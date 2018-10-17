@@ -1,0 +1,31 @@
+FC     = pgf77
+FFLAGS = -fast -r8 -Mextend -Msave -Mdalign
+#FFLAGS = -fast -r8 -Mextend -Msave -Mdalign -Mbounds
+
+#FC     = g77
+#FFLAGS = -g -C -O2 -malign-double -ffixed-line-length-none -fno-automatic -Wall -fbounds-check
+#FFLAGS = -g -C -O2 -malign-double -ffixed-line-length-none -fno-automatic -Wall
+#FFLAGS = -O3 -malign-double -ffixed-line-length-none -fno-automatic
+
+#FC     = xlf
+#FFLAGS = -gC -qextchk -qsave -qspnans -qdpc -bloadmap:map
+#FFLAGS =  -O2 -qextchk -qsave -qspnans -qdpc -bloadmap:map
+
+FC_MPI     = mpif77
+#FFLAGS_MPI = -fast -r8 -Mextend -Msave -Mdalign -Mbounds
+FFLAGS_MPI = -fast -r8 -Mextend -Msave
+
+#FC_MPI     = mpif77
+#FFLAGS_MPI = -O2 -malign-double -ffixed-line-length-none -fno-automatic -Wall
+#FFLAGS_MPI = -O3 -malign-double -ffixed-line-length-none -fno-automatic
+
+#FC_MPI     = mpxlf
+#FFLAGS_MPI = -gC -qextchk -qsave -qspnans -qdpc -bloadmap:map
+#FFLAGS_MPI =  -O2 -qextchk -qsave -qspnans -qdpc -bloadmap:map
+
+# At Sandia we need -lmpi at end of link line. Presently using cif77
+#FC_MPI     = cif77
+#FC_MPI     = cif90
+#FFLAGS_MPI = -O2
+#LDFLAGS_MPI = -lmpi
+

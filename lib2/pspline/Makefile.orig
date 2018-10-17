@@ -1,0 +1,191 @@
+#GNU Makefile to build pspline Library libpspline.a 
+#        and test drivers pspltest and pspltes8
+#
+#02/09/99 C. Ludescher
+#
+
+ifneq ($(MAKELEVEL),0)
+# if OBJ was defined for main Makefile one level down
+ifeq ("${OBJ}",".")
+	override OBJ=..
+endif
+endif
+
+# define system dependent flags, etc.
+-include ../share/Make.local
+include ../share/Make.flags
+
+ifeq ($(MACHINE),HP)
+	FTEST := $(FFLAGS) $(STATIC)
+else
+	FTEST := $(FFLAGS)
+endif
+
+ifdef DEBUG
+	FTEST := $(DFFLAGS)
+	FFLAGS = $(DFFLAGS)
+endif
+
+
+ARC = $(OBJ)/lib/libpspline.a
+OBJDIR = $(OBJ)/obj/pspline
+
+# don't rebuild library if using installed one in $PREFIX 
+ifeq ($(MAKELEVEL),0)
+	THISLIB=$(ARC)
+endif
+
+srcdir = $(shell pwd)
+DATA   = $(shell ls *.ref *.m *output)
+#=============================================================
+# f90 modules
+ 
+Mnams = ezspline.mod ezspline_obj.mod pspline_calls.mod
+Mobjs = ezspline_mod.o pspline_calls.o
+MODS = $(foreach file,$(Mobjs),$(ARC)($(file)))
+
+ifeq ($(MODUP),Y)
+ MODS0=$(foreach m,$(Mnams),$(shell  echo $(m) | tr 'a-z' 'A-Z'))
+ MODULES=$(foreach m,$(MODS0),$(subst .MOD,.$(MODEXT),$(m)))
+else
+ MODULES = $(foreach m,$(Mnams),$(subst .mod,.$(MODEXT),$(m)))
+endif 
+
+# C archive members
+C =  $(subst .c,.o,$(wildcard *.c))
+
+# fortran archive members
+F  = $(subst .f,.o, $(wildcard *.f)) $(subst .F,.o, $(wildcard *.F))
+F90 = $(subst .f90,.o, $(wildcard *.f90)) $(subst .F90,.o, $(wildcard *.F90))
+FALL = $(C) $(F) $(F90) 
+#remove test programs
+FMEM =$(filter-out ezspline_test%, $(filter-out ezspline_perf%, $(filter-out %lookup_test.o, $(filter-out psplte%,$(FALL)))))
+MEM = $(foreach file,$(FMEM),$(ARC)($(file)))
+
+# Test Programs
+PRGS1 = pspltest lookup_test r8lookup_test
+PRGS2 = ezspline_perf_r4 ezspline_perf_r8 ezspline_test_r4 ezspline_test_r8
+PRG1 =  $(foreach file,$(PRGS1),$(OBJ)/test/$(file))
+PRG2 =  $(foreach file,$(PRGS2),$(OBJ)/test/$(file))
+
+LDLIBS = -L$(OBJ)/lib $(LLOC) -lpspline -lportlib
+
+.PHONY: clean realclean checkdir all
+
+libs: FORCE $(ARC)
+ 
+all:  libs exec
+	@echo done  
+
+$(OLDLIB): timestamp.inf
+	@echo "--- DETECTED libpspline.a source update"
+	@echo "--- Re-Making $(ARC)"
+	@$(MAKE) libs
+
+FORCE:
+	@test -d $(OBJ)/lib || mkdir -p $(OBJ)/lib
+	@test -d $(MDIR) || mkdir -p $(MDIR)
+	@test -d $(OBJ)/obj/pspline || mkdir -p $(OBJ)/obj/pspline
+
+ 
+# compile c
+$(ARC)(%.o): %.c
+	$(c_proc)
+	$(make_ar)
+
+#pre-process/compile free form fortran 90 code
+$(ARC)(%.o): %.F90
+	$(F90_proc)
+	$(make_ar)
+
+
+# compile free form fortran 90 code
+$(ARC)(%.o): %.f90
+	$(FC90) $(FFLAGS) $(MODFLAGS) -I./ $(INCFLAGS) $(OUT) $(OBJDIR)/$*.o $<
+	$(make_ar)
+
+# compile fixed fortran
+$(ARC)(%.o): %.f
+	$(FC) $(FFLAGS) $(MODFLAGS) -I./ $(INCFLAGS) $(OUT) $(OBJDIR)/$*.o $<
+	$(make_ar)
+
+# pre-process/compile fixed code
+$(ARC)(%.o): %.F
+	$(F_proc)
+	$(make_ar)
+
+$(ARC): $(MODS) $(MEM)
+	@$(RANLIB) $@ > /dev/null
+#
+#---------------------------------------------------
+
+ckdirs: FORCE
+	@test -d $(OBJ)/test || mkdir -p $(OBJ)/test
+	@for i in $(DATA); do \
+	(cd $(OBJ)/test; test -f $$i || ln -s $(srcdir)/$$i $$i;) done 
+
+# don't compile main with dynamic, it requires too much stack space
+
+do_exec: ckdirs $(PRG1) $(PRG2) $(OBJ)/test/pspltes8
+
+exec: 
+ifneq ("$(wildcard pspltes8.F)","")
+	$(MAKE) do_exec
+else
+	@echo
+endif
+
+$(OBJ)/test/pspltes8: $(OBJDIR)/pspltes8.o $(ARC) 
+	$(FC) $(LDFLAGS) -o $@ $< $(LDLIBS) $(XFLIB)
+
+# NOTE: if HP would not require "STATIC"
+# one could just use
+# $(PROC_F)
+#
+$(OBJDIR)/pspltes8.o: pspltes8.F
+	@$(PERL) $(PL)/prefpp.pl $< | $(FPP) $(FPPFLAGS) - | $(PERL) $(PL)/postfpp.pl > $*.f
+	$(FC) $(FTEST) $(MODFLAGS) $(OUT) $@ $*.f
+	@if test -z "$(DEBUG)"; then \
+	rm -f $*.f*; fi	
+
+
+$(OBJDIR)/%.o: %.f 
+	$(FC) $(FTEST) $(MODFLAGS) $(OUT) $(OBJDIR)/$*.o $<
+
+$(OBJDIR)/%.o: %.f90
+	$(FC90) $(FFLAGS) $(MODFLAGS)  $(OUT) $(OBJDIR)/$*.o $<
+
+$(PRG1): $(OBJ)/test/%: $(OBJDIR)/%.o 
+	$(FC) $(LDFLAGS) -o $@  $(OBJDIR)/$*.o $(LDLIBS)  $(XFLIB)
+
+$(PRG2): $(OBJ)/test/%: $(OBJDIR)/%.o 
+	$(FC90) $(LDFLAGS) -o $@  $(OBJDIR)/$*.o $(LDLIBS) -lezcdf $(XFLIB) -L$(USRLIB) $(NETCDF)
+
+
+chkins:
+	@test -d $(MODDIR) ||  mkdir -p $(MODDIR)
+	@test -d $(LIBDIR) ||  mkdir -p $(LIBDIR)
+	@test -d $(MANDIR)/man3 || mkdir -p $(MANDIR)/man3
+
+install: chkins
+	@if test -f $(ARC); then \
+	  umask 133; cp $(ARC) $(LIBDIR)/; \
+	else test -f $(LIBDIR)/libpspline.a || echo ">>> can not find $(ARC)";fi;
+	@umask 133; cp pspline.3 $(MANDIR)/man3/
+	$(foreach file,$(MODULES),$(shell cp $(MDIR)/$(file) $(MODDIR)/))
+
+uninstall:
+	$(foreach m,$(MODULES),$(shell rm -f $(MODDIR)/$(m) ))
+	rm -f $(LIBDIR)/libpspline.a
+	rm -f $(MANDIR)/man3/pspline.3
+
+clean: 
+	@rm -f $(OBJDIR)/*
+	@if test -d $(MDIR); then \
+	  (cd $(MDIR); rm -f $(MODULES)); fi
+
+realclean: clean
+	@rm -f $(ARC)
+	@rm -f $(PRG1) $(PRG2)
+	@if test -d $(OBJ)/test; then \
+	  (cd $(OBJ)/test; rm -f $(DATA)); fi

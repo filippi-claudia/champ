@@ -1,0 +1,85 @@
+This is TeX, Version 3.14159 (Web2C 7.3.1) (format=latex 2001.3.8)  15 NOV 2002 11:51
+**p2.tex
+(p2.tex
+LaTeX2e <2000/06/01>
+Babel <v3.6x> and hyphenation patterns for american, british, german, dutch, ma
+gyar, nohyphenation, loaded.
+(/opt/tex/share/texmf/tex/latex/base/article.cls
+Document Class: article 2000/05/19 v1.4b Standard LaTeX document class
+(/opt/tex/share/texmf/tex/latex/base/size10.clo
+File: size10.clo 2000/05/19 v1.4b Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (p2.aux)
+\openout1 = `p2.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 4.
+LaTeX Font Info:    ... okay on input line 4.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 5.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 5.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 5.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 19.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 19.
+ [1
+
+] [2] [3]
+Overfull \hbox (38.24666pt too wide) in paragraph at lines 160--160
+[]\OT1/cmtt/m/n/10 CKEYDOC calls fooarg , 2 arguments having defaults, one the 
+fixed value 0[] 
+ []
+
+
+Overfull \hbox (43.49661pt too wide) in paragraph at lines 160--160
+[]\OT1/cmtt/m/n/10 CKEYDOC (the one the keyword is read from) is passed as the 
+first argument[] 
+ []
+
+[4] [5]
+LaTeX Font Info:    Try loading font information for OML+cmr on input line 259.
+
+ (/opt/tex/share/texmf/tex/latex/base/omlcmr.fd
+File: omlcmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <10> not available
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 259.
+
+Overfull \hbox (48.91153pt too wide) in paragraph at lines 279--299
+[][] 
+ []
+
+[6] [7] (p2.aux) ) 
+Here is how much of TeX's memory you used:
+ 248 strings out of 10893
+ 2490 string characters out of 72344
+ 49308 words of memory out of 263001
+ 3235 multiletter control sequences out of 10000+0
+ 8876 words of font info for 32 fonts, out of 400000 for 1000
+ 22 hyphenation exceptions out of 1000
+ 23i,7n,17p,169b,301s stack positions out of 300i,100n,500p,50000b,4000s
+
+Output written on p2.dvi (7 pages, 17540 bytes).

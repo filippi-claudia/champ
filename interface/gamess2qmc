@@ -1,0 +1,1939 @@
+#!/usr/bin/perl  
+#########################################################################
+#                                                                       #
+# gamess -> qmc interface                                               #
+# (c) Friedemann Schautz 2002-2003                                      #
+# script to extract geometry, basis and orbitals                        #
+# from GAMESS output and to convert into formats suitable for QMC       #
+# Grid representations for radial parts of basis functions are          #
+# computed as well.                                                     #
+# Run with -h to get a summary of command-line options                  # 
+#########################################################################
+#$Revision: 1.11 $                               
+
+# package for analyzing command line arguments
+use Getopt::Std;
+
+# main driver for all input and output
+sub main{
+    initialize();
+    get_options();
+
+    printf "========= GAMESS to CHAMP interface =========\n" if(! $quiet); 
+
+    read_from_gamess();
+    test_print() if($verbose);
+
+     if($reverse_trafo){
+ 	expand_shells();
+ 	read_qmc_lcao();
+ 	transform_back();
+ 	print_gamess_vec();
+ 	exit;
+     }
+    
+    print_geometry() if($make_geometry_file);
+
+    basis_grid();
+
+    if($make_det_file ||$make_efpci_file  ){
+    	if($detread && $gugaread){
+	    transform_det();
+	} else {
+	    printf "ci [%s] guga [%s]\n",$detread,$gugaread;
+	    die "GUGA and/or CI-info missing!";
+	}
+        csf_strings();
+    }
+
+    if($make_det_file){
+        common_csf();
+        foreach $trial_state ( @multiple_states ){
+  	   trial_det();
+   	   print_determinants();
+           print_csf();
+           if($#multiple_states>0){
+             print_mstates();
+           }
+        }
+        if($make_dmatrix_file){
+          print_dmatrix();
+        }
+    }
+
+    if($make_efpci_file){
+	print_efpci_data();
+    }
+
+
+    if($orbread != -1){
+	expand_shells();
+	transform_lcao();
+	print_lcao();
+	if($make_radial_grids){
+	    print_qmc_bf_info();
+	}
+    } else {
+	print STDERR "WARNING : no orbitals \n" if(! $quiet);
+    }
+
+}
+
+sub initialize{
+# global initialization
+# NOTE: all settings below can be overridden using the
+# -x command line option, just put the appropriate perl
+# command(s) in a file and execute it with -x  
+
+# strings indicating different orbital sections in gamess output
+# ***WARNING: the information in the next 3 arrays depends on the
+# Version of GAMESS and keeps changing!
+#
+@orb_start=('^\s*EIGENVECTORS\s*$', '^\s*INITIAL GUESS ORBITALS\s*$', 
+            '^\s*NATURAL ORBITALS IN ATOMIC ORBITAL BASIS\s*$',
+            '^\s*MCSCF NATURAL ORBITALS\s*$',
+            '^\s*MCSCF OPTIMIZED ORBITALS\s*' );
+@orb_stop=('END OF RO?HF CALCULATION', 
+           'END OF INITIAL ORBITAL SELECTION',
+           'END OF DENSITY MATRIX CALCULATION',
+	   '------------------------',
+           'DONE WITH MCSCF ITERATIONS');
+
+# number of extra lines from start string to first orbital block
+@lineskip1=(2,2,2,2,2);
+# number of extra lines from orbital indices to coefficients
+@lineskip2=(2,2,2,3,2);
+# eigenvalues within lineskip2 (0: don't try to fetch them)
+@eigenlabel=(1,1,0,0,1);  
+# irrep label within lineskip2 (0: don't try to fetch them)
+@irreplabel=(2,2,2,0,2);  
+
+# mapping names (for command line option) to position in above arrays
+%orbid=( rhf => 0, initial => 1, cinat => 2, mnat => 3, mopt => 4 );
+# names for print out
+@orbnames=('RHF','INITIAL','NATURAL (CI)','NATURAL (MCSCF)','OPTIMZED (MCSCF)');
+
+
+# symbols -> angular momentum
+%angular=( S => 0, P => 1, D => 2, F => 3);
+# expected order of primitives in qmc
+@basorder= ('S','XX','X','Y','Z','YY','ZZ','XY','XZ','YZ','XXX','YYY','ZZZ','XXY','XXZ','YYX','YYZ','ZZX','ZZY','XYZ');
+# sequence of flags in qmc input
+@basorder2=('S','*','X','Y','Z','*','*','*','*','YY','ZZ','XY','XZ','YZ',
+	    '*','*','*','*','XXX','YYY','ZZZ','XXY','XXZ','YYX','YYZ','ZZX','ZZY','XYZ',
+            '*','*','*','*','*','*','*','*','*');
+%map_prim=( 'XX' => 'S');
+# primitives in shells in gamess
+@{$shell{S}}=('S');
+@{$shell{P}}=('X','Y','Z');
+@{$shell{L}}=('S','X','Y','Z');
+@{$shell{D}}=('XX','YY','ZZ','XY','XZ','YZ');
+@{$shell{F}}=('XXX','YYY','ZZZ','XXY','XXZ','YYX','YYZ','ZZX','ZZY','XYZ');
+
+# default values for grid parameters
+$gridtype=3;
+$gridpoints=2000;
+$gridarg=1.003;
+$gridr0=20.0;
+# format string (for one number) for grid print out 
+$gridformat="  %.12E";
+# format string for lcao coefficients output
+$lcao_format=" % .8E";
+
+# some constants
+$d3b4=0.75;
+$pi=atan2(1,0)*2.0;
+$pi4i=1.0/($pi**(1.0/4.0));
+$d5b4=5.0/4.0;
+$sq8b3=sqrt(8.0/3.0);
+$d7b4=7.0/4.0;
+$sq16b15=sqrt(16.0/15.0);
+$d9b4=9.0/4.0;
+$sq32b105=sqrt(32.0/105.0);
+
+$lcao_cs=sqrt(5.0);
+$lcao_cd=1.0/sqrt(3.0);
+
+}
+
+sub get_options{
+# process command line options
+    $verbose=0;
+    $quiet=0;
+    my %options = ();
+# in the string argument of getopts, each command line
+# option is specified with its letter (g for -g etc) 
+# if the option takes an argument (like -d 0.1) it is
+# folowed by a colon (:). After invoking getopts, the
+# hash %options will contain the values. 
+    getopts("grqht:v:n:b:x:ld:w:uc:samej:ED", \%options);
+
+# shortcuts (which can be changed by individual options)
+# e.g. '-D' is the same as '-d 0.9 -w 1 -t initial -u'
+# but '-D -w 2' or '-w 2 -D' will both change the arg of
+# w (the trial state index) to 2. 
+   if(exists $options{E}){
+       $options{e}=1 if(! exists $options{e});
+       $options{s}=1 if(! exists $options{s});
+       $options{t}='initial' if(! exists $options{t});
+       $options{j}=0 if(! exists $options{j});
+   }
+   if(exists $options{D}){
+       $options{d}=0.9 if(! exists $options{d});
+       $options{w}=1   if(! exists $options{w});
+       $options{t}='initial' if(! exists $options{t});
+       $options{u}=1  if(! exists $options{u});
+   }
+# process all 'atomic' options 
+    if(exists $options{h}){
+	print_usage();
+    }
+    if(exists $options{v}){
+	$verbose=$options{v};
+    }
+    if(exists $options{q}){
+	$quiet=1;
+	$verbose=0;
+    }
+    
+
+    $orbtype=0;
+    $make_geometry_file=0;
+    $make_lcao_file=0;
+    $make_radial_grids=0;
+    $make_eigen_file=0;
+    $make_symmetry_file=0;
+    $make_dmatrix_file=0;
+    if(exists $options{g}){
+	$make_geometry_file=1;
+    }
+    if(exists $options{r}){
+	$make_radial_grids=1;
+    }
+
+    if(exists $options{a}){
+	$make_eigen_file=1;
+    }
+    if(exists $options{s}){
+	$make_symmetry_file=1;
+    }
+    if(exists $options{m}){
+	$make_dmatrix_file=1;
+    }
+
+    if(exists $options{t}){
+	if(exists $orbid{$options{t}} ){
+	    $orbtype=$orbid{$options{t}};
+	    $make_lcao_file=1;
+	} else {
+	    printf "known types : %s\n",join(" ",keys(%orbid));
+	    die "bad orbital type: $options{t}";
+	}
+    }
+
+# print second line in basis* files ?
+    $print_lorb=0;
+
+# how many orbitals ?
+    $porb=0;
+    if(exists $options{n}){
+	$porb=$options{n};
+    }
+
+# omit unused orbitals? 
+    if(exists $options{u}){
+	$omit_unused_orbitals = 1;
+    } else {
+	$omit_unused_orbitals = 0;
+    }
+# there should be exactly on file to process
+    if( $#ARGV != 0){
+	print_usage();
+    } else {
+# setup file names 
+	$gamess_file=$ARGV[0];
+	if( ! -f $gamess_file ){
+	    die "Input file $gamess_file does not exist!\n";
+	}
+    }
+
+# base name
+    $i=rindex($gamess_file,'.');
+    if($i>0){
+	$old_basname=substr($gamess_file,0,$i);
+    } else {
+	$old_basname=$gamess_file;
+    }
+
+# new base name
+    if(exists $options{b}){
+	$basname=$options{b};
+    } else {
+	$basname=$old_basname;
+    }
+
+# input file names
+    $dat_file      = $old_basname . '.' . 'dat';
+# output file names
+    $basis_file    = $basname . '.' . 'basis';
+    $geometry_file = $basname . '.' . 'geometry';
+    $lcao_file     = $basname . '.' . 'lcao';
+    $det_file      = $basname . '.' . 'det';
+    $dmat_file     = $basname . '.' . 'dmat';
+    $bf_info_file  = $basname . '.' . 'bfinfo';
+    $eig_info_file = $basname . '.' . 'eig';
+    $sym_info_file = $basname . '.' . 'sym';
+    $efpci_file    = $basname . '.' . 'efpci';
+
+# VEC file
+    if(exists $options{l}){
+	$reread_lcao=1;
+    }else{
+	$reread_lcao=0;
+    };
+# LCAO file for reverse transformation
+    if(exists $options{c}){
+ 	$qmc_lcao_file=$options{c};
+ 	$new_vec_file=$qmc_lcao_file . '.vec';
+         $reverse_trafo=1;
+     } else {
+         $reverse_trafo=0;
+     }
+
+# determinants, threshold
+      if(exists $options{d}){
+	  $make_det_file = 1;
+	  $det_threshold = $options{d};
+      } else {
+	  $make_det_file = 0;
+      }
+# state for trial wave function
+    if(exists $options{w}){
+        @multiple_states=split(',',$options{w});
+    } else {
+	$multiple_states[0]=1;
+    }
+
+# output for CSF based efpci code
+    if(exists $options{e}){
+	$make_efpci_file=1;
+	$all_states=1;
+    }
+# output format for CSF occupation patterns
+# (0=heuristic / 1= CASE VECTOR )
+    if(exists $options{j}){
+	$case_vector_format=$options{j};
+    }else{
+	$case_vector_format=0;
+    }
+
+# source extended option file 
+# this file must contain valid perl statements, which can be used to 
+# overide settings .
+# Everything specified above this point (e.g. file names) can be changed
+# by putting it in the 'extended options' file 
+     if(exists $options{x}){
+	 $opt_file=$options{x};
+	 open(RCFILE,"< $opt_file") || die  "can not open option file $opt_file : $!\n";
+	 print "sourcing option file  $opt_file \n" if(! $quiet);
+	 while(<RCFILE>){
+	     print ">> $_\n" if($verbose);
+	     eval($_);
+	     if($@){
+		 printf("Error in at line $. \n");
+		 die;
+	     }
+	 }
+     }
+
+
+
+# is some output specified ?
+
+    if( (! $make_geometry_file ) 
+	&& (! $make_radial_grids) 
+	&& (! $make_det_file ) 
+	&& (! $make_lcao_file)
+        && (! $reverse_trafo)
+	&& (! $make_efpci_file)){
+	 print "\n\n  No output specified ! \n\n";
+	 print_usage();
+    }
+}
+
+sub eat_lines{
+# eat n lines 
+    my $n= $_[0];
+    for(my $i=0; $i<$n; $i++){
+	<>;
+    }
+}
+
+sub read_from_gamess{
+# main loop for reading from gamess : look for strings 
+# identifying a section and call the appropriate routine
+# <> reads from standard input, each <>; eats a line
+
+    $orbread=-1;
+    $detread=0;
+    $gugaread=0;
+    print "reading gamess output: " if(! $quiet);
+  READ_LOOP: while(<>){
+      if( /^\s*RUN TITLE\s*$/){
+	  eat_lines(1);
+	  $_= <>; chomp;
+	  $run_title=$_;
+	  next READ_LOOP;
+      }
+      if( /^ ATOM      ATOMIC                      COORDINATES/){
+	  eat_lines(1);;
+	  read_geometry();
+	  next READ_LOOP;
+      }
+      if( /^\s*ECP POTENTIALS\s*/){
+	  eat_lines(2);
+	  read_zcore();
+	  next READ_LOOP;
+      }
+      if(  /^\s*ATOMIC BASIS SET\s*$/ ){
+	  eat_lines(5);  
+	  read_basis();
+	  next READ_LOOP;
+      }
+      if( /FROZEN CORE ENERGY =\s*([-]?[0-9]+[.][0-9]+)\s*$/){
+	  $core_energy=$1;
+      }
+      if( /^\s*THE NUCLEAR REPULSION ENERGY IS\s*([-]?[0-9]+[.][0-9]+)\s*$/){
+	  $enuc=$1;
+      }
+      if( /^\s*THE ADJUSTED NUCLEAR REPULSION ENERGY=\s*([-]?[0-9]+[.][0-9]+)\s*$/){
+	  $enuc_ecp=$1;
+      }
+      if( ($orbread == -1) && ($_ =~ $orb_start[$orbtype] )){
+	  eat_lines($lineskip1[$orbtype]); 
+	  read_orbitals($orb_stop[$orbtype]);
+	  $orbread=$orbtype;
+	  next READ_LOOP;
+      }
+      if(/^\s*TOTAL NUMBER OF MOS IN VARIATION SPACE=\s*([0-9]+)/){
+	  $mos_left=$1;
+	  printf STDERR "\n\nWARNING: Number of MOS reduced to %d!\n\n",$mos_left if(! $quiet);
+      }
+      if(/^\s*GUGA DISTINCT ROW TABLE /){
+	  if($make_det_file || $make_efpci_file){
+	      read_guga();
+	      $gugaread=1;
+	  }
+	  next READ_LOOP;
+      }
+      if( /^ STATE #\s+([0-9]+)\s+ENERGY =/ ){
+	  $state=$1;
+	  if( ($states_read+1) != $state){
+	      if($state <= $states_read){
+		  printf STDERR "WARNING : re-reading state %d !\n",$state  if(! $quiet);
+	      } else {
+		  die "state index out of range : $states_read $state";
+	      }
+	  } else {
+	      $states_read++;
+	  }
+	  chomp;
+	  @w=split;
+	  $state_energy[$state]=$w[-1];
+	  if($make_det_file || $make_efpci_file){
+              if( $all_states ){
+		  read_det();
+		  $detread=1;
+	      } else {
+                  foreach $trial_state ( @multiple_states ){
+                    if($state == $trial_state){
+                      read_det();
+                      $detread=1;
+                    }
+                  }
+              }
+	  }
+	  next READ_LOOP;
+      }
+    }
+    if($reread_lcao){
+	if($orbtype==1){
+	    reread_vec();
+	    print "orbitals re-read from data-file\n";
+	} else {
+	    print "WARNING: unable to re-read orbital coefficients\n";
+	}
+    }
+    print "done\n" if(! $quiet);
+}
+
+sub read_geometry{
+    print "geometry " if(! $quiet);
+    %seen=();
+# loop as long as we have 5 fields on the line
+  READ_LOOP: while(1) {
+      $_ = <>;  chomp;
+# split line into fields according to white space
+      @w = split;
+      if( $#w == 4 ){
+	  push @atom_symbols,$w[0]; 
+# remember unique atoms 
+	  if( ! $seen{$w[0]} ){
+	      $seen{$w[0]}=1;
+	      push @atom_types,$w[0];
+	  }
+	  push @atom_charges,$w[1];
+	  push @atom_x,$w[2];
+	  push @atom_y,$w[3];
+	  push @atom_z,$w[4];
+      } else {
+	  last READ_LOOP;
+      }
+  }
+    for(my $i=0; $i<= $#atom_symbols; $i++){
+	if( ! exists($zatom{$atom_symbols[$i]})) {
+	    $zatom{$atom_symbols[$i]}=$atom_charges[$i];
+	} else {
+	    if( $zatom{$atom_symbols[$i]} != $atom_charges[$i] ){
+		print STDERR "WARNING : new charge for type ",$atom_symbols[$i]," : ", $atom_charges[$i],"\n" if(! $quiet);
+	    }
+	}
+    }
+
+}
+
+sub read_zcore{
+    print "ecp " if(! $quiet);
+  READ_LOOP: while(1) {
+      $_ = <>;  chomp;
+      if($_ =~ /^\s*THE ECP RUN REMOVES/){
+	  last READ_LOOP;
+      }
+      if($_ =~ /^\s*PARAMETERS\s+FOR\s+"([^" ]*)\s*"\s+ON\s+ATOM\s+([0-9]+)\s+WITH\s+ZCORE\s+([0-9]+)\s+AND\s+LMAX\s+([0-9]+)\s+ARE\s*$/){
+        if (! exists $zcore{$atom_symbols[$2-1]} ){
+          $zcore{$atom_symbols[$2-1]}=$3;
+        } else {
+          if( $zcore{$atom_symbols[$2-1]} != $3){
+            print STDERR "WARNING : ignoring new ZCORE for atom type ",$atom_symbols[$2-1],"\n" if(! $quiet);
+          }
+        } 
+      }
+      if($_ =~ /^\s*PARAMETERS\s+FOR\s+"([^" ]*)\s*"\s+ON\s+ATOM\s+([0-9]+)\s+ARE\s+THE\s+SAME\s+AS\s+ATOM\s+([0-9]+)\s*$/){
+        if (! exists $zcore{$atom_symbols[$2-1]} ){
+	    $zcore{$atom_symbols[$2-1]}=$zcore{$atom_symbols[$3-1]};
+        } else {
+	    if( $zcore{$atom_symbols[$2-1]} != $zcore{$atom_symbols[$3-1]}){
+		print STDERR "WARNING : ignoring new ZCORE for atom type ",$atom_symbols[$2],"\n" if(! $quiet);
+	    }
+        } 
+      }
+   }
+    if($verbose){
+	print "\n Atom Charges \n";
+	foreach my $i (@atom_types){
+	    printf "Atom type %s charge %f ",$i,$zatom{$i};
+	    if( exists $zcore{$i} ){
+		printf "core charge %d ",$zcore{$i};
+	    }
+	    printf "\n";
+	}
+    } 
+}
+sub read_basis{
+    $current_func=0;
+     printf(" basis ") if(! $quiet);
+    %seen=();
+    $ignore=0;
+  READ_LOOP: while(1) {
+      $_ = <>;  chomp;
+      @w = split;
+      if( $_ =~  /^\s*TOTAL NUMBER OF BASIS SET SHELLS/ ){
+	  last READ_LOOP;
+      }
+      if( $#w==0 ){
+# only one field : atom symbol
+	  $symbol=$w[0];
+# basis my be printed more than once
+	  if( $seen{$symbol} ){
+	      $ignore=1;
+	      if($verbose){
+		  print "\n *** Ignoring multiple listing for type $symbol\n";
+	      }
+	  } else {
+	      $ignore=0;
+	      $seen{$symbol}=1;
+	  }
+      } elsif($#w>0){
+	  if( $ignore == 1){
+	      next READ_LOOP;
+	  }
+# more than one : new basis function
+	  if($current_func != $w[0]){
+	      $current_func=$w[0];
+	      push @{$functions{$symbol}},$current_func;
+	  }
+	  $ftype[$current_func]=$w[1];
+	  push @{$exponents[$current_func]}, $w[3];
+	  push @{$coeff[$current_func]}, $w[4];
+	  if($w[1] eq "L"){
+	      push @{$coeff_L[$current_func]}, $w[5];
+	  }
+      }
+  }
+}
+
+sub read_orbitals{
+    $no1 = -1;
+    $no2 = -1;
+    $end_tag=$_[0];
+    $orbitals=0;
+    @irrep_strings=();
+    @eigenvalue=();
+#   ignore extra orbitals 
+    if( $mos_left){
+	$last_orb=$mos_left-1;
+    } else {
+	$last_orb=undef;
+    }
+    printf (" orbitals  ") if(! $quiet);
+    $end_ok=0;
+  READ_LOOP: while(<>) {
+      chomp;
+      @w = split;
+      if( $_ =~  $end_tag ){
+          $end_ok=1;
+	  last READ_LOOP;
+      }
+# extra garbage
+      if( $_ =~ /^\s*tryfop/){
+	  next READ_LOOP;
+      }
+      if( $_ =~ /^\s*dumpev/){
+	  next READ_LOOP;
+      }
+      if( $#w == -1 ){
+# blank line : reset orbital indices
+	  $no1=-1;
+	  $no2=-1;
+	  next READ_LOOP;
+      }
+      if( ($no1 == -1) && ($no2 == -1)){
+# line following the blank line should contain orbital indices
+# (we are ignoring indices, just count)  
+	  $no1=$orbitals;
+	  $orbitals += ($#w+1);
+	  $no2=$orbitals - 1 ;
+	  if($eigenlabel[$orbtype] == 0){
+              eat_lines($lineskip2[$orbtype]-$irreplabel[$orbtype]+1);
+          } else {
+# get eigenvalues
+              $_=<>; chomp; @w=split;
+              for($i=0; $i<=$#w; $i++){
+                  if((! defined $last_orb) || ($no1+$i <= $last_orb)){
+                      $eigenvalue[$no1+$i]=$w[$i];
+                  }
+              }
+          }
+	  if($irreplabel[$orbtype] == 0){
+	      eat_lines($lineskip2[$orbtype]-$eigenlabel[$orbtype]+1);
+	  } else {
+# get irrep labels 
+	      $_=<>; chomp; @w=split;
+	      for($i=0; $i<=$#w; $i++){
+		  if((! defined $last_orb) || ($no1+$i <= $last_orb)){
+		      $irrep_strings[$no1+$i]=$w[$i];
+		  }
+	      }
+	      eat_lines($lineskip2[$orbtype]-$irreplabel[$orbtype]);
+	  }
+	  next READ_LOOP;
+      }
+      if( $no1 == 0){
+# if we are reading orbital number one, we also save the basis function labels
+          push @lcao_atomsym, $w[1];
+          push @lcao_atomidx, $w[2];
+          push @lcao_bflabel, $w[3];
+      }
+      $col=4;
+      for ($i=$no1; $i <=$no2; $i++){
+          if(( ! defined $last_orb) || ($i <= $last_orb)){
+              push @{$lcao[$i]}, $w[$col];
+          } 
+
+          $col++;
+      }
+  }
+
+    if(defined $mos_left){
+	if( $orbitals >= $mos_left){
+	    $orbitals=$mos_left;
+	}
+    }
+
+    if(! $end_ok ){
+	die "End of Orbitals section not found\n";
+    }
+}
+
+sub reread_vec{
+    open(VECFILE,"< $dat_file") || die "can not open file $dat_file : $!\n";
+    if(! $quiet){
+	print "new coefficients from file $dat_file\n";
+    }
+    $vec_ok=0;
+    @vv=();
+  VECFILELOOP: while(<VECFILE>){
+      chomp;
+      if(/^\s*STARTING ORBITALS/){
+	  $_=<VECFILE>; chomp;
+	  if(/^\s*\$VEC\s*$/){
+	      while(<VECFILE>){
+		  chomp;
+		  if(/^\s*\$END\s*$/){
+		      $vec_ok=1;
+		      last VECFILELOOP;
+		  }else{
+		      push @vv,$_;
+		  }
+	      }
+	  }
+      }
+    }
+    close(VECFILE);
+    if($vec_ok){
+	if( $verbose ){
+	    print $#vv," lines in $dat_file\n";
+	}
+	read_vec(\@vv);
+    } else {
+	die "ERROR reading orbitals from data file (VEC)\n";
+    }
+}
+
+sub read_vec{
+    $vec_lines=$_[0];
+    @tmplcao=();
+    $norbit=0;
+    $o=0;
+# field lengths of first 3 fields
+    @flen=(2,3,15);
+# re-read lcao coefficients from 'VEC' data
+    foreach my $st (@$vec_lines){
+	chomp $st;
+	$st =~ s/\s+$//;
+	$ncol=(length($st)-$flen[0]-$flen[1])/$flen[2];
+	$orb_tag=substr($st,0,$flen[0]);
+	if($orb_tag != $o){
+	    $o=$orb_tag;
+	    $norbit++;
+	    $orb=$norbit;
+	}
+	$count=substr($st,$flen[0],$flen[1]);
+	@values=();
+	for($i=1;$i<=$ncol;$i++){
+	    push @values,substr($st,$flen[0]+$flen[1]+($i-1)*$flen[2],$flen[2]);
+	}
+	push  @{$tmplcao[$orb-1]}, @values; 
+    }
+    if(! $quiet){
+	print "Number of orbitals re-read from VEC : $norbit of $orbitals \n";
+    }
+
+    $nb=$#lcao_bflabel;
+    if($norbit > $orbitals){
+	printf "too many orbital coefficients: old %d new %d\n",$orbitals,$norbit;
+	die "Error in read_vec";
+    }
+    for(my $i=0; $i<$norbit; $i++){
+	$nb2=$#{$tmplcao[$i]};
+	if($nb != $nb2){
+	    printf "Orbital %d : Different number of basis functions : old %d new %d\n",$i+1,$nb+1,$nb2+1;
+	    die "Error in read_vec";
+	}
+	for(my $j=0; $j<=$nb; $j++){
+	    ${$lcao[$i]}[$j]=${tmplcao[$i]}[$j];
+	}
+    }
+}
+
+sub read_guga{
+    printf (" guga  ") if(! $quiet);
+    $guga_end=0;
+    $read_again=0;
+
+    while( ($read_again == 1) || ($_ = <>) ){
+	$read_again=0;
+	chomp;
+
+	@w = split;
+	if(/END OF -DRT- GENERATION/){
+	    $guga_end=1;
+	    last;
+	}
+		if(/^\s*SYMMETRIES\s+FOR\s+THE\s+([0-9]+)\s+CORE,\s+([0-9]+)\s+ACTIVE,\s+([0-9]+)\s+EXTERNAL\s+MO-S\s+ARE\s*$/){
+	    $ncore=$1;
+	    $nactive=$2;
+	    $nexternal=$3;
+	    for($i=0;$i<$nactive+$nexternal;$i++){
+		$global_orb_order[$i]='0';
+	    }
+
+	}	
+
+	if(/NUMBER OF ALPHA ELECTRONS =/){
+	    $alpha=$w[5];
+	    next;
+	}
+	if(/NUMBER OF  BETA ELECTRONS =/){
+	    $beta=$w[5];
+	    next;
+	}
+	if(/THE WAVEFUNCTION CONTAINS\s+([0-9]+)\s+WALKS/){
+	    $csf=$1;
+	    next;
+	}
+	if(/^\s*CASE\s+VECTOR\s*=\s*([0-9]+)\s*$/){
+	    $case_vector_index=$1;
+            # following line containes case vector
+	    $l = <>; chomp($l);
+	    if($l =~ /^\s*([1234]+)\s*$/){
+		$case_vectors[$case_vector_index]=$1;
+	    } else {
+		if(! $quiet) {
+		    print STDERR "case vector index $case_vector_index missing\n";
+		}
+	    }
+ 
+	}
+	if(/^\s*CSF\s+([0-9]+):/){
+            # Current and following lines contain expanssion of CSF in terms of determinants
+	    $csf_read++;
+	    print "CSF  $csf_read ( index $1 )\n" if $verbose;
+	    $l=join ' ',@w[2 .. $#w];
+	    @csf_orbitals_tmp=();
+	    $first_line=1;
+	    while( $l =~ /^\s*C\(\s*[0-9]+\)=\s*(-?[0-9]\.[0-9]+)\s*:\s*(((-?[0-9]+)\s*)+)$/){
+		$detlist_dim++;
+		printf "OCC : [%s]\n",$l  if $verbose;
+		$coef=$1;
+		printf "coef = %f\n",$coef if $verbose;
+		$occ_pattern=$2;
+		printf "pattern=[%s]\n",$occ_pattern if $verbose;
+		
+		@occ=();
+		while($occ_pattern =~ /\s*(-?[0-9]+)/g){
+		    push @occ,$1;
+		}
+
+		print "OCC ARRAY ", join("|",@occ),"\n" if($verbose);
+		@alp_occ=();
+		@bet_occ=();
+
+		
+		foreach $o (@occ){
+		    if( $o =~ /-([0-9]+)/ ){
+			$active_orbitals{$1}++;
+			push  @bet_occ,$1;
+			if($first_line == 1){
+			    if( ! ($csf_orbitals_tmp[$#csf_orbitals_tmp] eq $1)){
+				push @csf_orbitals_tmp, $1;
+				# print "active - orb added [$1]\n";
+			    }
+			}
+		    }else{
+			$active_orbitals{$o}++;
+			push  @alp_occ, $o;
+			if($first_line == 1){
+			    if( ! ($csf_orbitals_tmp[$#csf_orbitals_tmp] eq $o)){
+				push @csf_orbitals_tmp, $o;
+				# print "active + orb added [$o]\n";
+			    }
+			}
+
+		    }
+		}
+		
+		$pm=0;
+		@occ_ab =  @occ;
+
+		$done=0;
+
+		while(!$done){
+		    $swaps=0;
+		    for($k=0; $k<$#occ_ab; $k++){
+			if(abs($occ_ab[$k]) > abs($occ_ab[$k+1])){
+			    $h=$occ_ab[$k];
+			    $occ_ab[$k]=$occ_ab[$k+1];
+			    $occ_ab[$k+1]=$h;
+			    $swaps++;
+			} elsif(abs($occ_ab[$k]) == abs($occ_ab[$k+1])){
+			    if($occ_ab[$k] < 0 ){
+				$occ_ab[$k]= -$occ_ab[$k];
+				$occ_ab[$k+1]= -$occ_ab[$k+1];
+				$swaps++;
+			    }
+			}
+		    }
+		    if( $swaps == 0 ){
+			$done=1;
+		    } else {
+			$pm+=$swaps;
+		    }
+		}
+
+		$phase=(-1)**$pm;
+		if($verbose){
+		    print " -- sorted -- \n";
+		    print "count = $pm phase = $phase\n"; 
+		    foreach $r (@occ){
+			if($r<0){
+			    print "$r ";
+			} else {
+			    print " $r ";
+			}
+		    }
+		    print "\n";
+		    foreach $r (@occ_ab){
+			if($r<0){
+			    print "$r ";
+			} else {
+			    print " $r ";
+			}
+		    }
+		    print "\n";
+		}
+		
+		$op2= join ' ',@occ_ab;
+		
+		if( exists( $determinant{$op2} )){
+		    $detnr=$determinant{$op2};
+		} else {
+		    $detref++;
+		    $determinant{$op2}=$detref;
+		    $detnr=$detref;
+		    print "New Determinant ($detref) [$op2]\n" if $verbose;
+		}
+		
+		$phase_factors[$detnr]=$phase;
+		
+		push @{$csf_list[$csf_read]},{ coef=>$coef, det=>$detnr};
+
+                # find position of orbital in case vector
+		if($first_line == 1){
+		    $n=0;
+		    @s=split(//,$case_vectors[$csf_read]);
+		    for($i=0;$i<=$#s;$i++){
+			if($s[$i] != 1){
+			    if($global_orb_order[$i] eq '0'){
+				$global_orb_order[$i]=$csf_orbitals_tmp[$n];
+			    } elsif($global_orb_order[$i]!=$csf_orbitals_tmp[$n]){
+				$global_orb_order[$i]='?';
+			    }
+			    $n++;
+			}
+		    }
+		    
+		}
+
+		
+		$l = <>; chomp($l); $first_line=0;
+	    }
+	    $_=$l;
+	    $read_again=1;
+	    next;
+	}
+    }
+    $n_actorb=(scalar keys(%active_orbitals));
+    if($verbose){
+	printf "GUGA reading done\n";
+	printf "Electrons: %d alpha %d beta, CSF: %d (read %d) \n",$alpha,$beta,$csf,$csf_read;
+	printf "Determinants %d\n",$detref;
+	printf "%d Active Orbitals : ",$n_actorb;
+    }
+
+    if($guga_end != 1){
+	die "read_guga: DRT info seems to be incomplete!\n";
+    }
+}
+
+sub read_det{
+    printf "[$state] " if(! $quiet);
+    for($i=1;$i<=$csf;$i++)
+    {
+	${$cicoef[$state]}[$i]=0;
+    }
+    <>; <>; <>; $done=0;
+    do{
+	$_=<>; chomp; @w=split;
+	if( (scalar @w ) == 3){
+	    ${$cicoef[$state]}[$w[0]]=$w[1];
+	    # with many orbitals, occupation patterns can continue on
+	    # the next line in GAMESS output 
+	    if(($plen=length($w[2])) < ($nactive+$nexternal)){
+		do{
+		    $_=<>; chomp; @w=split;
+		    if($#w != 0){
+			die "error on pattern continuation line";
+		    }
+		    $plen += length($w[0]);
+		} until($plen==$nactive+$nexternal);
+	    }
+         } else {
+	     $done=1;
+	 }
+      } until $done;
+}
+
+sub transform_det{
+
+    if($n_actorb != ($nactive+$nexternal)){
+	$ntmp=$nactive+$nexternal;
+	print STDERR "\nWARNING: wrong number of active orbitals ? (used: $n_actorb, specified: $ntmp)\n" if(! $quiet);
+	print STDERR "(this warning occurs also if some active orbitals are not used because of symmetry)\n\n" if(! $quiet);
+        $n_actorb=$nactive+$nexternal;
+    }
+
+    foreach $d (keys(%determinant)){    
+# fill core orbitals   
+	$nea=0; $neb=0;
+	for($i=1; $i<=$ncore; $i++){
+	    $orb_occ[$i]='2';
+	    $nea++; $neb++;
+	}
+	for($i=$ncore+1; $i<=$ncore+$n_actorb; $i++){
+	    $orb_occ[$i]='0';
+	}
+	@op=split ' ',$d;
+	foreach $oo (@op){
+	    $oa=abs($oo);
+	    if($oo > 0){
+		$orb_occ[$oa]='+';
+		$nea++;
+	    } else {
+		if($orb_occ[$oa] eq '+'){
+		    $orb_occ[$oa]='2';
+		} else {
+		    $orb_occ[$oa]='-';
+		}
+		$neb++;
+	    }
+	}
+	
+	if( ($nea != $alpha) || ($neb != $beta)){
+	    die "wrong number of electrons in determinant [$d] : alpha=($nea,$alpha) beta=($neb,$beta)\n";
+	}
+
+	$occ_pm = join '',@orb_occ;
+	
+	$sorted_detlist[$determinant{$d}]=$occ_pm;
+
+	printf "[%s] [%s] %d \n",$d, $occ_pm,$determinant{$d} if $verbose;
+    }
+# qmc phase factors (ababab... -> aaa...bbb.. reordering)
+    for( $i=1; $i<=$#sorted_detlist;$i++){
+	$p_count=0;
+	@ocsym=split '',$sorted_detlist[$i];
+	for($j=0; $j<=$#ocsym; $j++){
+	    if(($ocsym[$j] eq '-') || ($ocsym[$j] eq '2')){
+		for($k=$j+1; $k<=$#ocsym; $k++){
+		    if(($ocsym[$k] eq '+') || ($ocsym[$k] eq '2')){
+			$p_count++;
+		    }
+		}
+	    }
+	}
+	$qmc_phase[$i]=(-1.0)**($p_count);
+    }
+}
+
+sub read_qmc_lcao{
+# read qmc lcao format
+    open(QMCLCAO,"< $qmc_lcao_file") || die "can not open LCAO-file $qmc_lcao_file : $!\n";
+    @qmc_lcao_lines=();
+    $f=0;
+    while(<QMCLCAO>){
+     if(/^\s*lcao/){
+       $f=1; next;
+      }
+      if($f){
+ 	if(/^\s*end/){
+ 	   $f=0; next;
+ 	}
+ 	push @qmc_lcao_lines, $_;
+      }
+
+    }
+}
+
+#sub transform_back{
+## assuming that the @qmc_lcao_lines contains lcao coefficients 
+## which correspond to the current basis , translate them back
+## (existing LCAO will be erased)
+#    @lcao=();
+#    $n=0;
+#    foreach my $l (@qmc_lcao_lines){
+#	@col=split(/\s+/,$l);
+#	if($col =~ /\s*/){ shift col;}
+#	@t=();
+## reorder coefficients
+#	$j=0;
+#	for(my $ia=0; $ia <= $#atom_symbols; $ia++){
+#	    foreach my $i (@basorder){
+#		for(my $k=0; $k<=$#{$prim_index2{$i}}; $k++){
+#		    $pk=${$prim_index2{$i}}[$k];
+#	            if($lcao_atomidx[$pk] == ($ia+1)){
+#                      $t[$pk]= $col[$j++];
+#		    }
+#	        }
+#	    }
+#        }
+## add line
+#	push @{$lcao[$n]},@t;
+#
+##    print "orbital $n (a): (",join(')(',@col),")\n";
+##    print "orbital $n (b): (",join(')(',@t),")\n";
+#
+#	$n++;
+#    }
+#
+#    $orbitals=$n;
+#
+## translate d-function coefficients back from 5d,s to 6d
+#	 transform_lcao_back();
+#}
+
+sub common_csf{
+# index included csf in all states (according to threshold)
+    $csf_selected_dim=0;
+    foreach $trial_state ( @multiple_states ){
+       for(my $j=1; $j<=$csf_read; $j++){
+           $c=${$cicoef[$trial_state]}[$j];
+           if( abs($c) >= $det_threshold ){
+             if( ! defined $index_selected_csf[$j] ) {
+               $csf_selected_dim++
+             }
+             $index_selected_csf[$j]=1;
+           }
+       }
+    }
+}
+
+sub trial_det{
+# construct
+# list of included determinants as determined in common_csf
+    %det_coeff=();
+    $selected_csf=0;
+    $selected_det=0;
+    $detlist_selected_dim=0;
+    for($i=1; $i<=$csf_read; $i++){
+	$c=${$cicoef[$trial_state]}[$i];
+        if( $index_selected_csf[$i] ){
+            $selected_csf++;
+            $detlist_selected_dim += $#{$csf_list[$i]}+1;
+	    foreach $d (@{$csf_list[$i]}){
+#		printf "   %f (%d) [%s]\n", $$d{coef},$$d{det},$sorted_detlist[$$d{det}];
+		if( exists $det_coeff{$$d{det}} ){
+		    $det_coeff{$$d{det}} += ($$d{coef} * $c);
+		} else {
+		    $det_coeff{$$d{det}}  = ($$d{coef} * $c);
+                    $selected_det++;
+		}
+	    }
+	}
+   }
+# list of used orbitals
+  %used_orbitals = (); 
+  foreach $d (keys %det_coeff){
+    @ocsym=split '',$sorted_detlist[$d];
+    for($j=0; $j<=$#ocsym; $j++){
+	if( $ocsym[$j] ne '0'){
+	    $used_orbitals{$j}=1;
+	}
+    }
+  }
+  $n=0;
+  foreach $i (sort {$a <=> $b} keys %used_orbitals){
+      $orb_index{$i}=$n++;
+  }
+}
+
+sub print_determinants{
+# print selected determinants of trial state
+    open(DETFILE,"> $det_file.$trial_state") || die  "cant open file $det_file.$trial_state : $!";
+    printf DETFILE "# Determinants from run %s \n", $run_title;
+    printf DETFILE "# State %s  Threshold on CSF coefficients %s\n",$trial_state,$det_threshold;
+    printf DETFILE "&electrons nelec %d nup %d\n", $alpha+$beta,$alpha; 
+    printf DETFILE "determinants %d\n",$selected_det;
+    if($trial_state == $multiple_states[0]){
+      @sorted_keys = sort { abs($det_coeff{$b}) <=> abs($det_coeff{$a})} keys %det_coeff;
+    }
+    $isrt=0;
+    foreach $d (@sorted_keys){
+	printf DETFILE "%.8f ",$det_coeff{$d}*$phase_factors[$d]*$qmc_phase[$d];
+        $isrt++;
+        $index_sorted_det[$d]=$isrt;
+    }
+    $det_sorted_dim=$isrt;
+    printf DETFILE "\n";
+    foreach $d (@sorted_keys){
+	@ocsym=split '',$sorted_detlist[$d];
+	for($j=0; $j<=$#ocsym; $j++){
+	    if( ($ocsym[$j] eq '+') || ($ocsym[$j] eq '2')){
+		if($omit_unused_orbitals){
+		    printf DETFILE "%3d ",$orb_index{$j}+1;
+		} else {
+		    printf DETFILE "%3d ",$j+1;
+		}
+	    }
+	}
+	printf DETFILE  "    ";
+	for($j=0; $j<=$#ocsym; $j++){
+	    if( ($ocsym[$j] eq '-') || ($ocsym[$j] eq '2')){
+		if($omit_unused_orbitals){
+		    printf DETFILE "%3d ",$orb_index{$j}+1;
+		} else {
+		    printf DETFILE "%3d ",$j+1;
+		}
+	    }
+	}
+	printf DETFILE "\n";
+    }
+    printf DETFILE "end\n";
+    printf ("determinants for state $trial_state written to file $det_file.$trial_state\n") if(! $quiet);
+}
+
+sub print_csf{
+# print selected csf of trial state
+    $selected_states=$#multiple_states+1;
+    printf DETFILE "csf %d %d\n",$selected_csf,$selected_states;
+    foreach $trial_state ( @multiple_states ){
+#   for($i=1; $i<=$selected_states; $i++){
+        for($j=1; $j<=$csf_read; $j++) {
+          if( $index_selected_csf[$j] ){
+            printf DETFILE "%f ",${$cicoef[$trial_state]}[$j];
+          }
+        }
+        print DETFILE "\n";
+    }
+    print  DETFILE "end\n";
+    print  DETFILE "csfmap\n";
+    printf DETFILE "%d %d %d\n",$csf_selected_dim,$det_sorted_dim,$detlist_selected_dim;
+    for($i=1; $i<=$csf_read; $i++){
+      if( $index_selected_csf[$i] ){
+       printf DETFILE "%d\n",$#{$csf_list[$i]}+1;
+         foreach $d (@{$csf_list[$i]}){
+           $det_trial=$index_sorted_det[$$d{det}];
+           printf DETFILE "%d  % f\n",$det_trial,$$d{coef}*$phase_factors[$$d{det}]*$qmc_phase[$$d{det}];
+         }
+      }
+    }
+    print DETFILE "end\n";
+}
+
+sub print_mstates{
+    if($trial_state == $multiple_states[0]){
+      open(MSTATFILE,"> $det_file.mstates") || die  "cant open file $det_file.mstates : $!";
+      printf MSTATFILE "multiple_cistates %d\n",$#multiple_states+1;
+      }
+    foreach $d (@sorted_keys){
+       printf MSTATFILE "%.8f ",$det_coeff{$d}*$phase_factors[$d]*$qmc_phase[$d];
+    }
+    printf MSTATFILE "\n";
+    if($trial_state == $#multiple_states+1) {
+       printf MSTATFILE "end\n";
+       printf ("multiple states written to file $det_file.mstates\n") if(! $quiet);
+    }
+}
+
+sub csf_strings{
+# find occupation pattern to label entire CSF
+# this is a bit heuristic and might result in
+# different CSF having the same label 
+  CSFLOOP: for($i=1; $i<=$csf_read; $i++){
+      $csf_rep[$i]='';
+      $fmmin=9999;
+      $detfm=0;
+    DETLOOP: foreach $d (@{$csf_list[$i]}){
+	printf "? [%s]",$sorted_detlist[$$d{det}] if($verbose);
+	$s=0;
+	$fm=0;
+	$count=0;
+	foreach $t (split '',$sorted_detlist[$$d{det}]){
+	    if($t eq '+'){
+		$s++;
+		if($fm == 0){ $count++ }
+	    } elsif( $t eq '-'){
+		$s--;
+		$fm=$count;
+	    }
+	    printf " %d ",$s if $verbose;
+	    if( $s <0 ){
+		next DETLOOP;
+	    }
+	}
+	if($s >= 0){
+	    if($fm < $fmmin){
+		$fmmin=$fm;
+		$detfm=$$d{det};
+	    }
+	}
+    }
+      if($detfm > 0){
+	  $csf_rep[$i]=$sorted_detlist[$detfm];
+	  $csf_phase[$i]=$phase_factors[$detfm];
+      } else {
+	  die "Error in csf label search";
+      } 
+  }
+}
+
+
+
+sub print_efpci_data{
+    open(EFPCI,"> $efpci_file") || die "Can not open file  $efpci_file : $!\n";
+
+#   csf_strings();
+# multiply phase factors
+    for($i=1; $i<=$states_read; $i++){
+	for($j=1; $j<=$csf_read; $j++){
+	    ${$cicoef[$i]}[$j]*=$csf_phase[$j];
+        }
+    }
+
+    for($i=1; $i<=$csf_read; $i++){
+       foreach $d (@{$csf_list[$i]}){
+          $$d{coef}*=($phase_factors[$$d{det}] / $csf_phase[$i]);
+                  printf "Phase factor: csf  %d  det %d  factor %f %f\n",$i, $$d{det},
+                          $phase_factors[$$d{det}],$csf_phase[$i] if $verbose;
+      }
+    }
+
+    printf EFPCI "&ci alpha %d beta %d\n",$alpha,$beta;
+    printf EFPCI "&ci det %d states %d\n",$detref,$states_read; 
+    printf EFPCI "&ci orbitals %d core %d external %d\n",$ncore+$n_actorb,$ncore,$nexternal;
+    printf EFPCI "&ci casevectors %d\n",$case_vector_format;
+    if(defined $core_energy){
+	printf EFPCI "&ci ecore %f\n",$core_energy;
+    }
+    if(defined $enuc_ecp){
+     printf EFPCI "&ci enuc %f\n",$enuc_ecp;
+    } else {
+	if(defined $enuc){
+	    printf EFPCI "&ci enuc %f\n",$enuc;
+	}
+    }
+    if($case_vector_format>0){
+	$ncp=0;
+	$bad_sequence=0;
+	printf EFPCI "orbital_sequence %d\n",$nactive+$nexternal;
+	for($i=0;$i<$nactive+$nexternal;$i++){
+	    if($global_orb_order[$i] eq '?'){
+		$bad_sequence++;
+	    }
+	printf EFPCI "%s ",$global_orb_order[$i];
+	}
+	printf EFPCI "\nend\n";
+    } else {
+	$ncp=1;
+    }
+
+    if($bad_sequence>0){
+	print STDERR "Warning: orbital sequence could not be determined!\n" if(! $quiet);
+	printf EFPCI "# Warning: orbital sequence could not be determined!\n";
+	$case_vector_format = 2;
+    }
+
+    printf EFPCI "csf %d %d\n",$csf_read,$ncp;
+
+    for($j=1; $j<=$csf_read; $j++) {
+	if($case_vector_format == 0){
+	    printf EFPCI "%s\n",$csf_rep[$j];
+	}elsif($case_vector_format == 1){
+	    $s=$case_vectors[$j];
+	    $s =~ s/1/0/g;
+	    $s =~ s/2/+/g;
+	    $s =~ s/3/-/g;
+	    $s =~ s/4/2/g;
+	    printf EFPCI "%s\n",$s;
+	}else{
+	    printf EFPCI " (csf %d)\n",$j,
+	}
+    }
+    print  EFPCI "end\n";
+
+    printf EFPCI "determinants %d\n",$#sorted_detlist;
+    for( $i=1; $i<=$#sorted_detlist;$i++){
+	printf EFPCI "%s\n",$sorted_detlist[$i];
+    }
+    print  EFPCI "end\n";
+
+    printf EFPCI "states %d\n",$states_read;
+    for($i=1; $i<=$states_read; $i++){
+	printf EFPCI "% f ",$state_energy[$i];
+    }
+    print EFPCI "\n";
+
+    for($i=1; $i<=$states_read; $i++){
+	for($j=1; $j<=$csf_read; $j++) {
+	    printf EFPCI "%f ",${$cicoef[$i]}[$j];
+        }
+        print  EFPCI "\n";
+    }
+    print  EFPCI "end\n";
+    print  EFPCI "csfmap\n";
+    printf EFPCI "%d %d %d\n",$csf_read,$#sorted_detlist,$detlist_dim;
+    for($i=1; $i<=$csf_read; $i++){
+      printf EFPCI "%d\n",$#{$csf_list[$i]}+1;
+        foreach $d (@{$csf_list[$i]}){
+          printf EFPCI "%d  % f\n",$$d{det},$$d{coef};
+        }
+    }
+    print EFPCI "end\n";
+    close(EFPCI);
+    printf ("efpci information written to file $efpci_file\n") if(! $quiet);
+}
+
+sub test_print{
+    printf "atom types %s\n", join(" ",@atom_types);
+    print " coordinates\n";
+    for($i=0; $i <= $#atom_symbols; $i++){
+	printf "%d : %s %d % f % f % f \n", $i,$atom_symbols[$i],$atom_charges[$i],
+          $atom_x[$i],$atom_y[$i],$atom_z[$i];
+    }
+    print " basis\n";
+    foreach $i (keys %functions){
+	printf "symbol %s \n ",$i;
+	foreach $j (@{$functions{$i}}){
+	    printf "function %d type %s exp ",$j,$ftype[$j];
+	    foreach $e (@{$exponents[$j]}){
+		printf "%f ",$e;
+	    }
+	    printf "\n";
+	}
+	printf "\n";
+    }
+    if($orbread == -1){
+	print "no orbitals of type $orbtype  found !!\n";
+    } else { 
+	printf " orbitals: type %d number %d\n", $orbtype,$orbitals;
+	if($verbose > 2){
+	printf "sym   %s\n", join " ",@lcao_atomsym;
+	printf "index %s\n", join " ",@lcao_atomidx;
+	printf "label %s\n", join " ",@lcao_bflabel;
+	if($verbose > 3 ){
+	    for($i=1; $i<=$orbitals;$i++){
+		printf " %s \n",join " ",@{$lcao[$i]};
+	    }
+	}
+	}
+    }
+}
+
+sub basis_grid{
+    if( ! $make_radial_grids ){
+	$gridpoints=2;
+    }
+    $gridr0_save=$gridr0;
+    if($gridtype == 3) {
+	$gridr0=$gridr0/($gridarg**($gridpoints-1)-1);
+    }
+# put radial parts of basis functions on grids
+    $c = 0;
+    $radial_ptr=1;
+# radial part index for primitives
+    %prim_radial=();
+    foreach my $i (@atom_types){
+	@bgrid=();
+	$c++;
+	compute_grid(\@bgrid);
+	@lbas=();
+	foreach my $j (@{$functions{$i}}){
+	    print "BASIS GRID atom type $i function $j type  $ftype[$j]\n" if($verbose);
+	    if($ftype[$j] eq 'L'){
+		add_function('S',\@{$exponents[$j]},\@{$coeff[$j]},\@bgrid);
+		add_function('P',\@{$exponents[$j]},\@{$coeff_L[$j]},\@bgrid);
+	    } else {
+		add_function($ftype[$j],\@{$exponents[$j]},\@{$coeff[$j]},\@bgrid);
+	    }
+	}
+	$prim_radial{$i}=$radial_ptr;
+	$radial_ptr+=$#{$bgrid[0]};
+	if($make_radial_grids){
+	    $file="$basis_file.$i.$c";
+	    open(GRIDFILE,"> $file") || die "cant open file $file : $!";
+	    printf GRIDFILE "%d %d %d %f %f 0\n",$#{$bgrid[0]},$gridtype,$gridpoints,$gridarg,$gridr0_save;
+	    printf GRIDFILE "%s\n",join(" ",@lbas) if($print_lorb);
+	    for(my $k=0; $k<=$#bgrid; $k++){
+		printf GRIDFILE "%s\n", join("",map(sprintf($gridformat,$_),@{$bgrid[$k]}));
+	    }
+	    close(GRIDFILE);
+	    printf("grid for atom type %s written to file %s\n",$i,$file)  if(! $quiet);
+	}
+    }
+}
+
+sub compute_grid{
+# compute r values  according to grid type 
+    $grid=@_[0];
+     for(my $k=0; $k<$gridpoints; $k++){
+	if($gridtype == 1){
+	    $r=$gridr0 + $gridarg*$k;
+	} elsif($gridtype == 2){
+	    $r=$gridr0 * $gridarg**$k;
+	} elsif($gridtype == 3){
+	    $r=$gridr0 * $gridarg**$k - $gridr0;
+	}
+	push @{$$grid[$k]}, $r;
+    }
+}
+
+sub add_function{
+# put a new function on the grid 
+    ($type,$ex,$co,$grid)=@_;
+    print "add function $type $#$grid \n" if($verbose);
+    $l=$angular{$type};
+    push @lbas, $l;
+    for(my $k=0; $k<=$#$grid; $k++){
+	$r=${$$grid[$k]}[0];
+	$r2=$r**2;
+        $r3=$r**3;
+	$value=0;
+        for($ib=0; $ib<=$#$ex; $ib++){
+	    $z = gnorm($$ex[$ib],$l) * $$co[$ib] 
+		* exp(-1.0 * $$ex[$ib] * $r2);
+	    $value += $z;
+	}
+        if( $l == 1){
+	    $value *= $r;
+	} elsif( $l == 2){
+	    $value *= $r2;
+        } elsif( $l == 3){
+            $value *= $r3;
+	}
+        if( abs($value) > 1.0E-15 ){
+         push @{$$grid[$k]},$value;
+        } else {
+	 push @{$$grid[$k]},0.0;
+        }
+    }
+}
+
+sub gnorm{
+# compute norm prefactor
+    ($alp,$l)=@_;
+    $nrm=1.0;
+    if($l == 0){
+	$nrm=(2.0*$alp)**$d3b4*2.0*$pi4i;
+    } elsif($l == 1){
+	$nrm=(2.0*$alp)**$d5b4*$sq8b3*$pi4i;
+    } elsif($l == 2){
+	$nrm=(2.0*$alp)**$d7b4*$sq16b15*$pi4i;
+    } elsif($l == 3){
+        $nrm=(2.0*$alp)**$d9b4*$sq32b105*$pi4i;
+    }
+}
+
+sub basis_info{
+# get basis info for atom type atype :
+# number of primitives of each kind, radial part index 
+    ($atype,$b_count,$b_rad) = @_;
+    foreach my $i (@basorder){
+	@{$r_func{$i}}=();
+    }
+    $p=1;
+    foreach my $j (@{$functions{$atype}}){
+	foreach my $k (@{$shell{$ftype[$j]}}){
+	    if( exists $map_prim{$k}){
+		$k2=$map_prim{$k} 
+	    } else {
+		$k2=$k;
+	    }
+	    push @{$r_func{$k2}}, $p;
+	    if( ($ftype[$j] eq 'L') && ($k eq 'S')){
+		$p++;
+	    } 
+	}
+	$p++;
+    }
+
+    @$b_count=();
+    @$b_rad=();
+    foreach my $i (@basorder2){
+	if(exists $r_func{$i}){
+	    push @$b_count, -1 * ($#{$r_func{$i}}+1);
+	    push @$b_rad, @{$r_func{$i}};
+        } else {
+	    push @$b_count, 0;
+        }
+    }
+ 
+}
+
+
+sub expand_shells{
+# get complete list of primitive functions
+# and compare them to labels in gamess orbital output 
+# also reorder them to be qmc friendly
+    $count=0;
+    for(my $i=0; $i <= $#atom_symbols; $i++){
+	$a=$atom_symbols[$i];
+	$p=$prim_radial{$a};
+	foreach my $j (@{$functions{$a}}){
+	    foreach my $k (@{$shell{$ftype[$j]}}){
+		if($verbose > 1){
+		    print "PRIM $count ";
+		    print " atom index $lcao_atomidx[$count] | ",$i+1;
+		    print " symbol $lcao_atomsym[$count] | $a";
+		    print " label  $lcao_bflabel[$count] | $k";
+		}
+		if( ($lcao_atomsym[$count] eq $a) && ($lcao_atomidx[$count] == $i+1) 
+		    && ($lcao_bflabel[$count] eq $k)){
+		    if($verbose > 1){
+			print " OK \n";
+		    }
+		} else {
+		    if($verbose > 1){
+			print " MISMATCH! \n";
+		    }
+		    die "primitive functions not in expected order \n";
+		}
+		push @{$radial_part{$k}}, $p;
+		push @{$prim_index{$k}}, $count;
+		if( exists $map_prim{$k}){
+		    $k2=$map_prim{$k} 
+		} else {
+		    $k2=$k;
+		}
+		push @{$prim_index2{$k2}}, $count;
+		if( ($ftype[$j] eq 'L') && ($k eq 'S')){
+		    $p++;
+		}
+		$count++;
+	    }
+	    $p++;
+	}
+    }
+    if($verbose > 1){
+	print "reordered basis \n";
+	foreach my $i (@basorder){
+	    print "primitive function type $i , number of functions ",$#{$prim_index{$i}}+1," \n";
+	    for(my $k=0; $k<=$#{$prim_index{$i}}; $k++){
+		print "$k primitive ",${$prim_index{$i}}[$k]," radial fn ",${$radial_part{$i}}[$k],"\n";
+            }
+	}
+    }
+}
+   
+  
+sub transform_lcao{
+# trafo among d-functions : x^2+y^2+z^2 -> 'XX'   2z^2-x^2-y^2 -> 'YY'   x^2-y^2 -> 'ZZ'
+    for(my $k=0; $k<=$#{$prim_index{'XX'}}; $k++){
+	$pxx=${$prim_index{'XX'}}[$k];
+        $pyy=${$prim_index{'YY'}}[$k];
+        $pzz=${$prim_index{'ZZ'}}[$k];
+        for(my $i=0; $i < $orbitals; $i++){
+          $a=${$lcao[$i]}[$pxx];
+          $b=${$lcao[$i]}[$pyy];
+          $c=${$lcao[$i]}[$pzz];
+          ${$lcao[$i]}[$pxx] = $lcao_cs * ($a+$b+$c) / 3.0;
+          ${$lcao[$i]}[$pyy] = (2.0 * $c - $b - $a) /3.0;
+          ${$lcao[$i]}[$pzz] = $lcao_cd * ($a - $b);
+       }
+   }
+}
+sub transform_lcao_back{
+# reverse of 'transform_lcao'
+    for(my $k=0; $k<=$#{$prim_index{'XX'}}; $k++){
+	$pxx=${$prim_index{'XX'}}[$k];
+        $pyy=${$prim_index{'YY'}}[$k];
+        $pzz=${$prim_index{'ZZ'}}[$k];
+        for(my $i=0; $i < $orbitals; $i++){
+          $a=${$lcao[$i]}[$pxx];
+          $b=${$lcao[$i]}[$pyy];
+          $c=${$lcao[$i]}[$pzz];
+          ${$lcao[$i]}[$pxx] = $a/$lcao_cs - $b/2.0 + $c / (2.0*$lcao_cd);
+	  ${$lcao[$i]}[$pyy] = $a/$lcao_cs - $b/2.0 - $c / (2.0*$lcao_cd);
+          ${$lcao[$i]}[$pzz] = $a/$lcao_cs + $b;
+
+          # print "transform_lcao_back : $i $pxx $pyy $pzz\n";
+
+       }
+   }
+}
+
+sub print_qmc_bf_info{
+    open(BFINFOFILE,"> $bf_info_file") || die "Can not open file $bf_info_file: $!\n";
+    printf BFINFOFILE "qmc_bf_info 1\n";
+    foreach my $a (@atom_types){
+	@c=();
+	@r=();
+	basis_info($a,\@c,\@r);
+	printf BFINFOFILE "%s\n", join(" ", @c);
+	printf BFINFOFILE "%s\n", join(" ", @r);
+    }
+    printf BFINFOFILE "end\n";
+    close(BFINFOFILE);
+}
+
+sub print_lcao{
+    open(LCAOFILE,"> $lcao_file") || die  "cant open file $lcao_file : $!";
+# info
+    printf LCAOFILE "# orbitals from run %s\n",$run_title;
+    printf LCAOFILE "# orbital  type %s \n",$orbnames[$orbtype]; 
+
+# orbitals to be printed
+    if($porb == 0){
+	$porb=$orbitals;
+    }
+    if( $omit_unused_orbitals && $make_det_file ){
+	@orbital_indices=sort { $a <=> $b } keys %used_orbitals; 
+	$porb=$#orbital_indices + 1;
+    } else {
+	for(my $j=0; $j<$porb; $j++){
+	    $orbital_indices[$j]=$j;
+	}
+    }
+# irrep info
+    if($#irrep_strings > -1){
+	%irreps=();
+	$irrep_num=0;
+	@irrep_index=();
+	for($j=0; $j<$orbitals;$j++){
+	    if( ! exists $irreps{$irrep_strings[$j]}){
+		$irrep_num++;
+		$irreps{$irrep_strings[$j]}=$irrep_num;
+		$idx=$irrep_num;
+	    } else {
+		$idx=$irreps{$irrep_strings[$j]};
+	    }
+	    $irrep_index[$j]=$idx;
+	}
+	if($verbose){
+	    for(my $i=0; $i<=$#orbital_indices; $i++){
+		printf "used orbital %d : %d irrep %d \n",$i+1, $orbital_indices[$i]+1,$irrep_index[$orbital_indices[$i]];
+	    }
+	}
+	if($make_symmetry_file){
+	    open(SYMFILE,"> $sym_info_file") || die "Can not open file $sym_info_file: $!\n";
+
+	    printf SYMFILE "sym_labels %d %d\n",$irrep_num,$porb;
+	    for my $j (sort(keys(%irreps))){
+		printf SYMFILE "%d %s ",$irreps{$j},$j;
+	    }
+	    printf SYMFILE "\n";
+	    foreach my $j (@orbital_indices){
+		printf SYMFILE "%d ",$irrep_index[$j];
+	    }
+	    printf SYMFILE "\nend\n";
+            close(SYMFILE);
+            printf ("orbital symmetries written to file $sym_info_file\n") if(! $quiet);
+	}
+    }
+# eigenvalue info
+    if($#eigenvalue > -1){
+        if($make_eigen_file){
+          open(EIGFILE,"> $eig_info_file") || die "Can not open file $eig_info_file: $!\n";
+
+          printf EIGFILE "eigenvalues %d \n",$porb;
+          foreach my $j (@orbital_indices){
+             printf EIGFILE "% .4f ", $eigenvalue[$j];
+          }
+          printf EIGFILE "\nend\n";
+          close(EIGFILE);
+          printf ("orbital eigenvalues written to file $eig_info_file\n") if(! $quiet);
+        }
+     }
+# LCAO coefficients
+    printf LCAOFILE "lcao %d %d \n",$porb,$#lcao_bflabel+1;
+# print out coefficients ordered by atoms and
+# within each atom by the sequence given in the array basorder
+# this loop is a bit ugly since we loop over the complete set
+# of functions for each atom, the reason is the messy way of 
+# simulating multi-dimensional arrays 
+    foreach my $j (@orbital_indices){
+	for(my $ia=0; $ia <= $#atom_symbols; $ia++){
+# debugging only
+#	    print LCAOFILE "### atom $ia  ",$atom_symbols[$ia]," \n";
+#
+	    foreach my $i (@basorder){
+		for(my $k=0; $k<=$#{$prim_index2{$i}}; $k++){
+		    $pk=${$prim_index2{$i}}[$k];
+		      if($lcao_atomidx[$pk] == ($ia+1)){
+		         printf LCAOFILE $lcao_format, ${$lcao[$j]}[$pk];
+	              }
+	       }
+            }
+        }
+        printf  LCAOFILE "\n";
+   } 
+   printf  LCAOFILE "end\n";
+   printf ("basis info and lcao coefficients written to file $lcao_file\n")  if(! $quiet);
+   close(LCAOFILE);
+}
+
+sub print_gamess_vec{
+# print current lcao in GAMESS' VEC format
+    open(VECFLE,"> $new_vec_file") || die "can not open VEC file $new_vec_file : $!\n";
+    $nb=$#lcao_bflabel+1;
+    $ncol=5;
+
+    print "basis fn $nb orbitals $orbitals\n";
+
+    printf VECFLE " \$VEC";
+    for(my $i=0; $i<$orbitals; $i++){
+      $nff=1;
+      $c=0;
+      for(my $j=0; $j<$nb; $j++){
+	if(--$nff == 0){
+	    $c++;	
+	    printf VECFLE "\n%2d%3d",($i+1)%100,$c%100;
+	    $nff=$ncol;
+	}
+	printf VECFLE "% 15.8E",${$lcao[$i]}[$j];
+      }
+    }
+    printf VECFLE "\n \$END\n";
+    close(VECFLE);
+}
+
+sub print_geometry{
+# write out geometry info (coordinates and types)
+    open(GEOFILE,"> $geometry_file") || die  "cant open file $geometry_file : $!";
+    printf GEOFILE "# geometry from run %s \n",$run_title;
+    printf GEOFILE "&atoms nctype %d natom %d\n", $#atom_types+1, $#atom_symbols+1;
+    %atom_type_index=();
+    printf GEOFILE "&atom_types ";
+    for(my $i=0; $i<= $#atom_types; $i++){
+	$atom_type_index{$atom_types[$i]}=$i;
+	printf  GEOFILE " %d %s ",$i+1,$atom_types[$i];
+    }
+    printf  GEOFILE "\n";
+    
+    printf GEOFILE "geometry\n";
+    for(my $i=0; $i<= $#atom_symbols; $i++){
+	printf GEOFILE "% f % f % f %d\n", $atom_x[$i],$atom_y[$i],$atom_z[$i],$atom_type_index{$atom_symbols[$i]}+1;
+    }
+    printf GEOFILE "end\n";
+
+    printf GEOFILE "znuc\n";
+    foreach my $i (@atom_types){
+	if( exists $zcore{$i} ){
+	    $z=$zatom{$i}-$zcore{$i};
+	} else {
+	    $z=$zatom{$i};
+	}
+	printf GEOFILE "%f ",$z;
+    }
+    printf GEOFILE "\nend\n";
+
+    close(GEOFILE);
+    printf ("geometry information written to file $geometry_file\n") if(! $quiet);
+}
+
+sub print_dmatrix{
+  open(DMATFILE,"> $dmat_file") || die  "cant open file $dmat_file : $!";
+  printf DMATFILE "# diagonal density matrix\n";
+  printf DMATFILE "dmatrix %s %s\n", $ncore+$n_actorb,$#multiple_states+1;
+  foreach $trial_state ( @multiple_states ){
+    printf DMATFILE "%s ", $trial_state;
+  }
+  printf DMATFILE "\n";
+  foreach $trial_state ( @multiple_states ){
+    $norm=0;
+    for(my $i=1; $i<=$csf_read; $i++){
+       if( $index_selected_csf[$i] ){
+          $c=${$cicoef[$trial_state]}[$i];
+          $norm += $c*$c;
+       }
+    }
+    for(my $j=0; $j<$ncore+$n_actorb; $j++){
+       $dmat=0;
+       for(my $i=1; $i<=$csf_read; $i++){
+          if( $index_selected_csf[$i] ){
+             $c=${$cicoef[$trial_state]}[$i];
+             @occorb=split '',$csf_rep[$i];
+             $d=0;
+             if($occorb[$j] eq '2'){
+                $d=1;
+             } else {
+                $d=0.5 if( ! ($occorb[$j] eq '0') );
+             }
+             $dmat += $d*$c*$c;
+          }
+       }
+       printf DMATFILE "%f ",$dmat/$norm;
+    }
+    printf DMATFILE "\n";
+  }
+  printf DMATFILE "end\n";
+
+  close(DMATFILE);
+  printf ("density matrix written to file $dmat_file\n") if(! $quiet);
+}
+
+sub print_usage{
+# tell how to use this program using the text after __DATA__
+    while(<DATA>){
+	print $_;
+    }
+    print "\n --- Orbital Types ---\n";
+    foreach my $i (keys(%orbid)){
+	printf "%20s : %s\n",$i,$orbnames[$orbid{$i}];
+    }
+    exit;
+}
+
+# Finally : run main routine 
+main();
+
+# the rest is data and printed  be the usage-routine
+# exactly the way it is written below.
+__DATA__
+
+gamess2qmc: conversion of geometry, basis, orbitals (lcao), and CI-information
+            from  GAMESS(US) output to formats suitable for QMC and EFPCI.
+ 
+usage: gamess2qmc [OPTIONS]  gamess_output
+       OPTIONS: 
+
+           -g              create geometry file
+           -r              create basis on radial grid files
+           -a              create file with orbital eigenvalues
+           -m              create file with diagonal one-body density matrix
+           -s              create file with lcao symmetry information
+           -t type         fetch orbitals of specified type and create lcao file
+           -n norb         fetch first norb orbitals instead of all
+           -d threshold    multi-determinant trial wave function with selection threshold
+           -w state        select state for trial wave function (default 1)
+           -u              omit unused orbitals 
+
+           -e              generate EFPCI input (all states, CSFs and determinants)
+           -j n            case vector format (0 heuristic possibly not unique, 1 from gamess)
+           -E              same as '-t initial -s -e -j 0' (i.e. all what is needed for EFPCI)
+           -D              short for '-t initial -d 0.9 -w 1 -u' 
+
+           -b basename     alternative basename for output files
+           -x file         source extended option file (e.g. different grid parameters)
+           -l              re-read lcao coefficients (VEC format) from dat-file
+                           (only available for orbital type initial)
+           -c file         get lcao coefficients from 'lcao' file and transform back 
+                           to VEC format (i.e. qmc2gamess )
+
+           -v n            set verbosity level to n 
+           -q              quiet (no print to stdout)
+           -h              print this message
+
+  Output is written to various files with basename like GAMESS output or
+  given with -b, extensions as follows:
+  *.geometry  : molecular geometry
+  *.basis.N   : radial grids for atom #N
+  *.bfinfo    : pointers basis functions -> radial part 
+  *.lcao      : orbital coefficients
+  *.sym       : orbital pointgroup symmetry information
+  *.det       : determinantal expansion of trial state 
+  *.efpci     : CSFs, determinants and states for EFPCI
+  *.eig       : orbital energies
+
+  === Version  $Revision: 1.11 $ ===
+
+

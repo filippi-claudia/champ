@@ -1,0 +1,2 @@
+      integer MPARM,MOBS,MCONF,MVEC
+      parameter(MPARM=1010,MOBS=2+5*MPARM,MCONF=60000,MVEC=100)

@@ -1,0 +1,7 @@
+$RunGauss
+%chk=/scr3/mstahl/
+#rhf 3-21g opt scf=direct maxdisk=10000000 Test
+
+comment line
+
+0 1

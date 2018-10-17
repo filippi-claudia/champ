@@ -1,0 +1,50 @@
+V = $(QMCHOME)/vmc
+
+OBJCOMA = $V/read_input.o $V/orbitals.o \
+          $V/hpsi.o $V/determinant.o $V/determinant_psit.o \
+          $V/bxmatrices.o $V/multideterminant.o \
+          $V/jastrow.o $V/jastrow_num.o $V/jastrow4.o \
+          $V/deriv_jastrow4.o \
+          $V/cuspinit4.o $V/cuspexact4.o \
+          $V/psi.o $V/gammai.o \
+          $V/matinv.o $V/distances.o $V/scale_dist.o \
+          $V/basis_norm.o $V/basis_fns_vgl.o \
+          $V/basis_fnse_vgl.o $V/basis_fnse_v.o $V/basis_fnse_vg.o \
+          $V/slm.o $V/read_bas_num.o $V/write_orb_loc.o \
+          $V/3dgrid.o $V/3dgrid_orbitals.o $V/verify_orbitals.o \
+          $V/readps.o $V/readps_tm.o $V/readps_gauss.o $V/readps_champ.o \
+          $V/pot_local.o $V/pot.o $V/nonloc_pot.o $V/nonloc.o $V/nonlpsi.o $V/rotqua.o \
+          $V/deriv_nonloc.o $V/deriv_nonlpsi.o \
+          $V/properties.o $V/pcm.o $V/mmpol.o $V/pcm_3dgrid.o $V/efield.o \
+          $V/spline.o $V/spline2.o $V/splfit.o \
+          $V/rannyu.o $V/sites.o $V/nodes_distance.o \
+          $V/misc_grdnts.o $V/convcartzmat.o \
+          $V/force_analytic.o $V/multiply_slmi_mderiv.o
+
+OBJCOM1 = $V/hpsie.o $V/multideterminante.o $V/determinante.o $V/determinante_psit.o \
+          $V/jastrowe.o $V/jastrow4e.o $V/jassav.o $V/detsav.o 
+
+OBJINP  = $(INPUT)/p2_defaults.o $(INPUT)/p2etc.o $(INPUT)/p2nmcheck.o $V/p2prog.o
+
+%.o : %.f90
+	$(FC) $(FFLAGS_F90) -c -o $@ $<
+
+ifeq ($(QMMM),T)
+OBJQMMM = $V/qmmm_modules.o $V/qmmm_bspline.o $V/qmmm_density.o $V/qmmm_pot.o $V/qmmm_writecube.o
+%.o : %.f90
+	$(FC) $(F90FLAGS) -c -o $@ $<
+endif
+
+ifeq ($(QMMM),F)
+OBJQMMM = $V/qmmm_placeholder.o
+endif
+
+ifeq ($(PERIODIC),T)
+OBJPW = $V/pw_find_image.o $V/pw_ewald.o $V/pw_orbitals.o $V/pw_orbitals_e.o $V/pw_read.o
+endif
+
+ifeq ($(PERIODIC),F)
+OBJPW = $V/pw_placeholder.o
+endif
+
+OBJCOM = $(OBJCOMA) $(OBJPW) $(OBJQMMM) $(OBJINP)

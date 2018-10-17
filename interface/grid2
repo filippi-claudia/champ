@@ -1,0 +1,9 @@
+# overide built-in defaults for grid parameters
+$gridtype=3;
+$gridpoints=1000;
+$gridarg=1.003;
+$gridr0=10.0;
+# format for printing basis grid
+$gridformat=" %.7E";
+# print angular momenta as well 
+$print_lorb = 1;

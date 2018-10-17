@@ -1,0 +1,27 @@
+&general title 'system'
+&general pool ../pool_qmc/
+&general pseudopot BFD
+&general basis BFD-D
+
+load $(general:pool)/system.geometry
+load $(general:pool)/global.inp
+load $(general:pool)/BFD-D.bfinfo
+
+load jastrow.0
+load file.lcao                  
+load file.det
+
+# load opt.inp
+
+# load file.mstates
+# &weights 1 0.5 2 0.5 
+# &mstates iguiding 2 iefficiency 1
+
+&blocking_vmc nstep 20 nblk 2000 nblkeq 1 nconf_new 0
+&blocking_dmc nstep 250 nblk 50 nblkeq 1 nconf 100 nconf_new 0
+
+&dmc tau 0.05 etrial -10.0
+&dmc icasula -1
+
+# &startend isite 0
+# &properties sample 1

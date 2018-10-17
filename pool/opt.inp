@@ -1,0 +1,13 @@
+&optwf ioptwf 1 ioptci 0 ioptjas 1 ioptorb 0
+&optwf method linear multiple_adiag 1
+&optwf ncore 0 nextorb 280 no_active 1
+&optwf nblk_max 1000 nopt_iter 6
+
+jasderiv
+4 5  15 0 0 0  nparma,nparmb,nparmc,nparmf
+  3 4 5 6 (iwjasa(iparm),iparm=1,nparma)
+2 3 4 5 6 (iwjasb(iparm),iparm=1,nparmb)
+3 5 7 8 9         11 13 14 15 16     17 18 20 21 23 (c(iparmj),iparmj=1,nparmc)
+end
+
+# load file *sym

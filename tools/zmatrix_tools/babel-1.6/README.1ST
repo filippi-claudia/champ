@@ -1,0 +1,539 @@
+	      Babel version 1.6 Copyright (C) 1992-1996
+				  by
+		      Pat Walters and Matt Stahl
+
+		   babel@mercury.aichem.arizona.edu
+
+
+This software is provided on an "as is" basis, and without warranty of any 
+kind, including but not limited to any implied warranty of merchantability 
+or fitness for a particular purpose.
+
+In no event shall the authors or the University of Arizona be liable for 
+any direct, indirect, incidental, special, or consequential damages arising 
+from use or distribution of this software. The University of Arizona also 
+shall not be liable for any claim against any user of this program by any 
+third party.
+
+WHAT'S NEW 
+-----------------
+SMILES support - thanks Simon Kilvington
+Gaussian 94 support
+Command line arguments have changed a bit. See the section below on
+multi-structure files.
+
+
+PLEASE REGISTER
+---------------
+We don't want any money for Babel (unless of course you insist), but we
+would like to know who has a copy so that we can notify people about updates 
+and bug fixes.
+
+You can register by sending e-mail to babel@mercury.aichem.arizona.edu and 
+letting us know the following:
+	-who you are
+	-where you are
+	-what platform you're running Babel on
+	-which file conversions you commonly use
+
+We are very open to suggestions.  If there's anything you like or don't 
+like about the program please let us know.  Also if there are file formats
+you would like to see supported let us know.
+--------------------------------------------------------------------------
+
+Thanks for downloading this copy of babel.  With this program we hope to
+implement a general framework for converting between file formats used 
+for molecular modeling.  
+
+
+This manual is divided into 3 sections.
+
+I. Installation
+ A. Unix Installation
+ B. DOS Installation
+II. Using Babel
+III. Other Stuff
+
+I. INSTALLATION
+--------------------------UNIX INSTALLATION-----------------------------
+NOTE : If you downloded either sun-babel-1.0X.tar.Z or sgi-babel-1.0X.tar.Z 
+please skip directly to step 3.
+
+Installation is very simple. 
+
+1. Special Instructions - Unless you have a Sun Workstaion with an old
+Sabre C compiler (or other non-ansi C compiler) or a Dec machine running
+Ultrix goto step 2.
+
+SUN WORKSTATIONS WITH THE OLD (NON-ANSI) SABRE C COMPILER
+If you have a Sun workstation with the old Sabre C compiler or another
+non-ANSI C-compiler you must use gcc to compile babel. If you are using
+gcc to compile babel, change line 10 in the makefile from
+
+CC	      = cc
+
+to
+
+CC	      = gcc
+
+DEC STATIONS RUNNING ULTRIX - If you have gcc follow the instructions above
+to use gcc as the compiler.  Otherwise change line 1 in the Makefile from
+
+CFLAGS        = -O 
+
+to
+
+CFLAGS        = -O -DULTRIX
+
+2. Make the program by typing make.
+3. Set the environment variable BABEL_DIR to point to the directory 
+where the files types.lis and elements.lis are stored.
+i.e. If the files are in /usr/local/babel type the following
+
+setenv BABEL_DIR /usr/local/babel
+
+If you plan to use babel frequently then you will probably want to
+place the line above in your .cshrc file.
+
+
+---------------------------DOS INSTALLATION------------------------------
+1. Create a subdirectory for babel on your hard disk.
+We will assume that you called the directory C:\BABEL.
+2. Copy the files babel.exe, element.lis, and types.lis
+into this directory.
+3. Put the following line in your autoexec.bat file
+SET BABEL_DIR=C:\BABEL
+4. You're all set, have fun.
+
+II. USING BABEL
+
+The babel program may be invoked using command line options or menus. 
+
+The menu interface can be accessed by typing:
+babel -m
+
+The command line input has the following format:
+babel [-v] -i<itype> <infile> [keywords] -o<out type> <outfile> [keywords2]
+
+All arguments surrounded by [] are optional.
+The -v flag is optional and is used to produce verbose output.
+The -i flag is used to set the input type.  The following input type codes
+are currently supported.
+
+	alc -- Alchemy file
+	prep -- AMBER PREP file
+	bs -- Ball and Stick file
+	bgf -- MSI BGF file
+	car -- Biosym .CAR file
+	boog -- Boogie file
+	caccrt -- Cacao Cartesian file
+	cadpac -- Cambridge CADPAC file
+	charmm -- CHARMm file
+	c3d1 -- Chem3D Cartesian 1 file
+	c3d2 -- Chem3D Cartesian 2 file
+	cssr -- CSD CSSR file
+	fdat -- CSD FDAT file
+	gstat -- CSD GSTAT file
+	dock -- Dock Database file
+	dpdb -- Dock PDB file
+	feat -- Feature file
+	fract -- Free Form Fractional file
+	gamout -- GAMESS Output file
+	gzmat -- Gaussian Z-Matrix file
+	gauout -- Gaussian 92 Output file
+	g94 -- Gaussian 94 Output file
+	gr96A -- GROMOS96 (A) file
+	gr96N -- GROMOS96 (nm) file
+	hin -- Hyperchem HIN file
+	sdf -- MDL Isis SDF file
+	m3d -- M3D file
+	macmol -- Mac Molecule file
+	macmod -- Macromodel file
+	micro -- Micro World file
+	mm2in -- MM2 Input file
+	mm2out -- MM2 Output file
+	mm3 -- MM3 file
+	mmads -- MMADS file
+	mdl -- MDL MOLfile file
+	molen -- MOLIN file
+	mopcrt -- Mopac Cartesian file
+	mopint -- Mopac Internal file
+	mopout -- Mopac Output file
+	pcmod -- PC Model file
+	pdb -- PDB file
+	psin -- PS-GVB Input file
+	psout -- PS-GVB Output file
+	msf -- Quanta MSF file
+	schakal -- Schakal file
+	shelx -- ShelX file
+	smiles -- SMILES file
+	spar -- Spartan file
+	semi -- Spartan Semi-Empirical file
+	spmm -- Spartan Mol. Mechanics file
+	mol -- Sybyl Mol file
+	mol2 -- Sybyl Mol2 file
+	wiz -- Conjure file
+	unixyz -- UniChem XYZ file
+	xyz -- XYZ file
+	xed -- XED file
+
+The -o flag is used to set the output file type.  The following output 
+type codes are currently supported.
+
+	diag -- DIAGNOTICS file
+	t -- Alchemy file
+	bs -- Ball and Stick file
+	bmin -- Batchmin Command file
+	caccrt -- Cacao Cartesian file
+	cacint -- Cacao Internal file
+	cache -- CAChe MolStruct file
+	c3d1 -- Chem3D Cartesian 1 file
+	c3d2 -- Chem3D Cartesian 2 file
+	d -- ChemDraw Conn. Table file
+	con -- Conjure file
+	contmp -- Conjure Template file
+	cssr -- CSD CSSR file
+	feat -- Feature file
+	fhz -- Fenske-Hall ZMatrix file
+	gamin -- Gamess Input file
+	gcart -- Gaussian Cartesian file
+	g -- Gaussian Z-matrix file
+	gotmp -- Gaussian Z-matrix tmplt file
+	hin -- Hyperchem HIN file
+	icon -- Icon 8 file
+	i -- IDATM file
+	macmol -- Mac Molecule file
+	k -- Macromodel file
+	micro -- Micro World file
+	mi -- MM2 Input file
+	mo -- MM2 Ouput file
+	mm3 -- MM3 file
+	mmads -- MMADS file
+	mdl -- MDL Molfile file
+	ac -- Mopac Cartesian file
+	ai -- Mopac Internal file
+	pc -- PC Model file
+	p -- PDB file
+	report -- Report file
+	spar -- Spartan file
+	mol -- Sybyl Mol file
+	mol2 -- Sybyl Mol2 file
+	maccs -- MDL Maccs file file
+	xed -- XED file
+	unixyz -- UniChem XYZ file
+	x -- XYZ file
+
+To convert an MM2 output file named mm2.grf to a MOPAC internal coordinate 
+input file named mopac.dat the user would enter:
+babel -imm2out mm2.grf -omopint mopac.dat
+
+To perform the above conversion with the keywords PM3 GEO-OK T=30000 in the
+file mopac.dat the user would enter:
+babel -imm2out mm2.grf -omopint mopac.dat "PM3 GEO-OK T=30000"
+Note the use of the double quotes around the keywords.
+
+
+Z-MATRIX RENUMBERING
+--------------------
+I have received mail from a number of people who have complained that the Z-matrix
+created by Babel contains very long "bonds" (often 5 to 10 angstroms).  This is
+not a bug in the Cartesian to internal algorithm.  It is actually brought about by
+a poorly numbered structure.
+
+The Cartesian to internal algorithm goes kind of like this :
+        put atom 1 at the origin
+        for i = 2 to num_atoms
+         {
+          find the closest atom with atom number < i
+          call that atom NA(i)
+         }
+
+If atoms are not numbered properly you end up with very long bonds.
+Having these "bonds" in your Z-matrix tends to create all sorts of
+problems during geometry optimization.
+
+I've added a new flag, "-renum" to Babel.  If this flag is used, Babel
+will attempt to renumber the structure so that the Z-matrix is
+contiguous.
+
+Renumbering in Babel 1.1 is accomplished using the -renum flag. There are
+two ways to this.  If you use -renum by itself, Babel will use atom 1 in
+the input structure as atom 1 in the Z-matrix.  If you use -renum X where
+X is an integer, Babel will use atom X as atom 1 in the Z-matrix.
+
+Examples:
+
+babel -ixyz myfile.xyz -renum -omopint myfile.dat "AM1 MMOK T=30000"
+
+will create a MOPAC input file with atom 1 from myfile.xyz as atom 1
+in myfile.dat.
+
+babel -ixyz myfile.xyz -renum 9 -omopint myfile.dat "AM1 MMOK T=30000"
+
+will create a MOPAC input file with atom 9 from myfile.xyz as atom 1
+in myfile.dat.
+
+There is currently one limitiation to the -renum flag.  The file must
+be contiguous.  The method won't currently work for bimolecular complexes
+or anything like that.  I'll try and fix this up in the near future.
+
+If you run into any problems with this, please don't hesitate to contact me.
+
+MULTI-STRUCTURE FILES
+---------------------
+Most file formats are now supported as multi-structure.  With this type of 
+file, the user has two output options
+	- produce one output file for each structure in the file
+	- produce a multi-structure output file.
+
+When converting a multi structure file it is sometimes necessary to supply a 
+keyword after the input file name.  This keyword specifies the number
+of files to extract from the input file. Hopefully the examples below 
+will make this a little more clear.
+
+To extract all the structures from a multi-structure Macromodel file 
+called mols.out and write the structures as pdb files the user would 
+type:
+
+babel -imacmod mols.out all -op mols.pdb
+
+To extract the structures into a series of single structure files
+use the -split keyword.
+
+babel -imacmod mols.out all -op mols.pdb -split
+
+To extract only the first five structures from a multi-structure 
+Macromodel file and write the structures as a MOPAC internal coordinate
+file the user would type
+babel -imacmod mols.out "1-5" -oai mols.int
+
+
+
+HYDROGEN ADDITION/DELETION
+--------------------------
+Babel has the ability to add and delete hydrogens from any file format.  
+Hydrogens can be added by supplying the -h flag, hydrogens may be deleted 
+by supplying the -d flag.
+
+To add hydrogens a CSD fractional coordinate file called input.cssr and 
+output the file as a MOPAC internal coordinate input file named output.add 
+the user would type:
+babel -icf input.cssr -h -oai output.add 
+
+To delete hydrogens from a Macromodel file named benzene.dat and 
+output the file as an XYZ file name benzene.new the user would type
+babel -imacmod benzene.dat -d -oxyz benzene.new
+
+CONVERTING THE NCI DATABASE
+---------------------------
+Now that Professor Gasteiger's group has made the NCI database available
+as 3D structures, I'm sure that alot of people will be interested in 
+converting the database to other formats.  Many people people also want to
+add the hydrogens which are missing in the NCI 3D database.
+
+Babel is capable of reading the NCI database using the -imaccs 
+flag.  Here are a couple of examples of how to convert NCI 3D.
+
+If you want to convert the entire database to one huge Sybyl mol2 file, you
+would type the following:
+
+babel -imaccs nci3d.mol -omol2 nci3d.mol2
+
+If you want to convert the entire database to one huge Sybyl mol2 file and
+add hydrogens, you would do the following:
+
+babel -h -imaccs nci3d.mol -omol2  nci3d.mol2
+
+Let's say you're slightly less ambitious and you only want to look at the 
+first 500 structures.  Then you would do this:
+
+babel -h -imaccs nci3d.mol "1-500" -omol2 CON > nci3d.mol2
+
+If you wanted to look at the next 500 structures you would do this:
+
+babel -h -imaccs nci3d.mol "501-1000" -omol2 CON > nci3d.mol2
+
+To read the first 100 structures and output them to individual MacroModel
+files named nci0001.dat, nci0002.dat, nci0003.dat, etc., you would type:
+
+babel -h -imaccs nci3d.mol "1-100" -omacmod nci.dat
+
+MACMOLECULE FILES
+-----------------
+Since MacMolecule only uses single letter it is often necessary to use
+different names (i.e. X for Cl).  The user can specify substituted atom
+names on the command line.  
+
+To read a MacMolecule file named foo.bar where X is substituted for Cl
+and Y is substitued for Cobalt and write an MM2 output type file named
+bar.baz the user would type:
+babel -imacmol "X/Cl Y/Co" foo.bar -omo bar.baz  
+
+CHEMDRAW FILES
+--------------
+The user can supply a keyword to indicate the viewing axis for the 
+ChemDraw projection by supplying a keyword.  To convert an XYZ file
+named test.xyz to a ChemDraw file named test.cdy with the view down the
+y axis the user would type:
+babel -ix test.xyz -od test.cdx x
+
+The default view is down the z axis.  Babel will also write MDL Molfile
+type files which can be read by ChemDraw, ChemIntosh, ChemWindow, and 
+Chem3D.
+
+GAMESS FILES
+------------
+---GAMESS Output Files---
+The output files are the .log files created by redirecting screen output.  
+Babel first looks for a set of geometry optimized coordinates.  If the 
+output file does not contain geometry optimized coordiantes Babel will 
+use the input coordiantes. If Babel uses the input coordiantes it will 
+convert from Bohr to Angstroms.
+
+To read a GAMESS output file named exam01.log and convert it to an XYZ 
+file named exam01.xyz the user would type:
+babel -igamout exam01.log -ox exam01.xyz
+
+---GAMESS Input Files---
+Babel is capable of creating three types of GAMESS input files
+COORD=CART Cartesian Coordinates
+COORD=ZMAT Gaussian Style Z-matrix
+COORD=ZMTPC MOPAC Style Z-matrix
+
+Babel does not calculate the point group for you.  You'll have to pull
+out your copy of Cotton and insert that manually. You'll also have to 
+specify your own $SYSTEM, $BASIS, $SCF, $GUESS, etc. cards.
+
+The type of input file is controlled by specifying a keyword on the 
+Babel command line.  The keywords are
+	cart - Cartesian 
+	zmt - Gaussian style Z-matrix
+	zmtmpc - MOPAC style Z-matrix
+
+To read an xyz file named coords.xyz and convert it to a GAMESS input
+file in Cartesian coordiantes named coords.in the user would type:
+babel -ixyz coords.xzy -ogamin coords.in cart
+
+To do the same conversion by have the GAMESS input in Gaussian Z-matrix
+style the user would type
+babel -ixyz coords.xzy -ogamin coords.in zmt
+
+If no keyword is specified the input file will be in Cartesian Coordiantes.
+
+GAUSSIAN FILES
+--------------
+NOTE : The output file format for Gaussian94 in different from
+that used by previous versions of Gaussain.  Use the -g94 flag
+to read Gaussian94 output files.
+
+Babel 1.6 features a number of improvements aimed at the Gaussian
+user.
+
+1.  A (hopefully) bulletproof Gaussian reader.
+2.  A new reader for gaussian output files which reads all the
+steps from a minimization. These steps can then be written to
+a multistructure file which can be animated with X-mol or whatever.
+To extract all the steps from a Gaussian output file into a single muti
+structure XYZ file you would do this:
+
+babel -igauout file.out all -oxyz file.xyz
+
+To extract all the steps from a Gaussian output file into a series of
+files called file0001.xyz, file0002.xyz, etc.  You would do this:
+
+babel -igauout file.out all -oxyz file.xyz
+
+To extract only the last step from a Gaussian output file you would do
+this:
+
+babel -igauout file.out last -oxyz file.xyz
+
+3. We  added the facility to define the header information for your
+Gaussian files.  To do this you need to have a file with the header info
+in either the current directory (checked first) or the directory pointed
+to by the BABEL_DIR environment variable (checked second).  If the header
+file isn't present Babel just puts in its default header information.
+This can be handy if you constantly use the same basis sets and run the
+same sorts of jobs.  There is a sample gauss.hdr in the archive.
+
+QUANTA FILES
+------------
+Quanta files are binary and different systems use different binary
+representations (big endian vs. little endian).  So, if you are going to use
+Babel on a Quanta file you should run Babel on the same type of machine which
+created the Quanta file.
+
+I made a few concessions with this file format.  First,  I just translated the 
+Quanta atom types to element types and let Babel assign hybridizations.  Quanta
+has alot of strange atom types (i.e. Carbon with 2 Flourines attached) which 
+don't translate easily to the hybidizized types we use.  Second, I found that 
+the bonding information found in the Quanta files was not alway reliable so I
+had Babel assign connectivities.  
+
+There is a file called quanta.lis which should be kept in the directory 
+pointed to by BABEL_DIR.  This file contains the numeric quanta type and 
+corresponding element type.  If anything is missing or incorrect you can just 
+edit this file and fix it.
+
+III. OTHER STUFF
+---------------
+CURRENT LIMITATIONS
+Macromodel - bond orders are not always correctly assigned for conjugated
+pi systems.  
+
+PDB files - When reading PDB files Babel assigns bonds are examining 
+interatomic distances and assigning a bond where the interatomic distance
+is less than the sum of the atoms convalent radii.  There is code in read_pdb.c
+to read connections specified in CONECT records, but this code is commented
+out.  We did this because a number of files available from Brookhaven have
+CONECT records specified for only a few of the bonds in the molecule.  We
+realize that we could determine connectivity in the PDB file by looking
+at atom ids and residue types, but we have put this in yet.  This feature 
+will probably be added soon.  If you would like to use the explicit CONECT
+records in a PDB file see Appendix A.  When writing PDB files all residue
+types are assigned as UNK.
+
+REPORTING BUGS
+Noone is perfect, and we're sure that there are still a few glitches in this
+program.  If you happen to find such a glitch please send a mail message to
+babel@mercury.aichem.arizona.edu describing the nature of the problem.  If 
+possible please include the input file so we can use it to determine the 
+cause of the problem.
+
+CREDIT WHERE CREDIT IS DUE
+Babel began it's life a program called convert written by Ajay Shah.  
+Babel in its current form was written by Pat Walters and Matt Stahl.
+
+COMING ATTRACTIONS
+We consider Babel to be a constantly evolving program.  Hopefully 
+modules to handle new file formats will be contributed and the program 
+will become useful to an even wider range of chemists.  We currently have 
+a number of additions to Babel underway at the
+U of A.  Among these are:
+1.  A real users manual 
+2.  A developers guide which will assist programmers in creating new 
+modules (Actually I have finished a draft of the Babel Developers Guide.
+If you'd like a copy send me some mail - pat@mercury.aichem.arizona.edu).
+
+PLEASE WRITE
+We would really appreciate any and all input from babel users.  Please
+send comments, praise, flames, and job offers :-) to 
+babel@mercury.aichem.arizona.edu
+
+Have fun,
+
+Pat Walters
+Chief Cook and Bottle-Washer
+
+
+
+
+
+
+
+
+
+
+
+
+

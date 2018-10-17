@@ -1,0 +1,23 @@
+# p2_defaults.f
+array p2arry inp a 0 i=1 
+vector p2arry inp a 1 i=1 
+table p2arry inp a 2 i=1 
+printmacros p2vin a=stdout 0 
+savemacros p2vin a=stdout 1 
+skipto skipto a i=1 
+gotol gotol i 
+loop loop a i i i=1 
+end ectrl 
+? cmdlst 3 
+?? cmdlst 0 
+load ldcmdf a 
+fop p2fop a a d a d=0 
+@@ p2fop a a d a d=0 
+iop p2iop a a i=0 a=x i=0 
+@ p2iop a a i=0 a=x i=0 
+# p2etc.f
+info infox i i=-1 
+finfo finfo i=0 
+rewind rwf a 
+autorewind arwnd a=on i=0 
+open_file fn_open a a=f a=app 

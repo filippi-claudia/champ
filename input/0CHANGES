@@ -1,0 +1,5 @@
+Wed Jul 16 18:13:04 CEST 2003
+ +  added keyword quit to end.p2
+ +  several dimension fixes in parser to permit 
+    string arguments and file names longer than
+    64 characters  
