@@ -73,3 +73,11 @@ CHAMP relies on various other program packages:
    the eye. The Perl script was written by Friedemann Schautz.
 
 4. MOLCAS_Interface: recently added thanks to Csaba Daday and Monika Dash
+
+
+### Installation Using CMake
+To install **Champ** using [cmake](https://cmake.org/) you need to run the following commands:
+```
+cmake -H. -Bbuild
+cmake --build build -- -j4
+```

@@ -13,3 +13,6 @@ settings.make
 input/p2nmcheck.f
 vmc/all.p2
 vmc/commands.p2
+
+# emacs
+*~
