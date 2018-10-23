@@ -14,5 +14,19 @@ input/p2nmcheck.f
 vmc/all.p2
 vmc/commands.p2
 
+# CMake
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+
+# build directory
+build
+
 # emacs
 *~

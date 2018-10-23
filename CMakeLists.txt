@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.0.2)
 
 enable_language(Fortran)
@@ -18,7 +17,6 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 ## External packages
 # search for lapack
 find_package(LAPACK COMPONENTS Fortran REQUIRED)
-
 # Search for Blas
 find_package(BLAS COMPONENTS Fortran REQUIRED)
 
@@ -35,6 +33,7 @@ endif(BUILD_DOC)
 # Include the following subdirectories
 add_subdirectory(include)
 add_subdirectory(lib)
+add_subdirectory(interface)
 # add_subdirectory(tools)
 # add_subdirectory(dmc)
 # add_subdirectory(vmc)
