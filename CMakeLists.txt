@@ -17,17 +17,25 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 ## External packages
 # search for lapack
 find_package(LAPACK COMPONENTS Fortran REQUIRED)
+
 # Search for Blas
 find_package(BLAS COMPONENTS Fortran REQUIRED)
 
-# User options
+## User options
+# documentation
 option(BUILD_DOC "build_doc" off)
 
+# MKL library
+option(ENABLE_MKL "enable_mkl" off)
 
 #  documentation requirements
 if (BUILD_DOC)
-  find_package(DOXYGEN COMPONENTS REQUIRED)
+  find_package(DOXYGEN)
 endif(BUILD_DOC)
+
+if (ENABLE_MKL)
+  find_package(MKL)
+endif(ENABLE_MKL)
 
 ## Subdirectories
 # Include the following subdirectories
