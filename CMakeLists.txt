@@ -1,16 +1,14 @@
-cmake_minimum_required(VERSION 3.0.2)
-
-enable_language(Fortran)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 # Project's name
-project(champ)
+project(champ LANGUAGES Fortran)
 
 set( CMAKE_VERBOSE_MAKEFILE on )
 
 ## Compiler FLAGS
 
 # Set the output folder where your program will be created
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
@@ -40,8 +38,8 @@ endif(ENABLE_MKL)
 ## Subdirectories
 # Include the following subdirectories
 add_subdirectory(include)
-add_subdirectory(lib)
 add_subdirectory(interface)
+add_subdirectory(lib)
 # add_subdirectory(tools)
 # add_subdirectory(dmc)
 # add_subdirectory(vmc)
@@ -63,6 +61,3 @@ endif()
 ## set compiler flags
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${dialect} ${memory} ${check}")
 # set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} ${check}")
-
-
-

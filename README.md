@@ -81,3 +81,10 @@ To install **Champ** using [cmake](https://cmake.org/) you need to run the follo
 cmake -H. -Bbuild
 cmake --build build -- -j4
 ```
+
+#### CMAKE Options
+
+To select a given compiler you can type:
+```
+cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=ifort 
+``

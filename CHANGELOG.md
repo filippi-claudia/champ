@@ -9,5 +9,12 @@
 
  * Used the definifition of lib/my_second.f.ifort as default `my_second.f`
  
- 
+
+## Removed
+
+* Link to unused *LINPACK* library
+
+
 ## Fixed
+
+
