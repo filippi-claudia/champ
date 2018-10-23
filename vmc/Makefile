@@ -7,7 +7,7 @@ INPUT      = $(QMCHOME)/input
 CYRUSLIB   = -L$(LIBHOME)/lib -lcyrus
 
 BLASHOME   = $(LIBHOME)/lib2/blas-2007
-LAPACKHOME = $(LIBHOME)/lib2/lapack-3.4.2
+LAPACKHOME = $(LIBHOME)/lib2/lapack-3.6.0
 BLAS       = -L$(BLASHOME) -lblas
 LAPACK     = -L$(LAPACKHOME) -llapack
 
@@ -23,6 +23,7 @@ include $(QMCHOME)/settings.make.local
 endif
 
 FFLAGS := $(FFLAGS) $(INC)
+F90FLAGS := $(F90FLAGS) $(INC)
 
 include $(QMCHOME)/common_objects
 
@@ -35,7 +36,8 @@ OBJVMC = main.o vmc.o \
          optwf.o optwf_vmc.o optwf_lib.o \
          sr.o sr_more.o \
          lin_d.o lin_d_more.o regterg.o jdqz_main.o jdqz_lib.o \
-         dl.o dl_more.o dl_iter.o fetch_parameters.o
+         dl.o dl_more.o dl_iter.o fetch_parameters.o \
+	 coords_int.o
 
 OVMC1  = $(OBJVMC) $(OBJCOM) $(OBJCOM1) metrop_mov1_slat.o 
 

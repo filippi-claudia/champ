@@ -27,7 +27,7 @@ OBJCOM1 = $V/hpsie.o $V/multideterminante.o $V/determinante.o $V/determinante_ps
 OBJINP  = $(INPUT)/p2_defaults.o $(INPUT)/p2etc.o $(INPUT)/p2nmcheck.o $V/p2prog.o
 
 %.o : %.f90
-	$(FC) $(FFLAGS_F90) -c -o $@ $<
+	$(FC) $(F90FLAGS) -c -o $@ $<
 
 ifeq ($(QMMM),T)
 OBJQMMM = $V/qmmm_modules.o $V/qmmm_bspline.o $V/qmmm_density.o $V/qmmm_pot.o $V/qmmm_writecube.o
