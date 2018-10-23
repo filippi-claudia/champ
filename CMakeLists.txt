@@ -34,6 +34,7 @@ endif(BUILD_DOC)
 ## Subdirectories
 # Include the following subdirectories
 add_subdirectory(include)
+add_subdirectory(lib)
 # add_subdirectory(tools)
 # add_subdirectory(dmc)
 # add_subdirectory(vmc)
@@ -41,18 +42,20 @@ add_subdirectory(include)
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   set(dialect "-O2 -ffixed-form -ffixed-line-length-132 -fno-automatic")
-endif()
-if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   set(dialect "-O2 -xHost -mcmodel=large -shared-intel -132 -save -g")
   set(memory "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
   set(check " -check bounds -check format ")
-endif()
-if(CMAKE_Fortran_COMPILER_ID MATCHES "PGI")
+
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI")
   set(dialect "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
+
 endif()
 
-# set compiler flags
+## set compiler flags
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${dialect} ${memory} ${check}")
 # set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} ${check}")
+
 
 
