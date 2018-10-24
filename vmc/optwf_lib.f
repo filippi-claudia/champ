@@ -336,7 +336,7 @@ C     sorts in ascending order
 5       indx(l+1)=indx(j)
         indx(j)=indxt
         jstack=jstack+2
-        if(jstack.gt.nstack)pause 'nstack too small in indexx'
+        if(jstack.gt.nstack) stop 'nstack too small in indexx'
         if(ir-i+1.ge.j-l)then
           istack(jstack)=ir
           istack(jstack-1)=i
@@ -418,7 +418,7 @@ C$    sorts in ascending order
 5       indx(l+1)=indx(j)
         indx(j)=indxt
         jstack=jstack+2
-        if(jstack.gt.nstack)pause 'nstack too small in indexx'
+        if(jstack.gt.nstack) stop 'nstack too small in indexx'
         if(ir-i+1.ge.j-l)then
           istack(jstack)=ir
           istack(jstack-1)=i
