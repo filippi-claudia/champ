@@ -5,8 +5,13 @@ project(champ LANGUAGES Fortran)
 
 set( CMAKE_VERBOSE_MAKEFILE on )
 
-## Compiler FLAGS
+# ## Build type
+# if(NOT CMAKE_BUILD_TYPE)
+#   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+# endif()
 
+
+## Compiler FLAGS
 # Set the output folder where your program will be created
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -44,20 +49,4 @@ add_subdirectory(lib)
 # add_subdirectory(dmc)
 # add_subdirectory(vmc)
 
-## Compiler FLAGS
-if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  set(dialect "-O2 -ffixed-form -ffixed-line-length-132 -fno-automatic")
 
-elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  set(dialect "-O2 -xHost -mcmodel=large -shared-intel -132 -save -g")
-  set(memory "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
-  set(check " -check bounds -check format ")
-
-elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI")
-  set(dialect "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
-
-endif()
-
-## set compiler flags
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${dialect} ${memory} ${check}")
-# set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} ${check}")
