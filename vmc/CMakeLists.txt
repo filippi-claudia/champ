@@ -6,17 +6,6 @@ file(GLOB VMC90_SOURCES LIST_DIRECTORIES false *f90)
 set(PERIODIC F)
 set(QMMM F)
 
-## BUILD pspline by hand
-add_custom_command(
-  OUTPUT libpspline.a
-  COMMAND  make
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib2/pspline)
-
-# # Added the pspline library to the link_directories
-# INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/bin)
-# LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/bin)
-# message(STATUS "LINK_DIRECTORIES: " ${LINK_DIRECTORIES})
-
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-O2" "-ffixed-line-length-132" "-fno-automatic")
@@ -62,7 +51,8 @@ target_compile_options(vmc.mov1
   "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
   )
 
-target_link_libraries(vmc.mov1 cyrus libpspline.a ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
+target_link_libraries(vmc.mov1 cyrus pspline ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
+# target_link_libraries(vmc.mov1 ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
 
 
 # ifndef FFLAGS
