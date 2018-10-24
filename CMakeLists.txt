@@ -43,10 +43,11 @@ endif(ENABLE_MKL)
 ## Subdirectories
 # Include the following subdirectories
 add_subdirectory(include)
+add_subdirectory(input)
 add_subdirectory(interface)
 add_subdirectory(lib)
 # add_subdirectory(tools)
 # add_subdirectory(dmc)
-# add_subdirectory(vmc)
+add_subdirectory(vmc)
 
 
