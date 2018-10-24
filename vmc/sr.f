@@ -449,54 +449,87 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       end
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+!      subroutine compute_positions
+!      implicit real*8(a-h,o-z)
+!
+!      include 'vmc.h'
+!      include 'force.h'
+!
+!      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
+!
+!      common /force_analy/ iforce_analy,iuse_zmat,alfgeo
+!      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
+!      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
+!     &                 czcart_ref(3,3),izcmat(3,MCENT),
+!     &                 izmatrix
+!      common /grdnthes/ hessian_zmat(3,MCENT)
+!
+!      dimension cent_ref(3,MCENT)
+!
+!      if(iforce_analy.eq.0)return
+!
+!      call compute_position_bcast
+!
+!      if(iuse_zmat.eq.0) then
+!
+!        do ic=1,ncent
+!          do k=1,3
+!            cent(k,ic)=cent(k,ic)-alfgeo*da_energy_ave(k,ic)
+!          enddo
+!          write(6,*)'CENT ',(cent(k,ic),k=1,3)
+!        enddo
+!
+!      else
+!
+!        do 10 ic=1,3
+!          do 10 k=1,3
+!   10       cent_ref(k,ic)=cent(k,ic)
+!
+!        call cart2zmat(ncent,cent,izcmat,czint)
+!
+!        do ic=1,ncent
+!          do k=1,3
+!            czint(k,ic)=czint(k,ic)-alfgeo*da_energy_ave(k,ic)/hessian_zmat(k,ic)
+!          enddo
+!          write(6,*)'CENT ',(czint(k,ic),k=1,3)
+!        enddo
+!
+!        call zmat2cart_rc(ncent,izcmat,czint,cent,cent_ref)
+!
+!      endif
+!
+!      return
+!      end
+
+
       subroutine compute_positions
-      implicit real*8(a-h,o-z)
-
-      include 'vmc.h'
-      include 'force.h'
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
-
-      common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
-      common /grdnthes/ hessian_zmat(3,MCENT)
-
-      dimension cent_ref(3,MCENT)
-
-      if(iforce_analy.eq.0)return
-
-      call compute_position_bcast
-
-      if(iuse_zmat.eq.0) then
-
-        do ic=1,ncent
-          do k=1,3
-            cent(k,ic)=cent(k,ic)-alfgeo*da_energy_ave(k,ic)
-          enddo
-          write(6,*)'CENT ',(cent(k,ic),k=1,3)
-        enddo
-
-      else
-
-        do 10 ic=1,3
-          do 10 k=1,3
-   10       cent_ref(k,ic)=cent(k,ic)
-
-        call cart2zmat(ncent,cent,izcmat,czint)
-
-        do ic=1,ncent
-          do k=1,3
-            czint(k,ic)=czint(k,ic)-alfgeo*da_energy_ave(k,ic)/hessian_zmat(k,ic)
-          enddo
-          write(6,*)'CENT ',(czint(k,ic),k=1,3)
-        enddo
-
-        call zmat2cart_rc(ncent,izcmat,czint,cent,cent_ref)
-
-      endif
-
-      return
+        use coords_int
+        implicit real*8(a-h,o-z)
+      
+        include 'vmc.h'
+        include 'force.h'
+        
+        common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
+        
+        common /force_analy/ iforce_analy,iuse_zmat,alfgeo
+        common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
+        common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
+     &                   czcart_ref(3,3),izcmat(3,MCENT),
+     &                   izmatrix
+        
+        if (iforce_analy.eq.0) return !TODO why is this here?
+        
+        call compute_position_bcast
+        
+        if(iuse_zmat.eq.0) then
+      
+          call init (MCENT)
+          call transform_gradients (da_energy_ave)
+          call compute_step_int (alfgeo)
+          call do_step (czint, cent, izcmat)
+        endif
+        
+        return
       end
+
+

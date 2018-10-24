@@ -3,16 +3,24 @@
 !! Subroutines related to transforming coordinates and gradients
 !! between cartesian and internal coordinate systems.
 !!
-!! Jonas Feldt (j.feldt@utwente.nl)
+!! @author Jonas Feldt (j.feldt@utwente.nl)
+!! @date October 2018
 !!
 module coords_int
 
   implicit none
 
   real(kind=8), allocatable :: bmat (:,:)
+  real(kind=8), allocatable :: bmatinv (:,:)
+
   real(kind=8), allocatable :: int_gradients (:)
+  real(kind=8), allocatable :: int_step (:)
+  real(kind=8), allocatable :: int_coords (:)
+
   real(kind=8), allocatable :: cart_gradients (:)
   integer :: num_cart, num_int, num_centers
+
+  logical :: initialized
 
   
 
@@ -34,6 +42,8 @@ module coords_int
 
     integer, intent(in) :: mcent
 
+    if (initialized.eqv..true.) return
+
     num_centers = mcent
     num_cart = 3 * num_centers
     if (num_cart.eq.6) then
@@ -43,8 +53,15 @@ module coords_int
     endif
 
     allocate (bmat(num_int, num_cart))
+    allocate (bmatinv(num_cart, num_int))
+
     allocate (int_gradients(num_int))
+    allocate (int_step(num_int))
+    allocate (int_coords(num_int))
+
     allocate (cart_gradients(num_cart))
+
+    initialized = .true.
     
   end subroutine init
 
@@ -119,7 +136,7 @@ module coords_int
     integer, dimension(:), allocatable :: iwork
     integer :: i, irank, info
     integer :: lwork = -1, liwork = -1
-    real(kind=8) :: rcond = -1d0
+    real(kind=8) :: rcond = -1d0 ! optional conditioner to remove eigenvalues close to zero
 
 
     ! trivially reshapes to vector
@@ -136,14 +153,14 @@ module coords_int
     allocate (work(1))
     allocate (iwork(1))
 
-    ! query for work space size
+    ! queries for work space size
     call dgelsd (num_int, num_cart, num_int, bmat, num_int, u, num_cart, s, rcond, irank, work, lwork, iwork, info)
     if (info.ne.0) then
       write (*,*) 'transform_gradients: dgelsd() query for workspace failed.'
       stop
     end if  
 
-    ! allocate optimal work and iwork
+    ! allocates optimal work and iwork
     lwork = int (work(1))
     deallocate (work)
     allocate (work(lwork))
@@ -152,7 +169,6 @@ module coords_int
     allocate (iwork(liwork))
 
 
-    ! do something
     call dgelsd (num_int, num_cart, num_int, bmat, num_int, u, num_cart, s, rcond, irank, work, lwork, iwork, info)
 
     if (info.gt.0) then
@@ -165,8 +181,10 @@ module coords_int
       write (*,'(9f10.5)') u(i, 1:num_int)
     enddo
 
+    ! extracts pseudo-inverse
     allocate (bmattinv(num_int, num_cart))
-    bmattinv = transpose(u(1:9, 1:3))
+    bmatinv = u(1:9, 1:3) ! save for later
+    bmattinv = transpose(bmatinv)
 
     print *,"bmattinv"
     do i = 1, num_int
@@ -179,9 +197,141 @@ module coords_int
   end subroutine transform_gradients
 
 
+
+  !>
+  !! Computes the step in internal coordinates
+  !!
+  !! For now just a trivial steepest descent step. This can be improved.
+  !!
+  !! @param alpha scales the gradient and determines the length of the step
+  !!
+  subroutine compute_step_int (alpha)
+
+    real(kind=8), intent (in) :: alpha
+
+    int_step = -alpha * int_gradients
+    
+  end subroutine compute_step_int
+
+
+  !>
+  !! Transforms the step from internal to cartesian coordinates
+  !! and computes the new geometry.
+  !!
+  !! @param int_coords2d internal coordinates in z-Matrix representation (3xMCENT)
+  !! @param cart_coords2d cartesian coordinates (3xMCENT)
+  !! @param connectivities z Matrix connectivity matrix (3xMCENT)
+  !!
+  !! Slightly more complicated than it has to be for a z Matrix in preparation
+  !! for the generalization to other internal coordinates.
+  !!
+  subroutine do_step (int_coords2d, cart_coords2d, connectivities)
+
+    real(kind=8), dimension(:,:), intent(inout) :: cart_coords2d
+    real(kind=8), dimension(:,:), intent(inout) :: int_coords2d
+    integer, dimension(:,:), intent(in) :: connectivities
+
+    integer, parameter :: maxit = 25
+
+    real(kind=8), dimension(num_cart) :: cart_coords
+    real(kind=8), dimension(num_int) :: int_dnew
+    real :: delta
+    integer :: iint = 1
+    integer :: ic, it
+
+    ! computes new geometry in internal coordinates as reference
+    do ic = 2, num_centers ! loop over bonds
+      int_coords(iint) = int_coords2d(1, ic) + int_step(iint)
+      iint = iint + 1
+    enddo
+
+    print *,"Internal reference"
+    write (*,'(f10.5)') (int_coords(iint),iint=1,num_int)
+
+    ! computes new geometry in cartesian coordinates
+    cart_coords  = reshape (cart_coords2d, shape (cart_coords)) ! 2d->1d
+    cart_coords = cart_coords - matmul (bmatinv, int_step) !TODO why do I need here minus instead of plus, check paper again...
+    print *
+    print *,"old cart"
+    write (*,'(9f10.5)') cart_coords2d
+    cart_coords2d  = reshape (cart_coords, shape (cart_coords2d)) ! 1d->2d
+    print *
+    print *,"new cart"
+    write (*,'(9f10.5)') cart_coords2d
+
+    ! transforms back to internal coordinates
+    call cart2zmat(num_centers, cart_coords2d, connectivities, int_coords2d)
+    !int_coords2d (1, 2) = norm2 (cart_coords2d(1:3, 2) - cart_coords2d(1:3, 1))
+    !int_coords2d (1, 3) = norm2 (cart_coords2d(1:3, 3) - cart_coords2d(1:3, 2))
+
+    print *
+    print *, 'internal new'
+    write (*,'(9f10.5)') int_coords2d
+
+    ! computes difference between reference step and actual step
+    iint = 1
+    do ic = 2, num_centers ! loop over bonds
+      int_dnew(iint) = (int_coords(iint) - int_coords2d(1, ic))
+      iint = iint + 1
+    enddo
+    delta = sqrt(sum(int_dnew**2))
+
+    print *
+    print *,"int_step"
+    write (*,'(3f10.5)') int_step
+    print *,"int_dnew"
+    write (*,'(3f10.5)') int_dnew
+    print *, "Delta", delta
+
+    it = 0
+    do while (delta.gt.1d-6.and.it.lt.maxit)
+      print *
+      print *,"Iteration", it
+
+      cart_coords = cart_coords - matmul (bmatinv, int_dnew) !TODO why do I need here minus instead of plus? check paper again...
+      print *
+      print *,"old cart"
+      write (*,'(9f10.5)') cart_coords2d
+      cart_coords2d  = reshape (cart_coords, shape (cart_coords2d)) ! 1d->2d
+      print *
+      print *,"new cart"
+      write (*,'(9f10.5)') cart_coords2d
+
+      ! transforms back to internal coordinates
+      call cart2zmat(num_centers, cart_coords2d, connectivities, int_coords2d)
+      !int_coords2d (1, 2) = norm2 (cart_coords2d(1:3, 2) - cart_coords2d(1:3, 1))
+      !int_coords2d (1, 3) = norm2 (cart_coords2d(1:3, 3) - cart_coords2d(1:3, 2))
+
+      print *
+      print *, 'internal new'
+      write (*,'(9f10.5)') int_coords2d
+
+      ! computes difference between reference step and actual step
+      iint = 1
+      do ic = 2, num_centers ! loop over bonds
+        int_dnew(iint) = (int_coords(iint) - int_coords2d(1, ic))
+        iint = iint + 1
+      enddo
+      delta = sqrt(sum(int_dnew**2))
+
+      print *
+      print *,"int_step"
+      write (*,'(3f10.5)') int_step
+      print *,"int_dnew"
+      write (*,'(3f10.5)') int_dnew
+      print *, "Delta", delta
+
+      it = it + 1
+    enddo
+
+    if (delta.gt.1d-6) then
+      write (*,*) 'do_step: backtransformation did not converge'
+      stop
+    endif
+
+
+  end subroutine do_step
+
+
 end module coords_int
-
-
-
-
 
