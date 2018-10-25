@@ -33,6 +33,9 @@ endif()
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+# Input directory
+set(INPUT_DIR ${CMAKE_SOURCE_DIR}/input)
+
 
 ## External packages
 # search for lapack
@@ -72,7 +75,7 @@ add_subdirectory(interface)
 add_subdirectory(lib)
 add_subdirectory(lib2)
 # add_subdirectory(tools)
-# add_subdirectory(dmc)
 add_subdirectory(vmc)
+add_subdirectory(dmc)
 
 
