@@ -2,10 +2,6 @@
 file(GLOB VMC_SOURCES LIST_DIRECTORIES false  *.f)
 file(GLOB VMC90_SOURCES LIST_DIRECTORIES false *f90)
 
-# SET periodic and qmmm to false
-set(PERIODIC F)
-set(QMMM F)
-
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-O2" "-ffixed-line-length-132" "-fno-automatic")
@@ -20,9 +16,12 @@ elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
 endif()
 
+# Input directory
+set(INPUT_DIR ${CMAKE_SOURCE_DIR}/input)
 
 # Compile and link executable
-add_executable(vmc.mov1 ${VMC_SOURCES} ${VMC90_SOURCES} ${CMAKE_SOURCE_DIR}/include/vmc.h)
+add_executable(vmc.mov1 ${CMAKE_SOURCE_DIR}/include/vmc.h ${VMC_SOURCES} ${VMC90_SOURCES}
+  ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f)
 
 #  Add headers
 target_include_directories(vmc.mov1
@@ -51,8 +50,7 @@ target_compile_options(vmc.mov1
   "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
   )
 
-target_link_libraries(vmc.mov1 cyrus pspline ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
-# target_link_libraries(vmc.mov1 ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
+target_link_libraries(vmc.mov1 cyrus ${LAPACK_LIBRARIES} pspline ${BLAS_LIBRARIES})
 
 
 # ifndef FFLAGS
