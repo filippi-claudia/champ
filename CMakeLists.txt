@@ -10,8 +10,25 @@ set( CMAKE_VERBOSE_MAKEFILE on )
 #   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 # endif()
 
+# Cmake modules/macros are in a subdirectory to keep this file cleaner
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
+
 
 ## Compiler FLAGS
+if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
+  list(APPEND Fortran_FLAGS "-O2" "-ffixed-line-length-132" "-fno-automatic")
+  
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+  list(APPEND Fortran_FLAGS "-O2" "-xHost" "-mcmodel=large" "-shared-intel" "-132" "-save "
+    "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data"
+    "-check bounds" "-check format ")
+  list(APPEND Fortan_FLAGS_DEBUG "-g")
+  
+elseif(Fortran_COMPILER_ID MATCHES "PGI")
+  list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
+endif()
+
+
 # Set the output folder where your program will be created
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -45,6 +62,7 @@ endif(BUILD_DOC)
 if (ENABLE_MKL)
   find_package(MKL)
 endif(ENABLE_MKL)
+
 
 ## Subdirectories
 # Include the following subdirectories
