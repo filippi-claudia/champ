@@ -31,6 +31,12 @@ option(BUILD_DOC "build_doc" off)
 # MKL library
 option(ENABLE_MKL "enable_mkl" off)
 
+# QMMM option
+option(ENABLE_QMMM "enable_qmmm" off)
+
+# Periodic option
+option(ENABLE_PERIODIC "enable_periodic")
+
 #  documentation requirements
 if (BUILD_DOC)
   find_package(DOXYGEN)

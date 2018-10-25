@@ -1,6 +1,20 @@
 # Source files
 file(GLOB VMC_SOURCES LIST_DIRECTORIES false  *.f)
-file(GLOB VMC90_SOURCES LIST_DIRECTORIES false *f90)
+file(GLOB VMC90_SOURCES LIST_DIRECTORIES false convcartzmat.f90 regterg.f90)
+
+if (NOT ENABLE_QMMM)
+  message(STATUS "QMMM is NOT enable!")
+endif()
+
+if (NOT ENABLE_PERIODIC)
+  message(STATUS "PERIODIC is NOT enable!")
+  list(REMOVE_ITEM VMC_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f)
+  message(STATUS "VMC_SOURCES: " ${VMC_SOURCES})
+endif()
+
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
