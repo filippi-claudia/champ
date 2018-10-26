@@ -36,17 +36,12 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 # Input directory
 set(INPUT_DIR ${CMAKE_SOURCE_DIR}/input)
 
-
-## External packages
-# search for lapack
-find_package(LAPACK COMPONENTS Fortran REQUIRED)
-
-# Search for Blas
-find_package(BLAS COMPONENTS Fortran REQUIRED)
-
 ## User options
 # documentation
 option(BUILD_DOC "build_doc" off)
+
+# MPI 
+option(ENABLE_MPI "enable_mpi" on)
 
 # MKL library
 option(ENABLE_MKL "enable_mkl" off)
@@ -55,27 +50,40 @@ option(ENABLE_MKL "enable_mkl" off)
 option(ENABLE_QMMM "enable_qmmm" off)
 
 # Periodic option
-option(ENABLE_PERIODIC "enable_periodic")
+option(ENABLE_PERIODIC "enable_periodic" off)
+
+## External packages
+# search for lapack
+find_package(LAPACK COMPONENTS Fortran REQUIRED)
+
+# Search for Blas
+find_package(BLAS COMPONENTS Fortran REQUIRED)
 
 #  documentation requirements
 if (BUILD_DOC)
   find_package(DOXYGEN)
 endif(BUILD_DOC)
 
+# Find MKL
 if (ENABLE_MKL)
   find_package(MKL)
 endif(ENABLE_MKL)
 
+# Find MPI
+if (ENABLE_MPI)
+  find_package(MPI)
+endif(ENABLE_MPI)
+
 
 ## Subdirectories
 # Include the following subdirectories
-add_subdirectory(include)
-add_subdirectory(input)
-add_subdirectory(interface)
-add_subdirectory(lib)
-add_subdirectory(lib2)
+add_subdirectory(${CMAKE_SOURCE_DIR}/include)
+add_subdirectory(${CMAKE_SOURCE_DIR}/input)
+add_subdirectory(${CMAKE_SOURCE_DIR}/interface)
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib)
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib2)
 # add_subdirectory(tools)
-add_subdirectory(vmc)
-add_subdirectory(dmc)
+add_subdirectory(${CMAKE_SOURCE_DIR}/vmc)
+add_subdirectory(${CMAKE_SOURCE_DIR}/dmc)
 
 

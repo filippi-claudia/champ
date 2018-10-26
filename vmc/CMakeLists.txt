@@ -1,6 +1,6 @@
 # Source files
 file(GLOB VMC_SOURCE LIST_DIRECTORIES false  *.f)
-file(GLOB VMC90_SOURCES LIST_DIRECTORIES false convcartzmat.f90 regterg.f90)
+file(GLOB VMC90_SOURCE LIST_DIRECTORIES false convcartzmat.f90 regterg.f90)
 
 if (NOT ENABLE_QMMM)
   message(STATUS "QMMM is NOT enable!")
@@ -15,7 +15,7 @@ if (NOT ENABLE_PERIODIC)
 endif()
 
 # Compile and link executable
-add_executable(vmc.mov1 ${CMAKE_SOURCE_DIR}/include/vmc.h ${VMC_SOURCE} ${VMC90_SOURCES}
+add_executable(vmc.mov1 ${CMAKE_SOURCE_DIR}/include/vmc.h ${VMC_SOURCE} ${VMC90_SOURCE}
   ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f)
 
 #  Add headers
@@ -28,7 +28,7 @@ target_include_directories(vmc.mov1
 # Include function to change fortran format
 include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
 
-formatFortran("${VMC90_SOURCES}" "FREE")
+formatFortran("${VMC90_SOURCE}" "FREE")
 formatFortran("${VMC_SOURCE}" "FIXED")
 
 # compilation
@@ -41,6 +41,6 @@ target_compile_options(vmc.mov1
 target_link_libraries(vmc.mov1 cyrus ${LAPACK_LIBRARIES} pspline ${BLAS_LIBRARIES})
 
 # Include MPI subdir
-# set(VMC_SOURCE ${VMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
-# set(VMC90_SOURCE ${VMC90_SOURCE} CACHE INTERNAL "Path to the source of vmc f90")
+set(VMC_SOURCE ${VMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
+# set(VMC90_SOURCE ${VMC90_SOURCE} CACHE INTERNAL "Path to the source of vmc f90")x
 add_subdirectory(MPI)
