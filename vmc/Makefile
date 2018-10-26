@@ -22,8 +22,8 @@ PERIODIC = F
 include $(QMCHOME)/settings.make.local
 endif
 
-FFLAGS := $(FFLAGS) $(INC)
-F90FLAGS := $(F90FLAGS) $(INC)
+FFLAGS := -ggdb $(FFLAGS) $(INC)
+F90FLAGS := -ggdb -fcheck=all $(F90FLAGS) $(INC)
 
 include $(QMCHOME)/common_objects
 

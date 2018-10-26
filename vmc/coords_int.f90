@@ -20,7 +20,7 @@ module coords_int
   real(kind=8), allocatable :: cart_gradients (:)
   integer :: num_cart, num_int, num_centers
 
-  logical :: initialized
+  logical :: initialized = .false.
 
   
 
@@ -36,21 +36,26 @@ module coords_int
   !! Initalizes data for the geometry optimization in z-Matrix internal
   !! coordinates based on the provided cartesian coordinates.
   !!
-  !! @param mcent number of atoms
+  !! @param ncent number of atoms
   !!
-  subroutine init (mcent)
+  subroutine init (ncent)
 
-    integer, intent(in) :: mcent
+    integer, intent(in) :: ncent
 
     if (initialized.eqv..true.) return
 
-    num_centers = mcent
+    print *,"Initializing for ", ncent, " atoms"
+
+    num_centers = ncent
     num_cart = 3 * num_centers
     if (num_cart.eq.6) then
       num_int = 1
     else
       num_int = num_cart - 6
     endif
+
+    print *,num_cart," cartesian coordinates"
+    print *,num_int," internal coordinates"
 
     allocate (bmat(num_int, num_cart))
     allocate (bmatinv(num_cart, num_int))
@@ -81,41 +86,39 @@ module coords_int
     
     real(kind=8) :: vec(3)
     integer :: cb, cc, cd
-    integer :: iint = 1 ! ID of current internal coordinate
+    integer :: iint ! ID of current internal coordinate
     integer :: i
     integer :: b1, b2 ! indices for cart. coordinates in bmat
 
+    bmat = 0d0
+
     ! computes all bond contributions
+    iint = 1
     do i = 2, num_centers ! starts at 2 ignoring the irrelevant 1. row in z Matrix
+
 
       ! computes normalized bond vector
       cb = connectivities(1, i)
       vec = cart_coords(1:3, i) - cart_coords(1:3, cb)
+      print *,"BMAT: computing bond", i, cb, norm2 (vec)
+      print *, cart_coords(1:3, i), cart_coords(1:3, cb)
       vec = vec / norm2 (vec)
+      print *,vec
 
 
-      b1 = b (i)
-      b2 = b (cb)
+      b1 = 3 * (i - 1) + 1
+      b2 = 3 * (cb - 1) + 1
+      print *,"iint,b1,b2",iint,b1,b2
+      print *,"bmat",shape(bmat)
       bmat(iint, b1:b1+2) = -vec
       bmat(iint, b2:b2+2) =  vec
       iint = iint + 1
 
     enddo
 
-  end subroutine compute_bmat
+    print *,"B",bmat
 
-  !>
-  !! Computes the starting index of the atom i in the bmatrix.
-  !!
-  !! @param i ID of atom
-  !! 
-  !! @return index in the bmatrix
-  !!
-  integer function b (i)
-    integer :: i, ib
-    ib = 3 * (i - 1) + 1
-    return
-  end function
+  end subroutine compute_bmat
 
 
 
@@ -135,12 +138,20 @@ module coords_int
     real(kind=8), dimension(:), allocatable :: work
     integer, dimension(:), allocatable :: iwork
     integer :: i, irank, info
-    integer :: lwork = -1, liwork = -1
-    real(kind=8) :: rcond = -1d0 ! optional conditioner to remove eigenvalues close to zero
+    integer :: lwork, liwork
+    real(kind=8) :: rcond ! optional conditioner to remove eigenvalues close to zero
 
+    lwork = -1
+    liwork = -1
+    rcond = -1d0
+
+    print *
+    print *,"Transform Gradients"
+    print *
 
     ! trivially reshapes to vector
     cart_gradients = reshape (cart_gradients2d, shape (cart_gradients))
+    print *,cart_gradients
 
     ! computes the inverse of the transpose of B (= (B^T)^+)
 
@@ -164,7 +175,7 @@ module coords_int
     lwork = int (work(1))
     deallocate (work)
     allocate (work(lwork))
-    liwork = int (iwork(1))
+    liwork = iwork(1)
     deallocate (iwork)
     allocate (iwork(liwork))
 
@@ -183,7 +194,7 @@ module coords_int
 
     ! extracts pseudo-inverse
     allocate (bmattinv(num_int, num_cart))
-    bmatinv = u(1:9, 1:3) ! save for later
+    bmatinv = u(1:num_cart, 1:num_int) ! save for later
     bmattinv = transpose(bmatinv)
 
     print *,"bmattinv"
@@ -191,8 +202,12 @@ module coords_int
       write (*,'(9f10.5)') bmattinv(i, 1:num_cart)
     enddo
 
+    print *,size(bmattinv),size(cart_gradients),size(int_gradients)
+
     ! transforms the gradients
     int_gradients = matmul (bmattinv, cart_gradients)
+    print *,"internal gradients"
+    print *,int_gradients
 
   end subroutine transform_gradients
 
@@ -210,6 +225,9 @@ module coords_int
     real(kind=8), intent (in) :: alpha
 
     int_step = -alpha * int_gradients
+    print *,"Compute step"
+    print *,'grad', int_gradients
+    print *,'step', int_step
     
   end subroutine compute_step_int
 
@@ -222,8 +240,6 @@ module coords_int
   !! @param cart_coords2d cartesian coordinates (3xMCENT)
   !! @param connectivities z Matrix connectivity matrix (3xMCENT)
   !!
-  !! Slightly more complicated than it has to be for a z Matrix in preparation
-  !! for the generalization to other internal coordinates.
   !!
   subroutine do_step (int_coords2d, cart_coords2d, connectivities)
 
@@ -236,12 +252,19 @@ module coords_int
     real(kind=8), dimension(num_cart) :: cart_coords
     real(kind=8), dimension(num_int) :: int_dnew
     real :: delta
-    integer :: iint = 1
+    integer :: iint
     integer :: ic, it
+    integer :: i, j
+
+    print *
+    print *,"Do step"
+    print *
+
+    iint = 1
 
     ! computes new geometry in internal coordinates as reference
     do ic = 2, num_centers ! loop over bonds
-      int_coords(iint) = int_coords2d(1, ic) + int_step(iint)
+      int_coords(iint) = int_coords2d(1, ic) - int_step(iint) !TODO why is here minus?
       iint = iint + 1
     enddo
 
@@ -250,14 +273,19 @@ module coords_int
 
     ! computes new geometry in cartesian coordinates
     cart_coords  = reshape (cart_coords2d, shape (cart_coords)) ! 2d->1d
-    cart_coords = cart_coords - matmul (bmatinv, int_step) !TODO why do I need here minus instead of plus, check paper again...
+    cart_coords = cart_coords + matmul (bmatinv, int_step)
     print *
     print *,"old cart"
-    write (*,'(9f10.5)') cart_coords2d
-    cart_coords2d  = reshape (cart_coords, shape (cart_coords2d)) ! 1d->2d
+    write (*,'(6f10.5)') cart_coords2d(1:2,1:3)
+    do i=1,num_centers
+      do j = 1,3
+        cart_coords2d(j, i) = cart_coords(3*(i-1)+j)
+      enddo
+    enddo
+    !cart_coords2d  = reshape (cart_coords, shape (cart_coords2d)) ! 1d->2d
     print *
     print *,"new cart"
-    write (*,'(9f10.5)') cart_coords2d
+    write (*,'(6f10.5)') cart_coords2d(1:2,1:3)
 
     ! transforms back to internal coordinates
     call cart2zmat(num_centers, cart_coords2d, connectivities, int_coords2d)
@@ -266,7 +294,7 @@ module coords_int
 
     print *
     print *, 'internal new'
-    write (*,'(9f10.5)') int_coords2d
+    write (*,'(1f10.5)') int_coords2d(2,1)
 
     ! computes difference between reference step and actual step
     iint = 1
@@ -326,7 +354,7 @@ module coords_int
 
     if (delta.gt.1d-6) then
       write (*,*) 'do_step: backtransformation did not converge'
-      stop
+      !stop
     endif
 
 

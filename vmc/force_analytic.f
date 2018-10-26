@@ -372,7 +372,9 @@ c-----------------------------------------------------------------------
    10     da_energy_err(k)=err(da_energy_ave(k,ic),da_energy_cm2(k,ic))
    20   write(80,'(i5,1p6e14.5)') ic,(da_energy_ave(k,ic),k=1,3),(da_energy_err(k),k=1,3)
 
-      call transform_grad_zmat(da_energy_ave)
+      ! TODO JF this is included in the treatment of internal
+      ! coordinates, remove this when finished
+      !call transform_grad_zmat(da_energy_ave)
       return
       end
 c-----------------------------------------------------------------------

@@ -521,12 +521,19 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         
         call compute_position_bcast
         
-        if(iuse_zmat.eq.0) then
-      
-          call init (MCENT)
+        if(iuse_zmat.eq.1) then
+          call init (ncent)
+          call compute_bmat(cent, izcmat)
           call transform_gradients (da_energy_ave)
           call compute_step_int (alfgeo)
           call do_step (czint, cent, izcmat)
+        else
+          do ic=1,ncent
+            do k=1,3
+              cent(k,ic)=cent(k,ic)-alfgeo*da_energy_ave(k,ic)
+            enddo
+            write(6,*)'CENT ',(cent(k,ic),k=1,3)
+          enddo
         endif
         
         return

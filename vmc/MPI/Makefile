@@ -41,6 +41,7 @@ OBJVMC = main.o dumper.o mc_configs.o \
          $V/optwf.o $V/optwf_vmc.o $V/optwf_lib.o \
          $V/optjas.o $V/optorb.o $V/optci.o \
          $V/optx_jas_orb.o $V/optx_orb_ci.o $V/optx_jas_ci.o \
+	 $V/coords_int.o \
          $V/sr.o $V/lin_d.o $V/jdqz_lib.o $V/dl.o $V/dl_iter.o $V/fetch_parameters.o
 
 OVMC1  = $(OBJVMC) $(OBJCOM) $(OBJCOM1) $V/metrop_mov1_slat.o 
