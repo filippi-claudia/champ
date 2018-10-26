@@ -4,56 +4,31 @@ set(DMC_SOURCE main.f dmc.f mc_configs.f gauss.f prop_dmc.f optwf_dmc.f pcm_dmc.
   finwrt.f dumper.f splitj.f walksav_det.f walksav_jas.f hpsiedmc.f 
   nonloc_grid.f multideterminant_tmove.f optwf_dummy.f acues1_reduce.f)
 
-#VMC shared
-set(VMC_PATH ${CMAKE_SOURCE_DIR}/vmc)
+# Remove the files that are not used from vmc
+set(PATH_VMC ${CMAKE_SOURCE_DIR}/vmc)
+list(REMOVE_ITEM VMC_SOURCE
+  ${PATH_VMC}/acuest.f ${PATH_VMC}/acuest_reduce.f ${PATH_VMC}/acuest_write.f
+  ${PATH_VMC}/deriv_jastrow.f ${PATH_VMC}/determinant_psig.f ${PATH_VMC}/dl.f
+  ${PATH_VMC}/dl_iter.f ${PATH_VMC}/dl_more.f ${PATH_VMC}/dumper.f ${PATH_VMC}/dumper_more.f
+  ${PATH_VMC}/fetch_parameters.f ${PATH_VMC}/fin_reduce.f ${PATH_VMC}/finwrt.f
+  ${PATH_VMC}/finwrt_more.f ${PATH_VMC}/jdqz_lib.f ${PATH_VMC}/jdqz_main.f ${PATH_VMC}/lin_d.f
+  ${PATH_VMC}/lin_d_more.f ${PATH_VMC}/main.f ${PATH_VMC}/mc_configs.f
+  ${PATH_VMC}/metrop_mov1_slat.f ${PATH_VMC}/mmpol_vmc.f ${PATH_VMC}/multiple_states.f
+  ${PATH_VMC}/optwf_vmc.f ${PATH_VMC}/pcm_vmc.f
+  ${PATH_VMC}/prop_vmc.f ${PATH_VMC}/pw_ewald.f ${PATH_VMC}/pw_find_image.f ${PATH_VMC}/pw_orbitals.f
+  ${PATH_VMC}/pw_orbitals_e.f ${PATH_VMC}/pw_read.f ${PATH_VMC}/sr.f ${PATH_VMC}/sr_more.f
+  ${PATH_VMC}/vmc.f)
 
-set(VMC90_DEPENDENCIES ${VMC_PATH}/convcartzmat.f90)
-
-set(VMC_DEPENDENCIES
-  # OBJCOM1
-  ${VMC_PATH}/p2prog.f
-  ${VMC_PATH}/read_input.f ${VMC_PATH}/orbitals.f 
-  ${VMC_PATH}/hpsi.f ${VMC_PATH}/determinant.f ${VMC_PATH}/determinant_psit.f
-  ${VMC_PATH}/bxmatrices.f ${VMC_PATH}/multideterminant.f
-  ${VMC_PATH}/jastrow.f ${VMC_PATH}/jastrow_num.f ${VMC_PATH}/jastrow4.f
-  ${VMC_PATH}/deriv_jastrow4.f
-  ${VMC_PATH}/cuspinit4.f ${VMC_PATH}/cuspexact4.f
-  ${VMC_PATH}/psi.f ${VMC_PATH}/gammai.f
-  ${VMC_PATH}/matinv.f ${VMC_PATH}/distances.f ${VMC_PATH}/scale_dist.f
-  ${VMC_PATH}/basis_norm.f ${VMC_PATH}/basis_fns_vgl.f
-  ${VMC_PATH}/basis_fnse_vgl.f ${VMC_PATH}/basis_fnse_v.f ${VMC_PATH}/basis_fnse_vg.f
-  ${VMC_PATH}/slm.f ${VMC_PATH}/read_bas_num.f ${VMC_PATH}/write_orb_loc.f
-  ${VMC_PATH}/3dgrid.f ${VMC_PATH}/3dgrid_orbitals.f ${VMC_PATH}/verify_orbitals.f
-  ${VMC_PATH}/readps.f ${VMC_PATH}/readps_tm.f ${VMC_PATH}/readps_gauss.f ${VMC_PATH}/readps_champ.f
-  ${VMC_PATH}/pot_local.f ${VMC_PATH}/pot.f ${VMC_PATH}/nonloc_pot.f ${VMC_PATH}/nonloc.f
-  ${VMC_PATH}/nonlpsi.f ${VMC_PATH}/rotqua.f
-  ${VMC_PATH}/deriv_nonloc.f ${VMC_PATH}/deriv_nonlpsi.f
-  ${VMC_PATH}/properties.f ${VMC_PATH}/pcm.f ${VMC_PATH}/mmpol.f ${VMC_PATH}/pcm_3dgrid.f ${VMC_PATH}/efield.f 
-  ${VMC_PATH}/spline.f ${VMC_PATH}/spline2.f ${VMC_PATH}/splfit.f
-  ${VMC_PATH}/rannyu.f ${VMC_PATH}/sites.f ${VMC_PATH}/nodes_distance.f
-  ${VMC_PATH}/misc_grdnts.f
-  ${VMC_PATH}/force_analytic.f ${VMC_PATH}/multiply_slmi_mderiv.f
-
-  # OBJCOM1
-  ${VMC_PATH}/hpsie.f ${VMC_PATH}/multideterminante.f ${VMC_PATH}/determinante.f ${VMC_PATH}/determinante_psit.f
-  ${VMC_PATH}/jastrowe.f ${VMC_PATH}/jastrow4e.f ${VMC_PATH}/jassav.f ${VMC_PATH}/detsav.f 
-
-  # OBJPW
-  ${VMC_PATH}/pw_placeholder.f
-
-  # OBJQMMM
-  ${VMC_PATH}/qmmm_placeholder.f
-
-  # OBJVMC
-  ${VMC_PATH}/error.f ${VMC_PATH}/strech.f 
-  ${VMC_PATH}/optwf.f ${VMC_PATH}/optwf_lib.f ${VMC_PATH}/optjas.f ${VMC_PATH}/optorb.f ${VMC_PATH}/optci.f 
-  ${VMC_PATH}/optx_jas_orb.f ${VMC_PATH}/optx_jas_ci.f ${VMC_PATH}/optx_orb_ci.f
-  )
-
-# Compile and link executable
+# executable dependencies
 add_executable(dmc.mov1
-  ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f
-  ${DMC_SOURCE} ${VMC90_DEPENDENCIES} ${VMC_DEPENDENCIES})
+  # shared code with VMC
+  ${VMC_SOURCE}
+  # Fortran 90 source
+  ${PATH_VMC}/convcartzmat.f90
+  # DMC source code
+  ${DMC_SOURCE}  
+  #Input parser
+  ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f)
 
 #  Add headers
 target_include_directories(dmc.mov1

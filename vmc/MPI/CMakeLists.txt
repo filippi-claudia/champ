@@ -22,12 +22,12 @@ if (MPI_FOUND)
   add_executable(vmc.mov1.mpi
     # Header
     ${CMAKE_SOURCE_DIR}/include/vmc.h
-    # Fortran 90 source
-    ${PATH_VMC}/convcartzmat.f90
     # MPI source code
     ${VMC_MPI_SOURCE} ${VMC90_MPI_SOURCE}
     # shared code with VMC
     ${VMC_SOURCE}
+    # shared VMC Fortran 90 source
+    ${PATH_VMC}/convcartzmat.f90
     # Input parser
     ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f)
 
