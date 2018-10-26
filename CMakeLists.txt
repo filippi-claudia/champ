@@ -77,13 +77,13 @@ endif(ENABLE_MPI)
 
 ## Subdirectories
 # Include the following subdirectories
-add_subdirectory(${CMAKE_SOURCE_DIR}/include)
-add_subdirectory(${CMAKE_SOURCE_DIR}/input)
-add_subdirectory(${CMAKE_SOURCE_DIR}/interface)
-add_subdirectory(${CMAKE_SOURCE_DIR}/lib)
-add_subdirectory(${CMAKE_SOURCE_DIR}/lib2)
+add_subdirectory(include)
+add_subdirectory(input)
+add_subdirectory(interface)
+add_subdirectory(lib)
+add_subdirectory(lib2)
 # add_subdirectory(tools)
-add_subdirectory(${CMAKE_SOURCE_DIR}/vmc)
-add_subdirectory(${CMAKE_SOURCE_DIR}/dmc)
+add_subdirectory(vmc)
+add_subdirectory(dmc)
 
 
