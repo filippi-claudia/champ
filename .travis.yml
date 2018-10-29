@@ -1,0 +1,12 @@
+dist: trusty
+sudo: require
+
+language: cpp
+
+apt:
+  sources:
+    - ubuntu-toolchain-r-test
+    packages:
+      - gcc-6
+      - cmake
+      - gfortran
