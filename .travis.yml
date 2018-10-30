@@ -21,8 +21,5 @@ env:
     - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
       
 install:
-# Download and install recent cmake
-- cmake --version
-- ls  /home/travis/build/filippi-claudia/champ/*
 - cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=gfortran
 - cmake --build build -- -j2 
