@@ -9,8 +9,11 @@ addons:
     packages:
       - gfortran
       - cmake
-      - blas
-      - lapack
+      - libblas-dev
+      - liblapack-dev
+      - openmpi-bin
+      - libopenmpi-dev
+      
 
 env:
   global:
