@@ -1,0 +1,26 @@
+sudo: required
+
+language: cpp
+
+apt:
+  sources:
+    - ubuntu-toolchain-r-test
+    packages:
+      - gcc-6
+      - gfortran
+
+env:
+  global:
+    - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
+      
+install:
+  - CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1.tar.gz"
+  - mkdir -p ${DEPS_DIR}/cmake
+  - travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake
+  - export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+
+scripts;
+- cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=gfortran
+- cmake --build build -- -j2 
+
+  
