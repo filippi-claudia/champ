@@ -9,6 +9,8 @@ addons:
     packages:
       - gfortran
       - cmake
+      - blas
+      - lapack
 
 env:
   global:
