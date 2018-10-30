@@ -27,7 +27,7 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
 endif()
-
+message(STATUS "compiler flags are: " ${Fortran_FLAGS})
 
 # Set the output folder where your program will be created
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
