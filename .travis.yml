@@ -2,9 +2,10 @@ sudo: required
 
 language: cpp
 
-apt:
-  sources:
-    - ubuntu-toolchain-r-test
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
     packages:
       - gcc-6
       - gfortran
@@ -19,7 +20,7 @@ install:
   - travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake
   - export PATH=${DEPS_DIR}/cmake/bin:${PATH}
 
-scripts;
+scripts:
 - cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=gfortran
 - cmake --build build -- -j2 
 
