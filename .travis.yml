@@ -7,8 +7,9 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gfortran
       - cmake
+      - cmake-data
+      - gfortran
       - libblas-dev
       - liblapack-dev
       - openmpi-bin
