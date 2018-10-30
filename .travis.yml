@@ -14,7 +14,7 @@ env:
   global:
     - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
       
-scripts:
+install:
 - cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=gfortran
 - cmake --build build -- -j2 
 
