@@ -1,4 +1,3 @@
-sudo: required
 dist: trusty
 
 language: generic
@@ -20,13 +19,9 @@ addons:
 env:
   global:
     - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-    - CMAKE_URL="https://cmake.org/files/v3.12/cmake-3.12.3.tar.gz"
       
 install:
 # Download and install recent cmake
-- mkdir -p ${DEPS_DIR}/cmake
-- travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake
-- export PATH=${DEPS_DIR}/cmake/bin:${PATH}
 - cmake --version
 - cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=gfortran
 - cmake --build build -- -j2 

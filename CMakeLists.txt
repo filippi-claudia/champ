@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 # Project's name
+enable_language(Fortran)
 project(champ LANGUAGES Fortran)
 
 set( CMAKE_VERBOSE_MAKEFILE on )
