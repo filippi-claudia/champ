@@ -1,7 +1,14 @@
 
-file(GLOB_RECURSE CHAMP_SOURCES *.f)
+file(GLOB_RECURSE CHAMP_SOURCE *.f)
 
-add_library(cyrus STATIC ${CHAMP_SOURCES})
+add_library(cyrus STATIC ${CHAMP_SOURCE})
+
+## Set Fixed or Free format
+# Include function to change fortran format
+include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+
+formatFortran("${CHAMP_SOURCE}" "FIXED")
+
 
 # set compiler flags
 target_compile_options(cyrus
