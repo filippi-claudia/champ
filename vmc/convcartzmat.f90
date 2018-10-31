@@ -42,7 +42,9 @@ module misc_bond_func
     !if((cos_angle + 1.0_dp) .lt. 0.0001) then
     !   bond_angle = 180.0_dp
     !else
-    bond_angle = acos(cos_angle)*rad2deg
+    !TODO JF try in radians
+    !bond_angle = acos(cos_angle)*rad2deg
+    bond_angle = acos(cos_angle)
     !endif
   end function bond_angle
 
@@ -69,14 +71,18 @@ module misc_bond_func
        cos_angle = -1.0_dp
     endif
    
-    torsion_angle = acos(cos_angle)*rad2deg
-    
+    !torsion_angle = acos(cos_angle)*rad2deg
+    torsion_angle = acos(cos_angle)
+    !
     if (dot_product(vecBA,norm2) < 0.0_dp) then
-       torsion_angle = 360.0_dp - torsion_angle
+    !   torsion_angle = 360.0_dp - torsion_angle
+      torsion_angle = 2d0 * pi - torsion_angle
     endif
 
-    if (torsion_angle > 180.0_dp) then
-       torsion_angle = torsion_angle - 360.0_dp
+    !if (torsion_angle > 180.0_dp) then
+    !   torsion_angle = torsion_angle - 360.0_dp
+    if (torsion_angle > pi) then
+      torsion_angle = torsion_angle - 2d0 * pi
     endif
 
   end function torsion_angle

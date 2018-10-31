@@ -39,7 +39,7 @@ OBJVMC = main.o vmc.o \
          lin_d.o lin_d_more.o regterg.o jdqz_main.o jdqz_lib.o \
          dl.o dl_more.o dl_iter.o fetch_parameters.o
 
-OVMC1  = $(OBJVMC) $(OBJCOM) $(OBJCOM1) metrop_mov1_slat.o 
+OVMC1  = $(OBJCOM) $(OBJVMC) $(OBJCOM1) metrop_mov1_slat.o 
 
 commands.p2: $V/read_input.f 
 	$(INPUT)/inpt.awk  -v p2file=$@ -v logf=$(INPUT)/commands.log $^
