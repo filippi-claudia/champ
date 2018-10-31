@@ -18,7 +18,7 @@ if (MPI_FOUND)
     ${PATH_VMC}/pw_ewald.f ${PATH_VMC}/pw_find_image.f
     ${PATH_VMC}/pw_orbitals.f ${PATH_VMC}/pw_orbitals_e.f ${PATH_VMC}/pw_read.f
     ${PATH_VMC}/regterg.f90 ${PATH_VMC}/sr_more.f)
-
+  
   add_executable(vmc.mov1.mpi
     # Header
     ${CMAKE_SOURCE_DIR}/include/vmc.h
@@ -59,4 +59,7 @@ if (MPI_FOUND)
     ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES}
     MPI::MPI_Fortran
     )
+  # # # Cache the results for targets that depends on these files
+  # set(VMC_MPI_SOURCE ${VMC_MPI_SOURCE} CACHE INTERNAL "MPI vmc source files")
+  # set(VMC_SOURCE ${VMC_SOURCE} CACHE INTERNAL "VMC sources files minus mpi")
 endif()
