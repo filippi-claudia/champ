@@ -527,6 +527,16 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           call transform_gradients (da_energy_ave)
           call compute_step_int (alfgeo)
           call do_step (czint, cent, izcmat)
+
+          write (6,*) 'INTERNAL'
+          do ic=1,ncent
+            write (6,'(x 3f10.5)') czint(1:3, ic)
+          enddo
+
+          write (6,*) 'CENT'
+          do ic=1,ncent
+            write(6,'(3f10.5)') (cent(k,ic),k=1,3)
+          enddo
         else
           do ic=1,ncent
             do k=1,3

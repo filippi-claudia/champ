@@ -53,7 +53,7 @@ module coords_int
 
     if (initialized.eqv..true.) return
 
-    print *,"Initializing for ", ncent, " atoms"
+    write (6,*) "Initializing for ", ncent, " atoms"
 
     num_centers = ncent
     num_cart = 3 * num_centers
@@ -69,8 +69,8 @@ module coords_int
     num_dihedrals = num_centers - 3
     if (num_dihedrals.lt.0) num_dihedrals = 0
 
-    print *,num_cart," cartesian coordinates"
-    print *,num_int," internal coordinates"
+    write (6,*) num_cart," cartesian coordinates"
+    write (6,*) num_int," internal coordinates"
 
     allocate (b(num_int, num_cart))
     allocate (binv(num_cart, num_int))
@@ -119,7 +119,7 @@ module coords_int
       ! computes normalized bond vector
       cb = connectivities(1, i)
       uvec = cart_coords(:, i) - cart_coords(:, cb)
-      print *,"BMAT: computing bond", i, cb
+      write (6,*) "BMAT: computing bond", i, cb
       uvec = uvec / norm2 (uvec)
 
 
@@ -136,7 +136,7 @@ module coords_int
 
       cb = connectivities(1, i)
       cc = connectivities(2, i)
-      print *,"BMAT: computing angle", i, cb, cc
+      write (6,*) "BMAT: computing angle", i, cb, cc
       ! this direction of vectors works: i->b->c
       uvec = cart_coords(:, cb) - cart_coords(:,i )
       vvec = cart_coords(:, cc) - cart_coords(:,cb)
@@ -164,7 +164,7 @@ module coords_int
       cb = connectivities(1, i)
       cc = connectivities(2, i)
       cd = connectivities(3, i)
-      print *,"BMAT: computing dihedral", i, cb, cc, cd
+      write (6,*) "BMAT: computing dihedral", i, cb, cc, cd
       ! vectors: i->b->c->d
       uvec = cart_coords(:, i ) - cart_coords(:,cb)
       wvec = cart_coords(:, cc) - cart_coords(:,cb)
@@ -197,9 +197,9 @@ module coords_int
       iint = iint + 1
     enddo
 
-    print *,"B"
+    write (6,*) "B"
     do i = 1, num_int
-      write (*,'(12f10.5)') b(i, 1:num_cart)
+      write (6,'(12f10.5)') b(i, 1:num_cart)
     enddo
 
   end subroutine compute_bmat
@@ -231,9 +231,9 @@ module coords_int
     liwork = -1
     rcond = -1d0
 
-    print *
-    print *,"Transform Gradients"
-    print *
+    write (6,*) 
+    write (6,*) "Transform Gradients"
+    write (6,*) 
 
     ! trivially reshapes to vector
     cart_gradients = reshape (cart_gradients2d, shape (cart_gradients))
@@ -254,7 +254,7 @@ module coords_int
     ! queries for work space size
     call dgelsd (num_int, num_cart, num_int, a, num_int, u, num_cart, s, rcond, irank, work, lwork, iwork, info)
     if (info.ne.0) then
-      write (*,*) 'transform_gradients: dgelsd() query for workspace failed.'
+      write (6,*) 'transform_gradients: dgelsd() query for workspace failed.'
       stop
     end if  
 
@@ -270,13 +270,13 @@ module coords_int
     call dgelsd (num_int, num_cart, num_int, a, num_int, u, num_cart, s, rcond, irank, work, lwork, iwork, info)
 
     if (info.gt.0) then
-      write (*,*) 'transform_gradients: dgelsd() did not converge.'
+      write (6,*) 'transform_gradients: dgelsd() did not converge.'
       stop
     end if  
 
-    print *,"u"
+    write (6,*) "u"
     do i = 1, num_cart
-      write (*,'(12f10.5)') u(i, 1:num_int)
+      write (6,'(12f10.5)') u(i, 1:num_int)
     enddo
 
     ! extracts pseudo-inverse
@@ -284,23 +284,23 @@ module coords_int
     binv = u(1:num_cart, 1:num_int) ! save for later
     btinv = transpose(binv)
 
-    print *,"btinv"
+    write (6,*) "btinv"
     do i = 1, num_int
-      write (*,'(12f10.5)') btinv(i, 1:num_cart)
+      write (6,'(12f10.5)') btinv(i, 1:num_cart)
     enddo
 
-    print *,size(btinv),size(cart_gradients),size(int_gradients)
+    write (6,*) size(btinv),size(cart_gradients),size(int_gradients)
 
     ! transforms the gradients
     int_gradients = matmul (btinv, cart_gradients)
-    print *,"internal gradients"
-    write (*,'(6f10.5)') int_gradients
+    write (6,*) "internal gradients"
+    write (6,'(6f10.5)') int_gradients
 
     if (project) then ! computes projector P = BB^+
       p = matmul (b, binv)
-      print *,"P", shape(p)
+      write (6,*) "P", shape(p)
       do i = 1, num_int
-        write (*,'(6f10.5)') p(i, 1:num_int)
+        write (6,'(6f10.5)') p(i, 1:num_int)
       enddo
       int_gradients = matmul (p, int_gradients)
     endif
@@ -321,12 +321,12 @@ module coords_int
     real(kind=8), intent (in) :: alpha
     integer :: i
 
-    print *
-    print *,"--- Compute step ---"
+    write (6,*) 
+    write (6,*) "--- Compute step ---"
     int_step = -alpha * int_gradients
-    write (*,'(6f10.5)') int_step
+    write (6,'(6f10.5)') int_step
 
-    print *,"Hessian diagonal elements according to type x=0.5, 0.2, 0.1"
+    write (6,*) "Hessian diagonal elements according to type x=0.5, 0.2, 0.1"
     do i = 1, num_bonds
       int_step(i) = int_step(i) / 0.5d0
     enddo
@@ -336,7 +336,7 @@ module coords_int
     do i = num_angles + num_bonds + 1, num_bonds + num_angles + num_dihedrals
       int_step(i) = int_step(i) / 0.1d0
     enddo
-    write (*,'(6f10.5)') int_step
+    write (6,'(6f10.5)') int_step
     
   end subroutine compute_step_int
 
@@ -366,9 +366,9 @@ module coords_int
     integer :: ic, it
     integer :: i, j
 
-    print *
-    print *,"--- Do step ---"
-    print *
+    write (6,*) 
+    write (6,*) "--- Do step ---"
+    write (6,*) 
 
     iint = 1
 
@@ -388,34 +388,36 @@ module coords_int
       iint = iint + 1
     enddo
 
-    print *,"Internal reference"
-    write (*,'(f10.5)') (int_coords(iint),iint=1,num_int)
+    write (6,*) "Internal reference"
+    write (6,'(f10.5)') (int_coords(iint),iint=1,num_int)
 
     ! computes new geometry in cartesian coordinates (x1, eq. 13)
     cart_coords  = reshape (cart_coords2d, shape (cart_coords)) ! 2d->1d
     cart_coords = cart_coords + matmul (binv, int_step)
 
-    print *
-    print *,"old cart"
-    write (*,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
+    write (6,*) 
+    write (6,*) "old cart"
+    write (6,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
     ! updates 2D cartesian coordinates
     do i=1,num_centers
       do j = 1,3
         cart_coords2d(j, i) = cart_coords(3*(i-1)+j)
       enddo
     enddo
-    print *
-    print *,"new cart"
-    write (*,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
+    write (6,*) 
+    write (6,*) "new cart"
+    write (6,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
 
     ! transforms back to internal coordinates (q1)
     call cart2zmat(num_centers, cart_coords2d, connectivities, int_coords2d)
 
-    print *
-    print *, 'internal new'
-    write (*,'(1f10.5)') int_coords2d(1,2)
-    write (*,'(2f10.5)') int_coords2d(1:2,3)
-    write (*,'(3f10.5)') int_coords2d(1:3,4)
+    call fix_dihedrals (int_coords, int_coords2d)
+
+    write (6,*) 
+    write (6,*)  'internal new'
+    write (6,'(1f10.5)') int_coords2d(1,2)
+    write (6,'(2f10.5)') int_coords2d(1:2,3)
+    write (6,'(3f10.5)') int_coords2d(1:3,4)
 
     ! computes the guess step in internal coordinates (q1-q0)
     iint = 1
@@ -432,56 +434,58 @@ module coords_int
       iint = iint + 1
     enddo
 
-    print *
-    print *,"int_step"
-    write (*,'(6f10.5)') int_step
-    print *,"int_dnew"
-    write (*,'(6f10.5)') int_dnew
+    write (6,*) 
+    write (6,*) "int_step"
+    write (6,'(6f10.5)') int_step
+    write (6,*) "int_dnew"
+    write (6,'(6f10.5)') int_dnew
 
     ! computes difference between the reference and guess step (delta_q1, eq. 14)
     int_dnew = int_step - int_dnew
-    print *,"delta_int"
-    write (*,'(6f10.5)') int_dnew
+    write (6,*) "delta_int"
+    write (6,'(6f10.5)') int_dnew
     cart_d = matmul (binv, int_dnew)
     delta = sqrt(sum(cart_d**2) / num_cart)
 
-    print *, "Delta", delta
+    write (6,*)  "Delta", delta
 
     it = 0
     do while (delta.gt.1d-6.and.it.lt.maxit)
-      print *
-      print *,"Iteration", it
+      write (6,*) 
+      write (6,*) "Iteration", it
 
       if (recalculate) then
         !TODO test to recalculate bmatrix here
-        print *, '----------------Computing new bmatrix -------------'
+        write (6,*)  '----------------Computing new bmatrix -------------'
         call compute_bmat (cart_coords2d, connectivities)
-        print *, '---------------------------------------------------'
+        write (6,*)  '---------------------------------------------------'
       endif
 
       ! step in cartesian coordinates
       cart_coords = cart_coords + cart_d
-      print *
-      print *,"old cart"
-      write (*,'(12f10.5)') cart_coords2d(1:3,1:3)
+      write (6,*) 
+      write (6,*) "old cart"
+      write (6,'(12f10.5)') cart_coords2d(1:3,1:3)
       ! updates 2D cartesian coordinates
       do i=1,num_centers
         do j = 1,3
           cart_coords2d(j, i) = cart_coords(3*(i-1)+j)
         enddo
       enddo
-      print *
-      print *,"new cart"
-      write (*,'(12f10.5)') cart_coords2d(1:3,1:3)
+      write (6,*) 
+      write (6,*) "new cart"
+      write (6,'(12f10.5)') cart_coords2d(1:3,1:3)
 
       ! transforms back to internal coordinates
       call cart2zmat(num_centers, cart_coords2d, connectivities, int_coords2d)
 
-      print *
-      print *, 'internal new'
-      write (*,'(1f10.5)') int_coords2d(1,2)
-      write (*,'(2f10.5)') int_coords2d(1:2,3)
-      write (*,'(3f10.5)') int_coords2d(1:3,4)
+      call fix_dihedrals (int_coords, int_coords2d)
+
+      write (6,*) 
+      write (6,*)  'internal new'
+      write (6,'(1f10.5)') int_coords2d(1,2)
+      write (6,'(2f10.5)') int_coords2d(1:2,3)
+      write (6,'(3f10.5)') int_coords2d(1:3,4)
 
       ! computes difference between reference step and actual step
       iint = 1
@@ -498,31 +502,60 @@ module coords_int
         iint = iint + 1
       enddo
 
-      print *
-      print *,"int_step"
-      write (*,'(6f10.5)') int_step
-      print *,"int_dnew"
-      write (*,'(6f10.5)') int_dnew
+      write (6,*) 
+      write (6,*) "int_step"
+      write (6,'(6f10.5)') int_step
+      write (6,*) "int_dnew"
+      write (6,'(6f10.5)') int_dnew
 
       ! computes difference between the reference and guess step
       int_dnew = int_step - int_dnew
-      print *,"delta_int"
-      write (*,'(6f10.5)') int_dnew
+      write (6,*) "delta_int"
+      write (6,'(6f10.5)') int_dnew
       cart_d = matmul (binv, int_dnew)
       delta = sqrt(sum(cart_d**2) / num_cart)
 
-      print *, "Delta", delta
+      write (6,*)  "Delta", delta
 
       it = it + 1
     enddo
 
     if (delta.gt.1d-6) then
-      write (*,*) 'do_step: backtransformation did not converge'
+      write (6,*) 'do_step: backtransformation did not converge'
       !stop
     endif
 
+    ! obtain final set of coordinates with dihedrals in the range of (-pi,pi)
+    call cart2zmat(num_centers, cart_coords2d, connectivities, int_coords2d)
 
   end subroutine do_step
+
+
+  subroutine fix_dihedrals (int_reference, int_coords2d)
+
+    real(kind=8), intent(in) :: int_reference(:)
+    real(kind=8), intent(inout) :: int_coords2d(:,:)
+    integer :: iint, ic
+
+    real(kind=8),  parameter :: PI2  = 8 * atan (1d0)
+
+    iint = num_bonds + num_angles + 1
+    do ic = 4, num_centers ! loop over dihedrals
+
+      if (int_reference(iint).lt.0d0.and.int_coords2d(3,ic).gt.0d0) then
+        int_coords2d(3, ic) = int_coords2d(3, ic) - PI2
+        write (6,*) 'FIX Flip of the dihedral detected. - to +.'
+      endif
+      if (int_reference(iint).gt.0d0.and.int_coords2d(3,ic).lt.0d0) then
+        int_coords2d(3, ic) = int_coords2d(3, ic) + PI2
+        write (6,*) 'FIX Flip of the dihedral detected. + to -.'
+      endif
+
+      iint = iint + 1
+    enddo
+
+  end subroutine fix_dihedrals
+
 
 end module coords_int
 
