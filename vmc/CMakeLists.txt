@@ -20,8 +20,9 @@ add_executable(vmc.mov1 ${CMAKE_SOURCE_DIR}/include/vmc.h ${VMC_SOURCE} ${VMC90_
 
 #  Add headers
 target_include_directories(vmc.mov1
-  PRIVATE ${CMAKE_SOURCE_DIR}/include
-  PRIVATE ${CMAKE_SOURCE_DIR}/input)
+  PUBLIC
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/input)
 
 
 ## Set Fixed or Free format
@@ -42,5 +43,5 @@ target_link_libraries(vmc.mov1 cyrus ${LAPACK_LIBRARIES} pspline ${BLAS_LIBRARIE
 
 # Include MPI subdir
 set(VMC_SOURCE ${VMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
-# set(VMC90_SOURCE ${VMC90_SOURCE} CACHE INTERNAL "Path to the source of vmc f90")x
+# set(VMC90_SOURCE ${VMC90_SOURCE} CACHE INTERNAL "Path to the source of vmc f90")
 add_subdirectory(MPI)

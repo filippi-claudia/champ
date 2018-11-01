@@ -41,7 +41,7 @@ if (MPI_FOUND)
   
   #  Add headers
   target_include_directories(vmc.mov1.mpi
-    PRIVATE
+    PUBLIC
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/input)
   
@@ -61,5 +61,4 @@ if (MPI_FOUND)
     )
   # # # Cache the results for targets that depends on these files
   # set(VMC_MPI_SOURCE ${VMC_MPI_SOURCE} CACHE INTERNAL "MPI vmc source files")
-  # set(VMC_SOURCE ${VMC_SOURCE} CACHE INTERNAL "VMC sources files minus mpi")
 endif()

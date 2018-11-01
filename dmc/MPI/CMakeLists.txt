@@ -1,4 +1,4 @@
-if (MPI_FOUND)
+if ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
   file(GLOB DMC_MPI_SOURCE LIST_DIRECTORIES false  *.f)
 
   # Include function to change fortran format
@@ -6,10 +6,10 @@ if (MPI_FOUND)
   formatFortran("${DMC_MPI_SOURCE}" "FIXED")
   
   add_executable(dmc.mov1.mpi
-    # VMC dependencies
-    ${VMC_SOURCE}
-    # MPI VMC code dependencies
-    ${VMC_MPI_SOURCE}
+    # # VMC dependencies
+    # ${VMC_SOURCE}
+    # # MPI VMC code dependencies
+    # ${VMC_MPI_SOURCE}
     # code in the current directory 
     ${DMC_MPI_SOURCE}
     #Input parser

@@ -32,8 +32,9 @@ add_executable(dmc.mov1
 
 #  Add headers
 target_include_directories(dmc.mov1
-  PRIVATE ${CMAKE_SOURCE_DIR}/include
-  PRIVATE ${CMAKE_SOURCE_DIR}/input)
+  PUBLIC
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/input)
 
 # Add depency with vmc
 add_dependencies(dmc.mov1 vmc.mov1)
@@ -53,4 +54,5 @@ target_compile_options(dmc.mov1
   )
 
 target_link_libraries(dmc.mov1 cyrus ${LAPACK_LIBRARIES} pspline ${BLAS_LIBRARIES})
-
+add_subdirectory(MPI)
+add_subdirectory(MPI_global_pop_big)
