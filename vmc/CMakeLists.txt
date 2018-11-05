@@ -43,5 +43,4 @@ target_link_libraries(vmc.mov1 cyrus ${LAPACK_LIBRARIES} pspline ${BLAS_LIBRARIE
 
 # Include MPI subdir
 set(VMC_SOURCE ${VMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
-# set(VMC90_SOURCE ${VMC90_SOURCE} CACHE INTERNAL "Path to the source of vmc f90")
 add_subdirectory(MPI)

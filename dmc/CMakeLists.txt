@@ -1,8 +1,16 @@
 # Source files
-set(DMC_SOURCE main.f dmc.f mc_configs.f gauss.f prop_dmc.f optwf_dmc.f pcm_dmc.f
-  mmpol_dmc.f averages.f dmc_good_ps_mov1.f acuest.f 
-  finwrt.f dumper.f splitj.f walksav_det.f walksav_jas.f hpsiedmc.f 
-  nonloc_grid.f multideterminant_tmove.f optwf_dummy.f acues1_reduce.f)
+set(DMC_SOURCE
+  ${CMAKE_CURRENT_SOURCE_DIR}/main.f ${CMAKE_CURRENT_SOURCE_DIR}/dmc.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc_configs.f ${CMAKE_CURRENT_SOURCE_DIR}/gauss.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/prop_dmc.f ${CMAKE_CURRENT_SOURCE_DIR}/optwf_dmc.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/pcm_dmc.f  ${CMAKE_CURRENT_SOURCE_DIR}/mmpol_dmc.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/averages.f ${CMAKE_CURRENT_SOURCE_DIR}/dmc_good_ps_mov1.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/acuest.f ${CMAKE_CURRENT_SOURCE_DIR}/finwrt.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/dumper.f ${CMAKE_CURRENT_SOURCE_DIR}/splitj.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/walksav_det.f ${CMAKE_CURRENT_SOURCE_DIR}/walksav_jas.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/hpsiedmc.f ${CMAKE_CURRENT_SOURCE_DIR}/nonloc_grid.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/multideterminant_tmove.f ${CMAKE_CURRENT_SOURCE_DIR}/optwf_dummy.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/acues1_reduce.f)
 
 # Remove the files that are not used from vmc
 set(PATH_VMC ${CMAKE_SOURCE_DIR}/vmc)
@@ -54,5 +62,6 @@ target_compile_options(dmc.mov1
   )
 
 target_link_libraries(dmc.mov1 cyrus ${LAPACK_LIBRARIES} pspline ${BLAS_LIBRARIES})
+set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
 add_subdirectory(MPI)
 add_subdirectory(MPI_global_pop_big)

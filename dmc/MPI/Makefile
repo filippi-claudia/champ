@@ -41,7 +41,7 @@ OBJDMC = main.o acuest.o dumper.o finwrt.o acues1_reduce.o prop_reduce.o \
          ../dmc_good_ps_mov1.o \
          ../multideterminant_tmove.o ../nonloc_grid.o ../optwf_dummy.o \
          ../dmc.o \
-         ../gauss.o ../splitj.o ../walksav_det.o ../walksav_jas.o ../hpsiedmc.o \
+x         ../gauss.o ../splitj.o ../walksav_det.o ../walksav_jas.o ../hpsiedmc.o \
          ../prop_dmc.o ../pcm_dmc.o ../mmpol_dmc.o ../optwf_dmc.o \
          ../averages.o \
          $(OBJVMC)

@@ -1,15 +1,39 @@
-if ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
-  file(GLOB DMC_MPI_SOURCE LIST_DIRECTORIES false  *.f)
+if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
+  list(APPEND DMC_MPI_SOURCE main.f acuest.f acues1_reduce.f dumper.f finwrt.f
+    mc_configs.f mmpol_reduce.f pcm_reduce.f prop_reduce.f)
 
+  # Remove the files that are not used from dmc
+  set(PATH_DMC ${CMAKE_SOURCE_DIR}/dmc)
+  list(REMOVE_ITEM DMC_SOURCE ${PATH_DMC}/acuest.f ${PATH_DMC}/acues1_reduce.f ${PATH_DMC}/dumper.f
+    ${PATH_DMC}/main.f ${PATH_DMC}/mc_configs.f ${PATH_DMC}/finwrt.f)
+
+
+  # Remove files from vmc
+  list(REMOVE_ITEM VMC_SOURCE ${CMAKE_SOURCE_DIR}/vmc/error.f)
+  
+  #Remove the files that are not used from vmc/mpi
+  set(PATH_VMC_MPI ${CMAKE_SOURCE_DIR}/vmc/MPI)
+  list(REMOVE_ITEM VMC_MPI_SOURCE
+    ${PATH_VMC_MPI}/main.f ${PATH_VMC_MPI}/acuest_reduce.f ${PATH_VMC_MPI}/dumper.f
+    ${PATH_VMC_MPI}/dl_more.f ${PATH_VMC_MPI}/fin_reduce.f ${PATH_VMC_MPI}/force_analy_reduce.f
+    ${PATH_VMC_MPI}/jdqz_main.f ${PATH_VMC_MPI}/lin_d_more.f ${PATH_VMC_MPI}/lin_d_more_no_semiortho.f
+    ${PATH_VMC_MPI}/mc_configs.f ${PATH_VMC_MPI}/mmpol_reduce.f ${PATH_VMC_MPI}/pcm_reduce.f
+    ${PATH_VMC_MPI}/prop_reduce.f ${PATH_VMC_MPI}/regterg.f90 ${PATH_VMC_MPI}/sr_more.f)
+  
+  # REmove unused files
   # Include function to change fortran format
   include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
   formatFortran("${DMC_MPI_SOURCE}" "FIXED")
-  
+
   add_executable(dmc.mov1.mpi
-    # # VMC dependencies
-    # ${VMC_SOURCE}
+    # VMC dependencies
+    ${VMC_SOURCE}
+    # VMC Fortran 90
+    ${CMAKE_SOURCE_DIR}/vmc/convcartzmat.f90
     # # MPI VMC code dependencies
-    # ${VMC_MPI_SOURCE}
+    ${VMC_MPI_SOURCE}
+    # DMC sequential code
+    ${DMC_SOURCE}
     # code in the current directory 
     ${DMC_MPI_SOURCE}
     #Input parser
@@ -21,12 +45,14 @@ if ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
     #  Add headers
   target_include_directories(dmc.mov1.mpi
     PRIVATE
-    ${CMAKE_SOURCE_DIR}/include)
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/input)
 
 
+  message(STATUS "vmc90_source: " ${VMC90_SOURCE})
   
   # compilation
-  target_compile_options(dmc.mov1
+  target_compile_options(dmc.mov1.mpi
     PRIVATE
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")

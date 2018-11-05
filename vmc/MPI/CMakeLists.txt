@@ -59,6 +59,8 @@ if (MPI_FOUND)
     ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES}
     MPI::MPI_Fortran
     )
+
   # # # Cache the results for targets that depends on these files
-  # set(VMC_MPI_SOURCE ${VMC_MPI_SOURCE} CACHE INTERNAL "MPI vmc source files")
+  set(VMC_MPI_SOURCE ${VMC_MPI_SOURCE} CACHE INTERNAL "MPI vmc source files")
+
 endif()
