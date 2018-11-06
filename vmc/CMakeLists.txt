@@ -20,8 +20,6 @@ add_executable(vmc.mov1 ${CMAKE_SOURCE_DIR}/include/vmc.h ${VMC_SOURCE} ${VMC90_
 
 #  Add headers
 target_include_directories(vmc.mov1
-  PRIVATE
-  ${MKL_INCLUDE}
   PUBLIC
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/input
