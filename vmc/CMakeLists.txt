@@ -39,7 +39,6 @@ target_compile_options(vmc.mov1
   "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
   )
 
-SET(CMAKE_EXE_LINKER_FLAGS ${VAR})
 target_link_libraries(vmc.mov1 cyrus pspline ${LINEAR_ALGEBRA})
 
 # Include MPI subdir
