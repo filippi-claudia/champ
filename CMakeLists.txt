@@ -64,7 +64,7 @@ endif(BUILD_DOC)
 
 # Find MPI
 if (ENABLE_MPI)
-  find_package(MPI)
+  find_package(MPI COMPONENTS Fortran REQUIRED)
 endif(ENABLE_MPI)
 
 

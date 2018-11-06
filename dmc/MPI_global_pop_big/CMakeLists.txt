@@ -1,4 +1,4 @@
-if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
+if (MPI_Fortran_FOUND)
 
   file(GLOB DMC_MPI_GPOPB_SOURCE LIST_DIRECTORIES false  *.f)
 
@@ -67,7 +67,7 @@ if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
     cyrus pspline
     # PUBLIC
     ${LINEAR_ALGEBRA}
-    MPI::MPI_Fortran)
+    ${MPI_Fortran_LIBRARIES})
 
   set(DMC_MPI_GPOPB_DEPENDENCIES ${VMC_SOURCE} ${VMC_MPI_SOURCE} ${DMC_SOURCE} ${DMC_MPI_GPOPB_SOURCE}
     CACHE INTERNAL "source files used by targets depending on dmc.mov1.gpopb.mpi")  

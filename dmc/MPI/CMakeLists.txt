@@ -1,4 +1,4 @@
-if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
+if (MPI_Fortran_FOUND)
   list(APPEND DMC_MPI_SOURCE main.f acuest.f acues1_reduce.f dumper.f finwrt.f
     mc_configs.f mmpol_reduce.f pcm_reduce.f prop_reduce.f)
 
@@ -60,6 +60,6 @@ if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
     cyrus pspline
     # PUBLIC
     ${LINEAR_ALGEBRA}
-    MPI::MPI_Fortran)
+    ${MPI_Fortran_LIBRARIES})
 
 endif()

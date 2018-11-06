@@ -1,4 +1,4 @@
-if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
+if (MPI_Fortran_FOUND)
   list(APPEND DMC_MPI_GPOP_SOURCE main.f walksav_jas.f)
 
   # Remove unused dependencies from Global population
@@ -43,6 +43,6 @@ if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
     cyrus pspline
     # PUBLIC
     ${LINEAR_ALGEBRA}
-    MPI::MPI_Fortran)
+    ${MPI_Fortran_LIBRARIES})
 
 endif()

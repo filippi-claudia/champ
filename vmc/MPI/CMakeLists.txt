@@ -1,4 +1,4 @@
-if (MPI_FOUND)
+if (MPI_Fortran_FOUND)
   file(GLOB VMC_MPI_SOURCE LIST_DIRECTORIES false  *.f)
   file(GLOB VMC90_MPI_SOURCE LIST_DIRECTORIES false  *.f90)
 
@@ -57,7 +57,7 @@ if (MPI_FOUND)
     cyrus pspline
     # PUBLIC
     ${LINEAR_ALGEBRA}
-    MPI::MPI_Fortran
+    ${MPI_Fortran_LIBRARIES}
     )
 
   # # # Cache the results for targets that depends on these files
