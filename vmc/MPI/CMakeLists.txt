@@ -56,7 +56,7 @@ if (MPI_FOUND)
     # PRIVATE
     cyrus pspline
     # PUBLIC
-    ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES}
+    ${LINEAR_ALGEBRA}
     MPI::MPI_Fortran
     )
 

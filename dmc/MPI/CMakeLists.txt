@@ -59,7 +59,7 @@ if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
     # PRIVATE
     cyrus pspline
     # PUBLIC
-    ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES}
+    ${LINEAR_ALGEBRA}
     MPI::MPI_Fortran)
 
 endif()

@@ -43,9 +43,6 @@ option(BUILD_DOC "build_doc" off)
 # MPI 
 option(ENABLE_MPI "enable_mpi" on)
 
-# MKL library
-option(ENABLE_MKL "enable_mkl" off)
-
 # QMMM option
 option(ENABLE_QMMM "enable_qmmm" off)
 
@@ -53,21 +50,27 @@ option(ENABLE_QMMM "enable_qmmm" off)
 option(ENABLE_PERIODIC "enable_periodic" off)
 
 ## External packages
-# search for lapack
-find_package(LAPACK COMPONENTS Fortran REQUIRED)
-
-# Search for Blas
-find_package(BLAS COMPONENTS Fortran REQUIRED)
-
+# Find MKL
+find_package(MKL)
+if (MKL_FOUND)
+  include_directories(${MKL_INCLUDE_DIRS})
+  set(LINEAR_ALGEBRA ${MKL_INCLUDE_DIRS})
+  message(STATUS "Using MKL for the linear algebra calculations!")
+else()
+  # search for lapack
+  find_package(LAPACK COMPONENTS Fortran REQUIRED)
+  
+  # Search for Blas
+  find_package(BLAS COMPONENTS Fortran REQUIRED)
+  set(LINEAR_ALGEBRA ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
+  message(STATUS "MKL NOT FOUND! Using default BLAS and LAPACK")
+endif(MKL_FOUND)
+  
 #  documentation requirements
 if (BUILD_DOC)
   find_package(DOXYGEN)
 endif(BUILD_DOC)
 
-# Find MKL
-if (ENABLE_MKL)
-  find_package(MKL)
-endif(ENABLE_MKL)
 
 # Find MPI
 if (ENABLE_MPI)

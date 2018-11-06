@@ -61,7 +61,10 @@ target_compile_options(dmc.mov1
   "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
   )
 
-target_link_libraries(dmc.mov1 cyrus ${LAPACK_LIBRARIES} pspline ${BLAS_LIBRARIES})
+target_link_libraries(dmc.mov1
+  cyrus pspline
+  ${LINEAR_ALGEBRA})
+
 set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
 add_subdirectory(MPI)
 add_subdirectory(MPI_global_pop_big)
