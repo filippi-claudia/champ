@@ -14,21 +14,6 @@ set( CMAKE_VERBOSE_MAKEFILE on )
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 
-## Compiler FLAGS
-if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O2" "-ffixed-line-length-132" "-fno-automatic")
-  
-elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  list(APPEND Fortran_FLAGS "-O2" "-xHost" "-mcmodel=large" "-shared-intel" "-132" "-save "
-    "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data"
-    "-check bounds" "-check format ")
-  list(APPEND Fortan_FLAGS_DEBUG "-g")
-  
-elseif(Fortran_COMPILER_ID MATCHES "PGI")
-  list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
-endif()
-message(STATUS "compiler flags are: " ${Fortran_FLAGS})
-
 # Set the output folder where your program will be created
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -56,17 +41,17 @@ include(${CMAKE_MODULE_PATH}/FindMKL.cmake)
 find_package(MKL)
 if (MKL_FOUND)
   include_directories(${MKL_INCLUDE_DIRS})
-  set(LINEAR_ALGEBRA ${MKL_INCLUDE_DIRS})
+  set(LINEAR_ALGEBRA "${MKL_LIBRARIES}")
   message(STATUS "Using MKL for the linear algebra calculations!")
 else()
   # search for lapack
   find_package(LAPACK COMPONENTS Fortran REQUIRED)
-  
   # Search for Blas
   find_package(BLAS COMPONENTS Fortran REQUIRED)
   set(LINEAR_ALGEBRA ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
   message(STATUS "MKL NOT FOUND! Using default BLAS and LAPACK")
 endif(MKL_FOUND)
+
   
 #  documentation requirements
 if (BUILD_DOC)
@@ -78,6 +63,30 @@ endif(BUILD_DOC)
 if (ENABLE_MPI)
   find_package(MPI)
 endif(ENABLE_MPI)
+
+
+## Compiler FLAGS
+if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
+  list(APPEND Fortran_FLAGS "-O2" "-ffixed-line-length-132" "-fno-automatic")
+  
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+  list(APPEND Fortran_FLAGS "-O2" "-xHost" "-mcmodel=large" "-shared-intel" "-132"
+    "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
+  list(APPEND Fortan_FLAGS_DEBUG "-g")
+  
+elseif(Fortran_COMPILER_ID MATCHES "PGI")
+  list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
+endif()
+message(STATUS "compiler flags are: " ${Fortran_FLAGS})
+
+# # are crucial for MKL to avoid SIGSEGV at runtime!
+# if (MKL_FOUND AND (CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
+#  list(APPEND LINK_FLAGS "-m64" "-Wl" "--no-as-needed")
+# elseif(MKL_FOUND AND (CMAKE_Fortran_COMPILER_ID MATCHES "Intel"))
+#  list(APPEND LINK_FLAGS "-liomp5" "-lpthread" "-lm" "-ldl")
+# endif()
+
+
 
 
 ## Subdirectories
