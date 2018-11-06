@@ -21,5 +21,6 @@ env:
     - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
       
 install:
+- ls /usr/bin/mpi*
 - cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90.openmpi
 - cmake --build build -- -j2 
