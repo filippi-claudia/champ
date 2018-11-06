@@ -21,6 +21,6 @@ env:
     - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
       
 install:
-- ln -s /usr/bin/gfortran-7 /usr/bin
+- ln -s /usr/bin/gfortran-7 /usr/bin/gfortran
 - cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
 - cmake --build build -- -j2 
