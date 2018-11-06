@@ -39,11 +39,15 @@ if(NOT BUILD_SHARED_LIBS)
   set(SEQ_LIB "libmkl_sequential.a")
   set(THR_LIB "libmkl_intel_thread.a")
   set(COR_LIB "libmkl_core.a")
+  set(BLAS_LIB "libmkl_blas95_ilp64.a")
+  set(LAPACK_LIB "libmkl_lapack95_ilp64.a")
 else()
   set(INT_LIB "mkl_intel_ilp64")
   set(SEQ_LIB "mkl_sequential")
   set(THR_LIB "mkl_intel_thread")
   set(COR_LIB "mkl_core")
+  set(BLAS_LIB "libmkl_blas95_ilp64")
+  set(LAPACK_LIB "libmkl_lapack95_ilp64")
 endif()
 
 find_path(MKL_INCLUDE_DIR NAMES mkl.h HINTS $ENV{MKLROOT}/include)
@@ -76,9 +80,23 @@ find_library(MKL_THREAD_LIBRARY
                    $ENV{INTEL}/mkl/lib/intel64
              NO_DEFAULT_PATH)
 
+find_library(MKL_BLAS_LIBRARY
+             NAMES ${BLAS_LIB}
+             PATHS $ENV{MKLROOT}/lib
+                   $ENV{MKLROOT}/lib/intel64
+                   $ENV{INTEL}/mkl/lib/intel64
+             NO_DEFAULT_PATH)
 
-set(MKL_INCLUDE_DIRS ${MKL_INCLUDE_DIR})
-set(MKL_LIBRARIES ${MKL_INTERFACE_LIBRARY} ${MKL_SEQUENTIAL_LAYER_LIBRARY} ${MKL_THREAD_LIBRARY} ${MKL_CORE_LIBRARY})
+find_library(MKL_LAPACK_LIBRARY
+             NAMES ${LAPACK_LIB}
+             PATHS $ENV{MKLROOT}/lib
+                   $ENV{MKLROOT}/lib/intel64
+                   $ENV{INTEL}/mkl/lib/intel64
+             NO_DEFAULT_PATH)
+	   
+
+set(MKL_INCLUDE_DIRS ${MKL_INCLUDE_DIR}
+set(MKL_LIBRARIES ${MKL_BLAS_LIBRARY} ${MKL_LAPACK_LIBRARY} ${MKL_INTERFACE_LIBRARY} ${MKL_THREAD_LIBRARY} ${MKL_CORE_LIBRARY})
 
 if (MKL_INCLUDE_DIR AND
     MKL_INTERFACE_LIBRARY AND
