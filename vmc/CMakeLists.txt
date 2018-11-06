@@ -39,7 +39,9 @@ target_compile_options(vmc.mov1
   "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
   )
 
-target_link_libraries(vmc.mov1 cyrus pspline ${LINEAR_ALGEBRA})
+set(VAR "${MKLROOT}/lib/intel64/libmkl_blas95_ilp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_ilp64.a -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_ilp64.a ${MKLROOT}/lib/intel64/libmkl_sequential.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread -lm -ldl")
+
+target_link_libraries(vmc.mov1 cyrus pspline ${VAR})
 
 # Include MPI subdir
 set(VMC_SOURCE ${VMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
