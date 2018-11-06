@@ -41,7 +41,7 @@ include(${CMAKE_MODULE_PATH}/FindMKL.cmake)
 find_package(MKL)
 if (MKL_FOUND)
   include_directories(${MKL_INCLUDE_DIRS})
-  set(LINEAR_ALGEBRA "${MKL_LIBRARIES}")
+  set(LINEAR_ALGEBRA ${MKL_LIBRARIES})
   message(STATUS "Using MKL for the linear algebra calculations!")
 else()
   # search for lapack
