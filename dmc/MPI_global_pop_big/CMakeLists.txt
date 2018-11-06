@@ -1,7 +1,6 @@
 if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
-  list(APPEND DMC_MPI_GPOPB_SOURCE main.f acues1_reduce.f acuest.f dumper.f finwrt.f
-    mmpol_mpi.f move_walker.f optwf_dummy.f
-    pcm_mpi.f prop_mpi.f redistribute.f walksav_jas.f walksav_det.f)
+
+  file(GLOB DMC_MPI_GPOPB_SOURCE LIST_DIRECTORIES false  *.f)
 
     # Remove the files that are not used from dmc
   set(PATH_DMC ${CMAKE_SOURCE_DIR}/dmc)
@@ -31,7 +30,6 @@ if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
   include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
   formatFortran("${DMC_MPI_SOURCE}" "FIXED")
 
-  message(STATUS "vmc_source: " ${VMC_SOURCE}) 
   add_executable(dmc.mov1.gpopb.mpi
     # VMC dependencies
     ${VMC_SOURCE}
@@ -41,8 +39,6 @@ if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
     ${VMC_MPI_SOURCE}
     # DMC sequential code
     ${DMC_SOURCE}
-    # code in the main MPI 
-    # ${DMC_MPI_SOURCE}
     # VMC Fortran 90
     ${CMAKE_SOURCE_DIR}/vmc/convcartzmat.f90
     # code in the current directory 
@@ -73,4 +69,6 @@ if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
     ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES}
     MPI::MPI_Fortran)
 
+  set(DMC_MPI_GPOPB_DEPENDENCIES ${VMC_SOURCE} ${VMC_MPI_SOURCE} ${DMC_SOURCE} ${DMC_MPI_GPOPB_SOURCE}
+    CACHE INTERNAL "source files used by targets depending on dmc.mov1.gpopb.mpi")  
 endif()

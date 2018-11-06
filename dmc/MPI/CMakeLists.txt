@@ -48,9 +48,6 @@ if (MPI_FOUND) # ((MPI_FOUND) AND (NOT CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/input)
 
-
-  message(STATUS "vmc90_source: " ${VMC90_SOURCE})
-  
   # compilation
   target_compile_options(dmc.mov1.mpi
     PRIVATE

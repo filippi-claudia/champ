@@ -1,7 +1,6 @@
 
 # Add fix or free format compiler flag
 function (formatFortran SOURCE_FILES FLAG)
-  message(STATUS "Setting source format properties")
 
     # Intel does not care about the fixed format
   if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
