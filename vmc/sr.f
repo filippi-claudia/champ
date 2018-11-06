@@ -522,11 +522,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         call compute_position_bcast
         
         if(iuse_zmat.eq.1) then
-          call init (ncent)
-          call compute_bmat(cent, izcmat)
-          call transform_gradients (da_energy_ave)
-          call compute_step_int (alfgeo)
-          call do_step (czint, cent, izcmat)
+          call coords_init (ncent)
+          call coords_compute_wilson (cent, izcmat)
+          call coords_transform_gradients (da_energy_ave)
+          call coords_compute_step (alfgeo)
+          call coords_transform_step (czint, cent, izcmat)
 
           write (6,*) 'INTERNAL'
           do ic=1,ncent
@@ -537,6 +537,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           do ic=1,ncent
             write(6,'(3f10.5)') (cent(k,ic),k=1,3)
           enddo
+
         else
           do ic=1,ncent
             do k=1,3

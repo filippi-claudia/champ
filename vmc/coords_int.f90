@@ -3,7 +3,8 @@
 !! Subroutines related to transforming coordinates and gradients
 !! between cartesian and internal coordinate systems.
 !! 
-!! Usefull reference: J. Chem. Phys, 117, 2002 (I think error in angle B)
+!! Useful reference: J. Chem. Phys, 117, 2002
+!!       (I think there is an error in the angle contribution to B in the paper)
 !!
 !! @author Jonas Feldt (j.feldt@utwente.nl)
 !! @date October 2018
@@ -15,6 +16,7 @@ module coords_int
   real(kind=8), allocatable :: b (:,:)
   real(kind=8), allocatable :: binv (:,:)
   real(kind=8), allocatable :: p (:,:)
+  real(kind=8), allocatable :: h (:,:)
 
   real(kind=8), allocatable :: int_gradients (:)
   real(kind=8), allocatable :: int_step (:)
@@ -30,11 +32,14 @@ module coords_int
   logical, parameter :: recalculate = .false.
 
   logical :: initialized = .false.
-
   
+  private
 
-  !private
-  !public
+  public :: coords_init
+  public :: coords_compute_wilson
+  public :: coords_transform_gradients
+  public :: coords_compute_step
+  public :: coords_transform_step
 
 
 
@@ -47,13 +52,12 @@ module coords_int
   !!
   !! @param ncent number of atoms
   !!
-  subroutine init (ncent)
+  subroutine coords_init (ncent)
+    use optgeo_hessian
 
     integer, intent(in) :: ncent
 
     if (initialized.eqv..true.) return
-
-    write (6,*) "Initializing for ", ncent, " atoms"
 
     num_centers = ncent
     num_cart = 3 * num_centers
@@ -69,9 +73,6 @@ module coords_int
     num_dihedrals = num_centers - 3
     if (num_dihedrals.lt.0) num_dihedrals = 0
 
-    write (6,*) num_cart," cartesian coordinates"
-    write (6,*) num_int," internal coordinates"
-
     allocate (b(num_int, num_cart))
     allocate (binv(num_cart, num_int))
     if (project) allocate (p(num_int, num_int))
@@ -82,9 +83,12 @@ module coords_int
 
     allocate (cart_gradients(num_cart))
 
+    allocate (h(num_int, num_int))
+    call optgeo_diagonal_scaled (h, num_centers, 2 * num_centers - 2)
+
     initialized = .true.
     
-  end subroutine init
+  end subroutine coords_init
 
 
 
@@ -95,7 +99,7 @@ module coords_int
   !! @param cart_coords current cartesian coordinates
   !! @param connectivities connectivities as specified in a z-Matrix
   !!
-  subroutine compute_bmat (cart_coords, connectivities)
+  subroutine coords_compute_wilson (cart_coords, connectivities)
     use misc_bond_func, only: cross_product
 
     real(kind=8), dimension(:,:), intent(in) :: cart_coords
@@ -105,9 +109,9 @@ module coords_int
     real(kind=8) :: un, vn, wn, cijk, sijk
     real(kind=8) :: uxw(3), vxw(3)
     real(kind=8) :: cu, cv, susq, svsq
-    integer :: cb, cc, cd
-    integer :: iint ! ID of current internal coordinate
     integer :: i
+    integer :: iint           ! ID of current internal coordinate
+    integer :: cb, cc, cd     ! indices of bonded neighbours
     integer :: b1, b2, b3, b4 ! indices for cart. coordinates in b
 
     b = 0d0
@@ -119,9 +123,7 @@ module coords_int
       ! computes normalized bond vector
       cb = connectivities(1, i)
       uvec = cart_coords(:, i) - cart_coords(:, cb)
-      write (6,*) "BMAT: computing bond", i, cb
       uvec = uvec / norm2 (uvec)
-
 
       b1 = 3 * (i - 1) + 1
       b2 = 3 * (cb - 1) + 1
@@ -136,8 +138,7 @@ module coords_int
 
       cb = connectivities(1, i)
       cc = connectivities(2, i)
-      write (6,*) "BMAT: computing angle", i, cb, cc
-      ! this direction of vectors works: i->b->c
+      ! vectors: i->b->c
       uvec = cart_coords(:, cb) - cart_coords(:,i )
       vvec = cart_coords(:, cc) - cart_coords(:,cb)
       un = norm2 (uvec)
@@ -164,7 +165,6 @@ module coords_int
       cb = connectivities(1, i)
       cc = connectivities(2, i)
       cd = connectivities(3, i)
-      write (6,*) "BMAT: computing dihedral", i, cb, cc, cd
       ! vectors: i->b->c->d
       uvec = cart_coords(:, i ) - cart_coords(:,cb)
       wvec = cart_coords(:, cc) - cart_coords(:,cb)
@@ -197,12 +197,7 @@ module coords_int
       iint = iint + 1
     enddo
 
-    write (6,*) "B"
-    do i = 1, num_int
-      write (6,'(12f10.5)') b(i, 1:num_cart)
-    enddo
-
-  end subroutine compute_bmat
+  end subroutine coords_compute_wilson
 
 
 
@@ -212,10 +207,13 @@ module coords_int
   !!
   !! @param cart_gradient2d gradients of the cartesian coordinates (3,MCENT)
   !!
-  subroutine transform_gradients (cart_gradients2d)
+  subroutine coords_transform_gradients (cart_gradients2d)
+
     real(kind=8), dimension(:,:), intent(in) :: cart_gradients2d
+
     real(kind=8), dimension(:,:), allocatable :: btinv
 
+    ! Everything related to Lapack
     real(kind=8), dimension(:), allocatable :: s
     real(kind=8), dimension(:,:), allocatable :: u
     real(kind=8), dimension(:,:), allocatable :: a
@@ -223,17 +221,12 @@ module coords_int
     integer, dimension(:), allocatable :: iwork
     integer :: i, irank, info
     integer :: lwork, liwork
-    real(kind=8) :: rcond ! optional conditioner to remove eigenvalues close to zero
+    real(kind=8), parameter :: rcond = -1d0 ! optional conditioner to remove eigenvalues close to zero
 
     real(kind=8),  parameter :: PI  = 4 * atan (1d0)
 
     lwork = -1
     liwork = -1
-    rcond = -1d0
-
-    write (6,*) 
-    write (6,*) "Transform Gradients"
-    write (6,*) 
 
     ! trivially reshapes to vector
     cart_gradients = reshape (cart_gradients2d, shape (cart_gradients))
@@ -274,38 +267,20 @@ module coords_int
       stop
     end if  
 
-    write (6,*) "u"
-    do i = 1, num_cart
-      write (6,'(12f10.5)') u(i, 1:num_int)
-    enddo
-
     ! extracts pseudo-inverse
     allocate (btinv(num_int, num_cart))
     binv = u(1:num_cart, 1:num_int) ! save for later
     btinv = transpose(binv)
 
-    write (6,*) "btinv"
-    do i = 1, num_int
-      write (6,'(12f10.5)') btinv(i, 1:num_cart)
-    enddo
-
-    write (6,*) size(btinv),size(cart_gradients),size(int_gradients)
-
     ! transforms the gradients
     int_gradients = matmul (btinv, cart_gradients)
-    write (6,*) "internal gradients"
-    write (6,'(6f10.5)') int_gradients
 
     if (project) then ! computes projector P = BB^+
       p = matmul (b, binv)
-      write (6,*) "P", shape(p)
-      do i = 1, num_int
-        write (6,'(6f10.5)') p(i, 1:num_int)
-      enddo
       int_gradients = matmul (p, int_gradients)
     endif
 
-  end subroutine transform_gradients
+  end subroutine coords_transform_gradients
 
 
 
@@ -316,29 +291,30 @@ module coords_int
   !!
   !! @param alpha scales the gradient and determines the length of the step
   !!
-  subroutine compute_step_int (alpha)
+  subroutine coords_compute_step (alpha)
 
     real(kind=8), intent (in) :: alpha
     integer :: i
 
-    write (6,*) 
-    write (6,*) "--- Compute step ---"
     int_step = -alpha * int_gradients
-    write (6,'(6f10.5)') int_step
 
-    write (6,*) "Hessian diagonal elements according to type x=0.5, 0.2, 0.1"
-    do i = 1, num_bonds
-      int_step(i) = int_step(i) / 0.5d0
+    ! divide by the diagonal elements of the Hessian matrix !TODO for now only works for this diagonal one
+    do i = 1, num_int
+      int_step(i) = int_step(i) / h(i, i)
     enddo
-    do i = num_bonds + 1, num_bonds + num_angles
-      int_step(i) = int_step(i) / 0.2d0
-    enddo
-    do i = num_angles + num_bonds + 1, num_bonds + num_angles + num_dihedrals
-      int_step(i) = int_step(i) / 0.1d0
-    enddo
-    write (6,'(6f10.5)') int_step
+
+    ! Hessian diagonal elements according to type x=0.5, 0.2, 0.1
+    !do i = 1, num_bonds
+    !  int_step(i) = int_step(i) / 0.5d0
+    !enddo
+    !do i = num_bonds + 1, num_bonds + num_angles
+    !  int_step(i) = int_step(i) / 0.2d0
+    !enddo
+    !do i = num_angles + num_bonds + 1, num_bonds + num_angles + num_dihedrals
+    !  int_step(i) = int_step(i) / 0.1d0
+    !enddo
     
-  end subroutine compute_step_int
+  end subroutine coords_compute_step
 
 
   !>
@@ -350,7 +326,7 @@ module coords_int
   !! @param connectivities z Matrix connectivity matrix (3xMCENT)
   !!
   !!
-  subroutine do_step (int_coords2d, cart_coords2d, connectivities)
+  subroutine coords_transform_step (int_coords2d, cart_coords2d, connectivities)
 
     real(kind=8), dimension(:,:), intent(inout) :: cart_coords2d
     real(kind=8), dimension(:,:), intent(inout) :: int_coords2d
@@ -366,10 +342,6 @@ module coords_int
     integer :: ic, it
     integer :: i, j
 
-    write (6,*) 
-    write (6,*) "--- Do step ---"
-    write (6,*) 
-
     iint = 1
 
     ! saves the original internal coordinates as reference (saves q0)
@@ -377,47 +349,30 @@ module coords_int
       int_coords(iint) = int_coords2d(1, ic)
       iint = iint + 1
     enddo
-
     do ic = 3, num_centers ! loop over angles
       int_coords(iint) = int_coords2d(2, ic)
       iint = iint + 1
     enddo
-
     do ic = 4, num_centers ! loop over dihedrals
       int_coords(iint) = int_coords2d(3, ic)
       iint = iint + 1
     enddo
 
-    write (6,*) "Internal reference"
-    write (6,'(f10.5)') (int_coords(iint),iint=1,num_int)
-
     ! computes new geometry in cartesian coordinates (x1, eq. 13)
     cart_coords  = reshape (cart_coords2d, shape (cart_coords)) ! 2d->1d
     cart_coords = cart_coords + matmul (binv, int_step)
 
-    write (6,*) 
-    write (6,*) "old cart"
-    write (6,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
     ! updates 2D cartesian coordinates
     do i=1,num_centers
       do j = 1,3
         cart_coords2d(j, i) = cart_coords(3*(i-1)+j)
       enddo
     enddo
-    write (6,*) 
-    write (6,*) "new cart"
-    write (6,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
 
     ! transforms back to internal coordinates (q1)
     call cart2zmat(num_centers, cart_coords2d, connectivities, int_coords2d)
 
     call fix_dihedrals (int_coords, int_coords2d)
-
-    write (6,*) 
-    write (6,*)  'internal new'
-    write (6,'(1f10.5)') int_coords2d(1,2)
-    write (6,'(2f10.5)') int_coords2d(1:2,3)
-    write (6,'(3f10.5)') int_coords2d(1:3,4)
 
     ! computes the guess step in internal coordinates (q1-q0)
     iint = 1
@@ -434,58 +389,32 @@ module coords_int
       iint = iint + 1
     enddo
 
-    write (6,*) 
-    write (6,*) "int_step"
-    write (6,'(6f10.5)') int_step
-    write (6,*) "int_dnew"
-    write (6,'(6f10.5)') int_dnew
-
     ! computes difference between the reference and guess step (delta_q1, eq. 14)
     int_dnew = int_step - int_dnew
-    write (6,*) "delta_int"
-    write (6,'(6f10.5)') int_dnew
     cart_d = matmul (binv, int_dnew)
     delta = sqrt(sum(cart_d**2) / num_cart)
 
-    write (6,*)  "Delta", delta
-
     it = 0
     do while (delta.gt.1d-6.and.it.lt.maxit)
-      write (6,*) 
-      write (6,*) "Iteration", it
 
       if (recalculate) then
-        !TODO test to recalculate bmatrix here
-        write (6,*)  '----------------Computing new bmatrix -------------'
-        call compute_bmat (cart_coords2d, connectivities)
-        write (6,*)  '---------------------------------------------------'
+        call coords_compute_wilson (cart_coords2d, connectivities)
       endif
 
       ! step in cartesian coordinates
       cart_coords = cart_coords + cart_d
-      write (6,*) 
-      write (6,*) "old cart"
-      write (6,'(12f10.5)') cart_coords2d(1:3,1:3)
+
       ! updates 2D cartesian coordinates
       do i=1,num_centers
         do j = 1,3
           cart_coords2d(j, i) = cart_coords(3*(i-1)+j)
         enddo
       enddo
-      write (6,*) 
-      write (6,*) "new cart"
-      write (6,'(12f10.5)') cart_coords2d(1:3,1:3)
 
       ! transforms back to internal coordinates
       call cart2zmat(num_centers, cart_coords2d, connectivities, int_coords2d)
 
       call fix_dihedrals (int_coords, int_coords2d)
-
-      write (6,*) 
-      write (6,*)  'internal new'
-      write (6,'(1f10.5)') int_coords2d(1,2)
-      write (6,'(2f10.5)') int_coords2d(1:2,3)
-      write (6,'(3f10.5)') int_coords2d(1:3,4)
 
       ! computes difference between reference step and actual step
       iint = 1
@@ -502,33 +431,23 @@ module coords_int
         iint = iint + 1
       enddo
 
-      write (6,*) 
-      write (6,*) "int_step"
-      write (6,'(6f10.5)') int_step
-      write (6,*) "int_dnew"
-      write (6,'(6f10.5)') int_dnew
-
       ! computes difference between the reference and guess step
       int_dnew = int_step - int_dnew
-      write (6,*) "delta_int"
-      write (6,'(6f10.5)') int_dnew
       cart_d = matmul (binv, int_dnew)
       delta = sqrt(sum(cart_d**2) / num_cart)
-
-      write (6,*)  "Delta", delta
 
       it = it + 1
     enddo
 
     if (delta.gt.1d-6) then
       write (6,*) 'do_step: backtransformation did not converge'
-      !stop
+      stop
     endif
 
     ! obtain final set of coordinates with dihedrals in the range of (-pi,pi)
     call cart2zmat(num_centers, cart_coords2d, connectivities, int_coords2d)
 
-  end subroutine do_step
+  end subroutine coords_transform_step
 
 
   subroutine fix_dihedrals (int_reference, int_coords2d)
