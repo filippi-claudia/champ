@@ -20,9 +20,12 @@ add_executable(vmc.mov1 ${CMAKE_SOURCE_DIR}/include/vmc.h ${VMC_SOURCE} ${VMC90_
 
 #  Add headers
 target_include_directories(vmc.mov1
+  PRIVATE
+  ${MKL_INCLUDE}
   PUBLIC
   ${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_SOURCE_DIR}/input)
+  ${CMAKE_SOURCE_DIR}/input
+)
 
 
 ## Set Fixed or Free format
@@ -39,8 +42,11 @@ target_compile_options(vmc.mov1
   "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
   )
 
-SET(CMAKE_EXE_LINKER_FLAGS ${VAR})
-target_link_libraries(vmc.mov1 cyrus pspline ${LINEAR_ALGEBRA})
+
+target_link_libraries(vmc.mov1
+  cyrus pspline
+  ${LINEAR_ALGEBRA})
+
 
 # Include MPI subdir
 set(VMC_SOURCE ${VMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")

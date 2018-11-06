@@ -41,8 +41,11 @@ include(${CMAKE_MODULE_PATH}/FindMKL.cmake)
 find_package(MKL)
 if (MKL_FOUND)
   include_directories(${MKL_INCLUDE_DIRS})
-  set(LINEAR_ALGEBRA ${MKL_LIBRARIES})
+  set(MKL_INCLUDE ${MKL_INCLUDE_DIRS}/intel64/ilp64)
+  set(LINEAR_ALGEBRA ${MKL_LIBRARIES} pthread m dl)
   message(STATUS "Using MKL for the linear algebra calculations!")
+  message(STATUS "MKL_INCLUDE_DIRS: " ${MKL_INCLUDE_DIRS})
+  message(STATUS "MKL_LIBRARIES: " ${MKL_LIBRARIES})
 else()
   # search for lapack
   find_package(LAPACK COMPONENTS Fortran REQUIRED)
@@ -78,15 +81,6 @@ elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
 endif()
 message(STATUS "compiler flags are: " ${Fortran_FLAGS})
-
-# # are crucial for MKL to avoid SIGSEGV at runtime!
-# if (MKL_FOUND AND (CMAKE_Fortran_COMPILER_ID MATCHES "GNU"))
-#  list(APPEND LINK_FLAGS "-m64" "-Wl" "--no-as-needed")
-# elseif(MKL_FOUND AND (CMAKE_Fortran_COMPILER_ID MATCHES "Intel"))
-#  list(APPEND LINK_FLAGS "-liomp5" "-lpthread" "-lm" "-ldl")
-# endif()
-
-
 
 
 ## Subdirectories
