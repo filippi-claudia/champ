@@ -14,6 +14,7 @@ addons:
       - liblapack-dev
       - openmpi-bin
       - libopenmpi-dev
+      - mpif90
       
 
 env:
@@ -21,5 +22,5 @@ env:
     - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
       
 install:
-- cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort
+- cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
 - cmake --build build -- -j2 
