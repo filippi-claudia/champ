@@ -13,6 +13,7 @@
 ## Removed
 
 * Link to unused *LINPACK* library
+* Unused files in lib2 (Using available libraries in the system)
 
 
 ## Fixed
