@@ -50,6 +50,8 @@ option(ENABLE_QMMM "enable_qmmm" off)
 option(ENABLE_PERIODIC "enable_periodic" off)
 
 ## External packages
+# Include function to Load MKL
+include(${CMAKE_MODULE_PATH}/FindMKL.cmake)
 # Find MKL
 find_package(MKL)
 if (MKL_FOUND)
