@@ -15,13 +15,13 @@ addons:
       - liblapack-dev
       - openmpi-bin
       - libopenmpi-dev
-      
+
 
 env:
   global:
     - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-      
+
 install:
 - sudo ln -s /usr/bin/gfortran-7 /usr/bin/gfortran
 - cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
-- cmake --build build -- -j2 
+- cmake --build build -- -j2
