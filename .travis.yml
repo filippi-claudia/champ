@@ -1,24 +1,27 @@
-sudo: required
+sudo: true
+dist: trusty
 
-language: cpp
+language: generic
 
-apt:
-  sources:
-    - ubuntu-toolchain-r-test
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
     packages:
-      - gcc-6
-      - gfortran
+      - cmake
+      - cmake-data
+      - gfortran-7
+      - libblas-dev
+      - liblapack-dev
+      - openmpi-bin
+      - libopenmpi-dev
+
 
 env:
   global:
     - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-      
-install:
-  - CMAKE_URL="https://cmake.org/files/v3.11/cmake-3.11.1.tar.gz"
-  - mkdir -p ${DEPS_DIR}/cmake
-  - travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake
-  - export PATH=${DEPS_DIR}/cmake/bin:${PATH}
 
-scripts;
-- cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=gfortran
-- cmake --build build -- -j2 
+install:
+- sudo ln -s /usr/bin/gfortran-7 /usr/bin/gfortran
+- cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
+- cmake --build build -- -j2
