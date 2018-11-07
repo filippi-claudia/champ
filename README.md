@@ -81,10 +81,45 @@ To install **Champ** using [cmake](https://cmake.org/) you need to run the follo
 cmake -H. -Bbuild
 cmake --build build -- -j4
 ```
+The first command is only required to set up the build directory and needs to
+executed only once.
 
 #### CMAKE Options
 
 To select a given compiler you can type:
 ```
 cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=ifort 
-``
+```
+To compile only e.g. VMC serial:
+```
+cmake --build build --target vmc.mov1
+```
+
+#### CMAKE Recipes
+
+Here are a couple of recipes for commonly used computing facilities, which can
+be easily adapted. See Cartesius for a module based setup or CCPGate for a
+standard Intel installation.
+
+* Cartesius
+Load the required modules
+```
+module unload mpi
+module load mpi/impi/18.0.4 cmake/3.7.2 mkl/18.0.4
+```
+Setup the build:
+```
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+```
+
+
+* CCPGate
+Set the variables for Intel MPI and MKL:
+```
+. /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
+. /software/intel/intel_2019.0.117/mkl/bin/mklvars.sh intel64
+```
+Setup the build:
+```
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
+```
