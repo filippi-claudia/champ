@@ -1,69 +1,69 @@
-      subroutine pw_setup_input
-      implicit real*8(a-h,o-z)
-
-      include 'vmc.h'
-      include 'ewald.h'
-      include 'inputflags.h'
-
-c  npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
-c  alattice   lattice constant to multiply rlatt
-c  rlatt      lattice vectors of primitive cell
-c  rlatt_sim  lattice vectors of simulation cell
-c  rkvec_shift k-shift for generating k-vector lattice
-
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-
-c note that if iperiodic=0, norb is fetched in read_lcao
-      call p2gti('periodic:norb',norb,1)
-
-c npoly is the polynomial order for short-range part
-      call p2gti('periodic:npoly',npoly,1)
-      call p2gti('periodic:np',np,1)
-      ncoef=npoly+1
-      if(ncoef.gt.NCOEFX) call fatal_error('INPUT: ncoef gt NCOEFX')
-
-      call p2gtf('periodic:cutg',cutg,1)
-      call p2gtf('periodic:cutg_sim',cutg_sim,1)
-      call p2gtf('periodic:cutg_big',cutg_big,1)
-      call p2gtf('periodic:cutg_sim_big',cutg_sim_big,1)
-      write(6,'(/,''Npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big'',2i4,9f8.2)')
-     & npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
-
-c Lattice vectors fetched in read_lattice
-      write(6,'(/,''Lattice basis vectors'',3(/,3f10.6))')
-     & ((rlatt(k,j),k=1,3),j=1,3)
-      write(6,'(/,''Simulation lattice basis vectors'',3(/,3f10.6))')
-     & ((rlatt_sim(k,j),k=1,3),j=1,3)
-
-      write(6,'(/,''center positions in primitive lattice vector units '',
-     &  ''and in cartesian coordinates'')')
-c Convert center positions from primitive lattice vector units to cartesian coordinates
-      do 5 ic=1,ncent
-        do 3 k=1,3
-    3     cent_tmp(k)=cent(k,ic)
-        do 4 k=1,3
-          cent(k,ic)=0
-          do 4 i=1,3
-    4       cent(k,ic)=cent(k,ic)+cent_tmp(i)*rlatt(k,i)
-    5   write(6,'(''center'',i4,1x,''('',3f9.5,'')'',1x,''('',3f9.5,'')'')')
-     &  ic,(cent_tmp(k),k=1,3),(cent(k,ic),k=1,3)
-
-c cutjas already fetched by read_jastrow_parameter, set_ewald would overwrite cutjas
-      cutjas_tmp=cutjas
-      call set_ewald
-
-      return
-      end
+c$$$      subroutine pw_setup_input
+c$$$      implicit real*8(a-h,o-z)
+c$$$
+c$$$      include 'vmc.h'
+c$$$      include 'ewald.h'
+c$$$      include 'inputflags.h'
+c$$$
+c$$$c  npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
+c$$$c  alattice   lattice constant to multiply rlatt
+c$$$c  rlatt      lattice vectors of primitive cell
+c$$$c  rlatt_sim  lattice vectors of simulation cell
+c$$$c  rkvec_shift k-shift for generating k-vector lattice
+c$$$
+c$$$      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
+c$$$     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
+c$$$     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
+c$$$     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
+c$$$     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
+c$$$     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
+c$$$     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
+c$$$     &,znuc_sum,znuc2_sum,vcell,vcell_sim
+c$$$     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
+c$$$     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
+c$$$     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
+c$$$
+c$$$c note that if iperiodic=0, norb is fetched in read_lcao
+c$$$      call p2gti('periodic:norb',norb,1)
+c$$$
+c$$$c npoly is the polynomial order for short-range part
+c$$$      call p2gti('periodic:npoly',npoly,1)
+c$$$      call p2gti('periodic:np',np,1)
+c$$$      ncoef=npoly+1
+c$$$      if(ncoef.gt.NCOEFX) call fatal_error('INPUT: ncoef gt NCOEFX')
+c$$$
+c$$$      call p2gtf('periodic:cutg',cutg,1)
+c$$$      call p2gtf('periodic:cutg_sim',cutg_sim,1)
+c$$$      call p2gtf('periodic:cutg_big',cutg_big,1)
+c$$$      call p2gtf('periodic:cutg_sim_big',cutg_sim_big,1)
+c$$$      write(6,'(/,''Npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big'',2i4,9f8.2)')
+c$$$     & npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
+c$$$
+c$$$c Lattice vectors fetched in read_lattice
+c$$$      write(6,'(/,''Lattice basis vectors'',3(/,3f10.6))')
+c$$$     & ((rlatt(k,j),k=1,3),j=1,3)
+c$$$      write(6,'(/,''Simulation lattice basis vectors'',3(/,3f10.6))')
+c$$$     & ((rlatt_sim(k,j),k=1,3),j=1,3)
+c$$$
+c$$$      write(6,'(/,''center positions in primitive lattice vector units '',
+c$$$     &  ''and in cartesian coordinates'')')
+c$$$c Convert center positions from primitive lattice vector units to cartesian coordinates
+c$$$      do 5 ic=1,ncent
+c$$$        do 3 k=1,3
+c$$$    3     cent_tmp(k)=cent(k,ic)
+c$$$        do 4 k=1,3
+c$$$          cent(k,ic)=0
+c$$$          do 4 i=1,3
+c$$$    4       cent(k,ic)=cent(k,ic)+cent_tmp(i)*rlatt(k,i)
+c$$$    5   write(6,'(''center'',i4,1x,''('',3f9.5,'')'',1x,''('',3f9.5,'')'')')
+c$$$     &  ic,(cent_tmp(k),k=1,3),(cent(k,ic),k=1,3)
+c$$$
+c$$$c cutjas already fetched by read_jastrow_parameter, set_ewald would overwrite cutjas
+c$$$      cutjas_tmp=cutjas
+c$$$      call set_ewald
+c$$$
+c$$$      return
+c$$$      end
 c----------------------------------------------------------------------
       subroutine do_read_lattice(iu)
       implicit real*8(a-h,o-z)
