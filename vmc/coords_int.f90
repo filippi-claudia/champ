@@ -27,7 +27,7 @@ module coords_int
   integer :: num_bonds, num_angles, num_dihedrals
 
   !> Uses the projector P=BB^+
-  logical, parameter :: project = .false.
+  logical, parameter :: project = .true.
   !> Recalculates B in every iteration while transforming the geometry step
   logical, parameter :: recalculate = .false.
 
@@ -51,15 +51,28 @@ module coords_int
   !! coordinates based on the provided cartesian coordinates.
   !!
   !! @param ncent number of atoms
+  !! @param cart_coords cartesian coordinates
+  !! @param connectivities connectivities in z-Matrix format
   !!
-  subroutine coords_init (ncent)
+  subroutine coords_init (ncent, cart_coords, connectivities)
     use optgeo_hessian
 
     integer, intent(in) :: ncent
+    real(kind=8), dimension(:,:), intent(in) :: cart_coords
+    integer, dimension(:,:), intent(in) :: connectivities
+
+    real(kind=8) :: uvec(3), vvec(3)
+    real(kind=8) :: un, vn, cijk
+    integer :: i, cb, cc
 
     if (initialized.eqv..true.) return
 
     num_centers = ncent
+    if (num_centers.eq.1) then
+      write (6, *) 'Found geometry optimization with a single atom!'
+      stop
+    endif
+
     num_cart = 3 * num_centers
     if (num_cart.eq.6) then
       num_int = 1
@@ -68,10 +81,33 @@ module coords_int
     endif
 
     num_bonds = num_centers - 1
-    num_angles = num_centers - 2
-    if (num_angles.lt.0) num_angles = 0
-    num_dihedrals = num_centers - 3
-    if (num_dihedrals.lt.0) num_dihedrals = 0
+    num_angles = max (0, num_centers - 2)
+    num_dihedrals = max (0, num_centers - 3)
+
+    write (6, *) 'total', num_int
+    write (6, *) 'bonds', num_bonds
+    write (6, *) 'angles', num_angles
+    write (6, *) 'dihedral angles', num_dihedrals
+
+!    do i = 3, num_centers ! first row in z Matrix with angle
+!
+!      cb = connectivities(1, i)
+!      cc = connectivities(2, i)
+!      ! vectors: i->b->c
+!      uvec = cart_coords(:, cb) - cart_coords(:,i )
+!      vvec = cart_coords(:, cc) - cart_coords(:,cb)
+!      un = norm2 (uvec)
+!      vn = norm2 (vvec)
+!
+!      ! computes cos and sin of angle
+!      cijk = dot_product (uvec, vvec) / un / vn
+!
+!      if (cijk > 0.8) then ! linear bend
+!
+!        print *, 'Warning! Found linear bend, increasing number of internal degrees of freedom by 1.'
+!        num_int = num_int + 1
+!      endif
+!    enddo
 
     allocate (b(num_int, num_cart))
     allocate (binv(num_cart, num_int))
@@ -106,10 +142,12 @@ module coords_int
     integer, dimension(:,:), intent(in) :: connectivities
     
     real(kind=8) :: uvec(3), vvec(3), wvec(3)
+    real(kind=8) :: v(3), px(3), py(3), pz(3), t(3,3), bmte(3)
+    real(kind=8) :: pxn, pyn, pzn
     real(kind=8) :: un, vn, wn, cijk, sijk
     real(kind=8) :: uxw(3), vxw(3)
     real(kind=8) :: cu, cv, susq, svsq
-    integer :: i
+    integer :: i, j
     integer :: iint           ! ID of current internal coordinate
     integer :: cb, cc, cd     ! indices of bonded neighbours
     integer :: b1, b2, b3, b4 ! indices for cart. coordinates in b
@@ -148,14 +186,73 @@ module coords_int
       cijk = dot_product (uvec, vvec) / un / vn
       sijk = sqrt (1d0 - cijk**2)
 
-      b1 = 3 * (i - 1) + 1
-      b2 = 3 * (cb - 1) + 1
-      b3 = 3 * (cc - 1) + 1
+      if (cijk > 0.98) then ! linear bend
 
-      b(iint, b1:b1+2) = (-cijk * vn * uvec - un * vvec) / (sijk * un**2 * vn)
-      b(iint, b2:b2+2) = ( cijk * vn**2 * uvec - un * vn * uvec &
-                          - cijk * un**2 * vvec + un * vn * vvec) / (sijk * un**2 * vn**2)
-      b(iint, b3:b3+2) = ( cijk * un * vvec + vn * uvec) / (sijk * un * vn**2)
+        print *, 'Warning! Found linear bend'
+
+        pz = cart_coords(:, cc) - cart_coords(:, i)
+        pzn = norm2 (pz)
+
+        if (abs (pz(3) / pzn).ne.1) then ! what does this mean?
+
+          v = 1d0 ! if this is colinear with pz it will fail?
+
+          py = cross_product (v , pz)
+          px = cross_product (py, pz)
+
+          pxn = norm2 (px)
+          pyn = norm2 (py)
+
+          ! sets up transpose of transformation matrix
+          t(1,:) = px(:) / pxn
+          t(2,:) = py(:) / pyn
+          t(3,:) = pz(:) / pzn
+
+        else
+
+          do j = 1, 3
+            if (pz(j) / pzn.lt.0) then
+              t(j,j) = -1d0
+            else 
+              t(j,j) =  1d0
+            endif
+          enddo
+
+        endif
+
+        ! Ry mode
+        bmte(1) = 1d0 / un
+        bmte(2) = -(un + vn) / (un * vn)
+        bmte(3) = 1d0 / pzn
+
+        b1 = 3 * (i - 1) + 1
+        b2 = 3 * (cb - 1) + 1
+        b3 = 3 * (cc - 1) + 1
+
+        ! transforms back
+        b(iint, b1:b1+2) = t(1,:) * bmte(1)
+        b(iint, b2:b2+2) = t(1,:) * bmte(2)
+        b(iint, b3:b3+2) = t(1,:) * bmte(3)
+        iint = iint + 1
+
+        !TODO second angle
+        ! Rx mode
+        !b(iint, b1:b1+2) = t(2,:) * bmte(1)
+        !b(iint, b2:b2+2) = t(2,:) * bmte(2)
+        !b(iint, b3:b3+2) = t(2,:) * bmte(3)
+
+      else ! regular angle
+
+        b1 = 3 * (i - 1) + 1
+        b2 = 3 * (cb - 1) + 1
+        b3 = 3 * (cc - 1) + 1
+
+        b(iint, b1:b1+2) = (-cijk * vn * uvec - un * vvec) / (sijk * un**2 * vn)
+        b(iint, b2:b2+2) = ( cijk * vn**2 * uvec - un * vn * uvec &
+                            - cijk * un**2 * vvec + un * vn * vvec) / (sijk * un**2 * vn**2)
+        b(iint, b3:b3+2) = ( cijk * un * vvec + vn * uvec) / (sijk * un * vn**2)
+
+      endif
 
       iint = iint + 1
     enddo
@@ -180,21 +277,29 @@ module coords_int
       uxw = cross_product (uvec, wvec)
       vxw = cross_product (vvec, wvec)
       cu =  dot_product (uvec, wvec)
-      cv = -dot_product (uvec, wvec)
-      susq = 1d0 - cu**2
-      svsq = 1d0 - cv**2
+      cv = -dot_product (vvec, wvec)
 
-      b1 = 3 * (i  - 1) + 1
-      b2 = 3 * (cb - 1) + 1
-      b3 = 3 * (cc - 1) + 1
-      b4 = 3 * (cd - 1) + 1
+      ! checks for linearity of the involved angles
+      if (cu.lt.-0.98d0.or.cv.lt.-0.98d0) then ! around 180 +/- 12.5 degrees
+        write (6, *) 'Found linearity in dihedral angle. Reducing number of internal coordinates.'
+        num_int = num_int - 1
+      else
 
-      b(iint, b1:b1+2) =  uxw / (un * susq)
-      b(iint, b2:b2+2) = -uxw / (un * susq) + uxw * cu / (susq * wn) + vxw * cv / (svsq * wn)
-      b(iint, b3:b3+2) =  vxw / (vn * svsq) - uxw * cu / (susq * wn) - vxw * cv / (svsq * wn)
-      b(iint, b4:b4+2) = -vxw / (vn * svsq)
+        susq = 1d0 - cu**2
+        svsq = 1d0 - cv**2
 
-      iint = iint + 1
+        b1 = 3 * (i  - 1) + 1
+        b2 = 3 * (cb - 1) + 1
+        b3 = 3 * (cc - 1) + 1
+        b4 = 3 * (cd - 1) + 1
+
+        b(iint, b1:b1+2) =  uxw / (un * susq)
+        b(iint, b2:b2+2) = -uxw / (un * susq) + uxw * cu / (susq * wn) + vxw * cv / (svsq * wn)
+        b(iint, b3:b3+2) =  vxw / (vn * svsq) - uxw * cu / (susq * wn) - vxw * cv / (svsq * wn)
+        b(iint, b4:b4+2) = -vxw / (vn * svsq)
+
+        iint = iint + 1
+      endif
     enddo
 
   end subroutine coords_compute_wilson
@@ -275,6 +380,9 @@ module coords_int
     ! transforms the gradients
     int_gradients = matmul (btinv, cart_gradients)
 
+    write (6,*) 'int_gradients'
+    write (6, '(6f10.5)') int_gradients
+
     if (project) then ! computes projector P = BB^+
       p = matmul (b, binv)
       int_gradients = matmul (p, int_gradients)
@@ -298,22 +406,16 @@ module coords_int
 
     int_step = -alpha * int_gradients
 
-    ! divide by the diagonal elements of the Hessian matrix !TODO for now only works for this diagonal one
-    do i = 1, num_int
-      int_step(i) = int_step(i) / h(i, i)
-    enddo
+    !if (project) then ! H=P.H.P
+    !  h = matmul (h, p)
+    !  h = matmul (p, h)
+    !endif
 
-    ! Hessian diagonal elements according to type x=0.5, 0.2, 0.1
-    !do i = 1, num_bonds
-    !  int_step(i) = int_step(i) / 0.5d0
+    ! divide by the diagonal elements of the Hessian matrix !TODO for now only works for this diagonal one
+    !do i = 1, num_int
+    !  int_step(i) = int_step(i) / h(i, i)
     !enddo
-    !do i = num_bonds + 1, num_bonds + num_angles
-    !  int_step(i) = int_step(i) / 0.2d0
-    !enddo
-    !do i = num_angles + num_bonds + 1, num_bonds + num_angles + num_dihedrals
-    !  int_step(i) = int_step(i) / 0.1d0
-    !enddo
-    
+
   end subroutine coords_compute_step
 
 
@@ -342,6 +444,10 @@ module coords_int
     integer :: ic, it
     integer :: i, j
 
+    write (6,*) 
+    write (6,*) "--- Do step ---"
+    write (6,*) 
+
     iint = 1
 
     ! saves the original internal coordinates as reference (saves q0)
@@ -353,49 +459,84 @@ module coords_int
       int_coords(iint) = int_coords2d(2, ic)
       iint = iint + 1
     enddo
+
+    ! TODO manually copying double angle
+    !int_coords(iint) = int_coords(iint - 1)
+
     do ic = 4, num_centers ! loop over dihedrals
       int_coords(iint) = int_coords2d(3, ic)
       iint = iint + 1
     enddo
 
+    write (6,*) "Internal reference"
+    write (6,'(f10.5)') (int_coords(iint),iint=1,num_int)
+
     ! computes new geometry in cartesian coordinates (x1, eq. 13)
     cart_coords  = reshape (cart_coords2d, shape (cart_coords)) ! 2d->1d
     cart_coords = cart_coords + matmul (binv, int_step)
 
+    write (6,*) 
+    write (6,*) "old cart"
+    write (6,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
     ! updates 2D cartesian coordinates
     do i=1,num_centers
       do j = 1,3
         cart_coords2d(j, i) = cart_coords(3*(i-1)+j)
       enddo
     enddo
+    write (6,*) 
+    write (6,*) "new cart"
+    write (6,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
 
     ! transforms back to internal coordinates (q1)
     call cart2zmat(num_centers, cart_coords2d, connectivities, int_coords2d)
 
     call fix_dihedrals (int_coords, int_coords2d)
 
+    write (6,*) 
+    write (6,*)  'internal new'
+    write (6,'(1f10.5)') int_coords2d(1,2)
+    write (6,'(2f10.5)') int_coords2d(1:2,3)
+    write (6,'(3f10.5)') int_coords2d(1:3,4)
+
     ! computes the guess step in internal coordinates (q1-q0)
     iint = 1
     do ic = 2, num_centers ! loop over bonds
-      int_dnew(iint) = (int_coords2d(1, ic) - int_coords(iint))
+      int_dnew(iint) = int_coords2d(1, ic) - int_coords(iint)
       iint = iint + 1
     enddo
     do ic = 3, num_centers ! loop over angles
-      int_dnew(iint) = (int_coords2d(2, ic) - int_coords(iint))
+      int_dnew(iint) = int_coords2d(2, ic) - int_coords(iint)
       iint = iint + 1
     enddo
+
+    !TODO manually taking care of double angle
+    !int_dnew(iint) = int_coords2d(2, 3) - int_coords(iint)
+
     do ic = 4, num_centers ! loop over dihedrals
-      int_dnew(iint) = (int_coords2d(3, ic) - int_coords(iint))
+      int_dnew(iint) = int_coords2d(3, ic) - int_coords(iint)
       iint = iint + 1
     enddo
+
+    write (6,*) 
+    write (6,*) "int_step"
+    write (6,'(6f10.5)') int_step
+    write (6,*) "int_dnew"
+    write (6,'(6f10.5)') int_dnew
 
     ! computes difference between the reference and guess step (delta_q1, eq. 14)
     int_dnew = int_step - int_dnew
+    write (6,*) "delta_int"
+    write (6,'(6f10.5)') int_dnew
     cart_d = matmul (binv, int_dnew)
     delta = sqrt(sum(cart_d**2) / num_cart)
 
+    write (6,*)  "Delta", delta
+
     it = 0
     do while (delta.gt.1d-6.and.it.lt.maxit)
+      write (6,*) 
+      write (6,*) "Iteration", it
 
       if (recalculate) then
         call coords_compute_wilson (cart_coords2d, connectivities)
@@ -426,18 +567,33 @@ module coords_int
         int_dnew(iint) = (int_coords2d(2, ic) - int_coords(iint))
         iint = iint + 1
       enddo
+
+      !TODO manually taking care of double angle
+      !int_dnew(iint) = int_coords2d(2, 3) - int_coords(iint)
+
       do ic = 4, num_centers ! loop over dihedrals
         int_dnew(iint) = (int_coords2d(3, ic) - int_coords(iint))
         iint = iint + 1
       enddo
 
+      write (6,*) 
+      write (6,*) "int_step"
+      write (6,'(6f10.5)') int_step
+      write (6,*) "int_dnew"
+      write (6,'(6f10.5)') int_dnew
+
       ! computes difference between the reference and guess step
       int_dnew = int_step - int_dnew
+      write (6,*) "delta_int"
+      write (6,'(6f10.5)') int_dnew
       cart_d = matmul (binv, int_dnew)
       delta = sqrt(sum(cart_d**2) / num_cart)
 
+      write (6,*)  "Delta", delta
+
       it = it + 1
     enddo
+
 
     if (delta.gt.1d-6) then
       write (6,*) 'do_step: backtransformation did not converge'
@@ -450,6 +606,17 @@ module coords_int
   end subroutine coords_transform_step
 
 
+
+
+  !>
+  !! This routine computes the correct step when a dihedral angle changes over
+  !! the 180/-180 degree border which would otherwise result in a ~360 degree
+  !! step. It does this by temporarily transforming the angle either on the
+  !! 0-360 or -360-0 degree range.
+  !!
+  !! @param int_reference internal coordinates before the step
+  !! @param int_coords2d new internal coordinates in 2D z-Matrix format
+  !!
   subroutine fix_dihedrals (int_reference, int_coords2d)
 
     real(kind=8), intent(in) :: int_reference(:)

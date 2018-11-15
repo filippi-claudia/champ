@@ -522,7 +522,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         call compute_position_bcast
         
         if(iuse_zmat.eq.1) then
-          call coords_init (ncent)
+          call coords_init (ncent, cent, izcmat)
           call coords_compute_wilson (cent, izcmat)
           call coords_transform_gradients (da_energy_ave)
           call coords_compute_step (alfgeo)
