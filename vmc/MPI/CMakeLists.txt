@@ -28,6 +28,8 @@ if (MPI_Fortran_FOUND)
     ${VMC_SOURCE}
     # shared VMC Fortran 90 source
     ${PATH_VMC}/convcartzmat.f90
+    ${PATH_VMC}/coords_int.f90
+    ${PATH_VMC}/optgeo_hessian.f90
     # Input parser
     ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f)
 
@@ -36,8 +38,14 @@ if (MPI_Fortran_FOUND)
   
   ## Set Fixed or Free format
   # Include function to change fortran format
-  include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
-  formatFortran("${VMC_MPI_SOURCES}" "FIXED")
+  #include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+  #formatFortran("${VMC_MPI_SOURCES}" "FIXED")
+  foreach(_source ${VMC_MPI_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
+  foreach(_source ${VMC_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
   
   #  Add headers
   target_include_directories(vmc.mov1.mpi

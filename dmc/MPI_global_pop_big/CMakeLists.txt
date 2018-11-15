@@ -45,6 +45,19 @@ if (MPI_Fortran_FOUND)
     ${DMC_MPI_GPOPB_SOURCE}
     #Input parser
     ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f)
+
+  foreach(_source ${VMC_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
+  foreach(_source ${VMC_MPI_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
+  foreach(_source ${DMC_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
+  foreach(_source ${DMC_MPI_GPOPB_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
   
   # Add dependency to vmc mpi
   add_dependencies(dmc.mov1.gpopb.mpi dmc.mov1.mpi)

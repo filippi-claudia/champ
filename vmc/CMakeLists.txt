@@ -1,6 +1,6 @@
 # Source files
 file(GLOB VMC_SOURCE LIST_DIRECTORIES false  *.f)
-file(GLOB VMC90_SOURCE LIST_DIRECTORIES false convcartzmat.f90 regterg.f90)
+file(GLOB VMC90_SOURCE LIST_DIRECTORIES false coords_int.f90 optgeo_hessian.f90 convcartzmat.f90 regterg.f90)
 
 if (NOT ENABLE_QMMM)
   message(STATUS "QMMM is NOT enable!")
@@ -28,10 +28,13 @@ target_include_directories(vmc.mov1
 
 ## Set Fixed or Free format
 # Include function to change fortran format
-include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+#include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
 
-formatFortran("${VMC90_SOURCE}" "FREE")
-formatFortran("${VMC_SOURCE}" "FIXED")
+#formatFortran("${VMC90_SOURCE}" "FREE")
+#formatFortran("${VMC_SOURCE}" "FIXED")
+foreach(_source ${VMC_SOURCE})
+  set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+endforeach(_source)
 
 # compilation
 target_compile_options(vmc.mov1
