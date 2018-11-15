@@ -70,7 +70,9 @@ endif(ENABLE_MPI)
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O2" "-ffixed-line-length-132" "-fno-automatic")
+  list(APPEND Fortran_FLAGS "-O2" "-mcmodel=large")
+  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
+  set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
   
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-O2" "-xHost" "-mcmodel=large" "-shared-intel" "-132"

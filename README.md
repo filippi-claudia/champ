@@ -82,7 +82,8 @@ cmake -H. -Bbuild
 cmake --build build -- -j4
 ```
 The first command is only required to set up the build directory and needs to
-executed only once.
+executed only once. Compared to the previous Makefiles the dependencies for the
+include files (e.g include/vmc.h) are correctly setup and no `--clean-first`
 
 #### CMAKE Options
 
@@ -94,6 +95,12 @@ To compile only e.g. VMC serial:
 ```
 cmake --build build --target vmc.mov1
 ```
+Clean and build:
+```
+cmake --build build --clean-first
+```
+Compared to the previous Makefiles the dependencies for the include files
+(e.g include/vmc.h) are correctly setup and no `--clean-first` is required.
 
 #### CMAKE Recipes
 
@@ -114,12 +121,28 @@ cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 
 
 * CCPGate
-Set the variables for Intel MPI and MKL:
+To build with ifort set the variables for the Intel MPI and MKL:
 ```
 . /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
 . /software/intel/intel_2019.0.117/mkl/bin/mklvars.sh intel64
 ```
-Setup the build:
+and setup the build:
 ```
 cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
 ```
+
+To build with gfortran set only(!):
+```
+. /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
+```
+and then use:
+```
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
+```
+which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find
+them already if none of the Intel MKL variables are set.) Combining gfortran
+with the Intel MKL is possible but requires special care to work with the
+compiler flag `-mcmodel=large`.
+
+
+

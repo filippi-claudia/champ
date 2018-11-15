@@ -49,10 +49,16 @@ add_dependencies(dmc.mov1 vmc.mov1)
 
 ## Set Fixed or Free format
 # Include function to change fortran format
-include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
-formatFortran("${VMC90_DEPENDENCIES}" "FREE")
-formatFortran("${VMC_DEPENDENCIES}" "FIXED")
-formatFortran("${DMC_SOURCE}" "FIXED")
+#include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+#formatFortran("${VMC90_DEPENDENCIES}" "FREE")
+#formatFortran("${VMC_DEPENDENCIES}" "FIXED")
+#formatFortran("${DMC_SOURCE}" "FIXED")
+foreach(_source ${DMC_SOURCE})
+  set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+endforeach(_source)
+foreach(_source ${VMC_SOURCE})
+  set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+endforeach(_source)
 
 # compilation
 target_compile_options(dmc.mov1

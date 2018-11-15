@@ -30,6 +30,15 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/input)
 
+  foreach(_source ${DMC_MPI_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
+  foreach(_source ${DMC_MPI_GPOP_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
+  foreach(_source ${DMC_MPI_GPOPB_DEPENDENCIES})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
 
   # compilation
   target_compile_options(dmc.mov1.gpop.mpi
