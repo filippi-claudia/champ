@@ -58,6 +58,8 @@ add_custom_command(
     ${INPUT_DIR}/p2nmcheck.f
   OUTPUT
     ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
+  WORKING_DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}
   COMMAND
     ${INPUT_DIR}/inpt.awk -v p2file=commands.p2 -v logf=${INPUT_DIR}/commands.log ${CMAKE_CURRENT_SOURCE_DIR}/read_input.f
   COMMAND

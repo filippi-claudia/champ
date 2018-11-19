@@ -6,9 +6,6 @@ if (MPI_Fortran_FOUND)
   list(REMOVE_ITEM DMC_MPI_GPOPB_DEPENDENCIES ${PATH_DMC_MPI_GPOPB}/main.f ${PATH_DMC_MPI_GPOPB}/walksav_jas.f)
   
   # REmove unused files
-  # Include function to change fortran format
-  include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
-  formatFortran("${DMC_MPI_SOURCE}" "FIXED")
 
   # message(STATUS "SOURCE: " ${DMC_MPI_GPOPB_DEPENDENCIES})
   add_executable(dmc.mov1.gpop.mpi
@@ -30,6 +27,9 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/input)
 
+  ## Include function to change fortran format
+  #include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+  #formatFortran("${DMC_MPI_SOURCE}" "FIXED")
   foreach(_source ${DMC_MPI_SOURCE})
     set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
   endforeach(_source)

@@ -25,10 +25,6 @@ if (MPI_Fortran_FOUND)
   # DMC MPI dependencies
   set(PATH_DMC_MPI ${CMAKE_SOURCE_DIR}/dmc/MPI)
   set(DMC_MPI_SOURCE ${PATH_DMC_MPI}/mc_configs.f)
-  
-  # Include function to change fortran format
-  include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
-  formatFortran("${DMC_MPI_SOURCE}" "FIXED")
 
   add_executable(dmc.mov1.gpopb.mpi
     # VMC dependencies
@@ -46,6 +42,9 @@ if (MPI_Fortran_FOUND)
     #Input parser
     ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f)
 
+  ## Include function to change fortran format
+  #include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+  #formatFortran("${DMC_MPI_SOURCE}" "FIXED")
   foreach(_source ${VMC_SOURCE})
     set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
   endforeach(_source)

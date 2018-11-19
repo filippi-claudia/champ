@@ -72,11 +72,12 @@ endif(ENABLE_MPI)
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-O2" "-mcmodel=large")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
-  set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
+  #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
   
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  list(APPEND Fortran_FLAGS "-O2" "-xHost" "-mcmodel=large" "-shared-intel" "-132"
+  list(APPEND Fortran_FLAGS "-O2" "-xHost" "-mcmodel=large" "-shared-intel"
     "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
+  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   list(APPEND Fortan_FLAGS_DEBUG "-g")
   
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
