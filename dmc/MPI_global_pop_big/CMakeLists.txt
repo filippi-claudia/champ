@@ -84,4 +84,15 @@ if (MPI_Fortran_FOUND)
 
   set(DMC_MPI_GPOPB_DEPENDENCIES ${VMC_SOURCE} ${VMC_MPI_SOURCE} ${DMC_SOURCE} ${DMC_MPI_GPOPB_SOURCE}
     CACHE INTERNAL "source files used by targets depending on dmc.mov1.gpopb.mpi")  
+
+  set_source_files_properties(
+    ${INPUT_DIR}/p2nmcheck.f
+    PROPERTIES GENERATED TRUE
+  )
+  
+  set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
+    PROPERTIES GENERATED TRUE
+  )
+
 endif()

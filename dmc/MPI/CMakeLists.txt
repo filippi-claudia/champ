@@ -74,4 +74,14 @@ if (MPI_Fortran_FOUND)
     ${LINEAR_ALGEBRA}
     ${MPI_Fortran_LIBRARIES})
 
+  set_source_files_properties(
+    ${INPUT_DIR}/p2nmcheck.f
+    PROPERTIES GENERATED TRUE
+  )
+  
+  set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
+    PROPERTIES GENERATED TRUE
+  )
+
 endif()

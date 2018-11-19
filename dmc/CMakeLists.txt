@@ -75,3 +75,13 @@ set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
 add_subdirectory(MPI)
 add_subdirectory(MPI_global_pop_big)
 add_subdirectory(MPI_global_pop)
+
+set_source_files_properties(
+  ${INPUT_DIR}/p2nmcheck.f
+  PROPERTIES GENERATED TRUE
+)
+
+set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
+  PROPERTIES GENERATED TRUE
+)

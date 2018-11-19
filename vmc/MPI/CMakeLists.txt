@@ -70,4 +70,14 @@ if (MPI_Fortran_FOUND)
   # # # Cache the results for targets that depends on these files
   set(VMC_MPI_SOURCE ${VMC_MPI_SOURCE} CACHE INTERNAL "MPI vmc source files")
 
+  set_source_files_properties(
+    ${INPUT_DIR}/p2nmcheck.f
+    PROPERTIES GENERATED TRUE
+  )
+  
+  set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
+    PROPERTIES GENERATED TRUE
+  )
+
 endif()
