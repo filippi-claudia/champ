@@ -18,6 +18,7 @@ if (MPI_Fortran_FOUND)
     ${PATH_VMC}/pw_ewald.f ${PATH_VMC}/pw_find_image.f
     ${PATH_VMC}/pw_orbitals.f ${PATH_VMC}/pw_orbitals_e.f ${PATH_VMC}/pw_read.f
     ${PATH_VMC}/regterg.f90 ${PATH_VMC}/sr_more.f)
+
   
   add_executable(vmc.mov1.mpi
     # Header
@@ -28,14 +29,12 @@ if (MPI_Fortran_FOUND)
     ${VMC_SOURCE}
     # shared VMC Fortran 90 source
     ${PATH_VMC}/convcartzmat.f90
-    ${PATH_VMC}/coords_int.f90
-    ${PATH_VMC}/optgeo_hessian.f90
     # Input parser
     ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f)
 
   # Add depency with vmc
   add_dependencies(vmc.mov1.mpi vmc.mov1)
-  
+
   ## Set Fixed or Free format
   # Include function to change fortran format
   #include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
