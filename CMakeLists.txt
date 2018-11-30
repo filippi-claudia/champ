@@ -43,6 +43,8 @@ if (MKL_FOUND)
   include_directories(${MKL_INCLUDE_DIRS})
   set(MKL_INCLUDE ${MKL_INCLUDE_DIRS}/intel64/ilp64)
   set(LINEAR_ALGEBRA ${MKL_LIBRARIES} pthread m dl)
+  list(APPEND Fortran_FLAGS "-i8")
+
   message(STATUS "Using MKL for the linear algebra calculations!")
   message(STATUS "MKL_INCLUDE_DIRS: " ${MKL_INCLUDE_DIRS})
   message(STATUS "MKL_LIBRARIES: " ${MKL_LIBRARIES})
