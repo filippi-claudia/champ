@@ -18,6 +18,7 @@ if (MPI_Fortran_FOUND)
     ${PATH_VMC}/pw_ewald.f ${PATH_VMC}/pw_find_image.f
     ${PATH_VMC}/pw_orbitals.f ${PATH_VMC}/pw_orbitals_e.f ${PATH_VMC}/pw_read.f
     ${PATH_VMC}/regterg.f90 ${PATH_VMC}/sr_more.f)
+
   
   add_executable(vmc.mov1.mpi
     # Header
@@ -33,11 +34,17 @@ if (MPI_Fortran_FOUND)
 
   # Add depency with vmc
   add_dependencies(vmc.mov1.mpi vmc.mov1)
-  
+
   ## Set Fixed or Free format
   # Include function to change fortran format
-  include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
-  formatFortran("${VMC_MPI_SOURCES}" "FIXED")
+  #include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+  #formatFortran("${VMC_MPI_SOURCES}" "FIXED")
+  foreach(_source ${VMC_MPI_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
+  foreach(_source ${VMC_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
   
   #  Add headers
   target_include_directories(vmc.mov1.mpi
@@ -62,5 +69,15 @@ if (MPI_Fortran_FOUND)
 
   # # # Cache the results for targets that depends on these files
   set(VMC_MPI_SOURCE ${VMC_MPI_SOURCE} CACHE INTERNAL "MPI vmc source files")
+
+  set_source_files_properties(
+    ${INPUT_DIR}/p2nmcheck.f
+    PROPERTIES GENERATED TRUE
+  )
+  
+  set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
+    PROPERTIES GENERATED TRUE
+  )
 
 endif()

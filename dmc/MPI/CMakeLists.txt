@@ -20,11 +20,6 @@ if (MPI_Fortran_FOUND)
     ${PATH_VMC_MPI}/mc_configs.f ${PATH_VMC_MPI}/mmpol_reduce.f ${PATH_VMC_MPI}/pcm_reduce.f
     ${PATH_VMC_MPI}/prop_reduce.f ${PATH_VMC_MPI}/regterg.f90 ${PATH_VMC_MPI}/sr_more.f)
   
-  # REmove unused files
-  # Include function to change fortran format
-  include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
-  formatFortran("${DMC_MPI_SOURCE}" "FIXED")
-
   add_executable(dmc.mov1.mpi
     # VMC dependencies
     ${VMC_SOURCE}
@@ -38,6 +33,23 @@ if (MPI_Fortran_FOUND)
     ${DMC_MPI_SOURCE}
     #Input parser
     ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f)
+
+  # REmove unused files
+  # Include function to change fortran format
+  #include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+  #formatFortran("${DMC_MPI_SOURCE}" "FIXED")
+  foreach(_source ${VMC_MPI_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
+  foreach(_source ${VMC_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
+  foreach(_source ${DMC_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
+  foreach(_source ${DMC_MPI_SOURCE})
+    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
+  endforeach(_source)
   
   # Add dependency to vmc mpi
   add_dependencies(dmc.mov1.mpi vmc.mov1.mpi dmc.mov1)
@@ -61,5 +73,15 @@ if (MPI_Fortran_FOUND)
     # PUBLIC
     ${LINEAR_ALGEBRA}
     ${MPI_Fortran_LIBRARIES})
+
+  set_source_files_properties(
+    ${INPUT_DIR}/p2nmcheck.f
+    PROPERTIES GENERATED TRUE
+  )
+  
+  set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
+    PROPERTIES GENERATED TRUE
+  )
 
 endif()
