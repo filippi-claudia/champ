@@ -1,22 +1,23 @@
 if (MPI_Fortran_FOUND)
   list(APPEND DMC_MPI_GPOP_SOURCE main.f walksav_jas.f)
+  include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+  formatFortran("${DMC_MPI_GPOP_SOURCE}" "FIXED")
 
   # Remove unused dependencies from Global population
   set(PATH_DMC_MPI_GPOPB ${CMAKE_SOURCE_DIR}/dmc/MPI_global_pop_big)
   list(REMOVE_ITEM DMC_MPI_GPOPB_DEPENDENCIES ${PATH_DMC_MPI_GPOPB}/main.f ${PATH_DMC_MPI_GPOPB}/walksav_jas.f)
+  formatFortran("${DMC_MPI_GPOPB_DEPENDENCIES}" "FIXED")
   
   # REmove unused files
 
   # message(STATUS "SOURCE: " ${DMC_MPI_GPOPB_DEPENDENCIES})
   add_executable(dmc.mov1.gpop.mpi
-    # VMC Fortran 90
-    ${CMAKE_SOURCE_DIR}/vmc/convcartzmat.f90
+    $<TARGET_OBJECTS:shared_objects_1>
+    $<TARGET_OBJECTS:vmc_dmc_mpi_objects>
     # All the dependencies from Global pop big
     ${DMC_MPI_GPOPB_DEPENDENCIES}
     # code in the current directory 
-    ${DMC_MPI_GPOP_SOURCE}
-    #Input parser
-    ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f)
+    ${DMC_MPI_GPOP_SOURCE})
   
   # Add dependency to vmc mpi
   add_dependencies(dmc.mov1.gpop.mpi dmc.mov1.gpopb.mpi)
@@ -24,21 +25,7 @@ if (MPI_Fortran_FOUND)
     #  Add headers
   target_include_directories(dmc.mov1.gpop.mpi
     PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/input)
-
-  ## Include function to change fortran format
-  #include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
-  #formatFortran("${DMC_MPI_SOURCE}" "FIXED")
-  foreach(_source ${DMC_MPI_SOURCE})
-    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
-  endforeach(_source)
-  foreach(_source ${DMC_MPI_GPOP_SOURCE})
-    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
-  endforeach(_source)
-  foreach(_source ${DMC_MPI_GPOPB_DEPENDENCIES})
-    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
-  endforeach(_source)
+    ${CMAKE_SOURCE_DIR}/include)
 
   # compilation
   target_compile_options(dmc.mov1.gpop.mpi
@@ -53,15 +40,5 @@ if (MPI_Fortran_FOUND)
     # PUBLIC
     ${LINEAR_ALGEBRA}
     ${MPI_Fortran_LIBRARIES})
-
-  set_source_files_properties(
-    ${INPUT_DIR}/p2nmcheck.f
-    PROPERTIES GENERATED TRUE
-  )
-  
-  set_source_files_properties(
-    ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
-    PROPERTIES GENERATED TRUE
-  )
 
 endif()
