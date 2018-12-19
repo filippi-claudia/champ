@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 # Project's name
 project(champ LANGUAGES Fortran)
@@ -72,12 +72,19 @@ endif(ENABLE_MPI)
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-O2" "-mcmodel=large")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
-  set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
+  if (MKL_FOUND)
+    #list(APPEND Fortran_FLAGS "-fdefault-integer-8")
+    list(APPEND Fortran_FLAGS "-m64")
+  endif()  
+  #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
   
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  list(APPEND Fortran_FLAGS "-O2" "-xHost" "-mcmodel=large" "-shared-intel" "-132"
+  list(APPEND Fortran_FLAGS "-O2" "-xHost" "-mcmodel=large" "-shared-intel"
     "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
-  list(APPEND Fortan_FLAGS_DEBUG "-g")
+  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
+  #if (MKL_FOUND)
+  #    list(APPEND Fortran_FLAGS "-i8")
+  #endif()  
   
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")

@@ -35,19 +35,21 @@ if (MKL_INCLUDE_DIRS AND MKL_LIBRARIES AND MKL_INTERFACE_LIBRARY AND
 endif()
 
 if(NOT BUILD_SHARED_LIBS)
-  set(INT_LIB "libmkl_intel_ilp64.a")
+  set(INT_LIB "libmkl_intel_lp64.a")  #<-- for ifort mpifort
+  #set(INT_LIB "libmkl_gf_lp64.a")    #<-- for gfortran
   set(SEQ_LIB "libmkl_sequential.a")
   set(THR_LIB "libmkl_intel_thread.a")
   set(COR_LIB "libmkl_core.a")
-  set(BLAS_LIB "libmkl_blas95_ilp64.a")
-  set(LAPACK_LIB "libmkl_lapack95_ilp64.a")
+  set(BLAS_LIB "libmkl_blas95_lp64.a")
+  set(LAPACK_LIB "libmkl_lapack95_lp64.a")
 else()
-  set(INT_LIB "mkl_intel_ilp64")
+  set(INT_LIB "mkl_intel_lp64") #<-- for ifort mpifort
+  #set(INT_LIB "mkl_gf_lp64")   #<-- for ifort mpifort
   set(SEQ_LIB "mkl_sequential")
   set(THR_LIB "mkl_intel_thread")
   set(COR_LIB "mkl_core")
-  set(BLAS_LIB "libmkl_blas95_ilp64")
-  set(LAPACK_LIB "libmkl_lapack95_ilp64")
+  set(BLAS_LIB "libmkl_blas95_lp64")
+  set(LAPACK_LIB "libmkl_lapack95_lp64")
 endif()
 
 find_path(MKL_INCLUDE_DIR NAMES mkl.h HINTS $ENV{MKLROOT}/include)

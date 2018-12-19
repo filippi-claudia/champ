@@ -7,51 +7,55 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/lin_d_more_no_semiortho.f
     ${CMAKE_CURRENT_SOURCE_DIR}/lin_d_more_semiortho.f
     )
-  
-  # Remove sequential source from dependencies
-  set(PATH_VMC ${CMAKE_SOURCE_DIR}/vmc)
-  list(REMOVE_ITEM VMC_SOURCE
-    ${PATH_VMC}/acuest_reduce.f ${PATH_VMC}/deriv_jastrow.f 
-    ${PATH_VMC}/dl_more.f ${PATH_VMC}/dumper.f ${PATH_VMC}/error.f ${PATH_VMC}/fin_reduce.f
-    ${PATH_VMC}/finwrt_more.f ${PATH_VMC}/jdqz_main.f
-    ${PATH_VMC}/lin_d_more.f ${PATH_VMC}/main.f ${PATH_VMC}/mc_configs.f
-    ${PATH_VMC}/pw_ewald.f ${PATH_VMC}/pw_find_image.f
-    ${PATH_VMC}/pw_orbitals.f ${PATH_VMC}/pw_orbitals_e.f ${PATH_VMC}/pw_read.f
-    ${PATH_VMC}/regterg.f90 ${PATH_VMC}/sr_more.f)
+
+  include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+  formatFortran("${VMC_MPI_SOURCE}") # Set Fixed format property
+
+# --------------------------------------------
+# creates object library for dmc.mov1.mpi
+# --------------------------------------------
+
+  set(SHARED_DMC_MPI_SOURCE
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_ci_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_orb_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_orb_ci_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optci_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optjas_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/error_mpi.f)
+
+  add_library(vmc_dmc_mpi_objects OBJECT ${SHARED_DMC_MPI_SOURCE})
+
+  target_include_directories(vmc_dmc_mpi_objects
+    PUBLIC
+    ${CMAKE_SOURCE_DIR}/include)
+
+  target_compile_options(vmc_dmc_mpi_objects
+    PRIVATE
+    ${Fortran_FLAGS}
+    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
+
+  foreach(s ${SHARED_DMC_MPI_SOURCE})
+    list(REMOVE_ITEM VMC_MPI_SOURCE ${s})
+  endforeach(s)
+
+# --------------------------------------------
   
   add_executable(vmc.mov1.mpi
-    # Header
-    ${CMAKE_SOURCE_DIR}/include/vmc.h
     # MPI source code
     ${VMC_MPI_SOURCE} ${VMC90_MPI_SOURCE}
-    # shared code with VMC
-    ${VMC_SOURCE}
-    # shared VMC Fortran 90 source
-    ${PATH_VMC}/convcartzmat.f90
-    ${PATH_VMC}/coords_int.f90
-    ${PATH_VMC}/optgeo_hessian.f90
-    # Input parser
-    ${INPUT_DIR}/p2_defaults.f ${INPUT_DIR}/p2etc.f ${INPUT_DIR}/p2nmcheck.f)
+    # shared VMC objects
+    $<TARGET_OBJECTS:shared_objects_1>
+    $<TARGET_OBJECTS:shared_objects_2>
+    $<TARGET_OBJECTS:vmc_mpi_objects>
+    $<TARGET_OBJECTS:vmc_dmc_mpi_objects>)
 
-  # Add depency with vmc
-  add_dependencies(vmc.mov1.mpi vmc.mov1)
-  
-  ## Set Fixed or Free format
-  # Include function to change fortran format
-  #include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
-  #formatFortran("${VMC_MPI_SOURCES}" "FIXED")
-  foreach(_source ${VMC_MPI_SOURCE})
-    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
-  endforeach(_source)
-  foreach(_source ${VMC_SOURCE})
-    set_property(SOURCE ${_source} PROPERTY Fortran_FORMAT FIXED)
-  endforeach(_source)
   
   #  Add headers
   target_include_directories(vmc.mov1.mpi
     PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/input)
+    ${CMAKE_SOURCE_DIR}/include)
   
   # compilation
   target_compile_options(vmc.mov1.mpi
@@ -59,7 +63,7 @@ if (MPI_Fortran_FOUND)
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
     )
-  
+
   target_link_libraries(vmc.mov1.mpi
     # PRIVATE
     cyrus pspline
