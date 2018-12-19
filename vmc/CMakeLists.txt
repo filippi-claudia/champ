@@ -157,6 +157,8 @@ set(SHARED_VMC_MPI_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/lin_d.f
   ${CMAKE_CURRENT_SOURCE_DIR}/jdqz_lib.f
   ${CMAKE_CURRENT_SOURCE_DIR}/prop_vmc.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/coords_int.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/sr.f
   ${CMAKE_CURRENT_SOURCE_DIR}/dl.f
   ${CMAKE_CURRENT_SOURCE_DIR}/vmc.f
@@ -182,6 +184,9 @@ target_compile_options(vmc_mpi_objects
 
 foreach(s ${SHARED_VMC_MPI_SOURCE})
   list(REMOVE_ITEM VMC_SOURCE ${s})
+endforeach(s)
+foreach(s ${SHARED_VMC_MPI_SOURCE})
+  list(REMOVE_ITEM VMC90_SOURCE ${s})
 endforeach(s)
 
 # --------------------------------------------

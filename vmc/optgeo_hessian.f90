@@ -95,7 +95,7 @@ module optgeo_hessian
     integer :: num
     real(kind=8) :: alpha
 
-    write (6,*) 'Don't use optgeo_update_bfgs. Not tested yet!'
+    write (6,*) 'Do not use optgeo_update_bfgs. Not tested yet!'
     stop
 
     ! initializes
