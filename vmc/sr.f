@@ -449,54 +449,105 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       end
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+!      subroutine compute_positions
+!      implicit real*8(a-h,o-z)
+!
+!      include 'vmc.h'
+!      include 'force.h'
+!
+!      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
+!
+!      common /force_analy/ iforce_analy,iuse_zmat,alfgeo
+!      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
+!      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
+!     &                 czcart_ref(3,3),izcmat(3,MCENT),
+!     &                 izmatrix
+!      common /grdnthes/ hessian_zmat(3,MCENT)
+!
+!      dimension cent_ref(3,MCENT)
+!
+!      if(iforce_analy.eq.0)return
+!
+!      call compute_position_bcast
+!
+!      if(iuse_zmat.eq.0) then
+!
+!        do ic=1,ncent
+!          do k=1,3
+!            cent(k,ic)=cent(k,ic)-alfgeo*da_energy_ave(k,ic)
+!          enddo
+!          write(6,*)'CENT ',(cent(k,ic),k=1,3)
+!        enddo
+!
+!      else
+!
+!        do 10 ic=1,3
+!          do 10 k=1,3
+!   10       cent_ref(k,ic)=cent(k,ic)
+!
+!        call cart2zmat(ncent,cent,izcmat,czint)
+!
+!        do ic=1,ncent
+!          do k=1,3
+!            czint(k,ic)=czint(k,ic)-alfgeo*da_energy_ave(k,ic)/hessian_zmat(k,ic)
+!          enddo
+!          write(6,*)'CENT ',(czint(k,ic),k=1,3)
+!        enddo
+!
+!        call zmat2cart_rc(ncent,izcmat,czint,cent,cent_ref)
+!
+!      endif
+!
+!      return
+!      end
+
+
       subroutine compute_positions
-      implicit real*8(a-h,o-z)
+        use coords_int
+        implicit real*8(a-h,o-z)
+      
+        include 'vmc.h'
+        include 'force.h'
+        
+        common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
+        
+        common /force_analy/ iforce_analy,iuse_zmat,alfgeo
+        common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
+        common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
+     &                   czcart_ref(3,3),izcmat(3,MCENT),
+     &                   izmatrix
+        
+        if (iforce_analy.eq.0) return
+        
+        call compute_position_bcast
+        
+        if(iuse_zmat.eq.1) then
+          call coords_init (ncent, cent, izcmat)
+          call coords_compute_wilson (cent, izcmat)
+          call coords_transform_gradients (da_energy_ave)
+          call coords_compute_step (alfgeo)
+          call coords_transform_step (czint, cent, izcmat)
 
-      include 'vmc.h'
-      include 'force.h'
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
-
-      common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
-      common /grdnthes/ hessian_zmat(3,MCENT)
-
-      dimension cent_ref(3,MCENT)
-
-      if(iforce_analy.eq.0)return
-
-      call compute_position_bcast
-
-      if(iuse_zmat.eq.0) then
-
-        do ic=1,ncent
-          do k=1,3
-            cent(k,ic)=cent(k,ic)-alfgeo*da_energy_ave(k,ic)
+          write (6,*) 'INTERNAL'
+          do ic=1,ncent
+            write (6,'(x 3f10.5)') czint(1:3, ic)
           enddo
-          write(6,*)'CENT ',(cent(k,ic),k=1,3)
-        enddo
 
-      else
-
-        do 10 ic=1,3
-          do 10 k=1,3
-   10       cent_ref(k,ic)=cent(k,ic)
-
-        call cart2zmat(ncent,cent,izcmat,czint)
-
-        do ic=1,ncent
-          do k=1,3
-            czint(k,ic)=czint(k,ic)-alfgeo*da_energy_ave(k,ic)/hessian_zmat(k,ic)
+          write (6,*) 'CENT'
+          do ic=1,ncent
+            write(6,'(3f10.5)') (cent(k,ic),k=1,3)
           enddo
-          write(6,*)'CENT ',(czint(k,ic),k=1,3)
-        enddo
 
-        call zmat2cart_rc(ncent,izcmat,czint,cent,cent_ref)
-
-      endif
-
-      return
+        else
+          do ic=1,ncent
+            do k=1,3
+              cent(k,ic)=cent(k,ic)-alfgeo*da_energy_ave(k,ic)
+            enddo
+            write(6,*)'CENT ',(cent(k,ic),k=1,3)
+          enddo
+        endif
+        
+        return
       end
+
+

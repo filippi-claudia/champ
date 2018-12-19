@@ -7,7 +7,7 @@ LIST dmc idmc tau etrial nfprod ipq itau_eff
      icasula node_cutoff enode_cutoff ibranch_elec icircular
      idrifdifgfunc
 
-LIST optgeo iforce_analy iuse_zmat alfgeo izvzb
+LIST optgeo iforce_analy iuse_zmat alfgeo izvzb iroot_geo
 
 LIST vmc imetro deltar deltat delta fbias node_cutoff enode_cutoff
 
