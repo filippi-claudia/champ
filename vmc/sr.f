@@ -517,7 +517,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      &                   czcart_ref(3,3),izcmat(3,MCENT),
      &                   izmatrix
         
-        if (iforce_analy.eq.0) return !TODO why is this here?
+        if (iforce_analy.eq.0) return
         
         call compute_position_bcast
         

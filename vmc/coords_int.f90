@@ -406,15 +406,18 @@ module coords_int
 
     int_step = -alpha * int_gradients
 
-    !if (project) then ! H=P.H.P
-    !  h = matmul (h, p)
-    !  h = matmul (p, h)
-    !endif
+    if (project) then ! H=P.H.P
+      h = matmul (h, p)
+      h = matmul (p, h)
+    endif
+
+    write (6,*) 'H', shape(H)
+    write (6,*) h
 
     ! divide by the diagonal elements of the Hessian matrix !TODO for now only works for this diagonal one
-    !do i = 1, num_int
-    !  int_step(i) = int_step(i) / h(i, i)
-    !enddo
+    do i = 1, num_int
+      int_step(i) = int_step(i) / h(i, i)
+    enddo
 
   end subroutine coords_compute_step
 

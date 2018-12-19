@@ -95,6 +95,9 @@ module optgeo_hessian
     integer :: num
     real(kind=8) :: alpha
 
+    write (6,*) 'Don't use optgeo_update_bfgs. Not tested yet!'
+    stop
+
     ! initializes
     num = size (h, 1)
     allocate (u(num, num))
