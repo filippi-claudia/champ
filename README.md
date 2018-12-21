@@ -81,9 +81,10 @@ To install **Champ** using [cmake](https://cmake.org/) you need to run the follo
 cmake -H. -Bbuild
 cmake --build build -- -j4
 ```
-The first command is only required to set up the build directory and needs to
+The first command is only required to set up the build directory and needs to be
 executed only once. Compared to the previous Makefiles the dependencies for the
-include files (e.g include/vmc.h) are correctly setup and no `--clean-first`
+include files (e.g include/vmc.h) are correctly setup and no `--clean-first` is
+required.
 
 #### CMAKE Options
 
@@ -121,17 +122,28 @@ cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 
 
 * CCPGate
-To build with ifort set the variables for the Intel MPI and MKL:
+To build with ifort set the variables for the Intel Compiler and MPI ->
+If you use CSH:
 ```
-. /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
-. /software/intel/intel_2019.0.117/mkl/bin/mklvars.sh intel64
+source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.csh -arch intel64 -platform linux
+source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.csh -arch intel64 -platform linux
+```
+If you use BASH:
+```
+. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.sh intel64
+. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.sh intel64
 ```
 and setup the build:
 ```
-cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 ```
 
-To build with gfortran set only(!):
+To build with gfortran set only(!) ->
+If you use CSH:
+```
+source /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh -arch intel64 -platform linux
+```
+If you use BASH:
 ```
 . /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
 ```
