@@ -16,7 +16,7 @@ c Written by Claudia Filippi
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
@@ -39,8 +39,6 @@ c Written by Claudia Filippi
 
       common /orbval/ orbo(MELEC,MORB),dorbo(3,MELEC,MORB),ddorbo(MELEC,MORB),ndetorb,nadorb
 
-      kref=1
-
       if(iel.le.nup) then
         ikel=nup*(iel-1)
         do 35 l=1,nup*nup
@@ -50,10 +48,12 @@ c Written by Claudia Filippi
           do 40 istate=1,nstates
    40       ymat(j,i,1,istate)=ymatn(j,i,istate)
    46     aa(i,j,1)=aan(i,j)
-        do 47 k=2,ndet
+        do 48 k=1,ndet
+          if(k.eq.kref) go to 48
           ndim=numrep_det(k,1)
           do 47 i=1,ndim*ndim
    47         wfmat(i,k,1)=wfmatn(i,k)
+   48   continue
 
         do 50 j=1,nup
           fpu(1,j+ikel)=dorb(1,iworbd(j,kref))
@@ -75,10 +75,12 @@ c Written by Claudia Filippi
           do 70 istate=1,nstates   
    70       ymat(j,i,2,istate)=ymatn(j,i,istate)
    76     aa(i,j,2)=aan(i,j)
-        do 77 k=2,ndet
+        do 78 k=1,ndet
+          if(k.eq.kref) go to 78
           ndim=numrep_det(k,2)
           do 77 i=1,ndim*ndim
    77         wfmat(i,k,2)=wfmatn(i,k)
+   78   continue
 
         do 80 j=1,ndn
           fpd(1,j+ikel)=dorb(1,iworbd(j+nup,kref))

@@ -23,7 +23,7 @@ c Written by Claudia Filippi
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
@@ -53,8 +53,6 @@ c Written by Claudia Filippi
 
       save aaw,wfmatw,ymatw,orbw,dorbw
 
-      kref=1
-
        do 20 k=1,ndet
          detuw(k,iw)=detu(k)
    20    detdw(k,iw)=detd(k)
@@ -77,15 +75,18 @@ c Written by Claudia Filippi
        do 62 iab=1,2
          nel=nup
          if(iab.eq.2) nel=ndn
-         do 61 j=ivirt(iab),norb
-          do 61 i=1,nel
-            do 60 istate=1,nstates
-   60         ymatw(j,i,iw,iab,istate)=ymat(j,i,iab,istate)
-   61       aaw(i,j,iw,iab)=aa(i,j,iab)
-          do 62 k=2,ndet
-            ndim=numrep_det(k,iab)
-            do 62 i=1,ndim*ndim
-   62         wfmatw(i,k,iw,iab)=wfmat(i,k,iab)
+         do 58 j=ivirt(iab),norb
+          do 58 i=1,nel
+            do 57 istate=1,nstates
+   57         ymatw(j,i,iw,iab,istate)=ymat(j,i,iab,istate)
+   58       aaw(i,j,iw,iab)=aa(i,j,iab)
+          do 62 k=1,ndet
+            if(k.ne.kref) then
+              ndim=numrep_det(k,iab)
+              do 60 i=1,ndim*ndim
+   60           wfmatw(i,k,iw,iab)=wfmat(i,k,iab)
+            endif
+   62  continue
 
        do 63 i=1,nelec
          do 63 iorb=1,norb
@@ -117,15 +118,18 @@ c Written by Claudia Filippi
        do 102 iab=1,2
          nel=nup
          if(iab.eq.2) nel=ndn
-         do 101 j=ivirt(iab),norb
-          do 101 i=1,nel
-            do 100 istate=1,nstates
-  100         ymat(j,i,iab,istate)=ymatw(j,i,iw,iab,istate)
-  101       aa(i,j,iab)=aaw(i,j,iw,iab)
-          do 102 k=2,ndet
-            ndim=numrep_det(k,iab)
-            do 102 i=1,ndim*ndim
-  102         wfmat(i,k,iab)=wfmatw(i,k,iw,iab)
+         do 98 j=ivirt(iab),norb
+          do 98 i=1,nel
+            do 97 istate=1,nstates
+   97         ymat(j,i,iab,istate)=ymatw(j,i,iw,iab,istate)
+   98       aa(i,j,iab)=aaw(i,j,iw,iab)
+          do 102 k=1,ndet
+            if(k.ne.kref) then
+              ndim=numrep_det(k,iab)
+              do 100 i=1,ndim*ndim
+  100           wfmat(i,k,iab)=wfmatw(i,k,iw,iab)
+            endif
+  102  continue
 
        do 103 i=1,nelec
          do 103 iorb=1,norb
@@ -158,15 +162,18 @@ c Written by Claudia Filippi
        do 142 iab=1,2
          nel=nup
          if(iab.eq.2) nel=ndn
-         do 141 j=ivirt(iab),norb
-          do 141 i=1,nel
-            do 140 istate=1,nstates
-  140         ymatw(j,i,iw2,iab,istate)=ymatw(j,i,iw,iab,istate)
-  141       aaw(i,j,iw2,iab)=aaw(i,j,iw,iab)
-          do 142 k=2,ndet
-            ndim=numrep_det(k,iab)
-            do 142 i=1,ndim*ndim
-  142         wfmatw(i,k,iw2,iab)=wfmatw(i,k,iw,iab)
+         do 138 j=ivirt(iab),norb
+          do 138 i=1,nel
+            do 137 istate=1,nstates
+  137         ymatw(j,i,iw2,iab,istate)=ymatw(j,i,iw,iab,istate)
+  138       aaw(i,j,iw2,iab)=aaw(i,j,iw,iab)
+          do 142 k=1,ndet
+            if(k.ne.kref) then
+              ndim=numrep_det(k,iab)
+              do 140 i=1,ndim*ndim
+  140           wfmatw(i,k,iw2,iab)=wfmatw(i,k,iw,iab)
+            endif
+  142  continue
 
        do 143 i=1,nelec
          do 143 iorb=1,norb

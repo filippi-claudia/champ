@@ -11,6 +11,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       if(ifunc_omega.eq.0) then
         call h_psi_energymin(ndim,nvec,psi,hpsi )
+       elseif(ifunc_omega.le.2) then
+        call h_psi_varmin(ndim,nvec,psi,hpsi )
        else
         call h_psi_omegamin(ndim,nvec,psi,hpsi )
       endif
@@ -29,7 +31,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       dimension psi(MPARM,*),spsi(MPARM,*)
 
-      if(ifunc_omega.eq.0) then
+      if(ifunc_omega.le.2) then
         call s_psi_energymin(ndim,nvec,psi,spsi )
        else
         call s_psi_omegamin(ndim,nvec,psi,spsi )

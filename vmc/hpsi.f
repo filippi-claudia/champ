@@ -1,4 +1,4 @@
-      subroutine hpsi(coord,psid,psij,energy,ifr)
+      subroutine hpsi(coord,psid,psij,energy,ipass,ifr)
 
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
@@ -51,7 +51,7 @@ c Calculates energy
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
@@ -110,7 +110,7 @@ c QM-MMPOL (charges+induced dipoles)
         pe_local=pe_local+peQM
       endif
 
-      if(ipr.ge.3) write(6,'(''pe before nonloc_pot'',9f12.5)') pe_local
+      if(ipr.ge.3) write(6,'(''pe_loc before nonloc_pot'',9f12.5)') pe_local
 
 c get contribution from jastrow (also compute derivatives wrt parameters and nuclei)
       if(ianalyt_lap.eq.1) then
@@ -121,7 +121,15 @@ c get contribution from jastrow (also compute derivatives wrt parameters and nuc
       if(ipr.ge.3) write(6,'(''d2j,psij'',9f12.5)') d2j,psij
 
 c compute reference determinant, its derivatives, and kinetic contribution to B_eloc and its derivatives
-      call determinant(coord,rvec_en,r_en)
+      icheck=0
+  2   call determinant(coord,rvec_en,r_en)
+
+      icheck=icheck+1
+      call check_detref(ipass,icheck,newref)
+      if(newref.gt.0) then
+        if (ioptorb.ne.0) call optorb_define
+        goto 2
+      endif
 
       call compute_bmatrices_kin
 
@@ -129,6 +137,11 @@ c compute pseudo-potential contribution
 c nonloc_pot must be called after determinant because slater matrices are needed
       if(nloc.gt.0) 
      &  call nonloc_pot(coord,rshift,rvec_en,r_en,pe_local,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
+
+      if(ipr.ge.3) then 
+        write(6,'(''pe_loc after nonloc_pot'',9f12.5)') pe_local
+        write(6,'(''pe_ref after nonloc_pot'',9f12.5)') (vpsp_det(ii),ii=1,2)
+      endif
 
       call multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
@@ -149,20 +162,21 @@ c compute energy using Ymat
           do 20 jrep=ivirt(iab),norb
             do 20 irep=iactv(iab),nel
    20         denergy(istate)=denergy(istate)+ymat(jrep,irep,iab,istate)*tildem(irep,jrep,iab)
-        denergy(istate)=denergy(istate)*detu(1)*detd(1)/psid(istate)
+        denergy(istate)=denergy(istate)*detu(kref)*detd(kref)/psid(istate)
 
-        energy(istate)=denergy(istate)+eloc_det(1,1)+eloc_det(1,2)+e_other
+        energy(istate)=denergy(istate)+eloc_det(kref,1)+eloc_det(kref,2)+e_other
 
         if(ipr.ge.2) then
           write(6,'(''state'',i4)') istate
           write(6,'(''psid,psij'',9d12.5)') psid(istate),psij
           write(6,'(''psitot   '',e18.11)') psid(istate)*exp(psij)
           do k=1,ndet
-            write(6,'(''psitot_k '',i6,3e18.8)') k, detu(k),detd(k),detu(k)*detd(k)*exp(psij)
+c           write(6,'(''psitot_k '',i6,3e18.8)') k, detu(k),detd(k),detu(k)*detd(k)*exp(psij)
+            write(6,'(''psitot_k '',i6,3e18.8)') k, detu(k),detd(k),cdet(k,1,1)*detu(k)*detd(k)*exp(psij)
           enddo
-          do 25 i=1,nelec
-            do 25 k=1,3
-   25         write(6,'(''vj'',2e18.11)') vj(k,i)
+c         do 25 i=1,nelec
+c           do 25 k=1,3
+c  25         write(6,'(''vj'',2e18.11)') vj(k,i)
           if(ipr.ge.3) write(6,'(''energy'',9f16.10)') energy(istate)
         endif
 

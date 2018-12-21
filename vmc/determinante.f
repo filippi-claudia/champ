@@ -19,6 +19,9 @@
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /dorb/ iworbd(MELEC,MDET)
 
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+     & ,iwundet(MDET,2),iactv(2),ivirt(2)
+
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
@@ -33,8 +36,6 @@ c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-
-      kref=1
 
       call orbitalse(iel,x,rvec_en,r_en,iflag)
 
@@ -129,7 +130,7 @@ c-----------------------------------------------------------------------
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
@@ -138,8 +139,6 @@ c-----------------------------------------------------------------------
       dimension ymat_tmp(MORB,MELEC)
 
       save ymat_tmp
-
-      kref=1
 
       if(iel.le.nup) then
         iab=1
@@ -309,10 +308,11 @@ c-----------------------------------------------------------------------
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /dorb/ iworbd(MELEC,MDET)
 
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+     & ,iwundet(MDET,2),iactv(2),ivirt(2)
+
       dimension slmi(MMAT_DIM),dorb(3,MORB)
       dimension ddx_ref(3)
-
-      kref=1
 
       ddx_ref(1)=0
       ddx_ref(2)=0

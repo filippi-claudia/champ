@@ -20,6 +20,9 @@ c Modified by A. Scemama
      &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
 
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+     & ,iwundet(MDET,2),iactv(2),ivirt(2)
+
       common /multislater/detiab(MDET,2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -28,8 +31,6 @@ c Modified by A. Scemama
 
 c compute orbitals
       call orbitals(x,rvec_en,r_en)
-
-      kref=1
 
       do 400 iab=1,2
 
@@ -69,9 +70,52 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
         d2dx2(i+ish)=ddot(nel,slmi(1+ik,iab),1,fpp( 1+ik,iab),1)
       enddo
 
+        if(ipr.ge.4) then
+          ik=-nel
+          do i=1,nel
+            ik=ik+nel
+            write(6,*) 'slmi',iab,'M',(slmi(ii+ik,iab),ii=1,nel)
+          enddo
+        endif
  400  continue
 
       if(ipr.ge.4) write(6,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine check_detref(ipass,icheck,iflag)
+
+      implicit real*8(a-h,o-z)
+      include 'vmc.h'
+      include 'force.h'
+      include 'optjas.h'
+      include 'mstates.h'
+
+      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+     & ,iwundet(MDET,2),iactv(2),ivirt(2)
+
+      common /multislater/detiab(MDET,2)
+
+      common /estpsi/ detref(2),apsi(MSTATES),aref
+
+      parameter (one=1.d0,half=0.5d0)
+
+      if(ipass.le.2) return
+
+      iflag=0
+      do iab=1,2
+        dlogdet=dlog10(dabs(detiab(kref,iab)))
+        dcheck=dabs(dlogdet-detref(iab)/ipass)
+        if(iab.eq.1.and.dcheck.gt.6) iflag=1
+        if(iab.eq.2.and.dcheck.gt.6) iflag=2
+        if(ipr.ge.2) write(6,*) 'check',dlogdet,detref(iab)/ipass
+      enddo
+
+      if(ipr.ge.2) write(6,*) 'check detref',iflag
+      if(iflag.gt.0) call multideterminants_define(iflag,icheck)
+    
       return
       end
 c-----------------------------------------------------------------------

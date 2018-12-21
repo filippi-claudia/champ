@@ -38,7 +38,7 @@ c routine to accumulate estimators for energy etc.
       common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),pecum(MSTATES),tpbcum(MSTATES),tjfcum(MSTATES),r2cum,iblk
       common /est2cm/ ecm21(MSTATES),ecm2(MSTATES,MFORCE),pecm2(MSTATES),tpbcm2(MSTATES),tjfcm2(MSTATES),r2cm2
       common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
-      common /estpsi/ apsi(MSTATES),aref
+      common /estpsi/ detref(2),apsi(MSTATES),aref
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad)
      &,ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
@@ -46,6 +46,9 @@ c routine to accumulate estimators for energy etc.
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+     & ,iwundet(MDET,2),iactv(2),ivirt(2)
+
       common /multislater/ detu(MDET),detd(MDET)
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
@@ -99,7 +102,7 @@ c only called for ifr=1
       call prop_cum(wsum(1,1))
       call pcm_cum(wsum(1,1))
       call mmpol_cum(wsum(1,1))
-      call force_analy_cum(wsum(1,1),ecum(1,1)/wcum(1,1))
+      call force_analy_cum(wsum(1,1),ecum(1,1)/wcum(1,1),wcum(1,1))
 
 c zero out xsum variables for metrop
 
@@ -133,8 +136,10 @@ c statistical fluctuations without blocking
         apsi(istate)=apsi(istate)+dabs(psido(istate))
   30  continue
     
-      kref=1
       aref=aref+dabs(detu(kref)*detd(kref))
+
+      detref(1)=detref(1)+dlog10(dabs(detu(kref)))
+      detref(2)=detref(2)+dlog10(dabs(detd(kref)))
 
       call acues1_reduce
 
@@ -183,6 +188,9 @@ c zero out estimators
 
         apsi(istate)=0
   50  continue
+
+      detref(1)=0
+      detref(2)=0
 
       aref=0
 
@@ -233,14 +241,14 @@ c secondary configs
 c set n- and e-coords and n-n potentials before getting wavefn. etc.
       do 80 ifr=2,nforce
         call strech(xold,xstrech,ajacob,ifr,1)
-        call hpsi(xstrech,psido,psijo,eold(1,ifr),ifr)
+        call hpsi(xstrech,psido,psijo,eold(1,ifr),0,ifr)
         do 80 istate=1,nstates
    80     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
 
 c primary config
 c set n- and e-coords and n-n potentials before getting wavefn. etc.
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
-      call hpsi(xold,psido,psijo,eold(1,1),1)
+      call hpsi(xold,psido,psijo,eold(1,1),0,1)
 
       do 82 istate=1,nstates
    82   psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)

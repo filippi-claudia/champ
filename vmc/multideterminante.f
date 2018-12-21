@@ -25,7 +25,7 @@
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
@@ -40,8 +40,6 @@
       dimension orb_sav(MORB)
 
       if(ndet.eq.1) return
-
-      kref=1
 
       iab=1
       nel=nup
@@ -71,7 +69,9 @@ c temporarely copy orbn to orb
       enddo
 
 c compute wave function 
-      do 200 k=2,ndet
+      do 200 k=1,ndet
+
+        if(k.ne.kref) then
 
         if(iwundet(k,iab).eq.k) then
 
@@ -98,10 +98,12 @@ c compute wave function
 
         endif
 
+        endif
+
  200  continue
 
-      do 400 k=2,ndet
-        if(iwundet(k,iab).ne.kref) then
+      do 400 k=1,ndet
+        if(k.ne.kref.and.iwundet(k,iab).ne.kref) then
           detn(k)=detn(k)*detn(kref)
         endif
  400  continue
@@ -137,7 +139,7 @@ c-----------------------------------------------------------------------
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
 
@@ -149,8 +151,6 @@ c-----------------------------------------------------------------------
       dimension b(MORB,3),dorb(3,MORB)
       dimension gmat(MELEC,MORB,3)
       dimension velocity(3)
-
-      kref=1
 
       do k=1,3
         velocity(k)=0.d0

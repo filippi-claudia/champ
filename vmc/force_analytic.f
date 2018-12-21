@@ -16,7 +16,7 @@
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -62,7 +62,7 @@ c-----------------------------------------------------------------------
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
@@ -80,7 +80,6 @@ c-----------------------------------------------------------------------
       dimension b_a(MORB,MELEC),b_kref(MELEC*MELEC),tildem_a(MELEC,MORB),xmat(MELEC*MELEC,2),work(MELEC)
       dimension da_psi_ref(3,MCENT)
 
-      kref=1
       do 400 ic=1,ncent
         do 400 k=1,3
 
@@ -129,7 +128,7 @@ c compute force for reference determinant
 c enddo iab
           enddo
 
-          da_psi(k,ic)=trace*detu(1)*detd(1)/psid
+          da_psi(k,ic)=trace*detu(kref)*detd(kref)/psid
 
  400  continue
 
@@ -167,7 +166,7 @@ c-----------------------------------------------------------------------
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
@@ -195,7 +194,6 @@ c-----------------------------------------------------------------------
 
       dimension da_energy_ref(3,MCENT)
 
-      kref=1
       do 400 ic=1,ncent
         do 400 k=1,3
 
@@ -234,7 +232,7 @@ c compute force for reference determinant
 c enddo iab
           enddo
 
-          da_energy(k,ic)=trace*detu(1)*detd(1)/psid
+          da_energy(k,ic)=trace*detu(kref)*detd(kref)/psid
   400 continue
 
       do 800 ic=1,ncent
@@ -255,8 +253,6 @@ c enddo iab
 c complete da_psi
   800 continue
 
-
-c     if(ipr.gt.3) write(6,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
 c     write(6,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
 
       return
@@ -320,7 +316,7 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
-      subroutine force_analy_cum(wsum,eave)
+      subroutine force_analy_cum(wsum,eave,wcum)
       implicit double precision(a-h,o-z)
 
       include 'vmc.h'
@@ -372,9 +368,10 @@ c-----------------------------------------------------------------------
    10     da_energy_err(k)=err(da_energy_ave(k,ic),da_energy_cm2(k,ic))
    20   write(80,'(i5,1p6e14.5)') ic,(da_energy_ave(k,ic),k=1,3),(da_energy_err(k),k=1,3)
 
-      ! TODO JF this is included in the treatment of internal
-      ! coordinates, remove this when finished
-      !call transform_grad_zmat(da_energy_ave)
+       ! TODO JF this is included in the treatment of internal
+       ! coordinates, remove this when finished
+       !call transform_grad_zmat(da_energy_ave)
+
       return
       end
 c-----------------------------------------------------------------------

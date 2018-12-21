@@ -13,10 +13,12 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
+
+      common /optwf_func/ omega,ifunc_omega
 
       call p2gtid('optgeo:izvzb',izvzb,0,1)
 
@@ -119,7 +121,7 @@ c         obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
       enddo
       write(6,'(''nparm, non-zero S diag'',t41,2i5)') nparm,kk
         
-      if(method.eq.'sr_n'.and.izvzb.eq.0) return
+      if(method.eq.'sr_n'.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
 
       if(method.ne.'sr_n') then
         s_diag(1,1)=sr_adiag !!!
@@ -146,6 +148,16 @@ c         obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
       do k=1,nparm
         obs(jfhfj+i-1,1)=obs(jfhfj+i-1,1) !!! +sr_adiag
       enddo
+
+      if(ifunc_omega.ne.0) then
+        den=omega*omega+obs(jelo2,1)-2*omega*obs(jelo,1)
+        dum1=-2/den
+        dum2=(omega-obs(jelo,1))/den
+        do k=1,nparm
+         h_sr(k)=dum1*(omega*obs(jfj+k-1,1)-obs(jefj+k-1,1)
+     &   -dum2*(omega*omega*obs(jfj+k-1,1)+obs(jelohfj+k-1,1)-omega*(obs(jhfj+k-1,1)+obs(jefj+k-1,1))))
+        enddo
+      endif
 
 c     do k=1,nparm
 c      s_kk=obs(jfifj+k-1)-obs(jfj+k-1)*obs(jfj+k-1)
@@ -174,7 +186,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
  
       common /force_mat_n/ force_o(6*MCENT,MCONF)
 
@@ -339,7 +351,7 @@ c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
       include 'sr.h'
       include 'mstates.h'
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension x(*),b(*)
       do i=1,n
@@ -362,7 +374,7 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
       include 'sr.h'
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight

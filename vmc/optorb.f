@@ -28,7 +28,7 @@
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
@@ -45,7 +45,7 @@ c     ns_current=ns_current+1
 c     if(ns_current.ne.iorbsample) return
 c ns_current reset in optorb_sum
 
-      detratio=detu(1)*detd(1)/psid
+      detratio=detu(kref)*detd(kref)/psid
       do 200 iterm=1,norbterm
 
         io=ideriv(1,iterm)
@@ -763,7 +763,7 @@ c-----------------------------------------------------------------------
       common /optorb_mix/ norbopt,norbvirt,iwmix_virt(MORB,MORB)
 
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       dimension iodet(2,MDET)
@@ -910,7 +910,6 @@ c Define new operator (new variation) and its terms
         if(m(1).gt.0) ideriv_iab(noporb)=1
         if(m(2).gt.0) ideriv_iab(noporb)=ideriv_iab(noporb)+2
 
-        kref=1
         do iab=1,2
           n0=0
           n1=nup

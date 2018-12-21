@@ -251,14 +251,14 @@ c loop over secondary config
       do 60 ifr=2,nforce
 c set n- and e-coord and n-n potential
         call strech(xold,xstrech,ajacob,ifr,1)
-        call hpsi(xstrech,psido,psijo,eold(1,ifr),ifr)
+        call hpsi(xstrech,psido,psijo,eold(1,ifr),0,ifr)
         do 60 istate=1,nforce
    60     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
 
 c primary config
 c set n-coord and n-n potential
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
-      call hpsi(xold,psido,psijo,eold(1,1),1)
+      call hpsi(xold,psido,psijo,eold(1,1),0,1)
       do 65 istate=1,nforce
         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
         tjfo(istate)=d2(istate)

@@ -14,11 +14,12 @@
       common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),pecum(MSTATES),tpbcum(MSTATES),tjfcum(MSTATES),r2cum,iblk
       common /est2cm/ ecm21(MSTATES),ecm2(MSTATES,MFORCE),pecm2(MSTATES),tpbcm2(MSTATES),tjfcm2(MSTATES),r2cm2
       common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
-      common /estpsi/ apsi(MSTATES),aref
+      common /estpsi/ detref(2),apsi(MSTATES),aref
 
       passes=dfloat(iblk*nstep)
 
       write(6,'(''average psid, det_ref '',2d12.5)') (apsi(istate)/passes,istate=1,nstates),aref/passes
+      write(6,'(''log detref '',2d12.5)') (detref(i)/passes,i=1,3)
 
       return
       end

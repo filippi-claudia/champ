@@ -364,7 +364,7 @@ c Primary configuration
             drifdifr=one
             if(nforce.gt.1)
      &      call strech(xold(1,1,iw,1),xold(1,1,iw,1),ajacob,1,0)
-            call hpsi(xold(1,1,iw,1),psidn,psijn,enew,1)
+            call hpsi(xold(1,1,iw,1),psidn,psijn,enew,ipass,1)
             call walksav_det(iw)
             call walksav_jas(iw)
             if(icasula.lt.0) call multideterminant_tmove(psidn,0)
@@ -402,7 +402,7 @@ c Compute streched electronic positions for all nucleus displacement
               endif
             endif
             if(icasula.lt.0) i_vpsp=icasula
-            call hpsi(xold(1,1,iw,ifr),psidn,psijn,enew,ifr)
+            call hpsi(xold(1,1,iw,ifr),psidn,psijn,enew,ipass,ifr)
             i_vpsp=0
           endif
 

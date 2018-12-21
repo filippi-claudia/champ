@@ -32,7 +32,7 @@
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
@@ -52,10 +52,7 @@
 
       if(ioptjas.eq.0) return
 
-      kref=1
- 
       do 200 iparm=1,nparmj
-
 
         deloc_dj(iparm)=dvpsp_dj(iparm)
         do i=1,nelec
@@ -67,13 +64,13 @@
         do 100 istate=1,nstates
  100      denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref*detu(kref)*detd(kref)
 
-        test=0
-        do j=1,nup
-          do i=1,nup
-            test=test+slmui(j+(i-1)*nup)*b_dj(j,i,iparm)
-            test=test+slmdi(j+(i-1)*nup)*b_dj(j,i+nup,iparm)
-          enddo
-        enddo
+C       test=0
+C       do j=1,nup
+C         do i=1,nup
+C           test=test+slmui(j+(i-1)*nup)*b_dj(j,i,iparm)
+C           test=test+slmdi(j+(i-1)*ndn)*b_dj(j,i+nup,iparm)
+C         enddo
+C       enddo
 
         if(ndet.gt.1) then
 
@@ -112,7 +109,9 @@
 
         denergy_det(kref,1)=0.d0
         denergy_det(kref,2)=0.d0
-        do k=2,ndet
+        do k=1,ndet
+
+          if(k.ne.kref) then
 
           do iab=1,2
 
@@ -149,9 +148,13 @@
              denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detu(k)*detd(k)
           enddo
 
+          endif
+c endif k.ne.kref
+
         enddo
 
         endif
+c endif ndet.gt.1
 
         term_jas=d2g(iparm)
         do i=1,nelec

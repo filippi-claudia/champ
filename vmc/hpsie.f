@@ -28,18 +28,19 @@ c Calculates wave function
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+     & ,iwundet(MDET,2),iactv(2),ivirt(2)
+
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
 
-      common /estpsi/ apsi(MSTATES),aref
+      common /estpsi/ detref(2),apsi(MSTATES),aref
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension coord(3,*),psid(*)
 
       iwf=iwftype(1)
-
-      kref=1
 
       call distances(iel,coord)
 
@@ -76,11 +77,6 @@ c combine determinantal quantities to obtain trial wave function
         aref_now=aref/(ipass-1)
         check_dref=abs(detn(kref))/aref_now
 
-c       if(check_apsi_min.lt.1.d-10.or.check_dref.lt.1.d-10.or.abs(detn(kref)/psid(1)).lt.d-10)
-c    &    write(88,'(i5,4d12.5)') ipass,abs(psid(1)),apsi_now,abs(detn(kref)),aref_now
-
-c       write(88,'(i5,4d12.5)') ipass,abs(psid(1)),apsi_now,abs(detn(kref)),aref_now
-   
       endif
 
       return

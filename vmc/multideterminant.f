@@ -21,18 +21,18 @@ c dimensioned at least max(nup**2,ndn**2)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
+      common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detiab(MDET,2)
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
+      common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
      & ,tildem(MELEC,MORB,2)
 
       common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
@@ -51,7 +51,7 @@ c dimensioned at least max(nup**2,ndn**2)
       dimension eloc_det(MDET,2)
       dimension vj(3,MELEC),vpsp_det(*)
 
-      kref=1
+      dimension btemp(MELEC**2,2)
 
       nel=nup
       ish=0
@@ -67,48 +67,56 @@ c dimensioned at least max(nup**2,ndn**2)
         enddo
       enddo
 
+c     write(6,*) 'eloc_ref',eloc_det(kref,1),eloc_det(kref,2)
 
-      if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) call bxmatrix(kref,xmatu,xmatd,b)
+      if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) call bxmatrix(kref,xmat(1,1),xmat(1,2),b)
      
       if(ndet.eq.1.and.ioptorb.eq.0) return
 
+      nel=nup
+      iel=0
       do iab=1,2
+        if(iab.eq.2) then
+          nel=ndn
+          iel=nup
+        endif
+
+c       ish=-nel
+c       do 110 i=1,nel
+c         ish=ish+nel
+c         do 110 j=1,nel
+c 110       btemp(j+ish,iab)=b(iworbd(j+iel,kref),i+iel)
 
 c       do jrep=ivirt(iab),norb+nadorb
         do jrep=1,norb+nadorb
-          if(iab.eq.1) then
-            do irep=1,nup
 
-              dum1=0.d0
-              dum2=0.d0
-              dum3=0.d0
-              do i=1,nup
-               dum1=dum1+slmui(irep+(i-1)*nup)*orb(i,jrep)
-               dum2=dum2+slmui(irep+(i-1)*nup)*b(jrep,i)
-               dum3=dum3+xmatu(i+(irep-1)*nup)*orb(i,jrep)
-              enddo
-              aa(irep,jrep,iab)=dum1
-              tildem(irep,jrep,iab)=dum2-dum3
-
+          do irep=1,nel
+            dum1=0.d0
+            dum2=0.d0
+            dum3=0.d0
+            do i=1,nel
+              dum1=dum1+slmi(irep+(i-1)*nel,iab)*orb(i+iel,jrep)
+              dum2=dum2+slmi(irep+(i-1)*nel,iab)*b(jrep,i+iel)
+              dum3=dum3+xmat(i+(irep-1)*nel,iab)*orb(i+iel,jrep)
             enddo
-           else
-            do irep=1,ndn
+            aa(irep,jrep,iab)=dum1
+            tildem(irep,jrep,iab)=dum2-dum3
+          enddo
 
-              dum1=0.d0
-              dum2=0.d0
-              dum3=0.d0
-              do i=1,ndn
-               dum1=dum1+slmdi(irep+(i-1)*ndn)*orb(i+nup,jrep)
-               dum2=dum2+slmdi(irep+(i-1)*ndn)*b(jrep,i+nup)
-               dum3=dum3+xmatd(i+(irep-1)*ndn)*orb(i+nup,jrep)
-              enddo
-              aa(irep,jrep,iab)=dum1
-              tildem(irep,jrep,iab)=dum2-dum3
-
-            enddo
-          endif
+c         do irep=1,nel
+c           dum1=0.d0
+c           do i=1,nel
+c             dum4=0.d0
+c             do kk=1,nel
+c               dum4=dum4+btemp(kk+nel*(i-1),iab)*aa(kk,jrep,iab)
+c             enddo
+c             dum1=dum1+slmi(irep+(i-1)*nel,iab)*(b(jrep,i+iel)-dum4)
+c           enddo
+c           tildem(irep,jrep,iab)=dum1
+c         enddo
 
         enddo
+
       enddo
 
       denergy_det(kref,1)=0
@@ -116,7 +124,12 @@ c       do jrep=ivirt(iab),norb+nadorb
 
       if(ndet.eq.1) return
 
-      do 200 k=2,ndet
+      do 200 k=1,ndet
+
+        if(k.eq.kref) then
+c         write(6,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
+          goto 200
+        endif
 
         do iab=1,2
 
@@ -139,7 +152,16 @@ c       do jrep=ivirt(iab),norb+nadorb
               enddo
             enddo
 
+c           if(kref.ne.1) then
+c           write(6,'('' AA det'',3i6)') k, iab,ndim
+c           do irep=1,ndim
+c             write(6,'(''AA'',10d12.4)') (wfmat(irep+(jrep-1)*ndim,k,iab),jrep=1,ndim)
+c           enddo
+c           endif
+
+c           write(6,*) 'B HELLO',k,ndim,(irepcol_det(irep,k,iab),irep=1,ndim),(ireporb_det(jrep,k,iab),jrep=1,ndim)
             call matinv(wfmat(1,k,iab),ndim,det)
+c           write(6,*) 'A HELLO',k,det
             detiab(k,iab)=det
 
 c           if(iab.eq.1) then
@@ -168,16 +190,23 @@ c           endif
 
         enddo
 
+c       write(6,*) 'denergy_det',denergy_det(k,1),denergy_det(k,2)
+
         eloc_det(k,1)=denergy_det(k,1)+eloc_det(kref,1)
         eloc_det(k,2)=denergy_det(k,2)+eloc_det(kref,2)
+
+c       write(6,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
  200  continue
 
-      do 400 k=2,ndet
-        do 400 iab=1,2
+      do 400 k=1,ndet
+        if(k.eq.kref) goto 400
+        do 300 iab=1,2
           if(iwundet(k,iab).ne.kref) then
             detiab(k,iab)=detiab(k,iab)*detiab(kref,iab)
           endif
+ 300  continue
  400  continue
+
 
 c compute Ymat for future use
 
@@ -222,7 +251,7 @@ c-----------------------------------------------------------------------
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -234,15 +263,14 @@ c-----------------------------------------------------------------------
 
       dimension detu(MDET),detd(MDET),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
 
-      kref=1
-
       detrefi=1.d0/(detu(kref)*detd(kref))
 
       do 10 i=1,nelec
         do 10 j=1,norb
  10       ymat(j,i)=0
 
-      do 300 k=2,ndet
+      do 300 k=1,ndet
+        if(k.eq.kref) goto 300
 
         cdet_equiv(k)=0
         dcdet_equiv(k)=0
@@ -263,9 +291,9 @@ c-----------------------------------------------------------------------
 
  300  continue
 
-      do 400 kk=2,ndet
+      do 400 kk=1,ndet
 
-        if(iwundet(kk,iab).ne.kk) goto 400
+        if(kk.eq.kref.or.iwundet(kk,iab).ne.kk) goto 400
 
         ndim=numrep_det(kk,iab)
 
@@ -301,7 +329,7 @@ c-----------------------------------------------------------------------
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
@@ -316,9 +344,9 @@ c-----------------------------------------------------------------------
         do 10 j=1,norb
  10       dymat(j,i)=0
 
-      do 400 kk=2,ndet
+      do 400 kk=1,ndet
 
-        if(iwundet(kk,iab).ne.kk) goto 400
+        if(kk.eq.kref.or.iwundet(kk,iab).ne.kk) goto 400
 
         ndim=numrep_det(kk,iab)
         do irep=1,ndim
@@ -380,7 +408,7 @@ c-----------------------------------------------------------------------
       common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
      & ,tildem(MELEC,MORB,2)
 
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
@@ -424,7 +452,9 @@ c           do krep=ivirt(iab),norb+nadorb
             enddo
           enddo
         enddo
+
   100 continue
+
 
       return
       end
@@ -470,7 +500,7 @@ c     write(6,*) 'YMAT',((ymat(i,j,iab,1),i=1,7),j=1,4)
       end
 
 c-----------------------------------------------------------------------
-      subroutine multideterminants_define
+      subroutine multideterminants_define(iflag,icheck)
 
       implicit real*8(a-h,o-z)
       include 'vmc.h'
@@ -480,7 +510,7 @@ c-----------------------------------------------------------------------
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /dorb/ iworbd(MELEC,MDET)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -488,6 +518,8 @@ c-----------------------------------------------------------------------
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       dimension iswapped(MELEC),itotphase(MDET)
+
+      save kref_old
 
       call p2gti('electrons:nelec',nelec,1)
       if(nelec.gt.MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
@@ -501,9 +533,27 @@ c-----------------------------------------------------------------------
 
       call p2gtid('optwf:ioptci',ioptci,0,1)
 
-      kref=1
+      if(iflag.eq.0) then
+        kref=1
+       else
+        if(kref.gt.1.and.icheck.eq.1) then
+          kref=1
+          goto 2
+        endif
+  1     kref=kref+1
+  2     if(idiff(kref_old,kref,iflag).eq.0) goto 1
+        write(6,*) 'kref change',iflag,kref_old,kref
+      endif
+      if(kref.gt.ndet) call fatal_error('MULTIDET_DEFINE: kref > ndet')
+      kref_old=kref
 
-      do k=2,ndet
+      do iab=1,2
+        numrep_det(kref,iab)=0
+      enddo
+
+      do k=1,ndet
+        itotphase(k)=0
+        if(k.eq.kref) goto 5 
         do iab=1,2
           nel=nup
           ish=0
@@ -547,7 +597,6 @@ c-----------------------------------------------------------------------
           do irep=1,numrep_det(k,iab)
             iswapped(irepcol_det(irep,k,iab))=ireporb_det(irep,k,iab)
           enddo
-c         if(k.eq.21) write(6,'(''MD setup'',2i4,''->'',10i3)') k,iab,(iswapped(i),i=1,nel)
           iphase=0
           do i=1,nel
             if(iworbd(i+ish,k).ne.iswapped(i)) then
@@ -561,22 +610,20 @@ c         if(k.eq.21) write(6,'(''MD setup'',2i4,''->'',10i3)') k,iab,(iswapped(
               enddo
             endif
           enddo
-c         if(k.eq.21) write(6,'(''MD setup'',2i4,''->'',10i3)') k,iab,(iswapped(i),i=1,nel)
-c         cdet(k,1,1)=cdet(k,1,1)*(-1)**iphase
 
           itotphase(k)=itotphase(k)+iphase
-c         if(k.eq.21) write(6,'(''MD setup'',3i4)') k,iab,iphase
         enddo
         do iwf=1,nwftype
           do istate=1,nstates
             cdet(k,istate,iwf)=cdet(k,istate,iwf)*(-1)**itotphase(k)
           enddo
         enddo
-c       if(k.eq.21) write(6,*) 'MD setup',cdet(k,1,1)
+  5     continue
       enddo
 
 
-      do k=2,ndet
+      do k=1,ndet
+        if(k.eq.kref) goto 6 
         do i=1,nelec
           iworbd(i,k)=iworbd(i,kref)
         enddo
@@ -587,23 +634,32 @@ c       if(k.eq.21) write(6,*) 'MD setup',cdet(k,1,1)
             iworbd(irepcol_det(irep,k,iab)+ish,k)=ireporb_det(irep,k,iab)
           enddo
         enddo
+  6     continue
       enddo
 
       iactv(1)=nup+1
       iactv(2)=ndn+1
       ivirt(1)=nup+1
       ivirt(2)=ndn+1
-      do k=2,ndet
+      do k=1,ndet
+        if(k.eq.kref) goto 8 
         do iab=1,2
           do irep=1,numrep_det(k,iab)
             if(irepcol_det(irep,k,iab).ne.0.and.irepcol_det(irep,k,iab).lt.iactv(iab)) iactv(iab)=irepcol_det(irep,k,iab)
             if(ireporb_det(irep,k,iab).lt.ivirt(iab)) ivirt(iab)=ireporb_det(irep,k,iab)
           enddo
         enddo
+  8     continue
       enddo
+
+      if(iflag.eq.0) then
+
+      write(6,*) 'norb  =', norb
       write(6,*) 'iactv =', (iactv(iab),iab=1,2)
       write(6,*) 'ivirt =', (ivirt(iab),iab=1,2)
-      write(6,*) 'norb  =', norb
+
+      endif
+
       idist=1
       if(idist.eq.0) then
         do iab=1,2
@@ -613,9 +669,13 @@ c       if(k.eq.21) write(6,*) 'MD setup',cdet(k,1,1)
         enddo
        else
         do iab=1,2
-          iwundet(1,iab)=1
-          do i=2,ndet
+          do i=1,ndet
             iwundet(i,iab)=i
+            if(i.eq.kref) goto 10
+            if(idiff(kref,i,iab).eq.0) then
+              iwundet(i,iab)=kref
+              goto 10
+            endif
             do j=1,i-1
               if(idiff(j,i,iab).eq.0)then
                 iwundet(i,iab)=j
@@ -652,7 +712,7 @@ c-----------------------------------------------------------------------
       function idiff(j,i,iab)
       implicit real*8(a-h,o-z)
       include 'vmc.h'
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
       idiff=1
       if(numrep_det(i,iab).ne.numrep_det(j,iab))return

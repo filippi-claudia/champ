@@ -1051,7 +1051,7 @@ CKEYDOC CI coefficients and occupation of determinants in wf
       include 'inputflags.h'
       common /dorb/ iworbd(MELEC,MDET)
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /multidet/ numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       if(nd.ne.ndet-1) call fatal_error('INPUT: problem in multidet')
@@ -1495,7 +1495,7 @@ c Check that the required blocks are there in the input
         if(ihessian_zmat.eq.0) call hessian_zmat_define
       endif
       if(imultideterminants.eq.0) then
-        call multideterminants_define
+        call multideterminants_define(0,0)
       endif
       if(ioptorb.ne.0) then
         if(ioptorb_mixvirt.eq.0) then

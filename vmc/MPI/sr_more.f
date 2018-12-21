@@ -13,10 +13,14 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       include 'optorb.h'
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
+
+      common /sr_index/ jelo,jelo2,jelohfj
+
+      common /optwf_func/ omega,ifunc_omega
 
       common /mpiconf/ idtask,nproc
 
@@ -132,7 +136,7 @@ c         obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
 
       endif
 
-      if(method.eq.'sr_n'.and.izvzb.eq.0) return
+      if(method.eq.'sr_n'.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
 
       if(method.ne.'sr_n') then
         s_diag(1,1)=sr_adiag !!!
@@ -164,9 +168,35 @@ c         obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
          obs_tot(i,1)=obs_tot(i,1)/obs_tot(1,1)
         enddo
 
-c       do i=1,nparm
-c         write(6,*) 'CIAO',obs_tot(jelohfj+i-1,1),obs_tot(jelo,1),obs_tot(jhfj+i-1,1)
-c       enddo
+        if(ifunc_omega.eq.1) then
+c variance
+          var=obs_tot(jelo2,1)-obs_tot(jelo,1)**2
+          do k=1,nparm
+           h_sr(k)=-2*(obs_tot(jelohfj+k-1,1)-(obs_tot(jhfj+k-1,1)-obs_tot(jefj+k-1,1))*obs_tot(jelo,1)
+     &             -obs_tot(jfj+k-1,1)*obs_tot(jelo2,1) 
+     &             -2*obs_tot(jelo,1)*(obs_tot(jefj+k-1,1)-obs_tot(jfj+k-1,1)*obs_tot(jelo,1)))
+          enddo
+
+         elseif(ifunc_omega.eq.2) then
+c variance with fixed average energy (omega)
+          var=omega*omega+obs_tot(jelo2,1)-2*omega*obs_tot(jelo,1)
+          dum1=-2
+          do k=1,nparm
+           h_sr(k)=dum1*(omega*omega*obs_tot(jfj+k-1,1)+obs_tot(jelohfj+k-1,1)-omega*(obs_tot(jhfj+k-1,1)+obs_tot(jefj+k-1,1))
+     &     -var*obs_tot(jfj+k-1,1))
+          enddo
+
+         elseif(ifunc_omega.eq.3.and.method.eq.'sr_n') then
+c Neuscamman's functional
+          den=omega*omega+obs_tot(jelo2,1)-2*omega*obs_tot(jelo,1)
+          dum1=-2/den
+          dum2=(omega-obs_tot(jelo,1))/den
+          do k=1,nparm
+           h_sr(k)=dum1*(omega*obs_tot(jfj+k-1,1)-obs_tot(jefj+k-1,1)
+     &     -dum2*(omega*omega*obs_tot(jfj+k-1,1)+obs_tot(jelohfj+k-1,1)-omega*(obs_tot(jhfj+k-1,1)+obs_tot(jefj+k-1,1))))
+          enddo
+      endif
+
       endif
 
       return
@@ -190,7 +220,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
  
       common /force_mat_n/ force_o(6*MCENT,MCONF)
 
@@ -390,7 +420,7 @@ c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
       include 'mstates.h'
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension x(*),b(*)
 
@@ -416,12 +446,17 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
       include 'sr.h'
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
-      dimension z(*),r(*),aux(0:MCONF),rloc(MPARM),r_s(MPARM),oz_jasci(MCONF)
+      common /sr_index/ jelo,jelo2,jelohfj
+
+      common /optwf_func/ omega,ifunc_omega
+
+      dimension z(*),r(*),aux(0:MCONF),aux1(0:MCONF),rloc(MPARM),r_s(MPARM),oz_jasci(MCONF)
+      dimension grad_ene(MPARM)
 
       call MPI_BCAST(z,n,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
@@ -430,6 +465,8 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
       do i=1,n
         r(i)=0.d0
       enddo
+
+      if(ifunc_omega.eq.0) then 
 
       do iconf=1,nconf
         oz_jasci(iconf)=ddot(nparm_jasci,z,1,sr_o(1,iconf),1)
@@ -461,6 +498,45 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
         endif
 
       enddo
+
+      else
+c ifunc_omega.gt.0
+
+      do k=1,n
+        grad_ene(k)=2*(obs_tot(jefj+k-1,1)-obs_tot(jfj+k-1,1)*obs_tot(jelo,1))
+      enddo
+
+      do iconf=1,nconf
+        hoz=ddot(n,z,1,sr_ho(1,iconf),1)
+        oz=ddot(n,z,1,sr_o(1,iconf),1)
+        aux(iconf)=(hoz-oz*elocal(iconf,1))*wtg(iconf,1)
+        aux1(iconf)=(oz*elocal(iconf,1)**2-hoz*elocal(iconf,1))*wtg(iconf,1)
+      enddo
+      do i=1,n
+        rloc(i)=ddot(nconf,aux(1),1,sr_ho(i,1),MPARM)
+        rloc(i)=rloc(i)+ddot(nconf,aux1(1),1,sr_o(i,1),MPARM)
+      enddo
+      call MPI_REDUCE(rloc,r,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
+
+      if(idtask.eq.0) then
+
+        do i=1,n
+         r(i)=r(i)/obs_tot(1,1)+s_diag(1,1)*z(i)
+        enddo
+
+        if(ifunc_omega.eq.1) then
+          aux0=ddot(n,z,1,grad_ene(1),1)
+          aux2=ddot(n,z,1,obs_tot(jhfj,1),1)
+          aux3=ddot(n,z,1,obs_tot(jefj,1),1)
+          do i=1,n
+           r(i)=r(i)+grad_ene(i)*aux0-(obs_tot(jhfj+i-1,1)-obs_tot(jefj+i-1,1))*aux0
+     &              -grad_ene(i)*(aux2-aux3)
+c    &              +s_diag(1,1)*z(i)
+          enddo
+        endif
+      endif
+
+      endif
 
       return
       end

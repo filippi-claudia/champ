@@ -67,8 +67,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       dimension orbn(MORB),dorbn(3,MORB),da_orbn(3,MCENT,MORB),term_radial_da_vps(3)
       dimension vjn(3),da_ratio_jn(3,MCENT),dd1(MELEC,MCENT),dd1_sav(MCENT)
 
-      kref=1
-
       do 11 ic=1,ncent
 cJF this is the culprit
         if(iforce_analy.eq.0) then
@@ -414,6 +412,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include 'mstates.h'
       include '3dgrid_flags.h'
 
+      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
+     & ,iwundet(MDET,2),iactv(2),ivirt(2)
+
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
@@ -422,7 +423,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       dimension detu(*),detd(*),slmui(MMAT_DIM),slmdi(MMAT_DIM)
       dimension orb(*),dorb(3)
 
-      kref=1
       if(iel.le.nup) then
 
         ikel=nup*(iel-1)

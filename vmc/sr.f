@@ -10,7 +10,7 @@
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
+      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_func/ omega,ifunc_omega
 
@@ -52,8 +52,15 @@
 
       call p2gtid('optwf:func_omega',ifunc_omega,0,1)
       if(ifunc_omega.gt.0) then
-       call p2gtfd('optwf:omega',omega,0.d0,1)
-       write(6,'(/,''LIN_D omega: '',f10.5)') omega
+       call p2gtfd('optwf:omega',omega0,0.d0,1)
+       call p2gtid('optwf:n_omegaf',n_omegaf,nopt_iter,1)
+       call p2gtid('optwf:n_omegat',n_omegat,0,1)
+       if(n_omegaf+n_omegat.gt.nopt_iter) call fatal_error('SR_OPTWF: n_omegaf+n_omegat > nopt_iter')
+       omega=omega0
+       write(6,'(/,''LIN_D ifunc_omega: '',i3)') ifunc_omega
+       write(6,'(''LIN_D omega: '',f10.5)') omega
+       write(6,'(''LIN_D n_omegaf: '',i4)') n_omegaf
+       write(6,'(''LIN_D n_omegat: '',i4)') n_omegat
       endif
 
       call p2gtid('optwf:micro_iter_sr',micro_iter_sr,1,1)
@@ -99,9 +106,20 @@ c do iteration
       do iter=1,nopt_iter
         write(6,'(/,''Optimization iteration'',i5,'' of'',i5)')iter,nopt_iter
 
-        if(ipr.gt.1) write(88,'(/,''Optimization iteration'',i5,'' of'',i5)')iter,nopt_iter
- 
         iforce_analy=0
+
+        if(ifunc_omega.gt.0) then
+          if(iter.gt.n_omegaf) then
+            alpha_omega=dfloat(n_omegaf+n_omegat-iter)/n_omegat
+            omega=alpha_omega*omega0+(1.d0-alpha_omega)*(energy_sav-sigma_sav)
+            if(ifunc_omega.eq.2) omega=alpha_omega*omega0+(1.d0-alpha_omega)*energy_sav
+          endif
+          if(iter.gt.n_omegaf+n_omegat) then
+            omega=energy_sav-sigma_sav
+            if(ifunc_omega.eq.2) omega=energy_sav
+          endif
+          write(6,'(''LIN_D omega: '',f10.5)') omega
+        endif
 
 c do micro_iteration
         do miter=1,micro_iter_sr
@@ -221,6 +239,7 @@ c         if(-denergy.gt.3*denergy_err) alfgeo=alfgeo/1.2
 
         energy_sav=energy(1)
         energy_err_sav=energy_err(1)
+        sigma_sav=sigma
       enddo
 c enddo iteration
 
@@ -251,7 +270,7 @@ c solve S*deltap=h_sr (call in optwf)
       include 'sr.h'
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension deltap(nparm)
 
@@ -300,7 +319,9 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
+
+      common /optwf_func/ omega,ifunc_omega
 
       dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)
 
@@ -337,7 +358,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       
       nconf=l
 
-      if(method.eq.'sr_n'.and.izvzb.eq.0) return
+      if(method.eq.'sr_n'.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
 
 c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secular problem
 
@@ -449,59 +470,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       end
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-!      subroutine compute_positions
-!      implicit real*8(a-h,o-z)
-!
-!      include 'vmc.h'
-!      include 'force.h'
-!
-!      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
-!
-!      common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-!      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
-!      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-!     &                 czcart_ref(3,3),izcmat(3,MCENT),
-!     &                 izmatrix
-!      common /grdnthes/ hessian_zmat(3,MCENT)
-!
-!      dimension cent_ref(3,MCENT)
-!
-!      if(iforce_analy.eq.0)return
-!
-!      call compute_position_bcast
-!
-!      if(iuse_zmat.eq.0) then
-!
-!        do ic=1,ncent
-!          do k=1,3
-!            cent(k,ic)=cent(k,ic)-alfgeo*da_energy_ave(k,ic)
-!          enddo
-!          write(6,*)'CENT ',(cent(k,ic),k=1,3)
-!        enddo
-!
-!      else
-!
-!        do 10 ic=1,3
-!          do 10 k=1,3
-!   10       cent_ref(k,ic)=cent(k,ic)
-!
-!        call cart2zmat(ncent,cent,izcmat,czint)
-!
-!        do ic=1,ncent
-!          do k=1,3
-!            czint(k,ic)=czint(k,ic)-alfgeo*da_energy_ave(k,ic)/hessian_zmat(k,ic)
-!          enddo
-!          write(6,*)'CENT ',(czint(k,ic),k=1,3)
-!        enddo
-!
-!        call zmat2cart_rc(ncent,izcmat,czint,cent,cent_ref)
-!
-!      endif
-!
-!      return
-!      end
-
-
       subroutine compute_positions
         use coords_int
         implicit real*8(a-h,o-z)

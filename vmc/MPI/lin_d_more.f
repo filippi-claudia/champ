@@ -12,7 +12,7 @@
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
@@ -195,7 +195,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       common /mpiconf/ idtask,nproc
 
@@ -288,7 +288,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       common /mpiconf/ idtask,nproc
 
@@ -342,9 +342,9 @@ c loop vec
 c end loop vec
       enddo
 
-c     do i=1,nparm+1
-c       write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
-c     enddo
+      do i=1,nparm+1
+        write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
+      enddo
 c     STOP
 
       return
@@ -363,7 +363,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       common /mpiconf/ idtask,nproc
 
@@ -472,7 +472,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       common /mpiconf/ idtask,nproc
 
@@ -578,6 +578,130 @@ c     enddo
       end
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
+      implicit real*8 (a-h,o-z)
+
+      include 'mpif.h'
+      include 'sr.h'
+      include 'mstates.h'
+ 
+      common /optwf_func/ omega,ifunc_omega
+
+      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
+      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
+
+      common /mpiconf/ idtask,nproc
+
+      dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux0(MCONF),aux1(MCONF),aux2(MCONF)
+      dimension grad_ene(MPARM)
+
+      i0=1
+      if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
+      nparm=ndim-i0
+
+c     do i=1,nparm+i0
+c       write(6,'(''PSI NEW'',100e12.3)')(psi(i,ivec),ivec=1,nvec)
+c     enddo
+
+c     write(6,*) 'HPSI_LIN',ndim,nvec
+
+      jwtg=1
+      jelo=2
+      n_obs=2
+      jfj=n_obs+1
+      n_obs=n_obs+nparm
+      jefj=n_obs+1
+      n_obs=n_obs+nparm
+      jfifj=n_obs+1
+      n_obs=n_obs+nparm
+
+c for lin_d
+      jhfj=n_obs+1
+      n_obs=n_obs+nparm
+      jfhfj=n_obs+1
+      n_obs=n_obs+nparm
+
+c for omega functional
+      jelo2=n_obs+1
+      n_obs=n_obs+1
+      jelohfj=n_obs+1
+      n_obs=n_obs+nparm
+
+      if(idtask.eq.0) then
+
+        var=obs_tot(jelo2,1)-obs_tot(jelo,1)*obs_tot(jelo,1)
+        do k=1,nparm
+          grad_ene(k)=2*(obs_tot(jefj+k-1,1)-obs_tot(jfj+k-1,1)*obs_tot(jelo,1))
+        enddo
+
+      endif
+      call MPI_BCAST(var,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
+c loop vec
+      do ivec=1,nvec
+
+      do i=1,ndim
+        hpsi(i,ivec)=0
+      enddo
+
+      call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
+      do iconf=1,nconf
+        hoz=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)
+        oz =ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)
+        aux0(iconf)=(hoz-oz*elocal(iconf,1))*wtg(iconf,1)
+        aux1(iconf)=(oz*elocal(iconf,1)**2-hoz*elocal(iconf,1))*wtg(iconf,1)
+        aux2(iconf)=oz*wtg(iconf,1)
+      enddo
+      do i=1,nparm
+        hpsiloc(i+i0,ivec)=ddot(nconf,aux0(1),1,sr_ho(i,1),MPARM)
+     &                    +ddot(nconf,aux2(1),1,sr_o(i,1),MPARM)*var
+     &                    +ddot(nconf,aux1(1),1,sr_o(i,1),MPARM)
+      enddo
+      call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
+
+      if(idtask.eq.0) then
+
+        do i=1,nparm
+         hpsi(i+i0,ivec)=hpsi(i+i0,ivec)/obs_tot(1,1)
+        enddo
+
+        if(ifunc_omega.eq.1) then
+          auxx0=ddot(nparm,psi(1+i0,ivec),1,grad_ene(1),1)
+          auxx2=ddot(nparm,psi(1+i0,ivec),1,obs_tot(jhfj,1),1)
+          auxx3=ddot(nparm,psi(1+i0,ivec),1,obs_tot(jefj,1),1)
+          do i=1,nparm
+           hpsi(i+i0,ivec)=hpsi(i+i0,ivec)
+     &              +grad_ene(i)*auxx0-(obs_tot(jhfj+i-1,1)-obs_tot(jefj+i-1,1))*auxx0
+     &              -grad_ene(i)*(auxx2-auxx3)
+          enddo
+        endif
+
+        auxx0=ddot(nparm,psi(1+i0,ivec),1,obs_tot(jfj,1),1)*var
+        do i=1,nparm
+          hpsi(i+i0,ivec)=hpsi(i+i0,ivec)-auxx0*obs_tot(jfj+i-1,1)
+        enddo
+
+        hpsi(1,ivec)=(var*psi(1,ivec)-0.5*ddot(nparm,h_sr(1),1,psi(2,ivec),1))
+        do i=1,nparm
+          hpsi(i+i0,ivec)=hpsi(i+i0,ivec)-0.5*h_sr(i)*psi(1,ivec)+s_diag(1,1)*psi(i+i0,ivec) !!!
+        enddo
+
+      endif
+
+c end loop vec
+      enddo
+
+      do i=1,nparm+i0
+        write(6,'(''HPSI_LIN'',100e12.3)')(hpsi(i,ivec),ivec=1,nvec)
+      enddo
+
+      return
+      end
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine g_psi_lin_d( ndim, nvec, nb1, psi, ew )
 
       implicit real*8 (a-h,o-z)
@@ -587,7 +711,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'mstates.h'
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension psi(MPARM,*),ew(*)
       dimension s(MPARM),h(MPARM)
@@ -657,7 +781,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,nconf
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 

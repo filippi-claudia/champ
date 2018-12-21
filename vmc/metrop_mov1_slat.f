@@ -313,6 +313,7 @@ c Do geometrical rejections for molecules
         igeometrical=0
         if(rminon(i).gt.rminn(i)*deltar .or. dot.lt.one-delttn(i))then
           igeometrical=1
+          if(ipr.gt.3) write(6,*) 'igeo',i,igeometrical
           p=zero
           q=one
           goto 208
@@ -374,7 +375,6 @@ c calculate psi at new configuration
         psi2n(1)=psi2n(1)+2*dlog(rnorm_nodes)
 
         if(ipr.gt.1) then
-          if(rnorm_nodes.ne.1) write(88,'(i5,100d12.4)') iel,rnorm_nodes,psig,(vnew(k,iel),k=1,3)
           write(6,'(''distance_node='',d12.4)') distance_node
           write(6,'(''rnorm_nodes='',d12.4)') rnorm_nodes
           write(6,'(''psid2n_ncut='',f9.4)') psi2n(1)
@@ -595,14 +595,14 @@ c Note when one electron moves the velocity on all electrons change.
 c loop over secondary configurations
       do 350 ifr=2,nforce
         call strech(xold,xstrech,ajacob,ifr,1)
-        call hpsi(xstrech,psido(1),psijo,eold(1,ifr),ifr)
+        call hpsi(xstrech,psido(1),psijo,eold(1,ifr),ipass,ifr)
         do 350 istate=1,nstates
   350     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
 
       call check_orbitals_reset
 c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
-      call hpsi(xold,psido(1),psijo,eold(1,1),1)
+      call hpsi(xold,psido(1),psijo,eold(1,1),ipass,1)
       do 355 istate=1,nstates
   355    psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
 

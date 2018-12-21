@@ -9,7 +9,7 @@ c Written by Claudia Filippi
       include 'optorb.h'
       include 'mpif.h'
 
-      parameter (MOBS=MSTATES*(8+5*MFORCE)+2)
+      parameter (MOBS=MSTATES*(8+5*MFORCE)+10)
 
       character*12 mode
       common /contr3/ mode
@@ -26,7 +26,7 @@ c Written by Claudia Filippi
       common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),avcum(MSTATES*3),r2cum,iblk
       common /est2cm/ ecm21(MSTATES),ecm2(MSTATES,MFORCE),avcm2(MSTATES*3),r2cm2
       common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
-      common /estpsi/ apsi(MSTATES),aref
+      common /estpsi/ detref(2),apsi(MSTATES),aref
 
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
@@ -51,6 +51,11 @@ c Written by Claudia Filippi
 
       jo=jo+1
       obs(jo)=aref
+
+      do iab=1,2
+        jo=jo+1
+        obs(jo)=detref(iab)
+      enddo
 
       do 20 ifr=1,nforce
         do 20 istate=1,nstates
@@ -81,6 +86,8 @@ c Written by Claudia Filippi
 
       jo_tot=jo
 
+      if(jo_tot.gt.MOBS)  call fatal_error('ACUEST_REDUCE: increase MOBS')
+ 
       call mpi_reduce(obs,collect,jo_tot
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
@@ -98,6 +105,11 @@ c Written by Claudia Filippi
       jo=jo+1
       aref=collect(jo)/nproc
       
+      do iab=1,2
+        jo=jo+1
+        detref(iab)=collect(jo)/nproc
+      enddo
+
       do 120 ifr=1,nforce
         do 120 istate=1,nstates
           jo=jo+1
