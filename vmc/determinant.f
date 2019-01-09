@@ -102,9 +102,9 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0,half=0.5d0)
 
+      iflag=0
       if(ipass.le.2) return
 
-      iflag=0
       do iab=1,2
         dlogdet=dlog10(dabs(detiab(kref,iab)))
         dcheck=dabs(dlogdet-detref(iab)/ipass)
