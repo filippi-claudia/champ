@@ -1,6 +1,6 @@
 # Source files
 file(GLOB VMC_SOURCE LIST_DIRECTORIES false  *.f)
-file(GLOB VMC90_SOURCE LIST_DIRECTORIES false coords_int.f90 optgeo_hessian.f90 convcartzmat.f90 regterg.f90)
+file(GLOB VMC90_SOURCE LIST_DIRECTORIES false optgeo_coords_int.f90 optgeo_hessian.f90 optgeo_convcartzmat.f90 regterg.f90)
 
 if (NOT ENABLE_QMMM)
   message(STATUS "QMMM is NOT enabled!")
@@ -91,7 +91,7 @@ set(SHARED_SOURCE_1
   ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid.f
   ${CMAKE_CURRENT_SOURCE_DIR}/detsav.f
   ${CMAKE_CURRENT_SOURCE_DIR}/basis_fnse_v.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/convcartzmat.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_convcartzmat.f90
   ${INPUT_DIR}/p2_defaults.f
   ${INPUT_DIR}/p2etc.f
   ${INPUT_DIR}/p2nmcheck.f)
@@ -114,7 +114,7 @@ foreach(s ${SHARED_SOURCE_1})
   list(REMOVE_ITEM VMC_SOURCE ${s})
 endforeach(s)
 # for now just remove this manually
-list(REMOVE_ITEM VMC90_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/convcartzmat.f90)
+list(REMOVE_ITEM VMC90_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_convcartzmat.f90)
 
 # --------------------------------------------
 
@@ -158,7 +158,7 @@ set(SHARED_VMC_MPI_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/jdqz_lib.f
   ${CMAKE_CURRENT_SOURCE_DIR}/prop_vmc.f
   ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
-  ${CMAKE_CURRENT_SOURCE_DIR}/coords_int.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_coords_int.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/sr.f
   ${CMAKE_CURRENT_SOURCE_DIR}/dl.f
   ${CMAKE_CURRENT_SOURCE_DIR}/vmc.f
@@ -216,7 +216,7 @@ endforeach(s)
 # Fortran Modules
 # --------------------------------------------
 
-add_library(vmc_modules convcartzmat.f90 coords_int.f90 optgeo_hessian.f90)
+add_library(vmc_modules optgeo_convcartzmat.f90 optgeo_coords_int.f90 optgeo_hessian.f90)
 
 # --------------------------------------------
 # Compile and link executable
