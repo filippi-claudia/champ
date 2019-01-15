@@ -27,7 +27,6 @@ set(SHARED_SOURCE_1
   ${CMAKE_CURRENT_SOURCE_DIR}/strech.f
   ${CMAKE_CURRENT_SOURCE_DIR}/slm.f
   ${CMAKE_CURRENT_SOURCE_DIR}/jastrow.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/optwf.f
   ${CMAKE_CURRENT_SOURCE_DIR}/jassav.f
   ${CMAKE_CURRENT_SOURCE_DIR}/gammai.f
   ${CMAKE_CURRENT_SOURCE_DIR}/sites.f
@@ -43,13 +42,14 @@ set(SHARED_SOURCE_1
   ${CMAKE_CURRENT_SOURCE_DIR}/verify_orbitals.f
   ${CMAKE_CURRENT_SOURCE_DIR}/properties.f
   ${CMAKE_CURRENT_SOURCE_DIR}/multideterminante.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/multideterminant.f
   ${CMAKE_CURRENT_SOURCE_DIR}/pcm.f
   ${CMAKE_CURRENT_SOURCE_DIR}/jastrowe.f
   ${CMAKE_CURRENT_SOURCE_DIR}/write_orb_loc.f
   ${CMAKE_CURRENT_SOURCE_DIR}/cuspexact4.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/optwf.f
   ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lib.f
   ${CMAKE_CURRENT_SOURCE_DIR}/matinv.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/multideterminant.f
   ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f
   ${CMAKE_CURRENT_SOURCE_DIR}/orbitals.f
   ${CMAKE_CURRENT_SOURCE_DIR}/readps_gauss.f
@@ -193,16 +193,24 @@ endforeach(s)
 # creates object library for dmc.mov1
 # --------------------------------------------
 
-set(SHARED_DMC_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/error.f)
+set(SHARED_DMC_SOURCE
+   ${CMAKE_CURRENT_SOURCE_DIR}/error.f
+   ${CMAKE_CURRENT_SOURCE_DIR}/optwf_write.f)
 
 add_library(dmc_objects OBJECT ${SHARED_DMC_SOURCE})
+
+target_include_directories(dmc_objects
+  PUBLIC
+  ${CMAKE_SOURCE_DIR}/include)
 
 target_compile_options(dmc_objects
   PRIVATE
   ${Fortran_FLAGS}
   "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
 
-list(REMOVE_ITEM VMC_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/error.f)
+foreach(s ${SHARED_DMC_SOURCE})
+  list(REMOVE_ITEM VMC_SOURCE ${s})
+endforeach(s)
 
 # --------------------------------------------
 

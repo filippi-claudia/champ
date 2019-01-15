@@ -121,15 +121,7 @@ c get contribution from jastrow (also compute derivatives wrt parameters and nuc
       if(ipr.ge.3) write(6,'(''d2j,psij'',9f12.5)') d2j,psij
 
 c compute reference determinant, its derivatives, and kinetic contribution to B_eloc and its derivatives
-      icheck=0
-  2   call determinant(coord,rvec_en,r_en)
-
-      icheck=icheck+1
-      call check_detref(ipass,icheck,newref)
-      if(newref.gt.0) then
-        if (ioptorb.ne.0) call optorb_define
-        goto 2
-      endif
+      call determinant(ipass,coord,rvec_en,r_en)
 
       call compute_bmatrices_kin
 

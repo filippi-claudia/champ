@@ -515,6 +515,8 @@ CVARDOC flag: CI averages will be printed
             method='linear'
             write(6,'(''Reset optimization method to linear'')')
           endif
+c TMP due to changing kref -> also for ncsf=0, we need to have cxdet(i) carrying the phase
+          if(ncsf.eq.0) call fatal_error('ncsf.eq.0 - further changes needed due to kref')
           if(ncsf.gt.0) then
             nciterm=ncsf
            else

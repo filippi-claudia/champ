@@ -1,4 +1,4 @@
-      subroutine determinant(x,rvec_en,r_en)
+      subroutine determinant(ipass,x,rvec_en,r_en)
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
@@ -31,6 +31,9 @@ c Modified by A. Scemama
 
 c compute orbitals
       call orbitals(x,rvec_en,r_en)
+
+      icheck=0
+  10  continue
 
       do 400 iab=1,2
 
@@ -80,6 +83,11 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
  400  continue
 
       if(ipr.ge.4) write(6,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
+
+      icheck=icheck+1
+      call check_detref(ipass,icheck,newref)
+      if(newref.gt.0) goto 10
+
       return
       end
 c-----------------------------------------------------------------------
@@ -92,6 +100,8 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+
+      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
@@ -114,7 +124,11 @@ c-----------------------------------------------------------------------
       enddo
 
       if(ipr.ge.2) write(6,*) 'check detref',iflag
-      if(iflag.gt.0) call multideterminants_define(iflag,icheck)
+      if(iflag.gt.0) then
+        call multideterminants_define(iflag,icheck)
+        if (ioptorb.ne.0) call optorb_define
+c       write(88,*) 'CHANGE KREF',kref
+      endif
     
       return
       end

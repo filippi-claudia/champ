@@ -531,7 +531,8 @@ c-----------------------------------------------------------------------
       call p2gtid('general:nwftype',nwftype,1,1)
       if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype exceeds MWF')
 
-      call p2gtid('optwf:ioptci',ioptci,0,1)
+c TMP
+c     call p2gtid('optwf:ioptci',ioptci,0,1)
 
       if(iflag.eq.0) then
         kref=1
@@ -642,7 +643,7 @@ c-----------------------------------------------------------------------
       ivirt(1)=nup+1
       ivirt(2)=ndn+1
       do k=1,ndet
-        if(k.eq.kref) goto 8 
+        if(k.eq.kref) go to 8
         do iab=1,2
           do irep=1,numrep_det(k,iab)
             if(irepcol_det(irep,k,iab).ne.0.and.irepcol_det(irep,k,iab).lt.iactv(iab)) iactv(iab)=irepcol_det(irep,k,iab)
@@ -652,13 +653,9 @@ c-----------------------------------------------------------------------
   8     continue
       enddo
 
-      if(iflag.eq.0) then
-
       write(6,*) 'norb  =', norb
       write(6,*) 'iactv =', (iactv(iab),iab=1,2)
       write(6,*) 'ivirt =', (ivirt(iab),iab=1,2)
-
-      endif
 
       idist=1
       if(idist.eq.0) then
@@ -698,13 +695,14 @@ c             write(6,*) 'det',iab,i,iwundet(i,iab)
         enddo
       endif
 
-      if(ioptci.gt.0) then
+c TMP
+c     if(ioptci.gt.0) then
         do 20 icsf=1,ncsf
           do 20 j=iadet(icsf),ibdet(icsf)
             k=icxdet(j)
             cxdet(j)=cxdet(j)*(-1)**itotphase(k)
  20     continue
-      endif
+c     endif
 
       return
       end
