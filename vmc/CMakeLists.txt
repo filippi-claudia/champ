@@ -3,11 +3,11 @@ file(GLOB VMC_SOURCE LIST_DIRECTORIES false  *.f)
 file(GLOB VMC90_SOURCE LIST_DIRECTORIES false coords_int.f90 optgeo_hessian.f90 convcartzmat.f90 regterg.f90)
 
 if (NOT ENABLE_QMMM)
-  message(STATUS "QMMM is NOT enable!")
+  message(STATUS "QMMM is NOT enabled!")
 endif()
 
 if (NOT ENABLE_PERIODIC)
-  message(STATUS "PERIODIC is NOT enable!")
+  message(STATUS "PERIODIC is NOT enabled!")
   list(REMOVE_ITEM VMC_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f
@@ -213,8 +213,15 @@ foreach(s ${SHARED_DMC_SOURCE})
 endforeach(s)
 
 # --------------------------------------------
+# Fortran Modules
+# --------------------------------------------
 
+add_library(vmc_modules convcartzmat.f90 coords_int.f90 optgeo_hessian.f90)
+
+# --------------------------------------------
 # Compile and link executable
+# --------------------------------------------
+
 add_executable(vmc.mov1
   $<TARGET_OBJECTS:shared_objects_1>
   $<TARGET_OBJECTS:shared_objects_2>
@@ -237,6 +244,7 @@ target_compile_options(vmc.mov1
   )
 
 target_link_libraries(vmc.mov1
+  vmc_modules
   cyrus pspline
   ${LINEAR_ALGEBRA})
 
