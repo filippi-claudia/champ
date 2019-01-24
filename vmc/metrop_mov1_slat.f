@@ -664,7 +664,7 @@ c use 'new' not 'old' value
       call optx_jas_ci_sum(wtg,0.d0,eold(1,1),eold(1,1))
       call optx_orb_ci_sum(wtg,0.d0)
 
-      if(irun.eq.1) call sr_store(ipass,wtg,psido,eold(1,1))
+      if(irun.eq.1) call optwf_store(ipass,wtg,psido,eold(1,1))
 
       call efficiency_sample(psido,psidg)
 

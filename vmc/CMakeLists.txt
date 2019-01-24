@@ -47,7 +47,8 @@ set(SHARED_SOURCE_1
   ${CMAKE_CURRENT_SOURCE_DIR}/jastrowe.f
   ${CMAKE_CURRENT_SOURCE_DIR}/write_orb_loc.f
   ${CMAKE_CURRENT_SOURCE_DIR}/cuspexact4.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/optwf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/optwf_matrix_corsamp.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lin_matrix.f
   ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lib.f
   ${CMAKE_CURRENT_SOURCE_DIR}/matinv.f
   ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f
@@ -92,6 +93,9 @@ set(SHARED_SOURCE_1
   ${CMAKE_CURRENT_SOURCE_DIR}/detsav.f
   ${CMAKE_CURRENT_SOURCE_DIR}/basis_fnse_v.f
   ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_convcartzmat.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_coords_int.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_lib.f
   ${INPUT_DIR}/p2_defaults.f
   ${INPUT_DIR}/p2etc.f
   ${INPUT_DIR}/p2nmcheck.f)
@@ -113,8 +117,9 @@ add_dependencies(shared_objects_1 generate-p2)
 foreach(s ${SHARED_SOURCE_1})
   list(REMOVE_ITEM VMC_SOURCE ${s})
 endforeach(s)
-# for now just remove this manually
-list(REMOVE_ITEM VMC90_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_convcartzmat.f90)
+foreach(s ${SHARED_SOURCE_1})
+  list(REMOVE_ITEM VMC90_SOURCE ${s})
+endforeach(s)
 
 # --------------------------------------------
 
@@ -154,22 +159,21 @@ set(SHARED_VMC_MPI_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/acuest.f
   ${CMAKE_CURRENT_SOURCE_DIR}/metrop_mov1_slat.f
   ${CMAKE_CURRENT_SOURCE_DIR}/acuest_write.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/lin_d.f
   ${CMAKE_CURRENT_SOURCE_DIR}/jdqz_lib.f
   ${CMAKE_CURRENT_SOURCE_DIR}/prop_vmc.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
-  ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_coords_int.f90
-  ${CMAKE_CURRENT_SOURCE_DIR}/sr.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/dl.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lin_dav.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/optwf_mix_sa.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/optwf_vmc.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/optwf_dl.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/optwf_dl_iter.f
   ${CMAKE_CURRENT_SOURCE_DIR}/vmc.f
   ${CMAKE_CURRENT_SOURCE_DIR}/pcm_vmc.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/dl_iter.f
   ${CMAKE_CURRENT_SOURCE_DIR}/finwrt.f
   ${CMAKE_CURRENT_SOURCE_DIR}/dumper_more.f
   ${CMAKE_CURRENT_SOURCE_DIR}/mmpol_vmc.f
   ${CMAKE_CURRENT_SOURCE_DIR}/multiple_states.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/determinant_psig.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/optwf_vmc.f)
+  ${CMAKE_CURRENT_SOURCE_DIR}/determinant_psig.f)
 
 add_library(vmc_mpi_objects OBJECT ${SHARED_VMC_MPI_SOURCE})
 
@@ -195,7 +199,8 @@ endforeach(s)
 
 set(SHARED_DMC_SOURCE
    ${CMAKE_CURRENT_SOURCE_DIR}/error.f
-   ${CMAKE_CURRENT_SOURCE_DIR}/optwf_write.f)
+   ${CMAKE_CURRENT_SOURCE_DIR}/optwf_handle_wf.f
+   ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_more.f)
 
 add_library(dmc_objects OBJECT ${SHARED_DMC_SOURCE})
 

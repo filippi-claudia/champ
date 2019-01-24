@@ -58,7 +58,7 @@ c   or anything < 10 for that matter
       call p2gtid('optwf:ioptwf',ioptwf,0,1)
 
       if(ioptwf.gt.0) then
-       call optwf
+       call optwf_matrix_corsamp
       else
        call dmc
       endif

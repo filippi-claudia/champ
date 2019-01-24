@@ -19,7 +19,7 @@
       passes=dfloat(iblk*nstep)
 
       write(6,'(''average psid, det_ref '',2d12.5)') (apsi(istate)/passes,istate=1,nstates),aref/passes
-      write(6,'(''log detref '',2d12.5)') (detref(i)/passes,i=1,3)
+      write(6,'(''log detref '',2d12.5)') (detref(i)/passes,i=1,2)
 
       return
       end

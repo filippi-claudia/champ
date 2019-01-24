@@ -18,11 +18,15 @@
 
       if(ioptwf.gt.0) then
         if(idl_flag.gt.0) then
-          call dl_optwf
-        elseif(method.eq.'sr_n'.or.method.eq.'lin_d'.or.method.eq.'mix_n') then
-          call sr_optwf
+          call optwf_dl
+        elseif(method.eq.'sr_n') then
+          call optwf_sr
+        elseif(method.eq.'lin_d') then
+          call optwf_lin_d
+        elseif(method.eq.'mix_n') then
+          call optwf_mix
         else
-         call optwf
+         call optwf_matrix_corsamp
        endif
       else
        call vmc

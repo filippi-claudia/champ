@@ -171,6 +171,131 @@ c     write(6,*) 'end of SR_HS'
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+      subroutine pcg(n,b,x,i,imax,imod,eps)
+c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
+
+      implicit none
+      integer m_parm_opt
+      parameter(m_parm_opt=59000)
+      integer n,imax,imod,i,j
+      real*8 b(*),x(*),eps
+      real*8 r(m_parm_opt),d(m_parm_opt),q(m_parm_opt),s(m_parm_opt)
+      real*8 delta_0,delta_new,delta_old,alpha,beta,ddot
+
+      if(n.gt.m_parm_opt) stop 'nparm > m_parm_opt'
+
+      call atimes_n(n,x,r)         ! r=Ax neuscamman
+      call daxpy(n,-1.d0,b,1,r,1)       ! r=r-b
+      call dscal(n,-1.d0,r,1)           ! r=b-r
+      call asolve(n,r,d)                ! d=M^{-1}r preconditioner
+      delta_new=ddot(n,d,1,r,1)           ! \delta_new=r^T d
+      print*,'delta0 = ',delta_new
+      delta_0=delta_new*eps**2            ! convergence thr
+      do i=0,imax-1
+       if(delta_new.lt.delta_0)return
+       call atimes_n(n,d,q)        ! q=Ad neuscamman
+       alpha=delta_new/ddot(n,d,1,q,1)  ! \alpha=\delta_new/(d^T q)
+       call daxpy(n,alpha,d,1,x,1)      ! x=x+\alpha d
+       if(mod(i,imod).eq.0)then
+        call atimes_n(n,x,r)       ! r=Ax neuscamman
+        call daxpy(n,-1.d0,b,1,r,1)     ! r=r-b
+        call dscal(n,-1.d0,r,1)         ! r=b-r
+       else
+        call daxpy(n,-alpha,q,1,r,1)    ! r=r-\alpha q
+       endif
+       call asolve(n,r,s)               ! s=M^{-1}r preconditioner
+       delta_old=delta_new              ! \delta_old=\delta_new
+       delta_new=ddot(n,r,1,s,1)        ! \delta_new=r^T s
+       print*,'delta_new ',delta_new
+       beta=delta_new/delta_old         ! \beta=\delta_new/\delta_old
+       call dscal(n,beta,d,1)           ! d=\beta d
+       call daxpy(n,1.d0,s,1,d,1)       ! d=s+d
+      enddo
+
+      return
+      end
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine asolve(n,b,x)
+c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
+
+      implicit real*8 (a-h,o-z)
+      include 'sr.h'
+      include 'mstates.h'
+      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
+
+      dimension x(*),b(*)
+      do i=1,n
+       x(i)=b(i)*s_ii_inv(i)
+      enddo
+
+      return
+      end
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine atimes_n(n,z,r)
+c r=a*z, i cicli doppi su n e nconf sono parallelizzati
+
+      implicit real*8 (a-h,o-z)
+      include 'vmc.h'
+      include 'force.h'
+      include 'mstates.h'
+      include 'optorb.h'
+      include 'sr.h'
+
+      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
+      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
+     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
+      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
+
+      dimension z(*),r(*),aux(0:MCONF),oz_jasci(MCONF)
+
+      nparm_jasci=max(n-norbterm,0)
+
+      do i=1,n
+        r(i)=0.d0
+      enddo
+
+      do iconf=1,nconf
+        oz_jasci(iconf)=ddot(nparm_jasci,z,1,sr_o(1,iconf),1)
+      enddo
+
+      do istate=1,nstates
+        wts=weights(istate)
+
+        i0=nparm_jasci+(istate-1)*norbterm+1
+        do iconf=1,nconf
+          oz_orb=ddot(norbterm,z(nparm_jasci+1),1,sr_o(i0,iconf),1)
+          aux(iconf)=(oz_jasci(iconf)+oz_orb)*wtg(iconf,istate)
+        enddo
+        aux0=ddot(n,z,1,obs(jfj,istate),1)
+        do i=1,nparm_jasci
+          r(i)=r(i)+wts*(ddot(nconf,aux(1),1,sr_o(i,1),MPARM)/obs(1,istate)
+     &                  -obs(jfj+i-1,istate)*aux0+s_diag(i,istate)*z(i))
+        enddo
+        do i=nparm_jasci+1,n
+          i0=i+(istate-1)*norbterm
+          r(i)=r(i)+wts*(ddot(nconf,aux(1),1,sr_o(i0,1),MPARM)/obs(1,istate)
+     &                  -obs(jfj+i-1,istate)*aux0+s_diag(i,istate)*z(i))
+        enddo
+      enddo
+
+      return
+      end
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine compute_position_bcast
+      implicit real*8 (a-h,o-z)
+
+      return
+      end
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
       subroutine forces_zvzb(nparm)
 
       implicit real*8 (a-h,o-z)
@@ -294,130 +419,5 @@ c         write(6,*) 'TEST ',test
         write(6,'(''FORCE after '',i4,3e15.7)') icent,(da_energy_ave(k,icent),k=1,3)
       enddo
           
-      return
-      end
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-      subroutine pcg(n,b,x,i,imax,imod,eps)
-c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
-
-      implicit none
-      integer m_parm_opt
-      parameter(m_parm_opt=59000)
-      integer n,imax,imod,i,j
-      real*8 b(*),x(*),eps
-      real*8 r(m_parm_opt),d(m_parm_opt),q(m_parm_opt),s(m_parm_opt)
-      real*8 delta_0,delta_new,delta_old,alpha,beta,ddot
-
-      if(n.gt.m_parm_opt) stop 'nparm > m_parm_opt'
-
-      call atimes_n(n,x,r)         ! r=Ax neuscamman
-      call daxpy(n,-1.d0,b,1,r,1)       ! r=r-b
-      call dscal(n,-1.d0,r,1)           ! r=b-r
-      call asolve(n,r,d)                ! d=M^{-1}r preconditioner
-      delta_new=ddot(n,d,1,r,1)           ! \delta_new=r^T d
-      print*,'delta0 = ',delta_new
-      delta_0=delta_new*eps**2            ! convergence thr
-      do i=0,imax-1
-       if(delta_new.lt.delta_0)return
-       call atimes_n(n,d,q)        ! q=Ad neuscamman
-       alpha=delta_new/ddot(n,d,1,q,1)  ! \alpha=\delta_new/(d^T q)
-       call daxpy(n,alpha,d,1,x,1)      ! x=x+\alpha d
-       if(mod(i,imod).eq.0)then
-        call atimes_n(n,x,r)       ! r=Ax neuscamman
-        call daxpy(n,-1.d0,b,1,r,1)     ! r=r-b
-        call dscal(n,-1.d0,r,1)         ! r=b-r
-       else
-        call daxpy(n,-alpha,q,1,r,1)    ! r=r-\alpha q
-       endif
-       call asolve(n,r,s)               ! s=M^{-1}r preconditioner
-       delta_old=delta_new              ! \delta_old=\delta_new
-       delta_new=ddot(n,r,1,s,1)        ! \delta_new=r^T s
-       print*,'delta_new ',delta_new
-       beta=delta_new/delta_old         ! \beta=\delta_new/\delta_old
-       call dscal(n,beta,d,1)           ! d=\beta d
-       call daxpy(n,1.d0,s,1,d,1)       ! d=s+d
-      enddo
-
-      return
-      end
-
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-      subroutine asolve(n,b,x)
-c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
-
-      implicit real*8 (a-h,o-z)
-      include 'sr.h'
-      include 'mstates.h'
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-
-      dimension x(*),b(*)
-      do i=1,n
-       x(i)=b(i)*s_ii_inv(i)
-      enddo
-
-      return
-      end
-
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-      subroutine atimes_n(n,z,r)
-c r=a*z, i cicli doppi su n e nconf sono parallelizzati
-
-      implicit real*8 (a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
-      include 'sr.h'
-
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
-
-      dimension z(*),r(*),aux(0:MCONF),oz_jasci(MCONF)
-
-      nparm_jasci=max(n-norbterm,0)
-
-      do i=1,n
-        r(i)=0.d0
-      enddo
-
-      do iconf=1,nconf
-        oz_jasci(iconf)=ddot(nparm_jasci,z,1,sr_o(1,iconf),1)
-      enddo
-
-      do istate=1,nstates
-        wts=weights(istate)
-
-        i0=nparm_jasci+(istate-1)*norbterm+1
-        do iconf=1,nconf
-          oz_orb=ddot(norbterm,z(nparm_jasci+1),1,sr_o(i0,iconf),1)
-          aux(iconf)=(oz_jasci(iconf)+oz_orb)*wtg(iconf,istate)
-        enddo
-        aux0=ddot(n,z,1,obs(jfj,istate),1)
-        do i=1,nparm_jasci
-          r(i)=r(i)+wts*(ddot(nconf,aux(1),1,sr_o(i,1),MPARM)/obs(1,istate)
-     &                  -obs(jfj+i-1,istate)*aux0+s_diag(i,istate)*z(i))
-        enddo
-        do i=nparm_jasci+1,n
-          i0=i+(istate-1)*norbterm
-          r(i)=r(i)+wts*(ddot(nconf,aux(1),1,sr_o(i0,1),MPARM)/obs(1,istate)
-     &                  -obs(jfj+i-1,istate)*aux0+s_diag(i,istate)*z(i))
-        enddo
-      enddo
-
-      return
-      end
-
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-      subroutine compute_position_bcast
-      implicit real*8 (a-h,o-z)
-
       return
       end

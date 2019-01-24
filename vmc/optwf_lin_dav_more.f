@@ -248,9 +248,9 @@ c TEST
 c end loop vec
       enddo
 
-      do i=1,nparm+i0
-        write(6,'(''HPSI_LIN'',100e12.3)')(hpsi(i,ivec),ivec=1,nvec)
-      enddo
+c     do i=1,nparm+i0
+c       write(6,'(''HPSI_LIN'',100e12.3)')(hpsi(i,ivec),ivec=1,nvec)
+c     enddo
 
       return
       end
@@ -307,9 +307,9 @@ c loop vec
 c end loop vec
       enddo
 
-      do i=1,nparm+i0
-        write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
-      enddo
+c     do i=1,nparm+i0
+c       write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
+c     enddo
 
       return
       end
@@ -404,9 +404,9 @@ c LATER
 c end loop vec
       enddo
 
-      do i=1,nparm+i0
-        write(6,'(''HPSI_LIN'',100e12.3)')(hpsi(i,ivec),ivec=1,nvec)
-      enddo
+c     do i=1,nparm+i0
+c       write(6,'(''HPSI_LIN'',100e12.3)')(hpsi(i,ivec),ivec=1,nvec)
+c     enddo
 
       return
       end
@@ -503,9 +503,9 @@ c LATER
 c end loop vec
       enddo
 
-      do i=1,nparm+i0
-        write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
-      enddo
+c     do i=1,nparm+i0
+c       write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
+c     enddo
 
       return
       end

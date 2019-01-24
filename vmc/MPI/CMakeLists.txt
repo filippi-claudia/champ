@@ -24,7 +24,8 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f
     ${CMAKE_CURRENT_SOURCE_DIR}/error_mpi.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_write.f)
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_handle_wf.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_more.f)
 
   add_library(vmc_dmc_mpi_objects OBJECT ${SHARED_DMC_MPI_SOURCE})
 
