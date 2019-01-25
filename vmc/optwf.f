@@ -1468,13 +1468,14 @@ c-----------------------------------------------------------------------
 
 c if kref (iwdetorb, cxdet) has changed
       if(ncsf.gt.0) then
-        do 45 j=1,ndet
-   45     cdet(j,k,1)=0
+        do 50 j=1,nstates
+          do 45 k=1,ndet
+   45       cdet(k,j,iadiag)=0
           do 50 icsf=1,ncsf
-            do 50 j=iadet(icsf),ibdet(icsf)
-              jx=icxdet(j)
-              cdet(jx,j,iadiag)=cdet(jx,j,iadiag)+ccsf(icsf,j,iadiag)*cxdet(j)
-   50       continue
+            do 50 k=iadet(icsf),ibdet(icsf)
+              kx=icxdet(k)
+              cdet(kx,j,iadiag)=cdet(kx,j,iadiag)+ccsf(icsf,j,iadiag)*cxdet(k)
+   50  continue
 
 c rest kref=1
          call multideterminants_define(0,0)

@@ -766,11 +766,13 @@ c-----------------------------------------------------------------------
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
-      dimension iodet(2,MDET)
-      dimension iopos(2,MDET)
-      dimension iflag(2,MORB)
+      data icount_orbdef /1/
+
+      dimension iodet(2,MDET),iopos(2,MDET),iflag(2,MORB)
 
       dimension ne(2),m(2)
+
+      save icount_orbdef
 
       iprt=3
 
@@ -933,14 +935,17 @@ c Define new operator (new variation) and its terms
       norbterm=noporb
       write(6,'(''number of orbital variations: '',2i8)') norbterm
 
-      call p2gtad('optwf:method',method,'linear',1)
+c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
+      if(icount_orbdef.eq.1) call p2gtad('optwf:method',method,'linear',1)
       if(method.eq.'linear') then
 
         if(MXREDUCED.ne.MXORBOP) call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')
         nreduced=norbterm
-       elseif(method.eq.'sr_n'.or.method.eq.'lin_d') then
+       elseif(method.eq.'sr_n'.or.method.eq.'lin_d'.or.method.eq.'mix_n') then
         nreduced=1
       endif
+
+      icount_orbdef=icount_orbdef+1
 
       return
       end

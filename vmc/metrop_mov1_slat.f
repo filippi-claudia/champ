@@ -666,7 +666,7 @@ c use 'new' not 'old' value
 
       if(irun.eq.1) call sr_store(ipass,wtg,psido,eold(1,1))
 
-      call efficiency_sample(psido,psidg)
+      call efficiency_sample(ipass,psido,psidg)
 
       call acues1(wtg)
 

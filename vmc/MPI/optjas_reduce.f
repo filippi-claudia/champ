@@ -28,10 +28,12 @@ c Written by Claudia Filippi
 
       dimension collect(MPARMJ,MSTATES),collect2(MPARMJ,MPARMJ,MSTATES)
 
+      write(88,*) 'CIAO IN JAS',ioptjas,method
       if(ioptjas.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
 c Note, to do: error is not collected
 
+      write(88,*) 'CIAO IN JAS'
       call mpi_reduce(dj,collect,MPARMJ*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
@@ -52,6 +54,8 @@ c Note, to do: error is not collected
         do 20 i=1,nparmj
   20      dj_e(i,istate)=collect(i,istate)
 
+      write(88,*) 'CIAO2 IN JAS'
+
       call mpi_reduce(de,collect,MPARMJ*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
@@ -61,6 +65,8 @@ c Note, to do: error is not collected
       do 25 istate=1,nstates
         do 25 i=1,nparmj
   25      de(i,istate)=collect(i,istate)
+
+      write(88,*) 'CIAO3 IN JAS'
 
       call mpi_reduce(de_e,collect,MPARMJ*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -72,6 +78,8 @@ c Note, to do: error is not collected
         do 26 i=1,nparmj
   26      de_e(i,istate)=collect(i,istate)
 
+      write(88,*) 'CIAO4 IN JAS'
+
       call mpi_reduce(e2,collect,MPARMJ*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
@@ -81,6 +89,8 @@ c Note, to do: error is not collected
       do 27 istate=1,nstates
         do 27 i=1,nparmj
   27      e2(i,istate)=collect(i,istate)
+
+      write(88,*) 'CIAO5 IN JAS'
 
       call mpi_reduce(dj_e2,collect,MPARMJ*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)

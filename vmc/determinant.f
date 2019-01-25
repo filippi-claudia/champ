@@ -103,6 +103,10 @@ c-----------------------------------------------------------------------
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
+      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+
+      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
@@ -126,7 +130,10 @@ c-----------------------------------------------------------------------
       if(ipr.ge.2) write(6,*) 'check detref',iflag
       if(iflag.gt.0) then
         call multideterminants_define(iflag,icheck)
-        if (ioptorb.ne.0) call optorb_define
+        if (ioptorb.ne.0) then
+          norb=norb+nadorb
+          call optorb_define
+        endif
 c       write(88,*) 'CHANGE KREF',kref
       endif
     
