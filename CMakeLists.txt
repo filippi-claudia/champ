@@ -79,7 +79,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
   
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  list(APPEND Fortran_FLAGS "-O2" "-xHost" "-mcmodel=large" "-shared-intel"
+  list(APPEND Fortran_FLAGS "-O2" "-mcmodel=large" "-shared-intel"
     "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
