@@ -73,7 +73,7 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
         d2dx2(i+ish)=ddot(nel,slmi(1+ik,iab),1,fpp( 1+ik,iab),1)
       enddo
 
-        if(ipr.ge.4) then
+       if(ipr.ge.4) then
           ik=-nel
           do i=1,nel
             ik=ik+nel
@@ -85,8 +85,10 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
       if(ipr.ge.4) write(6,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
 
       icheck=icheck+1
-      call check_detref(ipass,icheck,newref)
-      if(newref.gt.0) goto 10
+      if(icheck.le.10) then
+        call check_detref(ipass,icheck,newref)
+        if(newref.gt.0) goto 10
+      endif
 
       return
       end
@@ -121,7 +123,10 @@ c-----------------------------------------------------------------------
 
       do iab=1,2
         dlogdet=dlog10(dabs(detiab(kref,iab)))
-        dcheck=dabs(dlogdet-detref(iab)/ipass)
+c       dcheck=dabs(dlogdet-detref(iab)/ipass)
+c       if(iab.eq.1.and.dcheck.gt.6) iflag=1
+c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
+        dcheck=detref(iab)/ipass-dlogdet
         if(iab.eq.1.and.dcheck.gt.6) iflag=1
         if(iab.eq.2.and.dcheck.gt.6) iflag=2
         if(ipr.ge.2) write(6,*) 'check',dlogdet,detref(iab)/ipass
@@ -134,7 +139,6 @@ c-----------------------------------------------------------------------
           norb=norb+nadorb
           call optorb_define
         endif
-c       write(88,*) 'CHANGE KREF',kref
       endif
     
       return

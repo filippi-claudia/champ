@@ -119,6 +119,15 @@ c         enddo
 
       enddo
 
+c     if(kref.ne.1) then
+c       do irep=1,13
+c         write(6,'(''SLM  '',15f7.2)') (slmi(irep+(i-1)*ndn,2),i=1,13)
+c       enddo
+c       do irep=1,13
+c         write(6,'(''AA-2 '',15f7.2)') (aa(irep,jrep,2),jrep=1,15)
+c       enddo
+c     endif
+
       denergy_det(kref,1)=0
       denergy_det(kref,2)=0
 
@@ -152,7 +161,7 @@ c         write(6,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
               enddo
             enddo
 
-c           if(kref.ne.1) then
+c           if(kref.ne.1.and.k.eq.405) then
 c           write(6,'('' AA det'',3i6)') k, iab,ndim
 c           do irep=1,ndim
 c             write(6,'(''AA'',10d12.4)') (wfmat(irep+(jrep-1)*ndim,k,iab),jrep=1,ndim)
@@ -164,7 +173,7 @@ c           write(6,*) 'B HELLO',k,ndim,(irepcol_det(irep,k,iab),irep=1,ndim),(i
 c           write(6,*) 'A HELLO',k,det
             detiab(k,iab)=det
 
-c           if(iab.eq.1) then
+c           if(kref.ne.1.and.k.eq.405) then
 c           write(6,'('' AA det'',i6,d12.4)') k, det
 c           do irep=1,ndim
 c             write(6,'(''AA'',10d12.4)') (wfmat(irep+(jrep-1)*ndim,k,iab),jrep=1,ndim)
@@ -494,7 +503,12 @@ c-----------------------------------------------------------------------
 c     write(6,*) 'DU',(detiab(k,1),k=1,56)
 c     write(6,*) 'DD',(detiab(k,2),k=1,56)
 c     write(6,*) 'WF',((wfmat(i,k,iab),i=1,9),k=1,56)
-c     write(6,*) 'YMAT',((ymat(i,j,iab,1),i=1,7),j=1,4)
+c     do j=1,13
+c     if(iab.eq.2) write(6,*) j,'YMAT 1',(ymat(i,j,iab,1),i=1,96)
+c     enddo
+c     do j=1,13
+c     if(iab.eq.2) write(6,*) j,'YMAT 2',(ymat(i,j,iab,2),i=1,96)
+c     enddo
 
       return
       end
@@ -702,6 +716,25 @@ c     if(ioptci.gt.0) then
             k=icxdet(j)
             cxdet(j)=cxdet(j)*(-1)**itotphase(k)
  20     continue
+c     endif
+
+c     if(kref.ne.1) then
+c       write(6,*) 'WORBD',(iworbd(i,kref),i=1,nelec)
+c       write(6,*) 'TEST'
+c       write(6,*) 'WORBD',(iworbd(i,1),i=1,nelec)
+c       do iab=1,2
+c         do irep=1,numrep_det(1,iab)
+c           write(6,*) 'IREP', iab,' : ',irepcol_det(irep,1,iab),ireporb_det(irep,1,iab)
+c         enddo
+c       enddo
+c       write(6,*) 'TEST'
+c       write(6,*) 'WORBD',(iworbd(i,405),i=1,nelec)
+c       write(6,*) 'IWUND',iwundet(405,1),iwundet(405,2)
+c       do iab=1,2
+c         do irep=1,numrep_det(405,iab)
+c           write(6,*) 'IREP', iab,' : ',irepcol_det(irep,405,iab),ireporb_det(irep,405,iab)
+c         enddo
+c       enddo
 c     endif
 
       return
