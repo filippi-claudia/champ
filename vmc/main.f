@@ -19,6 +19,8 @@
       if(ioptwf.gt.0) then
         if(idl_flag.gt.0) then
           call dl_optwf
+        elseif(method.eq.'lbfgs') then
+          call lbfgs_optwf
         elseif(method.eq.'sr_n'.or.method.eq.'lin_d'.or.method.eq.'mix_n') then
           call sr_optwf
         else
