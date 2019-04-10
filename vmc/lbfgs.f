@@ -23,11 +23,11 @@
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 c vector of wave function parameters
-      dimension parameters(MPARM), diag(MPARM), workspace(MPARM*11 + 10)
+      dimension deltap(MPARM), parameters(MPARM), diag(MPARM), workspace(MPARM*11 + 10)
 
       call p2gtid('optwf:idl_flag',idl_flag,0,1)
 
-      if(method.ne.'sr_n'.or.idl_flag.eq.0)return
+      if(method.ne.'lbfgs')return
 
       write(6,'(''Started lbfgs optimization'')')
 
@@ -73,7 +73,7 @@ c do iteration
 
    6    continue
 
-        call lbfgs_more(iter, nparm, deltap, parameters, energy_sav, diag, workspace)
+        call lbfgs_more(iter, nparm, deltap, parameters, energy(1), diag, workspace)
 
 c historically, we input -deltap in compute_parameters, so we multiply actual deltap by -1
         call dscal(nparm,-1.d0,deltap,1)

@@ -12,17 +12,27 @@
       ! TODO figure out a cleaner way to get eold (as a subroutine 
       ! parameter is best)
 
-      dimension deltap(*), parameters(MPARM), parameters_old(MPARM), diag(MPARM), workspace(MPARM*11 + 10)
+      dimension deltap(*), parameters(*), diag(*), workspace(*)
+
+      real(kind=8), dimension(1), allocatable :: parameters_old(:)
+      real(kind=8), dimension(1), allocatable :: parms_lbfgs(:)
+
+      allocate(parameters_old(nparm))
+      allocate(parms_lbfgs(nparm))
+
+      parms_lbfgs = parameters(1:nparm)
+      parameters_old = parms_lbfgs
 
       ! save old parameters to compute deltap after lbfgs step
-      parameters_old = parameters
+      parameters_old = parameters(1:MPARM)
 
       ! TODO: make num_history configurable
-      call lbfgs_iteration(energy, parameters, -h_sr, nparm, 5, diag, workspace)
+      call lbfgs_iteration(energy, parms_lbfgs, -h_sr, nparm, 5, diag, workspace)
 
-      do i=1,nparm
-        deltap(i) = parameters(i) - parameters_old(i)
-      end do
+      deltap(1:nparm) = parms_lbfgs - parameters_old
+
+      deallocate(parms_lbfgs)
+      deallocate(parameters_old)
 
       return
       end

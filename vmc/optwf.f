@@ -2229,7 +2229,7 @@ c-----------------------------------------------------------------------
 
 c Note: we do not vary the first (i0) CI coefficient unless a run where we only optimize the CI coefs
 
-      if(method.eq.'hessian'.or.method.eq.'sr_n') then
+      if(method.eq.'hessian'.or.method.eq.'sr_n'.or.method.eq.'lbfgs') then
 
         nparmd=max(nciterm-1,0)
         nparm=nparmj+nparmd+norbterm
