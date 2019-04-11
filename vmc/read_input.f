@@ -445,6 +445,8 @@ CVARDOC flag: ORB-PT derivatives will be sampled
 CVARDOC flag: CI derivatives will be sampled
         call p2gtid('optwf:idl_flag',idl_flag,0,1)
 CVARDOC flag: Deep learning optimization algorithm wil be used
+        call p2gtid('optwf:ilbfgs_flag',ilbfgs_flag,0,1)
+CVARDOC flag: LBFGS optimization algorithm wil be used
 
         call p2gtid('optwf:ioptwf',ioptwf,0,1)
         if(ioptwf.gt.0) then

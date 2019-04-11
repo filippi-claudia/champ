@@ -27,7 +27,7 @@ c vector of wave function parameters
 
       call p2gtid('optwf:idl_flag',idl_flag,0,1)
 
-      if(method.ne.'lbfgs')return
+      if(method.ne.'sr_n')return
 
       write(6,'(''Started lbfgs optimization'')')
 
