@@ -22,8 +22,6 @@
       parms_lbfgs = parameters(1:nparm)
       parameters_old = parms_lbfgs
 
-      !TODO: Figure out why h_sr is filled with NaN
-
       ! TODO: make num_history configurable
       call lbfgs_iteration(energy, parms_lbfgs, -h_sr, nparm, 5, diag, workspace)
 
