@@ -400,7 +400,7 @@ c if kref (iwdetorb, cxdet) has changed
    50  continue
 
 c reset kref=1
-c         call multideterminants_define(0,0)
+      call multideterminants_define(0,0)
       endif
 
       return

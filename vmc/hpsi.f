@@ -162,10 +162,10 @@ c compute energy using Ymat
           write(6,'(''state'',i4)') istate
           write(6,'(''psid,psij'',9d12.5)') psid(istate),psij
           write(6,'(''psitot   '',e18.11)') psid(istate)*exp(psij)
-          do k=1,ndet
+c         do k=1,ndet
 c           write(6,'(''psitot_k '',i6,3e18.8)') k, detu(k),detd(k),detu(k)*detd(k)*exp(psij)
-            write(6,'(''psitot_k '',i6,3e18.8)') k, detu(k),detd(k),cdet(k,1,1)*detu(k)*detd(k)*exp(psij)
-          enddo
+c           write(6,'(''psitot_k '',i6,3e18.8)') k, detu(k),detd(k),cdet(k,1,1)*detu(k)*detd(k)*exp(psij)
+c         enddo
 c         do 25 i=1,nelec
 c           do 25 k=1,3
 c  25         write(6,'(''vj'',2e18.11)') vj(k,i)

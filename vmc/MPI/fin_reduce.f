@@ -105,7 +105,7 @@ c    &    ,2,MPI_COMM_WORLD,irequest,ierr)
         call optx_orb_ci_fin(wcum(1,1),efin)
       endif
 
-      call efficiency_prt(passes)
+c     call efficiency_prt(passes)
 
 c reduce pcm properties
       call pcm_reduce

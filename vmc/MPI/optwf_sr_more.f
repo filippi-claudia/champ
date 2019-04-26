@@ -41,7 +41,6 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       jfifj=n_obs+1
       n_obs=n_obs+nparm
 
-      if(n_obs.gt.MOBS) call fatal_error('SR_HS: n_obs > MOBS)')
 
       jhfj=n_obs+1
       n_obs=n_obs+nparm
@@ -54,7 +53,7 @@ c for omega functional
       jelohfj=n_obs+1
       n_obs=n_obs+nparm
 
-      if(method.ne.'sr_n'.and.n_obs.gt.MOBS) call fatal_error('SR_HS LIN: n_obs > MOBS)')
+      if(n_obs.gt.MOBS) call fatal_error('SR_HS LIN: n_obs > MOBS)')
 
       do k=1,nparm
         h_sr(k)=0.d0

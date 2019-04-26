@@ -192,6 +192,8 @@ c TMP to fix
 
  50   continue
 
+c     if(iab.eq.2) write(6,*) 'gmat ',(((gmat(irep,jrep,kk),irep=iactv(iab),nel),jrep=ivirt(iab),norb),kk=1,3)
+
       do kk=1,3
         dum=0
         do jrep=ivirt(iab),norb
@@ -201,6 +203,8 @@ c TMP to fix
         enddo
         velocity(kk)=dum*detratio
       enddo
+
+c     if(iab.eq.2) write(6,*) 'ymat ',((ymat(jrep,irep),irep=iactv(iab),nel),jrep=ivirt(iab),norb)
 
       return
       end

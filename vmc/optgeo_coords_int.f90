@@ -437,7 +437,7 @@ module coords_int
     real(kind=8), dimension(:,:), intent(inout) :: int_coords2d
     integer, dimension(:,:), intent(in) :: connectivities
 
-    integer, parameter :: maxit = 25
+    integer, parameter :: maxit = 40
 
     real(kind=8), dimension(num_cart) :: cart_coords
     real(kind=8), dimension(num_int)  :: int_dnew
@@ -626,18 +626,25 @@ module coords_int
     real(kind=8), intent(inout) :: int_coords2d(:,:)
     integer :: iint, ic
 
-    real(kind=8),  parameter :: PI2  = 8 * atan (1d0)
+    real(kind=8),  parameter :: PI2  = 8 * atan (1d0) ! 2 * pi
+    real(kind=8),  parameter :: PIH  = 2 * atan (1d0) ! 0.5 * pi
 
     iint = num_bonds + num_angles + 1
     do ic = 4, num_centers ! loop over dihedrals
 
-      if (int_reference(iint).lt.0d0.and.int_coords2d(3,ic).gt.0d0) then
-        int_coords2d(3, ic) = int_coords2d(3, ic) - PI2
-        write (6,*) 'FIX Flip of the dihedral detected. - to +.'
-      endif
-      if (int_reference(iint).gt.0d0.and.int_coords2d(3,ic).lt.0d0) then
-        int_coords2d(3, ic) = int_coords2d(3, ic) + PI2
-        write (6,*) 'FIX Flip of the dihedral detected. + to -.'
+      write (6,*) 'ref new', int_reference(iint), int_coords2d(3,ic)
+      if (int_reference(iint).gt.PIH.or.int_reference(iint).lt.-PIH) then
+
+        if (int_reference(iint).lt.0d0.and.int_coords2d(3,ic).gt.0d0) then
+          int_coords2d(3, ic) = int_coords2d(3, ic) - PI2
+          write (6,*) 'FIX Flip of the dihedral detected. - to +.'
+        endif
+
+        if (int_reference(iint).gt.0d0.and.int_coords2d(3,ic).lt.0d0) then
+          int_coords2d(3, ic) = int_coords2d(3, ic) + PI2
+          write (6,*) 'FIX Flip of the dihedral detected. + to -.'
+        endif
+
       endif
 
       iint = iint + 1

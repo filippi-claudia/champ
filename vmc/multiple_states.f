@@ -1,5 +1,5 @@
 c----------------------------------------------------------------------
-      subroutine efficiency_sample(determ_s,determ_psig)
+      subroutine efficiency_sample(ipass,determ_s,determ_psig)
 
       implicit real*8(a-h,o-z)
       include 'vmc.h'
@@ -19,7 +19,8 @@ c     write(6,*) ((determ_s(j)*determ_psigi)**2,j=1,nstates_psig)
         effcum(j)=effcum(j)+wi
   100   effcm2(j)=effcm2(j)+wi*wi
 
-c     write(6,*) (effcum(j),j=1,nstates_psig),(determ_s(j),j=1,nstates_psig),determ_psig
+c     write(88,*) (effcum(j),effcm2(j),j=1,nstates_psig),(determ_s(j),j=1,nstates_psig),determ_psig
+c     write(88,*) (effcum(j)*effcum(j)/effcm2(j)/ipass,j=1,nstates_psig)
 
       end
 c----------------------------------------------------------------------
