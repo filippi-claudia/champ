@@ -129,6 +129,8 @@ c
       loop = (k.lt.kmax.and.step.lt.maxstep)
       if (loop) then
 	 step = step+1
+         write(6,'(''iteration : '',i4)') step
+
 	 solvestep = solvestep+1
 	 if (j.eq.0) then
 	    call zlarnv(2, iseed, n, work(1,v+j))
@@ -233,6 +235,9 @@ c
 
             rnrm = dznrm2 (n, work(1,d), 1)/dble(evcond)
 
+        write(6,'(''mxmv : '',i4)') mxmv
+        write(6,'(''lambda('',i2,''): ('',1p,e11.4,'','',e11.4,'' )'')') k,zalpha/zbeta
+
             if (rnrm.lt.lock.and.ok) then
                targeta = zalpha
                targetb = zbeta
@@ -318,6 +323,7 @@ c              --- store the eigenvalue
          goto 100
       endif
 
+      write(6,'(''number of steps : '',i4)') step
 c
 c...     Did enough eigenpairs converge?
       kmax = k

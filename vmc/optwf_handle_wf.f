@@ -1,10 +1,16 @@
 c-----------------------------------------------------------------------
       subroutine write_wf(iwf_fit,iter)
       implicit real*8(a-h,o-z)
+
+      include 'mpif.h'
       include 'vmc.h'
       include 'force.h'
 
+      common /mpiconf/ idtask,nproc
+
       character*40 filetype,wf,itn
+
+      if(idtask.ne.0) return
 
       if(iter.lt.0) then
         filetype='_optimal.'//wf(1:index(wf,' ')-1)

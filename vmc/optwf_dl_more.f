@@ -3,6 +3,8 @@
       implicit real*8 (a-h,o-z)
       character*20 dl_alg
 
+      include 'mpif.h'
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -10,6 +12,8 @@
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
+
+      common /mpiconf/ idtask,nproc
 
       dimension deltap(*),dl_momentum(*),dl_EG_sq(*),dl_EG(*),parameters(*)
 
@@ -23,7 +27,11 @@
 c we only need h_sr = - grad_parm E
       call sr_hs(nparm,sr_adiag)
 
-      call dl_iter(iter,nparm,dl_alg,dl_mom,sr_tau,dl_momentum,dl_EG_sq,dl_EG,deltap,parameters)
+      if(idtask.eq.0) then 
+        call dl_iter(iter,nparm,dl_alg,dl_mom,sr_tau,dl_momentum,dl_EG_sq,dl_EG,deltap,parameters)
+      endif
+
+      call MPI_BCAST(deltap,nparm,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
       return
       end
