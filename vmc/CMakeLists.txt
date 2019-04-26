@@ -326,14 +326,14 @@ if (MPI_Fortran_FOUND)
       "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
   
     foreach(s ${SHARED_DMC_MPI_SOURCE})
-      list(REMOVE_ITEM VMC_MPI_SOURCE ${s})
+      list(REMOVE_ITEM VMC_SOURCE ${s})
     endforeach(s)
   
   # --------------------------------------------
     
     add_executable(vmc.mov1.mpi
       # MPI source code
-      ${VMC_MPI_SOURCE} ${VMC90_MPI_SOURCE}
+      ${VMC_SOURCE} ${VMC90_MPI_SOURCE}
       # shared VMC objects
       $<TARGET_OBJECTS:shared_objects_1>
       $<TARGET_OBJECTS:shared_objects_2>
@@ -362,6 +362,6 @@ if (MPI_Fortran_FOUND)
       )
   
     # # # Cache the results for targets that depends on these files
-    set(VMC_MPI_SOURCE ${VMC_MPI_SOURCE} CACHE INTERNAL "MPI vmc source files")
+    set(VMC_SOURCE ${VMC_SOURCE} CACHE INTERNAL "MPI vmc source files")
 
 endif()
