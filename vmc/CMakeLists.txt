@@ -11,8 +11,10 @@ if (MPI_Fortran_FOUND)
   if (NOT ENABLE_PERIODIC)
     message(STATUS "PERIODIC is NOT enabled!")
     list(REMOVE_ITEM VMC_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f)
   endif()
   
@@ -124,9 +126,7 @@ if (MPI_Fortran_FOUND)
   endforeach(s)
   
   # --------------------------------------------
-  
-  # --------------------------------------------
-  # creates object library shared for all binaries
+  # creates library shared for all binaries except DMC global pop versions
   # --------------------------------------------
   
   set(SHARED_SOURCE_2
@@ -154,47 +154,6 @@ if (MPI_Fortran_FOUND)
   
   # --------------------------------------------
   # creates object library for vmc.mov1.mpi
-  # --------------------------------------------
-  
-  set(SHARED_VMC_MPI_SOURCE
-    ${CMAKE_CURRENT_SOURCE_DIR}/fetch_parameters.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/acuest.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/metrop_mov1_slat.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/acuest_write.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/jdqz_lib.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/prop_vmc.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lin_dav.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_mix_sa.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_vmc.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_dl.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_dl_iter.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/vmc.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/pcm_vmc.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/finwrt.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/dumper_more.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/mmpol_vmc.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/multiple_states.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/determinant_psig.f)
-  
-  add_library(vmc_mpi_objects OBJECT ${SHARED_VMC_MPI_SOURCE})
-  
-  target_include_directories(vmc_mpi_objects
-    PUBLIC
-    ${CMAKE_SOURCE_DIR}/include)
-  
-  target_compile_options(vmc_mpi_objects
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
-  
-  foreach(s ${SHARED_VMC_MPI_SOURCE})
-    list(REMOVE_ITEM VMC_SOURCE ${s})
-  endforeach(s)
-  foreach(s ${SHARED_VMC_MPI_SOURCE})
-    list(REMOVE_ITEM VMC90_SOURCE ${s})
-  endforeach(s)
-  
   # --------------------------------------------
   # creates object library for dmc.mov1
   # --------------------------------------------
@@ -232,7 +191,6 @@ if (MPI_Fortran_FOUND)
   add_executable(vmc.mov1
     $<TARGET_OBJECTS:shared_objects_1>
     $<TARGET_OBJECTS:shared_objects_2>
-    $<TARGET_OBJECTS:vmc_mpi_objects>
     $<TARGET_OBJECTS:dmc_objects>
     # source that is not already included in the objects
     ${VMC_SOURCE} 
@@ -254,10 +212,6 @@ if (MPI_Fortran_FOUND)
     vmc_modules
     cyrus pspline
     ${LINEAR_ALGEBRA})
-  
-  # TODO remove after I took care of DMC
-  set(VMC_SOURCE ${VMC_SOURCE} CACHE INTERNAL "VMC source files")
-  
   
   # --------------------------------------------
   # Everything related to miniparser p2
@@ -329,39 +283,4 @@ if (MPI_Fortran_FOUND)
       list(REMOVE_ITEM VMC_SOURCE ${s})
     endforeach(s)
   
-  # --------------------------------------------
-    
-    add_executable(vmc.mov1.mpi
-      # MPI source code
-      ${VMC_SOURCE} ${VMC90_MPI_SOURCE}
-      # shared VMC objects
-      $<TARGET_OBJECTS:shared_objects_1>
-      $<TARGET_OBJECTS:shared_objects_2>
-      $<TARGET_OBJECTS:vmc_mpi_objects>
-      $<TARGET_OBJECTS:vmc_dmc_mpi_objects>)
-  
-    
-    #  Add headers
-    target_include_directories(vmc.mov1.mpi
-      PUBLIC
-      ${CMAKE_SOURCE_DIR}/include)
-    
-    # compilation
-    target_compile_options(vmc.mov1.mpi
-      PRIVATE
-      ${Fortran_FLAGS}
-      "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
-      )
-  
-    target_link_libraries(vmc.mov1.mpi
-      # PRIVATE
-      cyrus pspline
-      # PUBLIC
-      ${LINEAR_ALGEBRA}
-      ${MPI_Fortran_LIBRARIES}
-      )
-  
-    # # # Cache the results for targets that depends on these files
-    set(VMC_SOURCE ${VMC_SOURCE} CACHE INTERNAL "MPI vmc source files")
-
 endif()
