@@ -41,6 +41,7 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       jfifj=n_obs+1
       n_obs=n_obs+nparm
 
+
       jhfj=n_obs+1
       n_obs=n_obs+nparm
       jfhfj=n_obs+1
@@ -175,7 +176,7 @@ c variance
      &             -2*obs_tot(jelo,1)*(obs_tot(jefj+k-1,1)-obs_tot(jfj+k-1,1)*obs_tot(jelo,1)))
           enddo
 
-         elseif(ifunc_omega.eq.2) then
+        elseif(ifunc_omega.eq.2) then
 c variance with fixed average energy (omega)
           var=omega*omega+obs_tot(jelo2,1)-2*omega*obs_tot(jelo,1)
           dum1=-2
@@ -184,7 +185,7 @@ c variance with fixed average energy (omega)
      &     -var*obs_tot(jfj+k-1,1))
           enddo
 
-         elseif(ifunc_omega.eq.3.and.method.eq.'sr_n') then
+        elseif(ifunc_omega.eq.3.and.method.eq.'sr_n') then
 c Neuscamman's functional
           den=omega*omega+obs_tot(jelo2,1)-2*omega*obs_tot(jelo,1)
           dum1=-2/den
@@ -193,152 +194,10 @@ c Neuscamman's functional
            h_sr(k)=dum1*(omega*obs_tot(jfj+k-1,1)-obs_tot(jefj+k-1,1)
      &     -dum2*(omega*omega*obs_tot(jfj+k-1,1)+obs_tot(jelohfj+k-1,1)-omega*(obs_tot(jhfj+k-1,1)+obs_tot(jefj+k-1,1))))
           enddo
-      endif
-
-      endif
-
-      return
-      end
-
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-      subroutine forces_zvzb(nparm)
-
-      implicit real*8 (a-h,o-z)
-
-      include 'mpif.h'
-      include 'sr.h'
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
-
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
- 
-      common /force_mat_n/ force_o(6*MCENT,MCONF)
-
-      common /mpiconf/ idtask,nproc
-
-      parameter (MTEST=1500)
-      dimension cloc(MTEST,MTEST),c(MTEST,MTEST),oloc(MPARM),o(MPARM),p(MPARM),tmp(MPARM)
-      dimension ipvt(MTEST),work(MTEST)
-
-      if(nparm.gt.MTEST) stop 'mparm>MTEST'
-
-      jwtg=1
-      jelo=2
-      n_obs=2
-      jfj=n_obs+1
-      n_obs=n_obs+nparm
-      jefj=n_obs+1
-      n_obs=n_obs+nparm
-      jfifj=n_obs+1
-      n_obs=n_obs+nparm
-
-      jhfj=n_obs+1
-      n_obs=n_obs+nparm
-      jfhfj=n_obs+1
-      n_obs=n_obs+nparm
-
-      do 10 i=1,nparm
-        do 10 j=i,nparm
-  10      cloc(i,j)=0.d0
-
-      do l=1,nconf
-        do i=1,nparm
-          tmp(i)=(sr_ho(i,l)-elocal(l,1)*sr_o(i,l))*sqrt(wtg(l,1))
-        enddo
-        do k=1,nparm
-          do j=k,nparm
-            cloc(k,j)=cloc(k,j)+tmp(k)*tmp(j)
-          enddo
-        enddo
-      enddo
-
-      call MPI_REDUCE(cloc,c,MTEST*nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
-
-      if(idtask.eq.0) then
-
-        wtoti=1.d0/obs(1,1)
-        do 20 i=1,nparm
-          dum=(obs(jhfj+i-1,1)-obs(jefj+i-1,1))
-          c(i,i)=c(i,i)*wtoti-dum*dum
-          do 20 j=i+1,nparm
-            c(i,j)=c(i,j)*wtoti-dum*(obs(jhfj+j-1,1)-obs(jefj+j-1,1))
-  20        c(j,i)=c(i,j)
-
-        call dgetrf(nparm,nparm,c,MTEST,ipvt,info)
-        if(info.gt.0) then
-          write(6,'(''MATINV: u(k,k)=0 with k= '',i5)') info
-          call fatal_error('MATINV: info ne 0 in dgetrf')
         endif
-        call dgetri(nparm,c,MTEST,ipvt,work,MTEST,info)
 
-c ZVZB
-c       do 30 iparm=1,nparm
-c 30      tmp(iparm)=obs(jhfj+iparm-1,1)+obs(jefj+iparm-1,1)-2*obs(2,1)*obs(jfj+iparm-1,1)
-
-c ZV
-        do 30 iparm=1,nparm
-  30      tmp(iparm)=obs(jhfj+iparm-1,1)-obs(jefj+iparm-1,1)
-     
       endif
 
-      energy_tot=obs(2,1)
-
-      call MPI_BCAST(energy_tot,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
-
-      ia=0
-      ish=3*ncent
-      do icent=1,ncent
-        write(6,'(''FORCE before'',i4,3e15.7)') icent,(da_energy_ave(k,icent),k=1,3)
-        do k=1,3
-          ia=ia+1
-
-c         test=0.d0
-c         do l=1,nconf
-c           test=test+(force_o(ia+ish,l)-2*obs(2,1)*force_o(ia,l))*wtg(l,1)*wtoti
-c         enddo
-c         write(6,*) 'TEST ',test
-         
-          do i=1,nparm
-            oloc(i)=0.d0
-            do l=1,nconf
-              oloc(i)=oloc(i)+(sr_ho(i,l)-elocal(l,1)*sr_o(i,l))*
-     &                        (force_o(ia+ish,l)-2*energy_tot*force_o(ia,l))*wtg(l,1)
-            enddo
-          enddo
-
-          call MPI_REDUCE(oloc,o,nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
-
-          if(idtask.eq.0) then
-            do i=1,nparm
-              o(i)=o(i)*wtoti-(obs(jhfj+i-1,1)-obs(jefj+i-1,1))*da_energy_ave(k,icent)
-            enddo
-            do iparm=1,nparm
-              p(iparm)=0.d0
-              do jparm=1,nparm
-                p(iparm)=p(iparm)+c(iparm,jparm)*o(jparm)
-              enddo
-              p(iparm)=-0.5*p(iparm)
-            enddo
-
-            force_tmp=da_energy_ave(k,icent)
-            do iparm=1,nparm
-              force_tmp=force_tmp+p(iparm)*tmp(iparm)
-            enddo
-            da_energy_ave(k,icent)=force_tmp
-
-          endif
-        enddo
-        write(6,'(''FORCE after '',i4,3e15.7)') icent,(da_energy_ave(k,icent),k=1,3)
-      enddo
-          
       return
       end
 
@@ -559,3 +418,145 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       return
       end
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine forces_zvzb(nparm)
+
+      implicit real*8 (a-h,o-z)
+
+      include 'mpif.h'
+      include 'sr.h'
+      include 'vmc.h'
+      include 'force.h'
+      include 'mstates.h'
+
+      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+     &,iwctype(MCENT),nctype,ncent
+
+      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
+
+      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
+ 
+      common /force_mat_n/ force_o(6*MCENT,MCONF)
+
+      common /mpiconf/ idtask,nproc
+
+      parameter (MTEST=1500)
+      dimension cloc(MTEST,MTEST),c(MTEST,MTEST),oloc(MPARM),o(MPARM),p(MPARM),tmp(MPARM)
+      dimension ipvt(MTEST),work(MTEST)
+
+      if(nparm.gt.MTEST) stop 'mparm>MTEST'
+
+      jwtg=1
+      jelo=2
+      n_obs=2
+      jfj=n_obs+1
+      n_obs=n_obs+nparm
+      jefj=n_obs+1
+      n_obs=n_obs+nparm
+      jfifj=n_obs+1
+      n_obs=n_obs+nparm
+
+      jhfj=n_obs+1
+      n_obs=n_obs+nparm
+      jfhfj=n_obs+1
+      n_obs=n_obs+nparm
+
+      do 10 i=1,nparm
+        do 10 j=i,nparm
+  10      cloc(i,j)=0.d0
+
+      do l=1,nconf
+        do i=1,nparm
+          tmp(i)=(sr_ho(i,l)-elocal(l,1)*sr_o(i,l))*sqrt(wtg(l,1))
+        enddo
+        do k=1,nparm
+          do j=k,nparm
+            cloc(k,j)=cloc(k,j)+tmp(k)*tmp(j)
+          enddo
+        enddo
+      enddo
+
+      call MPI_REDUCE(cloc,c,MTEST*nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
+
+      if(idtask.eq.0) then
+
+        wtoti=1.d0/obs(1,1)
+        do 20 i=1,nparm
+          dum=(obs(jhfj+i-1,1)-obs(jefj+i-1,1))
+          c(i,i)=c(i,i)*wtoti-dum*dum
+          do 20 j=i+1,nparm
+            c(i,j)=c(i,j)*wtoti-dum*(obs(jhfj+j-1,1)-obs(jefj+j-1,1))
+  20        c(j,i)=c(i,j)
+
+        call dgetrf(nparm,nparm,c,MTEST,ipvt,info)
+        if(info.gt.0) then
+          write(6,'(''MATINV: u(k,k)=0 with k= '',i5)') info
+          call fatal_error('MATINV: info ne 0 in dgetrf')
+        endif
+        call dgetri(nparm,c,MTEST,ipvt,work,MTEST,info)
+
+c ZVZB
+c       do 30 iparm=1,nparm
+c 30      tmp(iparm)=obs(jhfj+iparm-1,1)+obs(jefj+iparm-1,1)-2*obs(2,1)*obs(jfj+iparm-1,1)
+
+c ZV
+        do 30 iparm=1,nparm
+  30      tmp(iparm)=obs(jhfj+iparm-1,1)-obs(jefj+iparm-1,1)
+     
+      endif
+
+      energy_tot=obs(2,1)
+
+      call MPI_BCAST(energy_tot,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
+
+      ia=0
+      ish=3*ncent
+      do icent=1,ncent
+        write(6,'(''FORCE before'',i4,3e15.7)') icent,(da_energy_ave(k,icent),k=1,3)
+        do k=1,3
+          ia=ia+1
+
+c         test=0.d0
+c         do l=1,nconf
+c           test=test+(force_o(ia+ish,l)-2*obs(2,1)*force_o(ia,l))*wtg(l,1)*wtoti
+c         enddo
+c         write(6,*) 'TEST ',test
+         
+          do i=1,nparm
+            oloc(i)=0.d0
+            do l=1,nconf
+              oloc(i)=oloc(i)+(sr_ho(i,l)-elocal(l,1)*sr_o(i,l))*
+     &                        (force_o(ia+ish,l)-2*energy_tot*force_o(ia,l))*wtg(l,1)
+            enddo
+          enddo
+
+          call MPI_REDUCE(oloc,o,nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
+
+          if(idtask.eq.0) then
+            do i=1,nparm
+              o(i)=o(i)*wtoti-(obs(jhfj+i-1,1)-obs(jefj+i-1,1))*da_energy_ave(k,icent)
+            enddo
+            do iparm=1,nparm
+              p(iparm)=0.d0
+              do jparm=1,nparm
+                p(iparm)=p(iparm)+c(iparm,jparm)*o(jparm)
+              enddo
+              p(iparm)=-0.5*p(iparm)
+            enddo
+
+            force_tmp=da_energy_ave(k,icent)
+            do iparm=1,nparm
+              force_tmp=force_tmp+p(iparm)*tmp(iparm)
+            enddo
+            da_energy_ave(k,icent)=force_tmp
+
+          endif
+        enddo
+        write(6,'(''FORCE after '',i4,3e15.7)') icent,(da_energy_ave(k,icent),k=1,3)
+      enddo
+          
+      return
+      end
+

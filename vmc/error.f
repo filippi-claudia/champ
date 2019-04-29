@@ -2,8 +2,10 @@
 
       character msg*(*)
 
-      write(6,'(''Fatal error: '',a)') msg
-      stop
+      include 'mpi_qmc.h'
+      include 'mpif.h'
 
-      return
+      write(6,'(''Fatal error: '',a)') msg
+      call mpi_abort(MPI_COMM_WORLD,0,ierr)
+
       end

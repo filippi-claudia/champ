@@ -7,7 +7,7 @@
 !
 !----------------------------------------------------------------------------
 SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
-                    e, btype, notcnv, dav_iter, ipr)
+                    e, btype, notcnv, dav_iter, ipr, idtask )
   !----------------------------------------------------------------------------
   !
   ! ... iterative solution of the eigenvalue problem:
@@ -19,6 +19,8 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
   ! ... (real wavefunctions with only half plane waves stored)
   !
   IMPLICIT NONE
+  !
+  include 'mpif.h'
   !
   INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, ipr
     ! dimension of the matrix to be diagonalized
@@ -40,9 +42,11 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
     ! integer  number of iterations performed
     ! number of unconverged roots
   !
+  INTEGER, INTENT(IN) :: idtask
+  !
   ! ... LOCAL variables
   !
-  INTEGER, PARAMETER :: maxter = 100
+  INTEGER, PARAMETER :: maxter = 200
     ! maximum number of iterations
   !
   INTEGER :: kter, nbase, np, n, m, nb1, ibnd
@@ -134,6 +138,8 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
   ! ... hr contains the projection of the hamiltonian onto the reduced
   ! ... space vr contains the eigenvectors of hr
   !
+  IF(idtask.eq.0) then
+  !
   hr(:,:) = 0.D0
   sr(:,:) = 0.D0
   vr(:,:) = 0.D0
@@ -164,9 +170,17 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
     enddo
   ENDIF
   !
+  ! Claudia
+  !
+  e(1:nvec) = ew(1:nvec)
+  !
+  END IF ! idtask.eq.0
+  !
   ! ... iterate
   !
   iterate: DO kter = 1, maxter
+     !
+     IF(idtask.eq.0) then
      !
      dav_iter = kter
      !
@@ -195,9 +209,9 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      END DO
      !
      IF(ipr.gt.1) then
-       write(6,*) 'Converged',(conv(n),n=1,nvec)
+       write(6,*) 'Not converged',(conv(n),n=1,nvec)
        !
-       write(6,'(''Expand notcnv,nvec,nbase '',3i4)') notcnv,nvec,nbase
+       write(6,'(''Expand with basis vectors '',i5)') notcnv
      ENDIF
      !
      nb1 = nbase + 1
@@ -218,7 +232,7 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      !
      ! ... approximate inverse iteration
      !
-!    CALL g_psi_lin_d( nparm, notcnv, psi(1,nb1), ew(nb1) )
+!    CALL g_psi_lin_d( nparm, notcnv, nb1, psi(1,nb1), ew(nb1) )
      !
      ! ... "normalize" correction vectors psi(:,nb1:nbase+notcnv) in 
      ! ... order to improve numerical stability of subspace diagonalization 
@@ -238,11 +252,17 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
         !
      END DO
      !
+     END IF ! idtask.eq.0
+     !
      ! ... here compute the hpsi and spsi of the new functions
+     !
+     nb1=nbase+1
      !
      CALL h_psi_lin_d( nparm, notcnv, psi(1,nb1), hpsi(1,nb1) )
      !
      CALL s_psi_lin_d( nparm, notcnv, psi(1,nb1), spsi(1,nb1) )
+     !
+     IF(idtask.eq.0) then
      !
      ! ... update the reduced hamiltonian
      !
@@ -303,16 +323,24 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      !
      e(1:nvec) = ew(1:nvec)
      !
+     END IF ! idtask.eq.0
+     !
      ! ... if overall convergence has been achieved, or the dimension of
      ! ... the reduced basis set is becoming too large, or in any case if
      ! ... we are at the last iteration refresh the basis set. i.e. replace
      ! ... the first nvec elements with the current estimate of the
      ! ... eigenvectors;  set the basis dimension to nvec.
      !
+     !
+     call MPI_BCAST(notcnv,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+     call MPI_BCAST(nbase,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+     call MPI_BCAST(dav_iter,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+     !
      IF ( notcnv == 0 .OR. &
           nbase+notcnv > nparm .OR. &
           nbase+notcnv > nvecx .OR. dav_iter == maxter ) THEN
         !
+        IF(idtask.eq.0) &
         CALL DGEMM( 'N', 'N', nparm, nvec, nbase, 1.D0, &
                     psi, nparmx, vr, nvecx, 0.D0, evc, nparmx )
         !
@@ -333,8 +361,10 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
            !
         END IF
         !
+        IF(idtask.eq.0) then
         !
-        IF(ipr.gt.1) write(6,'(''Refresh, notcnv,nvec,nbase '',3i4)') notcnv,nvec,nbase
+!       if(ipr.gt.1) write(6,'(''Refresh, notcnv,nvec,nbase '',3i4)') notcnv,nvec,nbase
+        write(6,'(''Refresh, notcnv,nvec,nbase '',3i4)') notcnv,nvec,nbase
         !
         ! ... refresh psi, H*psi and S*psi
         !
@@ -354,6 +384,17 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
         !
         nbase = nvec
         !
+        ! Claudia
+!       CALL DGEMM( 'T', 'N', nbase, nbase, nparm, 1.D0 , &
+!                   psi, nparmx, hpsi, nparmx, 0.D0, hr, nvecx )
+!       !
+!       CALL DGEMM( 'T', 'N', nbase, nbase, nparm, 1.D0, &
+!             psi, nparmx, spsi, nparmx, 0.D0, sr, nvecx )
+!       CALL rdiaghg( nbase, nvec, hr, sr, nvecx, ew, vr )
+!       !
+!       e(1:nvec) = ew(1:nvec)
+        ! Claudia
+        !
         hr(:,1:nbase) = 0.D0
         sr(:,1:nbase) = 0.D0
         vr(:,1:nbase) = 0.D0
@@ -366,6 +407,10 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
            !
         END DO
         !
+        END IF ! idtask.eq.0
+        ! 
+        call MPI_BCAST(nbase,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+        ! 
      END IF
      !
   END DO iterate

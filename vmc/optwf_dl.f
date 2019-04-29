@@ -1,4 +1,4 @@
-      subroutine dl_optwf
+      subroutine optwf_dl
 
       implicit real*8 (a-h,o-z)
       character*20 dl_alg
