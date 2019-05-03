@@ -1,4 +1,4 @@
-      subroutine lbfgs_iter(iter, nparm, deltap, parameters, energy, diag, workspace)
+      subroutine lbfgs_iter(iter, nparm, deltap, parameters, energy, diag, workspace, step_size)
       use lbfgs_wrapper, only: lbfgs_iteration
       implicit real*8 (a-h,o-z)
 
@@ -23,9 +23,10 @@
       parameters_old = parms_lbfgs
 
       ! TODO: make num_history configurable
-      call lbfgs_iteration(energy, parms_lbfgs, -h_sr, nparm, 5, diag, workspace)
+      call lbfgs_iteration(energy, parms_lbfgs, -h_sr, nparm, 10, diag, workspace, step_size)
 
       deltap(1:nparm) = parms_lbfgs - parameters_old
+      parameters(1:MPARM) = parameters(1:MPARM) + deltap(1:MPARM)
 
       deallocate(parms_lbfgs)
       deallocate(parameters_old)
