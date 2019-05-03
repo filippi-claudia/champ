@@ -1,0 +1,44 @@
+&general title 'psb-20'
+&general pool ../pool_qmc/
+&general pseudopot BFD
+&general basis bfd-dz
+
+load casci44-dz.geometry
+load $(general:pool)/global.inp
+load $(general:pool)/bfd-dz.bfinfo
+
+load jastrow_initial
+load casci44-dz.lcao
+load casci44-dz.det.1
+load casci44-dz.sym
+
+&optwf ioptwf 1 ioptci 1 ioptjas 1 ioptorb 1
+&optwf method mix_n multiple_adiag 0
+&optwf ncore 0 nextorb 86 no_active 0
+&optwf nblk_max 400 nopt_iter 8
+
+&optwf sr_tau 0.025 sr_eps 0.001 sr_adiag 0.05
+&optwf lin_eps 0.001 lin_adiag 0.01 lin_nvec 5 lin_nvecx 20
+&optwf micro_iter_sr 3
+&optwf isample_cmat 0 energy_tol 0.0
+
+&weights 1 1.0 2 1.0
+&weights_guiding 1 1.0 2 1.0
+&mstates iguiding 2 iefficiency 1
+
+jasderiv
+4 4 4  5 0 0 0 0 0 0 nparma,nparmb,nparmc,nparmf
+3 4 5 6   (iwjasa(iparm),iparm=1,nparma)
+3 4 5 6   (iwjasa(iparm),iparm=1,nparma)
+3 4 5 6   (iwjasa(iparm),iparm=1,nparma)
+2 3 4 5 6 (iwjasb(iparm),iparm=1,nparmb)
+3   5   7 8 9   11   13 14 15 16 17 18   20 21   23 (c(iparmj),iparmj=1,nparmc)
+3   5   7 8 9   11   13 14 15 16 17 18   20 21   23 (c(iparmj),iparmj=1,nparmc)
+3   5   7 8 9   11   13 14 15 16 17 18   20 21   23 (c(iparmj),iparmj=1,nparmc)
+end
+
+&blocking_vmc nstep 20 nblk 200 nblkeq 1 nconf_new 0
+
+# &startend isite 0
+
+&properties sample 1
