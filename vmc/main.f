@@ -5,11 +5,11 @@ c Written by Claudia Filippi
       character*12 mode
       character method*20
 
+      character*40 filename
+
 c mpif.h is system, mpi_qmc.h is ours
       include 'mpi_qmc.h'
       include 'mpif.h'
-
-      character*40 filename
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
@@ -40,16 +40,6 @@ c     if(idtask.ne.1) then
         open(45,file='/dev/null')
       endif
 
-      open(1,file='filename',status='old')
-      read(1,'(a40)') filename
-      close(1)
-
-cJF closes standard input(?) on 5, probably safer to avoid 5 for files
-c   or anything < 10 for that matter
-      close(5)
-
-      open(5,file=filename,status='old')
-
       call read_input
 
       if(ipr.gt.1) then
@@ -65,7 +55,6 @@ c   or anything < 10 for that matter
         filename='check.'//filename(1:index(filename,' ')-1)
         open(unit=88,form='formatted',file=filename)
       endif
-
 
       call p2gtid('optwf:ioptwf',ioptwf,0,1)
       call p2gtad('optwf:method',method,'linear',1)
