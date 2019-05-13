@@ -33,15 +33,6 @@ c Open the standard output and the log file only on the master
         open(45,file='/dev/null')
       endif
 
-      open(1,file='filename',status='old')
-      read(1,'(a40)') filename
-      close(1)
-
-cJF closes standard input(?) on 5, probably safer to avoid 5 for files
-c   or anything < 10 for that matter
-      close(5)
-      open(5,file=filename,status='old')
-
       if(idtask.le.9) then
         write(filename,'(''problem.'',i1)') idtask
        elseif(idtask.le.99) then

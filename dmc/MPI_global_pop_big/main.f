@@ -5,7 +5,7 @@ c Written by Claudia Filippi
       include 'mpi_qmc.h'
       include 'mpif.h'
 
-      character*20 filename
+      character*40 filename
 
       character*12 mode
       common /contr3/ mode
@@ -32,12 +32,6 @@ c Open the standard output and the log file only on the master
         open(6,file='/dev/null')
         open(45,file='trash.log')
       endif
-
-      open(1,file='filename',status='old')
-      read(1,'(a20)') filename
-      close(1)
-
-      open(5,file=filename,status='old')
 
       if(idtask.le.9) then
         write(filename,'(''problem.'',i1)') idtask
