@@ -74,6 +74,13 @@ CHAMP relies on various other program packages:
 
 4. MOLCAS_Interface: recently added thanks to Csaba Daday and Monika Dash
 
+### Run on CCPGate
+In the new version (without filename) run with:
+```
+mpirun -s all -np "n process" -machinefile "machinefile"
+
+```
+NOTE OpenMPI: Not tested but most likely will not work at the moment as the stdin cannot be redirected to all tasks.
 
 ### Installation Using CMake
 To install **Champ** using [cmake](https://cmake.org/) you need to run the following commands:
