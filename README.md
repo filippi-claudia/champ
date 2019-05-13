@@ -113,13 +113,12 @@ standard Intel installation.
 Load the required modules
 ```
 module unload mpi
-module load mpi/impi/18.0.4 cmake/3.7.2 mkl/18.0.4
+module load intel/2018b cmake/3.7.2
 ```
 Setup the build:
 ```
 cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 ```
-
 
 * CCPGate
 To build with ifort set the variables for the Intel Compiler and MPI ->
