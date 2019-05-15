@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Run with the following commands to reproduce the reference outputs 'vmc_optall.out':
+cd TZ_1M_128
+mpirun -np 24 -s all ~/software/champ-development/bin/vmc.mov1 < vmc_optall.inp > test.out
+cd ..
+
+# prepare machinefile to run on 5 nodes with 24 processes each
+cd TZ_1M_5114
+mpirun -ppn 24 -machinefile machinefile -s all ~/software/champ-development/bin/vmc.mov1 < vmc_optall.inp > test.out
+cd ..
+
+# prepare machinefile to run on 10 nodes with 24 processes each
+cd TZ_1M_5114
+mpirun -ppn 24 -machinefile machinefile -s all ~/software/champ-development/bin/vmc.mov1 < vmc_optall.inp > test.out
+cd ..
+
