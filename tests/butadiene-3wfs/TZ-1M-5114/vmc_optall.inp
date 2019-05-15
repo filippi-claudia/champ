@@ -15,7 +15,7 @@ load $(general:pool)/cas1010.sym
 &optwf ioptwf 1 ioptci 1 ioptjas 1 ioptorb 1
 &optwf method sr_n multiple_adiag 0
 &optwf ncore 0 nextorb 280 no_active 0
-&optwf nblk_max 1200 nopt_iter 3
+&optwf nblk_max 200 nopt_iter 3
 &optwf sr_tau 0.05 sr_eps 0.001 sr_adiag 0.01
 &optwf isample_cmat 0 energy_tol 0.0
 
