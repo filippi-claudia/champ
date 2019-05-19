@@ -1,4 +1,5 @@
       subroutine lbfgs_optwf
+      use olbfgs, only: initialize_olbfgs
 
       implicit real*8 (a-h,o-z)
       character*20 dl_alg
@@ -23,7 +24,7 @@
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 c vector of wave function parameters
-      dimension deltap(MPARM), parameters(MPARM), diag(MPARM), workspace(MPARM*11 + 10)
+      dimension deltap(MPARM), parameters(MPARM)
 
       call p2gtid('optwf:idl_flag',idl_flag,0,1)
 
@@ -56,12 +57,15 @@ c vector of wave function parameters
 c Initialize DL vectors to zero
       do i=1,nparm
         parameters(i) = 0.d0
-        diag(i) = 0.d0
       enddo
 
       call save_nparms
 
       call fetch_parameters(parameters)
+      
+      ! initialize olbfgs
+      ! TODO make num_history configurable
+      call initialize_olbfgs(nparm, 5)
 
 c do iteration
       do iter=1,nopt_iter
@@ -73,7 +77,7 @@ c do iteration
 
    6    continue
 
-        call lbfgs_more(iter, nparm, deltap, parameters, energy(1), diag, workspace)
+        call lbfgs_more(iter, nparm, deltap, parameters)
 
 c historically, we input -deltap in compute_parameters, so we multiply actual deltap by -1
         call dscal(nparm,-1.d0,deltap,1)
