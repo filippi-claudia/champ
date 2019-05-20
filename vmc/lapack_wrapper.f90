@@ -42,7 +42,6 @@ contains
     ! ! dimension of the guess space
     dim = size(mtx, 1)
 
-    write(6,*)'CIAO CIAO',dim
     gev = present(stx)
 
     ! local copy of the matrices
