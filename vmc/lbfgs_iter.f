@@ -22,10 +22,16 @@
       parameters_old = parms_lbfgs
 
       call update_hessian(parms_lbfgs, -h_sr)
+<<<<<<< HEAD
       ! TODO make step size configurable
       print *, 'Doing o-lbfgs iteration'
       print *, step_size
       call olbfgs_iteration(parms_lbfgs, -h_sr, step_size, iter)
+=======
+
+      call p2gtfd('optwf:sr_tau',sr_tau,0.02,1)
+      call olbfgs_iteration(parms_lbfgs, -h_sr, sr_tau, iter)
+>>>>>>> 73650ec
 
       deltap(1:nparm) = parms_lbfgs - parameters_old
       parameters(1:MPARM) = parameters(1:MPARM) + deltap(1:MPARM)
