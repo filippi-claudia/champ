@@ -1,0 +1,17 @@
+# global vmc/dmc settings
+&general unit Hartrees mass 0.5 nforce 1
+&general seed 1837465927472523
+&general ipr -1
+
+&dmc idmc 2
+&dmc nfprod 100
+&dmc ipq 1 itau_eff 1 iacc_rej 1 icross 1
+&dmc icuspg 0 idiv_v 0 icut_br 0 icut_e 0
+
+&vmc imetro 6
+&vmc deltar 5. deltat 1.
+&vmc delta 1. fbias 1.
+
+&pseudo nloc 4 nquad 6
+
+&jastrow ianalyt_lap 1 isc 2 nspin1 1 nspin2 1 ifock 0
