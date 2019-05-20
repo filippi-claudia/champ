@@ -19,7 +19,7 @@
 c we only need h_sr = - grad_parm E
       call sr_hs(nparm,sr_adiag)
 
-      call lbfgs_iter(iter, nparm, deltap, parameters)
+      call lbfgs_iter(iter, nparm, deltap, parameters, sr_tau)
 
       return
       end

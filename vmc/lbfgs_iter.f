@@ -1,4 +1,4 @@
-      subroutine lbfgs_iter(iter, nparm, deltap, parameters)
+      subroutine lbfgs_iter(iter, nparm, deltap, parameters, step_size)
       !use lbfgs_wrapper, only: lbfgs_iteration
       use olbfgs, only: olbfgs_iteration, update_hessian
       implicit real*8 (a-h,o-z)
@@ -24,7 +24,8 @@
       call update_hessian(parms_lbfgs, -h_sr)
       ! TODO make step size configurable
       print *, 'Doing o-lbfgs iteration'
-      call olbfgs_iteration(parms_lbfgs, -h_sr, 0.5d0, iter)
+      print *, step_size
+      call olbfgs_iteration(parms_lbfgs, -h_sr, step_size, iter)
 
       deltap(1:nparm) = parms_lbfgs - parameters_old
       parameters(1:MPARM) = parameters(1:MPARM) + deltap(1:MPARM)

@@ -65,7 +65,8 @@ c Initialize DL vectors to zero
       
       ! initialize olbfgs
       ! TODO make num_history configurable
-      call initialize_olbfgs(nparm, 5)
+      call p2gtid('optwf:ilbfgs_m',ilbfgs_m,5,1)
+      call initialize_olbfgs(nparm, ilbfgs_m)
 
 c do iteration
       do iter=1,nopt_iter
