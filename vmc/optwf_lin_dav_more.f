@@ -1,4 +1,4 @@
-      subroutine lin_d(nparm,nvec,nvecx,deltap,adiag,ethr)
+      subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
 
       implicit real*8(a-h,o-z)
 
@@ -20,8 +20,8 @@
 
       common /mpiconf/ idtask,nproc
 
-      dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,MSTATES),anorm(MVEC)
-      dimension deltap(*)
+      dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,MSTATES),index_overlap(MVEC),anorm(MVEC)
+      dimension deltap(*),deltap_more(MPARM*MSTATES,5)
 
       call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
 
@@ -43,32 +43,27 @@
 
       if(lin_jdav.eq.0) then
 
+       write(6,*) "USING OLD REGTERG"
+
         call regterg( nparm_p1, MPARM, nvec, nvecx, evc, ethr,
      &                e, itype, notcnv, idav_iter, ipr, idtask )
 
         write(6,'(''LIN_D: no. iterations'',i4)') idav_iter
         write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
 
-      else
-
-c e0,nvec_e0
-        e0=energy(1)
-        nvec_e0=nvec
-
-        nvecm=nvec*2
-        write(6,'(''LIN_D : target energy'',f14.6)') e0
-
-        call jdqz_driver( nparm_p1, nvec_e0, nvecm, nvecx, evc, ethr,
-     &                    e, e0, itype, notcnv, idav_iter , ipr )
-
+       elseif(lin_jdav.eq.1) then
+       write(6,*) "USING DAVIDOSN WRAP"
+        call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, evc, ethr,
+     &              e, itype, notcnv, idav_iter, ipr, idtask )
+       else
+         call fatal_error('LIND: lin_jdav < 2')
       endif
 
       call my_second(2,'david ')
 
-c     STOP
+      call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)
 
-      call compute_overlap_psi(nparm+i0,nvec,evc,overlap_psi,anorm)
-
+c idtask.eq.0
       if(idtask.eq.0)  then
 
         do istate=1,nstates
@@ -99,28 +94,45 @@ c     STOP
           do i=1,nparm
             deltap(i)=deltap(i)/bot
           enddo
-         else
+
+         else                   
+c else means if i optimize jastrow and or orbitals
+
           do istate=1,nstates
-            overlap_max=0.d0
-            do ivec=1,nvec
-              if(overlap_psi(ivec,istate).gt.overlap_max) then
-                overlap_max=overlap_psi(ivec,istate)
-                i_overlap_max=ivec
-              endif
-            enddo
+            call sort(nvec,overlap_psi(1,istate),index_overlap)
+            i_overlap_max=index_overlap(nvec)
             write(6,'(''LIN_D: state, max overlap ivec'',2i4)') istate,i_overlap_max
 
             do i=1,nparm
               deltap(i+nparm*(istate-1))=evc(i,i_overlap_max)/anorm(i_overlap_max)
             enddo
+
+c save 5 additional vectors with large overlap
+            do ivec=1,5
+              idx_ivec=index_overlap(nvec-ivec)
+              do i=1,nparm
+                deltap_more(i+nparm*(istate-1),ivec)=evc(i,idx_ivec)/anorm(idx_ivec)
+              enddo
+            enddo
           enddo
+
         endif
 
+c endif idtask.eq.0
       endif
 
-      do istate=1,nstates
-        call MPI_BCAST(deltap(1+nparm*(istate-1)),nparm,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      enddo
+c     do istate=1,nstates
+c       call MPI_BCAST(deltap(1+nparm*(istate-1)),nparm,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+c     enddo
+
+      call MPI_BCAST(deltap,nparm*nstates,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
+      if(i0.eq.0) then
+        do ivec=1,5
+          call MPI_BCAST(deltap_more(1,ivec),nparm*nstates,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+        enddo
+      endif
+
 
       return              ! deltap
       end
@@ -344,9 +356,9 @@ c loop vec
 c end loop vec
       enddo
 
-      do i=1,nparm+1
-        write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
-      enddo
+c     do i=1,nparm+1
+c       write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
+c     enddo
 c     STOP
 
       return

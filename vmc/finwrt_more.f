@@ -21,6 +21,8 @@ c written by Claudia Filippi
       common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
       common /estpsi/ detref(2),apsi(MSTATES),aref
 
+      common /sa_check/ energy_all(MSTATES), energy_err_all(MSTATES)
+
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
 
       dimension istatus(MPI_STATUS_SIZE)
@@ -39,8 +41,12 @@ c written by Claudia Filippi
      &    ,3,MPI_COMM_WORLD,ierr)
           call mpi_send(force_err,3,mpi_double_precision,id
      &    ,4,MPI_COMM_WORLD,ierr)
-  20      call mpi_send(sigma,1,mpi_double_precision,id
+          call mpi_send(sigma,1,mpi_double_precision,id
      &    ,5,MPI_COMM_WORLD,ierr)
+          call mpi_send(energy_all,nstates,mpi_double_precision,id
+     &    ,6,MPI_COMM_WORLD,ierr)
+  20      call mpi_send(energy_err_all,nstates,mpi_double_precision,id
+     &    ,7,MPI_COMM_WORLD,ierr)
        else
         call mpi_recv(energy,3,mpi_double_precision,0
      &  ,1,MPI_COMM_WORLD,istatus,ierr)
@@ -52,6 +58,10 @@ c written by Claudia Filippi
      &  ,4,MPI_COMM_WORLD,istatus,ierr)
         call mpi_recv(sigma,1,mpi_double_precision,0
      &  ,5,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(energy_all,nstates,mpi_double_precision,0
+     &  ,6,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(energy_err_all,nstates,mpi_double_precision,0
+     &  ,7,MPI_COMM_WORLD,istatus,ierr)
       endif
 
       return

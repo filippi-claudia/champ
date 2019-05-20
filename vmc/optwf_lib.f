@@ -88,7 +88,7 @@ c out: b = solution of eqs.; overwites original b
       end
 c-----------------------------------------------------------------------
       subroutine sort(n,arr,indx)
-C     index sort from numerical recepires
+C     index sort from numerical recipes
 C     sorts in ascending order
       implicit double precision(a-h,o-z)
       integer n,indx(n),m,nstack

@@ -70,6 +70,7 @@ c for omega functional
         obs_wtg(istate)=obs(jwtg,istate)
       enddo
 
+
       call MPI_REDUCE(obs_wtg,obs_wtg_tot,nstates,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
       do istate=1,nstates
         obs_tot(jwtg,istate)=obs_wtg_tot(istate)

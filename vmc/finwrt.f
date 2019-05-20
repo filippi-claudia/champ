@@ -11,6 +11,8 @@ c routine to print out final results
       include 'optorb.h'
       include 'mstates.h'
       include 'optci.h'
+      include 'mpif.h'
+
       parameter (one=1.d0,half=.5d0)
 
       common /forcepar/ deltot(MFORCE),nforce,istrech
@@ -32,6 +34,8 @@ c routine to print out final results
      &ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
 
+      common /estpsi/ detref(2),apsi(MSTATES),aref
+
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
@@ -44,6 +48,12 @@ c routine to print out final results
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
 
       common /tmpnode/ distance_node_sum
+      common /sa_check/ energy_all(MSTATES), energy_err_all(MSTATES)
+
+      logical wid
+      common /mpiconf/ idtask,nproc,wid
+
+      dimension istatus(MPI_STATUS_SIZE)
 
       err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
       err1(x,x2,j)=dsqrt(dabs(x2/wcum(j,1)-(x/wcum(j,1))**2)/passes)
@@ -98,6 +108,10 @@ c quantities also computed in acuest_write
       tjferr=err(tjfcum(istate),tjfcm2(istate),istate,1)
       r2err=err(r2cum,r2cm2,1,1)
 
+c     save the enegies (of all the states) of the last run for the check in lin_d and error 
+      energy_all(istate)=efin
+      energy_err_all(istate)=eerr
+
       energy(1)=energy(1)+weights(istate)*efin
 c TMP
 c     energy_err(1)=energy_err(1)+(weights(istate)*eerr)**2
@@ -126,7 +140,7 @@ c is precisely what is being reflected when we get T_corr < 1.
 
       write(6,'(''total E ='',t17,f12.7,'' +-'',f11.7,3f9.5,f8.2)')
      & efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,tcsq*tcsq
-
+    
       efin_p=efin
       eerr_p=eerr
 
@@ -188,7 +202,44 @@ c 250   force_err(ifr)=sqrt(force_err(ifr))
 
       call prop_fin(wcum(1,1),iblk,efin_p,eerr_p)
 
-      call finwrt_more
+c BEGIN parallel 
+      write(6,'(''average psid, det_ref '',2d12.5)') (apsi(istate)*nproc/passes,istate=1,nstates),aref*nproc/passes
+      write(6,'(''log detref '',2d12.5)') (detref(iab)*nproc/passes,iab=1,2)
+
+      if(wid) then
+        do 20 id=1,nproc-1
+          call mpi_send(energy,3,mpi_double_precision,id
+     &    ,1,MPI_COMM_WORLD,ierr)
+          call mpi_send(energy_err,3,mpi_double_precision,id
+     &    ,2,MPI_COMM_WORLD,ierr)
+          call mpi_send(force,3,mpi_double_precision,id
+     &    ,3,MPI_COMM_WORLD,ierr)
+          call mpi_send(force_err,3,mpi_double_precision,id
+     &    ,4,MPI_COMM_WORLD,ierr)
+          call mpi_send(sigma,1,mpi_double_precision,id
+     &    ,5,MPI_COMM_WORLD,ierr)
+          call mpi_send(energy_all,nstates,mpi_double_precision,id
+     &    ,6,MPI_COMM_WORLD,ierr)
+  20      call mpi_send(energy_err_all,nstates,mpi_double_precision,id
+     &    ,7,MPI_COMM_WORLD,ierr)
+       else
+        call mpi_recv(energy,3,mpi_double_precision,0
+     &  ,1,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(energy_err,3,mpi_double_precision,0
+     &  ,2,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(force,3,mpi_double_precision,0
+     &  ,3,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(force_err,3,mpi_double_precision,0
+     &  ,4,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(sigma,1,mpi_double_precision,0
+     &  ,5,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(energy_all,nstates,mpi_double_precision,0
+     &  ,6,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(energy_err_all,nstates,mpi_double_precision,0
+     &  ,7,MPI_COMM_WORLD,istatus,ierr)
+      endif
+
+c END parallel 
 
       write(6,'(''distance from the nodes '',f10.5)') distance_node_sum/passes
 

@@ -103,6 +103,8 @@ c do micro_iteration
 
           if(miter.eq.micro_iter_sr) iforce_analy=iforce_analy_sav
 
+c        efin_old = efin define efin_old as the energy before
+
           call qmc
 
           write(6,'(/,''Completed sampling'')')
@@ -127,6 +129,9 @@ c do micro_iteration
               alin_adiag=alin_adiag_sav
             endif
           endif
+
+
+c Here I should save the old parameters 
  
           call compute_parameters(grad,iflag,1)
           call write_wf(1,iter)

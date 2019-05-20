@@ -131,9 +131,11 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
   !
   ! ... hpsi contains h times the basis vectors
   !
+  write(6,*) "HELLO PRIMA DEL H_PSI"
   CALL h_psi_lin_d( nparm, nvec, psi, hpsi )
   !
   CALL s_psi_lin_d( nparm, nvec, psi, spsi )
+  write(6,*) "HELLO DOPO DEL H_PSI"
   !
   ! ... hr contains the projection of the hamiltonian onto the reduced
   ! ... space vr contains the eigenvectors of hr
