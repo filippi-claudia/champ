@@ -11,7 +11,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   ! ... (real wavefunctions with only half plane waves stored)
   ! 
   use numeric_kinds, only: dp
-  use davidson, only: generalized_eigensolver
+  use davidson_free, only: davidson_parameters, generalized_eigensolver
 
   IMPLICIT NONE
 
@@ -34,105 +34,101 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, ipr, idtask
   INTEGER, dimension(nvec), INTENT(IN) :: btype
   INTEGER, INTENT(OUT) :: dav_iter, notcnv
-
   
-  ! ... LOCAL variables
-  REAL(dp), ALLOCATABLE :: psi(:,:), hpsi(:,:), spsi(:,:)
-  INTEGER :: ierr ! Error info
+  ! Function to compute the target matrix on the fly
+  
+  interface
+     function fun_mtx_gemv(parameters, input_vect) result(output_vect)
+       !> \brief Function to compute the action of the hamiltonian on the fly
+       !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+       !> \param[in] input_vec Array to project
+       !> \return Projected matrix
 
-    ! Function to compute the target matrix on the fly
-    interface
-
-       function apply_mtx_to_vect(nparm, lowest, input_vect) result(output_vect)
-         !> \brief Function to compute the optional mtx on the fly
-         !> \param lowest Number of lowest eigenvalues
-         !> \param[in] i column/row to compute from mtx
-         !> \return vec column/row from mtx
-         use numeric_kinds, only: dp
-         integer, intent(in) :: nparm, lowest 
-         real (dp), dimension(:,:), intent(in) :: input_vect
-         real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
-
-       end function apply_mtx_to_vect
+       use numeric_kinds, only: dp
+       import :: davidson_parameters
+       type(davidson_parameters) :: parameters
+       real (dp), dimension(:,:), intent(in) :: input_vect
+       real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
        
-       function apply_stx_to_vect(nparm, lowest, input_vect) result(output_vect)
-         !> \brief Fucntion to compute the optional stx matrix on the fly
-         !> \param[in] i column/row to compute from stx
-         !> \param vec column/row from stx
-         use numeric_kinds, only: dp
-         integer, intent(in) :: nparm, lowest 
-         real(dp), dimension(:,:), intent(in) :: input_vect
-         real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
-         
-       end function apply_stx_to_vect
+     end function fun_mtx_gemv
+     
+     function fun_stx_gemv(parameters, input_vect) result(output_vect)
+       !> \brief Function to compute the action of the overlap on the fly
+       !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+       !> \param[in] input_vec Array to project
+       !> \return Projected matrix
+       
+       use numeric_kinds, only: dp
+       import :: davidson_parameters
+       type(davidson_parameters) :: parameters
+       real (dp), dimension(:,:), intent(in) :: input_vect
+       real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
+       
+       end function fun_stx_gemv
 
     end interface
 
-  
+  notcnv=0 !Not used in davidson_wrap
+    
   ! Allocate variables
   IF ( nvec > nvecx / 2 ) CALL fatal_error( 'regter: nvecx is too small')
-
-  ALLOCATE( psi(  nparmx, nvecx ), STAT=ierr )
-  IF( ierr /= 0 ) &
-     CALL fatal_error( 'davidson_wrap: cannot allocate psi ')
-  ALLOCATE( hpsi( nparmx, nvecx ), STAT=ierr )
-  IF( ierr /= 0 ) &
-     CALL fatal_error( 'davidson_wrap: cannot allocate hpsi ')
-  !
-  ALLOCATE( spsi( nparmx, nvecx ), STAT=ierr )
-  IF( ierr /= 0 ) &
-     CALL fatal_error( ' davidson_wrap: cannot allocate spsi ')
-  
-  ! Initialize
-  spsi = 0.0_dp
-  hpsi = 0.0_dp
-  psi  = 0.0_dp
-  psi(:,1:nvec) = eigenvectors(:,1:nvec)
- 
-  notcnv=0 !Not used in davidson_wrap
-  
-  call generalized_eigensolver(apply_mtx_to_vect, eigenvalues, eigenvectors, nparm, nvec, &
-       "DPR", 100, ethr, dav_iter, nvecx, apply_stx_to_vect, idtask)
+    
+  call generalized_eigensolver(fun_mtx_gemv, eigenvalues, eigenvectors, nparm, &
+       nparmx,  nvec, "DPR", 100, ethr, dav_iter, nvecx, fun_stx_gemv, idtask)
   
 END SUBROUTINE davidson_wrap
 
-function apply_mtx_to_vect(nparm, nvec, psi) result(hpsi)
-  !> \brief interface to compute the product between the Hamiltonian and the eigenvectors
-  !> \param nvec Number of pair eigenvalues/eigenvectors to compute
-  !> \return the result of applying the Hamiltonian to the trial eigenvectors
+function fun_mtx_gemv(parameters, eigenvectors, input_vect) result(output_vect)
+  !> \brief Function to compute the optional mtx on the fly
+  !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+  !> \param[in]  eigenvectors Wave function
+  !> \return vec column/row from mtx
+  use numeric_kinds, only: dp
+  use davidson_free, only: davidson_parameters
+
+  type(davidson_parameters) :: parameters
+  real (dp), dimension(:,:), intent(in) :: eigenvectors, input_vect
+  real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
+  real(dp), dimension(:, :), allocatable :: psi, hpsi
+
+  allocate(psi(parameters%nparm_max, parameters%max_dim_sub))
+  allocate(hpsi(parameters%nparm_max, parameters%max_dim_sub))
+  psi = 0.0_dp
+  psi(1:size(input_vect,1),1:size(input_vect,2)) = input_vect
+  
+  call h_psi_lin_d(parameters%nparm, parameters%lowest, psi, hpsi)
+
+  output_vect = hpsi(1:size(input_vect,1),1:size(input_vect,2))
+  deallocate(psi, hpsi)
+  
+end function fun_mtx_gemv
+
+function fun_stx_gemv(parameters, eigenvectors, input_vect) result(output_vect)
+  !> \brief Fucntion to compute the optional stx matrix on the fly
+  !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+  !> \param[in]  eigenvectors Wave function
   
   use numeric_kinds, only: dp
+  use davidson_free, only: davidson_parameters
+  type(davidson_parameters) :: parameters
+  real (dp), dimension(:,:), intent(in) :: eigenvectors, input_vect
+  real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
+  real(dp), dimension(:, :), allocatable :: psi, spsi
 
-  implicit none
+  allocate(psi(parameters%nparm_max, parameters%max_dim_sub))
+  allocate(spsi(parameters%nparm_max, parameters%max_dim_sub))
+  psi = 0.0_dp
+  psi(1:size(input_vect,1),1:size(input_vect,2)) = input_vect
   
-  ! IO variables
-  integer, intent(in) :: nparm, nvec
-  real(dp), dimension(:, :), intent(in) :: psi
+  call s_psi_lin_d(parameters%nparm, parameters%lowest, psi, spsi)
 
-  real(dp), dimension(size(psi, 1), size(psi, 2)) :: hpsi
-
-  ! nparmx = size(psi, 1)
-  call h_psi_lin_d(nparm, nvec, psi, hpsi) 
-
-end function apply_mtx_to_vect
-
-
-function apply_stx_to_vect(nparm, nvec, psi) result(spsi)
-  !> \brief interface to compute the product between the Overlap and the eigenvectors
-  !> \param nvec Number of pair eigenvalues/eigenvectors to compute
-  !> \return the result of applying the Hamiltonian to the trial eigenvectors
+  output_vect = spsi(1:size(input_vect,1),1:size(input_vect,2))
+  deallocate(psi, spsi)
   
-  use numeric_kinds, only: dp
-  
-  implicit none
-  
-  ! IO variables
-  integer, intent(in) :: nparm, nvec
-  real(dp), dimension(:, :), intent(in) :: psi
+end function fun_stx_gemv
 
-  real(dp), dimension(size(psi, 1), size(psi, 2)) :: spsi
-  ! nparm = size(psi, 1)
-  CALL s_psi_lin_d(nparm, nvec, psi, spsi)
+
+
   
-end function apply_stx_to_vect
+  
 
