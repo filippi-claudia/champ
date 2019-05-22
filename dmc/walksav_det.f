@@ -38,7 +38,7 @@ c Written by Claudia Filippi
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      dimension slmuiw(MMAT_DIM,MWALK)
+      dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK)
      &,slmdiw(MMAT_DIM,MWALK)
      &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)
      &,fppuw(MMAT_DIM,MWALK),fppdw(MMAT_DIM,MWALK)
@@ -49,7 +49,7 @@ c Written by Claudia Filippi
 
       dimension orbw(MELEC,MORB,MWALK),dorbw(3,MELEC,MORB,MWALK)
 
-      save slmuiw,slmdiw,fpuw,fpdw,fppuw,fppdw,detuw,detdw,ddxw,d2dx2w
+      save krefw,slmuiw,slmdiw,fpuw,fpdw,fppuw,fppdw,detuw,detdw,ddxw,d2dx2w
 
       save aaw,wfmatw,ymatw,orbw,dorbw
 
@@ -57,6 +57,7 @@ c Written by Claudia Filippi
          detuw(k,iw)=detu(k)
    20    detdw(k,iw)=detd(k)
 
+       krefw(iw)=kref
        do 40 j=1,nup*nup
          slmuiw(j,iw)=slmui(j)
          fpuw(1,j,iw)=fpu(1,j)
@@ -95,11 +96,14 @@ c Written by Claudia Filippi
    63        dorbw(kk,i,iorb,iw)=dorb(kk,i,iorb)
 
       return
+
       entry walkstrdet(iw)
 
       do 70 k=1,ndet
         detu(k)=detuw(k,iw)
    70   detd(k)=detdw(k,iw)
+
+      kref=krefw(iw)
       do 80 j=1,nup*nup
         slmui(j)=slmuiw(j,iw)
         fpu(1,j)=fpuw(1,j,iw)
@@ -144,6 +148,8 @@ c Written by Claudia Filippi
       do 110 k=1,ndet
         detuw(k,iw2)=detuw(k,iw)
   110   detdw(k,iw2)=detdw(k,iw)
+
+      krefw(iw2)=krefw(iw)
       do 120 j=1,nup*nup
         slmuiw(j,iw2)=slmuiw(j,iw)
         fpuw(1,j,iw2)=fpuw(1,j,iw)

@@ -15,6 +15,8 @@ c Modified by A. Scemama
       common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
+      common /dets/ cdet(MDET,MSTATES,MWF),ndet
+
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
      &,fpp(MMAT_DIM,2)
@@ -85,7 +87,7 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
       if(ipr.ge.4) write(6,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
 
       icheck=icheck+1
-      if(icheck.le.10) then
+      if(icheck.le.10.and.ndet.gt.1) then
         call check_detref(ipass,icheck,newref)
         if(newref.gt.0) goto 10
       endif

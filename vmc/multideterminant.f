@@ -556,10 +556,11 @@ c     call p2gtid('optwf:ioptci',ioptci,0,1)
           goto 2
         endif
   1     kref=kref+1
+        if(kref.gt.ndet) call fatal_error('MULTIDET_DEFINE: kref > ndet')
+
   2     if(idiff(kref_old,kref,iflag).eq.0) goto 1
         write(6,*) 'kref change',iflag,kref_old,kref
       endif
-      if(kref.gt.ndet) call fatal_error('MULTIDET_DEFINE: kref > ndet')
       kref_old=kref
 
       do iab=1,2

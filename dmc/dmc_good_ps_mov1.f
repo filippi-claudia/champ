@@ -214,6 +214,14 @@ c Sample Green function for forward move
 
         do 200 i=1,nelec
 
+          if(i.le.nup) then
+            iflag_up=2
+            iflag_dn=3
+           else
+            iflag_up=3
+            iflag_dn=2
+          endif
+
           call compute_determinante_grad(i,psido(iw,1),psido(iw,1),vold(1,i,iw,1),1)
 
 c Use more accurate formula for the drift
@@ -241,10 +249,16 @@ c calculate psi and velocity at new configuration
 
           distance_node_ratio2=1.d0
           if(node_cutoff.gt.0) then
-            call nodes_distance(vold(1,1,iw,1),distance_node)
+            do 100 jel=1,nup
+  100         if(jel.ne.i) call compute_determinante_grad(jel,psidn,psidn,vnew(1,jel),iflag_up)
+
+            do 105 jel=nup+1,nelec
+  105         if(jel.ne.i) call compute_determinante_grad(jel,psidn,psidn,vnew(1,jel),iflag_dn)
+
+            call nodes_distance(vold(1,1,iw,1),distance_node,1)
             rnorm_nodes_old=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
 
-            call nodes_distance(vnew,distance_node)
+            call nodes_distance(vnew,distance_node,0)
             rnorm_nodes_new=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
             distance_node_ratio2=(rnorm_nodes_new/rnorm_nodes_old)**2
           endif
@@ -373,7 +387,7 @@ c           call t_vpsp_sav(iw)
             i_vpsp=0
             rnorm_nodes=1.d0
             if(node_cutoff.gt.0) then
-              call nodes_distance(vold(1,1,iw,1),distance_node)
+              call nodes_distance(vold(1,1,iw,1),distance_node,1)
               rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
             endif
            else
