@@ -78,19 +78,20 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   
 END SUBROUTINE davidson_wrap
 
-function fun_mtx_gemv(parameters, eigenvectors, input_vect) result(output_vect)
-  !> \brief Function to compute the optional mtx on the fly
+function fun_mtx_gemv(parameters,  input_vect) result(output_vect)
+  !> \brief Function to compute the action of the hamiltonian on the fly
   !> \param[in] dimension of the arrays to compute the action of the hamiltonian
-  !> \param[in]  eigenvectors Wave function
-  !> \return vec column/row from mtx
+  !> \param[in] input_vec Array to project
+  !> \return Projected matrix
+
   use numeric_kinds, only: dp
   use davidson_free, only: davidson_parameters
 
   type(davidson_parameters) :: parameters
-  real (dp), dimension(:,:), intent(in) :: eigenvectors, input_vect
+  real (dp), dimension(:,:), intent(in) :: input_vect
   real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
   real(dp), dimension(:, :), allocatable :: psi, hpsi
-
+  
   allocate(psi(parameters%nparm_max, parameters%max_dim_sub))
   allocate(hpsi(parameters%nparm_max, parameters%max_dim_sub))
   psi = 0.0_dp
@@ -103,15 +104,16 @@ function fun_mtx_gemv(parameters, eigenvectors, input_vect) result(output_vect)
   
 end function fun_mtx_gemv
 
-function fun_stx_gemv(parameters, eigenvectors, input_vect) result(output_vect)
+function fun_stx_gemv(parameters, input_vect) result(output_vect)
   !> \brief Fucntion to compute the optional stx matrix on the fly
   !> \param[in] dimension of the arrays to compute the action of the hamiltonian
-  !> \param[in]  eigenvectors Wave function
+  !> \param[in] input_vec Array to project
+  !> \return Projected matrix
   
   use numeric_kinds, only: dp
   use davidson_free, only: davidson_parameters
   type(davidson_parameters) :: parameters
-  real (dp), dimension(:,:), intent(in) :: eigenvectors, input_vect
+  real (dp), dimension(:,:), intent(in) :: input_vect
   real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
   real(dp), dimension(:, :), allocatable :: psi, spsi
 

@@ -109,7 +109,7 @@ contains
     
     ! ! Basis of subspace of approximants
     real(dp), dimension(size(ritz_vectors, 1),1) :: guess, rs
-    real(dp), dimension(size(ritz_vectors, 1)  ) :: diag_mtx, diag_stx, copy_d
+    real(dp), dimension(:), allocatable :: diag_mtx, diag_stx
     real(dp), dimension(lowest):: errors
     
     ! ! Working arrays
@@ -136,14 +136,17 @@ contains
 
     write(6,'(''DAV: Compute diagonals of S and H'')')
 
-    diag_mtx = extract_diagonal_free(fun_mtx_gemv, parameters, dim_mtx)
-    diag_stx = extract_diagonal_free(fun_stx_gemv, parameters, dim_mtx)
+    !! Diagonal of the arrays
+    allocate(diag_mtx(dim_sub))
+    allocate(diag_stx(dim_sub))
+    diag_mtx = extract_diagonal_free(fun_mtx_gemv, parameters, dim_sub)
+    diag_stx = extract_diagonal_free(fun_stx_gemv, parameters, dim_sub)
     
     ! 1. Variables initialization
     ! Select the initial ortogonal subspace based on lowest elements
     ! of the diagonal of the matrix
-    copy_d = diag_mtx
-    V = generate_preconditioner(copy_d, dim_sub) ! Initial orthonormal basis
+    V = ritz_vectors(1:nparm, 1:lowest) ! Initial orthonormal basis
+    call lapack_qr(V)
     
     ! 2. Generate subspace matrix problem by projecting into V
     write(6,'(''DAV: Setup subspace problem'')')
@@ -243,7 +246,7 @@ contains
     
     ! Free memory
     call check_deallocate_matrix(correction)
-    deallocate(eigenvalues_sub, eigenvectors_sub, V, mtx_proj)
+    deallocate(eigenvalues_sub, eigenvectors_sub, V, mtx_proj, diag_mtx, diag_stx)
     
     ! free optional matrix
     call check_deallocate_matrix(stx_proj)
@@ -332,7 +335,7 @@ contains
     
   end function compute_DPR_free
 
- function extract_diagonal_free(fun_mtx_gemv, parameters,  dim) result(out)
+ function extract_diagonal_free(fun_mtx_gemv, parameters, dim) result(out)
    !> \brief extract the diagonal of the matrix
    !> \param parameters: dimensions of the arrays
    implicit none
@@ -359,7 +362,9 @@ contains
    
    ! local variable
    integer :: ii
-   real(dp), dimension(dim,1) :: tmp_array
+   real(dp), dimension(parameters%nparm, 1) :: tmp_array
+
+   write(6,'(''DAV: extracting diagonal'')')
    
    do ii = 1, dim
       tmp_array = 0E0
