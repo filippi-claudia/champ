@@ -1,4 +1,4 @@
-      subroutine lbfgs_more(iter, nparm, deltap, parameters)
+      subroutine olbfgs_more(iter, nparm, deltap, parameters)
 
       implicit real*8 (a-h,o-z)
       character*20 dl_alg
@@ -19,7 +19,7 @@
 c we only need h_sr = - grad_parm E
       call sr_hs(nparm,sr_adiag)
 
-      call lbfgs_iter(iter, nparm, deltap, parameters, sr_tau)
+      call olbfgs_iter(iter, nparm, deltap, parameters, sr_tau)
 
       return
       end

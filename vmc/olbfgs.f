@@ -47,11 +47,13 @@ c vector of wave function parameters
       call p2gtfd('optwf:sr_adiag',sr_adiag,0.01,1)
       call p2gtfd('optwf:sr_eps',sr_eps,0.001,1)
       call p2gtid('optwf:idl_flag',idl_flag,0,1)
+      call p2gtid('optwf:ilbfgs_flag',ilbfgs_flag,0,1)
 
       write(6,'(/,''SR adiag: '',f10.5)') sr_adiag
       write(6,'(''SR tau:   '',f10.5)') sr_tau
       write(6,'(''SR eps:   '',f10.5)') sr_eps
       write(6,'(''DL flag:   '',I10)') idl_flag
+      write(6,'(''LBFGS flag:   '',I10)') ilbfgs_flag 
 
       inc_nblk=0
 c Initialize DL vectors to zero
@@ -70,7 +72,7 @@ c Initialize DL vectors to zero
 
 c do iteration
       do iter=1,nopt_iter
-        write(6,'(/,''LBFGS Optimization iteration'',i5,'' of'',i5)')iter,nopt_iter
+        write(6,'(/,''OLBFGS Optimization iteration'',i5,'' of'',i5)')iter,nopt_iter
 
         call qmc
 
@@ -78,7 +80,7 @@ c do iteration
 
    6    continue
 
-        call lbfgs_more(iter, nparm, deltap, parameters)
+        call olbfgs_more(iter, nparm, deltap, parameters)
 
 c historically, we input -deltap in compute_parameters, so we multiply actual deltap by -1
         call dscal(nparm,-1.d0,deltap,1)

@@ -1,4 +1,4 @@
-      subroutine lbfgs_iter(iter, nparm, deltap, parameters, step_size)
+      subroutine olbfgs_iter(iter, nparm, deltap, parameters, step_size)
       !use lbfgs_wrapper, only: lbfgs_iteration
       use olbfgs, only: olbfgs_iteration, update_hessian
       implicit real*8 (a-h,o-z)
