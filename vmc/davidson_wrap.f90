@@ -45,7 +45,6 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   ! Allocate Arrays to compute H ans S
   psi = eye(nparm, nparm, 1.0_dp)
   call h_psi_lin_d(nparm, nparm, psi, mtx)
-  print *, "calling spsi"
   call s_psi_lin_d(nparm, nparm, psi, stx)
 
   call write_matrix("H.txt", mtx, nparm)
