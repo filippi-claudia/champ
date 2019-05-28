@@ -41,11 +41,11 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   integer :: i
   real(dp), dimension(nparm, nparm) :: mtx, stx
   real(dp), dimension(nparmx, nparmx) :: psi
+  real(dp), dimension(nparm, nvec) :: ritz_vectors
   real(dp), dimension(:, :), allocatable :: hpsi, spsi
 
   ! Allocate Arrays to compute H ans S
-  psi = 0.0_dp
-  psi = eye(nparm, nparm, 1.0_dp)
+  psi = eye(nparmx, nparmx, 1.0_dp)
   allocate(hpsi(nparmx, nparmx))
   allocate(spsi(nparmx, nparmx))
   hpsi = 0.0_dp
@@ -63,10 +63,12 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
 
   call write_matrix("H.txt", mtx, nparm)
   call write_matrix("S.txt", stx, nparm)
-     
-  call generalized_eigensolver_dense(mtx, eigenvalues, eigenvectors, nvec, &
+
+  call generalized_eigensolver_dense(mtx, eigenvalues, ritz_vectors, nvec, &
        "DPR", 100, ethr, dav_iter, nvecx, stx)
 
+  eigenvectors(1:nparm,1:nvec) = ritz_vectors
+  
   do i=1,size(eigenvalues)
      print *, "eigenvalue ", i, " : ", eigenvalues(i)
   end do
