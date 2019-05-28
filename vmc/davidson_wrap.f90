@@ -41,11 +41,25 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   integer :: i
   real(dp), dimension(nparm, nparm) :: mtx, stx
   real(dp), dimension(nparmx, nparmx) :: psi
+  real(dp), dimension(:, :), allocatable :: hpsi, spsi
 
   ! Allocate Arrays to compute H ans S
+  psi = 0.0_dp
   psi = eye(nparm, nparm, 1.0_dp)
-  call h_psi_lin_d(nparm, nparm, psi, mtx)
-  call s_psi_lin_d(nparm, nparm, psi, stx)
+  allocate(hpsi(nparmx, nparmx))
+  allocate(spsi(nparmx, nparmx))
+  hpsi = 0.0_dp
+  spsi = 0.0_dp
+  call h_psi_lin_d(nparm, nparm, psi, hpsi)
+  call s_psi_lin_d(nparm, nparm, psi, spsi)
+
+  mtx(1:nparm, 1:nparm) = hpsi(1:nparm, 1:nparm)
+  stx(1:nparm, 1:nparm) = spsi(1:nparm, 1:nparm)
+  
+  ! ! Allocate Arrays to compute H ans S
+  ! psi = eye(nparm, nparm, 1.0_dp)
+  ! call h_psi_lin_d(nparm, nparm, psi, mtx)
+  ! call s_psi_lin_d(nparm, nparm, psi, stx)
 
   call write_matrix("H.txt", mtx, nparm)
   call write_matrix("S.txt", stx, nparm)
@@ -59,6 +73,8 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   
   notcnv = 0
 
+  deallocate(hpsi, spsi)
+  
 END SUBROUTINE davidson_wrap
 
 
