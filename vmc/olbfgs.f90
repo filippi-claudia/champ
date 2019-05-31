@@ -26,8 +26,8 @@ contains
         allocate(gradient_prev(num_pars))
         allocate(parms_prev(num_pars))
 
-        gradient_prev = (/(0, i=1, num_pars)/)
-        parms_prev = (/(0, i=1, num_pars)/)
+        gradient_prev = (/(eps, i=1, num_pars)/)
+        parms_prev = (/(eps, i=1, num_pars)/)
 
     end subroutine
 
