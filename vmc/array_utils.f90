@@ -9,7 +9,7 @@ module array_utils
   private
   !> \public
   public :: concatenate, diagonal,eye, generate_diagonal_dominant, norm, &
-       generate_preconditioner
+       generate_preconditioner, write_matrix, write_vector
 
 contains
 
@@ -177,5 +177,35 @@ contains
     end do
 
   end function search_key
+
+  subroutine write_matrix(path_file, mtx)
+    !> Write matrix to path_file
+    character(len=*), intent(in) :: path_file
+    real(dp), dimension(:, :), intent(in) :: mtx
+    integer :: i, j
+
+    open(unit=314, file=path_file, status="REPLACE")
+    do i=1,size(mtx, 1)
+       do j=1,size(mtx, 2)
+          write(314, *) mtx(i, j)
+       end do
+    end do
+    close(314)
     
+  end subroutine write_matrix
+
+  subroutine write_vector(path_file, vector)
+    !> Write vector to path_file
+    character(len=*), intent(in) :: path_file
+    real(dp), dimension(:), intent(in) :: vector
+    integer :: i
+
+    open(unit=314, file=path_file, status="REPLACE")
+    do i=1,size(vector)
+       write(314, *) vector(i)
+    end do
+    close(314)
+    
+  end subroutine write_vector  
+  
 end module array_utils

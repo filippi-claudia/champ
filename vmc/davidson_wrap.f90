@@ -56,11 +56,6 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   mtx(1:nparm, 1:nparm) = hpsi(1:nparm, 1:nparm)
   stx(1:nparm, 1:nparm) = spsi(1:nparm, 1:nparm)
   
-  ! ! Allocate Arrays to compute H ans S
-  ! psi = eye(nparm, nparm, 1.0_dp)
-  ! call h_psi_lin_d(nparm, nparm, psi, mtx)
-  ! call s_psi_lin_d(nparm, nparm, psi, stx)
-
   call write_matrix("H.txt", mtx, nparm)
   call write_matrix("S.txt", stx, nparm)
 
@@ -68,7 +63,8 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
        "DPR", 100, ethr, dav_iter, nvecx, stx)
 
   eigenvectors(1:nparm,1:nvec) = ritz_vectors
-  
+
+  print *, "davidson's iterations: ", dav_iter
   do i=1,size(eigenvalues)
      print *, "eigenvalue ", i, " : ", eigenvalues(i)
   end do
