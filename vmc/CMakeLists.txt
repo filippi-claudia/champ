@@ -216,7 +216,7 @@ endforeach(s)
 # Fortran Modules
 # --------------------------------------------
 
-add_library(vmc_modules optgeo_convcartzmat.f90 optgeo_coords_int.f90 optgeo_hessian.f90)
+add_library(vmc_modules optgeo_convcartzmat.f90 optgeo_coords_int.f90 optgeo_hessian.f90 olbfgs.f90)
 
 # --------------------------------------------
 # Compile and link executable
