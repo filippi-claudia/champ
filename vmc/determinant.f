@@ -83,12 +83,12 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
  400  continue
 
       if(ipr.ge.4) write(6,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
-
-c     icheck=icheck+1
-c     if(icheck.le.10) then
-c       call check_detref(ipass,icheck,newref)
-c       if(newref.gt.0) goto 10
-c     endif
+ 
+      icheck=icheck+1
+      if(icheck.le.10) then
+        call check_detref(ipass,icheck,newref)
+        if(newref.gt.0) goto 10
+      endif
 
       return
       end

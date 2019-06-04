@@ -49,5 +49,7 @@ c Update parameter changes
 
       !call olbfgs_iter(iter, nparm, deltap, parameters, sr_tau)
 
+      call MPI_BCAST(deltap,nparm,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
       return
       end
