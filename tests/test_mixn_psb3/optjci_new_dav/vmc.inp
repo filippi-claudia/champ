@@ -38,7 +38,7 @@ load ../ci66_BFD-Da_sa2.sym
 &weights_guiding 1 1.0 2 1.0
 &mstates iguiding 2 iefficiency 1
 
-&blocking_vmc nstep 20 nblk 200 nblkeq 1 nconf_new 0
+&blocking_vmc nstep 20 nblk 100 nblkeq 1 nconf_new 0
 &blocking_dmc nstep 250 nblk 50 nblkeq 1 nconf 100 nconf_new 0
 
 &dmc tau 0.05 etrial -10.0
