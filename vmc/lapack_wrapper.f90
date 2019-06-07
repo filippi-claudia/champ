@@ -6,8 +6,8 @@ module lapack_wrapper
   !> \private
   private
   !> \public
-  public :: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
-       lapack_qr, lapack_solver, lapack_sort
+  public :: lapack_generalized_eigensolver, lapack_generalized_eigensolver_lowest, &
+       lapack_matmul, lapack_matrix_vector, lapack_qr, lapack_solver, lapack_sort
 
 contains
 
@@ -91,6 +91,89 @@ contains
     
   end subroutine lapack_generalized_eigensolver
 
+    subroutine lapack_generalized_eigensolver_lowest(mtx, stx, eigenvalues, eigenvectors, lowest)
+    !> Call the DSYGVX subroutine lapack to compute the lowest eigenvalues
+    !> and corresponding eigenvectors of mtx
+    !> \param mtx: Matrix to diaogonalize
+    !> \param stx: Overlap Matrix to diaogonalize
+    !> \param eigenvalues: lowest eigenvalues
+    !> \param eigenvectors: corresponding eigenvectors
+    !> \param lowest: number of lowest eigenvalues/eigenvectors pairs to compute  
+    !> \return eigenvalues/eigenvectors
+    
+    ! input/output
+    implicit none
+    real(dp), dimension(:, :), intent(in) :: mtx
+    real(dp), dimension(:, :), intent(in) :: stx
+    real(dp), dimension(lowest), intent(out) :: eigenvalues
+    real(dp), dimension(size(mtx, 1), lowest), intent(out) :: eigenvectors
+    integer :: lowest
+
+    ! Local variables
+    real(dp), dimension(:, :), allocatable :: mtx_copy
+    real(dp), dimension(:, :), allocatable :: stx_copy
+
+    integer :: dim, info,  lwork, m, itype = 1
+    real(dp) :: vl, vu, abstol
+
+    ! Failed eigenvalues
+    integer, dimension(size(mtx, 1)) :: ifail
+
+    
+     ! ALL the eigenvalues of the subpace (re, im)
+    real(dp), dimension(size(mtx, 1)) :: eigenvalues_work
+    real(dp), dimension(size(mtx, 1), lowest) :: eigenvectors_work
+    real(dp), dimension(:), allocatable :: work ! workspace, see lapack documentation
+    integer, dimension(:), allocatable :: iwork ! workspace, see lapack documentation
+    
+    ! ! dimension of the guess space
+    dim = size(mtx, 1)
+
+    ! local copy of the matrices
+    allocate(mtx_copy(dim,dim))
+    mtx_copy = mtx
+
+    allocate(stx_copy(dim,dim))
+    stx_copy = stx
+
+    ! LAPACK SAYS: If range = 'A' or 'I', vl and vu are not referenced
+    vl = 0.0_dp
+    vu = 0.0_dp
+
+    ! Absolute tolerance
+    
+    ! Query size of the optimal workspace
+    allocate(work(1))
+    allocate(iwork(1))
+
+    call DSYGVX(itype,"V", "I", "U", dim, mtx_copy, dim, stx_copy, dim, vl, vu, &
+         1, lowest, abstol, m, eigenvalues_work, eigenvectors_work, &
+         dim, work, -1, iwork, ifail, info)
+    call check_lapack_call(info, "DSYGVX")
+
+    ! Allocate memory for the workspace
+    lwork = max(1, int(work(1)))
+    deallocate(work, iwork)
+    allocate(work(lwork))
+    allocate(iwork(lwork))
+
+    ! Compute Eigenvalues
+
+    call DSYGVX(itype,"V", "I", "U", dim, mtx_copy, dim, stx_copy, dim, vl, vu, &
+         1, lowest, abstol, m, eigenvalues_work, eigenvectors_work, &
+         dim, work, lwork, iwork, ifail, info)
+
+    call check_lapack_call(info, "DSYGVX")
+      
+    ! Copy the eigenvalues and eigenvectors
+    eigenvalues = eigenvalues_work(1:lowest)
+    eigenvectors = eigenvectors_work(1:dim, 1:lowest)
+    
+    ! release memory
+    deallocate(work, iwork, mtx_copy, stx_copy)
+    
+  end subroutine lapack_generalized_eigensolver_lowest
+  
   subroutine lapack_qr(basis)
     !> Orthoghonalize the basis using the QR factorization.
     !> QR factorization of the M-by-N (M>N) matrx A=Q*R in the form where

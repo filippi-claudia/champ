@@ -14,6 +14,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   use array_utils, only: eye
   use numeric_kinds, only: dp
   use davidson_dense, only: generalized_eigensolver_dense
+  use lapack_wrapper, only: lapack_generalized_eigensolver_lowest
 
   IMPLICIT NONE
 
@@ -29,7 +30,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   !> \param notcnv number of unconverged roots
 
 
-  REAL(dp), dimension(nparmx, nvec),  INTENT(INOUT) :: eigenvectors
+  REAL(dp), dimension(nparm, nvec),  INTENT(INOUT) :: eigenvectors
   REAL(dp), dimension(nvec), INTENT(OUT) :: eigenvalues
   REAL(dp), INTENT(IN) :: ethr
 
@@ -56,9 +57,11 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   mtx(1:nparm, 1:nparm) = hpsi(1:nparm, 1:nparm)
   stx(1:nparm, 1:nparm) = spsi(1:nparm, 1:nparm)
   
-  call write_matrix("H.txt", mtx, nparm)
-  call write_matrix("S.txt", stx, nparm)
+  ! call write_matrix("H.txt", mtx, nparm)
+  ! call write_matrix("S.txt", stx, nparm)
 
+  ! call lapack_generalized_eigensolver_lowest(mtx, stx, eigenvalues, ritz_vectors, nvec)
+  
   call generalized_eigensolver_dense(mtx, eigenvalues, ritz_vectors, nvec, &
        "DPR", 100, ethr, dav_iter, nvecx, stx)
 
@@ -70,9 +73,10 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, eigenvectors, ethr, &
   end do
   
   notcnv = 0
+  dav_iter = 0
 
   deallocate(hpsi, spsi)
-  
+
 END SUBROUTINE davidson_wrap
 
 
