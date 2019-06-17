@@ -48,6 +48,8 @@ c for omega functional
       jelohfj=n_obs+1
       n_obs=n_obs+nparm
 
+      print *, 'n_obs = ', n_obs
+
       if(n_obs.gt.MOBS) call fatal_error('SR_HS LIN: n_obs > MOBS)')
 
       do k=1,nparm
