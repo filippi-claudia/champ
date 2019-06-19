@@ -8,7 +8,7 @@ implicit none
         real(dp), allocatable :: y(:, :)
         real(dp), allocatable :: gradient_prev(:)
         real(dp), allocatable :: parms_prev(:)
-        real(dp), parameter :: eps = 1.0e-10_dp
+        real(dp), parameter :: eps = 1.0e-15_dp
         integer :: curvature_index = 0
 
     public initialize_olbfgs, olbfgs_iteration, update_hessian
@@ -26,8 +26,8 @@ contains
         allocate(gradient_prev(num_pars))
         allocate(parms_prev(num_pars))
 
-        gradient_prev = (/(0, i=1, num_pars)/)
-        parms_prev = (/(0, i=1, num_pars)/)
+        gradient_prev = (/(eps, i=1, num_pars)/)
+        parms_prev = (/(eps, i=1, num_pars)/)
 
     end subroutine
 

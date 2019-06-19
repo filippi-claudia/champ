@@ -161,6 +161,9 @@ set(SHARED_VMC_MPI_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_coords_int.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/sr.f
   ${CMAKE_CURRENT_SOURCE_DIR}/dl.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/olbfgs.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/olbfgs_iter.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/olbfgs.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/vmc.f
   ${CMAKE_CURRENT_SOURCE_DIR}/pcm_vmc.f
   ${CMAKE_CURRENT_SOURCE_DIR}/dl_iter.f
@@ -216,7 +219,7 @@ endforeach(s)
 # Fortran Modules
 # --------------------------------------------
 
-add_library(vmc_modules optgeo_convcartzmat.f90 optgeo_coords_int.f90 optgeo_hessian.f90)
+add_library(vmc_modules optgeo_convcartzmat.f90 optgeo_coords_int.f90 optgeo_hessian.f90 olbfgs.f90)
 
 # --------------------------------------------
 # Compile and link executable
