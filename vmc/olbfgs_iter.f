@@ -1,6 +1,5 @@
-      subroutine olbfgs_iter(iter, nparm, deltap, parameters, step_size)
-      !use lbfgs_wrapper, only: lbfgs_iteration
-      use olbfgs, only: olbfgs_iteration, update_hessian
+      subroutine olbfgs_iter(iter,nparm,deltap,parameters)
+      use olbfgs, only: update_hessian, olbfgs_iteration
       implicit real*8 (a-h,o-z)
 
       include 'vmc.h'
@@ -8,7 +7,8 @@
       include 'mstates.h'
       include 'sr.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES),s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
+      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension deltap(*), parameters(*)
 
@@ -21,13 +21,18 @@
       parms_lbfgs = parameters(1:nparm)
       parameters_old = parms_lbfgs
 
+      call p2gtfd('optwf:sr_adiag',sr_adiag,0.01,1)
+      call p2gtfd('optwf:sr_tau',sr_tau,0.02,1)
+
+c update stored Hessian approximation
       call update_hessian(parms_lbfgs, -h_sr)
 
-      call p2gtfd('optwf:sr_tau',sr_tau,0.02,1)
+c perform actual oLBFGS iteration
       call olbfgs_iteration(parms_lbfgs, -h_sr, sr_tau, iter)
 
+c Update parameter changes
       deltap(1:nparm) = parms_lbfgs - parameters_old
-      parameters(1:MPARM) = parameters(1:MPARM) + deltap(1:MPARM)
+      parameters(1:nparm) = parameters(1:nparm) + deltap(1:nparm)
 
       deallocate(parms_lbfgs)
       deallocate(parameters_old)
