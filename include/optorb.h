@@ -1,7 +1,7 @@
 c flags and dimensions for orbital optimization
 c
 c maximal number of terms, max dim of reduced matrices
-      parameter (MXORBOP=4000,MXREDUCED=4000,
+      parameter (MXORBOP=8000,MXREDUCED=8000,
      &     MXMATDIM=MXREDUCED*(MXREDUCED+1),MXMATDIM2=MXMATDIM/2,
      &     MXREP=10)
 c norbterm: number of terms (possibly after a transformation)
