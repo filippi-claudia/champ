@@ -2,7 +2,7 @@ if (MPI_Fortran_FOUND)
 
   # Source files
   file(GLOB VMC_SOURCE LIST_DIRECTORIES false  *.f)
-  file(GLOB VMC90_SOURCE LIST_DIRECTORIES false optgeo_coords_int.f90 optgeo_hessian.f90 optgeo_convcartzmat.f90 regterg.f90)
+  file(GLOB VMC90_SOURCE LIST_DIRECTORIES false optgeo_coords_int.f90 optgeo_hessian.f90 optgeo_convcartzmat.f90 regterg.f90 olbfgs.f90)
   
   if (NOT ENABLE_QMMM)
     message(STATUS "QMMM is NOT enabled!")
@@ -182,7 +182,7 @@ if (MPI_Fortran_FOUND)
   # Fortran Modules
   # --------------------------------------------
   
-  add_library(vmc_modules optgeo_convcartzmat.f90 optgeo_coords_int.f90 optgeo_hessian.f90)
+  add_library(vmc_modules optgeo_convcartzmat.f90 optgeo_coords_int.f90 optgeo_hessian.f90 olbfgs.f90)
   
   # --------------------------------------------
   # Compile and link executable
