@@ -61,7 +61,7 @@ c temporarely copy orbn to orb
 
           dum1=0.d0
           do i=1,nel
-           dum1=dum1+slmin(irep+(i-1)*nup)*orb(i+ish,jrep)
+           dum1=dum1+slmin(irep+(i-1)*nel)*orb(i+ish,jrep)
           enddo
           aan(irep,jrep)=dum1
 
