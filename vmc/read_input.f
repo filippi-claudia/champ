@@ -134,6 +134,7 @@ c and Anthony Scemema
       character*10 eunit
       character*12 mode
       character*16 cseed
+      character*20 dl_alg
       dimension irn(4),cent_tmp(3),anorm(MBASIS)
 
 c Inputs:
