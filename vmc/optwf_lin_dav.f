@@ -20,7 +20,7 @@
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      dimension grad(MPARM*MSTATES)
+      dimension grad(MPARM*MSTATES), grad_more(MPARM*MSTATES,5)
 
       if(method.ne.'lin_d')return
 
@@ -111,7 +111,7 @@ c        efin_old = efin define efin_old as the energy before
 
    6      continue
 
-          call lin_d(nparm,nvec,nvecx,grad,alin_adiag,alin_eps)
+          call lin_d(nparm,nvec,nvecx,grad,grad_more,alin_adiag,alin_eps)
           if(nstates.eq.1) call dscal(nparm,-1.d0,grad,1)
 
           if(method.eq.'lin_d'.and.ioptorb+ioptjas.gt.0) then
