@@ -1,5 +1,5 @@
 SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
-                    eigenvalues, btype, notcnv, dav_iter, ipr, idtask)
+                    eigenvalues, btype, notcnv, dav_iter, ipr, idtask, free)
   !----------------------------------------------------------------------------
   !
   ! ... iterative solution of the eigenvalue problem:
@@ -11,7 +11,9 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   ! ... (real wavefunctions with only half plane waves stored)
   ! 
   use numeric_kinds, only: dp
-  use davidson_free, only: davidson_parameters, generalized_eigensolver
+  use davidson, only: generalized_eigensolver
+  use davidson_free, only: davidson_parameters
+  use array_utils, only: eye
 
   IMPLICIT NONE
 
@@ -25,6 +27,8 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   !> \param eigenvalues Eigenvalues
   !> \param dav_iter integer  number of iterations performed
   !> \param notcnv number of unconverged roots
+  !> \param notcnv number of unconverged roots
+  !> \param free free version (.true.) or dens version (.false.)  
 
 
   REAL(dp), dimension(nparmx, nvec),  INTENT(INOUT) :: eigenvectors
@@ -34,6 +38,13 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, mvec, ipr, idtask
   INTEGER, dimension(nvec), INTENT(IN) :: btype
   INTEGER, INTENT(OUT) :: dav_iter, notcnv
+  LOGICAL, INTENT(IN)  :: free 
+  ! local variables
+  integer :: i
+  real(dp), dimension(nparm, nparm) :: mtx, stx
+  real(dp), dimension(nparmx, nparmx) :: psi
+  real(dp), dimension(nparm, nvec) :: ritz_vectors
+  real(dp), dimension(:, :), allocatable :: hpsi, spsi
   
   ! Function to compute the target matrix on the fly
   
@@ -72,9 +83,42 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
     
   ! Allocate variables
   IF ( nvec > nvecx / 2 ) CALL fatal_error( 'regter: nvecx is too small')
-    
-  call generalized_eigensolver(fun_mtx_gemv, eigenvalues, eigenvectors, nparm, &
-       nparmx,  nvec, mvec, "DPR", 100, ethr, dav_iter, nvecx, fun_stx_gemv, idtask)
+  is_free_or_dens: IF (free) then   
+!
+        call generalized_eigensolver(fun_mtx_gemv, eigenvalues, eigenvectors, nparm, &
+             nparmx,  nvec, mvec, "DPR", 100, ethr, dav_iter, nvecx, fun_stx_gemv, idtask)
+!
+    ELSEIF (.not.free) then 
+!
+      ! Allocate Arrays to compute H ans S
+      psi = eye(nparmx, nparmx, 1.0_dp)
+      allocate(hpsi(nparmx, nparmx))
+      allocate(spsi(nparmx, nparmx))
+      hpsi = 0.0_dp
+      spsi = 0.0_dp
+!
+      call h_psi_lin_d(nparm, nparm, psi, hpsi)
+      call s_psi_lin_d(nparm, nparm, psi, spsi)
+      
+      mtx(1:nparm, 1:nparm) = hpsi(1:nparm, 1:nparm)
+      stx(1:nparm, 1:nparm) = spsi(1:nparm, 1:nparm)
+!     
+      call generalized_eigensolver(mtx, eigenvalues, ritz_vectors, nvec, &
+           "DPR", 100, ethr, dav_iter, nvecx, stx)
+!
+      eigenvectors(1:nparm,1:nvec) = ritz_vectors
+!
+      print *, "davidson's iterations: ", dav_iter
+      do i=1,size(eigenvalues)
+         print *, "eigenvalue ", i, " : ", eigenvalues(i)
+      end do
+!
+      notcnv = 0
+      dav_iter = 0
+!
+      deallocate(hpsi, spsi)
+ 
+  ENDIF is_free_or_dens
   
 END SUBROUTINE davidson_wrap
 

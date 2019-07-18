@@ -52,11 +52,16 @@
         write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
 
        elseif(lin_jdav.eq.1) then
-       write(6,*) "USING DAVIDOSN WRAP"
+       write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &         ethr, e, itype, notcnv, idav_iter, ipr, idtask )
+     &         ethr, e, itype, notcnv, idav_iter, ipr, idtask, .true.)
+
+       elseif(lin_jdav.eq.2) then
+       write(6,*) "USING DAVIDSON WRAP: DENS VERSION"
+        call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
+     &         ethr, e, itype, notcnv, idav_iter, ipr, idtask, .false.)
        else
-         call fatal_error('LIND: lin_jdav < 2')
+         call fatal_error('LIND: lin_jdav < 3')
       endif
 
       call my_second(2,'david ')
