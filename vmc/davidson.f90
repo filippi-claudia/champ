@@ -119,7 +119,7 @@ contains
     type(davidson_parameters) :: parameters
     
     ! Iteration subpsace dimension
-    dim_sub = lowest * 2
+    dim_sub = lowest ! * 2
     
     ! maximum dimension of the basis for the subspace
     if (present(max_dim_sub)) then
@@ -560,7 +560,7 @@ contains
     logical, dimension(lowest) :: has_converged
 
     ! Iteration subpsace dimension
-    dim_sub = lowest * 2
+    dim_sub = lowest ! * 2
 
     ! Initial number of converged eigenvalue/eigenvector pairs
     n_converged = 0
@@ -591,6 +591,7 @@ contains
 
     ! ! Outer loop block Davidson schema
     outer_loop: do i=1, max_iters
+       write(6,'(''DAV: Davidson iteration: '', I10)') i
 
        ! 3. compute the eigenvalues and their corresponding ritz_vectors
        ! for the projected matrix using lapack
@@ -806,9 +807,19 @@ contains
 
        do ii=1,size(correction,1)
           if (gev) then
-             correction(ii, j) = correction(ii, j) / (eigenvalues(j) * stx(ii,ii) - mtx(ii, ii))
+! Pablo imposes the same threshold as the free version
+             if ((eigenvalues(j) * stx(ii,ii) - mtx(ii, ii)).gt.0.001_dp) then
+               correction(ii, j) = correction(ii, j) / (eigenvalues(j) * stx(ii,ii) - mtx(ii, ii))
+             else 
+               correction(ii,j) =0.0_dp
+             endif
            else
+             if ((eigenvalues(j) - mtx(ii, ii)).gt.0.001_dp) then
               correction(ii, j) = correction(ii, j) / (eigenvalues(j)  - mtx(ii, ii))
+             else 
+               correction(ii,j) =0.0_dp
+             endif
+! End Pablo
            endif
         end do
     end do
