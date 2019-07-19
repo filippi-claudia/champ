@@ -85,8 +85,12 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   IF ( nvec > nvecx / 2 ) CALL fatal_error( 'regter: nvecx is too small')
   is_free_or_dens: IF (free) then   
 !
-        call generalized_eigensolver(fun_mtx_gemv, eigenvalues, eigenvectors, nparm, &
+      call generalized_eigensolver(fun_mtx_gemv, eigenvalues, eigenvectors, nparm, &
              nparmx,  nvec, mvec, "DPR", 100, ethr, dav_iter, nvecx, fun_stx_gemv, idtask)
+!
+      do i=1,size(eigenvalues)
+        print *, "eigenvalue ", i, " : ", eigenvalues(i)
+      end do
 !
     ELSEIF (.not.free) then 
 !
@@ -108,7 +112,6 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
 !
       eigenvectors(1:nparm,1:nvec) = ritz_vectors
 !
-      print *, "davidson's iterations: ", dav_iter
       do i=1,size(eigenvalues)
          print *, "eigenvalue ", i, " : ", eigenvalues(i)
       end do

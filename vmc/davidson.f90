@@ -111,6 +111,7 @@ contains
     real(dp), dimension(size(ritz_vectors, 1),1) :: guess, rs
     real(dp), dimension(:), allocatable :: diag_mtx, diag_stx
     real(dp), dimension(lowest):: errors
+    ! generalize problem
     
     ! ! Working arrays
     real(dp), dimension(:), allocatable :: eigenvalues_sub
@@ -120,7 +121,7 @@ contains
     
     ! Iteration subpsace dimension
     dim_sub = lowest ! * 2
-    
+
     ! maximum dimension of the basis for the subspace
     if (present(max_dim_sub)) then
        max_dim  = max_dim_sub
@@ -154,8 +155,6 @@ contains
     mtx_proj = lapack_matmul('T', 'N', V, fun_mtx_gemv(parameters, V))
     stx_proj = lapack_matmul('T', 'N', V, fun_stx_gemv(parameters, V))
 
-    write(6,'(''DAV: Begin iterations'')')
-
     ! Outer loop block Davidson schema
     outer_loop: do i=1, max_iters
       write(6,'(''DAV: Davidson iteration: '', I10)') i
@@ -185,7 +184,7 @@ contains
           rs = fun_mtx_gemv(parameters, reshape(ritz_vectors(:, j), (/dim_mtx,1/))) - guess
           errors(j) = norm(reshape(rs,(/dim_mtx/)))
        end do
-       write(6,'(''DAV: eigv'',1000f12.5)') (eigenvalues_sub(j),j=1,lowest)
+!       write(6,'(''DAV: eigv'',1000f12.5)') (eigenvalues_sub(j),j=1,lowest)
 
       ! ENDIF IDTASK
        endif
@@ -381,7 +380,7 @@ contains
    integer :: ii
    real(dp), dimension(parameters%nparm, 1) :: tmp_array
 
-   write(6,'(''DAV: extracting diagonal'')')
+!   write(6,'(''DAV: extracting diagonal'')')
    
    do ii = 1, dim
       tmp_array = 0E0
@@ -579,16 +578,18 @@ contains
     ! 1. Variables initialization
     ! Select the initial ortogonal subspace based on lowest elements
     ! of the diagonal of the matrix
+    write(6,'(''DAV: Compute diagonals of H'')')  
     d = diagonal(mtx)
     V = generate_preconditioner(d, dim_sub)
 
    ! 2. Generate subpace matrix problem by projecting into V
+   write(6,'(''DAV: Setup subspace problem'')')
    mtx_proj = lapack_matmul('T', 'N', V, lapack_matmul('N', 'N', mtx, V))
 
    if(gev) then
-    stx_proj = lapack_matmul('T', 'N', V, lapack_matmul('N', 'N', stx, V))
+     stx_proj = lapack_matmul('T', 'N', V, lapack_matmul('N', 'N', stx, V))
    end if
-
+   
     ! ! Outer loop block Davidson schema
     outer_loop: do i=1, max_iters
        write(6,'(''DAV: Davidson iteration: '', I10)') i
@@ -604,12 +605,13 @@ contains
        allocate(eigenvalues_sub(size(mtx_proj, 1)))
        allocate(eigenvectors_sub(size(mtx_proj, 1), size(mtx_proj, 2)))
 
-
+       write(6,'(''DAV: enter lapack_generalized_eigensolver'')')
        if (gev) then
         call lapack_generalized_eigensolver(mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
        else
         call lapack_generalized_eigensolver(mtx_proj, eigenvalues_sub, eigenvectors_sub)
        end if
+       write(6,'(''DAV: exit lapack_generalized_eigensolver'')')
 
        ! 4. Check for convergence
        ritz_vectors = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :lowest))
