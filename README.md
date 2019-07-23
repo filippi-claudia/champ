@@ -95,9 +95,13 @@ required.
 
 #### CMAKE Options
 
-To select a given compiler you can type:
+To select a given compiler, you can type:
 ```
 cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=ifort 
+```
+To use LAPACK and BLAS installed locally, include the path to the libraries:
+```
+cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=ifort -D BLAS_blas_LIBRARY=/home/user/lib/BLAS/blas_LINUX.a -D LAPACK_lapack_LIBRARY=/home/user/lib/LAPACK/liblapack.a
 ```
 To compile only e.g. VMC serial:
 ```
@@ -129,6 +133,7 @@ cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 
 * CCPGate
 To build with ifort set the variables for the Intel Compiler and MPI ->
+
 If you use CSH:
 ```
 source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.csh -arch intel64 -platform linux
