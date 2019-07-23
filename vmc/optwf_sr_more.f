@@ -143,6 +143,8 @@ c         obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
         do k=1,nparm
          h_sr(k)=-0.5d0*h_sr(k)
         enddo
+      elseif(ifunc_omega.ne.0) then
+        s_diag(1,1)=sr_adiag !!!
       endif
 
       if(n_obs.gt.MOBS) call fatal_error('SR_HS LIN: n_obs > MOBS)')
@@ -175,14 +177,15 @@ c variance
      &             -obs_tot(jfj+k-1,1)*obs_tot(jelo2,1) 
      &             -2*obs_tot(jelo,1)*(obs_tot(jefj+k-1,1)-obs_tot(jfj+k-1,1)*obs_tot(jelo,1)))
           enddo
-
         elseif(ifunc_omega.eq.2) then
 c variance with fixed average energy (omega)
           var=omega*omega+obs_tot(jelo2,1)-2*omega*obs_tot(jelo,1)
           dum1=-2
           do k=1,nparm
            h_sr(k)=dum1*(omega*omega*obs_tot(jfj+k-1,1)+obs_tot(jelohfj+k-1,1)-omega*(obs_tot(jhfj+k-1,1)+obs_tot(jefj+k-1,1))
-     &     -var*obs_tot(jfj+k-1,1))
+     &     -var*obs_tot(jfj+k-1,1)
+c adding a term which intergrates to zero
+     &     -(obs_tot(jelo,1)-omega)*(obs_tot(jhfj+k-1,1)-obs_tot(jefj+k-1,1)))
           enddo
 
         elseif(ifunc_omega.eq.3.and.method.eq.'sr_n') then
@@ -313,7 +316,7 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
       common /optwf_func/ omega,ifunc_omega
 
       dimension z(*),r(*),aux(0:MCONF),aux1(0:MCONF),rloc(MPARM),r_s(MPARM),oz_jasci(MCONF)
-      dimension grad_ene(MPARM)
+      dimension tmp(MPARM),tmp2(MPARM)
 
       call MPI_BCAST(z,n,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
@@ -359,37 +362,60 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
       else
 c ifunc_omega.gt.0
 
-      do k=1,n
-        grad_ene(k)=2*(obs_tot(jefj+k-1,1)-obs_tot(jfj+k-1,1)*obs_tot(jelo,1))
-      enddo
-
       do iconf=1,nconf
         hoz=ddot(n,z,1,sr_ho(1,iconf),1)
         oz=ddot(n,z,1,sr_o(1,iconf),1)
-        aux(iconf)=(hoz-oz*elocal(iconf,1))*wtg(iconf,1)
-        aux1(iconf)=(oz*elocal(iconf,1)**2-hoz*elocal(iconf,1))*wtg(iconf,1)
+        aux(iconf)=(hoz-omega*oz)*wtg(iconf,1)
+c        aux1(iconf)=oz*wtg(iconf,1)
       enddo
       do i=1,n
         rloc(i)=ddot(nconf,aux(1),1,sr_ho(i,1),MPARM)
-        rloc(i)=rloc(i)+ddot(nconf,aux1(1),1,sr_o(i,1),MPARM)
+        rloc(i)=rloc(i)-omega*ddot(nconf,aux(1),1,sr_o(i,1),MPARM)
+c  only if you want to mix the hessian with the sr
+c     &                 +s_diag(1,1)*ddot(nconf,aux1(1),1,sr_o(i,1),MPARM)
       enddo
       call MPI_REDUCE(rloc,r,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
       if(idtask.eq.0) then
 
+c   here is the part with s_diag used to stabilize that create problems
+
         do i=1,n
-         r(i)=r(i)/obs_tot(1,1)+s_diag(1,1)*z(i)
+        r(i)=r(i)/obs_tot(1,1)+s_diag(1,1)*z(i)
+c        r(i)=r(i)/obs_tot(1,1)
         enddo
 
-        if(ifunc_omega.eq.1) then
-          aux0=ddot(n,z,1,grad_ene(1),1)
-          aux2=ddot(n,z,1,obs_tot(jhfj,1),1)
-          aux3=ddot(n,z,1,obs_tot(jefj,1),1)
-          do i=1,n
-           r(i)=r(i)+grad_ene(i)*aux0-(obs_tot(jhfj+i-1,1)-obs_tot(jefj+i-1,1))*aux0
-     &              -grad_ene(i)*(aux2-aux3)
-c    &              +s_diag(1,1)*z(i)
+        if(ifunc_omega.eq.2) then
+          var=omega*omega+obs_tot(jelo2,1)-2*omega*obs_tot(jelo,1)
+
+          do k=1,n
+            tmp(k)=obs_tot(jelohfj+k-1,1)-omega*obs_tot(jefj+k-1,1)-omega*(obs_tot(jhfj+k-1,1)-omega*obs_tot(jfj+k-1,1))
           enddo
+
+          aux0=ddot(n,z,1,tmp(1),1)
+          aux2=ddot(n,z,1,obs_tot(jfj,1),1)
+          do i=1,n
+           r(i)=r(i)-tmp(i)*aux2-obs_tot(jfj+i-1,1)*aux0+var*obs_tot(jfj+i-1,1)*aux2
+c    only if you want to mix the hessian with the sr
+c           r(i)=r(i)-s_diag(1,1)*obs_tot(jfj+i-1,1)*aux2
+          enddo
+
+          do k=1,n
+            tmp(k)=obs_tot(jhfj+k-1,1)-obs_tot(jelo,1)*obs_tot(jfj+k-1,1)
+          enddo
+          aux3=ddot(n,z,1,tmp(1),1)
+          do i=1,n
+           r(i)=r(i)-tmp(i)*aux3
+          enddo
+
+          do k=1,n
+            tmp2(k)=obs_tot(jefj+k-1,1)-obs_tot(jelo,1)*obs_tot(jfj+k-1,1)
+          enddo
+          aux4=ddot(n,z,1,tmp2(1),1)
+          do i=1,n
+           r(i)=r(i)-tmp(i)*aux4-tmp2(i)*aux3
+          enddo
+
         endif
       endif
 
