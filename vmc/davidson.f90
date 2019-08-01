@@ -116,11 +116,13 @@ contains
     ! ! Working arrays
     real(dp), dimension(:), allocatable :: eigenvalues_sub
     real(dp), dimension(:, :), allocatable :: correction, eigenvectors_sub, mtx_proj, stx_proj, V
+    real(dp), dimension(nparm, 1) :: xs, gs
+    real(dp), dimension(:), allocatable :: d 
     ! Arrays dimension
     type(davidson_parameters) :: parameters
     
     ! Iteration subpsace dimension
-    dim_sub = lowest ! * 2
+    dim_sub = lowest  * 2
 
     ! maximum dimension of the basis for the subspace
     if (present(max_dim_sub)) then
@@ -140,14 +142,23 @@ contains
     !! Diagonal of the arrays
     allocate(diag_mtx(dim_sub))
     allocate(diag_stx(dim_sub))
+    allocate(d(dim_sub))
+
     diag_mtx = extract_diagonal_free(fun_mtx_gemv, parameters, dim_sub)
     diag_stx = extract_diagonal_free(fun_stx_gemv, parameters, dim_sub)
-    
+    ! 
+    d= 0.0_dp
+    do i= 1, dim_sub 
+      xs= 0.0_dp 
+      xs(i,1)= 1.0_dp 
+      gs= fun_mtx_gemv(parameters, xs)
+      d(i)= gs(i,1)
+    enddo
+ 
     ! 1. Variables initialization
     ! Select the initial ortogonal subspace based on lowest elements
     ! of the diagonal of the matrix
-    V = ritz_vectors(1:nparm, 1:lowest) ! Initial orthonormal basis
-    call lapack_qr(V)
+     V = generate_preconditioner( d(1:dim_sub), dim_sub, nparm) ! Initial orthonormal basis
     
     ! 2. Generate subspace matrix problem by projecting into V
     write(6,'(''DAV: Setup subspace problem'')')
@@ -265,6 +276,9 @@ contains
     !> \param[in] eigenvalues: of the reduce problem
     !> \param[in] eigenvectors: of the reduce problem
     !> \return correction matrix
+    !
+    use array_utils, only: eye
+    !
     integer, intent(in) :: lowest
     
     real(dp), dimension(:), intent(in) :: eigenvalues
@@ -307,47 +321,38 @@ contains
     ! local variables
     !real(dp), dimension(size(V, 1),1) :: vector
     real(dp), dimension(size(V, 1), size(V, 2)) :: correction, vectors
-    real(dp), dimension(size(V, 2),size(V, 2)) :: diag_eigenvalues
+    real(dp), dimension(size(V, 1), size(V, 2)) :: proj_mtx, proj_stx
+    real(dp), dimension(size(V, 1), size(V, 1)) :: diag
     type(davidson_parameters) :: parameters
     integer :: ii, j
-    integer :: dim
-    
-    dim = size(V,1)
-    
-    ! create a diagonal matrix of eigenvalues
-    diag_eigenvalues = 0E0
-    do ii =1, size(V,2)
-       diag_eigenvalues(ii,ii) = eigenvalues(ii)
-    end do
+    integer :: m
+    real(dp) :: tiny_value 
     
     ! create all the ritz vectors
     vectors = lapack_matmul('N','N', V, eigenvectors)
-    
-    ! initialize the correction vectors
-    correction = fun_mtx_gemv(parameters, vectors) - lapack_matmul( &
-         'N','N', fun_stx_gemv(parameters, vectors), diag_eigenvalues)
-!   
-! Pablo 
-!
-! A threshold in the denomitor of the correction is imposed.  
-    do j=1, size(V, 2)
+
+    ! project matrices
+    proj_mtx = fun_mtx_gemv(parameters, vectors)
+    proj_stx = fun_stx_gemv(parameters, vectors)
+
+    ! calculate the correction vectors
+    m= size( V, 1) 
+    diag = 0.0_dp
+    tiny_value = tiny(1.0_dp)
+
+    do j = 1, size( V, 2)
+     diag = eye(m , m, eigenvalues( j))
+     correction(:,j) = proj_mtx(:,j)  - lapack_matrix_vector('N', diag, proj_stx(:,j))
+ 
+    ! a threshold in the denomitor of the correction is imposed.  
        do ii=1,size(correction,1)
-          if ((eigenvalues(j) * diag_stx(ii)  - diag_mtx(ii)).gt.0.001_dp) then 
-            correction(ii, j) = correction(ii, j) / (eigenvalues(j) * diag_stx(ii)  - diag_mtx(ii))
+          if ((eigenvalues(j) * diag_stx(ii)  - diag_mtx(ii)) > tiny_value) then 
+            correction(ii, j) = correction(ii, j) / ( eigenvalues(j)  * diag_stx(ii) ) !  - diag_mtx(ii))
           else
-            correction(ii,j) =0.0_dp
+            correction(ii,j) = tiny_value 
           endif
        end do
     end do
-!
-! End Pablo
-!
-!*! Original
-!*!    do j=1, size(V, 2)
-!*!       do ii=1,size(correction,1)
-!*!          correction(ii, j) = correction(ii, j) / (eigenvalues(j) * diag_stx(ii)  - diag_mtx(ii))
-!*!       end do
-!*!    end do
 
   end function compute_DPR_free
 
@@ -559,7 +564,7 @@ contains
     logical, dimension(lowest) :: has_converged
 
     ! Iteration subpsace dimension
-    dim_sub = lowest ! * 2
+    dim_sub = lowest  * 2
 
     ! Initial number of converged eigenvalue/eigenvector pairs
     n_converged = 0
@@ -580,7 +585,7 @@ contains
     ! of the diagonal of the matrix
     write(6,'(''DAV: Compute diagonals of H'')')  
     d = diagonal(mtx)
-    V = generate_preconditioner(d, dim_sub)
+    V = generate_preconditioner(d(1:dim_sub), dim_sub, size(mtx,1))
 
    ! 2. Generate subpace matrix problem by projecting into V
    write(6,'(''DAV: Setup subspace problem'')')
@@ -790,11 +795,13 @@ contains
     integer :: ii,j, m
     real(dp), dimension(size(mtx, 1), size(mtx, 2)) :: diag, arr
     real(dp), dimension(size(mtx, 1)) :: vec
+    real(dp) :: tiny_value
     logical :: gev
     
     ! shape of matrix
     m = size(mtx, 1)
     gev = (present(stx))
+    tiny_value= tiny(1.0_dp)
 
     do j=1, size(V, 2)
        if(gev) then
@@ -807,21 +814,21 @@ contains
       
        correction(:, j) = lapack_matrix_vector('N', arr, vec) 
 
+ 
        do ii=1,size(correction,1)
           if (gev) then
-! Pablo imposes the same threshold as the free version
-             if ((eigenvalues(j) * stx(ii,ii) - mtx(ii, ii)).gt.0.001_dp) then
-               correction(ii, j) = correction(ii, j) / (eigenvalues(j) * stx(ii,ii) - mtx(ii, ii))
+! same threshold as free version is imposed
+             if ((eigenvalues(j) * stx(ii,ii) - mtx(ii, ii)) > tiny_value ) then
+               correction(ii, j) = correction(ii, j) / (eigenvalues(j)  * stx(ii,ii) ) ! - mtx(ii, ii))
              else 
-               correction(ii,j) =0.0_dp
+               correction(ii,j) = tiny_value 
              endif
            else
-             if ((eigenvalues(j) - mtx(ii, ii)).gt.0.001_dp) then
+             if ((eigenvalues(j) - mtx(ii, ii)) > tiny_value) then
               correction(ii, j) = correction(ii, j) / (eigenvalues(j)  - mtx(ii, ii))
              else 
-               correction(ii,j) =0.0_dp
+               correction(ii,j) = tiny_value
              endif
-! End Pablo
            endif
         end do
     end do

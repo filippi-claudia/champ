@@ -133,16 +133,16 @@ contains
 
   end function diagonal  
 
-  function generate_preconditioner(diag, dim_sub) result(precond)
+  function generate_preconditioner(diag, dim_sub, dim_base) result(precond)
     !> \brief generates a diagonal preconditioner for `matrix`.
     !> \return diagonal matrix
 
     ! input variable
     real(dp), dimension(:), intent(inout) :: diag
-    integer, intent(in) :: dim_sub
+    integer, intent(in) :: dim_sub, dim_base
 
     ! local variables
-    real(dp), dimension(size(diag), dim_sub) :: precond
+    real(dp), dimension(dim_base, dim_sub) :: precond
     integer, dimension(size(diag)) :: keys
     integer :: i, k
     
