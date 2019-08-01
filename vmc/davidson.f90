@@ -347,7 +347,7 @@ contains
     ! a threshold in the denomitor of the correction is imposed.  
        do ii=1,size(correction,1)
           if ((eigenvalues(j) * diag_stx(ii)  - diag_mtx(ii)) > tiny_value) then 
-            correction(ii, j) = correction(ii, j) / ( eigenvalues(j)  * diag_stx(ii) ) !  - diag_mtx(ii))
+            correction(ii, j) = correction(ii, j) / ( eigenvalues(j)  * diag_stx(ii)   - diag_mtx(ii))
           else
             correction(ii,j) = tiny_value 
           endif
@@ -819,7 +819,7 @@ contains
           if (gev) then
 ! same threshold as free version is imposed
              if ((eigenvalues(j) * stx(ii,ii) - mtx(ii, ii)) > tiny_value ) then
-               correction(ii, j) = correction(ii, j) / (eigenvalues(j)  * stx(ii,ii) ) ! - mtx(ii, ii))
+               correction(ii, j) = correction(ii, j) / (eigenvalues(j)  * stx(ii,ii)  - mtx(ii, ii))
              else 
                correction(ii,j) = tiny_value 
              endif
