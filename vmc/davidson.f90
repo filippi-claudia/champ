@@ -140,12 +140,12 @@ contains
     write(6,'(''DAV: Compute diagonals of S and H'')')
 
     !! Diagonal of the arrays
-    allocate(diag_mtx(dim_sub))
-    allocate(diag_stx(dim_sub))
+    allocate(diag_mtx(parameters%nparm))
+    allocate(diag_stx(parameters%nparm))
     allocate(d(dim_sub))
 
-    diag_mtx = extract_diagonal_free(fun_mtx_gemv, parameters, dim_sub)
-    diag_stx = extract_diagonal_free(fun_stx_gemv, parameters, dim_sub)
+    diag_mtx = extract_diagonal_free(fun_mtx_gemv, parameters, parameters%nparm)
+    diag_stx = extract_diagonal_free(fun_stx_gemv, parameters, parameters%nparm)
     ! 
     d= 0.0_dp
     do i= 1, dim_sub 
@@ -326,7 +326,6 @@ contains
     type(davidson_parameters) :: parameters
     integer :: ii, j
     integer :: m
-    real(dp) :: tiny_value 
     
     ! create all the ritz vectors
     vectors = lapack_matmul('N','N', V, eigenvectors)
@@ -338,19 +337,13 @@ contains
     ! calculate the correction vectors
     m= size( V, 1) 
     diag = 0.0_dp
-    tiny_value = tiny(1.0_dp)
 
     do j = 1, size( V, 2)
      diag = eye(m , m, eigenvalues( j))
      correction(:,j) = proj_mtx(:,j)  - lapack_matrix_vector('N', diag, proj_stx(:,j))
  
-    ! a threshold in the denomitor of the correction is imposed.  
        do ii=1,size(correction,1)
-          if ((eigenvalues(j) * diag_stx(ii)  - diag_mtx(ii)) > tiny_value) then 
             correction(ii, j) = correction(ii, j) / ( eigenvalues(j)  * diag_stx(ii)   - diag_mtx(ii))
-          else
-            correction(ii,j) = tiny_value 
-          endif
        end do
     end do
 
@@ -795,13 +788,11 @@ contains
     integer :: ii,j, m
     real(dp), dimension(size(mtx, 1), size(mtx, 2)) :: diag, arr
     real(dp), dimension(size(mtx, 1)) :: vec
-    real(dp) :: tiny_value
     logical :: gev
     
     ! shape of matrix
     m = size(mtx, 1)
     gev = (present(stx))
-    tiny_value= tiny(1.0_dp)
 
     do j=1, size(V, 2)
        if(gev) then
@@ -814,22 +805,12 @@ contains
       
        correction(:, j) = lapack_matrix_vector('N', arr, vec) 
 
- 
        do ii=1,size(correction,1)
           if (gev) then
-! same threshold as free version is imposed
-             if ((eigenvalues(j) * stx(ii,ii) - mtx(ii, ii)) > tiny_value ) then
                correction(ii, j) = correction(ii, j) / (eigenvalues(j)  * stx(ii,ii)  - mtx(ii, ii))
-             else 
-               correction(ii,j) = tiny_value 
-             endif
            else
-             if ((eigenvalues(j) - mtx(ii, ii)) > tiny_value) then
               correction(ii, j) = correction(ii, j) / (eigenvalues(j)  - mtx(ii, ii))
-             else 
-               correction(ii,j) = tiny_value
-             endif
-           endif
+          endif
         end do
     end do
 
