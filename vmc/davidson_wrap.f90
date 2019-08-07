@@ -1,5 +1,5 @@
 SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
-                    eigenvalues, btype, notcnv, dav_iter, ipr, idtask, free)
+                 eigenvalues, btype, notcnv, dav_iter, ipr, nproc, idtask, free)
   !----------------------------------------------------------------------------
   !
   ! ... iterative solution of the eigenvalue problem:
@@ -16,6 +16,8 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   use array_utils, only: eye
 
   IMPLICIT NONE
+
+  include 'mpif.h'
 
   !> \param npram dimension of the matrix to be diagonalized
   !> \param nparmx leading dimension of matrix eigenvectors
@@ -35,12 +37,12 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   REAL(dp), dimension(nvec), INTENT(OUT) :: eigenvalues
   REAL(dp), INTENT(IN) :: ethr
 
-  INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, mvec, ipr, idtask
+  INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, mvec, ipr, nproc, idtask
   INTEGER, dimension(nvec), INTENT(IN) :: btype
   INTEGER, INTENT(OUT) :: dav_iter, notcnv
   LOGICAL, INTENT(IN)  :: free 
   ! local variables
-  integer :: i
+  integer :: i, ierr
   real(dp), dimension(nparm, nparm) :: mtx, stx
   real(dp), dimension(nparmx, nparmx) :: psi
   real(dp), dimension(nparm, nvec) :: ritz_vectors
@@ -95,9 +97,12 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
     ELSEIF (.not.free) then 
 !
       ! Allocate Arrays to compute H ans S
-      psi = eye(nparmx, nparmx, 1.0_dp)
+      if( idtask== 0)  psi = eye(nparmx, nparmx, 1.0_dp)
+      if( nproc > 1)  call MPI_BCAST(psi, nparmx*nparmx, MPI_DOUBLE, 0, MPI_COMM_WORLD, ierr)
+!
       allocate(hpsi(nparmx, nparmx))
       allocate(spsi(nparmx, nparmx))
+!
       hpsi = 0.0_dp
       spsi = 0.0_dp
 !

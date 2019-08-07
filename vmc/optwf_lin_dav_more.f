@@ -54,12 +54,12 @@
        elseif(lin_jdav.eq.1) then
        write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &         ethr, e, itype, notcnv, idav_iter, ipr, idtask, .true.)
+     &       ethr, e, itype, notcnv, idav_iter, ipr, nproc, idtask, .true.)
 
        elseif(lin_jdav.eq.2) then
        write(6,*) "USING DAVIDSON WRAP: DENSE VERSION"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &         ethr, e, itype, notcnv, idav_iter, ipr, idtask, .false.)
+     &       ethr, e, itype, notcnv, idav_iter, ipr, nproc, idtask, .false.)
        else
          call fatal_error('LIND: lin_jdav < 3')
       endif
