@@ -8,7 +8,8 @@ implicit none
         real(dp), allocatable :: y(:, :)
         real(dp), allocatable :: gradient_prev(:)
         real(dp), allocatable :: parms_prev(:)
-        real(dp), parameter :: eps = 1.0e-15_dp
+        real(dp), parameter :: eps_parm = 1.0e-5_dp
+        real(dp), parameter :: eps_zero = 1.0e-15_dp
         integer :: curvature_index = 0
 
     public initialize_olbfgs, olbfgs_iteration, update_hessian
@@ -26,8 +27,8 @@ contains
         allocate(gradient_prev(num_pars))
         allocate(parms_prev(num_pars))
 
-        gradient_prev = (/(eps, i=1, num_pars)/)
-        parms_prev = (/(eps, i=1, num_pars)/)
+        gradient_prev = (/(eps_zero, i=1, num_pars)/)
+        parms_prev = (/(eps_zero, i=1, num_pars)/)
 
     end subroutine
 
@@ -68,7 +69,7 @@ contains
         curvature_index = mod(curvature_index , m) + 1
 
         ! update curvature pairs s, y according to algorithm
-        s(curvature_index, :) = parameters - parms_prev
+        s(curvature_index, :) = parameters(1:n) - parms_prev
         y(curvature_index, :) = gradient(1:n) - gradient_prev
     end subroutine
 
@@ -93,37 +94,36 @@ contains
         ! perform hessian approximation using history
         initial_direction = -gradient(1:n)
 
-        ! first of two-loop recursion
-        ! TODO: figure out way to use curvature_meow as queue
-        do i=min(m, iteration),1,-1
-            head = transform_index(i, iteration)
-            alpha = dot_product(s(head, :), initial_direction) &
-                / dot_product(s(head, :), y(head, :))
-            initial_direction = initial_direction - alpha * y(head, :)
-            alphas(head) = alpha
-        end do
-
         ! scale search direction
         if (iteration == 1) then
-            initial_direction = initial_direction * eps
+            initial_direction = initial_direction * eps_parm
         else
+        ! first of two-loop recursion
+            do i=min(m, iteration-1),1,-1
+                head = transform_index(i, iteration)
+                alpha = dot_product(s(head, :), initial_direction) &
+                    / dot_product(s(head, :), y(head, :))
+                initial_direction = initial_direction - alpha * y(head, :)
+                alphas(head) = alpha
+            end do
+
             tot = 0.0_dp
-            do i=1, min(m, iteration)
+            do i=1, min(m, iteration-1)
                 head = transform_index(i, iteration)
                 tot = tot + dot_product(s(head, :), y(head, :)) &
                     / dot_product(y(head, :), y(head, :))
             end do
-            initial_direction = initial_direction * tot/min(m, iteration)
-        end if
+            initial_direction = initial_direction * tot/min(m, iteration-1)
 
         ! second of two-loop recursion
-        do i=1, min(m, iteration)
-            head = transform_index(i, iteration)
-            alpha = alphas(head)
-            beta = dot_product(y(head, :), initial_direction) &
-                / dot_product(y(head, :), s(head, :))
-            initial_direction = initial_direction + (alpha - beta) * s(head, :)
-        end do
+            do i=1, min(m, iteration-1)
+                head = transform_index(i, iteration)
+                alpha = alphas(head)
+                beta = dot_product(y(head, :), initial_direction) &
+                    / dot_product(y(head, :), s(head, :))
+                initial_direction = initial_direction + (alpha - beta) * s(head, :)
+            end do
+        end if
 
     end function 
 
@@ -137,9 +137,9 @@ contains
 
         ! determine true index into s, y
         if (iteration <= m) then
-            transform_index = index
+            transform_index = index 
         else
-            transform_index = mod(index - 1 + curvature_index, m) + 1
+            transform_index = mod(index + curvature_index, m) + 1
         end if
 
     end function
