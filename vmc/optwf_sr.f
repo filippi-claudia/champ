@@ -10,7 +10,7 @@
       common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_func/ omega,ifunc_omega
+      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -36,6 +36,7 @@
       call p2gtfd('optwf:sr_tau',sr_tau,0.02,1)
       call p2gtfd('optwf:sr_adiag',sr_adiag,0.01,1)
       call p2gtfd('optwf:sr_eps',sr_eps,0.001,1)
+      call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
 
       call p2gtid('optwf:func_omega',ifunc_omega,0,1)
       if(ifunc_omega.gt.0) then
@@ -78,14 +79,15 @@ c do iteration
         iforce_analy=0
 
         if(ifunc_omega.gt.0) then
+          omega_hes=energy_sav
           if(iter.gt.n_omegaf) then
             alpha_omega=dfloat(n_omegaf+n_omegat-iter)/n_omegat
             omega=alpha_omega*omega0+(1.d0-alpha_omega)*(energy_sav-sigma_sav)
-            if(ifunc_omega.eq.2) omega=alpha_omega*omega0+(1.d0-alpha_omega)*energy_sav
+            if(ifunc_omega.eq.1.or.ifunc_omega.eq.2) omega=alpha_omega*omega0+(1.d0-alpha_omega)*energy_sav
           endif
           if(iter.gt.n_omegaf+n_omegat) then
             omega=energy_sav-sigma_sav
-            if(ifunc_omega.eq.2) omega=energy_sav
+            if(ifunc_omega.eq.1.or.ifunc_omega.eq.2) omega=energy_sav
           endif
           write(6,'(''SR omega: '',f10.5)') omega
         endif
@@ -108,7 +110,7 @@ c do micro_iteration
 
           adiag=sr_adiag
           call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,adiag,iflag)
-          write(6,'(''Norm of parm variation '',g12.5)') dparm_norm
+          write(6,'(''Norm of parm variation '',d12.5)') dparm_norm
           if(iflag.ne.0) then
             write(6,'(''Warning: dparm_norm>1'')')
             adiag=10*adiag
@@ -192,6 +194,8 @@ c solve S*deltap=h_sr (call in optwf)
       enddo
       call pcg(nparm,h_sr,deltap,i,imax,imod,sr_eps)
       write(6,*) 'CG iter ',i
+
+      call sr_rescale_deltap(nparm,deltap)
 
       return              ! deltap
       end

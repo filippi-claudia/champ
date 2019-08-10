@@ -20,13 +20,14 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       common /sr_index/ jelo,jelo2,jelohfj
 
-      common /optwf_func/ omega,ifunc_omega
+      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       common /mpiconf/ idtask,nproc
 
       dimension obs(MOBS,MSTATES),obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
 
       call p2gtid('optgeo:izvzb',izvzb,0,1)
+      call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
 
       nstates_eff=nstates
       if(method.eq.'lin_d') nstates_eff=1
@@ -82,7 +83,6 @@ c for omega functional
 
         ish=(istate-1)*norbterm
         do iconf=1,nconf
-c         obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
           obs(jelo,istate)=obs(jelo,istate)+elocal(iconf,istate)*wtg(iconf,istate)
           do i=1,nparm_jasci
             obs(jfj +i-1,istate)=obs(jfj +i-1,istate)+sr_o(i,iconf)*wtg(iconf,istate)
@@ -135,7 +135,7 @@ c         obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
 
       endif
 
-      if(method.eq.'sr_n'.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
+      if(method.eq.'sr_n'.and.i_sr_rescale.eq.0.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
 
       if(method.ne.'sr_n') then
         s_diag(1,1)=sr_adiag !!!
@@ -183,9 +183,9 @@ c variance with fixed average energy (omega)
           dum1=-2
           do k=1,nparm
            h_sr(k)=dum1*(omega*omega*obs_tot(jfj+k-1,1)+obs_tot(jelohfj+k-1,1)-omega*(obs_tot(jhfj+k-1,1)+obs_tot(jefj+k-1,1))
-     &     -var*obs_tot(jfj+k-1,1)
+     &     -var*obs_tot(jfj+k-1,1))
 c adding a term which intergrates to zero
-     &     -(obs_tot(jelo,1)-omega)*(obs_tot(jhfj+k-1,1)-obs_tot(jefj+k-1,1)))
+c    &     -(obs_tot(jelo,1)-omega)*(obs_tot(jhfj+k-1,1)-obs_tot(jefj+k-1,1)))
           enddo
 
         elseif(ifunc_omega.eq.3.and.method.eq.'sr_n') then
@@ -313,7 +313,7 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
 
       common /sr_index/ jelo,jelo2,jelohfj
 
-      common /optwf_func/ omega,ifunc_omega
+      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       dimension z(*),r(*),aux(0:MCONF),aux1(0:MCONF),rloc(MPARM),r_s(MPARM),oz_jasci(MCONF)
       dimension tmp(MPARM),tmp2(MPARM)
@@ -362,68 +362,112 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
       else
 c ifunc_omega.gt.0
 
+      if(ifunc_omega.eq.1.or.ifunc_omega.eq.2) omega_hes=omega
+
       do iconf=1,nconf
         hoz=ddot(n,z,1,sr_ho(1,iconf),1)
         oz=ddot(n,z,1,sr_o(1,iconf),1)
-        aux(iconf)=(hoz-omega*oz)*wtg(iconf,1)
-c        aux1(iconf)=oz*wtg(iconf,1)
+        aux(iconf)=(hoz-omega_hes*oz)*wtg(iconf,1)
       enddo
       do i=1,n
         rloc(i)=ddot(nconf,aux(1),1,sr_ho(i,1),MPARM)
-        rloc(i)=rloc(i)-omega*ddot(nconf,aux(1),1,sr_o(i,1),MPARM)
-c  only if you want to mix the hessian with the sr
-c     &                 +s_diag(1,1)*ddot(nconf,aux1(1),1,sr_o(i,1),MPARM)
+        rloc(i)=rloc(i)-omega_hes*ddot(nconf,aux(1),1,sr_o(i,1),MPARM)
       enddo
       call MPI_REDUCE(rloc,r,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
       if(idtask.eq.0) then
 
-c   here is the part with s_diag used to stabilize that create problems
-
         do i=1,n
-        r(i)=r(i)/obs_tot(1,1)+s_diag(1,1)*z(i)
-c        r(i)=r(i)/obs_tot(1,1)
+          r(i)=r(i)/obs_tot(1,1)+s_diag(1,1)*z(i)
         enddo
 
-        if(ifunc_omega.eq.2) then
-          var=omega*omega+obs_tot(jelo2,1)-2*omega*obs_tot(jelo,1)
+        var=omega_hes*omega_hes+obs_tot(jelo2,1)-2*omega_hes*obs_tot(jelo,1)
 
-          do k=1,n
-            tmp(k)=obs_tot(jelohfj+k-1,1)-omega*obs_tot(jefj+k-1,1)-omega*(obs_tot(jhfj+k-1,1)-omega*obs_tot(jfj+k-1,1))
-          enddo
+        do k=1,n
+          tmp(k)=obs_tot(jelohfj+k-1,1)-omega_hes*obs_tot(jefj+k-1,1)-omega_hes*(obs_tot(jhfj+k-1,1)-omega_hes*obs_tot(jfj+k-1,1))
+        enddo
 
-          aux0=ddot(n,z,1,tmp(1),1)
-          aux2=ddot(n,z,1,obs_tot(jfj,1),1)
-          do i=1,n
-           r(i)=r(i)-tmp(i)*aux2-obs_tot(jfj+i-1,1)*aux0+var*obs_tot(jfj+i-1,1)*aux2
-c    only if you want to mix the hessian with the sr
-c           r(i)=r(i)-s_diag(1,1)*obs_tot(jfj+i-1,1)*aux2
-          enddo
+        aux0=ddot(n,z,1,tmp(1),1)
+        aux2=ddot(n,z,1,obs_tot(jfj,1),1)
+        do i=1,n
+          r(i)=r(i)-tmp(i)*aux2-obs_tot(jfj+i-1,1)*aux0+var*obs_tot(jfj+i-1,1)*aux2
+        enddo
 
-          do k=1,n
-            tmp(k)=obs_tot(jhfj+k-1,1)-obs_tot(jelo,1)*obs_tot(jfj+k-1,1)
-          enddo
-          aux3=ddot(n,z,1,tmp(1),1)
-          do i=1,n
-           r(i)=r(i)-tmp(i)*aux3
-          enddo
+        do k=1,n
+          tmp(k)=obs_tot(jhfj+k-1,1)-obs_tot(jelo,1)*obs_tot(jfj+k-1,1)
+        enddo
+        aux3=ddot(n,z,1,tmp(1),1)
+        do i=1,n
+          r(i)=r(i)-tmp(i)*aux3
+        enddo
 
-          do k=1,n
-            tmp2(k)=obs_tot(jefj+k-1,1)-obs_tot(jelo,1)*obs_tot(jfj+k-1,1)
-          enddo
-          aux4=ddot(n,z,1,tmp2(1),1)
-          do i=1,n
-           r(i)=r(i)-tmp(i)*aux4-tmp2(i)*aux3
-          enddo
+        do k=1,n
+          tmp2(k)=obs_tot(jefj+k-1,1)-obs_tot(jelo,1)*obs_tot(jfj+k-1,1)
+        enddo
+        aux4=ddot(n,z,1,tmp2(1),1)
+        do i=1,n
+          r(i)=r(i)-tmp(i)*aux4-tmp2(i)*aux3
+        enddo
 
-        endif
       endif
+c endif idtask.eq.0
 
       endif
 
       return
       end
 
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      subroutine sr_rescale_deltap(nparm,deltap)
+
+      implicit real*8(a-h,o-z)
+
+      include 'mpif.h'
+      include 'vmc.h'
+      include 'sr.h'
+      include 'mstates.h'
+
+      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
+     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
+      common /mpiconf/ idtask,nproc
+
+      dimension deltap(*)
+
+      call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
+      if(i_sr_rescale.eq.0) return
+
+      jwtg=1
+      jelo=2
+      n_obs=2
+      jfj=n_obs+1
+      n_obs=n_obs+nparm
+      jefj=n_obs+1
+      n_obs=n_obs+nparm
+      jfifj=n_obs+1
+      n_obs=n_obs+nparm
+
+      jhfj=n_obs+1
+      n_obs=n_obs+nparm
+      jfhfj=n_obs+1
+      n_obs=n_obs+nparm
+
+      jelo2=n_obs+1
+      n_obs=n_obs+1
+      jelohfj=n_obs+1
+      n_obs=n_obs+nparm
+
+      if(idtask.eq.0) then
+        do i=1,nparm
+          write(6,*) 'CIAO',obs_tot(jfhfj+i-1,1)/obs_tot(jfifj+i-1,1),obs_tot(jelo,1),
+     &    obs_tot(jfhfj+i-1,1)/obs_tot(jfifj+i-1,1)-obs_tot(jelo,1)
+          deltap(i)=deltap(i)/(obs_tot(jfhfj+i-1,1)/obs_tot(jfifj+i-1,1)-obs_tot(jelo,1))
+        enddo
+      endif
+
+      call MPI_BCAST(deltap,nparm,MPI_REAL8,0,MPI_COMM_WORLD,j)
+
+      return 
+      end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_position_bcast

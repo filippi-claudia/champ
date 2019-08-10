@@ -952,11 +952,12 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
-      common /optwf_func/ omega,ifunc_omega
+      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)
 
       call p2gtid('optgeo:izvzb',izvzb,0,1)
+      call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
 
       if(iforce_analy.gt.0.and.izvzb.eq.1) call force_store(l)
 
@@ -989,7 +990,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       
       nconf=l
 
-      if(method.eq.'sr_n'.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
+      if(method.eq.'sr_n'.and.i_sr_rescale.eq.0.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
 
 c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secular problem
 
