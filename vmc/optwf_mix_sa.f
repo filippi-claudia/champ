@@ -12,7 +12,7 @@
       common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_func/ omega,ifunc_omega
+      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
