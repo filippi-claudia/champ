@@ -27,7 +27,8 @@ LIST ci iciprt
 
 LIST mstates iguiding iefficiency
 
-LIST optwf ioptwf idl_flag ilbfgs_flag ilbfgs_m method nopt_iter ioptjas ioptorb ioptci multiple_adiag add_diag
+LIST optwf ioptwf idl_flag ilbfgs_flag ilbfgs_m method nopt_iter 
+     ioptjas ioptorb ioptci multiple_adiag add_diag
      ngrad_jas_blocks nblk_max nblk_ci dl_alg
      iorbprt isample_cmat istddev limit_cmat e_shift
      save_blocks force_blocks iorbsample
@@ -36,6 +37,7 @@ LIST optwf ioptwf idl_flag ilbfgs_flag ilbfgs_m method nopt_iter ioptjas ioptorb
      sr_tau sr_eps sr_adiag micro_iter_sr dl_mom
      lin_eps lin_adiag lin_nvec lin_nvecx lin_jdav
      func_omega omega n_omegaf n_omegat
+     sr_rescale
 
 LIST embedding ihtree ihpol ixchng ixpol
 
