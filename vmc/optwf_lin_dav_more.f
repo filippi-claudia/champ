@@ -25,7 +25,7 @@
 
       call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
 
-      write(6,*) 'LIN_D NPARM',nparm
+c     write(6,*) 'LIN_D NPARM',nparm
 
       call sr_hs(nparm,adiag)
 
@@ -344,9 +344,9 @@ c loop vec
 c end loop vec
       enddo
 
-      do i=1,nparm+1
-        write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
-      enddo
+c     do i=1,nparm+1
+c       write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
+c     enddo
 c     STOP
 
       return

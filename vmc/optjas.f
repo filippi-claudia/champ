@@ -156,6 +156,7 @@ c endif k.ne.kref
         endif
 c endif ndet.gt.1
 
+c d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
         term_jas=d2g(iparm)
         do i=1,nelec
           term_jas=term_jas+2.d0*(g(1,i,iparm)*vj(1,i)+g(2,i,iparm)*vj(2,i)+g(3,i,iparm)*vj(3,i))
