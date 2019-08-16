@@ -174,7 +174,7 @@ c Written by Claudia Filippi
   137         ymatw(j,i,iw2,iab,istate)=ymatw(j,i,iw,iab,istate)
   138       aaw(i,j,iw2,iab)=aaw(i,j,iw,iab)
           do 142 k=1,ndet
-            if(k.ne.kref) then
+            if(k.ne.krefw(iw)) then
               ndim=numrep_det(k,iab)
               do 140 i=1,ndim*ndim
   140           wfmatw(i,k,iw2,iab)=wfmatw(i,k,iw,iab)
