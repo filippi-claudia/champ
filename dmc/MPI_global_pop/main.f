@@ -1,10 +1,9 @@
       program maindmc
-c MPI version created by Claudia Filippi
+c Written by Claudia Filippi
       implicit double precision (a-h,o-z)
 
       include 'mpi_qmc.h'
       include 'mpif.h'
-      include 'vmc.h'
 
       character*40 filename
 
@@ -13,11 +12,6 @@ c MPI version created by Claudia Filippi
 
       logical wid
       common /mpiconf/ idtask,nproc,wid
-      common /mpitype/ jas_type1,jas_type2
-
-      dimension iblocklen(MELEC),idispl(MELEC)
-
-      mode='dmc_one_mpi3'
 
       call mpi_init(ierr)
 
@@ -26,23 +20,9 @@ c MPI version created by Claudia Filippi
 
       if(nproc.gt.nprocx) call fatal_error('MAIN: nproc > nprocx')
 
+      mode='dmc_one_mpi2'
+
       wid=(idtask.eq.0)
-
-c To minimize the length of what is passed, use jas_typ to pick certain
-c elements of matrix
-      do 1 i=1,nelec
-        iblocklen(i)=nelec-(i-1)
-   1    idispl(i)=MELEC*(i-1)+(i-1)
-      call mpi_type_indexed(nelec,iblocklen,idispl,mpi_double_precision
-     &,jas_type1,ierr)
-      call mpi_type_commit(jas_type1,ierr)
-
-      do 2 i=1,nelec
-        iblocklen(i)=3*nelec
-   2    idispl(i)=3*MELEC*(i-1)
-      call mpi_type_indexed(nelec,iblocklen,idispl,mpi_double_precision
-     &,jas_type2,ierr)
-      call mpi_type_commit(jas_type2,ierr)
 
 c Open the standard output and the log file only on the master
       if(wid) then
@@ -50,7 +30,7 @@ c Open the standard output and the log file only on the master
       else
         close(6)
         open(6,file='/dev/null')
-        open(45,file='/dev/null')
+        open(45,file='trash.log')
       endif
 
       if(idtask.le.9) then
@@ -63,6 +43,10 @@ c Open the standard output and the log file only on the master
         call fatal_error('MAIN: idtask ge 1000')
       endif
       open(18,file=filename,status='unknown')
+
+      call MPI_ATTR_GET(MPI_COMM_WORLD,MPI_TAG_UB,ivalue,flag,ierr)
+c     write(6,*) 'In main.f from MPI_ATTR_GET',ivalue
+      if(ierr.ne.0) write(6,*) 'Warning:? in main.f from MPI_ATTR_GET',ierr
 
       call read_input
 

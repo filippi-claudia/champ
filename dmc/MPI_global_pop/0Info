@@ -1,2 +1,0 @@
-Version where there is one global population on all nodes
-and only the necessary parts of large arrays are communicated.

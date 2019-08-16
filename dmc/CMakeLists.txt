@@ -70,5 +70,4 @@ target_link_libraries(dmc.mov1
 
 set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
 add_subdirectory(MPI)
-add_subdirectory(MPI_global_pop_big)
 add_subdirectory(MPI_global_pop)

@@ -121,18 +121,10 @@ c Written by Claudia Filippi
      &,itag+1,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(fjow(1,1,nwalk),3*nelec,mpi_double_precision,irecv
      &,itag+2,MPI_COMM_WORLD,irequest,ierr)
-
-      call mpi_isend(fsow(1,1,nwalk),1,jas_type1,irecv,itag+3
-     &,MPI_COMM_WORLD,irequest,ierr)
-
-c     call mpi_isend(fsow(1,1,nwalk),MELEC*nelec,mpi_double_precision
-c    &,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
-
-      call mpi_isend(fijow(1,1,1,nwalk),1,jas_type2,irecv,itag+4
-     &,MPI_COMM_WORLD,irequest,ierr)
-
-c     call mpi_isend(fijow(1,1,1,nwalk),3*MELEC*nelec
-c    &,mpi_double_precision,irecv,itag+4,MPI_COMM_WORLD,irequest,ierr)
+      call mpi_isend(fsow(1,1,nwalk),MELEC*nelec,mpi_double_precision
+     &,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
+      call mpi_isend(fijow(1,1,1,nwalk),3*MELEC*nelec
+     &,mpi_double_precision,irecv,itag+4,MPI_COMM_WORLD,irequest,ierr)
 
       call mpi_isend(vjw(1,1,nwalk),3*nelec,mpi_double_precision,irecv
      &,itag+5,MPI_COMM_WORLD,irequest,ierr)
@@ -146,18 +138,10 @@ c    &,mpi_double_precision,irecv,itag+4,MPI_COMM_WORLD,irequest,ierr)
      &,itag+1,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(fjow(1,1,nwalk),3*nelec,mpi_double_precision,isend
      &,itag+2,MPI_COMM_WORLD,istatus,ierr)
-
-      call mpi_recv(fsow(1,1,nwalk),1,jas_type1,isend,itag+3
-     &,MPI_COMM_WORLD,istatus,ierr)
-
-c     call mpi_recv(fsow(1,1,nwalk),MELEC*nelec,mpi_double_precision
-c    &,isend,itag+3,MPI_COMM_WORLD,istatus,ierr)
-
-      call mpi_recv(fijow(1,1,1,nwalk),1,jas_type2,isend,itag+4
-     &,MPI_COMM_WORLD,istatus,ierr)
-
-c     call mpi_recv(fijow(1,1,1,nwalk),3*MELEC*nelec
-c    &,mpi_double_precision,isend,itag+4,MPI_COMM_WORLD,istatus,ierr)
+      call mpi_recv(fsow(1,1,nwalk),MELEC*nelec,mpi_double_precision
+     &,isend,itag+3,MPI_COMM_WORLD,istatus,ierr)
+      call mpi_recv(fijow(1,1,1,nwalk),3*MELEC*nelec
+     &,mpi_double_precision,isend,itag+4,MPI_COMM_WORLD,istatus,ierr)
 
       call mpi_recv(vjw(1,1,nwalk),3*nelec,mpi_double_precision,isend
      &,itag+5,MPI_COMM_WORLD,istatus,ierr)
