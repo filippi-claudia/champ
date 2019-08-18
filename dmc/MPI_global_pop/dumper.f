@@ -374,8 +374,8 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
           do 65 i=1,nelec
    65       call compute_determinante_grad(i,psido(iw,ifr),psido(iw,ifr),vold(1,i,iw,ifr),1)
           if(ifr.eq.1) then
-            call walksav_det(iw0)
-            call walksav_jas(iw0)
+            call walksav_det(iw)
+            call walksav_jas(iw)
 c           call t_vpsp_sav(iw)
             call t_vpsp_sav
             call prop_save_dmc(iw)
