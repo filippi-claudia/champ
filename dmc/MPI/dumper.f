@@ -65,7 +65,6 @@ c job where it left off
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /age/ iage(MWALK),ioldest,ioldestmx
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
-      common /div_v/ div_vo(MELEC,MWALK)
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 

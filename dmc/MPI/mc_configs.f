@@ -26,7 +26,7 @@
       dimension irn(4)
       save ngfmc
 
-      if(ipr.gt.-2.and.index(mode,'rmc').eq.0) then
+      if(ipr.gt.-2) then
         if(idtask.le.9) then
           write(filename,'(''walkalize.'',i1)') idtask
          elseif(idtask.le.99) then
@@ -65,7 +65,7 @@ c set the random number seed, setrn already called in read_input
         goto 345
   340   call fatal_error('DMC: error reading mc_configs')
   345   close (1)
-        if(ipr.gt.-2.and.index(mode,'rmc').eq.0) then
+        if(ipr.gt.-2) then
           open(11,file=filename)
           rewind 11
           write(11,'(i3,'' nblkeq to be added to nblock at file end'')')
@@ -100,14 +100,6 @@ c-----------------------------------------------------------------------
       entry mc_configs_write(iblk,ipass)
 
 c Write out configuration for optimization/dmc/gfmc here
-c We would like to:
-c Reduce each electron to central simulation cell before writing position.
-c Warning: This may result in the sign of the wavefunction being wrong depending
-c on the k-pt and the number of cells moved.  Test done in si_cub_.5.0.0 shows this
-c gives wrong energies and moves, possibly because the velocity is no longer consistent
-c with the move, though I would have thought the velocity would be OK since both the
-c wavfn and its gradients would change sign simultaneously.  May be I need to move
-c in only even multiples of the sim. lattice.
           if (iblk.gt.2*nblkeq .and. (mod(ipass,ngfmc).eq.1 .or.  ngfmc.eq.1)) then
             if(3*nelec.lt.100) then
               write(fmt,'(a1,i2,a21)')'(',3*nelec,'f14.8,i3,d12.4,f12.5)'
