@@ -10,14 +10,9 @@ c Written by Claudia Filippi
 
       parameter (MEXCIT=10)
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
-
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
-      common /dorb/ iworbd(MELEC,MDET)
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
@@ -39,8 +34,13 @@ c Written by Claudia Filippi
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK)
-     &,slmdiw(MMAT_DIM,MWALK)
+      common /forcepar/ deltot(MFORCE),nforce,istrech
+
+      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
+     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
+     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+
+      dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK),slmdiw(MMAT_DIM,MWALK)
      &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)
      &,fppuw(MMAT_DIM,MWALK),fppdw(MMAT_DIM,MWALK)
      &,ddxw(3,MELEC,MWALK),d2dx2w(MELEC,MWALK)
@@ -200,6 +200,7 @@ c Written by Claudia Filippi
       call mpi_isend(detdw(1,nwalk),ndet,mpi_double_precision,irecv
      &,itag+2,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+2
+
       call mpi_isend(slmuiw(1,nwalk),nup*nup,mpi_double_precision
      &  ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(fpuw(1,1,nwalk),3*nup*nup,mpi_double_precision
@@ -214,31 +215,31 @@ c Written by Claudia Filippi
      &  ,irecv,itag+6,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+6
 
-      call mpi_isend(aaw(1,1,nwalk,1),MELEC*MORB,mpi_double_precision
+      call mpi_isend(aaw(1,1,nwalk,1),MELEC*norb,mpi_double_precision
      & ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
-      call mpi_isend(aaw(1,1,nwalk,2),MELEC*MORB,mpi_double_precision
+      call mpi_isend(aaw(1,1,nwalk,2),MELEC*norb,mpi_double_precision
      & ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+2
 
       do 150 istate=1,nstates
         do 150 iab=1,2
         itag=itag+1
- 150    call mpi_isend(ymatw(1,1,nwalk,iab,istate),MELEC*MORB,mpi_double_precision
-     &   ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
+ 150    call mpi_isend(ymatw(1,1,nwalk,iab,istate),MORB*nelec,mpi_double_precision
+     &   ,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
 
       do 160 iab=1,2
         do 160 k=1,ndet
-          if(k.ne.krefw(nwalk)) then
+          ndim=numrep_det(k,iab)
+          if(k.ne.krefw(nwalk).and.ndim.gt.0) then
             itag=itag+1
-            ndim=numrep_det(k,iab)
-            call mpi_isend(wfmatw(1,k,nwalk,1),ndim*ndim,mpi_double_precision
+            call mpi_isend(wfmatw(1,k,nwalk,iab),ndim*ndim,mpi_double_precision
      &     ,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
           endif
  160  continue
 
-      call mpi_isend(orbw(1,1,nwalk),MELEC*MORB,mpi_double_precision
+      call mpi_isend(orbw(1,1,nwalk),MELEC*norb,mpi_double_precision
      &  ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
-      call mpi_isend(dorbw(1,1,1,nwalk),3*MELEC*MORB,mpi_double_precision
+      call mpi_isend(dorbw(1,1,1,nwalk),3*MELEC*norb,mpi_double_precision
      &  ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+2
 
@@ -252,6 +253,7 @@ c Written by Claudia Filippi
       call mpi_recv(detdw(1,nwalk),ndet,mpi_double_precision,isend
      &,itag+2,MPI_COMM_WORLD,istatus,ierr)
       itag=itag+2
+
       call mpi_recv(slmuiw(1,nwalk),nup*nup,mpi_double_precision
      &  ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(fpuw(1,1,nwalk),3*nup*nup,mpi_double_precision
@@ -263,34 +265,34 @@ c Written by Claudia Filippi
       call mpi_recv(ddxw(1,1,nwalk),3*nelec,mpi_double_precision
      &  ,isend,itag+5,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(krefw(nwalk),1,mpi_integer
-     &  ,irecv,itag+6,MPI_COMM_WORLD,irequest,ierr)
+     &  ,isend,itag+6,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+6
 
-      call mpi_recv(aaw(1,1,nwalk,1),MELEC*MORB,mpi_double_precision
+      call mpi_recv(aaw(1,1,nwalk,1),MELEC*norb,mpi_double_precision
      & ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(aaw(1,1,nwalk,2),MELEC*MORB,mpi_double_precision
+      call mpi_recv(aaw(1,1,nwalk,2),MELEC*norb,mpi_double_precision
      & ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       itag=itag+2
 
       do 250 istate=1,nstates
         do 250 iab=1,2
         itag=itag+1
- 250    call mpi_recv(ymatw(1,1,nwalk,iab,istate),MELEC*MORB,mpi_double_precision
-     &   ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
+ 250    call mpi_recv(ymatw(1,1,nwalk,iab,istate),MORB*nelec,mpi_double_precision
+     &   ,isend,itag,MPI_COMM_WORLD,istatus,ierr)
 
       do 260 iab=1,2
         do 260 k=1,ndet
-          if(k.ne.krefw(nwalk)) then
+          ndim=numrep_det(k,iab)
+          if(k.ne.krefw(nwalk).and.ndim.gt.0) then
             itag=itag+1
-            ndim=numrep_det(k,iab)
-            call mpi_recv(wfmatw(1,k,nwalk,1),ndim*ndim,mpi_double_precision
+            call mpi_recv(wfmatw(1,k,nwalk,iab),ndim*ndim,mpi_double_precision
      &     ,isend,itag,MPI_COMM_WORLD,istatus,ierr)
         endif
  260  continue
 
-      call mpi_recv(orbw(1,1,nwalk),MELEC*MORB,mpi_double_precision
+      call mpi_recv(orbw(1,1,nwalk),MELEC*morb,mpi_double_precision
      &  ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(dorbw(1,1,1,nwalk),3*MELEC*MORB,mpi_double_precision
+      call mpi_recv(dorbw(1,1,1,nwalk),3*MELEC*morb,mpi_double_precision
      &  ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       itag=itag+2
 

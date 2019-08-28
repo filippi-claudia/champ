@@ -5,8 +5,14 @@ c Written by Claudia Filippi
       include 'mpif.h'
       include 'vmc.h'
       include 'dmc.h'
+      include 'force.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+
+      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
+     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
+     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
      &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 

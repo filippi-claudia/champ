@@ -1,18 +1,52 @@
-      subroutine prop_reduce
+      subroutine prop_reduce(wgsum)
 
       implicit real*8(a-h,o-z)
 
+      include 'mpif.h'
       include 'dmc.h'
       include 'properties.h'
       include 'prop_dmc.h'
-      include 'mpif.h'
+
+      character*12 mode
+      common /contr3/ mode
+
+      logical wid
+      common /mpiconf/ idtask,nproc,wid
+
+      dimension vp2sum(MAXPROP), vpcollect(MAXPROP), vp2collect(MAXPROP)
 
       if(iprop.eq.0) return
 
+      if(mode.eq.'dmc_one_mpi2') then
+
+       call mpi_reduce(vprop_sum,vpcollect,nprop
+     &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+      do 1 i=1,nprop
+  1     vprop_sum(i)=vpcollect(i)
+
+      else
+
       do 10 i=1,nprop
-        call mpi_reduce(vprop_sum(i),vpcollect,1
-     &       ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
- 10     vprop_sum(i)=vpcollect
+        vpnow=vprop_sum(i)/wgsum
+ 10     vp2sum(i)=vprop_sum(i)*vpnow
+
+      call mpi_reduce(vprop_sum,vpcollect,nprop
+     &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+      call mpi_reduce(vp2sum,vp2collect,nprop
+     &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+      call mpi_barrier(MPI_COMM_WORLD,ierr)
+
+      if(.not.wid) return
+
+      do 20 i=1,nprop
+       vprop_cum(i)=vprop_cum(i)+vpcollect(i)
+       vprop_cm2(i)=vprop_cm2(i)+vp2collect(i)
+ 20   enddo
+
+      endif
 
       return
       end

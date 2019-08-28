@@ -22,11 +22,16 @@
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
 
+      character*12 mode
+      common /contr3/ mode
+
       logical wid
       common /mpiconf/ idtask,nproc,wid
 
       dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
      &,wg21collect(MFORCE),taucollect(MFORCE),rprobcollect(nrad)
+
+      if(mode.eq.'dmc_one_mpi2') return
 
       call mpi_reduce(ecum1,e1collect,1,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)

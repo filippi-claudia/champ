@@ -6,26 +6,18 @@ c Written by Claudia Filippi
       include 'force.h'
       include 'mpif.h'
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0)
-      parameter (ten=10.d0,tenth=.1d0,half=.5d0,third=1.d0/3.d0)
-
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
-
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
      &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE)
       common /age/ iage(MWALK),ioldest,ioldestmx
-      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,
-     &nbrnch,nodecr
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
-
-      common /mpiconf/ idtask,nproc,wid
+      common /forcepar/ deltot(MFORCE),nforce,istrech
+      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
+      common /force_dmc/ itausec,nwprod
 
       dimension istatus(MPI_STATUS_SIZE)
 

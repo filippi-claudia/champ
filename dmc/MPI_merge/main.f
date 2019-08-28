@@ -20,8 +20,6 @@ c Written by Claudia Filippi
 
       if(nproc.gt.nprocx) call fatal_error('MAIN: nproc > nprocx')
 
-      mode='dmc_one_mpi2'
-
       wid=(idtask.eq.0)
 
 c Open the standard output and the log file only on the master
@@ -44,28 +42,26 @@ c Open the standard output and the log file only on the master
       endif
       open(18,file=filename,status='unknown')
 
-      call MPI_ATTR_GET(MPI_COMM_WORLD,MPI_TAG_UB,ivalue,flag,ierr)
-c     write(6,*) 'In main.f from MPI_ATTR_GET',ivalue
-      if(ierr.ne.0) write(6,*) 'Warning:? in main.f from MPI_ATTR_GET',ierr
-
       call read_input
 
       call p2gtid('optwf:ioptwf',ioptwf,0,1)
-      if(ioptwf.gt.0) call fatal_error('MAIN: no DMC optimization with global population')
-      call p2gtid('dmc:ibranch_elec',ibranch_elec,0,1)
-      if(ibranch_elec.gt.0) call fatal_error('MAIN: no DMC single-branch with global population')
 
-      call dmc
+      if(mode.eq.'dmc_one_mpi2') then
+        if(ioptwf.gt.0) call fatal_error('MAIN: no DMC optimization with global population')
+
+        call p2gtid('dmc:ibranch_elec',ibranch_elec,0,1)
+        if(ibranch_elec.gt.0) call fatal_error('MAIN: no DMC single-branch with global population')
+      endif
+
+      if(ioptwf.gt.0) then
+       call optwf_matrix_corsamp
+      else
+       call dmc
+      endif
 
       close(5)
       close(6)
       close(45)
-
-c     if(wid) then
-c       close(45)
-c     else
-c       close(45,status='delete')
-c     endif
 
       call mpi_finalize(ierr)
 
