@@ -38,8 +38,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       dimension rshifti(3),rshiftj(3),gn(*)
       dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ)
 
-      dlogs4(x) = 2*dlog((one-dexp(-a1(41,is,iwf)*x))/a1(41,is,iwf))
-
       if(ijas.ge.4.and.ijas.le.6) then
 
         deriv_psinl=0

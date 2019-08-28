@@ -4,7 +4,6 @@ c Written by Friedemann Schautz
       implicit real*8(a-h,o-z)
 
       character*12 mode
-
       common /contr3/ mode
 
 c Initialize flags
@@ -65,7 +64,6 @@ c and Anthony Scemema
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /contr3/ mode
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -109,11 +107,6 @@ c and Anthony Scemema
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
-      common /c_rmc/j_first,j_last,j_dif
-     &             ,j_count_d,j_acc_d,j_count_b,j_acc_b,if_dmc_rej
-     &             ,iw_move_first,iw_move_last,iw_store
-     &             ,npath,nbuf,idir,ntau
-
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nbj_current
@@ -128,11 +121,13 @@ c and Anthony Scemema
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
+      character*12 mode
+      common /contr3/ mode
+
       character*20 title,fmt
       character*32 keyname
       character*24 date
       character*10 eunit
-      character*12 mode
       character*16 cseed
       character*20 dl_alg
       dimension irn(4),cent_tmp(3),anorm(MBASIS)
@@ -218,8 +213,10 @@ c  a4,b,c   Jastrow parameters for Jastrow4,5,6
 c  cutjas   cutoff for Jastrow4,5,6 if cutjas=6,7
 c  rlobx(y) Lobachevsky parameters for Fock expansion
 
-      
       pi=four*datan(one)
+
+c Default dmc_one_mpi1 separate populations; dmc_one_mpi2 global population
+      if(index(mode,'vmc').eq.0) call p2gtad('dmc:mode_dmc',mode,'dmc_one_mpi1',1)
 
 c Check that necessary blocks are in input file
       call flagcheck
@@ -238,14 +235,10 @@ c General section
      & write(6,'(''Variational MC one-electron move mpi'',a40)') title
       if(mode.eq.'dmc')
      & write(6,'(''Diffusion MC'',a40)') title
-      if(mode.eq.'rmc')
-     & write(6,'(''Reptation MC'',a40)') title
       if(mode.eq.'dmc_one_mpi1')
      & write(6,'(''Diffusion MC 1-electron move, mpi no global pop'',a40)') title
       if(mode.eq.'dmc_one_mpi2')
-     & write(6,'(''Diffusion MC 1-electron move, mpi global pop big comm'',a40)') title
-      if(mode.eq.'dmc_one_mpi3')
-     & write(6,'(''Diffusion MC 1-electron move, mpi global pop small comm'',a40)') title
+     & write(6,'(''Diffusion MC 1-electron move, mpi global pop comm'',a40)') title
 
       call p2gtid('general:iperiodic',iperiodic,0,1)
       call p2gtid('general:ibasis',ibasis,1,1)
@@ -364,18 +357,6 @@ c DMC parameters
 c Inizialized to zero for call to hpsi in vmc or dmc with no casula or/and in acuest
       i_vpsp=0
 
-c RMC parameters
-      if(index(mode,'rmc').ne.0) then
-          call p2gtid('rmc:ntau',ntau,10,1)
-          call p2gtid('rmc:if_dmc_rej',if_dmc_rej,0,1)
-c         write(6,'(''if_dmc_rej'',i4)') if_dmc_rej
-          call p2gtf('rmc:etrial',etrial,1)
-          call p2gtf('rmc:tau',tau,1)
-          rttau=dsqrt(tau)
-
-          call p2gtid('rmc:icasula',icasula,0,1)
-      endif
-
 c Parameters for blocking/start/dump
       if(index(mode,'mc').ne.0 ) then
 
@@ -392,13 +373,6 @@ c Parameters for blocking/start/dump
           call p2gtid('blocking_dmc:nblkeq',nblkeq,2,1)
           call p2gtid('blocking_dmc:nconf_new',nconf_new,0,1)
         endif
-        if(index(mode,'rmc').ne.0) then
-          call p2gti('blocking_rmc:nstep',nstep,1)
-          call p2gti('blocking_rmc:nblk',nblk,1)
-          call p2gtid('blocking_rmc:nblkeq',nblkeq,2,1)
-          nconf=1
-          nconf_new=0
-        endif
         call p2gtid('startend:idump',idump,1,1)
         call p2gtid('startend:irstar',irstar,0,1)
         call p2gtid('startend:isite',isite,1,1)
@@ -410,9 +384,9 @@ c Make sure that the printout is not huge
         write(6,'(''no. of steps/block ='',t30,i10)') nstep
         write(6,'(''no. of blocks after eq.='',t30,i10)') nblk
         write(6,'(''no. of blocks before eq. ='',t30,i10)') nblkeq
-        if(mode.eq.'vmc') then
+        if(index(mode,'vmc').ne.0) then
           write(6,'(''no. configurations saved ='',t30,i10)') nconf_new
-         elseif(mode.eq.'dmc') then
+         elseif(index(mode,'dmc').ne.0) then
           write(6,'(''target walker population ='',t30,i10)') nconf
           if(nconf.le.0) call fatal_error('INPUT: target population <= 0')
           if(nconf.gt.MWALK) call fatal_error('INPUT: target population > MWALK')
@@ -519,7 +493,7 @@ CVARDOC flag: CI averages will be printed
             write(6,'(''Reset optimization method to linear'')')
           endif
 c TMP due to changing kref -> also for ncsf=0, we need to have cxdet(i) carrying the phase
-          if(ncsf.eq.0) call fatal_error('ncsf.eq.0 - further changes needed due to kref')
+c         if(ncsf.eq.0) call fatal_error('ncsf.eq.0 - further changes needed due to kref')
           if(ncsf.gt.0) then
             nciterm=ncsf
            else
