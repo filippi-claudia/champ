@@ -1,4 +1,4 @@
-      subroutine dmc_good_ps
+      subroutine dmc_ps
 c Written by Cyrus Umrigar and Claudia Filippi
 c Uses the diffusion Monte Carlo algorithm described in:
 c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
@@ -239,6 +239,10 @@ c Tau primary -> tratio=one
             dfus2o=dfus2o+dfus**2
    80       xnew(k)=xold(k,i,iw,1)+dx
 
+          if(ipr.ge.1)
+     &    write(6,'(''xold'',2i4,9f8.5)') iw,i,(xold(k,i,iw,1),k=1,3)
+          if(ipr.ge.1)
+     &    write(6,'(''vold'',2i4,9f8.5)') iw,i,(vold(k,i,iw,1),k=1,3)
           if(ipr.ge.1)
      &    write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,3)
 

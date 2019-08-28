@@ -61,10 +61,6 @@ c-----------------------------------------------------------------------
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
-      rn_eff(w,w2)=w**2/w2
-      error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
-      errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
-
       if(immpol.eq.0) return
     
       immpolprt_sav=immpolprt
@@ -83,7 +79,6 @@ c-----------------------------------------------------------------------
       common /mmpol_hpsi/QMdp,QMq,eek_pol(3,MCHMM)
       common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
      &         eeko1(MWALK,MCHMM),eeko2(MWALK,MCHMM),eeko3(MWALK,MCHMM)
-
 
       if(immpol.eq.0) return
 
@@ -112,7 +107,6 @@ c-----------------------------------------------------------------------
 
       dmmpol_sum=dmmpol_sum+p*QMdp+q*dmmpolo(iw)
       cmmpol_sum=cmmpol_sum+p*QMq+q*cmmpolo(iw)
-
 
       do i=1,nchmm
         eek_sum(1,i)= eek_sum(1,i)+p*eek_pol(1,i)+q*eeko1(iw,i)

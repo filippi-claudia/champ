@@ -10,20 +10,18 @@ formatFortran("${DMC_SOURCE}") # Set Fixed format property
 
 set(SHARED_DMC_MPI_SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/averages.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/dmc_good_ps_mov1.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/dmc.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/dmc_ps_mov1.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/gauss.f
   ${CMAKE_CURRENT_SOURCE_DIR}/hpsiedmc.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/mmpol_dmc.f
   ${CMAKE_CURRENT_SOURCE_DIR}/multideterminant_tmove.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/nonloc_grid.f
   ${CMAKE_CURRENT_SOURCE_DIR}/optwf_dmc.f
   ${CMAKE_CURRENT_SOURCE_DIR}/pcm_dmc.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/splitj.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/walksav_jas.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/dmc.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/gauss.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/mmpol_dmc.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/nonloc_grid.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/optwf_dummy.f
   ${CMAKE_CURRENT_SOURCE_DIR}/prop_dmc.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/walksav_det.f)
+  ${CMAKE_CURRENT_SOURCE_DIR}/splitj.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/zerest.f)
 
 add_library(dmc_mpi_objects OBJECT ${SHARED_DMC_MPI_SOURCE})
 
@@ -69,5 +67,4 @@ target_link_libraries(dmc.mov1
   ${LINEAR_ALGEBRA})
 
 set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
-add_subdirectory(MPI)
-add_subdirectory(MPI_global_pop)
+add_subdirectory(MPI_merge)

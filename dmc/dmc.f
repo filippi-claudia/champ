@@ -184,7 +184,7 @@ c get initial value of cpu time
 
 c initialize sums and averages
       call init_averages_index
-      if(irstar.ne.1) call zeres0
+      if(irstar.ne.1) call init
       if(irstar.ne.1) call average(0)
 
 c forces implemented only for certain dmc control options
@@ -205,7 +205,7 @@ c loops for dmc calculation
 c           call dmc_brock
            elseif(iabs(idmc).eq.2) then
             if (nloc.gt.0) then
-              call dmc_good_ps
+              call dmc_ps
              else
 c             call dmc_good
             endif

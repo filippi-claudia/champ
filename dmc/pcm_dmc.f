@@ -65,10 +65,6 @@ c-----------------------------------------------------------------------
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
-      rn_eff(w,w2)=w**2/w2
-      error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
-      errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
-
       if(ipcm.eq.0) return
     
       ipcmprt_sav=ipcmprt
