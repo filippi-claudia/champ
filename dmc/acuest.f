@@ -1,12 +1,14 @@
       subroutine acuest
-c Written by Cyrus Umrigar, modified by Claudia Filippi
+c MPI version created by Claudia Filippi starting from serial version
+c routine to accumulate estimators for energy etc.
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
+      include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)
 
-c routine to accumulate estimators for energy etc.
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
@@ -26,20 +28,35 @@ c routine to accumulate estimators for energy etc.
      &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
      &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
      &tjfcm2(MFORCE),r2cm2,ricm2
-      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE),derivcm2(MFORCE),
-     &derivtotave_num_old(MFORCE)
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
+     &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
       common /age/ iage(MWALK),ioldest,ioldestmx
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
+
+      character*12 mode
+      common /contr3/ mode
+
+      common /mpiblk/ iblk_proc
+      logical wid
+      common /mpiconf/ idtask,nproc,wid
+
+      dimension egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE),
+     &tpbcollect(MFORCE),tjfcollect(MFORCE),eg2collect(MFORCE),wg2collect(MFORCE),
+     &pe2collect(MFORCE),tpb2collect(MFORCE),tjf2collect(MFORCE),fsum(MFORCE),
+     &f2sum(MFORCE),eg2sum(MFORCE),wg2sum(MFORCE),pe2sum(MFORCE),tpb2sum(MFORCE),
+     &tjf2sum(MFORCE),taucollect(MFORCE),fcollect(MFORCE),f2collect(MFORCE),
+     &derivcollect(10,MFORCE)
 
 c statement function for error calculation
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
+
+      if(mode.eq.'dmc_one_mpi2') then
+        call acuest_gpop
+        return
+      endif
 
 c wt   = weight of configurations
 c xsum = sum of values of x from dmc
@@ -50,7 +67,9 @@ c xave = current average value of x
 c xerr = current error of x
 
       iblk=iblk+1
-      npass=iblk*nstep
+      iblk_proc=iblk_proc+nproc
+
+      npass=iblk_proc*nstep
 
       wnow=wsum/nstep
       wfnow=wfsum/nstep
@@ -61,48 +80,131 @@ c xerr = current error of x
       rinow=risum/wgsum(1)
       r2now=r2sum/wgsum(1)
 
-      wcm2=wcm2+wsum**2
-      wfcm2=wfcm2+wfsum**2
-      ecm2=ecm2+esum*enow
-      efcm2=efcm2+efsum*efnow
       ei1cm2=ei1cm2+ei1now**2
       ei2cm2=ei2cm2+ei2now**2
       r2cm2=r2cm2+r2sum*r2now
       ricm2=ricm2+risum*rinow
 
-      wcum=wcum+wsum
-      wfcum=wfcum+wfsum
       wdcum=wdcum+wdsum
       wgdcum=wgdcum+wgdsum
-      ecum=ecum+esum
-      efcum=efcum+efsum
       ei1cum=ei1cum+ei1now
       ei2cum=ei2cum+ei2now
       r2cum=r2cum+r2sum
       ricum=ricum+risum
 
-      do 10 ifr=1,nforce
+      w2sum=wsum**2
+      wf2sum=wfsum**2
+      e2sum=esum*enow
+      ef2sum=efsum*efnow
 
+      do 10 ifr=1,nforce
         wgnow=wgsum(ifr)/nstep
         egnow=egsum(ifr)/wgsum(ifr)
         penow=pesum(ifr)/wgsum(ifr)
         tpbnow=tpbsum(ifr)/wgsum(ifr)
         tjfnow=tjfsum(ifr)/wgsum(ifr)
 
-        wgcm2(ifr)=wgcm2(ifr)+wgsum(ifr)**2
-        egcm2(ifr)=egcm2(ifr)+egsum(ifr)*egnow
-        pecm2(ifr)=pecm2(ifr)+pesum(ifr)*penow
-        tpbcm2(ifr)=tpbcm2(ifr)+tpbsum(ifr)*tpbnow
-        tjfcm2(ifr)=tjfcm2(ifr)+tjfsum(ifr)*tjfnow
+        wg2sum(ifr)=wgsum(ifr)**2
+        eg2sum(ifr)=egsum(ifr)*egnow
+        pe2sum(ifr)=pesum(ifr)*penow
+        tpb2sum(ifr)=tpbsum(ifr)*tpbnow
+        tjf2sum(ifr)=tjfsum(ifr)*tjfnow
+        if(ifr.gt.1) then
+          fsum(ifr)=wgsum(1)*(egnow-egsum(1)/wgsum(1))
+          f2sum(ifr)=wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
+        endif
+  10  continue
 
-        wgcum(ifr)=wgcum(ifr)+wgsum(ifr)
-        egcum(ifr)=egcum(ifr)+egsum(ifr)
-        pecum(ifr)=pecum(ifr)+pesum(ifr)
-        tpbcum(ifr)=tpbcum(ifr)+tpbsum(ifr)
-        tjfcum(ifr)=tjfcum(ifr)+tjfsum(ifr)
+      call mpi_allreduce(wgsum,wgcollect,MFORCE
+     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(egsum,egcollect,MFORCE
+     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tausum,taucollect,MFORCE
+     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-        do 5 k=1,10
-  5        derivcum(k,ifr)=derivcum(k,ifr)+derivsum(k,ifr)
+      do 12 ifr=1,nforce
+        wgcum(ifr)=wgcum(ifr)+wgcollect(ifr)
+        egcum(ifr)=egcum(ifr)+egcollect(ifr)
+        taucum(ifr)=taucum(ifr)+taucollect(ifr)
+  12  continue
+
+      call mpi_reduce(pesum,pecollect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(tpbsum,tpbcollect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(tjfsum,tjfcollect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+      call mpi_reduce(wg2sum,wg2collect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(eg2sum,eg2collect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(pe2sum,pe2collect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(tpb2sum,tpb2collect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(tjf2sum,tjf2collect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+      call mpi_reduce(fsum,fcollect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(f2sum,f2collect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+      call mpi_reduce(derivsum,derivcollect,10*MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+      call mpi_reduce(esum,ecollect,1
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(wsum,wcollect,1
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(efsum,efcollect,1
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(wfsum,wfcollect,1
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+      call mpi_reduce(e2sum,e2collect,1
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(w2sum,w2collect,1
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(ef2sum,ef2collect,1
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(wf2sum,wf2collect,1
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+
+      call optjas_cum(wgsum(1),egnow)
+      call optorb_cum(wgsum(1),egsum(1))
+      call optci_cum(wgsum(1))
+
+      call prop_reduce(wgsum(1))
+      call pcm_reduce(wgsum(1))
+      call mmpol_reduce(wgsum(1))
+
+      if(.not.wid) goto 17
+
+      wcm2=wcm2+w2collect
+      wfcm2=wfcm2+wf2collect
+      ecm2=ecm2+e2collect
+      efcm2=efcm2+ef2collect
+
+      wcum=wcum+wcollect
+      wfcum=wfcum+wfcollect
+      ecum=ecum+ecollect
+      efcum=efcum+efcollect
+
+      do 15 ifr=1,nforce
+        wgcm2(ifr)=wgcm2(ifr)+wg2collect(ifr)
+        egcm2(ifr)=egcm2(ifr)+eg2collect(ifr)
+        pecm2(ifr)=pecm2(ifr)+pe2collect(ifr)
+        tpbcm2(ifr)=tpbcm2(ifr)+tpb2collect(ifr)
+        tjfcm2(ifr)=tjfcm2(ifr)+tjf2collect(ifr)
+
+        pecum(ifr)=pecum(ifr)+pecollect(ifr)
+        tpbcum(ifr)=tpbcum(ifr)+tpbcollect(ifr)
+        tjfcum(ifr)=tjfcum(ifr)+tjfcollect(ifr)
+        do 13 k=1,3
+  13      derivcum(k,ifr)=derivcum(k,ifr)+derivcollect(k,ifr)
 
         if(iblk.eq.1) then
           egerr=0
@@ -122,8 +224,8 @@ c xerr = current error of x
         tjfave=tjfcum(ifr)/wgcum(ifr)
 
         if(ifr.gt.1) then
-          fgcum(ifr)=fgcum(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))
-          fgcm2(ifr)=fgcm2(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
+          fgcum(ifr)=fgcum(ifr)+fcollect(ifr)
+          fgcm2(ifr)=fgcm2(ifr)+f2collect(ifr)
           fgave=egcum(1)/wgcum(1)-egcum(ifr)/wgcum(ifr)
           fgave=fgave/deltot(ifr)
           if(iblk.eq.1) then
@@ -132,7 +234,7 @@ c xerr = current error of x
            else
             fgerr=errg(fgcum(ifr),fgcm2(ifr),1)
             fgerr=fgerr/abs(deltot(ifr))
-            ifgerr=nint(1.0d9* fgerr)
+            ifgerr=nint(1e12* fgerr)
           endif
           egave1=egcum(1)/wgcum(1)
           if(iblk.eq.1) derivtotave_num_old(ifr)=0.d0
@@ -147,27 +249,21 @@ c xerr = current error of x
            else
             derivgerr=errg(derivtotave,derivcm2(ifr),1)
             derivgerr=derivgerr/abs(deltot(ifr))
-            iderivgerr=nint(1.0d9* derivgerr)
+            iderivgerr=nint(1e12* derivgerr)
           endif
          else
-          call optjas_cum(wgsum(1),egnow)
-          call optorb_cum(wgsum(1),egsum(1))
-          call optci_cum(wgsum(1))
-
-          call prop_cum(wgsum(ifr))
-          call pcm_cum(wgsum(ifr))
-          call mmpol_cum(wgsum(ifr))
+          call prop_prt_dmc(iblk,0,wgcum,wgcm2)
+          call pcm_prt(iblk,wgcum,wgcm2)
+          call mmpol_prt(iblk,wgcum,wgcm2)
         endif
-
-        taucum(ifr)=taucum(ifr)+tausum(ifr)
 
 c write out header first time
 
         if (iblk.eq.1.and.ifr.eq.1)
      &  write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
      &  ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
-     &  ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t97,''(fgerr)'',
-     &  t109,''fgave_n'',''(fgerr_n)'',t130,''npass'',t140,''wgsum'',t150,''ioldest'')')
+     &  ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t96,''(fgerr)'',
+     &  t114,''fgave_n'',t131,''(fgerr_n)'',t146,''npass'',t156,''wgsum'',t164,''ioldest'')')
 
 c write out current values of averages etc.
 
@@ -177,24 +273,22 @@ c write out current values of averages etc.
         itjfer=nint(100000*tjferr)
 
         if(ifr.eq.1) then
-          write(6,'(f10.5,4(f10.5,''('',i5,'')''),46x,3i10)') egnow,
+          write(6,'(f10.5,4(f10.5,''('',i5,'')''),62x,3i10)')
+     &    egcollect(ifr)/wgcollect(ifr),
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,
-     &    nint(wgsum(ifr)),ioldest
-
-          call prop_prt_dmc(iblk,0,wgcum,wgcm2)
-          call pcm_prt(iblk,wgcum,wgcm2)
-          call mmpol_prt(iblk,wgcum,wgcm2)
+     &    nint(wgcollect(ifr)/nproc),ioldest
          else
-          write(6,'(f10.5,4(f10.5,''('',i5,'')''),f14.9,
-     &    ''('',i9,'')'',f14.9,''('',i9,'')'',6x,i10)') egnow,
+          write(6,'(f10.5,4(f10.5,''('',i5,'')''),f17.12,
+     &    ''('',i12,'')'',f17.12,''('',i12,'')'',10x,i10)')
+     &    egcollect(ifr)/wgcollect(ifr),
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-     &    fgave,ifgerr,derivtotave,iderivgerr,nint(wgsum(ifr))
+     &    fgave,ifgerr,derivtotave,iderivgerr,nint(wgcollect(ifr)/nproc)
         endif
-   10 continue
+   15 continue
 
 c zero out xsum variables for metrop
 
-      wsum=zero
+   17 wsum=zero
       wfsum=zero
       wdsum=zero
       wgdsum=zero

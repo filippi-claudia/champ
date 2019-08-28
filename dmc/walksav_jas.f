@@ -2,10 +2,17 @@
 c Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
+      include 'mpif.h'
       include 'vmc.h'
       include 'dmc.h'
+      include 'force.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+
+      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
+     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
+     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
      &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
@@ -15,6 +22,8 @@ c Written by Claudia Filippi
      &,fsumow(MWALK),fjow(3,MELEC,MWALK),d2ow(MWALK),d2ijow(MELEC,MELEC,MWALK)
 
       dimension vjw(3,MELEC,MWALK)
+
+      dimension istatus(MPI_STATUS_SIZE)
 
       save fsow,fijow,fsumow,fjow,d2ow,d2ijow
 
@@ -109,5 +118,39 @@ c Written by Claudia Filippi
         do 66 kk=1,3
   66      vjw(kk,i,iw2)=vjw(kk,i,iw)
     
+      return
+
+      entry send_jas(irecv)
+
+      itag=0
+      call mpi_isend(fsumow(nwalk),1,mpi_double_precision,irecv
+     &,itag+1,MPI_COMM_WORLD,irequest,ierr)
+      call mpi_isend(fjow(1,1,nwalk),3*nelec,mpi_double_precision,irecv
+     &,itag+2,MPI_COMM_WORLD,irequest,ierr)
+      call mpi_isend(fsow(1,1,nwalk),MELEC*nelec,mpi_double_precision
+     &,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
+      call mpi_isend(fijow(1,1,1,nwalk),3*MELEC*nelec
+     &,mpi_double_precision,irecv,itag+4,MPI_COMM_WORLD,irequest,ierr)
+
+      call mpi_isend(vjw(1,1,nwalk),3*nelec,mpi_double_precision,irecv
+     &,itag+5,MPI_COMM_WORLD,irequest,ierr)
+
+      return
+
+      entry recv_jas(isend)
+
+      itag=0
+      call mpi_recv(fsumow(nwalk),1,mpi_double_precision,isend
+     &,itag+1,MPI_COMM_WORLD,istatus,ierr)
+      call mpi_recv(fjow(1,1,nwalk),3*nelec,mpi_double_precision,isend
+     &,itag+2,MPI_COMM_WORLD,istatus,ierr)
+      call mpi_recv(fsow(1,1,nwalk),MELEC*nelec,mpi_double_precision
+     &,isend,itag+3,MPI_COMM_WORLD,istatus,ierr)
+      call mpi_recv(fijow(1,1,1,nwalk),3*MELEC*nelec
+     &,mpi_double_precision,isend,itag+4,MPI_COMM_WORLD,istatus,ierr)
+
+      call mpi_recv(vjw(1,1,nwalk),3*nelec,mpi_double_precision,isend
+     &,itag+5,MPI_COMM_WORLD,istatus,ierr)
+
       return
       end

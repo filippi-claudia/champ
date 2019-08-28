@@ -1,12 +1,13 @@
       subroutine acues1
-c Written by Cyrus Umrigar, modified by Claudia Filippi
+c MPI version created by Claudia Filippi starting from serial version
+c routine to accumulate estimators for energy etc.
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
       parameter (zero=0.d0,one=1.d0)
 
-c routine to accumulate estimators for energy etc.
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
@@ -26,8 +27,8 @@ c routine to accumulate estimators for energy etc.
      &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
      &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
      &tjfcm2(MFORCE),r2cm2,ricm2
-      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE),derivcm2(MFORCE),
-     &derivtotave_num_old(MFORCE)
+      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
+     &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
@@ -36,6 +37,13 @@ c routine to accumulate estimators for energy etc.
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod
 
+      character*12 mode
+      common /contr3/ mode
+
+      if(mode.eq.'dmc_one_mpi2') then
+        call acues1_gpop
+        return
+      endif
 c statistical fluctuations without blocking
       wdsum1=wdsumo
       wgdsum1=wgdsumo
@@ -75,8 +83,9 @@ c Estimate eigenvalue of G from the energy
         nfpro=min(nfprod,ipass)
         eigv=(wgsum1(1)/wtgen(ipmod))**(one/nfpro)
        else
-        eest=egcum1(1)/wgcum1(1)
-        eigv=dexp((etrial-eest)*(taucum(1)+tausum(1))/wgcum1(1))
+        eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
+        eigv=dexp((etrial-eest)*(taucum(1)+tausum(1))/
+     &                          (wgcum(1)+wgsum(1)))
         if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv,eest,accavn,
      &  egcum(1),egsum(1),wgcum(1),wgsum(1),fprod
       endif

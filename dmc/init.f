@@ -1,11 +1,14 @@
       subroutine init
-c Written by Cyrus Umrigar, modified by Claudia Filippi
+c MPI version created by Claudia Filippi starting from serial version
+c routine to accumulate estimators for energy etc.
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
       include 'basis.h'
       include 'pseudo.h'
+      include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -27,6 +30,12 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
+      character*12 mode
+      common /contr3/ mode
+
+      logical wid
+      common /mpiconf/ idtask,nproc,wid
+
 c Initialize various quantities at beginning of run
 c the initial values of energy psi etc. are calculated here
 
@@ -41,12 +50,7 @@ c get nuclear potential energy
       eigv=one
       eest=etrial
       nwalk=nconf
-      wdsumo=nconf
-      wgdsumo=nconf
       fprod=one
-      do 70 i=0,MFPRD1
-        wtgen(i)=nconf
-   70   ff(i)=one
 
       do 80 iw=1,nconf
         wt(iw)=one
@@ -56,7 +60,7 @@ c get nuclear potential energy
               do 71 k=1,3
    71           xold(k,ie,iw,ifr)=xold(k,ie,iw,1)
         endif
-        do 75 ifr=1,nforce
+        do 72 ifr=1,nforce
           if(nforce.gt.1) then
             if(ifr.eq.1.or.istrech.eq.0) then
               call strech(xold(1,1,iw,1),xold(1,1,iw,ifr),ajacob,ifr,0)
@@ -83,9 +87,16 @@ c           call t_vpsp_sav(iw)
             call mmpol_save(iw)
           endif
           pwt(iw,ifr)=0
-          do 75 ip=0,nwprod-1
-   75       wthist(iw,ip,ifr)=0
+          do 72 ip=0,nwprod-1
+   72       wthist(iw,ip,ifr)=0
    80 continue
+
+      if(mode.eq.'dmc_one_mpi2') nconf=nconf*nproc
+      wdsumo=nconf
+      wgdsumo=nconf
+      do 70 i=0,MFPRD1
+        wtgen(i)=nconf
+   70   ff(i)=one
 
       call zerest
 

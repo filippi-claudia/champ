@@ -34,6 +34,9 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       dimension nwalk_all(0:NPROCX),icommunicate_all(0:NPROCX),
      &iwalk_stack(NPROCX)
 
+c     call mpi_allgather(nwalk,1,mpi_integer,nwalk_all,1,mpi_integer,
+c    &MPI_COMM_WORLD,ierr)
+
       call mpi_gather(nwalk,1,mpi_integer,nwalk_all,1,mpi_integer,0,
      &MPI_COMM_WORLD,ierr)
       call mpi_bcast(nwalk_all(0),nproc,mpi_integer,0,MPI_COMM_WORLD,ierr)
@@ -94,7 +97,7 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
         write(6,'(''iwalk_stack='',(10i4))')
      &   (iwalk_stack(i),i=1,nproc)
         write(6,'(''nwalk_all='',(10i4))') (nwalk_all(i),i=0,nproc-1)
-        write(6,'(''nwalk_stack='',i4))') nwalk_stack
+        write(6,'(''nwalk_stack='',i4)') nwalk_stack
         write(6,*)
       endif
 

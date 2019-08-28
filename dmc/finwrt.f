@@ -1,25 +1,26 @@
       subroutine finwrt
-c Written by Cyrus Umrigar, modified by Claudia Filippi
+c MPI version created by Claudia Filippi starting from serial version
 c routine to print out final results
+
       implicit real*8(a-h,o-z)
       include 'dmc.h'
       include 'vmc.h'
       include 'force.h'
+      include 'mpif.h'
 
       parameter (one=1.d0,two=2.d0,half=.5d0)
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
+      character*20 title
+      character*24 date
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-      common /iterat/ ipass,iblk
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
+      common /iterat/ ipass,iblk
 c /config/ included to print out xold and vold for old walkers
       common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
      &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
@@ -39,8 +40,8 @@ c /config/ included to print out xold and vold for old walkers
      &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
      &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
      &tjfcm2(MFORCE),r2cm2,ricm2
-      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE),derivcm2(MFORCE),
-     &derivtotave_num_old(MFORCE)
+      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
+     &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
@@ -49,34 +50,36 @@ c /config/ included to print out xold and vold for old walkers
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /header/ title,date
       common /age/ iage(MWALK),ioldest,ioldestmx
-
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
-
-      character*20 title
-      character*24 date
-
+      common /forcepar/ deltot(MFORCE),nforce,istrech
+      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
+      common /force_dmc/ itausec,nwprod
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
+
+      character*12 mode
+      common /contr3/ mode
+
+      common /mpiblk/ iblk_proc
+      logical wid
+      common /mpiconf/ idtask,nproc,wid
+
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
+      dimension taucollect(MFORCE),rprobcollect(nrad)
 
 c statement functions for error calculation
       rn_eff(w,w2)=w**2/w2
 
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errorn(x,x2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn-1),0.d0))
-      errori(x,x2,w,w2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn_eff(w,w2)-1),
-     &0.d0))
       errc(x,x2)=error(x,x2,wcum,wcm2)
       errf(x,x2)=error(x,x2,wfcum,wfcm2)
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
       errc1(x,x2)=error(x,x2,wcum1,wcm21)
       errf1(x,x2)=error(x,x2,wfcum1,wfcm21)
       errg1(x,x2,i)=error(x,x2,wgcum1(i),wgcm21(i))
-      errw(x,x2)=errorn(x,x2,dfloat(iblk))/nstep
-      errw1(x,x2)=errorn(x,x2,passes)
-      erric(x,x2)=errori(x,x2,wcum,wcm2,dfloat(iblk))
-      erric1(x,x2)=errori(x,x2,wcum1,wcm21,passes)
-      errig(x,x2)=errori(x,x2,wgcum(1),wgcm2(1),dfloat(iblk))
+      errw(x,x2)=errorn(x,x2,dfloat(iblk_proc))/nstep
+      errw1(x,x2)=errorn(x,x2,pass_proc)
 
       do 1 ifr=1,nforce
         energy(ifr)=0
@@ -88,6 +91,14 @@ c statement functions for error calculation
 
       passes=dfloat(iblk*nstep)
       eval=nconf*passes
+      if(mode.eq.'dmc_one_mpi1') then
+        pass_proc=dfloat(iblk_proc*nstep)
+        eval_proc=nconf*pass_proc
+       else
+        iblk_proc=iblk
+        pass_proc=passes
+        eval_proc=eval
+      endif
 c Either the next 3 lines or the 3 lines following them could be used.
 c They should give nearly (but not exactly) the same result.
 c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-blk
@@ -97,21 +108,54 @@ c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
       eval_eff=nconf*nstep*rn_eff(wcum,wcm2)
       evalf_eff=nconf*nstep*rn_eff(wfcum,wfcm2)
       evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
-      rtpass1=dsqrt(passes-1)
-      rteval=dsqrt(eval)
+      rtpass1=dsqrt(pass_proc-1)
       rteval_eff1=dsqrt(eval_eff-1)
       rtevalf_eff1=dsqrt(evalf_eff-1)
       rtevalg_eff1=dsqrt(evalg_eff-1)
 
-c Write out radial charge density for atoms
+      write(6,'(''passes,eval,pass_proc,eval_proc,eval_eff,
+     &evalf_eff,evalg_eff'',19f9.0)')
+     & passes,eval,pass_proc,eval_proc,eval_eff,evalf_eff,
+     & evalg_eff
+
+      if(mode.eq.'mpi_one_mpi2') then
+
+c Collect radial charge density for atoms
+      if(iperiodic.eq.0) then
+        call mpi_reduce(rprob,rprobcollect,nrad,mpi_double_precision
+     &  ,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        do 2 i=1,nrad
+    2     rprob(i)=rprobcollect(i)
+      endif
+
+      call mpi_reduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,0,
+     &MPI_COMM_WORLD,ierr)
+      call mpi_reduce(trymove,trymove_collect,1,mpi_double_precision,mpi_sum,0,
+     &MPI_COMM_WORLD,ierr)
+      call mpi_reduce(acc,acc_collect,1,mpi_double_precision,mpi_sum,0,
+     &MPI_COMM_WORLD,ierr)
+      call mpi_reduce(nacc,nacc_collect,1,mpi_integer,mpi_sum,0,
+     &MPI_COMM_WORLD,ierr)
+      nodecr=nodecr_collect
+      trymove=trymove_collect
+      acc=acc_collect
+      nacc=nacc_collect
+
+      endif
+
+      if (ipr.gt.-2)
+     &  write(11,'(3i5,f11.5,f7.4,f10.7,
+     &  '' nstep,nblk,nconf,etrial,tau,taueff'')')
+     &  nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)
+
+      if(.not.wid.and.mode.eq.'dmc_one_mpi2') return
+
       if(iperiodic.eq.0 .and. ncent.eq.1) then
         write(45,'(''  r   rprob'')')
         delr=one/delri
-        write(45,'('' delri = '',f10.4)') delri
         term=one/(wgcum(1)*delr)
         do 5 i=1,nrad
-    5     write(45,'(f5.3,3f9.5)') delr*(i-half),rprob(i)*term,
-     &    rprobup(i)*term,rprobdn(i)*term
+    5     write(45,'(f5.3,3f9.5)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
       endif
 
       if(idmc.ge.0) then
@@ -128,8 +172,8 @@ c Write out radial charge density for atoms
      &   3i9)') ioldest,ioldestmx
       endif
 
-      write(6,'(''average of the squares of the accepted step-size='',
-     & f10.5)') dr2ac/trymove
+c     write(6,'(''average of the squares of the accepted step-size='',
+c    & f10.5)') dr2ac/trymove
 
       write(6,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),
      & ifr=1,nforce)
@@ -137,19 +181,10 @@ c Write out radial charge density for atoms
       accav=acc/trymove
       accavn=dfloat(nacc)/trymove
 
-      wave=wcum/passes
-      wfave=wfcum/passes
+      wave=wcum/pass_proc
+      wfave=wfcum/pass_proc
       eave=ecum/wcum
       efave=efcum/wfcum
-      ei1ave=wfcum/wdcum
-      ei2ave=wgcum(1)/wgdcum
-      ei3ave=ei3cum/passes
-
-      r2ave=r2cum/(wgcum(1)*nelec)
-      riave=ricum/(wgcum(1)*nelec)
-      e1ave=etrial-dlog(ei1ave)/(taucum(1)/wgcum(1))
-      e2ave=etrial-dlog(ei2ave)/(taucum(1)/wgcum(1))
-      e3ave=etrial-dlog(ei3ave)/(taucum(1)/wgcum(1))
 
       werr=errw(wcum,wcm2)
       wferr=errw(wfcum,wfcm2)
@@ -159,39 +194,29 @@ c Write out radial charge density for atoms
       eferr=errf(efcum,efcm2)
       eerr1=errc1(ecum1,ecm21)
       eferr1=errf1(efcum1,efcm21)
-      ei1err=erric(ei1cum,ei1cm2)
-      ei2err=errig(ei2cum,ei2cm2)
-      ei3err=erric1(ei3cum,ei3cm2)
-      r2err=errg(r2cum,r2cm2,1)/nelec
-      rierr=errg(ricum,ricm2,1)/nelec
 
-      e1err=dlog((ei1ave+ei1err)/(ei1ave-ei1err))/(2*taucum(1)/wgcum(1))
-      e2err=dlog((ei2ave+ei2err)/(ei2ave-ei2err))/(2*taucum(1)/wgcum(1))
-      e3err=dlog((ei3ave+ei3err)/(ei3ave-ei3err))/(2*taucum(1)/wgcum(1))
-
-c     write(6,'(''dmc_mov1 '',2a10)') title,date
-      write(6,'(''dmc_mov1 '',2a10)') title
+      if(mode.eq.'dmc_one_mpi1') then
+        write(6,'(''dmc_mov1_mpi '',2a10)') title
+       else
+        write(6,'(''dmc_mov1_mpi_globalpop '',2a10)') title
+      endif
       write(6,'(''No/frac. of node crossings,acceptance='',i9,3f10.6)')
      &nodecr,dfloat(nodecr)/trymove,accav,accavn
       if(idmc.ge.0) then
-        write(6,'(''Actual, expected # of branches for 0, inf corr time='',
-     &  i6,2f9.0)') nbrnch
-     &  ,nconf*passes*
-     &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))**2
-     &  ,nconf*passes*
-     &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
         write(6,'(''No. of walkers at end of run='',i5)') nwalk
 
         write(6,'(''nwalk_eff/nwalk         ='',2f6.3)')
-     &   rn_eff(wcum1,wcm21)/passes,rn_eff(wcum,wcm2)/iblk
+     &   rn_eff(wcum1,wcm21)/pass_proc,rn_eff(wcum,wcm2)/iblk_proc
         write(6,'(''nwalk_eff/nwalk with f  ='',2f6.3)')
-     &   rn_eff(wfcum1,wfcm21)/passes,rn_eff(wfcum,wfcm2)/iblk
+     &   rn_eff(wfcum1,wfcm21)/pass_proc,rn_eff(wfcum,wfcm2)/iblk_proc
         write(6,'(''nwalk_eff/nwalk with fs ='',2f6.3)')
-     &   rn_eff(wgcum1(1),wgcm21(1))/passes,rn_eff(wgcum(1),wgcm2(1))/iblk
+     &   rn_eff(wgcum1(1),wgcm21(1))/pass_proc,rn_eff(wgcum(1),
+     &   wgcm2(1))/iblk_proc
       endif
 
-      write(6,'(''nconf*passes     passes   nconf nstep  nblk nblkeq  tau    taueff'',/,
-     & 2f12.0,4i6,2f9.5)') eval,passes,nconf,nstep,iblk,nblkeq,tau,taucum(1)/wgcum(1)
+      write(6,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq  nproc  tau    taueff'',
+     &/,2f12.0,5i6,2f9.5)')
+     &eval,passes,nconf,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
       write(6,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
       if(idmc.ge.0) then
         write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
@@ -199,7 +224,7 @@ c     write(6,'(''dmc_mov1 '',2a10)') title,date
         write(6,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  wfave,wferr,wferr*rtpass1,wferr1*rtpass1,(wferr/wferr1)**2
         do 20 ifr=1,nforce
-          wgave=wgcum(ifr)/passes
+          wgave=wgcum(ifr)/pass_proc
           wgerr=errw(wgcum(ifr),wgcm2(ifr))
           wgerr1=errw1(wgcum1(ifr),wgcm21(ifr))
           write(6,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
@@ -222,14 +247,6 @@ c     write(6,'(''dmc_mov1 '',2a10)') title,date
         energy(ifr)=egave
         energy_err(ifr)=egerr
   30  continue
-      if(idmc.ge.0) then
-        write(6,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,
-     &  f9.5)') e1ave,e1err,e1err*rteval_eff1
-        write(6,'(''total energy ('',i4,'') ='',t24,f12.7,'' +-'',f11.7,
-     &  f9.5)') nfprod-1,e2ave,e2err,e2err*rtevalg_eff1
-        write(6,'(''total energy ='',t24,f12.7,'' +-'',f11.7,
-     &  f9.5)') e3ave,e3err,e3err*rteval_eff1
-      endif
       do 40 ifr=1,nforce
         peave=pecum(ifr)/wgcum(ifr)
         tpbave=tpbcum(ifr)/wgcum(ifr)
@@ -257,26 +274,16 @@ c Done by Omar Valsson 2008-12-01
         fgave=fgave/deltot(ifr)
         fgerr=fgerr/abs(deltot(ifr))
         write(6,'(''force config'',i2,t24,e19.10
-     &  ,'' +-'',e16.8,f9.5,e16.8)') ifr,fgave,fgerr,fgerr*rtevalg_eff1
+     &  ,'' +-'',e16.8,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_eff1
         force(ifr)=fgave
         force_err(ifr)=fgerr
   50  continue
-
-      if(iperiodic.eq.0 .and. ncent.eq.1) then
-        write(6,'(''<r2>_av ='',t24,f12.7,'' +-''
-     &  ,f11.7,f9.5)') r2ave,r2err,r2err*rtevalg_eff1
-        write(6,'(''<ri>_av ='',t24,f12.7,'' +-''
-     &  ,f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
-      endif
 
       call prop_prt_dmc(iblk,1,wgcum,wgcm2)
       call pcm_fin(iblk,wgcum,wgcm2)
       call mmpol_fin(iblk,wgcum,wgcm2)
 
-      if (ipr.gt.-2)
-     &  write(11,'(3i5,f11.5,f7.4,f10.7,
-     &  '' nstep,nblk,nconf,etrial,tau,taueff'')')
-     &  nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)
+      call finwrt_more
 
       if(ngradnts.gt.0 .and. igrdtype.eq.1) call finwrt_grdnts_cart(ffin_grdnts,ferr_grdnts)
       if(ngradnts.gt.0 .and. igrdtype.eq.2) call finwrt_grdnts_zmat(ffin_grdnts,ferr_grdnts)

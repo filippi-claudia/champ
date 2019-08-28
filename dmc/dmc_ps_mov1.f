@@ -239,12 +239,12 @@ c Tau primary -> tratio=one
             dfus2o=dfus2o+dfus**2
    80       xnew(k)=xold(k,i,iw,1)+dx
 
-          if(ipr.ge.1)
-     &    write(6,'(''xold'',2i4,9f8.5)') iw,i,(xold(k,i,iw,1),k=1,3)
-          if(ipr.ge.1)
-     &    write(6,'(''vold'',2i4,9f8.5)') iw,i,(vold(k,i,iw,1),k=1,3)
-          if(ipr.ge.1)
-     &    write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,3)
+          if(ipr.ge.1) then
+            write(6,'(''xold'',2i4,9f8.5)') iw,i,(xold(k,i,iw,1),k=1,3)
+            write(6,'(''vold'',2i4,9f8.5)') iw,i,(vold(k,i,iw,1),k=1,3)
+            write(6,'(''psido'',2i4,9f8.5)') iw,i,psido(iw,1)
+            write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,3)
+          endif
 
 c calculate psi and velocity at new configuration
           call psiedmc(i,iw,xnew,psidn,psijn,0)
