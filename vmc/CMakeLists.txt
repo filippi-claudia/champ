@@ -1,8 +1,8 @@
 if (MPI_Fortran_FOUND)
 
   # Source files
-  file(GLOB VMC_SOURCE LIST_DIRECTORIES false  *.f)
-  file(GLOB VMC90_SOURCE LIST_DIRECTORIES false optgeo_coords_int.f90 optgeo_hessian.f90 optgeo_convcartzmat.f90 regterg.f90 olbfgs.f90)
+  file(GLOB VMC_SOURCE *.f)
+  file(GLOB VMC90_SOURCE optgeo_coords_int.f90 optgeo_hessian.f90 optgeo_convcartzmat.f90 regterg.f90 olbfgs.f90)
   
   if (NOT ENABLE_QMMM)
     message(STATUS "QMMM is NOT enabled!")
@@ -25,7 +25,7 @@ if (MPI_Fortran_FOUND)
   # creates object library shared for all binaries
   # --------------------------------------------
   
-  set(SHARED_SOURCE_1
+  set(SHARED_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pcm_3dgrid.f
     ${CMAKE_CURRENT_SOURCE_DIR}/strech.f
@@ -100,82 +100,45 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_coords_int.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_lib.f
-    ${INPUT_DIR}/p2_defaults.f
-    ${INPUT_DIR}/p2etc.f
-    ${INPUT_DIR}/p2nmcheck.f)
-  
-  add_library(shared_objects_1 OBJECT ${SHARED_SOURCE_1})
-  
-  target_include_directories(shared_objects_1
-    PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/input)
-  
-  target_compile_options(shared_objects_1
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
-  
-  add_dependencies(shared_objects_1 generate-p2)
-  
-  foreach(s ${SHARED_SOURCE_1})
-    list(REMOVE_ITEM VMC_SOURCE ${s})
-  endforeach(s)
-  foreach(s ${SHARED_SOURCE_1})
-    list(REMOVE_ITEM VMC90_SOURCE ${s})
-  endforeach(s)
-  
-  # --------------------------------------------
-  # creates library shared for all binaries except DMC global pop versions
-  # --------------------------------------------
-  
-  set(SHARED_SOURCE_2
     ${CMAKE_CURRENT_SOURCE_DIR}/optjas.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optorb.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optci.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optx_orb_ci.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_ci.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_orb.f)
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_orb.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_handle_wf.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_more.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_ci_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_orb_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_orb_ci_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optci_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optjas_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/error.f
+    ${INPUT_DIR}/p2_defaults.f
+    ${INPUT_DIR}/p2etc.f
+    ${INPUT_DIR}/p2nmcheck.f)
   
-  add_library(shared_objects_2 OBJECT ${SHARED_SOURCE_2})
+  add_library(shared_objects OBJECT ${SHARED_SOURCE})
   
-  target_include_directories(shared_objects_2
+  target_include_directories(shared_objects
     PUBLIC
-    ${CMAKE_SOURCE_DIR}/include)
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/input)
   
-  target_compile_options(shared_objects_2
+  target_compile_options(shared_objects
     PRIVATE
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
   
-  foreach(s ${SHARED_SOURCE_2})
+  add_dependencies(shared_objects generate-p2)
+  
+  foreach(s ${SHARED_SOURCE})
     list(REMOVE_ITEM VMC_SOURCE ${s})
   endforeach(s)
-  
-  # --------------------------------------------
-  # creates object library for vmc.mov1.mpi
-  # --------------------------------------------
-  # creates object library for dmc.mov1
-  # --------------------------------------------
-  
-  set(SHARED_DMC_SOURCE
-     ${CMAKE_CURRENT_SOURCE_DIR}/error.f
-     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_handle_wf.f
-     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_more.f)
-  
-  add_library(dmc_objects OBJECT ${SHARED_DMC_SOURCE})
-  
-  target_include_directories(dmc_objects
-    PUBLIC
-    ${CMAKE_SOURCE_DIR}/include)
-  
-  target_compile_options(dmc_objects
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
-  
-  foreach(s ${SHARED_DMC_SOURCE})
-    list(REMOVE_ITEM VMC_SOURCE ${s})
+  foreach(s ${SHARED_SOURCE})
+    list(REMOVE_ITEM VMC90_SOURCE ${s})
   endforeach(s)
   
   # --------------------------------------------
@@ -189,9 +152,7 @@ if (MPI_Fortran_FOUND)
   # --------------------------------------------
   
   add_executable(vmc.mov1
-    $<TARGET_OBJECTS:shared_objects_1>
-    $<TARGET_OBJECTS:shared_objects_2>
-    $<TARGET_OBJECTS:dmc_objects>
+    $<TARGET_OBJECTS:shared_objects>
     # source that is not already included in the objects
     ${VMC_SOURCE} 
     ${VMC90_SOURCE})
@@ -251,36 +212,5 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
     PROPERTIES GENERATED TRUE
   )
-  
-  # --------------------------------------------
-  # creates object library for dmc.mov1.mpi
-  # --------------------------------------------
-  
-    set(SHARED_DMC_MPI_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/error.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_ci_reduce.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_orb_reduce.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/optx_orb_ci_reduce.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/optci_reduce.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/optjas_reduce.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/optwf_handle_wf.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_more.f)
-  
-    add_library(vmc_dmc_mpi_objects OBJECT ${SHARED_DMC_MPI_SOURCE})
-  
-    target_include_directories(vmc_dmc_mpi_objects
-      PUBLIC
-      ${CMAKE_SOURCE_DIR}/include)
-  
-    target_compile_options(vmc_dmc_mpi_objects
-      PRIVATE
-      ${Fortran_FLAGS}
-      "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
-  
-    foreach(s ${SHARED_DMC_MPI_SOURCE})
-      list(REMOVE_ITEM VMC_SOURCE ${s})
-    endforeach(s)
   
 endif()

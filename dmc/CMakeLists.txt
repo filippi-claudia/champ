@@ -1,5 +1,5 @@
 # Source files
-file(GLOB DMC_SOURCE LIST_DIRECTORIES false  *.f)
+file(GLOB DMC_SOURCE *.f)
 
 include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
 formatFortran("${DMC_SOURCE}") # Set Fixed format property
@@ -8,9 +8,7 @@ formatFortran("${DMC_SOURCE}") # Set Fixed format property
 
 # executable dependencies
 add_executable(dmc.mov1
-  $<TARGET_OBJECTS:shared_objects_1>
-  $<TARGET_OBJECTS:shared_objects_2>
-  $<TARGET_OBJECTS:vmc_dmc_mpi_objects>
+  $<TARGET_OBJECTS:shared_objects>
   # DMC source code
   ${DMC_SOURCE})
 
