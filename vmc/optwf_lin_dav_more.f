@@ -54,18 +54,17 @@
        elseif(lin_jdav.eq.1) then
        write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &       ethr, e, itype, notcnv, idav_iter, ipr, nproc, idtask, .true.)
+     &       ethr, e, itype, notcnv, idav_iter, ipr, .true.)
 
        elseif(lin_jdav.eq.2) then
        write(6,*) "USING DAVIDSON WRAP: DENSE VERSION"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &       ethr, e, itype, notcnv, idav_iter, ipr, nproc, idtask, .false.)
+     &       ethr, e, itype, notcnv, idav_iter, ipr, .false.)
        else
          call fatal_error('LIND: lin_jdav < 3')
       endif
 
       call my_second(2,'david ')
-
       call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)
 
 c idtask.eq.0
@@ -803,16 +802,18 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
+      common /mpiconf/ idtask,nproc
 
       dimension psi(MPARM,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,MSTATES),anorm_loc(MVEC)
 
       i0=1
       if(ioptjas+ioptorb.eq.0) i0=0
       nparm=ndim-i0
-
-      do ivec=1,nvec
-        call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      enddo
+      if (nproc > 1) then  
+        do ivec=1,nvec
+          call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+        enddo
+      endif 
 
       ratio=1.d0
       do ivec=1,nvec

@@ -1,5 +1,5 @@
 SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
-                 eigenvalues, btype, notcnv, dav_iter, ipr, nproc, idtask, free)
+                 eigenvalues, btype, notcnv, dav_iter, ipr, free)
   !----------------------------------------------------------------------------
   !
   ! ... iterative solution of the eigenvalue problem:
@@ -13,7 +13,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   use numeric_kinds, only: dp
   use davidson, only: generalized_eigensolver
   use davidson_free, only: davidson_parameters
-  use array_utils, only: eye
+  use array_utils, only: eye, write_matrix, write_vector
 
   IMPLICIT NONE
 
@@ -37,16 +37,16 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   REAL(dp), dimension(nvec), INTENT(OUT) :: eigenvalues
   REAL(dp), INTENT(IN) :: ethr
 
-  INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, mvec, ipr, nproc, idtask
+  INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, mvec, ipr
   INTEGER, dimension(nvec), INTENT(IN) :: btype
   INTEGER, INTENT(OUT) :: dav_iter, notcnv
   LOGICAL, INTENT(IN)  :: free 
   ! local variables
   integer :: i, ierr
+  integer :: nproc, idtask 
   real(dp), dimension(nparm, nparm) :: mtx, stx
   real(dp), dimension(nparmx, nparmx) :: psi
-  real(dp), dimension(nparm, nvec) :: ritz_vectors
-  real(dp), dimension(:, :), allocatable :: hpsi, spsi
+  real(dp), dimension(:, :), allocatable :: hpsi, spsi, ritz_vectors
   
   ! Function to compute the target matrix on the fly
   
@@ -80,19 +80,25 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
        end function fun_stx_gemv
 
     end interface
-
+!
+  call mpi_comm_rank(MPI_COMM_WORLD,idtask,ierr)
+  call mpi_comm_size(MPI_COMM_WORLD,nproc,ierr)
+!
   notcnv=0 !Not used in davidson_wrap
     
   ! Allocate variables
   IF ( nvec > nvecx / 2 ) CALL fatal_error( 'regter: nvecx is too small')
   is_free_or_dens: IF (free) then   
+      call generalized_eigensolver(fun_mtx_gemv, eigenvalues, ritz_vectors, nparm, &
+             nparmx, nvec, mvec, "DPR", 100, ethr, dav_iter, nvecx, fun_stx_gemv, nproc, idtask)
 !
-      call generalized_eigensolver(fun_mtx_gemv, eigenvalues, eigenvectors, nparm, &
-             nparmx,  nvec, mvec, "DPR", 100, ethr, dav_iter, nvecx, fun_stx_gemv, idtask)
-!
-      do i=1,size(eigenvalues)
-        print *, "eigenvalue ", i, " : ", eigenvalues(i)
-      end do
+      if (idtask == 0) then
+        do i=1,size(eigenvalues)
+         print *, "eigenvalue ", i, " : ", eigenvalues(i)
+        end do
+      endif
+! 
+      eigenvectors(1:nparm,1:nvec) = ritz_vectors
 !
     ELSEIF (.not.free) then 
 !
