@@ -32,9 +32,9 @@ c Mode gets reset in metrop_mov1... but loses mpi info
 c Open the standard output and the log file only on the master
       if(wid) then
         open(45,file='output.log',status='unknown')
-      else
-c     endif
-c     if(idtask.ne.1) then
+!C      else
+      endif
+      if(idtask.gt.1) then
         close(6)
         open(6,file='/dev/null')
         open(45,file='/dev/null')

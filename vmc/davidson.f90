@@ -11,7 +11,7 @@ module davidson_free
   use numeric_kinds, only: dp
   use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
        lapack_qr, lapack_solver
-  use array_utils, only: concatenate, generate_preconditioner, norm, write_matrix, write_vector
+  use array_utils, only: concatenate, generate_preconditioner, norm, write_matrix, write_vector, eye
   implicit none
 
   type davidson_parameters
@@ -115,6 +115,7 @@ contains
     
     ! ! Working arrays
     real(dp), dimension(:), allocatable :: eigenvalues_sub
+    real(dp), dimension(:,:), allocatable :: lambda       ! eigenvalues_sub in a diagonal matrix 
     real(dp), dimension(:, :), allocatable :: correction, eigenvectors_sub, mtx_proj, stx_proj, V
     real(dp), dimension(:, :), allocatable :: mtxV, stxV 
     real(dp), dimension(nparm, 1) :: xs, gs
@@ -172,7 +173,7 @@ contains
       if( idtask == 0) write(6,'(''DAV: Davidson iteration: '', I10)') i
 
       !! Array deallocation/allocation!
-      call check_deallocate_matrices(mtx_proj, stx_proj, mtxV, stxV, eigenvectors_sub, ritz_vectors)
+      call check_deallocate_matrices(mtx_proj, stx_proj, mtxV, stxV, lambda, eigenvectors_sub, ritz_vectors)
       if (allocated(eigenvalues_sub)) then
           deallocate(eigenvalues_sub)
       end if
@@ -184,8 +185,9 @@ contains
       mtx_proj = lapack_matmul('T', 'N', V, mtxV)
       stx_proj = lapack_matmul('T', 'N', V, stxV)
 
-      allocate(eigenvalues_sub(size(mtx_proj, 1)))
-      allocate(eigenvectors_sub(size(mtx_proj, 1), size(mtx_proj, 2)))
+      allocate(eigenvalues_sub(size(V, 2)))
+      allocate(lambda(size(V,2), size(V,2)))
+      allocate(eigenvectors_sub(size(V,2), size(V,2)))
 
       !! IF IDTASK=0
       if (idtask.eq.0) then
@@ -193,33 +195,41 @@ contains
         ! 5. compute the eigenvalues and their corresponding ritz_vectors
         ! for the projected matrix using lapack
         
-        if( idtask == 0) write(6,'(''DAV: enter lapack_generalized_eigensolver'')') 
-        call lapack_generalized_eigensolver(mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
-        if( idtask == 0) write(6,'(''DAV: exit lapack_generalized_eigensolver'')') 
+        write(6,'(''DAV: enter lapack_generalized_eigensolver'')') 
+        call lapack_generalized_eigensolver( mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
+        write(6,'(''DAV: exit lapack_generalized_eigensolver'')') 
+        write(6,'(''DAV: eigv'',1000f12.5)') (eigenvalues_sub(j),j=1,lowest)
+    
+        ! 6. Construction of lambda matrix (a squared one with eigenvalues_sub in the diagonal)
+        lambda= eye( size( V, 2), size( V, 2))
+        do j= 1, size(V,2) 
+          lambda( j, j)= eigenvalues_sub( j)
+        enddo
  
+        ! 7. Residue calculation  
+        rs = lapack_matmul('N', 'N', stxV, eigenvectors_sub)
+        guess =  lapack_matmul('N', 'N', rs, lambda)  
+        deallocate(rs)
+        rs =  lapack_matmul('N', 'N', mtxV, eigenvectors_sub) - guess 
+        do j=1,lowest
+          errors(j) = norm(reshape(rs,(/parameters%nparm/)))
+        end do
+
       !! ENDIF IDTASK
       endif
 
       if (nproc > 1) then
+        call MPI_BCAST(errors,lowest,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         call MPI_BCAST(eigenvalues_sub, size(mtx_proj,1), MPI_REAL8, 0, MPI_COMM_WORLD,ier)
         call MPI_BCAST(eigenvectors_sub, size(mtx_proj,1)*size(mtx_proj,2), MPI_REAL8, 0, MPI_COMM_WORLD,ier)
-      endif 
+      endif       
 
-      ! 6. Check for convergence
       ritz_vectors = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :lowest))
 
-      do j=1,lowest
-        guess = eigenvalues_sub(j) * fun_stx_gemv(parameters, reshape(ritz_vectors(:, j),(/parameters%nparm,1/) ) )
-        rs = fun_mtx_gemv(parameters, reshape(ritz_vectors(:, j), (/parameters%nparm,1/)))  - guess
-        errors(j) = norm(reshape(rs,(/parameters%nparm/)))
-      end do
-     if (idtask ==0)  write(6,'(''DAV: eigv'',1000f12.5)') (eigenvalues_sub(j),j=1,lowest)
-
-      call MPI_BCAST(errors,lowest,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-
+      ! 8. Check for convergence
       if (all(errors < tolerance)) then
         iters = i
-        if( idtask == 0) write( 6, '(''DAV: roots are converged'')') 
+        write( 6, '(''DAV: roots are converged'')') 
         eigenvalues = eigenvalues_sub(:lowest)
         exit outer_loop
       end if
@@ -305,9 +315,6 @@ contains
     integer :: ii, j
     integer :: m
     
-    ! create all the ritz vectors
-!    vectors = lapack_matmul('N','N', V, eigenvectors)
-
     ! calculate the correction vectors
     m= size( mtxV, 1) 
 
@@ -325,7 +332,6 @@ contains
        end do
     end do
 
-!    deallocate(vectors)
   end function compute_DPR_free
 
   function extract_diagonal_free(fun_mtx_gemv, parameters, dim) result(out)
@@ -368,18 +374,20 @@ contains
     
   end function extract_diagonal_free
  
-  subroutine check_deallocate_matrices(mtx_proj, stx_proj, mtxV, stxV, eigenvectors_sub, ritz_vectors)
+  subroutine check_deallocate_matrices(mtx_proj, stx_proj, mtxV, stxV, lambda, eigenvectors_sub, ritz_vectors)
     !> deallocate a matrix if allocated
     real(dp), dimension(:, :), allocatable, intent(inout) ::  mtx_proj
     real(dp), dimension(:, :), allocatable, intent(inout) ::  stx_proj
     real(dp), dimension(:, :), allocatable, intent(inout) ::  mtxV
     real(dp), dimension(:, :), allocatable, intent(inout) ::  stxV
+    real(dp), dimension(:, :), allocatable, intent(inout) ::  lambda 
     real(dp), dimension(:, :), allocatable, intent(inout) ::  eigenvectors_sub 
     real(dp), dimension(:, :), allocatable, intent(inout) ::  ritz_vectors 
       call check_deallocate_matrix(mtx_proj)
       call check_deallocate_matrix(stx_proj)
       call check_deallocate_matrix(mtxV)
       call check_deallocate_matrix(stxV)
+      call check_deallocate_matrix(lambda)
       call check_deallocate_matrix(eigenvectors_sub)
       call check_deallocate_matrix(ritz_vectors)
     
@@ -463,7 +471,7 @@ contains
     real(dp), dimension(:, :), intent(in) :: mtx
     real(dp), dimension(:, :), intent(in), optional :: stx
     real(dp), dimension(lowest), intent(out) :: eigenvalues
-    real(dp), dimension(:, :), intent(out) :: ritz_vectors
+    real(dp), dimension(:, :), allocatable, intent(out) :: ritz_vectors
     integer, intent(in) :: max_iters
     integer, intent(in), optional :: max_dim_sub
     real(dp), intent(in) :: tolerance
