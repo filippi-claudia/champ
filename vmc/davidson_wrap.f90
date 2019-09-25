@@ -90,7 +90,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   IF ( nvec > nvecx / 2 ) CALL fatal_error( 'regter: nvecx is too small')
   is_free_or_dens: IF (free) then   
       call generalized_eigensolver(fun_mtx_gemv, eigenvalues, ritz_vectors, nparm, &
-             nparmx, nvec, mvec, "DPR", 100, ethr, dav_iter, nvecx, fun_stx_gemv, nproc, idtask)
+             nparmx, nvec, nvecx, "DPR", 100, ethr, dav_iter, fun_stx_gemv, nproc, idtask)
 !
       if (idtask == 0) then
         do i=1,size(eigenvalues)
@@ -150,8 +150,8 @@ function fun_mtx_gemv(parameters,  input_vect) result(output_vect)
   real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
   real(dp), dimension(:, :), allocatable :: psi, hpsi
   
-  allocate(psi(parameters%nparm_max, parameters%mvec))
-  allocate(hpsi(parameters%nparm_max, parameters%mvec))
+  allocate(psi(parameters%nparm_max, parameters%max_size_basis))
+  allocate(hpsi(parameters%nparm_max, parameters%max_size_basis))
   psi = 0.0_dp
   psi(1:size(input_vect,1),1:size(input_vect,2)) = input_vect
   
@@ -175,8 +175,8 @@ function fun_stx_gemv(parameters, input_vect) result(output_vect)
   real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
   real(dp), dimension(:, :), allocatable :: psi, spsi
 
-  allocate(psi(parameters%nparm_max, parameters%mvec))
-  allocate(spsi(parameters%nparm_max, parameters%mvec))
+  allocate(psi(parameters%nparm_max, parameters%max_size_basis))
+  allocate(spsi(parameters%nparm_max, parameters%max_size_basis))
   psi = 0.0_dp
   psi(1:size(input_vect,1),1:size(input_vect,2)) = input_vect
   

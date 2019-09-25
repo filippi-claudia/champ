@@ -6,6 +6,8 @@
 !> vector is computed.
 !> Computed pairs of eigenvalues/eigenvectors are deflated using algorithm
 !> described at: https://doi.org/10.1023/A:101919970
+!>
+!> Revised by P. Lopez-Tarifa@NLeSC(2019)
 module davidson_free
 
   use numeric_kinds, only: dp
@@ -18,8 +20,8 @@ module davidson_free
      INTEGER :: nparm
      INTEGER :: nparm_max
      INTEGER :: lowest
-     INTEGER :: max_dim_sub
-     INTEGER :: mvec
+     INTEGER :: nvecx 
+     INTEGER :: max_size_basis
   end type davidson_parameters
 
   !> \private
@@ -31,7 +33,7 @@ module davidson_free
 contains
 
   subroutine generalized_eigensolver_free(fun_mtx_gemv, eigenvalues, ritz_vectors, nparm, nparm_max, &
-       lowest, mvec, method, max_iters, tolerance, iters, max_dim_sub, fun_stx_gemv, nproc, idtask)
+       lowest, nvecx, method, max_iters, tolerance, iters, fun_stx_gemv, nproc, idtask)
     !> \brief use a pair of functions fun_mtx and fun_stx to compute on the fly the matrices to solve
     !>  the general eigenvalue problem
     !> The current implementation uses a general  davidson algorithm, meaning
@@ -62,11 +64,10 @@ contains
     include 'mpif.h'
 
     ! input/output variable
-    integer, intent(in) :: nparm, nparm_max, mvec, lowest, nproc, idtask
+    integer, intent(in) :: nparm, nparm_max, nvecx, lowest, nproc, idtask
     real(dp), dimension(lowest), intent(out) :: eigenvalues
     real(dp), dimension(:, :), allocatable, intent(out) :: ritz_vectors
     integer, intent(in) :: max_iters
-    integer, intent(in), optional :: max_dim_sub
     real(dp), intent(in) :: tolerance
     character(len=*), intent(in) :: method
     integer, intent(out) :: iters
@@ -105,7 +106,7 @@ contains
     end interface
 !    
     !local variables
-    integer :: dim_sub, max_dim, i, j, ier
+    integer :: dim_sub, max_size_basis, i, j, ier
 !    
     ! ! Basis of subspace of approximants
     real(dp), dimension(:), allocatable :: diag_mtx, diag_stx
@@ -126,15 +127,11 @@ contains
     ! Iteration subpsace dimension
     dim_sub = lowest  * 2
 
-    ! maximum dimension of the basis for the subspace
-    if (present(max_dim_sub)) then
-       max_dim  = max_dim_sub
-    else
-       max_dim = lowest * 10
-    endif
-    
+    ! calculation of maximum dimension of the basis subspace
+    max_size_basis = compute_maximum_basis_size(lowest, nvecx) 
+
     ! dimension of the matrix
-    parameters = davidson_parameters(nparm, nparm_max, lowest, max_dim_sub, mvec)
+    parameters = davidson_parameters(nparm, nparm_max, lowest, nvecx, max_size_basis) 
 
     ! 1. Variables initialization
     ! extract the diagonals of the matrices
@@ -235,7 +232,7 @@ contains
       end if
 
      ! 7. Add the correction vectors to the current basis
-     if (size(V, 2) <= max_dim) then
+     if (size(V, 2) <= nvecx) then
 
        ! append correction to the current basis
        call check_deallocate_matrix(correction)
@@ -285,6 +282,22 @@ contains
     
   end subroutine generalized_eigensolver_free
 !  
+!
+  function  compute_maximum_basis_size( lowest, max_dim_sub) result(max_size)
+    !> compute the maximum basis size of the subspace V.  
+    integer, intent(in) :: lowest
+    integer, intent(in) :: max_dim_sub
+    integer :: max_size, i
+
+!   Local variables
+
+    max_size = lowest
+    do while( max_size < max_dim_sub)
+      max_size= max_size*2
+    enddo
+    write(6,*) "Pablo says max_size" , max_size
+
+  end function compute_maximum_basis_size
 !
   function compute_DPR_free(mtxV, stxV, parameters, lowest, eigenvalues, eigenvectors, &
     diag_mtx, diag_stx) result(correction)
