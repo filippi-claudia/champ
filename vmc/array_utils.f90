@@ -201,6 +201,9 @@ contains
     integer :: i
 
     open(unit=314, file=path_file, status="REPLACE")
+! Pablo 
+    write(6,*) "Pablo is going to write ", path_file , "of size:", size(vector) 
+! End Pablo
     do i=1,size(vector)
        write(314, *) vector(i)
     end do

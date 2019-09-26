@@ -104,23 +104,23 @@ contains
        end function fun_stx_gemv
 
     end interface
-
-    ! Local variables
+!    
+    !local variables
     integer :: dim_sub, max_size_basis, i, j, ier
-
-    ! Basis of subspace of approximants
+!    
+    ! ! Basis of subspace of approximants
     real(dp), dimension(:), allocatable :: diag_mtx, diag_stx
     real(dp), dimension(:,:), allocatable :: guess, rs 
     real(dp), dimension(lowest):: errors
+    ! generalize problem
     
-    ! Working arrays
+    ! ! Working arrays
     real(dp), dimension(:), allocatable :: eigenvalues_sub
     real(dp), dimension(:,:), allocatable :: lambda       ! eigenvalues_sub in a diagonal matrix 
     real(dp), dimension(:, :), allocatable :: correction, eigenvectors_sub, mtx_proj, stx_proj, V
     real(dp), dimension(:, :), allocatable :: mtxV, stxV 
     real(dp), dimension(nparm, 1) :: xs, gs
     real(dp), dimension(:), allocatable :: d 
-
     ! Arrays dimension
     type(davidson_parameters) :: parameters
     
@@ -129,18 +129,14 @@ contains
 
     ! calculation of maximum dimension of the basis subspace
     max_size_basis = compute_maximum_basis_size(lowest, nvecx) 
-    if( idtask == 0) then 
-      write(6,'(''DAV: Max, size of subspace V, max_size_basis, and, nparm: '', I10, I10)') max_size_basis, nparm
-      if (max_size_basis > nparm) call die('DAV max_size_basis > nparm, increase nparm or decrese lin_nvecx') 
-    endif
 
-    ! Parameters definition 
+    ! dimension of the matrix
     parameters = davidson_parameters(nparm, nparm_max, lowest, nvecx, max_size_basis) 
 
     ! 1. Variables initialization
     ! extract the diagonals of the matrices
 
-    if( idtask ==0) write(6,'(''DAV: Compute diagonals of S and H'')')
+    write(6,'(''DAV: Compute diagonals of S and H'')')
 
     !! Diagonal of the arrays
     allocate(diag_mtx(parameters%nparm))
@@ -299,6 +295,7 @@ contains
     do while( max_size < max_dim_sub)
       max_size= max_size*2
     enddo
+    write(6,*) "Pablo says max_size" , max_size
 
   end function compute_maximum_basis_size
 !
@@ -418,19 +415,6 @@ contains
     end if
     
   end subroutine check_deallocate_matrix  
-!
-  subroutine die(msg)
-  !> Subroutine that dies the calculation raising an errror message
-  
-  character msg*(*)
-  integer ierr
-
-  include 'mpif.h'
-
-  write(6,'(''Fatal error: '',a)') msg
-  call mpi_abort(MPI_COMM_WORLD,0,ierr)
-
-  end
 !
 end module davidson_free
 
