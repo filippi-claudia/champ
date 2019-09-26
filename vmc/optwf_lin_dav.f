@@ -55,7 +55,9 @@
 
       call p2gtid('optwf:micro_iter_sr',micro_iter_sr,1,1)
 
-      if(nvecx.gt.MVEC) call fatal_error('SR_OPTWF: nvecx > MVEC')
+      call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
+      if((lin_jdav.eq.0).and.(nvecx.gt.MVEC))
+     $         call fatal_error('SR_OPTWF: nvecx > MVEC')
       write(6,'(/,''LIN_D adiag: '',f10.5)') alin_adiag
       write(6,'(''LIN_D ethr:  '',f10.5)') alin_eps
       write(6,'(''LIN_D nvec:  '',i4)') nvec
