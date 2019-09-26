@@ -217,7 +217,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       common /mpiconf/ idtask,nproc
 
-      dimension psi(MPARM,*),hpsi(MPARM,*),aux(MCONF),hpsiloc(MPARM,MVEC)
+      dimension psi(MPARM,*),hpsi(MPARM,*),aux(MCONF),hpsiloc(MPARM,nvec)
 
 
       i0=1
@@ -310,7 +310,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       common /mpiconf/ idtask,nproc
 
-      dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF)
+      dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,nvec),aux(MCONF)
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
