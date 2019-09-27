@@ -150,8 +150,8 @@ function fun_mtx_gemv(parameters,  input_vect) result(output_vect)
   real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
   real(dp), dimension(:, :), allocatable :: psi, hpsi
   
-  allocate(psi(parameters%nparm_max, parameters%max_size_basis))
-  allocate(hpsi(parameters%nparm_max, parameters%max_size_basis))
+  allocate(psi(parameters%nparm_max, parameters%nvecx))
+  allocate(hpsi(parameters%nparm_max, parameters%nvecx))
   psi = 0.0_dp
   psi(1:size(input_vect,1),1:size(input_vect,2)) = input_vect
   
@@ -175,8 +175,8 @@ function fun_stx_gemv(parameters, input_vect) result(output_vect)
   real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
   real(dp), dimension(:, :), allocatable :: psi, spsi
 
-  allocate(psi(parameters%nparm_max, parameters%max_size_basis))
-  allocate(spsi(parameters%nparm_max, parameters%max_size_basis))
+  allocate(psi(parameters%nparm_max, parameters%nvecx))
+  allocate(spsi(parameters%nparm_max, parameters%nvecx))
   psi = 0.0_dp
   psi(1:size(input_vect,1),1:size(input_vect,2)) = input_vect
   
