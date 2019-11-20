@@ -22,6 +22,7 @@ module davidson_free
      INTEGER :: nparm_max
      INTEGER :: lowest
      INTEGER :: nvecx 
+     INTEGER :: basis_size 
   end type davidson_parameters
 
   !> \private
@@ -132,7 +133,7 @@ contains
     endif
 
     ! dimension of the matrix
-    parameters = davidson_parameters(nparm, nparm_max, lowest, nvecx)
+    parameters = davidson_parameters(nparm, nparm_max, lowest, nvecx, dim_sub) 
 
     ! 1. Variables initialization
     ! extract the diagonals of the matrices
@@ -161,7 +162,7 @@ contains
     ! 2.  Select the initial ortogonal subspace based on lowest elements
     !     of the diagonal of the matrix
 
-    V = generate_preconditioner( d(1:dim_sub), dim_sub, nparm) ! Initial orthonormal basis
+    V= generate_preconditioner( d( 1: dim_sub), dim_sub, nparm) ! Initial orthonormal basis
     
     if( idtask== 0) write(6,'(''DAV: Setup subspace problem'')')
 
@@ -176,10 +177,10 @@ contains
       if( allocated( eigenvalues_sub)) then
           deallocate( eigenvalues_sub)
       end if
-      allocate( mtxV( size( V,1),size( V, 2)), stxV( size( V, 1), size( V, 2)))
-      allocate( eigenvalues_sub( size( V, 2)))
-      allocate( lambda( size( V, 2), size( V, 2)))
-      allocate( eigenvectors_sub( size( V, 2), size( V, 2)))
+      allocate( mtxV( parameters%nparm, parameters%basis_size), stxV(parameters%nparm, parameters%basis_size)) 
+      allocate( eigenvalues_sub( parameters%basis_size)) 
+      allocate( lambda( parameters%basis_size, parameters%basis_size)) 
+      allocate( eigenvectors_sub( parameters%basis_size, parameters%basis_size)) 
 
       ! 4. Projection of H and S matrices
 
@@ -187,8 +188,8 @@ contains
       stxV= fun_stx_gemv( parameters, V)
 
       if (nproc > 1) then
-        call MPI_BCAST( mtxV, size( V, 1)* size( V, 2), MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-        call MPI_BCAST( stxV, size( V, 1)* size( V, 2), MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+        call MPI_BCAST( mtxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+        call MPI_BCAST( stxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
       endif
 
       mtx_proj= lapack_matmul( 'T', 'N', V, mtxV)
@@ -207,8 +208,8 @@ contains
     
         ! 6. Construction of lambda matrix (a squared one with eigenvalues_sub in the diagonal)
 
-        lambda= eye( size( V, 2), size( V, 2))
-        do j= 1, size(V,2) 
+        lambda= eye( parameters%basis_size, parameters%basis_size) 
+        do j= 1, parameters%basis_size 
           lambda( j, j)= eigenvalues_sub( j)
         enddo
  
@@ -227,11 +228,12 @@ contains
 
       if (nproc > 1) then
         call MPI_BCAST(errors,lowest,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-        call MPI_BCAST(eigenvalues_sub, size(mtx_proj,1), MPI_REAL8, 0, MPI_COMM_WORLD,ier)
-        call MPI_BCAST(eigenvectors_sub, size(mtx_proj,1)*size(mtx_proj,2), MPI_REAL8, 0, MPI_COMM_WORLD,ier)
+        call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD,ier)
+        call MPI_BCAST(eigenvectors_sub, parameters%basis_size*parameters%basis_size, & 
+                      MPI_REAL8, 0, MPI_COMM_WORLD,ier)
       endif       
 
-      ritz_vectors = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :lowest))
+      ritz_vectors = lapack_matmul('N', 'N', V, eigenvectors_sub)
 
       ! 8. Check for convergence
 
@@ -244,30 +246,39 @@ contains
 
       ! 7. Add the correction vectors to the current basis
 
-      if(( size(V, 2) <= nvecx).and.( 2*size(V, 2)< nparm)) then
+      if(( parameters%basis_size <= nvecx).and.( 2*parameters%basis_size< nparm)) then
 
         ! append correction to the current basis
         call check_deallocate_matrix(correction)
         allocate(correction(size(ritz_vectors, 1), size(V, 2)))
 
-        correction = compute_DPR_free(mtxV, stxV, parameters, lowest, eigenvalues_sub, &
-                                      eigenvectors_sub, diag_mtx, diag_stx)
+        select case( method)
+        case( "DPR")
+          if( idtask == 1)  write(6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
+          correction= compute_DPR_free( mtxV, stxV, parameters, eigenvalues_sub,             &
+                                        eigenvectors_sub, diag_mtx, diag_stx)
+        case( "GJD")
+          if( idtask == 1)  write(6,'(''DAV: Diagonal-Preconditioned-Residue (GJD)'')')
+          correction= compute_GJD_free( parameters, ritz_vectors, rs, eigenvectors_sub,      &
+                                        eigenvalues_sub)
+        end select
+
         ! 8. Increase Basis size
 
-        call concatenate(V, correction)
+        call concatenate( V, correction)
            
         ! IF IDTASK=0
-        if(idtask.eq.0) then
+        if( idtask .eq. 0) then
 
           ! 9. Orthogonalize basis
 
-          call lapack_qr(V)
+          call lapack_qr( V)
 
         ! ENDIF IDTASK
         endif
 
         if (nproc > 1) then
-          call MPI_BCAST(V, size(V,1)*size(V,2), MPI_REAL8, 0, MPI_COMM_WORLD,ier)
+          call MPI_BCAST( V, size( V, 1)* size( V, 2), MPI_REAL8, 0, MPI_COMM_WORLD, ier)
         endif 
 
       else
@@ -276,6 +287,9 @@ contains
         V = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :dim_sub))
 
       end if
+    
+    ! Update basis size
+      parameters%basis_size = size( V, 2) 
 
     end do outer_loop
 
@@ -310,9 +324,9 @@ contains
   call mpi_abort(MPI_COMM_WORLD,0,ierr)
 
   end subroutine
-!
-  function compute_DPR_free(mtxV, stxV, parameters, lowest, eigenvalues, eigenvectors, &
-    diag_mtx, diag_stx) result(correction)
+
+  function compute_DPR_free(mtxV, stxV, parameters, eigenvalues, eigenvectors,    &
+                            diag_mtx, diag_stx) result(correction)
 
     !> compute the correction vector using the DPR method for a matrix free diagonalization
     !> See correction_methods submodule for the implementations
@@ -325,7 +339,6 @@ contains
     !
     use array_utils, only: eye
     !
-    integer, intent(in) :: lowest
     
     real(dp), dimension(:), intent(in) :: eigenvalues
     real(dp), dimension(:, :), intent(in) ::  eigenvectors, mtxV, stxV
@@ -349,15 +362,132 @@ contains
     diag = 0.0_dp
 
     do j = 1, size( mtxV, 2)
-     diag = eye(m , m, eigenvalues( j))
-     correction(:,j) = proj_mtx(:,j)  - lapack_matrix_vector('N', diag, proj_stx(:,j))
- 
-       do ii=1,size(correction,1)
-            correction(ii, j) = correction(ii, j) / ( eigenvalues(j)  * diag_stx(ii)   - diag_mtx(ii))
-       end do
+     diag= eye( m , m, eigenvalues( j))
+     correction( :, j)= proj_mtx( :, j)- lapack_matrix_vector( 'N', diag, proj_stx( :, j))
+
+     do ii= 1, size( correction, 1)
+       correction( ii, j)= correction( ii, j)/( eigenvalues( j)* diag_stx( ii)- diag_mtx( ii))
+     end do
+
     end do
 
   end function compute_DPR_free
+
+  function compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors, & 
+             eigenvalues) result(correction)
+
+    !> Compute the correction vector using the GJD method for a matrix free
+    !> diagonalization. We follow the notation of:
+    !> I. Sabzevari, A. Mahajan and S. Sharma,  arXiv:1908.04423 (2019)
+    !>
+    !> \param[in] mtxV: h_psi_lin_d( V) 
+    !> \param[in] stxV: s_psi_lin_d( V) 
+    !> \param[in] ritz_vectors: ritz_vectors.
+    !> \param[in] residues: residue vectors.
+    !> \param[in] parameter: davidson_parameters type.
+    !> \param[in] eigenvectors. 
+    !> \param[in] eigenvalues. 
+    !> \return correction matrix
+
+    use array_utils, only: eye
+
+    type( davidson_parameters)               :: parameters
+    real( dp), dimension( :, :), intent( in) :: ritz_vectors
+    real( dp), dimension( :, :), intent( in) :: residues
+    real( dp), dimension( :, :), intent( in) :: eigenvectors
+    real( dp), dimension( :),    intent( in) :: eigenvalues 
+!
+! local variables
+!
+    real( dp), dimension( parameters%nparm, parameters%basis_size) :: correction
+    integer :: k, m
+    logical :: gev
+    real( dp), dimension( :, :), allocatable ::  F
+    real( dp), dimension( parameters%nparm, 1) :: brr
+
+    do k= 1, parameters%basis_size 
+
+      F= fun_F_matrix( ritz_vectors, parameters, k, eigenvalues( k))  
+      brr( :, 1) = -residues(:,k)
+      call lapack_solver( F, brr)
+      correction( :, k)= brr( :, 1)
+
+    end do
+
+! Deallocate
+     deallocate( F)
+
+  end function compute_GJD_free
+
+  function fun_F_matrix( ritz_vectors, parameters, eigen_index, eigenvalue) &
+           result(F_matrix)
+    !> \brief Function that computes the F matrix: 
+    !> F= ubut*( A- theta* B)* uubt
+    !> in a pseudo-free way for a given engenvalue. 
+    !> 
+    !> ritz_vectors( in) :: ritz_vectors.  
+    !> parameters( in)   :: array_sizes  
+    !> eigen_index( in)  :: index of the passing eingenvalue.
+    !> eigenvalue( in)   :: eigen_index eigenvalue.  
+
+    use array_utils, only: eye
+
+    real( dp), dimension( :, :), intent( in) :: ritz_vectors 
+    type( davidson_parameters) :: parameters
+    integer   :: eigen_index 
+    real( dp) :: eigenvalue 
+
+    interface
+
+     function fun_mtx_gemv(parameters, input_vect) result(output_vect)
+       !> \brief Function to compute the action of the hamiltonian on the fly
+       !> \param[in] dimension of the arrays to compute the action of the
+       !             hamiltonian
+       !> \param[in] input_vec Array to project
+       !> \return Projected matrix
+       use numeric_kinds, only: dp
+       import                                   :: davidson_parameters
+       type( davidson_parameters)               :: parameters
+       real( dp), dimension( :, :), intent( in) :: input_vect
+       real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
+     end function fun_mtx_gemv
+
+     function fun_stx_gemv(parameters, input_vect) result(output_vect)
+       !> \brief Fucntion to compute the optional stx matrix on the fly
+       !> \param[in] dimension of the arrays to compute the action of the
+       !             hamiltonian
+       !> \param[in] input_vec Array to project
+       !> \return Projected matrix
+       use numeric_kinds, only: dp
+       import                                 :: davidson_parameters
+       type(davidson_parameters)              :: parameters
+       real (dp), dimension(:,:), intent(in)  :: input_vect
+       real (dp), dimension(size(input_vect,1), size(input_vect,2)) :: output_vect
+     end function fun_stx_gemv
+
+    end interface
+ 
+    real( dp), dimension( parameters%nparm, parameters%nparm) :: F_matrix, lambda
+    real( dp), dimension( parameters%nparm, 1) :: ritz_tmp
+    real( dp), dimension( :, :), allocatable :: ys 
+    real( dp), dimension( parameters%nparm, parameters%nparm) :: ubut, uubt
+
+    ritz_tmp( :, 1)= ritz_vectors( :, eigen_index)
+
+    lambda= eye( parameters%nparm, parameters%nparm, eigenvalue)
+
+    ubut= eye( parameters%nparm, parameters%nparm)- &
+          lapack_matmul( 'N', 'T', fun_stx_gemv( parameters, ritz_tmp), ritz_tmp)
+
+    uubt= eye( parameters%nparm, parameters%nparm)- &
+          lapack_matmul( 'N', 'T', ritz_tmp, fun_stx_gemv( parameters, ritz_tmp)) 
+
+    ys = lapack_matmul( 'N', 'N', lambda, fun_stx_gemv( parameters, uubt)) 
+
+    F_matrix= lapack_matmul( 'N', 'N', ubut, fun_mtx_gemv( parameters, uubt)) - &
+              lapack_matmul( 'N', 'N', ubut, ys) 
+
+  end function fun_F_matrix
 
   function extract_diagonal_free(fun_mtx_gemv, parameters, dim) result(out)
     !> \brief extract the diagonal of the matrix
@@ -399,7 +529,6 @@ contains
     
   end function extract_diagonal_free
  
-!
 end module davidson_free
 
 module davidson_dense
@@ -795,7 +924,7 @@ contains
     integer :: k, m
     logical :: gev
     real( dp), dimension( size( mtx, 1), 1) :: ritz_tmp
-    real( dp), dimension( size( mtx, 1), size( mtx, 2)) :: arr, xs, ys
+    real( dp), dimension( size( mtx, 1), size( mtx, 2)) :: F, ubut, uubt, ys
     real( dp), dimension( size( mtx, 1), 1) :: brr
 
     ! Diagonal matrix
@@ -805,17 +934,21 @@ contains
 
     do k= 1, basis_size 
        ritz_tmp( :, 1)= ritz_vectors( :, k)
-       xs= eye( m, m)- lapack_matmul( 'N', 'T', ritz_tmp, ritz_tmp)
+
        if( gev) then
          ys= mtx- eigenvalues( k)* stx
        else
          ys= substract_from_diagonal( mtx, eigenvalues( k))
        end if
 
-       arr= lapack_matmul( 'N', 'N', xs, lapack_matmul( 'N', 'N', ys, xs))
+! Following I. Sabzevari, A. Mahajan and S. Sharma, arXiv:1908.04423 (2019)
+       ubut= eye( m, m)- lapack_matmul( 'N', 'T', lapack_matmul( 'N', 'N', stx, ritz_tmp), ritz_tmp)
+       uubt= eye( m, m)- lapack_matmul( 'N', 'T', ritz_tmp, lapack_matmul( 'N', 'N', stx, ritz_tmp))
+
+       F= lapack_matmul( 'N', 'N', ubut, lapack_matmul( 'N', 'N', ys, uubt))
        brr( :, 1) = -residues(:,k)
-       
-       call lapack_solver( arr, brr)
+
+       call lapack_solver( F, brr)
        correction( :, k)= brr( :, 1)
     end do
     
