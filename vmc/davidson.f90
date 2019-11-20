@@ -374,14 +374,12 @@ contains
   end function compute_DPR_free
 
   function compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors, & 
-             eigenvalues) result(correction)
+             eigenvalues) result( correction)
 
     !> Compute the correction vector using the GJD method for a matrix free
     !> diagonalization. We follow the notation of:
     !> I. Sabzevari, A. Mahajan and S. Sharma,  arXiv:1908.04423 (2019)
     !>
-    !> \param[in] mtxV: h_psi_lin_d( V) 
-    !> \param[in] stxV: s_psi_lin_d( V) 
     !> \param[in] ritz_vectors: ritz_vectors.
     !> \param[in] residues: residue vectors.
     !> \param[in] parameter: davidson_parameters type.
@@ -396,13 +394,13 @@ contains
     real( dp), dimension( :, :), intent( in) :: residues
     real( dp), dimension( :, :), intent( in) :: eigenvectors
     real( dp), dimension( :),    intent( in) :: eigenvalues 
-!
-! local variables
-!
+    !
+    ! local variables
+    !
     real( dp), dimension( parameters%nparm, parameters%basis_size) :: correction
     integer :: k, m
     logical :: gev
-    real( dp), dimension( :, :), allocatable ::  F
+    real( dp), dimension( :, :), allocatable   ::  F
     real( dp), dimension( parameters%nparm, 1) :: brr
 
     do k= 1, parameters%basis_size 
@@ -414,13 +412,13 @@ contains
 
     end do
 
-! Deallocate
+     ! Deallocate
      deallocate( F)
 
   end function compute_GJD_free
 
   function fun_F_matrix( ritz_vectors, parameters, eigen_index, eigenvalue) &
-           result(F_matrix)
+           result( F_matrix)
     !> \brief Function that computes the F matrix: 
     !> F= ubut*( A- theta* B)* uubt
     !> in a pseudo-free way for a given engenvalue. 
@@ -439,7 +437,7 @@ contains
 
     interface
 
-     function fun_mtx_gemv(parameters, input_vect) result(output_vect)
+     function fun_mtx_gemv( parameters, input_vect) result( output_vect)
        !> \brief Function to compute the action of the hamiltonian on the fly
        !> \param[in] dimension of the arrays to compute the action of the
        !             hamiltonian
@@ -449,20 +447,20 @@ contains
        import                                   :: davidson_parameters
        type( davidson_parameters)               :: parameters
        real( dp), dimension( :, :), intent( in) :: input_vect
-       real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
+       real( dp), dimension( size( input_vect, 1), size( input_vect, 2)) :: output_vect
      end function fun_mtx_gemv
 
-     function fun_stx_gemv(parameters, input_vect) result(output_vect)
+     function fun_stx_gemv( parameters, input_vect) result( output_vect)
        !> \brief Fucntion to compute the optional stx matrix on the fly
        !> \param[in] dimension of the arrays to compute the action of the
        !             hamiltonian
        !> \param[in] input_vec Array to project
        !> \return Projected matrix
        use numeric_kinds, only: dp
-       import                                 :: davidson_parameters
-       type(davidson_parameters)              :: parameters
-       real (dp), dimension(:,:), intent(in)  :: input_vect
-       real (dp), dimension(size(input_vect,1), size(input_vect,2)) :: output_vect
+       import                                   :: davidson_parameters
+       type( davidson_parameters)               :: parameters
+       real( dp), dimension( :, :), intent( in) :: input_vect
+       real( dp), dimension( size( input_vect, 1), size( input_vect, 2)) :: output_vect
      end function fun_stx_gemv
 
     end interface
@@ -489,7 +487,7 @@ contains
 
   end function fun_F_matrix
 
-  function extract_diagonal_free(fun_mtx_gemv, parameters, dim) result(out)
+  function extract_diagonal_free( fun_mtx_gemv, parameters, dim) result( out)
     !> \brief extract the diagonal of the matrix
     !> \param parameters: dimensions of the arrays
     implicit none
