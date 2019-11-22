@@ -13,15 +13,16 @@
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_func/ omega,omega_hes,ifunc_omega
-
+      common /sa_check/ energy_all(MSTATES),energy_err_all(MSTATES) 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      dimension grad(MPARM*MSTATES)
-
+      dimension deltap(MPARM*MSTATES),deltap_more(MPARM*MSTATES,5)
+      dimension energy_old(MSTATES), energy_err_old(MSTATES), i_deltap(MSTATES), energy_davidson(6,MSTATES) 
+      dimension index_min_energy(5), deltap_new(MPARM)
       save method_sav
 
       if(method.ne.'mix_n') return
@@ -68,6 +69,7 @@
 
       sr_adiag_sav=sr_adiag
       alin_adiag_sav=alin_adiag
+      nblk_sav=nblk
 
       nstates_sav=nstates
       iforce_analy_sav=iforce_analy
@@ -78,6 +80,8 @@
       call save_nparms
 
       call write_geometry(0)
+
+      call save_wf
 
 c do iteration
       do iter=1,nopt_iter
@@ -90,36 +94,100 @@ c do micro_iteration
 
           if(micro_iter_sr.gt.1) write(6,'(/,''Micro iteration'',i5,'' of'',i5)')miter,micro_iter_sr
 
+          nblk=nblk_sav
           method='sr_n'
           ioptci=0
           ioptorb=ioptorb_sav
           ioptjas=ioptjas_sav
-
           if(miter.eq.micro_iter_sr) then
             method='lin_d'
             ioptci=ioptci_sav
+
+            nblk_sav=nblk
+            nblk= 1.5*nblk
+            write(6,*) "NBLOCK CI", "NBLOCK SAV", nblk, nblk_sav
+
+            call p2gtid('optwf:nblk_ci',nblk_ci,nblk,1)
             ioptorb=0
             ioptjas=0
           endif
           call set_nparms
+          if(iter.eq.1.and. miter.eq.micro_iter_sr) nparmci=nparm
 
-          call qmc
+c if the last step was a davidson then save the old energy before recomputing it (for the check)
 
+          if(miter.eq.1.and.iter.gt.1) energy_old(:nstates)=energy_all(:nstates)
+          if(miter.eq.1.and.iter.gt.1) energy_err_old(:nstates)=energy_err_all(:nstates)
+
+          iqmc_check=0
+
+   5      call qmc 
+          nblk=nblk_sav
           write(6,'(/,''Completed sampling'')')
+
+          if(miter.eq.1 .and. iter.gt.1) then          
+            energy_davidson(iqmc_check+1,:)=energy_all(:)
+            if(iqmc_check.eq.0) i_deltap(:nstates)=0
+
+            if(iqmc_check.lt.5) then             
+              do istate=1,nstates
+                diff=abs(energy_all(istate)-energy_old(istate))
+
+
+                if(diff.ge.0.1)then
+c                if(diff.ge.10*energy_err_old(istate))then
+                  i_deltap(istate)=i_deltap(istate)+1
+                  istate0=(istate-1)*nparmci+1
+                  call change_ci(deltap_more(istate0,i_deltap(istate)),istate)
+
+                  write(6,'(''STATE, N OVERLAP, ENRGY OLD, ENERGY NEW,6*ERR '',2i3,3f12.5)') 
+     &            istate,i_deltap(istate),energy_old(istate),energy_all(istate),6*energy_err_old(istate)
+                  iqmc_again=1
+
+                endif
+              enddo   
+              if(iqmc_again.gt.0) then
+                iqmc_check=iqmc_check+1
+                go to 5
+              endif
+             else
+c              ioptci=ioptci_sav
+c              call restore_wf(1)
+c              ioptci=0
+
+              do istate=1,nstates
+               istate0=(istate-1)*nparmci+1
+               if(i_deltap(istate).ne.0) then
+                 call sort(5, energy_davidson(1,istate),index_min_energy)
+                 if(index_min_energy(1).eq.1) then
+                   call change_ci(deltap(istate0),istate)
+                  else 
+                   call change_ci(deltap_more(istate0,index_min_energy(1)),istate)
+                 endif
+                 write(6,*) "ENERGY DAV", energy_davidson(:,istate)
+                 write(6,*) "NO GOOD WF FOUND, FOR STATE", istate, "TAKING OVERLAP", index_min_energy(1)
+                 write(6,*) "VEC CORR TO ENERGY", energy_davidson(index_min_energy(1),istate)
+               endif
+
+              enddo
+
+               call qmc
+
+            endif   
+          endif
 
    6      continue
 
           if(method.eq.'sr_n') then
-            call sr(nparm,grad,sr_adiag,sr_eps,i)
-            call dscal(nparm,-sr_tau,grad,1)
+            call sr(nparm,deltap,sr_adiag,sr_eps,i)
+            call dscal(nparm,-sr_tau,deltap,1)
             adiag=sr_adiag
            else
-            call lin_d(nparm,nvec,nvecx,grad,alin_adiag,alin_eps)
-            if(nstates.eq.1) call dscal(nparm,-1.d0,grad,1)
+            call lin_d(nparm,nvec,nvecx,deltap,deltap_more,alin_adiag,alin_eps)
+            if(nstates.eq.1) call dscal(nparm,-1.d0,deltap,1)
             adiag=alin_adiag
           endif
-
-          call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,adiag,iflag)
+          call test_solution_parm(nparm,deltap,dparm_norm,dparm_norm_min,adiag,iflag)
           write(6,'(''Norm of parm variation '',g12.5)') dparm_norm
           if(iflag.ne.0) then
             write(6,'(''Warning: dparm_norm>1'')')
@@ -134,14 +202,13 @@ c do micro_iteration
             alin_adiag=alin_adiag_sav
           endif
  
-          call compute_parameters(grad,iflag,1)
+          call compute_parameters(deltap,iflag,1)
           call write_wf(1,iter)
 
           call save_wf
-
         enddo
 c enddo micro_iteration
- 
+
         if(iforce_analy_sav.eq.1) then
 
           call select_ci_root(iroot_geo)
@@ -207,3 +274,37 @@ c enddo iteration
       end
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      subroutine change_ci(dparm_new,istate)
+      implicit real*8(a-h,o-z)
+      include 'vmc.h'
+      include 'force.h'
+      include 'mstates.h'
+
+      common /dets/ cdet(MDET,MSTATES,MWF),ndet
+      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
+     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
+
+      dimension dparm_new(*)
+
+c      write(6,*) "COPUTING NEW CI, ccsf(1,state,1)", ccsf(1,istate,1), dparm_new(1)
+c update the ci coef
+
+       if(ncsf.eq.0) then
+         do idet=1,ndet
+          cdet(idet,istate,1)=dparm_new(idet)
+         enddo
+       else
+         cdet(:,istate,1)=0
+         do icsf=1,ncsf
+           do j=iadet(icsf),ibdet(icsf)
+              jx=icxdet(j)
+              cdet(jx,istate,1)=cdet(jx,istate,1)+dparm_new(icsf)*cxdet(j)
+           enddo
+           ccsf(icsf,istate,1)=dparm_new(icsf)
+           enddo
+       endif
+c      write(6,*) "COPUTING NEW CI, ccsf(1,istate,1)", ccsf(1,istate,1), dparm_new(1)
+
+      return
+      end
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

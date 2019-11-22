@@ -1,4 +1,4 @@
-      subroutine lin_d(nparm,nvec,nvecx,deltap,adiag,ethr)
+      subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
 
       implicit real*8(a-h,o-z)
 
@@ -20,12 +20,12 @@
 
       common /mpiconf/ idtask,nproc
 
-      dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,MSTATES),anorm(MVEC)
-      dimension deltap(*)
+      dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,MSTATES),index_overlap(MVEC),anorm(MVEC)
+      dimension deltap(*),deltap_more(MPARM*MSTATES,5)
 
       call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
 
-c     write(6,*) 'LIN_D NPARM',nparm
+      write(6,*) 'LIN_D NPARM',nparm
 
       call sr_hs(nparm,adiag)
 
@@ -43,32 +43,31 @@ c     write(6,*) 'LIN_D NPARM',nparm
 
       if(lin_jdav.eq.0) then
 
+       write(6,*) "USING OLD REGTERG"
+
         call regterg( nparm_p1, MPARM, nvec, nvecx, evc, ethr,
      &                e, itype, notcnv, idav_iter, ipr, idtask )
 
         write(6,'(''LIN_D: no. iterations'',i4)') idav_iter
         write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
 
-      else
+       elseif(lin_jdav.eq.1) then
+       write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
+        call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
+     &       ethr, e, itype, notcnv, idav_iter, ipr, .true.)
 
-c e0,nvec_e0
-        e0=energy(1)
-        nvec_e0=nvec
-
-        nvecm=nvec*2
-        write(6,'(''LIN_D : target energy'',f14.6)') e0
-
-        call jdqz_driver( nparm_p1, nvec_e0, nvecm, nvecx, evc, ethr,
-     &                    e, e0, itype, notcnv, idav_iter , ipr )
-
+       elseif(lin_jdav.eq.2) then
+       write(6,*) "USING DAVIDSON WRAP: DENSE VERSION"
+        call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
+     &       ethr, e, itype, notcnv, idav_iter, ipr, .false.)
+       else
+         call fatal_error('LIND: lin_jdav < 3')
       endif
 
       call my_second(2,'david ')
-
-c     STOP
-
-      call compute_overlap_psi(nparm+i0,nvec,evc,overlap_psi,anorm)
-
+      call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)
+      write(6,*) "HEREEEE"
+c idtask.eq.0
       if(idtask.eq.0)  then
 
         do istate=1,nstates
@@ -99,28 +98,46 @@ c     STOP
           do i=1,nparm
             deltap(i)=deltap(i)/bot
           enddo
-         else
+
+         else                   
+c else means if i optimize jastrow and or orbitals
+
           do istate=1,nstates
-            overlap_max=0.d0
-            do ivec=1,nvec
-              if(overlap_psi(ivec,istate).gt.overlap_max) then
-                overlap_max=overlap_psi(ivec,istate)
-                i_overlap_max=ivec
-              endif
-            enddo
+            call sort(nvec,overlap_psi(1,istate),index_overlap)
+            i_overlap_max=index_overlap(nvec)
             write(6,'(''LIN_D: state, max overlap ivec'',2i4)') istate,i_overlap_max
 
             do i=1,nparm
               deltap(i+nparm*(istate-1))=evc(i,i_overlap_max)/anorm(i_overlap_max)
             enddo
+
+       write(6,*) "HEREEEE 2"
+c save 5 additional vectors with large overlap
+            do ivec=1,5
+              idx_ivec=index_overlap(nvec-ivec)
+              do i=1,nparm
+                deltap_more(i+nparm*(istate-1),ivec)=evc(i,idx_ivec)/anorm(idx_ivec)
+              enddo
+            enddo
           enddo
+
         endif
 
+c endif idtask.eq.0
       endif
 
-      do istate=1,nstates
-        call MPI_BCAST(deltap(1+nparm*(istate-1)),nparm,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      enddo
+c     do istate=1,nstates
+c       call MPI_BCAST(deltap(1+nparm*(istate-1)),nparm,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+c     enddo
+
+      call MPI_BCAST(deltap,nparm*nstates,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
+      if(i0.eq.0) then
+        do ivec=1,5
+          call MPI_BCAST(deltap_more(1,ivec),nparm*nstates,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+        enddo
+      endif
+
 
       return              ! deltap
       end
@@ -363,6 +380,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
  
       common /optwf_func/ omega,omega_hes,ifunc_omega
 
+
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
@@ -469,6 +487,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'mpif.h'
       include 'sr.h'
       include 'mstates.h'
+
 
       common /optwf_func/ omega,omega_hes,ifunc_omega
 
@@ -587,9 +606,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'mpif.h'
       include 'sr.h'
       include 'mstates.h'
+
  
       common /optwf_func/ omega,omega_hes,ifunc_omega
-
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
@@ -786,16 +805,18 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
+      common /mpiconf/ idtask,nproc
 
       dimension psi(MPARM,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,MSTATES),anorm_loc(MVEC)
 
       i0=1
       if(ioptjas+ioptorb.eq.0) i0=0
       nparm=ndim-i0
-
-      do ivec=1,nvec
-        call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      enddo
+      if (nproc > 1) then  
+        do ivec=1,nvec
+          call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+        enddo
+      endif 
 
       ratio=1.d0
       do ivec=1,nvec

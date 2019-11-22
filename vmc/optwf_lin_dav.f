@@ -20,7 +20,7 @@
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      dimension grad(MPARM*MSTATES)
+      dimension grad(MPARM*MSTATES), grad_more(MPARM*MSTATES,5)
 
       if(method.ne.'lin_d')return
 
@@ -103,13 +103,15 @@ c do micro_iteration
 
           if(miter.eq.micro_iter_sr) iforce_analy=iforce_analy_sav
 
+c        efin_old = efin define efin_old as the energy before
+
           call qmc
 
           write(6,'(/,''Completed sampling'')')
 
    6      continue
 
-          call lin_d(nparm,nvec,nvecx,grad,alin_adiag,alin_eps)
+          call lin_d(nparm,nvec,nvecx,grad,grad_more,alin_adiag,alin_eps)
           if(nstates.eq.1) call dscal(nparm,-1.d0,grad,1)
 
           if(method.eq.'lin_d'.and.ioptorb+ioptjas.gt.0) then
@@ -127,6 +129,9 @@ c do micro_iteration
               alin_adiag=alin_adiag_sav
             endif
           endif
+
+
+c Here I should save the old parameters 
  
           call compute_parameters(grad,iflag,1)
           call write_wf(1,iter)
@@ -180,7 +185,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       include 'sr.h'
       include 'mstates.h'
- 
+
       common /optwf_func/ omega,omega_hes,ifunc_omega
 
       dimension psi(MPARM,*),hpsi(MPARM,*)

@@ -2,8 +2,10 @@ if (MPI_Fortran_FOUND)
 
   # Source files
   file(GLOB VMC_SOURCE *.f)
-  file(GLOB VMC90_SOURCE optgeo_coords_int.f90 optgeo_hessian.f90 optgeo_convcartzmat.f90 regterg.f90 olbfgs.f90)
-  
+  file(GLOB VMC90_SOURCE optgeo_coords_int.f90 optgeo_hessian.f90 optgeo_convcartzmat.f90 regterg.f90 olbfgs.f90 davidson_wrap.f90)
+  set(DAVIDSON_SOURCE array_utils.f90 numeric_kinds.f90 lapack_wrapper.f90 davidson.f90)
+
+  set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-check bounds -g -traceback")
   if (NOT ENABLE_QMMM)
     message(STATUS "QMMM is NOT enabled!")
   endif()
@@ -155,6 +157,7 @@ if (MPI_Fortran_FOUND)
     $<TARGET_OBJECTS:shared_objects>
     # source that is not already included in the objects
     ${VMC_SOURCE} 
+    ${DAVIDSON_SOURCE}
     ${VMC90_SOURCE})
   
   #  Add headers
