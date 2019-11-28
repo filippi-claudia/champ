@@ -51,38 +51,38 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   ! Function to compute the target matrix on the fly
   
   interface
-     function fun_mtx_gemv(parameters, input_vect) result(output_vect)
-       !> \brief Function to compute the action of the hamiltonian on the fly
-       !> \param[in] dimension of the arrays to compute the action of the hamiltonian
-       !> \param[in] input_vec Array to project
-       !> \return Projected matrix
+    function fun_mtx_gemv(parameters, input_vect) result(output_vect)
+      !> \brief Function to compute the action of the hamiltonian on the fly
+      !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+      !> \param[in] input_vec Array to project
+      !> \return Projected matrix
 
-       use numeric_kinds, only: dp
-       import :: davidson_parameters
-       type(davidson_parameters) :: parameters
-       real (dp), dimension(:,:), intent(in) :: input_vect
-       real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
-       
-     end function fun_mtx_gemv
+      use numeric_kinds, only: dp
+      import :: davidson_parameters
+      type(davidson_parameters) :: parameters
+      real (dp), dimension(:,:), intent(in) :: input_vect
+      real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
+      
+    end function fun_mtx_gemv
      
-     function fun_stx_gemv(parameters, input_vect) result(output_vect)
-       !> \brief Function to compute the action of the overlap on the fly
-       !> \param[in] dimension of the arrays to compute the action of the hamiltonian
-       !> \param[in] input_vec Array to project
-       !> \return Projected matrix
+    function fun_stx_gemv(parameters, input_vect) result(output_vect)
+      !> \brief Function to compute the action of the overlap on the fly
+      !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+      !> \param[in] input_vec Array to project
+      !> \return Projected matrix
        
-       use numeric_kinds, only: dp
-       import :: davidson_parameters
-       type(davidson_parameters) :: parameters
-       real (dp), dimension(:,:), intent(in) :: input_vect
-       real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
+      use numeric_kinds, only: dp
+      import :: davidson_parameters
+      type(davidson_parameters) :: parameters
+      real (dp), dimension(:,:), intent(in) :: input_vect
+      real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
        
-       end function fun_stx_gemv
+    end function fun_stx_gemv
 
-    end interface
+  end interface
 !
-  call mpi_comm_rank(MPI_COMM_WORLD,idtask,ierr)
-  call mpi_comm_size(MPI_COMM_WORLD,nproc,ierr)
+  call mpi_comm_rank( MPI_COMM_WORLD, idtask, ierr)
+  call mpi_comm_size( MPI_COMM_WORLD, nproc, ierr)
 !
   notcnv=0 !Not used in davidson_wrap
     
@@ -90,7 +90,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   IF ( nvec > nvecx / 2 ) CALL fatal_error( 'regter: nvecx is too small')
   is_free_or_dens: IF (free) then   
       call generalized_eigensolver(fun_mtx_gemv, eigenvalues, ritz_vectors, nparm, &
-             nparmx, nvec, nvecx, "DPR", 300, ethr, dav_iter, fun_stx_gemv, nproc, idtask)
+             nparmx, nvec, nvecx, "GJD", 1, ethr, dav_iter, fun_stx_gemv, nproc, idtask)
 !
       if (idtask == 0) then
         do i=1,size(eigenvalues)
@@ -117,26 +117,26 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
       
       mtx(1:nparm, 1:nparm) = hpsi(1:nparm, 1:nparm)
       stx(1:nparm, 1:nparm) = spsi(1:nparm, 1:nparm)
-!     
-      call generalized_eigensolver(mtx, eigenvalues, ritz_vectors, nvec, &
-           "DPR", 300, ethr, dav_iter, nvecx, stx)
-!
+
+      call generalized_eigensolver(mtx, eigenvalues, ritz_vectors, nparm, & 
+             nparmx, nvec, nvecx, "GJD", 100, ethr, dav_iter, stx, nproc, idtask) 
+
       eigenvectors(1:nparm,1:nvec) = ritz_vectors
-!
+
       do i=1,size(eigenvalues)
          print *, "eigenvalue ", i, " : ", eigenvalues(i)
       end do
-!
+
       notcnv = 0
       dav_iter = 0
-!
+
       deallocate(hpsi, spsi)
  
   ENDIF is_free_or_dens
   
 END SUBROUTINE davidson_wrap
 
-function fun_mtx_gemv(parameters,  input_vect) result(output_vect)
+function fun_mtx_gemv( parameters, input_vect) result( output_vect)
   !> \brief Function to compute the action of the hamiltonian on the fly
   !> \param[in] dimension of the arrays to compute the action of the hamiltonian
   !> \param[in] input_vec Array to project
@@ -145,15 +145,16 @@ function fun_mtx_gemv(parameters,  input_vect) result(output_vect)
   use numeric_kinds, only: dp
   use davidson_free, only: davidson_parameters
 
-  type(davidson_parameters) :: parameters
-  real (dp), dimension(:,:), intent(in) :: input_vect
-  real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
-  real(dp), dimension(:, :), allocatable :: psi, hpsi
+  type( davidson_parameters) :: parameters
+  real( dp), dimension( :, :), intent( in) :: input_vect
+  real( dp), dimension( size( input_vect, 1), size( input_vect, 2)) :: output_vect
+  real( dp), dimension( :, :), allocatable :: psi, hpsi
+
+  allocate( psi( parameters%nparm_max, 2* parameters%nvecx))
+  allocate( hpsi( parameters%nparm_max, 2* parameters%nvecx))
   
-  allocate(psi(parameters%nparm_max, parameters%nvecx))
-  allocate(hpsi(parameters%nparm_max, parameters%nvecx))
   psi = 0.0_dp
-  psi(1:size(input_vect,1),1:size(input_vect,2)) = input_vect
+  psi( 1:size( input_vect, 1), 1: size( input_vect, 2)) = input_vect
   
   call h_psi_lin_d(parameters%nparm, size(input_vect,2), psi, hpsi)
 
@@ -170,13 +171,15 @@ function fun_stx_gemv(parameters, input_vect) result(output_vect)
   
   use numeric_kinds, only: dp
   use davidson_free, only: davidson_parameters
+
   type(davidson_parameters) :: parameters
   real (dp), dimension(:,:), intent(in) :: input_vect
   real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
   real(dp), dimension(:, :), allocatable :: psi, spsi
 
-  allocate(psi(parameters%nparm_max, parameters%nvecx))
-  allocate(spsi(parameters%nparm_max, parameters%nvecx))
+  allocate(psi(parameters%nparm_max, 2* parameters%nvecx))
+  allocate(spsi(parameters%nparm_max, 2* parameters%nvecx))
+  
   psi = 0.0_dp
   psi(1:size(input_vect,1),1:size(input_vect,2)) = input_vect
   
