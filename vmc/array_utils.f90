@@ -9,7 +9,8 @@ module array_utils
   private
   !> \public
   public :: concatenate, diagonal,eye, generate_diagonal_dominant, norm, &
-       generate_preconditioner, write_matrix, write_vector
+       generate_preconditioner, write_matrix, write_vector, check_deallocate_matrices, &
+       check_deallocate_matrix
 
 contains
 
@@ -201,14 +202,42 @@ contains
     integer :: i
 
     open(unit=314, file=path_file, status="REPLACE")
-! Pablo 
-    write(6,*) "Pablo is going to write ", path_file , "of size:", size(vector) 
-! End Pablo
     do i=1,size(vector)
        write(314, *) vector(i)
     end do
     close(314)
     
   end subroutine write_vector  
+
+  subroutine check_deallocate_matrices( mtx_proj, stx_proj, lambda, eigenvectors_sub, &
+                   ritz_vectors, mtxV, stxV)
+    !> deallocate a matrix if allocated
+    real(dp), dimension(:, :), allocatable, intent(inout) ::  mtx_proj
+    real(dp), dimension(:, :), allocatable, intent(inout) ::  stx_proj
+    real(dp), dimension(:, :), allocatable, intent(inout) ::  lambda
+    real(dp), dimension(:, :), allocatable, intent(inout) ::  eigenvectors_sub
+    real(dp), dimension(:, :), allocatable, intent(inout) ::  ritz_vectors
+    real(dp), dimension(:, :), allocatable, intent(inout), optional ::  mtxV
+    real(dp), dimension(:, :), allocatable, intent(inout), optional ::  stxV
+      call check_deallocate_matrix( mtx_proj)
+      call check_deallocate_matrix( stx_proj)
+      call check_deallocate_matrix( lambda)
+      call check_deallocate_matrix( eigenvectors_sub)
+      call check_deallocate_matrix( ritz_vectors)
+      if( present( mtxV))  call check_deallocate_matrix( mtxV)
+      if( present( stxV))  call check_deallocate_matrix( stxV)
+
+  end subroutine check_deallocate_matrices
+
+  subroutine check_deallocate_matrix(mtx)
+
+    !> deallocate a matrix if allocated
+    real(dp), dimension(:, :), allocatable, intent(inout) ::  mtx
+
+    if (allocated(mtx)) then
+       deallocate(mtx)
+    end if
+
+  end subroutine check_deallocate_matrix
   
 end module array_utils
