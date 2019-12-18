@@ -99,7 +99,7 @@ add_subdirectory(input)
 add_subdirectory(interface)
 add_subdirectory(lib)
 add_subdirectory(lib2)
-add_subdirectory(vmc)
-add_subdirectory(dmc)
+add_subdirectory(src/vmc)
+add_subdirectory(src/dmc)
 
 
