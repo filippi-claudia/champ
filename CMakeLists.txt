@@ -96,7 +96,7 @@ message(STATUS "compiler flags are: " ${Fortran_FLAGS})
 # Include the following subdirectories
 add_subdirectory(src/include)
 add_subdirectory(input)
-add_subdirectory(interface)
+add_subdirectory(tools/interface)
 add_subdirectory(lib)
 add_subdirectory(lib2)
 add_subdirectory(src/vmc)
