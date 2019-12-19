@@ -1,0 +1,6 @@
+1) 25th Nov 1993
+   Changed arguments of simson,bode,bode_sub from
+   bode(h,y,n) to bode(h,h,n)
+   bode(h,y,n,s) to bode (y,s,h,n)
+   simson(h,y,n,s) to simson (y,s,h,n)
+
