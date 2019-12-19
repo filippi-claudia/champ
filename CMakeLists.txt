@@ -19,7 +19,7 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 # Input directory
-set(INPUT_DIR ${CMAKE_SOURCE_DIR}/input)
+set(INPUT_DIR ${CMAKE_SOURCE_DIR}/src/vmc/input)
 
 ## User options
 # documentation
@@ -95,7 +95,7 @@ message(STATUS "compiler flags are: " ${Fortran_FLAGS})
 ## Subdirectories
 # Include the following subdirectories
 add_subdirectory(src/include)
-add_subdirectory(input)
+add_subdirectory(src/vmc/input)
 add_subdirectory(tools/interface)
 add_subdirectory(lib/cyrus)
 add_subdirectory(lib/pspline)
