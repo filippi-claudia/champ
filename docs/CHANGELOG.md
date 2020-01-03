@@ -15,6 +15,7 @@
  * `input` folder is moved to `src/vmc`.  
  * notes_jastrow.pdf and README.md are now in a new `docs` folder.
  * `interface` folder is moved to `tools` folder.
+ * CHANGELOG.md	and CHANGELOG.md are moved to `docs`.
 
 ## Removed
 
