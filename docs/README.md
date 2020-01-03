@@ -1,22 +1,3 @@
-```
-**********************************************************
-**                                                      **
-**   Cornell Holland Ab-initio Materials Package        **
-**                                                      **
-**    CCCCC   HH    HH    AAAAA   MMM   MMM   PPPPPP    **
-**   CC   CC  HH    HH   AA   AA  MM M M MM   PP   PP   **
-**   CC       HH    HH   AA   AA  MM  M  MM   PP   PP   **
-**   CC       HHHHHHHH   AAAAAAA  MM     MM   PPPPPP    **
-**   CC       HH    HH   AA   AA  MM     MM   PP        **
-**   CC   CC  HH    HH   AA   AA  MM     MM   PP        **
-**    CCCCC   HH    HH   AA   AA  MM     MM   PP        **
-**                                                      **
-**   Cornell Holland Ab-initio Materials Package        **
-**                                                      **
-**********************************************************
-```
-------
-
 The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo 
 suite of programs for electronic structure calculations of atomic and molecular systems. 
 The code is a sister code of the homonymous program originally developed by Cyrus Umrigar 
@@ -167,5 +148,11 @@ them already if none of the Intel MKL variables are set.) Combining gfortran
 with the Intel MKL is possible but requires special care to work with the
 compiler flag `-mcmodel=large`.
 
+#### Documentation
+CHAMP developer documentation can be generated using [Doxygen](http://www.doxygen.nl/) tool. The package is easy to install, we advise to follow the instructions at the Doxygen web page: <http://www.doxygen.nl/download.html>.
 
-
+The Doxyfile file provided in CHAMP root directory contains all the settings needed to generate the documentation. Once Doxygen is installed, at the root folder of CHAMP simply run:
+```
+doxygen Doxyfile
+```
+Then, a folder will be created in ./docs/developers/html (and its latex version, ./docs/developers/latex) containing the documentation all modules, subroutines and functions within CHAMP.
