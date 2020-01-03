@@ -151,7 +151,7 @@ compiler flag `-mcmodel=large`.
 #### Documentation
 CHAMP developer documentation can be generated using [Doxygen](http://www.doxygen.nl/) tool. The package is easy to install, we advise to follow the instructions at the Doxygen web page: <http://www.doxygen.nl/download.html>.
 
-The Doxyfile file provided in CHAMP root directory contains all the settings needed to generate the documentation. Once Doxygen is installed, at the root folder of CHAMP simply run:
+The Doxyfile file provided in CHAMP docs directory contains all the settings needed to generate the documentation. Once Doxygen is installed, at the docs folder of CHAMP simply run:
 ```
 doxygen Doxyfile
 ```
