@@ -1,15 +1,31 @@
-!> \namespace Davidson eigensolver
-!> \author Felipe Zapata
-!> The current implementation uses a general  davidson algorithm, meaning
-!> that it compute all the eigenvalues simultaneusly using a variable size block approach.
-!> The family of Davidson algorithm only differ in the way that the correction
-!> vector is computed.
-!> Computed pairs of eigenvalues/eigenvectors are deflated using algorithm
-!> described at: https://doi.org/10.1023/A:101919970
-!>
-!> Revised by P. Lopez-Tarifa@NLeSC(2019)
-module davidson_free
+!! The current implementation uses a general  davidson algorithm, meaning
+!! that it compute all the eigenvalues simultaneusly using a variable size block approach.
+!! The family of Davidson algorithm only differ in the way that the correction
+!! vector is computed.
+!! Computed pairs of eigenvalues/eigenvectors are deflated using algorithm
+!! described at: https://doi.org/10.1023/A:101919970
+!!
+!! Authors: Felipe Zapata and revised by P. Lopez-Tarifa NLeSC(2019)
+!> 
+!> \brief Solves the Davidson diagonalisation without storing matrices in memory. 
+!> \param[in] mtx: Matrix to diagonalize
+!> \param[inout] stx: Optional matrix for the general eigenvalue problem:
+!> \f$ mtx \lambda = V stx \lambda \f$
 
+!> \param[out] eigenvalues Computed eigenvalues
+!> \param[out] ritz_vectors approximation to the eigenvectors
+!> \param[in] lowest Number of lowest eigenvalues/ritz_vectors to compute
+!> \param[in] method Method to compute the correction vector. Available
+!> methods are,
+!>    DPR: Diagonal-Preconditioned-Residue
+!>    GJD: Generalized Jacobi Davidson
+!> \param[in] max_iters: Maximum number of iterations
+!> \param[in] tolerance norm-2 error of the eigenvalues
+!> \param[in] method: Method to compute the correction vectors
+!> \param[in, opt] max_dim_sub: maximum dimension of the subspace search   
+!> \param[out] iters: Number of iterations until convergence
+!> \return eigenvalues and ritz_vectors of the matrix `mtx`
+module davidson_free
   use numeric_kinds, only: dp
   use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
        lapack_qr, lapack_solver
@@ -553,6 +569,9 @@ contains
  
 end module davidson_free
 
+
+!> 
+!> \brief caca de vaca2
 module davidson_dense
   !> Submodule containing the implementation of the Davidson diagonalization method
   !> for dense matrices
@@ -995,7 +1014,18 @@ contains
   end function substract_from_diagonal
   
 end submodule correction_methods_generalized_dense
-
+!> 
+!> \namespace davidson 
+!> \brief Main module of the Davidson diagonalisation. 
+!>
+!> The current implementation uses a general davidson algorithm, meaning
+!> that it computes all eigenvalues simultaneusly using a variable size block approach.
+!> The family of Davidson algorithm only differ in the way that the correction
+!> vector is computed.
+!> Computed pairs of eigenvalues/eigenvectors are deflated using algorithm
+!> described at: https://doi.org/10.1023/A:101919970
+!>
+!> \author Felipe Zapata and revised by P. Lopez-Tarifa NLeSC(2019)
 module davidson
 
   use numeric_kinds, only: dp
@@ -1013,29 +1043,12 @@ module davidson
   public :: generalized_eigensolver
 
   interface generalized_eigensolver
- !> \brief Solve a (general) eigenvalue problem using different types of Davidson algorithms.
+ !> Solve a (general) eigenvalue problem using different types of Davidson algorithms.
 
- !> \param[in] mtx: Matrix to diagonalize
- !> \param[in, opt] stx: Optional matrix for the general eigenvalue problem:
- !> \f$ mtx \lambda = V stx \lambda \f$
-
- !> \param[out] eigenvalues Computed eigenvalues
- !> \param[out] ritz_vectors approximation to the eigenvectors
- !> \param[in] lowest Number of lowest eigenvalues/ritz_vectors to compute
- !> \param[in] method Method to compute the correction vector. Available
- !> methods are,
- !>    DPR: Diagonal-Preconditioned-Residue
- !>    GJD: Generalized Jacobi Davidson
- !> \param[in] max_iters: Maximum number of iterations
- !> \param[in] tolerance norm-2 error of the eigenvalues
- !> \param[in] method: Method to compute the correction vectors
- !> \param[in, opt] max_dim_sub: maximum dimension of the subspace search   
- !> \param[out] iters: Number of iterations until convergence
- !> \return eigenvalues and ritz_vectors of the matrix `mtx`
 
      procedure generalized_eigensolver_dense
      procedure generalized_eigensolver_free
   end interface generalized_eigensolver
 !
 end module davidson
-!> \namespace Davidson eigensolver
+!> \namespace davidson 

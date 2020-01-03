@@ -1,120 +1,171 @@
-**Pseudopotentials**
+```
+**********************************************************
+**                                                      **
+**   Cornell Holland Ab-initio Materials Package        **
+**                                                      **
+**    CCCCC   HH    HH    AAAAA   MMM   MMM   PPPPPP    **
+**   CC   CC  HH    HH   AA   AA  MM M M MM   PP   PP   **
+**   CC       HH    HH   AA   AA  MM  M  MM   PP   PP   **
+**   CC       HHHHHHHH   AAAAAAA  MM     MM   PPPPPP    **
+**   CC       HH    HH   AA   AA  MM     MM   PP        **
+**   CC   CC  HH    HH   AA   AA  MM     MM   PP        **
+**    CCCCC   HH    HH   AA   AA  MM     MM   PP        **
+**                                                      **
+**   Cornell Holland Ab-initio Materials Package        **
+**                                                      **
+**********************************************************
+```
+------
 
-`http://www.burkatzki.com/pseudos/index.2.html`
+The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo 
+suite of programs for electronic structure calculations of atomic and molecular systems. 
+The code is a sister code of the homonymous program originally developed by Cyrus Umrigar 
+and Claudia Filippi of which it retains the accelerated Metropolis method and the efficient 
+diffusion Monte Carlo algorithms.
 
-Do not use the H pseudopotential/basis (in principle, avoid basis sets of 1- and 2-electron atoms) from this database.
+The European branch of the code is currently developed by Claudia Filippi and Saverio Moroni, 
+with significant contributions by Claudio Amovilli and other collaborators.
 
-For H pseudopotential, we still need to check the double basis (extended fit with weight(H)=1 or 10). From VTZ up, the basis sets are good.
+CHAMP has three basic capabilities:
 
-Check under `pool/BFD/BASIS_gamess/`
+* Metropolis or variational Monte Carlo (VMC)
+* Diffusion Monte Carlo (DMC)
+* Optimization of many-body wave functions by energy minimization (VMC) for ground and excited states
 
-**Gamess**
+Noteworthy features of CHAMP are:
 
-If we do not use external basis file, we need to repeat basis set for each atom (cumbersome for large molecules).
+* Efficient wave function optimization also in a state-average fashion for multiple states of the same symmetry (VMC)
+* Efficient computation of analytical interatomic forces (VMC)
+* Compact formulation for a fast evaluation of multi-determinant expansions and their derivatives (VMC and DMC)
+* Multiscale VMC and DMC calculations in classical point charges (MM), polarizable continuum model (PCM), and polarizable force fields (MMpol)
 
-External basis file was created by Omar and modified by Riccardo, and available as `champ/pool/BFD/BASIS_gamess/BFD_Basis.EXTBAS`
+**NOTE**
 
-**QMC codes**
+You should neither obtain this program from any other source nor should you distribute it 
+or any portion thereof to any person, including people in the same research group.
 
-make clean, clean_all, seq, mpi, all, vmc.mov1, etc.
+It is expected that users of the programs will do so in collaboration
+with one of the principal authors.  This serves to ensure both that the
+programs are used correctly and that the principal authors get adequate
+scientific credit for the time invested in developing the programs.
 
-Check Makefile to see what is available. 
+**Usual disclaimer**  
 
-dimensions in `~/champ/include/<...>.h`
+The authors make no claims about the correctness of
+the program suite and people who use it do so at their own risk.
 
-For compiler commands, check make_config directory and file settings.make (must be symbolically linked to the correct settings.make.ifort etc.)
+------------------------------------------------------------------------
 
-**Setup of input files of QMC**
+CHAMP relies on various other program packages:
 
-If you type:
+1. Parser2: 
+   An easy-to-use and easy-to-extend keyword based input facility for fortran 
+   programs written by Friedemann Schautz.
 
-`~/champ/interface/gamess2qmc`
+2. GAMESS:
+   For finite systems the starting wavefunction is obtained from the
+   quantum chemistry program GAMESS, written by Mike Schmidt and
+   collaborators at Iowa State University.  
 
-you can see all options.
+3. GAMESS_Interface:
+   The wavefunction produced by GAMESS has to be cast in a form
+   suitable for input to CHAMP.  This is a lot more work than first meets
+   the eye. The Perl script was written by Friedemann Schautz.
 
-*Example:*
+4. MOLCAS_Interface: recently added thanks to Csaba Daday and Monika Dash
 
-`~/champ/interface/gamess2qmc -g -t rhf -n 6 -r -b BFD.pVDZ rhf.out`
+### Run on CCPGate
+In the new version (without filename) run with:
+```
+mpirun -s all -np "n process" -machinefile "machinefile"
 
-g -> geometry
-t -> type orbitals
-n -> number of orbitals
-r -> tabulate radial atomic basis (radial AO) on a grid
-b -> name of the basis
+```
+NOTE OpenMPI: Not tested but most likely will not work at the moment as the stdin cannot be redirected to all tasks.
 
-It generates:
+### Installation Using CMake
+To install **Champ** using [cmake](https://cmake.org/) you need to run the following commands:
+```
+cmake -H. -Bbuild
+cmake --build build -- -j4
+```
+The first command is only required to set up the build directory and needs to be
+executed only once. Compared to the previous Makefiles the dependencies for the
+include files (e.g include/vmc.h) are correctly setup and no `--clean-first` is
+required.
 
-BFD.pVDZ.lcao -> LCAO coefficients for MO orbitals
-BFD.pVDZ.geometry  -> geometry
-BFD.pVDZ.basis.C.1 -> radial AO basis for C
-BFD.pVDZ.basis.H.2 -> radial AO basis for H
-BFD.pVDZ.bfinfo -> Information on the basis (relation radial -> Ylm: s, p etc?)
+#### CMAKE Options
 
-* If you change the wave function (e.g. rhf -> b3lyp) using the same 
-basis (for the same system) and run again a QMC run, you do not need 
-to regenerate the atomic basis/geometry.
+To select a given compiler, you can type:
+```
+cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=ifort 
+```
+To use LAPACK and BLAS installed locally, include the path to the libraries:
+```
+cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=ifort -D BLAS_blas_LIBRARY=/home/user/lib/BLAS/blas_LINUX.a -D LAPACK_lapack_LIBRARY=/home/user/lib/LAPACK/liblapack.a
+```
+To compile only e.g. VMC serial:
+```
+cmake --build build --target vmc.mov1
+```
+Clean and build:
+```
+cmake --build build --clean-first
+```
+Compared to the previous Makefiles the dependencies for the include files
+(e.g include/vmc.h) are correctly setup and no `--clean-first` is required.
 
-`~/champ/interface/gamess2qmc -t rhf -n 6 b3lyp.out`
+#### CMAKE Recipes
 
-* Generate file for optimization of orbitals
+Here are a couple of recipes for commonly used computing facilities, which can
+be easily adapted. See Cartesius for a module based setup or CCPGate for a
+standard Intel installation.
 
-`~/programs/champ_source/interface/gamess2qmc -t rhf -s rhf_pVDZ.out`
+* Cartesius
+Load the required modules
+```
+module unload mpi
+module load intel/2018b cmake/3.7.2
+```
+Setup the build:
+```
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+```
 
-Gets all orbitals and symmetry (-s) file.
+* CCPGate
+To build with ifort set the variables for the Intel Compiler and MPI ->
 
-* After MCSCF/CASSF in Gamess, you need to run a CI starting from the MCSCF orbitals
-to have the correct CI coefficients.
+If you use CSH:
+```
+source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.csh -arch intel64 -platform linux
+source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.csh -arch intel64 -platform linux
+```
+If you use BASH:
+```
+. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.sh intel64
+. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.sh intel64
+```
+and setup the build:
+```
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+```
 
-Then, you will get the orbitals as the INITIAL of the CI run (put PRTMO=.TRUE.);
-include the MCSCF orbitals in the CI input as the VEC field (from the mcscf.dat).
-You may choose to use natural orbitals from the VEC file (if you truncate in 
-QMC, the surviving determinants might be more representative). If you want to
-optimize and start from natural orbitals, recall to include the virtual MCSCF 
-orbitals in the VEC file of the CI run.
+To build with gfortran set only(!) ->
+If you use CSH:
+```
+source /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh -arch intel64 -platform linux
+```
+If you use BASH:
+```
+. /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
+```
+and then use:
+```
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
+```
+which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find
+them already if none of the Intel MKL variables are set.) Combining gfortran
+with the Intel MKL is possible but requires special care to work with the
+compiler flag `-mcmodel=large`.
 
-* To get the CI coefs from the CI output:
 
-`~/programs/champ_source/interface/gamess2qmc -t initial -d 0.0 -s ci22_pVDZ.out`
-
-`-d 0.0` -> the threshold for the coefficients is set to zero (get them all)
-
-* If you are running more that one state (after an SA-MCSCF run), you will need
-to specify which states you want as 
-
-`~/programs/champ_source/interface/gamess2qmc -t initial -d 0.1 -s -w 1,2 ci66_pVDZ.out`
-
-where you are getting (for example) states 1 and 2.
-
-* To run vmc etc.
-
-There are different excecutables to run vmc, dmc, serial and parallel.
-
-`~/codes/champ/bin/vmc.mov1 < vmc.inp > vmc.out &`
-
-Use the vmc.mov1, dmc.mov1. vmc.mov1.mpi etc., namely, the single-electron move versions.
-
-* MPI champ
-
-Recall to create a file 'filename' with the name of the inputfile.
-vmc.mov1.mpi etc. will open 'filename' to read the name of the input.
-
-* From VMC (1 walker) to DMC (nconf 100 or more)
-
-You need to generate the walkers in a VMC run by setting for instance
-(nconf_new 100). The VMC run generates 'mc_configs_new' (for parallel run,
-mc_configs_newIPROC). Careful that nstep\*nblk > Tcorr\*10\*nconf_new.
-
-Then, you create a file `mc_configs` which will be read by DMC.
-On 1 proc: 
-
-`mv mc_configs_new mc_configs`
-
-on N procs:
-
-`cat mc_configs_new* >> mc_configs`
-`rm mc_configs_new*`
-
-The file contains 100\*NPROC 3N coordinates.
-
-These coordinates will be the starting population of walkers for DMC.
 
