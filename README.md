@@ -168,10 +168,10 @@ with the Intel MKL is possible but requires special care to work with the
 compiler flag `-mcmodel=large`.
 
 #### Documentation
-CHAMP developer documentation can be generated using [Doxygen](http://www.doxygen.nl/) tool. The package is easy to install, we advise to follow the instructions at the Doxygen web page: <http://www.doxygen.nl/download.html>.
+CHAMP developer documentation can be generated using [Doxygen](http://www.doxygen.nl/) tool. To install the package, we advise to follow the instructions at the Doxygen web page: <http://www.doxygen.nl/download.html>.
 
 The Doxyfile file provided in CHAMP docs directory contains all the settings needed to generate the documentation. Once Doxygen is installed, at the docs folder of CHAMP simply run:
 ```
 doxygen Doxyfile
 ```
-Then, a folder will be created in ./docs/developers/html (and its latex version, ./docs/developers/latex) containing the documentation all modules, subroutines and functions within CHAMP.
+Then, two folders will be created in ./docs/developers, ./docs/developers/html and latex, containing the documentation in html and latex formats.
