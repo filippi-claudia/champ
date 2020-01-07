@@ -335,7 +335,7 @@ contains
        iters= i
        if ( idtask== 0) then 
          do j=1, parameters%lowest
-          if( has_converged( j) == .false.) &
+          if( has_converged( j) .eqv. .false.) &
             write(6,'(''DAV: Davidson eingenpair: '', I10, '' not converged'')') j 
          enddo
        write( 6, *), "DAV Warninng: Algorithm did not converge!!"
