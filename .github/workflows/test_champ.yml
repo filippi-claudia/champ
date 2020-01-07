@@ -22,7 +22,6 @@ jobs:
     - name: Install compilers and libraries 
       run: conda install libgfortran openmpi-mpifort blas 
     - name: Locate gwak 
-      run: which gwak
-      run: |
+      run: which gwak |
         echo "Hello world!"
         echo test, and deploy your project.
