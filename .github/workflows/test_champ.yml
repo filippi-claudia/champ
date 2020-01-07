@@ -19,7 +19,10 @@ jobs:
     - run: which python
     - run: conda install numpy
 
-    - name: Run a multi-line script
+    - name: Install compilers and libraries 
+      run: conda install libgfortran openmpi-mpifort blas 
+    - name: Locate gwak 
+      run: which gwak
       run: |
         echo "Hello world!"
         echo test, and deploy your project.
