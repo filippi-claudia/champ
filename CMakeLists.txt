@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 # Project's name
-project(champ LANGUAGES Fortran)
+project(champ LANGUAGES Fortran CXX)
 
 set(CMAKE_VERBOSE_MAKEFILE off)
 

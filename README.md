@@ -174,4 +174,4 @@ The Doxyfile file provided in CHAMP docs directory contains all the settings nee
 ```
 doxygen Doxyfile
 ```
-Then, two folders will be created in ./docs/developers, ./docs/developers/html and latex, containing the documentation in html and latex formats.
+Then two folders will be created, /docs/developers/html and ./docs/developers/latex, containing the documentation about modules, subroutines and functions in both html and latex formats.
