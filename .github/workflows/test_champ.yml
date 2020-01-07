@@ -10,11 +10,15 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Conda installation 
+      uses: s-weigand/setup-conda@master
       with:
         update-conda: true
         python-version: 3.7
         conda-channels: anaconda, conda-forge
-      run: conda --version 
+    - run: conda --version 
+    - run: which python
+    - run: conda install numpy
+
     - name: Run a multi-line script
       run: |
         echo "Hello world!"
