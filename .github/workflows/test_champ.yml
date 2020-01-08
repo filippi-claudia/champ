@@ -9,23 +9,28 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+
     - name: Conda installation 
       uses: s-weigand/setup-conda@master
       with:
         update-conda: true
         python-version: 3.7
         conda-channels: anaconda, conda-forge
+
     - run: conda --version 
     - run: which python
-    - run: conda install numpy
 
     - name: Install compilers and libraries 
       run: conda install
-                 gwak   
                  libgfortran 
                  openmpi-mpifort
                  blas
+            sudo apt-get install gawk
+
     - name: Locate gwak 
       run: gawk --version 
         echo "Hello world!"
         echo test, and deploy your project.
+# Testing
+#    - name: Test code with python script 
+#      run: conda install numpy
