@@ -1,6 +1,5 @@
-name: Compile and test 
-author: PLT
-description: Test if Champ can be compiled using openmpi/blas combiation. 
+name: Build and test  
+
 on: [push]
 
 jobs:
@@ -27,6 +26,6 @@ jobs:
                  openmpi-mpifort |
                  blas 
     - name: Locate gwak 
-      run: gawk --version |  
+      run: gawk --version 
         echo "Hello world!"
         echo test, and deploy your project.
