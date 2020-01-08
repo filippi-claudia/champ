@@ -24,11 +24,12 @@ jobs:
       run: |
            conda install libgfortran openmpi-mpifort blas
            sudo apt-get install gawk
+           gawk --version 
 
-    - name: Locate gwak 
-      run: gawk --version 
-        echo "Hello world!"
-        echo test, and deploy your project.
+    - name: Building code  
+      run: |  
+           cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort
+#           cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
 # Testing
 #    - name: Test code with python script 
 #      run: conda install numpy
