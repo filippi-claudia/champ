@@ -1,5 +1,6 @@
-name: CI
-author: P. Lopez-Tarifa@NLeSC (2020)
+name: Compile and test 
+author: PLT
+description: Test if Champ can be compiled using openmpi/blas combiation. 
 on: [push]
 
 jobs:
