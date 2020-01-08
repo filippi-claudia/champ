@@ -20,11 +20,11 @@ jobs:
     - run: conda install numpy
 
     - name: Install compilers and libraries 
-      run: conda install         \
-                 gwak            \
-                 libgfortran     \
-                 openmpi-mpifort \
-                 blas 
+      run: conda install
+                 gwak   
+                 libgfortran 
+                 openmpi-mpifort
+                 blas
     - name: Locate gwak 
       run: gawk --version 
         echo "Hello world!"
