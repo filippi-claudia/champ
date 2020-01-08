@@ -21,10 +21,8 @@ jobs:
     - run: which python
 
     - name: Install compilers and libraries 
-      run: conda install
-                 libgfortran 
-                 openmpi-mpifort
-                 blas
+      run: |
+           conda install libgfortran openmpi-mpifort blas
            sudo apt-get install gawk
 
     - name: Locate gwak 
