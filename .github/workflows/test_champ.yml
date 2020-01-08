@@ -25,14 +25,14 @@ jobs:
            conda install libgfortran openmpi-mpifort blas
            sudo apt-get install gawk
            gawk --version 
+    - name: list folders
+      run: ls -ltRh /usr/share/miniconda 
 
     - name: Building code  
       env:
            CONDA_PREFIX: /usr/share/miniconda
       run: |  
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort 
-    - name: list folders
-      run: ls -ltRh /usr/share/miniconda 
         # -DBLAS_blas_LIBRARY=/home/plopez/Programs/BLAS-3.8.0/blas_LINUX.a
 #           cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
 # Testing
