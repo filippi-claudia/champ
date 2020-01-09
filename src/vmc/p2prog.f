@@ -3,8 +3,8 @@ C keywords from file all.p2
 C ----------------------------------------------------------------------
       subroutine p2init
       implicit double precision (a-h,o-z)
-      include 'input/inc/p2_dim.inc'
-      include 'input/inc/p2.inc'
+      include 'inc/p2_dim.inc'
+      include 'inc/p2.inc'
       call p2ini0
       call p2inid
       sfile='all.p2'
@@ -208,9 +208,9 @@ C ----------------------------------------------------------------------
       end
       subroutine p2inid
       implicit double precision (a-h,o-z)
-      include 'input/inc/p2_dim.inc'
-      include 'input/inc/p2.inc'
-      include 'input/inc/p2defv.inc'
+      include 'inc/p2_dim.inc'
+      include 'inc/p2.inc'
+      include 'inc/p2defv.inc'
       do i=1,MXKEY
        ideflt(i)=0
        do j=1,MXIDL
@@ -318,7 +318,7 @@ C ----------------------------------------------------------------------
       end
       subroutine p2call(ikw,itmp,ftmp,is1,is2,lne,iend,MXF,iu)
       implicit double precision (a-h,o-z)
-      include 'input/inc/p2etc.inc'
+      include 'inc/p2etc.inc'
       dimension itmp(MXF)
       dimension ftmp(MXF)
       character lne*(*)

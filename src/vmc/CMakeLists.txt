@@ -127,7 +127,7 @@ if (MPI_Fortran_FOUND)
   target_include_directories(shared_objects
     PUBLIC
     ${CMAKE_SOURCE_DIR}/src/include
-    ${CMAKE_SOURCE_DIR}/input)
+    ${CMAKE_SOURCE_DIR}/src/input)
   
   target_compile_options(shared_objects
     PRIVATE
