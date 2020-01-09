@@ -33,6 +33,7 @@ jobs:
       env:
            CONDA_PREFIX: /usr/share/miniconda
       run: |  
+           conda init bash
            conda activate champ
 #           cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DBLAS_blas_LIBRARY=/usr/share/miniconda/pkgs/libcblas-3.8.0-14_openblas/lib/libopenblasp-r0.3.7.so
 #           cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
