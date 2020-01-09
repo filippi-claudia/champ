@@ -1,5 +1,5 @@
 &general title 'psb3_cas66'
-&general pool ../pool/psb3
+&general pool ./pool
 &general pseudopot BFD
 &general basis BFD-Da
 
