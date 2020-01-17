@@ -35,15 +35,15 @@ c
       common /vars2/ nvtop,ivrln,id020
 c
 c control
-C$    types 
-C$    1: i-loop
-C$ 
+C    types 
+C    1: i-loop
+C 
       common /p2ct1/  lctrl,ktctrl(MXCTRL),kctrl(MXCTRL),
      $     ipctl(MXCP,MXCTRL),id014
       character apctl(MXCP,MXCTRL)*(MXIDL)
       common /p2ct2/  apctl
       common /p2ct3/  fpctl(MXCP,MXCTRL)
-C$ nesting
+C nesting
       parameter(MXNEST=8)
       character co(MXNEST)
       common /p2nst1/co
