@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 # Project's name
-project(champ LANGUAGES Fortran)
+project(champ LANGUAGES Fortran CXX)
 
 set(CMAKE_VERBOSE_MAKEFILE off)
 
@@ -19,7 +19,7 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 # Input directory
-set(INPUT_DIR ${CMAKE_SOURCE_DIR}/input)
+set(INPUT_DIR ${CMAKE_SOURCE_DIR}/src/input)
 
 ## User options
 # documentation
@@ -94,12 +94,12 @@ message(STATUS "compiler flags are: " ${Fortran_FLAGS})
 
 ## Subdirectories
 # Include the following subdirectories
-add_subdirectory(include)
-add_subdirectory(input)
-add_subdirectory(interface)
-add_subdirectory(lib)
-add_subdirectory(lib2)
-add_subdirectory(vmc)
-add_subdirectory(dmc)
+add_subdirectory(src/include)
+add_subdirectory(src/input)
+add_subdirectory(tools/interface)
+add_subdirectory(lib/cyrus)
+add_subdirectory(lib/pspline)
+add_subdirectory(src/vmc)
+add_subdirectory(src/dmc)
 
 

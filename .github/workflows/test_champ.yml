@@ -1,0 +1,41 @@
+name: Build and test  
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Conda_installation 
+      uses: s-weigand/setup-conda@master
+      with:
+        update-conda: true
+        python-version: 3.7
+        conda-channels: anaconda, conda-forge
+
+    - run: conda --version 
+    - run: which python
+
+    - name: Install_compilers_and_libraries 
+      run: |
+           conda install libgfortran openmpi-mpifort blas
+           sudo apt-get install gawk
+           gawk --version 
+
+#    - name: List_folders
+#      run: ls -ltRh /usr/share/miniconda 
+
+    - name: Building_code  
+      env:
+           CONDA_PREFIX: /usr/share/miniconda
+      run: |  
+           cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort  -DCMAKE_INSTALL_PREFIX=/usr/share/miniconda
+           cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
+# Testing
+#    - name: Test code with python script 
+#      run: conda install numpy
+# -DBLAS_blas_LIBRARY=/usr/share/miniconda/pkgs/libcblas-3.8.0-14_openblas/lib/libopenblasp-r0.3.7.so
