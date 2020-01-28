@@ -1,4 +1,4 @@
-c     open files
+!     open files
       parameter(MXFNL=4096)
       parameter(MXFLS=1024)
       dimension ifu(MXFLS)
@@ -8,13 +8,13 @@ c     open files
       common /fle1/ nfle,iul,ifu,istat,itype
       common /fle2/ ifn
       common /fle2b/ inptu
-C range of unit numbers for 'sr file'	 
+! range of unit numbers for 'sr file'	 
       parameter(MINUNT=50,MXUNT=90)
-C    current positions
+!    current positions
       common /fle3/ icpos(MXUNT)
-C    other flags
+!    other flags
       common /fle4/ irewnd
-C    internal buffers	
+!    internal buffers	
       parameter(IBUF1=7,IBUF2=8,NBUFFER=2,MBUFLNE=256,KBUFLNE=256)
       common /ibuf00/  ibufline(NBUFFER),kbufline(NBUFFER)
       character cbuffer(MBUFLNE,NBUFFER)*(KBUFLNE)

@@ -1,5 +1,5 @@
-C$ default values for commands
-C$Revision: 1.1 $
+!  default values for commands
+!  Revision: 1.1 $
       dimension ideflt(MXKEY)
       dimension idefpp(MXDEF,MXKEY)
       dimension idefvv(MXDEF)

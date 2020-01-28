@@ -1,6 +1,6 @@
-c     common blocks for p2 (part2)
-C$Revision: 1.1 $
-c various flags
+!     common blocks for p2 (part2)
+! Revision: 1.1 $
+! various flags
       common /p32/ ip2deb,inice,ip2ab,idum2
       character fsep*8
       common /sep00/ fsep,ifsep,id011
