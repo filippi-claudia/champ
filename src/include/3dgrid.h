@@ -1,10 +1,10 @@
-c     flags and dimensions for the 3d grid objects
+!     flags and dimensions for the 3d grid objects
 
       integer MXNSTEP,MXNSTEP2,MXNSTEP3
       integer IUNDEFINED
       real*8  UNDEFINED, SHIFT
 
-c     parameter (MXNSTEP=50)
+!     parameter (MXNSTEP=50)
       parameter (MXNSTEP=1)
       parameter (UNDEFINED = -1234567890.d0)
       parameter (IUNDEFINED = -1234567890)

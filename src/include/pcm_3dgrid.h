@@ -1,4 +1,4 @@
-c     flags and dimensions for the 3d grid objects
+!     flags and dimensions for the 3d grid objects
 
       integer MGRID_PCM,MGRID_PCM2,MGRID_PCM3
       integer IUNDEFINED
