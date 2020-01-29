@@ -63,6 +63,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante_psit.f
     ${CMAKE_CURRENT_SOURCE_DIR}/readps_tm.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pot.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_common.F90
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/mmpol.f
     ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f

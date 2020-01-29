@@ -13,12 +13,15 @@ c &3dgrid xn 1. yn 1. zn 1.
 c----------------------------------------------------------------------
 
       subroutine setup_grid()
+
+      use atom, only: znuc, cent, iwctype, ncent
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include '3dgrid.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!     &,iwctype(MCENT),nctype,ncent
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
@@ -166,13 +169,16 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
       subroutine write_cube(cube_file)
+
+      use atom, only: znuc, cent, iwctype, ncent
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include '3dgrid.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!     &,iwctype(MCENT),nctype,ncent
       common /ghostatom/ newghostype,nghostcent
       character*(*) cube_file
 
