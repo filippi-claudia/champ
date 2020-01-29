@@ -102,4 +102,8 @@ add_subdirectory(lib/pspline)
 add_subdirectory(src/vmc)
 add_subdirectory(src/dmc)
 
-
+if(ENABLE_TEST)
+  MESSAGE(STATUS "enable test")
+  enable_testing()
+  add_subdirectory(tests)
+endif(ENABLE_TEST)

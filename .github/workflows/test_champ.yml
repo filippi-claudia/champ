@@ -35,6 +35,7 @@ jobs:
       run: |  
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort  -DCMAKE_INSTALL_PREFIX=/usr/share/miniconda
            cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
+           cd build && ctest -V
 # Testing
 #    - name: Test code with python script 
 #      run: conda install numpy
