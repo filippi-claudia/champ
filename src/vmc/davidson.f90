@@ -293,7 +293,7 @@ contains
         case( "DPR")
           if( idtask== 0)  write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
           correction= compute_DPR_free( rs, parameters, eigenvalues_sub,                     &
-                                        eigenvectors_sub, diag_mtx, diag_stx)
+                                        diag_mtx, diag_stx)
         case( "GJD")
           if( idtask== 0)  write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
           correction= compute_GJD_free( parameters, ritz_vectors, rs, eigenvectors_sub,      &
@@ -368,8 +368,8 @@ contains
 
   end subroutine
 
-  function compute_DPR_free(rs, parameters, eigenvalues, eigenvectors,    &
-                            diag_mtx, diag_stx) result(correction)
+  function compute_DPR_free(rs, parameters, eigenvalues, diag_mtx, diag_stx) &
+                            result(correction)
 
     !> compute the correction vector using the DPR method for a matrix free diagonalization
     !> See correction_methods submodule for the implementations
@@ -382,9 +382,8 @@ contains
     !
     use array_utils, only: eye
     !
-    
-    real(dp), dimension(:), intent(in) :: eigenvalues
-    real(dp), dimension(:, :), intent(in) ::  eigenvectors, rs
+    real(dp), dimension(:, :), intent(in) :: rs
+    real(dp), dimension(:), intent(in) :: eigenvalues  
     real(dp), dimension(:), intent(in) :: diag_mtx, diag_stx
 
     ! local variables
