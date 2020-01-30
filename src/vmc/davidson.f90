@@ -190,7 +190,7 @@ contains
     ! 2.  Select the initial ortogonal subspace based on lowest elements
     !     of the diagonal of the matrix
 
-    V= generate_preconditioner( d( 1: dim_sub), dim_sub, nparm) ! Initial orthonormal basis
+    V= generate_preconditioner( diag_mtx( 1: dim_sub), dim_sub, nparm) ! Initial orthonormal basis
     
     if( idtask== 0) write(6,'(''DAV: Setup subspace problem'')')
 
@@ -292,7 +292,7 @@ contains
         select case( method)
         case( "DPR")
           if( idtask== 0)  write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
-          correction= compute_DPR_free( mtxV, stxV, parameters, eigenvalues_sub,             &
+          correction= compute_DPR_free( rs, parameters, eigenvalues_sub,                     &
                                         eigenvectors_sub, diag_mtx, diag_stx)
         case( "GJD")
           if( idtask== 0)  write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
@@ -368,7 +368,7 @@ contains
 
   end subroutine
 
-  function compute_DPR_free(mtxV, stxV, parameters, eigenvalues, eigenvectors,    &
+  function compute_DPR_free(rs, parameters, eigenvalues, eigenvectors,    &
                             diag_mtx, diag_stx) result(correction)
 
     !> compute the correction vector using the DPR method for a matrix free diagonalization
@@ -384,29 +384,25 @@ contains
     !
     
     real(dp), dimension(:), intent(in) :: eigenvalues
-    real(dp), dimension(:, :), intent(in) ::  eigenvectors, mtxV, stxV
+    real(dp), dimension(:, :), intent(in) ::  eigenvectors, rs
     real(dp), dimension(:), intent(in) :: diag_mtx, diag_stx
-    
+
     ! local variables
-    !real(dp), dimension(size(V, 1),1) :: vector
-    real(dp), dimension(size(mtxV, 1), size(mtxV, 2)) :: correction
-    real(dp), dimension(size(mtxV, 1), size(mtxV, 2)) :: proj_mtx, proj_stx
-    real(dp), dimension(size(mtxV, 1),size(mtxV, 1)) :: diag
     type(davidson_parameters) :: parameters
+    real(dp), dimension(parameters%nparm,parameters%nparm) :: diag
+    real(dp), dimension(parameters%nparm, parameters%basis_size) :: correction
     integer :: ii, j
     integer :: m
     
     ! calculate the correction vectors
-    m= size( mtxV, 1) 
+    m= parameters%nparm
 
     ! computed the projected matrices
-    proj_mtx = lapack_matmul('N', 'N', mtxV, eigenvectors)
-    proj_stx = lapack_matmul('N', 'N', stxV, eigenvectors)
     diag = 0.0_dp
 
-    do j = 1, size( mtxV, 2)
+    do j = 1, parameters%basis_size 
      diag= eye( m , m, eigenvalues( j))
-     correction( :, j)= proj_mtx( :, j)- lapack_matrix_vector( 'N', diag, proj_stx( :, j))
+     correction( :, j)= rs( :, j) 
 
      do ii= 1, size( correction, 1)
        correction( ii, j)= correction( ii, j)/( eigenvalues( j)* diag_stx( ii)- diag_mtx( ii))
