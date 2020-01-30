@@ -174,8 +174,9 @@ contains
     allocate(diag_stx(parameters%nparm))
     allocate(d(dim_sub))
 
-    diag_mtx= extract_diagonal_free(fun_mtx_gemv, parameters, parameters%nparm)
-    diag_stx= extract_diagonal_free(fun_stx_gemv, parameters, parameters%nparm)
+    call store_daig_hs(parameters%nparm,diag_mtx, diag_stx)
+!    diag_mtx= extract_diagonal_free(fun_mtx_gemv, parameters, parameters%nparm)
+!    diag_stx= extract_diagonal_free(fun_stx_gemv, parameters, parameters%nparm)
 
     d= 0.0_dp
     do i= 1, dim_sub 
