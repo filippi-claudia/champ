@@ -178,15 +178,16 @@ contains
 !    diag_mtx= extract_diagonal_free(fun_mtx_gemv, parameters, parameters%nparm)
 !    diag_stx= extract_diagonal_free(fun_stx_gemv, parameters, parameters%nparm)
 
-    d= 0.0_dp
-    do i= 1, dim_sub 
-      xs= 0.0_dp 
-      xs( i, 1)= 1.0_dp 
-      gs= fun_mtx_gemv( parameters, xs)
-      d( i)= gs( i,1)
-    enddo
+!    d= 0.0_dp
+!    do i= 1, dim_sub 
+!      xs= 0.0_dp 
+!      xs( i, 1)= 1.0_dp 
+!      gs= fun_mtx_gemv( parameters, xs)
+!      d( i)= gs( i,1)
+!    enddo
 
-    if (nproc > 1) call MPI_BCAST( d, dim_sub, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+!    if (nproc > 1) call MPI_BCAST( d, dim_sub, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+    if (nproc > 1) call MPI_BCAST( diag_mtx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
  
     ! 2.  Select the initial ortogonal subspace based on lowest elements
     !     of the diagonal of the matrix
