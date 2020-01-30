@@ -1,3 +1,6 @@
+!> \brief File collecting all modules that replace common blocks.  
+!>
+!> \author P. Lopez-Tarifa NLeSC(2019)
 MODULE contrl_per
   INTEGER:: iperiodic,ibasis
   SAVE
@@ -7,7 +10,6 @@ MODULE force_analy
   INTEGER:: iforce_analy 
   SAVE
 END MODULE 
-
 
 MODULE da_pseudo
    include 'vmc.h'
