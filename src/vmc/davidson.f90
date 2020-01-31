@@ -181,19 +181,19 @@ contains
 !    if (idtask==0) call write_vector( 'diag_0.txt', diag_mtx)
  
     ! 2.  Select the initial ortogonal subspace based on lowest elements
-    !     of the diagonal of the matrix
+    !     of the diagonal of the matrix.
 
     V= generate_preconditioner( diag_mtx( 1: dim_sub), dim_sub, nparm) ! Initial orthonormal basis
     
     if( idtask== 0) write(6,'(''DAV: Setup subspace problem'')')
 
-    ! 3. Outer loop block Davidson schema
+    ! 3. Outer loop block Davidson schema:
 
     outer_loop: do i= 1, max_iters
 
       if( idtask== 0) write(6,'(''DAV: Davidson iteration: '', I10)') i
 
-      ! Array deallocation/allocation
+      ! Array deallocation/allocation.
       call check_deallocate_matrices(mtx_proj, stx_proj, lambda, eigenvectors_sub, ritz_vectors, mtxV, stxV)
       call check_deallocate_matrix( guess)
       call check_deallocate_matrix( rs)
@@ -206,8 +206,7 @@ contains
       allocate( lambda( parameters%basis_size, parameters%basis_size)) 
       allocate( eigenvectors_sub( parameters%basis_size, parameters%basis_size)) 
 
-      ! 4. Projection of H and S matrices
-
+      ! Calculation of H and S in the subspace:
       mtxV= fun_mtx_gemv( parameters, V)
       stxV= fun_stx_gemv( parameters, V)
 
@@ -216,14 +215,17 @@ contains
         call MPI_BCAST( stxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
       endif
 
-      mtx_proj= lapack_matmul( 'T', 'N', V, mtxV)
-      stx_proj= lapack_matmul( 'T', 'N', V, stxV)
 
       !! IF IDTASK=0
       if( idtask.eq. 0) then
 
+        ! 4. Projection of H and S matrices
+
+        mtx_proj= lapack_matmul( 'T', 'N', V, mtxV)
+        stx_proj= lapack_matmul( 'T', 'N', V, stxV)
+
         ! 5.Compute the eigenvalues and their corresponding ritz_vectors
-        ! for the projected matrix using lapack
+        ! for the projected matrix using lapack.
         
         write( 6, '(''DAV: enter lapack_generalized_eigensolver'')') 
         call lapack_generalized_eigensolver( mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
@@ -314,7 +316,8 @@ contains
       else
 
         ! 12. Otherwise reduce the basis of the subspace to the current correction
-        V = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :dim_sub))
+!        V = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :dim_sub))
+        V = ritz_vectors(:, :dim_sub)
 
       end if
     
@@ -341,11 +344,14 @@ contains
     
     ! Free memory
     call check_deallocate_matrix( correction)
-    deallocate( eigenvalues_sub, eigenvectors_sub, mtx_proj, diag_mtx, diag_stx)
+    deallocate( eigenvalues_sub, eigenvectors_sub, diag_mtx, diag_stx)
     deallocate( V, mtxV, stxV, guess, rs, lambda)
+    if (idtask == 0) then  
+       deallocate( mtx_proj)
+       call check_deallocate_matrix( stx_proj)
+    endif 
     
     ! free optional matrix
-    call check_deallocate_matrix( stx_proj)
     
   end subroutine generalized_eigensolver
 !  
