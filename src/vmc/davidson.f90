@@ -140,7 +140,6 @@ contains
     real( dp), dimension(:, :), allocatable :: correction, eigenvectors_sub, mtx_proj, stx_proj, V
     real( dp), dimension(:, :), allocatable :: mtxV, stxV 
     real( dp), dimension(nparm, 1) :: xs, gs
-    real( dp), dimension(:), allocatable :: d 
 
     ! Arrays dimension
     type(davidson_parameters) :: parameters
@@ -172,26 +171,13 @@ contains
     ! Diagonal of the arrays
     allocate(diag_mtx(parameters%nparm))
     allocate(diag_stx(parameters%nparm))
-    allocate(d(dim_sub))
 
     if (idtask==0) call store_daig_hs(parameters%nparm, diag_mtx, diag_stx)
 
-! Obsolete:
-!    diag_mtx= extract_diagonal_free(fun_mtx_gemv, parameters, parameters%nparm)
-!    diag_stx= extract_diagonal_free(fun_stx_gemv, parameters, parameters%nparm)
-!    d= 0.0_dp
-!    do i= 1, dim_sub 
-!      xs= 0.0_dp 
-!      xs( i, 1)= 1.0_dp 
-!      gs= fun_mtx_gemv( parameters, xs)
-!      d( i)= gs( i,1)
-!    enddo
-!    if (nproc > 1) call MPI_BCAST( d, dim_sub, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-!    V= generate_preconditioner( diag_mtx( 1: dim_sub), dim_sub, nparm) ! Initial orthonormal basis
-!    V= generate_preconditioner( d( 1: dim_sub), dim_sub, nparm) 
-! end Obsolete
-
-    if (nproc > 1) call MPI_BCAST( diag_mtx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+    if (nproc > 1) then  
+       call MPI_BCAST( diag_mtx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+       call MPI_BCAST( diag_stx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+    endif 
 !    if (idtask==0) call write_vector( 'diag_0.txt', diag_mtx)
  
     ! 2.  Select the initial ortogonal subspace based on lowest elements
@@ -355,7 +341,7 @@ contains
     
     ! Free memory
     call check_deallocate_matrix( correction)
-    deallocate( eigenvalues_sub, eigenvectors_sub, mtx_proj, diag_mtx, diag_stx, d)
+    deallocate( eigenvalues_sub, eigenvectors_sub, mtx_proj, diag_mtx, diag_stx)
     deallocate( V, mtxV, stxV, guess, rs, lambda)
     
     ! free optional matrix
