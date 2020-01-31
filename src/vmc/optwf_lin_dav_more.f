@@ -54,7 +54,7 @@
        elseif(lin_jdav.eq.1) then
        write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &       ethr, e, itype, notcnv, idav_iter, ipr, .true.)
+     &       ethr, e, itype, notcnv, idav_iter, ipr)
        else
          call fatal_error('LIND: lin_jdav < 2')
       endif
