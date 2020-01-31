@@ -20,8 +20,6 @@ c----------------------------------------------------------------------
 
       include 'vmc.h'
       include '3dgrid.h'
-!      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!     &,iwctype(MCENT),nctype,ncent
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
@@ -177,8 +175,6 @@ c----------------------------------------------------------------------
       include 'vmc.h'
       include '3dgrid.h'
 
-!      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!     &,iwctype(MCENT),nctype,ncent
       common /ghostatom/ newghostype,nghostcent
       character*(*) cube_file
 

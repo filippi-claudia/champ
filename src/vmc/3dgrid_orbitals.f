@@ -2,6 +2,9 @@ c Orbitals on a 3d grid with spline fit
 c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       subroutine setup_3dsplorb
+
+      use atom, only: cent, ncent
+
       implicit real*8(a-h,o-z)
 
       include 'force.h'
@@ -10,8 +13,6 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       include '3dgrid_flags.h'
       include '3dgrid_spline.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /ghostatom/ newghostype,nghostcent
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
@@ -384,6 +385,9 @@ c
 c Lagrange interpolation routines
 
       subroutine setup_3dlagorb
+
+      use atom, only: cent, ncent
+
       implicit real*8(a-h,o-z)
 
       include 'force.h'
@@ -392,8 +396,6 @@ c Lagrange interpolation routines
       include '3dgrid_flags.h'
       include '3dgrid_lagrange.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /ghostatom/ newghostype,nghostcent
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
