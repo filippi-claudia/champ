@@ -27,14 +27,13 @@
 !> \param[in] max_iters: Maximum number of iterations.
 !> \param[in] tolerance Norm**2 error of the eigenvalues.
 !> \param[in] method: Method to compute the correction vectors.
-!> \param[in, opt] max_dim_sub: maximum dimension of the subspace search.   
 !> \param[out] iters: Number of iterations until convergence.
 !> \return eigenvalues and ritz_vectors of the matrix `mtx`.
 module davidson
   use numeric_kinds, only: dp
   use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
        lapack_qr, lapack_solver
-  use array_utils, only: concatenate, generate_preconditioner, norm, write_matrix, write_vector, & 
+  use array_utils, only: concatenate, initialize_subspace, norm, write_matrix, write_vector, & 
                         eye, check_deallocate_matrices, check_deallocate_matrix
   implicit none
 
@@ -76,7 +75,6 @@ contains
     !> \param[in] max_iters: Maximum number of iterations
     !> \param[in] tolerance norm-2 error of the eigenvalues
     !> \param[in] method: Method to compute the correction vectors
-    !> \param[in, opt] max_dim_sub: maximum dimension of the subspace search   
     !> \param[out] iters: Number of iterations until convergence
     !> \return eigenvalues and ritz_vectors of the matrix `mtx`
 
@@ -127,7 +125,7 @@ contains
     end interface
 
     ! Local variables
-    integer :: dim_sub, max_size_basis, i, j, ier
+    integer :: init_subspace_size, max_size_basis, i, j, ier
 
     ! Basis of subspace of approximants
     real(dp), dimension(:), allocatable :: diag_mtx, diag_stx
@@ -149,7 +147,7 @@ contains
     integer :: n_converged ! Number of converged eigenvalue/eigenvector pairs
     
     ! Iteration subpsace dimension
-    dim_sub = lowest  * 2
+    init_subspace_size = lowest  * 2
 
     ! Lapack qr safety check 
     if (nvecx > nparm) then 
@@ -157,7 +155,7 @@ contains
     endif
 
     ! Dimension of the matrix
-    parameters = davidson_parameters(nparm, nparm_max, lowest, nvecx, dim_sub) 
+    parameters = davidson_parameters(nparm, nparm_max, lowest, nvecx, init_subspace_size) 
 
     ! 1. Variables initialization
     ! extract the diagonals of the matrices
@@ -183,7 +181,7 @@ contains
     ! 2.  Select the initial ortogonal subspace based on lowest elements
     !     of the diagonal of the matrix.
 
-    V= generate_preconditioner( diag_mtx( 1: dim_sub), dim_sub, nparm) ! Initial orthonormal basis
+    V= initialize_subspace( diag_mtx( 1: init_subspace_size), init_subspace_size, nparm) ! Initial orthonormal basis
     
     if( idtask== 0) write(6,'(''DAV: Setup subspace problem'')')
 
@@ -287,7 +285,7 @@ contains
         select case( method)
         case( "DPR")
           if( idtask== 0)  write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
-          correction= compute_DPR_free( rs, parameters, eigenvalues_sub,                     &
+          correction= compute_DPR( rs, parameters, eigenvalues_sub,                     &
                                         diag_mtx, diag_stx)
         case( "GJD")
           if( idtask== 0)  write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
@@ -316,8 +314,7 @@ contains
       else
 
         ! 12. Otherwise reduce the basis of the subspace to the current correction
-!        V = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :dim_sub))
-        V = ritz_vectors(:, :dim_sub)
+        V = ritz_vectors(:, :init_subspace_size)
 
       end if
     
@@ -367,7 +364,7 @@ contains
 
   end subroutine
 
-  function compute_DPR_free(rs, parameters, eigenvalues, diag_mtx, diag_stx) &
+  function compute_DPR(rs, parameters, eigenvalues, diag_mtx, diag_stx) &
                             result(correction)
 
     !> compute the correction vector using the DPR method for a matrix free diagonalization
@@ -408,7 +405,7 @@ contains
 
     end do
 
-  end function compute_DPR_free
+  end function compute_DPR
 
   function compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors, & 
              eigenvalues) result( correction)
