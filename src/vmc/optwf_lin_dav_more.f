@@ -61,7 +61,6 @@
 
       call my_second(2,'david ')
       call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)
-      write(6,*) "HEREEEE"
 c idtask.eq.0
       if(idtask.eq.0)  then
 
@@ -106,7 +105,6 @@ c else means if i optimize jastrow and or orbitals
               deltap(i+nparm*(istate-1))=evc(i,i_overlap_max)/anorm(i_overlap_max)
             enddo
 
-       write(6,*) "HEREEEE 2"
 c save 5 additional vectors with large overlap
             do ivec=1,5
               idx_ivec=index_overlap(nvec-ivec)
