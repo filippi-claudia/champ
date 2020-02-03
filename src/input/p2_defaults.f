@@ -99,10 +99,10 @@ c     parse line ...
       end 
       subroutine gpnln2(iu,il,lne,nl,idx1,idx2,mm,lbuf,errmsg)
       implicit double precision (a-h,o-z)
-C$    wrapper around gpnlne which
-C$    eats comments and blank lines
-C$    and reports errors 
-C$    returns 'end' at end-of-file
+C    wrapper around gpnlne which
+C    eats comments and blank lines
+C    and reports errors 
+C    returns 'end' at end-of-file
       include 'inc/p2_dim.inc'
       character  lne*(MXLNE)
       character  lbuf*(MXLNE)
@@ -112,16 +112,16 @@ C$    returns 'end' at end-of-file
  1    continue 
       call gpnlne(iu,il,lne,MXLNE,idx1,idx2,mm,lbuf,ierr)
       if(ierr.eq.0) then
-C$ blank line
+C blank line
        if(mm.eq.0) goto 1
       elseif(ierr.eq.-1) then
-C$ comment line
+C comment line
        goto 1
       elseif(ierr.eq.1) then
-C$ eof
+C eof
        goto 2000
       else
-C$ some other error
+C some other error
        goto 1000
       endif
       return
@@ -221,7 +221,7 @@ ccc ***
       return
       end 
       subroutine rdln(iu,line,lnum,ieof)
-C$    read next line from input stream 
+C    read next line from input stream 
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
@@ -285,7 +285,7 @@ c     format string : i,d,a (integer,double,string*MXLNE)
 c
 ccc *** special commands 
       if(lne(idx1(1):idx1(1)).eq.'"') then
-C$    print whole line
+C    print whole line
        if(idx2(1).eq.idx1(1)) then
         write (6,201) lne(idx1(2):idx2(mm))
        else
@@ -295,7 +295,7 @@ C$    print whole line
        ierr=-1
        return
       elseif(lne(idx1(1):idx2(1)).eq.'sh') then
-C$    system call (only on DEC-osf1 and linux)
+C    system call (only on DEC-osf1 and linux)
        if(mm.gt.1) then
         write (6,*) ' '
         write (6,*) ' '
@@ -312,14 +312,14 @@ C$    system call (only on DEC-osf1 and linux)
        ierr=-1
        return
       elseif(lne(idx1(1):idx1(1)).eq.'&') then
-C$ 'namelist' -like variable input
-C$ expected format: & nam1 val1 nam2 val2 ...
-C$ or               &prefix val1 nam2 val2 ...
+C 'namelist' -like variable input
+C expected format: & nam1 val1 nam2 val2 ...
+C or               &prefix val1 nam2 val2 ...
        if((mm.lt.3).or.(mod((mm-1),2).ne.0)) then
         ierr=7
         goto 1000
        else
-C$ prefix 
+C prefix 
         if(idx2(1).gt.idx1(1)) then
          pfxstr=lne((idx1(1)+1):idx2(1))
          kplen=idx2(1)-idx1(1)
@@ -329,7 +329,7 @@ c$$$ 888     format ('prefix ',i8,' [',a,']')
         else
          ipfx=0
         endif
-C$ loop over name-value pairs
+C loop over name-value pairs
         do i=2,mm,2
          if(ipfx.eq.1) then
           write(vnm,789) pfxstr(1:kplen), lne(idx1(i):idx2(i))
@@ -355,7 +355,7 @@ c$$$ 889     format('VAR NAME ',i8, ' [',a,']')
         return
        endif
       elseif(lne(idx1(1):idx2(1)).eq.'def') then
-C$    macro definition
+C    macro definition
        if(mm.eq.2) then
         call p2setv(lne(idx1(2):idx2(2)),' ')
         ierr=-1
@@ -370,25 +370,25 @@ C$    macro definition
         goto 1000
        endif
       else
-C$    catch pragmas
+C    catch pragmas
        call p2prag(iu,lne(idx1(1):idx2(mm)),itest)
        if(itest.eq.1) then
         ierr=-1
         return
        endif
-C$    simple keyword search
+C    simple keyword search
        iabbr=0
        ikw=0
        len0=idx2(1)-idx1(1)+1
        do k=1,NKEY
-C$ exact match
+C exact match
         if(len0.eq.keylen(k)) then
          if(keys(k)(1:keylen(k)).eq.lne(idx1(1):idx2(1)))then
           ikw=k
           goto 80
          endif
         elseif(len0.lt.keylen(k)) then
-C$ abbrev
+C abbrev
          if(ip2ab.eq.1) then
           if(keys(k)(1:len0).eq.lne(idx1(1):idx2(1)))then
            iabbr=iabbr+1
@@ -423,7 +423,7 @@ c
       ini=0
       ifl=0
       iaa=0
-c$    argument list ...
+c    argument list ...
       if(mm.gt.1)then
        do i=2,mm
 c       late comment ?
@@ -468,7 +468,7 @@ c       late comment ?
       if(iarg.eq.nargs(ikw)) then
        ierr=0
       else
-C$    insert default values ??
+C    insert default values ??
        if((ip2dfl.ne.0).and.(ideflt(ikw).gt.0).and.(ideflt(ikw).le.(iarg
      $      +1))) then
         call p2ddfl(ikw,iarg,ini,ifl,iaa,nargs(ikw),
@@ -481,7 +481,7 @@ C$    insert default values ??
        endif
       endif
       if(ierr.eq.0) return
-C$ errors ....
+C errors ....
  999  continue 
       ierr=2
  1000 continue 
@@ -733,11 +733,11 @@ c                change $$ into $
 
       subroutine p2arry(iu,nm,iv,n1)
       implicit double precision (a-h,o-z)
-C$INPUT array  inp a 0 i=1
-C$INPUT vector inp a 1 i=1
-C$INPUT table  inp a 2 i=1
-C$    simple 1d array input
-C$    nm basename, n1 first index
+CINPUT array  inp a 0 i=1
+CINPUT vector inp a 1 i=1
+CINPUT table  inp a 2 i=1
+C    simple 1d array input
+C    nm basename, n1 first index
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
       include 'inc/p2b.inc'
@@ -803,7 +803,7 @@ C$    nm basename, n1 first index
       enddo
       goto 1
  2    continue 
-C$    dimension stored in name.size
+C    dimension stored in name.size
       id=idx-1
       write(vnm,20) nm
  20   format(a,'.size')
@@ -935,7 +935,7 @@ c     if variable is not set, assign def instead
 
       subroutine p2gti(nm,iv,ierr)
       implicit double precision (a-h,o-z)
-C$    get integer variable 
+C    get integer variable 
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
       include 'inc/p2b.inc'
@@ -961,7 +961,7 @@ C$    get integer variable
       end 
       subroutine p2gtf(nm,v,ierr)
       implicit double precision (a-h,o-z)
-C$    get fload variable 
+C    get fload variable 
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
       include 'inc/p2b.inc'
@@ -989,7 +989,7 @@ C$    get fload variable
 
       subroutine p2gta(nm,v,ierr)
       implicit double precision (a-h,o-z)
-C$    get fload variable 
+C    get fload variable 
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
       include 'inc/p2b.inc'
@@ -1049,9 +1049,9 @@ CTEST<
       end 
 
       subroutine p2vin(fn,ifmt)
-C$INPUT printmacros a=stdout 0
-C$INPUT savemacros  a=stdout 1
-C$ list all defined macros
+CINPUT printmacros a=stdout 0
+CINPUT savemacros  a=stdout 1
+C list all defined macros
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
@@ -1112,8 +1112,8 @@ c     endif
 
       subroutine p2ind(s1,s2,n)
       implicit double precision (a-h,o-z)
-C$    copies s1 to s2 and expands one-chracter macros
-C$    (index-macros)
+C    copies s1 to s2 and expands one-chracter macros
+C    (index-macros)
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
       include 'inc/p2b.inc'
@@ -1165,7 +1165,7 @@ C$    (index-macros)
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2b.inc'
-C$    put float to variable list
+C    put float to variable list
       character tmpstr*64
       character tmp2*64
       character nmstr*25
@@ -1207,7 +1207,7 @@ C$    put float to variable list
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2b.inc'
-C$    put integer to variable list
+C    put integer to variable list
       character nam*(*)
       character tmpstr*64
       character tmp2*64
@@ -1263,7 +1263,7 @@ C$    put integer to variable list
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2b.inc'
-C$    put integer to variable list
+C    put integer to variable list
       character a*(64)
       character nam*(64)
       character tmpstr*64
@@ -1388,11 +1388,11 @@ c
         endif
         iap=1
        elseif(imac.eq.2) then
-C$    index inside vn ?? 
-C$    (macro names can contain one-letter macros like $(foo.$i.$k.bar)) 
+C    index inside vn ?? 
+C    (macro names can contain one-letter macros like $(foo.$i.$k.bar)) 
         k01=ivn
         call p2ind(vn,vn2,k01)
-C$
+C
         call p2var(vn2,k01,lbuf2(ib2:),k3,ie)
         if(ie.ne.0) goto 1000
         ib2=ib2+k3
@@ -1468,26 +1468,26 @@ c     called by p2init
       include 'inc/p2b.inc' 
       character tab
       data tab /'\t'/
-C$    commands in output
+C    commands in output
       inice=0
-C$    abbreviation of commands allowed
+C    abbreviation of commands allowed
       ip2ab=1
-C$    filed separator characters
+C    filed separator characters
       ifsep=3
       fsep=' ,'//tab
       nvtop=0
       nans=0
       iskip=0
-C$    one line comment 
+C    one line comment 
       cmtchr='#'
-C$    'anticomment'
+C    'anticomment'
       antchr='#'
       iant=0
-C$ debugging off
+C debugging off
       ip2deb=0
-C$    nest level 0
+C    nest level 0
       lnest=0
-C$    init file own handling 
+C    init file own handling 
       call setinp(5)
       call file(iutmp,'<input>','old',1,0)
       end 
@@ -1510,7 +1510,7 @@ c$
       dimension idefvv(MXDEF)
       dimension ddefvv(MXDEF)
       character adefvv(MXDEF)*(MXLNE)
-C$
+C
       ierr=0
       do i=iarg+1,nargs
        ix=idefpp(i,ikw)
@@ -1542,7 +1542,7 @@ C$
       end 
 
       subroutine p2prag(iu,str,itest)
-C$ pragmas
+C pragmas
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
@@ -1558,47 +1558,47 @@ c
        itest=1
        if(str(2:8).eq.'VERSION') then
         call pver
-C$ allow commands to be abbreviated
+C allow commands to be abbreviated
        elseif(str(2:7).eq.'ABBREV') then
         ip2ab=1
        elseif(str(2:9).eq.'NOABBREV') then
         ip2ab=0
-C$ print command and separator line
+C print command and separator line
        elseif(str(2:4).eq.'SEP') then
         inice=1
        elseif(str(2:6).eq.'NOSEP') then
         inice=0
-C$ allow use of default arguments 
+C allow use of default arguments 
        elseif(str(2:11).eq.'NODEFAULTS') then
         ip2dfl=0
        elseif(str(2:9).eq.'DEFAULTS') then
         ip2dfl=1
-C$ no warning if default values of variables are used
+C no warning if default values of variables are used
        elseif(str(2:14).eq.'VARDEF_SILENT') then
         iwp2gtd=0
-C$  warning if default values of variables are used
+C  warning if default values of variables are used
        elseif(str(2:12).eq.'VARDEF_WARN') then
         iwp2gtd=1
-C$    Error if default values of variables are used
+C    Error if default values of variables are used
        elseif(str(2:13).eq.'VARDEF_ERROR') then
         iwp2gtd=2
-C$ parser debugging 
+C parser debugging 
        elseif(str(2:6).eq.'DEBUG') then
         ip2deb=1
        elseif(str(2:8).eq.'NODEBUG') then
         ip2deb=0
-C$ change character for one-line-comments 
+C change character for one-line-comments 
        elseif(str(2:9).eq.'COMMENTS') then
         cmtchr=str(10:10)
-C$ set character with which lines have to begin 
-C$ in order to be parsed  
+C set character with which lines have to begin 
+C in order to be parsed  
        elseif(str(2:5).eq.'ONLY') then
         iant=1
         antchr=str(6:6)
-C$ reset this (all lines which are not comments will be parsed)
+C reset this (all lines which are not comments will be parsed)
        elseif(str(2:4).eq.'ALL') then
         iant=0
-C$ set input line number
+C set input line number
        elseif(str(2:5).eq.'LINE') then
         ipos=ifroms(str(6:),1)
         call setpos(iu,ipos)
@@ -1618,10 +1618,10 @@ C$ set input line number
  12   format('### line ',i6,' PRAGMA ',a) 
       end 
 
-C$## simple control rout. (not included by default) ## 
+C## simple control rout. (not included by default) ## 
       subroutine skipto(lbl,icond)
       implicit double precision (a-h,o-z)
-C$INPUT skipto a i=1
+CINPUT skipto a i=1
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
       include 'inc/p2b.inc'
@@ -1640,7 +1640,7 @@ C$INPUT skipto a i=1
       end 
 
       subroutine gotol(nl)
-C$INPUT gotol i
+CINPUT gotol i
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
@@ -1663,7 +1663,7 @@ C$INPUT gotol i
       end 
 
       subroutine loop(nam,ia,ib,is)
-C$INPUT loop a i i i=1
+CINPUT loop a i i i=1
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
@@ -1700,7 +1700,7 @@ ctest<
       endif
       end 
       subroutine ectrl
-C$INPUT end
+CINPUT end
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
@@ -1757,8 +1757,8 @@ ctest<
       end 
 C     prints list of commands
       subroutine cmdlst(icol)
-C$INPUT ?  3
-C$INPUT ?? 0
+CINPUT ?  3
+CINPUT ?? 0
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
@@ -1790,7 +1790,7 @@ C$INPUT ?? 0
       end 
 CCC load command file ...
       subroutine ldcmdf(fn)
-C$INPUT load a
+CINPUT load a
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
@@ -1815,7 +1815,7 @@ C$INPUT load a
         call fatal('too many levels for nested load')
        endif
        write (6,10) fnsave(1:ifn)
-C$    push flags & set defaults
+C    push flags & set defaults
        iio(lnest)=iimode
        co(lnest)=cmtchr
        ianto(lnest)=iant
@@ -1857,9 +1857,9 @@ C$    push flags & set defaults
       iant=iant0
       end 
       subroutine p2fop(vn,aop,d1,op,d2)
-C$INPUT fop a a d a d=0
-C$INPUT @@  a a d a d=0
-C$    simple operations on integer variables
+CINPUT fop a a d a d=0
+CINPUT @@  a a d a d=0
+C    simple operations on integer variables
       implicit double precision (a-h,o-z)
       character vn*(*),op*(*),aop*(*)
       if(aop.eq.'=') then
@@ -1884,9 +1884,9 @@ C$    simple operations on integer variables
       endif
       end       
       subroutine p2iop(vn,aop,i1,op,i2)
-C$INPUT iop a a i=0 a=x i=0
-C$INPUT @   a a i=0 a=x i=0
-C$    simple operations on integer variables
+CINPUT iop a a i=0 a=x i=0
+CINPUT @   a a i=0 a=x i=0
+C    simple operations on integer variables
       implicit double precision (a-h,o-z)
       character vn*(*),op*(*),aop*(*)
       call intro('p2iop')
@@ -1933,7 +1933,7 @@ C$    simple operations on integer variables
       end       
 
       subroutine strfl(s,c,n)
-C$    string fill
+C    string fill
       implicit double precision (a-h,o-z)
       character s*(*)
       character c

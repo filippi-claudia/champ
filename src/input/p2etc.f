@@ -304,7 +304,7 @@ c     existing file...
       end 
       subroutine incpos(iu,il,incr)
       implicit double precision (a-h,o-z)
-C$    increment and return file posision counter
+C    increment and return file posision counter
       include 'inc/files.inc'
       icpos(iu)=icpos(iu)+incr
       il=icpos(iu)
@@ -325,7 +325,7 @@ c     close all files
       end 
 
       subroutine finfo(iflag)
-C$INPUT finfo i=0
+C INPUT finfo i=0
       implicit double precision (a-h,o-z)
       include 'inc/files.inc'
       character s*10
@@ -365,7 +365,7 @@ c     when iflag is set, dont list closed files
       end 
 
       subroutine rwf(fn)
-C$INPUT rewind a
+C INPUT rewind a
       implicit double precision (a-h,o-z)
       include 'inc/files.inc'
       character fn*(*)
@@ -453,7 +453,7 @@ CC********** conversion functions *******************
       end 
 
 
-C$    clear vector
+C    clear vector
       subroutine iclear(k,n)
       implicit double precision (a-h,o-z)
       dimension k(n)
@@ -468,7 +468,7 @@ C$    clear vector
        v(i)=0.d0
       enddo
       end 
-C$    read out vector elements
+C    read out vector elements
       subroutine  getvc1(src,np,tgt,np2,n1,n2)
       implicit double precision (a-h,o-z)
       dimension src(np)
@@ -490,7 +490,7 @@ C$    read out vector elements
       enddo
       end 
       subroutine arwnd(flag,i1)
-C$INPUT autorewind a=on i=0
+C INPUT autorewind a=on i=0
       implicit double precision (a-h,o-z)
       include 'inc/files.inc'
       character flag*(*)
