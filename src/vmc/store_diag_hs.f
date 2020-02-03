@@ -1,4 +1,4 @@
-      subroutine store_daig_hs(nparm_p1,hii,sii)
+      subroutine store_diag_hs(nparm_p1,hii,sii)
 
       implicit real*8 (a-h,o-z)
 

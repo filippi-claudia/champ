@@ -170,7 +170,7 @@ contains
     allocate(diag_mtx(parameters%nparm))
     allocate(diag_stx(parameters%nparm))
 
-    if (idtask==0) call store_daig_hs(parameters%nparm, diag_mtx, diag_stx)
+    if (idtask==0) call store_diag_hs(parameters%nparm, diag_mtx, diag_stx)
 
     if (nproc > 1) then  
        call MPI_BCAST( diag_mtx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
