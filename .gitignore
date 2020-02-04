@@ -30,3 +30,5 @@ build
 
 # emacs
 *~
+# local scripts
+compile.zsh

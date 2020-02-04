@@ -1,5 +1,5 @@
 &general title 'psb-20'
-&general pool ../pool_qmc/
+&general pool ./pool_qmc/
 &general pseudopot BFD
 &general basis bfd-dz
 

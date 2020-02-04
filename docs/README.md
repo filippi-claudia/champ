@@ -1,22 +1,3 @@
-```
-**********************************************************
-**                                                      **
-**   Cornell Holland Ab-initio Materials Package        **
-**                                                      **
-**    CCCCC   HH    HH    AAAAA   MMM   MMM   PPPPPP    **
-**   CC   CC  HH    HH   AA   AA  MM M M MM   PP   PP   **
-**   CC       HH    HH   AA   AA  MM  M  MM   PP   PP   **
-**   CC       HHHHHHHH   AAAAAAA  MM     MM   PPPPPP    **
-**   CC       HH    HH   AA   AA  MM     MM   PP        **
-**   CC   CC  HH    HH   AA   AA  MM     MM   PP        **
-**    CCCCC   HH    HH   AA   AA  MM     MM   PP        **
-**                                                      **
-**   Cornell Holland Ab-initio Materials Package        **
-**                                                      **
-**********************************************************
-```
-------
-
 The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo 
 suite of programs for electronic structure calculations of atomic and molecular systems. 
 The code is a sister code of the homonymous program originally developed by Cyrus Umrigar 
