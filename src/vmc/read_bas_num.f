@@ -1,4 +1,5 @@
       subroutine read_bas_num(iwf)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 c Written by Claudia Filippi
 c Modified by F. Schautz to use fancy file names
 c Reads in localized orbitals on a radial grid
@@ -15,8 +16,6 @@ c Reads in localized orbitals on a radial grid
       parameter(NCOEF=5)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /numbas/ arg(MCTYPE),r0(MCTYPE)
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)

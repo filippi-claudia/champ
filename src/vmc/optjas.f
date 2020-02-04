@@ -178,14 +178,15 @@ c d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
 c-----------------------------------------------------------------------
       subroutine optjas_sum(wtg_new,wtg_old,enew,eold,iflag)
 c Written by Claudia Filippi
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /bparm/ nspin2b,nocuspb
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
@@ -427,14 +428,14 @@ c-----------------------------------------------------------------------
       subroutine optjas_save
 c Written by Claudia Filippi
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /bparm/ nspin2b,nocuspb
 
       common /gradhessjo/ gvalue_old(MPARMJ),denergy_old(MPARMJ,MSTATES)
@@ -621,6 +622,9 @@ c Written by Claudia Filippi
 c-----------------------------------------------------------------------
       subroutine optjas_fin(wcum,ecum)
 c Written by Claudia Filippi
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'optjas.h'
@@ -642,9 +646,6 @@ c Written by Claudia Filippi
      &dj_save(MPARMJ,MSTATES),e_bsum(MSTATES)
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 

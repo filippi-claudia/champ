@@ -9,12 +9,11 @@ c     computes nuclei-dipoles  interactions (penu_dp)
 c     computes charges-charges interactions (peqq)
 c     computes charges-dipoles interactions (peq_dp)
 c...........................................................
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h' 
       include 'mmpol.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       data PI/3.1415927D0/
 
@@ -83,12 +82,11 @@ c............................................................
 c     compute distances and screening between sites and
 c     peqq  (charges-charges interaction) 
 c............................................................
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       IMPLICIT REAL*8 (A-H,O-Z)
       include 'vmc.h' 
       include 'mmpol.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       if(immpol.eq.0) return
 
@@ -190,12 +188,11 @@ c-----------------------------------------------------------------------
 c............................................................
 c     compute penu_dp (nuclei-induced dipoles on MM sites interaction) 
 c............................................................
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       IMPLICIT REAL*8 (A-H,O-Z)
       include 'vmc.h' 
       include 'mmpol.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       if(immpol.eq.0) return
 
@@ -222,12 +219,11 @@ c-----------------------------------------------------------------------
 c............................................................
 c     compute penu_q  (nuclei-charges interaction) 
 c............................................................
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       IMPLICIT REAL*8 (A-H,O-Z)
       include 'vmc.h' 
       include 'mmpol.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       if(immpol.eq.0) return
 
@@ -316,14 +312,13 @@ c-----------------------------------------------------------------------
 C     ***************************************************************
 C     contribution from nuclei to polarization charghes
 C     ***************************************************************
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       IMPLICIT REAL*8 (A-H,O-Z)
       double precision ah_vec,det
 C     
       include 'mmpol.h'
       include 'vmc.h' 
 C    
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 c
       if(immpol.eq.0) return
 c..............................................................
@@ -402,13 +397,12 @@ C     ***************************************************************
 c     For the accepted configuration, the electronic field is computed 
 c     on MM sites  eek_pol(1,k),eek_pol(2,k),eek_pol(3,k)
 C     ***************************************************************
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       IMPLICIT REAL*8 (A-H,O-Z)
       include 'mmpol.h'
       include 'vmc.h'
       common /mmpol_hpsi/ peQMdp,peQMq,eek_pol(3,MCHMM)
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       dimension coord(3,*)
 

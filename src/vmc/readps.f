@@ -1,5 +1,6 @@
       subroutine readps
 c Written by Claudia Filippi
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
 
@@ -9,8 +10,6 @@ c Written by Claudia Filippi
 
       character*20 filename,atomtyp
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
      &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
@@ -92,13 +91,12 @@ c     call gesqua (nquad,xq,yq,zq,wq)
 c-----------------------------------------------------------------------
       subroutine getvps(rad,iel)
 c Written by Claudia Filippi
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       include 'pseudo.h'
 
       common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)

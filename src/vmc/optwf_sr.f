@@ -1,4 +1,5 @@
       subroutine optwf_sr
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8 (a-h,o-z)
       include 'vmc.h'
@@ -13,8 +14,6 @@
       common /optwf_func/ omega,omega_hes,ifunc_omega
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 

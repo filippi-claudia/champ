@@ -1,12 +1,12 @@
       subroutine compute_force(psid,denergy)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -44,6 +44,7 @@ c     write(6,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
       include 'vmc.h'
@@ -52,7 +53,6 @@ c-----------------------------------------------------------------------
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -145,7 +145,7 @@ c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
-
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'pseudo.h'
@@ -156,7 +156,6 @@ c-----------------------------------------------------------------------
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -259,11 +258,10 @@ c     write(6,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_init(iflag)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit double precision(a-h,o-z)
 
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
@@ -292,11 +290,10 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine force_analy_sum(p,q,eloc,eloco)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit double precision(a-h,o-z)
 
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
@@ -317,11 +314,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_cum(wsum,eave,wcum)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit double precision(a-h,o-z)
 
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
      & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
@@ -341,10 +337,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_fin(wcum,iblk,eave)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
@@ -376,10 +371,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_dump(iu)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
@@ -396,10 +390,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_rstrt(iu)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 

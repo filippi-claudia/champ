@@ -212,6 +212,7 @@ c25   continue
       end
 c------------------------------------------------------------------------------------
       subroutine da_orbitals
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8 (a-h,o-z)
 
@@ -220,8 +221,6 @@ c-------------------------------------------------------------------------------
       include 'force.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)

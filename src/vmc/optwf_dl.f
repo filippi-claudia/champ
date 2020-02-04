@@ -1,4 +1,5 @@
       subroutine optwf_dl
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8 (a-h,o-z)
       character*20 dl_alg
@@ -14,8 +15,6 @@
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 

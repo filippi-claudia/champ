@@ -1,12 +1,11 @@
       subroutine write_geometry(iter)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
 
       character*40 filename,itn
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       if(iter.lt.0) then
         filename='geo_optimal_final'
@@ -37,13 +36,14 @@
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine compute_positions
+
         use coords_int
+        use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
         implicit real*8(a-h,o-z)
       
         include 'vmc.h'
         include 'force.h'
-        
-        common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
         
         common /force_analy/ iforce_analy,iuse_zmat,alfgeo
         common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
@@ -88,13 +88,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine force_store(l)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'sr.h'
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 

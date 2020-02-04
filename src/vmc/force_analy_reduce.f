@@ -1,4 +1,5 @@
       subroutine force_analy_reduce
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
       include 'mpif.h'
@@ -6,9 +7,6 @@
 
       logical wid
       common /mpiconf/ idtask,nproc,wid
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
      & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)

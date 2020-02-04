@@ -1,6 +1,7 @@
       subroutine basis_fnse_v(k,rvec_en,r_en)
 c Written by Claudia Filippi by modifying basis_fns
 c routine to calculate basis functions for electron k
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
@@ -10,8 +11,6 @@ c routine to calculate basis functions for electron k
 
       parameter (one=1.d0,three=3.d0,half=0.5d0)
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /ghostatom/ newghostype,nghostcent
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)

@@ -148,6 +148,8 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
@@ -157,9 +159,6 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 

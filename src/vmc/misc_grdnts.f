@@ -83,6 +83,7 @@ c   Subroutine which calculates and printouts energy gradients
 c   for cartesian coordinates of atoms from energy differences 
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_cart(forces_ave,forces_err)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'force.h'
       include 'vmc.h'
@@ -92,8 +93,6 @@ c   calculated using correlated smapling.
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
       common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,
-     &              iwctype(MCENT),nctype,ncent
       dimension forces_ave(MFORCE),forces_err(MFORCE)
       dimension grdnts_ave(MFORCE),grdnts_err(MFORCE)     
 
@@ -143,6 +142,7 @@ c   Subroutine which calculates and printouts energy gradients
 c   for Z matrix coordinates of atoms from energy differences 
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_zmat(forces_ave,forces_err)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'force.h'
       include 'vmc.h'
@@ -152,8 +152,6 @@ c   calculated using correlated smapling.
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
       common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,
-     &              iwctype(MCENT),nctype,ncent
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
@@ -297,6 +295,7 @@ c -----------------------------------------------------------------------
 c   Subroutine which calculates the displacement for energy gradients
 c   using Z matrix (internal) coordinates
       subroutine grdzmat_displ(k_in,ic_in,ia_in,delfactor)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'force.h'
       include 'vmc.h'
@@ -305,8 +304,6 @@ c   using Z matrix (internal) coordinates
      &                  igrdcidx(MFORCE)
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,
-     &              iwctype(MCENT),nctype,ncent
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
@@ -343,12 +340,11 @@ c -----------------------------------------------------------------------
 c   Subroutine which prints out at the start of a run 
 c   information regarding the Z matrix.
       subroutine inpwrt_zmatrix()
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'force.h'
       include 'vmc.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,
-     &              iwctype(MCENT),nctype,ncent
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
@@ -382,6 +378,7 @@ c   Subroutine which calculates and print outs the diagonal
 c   part of the Hessian for Z matrix coordinates of atoms 
 c   from energy differences  calculated using correlated smapling.
       subroutine finwrt_diaghess_zmat(forces_ave,forces_err)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'force.h'
       include 'vmc.h'
@@ -391,8 +388,6 @@ c   from energy differences  calculated using correlated smapling.
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
       common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,
-     &              iwctype(MCENT),nctype,ncent
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
@@ -531,6 +526,7 @@ c   from energy differences  calculated using correlated smapling.
       end     
 c -----------------------------------------------------------------------
       subroutine transform_grad_zmat(force_cart)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
       include 'force.h'
@@ -539,8 +535,6 @@ c -----------------------------------------------------------------------
       parameter (eps=1.d-5,epsi=0.5d0/eps)
       parameter (MCENT3=3*MCENT)
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,
-     &              iwctype(MCENT),nctype,ncent
       common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
      &                  igrdcidx(MFORCE)
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),

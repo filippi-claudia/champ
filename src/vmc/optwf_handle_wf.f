@@ -49,6 +49,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
@@ -56,8 +59,6 @@ c-----------------------------------------------------------------------
       character*50 fmt
       character*40 filename,filetype
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -282,12 +283,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_jastrow
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -413,12 +415,13 @@ c reset kref=1
       end
 c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
+ 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -494,12 +497,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_jastrow_best
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -632,12 +636,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -774,12 +779,13 @@ c90     write(6,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
       end
 c-----------------------------------------------------------------------
       subroutine check_parms_jas(iflag)
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -923,6 +929,8 @@ c-----------------------------------------------------------------------
       subroutine optwf_store(l,wt,psid,energy)
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
@@ -938,9 +946,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm

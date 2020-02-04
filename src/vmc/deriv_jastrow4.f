@@ -1,5 +1,6 @@
       subroutine deriv_jastrow4(x,v,d2,value)
 c Written by Cyrus Umrigar and Claudia Filippi
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
 
@@ -12,8 +13,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
      &,ifock,i3body,irewgt,iaver,istrch
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /elec/ nup,ndn
       common /bparm/ nspin2b,nocuspb

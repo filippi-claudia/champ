@@ -1,4 +1,6 @@
       subroutine mc_configs_start
+      
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
 
@@ -16,8 +18,6 @@
      &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
      &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
      &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       logical wid
       common /mpiconf/ idtask,nproc,wid
@@ -114,7 +114,6 @@ c then set up so no configurations are written.
         open(unit=7,form='formatted',file=filename)
         rewind 7
       endif
-
       call pcm_qvol(nproc)
 
       return

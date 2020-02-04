@@ -471,13 +471,14 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_position_bcast
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
       include 'vmc.h'
       include 'force.h'
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
 
       common /force_analy/ iforce_analy
       common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
@@ -492,6 +493,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine forces_zvzb(nparm)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8 (a-h,o-z)
 
       include 'mpif.h'
@@ -499,9 +502,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
 

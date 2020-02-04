@@ -1,6 +1,7 @@
       subroutine basis_norm(iwf,anorm,iflag)
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt routine
 c Set normalization of basis fns.
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
       include 'vmc.h'
@@ -13,8 +14,6 @@ c Set normalization of basis fns.
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /ghostatom/ newghostype,nghostcent
 

@@ -27,6 +27,7 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
 
@@ -66,8 +67,6 @@ c and Anthony Scemema
      &,ifock,i3body,irewgt,iaver,istrch
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
@@ -888,13 +887,12 @@ c-----------------------------------------------------------------------
 C$INPUT znuc inp
 CKEYDOC nuclear charge for each atom type and ghost type
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'inputflags.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       call p2gti('atoms:nctype',nctype,1)
       call p2gtid('atoms:addghostype',newghostype,0,1)
@@ -949,12 +947,11 @@ c-----------------------------------------------------------------------
       subroutine read_geometry(iu)
 C$INPUT geometry inp
 CKEYDOC position and type for each atom and ghost atom
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'inputflags.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       call p2gti('atoms:natom',ncent,1)
       call p2gtid('atoms:nghostcent',nghostcent,0,1)
@@ -1673,6 +1670,7 @@ c Set all force displacements to zero
 c-----------------------------------------------------------------------
       subroutine read_jasderiv(iu)
 C$INPUT jasderiv inp
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8 (a-h,o-z)
       include 'vmc.h'
       include 'optjas.h'
@@ -1681,8 +1679,6 @@ C$INPUT jasderiv inp
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /numbas/ arg(MCTYPE),r0(MCTYPE)
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
@@ -2196,6 +2192,7 @@ CKEYDOC It is need when calculating forces in Z matrix
 CKEYDOC coordinates.
 
 c      Written by Omar Valsson
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
 
@@ -2203,8 +2200,6 @@ c      Written by Omar Valsson
       include 'force.h'
       include 'inputflags.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,
-     &              iwctype(MCENT),nctype,ncent
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix

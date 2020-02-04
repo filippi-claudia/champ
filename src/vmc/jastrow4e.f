@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
       include 'vmc.h'
@@ -11,8 +12,6 @@ c Jastrow 6   must be used with one of isc=6,7
      &,ifock,i3body,irewgt,iaver,istrch
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /elec/ nup,ndn
 
       common /bparm/ nspin2b,nocuspb

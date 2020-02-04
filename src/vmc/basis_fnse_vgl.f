@@ -1,6 +1,7 @@
       subroutine basis_fnse_vgl(k,rvec_en,r_en)
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt routine
 c routine to calculate the values of the basis functions and their derivatives
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
       include 'vmc.h'
@@ -21,8 +22,6 @@ c npa < 0   (xyz)*exp(-a*r^2)
 c nda < 0   (zr,x2y2...)*exp(-a*r^2)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /ghostatom/ newghostype,nghostcent
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)

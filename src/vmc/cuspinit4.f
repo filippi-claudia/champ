@@ -65,6 +65,7 @@ c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       end
 c-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
 
@@ -77,8 +78,6 @@ c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,83,MCTYPE)
      &,cdep(NEQSX,83,MCTYPE)

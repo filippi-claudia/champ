@@ -11,7 +11,7 @@ module atom
    include 'vmc.h'
    real*8 :: cent( 3, MCENT) 
    real*8 :: znuc( MCTYPE)
-   integer:: pecent
+   real*8 :: pecent
    integer:: iwctype( MCENT), nctype, ncent
   SAVE
 end module 

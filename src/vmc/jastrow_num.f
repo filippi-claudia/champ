@@ -5,6 +5,7 @@ c **Warning** This routine needs to be upgraded to calculate distances
 c correctly for periodic systems if we add in capability to use
 c numerical Laplacian for periodic systems.
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
 
       parameter (zero=0.d0,one=1.d0,two=2.d0)
@@ -27,8 +28,6 @@ c and the potential
       common /elec/ nup,ndn
 
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /bparm/ nspin2b,nocuspb
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
