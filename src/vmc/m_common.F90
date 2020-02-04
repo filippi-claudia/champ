@@ -1,27 +1,38 @@
 !> \brief File collecting all modules that replace common blocks.  
 !>
 !> \author P. Lopez-Tarifa NLeSC(2019)
-MODULE atom
+! Victor's suggestion
+!module vmc
+!  include 'vmc.h'
+!end module
+
+module atom
+!> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
    include 'vmc.h'
-   integer znuc(MCTYPE),cent(3,MCENT), pecent
-   integer iwctype(MCENT),nctype,ncent
+   real*8 :: cent( 3, MCENT) 
+   real*8 :: znuc( MCTYPE)
+   integer:: pecent
+   integer:: iwctype( MCENT), nctype, ncent
   SAVE
-END MODULE 
+end module 
 
-MODULE contrl_per
-  INTEGER:: iperiodic,ibasis
+module contrl_per
+!> Arguments: iperiodic, ibasis 
+  integer:: iperiodic, ibasis
   SAVE
-END MODULE contrl_per
+end module contrl_per
 
-MODULE da_pseudo
+module da_pseudo
+!> Arguments: da_pecent, da_vps, da_nonloc  
   include 'vmc.h'
   include 'pseudo.h'
-  real*8 :: da_pecent(3,MCENT), da_vps(3,MELEC,MCENT,MPS_L)
-  real*8 :: da_nonloc(3,MCENT)=0.0D0 
+  real*8 :: da_pecent( 3, MCENT), da_vps( 3, MELEC, MCENT, MPS_L)
+  real*8 :: da_nonloc( 3, MCENT)= 0.0D0 
  SAVE
-END MODULE 
+end module 
 
-MODULE force_analy 
-  INTEGER:: iforce_analy 
-  SAVE
-END MODULE 
+module force_analy 
+!> Arguments: iforce_analy 
+  integer :: iforce_analy 
+  save
+end module 
