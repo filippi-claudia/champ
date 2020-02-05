@@ -131,14 +131,15 @@ c if the last step was a davidson then save the old energy before recomputing it
             if(iqmc_check.lt.3) then             
               do istate=1,nstates
                 diff=abs(energy_all(istate)-energy_old(istate))
+                errdiff=sqrt(energy_err_all(istate)**2+energy_err_old(istate)**2)
 
-                if(diff.ge.10*energy_err_old(istate))then
+                if(diff.ge.10*errdiff)then
                   i_deltap(istate)=i_deltap(istate)+1
                   istate0=(istate-1)*nparmci+1
                   call change_ci(deltap_more(istate0,i_deltap(istate)),istate)
 
-                  write(6,'(''STATE, N OVERLAP, ENRGY OLD, ENERGY NEW,6*ERR '',2i3,3f12.5)') 
-     &            istate,i_deltap(istate),energy_old(istate),energy_all(istate),6*energy_err_old(istate)
+                  write(6,'(''STATE, N OVERLAP, ENRGY OLD, ENERGY NEW,10*ERRDIFF '',2i3,3f12.5)') 
+     &            istate,i_deltap(istate),energy_old(istate),energy_all(istate),10*errdiff
                   iqmc_again=1
 
                 endif
