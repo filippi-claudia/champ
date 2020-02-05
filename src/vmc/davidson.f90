@@ -27,14 +27,13 @@
 !> \param[in] max_iters: Maximum number of iterations.
 !> \param[in] tolerance Norm**2 error of the eigenvalues.
 !> \param[in] method: Method to compute the correction vectors.
-!> \param[in, opt] max_dim_sub: maximum dimension of the subspace search.   
 !> \param[out] iters: Number of iterations until convergence.
 !> \return eigenvalues and ritz_vectors of the matrix `mtx`.
-module davidson_free
+module davidson
   use numeric_kinds, only: dp
   use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
        lapack_qr, lapack_solver
-  use array_utils, only: concatenate, generate_preconditioner, norm, write_matrix, write_vector, & 
+  use array_utils, only: concatenate, initialize_subspace, norm, write_matrix, write_vector, & 
                         eye, check_deallocate_matrices, check_deallocate_matrix
   implicit none
 
@@ -49,11 +48,11 @@ module davidson_free
   !> \private
   private
   !> \public
-  public :: generalized_eigensolver_free, davidson_parameters, die
+  public :: generalized_eigensolver, davidson_parameters, die
   
 contains
 
-  subroutine generalized_eigensolver_free(fun_mtx_gemv, eigenvalues, ritz_vectors, nparm, nparm_max, &
+  subroutine generalized_eigensolver (fun_mtx_gemv, eigenvalues, ritz_vectors, nparm, nparm_max, &
        lowest, nvecx, method, max_iters, tolerance, iters, fun_stx_gemv, nproc, idtask)
     !> \brief use a pair of functions fun_mtx and fun_stx to compute on the fly the matrices to solve
     !>  the general eigenvalue problem
@@ -76,7 +75,6 @@ contains
     !> \param[in] max_iters: Maximum number of iterations
     !> \param[in] tolerance norm-2 error of the eigenvalues
     !> \param[in] method: Method to compute the correction vectors
-    !> \param[in, opt] max_dim_sub: maximum dimension of the subspace search   
     !> \param[out] iters: Number of iterations until convergence
     !> \return eigenvalues and ritz_vectors of the matrix `mtx`
 
@@ -127,7 +125,7 @@ contains
     end interface
 
     ! Local variables
-    integer :: dim_sub, max_size_basis, i, j, ier
+    integer :: init_subspace_size, max_size_basis, i, j, ier
 
     ! Basis of subspace of approximants
     real(dp), dimension(:), allocatable :: diag_mtx, diag_stx
@@ -140,7 +138,6 @@ contains
     real( dp), dimension(:, :), allocatable :: correction, eigenvectors_sub, mtx_proj, stx_proj, V
     real( dp), dimension(:, :), allocatable :: mtxV, stxV 
     real( dp), dimension(nparm, 1) :: xs, gs
-    real( dp), dimension(:), allocatable :: d 
 
     ! Arrays dimension
     type(davidson_parameters) :: parameters
@@ -150,7 +147,7 @@ contains
     integer :: n_converged ! Number of converged eigenvalue/eigenvector pairs
     
     ! Iteration subpsace dimension
-    dim_sub = lowest  * 2
+    init_subspace_size = lowest  * 2
 
     ! Lapack qr safety check 
     if (nvecx > nparm) then 
@@ -158,7 +155,7 @@ contains
     endif
 
     ! Dimension of the matrix
-    parameters = davidson_parameters(nparm, nparm_max, lowest, nvecx, dim_sub) 
+    parameters = davidson_parameters(nparm, nparm_max, lowest, nvecx, init_subspace_size) 
 
     ! 1. Variables initialization
     ! extract the diagonals of the matrices
@@ -172,35 +169,29 @@ contains
     ! Diagonal of the arrays
     allocate(diag_mtx(parameters%nparm))
     allocate(diag_stx(parameters%nparm))
-    allocate(d(dim_sub))
 
-    diag_mtx= extract_diagonal_free(fun_mtx_gemv, parameters, parameters%nparm)
-    diag_stx= extract_diagonal_free(fun_stx_gemv, parameters, parameters%nparm)
+    if (idtask==0) call store_diag_hs(parameters%nparm, diag_mtx, diag_stx)
 
-    d= 0.0_dp
-    do i= 1, dim_sub 
-      xs= 0.0_dp 
-      xs( i, 1)= 1.0_dp 
-      gs= fun_mtx_gemv( parameters, xs)
-      d( i)= gs( i,1)
-    enddo
-
-    if (nproc > 1) call MPI_BCAST( d, dim_sub, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+    if (nproc > 1) then  
+       call MPI_BCAST( diag_mtx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+       call MPI_BCAST( diag_stx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+    endif 
+!    if (idtask==0) call write_vector( 'diag_0.txt', diag_mtx)
  
     ! 2.  Select the initial ortogonal subspace based on lowest elements
-    !     of the diagonal of the matrix
+    !     of the diagonal of the matrix.
 
-    V= generate_preconditioner( d( 1: dim_sub), dim_sub, nparm) ! Initial orthonormal basis
+    V= initialize_subspace( diag_mtx( 1: init_subspace_size), init_subspace_size, nparm) ! Initial orthonormal basis
     
     if( idtask== 0) write(6,'(''DAV: Setup subspace problem'')')
 
-    ! 3. Outer loop block Davidson schema
+    ! 3. Outer loop block Davidson schema:
 
     outer_loop: do i= 1, max_iters
 
       if( idtask== 0) write(6,'(''DAV: Davidson iteration: '', I10)') i
 
-      ! Array deallocation/allocation
+      ! Array deallocation/allocation.
       call check_deallocate_matrices(mtx_proj, stx_proj, lambda, eigenvectors_sub, ritz_vectors, mtxV, stxV)
       call check_deallocate_matrix( guess)
       call check_deallocate_matrix( rs)
@@ -213,8 +204,7 @@ contains
       allocate( lambda( parameters%basis_size, parameters%basis_size)) 
       allocate( eigenvectors_sub( parameters%basis_size, parameters%basis_size)) 
 
-      ! 4. Projection of H and S matrices
-
+      ! Calculation of H and S in the subspace:
       mtxV= fun_mtx_gemv( parameters, V)
       stxV= fun_stx_gemv( parameters, V)
 
@@ -223,14 +213,17 @@ contains
         call MPI_BCAST( stxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
       endif
 
-      mtx_proj= lapack_matmul( 'T', 'N', V, mtxV)
-      stx_proj= lapack_matmul( 'T', 'N', V, stxV)
 
       !! IF IDTASK=0
       if( idtask.eq. 0) then
 
+        ! 4. Projection of H and S matrices
+
+        mtx_proj= lapack_matmul( 'T', 'N', V, mtxV)
+        stx_proj= lapack_matmul( 'T', 'N', V, stxV)
+
         ! 5.Compute the eigenvalues and their corresponding ritz_vectors
-        ! for the projected matrix using lapack
+        ! for the projected matrix using lapack.
         
         write( 6, '(''DAV: enter lapack_generalized_eigensolver'')') 
         call lapack_generalized_eigensolver( mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
@@ -292,8 +285,8 @@ contains
         select case( method)
         case( "DPR")
           if( idtask== 0)  write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
-          correction= compute_DPR_free( mtxV, stxV, parameters, eigenvalues_sub,             &
-                                        eigenvectors_sub, diag_mtx, diag_stx)
+          correction= compute_DPR( rs, parameters, eigenvalues_sub,                     &
+                                        diag_mtx, diag_stx)
         case( "GJD")
           if( idtask== 0)  write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
           correction= compute_GJD_free( parameters, ritz_vectors, rs, eigenvectors_sub,      &
@@ -321,7 +314,7 @@ contains
       else
 
         ! 12. Otherwise reduce the basis of the subspace to the current correction
-        V = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :dim_sub))
+        V = ritz_vectors(:, :init_subspace_size)
 
       end if
     
@@ -348,13 +341,16 @@ contains
     
     ! Free memory
     call check_deallocate_matrix( correction)
-    deallocate( eigenvalues_sub, eigenvectors_sub, mtx_proj, diag_mtx, diag_stx, d)
+    deallocate( eigenvalues_sub, eigenvectors_sub, diag_mtx, diag_stx)
     deallocate( V, mtxV, stxV, guess, rs, lambda)
+    if (idtask == 0) then  
+       deallocate( mtx_proj)
+       call check_deallocate_matrix( stx_proj)
+    endif 
     
     ! free optional matrix
-    call check_deallocate_matrix( stx_proj)
     
-  end subroutine generalized_eigensolver_free
+  end subroutine generalized_eigensolver
 !  
   subroutine die(msg)
   !> Subroutine that dies the calculation raising an errror message
@@ -368,8 +364,8 @@ contains
 
   end subroutine
 
-  function compute_DPR_free(mtxV, stxV, parameters, eigenvalues, eigenvectors,    &
-                            diag_mtx, diag_stx) result(correction)
+  function compute_DPR(rs, parameters, eigenvalues, diag_mtx, diag_stx) &
+                            result(correction)
 
     !> compute the correction vector using the DPR method for a matrix free diagonalization
     !> See correction_methods submodule for the implementations
@@ -382,31 +378,26 @@ contains
     !
     use array_utils, only: eye
     !
-    
-    real(dp), dimension(:), intent(in) :: eigenvalues
-    real(dp), dimension(:, :), intent(in) ::  eigenvectors, mtxV, stxV
+    real(dp), dimension(:, :), intent(in) :: rs
+    real(dp), dimension(:), intent(in) :: eigenvalues  
     real(dp), dimension(:), intent(in) :: diag_mtx, diag_stx
-    
+
     ! local variables
-    !real(dp), dimension(size(V, 1),1) :: vector
-    real(dp), dimension(size(mtxV, 1), size(mtxV, 2)) :: correction
-    real(dp), dimension(size(mtxV, 1), size(mtxV, 2)) :: proj_mtx, proj_stx
-    real(dp), dimension(size(mtxV, 1),size(mtxV, 1)) :: diag
     type(davidson_parameters) :: parameters
+    real(dp), dimension(parameters%nparm,parameters%nparm) :: diag
+    real(dp), dimension(parameters%nparm, parameters%basis_size) :: correction
     integer :: ii, j
     integer :: m
     
     ! calculate the correction vectors
-    m= size( mtxV, 1) 
+    m= parameters%nparm
 
     ! computed the projected matrices
-    proj_mtx = lapack_matmul('N', 'N', mtxV, eigenvectors)
-    proj_stx = lapack_matmul('N', 'N', stxV, eigenvectors)
     diag = 0.0_dp
 
-    do j = 1, size( mtxV, 2)
+    do j = 1, parameters%basis_size 
      diag= eye( m , m, eigenvalues( j))
-     correction( :, j)= proj_mtx( :, j)- lapack_matrix_vector( 'N', diag, proj_stx( :, j))
+     correction( :, j)= rs( :, j) 
 
      do ii= 1, size( correction, 1)
        correction( ii, j)= correction( ii, j)/( eigenvalues( j)* diag_stx( ii)- diag_mtx( ii))
@@ -414,7 +405,7 @@ contains
 
     end do
 
-  end function compute_DPR_free
+  end function compute_DPR
 
   function compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors, & 
              eigenvalues) result( correction)
@@ -532,533 +523,4 @@ contains
 
   end function fun_F_matrix
 
-  function extract_diagonal_free( fun_mtx_gemv, parameters, dim) result( out)
-    !> \brief extract the diagonal of the matrix
-    !> \param parameters: dimensions of the arrays
-    implicit none
-    
-    type(davidson_parameters) :: parameters
-    integer, intent(in) :: dim
-    real(dp), dimension(dim) :: out
-    
-    interface
-      function fun_mtx_gemv(parameters, input_vect) result(output_vect)
-        !> \brief Function to compute the action of the hamiltonian on the fly
-        !> \param[in] dimension of the arrays to compute the action of the hamiltonian
-        !> \param[in] input_vec Array to project
-        !> \return Projected matrix
-
-        use numeric_kinds, only: dp
-        import :: davidson_parameters
-        type(davidson_parameters) :: parameters
-        real (dp), dimension(:,:), intent(in) :: input_vect
-        real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
-        
-      end function fun_mtx_gemv      
-    end interface
-    
-    ! local variable
-    integer :: ii
-    real(dp), dimension(parameters%nparm, 1) :: tmp_array
-
-!    write(6,'(''DAV: extracting diagonal'')')
-    
-    do ii = 1, dim
-       tmp_array = 0E0
-       tmp_array(ii,1) = 1.0
-       tmp_array = fun_mtx_gemv(parameters, tmp_array)
-       out(ii) = tmp_array(ii,1)
-    end do
-    
-  end function extract_diagonal_free
- 
-end module davidson_free
-
-
-!> 
-!> \brief Solves the Davidson diagonalisation using mtx and stx matrices stored in memory. 
-module davidson_dense
-  use numeric_kinds, only: dp
-  use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
-       lapack_qr, lapack_solver, lapack_sort
-  use array_utils, only: concatenate, diagonal, eye, generate_preconditioner, norm, &
-                         check_deallocate_matrices, check_deallocate_matrix
-  use davidson_free, only: die
-
-  implicit none
-
-  type davidson_parameters
-     INTEGER :: nparm
-     INTEGER :: nparm_max
-     INTEGER :: lowest
-     INTEGER :: nvecx
-  end type davidson_parameters
-  
-  !> \private
-  private
-  !> \public
-  public :: generalized_eigensolver_dense
-
-  interface
-     module function compute_correction_generalized_dense( mtx, V, eigenvalues, eigenvectors, method, &
-                       rs, ritz_vectors, stx) result( correction)
-       !> \brief Compute the correction vector using a given `method` for the Davidson algorithm
-       !> See correction_methods submodule for the implementations
-       !> \param[in] mtx: Original matrix.
-       !> \param[in] V: Basis of the iteration subspace
-       !> \param[in] eigenvalues: Eigenvalues of the reduce problem.
-       !> \param[in] eigenvectors: Eigenvectors of the reduce problem.
-       !> \param[in] method: Name of the method to compute the correction.
-       !> \param[in] rs: Residue vectors. 
-       !> \param[in] ritz_vectors: Ritz-vectors.  
-       !> \param[in] stx: Matrix to compute the general eigenvalue problem.
-       !> \param[out] correction: Correction vectors. 
-       
-       real(dp), dimension(:), intent(in) :: eigenvalues
-       real(dp), dimension(:, :), intent(in) :: mtx, V, eigenvectors
-       real(dp), dimension(:, :), intent(in), optional :: rs 
-       real(dp), dimension(:, :), intent(in), optional :: ritz_vectors 
-       real(dp), dimension(:, :), intent(in), optional :: stx
-       character(len=*), optional, intent(in) :: method
-       real(dp), dimension(size(mtx, 1), size(V, 2)) :: correction
-       
-     end function compute_correction_generalized_dense
-
-  end interface
-  
-contains
-
-  subroutine generalized_eigensolver_dense(mtx, eigenvalues, ritz_vectors, nparm, nparm_max, &
-             lowest, nvecx, method, max_iters, tolerance, iters, stx, nproc, idtask)
-    !> Implementation storing in memory the initial densed matrix mtx.
-      
-    !> \param[in] mtx: Matrix to diagonalize
-    !> \param[in, opt] Optional matrix to solve the general eigenvalue problem:
-    !> \f$ mtx \lambda = V stx \lambda \f$
-    !> \param[out] eigenvalues Computed eigenvalues
-    !> \param[out] ritz_vectors approximation to the eigenvectors
-    !> \param[in] lowest Number of lowest eigenvalues/ritz_vectors to compute
-    !> \param[in] method Method to compute the correction vector. Available
-    !> methods are,
-    !>    DPR: Diagonal-Preconditioned-Residue
-    !>    GJD: Generalized Jacobi Davidson
-    !> \param[in] max_iters: Maximum number of iterations
-    !> \param[in] tolerance norm-2 error of the eigenvalues
-    !> \param[in] method: Method to compute the correction vectors
-    !> \param[in, opt] max_dim_sub: maximum dimension of the subspace search   
-    !> \param[out] iters: Number of iterations until convergence
-    !> \return eigenvalues and ritz_vectors of the matrix `mtx`
-
-    implicit none
-
-    include 'mpif.h'
-
-    ! input/output variable
-    integer, intent(in) :: nparm, nparm_max, nvecx, lowest, nproc, idtask 
-    real(dp), dimension(:, :), intent(in) :: mtx
-    real(dp), dimension(:, :), intent(in), optional :: stx
-    real(dp), dimension(lowest), intent(out) :: eigenvalues
-    real(dp), dimension(:, :), allocatable, intent(out) :: ritz_vectors
-    integer, intent(in) :: max_iters
-    real(dp), intent(in) :: tolerance
-    character(len=*), intent(in) :: method
-    integer, intent(out) :: iters
-    
-    !local variables
-    integer :: i, j, dim_sub, max_dim, ier
-    
-    ! Basis of subspace of approximants
-    real(dp), dimension( :, :), allocatable:: guess, rs  
-    real(dp), dimension(lowest):: errors
-
-    ! Working arrays
-    real(dp), dimension(:), allocatable :: eigenvalues_sub
-    real(dp), dimension(:,:), allocatable :: lambda       ! eigenvalues_sub in a diagonal matrix
-    real(dp), dimension(:, :), allocatable :: correction, eigenvectors_sub, mtx_proj, stx_proj, V
-    ! Arrays dimension
-    type(davidson_parameters) :: parameters
-
-    ! Diagonal matrix
-    real(dp), dimension(size(mtx, 1)) :: d
-    
-    ! generalize problem
-    logical :: gev 
-
-    ! Iteration subpsace dimension
-    dim_sub = lowest  * 2
-
-    ! Lapack qr safety check
-    if (nvecx > nparm) then
-      if( idtask == 1) call die('DAV: nvecx > nparm, increase nparm or decrese lin_nvecx')
-    endif
-
-    ! dimension of the matrix
-    parameters = davidson_parameters(nparm, nparm_max, lowest, nvecx)
-
-    
-    ! Generalied problem
-    gev = present(stx)
-!
-    ! 1. Variables initialization
-    ! extract the diagonals of the matrices
-
-    write(6,'(''DAV: Compute diagonals of H'')')  
-    d = diagonal(mtx)
-
-    if (nproc > 1) call MPI_BCAST( d, dim_sub, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-
-    ! 2. Select the initial ortogonal subspace based on lowest elements
-    !    of the diagonal of the matrix
-
-    V = generate_preconditioner(d(1:dim_sub), dim_sub, size(mtx,1))
-
-    write(6,'(''DAV: Setup subspace problem'')')
-
-!   
-   ! 3. Outer loop block Davidson schema
-    outer_loop: do i= 1, max_iters
-      if( idtask == 0) write(6,'(''DAV: Davidson iteration: '', I10)') i
-
-      !! Array deallocation/allocation
-      call check_deallocate_matrices( mtx_proj, stx_proj, lambda, eigenvectors_sub, ritz_vectors)
-      if( allocated( eigenvalues_sub)) then
-         deallocate( eigenvalues_sub)
-      end if
-      allocate( eigenvalues_sub( size( V, 2)))
-      allocate( lambda( size( V, 2), size( V, 2))) 
-      allocate( eigenvectors_sub( size( V, 2), size( V, 2)))
-
-      ! 4. Projection of H and S matrices
-
-      mtx_proj= lapack_matmul( 'T', 'N', V, lapack_matmul( 'N', 'N', mtx, V))
-
-      if( gev) then
-        stx_proj= lapack_matmul( 'T', 'N', V, lapack_matmul( 'N', 'N', stx, V))
-      end if
-
-      if (nproc > 1) then
-        call MPI_BCAST( mtx_proj, size( V, 1)* size( V, 2), MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-        if( gev) & 
-        call MPI_BCAST( stx_proj, size( V, 1)* size( V, 2), MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-      endif
-
-      !! IF IDTASK=0
-      if( idtask.eq. 0) then
-
-        ! 5. compute the eigenvalues and their corresponding ritz_vectors
-        ! for the projected matrix using lapack
-
-        write(6,'(''DAV: enter lapack_generalized_eigensolver'')')
-        if( gev) then
-          call lapack_generalized_eigensolver( mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
-        else
-          call lapack_generalized_eigensolver( mtx_proj, eigenvalues_sub, eigenvectors_sub)
-        end if
-        write(6,'(''DAV: exit lapack_generalized_eigensolver'')')
-        write(6,'(''DAV: eigv'',1000f12.5)') ( eigenvalues_sub( j), j= 1, lowest)
-
-        ! 6. Construction of lambda matrix (a squared one with eigenvalues_sub
-        ! in the diagonal)
-
-        lambda= eye( size( V, 2), size( V, 2))
-        do j= 1, size(V,2)
-          lambda( j, j)= eigenvalues_sub( j)
-        enddo
-      !! ENDIF IDTASK
-      endif
-
-      if (nproc > 1) then
-        call MPI_BCAST(eigenvalues_sub, size( mtx_proj, 1), MPI_REAL8, 0, MPI_COMM_WORLD,ier)
-        call MPI_BCAST(eigenvectors_sub, size( mtx_proj, 1)* size( mtx_proj, 2), MPI_REAL8, 0, MPI_COMM_WORLD,ier)
-      endif       
-
-      ritz_vectors = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :))
-
-      ! 7. Residue calculation
-
-      !! IF IDTASK=0
-
-      if( idtask .eq. 0) then
-        if( gev) then
-          rs= lapack_matmul('N', 'N', stx, ritz_vectors) 
-         else 
-          rs = ritz_vectors 
-        endif
-        guess =  lapack_matmul('N', 'N', rs, lambda)
-        deallocate(rs)
-        rs =  lapack_matmul('N', 'N', mtx, ritz_vectors) - guess
-        do j=1,lowest
-          errors( j) = norm(reshape( rs( :, j), (/ parameters%nparm/)))
-        end do
-
-      !! ENDIF IDTASK
-      endif
-
-      if (nproc > 1) then
-        call MPI_BCAST(errors, lowest, MPI_REAL8, 0, MPI_COMM_WORLD,ier)
-      endif       
-
-      ! 8. Check for convergence
-
-      if (all(errors < tolerance)) then
-        iters = i
-        write( 6, '(''DAV: roots are converged'')')
-        eigenvalues = eigenvalues_sub(:lowest)
-        exit outer_loop
-      end if
-
-      ! 9. Calculate correction vectors. 
-
-      if(( size( V, 2) <= nvecx).and.( 2* size( V, 2)< nparm)) then
-
-          ! append correction to the current basis
-          call check_deallocate_matrix( correction)
-          allocate( correction( size( mtx, 1), size( V, 2)))
-
-          if( gev) then
-            correction= compute_correction_generalized_dense( mtx, V, eigenvalues_sub, &
-                        eigenvectors_sub, method, rs, ritz_vectors, stx)
-          else
-            correction= compute_correction_generalized_dense( mtx, V, eigenvalues_sub, &
-                        eigenvectors_sub, method)
-          end if
-
-          ! 10. Add the correction vectors to the current basis.
-          call concatenate(V, correction)
-       
-          ! IF IDTASK=0
-          if(idtask.eq.0) then
-
-            ! 11. Orthogonalize basis
-
-            call lapack_qr(V)
-
-          ! ENDIF IDTASK
-          endif
-
-        if (nproc > 1) then
-          call MPI_BCAST(V, size(V,1)*size(V,2), MPI_REAL8, 0, MPI_COMM_WORLD,ier)
-        endif
-          
-      else
-
-        ! 12. Otherwise reduce the basis of the subspace to the current correction
-
-        V = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :dim_sub))
-
-      end if
-
-    end do outer_loop
-
-    !  13. Check convergence
-    if (i > max_iters) then
-       iters = i
-       print *, "Warning: Algorithm did not converge!!"
-    end if
-
-    ! Select the lowest eigenvalues and their corresponding ritz_vectors
-    ! They are sort in increasing order
-    eigenvalues= eigenvalues_sub( :lowest)
-
-    ! Free memory
-    call check_deallocate_matrix( correction)
-    deallocate( eigenvalues_sub, eigenvectors_sub, mtx_proj, V, guess, rs, lambda)
-
-    ! free optional matrix
-    if (gev) then
-       call check_deallocate_matrix(stx_proj)
-    endif
-
-  end subroutine generalized_eigensolver_dense
-  
-end module davidson_dense
-
-submodule (davidson_dense) correction_methods_generalized_dense
-  !> submodule containing the implementations of different kind
-  !> algorithms to compute the correction vectors for the Davidson's diagonalization
-
-  implicit none
-  
-contains
-
-  module function compute_correction_generalized_dense(mtx, V, eigenvalues, eigenvectors, method, rs, ritz_vectors, stx) &
-       result(correction)
-    !> see interface in davidson module
-    real(dp), dimension(:), intent(in) :: eigenvalues
-    real(dp), dimension(:, :), intent(in) :: mtx, V, eigenvectors
-    real(dp), dimension(:, :), intent(in), optional :: ritz_vectors 
-    real(dp), dimension(:, :), intent(in), optional :: rs 
-    real(dp), dimension(:, :), intent(in), optional :: stx
-    character(len=*), optional,intent(in) :: method
-    logical :: gev 
-
-    ! local variables
-    character(len=10) :: opt 
-    real(dp), dimension(size(mtx, 1), size(V, 2)) :: correction
-
-    !check optional arguments
-    gev = present(stx)
-    opt="DPR"
-    if (present(method)) opt=trim(method)
-    
-    select case (method)
-    case ("DPR")
-      if(gev) then
-       correction = compute_DPR_generalized_dense(mtx, V, eigenvalues, eigenvectors, stx) 
-      else
-        correction = compute_DPR_generalized_dense(mtx, V, eigenvalues, eigenvectors)
-      end if
-    case ("GJD")
-      if(gev) then
-       correction = compute_GJD_generalized_dense(mtx, size(V,2), eigenvalues,  rs, ritz_vectors, stx)
-      else
-        correction = compute_GJD_generalized_dense(mtx, size(V,2), eigenvalues, residues=rs, ritz_vectors=ritz_vectors)
-      end if
-    end select
-    
-  end function compute_correction_generalized_dense
-
-  function compute_DPR_generalized_dense(mtx, V, eigenvalues, eigenvectors, stx) result(correction)
-    !> compute Diagonal-Preconditioned-Residue (DPR) correction
-    real(dp), dimension(:), intent(in) :: eigenvalues
-    real(dp), dimension(:, :), intent(in) :: mtx, V, eigenvectors
-    real(dp), dimension(:, :), intent(in), optional ::  stx 
-    real(dp), dimension(size(mtx, 1), size(V, 2)) :: correction
-    
-    ! local variables
-    integer :: ii, j, m
-    real(dp), dimension(size(mtx, 1), size(mtx, 2)) :: diag, arr
-    real(dp), dimension(size(mtx, 1)) :: vec
-    logical :: gev
-    
-    ! shape of matrix
-    m = size(mtx, 1)
-    gev = (present(stx))
-
-    do j=1, size(V, 2)
-       if(gev) then
-          diag = eigenvalues(j) * stx
-       else
-          diag = eye(m , m, eigenvalues(j))
-       end if
-       arr = mtx - diag
-       vec = lapack_matrix_vector('N', V, eigenvectors(:, j))
-      
-       correction(:, j) = lapack_matrix_vector('N', arr, vec) 
-
-       do ii=1,size(correction,1)
-          if (gev) then
-               correction(ii, j) = correction(ii, j) / (eigenvalues(j)  * stx(ii,ii)  - mtx(ii, ii))
-           else
-              correction(ii, j) = correction(ii, j) / (eigenvalues(j)  - mtx(ii, ii))
-          endif
-        end do
-    end do
-
-  end function compute_DPR_generalized_dense
-
-  function compute_GJD_generalized_dense(mtx, basis_size, eigenvalues, residues, ritz_vectors, stx) &
-           result(correction)
-    !> Compute the Generalized Jacobi Davidson (GJD) correction
-    
-    real(dp), dimension( :), intent( in) :: eigenvalues
-    integer, intent( in):: basis_size
-    real( dp), dimension( :, :), intent( in) :: mtx
-    real( dp), dimension( :, :), intent( in), optional :: residues 
-    real( dp), dimension( :, :), intent( in), optional :: ritz_vectors 
-    real( dp), dimension( :, :), intent( in), optional :: stx
-    real( dp), dimension( size(mtx, 1), basis_size) :: correction
-
-    ! local variables
-    integer :: k, m
-    logical :: gev
-    real( dp), dimension( size( mtx, 1), 1) :: ritz_tmp
-    real( dp), dimension( size( mtx, 1), size( mtx, 2)) :: F, ubut, uubt, ys
-    real( dp), dimension( size( mtx, 1), 1) :: brr
-
-    ! Diagonal matrix
-    m= size(mtx, 1)
-
-    gev= present(stx)
-
-    do k= 1, basis_size 
-       ritz_tmp( :, 1)= ritz_vectors( :, k)
-
-       if( gev) then
-         ys= mtx- eigenvalues( k)* stx
-       else
-         ys= substract_from_diagonal( mtx, eigenvalues( k))
-       end if
-
-! Following I. Sabzevari, A. Mahajan and S. Sharma, arXiv:1908.04423 (2019)
-       ubut= eye( m, m)- lapack_matmul( 'N', 'T', lapack_matmul( 'N', 'N', stx, ritz_tmp), ritz_tmp)
-       uubt= eye( m, m)- lapack_matmul( 'N', 'T', ritz_tmp, lapack_matmul( 'N', 'N', stx, ritz_tmp))
-
-       F= lapack_matmul( 'N', 'N', ubut, lapack_matmul( 'N', 'N', ys, uubt))
-       brr( :, 1) = -residues(:,k)
-
-       call lapack_solver( F, brr)
-       correction( :, k)= brr( :, 1)
-    end do
-    
-  end function compute_GJD_generalized_dense
-
-  function substract_from_diagonal(mtx, alpha) result(arr)
-    !> susbstract an scalar from the diagonal of a matrix
-    !> \param mtx: square matrix
-    !> \param alpha: scalar to substract
-    real(dp), dimension(:, :), intent(in) :: mtx
-    real(dp), dimension(size(mtx, 1), size(mtx, 2)) :: arr
-    real(dp), intent(in) :: alpha
-    integer :: i
-
-    arr = mtx
-    do i=1,size(mtx, 1)
-       arr(i, i) = arr(i, i) - alpha
-    end do
-    
-  end function substract_from_diagonal
-  
-end submodule correction_methods_generalized_dense
-!> 
-!> \namespace davidson 
-!> \brief Main module of the Davidson diagonalisation. 
-!>
-!> The current implementation uses a general davidson algorithm, meaning
-!> that it computes all eigenvalues simultaneusly using a variable size block approach.
-!> The family of Davidson algorithm only differ in the way that the correction
-!> vector is computed.
-!> Computed pairs of eigenvalues/eigenvectors are deflated using algorithm
-!> described at: https://doi.org/10.1023/A:101919970
-!>
-!> Solve a (general) eigenvalue problem using different types of Davidson algorithms.
-!> There are two flavors:
-!> - generalized_eigensolver_dense: The solver uses the mtx and stx matrices stored in memory. 
-!> - generalized_eigensolver_free: The solver **does not** stores mtx and stx matrices in memory, 
-!>                                 they are calculated on the fly. 
-!>
-!> \author Felipe Zapata and P. Lopez-Tarifa NLeSC(2019)
-module davidson
-
-  use numeric_kinds, only: dp
-  use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
-       lapack_qr, lapack_solver
-  use array_utils, only: concatenate, eye, norm
-  use davidson_dense, only: generalized_eigensolver_dense
-  use davidson_free, only: generalized_eigensolver_free
-  implicit none
-
-!
-  !> \private
-  private
-  !> \public
-  public :: generalized_eigensolver
-
-  interface generalized_eigensolver
-
-     procedure generalized_eigensolver_dense
-     procedure generalized_eigensolver_free
-  end interface generalized_eigensolver
-!
 end module davidson
-!> \namespace davidson 

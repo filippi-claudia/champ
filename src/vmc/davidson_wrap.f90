@@ -1,5 +1,5 @@
 SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
-                 eigenvalues, btype, notcnv, dav_iter, ipr, free)
+                 eigenvalues, btype, notcnv, dav_iter, ipr)
   !----------------------------------------------------------------------------
   !
   ! ... iterative solution of the eigenvalue problem:
@@ -12,7 +12,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   ! 
   use numeric_kinds, only: dp
   use davidson, only: generalized_eigensolver
-  use davidson_free, only: davidson_parameters
+  use davidson, only: davidson_parameters
   use array_utils, only: eye, write_matrix, write_vector
 
   IMPLICIT NONE
@@ -30,7 +30,6 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   !> \param dav_iter integer  number of iterations performed
   !> \param notcnv number of unconverged roots
   !> \param notcnv number of unconverged roots
-  !> \param free free version (.true.) or dens version (.false.)  
 
 
   REAL(dp), dimension(nparmx, nvec),  INTENT(INOUT) :: eigenvectors
@@ -40,7 +39,6 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, mvec, ipr
   INTEGER, dimension(nvec), INTENT(IN) :: btype
   INTEGER, INTENT(OUT) :: dav_iter, notcnv
-  LOGICAL, INTENT(IN)  :: free 
   ! local variables
   integer :: i, ierr
   integer :: nproc, idtask 
@@ -80,59 +78,24 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
     end function fun_stx_gemv
 
   end interface
-!
+
   call mpi_comm_rank( MPI_COMM_WORLD, idtask, ierr)
   call mpi_comm_size( MPI_COMM_WORLD, nproc, ierr)
-!
+
   notcnv=0 !Not used in davidson_wrap
     
   ! Allocate variables
   IF ( nvec > nvecx / 2 ) CALL fatal_error( 'regter: nvecx is too small')
-  is_free_or_dens: IF (free) then   
-      call generalized_eigensolver(fun_mtx_gemv, eigenvalues, ritz_vectors, nparm, &
-             nparmx, nvec, nvecx, "DPR", 200, ethr, dav_iter, fun_stx_gemv, nproc, idtask)
-!
-      if (idtask == 0) then
-        do i=1,size(eigenvalues)
-         print *, "eigenvalue ", i, " : ", eigenvalues(i)
-        end do
-      endif
-! 
-      eigenvectors(1:nparm,1:nvec) = ritz_vectors
-!
-    ELSEIF (.not.free) then 
-!
-      ! Allocate Arrays to compute H ans S
-      if( idtask== 0)  psi = eye(nparmx, nparmx, 1.0_dp)
-      if( nproc > 1)  call MPI_BCAST(psi, nparmx*nparmx, MPI_DOUBLE, 0, MPI_COMM_WORLD, ierr)
-!
-      allocate(hpsi(nparmx, nparmx))
-      allocate(spsi(nparmx, nparmx))
-!
-      hpsi = 0.0_dp
-      spsi = 0.0_dp
-!
-      call h_psi_lin_d(nparm, nparm, psi, hpsi)
-      call s_psi_lin_d(nparm, nparm, psi, spsi)
-      
-      mtx(1:nparm, 1:nparm) = hpsi(1:nparm, 1:nparm)
-      stx(1:nparm, 1:nparm) = spsi(1:nparm, 1:nparm)
+  call generalized_eigensolver(fun_mtx_gemv, eigenvalues, ritz_vectors, nparm, &
+         nparmx, nvec, nvecx, "DPR", 200, ethr, dav_iter, fun_stx_gemv, nproc, idtask)
 
-      call generalized_eigensolver(mtx, eigenvalues, ritz_vectors, nparm, & 
-             nparmx, nvec, nvecx, "DPR", 200, ethr, dav_iter, stx, nproc, idtask) 
+  if (idtask == 0) then
+    do i=1,size(eigenvalues)
+     print *, "eigenvalue ", i, " : ", eigenvalues(i)
+    end do
+  endif
 
-      eigenvectors(1:nparm,1:nvec) = ritz_vectors
-
-      do i=1,size(eigenvalues)
-         print *, "eigenvalue ", i, " : ", eigenvalues(i)
-      end do
-
-      notcnv = 0
-      dav_iter = 0
-
-      deallocate(hpsi, spsi)
- 
-  ENDIF is_free_or_dens
+  eigenvectors(1:nparm,1:nvec) = ritz_vectors
   
 END SUBROUTINE davidson_wrap
 
@@ -143,7 +106,7 @@ function fun_mtx_gemv( parameters, input_vect) result( output_vect)
   !> \return Projected matrix
 
   use numeric_kinds, only: dp
-  use davidson_free, only: davidson_parameters
+  use davidson, only: davidson_parameters
 
   type( davidson_parameters) :: parameters
   real( dp), dimension( :, :), intent( in) :: input_vect
@@ -170,7 +133,7 @@ function fun_stx_gemv(parameters, input_vect) result(output_vect)
   !> \return Projected matrix
   
   use numeric_kinds, only: dp
-  use davidson_free, only: davidson_parameters
+  use davidson, only: davidson_parameters
 
   type(davidson_parameters) :: parameters
   real (dp), dimension(:,:), intent(in) :: input_vect

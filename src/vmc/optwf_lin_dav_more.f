@@ -54,19 +54,13 @@
        elseif(lin_jdav.eq.1) then
        write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &       ethr, e, itype, notcnv, idav_iter, ipr, .true.)
-
-       elseif(lin_jdav.eq.2) then
-       write(6,*) "USING DAVIDSON WRAP: DENSE VERSION"
-        call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &       ethr, e, itype, notcnv, idav_iter, ipr, .false.)
+     &       ethr, e, itype, notcnv, idav_iter, ipr)
        else
-         call fatal_error('LIND: lin_jdav < 3')
+         call fatal_error('LIND: lin_jdav < 2')
       endif
 
       call my_second(2,'david ')
       call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)
-      write(6,*) "HEREEEE"
 c idtask.eq.0
       if(idtask.eq.0)  then
 
@@ -111,7 +105,6 @@ c else means if i optimize jastrow and or orbitals
               deltap(i+nparm*(istate-1))=evc(i,i_overlap_max)/anorm(i_overlap_max)
             enddo
 
-       write(6,*) "HEREEEE 2"
 c save 5 additional vectors with large overlap
             do ivec=1,5
               idx_ivec=index_overlap(nvec-ivec)
