@@ -39,8 +39,12 @@ c written by Claudia Filippi
      &    ,3,MPI_COMM_WORLD,ierr)
           call mpi_send(force_err,3,mpi_double_precision,id
      &    ,4,MPI_COMM_WORLD,ierr)
-  20      call mpi_send(sigma,1,mpi_double_precision,id
+          call mpi_send(sigma,1,mpi_double_precision,id
      &    ,5,MPI_COMM_WORLD,ierr)
+          call mpi_send(energy_all,nstates,mpi_double_precision,id
+     &    ,6,MPI_COMM_WORLD,ierr)
+  20      call mpi_send(energy_err_all,nstates,mpi_double_precision,id
+     &    ,7,MPI_COMM_WORLD,ierr)
        else
         call mpi_recv(energy,3,mpi_double_precision,0
      &  ,1,MPI_COMM_WORLD,istatus,ierr)
@@ -52,6 +56,10 @@ c written by Claudia Filippi
      &  ,4,MPI_COMM_WORLD,istatus,ierr)
         call mpi_recv(sigma,1,mpi_double_precision,0
      &  ,5,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(energy_all,nstates,mpi_double_precision,0
+     &  ,6,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(energy_err_all,nstates,mpi_double_precision,0
+     &  ,7,MPI_COMM_WORLD,istatus,ierr)
       endif
 
       return
