@@ -2,7 +2,9 @@
       
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
 
@@ -11,7 +13,6 @@
       include 'mstates.h'
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
      &,vnew(3,MELEC),psi2o(MSTATES,MFORCE),psi2n(MFORCE),eold(MSTATES,MFORCE),enew(MFORCE)
      &,peo(MSTATES),pen,tjfn,tjfo(MSTATES),psido(MSTATES),psijo

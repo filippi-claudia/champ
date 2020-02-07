@@ -1,5 +1,7 @@
       subroutine verify_orbitals
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -13,7 +15,6 @@
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump
      &     ,irstar
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /dorb/ iworbd(MELEC,MDET)

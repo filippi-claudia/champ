@@ -4,7 +4,9 @@ c routine to calculate the values of the basis functions and their derivatives
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use ghostatom, only: newghostype, nghostcent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -23,7 +25,6 @@ c nsa < 0   r^2*exp(-a*r^2)
 c npa < 0   (xyz)*exp(-a*r^2)
 c nda < 0   (zr,x2y2...)*exp(-a*r^2)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)

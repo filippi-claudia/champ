@@ -2,7 +2,9 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
@@ -11,7 +13,6 @@ c Modified by A. Scemama
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -97,13 +98,14 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'mstates.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
@@ -150,7 +152,9 @@ c-----------------------------------------------------------------------
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
@@ -158,7 +162,6 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 

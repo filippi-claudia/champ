@@ -174,7 +174,9 @@ c Also, I first write out a temporary fort.3 and then delete it just because
 c it is only after one has processed all the k-pts that one knows how big ngvec_orb is.
 c However, that causes problems when running with mpi, so comment out that part.
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -200,7 +202,6 @@ c     dimension igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC_BIGX),c_real(NGVEC_BIGX),c_
 c    &,rkvec_tmp(3),rkvec_tmp2(3)
       common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC_BIGX),c_real(NGVEC_BIGX),c_imag(NGVEC_BIGX)
      &,rkvec_tmp(3),rkvec_tmp2(3),ngg(IVOL_RATIO),ngvec_dft
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
 c Warning: Temporary
 c Warning: why do I print out zeros if I dimension to MORB rather than IVOL_RATIO?
@@ -419,14 +420,15 @@ c At present it is assumed that k-vectors are in the correct order, but
 c if not one could use isortk to map iorb.
 c This is the straightforward evaluation for checking purposes only.
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
      &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big

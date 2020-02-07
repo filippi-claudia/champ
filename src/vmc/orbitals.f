@@ -2,7 +2,9 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -16,7 +18,6 @@ c as many ups as downs. If this is not true then be careful if
 c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /force_analy/ iforce_analy
@@ -153,7 +154,9 @@ c           do 26 m=1,nbasis
       end
 c------------------------------------------------------------------------------------
       subroutine virtual_orbitals
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 c compute values of extra ('virtual') orbitals needed for optorb operators
 c assuming that basis function values in phin are up to date
 
@@ -161,7 +164,6 @@ c assuming that basis function values in phin are up to date
       include 'force.h'
       include 'optorb.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
@@ -214,13 +216,14 @@ c-------------------------------------------------------------------------------
       subroutine da_orbitals
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
-      implicit real*8 (a-h,o-z)
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'numbas.h'
       include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
@@ -268,7 +271,9 @@ c-------------------------------------------------------------------------------
 c------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -277,7 +282,6 @@ c-------------------------------------------------------------------------------
 
       parameter(one=1.d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn

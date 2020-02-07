@@ -1,6 +1,8 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,7 +10,6 @@
 
       parameter(one=1.d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
@@ -95,7 +96,9 @@ c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -103,7 +106,6 @@ c-----------------------------------------------------------------------
       parameter (MEXCIT=10)
       parameter (one=1.d0,half=0.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /dorb/ iworbd(MELEC,MDET)
@@ -295,7 +297,9 @@ c iel has different spin than the electron moved
 c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -303,7 +307,6 @@ c-----------------------------------------------------------------------
       parameter (MEXCIT=10)
       parameter (one=1.d0,half=0.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /dorb/ iworbd(MELEC,MDET)

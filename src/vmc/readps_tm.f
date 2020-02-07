@@ -8,7 +8,9 @@ c Also eval pot. at 0 and initializes quadrature pts.
 c 
 c Modified by F. Schautz to use fancy file names
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
@@ -22,7 +24,6 @@ c Modified by F. Schautz to use fancy file names
 
       parameter (ncoef=5)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /pseudo_tm/ rmax(MCTYPE),arg(MCTYPE),r0(MCTYPE)
      &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),nr_ps(MCTYPE)

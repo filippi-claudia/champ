@@ -10,7 +10,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       character*12 mode
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,half=0.5d0)
@@ -40,7 +42,6 @@ c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best
 
       common /contr3/ mode
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /const2/ deltar,deltat
       common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)

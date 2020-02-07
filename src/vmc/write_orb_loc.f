@@ -6,7 +6,9 @@ c 1) a slater basis
 c 2) a gaussian basis
       use atom, only:  znuc, cent, pecent, iwctype, nctype, ncent
       use ghostatom, only: newghostype, nghostcent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
 
       parameter (zero=0.d0,one=1.d0)
@@ -19,7 +21,6 @@ c 2) a gaussian basis
       include 'basis.h'
       include 'numbas.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       common /numbas/ arg(MCTYPE),r0(MCTYPE)

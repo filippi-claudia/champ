@@ -3,7 +3,9 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -12,7 +14,6 @@ c job where it left off
       include 'mpi_qmc.h'
       include 'mpif.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)

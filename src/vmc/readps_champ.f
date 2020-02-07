@@ -19,7 +19,9 @@ c         =3, shifted exponential, r(i)=r0_ps*(exp((i-1)*h_ps)-1)
 c The prefered grid is 3.
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
@@ -28,7 +30,6 @@ c The prefered grid is 3.
       character*256 filename,pooldir,pp_id
       character*80 title
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /pseudo_tm/ rmax_ps(MCTYPE),arg_ps(MCTYPE),r0_ps(MCTYPE)
      &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),nr_ps(MCTYPE)

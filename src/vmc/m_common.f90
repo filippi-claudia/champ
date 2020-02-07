@@ -1,23 +1,19 @@
 !> \brief File collecting all modules that replace common blocks.  
 !>
-!> \author P. Lopez-Tarifa NLeSC(2019)
-! Victor's suggestion
-!module vmc
-!  include 'vmc.h'
-!end module
+!> \author P. Lopez-Tarifa & F. Zapata NLeSC(2019)
 
-module precision_kinds
-  ! named constants for 4, 2, and 1 byte integers:
-  integer, parameter :: &
-       i4b = selected_int_kind(9), &
-       i2b = selected_int_kind(4), &
-       i1b = selected_int_kind(2)
-  ! single, double and quadruple precision reals:
-  integer, parameter :: &
-       sp = kind(1.0), &
-       dp = selected_real_kind(2 * precision(1.0_sp)), &
-       qp = selected_real_kind(2 * precision(1.0_dp))
-end module precision_kinds
+ module precision_kinds
+   ! named constants for 4, 2, and 1 byte integers:
+   integer, parameter :: &
+        i4b = selected_int_kind(9), &
+        i2b = selected_int_kind(4), &
+        i1b = selected_int_kind(2)
+   ! single, double and quadruple precision reals:
+   integer, parameter :: &
+        sp = kind(1.0), &
+        dp = selected_real_kind(2 * precision(1.0_sp)), &
+        qp = selected_real_kind(2 * precision(1.0_dp))
+ end module precision_kinds
 
  module atom
    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
@@ -35,6 +31,24 @@ end module precision_kinds
    save
  end module atom
    
+module const
+    !> Arguments: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+    use precision_kinds, only: dp
+    include 'vmc.h'
+
+    real(dp) :: delta
+    real(dp) :: deltai
+    real(dp) :: etrial
+    real(dp) :: fbias
+    real(dp) :: hb
+    integer  :: imetro
+    integer  :: ipr
+    integer  :: nelec
+    real(dp) :: pi
+
+    save
+end module const
+
  module contrl_per
    !> Arguments: iperiodic, ibasis 
 
@@ -70,7 +84,17 @@ end module precision_kinds
    public   :: iforce_analy 
    save
  end module force_analy 
- 
+
+module ghostatom
+    !> Arguments: newghostype, nghostcent
+    use precision_kinds, only: dp
+    include 'vmc.h'
+
+    integer  :: newghostype
+    integer  :: nghostcent
+
+    save
+end module ghostatom
 
 module jaspar
     !> Arguments: nspin1, nspin2, sspin, sspinn, is
@@ -86,14 +110,4 @@ module jaspar
     save
 end module jaspar
 
-module ghostatom
-    !> Arguments: newghostype, nghostcent
-    use precision_kinds, only: dp
-    include 'vmc.h'
-
-    integer  :: newghostype
-    integer  :: nghostcent
-
-    save
-end module ghostatom
 

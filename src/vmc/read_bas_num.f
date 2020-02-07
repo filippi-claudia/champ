@@ -5,7 +5,9 @@ c Modified by F. Schautz to use fancy file names
 c Reads in localized orbitals on a radial grid
 
       use ghostatom, only: newghostype, nghostcent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'numbas.h'
@@ -17,7 +19,6 @@ c Reads in localized orbitals on a radial grid
 
       parameter(NCOEF=5)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /numbas/ arg(MCTYPE),r0(MCTYPE)
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)

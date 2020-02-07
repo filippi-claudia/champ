@@ -2,7 +2,9 @@
 c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       character*12 mode
 
       include 'vmc.h'
@@ -12,7 +14,6 @@ c routine to write out estimators for energy etc.
 
       common /contr3/ mode
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates

@@ -1,6 +1,8 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,7 +10,6 @@
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /multislater/ detu(MDET),detd(MDET)
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)

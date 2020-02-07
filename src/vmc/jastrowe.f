@@ -1,7 +1,9 @@
       subroutine jastrowe(iel,x,v,d2,value,iflag)
 c Written by Claudia Filippi by modifying jastrow
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
 
@@ -14,7 +16,6 @@ c Written by Claudia Filippi by modifying jastrow
 
       include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension x(3,*),v(3,*)
 

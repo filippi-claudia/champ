@@ -3,7 +3,9 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -14,7 +16,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /elec/ nup,ndn
       common /bparm/ nspin2b,nocuspb

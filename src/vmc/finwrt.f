@@ -3,7 +3,9 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       character*12 mode
       character*20 title
       character*24 date
@@ -19,7 +21,6 @@ c routine to print out final results
       common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
       common /contrl_per/ iperiodic,ibasis
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contr3/ mode
       common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc

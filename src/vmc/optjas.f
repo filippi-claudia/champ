@@ -1,6 +1,8 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,7 +10,6 @@
       include 'pseudo.h'
 
       parameter (MEXCIT=10)
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm

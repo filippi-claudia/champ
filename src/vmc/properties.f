@@ -8,11 +8,12 @@ c     1   2   3   4      5      6
 c     <x> <y> <z> <x**2> <y**2> <z**2> 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine prop_compute(coord)
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'properties.h'
 c     electron coordinates
       dimension coord(3,*)
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       if(iprop.eq.0) return
       do 5 i=1,nprop
@@ -103,10 +104,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine prop_prt(w,iblk,iu)
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 c compute averages and print then out
       include 'properties.h'
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       dimension pav(MAXPROP),perr(MAXPROP)
 
       common /icount_prop/ icount

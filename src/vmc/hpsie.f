@@ -1,7 +1,9 @@
       subroutine psie(iel,coord,psid,psij,ipass,iflag)
 c Written by Claudia Filippi by modifying hpsi
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       character*12 mode
 
       include 'vmc.h'
@@ -14,7 +16,6 @@ c Written by Claudia Filippi by modifying hpsi
       parameter (MEXCIT=10)
 c Calculates wave function
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /elec/ nup,ndn
 

@@ -14,7 +14,9 @@ c NOTE: as usual power n means r**(n-2)
 c
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
@@ -25,7 +27,6 @@ c
 
       parameter (ncoef=5)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc

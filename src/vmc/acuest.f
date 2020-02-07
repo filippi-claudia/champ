@@ -4,7 +4,9 @@ c routine to accumulate estimators for energy etc.
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       character*12 mode
 
       parameter (half=.5d0)
@@ -21,7 +23,6 @@ c routine to accumulate estimators for energy etc.
       common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)
       common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contr3/ mode
       common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)

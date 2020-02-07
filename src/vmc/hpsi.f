@@ -3,7 +3,9 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
@@ -15,7 +17,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
 c Calculates energy
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
       common /elec/ nup,ndn

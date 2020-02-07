@@ -13,7 +13,9 @@ c and sa, pa, da asymptotic functions
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -23,7 +25,6 @@ c and sa, pa, da asymptotic functions
       include 'numbas.h'
       include 'pseudo.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /elec/ nup,ndn
       common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)

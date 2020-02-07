@@ -1,7 +1,9 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       parameter (one=1.d0)
 
       include 'vmc.h'
@@ -17,7 +19,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       common /contr3/ mode
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
@@ -253,7 +254,9 @@ c-----------------------------------------------------------------------
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       parameter (one=1.d0)
 
       include 'vmc.h'
@@ -262,7 +265,6 @@ c-----------------------------------------------------------------------
       include 'pseudo.h'
       include 'ewald.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
 
       common /elec/ nup,ndn
@@ -449,7 +451,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'ewald.h'
@@ -458,7 +462,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       parameter (half=.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
@@ -571,7 +574,9 @@ c-----------------------------------------------------------------------
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       parameter (one=1.d0)
 
       include 'vmc.h'
@@ -579,7 +584,6 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
       include 'pseudo.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)

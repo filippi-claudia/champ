@@ -1,7 +1,9 @@
       subroutine deriv_jastrow(x,v,d2,div_vj,value)
 c Written by Claudia Filippi
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       parameter (zero=0.d0)
 
       include 'vmc.h'
@@ -11,7 +13,6 @@ c Written by Claudia Filippi
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension x(3,*),v(3,*),div_vj(MELEC)
 

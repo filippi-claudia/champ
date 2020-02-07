@@ -1,6 +1,8 @@
       subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'sr.h'
@@ -8,7 +10,6 @@
       include 'force.h'
       include 'mstates.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)

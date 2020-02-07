@@ -1,6 +1,8 @@
       subroutine multideterminante(iel)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,7 +10,6 @@
       parameter (one=1.d0,half=0.5d0)
       parameter (MEXCIT=10)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
@@ -123,7 +124,9 @@ c compute wave function
 c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -131,7 +134,6 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
       parameter (MEXCIT=10)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /dorb/ iworbd(MELEC,MDET)

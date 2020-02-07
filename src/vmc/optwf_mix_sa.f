@@ -1,7 +1,9 @@
       subroutine optwf_mix
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
-      implicit real*8 (a-h,o-z)
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -9,7 +11,6 @@
 
       character*20 method_sav
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm

@@ -4,7 +4,9 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use ghostatom, only: newghostype, nghostcent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -16,7 +18,6 @@ c job where it left off
 
       parameter(half=0.5d0,small=1.d-6)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /const2/ deltar,deltat
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)

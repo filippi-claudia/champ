@@ -1,6 +1,8 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,7 +10,6 @@
       include 'optorb_cblk.h'
 
       parameter (MEXCIT=10)
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
@@ -98,14 +99,15 @@ c ns_current reset in optorb_sum
 c-----------------------------------------------------------------------
       subroutine optorb_compute(psid,eloc,deloc)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
@@ -743,7 +745,9 @@ c replaced column
       end
 c-----------------------------------------------------------------------
       subroutine optorb_define
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -752,7 +756,6 @@ c-----------------------------------------------------------------------
       include 'optorb_cblk.h'
       include 'inputflags.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dets/ cdet(MDET,MSTATES,MWF),ndet

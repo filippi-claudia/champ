@@ -1,11 +1,12 @@
       subroutine compute_force(psid,denergy)
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
@@ -46,12 +47,13 @@ c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
@@ -146,7 +148,9 @@ c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
 c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'mstates.h'
@@ -154,7 +158,6 @@ c-----------------------------------------------------------------------
 
       parameter (MEXCIT=10)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)

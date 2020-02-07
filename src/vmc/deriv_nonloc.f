@@ -4,7 +4,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -15,7 +17,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       parameter (half=.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /elec/ nup,ndn
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap

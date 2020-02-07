@@ -31,7 +31,9 @@ c and Anthony Scemema
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use ghostatom, only: newghostype, nghostcent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -61,7 +63,6 @@ c and Anthony Scemema
      &   xm1,xm2,xm12,xms,xma,Z
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /const2/ deltar,deltat
       common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar

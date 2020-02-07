@@ -1,14 +1,15 @@
       subroutine nodes_distance(v,distance_node,iflag)
 c Written by Claudia Filippi
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       parameter(one=1.d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /wfsec/ iwftype(MFORCE),iwf,nwftype

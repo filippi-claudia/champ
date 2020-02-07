@@ -3,7 +3,9 @@ c Written by Cyrus Umrigar
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -14,7 +16,6 @@ c Written by Cyrus Umrigar
 
       common /contrl_per/ iperiodic,ibasis
       common /constant/ twopi
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 c     common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
 c    &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
 c    &,nlrad(MCTYPE)
@@ -1572,10 +1573,11 @@ c-----------------------------------------------------------------------
       function ewald_pot(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell)
 c Written by Cyrus Umrigar
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
 
+
       include 'ewald.h'
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension rvec(3),gvec(3,*),gnorm(*),igmult(*),y(*)
 
@@ -1601,10 +1603,11 @@ c-----------------------------------------------------------------------
       function ewald_pot_psp(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell,ict,l,z)
 c Written by Cyrus Umrigar
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
 
+
       include 'ewald.h'
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension rvec(3),gvec(3,*),gnorm(*),igmult(*),y(*)
 
@@ -1879,7 +1882,9 @@ c Written by Cyrus Umrigar
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -1905,7 +1910,6 @@ c Written by Cyrus Umrigar
      &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
      &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
@@ -1963,7 +1967,9 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -1989,7 +1995,6 @@ c Written by Cyrus Umrigar
      &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
      &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension x(3,*)
