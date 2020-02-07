@@ -625,7 +625,9 @@ c Written by Claudia Filippi
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
@@ -633,7 +635,6 @@ c Written by Claudia Filippi
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /bparm/ nspin2b,nocuspb
 
       common /gradhessj/ dj(MPARMJ,MSTATES),dj_e(MPARMJ,MSTATES),dj_de(MPARMJ,MPARMJ,MSTATES)

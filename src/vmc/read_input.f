@@ -29,7 +29,11 @@ c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use ghostatom, only: newghostype, nghostcent
       implicit real*8(a-h,o-z)
+
+
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
@@ -69,7 +73,6 @@ c and Anthony Scemema
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
@@ -110,7 +113,6 @@ c and Anthony Scemema
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nbj_current
 
-      common /ghostatom/ newghostype,nghostcent
 
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
@@ -1050,7 +1052,9 @@ c-----------------------------------------------------------------------
       subroutine read_jastrow_parameter(iu,iwft)
 C$INPUT jastrow_parameter inp i=1
 CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
@@ -1058,7 +1062,6 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
       common /elec/ nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
@@ -1590,7 +1593,9 @@ c Set the lcao to be equal
 c----------------------------------------------------------------------
       subroutine inputjastrow(nwftype)
 c Set the jastrow to be equal
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -1598,7 +1603,6 @@ c Set the jastrow to be equal
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
@@ -1671,7 +1675,9 @@ c-----------------------------------------------------------------------
       subroutine read_jasderiv(iu)
 C$INPUT jasderiv inp
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      implicit real*8 (a-h,o-z)
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optjas.h'
       include 'numbas.h'
@@ -1682,7 +1688,6 @@ C$INPUT jasderiv inp
       common /numbas/ arg(MCTYPE),r0(MCTYPE)
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
 

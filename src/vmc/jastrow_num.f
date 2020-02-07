@@ -6,7 +6,9 @@ c correctly for periodic systems if we add in capability to use
 c numerical Laplacian for periodic systems.
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       implicit real*8(a-h,o-z)
+
 
       parameter (zero=0.d0,one=1.d0,two=2.d0)
       parameter (half=.5d0)
@@ -27,7 +29,6 @@ c and the potential
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
 
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /bparm/ nspin2b,nocuspb
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord

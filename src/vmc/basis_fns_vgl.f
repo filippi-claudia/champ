@@ -4,7 +4,9 @@ c routine to calculate the values of the basis functions and their derivatives
 c vgl -> value, gradient, laplacian
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use ghostatom, only: newghostype, nghostcent
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
@@ -17,7 +19,6 @@ c vgl -> value, gradient, laplacian
       parameter (twelve=12.d0)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /ghostatom/ newghostype,nghostcent
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)

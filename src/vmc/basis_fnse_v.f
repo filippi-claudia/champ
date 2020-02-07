@@ -2,7 +2,9 @@
 c Written by Claudia Filippi by modifying basis_fns
 c routine to calculate basis functions for electron k
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use ghostatom, only: newghostype, nghostcent
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
@@ -11,7 +13,6 @@ c routine to calculate basis functions for electron k
 
       parameter (one=1.d0,three=3.d0,half=0.5d0)
 
-      common /ghostatom/ newghostype,nghostcent
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)

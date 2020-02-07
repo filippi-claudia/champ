@@ -5,7 +5,11 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       use atom, only: cent, ncent
 
+      use ghostatom, only: newghostype, nghostcent
+      use ghostatom, only: newghostype, nghostcent
       implicit real*8(a-h,o-z)
+
+
 
       include 'force.h'
       include 'vmc.h'
@@ -13,7 +17,6 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       include '3dgrid_flags.h'
       include '3dgrid_spline.h'
 
-      common /ghostatom/ newghostype,nghostcent
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -396,7 +399,6 @@ c Lagrange interpolation routines
       include '3dgrid_flags.h'
       include '3dgrid_lagrange.h'
 
-      common /ghostatom/ newghostype,nghostcent
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb

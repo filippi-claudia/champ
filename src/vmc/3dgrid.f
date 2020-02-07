@@ -16,7 +16,9 @@ c----------------------------------------------------------------------
 
       use atom, only: znuc, cent, iwctype, ncent
 
+      use ghostatom, only: newghostype, nghostcent
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include '3dgrid.h'
@@ -175,7 +177,6 @@ c----------------------------------------------------------------------
       include 'vmc.h'
       include '3dgrid.h'
 
-      common /ghostatom/ newghostype,nghostcent
       character*(*) cube_file
 
 c    Header

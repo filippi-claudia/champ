@@ -3,7 +3,9 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'mstates.h'
@@ -16,7 +18,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /elec/ nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 

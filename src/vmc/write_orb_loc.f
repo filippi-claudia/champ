@@ -5,7 +5,9 @@ c Modified by A. Scemama (printing in a GAMESS-like format)
 c 1) a slater basis
 c 2) a gaussian basis
       use atom, only:  znuc, cent, pecent, iwctype, nctype, ncent
+      use ghostatom, only: newghostype, nghostcent
       implicit real*8(a-h,o-z)
+
 
       parameter (zero=0.d0,one=1.d0)
       parameter(nprime=10)
@@ -24,7 +26,6 @@ c 2) a gaussian basis
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
-      common /ghostatom/ newghostype,nghostcent
 
 c Check that nbasis in lcao matches specified basis on all centers
       ncheck=0

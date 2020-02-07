@@ -448,7 +448,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'ewald.h'
       include 'force.h'
@@ -463,7 +465,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
 
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 
       common /bparm/ nspin2b,nocuspb
 

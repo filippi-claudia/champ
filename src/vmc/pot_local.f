@@ -1,7 +1,9 @@
       subroutine pot_local(pe)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use ghostatom, only: newghostype, nghostcent
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -9,7 +11,6 @@
 
       common /contrl_per/ iperiodic,ibasis
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /ghostatom/ newghostype,nghostcent
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)

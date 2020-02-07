@@ -71,3 +71,29 @@ end module precision_kinds
    save
  end module force_analy 
  
+
+module jaspar
+    !> Arguments: nspin1, nspin2, sspin, sspinn, is
+    use precision_kinds, only: dp
+    include 'vmc.h'
+
+    integer  :: is
+    integer  :: nspin1
+    integer  :: nspin2
+    real(dp) :: sspin
+    real(dp) :: sspinn
+
+    save
+end module jaspar
+
+module ghostatom
+    !> Arguments: newghostype, nghostcent
+    use precision_kinds, only: dp
+    include 'vmc.h'
+
+    integer  :: newghostype
+    integer  :: nghostcent
+
+    save
+end module ghostatom
+

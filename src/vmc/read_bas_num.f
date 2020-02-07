@@ -4,7 +4,9 @@ c Written by Claudia Filippi
 c Modified by F. Schautz to use fancy file names
 c Reads in localized orbitals on a radial grid
 
+      use ghostatom, only: newghostype, nghostcent
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'numbas.h'
       include 'pseudo.h'
@@ -22,7 +24,6 @@ c Reads in localized orbitals on a radial grid
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /numexp/ce(NCOEF,MRWF,MCTYPE,MFORCE),ae(2,MRWF,MCTYPE,MFORCE)
-      common /ghostatom/ newghostype,nghostcent
 
       dimension x(MRWF_PTS),work(MRWF_PTS),y(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
      &,l(MBASIS),icusp(MCTYPE)
