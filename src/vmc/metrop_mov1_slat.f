@@ -11,7 +11,11 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
+     &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
+     &tjfoo, vnew, vold, xnew, xold
       implicit real*8(a-h,o-z)
+
 
       character*12 mode
 
@@ -44,12 +48,6 @@ c    Last 2 are prob. best
       common /contr3/ mode
       common /elec/ nup,ndn
       common /const2/ deltar,deltat
-      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-     &,vnew(3,MELEC),psi2o(MSTATES,MFORCE),psi2n(MFORCE),eold(MSTATES,MFORCE),enew(MFORCE)
-     &,peo(MSTATES),pen,tjfn(MSTATES),tjfo,psido(MSTATES),psijo
-     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
       common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
       common /stats/ rejmax
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
@@ -642,7 +640,7 @@ c form expected values of e, pe, etc.
         esum(istate,1)=esum(istate,1)+eold(istate,1)*wtg(istate)
         pesum(istate)=pesum(istate)+peo(istate)*wtg(istate)
         tpbsum(istate)=tpbsum(istate)+(eold(istate,1)-peo(istate))*wtg(istate)
-  360   tjfsum(istate)=tjfsum(istate)+tjfo*wtg(istate)
+  360   tjfsum(istate)=tjfsum(istate)+tjfoo*wtg(istate)
 
       if(ipr.gt.1) write(6,'(''energy reweighted '',d12.4)') eold(1,1)*wtg(1)
 

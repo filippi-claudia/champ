@@ -4,7 +4,11 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
+     &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
+     &vnew, vold, xnew, xold
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -16,12 +20,6 @@ c job where it left off
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-     &,vnew(3,MELEC),psi2o(MSTATES,MFORCE),psi2n(MFORCE),eold(MSTATES,MFORCE),enew(MFORCE)
-     &,peo(MSTATES),pen,tjfn,tjfo(MSTATES),psido(MSTATES),psijo
-     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
