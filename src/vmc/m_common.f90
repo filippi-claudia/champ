@@ -138,7 +138,7 @@ module config
     real(dp) :: rvminon(3,MELEC)
     real(dp) :: tjfn
     real(dp) :: tjfo(MSTATES)
-    real(dp)  :: tjfoo
+    real(dp) :: tjfoo
     real(dp) :: vnew(3,MELEC)
     real(dp) :: vold(3,MELEC)
     real(dp) :: xnew(3,MELEC)
