@@ -8,7 +8,9 @@ c job where it left off
       use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
      &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
      &vnew, vold, xnew, xold
+      use jaspar1, only: cjas1, cjas2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -27,7 +29,6 @@ c job where it left off
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
 
       common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
       common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),pecum(MSTATES),tpbcum(MSTATES),tjfcum(MSTATES),r2cum,iblk

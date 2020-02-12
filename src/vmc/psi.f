@@ -5,7 +5,9 @@ c if we add in the capability to use numerical Laplacian for
 c periodic systems.
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar1, only: cjas1, cjas2
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -20,7 +22,6 @@ c periodic systems.
 
       common /elec/ nup,ndn
 
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord

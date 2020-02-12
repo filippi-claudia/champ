@@ -32,7 +32,9 @@ c and Anthony Scemema
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use jaspar1, only: cjas1, cjas2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -74,7 +76,6 @@ c and Anthony Scemema
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -1054,7 +1055,9 @@ c-----------------------------------------------------------------------
 C$INPUT jastrow_parameter inp i=1
 CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar1, only: cjas1, cjas2
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -1063,7 +1066,6 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
       common /elec/ nup,ndn
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -1595,7 +1597,9 @@ c----------------------------------------------------------------------
       subroutine inputjastrow(nwftype)
 c Set the jastrow to be equal
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar1, only: cjas1, cjas2
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -1604,7 +1608,6 @@ c Set the jastrow to be equal
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord

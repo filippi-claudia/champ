@@ -17,7 +17,9 @@ c and sa, pa, da asymptotic functions
       use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
      &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
      &vnew, vold, xnew, xold
+      use jaspar1, only: cjas1, cjas2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -32,7 +34,6 @@ c and sa, pa, da asymptotic functions
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord

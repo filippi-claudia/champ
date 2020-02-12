@@ -110,8 +110,6 @@ module jaspar
     save
 end module jaspar
 
-
-
 module config
     !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
     use precision_kinds, only: dp
@@ -140,7 +138,7 @@ module config
     real(dp) :: rvminon(3,MELEC)
     real(dp) :: tjfn
     real(dp) :: tjfo(MSTATES)
-    integer  :: tjfoo
+    real(dp)  :: tjfoo
     real(dp) :: vnew(3,MELEC)
     real(dp) :: vold(3,MELEC)
     real(dp) :: xnew(3,MELEC)
@@ -148,3 +146,14 @@ module config
 
     save
 end module config
+
+module jaspar1
+    !> Arguments: cjas1, cjas2
+    use precision_kinds, only: dp
+    include 'force.h'
+
+    real(dp) :: cjas1(MWF)
+    real(dp) :: cjas2(MWF)
+
+    save
+end module jaspar1
