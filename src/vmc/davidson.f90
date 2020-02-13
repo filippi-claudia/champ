@@ -398,7 +398,6 @@ contains
     ! where are stored the eigenvectors !
     if( nproc > 1) then
       
-
       if (idtask > 0) then 
         allocate(ritz_vectors(parameters%nparm, size_update))     
         allocate(eigenvalues_sub(parameters%basis_size))
