@@ -31,7 +31,44 @@
    save
  end module atom
    
-module const
+ module config
+    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
+    use precision_kinds, only: dp
+    include 'vmc.h'
+    include 'force.h'
+    include 'mstates.h'
+
+    real(dp) :: delttn(MELEC)
+    real(dp) :: enew(MFORCE)
+    real(dp) :: eold(MSTATES,MFORCE)
+    integer  :: nearestn(MELEC)
+    integer  :: nearesto(MELEC)
+    real(dp) :: pen
+    real(dp) :: peo(MSTATES)
+    real(dp) :: psi2n(MFORCE)
+    real(dp) :: psi2o(MSTATES,MFORCE)
+    real(dp) :: psido(MSTATES)
+    real(dp) :: psijo
+    real(dp) :: rminn(MELEC)
+    real(dp) :: rminno(MELEC)
+    real(dp) :: rmino(MELEC)
+    real(dp) :: rminon(MELEC)
+    real(dp) :: rvminn(3,MELEC)
+    real(dp) :: rvminno(3,MELEC)
+    real(dp) :: rvmino(3,MELEC)
+    real(dp) :: rvminon(3,MELEC)
+    real(dp) :: tjfn
+    real(dp) :: tjfo(MSTATES)
+    real(dp) :: tjfoo
+    real(dp) :: vnew(3,MELEC)
+    real(dp) :: vold(3,MELEC)
+    real(dp) :: xnew(3,MELEC)
+    real(dp) :: xold(3,MELEC)
+
+    save
+ end module config
+
+ module const
     !> Arguments: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
     use precision_kinds, only: dp
     include 'vmc.h'
@@ -47,7 +84,7 @@ module const
     real(dp) :: pi
 
     save
-end module const
+ end module const
 
  module contrl_per
    !> Arguments: iperiodic, ibasis 
@@ -85,7 +122,7 @@ end module const
    save
  end module force_analy 
 
-module ghostatom
+ module ghostatom
     !> Arguments: newghostype, nghostcent
     use precision_kinds, only: dp
     include 'vmc.h'
@@ -94,9 +131,9 @@ module ghostatom
     integer  :: nghostcent
 
     save
-end module ghostatom
+ end module ghostatom
 
-module jaspar
+ module jaspar
     !> Arguments: nspin1, nspin2, sspin, sspinn, is
     use precision_kinds, only: dp
     include 'vmc.h'
@@ -108,46 +145,9 @@ module jaspar
     real(dp) :: sspinn
 
     save
-end module jaspar
+ end module jaspar
 
-module config
-    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
-    use precision_kinds, only: dp
-    include 'vmc.h'
-    include 'force.h'
-    include 'mstates.h'
-
-    real(dp) :: delttn(MELEC)
-    real(dp) :: enew(MFORCE)
-    real(dp) :: eold(MSTATES,MFORCE)
-    integer  :: nearestn(MELEC)
-    integer  :: nearesto(MELEC)
-    real(dp) :: pen
-    real(dp) :: peo(MSTATES)
-    real(dp) :: psi2n(MFORCE)
-    real(dp) :: psi2o(MSTATES,MFORCE)
-    real(dp) :: psido(MSTATES)
-    real(dp) :: psijo
-    real(dp) :: rminn(MELEC)
-    real(dp) :: rminno(MELEC)
-    real(dp) :: rmino(MELEC)
-    real(dp) :: rminon(MELEC)
-    real(dp) :: rvminn(3,MELEC)
-    real(dp) :: rvminno(3,MELEC)
-    real(dp) :: rvmino(3,MELEC)
-    real(dp) :: rvminon(3,MELEC)
-    real(dp) :: tjfn
-    real(dp) :: tjfo(MSTATES)
-    real(dp) :: tjfoo
-    real(dp) :: vnew(3,MELEC)
-    real(dp) :: vold(3,MELEC)
-    real(dp) :: xnew(3,MELEC)
-    real(dp) :: xold(3,MELEC)
-
-    save
-end module config
-
-module jaspar1
+ module jaspar1
     !> Arguments: cjas1, cjas2
     use precision_kinds, only: dp
     include 'force.h'
@@ -156,4 +156,4 @@ module jaspar1
     real(dp) :: cjas2(MWF)
 
     save
-end module jaspar1
+ end module jaspar1
