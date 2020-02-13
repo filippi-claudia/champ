@@ -147,6 +147,7 @@ contains
 
     ! Indices of the eigenvalues/eigenvectors pair that have not converged
     logical, dimension( lowest) :: has_converged
+    logical :: update_proj
     integer :: n_converged ! Number of converged eigenvalue/eigenvector pairs
     
     ! Iteration subpsace dimension
@@ -171,6 +172,7 @@ contains
     ! Initial number of converged eigenvalue/eigenvector pairs
     n_converged = 0
     has_converged = .false.
+    update_proj = .false.
 
     ! Diagonal of the arrays
     allocate(diag_mtx(parameters%nparm))
@@ -181,6 +183,7 @@ contains
     ! why ?
     ! wouldn't it be faster to have all the procs computing that
     ! instead of master computes and then broadcast ?
+    ! Needed for initalizing V so we need it
     if (nproc > 1) then  
        call MPI_BCAST( diag_mtx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
        call MPI_BCAST( diag_stx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
@@ -200,10 +203,14 @@ contains
     allocate( stxV( parameters%nparm, parameters%basis_size)) 
 
     ! Calculation of HV and SV
+    ! Only the master has the correct matrix
+    ! nut only the master needs it
     mtxV = fun_mtx_gemv( parameters, V)
     stxV = fun_stx_gemv( parameters, V)
 
     ! they all just computed it ! why broadcasting !
+    ! apparently needed for the correction.
+    ! I don't think they are needed on the slaves
     ! if (nproc> 1) then
     !   call MPI_BCAST( mtxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
     !   call MPI_BCAST( stxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
@@ -212,36 +219,52 @@ contains
     ! 3. Outer loop block Davidson
     outer_loop: do i= 1, max_iters
 
-      if( idtask== 0) write(6,'(''DAV: Davidson iteration: '', I10)') i
-
-      ! Array deallocation/allocation.
-      call check_deallocate_matrix(mtx_proj)
-      call check_deallocate_matrix(stx_proj)
+      ! do most of the calculation on the master
+      ! we could try to use openMP here via the lapack routines
+      if( idtask == 0) then
       
-      ! call check_deallocate_matrix(lambda)
-      ! call check_deallocate_matrix(tmp_res_array)
-      call check_deallocate_vector(eigenvalues_sub)
-      call check_deallocate_matrix(eigenvectors_sub)
-      call check_deallocate_matrix(ritz_vectors)
+        write(6,'(''DAV: Davidson iteration: '', I10)') i
+      
+        ! needed if we want to vectorix the residue calculation
+        ! call check_deallocate_matrix(lambda)
+        ! call check_deallocate_matrix(tmp_res_array)
+        ! allocate( lambda(size_update, size_update ))
+        ! allocate( tmp_res_array(parameters%nparm, size_update ))
 
-      call check_deallocate_matrix(residues)
-      call check_deallocate_matrix(correction)
+        ! reallocate eigenpairs of the small system
+        call check_deallocate_vector(eigenvalues_sub)
+        call check_deallocate_matrix(eigenvectors_sub)
+        allocate( eigenvalues_sub( parameters%basis_size)) 
+        allocate( eigenvectors_sub( parameters%basis_size, parameters%basis_size)) 
 
-      allocate( eigenvalues_sub( parameters%basis_size)) 
-      allocate( eigenvectors_sub( parameters%basis_size, parameters%basis_size)) 
+        ! deallocate the corection/residues
+        call check_deallocate_matrix(residues)
+        call check_deallocate_matrix(correction)
+        allocate( residues( parameters%nparm,size_update))
+        allocate( correction( parameters%nparm, size_update ))
 
-      ! allocate( lambda(size_update, size_update ))
-      ! allocate( tmp_res_array(parameters%nparm, size_update ))
-      allocate( residues( parameters%nparm,size_update))
-      allocate( correction( parameters%nparm, size_update ))
+        ! deallocate ritz vectors
+        call check_deallocate_matrix(ritz_vectors)
 
+        ! update the projected matrices in the small subspace
+        if(update_proj) then
 
-      !! IF IDTASK=0
-      if( idtask.eq. 0) then
+          ! update the projected matrices  
+          call update_projection(V, mtxV, mtx_proj)
+          call update_projection(V, stxV, stx_proj)   
 
-        ! 4. Projection of H and S matrices
-        mtx_proj= lapack_matmul( 'T', 'N', V, mtxV)
-        stx_proj= lapack_matmul( 'T', 'N', V, stxV)
+        ! recompute it from scratch when restarting
+        else 
+
+          ! Array deallocation/allocation.
+          call check_deallocate_matrix(mtx_proj)
+          call check_deallocate_matrix(stx_proj)
+
+          ! recompute the projected matrix
+          mtx_proj = lapack_matmul('T','N',V,mtxV)
+          stx_proj = lapack_matmul('T','N',V,stxV)
+
+        end if
 
         ! 5. Solve the small eigenvalue problem
         write( 6, '(''DAV: enter lapack_generalized_eigensolver'')') 
@@ -250,9 +273,9 @@ contains
         write( 6, '(''DAV: eigv'',1000f12.5)')( eigenvalues_sub( j), j= 1,parameters%lowest)
 
         ! Compute the necessary ritz vectors
-        ritz_vectors= lapack_matmul( 'N', 'N', V, eigenvectors_sub(:,:size_update))
+        ritz_vectors = lapack_matmul( 'N', 'N', V, eigenvectors_sub(:,:size_update))
       
-        ! 7. Residue calculation  
+        ! 7. Residue calculation (vectorized)
         ! lambda= diag_mat(eigenvalues_sub(:size_update))
         ! tmp_res_array = lapack_matmul('N', 'N', lapack_matmul( 'N', 'N', stxV, eigenvectors_sub(:,:size_update), lambda))
         ! residues = lapack_matmul( 'N', 'N', mtxV, eigenvectors_sub) - tmp_res_array 
@@ -264,78 +287,80 @@ contains
        end do
 
         ! Check which eigenvalues has converged
+        ! not sure if the reshape is necessary, norm2 also exists 
         do j= 1, parameters%lowest
-          ! not sure if the reshape is necessary
-          ! norm2 also exists !
           errors( j) = norm( reshape( residues( :, j), (/ parameters%nparm/)))
           if( errors( j)< tolerance) has_converged( j)= .true.
-
         end do
 
       !! ENDIF IDTASK
-      endif
+      !! endif <- we continue on the master
+      
+      ! Are those needed as well ?!!
+      ! I would say no 
+      ! if( nproc> 1) then
+      !   call MPI_BCAST(has_converged, parameters%lowest, MPI_LOGICAL, 0, MPI_COMM_WORLD, ier)
+      !   call MPI_BCAST(residues, parameters%nparm* size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+      !   call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+      !   call MPI_BCAST(eigenvectors_sub, parameters%basis_size* parameters%basis_size, & 
+      !                 MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+      ! endif       
 
-      if( nproc> 1) then
-        call MPI_BCAST(has_converged, parameters%lowest, MPI_LOGICAL, 0, MPI_COMM_WORLD, ier)
-        call MPI_BCAST(residues, parameters%nparm* size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-        call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-        call MPI_BCAST(eigenvectors_sub, parameters%basis_size* parameters%basis_size, & 
-                      MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-      endif       
 
+        ! 8. Check for convergence
 
-      ! 8. Check for convergence
+        if( all( has_converged)) then
+          iters= i
+          write( 6, '(''DAV: roots are converged'')') 
+          eigenvalues= eigenvalues_sub(:parameters%lowest)
+          exit outer_loop
+        end if
 
-      if( all( has_converged)) then
-        iters= i
-        write( 6, '(''DAV: roots are converged'')') 
-        eigenvalues= eigenvalues_sub(:parameters%lowest)
-        exit outer_loop
-      end if
+        ! 9. Calculate correction vectors.  
 
-      ! 9. Calculate correction vectors.  
+        ! if(( parameters%basis_size<= nvecx) .and.( 2*parameters%basis_size< nparm)) then
+        ! I'm not sure I get the reason behind the second condition.
+        ! I hope that our basis size nevers goes as large as half the matrix dimension !
+        if(( parameters%basis_size + size_update <= nvecx) .and.( 2*parameters%basis_size< nparm)) then
+          
+          update_proj = .true.
 
-      ! if(( parameters%basis_size<= nvecx) .and.( 2*parameters%basis_size< nparm)) then
-      ! I'm not sure I get the reason behind the second condition.
-      ! I hope that our basis size nevers goes as large as half the matrix dimension !
-      if(( parameters%basis_size + size_update <= nvecx) .and.( 2*parameters%basis_size< nparm)) then
+          ! compute the correction vectors
+          select case( method)
+          case( "DPR")
+            if( idtask== 0)  write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
+            correction= compute_DPR( residues, parameters, eigenvalues_sub,                     &
+                                          diag_mtx, diag_stx)
+          case( "GJD")
+            if( idtask== 0)  write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
+            correction= compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors_sub,      &
+                                          eigenvalues_sub)
+          end select
 
-        ! compute the correction vectors
-        select case( method)
-        case( "DPR")
-          if( idtask== 0)  write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
-          correction= compute_DPR( residues, parameters, eigenvalues_sub,                     &
-                                        diag_mtx, diag_stx)
-        case( "GJD")
-          if( idtask== 0)  write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
-          correction= compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors_sub,      &
-                                        eigenvalues_sub)
-        end select
-
-        ! 10. Add the correction vectors to the current basis.
-        call concatenate( V, correction)
-           
-        ! IF IDTASK=0
-        if( idtask .eq. 0) then
-
+          ! 10. Add the correction vectors to the current basis.
+          call concatenate( V, correction)
+            
           ! 11. Orthogonalize basis using modified GS
           call modified_gram_schmidt(V, parameters%basis_size+1)
           ! call lapack_qr( V)
+   
+        else
 
-        ! ENDIF IDTASK
-        endif
+          update_proj = .false.
+          
+          ! 12. Otherwise reduce the basis of the subspace to the current correction
+          V = ritz_vectors(:, :init_subspace_size)
 
-        if (nproc > 1) then
-          call MPI_BCAST( V, size( V, 1)* size( V, 2), MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-        endif 
+        end if
+      
+      !! ENDIF IDTASK
+      end if 
 
-      else
+      ! broadcast the basis vector
+      if (nproc > 1) then
+        call MPI_BCAST( V, size( V, 1)* size( V, 2), MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+      endif 
 
-        ! 12. Otherwise reduce the basis of the subspace to the current correction
-        V = ritz_vectors(:, :init_subspace_size)
-
-      end if
-    
       ! Update basis size
       parameters%basis_size = size( V, 2) 
 
@@ -352,16 +377,13 @@ contains
       !   call MPI_BCAST( stxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
       ! endif
 
-      ! update the projected matrices
-      call update_projection(V, mtxV, mtx_proj)
-      call update_projection(V, stxV, stx_proj)
 
     end do outer_loop
 
-    !  13. Check convergence
-    if( i> max_iters) then
-       iters= i
-       if ( idtask== 0) then 
+    !  13. print convergence
+    if ( idtask== 0) then
+      if( i > max_iters) then
+       iters= i  
          do j=1, parameters%lowest
           if( has_converged( j) .eqv. .false.) &
             write(6,'(''DAV: Davidson eingenpair: '', I10, '' not converged'')') j 
@@ -372,16 +394,29 @@ contains
 
     ! Select the lowest eigenvalues and their corresponding ritz_vectors
     ! They are sort in increasing order
+    ! where are stored the eigenvectors !
+    if( nproc > 1) then
+      call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+
+      if (idtask > 0) then 
+        allocate(ritz_vectors(parameters%nparm, size_update))     
+      end if  
+
+      call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, & 
+                    MPI_REAL8, 0, MPI_COMM_WORLD, ier) 
+    endif   
     eigenvalues= eigenvalues_sub( :parameters%lowest)
+    ritz_vectors = ritz_vectors(:,:parameters%lowest)
     
     ! Free memory
-    call check_deallocate_matrix( correction)
-    deallocate( eigenvalues_sub, eigenvectors_sub)
-    deallocate( diag_mtx, diag_stx)
     deallocate( V, mtxV, stxV)
-    deallocate( residues )
-    ! deallocate( lambda, tmp_array)
+
     if (idtask == 0) then  
+      call check_deallocate_matrix( correction)
+      deallocate( eigenvalues_sub, eigenvectors_sub)
+      deallocate( diag_mtx, diag_stx)
+      deallocate( residues )
+      ! deallocate( lambda, tmp_array)
        deallocate( mtx_proj)
        call check_deallocate_matrix( stx_proj)
     endif 
