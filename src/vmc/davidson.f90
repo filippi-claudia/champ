@@ -34,7 +34,7 @@ module davidson
   use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
        lapack_qr, lapack_solver
   use array_utils, only: concatenate, initialize_subspace, norm, write_matrix, write_vector, & 
-                        eye, check_deallocate_matrices, check_deallocate_matrix, check_deallocate_vector, modified_gram_schmidt
+                        eye, check_deallocate_matrix, check_deallocate_vector, modified_gram_schmidt
   implicit none
 
   type davidson_parameters
@@ -220,7 +220,7 @@ contains
       
       ! call check_deallocate_matrix(lambda)
       ! call check_deallocate_matrix(tmp_res_array)
-      call checl_deallocate_vector(eigenvalues_sub)
+      call check_deallocate_vector(eigenvalues_sub)
       call check_deallocate_matrix(eigenvectors_sub)
       call check_deallocate_matrix(ritz_vectors)
 
@@ -266,8 +266,8 @@ contains
         ! Check which eigenvalues has converged
         do j= 1, parameters%lowest
           ! not sure if the reshape is necessary
-          ! norm2 exists !
-          errors( j) = norm( reshape( rs( :, j), (/ parameters%nparm/)))
+          ! norm2 also exists !
+          errors( j) = norm( reshape( residues( :, j), (/ parameters%nparm/)))
           if( errors( j)< tolerance) has_converged( j)= .true.
 
         end do
@@ -376,8 +376,11 @@ contains
     
     ! Free memory
     call check_deallocate_matrix( correction)
-    deallocate( eigenvalues_sub, eigenvectors_sub, diag_mtx, diag_stx)
-    deallocate( V, mtxV, stxV, guess, rs, lambda)
+    deallocate( eigenvalues_sub, eigenvectors_sub)
+    deallocate( diag_mtx, diag_stx)
+    deallocate( V, mtxV, stxV)
+    deallocate( residues )
+    ! deallocate( lambda, tmp_array)
     if (idtask == 0) then  
        deallocate( mtx_proj)
        call check_deallocate_matrix( stx_proj)
@@ -415,6 +418,8 @@ contains
     ! Move to new expanded matrix
     deallocate(mtx_proj)
     call move_alloc(tmp_array, mtx_proj)
+
+  end subroutine update_projection
 
   subroutine die(msg)
   !> Subroutine that dies the calculation raising an errror message
