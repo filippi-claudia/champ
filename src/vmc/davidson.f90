@@ -52,7 +52,7 @@ module davidson
   
 contains
 
-  subroutine generalized_eigensolver (fun_mtx_gemv, eigenvalues, ritz_vectors, nparm, nparm_max, &
+  subroutine generalized_eigensolver (fun_mtx_gemv, eigenvalues, eigenvectors, nparm, nparm_max, &
        lowest, nvecx, method, max_iters, tolerance, iters, fun_stx_gemv, nproc, idtask)
     !> \brief use a pair of functions fun_mtx and fun_stx to compute on the fly the matrices to solve
     !>  the general eigenvalue problem
@@ -64,7 +64,7 @@ contains
     !> \param[in] fun_mtx_gemv: Function to apply the matrix to a buncof vectors
     !> \param[in, opt] fun_stx_gemv: (optional) function to apply the pencil to a bunch of vectors.
     !> \param[out] eigenvalues Computed eigenvalues
-    !> \param[inout] ritz_vectors approximation to the eigenvectors
+    !> \param[inout] eigenvectors approximation to the eigenvectors
     !> \param nparm[in] Leading dimension of the matrix to diagonalize
     !> \param nparm_max[in] Maximum dimension of the matrix to diagonalize
     !> \param[in] lowest Number of lowest eigenvalues/ritz_vectors to compute
@@ -85,7 +85,7 @@ contains
     ! input/output variable
     integer, intent(in) :: nparm, nparm_max, nvecx, lowest, nproc, idtask
     real(dp), dimension(lowest), intent(out) :: eigenvalues
-    real(dp), dimension(:, :), allocatable, intent(out) :: ritz_vectors
+    real(dp), dimension(:, :), allocatable, intent(out) :: eigenvectors
     integer, intent(in) :: max_iters
     real(dp), intent(in) :: tolerance
     character(len=*), intent(in) :: method
@@ -135,12 +135,13 @@ contains
     
     ! Working arrays
     real( dp), dimension(:), allocatable :: eigenvalues_sub
+    real( dp), dimension(:,:), allocatable :: ritz_vectors
     real( dp), dimension(:, :), allocatable :: correction, eigenvectors_sub, mtx_proj, stx_proj, V
     real( dp), dimension(:, :), allocatable :: mtxV, stxV 
     real( dp), dimension(nparm, 1) :: xs, gs
 
     ! real( dp), dimension(:,:), allocatable :: lambda              ! eigenvalues_sub in a diagonal matrix 
-    ! real( dp), dimension(:,:), allocatable :: tmp_res_array       ! tmp array for res calculation  
+    ! real( dp), dimension(:,:), allocatable :: tmp_res_array       ! tmp array for vectorized res calculation  
 
     ! Arrays dimension
     type(davidson_parameters) :: parameters
@@ -158,7 +159,7 @@ contains
 
     ! Lapack qr safety check 
     if (nvecx > nparm) then 
-      if( idtask == 1) call die('DAV: nvecx > nparm, increase nparm or decrese lin_nvecx')
+      if( idtask == 1) call die('DAV: nvecx > nparm, increase nparm or decrease lin_nvecx')
     endif
 
     ! Dimension of the matrix
@@ -396,24 +397,27 @@ contains
     ! They are sort in increasing order
     ! where are stored the eigenvectors !
     if( nproc > 1) then
-      call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+      
 
       if (idtask > 0) then 
         allocate(ritz_vectors(parameters%nparm, size_update))     
+        allocate(eigenvalues_sub(parameters%basis_size))
       end if  
 
+      call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
       call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, & 
                     MPI_REAL8, 0, MPI_COMM_WORLD, ier) 
     endif   
-    eigenvalues= eigenvalues_sub( :parameters%lowest)
-    ritz_vectors = ritz_vectors(:,:parameters%lowest)
-    
+    eigenvalues = eigenvalues_sub( :parameters%lowest)
+    eigenvectors = ritz_vectors(:,:parameters%lowest)
+
     ! Free memory
+    deallocate( eigenvalues_sub, ritz_vectors)
     deallocate( V, mtxV, stxV)
 
     if (idtask == 0) then  
       call check_deallocate_matrix( correction)
-      deallocate( eigenvalues_sub, eigenvectors_sub)
+      deallocate( eigenvectors_sub)
       deallocate( diag_mtx, diag_stx)
       deallocate( residues )
       ! deallocate( lambda, tmp_array)
@@ -421,7 +425,6 @@ contains
        call check_deallocate_matrix( stx_proj)
     endif 
     
-    ! free optional matrix
     
   end subroutine generalized_eigensolver
 !  
