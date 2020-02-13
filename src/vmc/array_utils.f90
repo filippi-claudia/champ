@@ -9,8 +9,8 @@ module array_utils
   private
   !> \public
   public :: concatenate, diagonal,eye, generate_diagonal_dominant, norm, &
-       initialize_subspace, write_matrix, write_vector, check_deallocate_matrices, &
-       check_deallocate_matrix
+       initialize_subspace, write_matrix, write_vector, check_deallocate_vector, &
+       check_deallocate_matrix, modified_gram_schmidt, diag_mat
 
 contains
 
@@ -25,13 +25,14 @@ contains
     real(dp), intent(in), optional :: alpha
     
     !local variable
-    integer :: i, j
+    integer :: i, j, min_dim
     real(dp) :: x
 
     ! check optional values
     x = 1.d0
     if (present(alpha)) x = alpha
     
+    ! that's sooooo costly
     do i=1, m
        do j=1, n
           if (i /= j) then
@@ -41,8 +42,27 @@ contains
           end if
        end do
     end do
+
+   ! why not that ?
+   !  eye = 0.0_dp
+   !  min_dim = min(m,n)
+   !  do i=1, min_dim
+   !    eye(i,i) = x
+   !  end do
     
   end function eye
+
+  pure function diag_mat(vec)
+   real(dp), dimension(:), intent(in) :: vec
+   real(dp), dimension(size(vec,1),size(vec,1)) :: diag_mat 
+
+   integer :: i
+   diag_mat = 0.0_dp
+   do i=1,size(vec,1)
+      diag_mat(i,i) = vec(i)
+   end do
+
+  end function diag_mat
 
   pure function norm(vector)
     !> compute the norm-2 of a vector
@@ -134,6 +154,8 @@ contains
 
   end function diagonal  
 
+
+
   function initialize_subspace(diag, dim_sub, dim_base) result(precond)
     !> \brief generates a diagonal preconditioner for `matrix`.
     !> \return diagonal matrix
@@ -159,6 +181,40 @@ contains
     end do
     
   end function initialize_subspace
+
+  subroutine modified_gram_schmidt(mat, nstart)
+   !> \brief use modifed gram-schmidt orthogonalization on mat
+   !> \brief nstart is the index of the first vector to orthogonalize
+   
+   ! input
+   real(dp), dimension(:,:), intent(inout) :: mat
+   integer, optional, intent(in) :: nstart
+
+   integer :: i
+   integer :: nrows, ncols
+   integer :: idx_start
+   real(dp), dimension(:), allocatable :: tmp_array
+
+   idx_start = 1
+   if (present(nstart)) idx_start = nstart
+
+   nrows = size(mat,1)
+   ncols = size(mat,2)
+
+   allocate(tmp_array(nrows))
+
+   do i=idx_start, ncols
+
+      tmp_array = 0.0_dp
+      tmp_array = lapack_matrix_vector('T', mat(:,:i-1),mat(:,i))
+      mat(:,i) = mat(:,i) - lapack_matrix_vector('N',mat(:,:i-1), tmp_array)
+      mat(:,i) = mat(:,i) / norm(mat(:,i))
+
+   end do
+   
+   deallocate(tmp_array)
+
+  end subroutine modified_gram_schmidt
 
   function search_key(keys, i) result(k)
     !> \brief Search for a given index `i` in a vector `keys`
@@ -209,25 +265,25 @@ contains
     
   end subroutine write_vector  
 
-  subroutine check_deallocate_matrices( mtx_proj, stx_proj, lambda, eigenvectors_sub, &
-                   ritz_vectors, mtxV, stxV)
-    !> deallocate a matrix if allocated
-    real(dp), dimension(:, :), allocatable, intent(inout) ::  mtx_proj
-    real(dp), dimension(:, :), allocatable, intent(inout) ::  stx_proj
-    real(dp), dimension(:, :), allocatable, intent(inout) ::  lambda
-    real(dp), dimension(:, :), allocatable, intent(inout) ::  eigenvectors_sub
-    real(dp), dimension(:, :), allocatable, intent(inout) ::  ritz_vectors
-    real(dp), dimension(:, :), allocatable, intent(inout), optional ::  mtxV
-    real(dp), dimension(:, :), allocatable, intent(inout), optional ::  stxV
-      call check_deallocate_matrix( mtx_proj)
-      call check_deallocate_matrix( stx_proj)
-      call check_deallocate_matrix( lambda)
-      call check_deallocate_matrix( eigenvectors_sub)
-      call check_deallocate_matrix( ritz_vectors)
-      if( present( mtxV))  call check_deallocate_matrix( mtxV)
-      if( present( stxV))  call check_deallocate_matrix( stxV)
+!   subroutine check_deallocate_matrices( mtx_proj, stx_proj, lambda, eigenvectors_sub, &
+!                    ritz_vectors, mtxV, stxV)
+!     !> deallocate a matrix if allocated
+!     real(dp), dimension(:, :), allocatable, intent(inout) ::  mtx_proj
+!     real(dp), dimension(:, :), allocatable, intent(inout) ::  stx_proj
+!     real(dp), dimension(:, :), allocatable, intent(inout) ::  lambda
+!     real(dp), dimension(:, :), allocatable, intent(inout) ::  eigenvectors_sub
+!     real(dp), dimension(:, :), allocatable, intent(inout) ::  ritz_vectors
+!     real(dp), dimension(:, :), allocatable, intent(inout), optional ::  mtxV
+!     real(dp), dimension(:, :), allocatable, intent(inout), optional ::  stxV
+!       call check_deallocate_matrix( mtx_proj)
+!       call check_deallocate_matrix( stx_proj)
+!       call check_deallocate_matrix( lambda)
+!       call check_deallocate_matrix( eigenvectors_sub)
+!       call check_deallocate_matrix( ritz_vectors)
+!       if( present( mtxV))  call check_deallocate_matrix( mtxV)
+!       if( present( stxV))  call check_deallocate_matrix( stxV)
 
-  end subroutine check_deallocate_matrices
+!   end subroutine check_deallocate_matrices
 
   subroutine check_deallocate_matrix(mtx)
 
@@ -239,5 +295,18 @@ contains
     end if
 
   end subroutine check_deallocate_matrix
+
+
+
+  subroutine check_deallocate_vector(vec)
+
+   !> deallocate a matrix if allocated
+   real(dp), dimension(:), allocatable, intent(inout) ::  vec
+
+   if (allocated(vec)) then
+      deallocate(vec)
+   end if
+
+ end subroutine check_deallocate_vector
   
 end module array_utils

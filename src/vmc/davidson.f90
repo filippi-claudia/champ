@@ -34,7 +34,7 @@ module davidson
   use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
        lapack_qr, lapack_solver
   use array_utils, only: concatenate, initialize_subspace, norm, write_matrix, write_vector, & 
-                        eye, check_deallocate_matrices, check_deallocate_matrix
+                        eye, check_deallocate_matrices, check_deallocate_matrix, check_deallocate_vector, modified_gram_schmidt
   implicit none
 
   type davidson_parameters
@@ -125,19 +125,22 @@ contains
     end interface
 
     ! Local variables
-    integer :: init_subspace_size, max_size_basis, i, j, ier
+    integer :: i, j, ier
+    integer :: init_subspace_size, max_size_basis, size_update
 
     ! Basis of subspace of approximants
     real(dp), dimension(:), allocatable :: diag_mtx, diag_stx
-    real(dp), dimension(:,:), allocatable :: guess, rs 
+    real(dp), dimension(:,:), allocatable :: residues
     real(dp), dimension(lowest):: errors
     
     ! Working arrays
     real( dp), dimension(:), allocatable :: eigenvalues_sub
-    real( dp), dimension(:,:), allocatable :: lambda       ! eigenvalues_sub in a diagonal matrix 
     real( dp), dimension(:, :), allocatable :: correction, eigenvectors_sub, mtx_proj, stx_proj, V
     real( dp), dimension(:, :), allocatable :: mtxV, stxV 
     real( dp), dimension(nparm, 1) :: xs, gs
+
+    ! real( dp), dimension(:,:), allocatable :: lambda              ! eigenvalues_sub in a diagonal matrix 
+    ! real( dp), dimension(:,:), allocatable :: tmp_res_array       ! tmp array for res calculation  
 
     ! Arrays dimension
     type(davidson_parameters) :: parameters
@@ -148,6 +151,9 @@ contains
     
     ! Iteration subpsace dimension
     init_subspace_size = lowest  * 2
+
+    ! number of correction vectors appended to V at each iteration
+    size_update = lowest * 2
 
     ! Lapack qr safety check 
     if (nvecx > nparm) then 
@@ -172,81 +178,95 @@ contains
 
     if (idtask==0) call store_diag_hs(parameters%nparm, diag_mtx, diag_stx)
 
+    ! why ?
+    ! wouldn't it be faster to have all the procs computing that
+    ! instead of master computes and then broadcast ?
     if (nproc > 1) then  
        call MPI_BCAST( diag_mtx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
        call MPI_BCAST( diag_stx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
     endif 
-!    if (idtask==0) call write_vector( 'diag_0.txt', diag_mtx)
+
  
     ! 2.  Select the initial ortogonal subspace based on lowest elements
     !     of the diagonal of the matrix.
-
-    V= initialize_subspace( diag_mtx( 1: init_subspace_size), init_subspace_size, nparm) ! Initial orthonormal basis
+    ! No we should find the min elements along the entire diagonal not just the first init_subspace_size elements !
+    ! V = initialize_subspace( diag_mtx( 1: init_subspace_size), init_subspace_size, nparm) ! Initial orthonormal basis
+    V = initialize_subspace( diag_mtx, init_subspace_size, nparm) ! Initial orthonormal basis
     
     if( idtask== 0) write(6,'(''DAV: Setup subspace problem'')')
 
-    ! 3. Outer loop block Davidson schema:
+    ! allocate mtxV and stxV
+    allocate( mtxV( parameters%nparm, parameters%basis_size))
+    allocate( stxV( parameters%nparm, parameters%basis_size)) 
 
+    ! Calculation of HV and SV
+    mtxV = fun_mtx_gemv( parameters, V)
+    stxV = fun_stx_gemv( parameters, V)
+
+    ! they all just computed it ! why broadcasting !
+    ! if (nproc> 1) then
+    !   call MPI_BCAST( mtxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+    !   call MPI_BCAST( stxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+    ! endif
+
+    ! 3. Outer loop block Davidson
     outer_loop: do i= 1, max_iters
 
       if( idtask== 0) write(6,'(''DAV: Davidson iteration: '', I10)') i
 
       ! Array deallocation/allocation.
-      call check_deallocate_matrices(mtx_proj, stx_proj, lambda, eigenvectors_sub, ritz_vectors, mtxV, stxV)
-      call check_deallocate_matrix( guess)
-      call check_deallocate_matrix( rs)
-      if( allocated( eigenvalues_sub)) then
-          deallocate( eigenvalues_sub)
-      end if
-      allocate( mtxV( parameters%nparm, parameters%basis_size), stxV(parameters%nparm, parameters%basis_size)) 
-      allocate( guess( parameters%nparm, parameters%basis_size), rs( parameters%nparm,parameters%basis_size))
+      call check_deallocate_matrix(mtx_proj)
+      call check_deallocate_matrix(stx_proj)
+      
+      ! call check_deallocate_matrix(lambda)
+      ! call check_deallocate_matrix(tmp_res_array)
+      call checl_deallocate_vector(eigenvalues_sub)
+      call check_deallocate_matrix(eigenvectors_sub)
+      call check_deallocate_matrix(ritz_vectors)
+
+      call check_deallocate_matrix(residues)
+      call check_deallocate_matrix(correction)
+
       allocate( eigenvalues_sub( parameters%basis_size)) 
-      allocate( lambda( parameters%basis_size, parameters%basis_size)) 
       allocate( eigenvectors_sub( parameters%basis_size, parameters%basis_size)) 
 
-      ! Calculation of H and S in the subspace:
-      mtxV= fun_mtx_gemv( parameters, V)
-      stxV= fun_stx_gemv( parameters, V)
-
-      if (nproc> 1) then
-        call MPI_BCAST( mtxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-        call MPI_BCAST( stxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-      endif
+      ! allocate( lambda(size_update, size_update ))
+      ! allocate( tmp_res_array(parameters%nparm, size_update ))
+      allocate( residues( parameters%nparm,size_update))
+      allocate( correction( parameters%nparm, size_update ))
 
 
       !! IF IDTASK=0
       if( idtask.eq. 0) then
 
         ! 4. Projection of H and S matrices
-
         mtx_proj= lapack_matmul( 'T', 'N', V, mtxV)
         stx_proj= lapack_matmul( 'T', 'N', V, stxV)
 
-        ! 5.Compute the eigenvalues and their corresponding ritz_vectors
-        ! for the projected matrix using lapack.
-        
+        ! 5. Solve the small eigenvalue problem
         write( 6, '(''DAV: enter lapack_generalized_eigensolver'')') 
         call lapack_generalized_eigensolver( mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
         write( 6, '(''DAV: exit lapack_generalized_eigensolver'')') 
         write( 6, '(''DAV: eigv'',1000f12.5)')( eigenvalues_sub( j), j= 1,parameters%lowest)
-    
-        ! 6. Construction of lambda matrix (a squared one with eigenvalues_sub in the diagonal)
 
-        lambda= eye( parameters%basis_size, parameters%basis_size) 
-        do j= 1, parameters%basis_size 
-          lambda( j, j)= eigenvalues_sub( j)
-        enddo
- 
+        ! Compute the necessary ritz vectors
+        ritz_vectors= lapack_matmul( 'N', 'N', V, eigenvectors_sub(:,:size_update))
+      
         ! 7. Residue calculation  
+        ! lambda= diag_mat(eigenvalues_sub(:size_update))
+        ! tmp_res_array = lapack_matmul('N', 'N', lapack_matmul( 'N', 'N', stxV, eigenvectors_sub(:,:size_update), lambda))
+        ! residues = lapack_matmul( 'N', 'N', mtxV, eigenvectors_sub) - tmp_res_array 
 
-        rs= lapack_matmul( 'N', 'N', stxV, eigenvectors_sub)
-        guess= lapack_matmul('N', 'N', rs, lambda)  
-        deallocate( rs)
-        rs= lapack_matmul( 'N', 'N', mtxV, eigenvectors_sub) - guess 
+        ! Residue calculation loop
+        do j=1, size_update          
+          residues(:, j) = eigenvalues_sub(j) * lapack_matrix_vector('N', stxV, eigenvectors_sub(:, j))
+          residues(:, j) = lapack_matrix_vector('N', mtxV, eigenvectors_sub(:, j)) - residues(:, j)
+       end do
 
         ! Check which eigenvalues has converged
         do j= 1, parameters%lowest
-
+          ! not sure if the reshape is necessary
+          ! norm2 exists !
           errors( j) = norm( reshape( rs( :, j), (/ parameters%nparm/)))
           if( errors( j)< tolerance) has_converged( j)= .true.
 
@@ -257,13 +277,12 @@ contains
 
       if( nproc> 1) then
         call MPI_BCAST(has_converged, parameters%lowest, MPI_LOGICAL, 0, MPI_COMM_WORLD, ier)
-        call MPI_BCAST(rs, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+        call MPI_BCAST(residues, parameters%nparm* size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
         call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
         call MPI_BCAST(eigenvectors_sub, parameters%basis_size* parameters%basis_size, & 
                       MPI_REAL8, 0, MPI_COMM_WORLD, ier)
       endif       
 
-      ritz_vectors= lapack_matmul( 'N', 'N', V, eigenvectors_sub)
 
       ! 8. Check for convergence
 
@@ -276,33 +295,32 @@ contains
 
       ! 9. Calculate correction vectors.  
 
-      if(( parameters%basis_size<= nvecx).and.( 2*parameters%basis_size< nparm)) then
+      ! if(( parameters%basis_size<= nvecx) .and.( 2*parameters%basis_size< nparm)) then
+      ! I'm not sure I get the reason behind the second condition.
+      ! I hope that our basis size nevers goes as large as half the matrix dimension !
+      if(( parameters%basis_size + size_update <= nvecx) .and.( 2*parameters%basis_size< nparm)) then
 
-        ! append correction to the current basis
-        call check_deallocate_matrix( correction)
-        allocate( correction( size( ritz_vectors, 1), size( V, 2)))
-
+        ! compute the correction vectors
         select case( method)
         case( "DPR")
           if( idtask== 0)  write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
-          correction= compute_DPR( rs, parameters, eigenvalues_sub,                     &
+          correction= compute_DPR( residues, parameters, eigenvalues_sub,                     &
                                         diag_mtx, diag_stx)
         case( "GJD")
           if( idtask== 0)  write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
-          correction= compute_GJD_free( parameters, ritz_vectors, rs, eigenvectors_sub,      &
+          correction= compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors_sub,      &
                                         eigenvalues_sub)
         end select
 
         ! 10. Add the correction vectors to the current basis.
-
         call concatenate( V, correction)
            
         ! IF IDTASK=0
         if( idtask .eq. 0) then
 
-          ! 11. Orthogonalize basis
-
-          call lapack_qr( V)
+          ! 11. Orthogonalize basis using modified GS
+          call modified_gram_schmidt(V, parameters%basis_size+1)
+          ! call lapack_qr( V)
 
         ! ENDIF IDTASK
         endif
@@ -318,8 +336,25 @@ contains
 
       end if
     
-    ! Update basis size
+      ! Update basis size
       parameters%basis_size = size( V, 2) 
+
+      ! Calculation of HV and SV
+      call check_deallocate_matrix(mtxV)
+      mtxV = fun_mtx_gemv( parameters, V)
+
+      call check_deallocate_matrix(stxV)
+      stxV = fun_stx_gemv( parameters, V)
+  
+      ! there again they all have it so should we broadcast ??!!
+      ! if (nproc> 1) then
+      !   call MPI_BCAST( mtxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+      !   call MPI_BCAST( stxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+      ! endif
+
+      ! update the projected matrices
+      call update_projection(V, mtxV, mtx_proj)
+      call update_projection(V, stxV, stx_proj)
 
     end do outer_loop
 
@@ -352,6 +387,35 @@ contains
     
   end subroutine generalized_eigensolver
 !  
+  subroutine update_projection(V, mtxV, mtx_proj)
+    !> update the projected matrices
+    !> \param mtxV: full matrix x projector
+    !> \param V: projector
+    !> \param mtx_proj: projected matrix
+ 
+    implicit none
+    real(dp), dimension(:, :), intent(in) :: mtxV
+    real(dp), dimension(:, :), intent(in) :: V
+    real(dp), dimension(:, :), intent(inout), allocatable :: mtx_proj
+    real(dp), dimension(:, :), allocatable :: tmp_array
+ 
+    ! local variables
+    integer :: nvec, old_dim
+ 
+    ! dimension of the matrices
+    nvec = size(mtxV,2)
+    old_dim = size(mtx_proj,1)    
+ 
+    ! move to temporal array
+    allocate(tmp_array(nvec, nvec))
+    tmp_array(:old_dim, :old_dim) = mtx_proj
+    tmp_array(:,old_dim+1:) = lapack_matmul('T', 'N', V, mtxV(:, old_dim+1:))
+    tmp_array( old_dim+1:,:old_dim ) = transpose(tmp_array(:old_dim, old_dim+1:))
+ 
+    ! Move to new expanded matrix
+    deallocate(mtx_proj)
+    call move_alloc(tmp_array, mtx_proj)
+
   subroutine die(msg)
   !> Subroutine that dies the calculation raising an errror message
   !
@@ -364,7 +428,7 @@ contains
 
   end subroutine
 
-  function compute_DPR(rs, parameters, eigenvalues, diag_mtx, diag_stx) &
+  function compute_DPR(residues, parameters, eigenvalues, diag_mtx, diag_stx) &
                             result(correction)
 
     !> compute the correction vector using the DPR method for a matrix free diagonalization
@@ -378,26 +442,29 @@ contains
     !
     use array_utils, only: eye
     !
-    real(dp), dimension(:, :), intent(in) :: rs
+    real(dp), dimension(:, :), intent(in) :: residues
     real(dp), dimension(:), intent(in) :: eigenvalues  
     real(dp), dimension(:), intent(in) :: diag_mtx, diag_stx
 
     ! local variables
     type(davidson_parameters) :: parameters
-    real(dp), dimension(parameters%nparm,parameters%nparm) :: diag
-    real(dp), dimension(parameters%nparm, parameters%basis_size) :: correction
+
+    ! that's :
+    !   1 - never used   
+    !   2 - the size of the matrix we **don't want to store**
+    ! real(dp), dimension(parameters%nparm, parameters%nparm) :: diag
+
+    real(dp), dimension(parameters%nparm, size(residues,2)) :: correction
     integer :: ii, j
     integer :: m
     
     ! calculate the correction vectors
     m= parameters%nparm
 
-    ! computed the projected matrices
-    diag = 0.0_dp
 
-    do j = 1, parameters%basis_size 
-     diag= eye( m , m, eigenvalues( j))
-     correction( :, j)= rs( :, j) 
+    do j = 1, size(residues, 2) 
+
+     correction( :, j)= residues( :, j) 
 
      do ii= 1, size( correction, 1)
        correction( ii, j)= correction( ii, j)/( eigenvalues( j)* diag_stx( ii)- diag_mtx( ii))
