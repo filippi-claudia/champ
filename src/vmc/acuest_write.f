@@ -3,7 +3,10 @@ c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
       character*12 mode
 
@@ -15,8 +18,6 @@ c routine to write out estimators for energy etc.
       common /contr3/ mode
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)

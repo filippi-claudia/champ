@@ -4,7 +4,10 @@ c routine to print out final results
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
       character*12 mode
       character*20 title
@@ -32,8 +35,6 @@ c routine to print out final results
      &ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 

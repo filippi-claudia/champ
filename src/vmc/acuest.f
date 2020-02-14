@@ -8,7 +8,10 @@ c routine to accumulate estimators for energy etc.
       use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
      &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
      &vnew, vold, xnew, xold
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
 
       character*12 mode
@@ -43,8 +46,6 @@ c routine to accumulate estimators for energy etc.
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 

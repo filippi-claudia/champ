@@ -1,7 +1,10 @@
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -18,8 +21,6 @@ c dimensioned at least max(nup**2,ndn**2)
 
       common /elec/ nup,ndn
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -475,7 +476,10 @@ c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -485,8 +489,6 @@ c-----------------------------------------------------------------------
 
       common /elec/ nup,ndn
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /multislater/ detiab(MDET,2)
 
@@ -522,7 +524,10 @@ c-----------------------------------------------------------------------
       subroutine multideterminants_define(iflag,icheck)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -534,8 +539,6 @@ c-----------------------------------------------------------------------
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /dorb/ iworbd(MELEC,MDET)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       dimension iswapped(MELEC),itotphase(MDET)
 

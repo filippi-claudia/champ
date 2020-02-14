@@ -1,6 +1,9 @@
       subroutine store_diag_hs(nparm_p1,hii,sii)
 
-      implicit real*8 (a-h,o-z)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'sr.h'
@@ -13,8 +16,6 @@
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
       common /sr_index/ jelo,jelo2,jelohfj

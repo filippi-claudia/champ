@@ -65,25 +65,30 @@
     real(dp) :: xnew(3,MELEC)
     real(dp) :: xold(3,MELEC)
 
+    private
+    public   :: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n
+    public   :: psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
     save
  end module config
 
  module const
-    !> Arguments: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-    use precision_kinds, only: dp
-    include 'vmc.h'
+   !> Arguments: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+   use precision_kinds, only: dp
+   include 'vmc.h'
 
-    real(dp) :: delta
-    real(dp) :: deltai
-    real(dp) :: etrial
-    real(dp) :: fbias
-    real(dp) :: hb
-    integer  :: imetro
-    integer  :: ipr
-    integer  :: nelec
-    real(dp) :: pi
+   real(dp) :: delta
+   real(dp) :: deltai
+   real(dp) :: etrial
+   real(dp) :: fbias
+   real(dp) :: hb
+   integer  :: imetro
+   integer  :: ipr
+   integer  :: nelec
+   real(dp) :: pi
 
-    save
+   private
+   public   :: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+   save
  end module const
 
  module contrl_per
@@ -95,6 +100,26 @@
    public   :: iperiodic, ibasis
    save
  end module contrl_per
+ 
+ module csfs
+   !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'mstates.h'
+   include 'force.h'
+
+   real(dp) :: ccsf(MDET,MSTATES,MWF)
+   real(dp) :: cxdet(MDET*MDETCSFX)
+   integer  :: iadet(MDET)
+   integer  :: ibdet(MDET)
+   integer  :: icxdet(MDET*MDETCSFX)
+   integer  :: ncsf
+   integer  :: nstates
+
+   private
+   public   :: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+   save
+ end module csfs
  
  module da_pseudo
    !> Arguments: da_pecent, da_vps, da_nonloc  
@@ -123,37 +148,43 @@
  end module force_analy 
 
  module ghostatom
-    !> Arguments: newghostype, nghostcent
-    use precision_kinds, only: dp
-    include 'vmc.h'
+   !> Arguments: newghostype, nghostcent
+   use precision_kinds, only: dp
+   include 'vmc.h'
 
-    integer  :: newghostype
-    integer  :: nghostcent
+   integer  :: newghostype
+   integer  :: nghostcent
 
-    save
+   private
+   public   :: newghostype, nghostcent
+   save
  end module ghostatom
 
  module jaspar
-    !> Arguments: nspin1, nspin2, sspin, sspinn, is
-    use precision_kinds, only: dp
-    include 'vmc.h'
+   !> Arguments: nspin1, nspin2, sspin, sspinn, is
+   use precision_kinds, only: dp
+   include 'vmc.h'
 
-    integer  :: is
-    integer  :: nspin1
-    integer  :: nspin2
-    real(dp) :: sspin
-    real(dp) :: sspinn
+   integer  :: is
+   integer  :: nspin1
+   integer  :: nspin2
+   real(dp) :: sspin
+   real(dp) :: sspinn
 
-    save
+   private
+   public   :: nspin1, nspin2, sspin, sspinn, is
+   save
  end module jaspar
 
  module jaspar1
-    !> Arguments: cjas1, cjas2
-    use precision_kinds, only: dp
-    include 'force.h'
+   !> Arguments: cjas1, cjas2
+   use precision_kinds, only: dp
+   include 'force.h'
 
-    real(dp) :: cjas1(MWF)
-    real(dp) :: cjas2(MWF)
+   real(dp) :: cjas1(MWF)
+   real(dp) :: cjas2(MWF)
 
-    save
+   private
+   public   ::  cjas1, cjas2
+   save
  end module jaspar1

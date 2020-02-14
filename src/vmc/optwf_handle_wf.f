@@ -165,7 +165,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine write_ci(iwf_fit,filetype)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -175,8 +178,6 @@ c-----------------------------------------------------------------------
       common /dorb/ iworbd(MELEC,MDET)
 
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
@@ -364,14 +365,15 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
@@ -465,14 +467,15 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine copy_ci(iadiag)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       do 30 j=1,nstates
         do 30 i=1,ndet
@@ -583,14 +586,15 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci_best
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
@@ -724,14 +728,15 @@ c Update the orbitals
       end
 c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -937,7 +942,10 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -950,8 +958,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm

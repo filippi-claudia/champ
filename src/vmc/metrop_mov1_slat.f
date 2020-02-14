@@ -14,7 +14,10 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
      &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
      &tjfoo, vnew, vold, xnew, xold
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
 
       character*12 mode
@@ -55,8 +58,6 @@ c    Last 2 are prob. best
       common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
  

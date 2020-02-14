@@ -9,7 +9,10 @@ c job where it left off
      &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
      &vnew, vold, xnew, xold
       use jaspar1, only: cjas1, cjas2
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -45,8 +48,6 @@ c job where it left off
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 

@@ -3,7 +3,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_hs(nparm,sr_adiag)
 c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
-      implicit real*8 (a-h,o-z)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'sr.h'
@@ -14,8 +17,6 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
       common /sr_index/ jelo,jelo2,jelohfj
@@ -296,7 +297,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine atimes_n(n,z,r)
 c r=a*z, i cicli doppi su n e nconf sono parallelizzati
 
-      implicit real*8 (a-h,o-z)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      implicit real*8(a-h,o-z)
+
       include 'mpif.h'
 
       include 'vmc.h'
@@ -307,8 +311,6 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
       common /sr_index/ jelo,jelo2,jelohfj

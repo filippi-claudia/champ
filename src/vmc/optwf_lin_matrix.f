@@ -309,7 +309,10 @@ c-----------------------------------------------------------------------
       subroutine compute_dparm(nparm,mparmx,lwork,dparm,h,h_sav,s,s_sav,work,eig_vec,
      &                     add_diag,energy_sav,energy_err_sav)
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -326,8 +329,6 @@ c-----------------------------------------------------------------------
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparmsav
 

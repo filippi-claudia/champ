@@ -105,7 +105,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_fin(passes,eave)
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'mstates.h'
@@ -141,8 +144,6 @@ c-----------------------------------------------------------------------
 
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       dimension oelocav(MXCITERM),eav(MXCITERM)
 

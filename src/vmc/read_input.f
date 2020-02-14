@@ -33,7 +33,10 @@ c and Anthony Scemema
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use jaspar1, only: cjas1, cjas2
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -107,8 +110,6 @@ c and Anthony Scemema
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
@@ -1301,14 +1302,15 @@ CKEYDOC Displacement parameters and wave function types
 c-----------------------------------------------------------------------
       subroutine read_csf(ncsf_read,nstates_read,fn)
 C$INPUT csf i i=1 a=<input>
-      implicit double precision (a-h,o-z)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optci.h'
       include 'inputflags.h'
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       character fn*(*)
 
@@ -1337,14 +1339,15 @@ c-----------------------------------------------------------------------
       subroutine read_csfmap(fn)
 C$INPUT csfmap a=<input>
 CKEYDOC Read mapping between csf and determinants.
-      implicit double precision (a-h,o-z)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       character fn*(*)
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 c
       call ptfile(iu,fn,'old')
 c
@@ -1519,15 +1522,16 @@ c Check that the required blocks are there in the input
 c-----------------------------------------------------------------------
       subroutine inputcsf
 c Check that the required blocks are there in the input
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'mstates.h'
       include 'inputflags.h'
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       nstates=1
       ncsf=0
@@ -1921,14 +1925,15 @@ CKEYDOC Read diagonal density matrix information.
       end
 c----------------------------------------------------------------------
       subroutine get_weights(field,weights,iweight,nweight)
-      implicit double precision (a-h,o-z)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 c weights for state averaging
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       dimension weights(MSTATES),iweight(MSTATES)
 

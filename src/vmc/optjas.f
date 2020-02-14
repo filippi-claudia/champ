@@ -1,7 +1,10 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -42,8 +45,6 @@
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /scratch/ dtildem(MELEC,MORB,2),denergy_det(MDET,2)
      &,xmatu(MELEC**2),xmatd(MELEC**2) 
@@ -182,7 +183,10 @@ c Written by Claudia Filippi
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
@@ -203,8 +207,6 @@ c Written by Claudia Filippi
 
       common /ijasnonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2)
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -361,7 +363,10 @@ c-----------------------------------------------------------------------
       subroutine optjas_cum(wsum,enow)
 c Written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
@@ -378,8 +383,6 @@ c Written by Claudia Filippi
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -431,7 +434,10 @@ c Written by Claudia Filippi
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
@@ -446,8 +452,6 @@ c Written by Claudia Filippi
      &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
       common /ijasnonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2)
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -473,7 +477,10 @@ c-----------------------------------------------------------------------
       subroutine optjas_init
 c Written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optjas.h'
       include 'mstates.h'
@@ -490,8 +497,6 @@ c Written by Claudia Filippi
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -535,7 +540,10 @@ c-----------------------------------------------------------------------
       subroutine optjas_dump(iu)
 c Written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
@@ -552,8 +560,6 @@ c Written by Claudia Filippi
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -578,7 +584,10 @@ c-----------------------------------------------------------------------
       subroutine optjas_rstrt(iu)
 c Written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
@@ -595,8 +604,6 @@ c Written by Claudia Filippi
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -627,7 +634,10 @@ c Written by Claudia Filippi
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'optjas.h'
@@ -653,8 +663,6 @@ c Written by Claudia Filippi
 
       common /gradhess_jas/ grad_jas(MPARMJ),h_jas(MPARMJ,MPARMJ),s_jas(MPARMJ,MPARMJ)
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 

@@ -1,7 +1,10 @@
       subroutine acuest_reduce(enow)
 c Written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -24,8 +27,6 @@ c Written by Claudia Filippi
       common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
       common /estpsi/ detref(2),apsi(MSTATES),aref
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       logical wid
       common /mpiconf/ idtask,nproc,wid
