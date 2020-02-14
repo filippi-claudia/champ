@@ -34,7 +34,7 @@ module davidson
   use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
        lapack_qr, lapack_solver
   use array_utils, only: concatenate, initialize_subspace, norm, write_matrix, write_vector, & 
-                        eye, check_deallocate_matrix, check_deallocate_vector, modified_gram_schmidt
+                        eye, check_deallocate_matrix, check_deallocate_vector, modified_gram_schmidt, diag_mat
   implicit none
 
   type davidson_parameters
@@ -140,8 +140,9 @@ contains
     real( dp), dimension(:, :), allocatable :: mtxV, stxV 
     real( dp), dimension(nparm, 1) :: xs, gs
 
-    ! real( dp), dimension(:,:), allocatable :: lambda              ! eigenvalues_sub in a diagonal matrix 
-    ! real( dp), dimension(:,:), allocatable :: tmp_res_array       ! tmp array for vectorized res calculation  
+    ! tmp arrays for the vectorsi residue calculation
+    real( dp), dimension(:,:), allocatable :: lambda              ! eigenvalues_sub in a diagonal matrix 
+    real( dp), dimension(:,:), allocatable :: tmp_res_array       ! tmp array for vectorized res calculation  
 
     ! Arrays dimension
     type(davidson_parameters) :: parameters
@@ -227,8 +228,8 @@ contains
         write(6,'(''DAV: Davidson iteration: '', I10)') i
       
         ! needed if we want to vectorix the residue calculation
-        ! call check_deallocate_matrix(lambda)
-        ! call check_deallocate_matrix(tmp_res_array)
+        call check_deallocate_matrix(lambda)
+        call check_deallocate_matrix(tmp_res_array)
         ! allocate( lambda(size_update, size_update ))
         ! allocate( tmp_res_array(parameters%nparm, size_update ))
 
@@ -277,15 +278,15 @@ contains
         ritz_vectors = lapack_matmul( 'N', 'N', V, eigenvectors_sub(:,:size_update))
       
         ! 7. Residue calculation (vectorized)
-        ! lambda= diag_mat(eigenvalues_sub(:size_update))
-        ! tmp_res_array = lapack_matmul('N', 'N', lapack_matmul( 'N', 'N', stxV, eigenvectors_sub(:,:size_update), lambda))
-        ! residues = lapack_matmul( 'N', 'N', mtxV, eigenvectors_sub) - tmp_res_array 
+        lambda= diag_mat(eigenvalues_sub(:size_update))
+        tmp_res_array = lapack_matmul('N', 'N', lapack_matmul( 'N', 'N', stxV, eigenvectors_sub(:,:size_update)), lambda)
+        residues = lapack_matmul( 'N', 'N', mtxV, eigenvectors_sub(:,:size_update)) - tmp_res_array 
 
         ! Residue calculation loop
-        do j=1, size_update          
-          residues(:, j) = eigenvalues_sub(j) * lapack_matrix_vector('N', stxV, eigenvectors_sub(:, j))
-          residues(:, j) = lapack_matrix_vector('N', mtxV, eigenvectors_sub(:, j)) - residues(:, j)
-       end do
+      !   do j=1, size_update          
+      !     residues(:, j) = eigenvalues_sub(j) * lapack_matrix_vector('N', stxV, eigenvectors_sub(:, j))
+      !     residues(:, j) = lapack_matrix_vector('N', mtxV, eigenvectors_sub(:, j)) - residues(:, j)
+      !  end do
 
         ! Check which eigenvalues has converged
         ! not sure if the reshape is necessary, norm2 also exists 
