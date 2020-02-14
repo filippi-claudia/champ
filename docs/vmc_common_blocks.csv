@@ -21,7 +21,7 @@ contrldmc,1,Todo
 csfs,74,DONE
 cuspmat4,5,Todo
 da_energy_ave,7,Todo
-da_energy_now,8,Todo
+da_energy_now,8,DONE
 da_jastrow4val,8,Todo
 da_orbval,8,Todo
 da_pseudo,7,DONE

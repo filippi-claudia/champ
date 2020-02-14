@@ -2,7 +2,9 @@
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_energy_now, only: da_energy, da_psi
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -25,7 +27,6 @@
       common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
       common /da_jastrow4val/ da_j(3,MELEC,MCENT),da_d2j(3,MELEC,MCENT),da_vj(3,3,MELEC,MCENT)
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
       dimension da_psi_ref(3,MCENT)
 
@@ -48,7 +49,9 @@ c-----------------------------------------------------------------------
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_energy_now, only: da_energy, da_psi
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -77,7 +80,6 @@ c-----------------------------------------------------------------------
       common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
       common /da_jastrow4val/ da_j(3,MELEC,MCENT),da_d2j(3,MELEC,MCENT),da_vj(3,3,MELEC,MCENT)
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
       dimension b_a(MORB,MELEC),b_kref(MELEC*MELEC),tildem_a(MELEC,MORB),xmat(MELEC*MELEC,2),work(MELEC)
       dimension da_psi_ref(3,MCENT)
@@ -149,7 +151,9 @@ c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_energy_now, only: da_energy, da_psi
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -192,7 +196,6 @@ c-----------------------------------------------------------------------
      & ,tildem(MELEC,MORB,2)
       common /Bloc_da/ b_da(3,MELEC,MORB,MCENT)
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
       dimension da_energy_ref(3,MCENT)
 
@@ -262,11 +265,12 @@ c     write(6,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
 c-----------------------------------------------------------------------
       subroutine force_analy_init(iflag)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      implicit double precision(a-h,o-z)
+      use da_energy_now, only: da_energy, da_psi
+      implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
       common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
      & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
@@ -294,11 +298,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine force_analy_sum(p,q,eloc,eloco)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      implicit double precision(a-h,o-z)
+      use da_energy_now, only: da_energy, da_psi
+      implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
       common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
      & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)

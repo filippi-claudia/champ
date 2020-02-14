@@ -2,7 +2,9 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_energy_now, only: da_energy, da_psi
       implicit real*8(a-h,o-z)
+
 
       parameter (one=1.d0)
 
@@ -53,7 +55,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
      & da_nonloc(3,MCENT)
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
       common /force_analy/ iforce_analy
 
