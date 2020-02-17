@@ -138,7 +138,6 @@ contains
     real( dp), dimension(:,:), allocatable :: ritz_vectors
     real( dp), dimension(:, :), allocatable :: correction, eigenvectors_sub, mtx_proj, stx_proj, V
     real( dp), dimension(:, :), allocatable :: mtxV, stxV 
-    real( dp), dimension(nparm, 1) :: xs, gs
 
     ! tmp arrays for the vectorsi residue calculation
     real( dp), dimension(:,:), allocatable :: lambda              ! eigenvalues_sub in a diagonal matrix 
@@ -408,6 +407,8 @@ contains
       call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, & 
                     MPI_REAL8, 0, MPI_COMM_WORLD, ier) 
     endif   
+
+    ! store the eigenpairs
     eigenvalues = eigenvalues_sub( :parameters%lowest)
     eigenvectors = ritz_vectors(:,:parameters%lowest)
 
@@ -420,9 +421,9 @@ contains
       deallocate( eigenvectors_sub)
       deallocate( diag_mtx, diag_stx)
       deallocate( residues )
-      ! deallocate( lambda, tmp_array)
-       deallocate( mtx_proj)
-       call check_deallocate_matrix( stx_proj)
+      deallocate( lambda, tmp_array)
+      deallocate( mtx_proj)
+      call check_deallocate_matrix( stx_proj)
     endif 
     
     
