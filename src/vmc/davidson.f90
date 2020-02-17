@@ -421,7 +421,7 @@ contains
       deallocate( eigenvectors_sub)
       deallocate( diag_mtx, diag_stx)
       deallocate( residues )
-      deallocate( lambda, tmp_array)
+      deallocate( lambda, tmp_res_array)
       deallocate( mtx_proj)
       call check_deallocate_matrix( stx_proj)
     endif 
