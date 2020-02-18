@@ -359,7 +359,7 @@ contains
 
     end do outer_loop
 
-    !  13. print convergence
+    ! print convergence
     if ( idtask== 0) then
       if( i > max_iters) then
        iters= i  
@@ -368,7 +368,9 @@ contains
             write(6,'(''DAV: Davidson eingenpair: '', I10, '' not converged'')') j 
          enddo
          write( 6,'(''DAV: Warning Davidson did not converge'')')
-       end if
+      else
+        write( 6,'(''DAV: Warning Davidson converged'')')
+      end if
     end if
 
     ! Select the lowest eigenvalues and their corresponding ritz_vectors
@@ -378,6 +380,10 @@ contains
         allocate(ritz_vectors(parameters%nparm, size_update))     
         allocate(eigenvalues_sub(parameters%basis_size))
       end if  
+
+      if (idtask == 0) then
+        write( 6,'(''DAV: Broadcasting solutions'')')
+      endif
 
       call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
       call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, & 
@@ -401,7 +407,10 @@ contains
       deallocate( mtx_proj)
       call check_deallocate_matrix( stx_proj)
     endif 
-    
+
+    if (idtask == 0) then
+      write( 6,'(''DAV: Exiting Davidson'')')
+    endif
     
   end subroutine generalized_eigensolver
 !  
