@@ -298,8 +298,6 @@ contains
         if( all(has_converged)) then
           iters= i
           write( 6, '(''DAV: roots are converged'')') 
-          eigenvalues = eigenvalues_sub(:parameters%lowest)
-          eigenvectors = ritz_vectors(:,:parameters%lowest)
           exit outer_loop
         end if
 
@@ -363,36 +361,40 @@ contains
 
     end do outer_loop
 
-    ! print convergence
-    if (idtask== 0) then
-      iters = i
+    ! Master Store eigenpairs
+    if (idtask==0) then
+
+      ! if we didnt converge
       if( i > max_iters) then
-         do j=1, parameters%lowest
-          if( has_converged( j) .eqv. .false.) &
-            write(6,'(''DAV: Davidson eingenpair: '', I10, '' not converged'')') j 
-         enddo
          write( 6,'(''DAV: Warning Davidson did not converge'')')
       else
         write( 6,'(''DAV: Davidson converged'')')
       end if
+
+      ! store eigenpairs
+      eigenvalues = eigenvalues_sub(:parameters%lowest)
+      eigenvectors = ritz_vectors(:,:parameters%lowest) 
+      ! number of iterations 
+      iters = i
+
     end if
 
-    ! Select the lowest eigenvalues and their corresponding ritz_vectors
+    ! Broadcast solutions to all slaves
     if( nproc > 1) then
-      
-      ! if (idtask > 0) then 
-      !   allocate(ritz_vectors(parameters%nparm, size_update))     
-      !   allocate(eigenvalues_sub(parameters%basis_size))
-      ! end if  
 
       if (idtask == 0) then
-        write( 6,'(''DAV: Broadcasting solutions'')')
+        write( 6,'(''DAV: Broadcasting iter'')')
       endif
-      
-      ! call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-      ! call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier) 
       call MPI_BCAST(iters, 1, MPI_INT, 0, MPI_COMM_WORLD, ier)
+
+      if (idtask == 0) then
+        write( 6,'(''DAV: Broadcasting eigenvalues'')')
+      endif
       call MPI_BCAST(eigenvalues, parameters%lowest, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+      
+      if (idtask == 0) then
+        write( 6,'(''DAV: Broadcasting eigenvectors'')')
+      endif
       call MPI_BCAST(eigenvectors, parameters%nparm * parameters%lowest, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
 
     endif   
