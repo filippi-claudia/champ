@@ -150,6 +150,7 @@ contains
     logical, dimension( lowest) :: has_converged
     logical :: update_proj
     integer :: n_converged ! Number of converged eigenvalue/eigenvector pairs
+    integer :: sizeV ! size of V for broadcasting
     
     ! Iteration subpsace dimension
     init_subspace_size = lowest  * 2
@@ -359,11 +360,13 @@ contains
 
       ! broadcast the basis vector
       if (nproc > 1) then
+        sizeV = size(V,2)
         if (idtask > 0) then
+          call MPI_BCAST( sizeV, 1, MPI_INT, 0, MPI_COMM_WORLD, ier)
           call check_deallocate_matrix(V)
-          allocate(V(parameters%nparm, parameters%basis_size+size_update))
+          allocate(V(parameters%nparm, sizeV))
         end if
-        call MPI_BCAST( V, size( V, 1)* size( V, 2), MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+        call MPI_BCAST( V, parameters%nparm*sizeV, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
       endif 
 
       ! Update basis size
