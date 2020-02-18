@@ -154,7 +154,10 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -178,8 +181,6 @@ c-----------------------------------------------------------------------
 
       common /force_analy/ iforce_analy
 
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT)
-     &,da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
 
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)

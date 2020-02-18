@@ -136,6 +136,20 @@
    save
  end module da_jastrow4val
 
+ module da_orbval
+   !> Arguments: da_d2orb, da_dorb, da_orb
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: da_d2orb(3,MELEC,MORB,MCENT)
+   real(dp) :: da_dorb(3,3,MELEC,MORB,MCENT)
+   real(dp) :: da_orb(3,MELEC,MORB,MCENT)
+
+   private
+   public   ::  da_d2orb, da_dorb, da_orb
+   save
+ end module da_orbval
+
  module da_pseudo
    !> Arguments: da_pecent, da_vps, da_nonloc  
 

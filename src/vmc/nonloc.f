@@ -3,7 +3,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_energy_now, only: da_energy, da_psi
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
       implicit real*8(a-h,o-z)
+
 
 
       parameter (one=1.d0)
@@ -46,7 +49,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
 
       common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
      & ,tildem(MELEC,MORB,2)

@@ -3,7 +3,10 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -28,7 +31,6 @@ c dimensioned at least max(nup**2,ndn**2)
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension bhin(melec,mbasis),dbhin(3*melec,mbasis),d2bhin(melec,mbasis)
@@ -217,7 +219,10 @@ c-------------------------------------------------------------------------------
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -233,7 +238,6 @@ c-------------------------------------------------------------------------------
 
       common /numbas2/ ibas0(MCENT),ibas1(MCENT)
 
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 

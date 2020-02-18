@@ -4,7 +4,10 @@
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -26,7 +29,6 @@
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
 
 
       dimension da_psi_ref(3,MCENT)
@@ -52,7 +54,10 @@ c-----------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -80,7 +85,6 @@ c-----------------------------------------------------------------------
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
 
 
       dimension b_a(MORB,MELEC),b_kref(MELEC*MELEC),tildem_a(MELEC,MORB),xmat(MELEC*MELEC,2),work(MELEC)
@@ -155,7 +159,10 @@ c-----------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -187,7 +194,6 @@ c-----------------------------------------------------------------------
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
