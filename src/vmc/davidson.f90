@@ -293,7 +293,6 @@ contains
         end do
         write( 6, '(''DAV: resd'',1000f12.5)')( errors( j), j= 1,parameters%lowest)
 
-
         ! Check for convergence
         if( all(has_converged)) then
           iters= i
@@ -313,11 +312,9 @@ contains
           ! compute the correction vectors
           select case( method)
           case( "DPR")
-            correction= compute_DPR( residues, parameters, eigenvalues_sub,                     &
-                                          diag_mtx, diag_stx)
+            correction= compute_DPR( residues, parameters, eigenvalues_sub, diag_mtx, diag_stx)
           case( "GJD")
-            correction= compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors_sub,      &
-                                          eigenvalues_sub)
+            correction= compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors_sub, eigenvalues_sub)
           end select
 
           ! Add the correction vectors to the current basis.
@@ -361,7 +358,7 @@ contains
 
     end do outer_loop
 
-    ! Master Store eigenpairs
+    ! Master store eigenpairs
     if (idtask==0) then
 
       ! if we didnt converge
@@ -374,7 +371,6 @@ contains
       ! store eigenpairs
       eigenvalues = eigenvalues_sub(:parameters%lowest)
       eigenvectors = ritz_vectors(:,:parameters%lowest) 
-      ! number of iterations 
       iters = i
 
     end if
@@ -384,18 +380,23 @@ contains
 
       if (idtask == 0) then
         write( 6,'(''DAV: Broadcasting iter'')')
-      endif
+      end if
       call MPI_BCAST(iters, 1, MPI_INT, 0, MPI_COMM_WORLD, ier)
 
       if (idtask == 0) then
         write( 6,'(''DAV: Broadcasting eigenvalues'')')
-      endif
+      end if
       call MPI_BCAST(eigenvalues, parameters%lowest, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
       
       if (idtask == 0) then
         write( 6,'(''DAV: Broadcasting eigenvectors'')')
-      endif
+      end if
+      write(6,'(''DAV: buffer size: '', I10, I10, I10)') idtask, size(eigenvectors,1), size(eigenvectors,2)
       call MPI_BCAST(eigenvectors, parameters%nparm * parameters%lowest, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+
+      if (idtask == 0) then
+        write( 6,'(''DAV: Broadcasting Done'')')
+      end if
 
     endif   
 
