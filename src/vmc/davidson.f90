@@ -218,6 +218,15 @@ contains
     !   call MPI_BCAST( stxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
     ! endif
 
+    if (idtask==0) then
+      select case( method)
+      case( "DPR")
+        write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
+      case( "GJD")
+        write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
+      end select
+    endif
+
     ! 3. Outer loop block Davidson
     outer_loop: do i= 1, max_iters
 
@@ -269,31 +278,28 @@ contains
         end if
 
         ! 5. Solve the small eigenvalue problem
-        write( 6, '(''DAV: enter lapack_generalized_eigensolver'')') 
+        ! write( 6, '(''DAV: enter lapack_generalized_eigensolver'')') 
         call lapack_generalized_eigensolver( mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
-        write( 6, '(''DAV: exit lapack_generalized_eigensolver'')') 
+        ! write( 6, '(''DAV: exit lapack_generalized_eigensolver'')') 
         write( 6, '(''DAV: eigv'',1000f12.5)')( eigenvalues_sub( j), j= 1,parameters%lowest)
 
         ! Compute the necessary ritz vectors
         ritz_vectors = lapack_matmul( 'N', 'N', V, eigenvectors_sub(:,:size_update))
       
-        ! 7. Residue calculation (vectorized)
+        ! Residue calculation (vectorized)
         lambda= diag_mat(eigenvalues_sub(:size_update))
         tmp_res_array = lapack_matmul('N', 'N', lapack_matmul( 'N', 'N', stxV, eigenvectors_sub(:,:size_update)), lambda)
         residues = lapack_matmul( 'N', 'N', mtxV, eigenvectors_sub(:,:size_update)) - tmp_res_array 
 
-        ! Residue calculation loop
-      !   do j=1, size_update          
-      !     residues(:, j) = eigenvalues_sub(j) * lapack_matrix_vector('N', stxV, eigenvectors_sub(:, j))
-      !     residues(:, j) = lapack_matrix_vector('N', mtxV, eigenvectors_sub(:, j)) - residues(:, j)
-      !  end do
+        
 
         ! Check which eigenvalues has converged
-        ! not sure if the reshape is necessary, norm2 also exists 
+        errors = norm2(residues(:,:parameters%lowest), 2)
         do j= 1, parameters%lowest
-          errors( j) = norm( reshape( residues( :, j), (/ parameters%nparm/)))
-          if( errors( j)< tolerance) has_converged( j)= .true.
+          if( errors( j) < tolerance) has_converged( j)= .true.
         end do
+        write( 6, '(''DAV: resd'',1000f12.5)')( errors( j), j= 1,parameters%lowest)
+
 
       !! ENDIF IDTASK
       !! endif <- we continue on the master
@@ -309,7 +315,7 @@ contains
       ! endif       
 
 
-        ! 8. Check for convergence
+        ! Check for convergence
 
         if( all( has_converged)) then
           iters= i
@@ -318,7 +324,7 @@ contains
           exit outer_loop
         end if
 
-        ! 9. Calculate correction vectors.  
+        ! Calculate correction vectors.  
 
         ! if(( parameters%basis_size<= nvecx) .and.( 2*parameters%basis_size< nparm)) then
         ! I'm not sure I get the reason behind the second condition.
@@ -330,11 +336,11 @@ contains
           ! compute the correction vectors
           select case( method)
           case( "DPR")
-            if( idtask== 0)  write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
+            ! if( idtask== 0)  write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
             correction= compute_DPR( residues, parameters, eigenvalues_sub,                     &
                                           diag_mtx, diag_stx)
           case( "GJD")
-            if( idtask== 0)  write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
+            ! if( idtask== 0)  write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
             correction= compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors_sub,      &
                                           eigenvalues_sub)
           end select
