@@ -203,6 +203,9 @@ contains
     mtxV = fun_mtx_gemv( parameters, V)
     stxV = fun_stx_gemv( parameters, V)
 
+    ! allocate eigenvalues/vectors
+    ! allocate(eigenvalues(parameters%lowest))
+    allocate(eigenvectors(parameters%nparm,parameters%lowest))
 
     if (idtask==0) then
 
@@ -292,10 +295,11 @@ contains
 
 
         ! Check for convergence
-        if( all( has_converged)) then
+        if( all(has_converged)) then
           iters= i
           write( 6, '(''DAV: roots are converged'')') 
-          eigenvalues= eigenvalues_sub(:parameters%lowest)
+          eigenvalues = eigenvalues_sub(:parameters%lowest)
+          eigenvectors = ritz_vectors(:,:parameters%lowest)
           exit outer_loop
         end if
 
@@ -318,17 +322,17 @@ contains
                                           eigenvalues_sub)
           end select
 
-          ! 10. Add the correction vectors to the current basis.
+          ! Add the correction vectors to the current basis.
           call concatenate( V, correction)
             
-          ! 11. Orthogonalize basis using modified GS
+          ! Orthogonalize basis using modified GS
           call modified_gram_schmidt(V, parameters%basis_size+1)
           ! call lapack_qr(V)
    
         else
           write( 6,'(''DAV: --- Restart ---'')')
           update_proj = .false.
-          ! 12. Otherwise reduce the basis of the subspace to the current correction
+          ! Otherwise reduce the basis of the subspace to the current correction
           V = ritz_vectors(:, :init_subspace_size)
 
         end if
@@ -369,38 +373,40 @@ contains
          enddo
          write( 6,'(''DAV: Warning Davidson did not converge'')')
       else
-        write( 6,'(''DAV: Warning Davidson converged'')')
+        write( 6,'(''DAV: Davidson converged'')')
       end if
     end if
 
     ! Select the lowest eigenvalues and their corresponding ritz_vectors
     if( nproc > 1) then
       
-      if (idtask > 0) then 
-        allocate(ritz_vectors(parameters%nparm, size_update))     
-        allocate(eigenvalues_sub(parameters%basis_size))
-      end if  
+      ! if (idtask > 0) then 
+      !   allocate(ritz_vectors(parameters%nparm, size_update))     
+      !   allocate(eigenvalues_sub(parameters%basis_size))
+      ! end if  
 
       if (idtask == 0) then
         write( 6,'(''DAV: Broadcasting solutions'')')
       endif
+      
+      ! call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+      ! call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier) 
+      call MPI_BCAST(iters, 1, MPI_INT, 0, MPI_COMM_WORLD, ier)
+      call MPI_BCAST(eigenvalues, parameters%lowest, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+      call MPI_BCAST(eigenvectors, parameters%nparm * parameters%lowest, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
 
-      call MPI_BCAST( iters, 1, MPI_INT, 0, MPI_COMM_WORLD, ier)
-      call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-      call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, & 
-                    MPI_REAL8, 0, MPI_COMM_WORLD, ier) 
     endif   
 
-    ! store the eigenpairs
-    eigenvalues = eigenvalues_sub( :parameters%lowest)
-    eigenvectors = ritz_vectors(:,:parameters%lowest)
+    if (idtask == 0) then
+      write( 6,'(''DAV: Free memory'')')
+    endif
 
     ! Free memory
-    deallocate( eigenvalues_sub, ritz_vectors)
     deallocate( V, mtxV, stxV)
 
     if (idtask == 0) then  
       call check_deallocate_matrix( correction)
+      deallocate( eigenvalues_sub, ritz_vectors)
       deallocate( eigenvectors_sub)
       deallocate( diag_mtx, diag_stx)
       deallocate( residues )
