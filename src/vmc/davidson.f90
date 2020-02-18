@@ -228,7 +228,7 @@ contains
     endif
 
     if (idtask==0) then
-      write( 6,'(''DAV: tolerance : '', E5.3)') tolerance
+      write( 6,'(''DAV: tolerance : '', E10.3)') tolerance
     endif
 
     ! 3. Outer loop block Davidson
@@ -238,6 +238,7 @@ contains
       ! we could try to use openMP here via the lapack routines
       if( idtask == 0) then
       
+        write( 6,'(''DAV: -----------------------------'')')
         write(6,'(''DAV: Davidson iteration: '', I10)') i
       
         ! needed if we want to vectorix the residue calculation
@@ -281,10 +282,8 @@ contains
 
         end if
 
-        ! 5. Solve the small eigenvalue problem
-        ! write( 6, '(''DAV: enter lapack_generalized_eigensolver'')') 
+        ! Solve the small eigenvalue problem
         call lapack_generalized_eigensolver( mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
-        ! write( 6, '(''DAV: exit lapack_generalized_eigensolver'')') 
         write( 6, '(''DAV: eigv'',1000f12.5)')( eigenvalues_sub( j), j= 1,parameters%lowest)
 
         ! Compute the necessary ritz vectors
@@ -295,8 +294,6 @@ contains
         tmp_res_array = lapack_matmul('N', 'N', lapack_matmul( 'N', 'N', stxV, eigenvectors_sub(:,:size_update)), lambda)
         residues = lapack_matmul( 'N', 'N', mtxV, eigenvectors_sub(:,:size_update)) - tmp_res_array 
 
-        
-
         ! Check which eigenvalues has converged
         errors = norm2(residues(:,:parameters%lowest), 1)
         do j= 1, parameters%lowest
@@ -305,22 +302,7 @@ contains
         write( 6, '(''DAV: resd'',1000f12.5)')( errors( j), j= 1,parameters%lowest)
 
 
-      !! ENDIF IDTASK
-      !! endif <- we continue on the master
-      
-      ! Are those needed as well ?!!
-      ! I would say no 
-      ! if( nproc> 1) then
-      !   call MPI_BCAST(has_converged, parameters%lowest, MPI_LOGICAL, 0, MPI_COMM_WORLD, ier)
-      !   call MPI_BCAST(residues, parameters%nparm* size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-      !   call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-      !   call MPI_BCAST(eigenvectors_sub, parameters%basis_size* parameters%basis_size, & 
-      !                 MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-      ! endif       
-
-
         ! Check for convergence
-
         if( all( has_converged)) then
           iters= i
           write( 6, '(''DAV: roots are converged'')') 
@@ -340,11 +322,9 @@ contains
           ! compute the correction vectors
           select case( method)
           case( "DPR")
-            ! if( idtask== 0)  write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
             correction= compute_DPR( residues, parameters, eigenvalues_sub,                     &
                                           diag_mtx, diag_stx)
           case( "GJD")
-            ! if( idtask== 0)  write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
             correction= compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors_sub,      &
                                           eigenvalues_sub)
           end select
@@ -358,7 +338,7 @@ contains
         else
 
           update_proj = .false.
-          
+          write( 6,'(''DAV: --- Restart ---'')')
           ! 12. Otherwise reduce the basis of the subspace to the current correction
           V = ritz_vectors(:, :init_subspace_size)
 
@@ -387,13 +367,6 @@ contains
 
       call check_deallocate_matrix(stxV)
       stxV = fun_stx_gemv( parameters, V)
-  
-      ! there again they all have it so should we broadcast ??!!
-      ! if (nproc> 1) then
-      !   call MPI_BCAST( mtxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-      !   call MPI_BCAST( stxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-      ! endif
-
 
     end do outer_loop
 
@@ -405,13 +378,11 @@ contains
           if( has_converged( j) .eqv. .false.) &
             write(6,'(''DAV: Davidson eingenpair: '', I10, '' not converged'')') j 
          enddo
-       write( 6, *), "DAV Warninng: Algorithm did not converge!!"
+         write( 6,'(''DAV: Warning Davidson did not converge'')')
        end if
     end if
 
     ! Select the lowest eigenvalues and their corresponding ritz_vectors
-    ! They are sort in increasing order
-    ! where are stored the eigenvectors !
     if( nproc > 1) then
       
       if (idtask > 0) then 
