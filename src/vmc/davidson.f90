@@ -166,11 +166,6 @@ contains
     ! Dimension of the matrix
     parameters = davidson_parameters(nparm, nparm_max, lowest, nvecx, init_subspace_size) 
 
-    ! 1. Variables initialization
-    ! extract the diagonals of the matrices
-
-    write(6,'(''DAV: Compute diagonals of S and H'')')
-
     ! Initial number of converged eigenvalue/eigenvector pairs
     n_converged = 0
     has_converged = .false.
@@ -192,10 +187,8 @@ contains
     endif 
 
  
-    ! 2.  Select the initial ortogonal subspace based on lowest elements
-    !     of the diagonal of the matrix.
-    ! No we should find the min elements along the entire diagonal not just the first init_subspace_size elements !
-    ! V = initialize_subspace( diag_mtx( 1: init_subspace_size), init_subspace_size, nparm) ! Initial orthonormal basis
+    ! Select the initial ortogonal subspace based on lowest elements
+    ! of the diagonal of the matrix.
     V = initialize_subspace( diag_mtx, init_subspace_size, nparm) ! Initial orthonormal basis
     
     if( idtask== 0) write(6,'(''DAV: Setup subspace problem'')')
@@ -210,25 +203,20 @@ contains
     mtxV = fun_mtx_gemv( parameters, V)
     stxV = fun_stx_gemv( parameters, V)
 
-    ! they all just computed it ! why broadcasting !
-    ! apparently needed for the correction.
-    ! I don't think they are needed on the slaves
-    ! if (nproc> 1) then
-    !   call MPI_BCAST( mtxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-    !   call MPI_BCAST( stxV, parameters%nparm* parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-    ! endif
 
     if (idtask==0) then
+
       select case( method)
       case( "DPR")
         write( 6,'(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
       case( "GJD")
         write( 6,'(''DAV: Generalized Jacobi-Davidson (GJD)'')')
       end select
-    endif
-
-    if (idtask==0) then
-      write( 6,'(''DAV: tolerance : '', E10.3)') tolerance
+    
+      write( 6,'(''DAV: tolerance         : '', E10.3)') tolerance
+      write(6,'(''DAV: Number eigenvalues : '', I10)') parameter%lowest
+      write(6,'(''DAV: Update size        : '', I10)') size_update
+      write(6,'(''DAV: Max basis size     : '', I10)') nvecx
     endif
 
     ! 3. Outer loop block Davidson
@@ -239,7 +227,8 @@ contains
       if( idtask == 0) then
       
         write( 6,'(''DAV: -----------------------------'')')
-        write(6,'(''DAV: Davidson iteration: '', I10)') i
+        write(6,'(''DAV: Iteration: '', I10)') i
+        write(6,'(''DAV: Basis size: '', I10)') parameters%basis_size
       
         ! needed if we want to vectorix the residue calculation
         call check_deallocate_matrix(lambda)
@@ -334,11 +323,11 @@ contains
             
           ! 11. Orthogonalize basis using modified GS
           call modified_gram_schmidt(V, parameters%basis_size+1)
+          ! call lapack_qr(V)
    
         else
-
-          update_proj = .false.
           write( 6,'(''DAV: --- Restart ---'')')
+          update_proj = .false.
           ! 12. Otherwise reduce the basis of the subspace to the current correction
           V = ritz_vectors(:, :init_subspace_size)
 
