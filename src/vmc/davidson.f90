@@ -293,15 +293,8 @@ contains
         end do
         write( 6, '(''DAV: resd'',1000f12.5)')( errors( j), j= 1,parameters%lowest)
 
-        ! Check for convergence
-        if( all(has_converged)) then
-          iters= i
-          write( 6, '(''DAV: roots are converged'')') 
-          exit outer_loop
-        end if
 
         ! Calculate correction vectors.  
-
         ! if(( parameters%basis_size<= nvecx) .and.( 2*parameters%basis_size< nparm)) then
         ! I'm not sure I get the reason behind the second condition.
         ! I hope that our basis size nevers goes as large as half the matrix dimension !
@@ -334,6 +327,17 @@ contains
       
       !! ENDIF IDTASK
       end if 
+
+      ! Check for convergence
+      ! all the procs need to know when to exit
+      call MPI_BCAST( has_converged, parameters%lowest, MPI_LOGICAL, 0, MPI_COMM_WORLD, ier)
+      if( all(has_converged)) then
+        iters= i
+        if (idtask==0) then
+          write( 6, '(''DAV: roots are converged'')') 
+        endif
+        exit outer_loop
+      end if
 
       ! broadcast the basis vector
       if (nproc > 1) then
