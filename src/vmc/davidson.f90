@@ -359,6 +359,10 @@ contains
 
       ! broadcast the basis vector
       if (nproc > 1) then
+        if (idtask > 0) then
+          call check_deallocate_matrix(V)
+          allocate(V(parameters%nparm, parameters%basis_size+size_update))
+        end if
         call MPI_BCAST( V, size( V, 1)* size( V, 2), MPI_REAL8, 0, MPI_COMM_WORLD, ier)
       endif 
 
