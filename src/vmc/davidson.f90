@@ -214,7 +214,7 @@ contains
       end select
     
       write( 6,'(''DAV: tolerance         : '', E10.3)') tolerance
-      write(6,'(''DAV: Number eigenvalues : '', I10)') parameter%lowest
+      write(6,'(''DAV: Number eigenvalues : '', I10)') parameters%lowest
       write(6,'(''DAV: Update size        : '', I10)') size_update
       write(6,'(''DAV: Max basis size     : '', I10)') nvecx
     endif
