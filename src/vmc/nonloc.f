@@ -453,7 +453,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_jastrow4val, only: da_d2j, da_j, da_vj
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -472,7 +474,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       common /bparm/ nspin2b,nocuspb
 
-      common /da_jastrow4val/ da_j(3,MELEC,MCENT),da_d2j(3,MELEC,MCENT),da_vj(3,3,MELEC,MCENT)
 
       common /force_analy/ iforce_analy
 

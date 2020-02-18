@@ -371,14 +371,15 @@ c     write(6,'(''nterms4='',i5)') nterms4
 c-----------------------------------------------------------------------
       subroutine da_jastrow4(iwf,i,ic,it,rvec_en,r,rr,feni,fenii,dd1,dd2)
 
+      use da_jastrow4val, only: da_d2j, da_j, da_vj
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
  
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /scale_more/ dd3
 
-      common /da_jastrow4val/ da_j(3,MELEC,MCENT),da_d2j(3,MELEC,MCENT),da_vj(3,3,MELEC,MCENT)
 
       dimension rvec_en(3),rr(-2:MORDJ)
 

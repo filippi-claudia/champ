@@ -5,7 +5,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_jastrow4val, only: da_d2j, da_j, da_vj
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -35,7 +37,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
      &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
-      common /da_jastrow4val/ da_j(3,MELEC,MCENT),da_d2j(3,MELEC,MCENT),da_vj(3,3,MELEC,MCENT)
 
       common /force_analy/ iforce_analy
 

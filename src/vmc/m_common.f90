@@ -201,3 +201,15 @@
    public   ::  cjas1, cjas2
    save
  end module jaspar1
+
+module da_jastrow4val
+    !> Arguments: da_d2j, da_j, da_vj
+    use precision_kinds, only: dp
+    include 'vmc.h'
+
+    real(dp) :: da_d2j(3,MELEC,MCENT)
+    real(dp) :: da_j(3,MELEC,MCENT)
+    real(dp) :: da_vj(3,3,MELEC,MCENT)
+
+    save
+end module da_jastrow4val
