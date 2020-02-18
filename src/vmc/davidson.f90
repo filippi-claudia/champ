@@ -227,6 +227,10 @@ contains
       end select
     endif
 
+    if (idtask==0) then
+      write( 6,'(''DAV: tolerance : '', E5.3)') tolerance
+    endif
+
     ! 3. Outer loop block Davidson
     outer_loop: do i= 1, max_iters
 
@@ -294,7 +298,7 @@ contains
         
 
         ! Check which eigenvalues has converged
-        errors = norm2(residues(:,:parameters%lowest), 2)
+        errors = norm2(residues(:,:parameters%lowest), 1)
         do j= 1, parameters%lowest
           if( errors( j) < tolerance) has_converged( j)= .true.
         end do
@@ -350,7 +354,6 @@ contains
             
           ! 11. Orthogonalize basis using modified GS
           call modified_gram_schmidt(V, parameters%basis_size+1)
-          ! call lapack_qr( V)
    
         else
 
