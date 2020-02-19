@@ -151,14 +151,15 @@ contains
     logical :: update_proj
     integer :: n_converged ! Number of converged eigenvalue/eigenvector pairs
     integer :: sizeV ! size of V for broadcasting
-    
+    logical, parameter :: use_gs_ortho = .true.! which orthogonalization method to use gs/qr
+
     ! Iteration subpsace dimension
     init_subspace_size = lowest  * 2
 
     ! number of correction vectors appended to V at each iteration
     size_update = lowest * 2
 
-    ! Lapack qr safety check 
+    ! Make sure nvecx is lower than nparm
     if (nvecx > nparm) then 
       if( idtask == 1) call die('DAV: nvecx > nparm, increase nparm or decrease lin_nvecx')
     endif
@@ -220,6 +221,11 @@ contains
       write(6,'(''DAV: Number eigenvalues : '', I10)') parameters%lowest
       write(6,'(''DAV: Update size        : '', I10)') size_update
       write(6,'(''DAV: Max basis size     : '', I10)') nvecx
+      if (use_gs_ortho) then 
+        write( 6,'(''Modified Gram-Schmidt orthogonalization with projection update'')')
+      else
+        write( 6,'(''QR orthogonalization with full projection'')')
+      end if
     endif
 
     ! 3. Outer loop block Davidson
@@ -294,14 +300,9 @@ contains
         write( 6, '(''DAV: resd'',1000f12.5)')( errors( j), j= 1,parameters%lowest)
 
 
-        ! Calculate correction vectors.  
-        ! if(( parameters%basis_size<= nvecx) .and.( 2*parameters%basis_size< nparm)) then
-        ! I'm not sure I get the reason behind the second condition.
-        ! I hope that our basis size nevers goes as large as half the matrix dimension !
-        if(( parameters%basis_size + size_update <= nvecx) .and.( 2*parameters%basis_size< nparm)) then
+        ! Append correction vectors
+        if( parameters%basis_size + size_update <= nvecx) then 
           
-          update_proj = .true.
-
           ! compute the correction vectors
           select case( method)
           case( "DPR")
@@ -314,14 +315,20 @@ contains
           call concatenate( V, correction)
             
           ! Orthogonalize basis using modified GS
-          call modified_gram_schmidt(V, parameters%basis_size+1)
-          ! call lapack_qr(V)
+          if (use_gs_ortho) then
+            call modified_gram_schmidt(V, parameters%basis_size+1)
+            update_proj = .true.
+          else
+            call lapack_qr(V)
+            update_proj = .false.
+          end if
    
+        ! Restart.
         else
+
           write( 6,'(''DAV: --- Restart ---'')')
-          update_proj = .false.
-          ! Otherwise reduce the basis of the subspace to the current correction
           V = ritz_vectors(:, :init_subspace_size)
+          update_proj = .false.
 
         end if
       
@@ -383,30 +390,13 @@ contains
     if( nproc > 1) then
 
       if (idtask == 0) then
-        write( 6,'(''DAV: Broadcasting iter'')')
+        write( 6,'(''DAV: Broadcasting solutions'')')
       end if
       call MPI_BCAST(iters, 1, MPI_INT, 0, MPI_COMM_WORLD, ier)
-
-      if (idtask == 0) then
-        write( 6,'(''DAV: Broadcasting eigenvalues'')')
-      end if
       call MPI_BCAST(eigenvalues, parameters%lowest, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-      
-      if (idtask == 0) then
-        write( 6,'(''DAV: Broadcasting eigenvectors'')')
-      end if
-      write(6,'(''DAV: buffer size: '', I10, I10, I10)') idtask, size(eigenvectors,1), size(eigenvectors,2)
       call MPI_BCAST(eigenvectors, parameters%nparm * parameters%lowest, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
 
-      if (idtask == 0) then
-        write( 6,'(''DAV: Broadcasting Done'')')
-      end if
-
     endif   
-
-    if (idtask == 0) then
-      write( 6,'(''DAV: Free memory'')')
-    endif
 
     ! Free memory
     deallocate( V, mtxV, stxV)
