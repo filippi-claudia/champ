@@ -151,6 +151,11 @@ contains
     logical :: update_proj
     integer :: n_converged ! Number of converged eigenvalue/eigenvector pairs
     integer :: sizeV ! size of V for broadcasting
+
+    ! variable for totla matrix calculations
+    real(dp), dimension(:,:), allocatable :: H_mat, S_mat, I_mat
+    real(dp), dimension(:,:), allocatable :: eigenvectors_lapack
+    real(dp), dimension(:), allocatable   :: eigenvalues_lapack
     
     ! Iteration subpsace dimension
     init_subspace_size = lowest  * 2
@@ -221,6 +226,36 @@ contains
       write(6,'(''DAV: Update size        : '', I10)') size_update
       write(6,'(''DAV: Max basis size     : '', I10)') nvecx
     endif
+
+    if(idtask==0) then
+	write( 6, '(''LAPACK: --- Create Matrices ---'')')
+    endif
+
+    allocate(I_mat(parameters%nparm,parameters%nparm))
+    I_mat = 0.0_dp
+    do i=1,parameters%nparm
+	I_mat(i,i) = 1.0
+    end do
+
+    H_mat = fun_mtx_gemv(parameters, I_mat)
+    S_mat = fun_stx_gemv(parameters, I_mat)
+
+    if (idtask==0) then
+	
+	allocate(eigenvalues_lapack(parameters%nparm))
+	allocate(eigenvectors_lapack(parameters%nparm,parameters%nparm))
+
+	write( 6, '(''LAPACK: --- Diagonalize ---'')')
+	call lapack_generalized_eigensolver(H_mat, eigenvalues_lapack, eigenvectors_lapack, S_mat)
+	write( 6, '(''LAPACK: eigv'',1000f12.5)')( eigenvalues_lapack( j), j= 1,parameters%lowest)
+	write( 6, '(''LAPACK: --- DONE ---'')')
+	
+	
+	deallocate(eigenvalues_lapack)
+	deallocate(eigenvectors_lapack)
+
+    end if
+    deallocate(I_mat,H_mat,S_mat)
 
     ! 3. Outer loop block Davidson
     outer_loop: do i= 1, max_iters
