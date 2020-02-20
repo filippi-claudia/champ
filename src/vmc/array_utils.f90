@@ -176,6 +176,7 @@ contains
 
     ! Add one depending on the order of the matrix diagonal
     do i=1, dim_sub
+       write(6,*) k
        k = search_key(keys, i)
        precond(k, i) = 1.d0
     end do

@@ -156,6 +156,10 @@ contains
     real(dp), dimension(:,:), allocatable :: H_mat, S_mat, I_mat
     real(dp), dimension(:,:), allocatable :: eigenvectors_lapack
     real(dp), dimension(:), allocatable   :: eigenvalues_lapack
+
+    ! choose orthogonalization method
+    logical, parameter :: use_gs = .true.
+    integer :: not_cnv
     
     ! Iteration subpsace dimension
     init_subspace_size = lowest  * 2
@@ -180,8 +184,10 @@ contains
     allocate(diag_mtx(parameters%nparm))
     allocate(diag_stx(parameters%nparm))
 
-    if (idtask==0) call store_diag_hs(parameters%nparm, diag_mtx, diag_stx)
-
+    if (idtask==0) then
+	 call store_diag_hs(parameters%nparm, diag_mtx, diag_stx)
+	 ! write(6,*) diag_mtx
+    end if
     ! why ?
     ! wouldn't it be faster to have all the procs computing that
     ! instead of master computes and then broadcast ?
@@ -190,13 +196,22 @@ contains
        call MPI_BCAST( diag_mtx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
        call MPI_BCAST( diag_stx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
     endif 
-
+   
  
     ! Select the initial ortogonal subspace based on lowest elements
     ! of the diagonal of the matrix.
     V = initialize_subspace( diag_mtx, init_subspace_size, nparm) ! Initial orthonormal basis
     
     if( idtask== 0) write(6,'(''DAV: Setup subspace problem'')')
+
+    ! Warning we reset the diag
+    if (idtask==0) then
+        do i=1, parameters%nparm
+                diag_mtx(i) = 1.0
+                diag_stx(i) = 0.0
+        end do
+    end if
+
 
     ! allocate mtxV and stxV
     allocate( mtxV( parameters%nparm, parameters%basis_size))
@@ -242,6 +257,7 @@ contains
 
     if (idtask==0) then
 	
+	! write(6,*) H_mat(:3,:3)	
 	allocate(eigenvalues_lapack(parameters%nparm))
 	allocate(eigenvectors_lapack(parameters%nparm,parameters%nparm))
 
@@ -327,30 +343,37 @@ contains
           if( errors( j) < tolerance) has_converged( j)= .true.
         end do
         write( 6, '(''DAV: resd'',1000f12.5)')( errors( j), j= 1,parameters%lowest)
-
+	not_cnv = count( .not. has_converged(:) )
+	write(6,'(''DAV: Root not converged     : '', I10)') not_cnv
 
         ! Calculate correction vectors.  
         ! if(( parameters%basis_size<= nvecx) .and.( 2*parameters%basis_size< nparm)) then
         ! I'm not sure I get the reason behind the second condition.
         ! I hope that our basis size nevers goes as large as half the matrix dimension !
-        if(( parameters%basis_size + size_update <= nvecx) .and.( 2*parameters%basis_size< nparm)) then
-          
+        ! if(( parameters%basis_size + size_update <= nvecx) .and.( 2*parameters%basis_size< nparm)) then
+        if( parameters%basis_size + size_update <= nvecx) then  
           update_proj = .true.
 
           ! compute the correction vectors
           select case( method)
           case( "DPR")
-            correction= compute_DPR( residues, parameters, eigenvalues_sub, diag_mtx, diag_stx)
-          case( "GJD")
+            correction= compute_DPR( residues, parameters, eigenvalues_sub, diag_mtx, diag_stx, has_converged)
+            ! correction = residues
+	  case( "GJD")
             correction= compute_GJD_free( parameters, ritz_vectors, residues, eigenvectors_sub, eigenvalues_sub)
           end select
 
           ! Add the correction vectors to the current basis.
-          call concatenate( V, correction)
+          call concatenate( V, correction(:,:not_cnv))
             
           ! Orthogonalize basis using modified GS
-          call modified_gram_schmidt(V, parameters%basis_size+1)
-          ! call lapack_qr(V)
+          if (use_gs) then
+          	call modified_gram_schmidt(V, parameters%basis_size+1)
+                update_proj= .true.
+          else
+          	call lapack_qr(V)
+		update_proj = .false.
+	  endif
    
         else
           write( 6,'(''DAV: --- Restart ---'')')
@@ -506,7 +529,7 @@ contains
 
   end subroutine
 
-  function compute_DPR(residues, parameters, eigenvalues, diag_mtx, diag_stx) &
+  function compute_DPR(residues, parameters, eigenvalues, diag_mtx, diag_stx, has_converged) &
                             result(correction)
 
     !> compute the correction vector using the DPR method for a matrix free diagonalization
@@ -523,31 +546,31 @@ contains
     real(dp), dimension(:, :), intent(in) :: residues
     real(dp), dimension(:), intent(in) :: eigenvalues  
     real(dp), dimension(:), intent(in) :: diag_mtx, diag_stx
+    logical,  dimension(:), intent(in) :: has_converged
 
     ! local variables
     type(davidson_parameters) :: parameters
 
-    ! that's :
-    !   1 - never used   
-    !   2 - the size of the matrix we **don't want to store**
-    ! real(dp), dimension(parameters%nparm, parameters%nparm) :: diag
 
     real(dp), dimension(parameters%nparm, size(residues,2)) :: correction
-    integer :: ii, j
-    integer :: m
+    integer :: ii, j, k
     
     ! calculate the correction vectors
-    m= parameters%nparm
 
+    j = 1
+    do k = 1, size(residues, 2) 
 
-    do j = 1, size(residues, 2) 
+     if (.not. has_converged(k)) then
 
-     correction( :, j)= residues( :, j) 
+     	correction( :, j)= residues( :, k) 
 
-     do ii= 1, size( correction, 1)
-       correction( ii, j)= correction( ii, j)/( eigenvalues( j)* diag_stx( ii)- diag_mtx( ii))
-     end do
+     	do ii= 1, size( correction, 1)
+       		correction( ii, j)= correction( ii, j)/( eigenvalues( k)* diag_stx( ii)- diag_mtx( ii))
+     	end do
 
+	j = j +1
+
+     end if
     end do
 
   end function compute_DPR
