@@ -188,6 +188,8 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      IF(idtask.eq.0) then
      !
      dav_iter = kter
+     write( 6,'(''REG: -----------------------------'')')
+     write(6,'(''REG: Iteration: '', I10)') kter
      !
      np = 0
      !
