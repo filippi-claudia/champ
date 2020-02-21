@@ -199,12 +199,12 @@ contains
     if( idtask== 0) write(6,'(''DAV: Setup subspace problem'')')
 
     ! Warning we reset the diag
-    if (idtask==0) then
-      do i=1, parameters%nparm
-              diag_mtx(i) = 1.0
-              diag_stx(i) = 0.0
-      end do
-    end if
+    ! if (idtask==0) then
+    !   do i=1, parameters%nparm
+    !           diag_mtx(i) = 1.0
+    !           diag_stx(i) = 0.0
+    !   end do
+    ! end if
 
 
     ! allocate mtxV and stxV
