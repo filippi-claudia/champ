@@ -16,7 +16,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
      &tjfoo, vnew, vold, xnew, xold
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -62,7 +64,6 @@ c    Last 2 are prob. best
       common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
  
 c TMP
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /multislater/ detu(MDET),detd(MDET)
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)

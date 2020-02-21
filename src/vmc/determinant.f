@@ -3,7 +3,9 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -16,7 +18,6 @@ c Modified by A. Scemama
       common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)

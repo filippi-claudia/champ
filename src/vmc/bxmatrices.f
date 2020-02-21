@@ -1,7 +1,9 @@
       subroutine bxmatrix(kref,xmatu,xmatd,b)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -9,7 +11,6 @@
       include 'pseudo.h'
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)

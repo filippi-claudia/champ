@@ -311,7 +311,9 @@ c-----------------------------------------------------------------------
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -328,7 +330,6 @@ c-----------------------------------------------------------------------
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparmsav
 

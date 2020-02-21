@@ -12,7 +12,9 @@ c job where it left off
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use denupdn, only: rprobdn, rprobup
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -32,7 +34,6 @@ c job where it left off
       common /const2/ deltar,deltat
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
 
       common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc

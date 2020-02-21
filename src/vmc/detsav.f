@@ -3,7 +3,9 @@ c Written by Claudia Filippi
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -11,7 +13,6 @@ c Written by Claudia Filippi
 
       parameter (MEXCIT=10)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet 
 
       common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb

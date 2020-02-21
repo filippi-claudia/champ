@@ -1,7 +1,9 @@
       subroutine determinant_psit(determ,istate)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -11,7 +13,6 @@
 
       common /contrl_per/ iperiodic,ibasis
       common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       common /multislater/ detu(MDET),detd(MDET)
 

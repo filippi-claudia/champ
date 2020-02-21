@@ -1,7 +1,9 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -11,7 +13,6 @@
       parameter(one=1.d0)
 
       common /contrl_per/ iperiodic,ibasis
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
@@ -99,7 +100,9 @@ c-----------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -110,7 +113,6 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
 
       common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /dorb/ iworbd(MELEC,MDET)
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -299,7 +301,9 @@ c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -309,7 +313,6 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
 
       common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /dorb/ iworbd(MELEC,MDET)
 
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)

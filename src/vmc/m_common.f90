@@ -208,6 +208,21 @@
    save
  end module derivjas
 
+ module dets
+   !> Arguments: cdet, ndet
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'force.h'
+   include 'mstates.h'
+
+   real(dp) :: cdet(MDET,MSTATES,MWF)
+   integer  :: ndet
+
+   private
+   public   :: cdet, ndet
+   save
+ end module dets
+
  module force_analy 
    !> Arguments: iforce_analy 
 

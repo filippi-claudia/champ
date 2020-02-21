@@ -35,7 +35,9 @@ c and Anthony Scemema
       use jaspar1, only: cjas1, cjas2
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -77,7 +79,6 @@ c and Anthony Scemema
      &,ifock,i3body,irewgt,iaver,istrch
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
@@ -993,13 +994,14 @@ c-----------------------------------------------------------------------
       subroutine read_determinants(iu,nd,iwft)
 C$INPUT determinants inp i i=1
 CKEYDOC CI coefficients and occupation of determinants in wf
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'inputflags.h'
       common /dorb/ iworbd(MELEC,MDET)
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       ndet=nd
       if(ndet.gt.MDET) then
@@ -1025,13 +1027,14 @@ c-----------------------------------------------------------------------
       subroutine read_multideterminants(iu,nd)
 C$INPUT multideterminants inp i 
 CKEYDOC CI coefficients and occupation of determinants in wf
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'inputflags.h'
       common /dorb/ iworbd(MELEC,MDET)
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
@@ -1341,13 +1344,14 @@ C$INPUT csfmap a=<input>
 CKEYDOC Read mapping between csf and determinants.
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       character fn*(*)
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 c
       call ptfile(iu,fn,'old')
 c
@@ -1569,12 +1573,13 @@ c Set the exponents to one when using a numerical basis
 c----------------------------------------------------------------------
       subroutine inputdet(nwftype)
 c Set the cdet to be equal
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
        do 10 iwft=2,nwftype
          do 10 k=1,ndet

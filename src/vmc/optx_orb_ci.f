@@ -88,7 +88,9 @@ c-----------------------------------------------------------------------
       subroutine optx_orb_ci_fin(passes,eave)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -110,7 +112,6 @@ c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm

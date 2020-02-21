@@ -2,7 +2,9 @@
 c Written by Claudia Filippi
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -10,7 +12,6 @@ c Written by Claudia Filippi
 
       parameter(one=1.d0)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

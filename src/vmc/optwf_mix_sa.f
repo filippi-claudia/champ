@@ -278,13 +278,14 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine change_ci(dparm_new,istate)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       dimension dparm_new(*)
 

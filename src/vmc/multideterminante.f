@@ -3,7 +3,9 @@
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -14,7 +16,6 @@
       parameter (MEXCIT=10)
 
       common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -126,7 +127,9 @@ c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -136,7 +139,6 @@ c-----------------------------------------------------------------------
       parameter (MEXCIT=10)
 
       common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /dorb/ iworbd(MELEC,MDET)
 
 

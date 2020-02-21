@@ -5,7 +5,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use da_energy_now, only: da_energy, da_psi
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -32,7 +34,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
@@ -410,7 +411,9 @@ c-----------------------------------------------------------------------
       subroutine nonlocd(iel,orb,detu,detd,slmui,slmdi,ratio)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -419,7 +422,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -456,7 +458,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -470,7 +474,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /contrl_per/ iperiodic,ibasis
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
 
 

@@ -307,7 +307,9 @@ c-----------------------------------------------------------------------
       subroutine optci_fin(iblk,passes,etot)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -326,7 +328,6 @@ c-----------------------------------------------------------------------
       common /gradhess_ci/  grad_ci(MXCITERM),h_ci(MXCITERM,MXCIREDUCED),s_ci(MXCITERM,MXCIREDUCED)
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       common /linear_norm/ ci_oav(MXCITERM)
       dimension oelocav(MXCITERM),eav(MXCITERM)
@@ -518,7 +519,9 @@ c-----------------------------------------------------------------------
       subroutine optci_define
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -529,7 +532,6 @@ c-----------------------------------------------------------------------
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       nciprim = ndet
 

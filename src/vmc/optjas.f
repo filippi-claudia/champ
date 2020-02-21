@@ -5,7 +5,9 @@
 
       use derivjas, only: d2g, g, go, gvalue
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -35,7 +37,6 @@
 
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)

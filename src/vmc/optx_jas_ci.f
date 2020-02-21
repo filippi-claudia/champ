@@ -108,7 +108,9 @@ c-----------------------------------------------------------------------
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -143,7 +145,6 @@ c-----------------------------------------------------------------------
       common /gradhess_ci/ grad_ci(MXCITERM),h_ci(MXCITERM,MXCIREDUCED),s_ci(MXCITERM,MXCIREDUCED)
       common /gradhess_mix_jas_ci/  h_mix_jas_ci(2*MPARMJ,MXCITERM),s_mix_jas_ci(MPARMJ,MXCITERM)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
 
       dimension oelocav(MXCITERM),eav(MXCITERM)

@@ -6,7 +6,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -26,7 +28,6 @@ c Calculates energy
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
