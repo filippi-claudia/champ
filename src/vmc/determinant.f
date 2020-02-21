@@ -156,7 +156,10 @@ c-----------------------------------------------------------------------
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
+      use derivjas, only: d2g, g, go, gvalue
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -176,8 +179,6 @@ c-----------------------------------------------------------------------
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
       common /force_analy/ iforce_analy
 

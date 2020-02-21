@@ -944,7 +944,10 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use derivjas, only: d2g, g, go, gvalue
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -962,8 +965,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)

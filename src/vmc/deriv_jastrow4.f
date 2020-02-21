@@ -4,7 +4,10 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use derivjas, only: d2g, g, go, gvalue
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -29,8 +32,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
      &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
       common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
       common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,83,MCTYPE)

@@ -192,6 +192,22 @@
    save
  end module denupdn
 
+ module derivjas
+   !> Arguments: d2g, g, go, gvalue
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'optjas.h'
+
+   real(dp) :: d2g(MPARMJ)
+   real(dp) :: g(3,MELEC,MPARMJ)
+   real(dp) :: go(MELEC,MELEC,MPARMJ)
+   real(dp) :: gvalue(MPARMJ)
+
+   private
+   public   :: d2g, g, go, gvalue
+   save
+ end module derivjas
+
  module force_analy 
    !> Arguments: iforce_analy 
 

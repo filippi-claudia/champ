@@ -1,6 +1,9 @@
       subroutine optx_jas_ci_sum(p,q,enew,eold)
 
+      use derivjas, only: d2g, g, go, gvalue
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optjas.h'
@@ -10,8 +13,6 @@
       common /bparm/ nspin2b,nocuspb
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
       common /gradhessjo/ gvalue_old(MPARMJ),denergy_old(MPARMJ,MSTATES)
      &,d1d2a_old(MCTYPE),d2d2a_old(MCTYPE),d1d2b_old(2),d2d2b_old(2)

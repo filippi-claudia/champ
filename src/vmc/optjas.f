@@ -3,7 +3,10 @@
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use derivjas, only: d2g, g, go, gvalue
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -30,8 +33,6 @@
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
@@ -185,7 +186,10 @@ c Written by Claudia Filippi
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use derivjas, only: d2g, g, go, gvalue
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'optjas.h'
@@ -195,8 +199,6 @@ c Written by Claudia Filippi
       common /bparm/ nspin2b,nocuspb
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
       common /gradhessj/ dj(MPARMJ,MSTATES),dj_e(MPARMJ,MSTATES),dj_de(MPARMJ,MPARMJ,MSTATES)
      &,dj_dj(MPARMJ,MPARMJ,MSTATES),dj_dj_e(MPARMJ,MPARMJ,MSTATES),de(MPARMJ,MSTATES)
@@ -436,7 +438,10 @@ c Written by Claudia Filippi
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use derivjas, only: d2g, g, go, gvalue
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'optjas.h'
@@ -448,8 +453,6 @@ c Written by Claudia Filippi
       common /gradhessjo/ gvalue_old(MPARMJ),denergy_old(MPARMJ,MSTATES)
      &,d1d2a_old(MCTYPE),d2d2a_old(MCTYPE),d1d2b_old(2),d2d2b_old(2)
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
       common /ijasnonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2)
 
 

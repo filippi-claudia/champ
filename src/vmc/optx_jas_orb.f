@@ -2,7 +2,10 @@
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use derivjas, only: d2g, g, go, gvalue
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -12,8 +15,6 @@
       include 'optorb_cblk.h'
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
       common /gradhessjo/ gvalue_old(MPARMJ),denergy_old(MPARMJ,MSTATES)
      &,d1d2a_old(MCTYPE),d2d2a_old(MCTYPE),d1d2b_old(2),d2d2b_old(2)

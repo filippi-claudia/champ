@@ -6,7 +6,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use derivjas, only: d2g, g, go, gvalue
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -31,8 +34,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
       common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
      &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
