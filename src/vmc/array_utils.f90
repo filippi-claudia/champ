@@ -171,13 +171,15 @@ contains
     
     ! sort diagonal
     keys = lapack_sort('I', diag)
+    ! write(6,*) diag
+
     ! Fill matrix with zeros
     precond = 0.0_dp
 
     ! Add one depending on the order of the matrix diagonal
     do i=1, dim_sub
-       write(6,*) k
        k = search_key(keys, i)
+       write(6,*) k, diag(k)
        precond(k, i) = 1.d0
     end do
     

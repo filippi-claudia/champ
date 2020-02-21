@@ -129,7 +129,7 @@ contains
     integer :: init_subspace_size, max_size_basis, size_update
 
     ! Basis of subspace of approximants
-    real(dp), dimension(:), allocatable :: diag_mtx, diag_stx
+    real(dp), dimension(:), allocatable :: diag_mtx, diag_stx, diag_mtx_cpy
     real(dp), dimension(:,:), allocatable :: residues
     real(dp), dimension(lowest):: errors
     
@@ -183,6 +183,7 @@ contains
     ! Diagonal of the arrays
     allocate(diag_mtx(parameters%nparm))
     allocate(diag_stx(parameters%nparm))
+    allocate(diag_mtx_cpy(parameters%nparm))
 
     if (idtask==0) then
 	 call store_diag_hs(parameters%nparm, diag_mtx, diag_stx)
@@ -200,17 +201,18 @@ contains
  
     ! Select the initial ortogonal subspace based on lowest elements
     ! of the diagonal of the matrix.
-    V = initialize_subspace( diag_mtx, init_subspace_size, nparm) ! Initial orthonormal basis
-    
+    diag_mtx_cpy = diag_mtx
+    V = initialize_subspace( diag_mtx_cpy, init_subspace_size, nparm) ! Initial orthonormal basis
+    !write(6,*) diag_mtx    
     if( idtask== 0) write(6,'(''DAV: Setup subspace problem'')')
 
     ! Warning we reset the diag
-    if (idtask==0) then
-        do i=1, parameters%nparm
-                diag_mtx(i) = 1.0
-                diag_stx(i) = 0.0
-        end do
-    end if
+    !if (idtask==0) then
+    !    do i=1, parameters%nparm
+    !            diag_mtx(i) = 1.0
+    !            diag_stx(i) = 0.0
+    !    end do
+    !end if
 
 
     ! allocate mtxV and stxV
