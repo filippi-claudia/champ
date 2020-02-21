@@ -372,15 +372,33 @@ contains
         call MPI_BCAST( V, parameters%nparm*sizeV, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
       endif 
 
+      ! broadcast update proj
+      call MPI_BCAST( update_proj, 1, MPI_LOGICAL, 0, MPI_COMM_WORLD, ier)
+
+      ! update mtxV and stxV
+      if (update_proj) then 
+        
+        call check_deallocate_matrix(tmp_res_array)
+        tmp_res_array = fun_mtx_gemv(parameters,V(:,parameters%basis_size+1:))
+        call concatenate( mtxV, tmp_res_array)
+
+        call check_deallocate_matrix(tmp_res_array)
+        tmp_res_array = fun_stx_gemv(parameters,V(:,parameters%basis_size+1:))
+        call concatenate( stxV, tmp_res_array)
+
+      ! recompute mtxV and stxV
+      else 
+
+        call check_deallocate_matrix(mtxV)
+        mtxV = fun_mtx_gemv( parameters, V)
+
+        call check_deallocate_matrix(stxV)
+        stxV = fun_stx_gemv( parameters, V)
+
+      end if
+
       ! Update basis size
       parameters%basis_size = size( V, 2) 
-
-      ! Calculation of HV and SV
-      call check_deallocate_matrix(mtxV)
-      mtxV = fun_mtx_gemv( parameters, V)
-
-      call check_deallocate_matrix(stxV)
-      stxV = fun_stx_gemv( parameters, V)
 
     end do outer_loop
 
