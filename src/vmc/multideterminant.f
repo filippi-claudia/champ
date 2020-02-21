@@ -244,7 +244,9 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use dets_equiv, only: cdet_equiv, dcdet_equiv
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -273,7 +275,6 @@ c-----------------------------------------------------------------------
      & ,tildem(MELEC,MORB,2)
 
       common /denergy_det/ denergy_det(MDET,2)
-      common /dets_equiv/ cdet_equiv(MDET),dcdet_equiv(MDET)
 
       dimension detu(MDET),detd(MDET),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
 
@@ -329,7 +330,9 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use dets_equiv, only: cdet_equiv, dcdet_equiv
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -352,7 +355,6 @@ c-----------------------------------------------------------------------
 
       common /denergy_det/ denergy_det(MDET,2)
 
-      common /dets_equiv/ cdet_equiv(MDET),dcdet_equiv(MDET)
 
       dimension dymat(MORB,MELEC),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
 

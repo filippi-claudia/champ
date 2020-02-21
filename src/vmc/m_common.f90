@@ -223,6 +223,19 @@
    save
  end module dets
 
+ module dets_equiv
+  !> Arguments: cdet_equiv, dcdet_equiv
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: cdet_equiv(MDET)
+   real(dp) :: dcdet_equiv(MDET)
+
+   private
+   public   ::  cdet_equiv, dcdet_equiv
+   save
+ end module dets_equiv
+
  module force_analy 
    !> Arguments: iforce_analy 
 
