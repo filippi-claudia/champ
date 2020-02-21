@@ -11,7 +11,9 @@ c job where it left off
       use jaspar1, only: cjas1, cjas2
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use denupdn, only: rprobdn, rprobup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -45,7 +47,6 @@ c job where it left off
       common /stats/ rejmax
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
-      common /denupdn/ rprobup(nrad),rprobdn(nrad)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 

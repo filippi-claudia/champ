@@ -6,7 +6,9 @@ c routine to print out final results
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use denupdn, only: rprobdn, rprobup
       implicit real*8(a-h,o-z)
+
 
 
       character*12 mode
@@ -33,7 +35,6 @@ c routine to print out final results
       common /header/ title,date
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
-      common /denupdn/ rprobup(nrad),rprobdn(nrad)
 
 
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight

@@ -10,7 +10,9 @@ c routine to accumulate estimators for energy etc.
      &vnew, vold, xnew, xold
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use denupdn, only: rprobdn, rprobup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -43,7 +45,6 @@ c routine to accumulate estimators for energy etc.
       common /estpsi/ detref(2),apsi(MSTATES),aref
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad)
      &,ekin(nrad),ekin2(nrad)
-      common /denupdn/ rprobup(nrad),rprobdn(nrad)
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)

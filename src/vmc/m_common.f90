@@ -179,6 +179,19 @@
    save
  end module da_energy_now
 
+ module denupdn
+   !> Arguments: rprobdn, rprobup
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: rprobdn(nrad)
+   real(dp) :: rprobup(nrad)
+
+   private
+   public   ::  rprobdn, rprobup 
+   save
+ end module denupdn
+
  module force_analy 
    !> Arguments: iforce_analy 
 
