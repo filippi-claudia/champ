@@ -3,14 +3,15 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /elec/ nup,ndn
 
       common /multislater/ detu(MDET),detd(MDET)
       common /multislatern/ detn(MDET)

@@ -6,7 +6,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,7 +36,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /elec/ nup,ndn
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -259,7 +260,9 @@ c-----------------------------------------------------------------------
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
       parameter (one=1.d0)
 
@@ -271,7 +274,6 @@ c-----------------------------------------------------------------------
 
       common /contrl_per/ iperiodic,ibasis
 
-      common /elec/ nup,ndn
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
@@ -324,7 +326,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -332,7 +336,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       common /contrl_per/ iperiodic,ibasis
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /elec/ nup,ndn
 
 
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
@@ -412,7 +415,9 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -422,7 +427,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
-      common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
       dimension x(3)
@@ -459,7 +463,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -474,7 +480,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /contrl_per/ iperiodic,ibasis
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /elec/ nup,ndn
 
 
       common /bparm/ nspin2b,nocuspb
@@ -582,7 +587,9 @@ c-----------------------------------------------------------------------
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
       parameter (one=1.d0)
 
@@ -591,7 +598,6 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
       include 'pseudo.h'
 
-      common /elec/ nup,ndn
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc

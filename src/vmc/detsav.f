@@ -4,7 +4,9 @@ c Written by Claudia Filippi
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -14,7 +16,6 @@ c Written by Claudia Filippi
       parameter (MEXCIT=10)
 
 
-      common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 

@@ -8,7 +8,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use derivjas, only: d2g, g, go, gvalue
 
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -23,7 +25,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       parameter (half=.5d0)
 
       common /contrl_per/ iperiodic,ibasis
-      common /elec/ nup,ndn
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 

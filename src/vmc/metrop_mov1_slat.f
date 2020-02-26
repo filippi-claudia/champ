@@ -17,7 +17,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -51,7 +53,6 @@ c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best
 
       common /contr3/ mode
-      common /elec/ nup,ndn
       common /const2/ deltar,deltat
       common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
       common /stats/ rejmax

@@ -236,6 +236,36 @@
    save
  end module dets_equiv
 
+ module distances_sav
+
+  !> Arguments: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
+  use precision_kinds, only: dp
+  include 'vmc.h'
+
+  real(dp) :: r_ee_sav(MELEC)
+  real(dp) :: r_en_sav(MCENT)
+  real(dp) :: rshift_sav(3,MCENT)
+  real(dp) :: rvec_ee_sav(3,MELEC)
+  real(dp) :: rvec_en_sav(3,MCENT)
+
+  private
+  public   :: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
+  save
+ end module distances_sav
+
+ module elec
+  !> Arguments: ndn, nup
+  use precision_kinds, only: dp
+  include 'vmc.h'
+
+  integer  :: ndn
+  integer  :: nup
+
+  private
+  public   :: ndn, nup
+  save
+ end module elec
+
  module force_analy 
    !> Arguments: iforce_analy 
 
@@ -287,17 +317,3 @@
    public   ::  cjas1, cjas2
    save
  end module jaspar1
-
-module distances_sav
-    !> Arguments: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
-    use precision_kinds, only: dp
-    include 'vmc.h'
-
-    real(dp) :: r_ee_sav(MELEC)
-    real(dp) :: r_en_sav(MCENT)
-    real(dp) :: rshift_sav(3,MCENT)
-    real(dp) :: rvec_ee_sav(3,MELEC)
-    real(dp) :: rvec_en_sav(3,MCENT)
-
-    save
-end module distances_sav

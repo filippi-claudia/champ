@@ -6,7 +6,9 @@
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -14,7 +16,6 @@
       include 'vmc.h'
       include 'force.h'
 
-      common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -56,7 +57,9 @@ c-----------------------------------------------------------------------
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -65,7 +68,6 @@ c-----------------------------------------------------------------------
       include 'force.h'
       include 'mstates.h'
 
-      common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -161,7 +163,9 @@ c-----------------------------------------------------------------------
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -173,7 +177,6 @@ c-----------------------------------------------------------------------
 
       parameter (MEXCIT=10)
 
-      common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 

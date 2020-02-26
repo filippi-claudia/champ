@@ -3,7 +3,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar1, only: cjas1, cjas2
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -16,7 +18,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /elec/ nup,ndn
 
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord

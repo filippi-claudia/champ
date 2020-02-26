@@ -4,7 +4,9 @@
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -15,7 +17,6 @@
       parameter (one=1.d0,half=0.5d0)
       parameter (MEXCIT=10)
 
-      common /elec/ nup,ndn
 
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -128,7 +129,9 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -138,7 +141,6 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
       parameter (MEXCIT=10)
 
-      common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
 

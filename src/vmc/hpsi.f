@@ -7,7 +7,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -24,7 +26,6 @@ c Calculates energy
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /elec/ nup,ndn
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 

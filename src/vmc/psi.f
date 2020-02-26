@@ -6,7 +6,9 @@ c periodic systems.
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar1, only: cjas1, cjas2
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -20,7 +22,6 @@ c periodic systems.
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /elec/ nup,ndn
 
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)

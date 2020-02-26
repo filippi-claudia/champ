@@ -18,7 +18,9 @@ c and sa, pa, da asymptotic functions
      &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
      &vnew, vold, xnew, xold
       use jaspar1, only: cjas1, cjas2
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -32,7 +34,6 @@ c and sa, pa, da asymptotic functions
       include 'pseudo.h'
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)

@@ -2,7 +2,9 @@
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -17,7 +19,6 @@
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /elec/ nup,ndn
 
       common /dorb/ iworbd(MELEC,MDET)
 

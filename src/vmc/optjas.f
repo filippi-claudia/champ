@@ -6,7 +6,9 @@
       use derivjas, only: d2g, g, go, gvalue
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -18,7 +20,6 @@
       include 'pseudo.h'
 
       parameter (MEXCIT=10)
-      common /elec/ nup,ndn
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj

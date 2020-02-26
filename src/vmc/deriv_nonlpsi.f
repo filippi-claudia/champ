@@ -3,7 +3,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar1, only: cjas1, cjas2
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -24,7 +26,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /elec/ nup,ndn
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

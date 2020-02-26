@@ -5,7 +5,9 @@ c Modified by A. Scemama
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -25,7 +27,6 @@ c dimensioned at least max(nup**2,ndn**2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /force_analy/ iforce_analy
 
-      common /elec/ nup,ndn
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
@@ -277,7 +278,9 @@ c-------------------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -289,7 +292,6 @@ c-------------------------------------------------------------------------------
       parameter(one=1.d0)
 
       common /contrl_per/ iperiodic,ibasis
-      common /elec/ nup,ndn
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)

@@ -4,7 +4,9 @@ c Modified by A. Scemama
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -15,7 +17,6 @@ c Modified by A. Scemama
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
 

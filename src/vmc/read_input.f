@@ -36,7 +36,9 @@ c and Anthony Scemema
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -79,7 +81,6 @@ c and Anthony Scemema
      &,ifock,i3body,irewgt,iaver,istrch
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /elec/ nup,ndn
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -1060,7 +1061,9 @@ C$INPUT jastrow_parameter inp i=1
 CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar1, only: cjas1, cjas2
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -1069,7 +1072,6 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /elec/ nup,ndn
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord

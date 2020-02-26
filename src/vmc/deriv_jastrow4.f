@@ -6,7 +6,9 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use derivjas, only: d2g, g, go, gvalue
 
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -20,7 +22,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
      &,ifock,i3body,irewgt,iaver,istrch
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /elec/ nup,ndn
       common /bparm/ nspin2b,nocuspb
 
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)

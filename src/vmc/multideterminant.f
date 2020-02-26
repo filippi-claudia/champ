@@ -4,7 +4,9 @@
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -21,7 +23,6 @@ c as many ups as downs. If this is not true then be careful if
 c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
-      common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -245,7 +246,9 @@ c-----------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -256,7 +259,6 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
       parameter (MEXCIT=10)
 
-      common /elec/ nup,ndn
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -331,7 +333,9 @@ c-----------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -341,7 +345,6 @@ c-----------------------------------------------------------------------
 
       parameter (MEXCIT=10)
 
-      common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
@@ -408,7 +411,9 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -417,7 +422,6 @@ c-----------------------------------------------------------------------
 
       parameter (MEXCIT=10)
 
-      common /elec/ nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -484,7 +488,9 @@ c-----------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -493,7 +499,6 @@ c-----------------------------------------------------------------------
 
       parameter (MEXCIT=10)
 
-      common /elec/ nup,ndn
 
 
       common /multislater/ detiab(MDET,2)
@@ -533,7 +538,9 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -541,7 +548,6 @@ c-----------------------------------------------------------------------
       include 'force.h'
       include 'mstates.h'
 
-      common /elec/ nup,ndn
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /dorb/ iworbd(MELEC,MDET)

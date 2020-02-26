@@ -4,7 +4,9 @@ c Written by Claudia Filippi by modifying hpsi
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       character*12 mode
@@ -20,7 +22,6 @@ c Written by Claudia Filippi by modifying hpsi
 c Calculates wave function
 
 
-      common /elec/ nup,ndn
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

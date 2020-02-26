@@ -2,7 +2,9 @@
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -13,7 +15,6 @@
       parameter(one=1.d0)
 
       common /contrl_per/ iperiodic,ibasis
-      common /elec/ nup,ndn
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
@@ -101,7 +102,9 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -112,7 +115,6 @@ c-----------------------------------------------------------------------
       parameter (MEXCIT=10)
       parameter (one=1.d0,half=0.5d0)
 
-      common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -302,7 +304,9 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -312,7 +316,6 @@ c-----------------------------------------------------------------------
       parameter (MEXCIT=10)
       parameter (one=1.d0,half=0.5d0)
 
-      common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)

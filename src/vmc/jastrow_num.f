@@ -8,7 +8,9 @@ c numerical Laplacian for periodic systems.
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -28,7 +30,6 @@ c numerical Laplacian for periodic systems.
 c subroutine to calculate jastrow factor,its derivatives
 c and the potential
 
-      common /elec/ nup,ndn
 
       common /bparm/ nspin2b,nocuspb
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)

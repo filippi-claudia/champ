@@ -308,7 +308,9 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -323,7 +325,6 @@ c-----------------------------------------------------------------------
       dimension ooeav(MXCIMATDIM)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /elec/ nup,ndn
 
       common /gradhess_ci/  grad_ci(MXCITERM),h_ci(MXCITERM,MXCIREDUCED),s_ci(MXCITERM,MXCIREDUCED)
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm

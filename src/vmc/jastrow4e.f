@@ -6,7 +6,9 @@ c Jastrow 6   must be used with one of isc=6,7
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -15,7 +17,6 @@ c Jastrow 6   must be used with one of isc=6,7
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /elec/ nup,ndn
 
       common /bparm/ nspin2b,nocuspb
 

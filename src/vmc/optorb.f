@@ -4,7 +4,9 @@
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -15,7 +17,6 @@
       include 'optorb_cblk.h'
 
       parameter (MEXCIT=10)
-      common /elec/ nup,ndn
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -758,7 +759,9 @@ c-----------------------------------------------------------------------
       subroutine optorb_define
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -771,7 +774,6 @@ c-----------------------------------------------------------------------
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /elec/ nup,ndn
 
       common /dorb/ iworbd(MELEC,MDET)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
