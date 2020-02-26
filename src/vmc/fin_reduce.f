@@ -4,7 +4,9 @@ c MPI version written by Claudia Filippi
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -14,7 +16,6 @@ c MPI version written by Claudia Filippi
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),pecum(MSTATES),tpbcum(MSTATES),tjfcum(MSTATES),r2cum,iblk
       common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
       common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 

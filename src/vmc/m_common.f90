@@ -266,6 +266,26 @@
   save
  end module elec
 
+ module estcum
+   !> Arguments: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
+   use precision_kinds, only: dp
+   include 'mstates.h'
+   include 'force.h'
+
+   real(dp) :: ecum(MSTATES,MFORCE)
+   real(dp) :: ecum1(MSTATES)
+   integer  :: iblk
+   real(dp) :: pecum(MSTATES)
+   real(dp) :: r2cum
+   real(dp) :: tjfcum(MSTATES)
+   real(dp) :: tpbcum(MSTATES)
+   real(dp) :: avcum(MSTATES*3) 
+
+   private
+   public   ::  ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
+   save
+ end module estcum
+ 
  module est2cm
    !> Arguments: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
    use precision_kinds, only: dp
