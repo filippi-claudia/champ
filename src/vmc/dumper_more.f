@@ -14,7 +14,9 @@ c job where it left off
       use denupdn, only: rprobdn, rprobup
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -39,7 +41,6 @@ c job where it left off
 
       common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
       common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),pecum(MSTATES),tpbcum(MSTATES),tjfcum(MSTATES),r2cum,iblk
-      common /est2cm/ ecm21(MSTATES),ecm2(MSTATES,MFORCE),pecm2(MSTATES),tpbcm2(MSTATES),tjfcm2(MSTATES),r2cm2
       common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
 
       common /forcepar/ deltot(MFORCE),nforce,istrech

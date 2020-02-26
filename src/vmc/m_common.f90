@@ -266,6 +266,25 @@
   save
  end module elec
 
+ module est2cm
+   !> Arguments: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
+   use precision_kinds, only: dp
+   include 'mstates.h'
+   include 'force.h'
+
+   real(dp) :: ecm2(MSTATES,MFORCE)
+   real(dp) :: ecm21(MSTATES)
+   real(dp) :: pecm2(MSTATES)
+   real(dp) :: r2cm2
+   real(dp) :: tjfcm2(MSTATES)
+   real(dp) :: tpbcm2(MSTATES)
+   real(dp) :: avcm2(MSTATES*3) 
+
+   private
+   public   :: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2 
+   save
+ end module est2cm
+
  module force_analy 
    !> Arguments: iforce_analy 
 

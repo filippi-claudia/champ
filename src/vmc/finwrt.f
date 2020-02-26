@@ -7,7 +7,9 @@ c routine to print out final results
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use denupdn, only: rprobdn, rprobup
+      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -30,7 +32,6 @@ c routine to print out final results
       common /contr3/ mode
       common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
       common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),pecum(MSTATES),tpbcum(MSTATES),tjfcum(MSTATES),r2cum,iblk
-      common /est2cm/ ecm21(MSTATES),ecm2(MSTATES,MFORCE),pecm2(MSTATES),tpbcm2(MSTATES),tjfcm2(MSTATES),r2cm2
       common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
       common /header/ title,date
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
