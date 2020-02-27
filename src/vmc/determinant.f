@@ -101,7 +101,9 @@ c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use estpsi, only: apsi, aref, detref
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -120,7 +122,6 @@ c-----------------------------------------------------------------------
 
       common /multislater/detiab(MDET,2)
 
-      common /estpsi/ detref(2),apsi(MSTATES),aref
 
       parameter (one=1.d0,half=0.5d0)
 

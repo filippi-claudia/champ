@@ -286,6 +286,20 @@
    save
  end module estcum
  
+ module estpsi
+   !> Arguments: apsi, aref, detref
+   use precision_kinds, only: dp
+   include 'mstates.h'
+
+   real(dp) :: apsi(MSTATES)
+   real(dp) :: aref
+   real(dp) :: detref(2)
+
+   private
+   public   ::  apsi, aref, detref 
+   save
+ end module estpsi
+
  module est2cm
    !> Arguments: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
    use precision_kinds, only: dp

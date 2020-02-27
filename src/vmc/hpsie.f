@@ -5,7 +5,9 @@ c Written by Claudia Filippi by modifying hpsi
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use elec, only: ndn, nup
+      use estpsi, only: apsi, aref, detref
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -37,7 +39,6 @@ c Calculates wave function
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
 
-      common /estpsi/ detref(2),apsi(MSTATES),aref
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
