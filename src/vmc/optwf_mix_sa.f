@@ -82,12 +82,14 @@
       call write_geometry(0)
 
       call save_wf
+      call save_ci_best
 
 c do iteration
       do iter=1,nopt_iter
         write(6,'(/,''Optimization iteration'',i5,'' of'',i5)')iter,nopt_iter
 
         iforce_analy=0
+
 
 c do micro_iteration
         do miter=1,micro_iter_sr
@@ -105,7 +107,7 @@ c do micro_iteration
 
             call p2gtid('optwf:nblk_ci',nblk_ci,nblk,0)
             nblk=nblk_ci
-            write(6,*) "NBLOCK CI", "NBLOCK SAV", nblk, nblk_sav
+            write(6,'(''NBLOCK changed from '',i7, '' to '',i7)') nblk_sav,nblk
 
             ioptorb=0
             ioptjas=0
@@ -128,11 +130,12 @@ c if the last step was a davidson then save the old energy before recomputing it
             energy_davidson(iqmc_check+1,:)=energy_all(:)
             if(iqmc_check.eq.0) i_deltap(:nstates)=0
 
-            if(iqmc_check.lt.3) then             
+            if(iqmc_check.lt.2) then             
               do istate=1,nstates
                 diff=abs(energy_all(istate)-energy_old(istate))
                 errdiff=sqrt(energy_err_all(istate)**2+energy_err_old(istate)**2)
 
+                iqmc_again=0
                 if(diff.ge.10*errdiff)then
                   i_deltap(istate)=i_deltap(istate)+1
                   istate0=(istate-1)*nparmci+1
@@ -141,31 +144,18 @@ c if the last step was a davidson then save the old energy before recomputing it
                   write(6,'(''STATE, N OVERLAP, ENRGY OLD, ENERGY NEW,10*ERRDIFF '',2i3,3f12.5)') 
      &            istate,i_deltap(istate),energy_old(istate),energy_all(istate),10*errdiff
                   iqmc_again=1
-
                 endif
               enddo   
               if(iqmc_again.gt.0) then
                 iqmc_check=iqmc_check+1
                 go to 5
+               else
+                call save_ci_best
+                write(6,'(''SAVE BEST CI'')')
               endif
              else
               call restore_ci_best
-              write(6,*) "RESTORE CI TO PREVIOUS ITERATION"
-
-c             do istate=1,nstates
-c              istate0=(istate-1)*nparmci+1
-c              if(i_deltap(istate).ne.0) then
-c                call sort(5, energy_davidson(1,istate),index_min_energy)
-c                if(index_min_energy(1).eq.1) then
-c                  call change_ci(deltap(istate0),istate)
-c                 else 
-c                  call change_ci(deltap_more(istate0,index_min_energy(1)),istate)
-c                endif
-c                write(6,*) "ENERGY DAV", energy_davidson(:,istate)
-c                write(6,*) "NO GOOD WF FOUND, FOR STATE", istate, "TAKING OVERLAP", index_min_energy(1)
-c                write(6,*) "VEC CORR TO ENERGY", energy_davidson(index_min_energy(1),istate)
-c              endif
-c             enddo
+              write(6,'(''RESTORE CI TO PREVIOUS ITERATION'')')
 
               call qmc
             endif   
