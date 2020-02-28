@@ -320,8 +320,16 @@ contains
       if( parameters%basis_size + size_update <= nvecx) then 
         
         ! compute the correction vectors
-        correction = compute_GJD( parameters, ritz_vectors, residues, eigenvectors_sub, eigenvalues_sub)
-        
+        select case(method)
+        case("DPR")
+          if (idtask==0) then
+            correction= compute_DPR( residues, parameters, eigenvalues_sub, diag_mtx, diag_stx, has_converged)
+          end if
+        case("GJD")
+          call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+          correction = compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, eigenvalues)
+        end select
+
         if (idtask==0) then 
 
           ! Add the correction vectors to the current basis.
@@ -492,6 +500,46 @@ contains
 
   end subroutine
 
+  function compute_DPR(residues, parameters, eigenvalues, diag_mtx, diag_stx, has_converged) &
+    result(correction)
+
+  !> compute the correction vector using the DPR method for a matrix free diagonalization
+  !> See correction_methods submodule for the implementations
+  !> \param[in] fun_mtx: function to compute matrix
+  !> \param[in] fun_stx: function to compute the matrix for the generalized case
+  !> \param[in] V: Basis of the iteration subspace
+  !> \param[in] eigenvalues: of the reduce problem
+  !> \param[in] eigenvectors: of the reduce problem
+  !> \return correction matrix
+  !
+  use array_utils, only: eye
+  !
+  real(dp), dimension(:, :), intent(in) :: residues
+  real(dp), dimension(:), intent(in) :: eigenvalues  
+  real(dp), dimension(:), intent(in) :: diag_mtx, diag_stx
+  logical,  dimension(:), intent(in) :: has_converged
+
+  ! local variables
+  type(davidson_parameters) :: parameters
+
+  real(dp), dimension(parameters%nparm, size(residues,2)) :: correction
+  integer :: ii, j, k
+
+  j = 1
+  do k = 1, size(residues, 2) 
+  if (.not. has_converged(k)) then
+  correction( :, j)= residues( :, k) 
+
+  do ii= 1, size( correction, 1)
+  correction( ii, j)= correction( ii, j)/( eigenvalues( k)* diag_stx( ii)- diag_mtx( ii))
+  end do
+  j = j+1
+  endif
+  end do
+
+  end function compute_DPR
+
+
   function compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, & 
              eigenvalues) result( correction)
 
@@ -512,57 +560,8 @@ contains
     real( dp), dimension( :, :), intent( in) :: ritz_vectors
     real( dp), dimension( :, :), intent( in) :: residues
     real( dp), dimension( :),    intent( in) :: eigenvalues 
-    !
-    ! local variables
-    !
-    real( dp), dimension( parameters%nparm, size(residues,2)) :: correction
-    real( dp), dimension( parameters%nparm, size(residues,2)) :: Ap
-    real( dp), dimension( parameters%nparm, size(residues,2)) :: r
-    real( dp) :: alpha
 
-    integer :: k, m
-    integer, PARAMETER :: kmax = 5
-
-    corrections = 0.0_dp
-    r = residues - compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, correction, parameters)
-    p = r
-    rnorms_old = norm2(r,1)
-
-    do k= 1, kmax
-
-      Ap = compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, p, parameters)
-
-      do i=1,size(residues,2)
-        alpha  = rnorms_old(i) / dot_product(p(:,i), Ap(:,i))
-        correction(:,i) = correction(:,i) + alpha * p(:,i)
-        r(:,i) = r(:,i) - alpha * p(:,i)
-      end do
-
-      rnorms_new = norm2(r,1)
-
-      do i=1,size(residues,2)
-        p(:,i) = r(:,i) + rnorms_new(i)/rnorms_old(i) * p(:,i)
-      end do
-
-      rnorms_old = rnorms_new
-    end do
-
-    ! Deallocate
-    deallocate(Ap)
-    deallocate(r)
-
-  end function compute_GJD
-
-
-  function compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, x, parameters) result(papx)
-
-    type( davidson_parameters)               :: parameters
-    real( dp), dimension( :, :), intent( in) :: ritz_vectors
-    real( dp), dimension( :),    intent( in) :: eigenvalues 
-    real(dp), dimension(:,:), intent(in) :: x    
-    real(dp), dimension(:,:) :: tmp_vects, mtx_tmp, stx_tmp
-
-        ! Function to compute the target matrix on the fly
+    ! Function to compute the target matrix on the fly
     interface
 
      function fun_mtx_gemv(parameters, input_vect) result(output_vect)
@@ -594,7 +593,92 @@ contains
        end function fun_stx_gemv
 
     end interface
-  
+
+    !
+    ! local variables
+    !
+    real( dp), dimension( parameters%nparm, size(residues,2)) :: correction
+    real( dp), dimension( parameters%nparm, size(residues,2)) :: Ap
+    real( dp), dimension( parameters%nparm, size(residues,2)) :: r
+    real( dp), dimension( parameters%nparm, size(residues,2)) :: p
+    real( dp), dimension(size(residues,2)) :: rnorms_old
+    real( dp), dimension(size(residues,2)) :: rnorms_new
+    real( dp) :: alpha
+
+    integer :: i, k, m
+    integer, PARAMETER :: kmax = 5
+
+    correction = 0.0_dp
+    r = -residues - compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, correction, parameters)
+    p = r
+    rnorms_old = norm2(r,1)
+
+    do k= 1, kmax
+
+      Ap = compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, p, parameters)
+
+      do i=1, size(residues,2)
+        alpha  = rnorms_old(i) / dot_product(p(:,i), Ap(:,i))
+        correction(:,i) = correction(:,i) + alpha * p(:,i)
+        r(:,i) = r(:,i) - alpha * p(:,i)
+      end do
+
+      rnorms_new = norm2(r,1)
+
+      do i=1,size(residues,2)
+        p(:,i) = r(:,i) + rnorms_new(i)/rnorms_old(i) * p(:,i)
+      end do
+
+      rnorms_old = rnorms_new
+    end do
+
+  end function compute_GJD
+
+
+  function compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, x, parameters) result(papx)
+
+    type( davidson_parameters)               :: parameters
+    real( dp), dimension( :, :), intent( in) :: ritz_vectors
+    real( dp), dimension( :),    intent( in) :: eigenvalues 
+    real(dp), dimension(:,:), intent(in) :: x    
+    real(dp), allocatable, dimension(:,:) :: tmp_vects, mtx_tmp, stx_tmp
+
+    ! Function to compute the target matrix on the fly
+    interface
+
+     function fun_mtx_gemv(parameters, input_vect) result(output_vect)
+       !> \brief Function to compute the action of the hamiltonian on the fly
+       !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+       !> \param[in] input_vec Array to project
+       !> \return Projected matrix
+
+       use numeric_kinds, only: dp
+       import :: davidson_parameters
+       type(davidson_parameters) :: parameters
+       real (dp), dimension(:,:), intent(in) :: input_vect
+       real (dp), dimension(size(input_vect,1),size(input_vect,2)) :: output_vect
+       
+     end function fun_mtx_gemv
+     
+     function fun_stx_gemv(parameters, input_vect) result(output_vect)
+       !> \brief Fucntion to compute the optional stx matrix on the fly
+       !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+       !> \param[in] input_vec Array to project
+       !> \return Projected matrix
+       
+       use numeric_kinds, only: dp
+       import :: davidson_parameters
+       type(davidson_parameters) :: parameters
+       real (dp), dimension(:,:), intent(in) :: input_vect
+       real (dp), dimension(size(input_vect,1), size(input_vect,2)) :: output_vect
+       
+       end function fun_stx_gemv
+
+    end interface
+    
+    real( dp), dimension( parameters%nparm, size(x,2)) :: papx
+    integer :: i
+
     allocate(tmp_vects(parameters%nparm,size(x,2)))
 
     ! project the x vector using the ritz vects
@@ -609,7 +693,9 @@ contains
       tmp_vects(:,i) = mtx_tmp(:,i) - eigenvalues(i) * stx_tmp(:,i)
     end do
 
+    ! px = (I-uu^\dagger) x
     papx = project_vects(ritz_vectors,tmp_vects)
+
     deallocate(tmp_vects)
     deallocate(mtx_tmp)
     deallocate(stx_tmp)
@@ -624,7 +710,7 @@ contains
     real(dp), dimension(:,:), intent(in) :: x    
     real(dp), dimension(:,:), allocatable :: px
     real(dp) :: tmp_float
-
+    integer :: i
     allocate(px(size(x,1),size(x,2)))
 
     do i=1, size(x,2)
@@ -633,75 +719,5 @@ contains
     end do
 
   end function project_vects
-
-  function fun_F_matrix( ritz_vectors, parameters, eigen_index, eigenvalue) &
-           result( F_matrix)
-    !> \brief Function that computes the F matrix: 
-    !> F= ubut*( A- theta* B)* uubt
-    !> in a pseudo-free way for a given engenvalue. 
-    !> 
-    !> ritz_vectors( in) :: ritz_vectors.  
-    !> parameters( in)   :: array_sizes  
-    !> eigen_index( in)  :: index of the passing eingenvalue.
-    !> eigenvalue( in)   :: eigen_index eigenvalue.  
-
-    use array_utils, only: eye
-
-    real( dp), dimension( :, :), intent( in) :: ritz_vectors 
-    type( davidson_parameters) :: parameters
-    integer   :: eigen_index 
-    real( dp) :: eigenvalue 
-
-    interface
-
-     function fun_mtx_gemv( parameters, input_vect) result( output_vect)
-       !> \brief Function to compute the action of the hamiltonian on the fly
-       !> \param[in] dimension of the arrays to compute the action of the
-       !             hamiltonian
-       !> \param[in] input_vec Array to project
-       !> \return Projected matrix
-       use numeric_kinds, only: dp
-       import                                   :: davidson_parameters
-       type( davidson_parameters)               :: parameters
-       real( dp), dimension( :, :), intent( in) :: input_vect
-       real( dp), dimension( size( input_vect, 1), size( input_vect, 2)) :: output_vect
-     end function fun_mtx_gemv
-
-     function fun_stx_gemv( parameters, input_vect) result( output_vect)
-       !> \brief Fucntion to compute the optional stx matrix on the fly
-       !> \param[in] dimension of the arrays to compute the action of the
-       !             hamiltonian
-       !> \param[in] input_vec Array to project
-       !> \return Projected matrix
-       use numeric_kinds, only: dp
-       import                                   :: davidson_parameters
-       type( davidson_parameters)               :: parameters
-       real( dp), dimension( :, :), intent( in) :: input_vect
-       real( dp), dimension( size( input_vect, 1), size( input_vect, 2)) :: output_vect
-     end function fun_stx_gemv
-
-    end interface
- 
-    real( dp), dimension( parameters%nparm, parameters%nparm) :: F_matrix, lambda
-    real( dp), dimension( parameters%nparm, 1) :: ritz_tmp
-    real( dp), dimension( :, :), allocatable :: ys 
-    real( dp), dimension( parameters%nparm, parameters%nparm) :: ubut, uubt
-
-    ritz_tmp( :, 1)= ritz_vectors( :, eigen_index)
-
-    lambda= eye( parameters%nparm, parameters%nparm, eigenvalue)
-
-    ubut= eye( parameters%nparm, parameters%nparm)- &
-          lapack_matmul( 'N', 'T', fun_stx_gemv( parameters, ritz_tmp), ritz_tmp)
-
-    uubt= eye( parameters%nparm, parameters%nparm)- &
-          lapack_matmul( 'N', 'T', ritz_tmp, fun_stx_gemv( parameters, ritz_tmp)) 
-
-    ys = lapack_matmul( 'N', 'N', lambda, fun_stx_gemv( parameters, uubt)) 
-
-    F_matrix= lapack_matmul( 'N', 'N', ubut, fun_mtx_gemv( parameters, uubt)) - &
-              lapack_matmul( 'N', 'N', ubut, ys) 
-
-  end function fun_F_matrix
 
 end module davidson
