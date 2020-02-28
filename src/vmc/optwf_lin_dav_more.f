@@ -41,23 +41,32 @@
         itype(ivec)=1
  20     evc(ivec,ivec)=1.d0
 
+      ! regterg
       if(lin_jdav.eq.0) then
-
        write(6,*) "USING OLD REGTERG"
 
         call regterg( nparm_p1, MPARM, nvec, nvecx, evc, ethr,
      &                e, itype, notcnv, idav_iter, ipr, idtask )
 
-        write(6,'(''LIN_D: no. iterations'',i4)') idav_iter
-        write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
-
+       ! Davidson DPR
        elseif(lin_jdav.eq.1) then
-       write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
+        write(6,*) "USING DPR DAVIDSON"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &       ethr, e, itype, notcnv, idav_iter, ipr)
+     &       ethr, e, itype, notcnv, idav_iter, ipr, "DPR")
+
+       ! Davidson JOCC
+       elseif(lin_jdav.eq.2) then
+        write(6,*) "USING GJD DAVIDSON"
+         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
+     &       ethr, e, itype, notcnv, idav_iter, ipr, "GJD")
+
        else
          call fatal_error('LIND: lin_jdav < 2')
+         
       endif
+
+      write(6,'(''LIN_D: no. iterations'',i4)') idav_iter
+      write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
 
       call my_second(2,'david ')
       call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)

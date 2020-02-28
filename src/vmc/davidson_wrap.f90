@@ -1,5 +1,5 @@
 SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
-                 eigenvalues, btype, notcnv, dav_iter, ipr)
+                 eigenvalues, btype, notcnv, dav_iter, ipr, method)
   !----------------------------------------------------------------------------
   !
   ! ... iterative solution of the eigenvalue problem:
@@ -39,6 +39,8 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, mvec, ipr
   INTEGER, dimension(nvec), INTENT(IN) :: btype
   INTEGER, INTENT(OUT) :: dav_iter, notcnv
+  character(len=*), intent(in) :: method
+
   ! local variables
   integer :: i, ierr
   integer :: nproc, idtask 
@@ -87,7 +89,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   ! Allocate variables
   IF ( nvec > nvecx / 2 ) CALL fatal_error( 'regter: nvecx is too small')
   call generalized_eigensolver(fun_mtx_gemv, eigenvalues, ritz_vectors, nparm, &
-         nparmx, nvec, nvecx, "DPR", 200, ethr, dav_iter, fun_stx_gemv, nproc, idtask)
+         nparmx, nvec, nvecx, method, 200, ethr, dav_iter, fun_stx_gemv, nproc, idtask)
 
   if (idtask == 0) then
     do i=1,size(eigenvalues)

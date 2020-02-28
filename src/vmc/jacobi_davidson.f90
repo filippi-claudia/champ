@@ -236,6 +236,13 @@ contains
       else
         write( 6,'(''QR orthogonalization with full projection'')')
       end if
+
+      select case(method)
+        case("DPR")
+          write( 6,'(''Using Davidson DPR method'')')
+        case("GJD")
+          write( 6,'(''Using Jacobi Davidson method'')')  
+      end select
     endif
 
     ! 3. Outer loop block Davidson
