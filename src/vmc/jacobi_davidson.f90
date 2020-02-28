@@ -333,7 +333,7 @@ contains
           end if
         case("GJD")
 
-          if (i==0) then
+          if (i==1) then
             if (idtask>0) then 
               allocate(ritz_vectors(parameters%nparm,size_update))
             end if
