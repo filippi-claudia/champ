@@ -340,7 +340,8 @@ contains
           call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
           call MPI_BCAST(residues, parameters%nparm * size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
           call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-
+          call MPI_BCAST( has_converged, parameters%lowest, MPI_LOGICAL, 0, MPI_COMM_WORLD, ier)
+          
           correction = compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, eigenvalues_sub, has_converged)          
         end select
 
