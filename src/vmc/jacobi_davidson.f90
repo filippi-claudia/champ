@@ -661,6 +661,9 @@ contains
     deallocate(r)
     deallocate(p)
 
+    deallocate(rnorms_old)
+    deallocate(rnorms_new)
+
   end function compute_GJD
 
 
