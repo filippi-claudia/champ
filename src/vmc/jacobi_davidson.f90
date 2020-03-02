@@ -313,8 +313,6 @@ contains
       !! ENDIF ID TASK
       end if 
       
-      write(6,'(''DAV: idtask      : '', I10)') idtask
-
       ! Append correction vectors
       if( parameters%basis_size + size_update <= nvecx) then 
         
