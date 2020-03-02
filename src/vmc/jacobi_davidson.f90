@@ -628,14 +628,17 @@ contains
     allocate(r(parameters%nparm, size(residues,2)))
     allocate(p(parameters%nparm, size(residues,2)))
 
-    write(6,'(''DAV: JD Start     : '')')
+    allocate(rnorms_old(size(residues,2)))
+    allocate(rnorms_new(size(residues,2)))
+
+
     correction = 0.0_dp
     r = - residues - compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, correction, parameters)
     p = r
     rnorms_old = norm2(r,1)
 
     do k= 1, kmax
-      write(6,'(''DAV: JD iter   : '', I10)') k
+      ! write(6,'(''DAV: inner JD iter   : '', I10)') k
       Ap = compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, p, parameters)
 
       do i=1, size(residues,2)
@@ -651,6 +654,7 @@ contains
       end do
 
       rnorms_old = rnorms_new
+
     end do
 
     deallocate(Ap)
@@ -704,19 +708,16 @@ contains
     real( dp), dimension( parameters%nparm, size(x,2)) :: papx
     integer :: i
 
-    write(6,'(''DAV: PAPx start     : '')')
     allocate(tmp_vects(parameters%nparm, size(x,2)))
     allocate(mtx_tmp(parameters%nparm,size(tmp_vects,2)))
     allocate(stx_tmp(parameters%nparm,size(tmp_vects,2)))
     
     ! project the x vector using the ritz vects
     ! px = (I-uu^\dagger) x
-    write(6,'(''DAV: PAPx proj1     : '')')
     tmp_vects = project_vects(ritz_vectors,x)
 
     ! form the H and S product and compute 
     ! (H - lambda S) px
-    write(6,'(''DAV: PAPx gemv     : '')')
     mtx_tmp = fun_mtx_gemv( parameters, tmp_vects)
     stx_tmp = fun_stx_gemv( parameters, tmp_vects)
 
@@ -725,7 +726,6 @@ contains
     end do
 
     ! px = (I-uu^\dagger) x
-    write(6,'(''DAV: PAPx proj2     : '')')
     papx = project_vects(ritz_vectors, tmp_vects)
 
     deallocate(tmp_vects)
