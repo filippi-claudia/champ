@@ -18,7 +18,7 @@ c are attempted.
 
       character*20 method
 
-      parameter(MELEC=32,MORB=150,MBASIS=150,MDET=5000,MCENT=20,MCTYPE=3,
+      parameter(MELEC=50,MORB=550,MBASIS=550,MDET=15000,MCENT=20,MCTYPE=3,
      &MCTYP3X=5,NSPLIN=1001,MORDJ=7,radmax=10.d0,nrad=3001,
      &MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2,
      &MORDJ1=MORDJ+1,delri=(nrad-1)/radmax)

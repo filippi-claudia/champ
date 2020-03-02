@@ -321,6 +321,9 @@ contains
       
       !! ENDIF ID TASK
       end if 
+      
+      write(6,'(''DAV: idtask      : '', I10)') idtask
+      ! stop
 
       ! Append correction vectors
       if( parameters%basis_size + size_update <= nvecx) then 
@@ -624,7 +627,7 @@ contains
 
     write(6,'(''DAV: JD Start     : '')')
     correction = 0.0_dp
-    r = -residues - compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, correction, parameters)
+    r = - residues - compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, correction, parameters)
     p = r
     rnorms_old = norm2(r,1)
 
@@ -656,7 +659,6 @@ contains
     real( dp), dimension( :, :), intent( in) :: ritz_vectors
     real( dp), dimension( :),    intent( in) :: eigenvalues 
     real(dp), dimension(:,:), intent(in) :: x    
-    real(dp), allocatable, dimension(:,:) :: tmp_vects, mtx_tmp, stx_tmp
 
     ! Function to compute the target matrix on the fly
     interface
@@ -691,12 +693,12 @@ contains
 
     end interface
 
-
+    real(dp), allocatable, dimension(:,:) :: tmp_vects, mtx_tmp, stx_tmp
     real( dp), dimension( parameters%nparm, size(x,2)) :: papx
     integer :: i
 
-     write(6,'(''DAV: PAPx start     : '')')
-    allocate(tmp_vects(parameters%nparm,size(x,2)))
+    write(6,'(''DAV: PAPx start     : '')')
+    allocate(tmp_vects(parameters%nparm, size(x,2)))
 
     ! project the x vector using the ritz vects
     ! px = (I-uu^\dagger) x
@@ -705,16 +707,23 @@ contains
 
     ! form the H and S product and compute 
     ! (H - lambda S) px
+    write(6,'(''DAV: SIZE1 TMP     : '', I10)') size(tmp_vects,1)
+    write(6,'(''DAV: SIZE2 TMP    : '', I10)') size(tmp_vects,2)
     write(6,'(''DAV: PAPx gemv     : '')')
-    mtx_tmp = fun_mtx_gemv( parameters, tmp_vects)
-    stx_tmp = fun_stx_gemv( parameters, tmp_vects)
+    allocate(mtx_tmp(parameters%nparm,size(tmp_vects,2)))
+    ! mtx_tmp = fun_mtx_gemv( parameters, tmp_vects)
+    write(6,'(''DAV: PAPx gemv2    : '')')
+    allocate(stx_tmp(parameters%nparm,size(tmp_vects,2)))
+    ! stx_tmp = fun_stx_gemv( parameters, tmp_vects)
+    mtx_tmp = 0.0_dp
+    stx_tmp = 0.0_dp
     do i=1,size(x,2)
       tmp_vects(:,i) = mtx_tmp(:,i) - eigenvalues(i) * stx_tmp(:,i)
     end do
 
     ! px = (I-uu^\dagger) x
     write(6,'(''DAV: PAPx proj2     : '')')
-    papx = project_vects(ritz_vectors,tmp_vects)
+    papx = project_vects(ritz_vectors, tmp_vects)
 
     deallocate(tmp_vects)
     deallocate(mtx_tmp)
@@ -728,10 +737,9 @@ contains
     
     real(dp), dimension(:,:), intent(in) :: ritz_vectors
     real(dp), dimension(:,:), intent(in) :: x    
-    real(dp), dimension(:,:), allocatable :: px
+    real(dp), dimension(size(x,1),size(x,2)) :: px
     real(dp) :: tmp_float
     integer :: i
-    allocate(px(size(x,1),size(x,2)))
 
     do i=1, size(x,2)
       tmp_float = dot_product(ritz_vectors(:,i),x(:,i))

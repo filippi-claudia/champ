@@ -83,7 +83,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
 
   call mpi_comm_rank( MPI_COMM_WORLD, idtask, ierr)
   call mpi_comm_size( MPI_COMM_WORLD, nproc, ierr)
-
+  write(6,'(''DAV: idtask      : '', I10)') idtask
   notcnv=0 !Not used in davidson_wrap
     
   ! Allocate variables
