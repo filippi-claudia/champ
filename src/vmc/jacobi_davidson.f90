@@ -198,15 +198,6 @@ contains
     
     if( idtask== 0) write(6,'(''DAV: Setup subspace problem'')')
 
-    ! Warning we reset the diag
-    ! if (idtask==0) then
-    !   do i=1, parameters%nparm
-    !           diag_mtx(i) = 1.0
-    !           diag_stx(i) = 0.0
-    !   end do
-    ! end if
-
-
     ! allocate mtxV and stxV
     allocate( mtxV( parameters%nparm, parameters%basis_size))
     allocate( stxV( parameters%nparm, parameters%basis_size)) 
@@ -323,7 +314,6 @@ contains
       end if 
       
       write(6,'(''DAV: idtask      : '', I10)') idtask
-      ! stop
 
       ! Append correction vectors
       if( parameters%basis_size + size_update <= nvecx) then 
@@ -336,14 +326,24 @@ contains
           end if
 
         case("GJD")
+
           if (i==1) then
+
             if (idtask>0) then 
               allocate(ritz_vectors(parameters%nparm,size_update))
+              allocate(correction(parameters%nparm,size_update))
+              allocate(residues(parameters%nparm,size_update))
             end if
           end if
           
+          call check_deallocate_vector(eigenvalues_sub)
+          allocate( eigenvalues_sub( parameters%basis_size)) 
+
           call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
-          correction = compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, eigenvalues)          
+          call MPI_BCAST(residues, parameters%nparm * size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+          call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+
+          correction = compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, eigenvalues_sub)          
         end select
 
 
@@ -456,10 +456,9 @@ contains
 
     ! Free memory
     deallocate( V, mtxV, stxV)
-
+    deallocate(correction, ritz_vectors)
     if (idtask == 0) then  
-      call check_deallocate_matrix( correction)
-      deallocate( eigenvalues_sub, ritz_vectors)
+      deallocate( eigenvalues_sub)
       deallocate( eigenvectors_sub)
       deallocate( diag_mtx, diag_stx)
       deallocate( residues )
@@ -559,7 +558,7 @@ contains
 
   function compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, & 
              eigenvalues) result( correction)
-
+         
     !> Compute the correction vector using the GJD method for a matrix free
     !> diagonalization. We follow the notation of:
     !> I. Sabzevari, A. Mahajan and S. Sharma,  arXiv:1908.04423 (2019)
@@ -615,15 +614,19 @@ contains
     ! local variables
     !
     real( dp), dimension( parameters%nparm, size(residues,2)) :: correction
-    real( dp), dimension( parameters%nparm, size(residues,2)) :: Ap
-    real( dp), dimension( parameters%nparm, size(residues,2)) :: r
-    real( dp), dimension( parameters%nparm, size(residues,2)) :: p
-    real( dp), dimension(size(residues,2)) :: rnorms_old
-    real( dp), dimension(size(residues,2)) :: rnorms_new
+    real( dp), allocatable, dimension( :,:) :: Ap
+    real( dp), allocatable, dimension( :,:) :: r
+    real( dp), allocatable, dimension( :,:) :: p
+    real( dp), allocatable, dimension(:) :: rnorms_old
+    real( dp), allocatable, dimension(:) :: rnorms_new
     real( dp) :: alpha
 
     integer :: i, k, m
     integer, PARAMETER :: kmax = 5
+
+    allocate(Ap(parameters%nparm, size(residues,2)))
+    allocate(r(parameters%nparm, size(residues,2)))
+    allocate(p(parameters%nparm, size(residues,2)))
 
     write(6,'(''DAV: JD Start     : '')')
     correction = 0.0_dp
@@ -649,6 +652,10 @@ contains
 
       rnorms_old = rnorms_new
     end do
+
+    deallocate(Ap)
+    deallocate(r)
+    deallocate(p)
 
   end function compute_GJD
 
