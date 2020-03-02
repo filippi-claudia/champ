@@ -706,7 +706,9 @@ contains
 
     write(6,'(''DAV: PAPx start     : '')')
     allocate(tmp_vects(parameters%nparm, size(x,2)))
-
+    allocate(mtx_tmp(parameters%nparm,size(tmp_vects,2)))
+    allocate(stx_tmp(parameters%nparm,size(tmp_vects,2)))
+    
     ! project the x vector using the ritz vects
     ! px = (I-uu^\dagger) x
     write(6,'(''DAV: PAPx proj1     : '')')
@@ -714,16 +716,10 @@ contains
 
     ! form the H and S product and compute 
     ! (H - lambda S) px
-    write(6,'(''DAV: SIZE1 TMP     : '', I10)') size(tmp_vects,1)
-    write(6,'(''DAV: SIZE2 TMP    : '', I10)') size(tmp_vects,2)
     write(6,'(''DAV: PAPx gemv     : '')')
-    allocate(mtx_tmp(parameters%nparm,size(tmp_vects,2)))
-    ! mtx_tmp = fun_mtx_gemv( parameters, tmp_vects)
-    write(6,'(''DAV: PAPx gemv2    : '')')
-    allocate(stx_tmp(parameters%nparm,size(tmp_vects,2)))
-    ! stx_tmp = fun_stx_gemv( parameters, tmp_vects)
-    mtx_tmp = 0.0_dp
-    stx_tmp = 0.0_dp
+    mtx_tmp = fun_mtx_gemv( parameters, tmp_vects)
+    stx_tmp = fun_stx_gemv( parameters, tmp_vects)
+
     do i=1,size(x,2)
       tmp_vects(:,i) = mtx_tmp(:,i) - eigenvalues(i) * stx_tmp(:,i)
     end do
