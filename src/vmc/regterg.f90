@@ -316,17 +316,17 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      !
      ! ... test for convergence
      !
-   !   WHERE( btype(1:nvec) == 1 )
-   !      !
-   !      conv(1:nvec) = ( ( ABS( ew(1:nvec) - e(1:nvec) ) < ethr ) )
-   !      !
-   !   ELSEWHERE
-   !      !
-   !      conv(1:nvec) = ( ( ABS( ew(1:nvec) - e(1:nvec) ) < empty_ethr ) )
-   !      !
-   !   END WHERE
-   !   !
-   !   notcnv = COUNT( .NOT. conv(:) )
+    WHERE( btype(1:nvec) == 1 )
+       !
+       conv(1:nvec) = ( ( ABS( ew(1:nvec) - e(1:nvec) ) < ethr ) )
+       !
+    ELSEWHERE
+       !
+        conv(1:nvec) = ( ( ABS( ew(1:nvec) - e(1:nvec) ) < empty_ethr ) )
+       !
+     END WHERE
+     !
+     notcnv = COUNT( .NOT. conv(:) )
      !
      e(1:nvec) = ew(1:nvec)
      
@@ -346,17 +346,17 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      write(6,'(''REG: EIG '',100e15.6)') (e(j),j=1,nvec)
      write(6,'(''REG: RES '',100e15.6)') (res_norm(j),j=1,nvec)
 
-     WHERE( btype(1:nvec) == 1 )
+!     WHERE( btype(1:nvec) == 1 )
         !
-        conv(1:nvec) = (  res_norm < ethr  )
+!        conv(1:nvec) = (  res_norm < ethr )
         !
-     ELSEWHERE
+!     ELSEWHERE
         !
-        conv(1:nvec) = ( res_norm < empty_ethr )
+!        conv(1:nvec) = ( res_norm < empty_ethr )
         !
-     END WHERE
+!     END WHERE
 
-     notcnv = COUNT(.not. conv(:))
+!     notcnv = COUNT(.not. conv(:))
 
      !
      END IF ! idtask.eq.0

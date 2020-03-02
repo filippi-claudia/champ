@@ -341,7 +341,11 @@ contains
           
           call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
           correction = compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, eigenvalues)
-        end select
+          !if (idtask==0) then
+          !  correction= compute_DPR( residues, parameters, eigenvalues_sub, diag_mtx, diag_stx, has_converged)
+          !end if
+        
+	end select
 
         if (idtask==0) then 
 
@@ -621,13 +625,14 @@ contains
     integer :: i, k, m
     integer, PARAMETER :: kmax = 5
 
+    write(6,'(''DAV: JD Start     : '')')
     correction = 0.0_dp
     r = -residues - compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, correction, parameters)
     p = r
     rnorms_old = norm2(r,1)
 
     do k= 1, kmax
-
+      write(6,'(''DAV: JD iter   : '', I10)') k
       Ap = compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, p, parameters)
 
       do i=1, size(residues,2)
@@ -688,18 +693,22 @@ contains
        end function fun_stx_gemv
 
     end interface
-    
+
+
     real( dp), dimension( parameters%nparm, size(x,2)) :: papx
     integer :: i
 
+     write(6,'(''DAV: PAPx start     : '')')
     allocate(tmp_vects(parameters%nparm,size(x,2)))
 
     ! project the x vector using the ritz vects
     ! px = (I-uu^\dagger) x
+    write(6,'(''DAV: PAPx proj1     : '')')
     tmp_vects = project_vects(ritz_vectors,x)
 
     ! form the H and S product and compute 
     ! (H - lambda S) px
+    write(6,'(''DAV: PAPx gemv     : '')')
     mtx_tmp = fun_mtx_gemv( parameters, tmp_vects)
     stx_tmp = fun_stx_gemv( parameters, tmp_vects)
     do i=1,size(x,2)
@@ -707,6 +716,7 @@ contains
     end do
 
     ! px = (I-uu^\dagger) x
+    write(6,'(''DAV: PAPx proj2     : '')')
     papx = project_vects(ritz_vectors,tmp_vects)
 
     deallocate(tmp_vects)
