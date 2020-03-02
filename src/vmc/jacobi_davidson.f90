@@ -341,7 +341,7 @@ contains
           call MPI_BCAST(residues, parameters%nparm * size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
           call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
           call MPI_BCAST( has_converged, parameters%lowest, MPI_LOGICAL, 0, MPI_COMM_WORLD, ier)
-          
+
           correction = compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, eigenvalues_sub, has_converged)          
         end select
 
@@ -644,9 +644,10 @@ contains
 
     allocate(rnorms_old(not_cnv))
     allocate(rnorms_new(not_cnv))
-
+    
+    write( 6,'(''DAV : Sort data'')')
     k = 1
-    do i=1,size(residues,2)
+    do i=1,size(has_converged)
       if (.not. has_converged(i)) then
         ritz_vectors_sorted(:,k) = ritz_vectors(:,i)
         residues_sorted(:,k) = residues(:,i)
@@ -662,17 +663,18 @@ contains
     rnorms_old = norm2(r,1)
 
     do k= 1, kmax
-      
-      Ap = compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted, p, parameters)
+      write(6,'(''DAV: GJD inner iteration     : '', I10)') k
 
+      Ap = compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted, p, parameters)
+      write( 6,'(''r'')')
       do i=1, not_cnv
         alpha  = rnorms_old(i) / dot_product(p(:,i), Ap(:,i))
         correction(:,i) = correction(:,i) + alpha * p(:,i)
         r(:,i) = r(:,i) - alpha * p(:,i)
       end do
-
+      write( 6,'(''DAV : norm'')')
       rnorms_new = norm2(r,1)
-
+      write( 6,'(''DAV : p'')')
       do i=1,not_cnv
         p(:,i) = r(:,i) + rnorms_new(i)/rnorms_old(i) * p(:,i)
       end do
