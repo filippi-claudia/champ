@@ -343,7 +343,7 @@ contains
           call MPI_BCAST(residues, parameters%nparm * size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
           call MPI_BCAST(eigenvalues_sub, parameters%basis_size, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
 
-          correction = compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, eigenvalues_sub)          
+          correction = compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, eigenvalues_sub, has_converged)          
         end select
 
 
@@ -557,7 +557,7 @@ contains
 
 
   function compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, & 
-             eigenvalues) result( correction)
+             eigenvalues, has_converged) result( correction)
          
     !> Compute the correction vector using the GJD method for a matrix free
     !> diagonalization. We follow the notation of:
@@ -576,6 +576,7 @@ contains
     real( dp), dimension( :, :), intent( in) :: ritz_vectors
     real( dp), dimension( :, :), intent( in) :: residues
     real( dp), dimension( :),    intent( in) :: eigenvalues 
+    logical,  dimension(:), intent(in) :: has_converged
 
     ! Function to compute the target matrix on the fly
     interface
@@ -614,6 +615,12 @@ contains
     ! local variables
     !
     real( dp), dimension( parameters%nparm, size(residues,2)) :: correction
+
+    real( dp), allocatable, dimension( :,:) :: ritz_vectors_sorted
+    real( dp), allocatable, dimension( :,:) :: residues_sorted
+    real( dp), allocatable, dimension( :) :: eigenvalues_sorted
+    
+
     real( dp), allocatable, dimension( :,:) :: Ap
     real( dp), allocatable, dimension( :,:) :: r
     real( dp), allocatable, dimension( :,:) :: p
@@ -623,25 +630,43 @@ contains
 
     integer :: i, k, m
     integer, PARAMETER :: kmax = 5
+    integer :: not_cnv
 
-    allocate(Ap(parameters%nparm, size(residues,2)))
-    allocate(r(parameters%nparm, size(residues,2)))
-    allocate(p(parameters%nparm, size(residues,2)))
+    not_cnv = count( .not. has_converged(:) )
+    
+    allocate(ritz_vectors_sorted(parameters%nparm,not_cnv))
+    allocate(residues_sorted(parameters%nparm,not_cnv))
 
-    allocate(rnorms_old(size(residues,2)))
-    allocate(rnorms_new(size(residues,2)))
+    allocate(eigenvalues_sorted(not_cnv))
 
+    allocate(Ap(parameters%nparm, not_cnv))
+    allocate(r(parameters%nparm, not_cnv))
+    allocate(p(parameters%nparm, not_cnv))
+
+    allocate(rnorms_old(not_cnv))
+    allocate(rnorms_new(not_cnv))
+
+    k = 1
+    do i=1,size(residues,2)
+      if (.not. has_converged(i)) then
+        ritz_vectors_sorted(:,k) = ritz_vectors(:,i)
+        residues_sorted(:,k) = residues(:,i)
+        eigenvalues_sorted(k) = eigenvalues(i)
+        k = k +1
+      end if
+    end do
 
     correction = 0.0_dp
-    r = - residues - compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, correction, parameters)
+    r = - residues - compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted,  &
+      correction(:,:not_cnv), parameters)
     p = r
     rnorms_old = norm2(r,1)
 
     do k= 1, kmax
-      ! write(6,'(''DAV: inner JD iter   : '', I10)') k
-      Ap = compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, p, parameters)
+      
+      Ap = compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted, p, parameters)
 
-      do i=1, size(residues,2)
+      do i=1, not_cnv
         alpha  = rnorms_old(i) / dot_product(p(:,i), Ap(:,i))
         correction(:,i) = correction(:,i) + alpha * p(:,i)
         r(:,i) = r(:,i) - alpha * p(:,i)
@@ -649,7 +674,7 @@ contains
 
       rnorms_new = norm2(r,1)
 
-      do i=1,size(residues,2)
+      do i=1,not_cnv
         p(:,i) = r(:,i) + rnorms_new(i)/rnorms_old(i) * p(:,i)
       end do
 
@@ -660,6 +685,10 @@ contains
     deallocate(Ap)
     deallocate(r)
     deallocate(p)
+
+    deallocate(ritz_vectors_sorted)
+    deallocate(residues_sorted)
+    deallocate(eigenvalues_sorted)
 
     deallocate(rnorms_old)
     deallocate(rnorms_new)
