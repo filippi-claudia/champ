@@ -627,7 +627,7 @@ contains
     real( dp), allocatable, dimension(:) :: rnorms_new
     real( dp) :: alpha
 
-    integer :: i, k, m
+    integer :: i, j, k, m
     integer, PARAMETER :: kmax = 5
     integer :: not_cnv
 
@@ -645,7 +645,6 @@ contains
     allocate(rnorms_old(not_cnv))
     allocate(rnorms_new(not_cnv))
     
-    write( 6,'(''DAV : Sort data'')')
     k = 1
     do i=1,size(has_converged)
       if (.not. has_converged(i)) then
@@ -662,21 +661,31 @@ contains
     p = r
     rnorms_old = norm2(r,1)
 
+    
     do k= 1, kmax
       write(6,'(''DAV: GJD inner iteration     : '', I10)') k
-
+      write( 6, '(''DAV: GJD inner resd'',1000f12.5)')( rnorms_old( j), j= 1,not_cnv)
+     
       Ap = compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted, p, parameters)
-      write( 6,'(''r'')')
+     
       do i=1, not_cnv
         alpha  = rnorms_old(i) / dot_product(p(:,i), Ap(:,i))
+
         correction(:,i) = correction(:,i) + alpha * p(:,i)
+
         r(:,i) = r(:,i) - alpha * p(:,i)
       end do
-      write( 6,'(''DAV : norm'')')
+
       rnorms_new = norm2(r,1)
-      write( 6,'(''DAV : p'')')
+
       do i=1,not_cnv
+        write( 6, '(''DAV: GJD norm p'',1000f12.5)') norm2(p(:,i))
+        write( 6, '(''DAV: GJD norm r'',1000f12.5)') norm2(r(:,i))
+        write( 6, '(''DAV: GJD rnorm_new'',1000f12.5)') rnorms_new(i)
+        write( 6, '(''DAV: GJD rnorm_old'',1000f12.5)') rnorms_old(i)
         p(:,i) = r(:,i) + rnorms_new(i)/rnorms_old(i) * p(:,i)
+        write( 6, '(''DAV: GJD norm p'',1000f12.5)') norm2(p(:,i))
+
       end do
 
       rnorms_old = rnorms_new
