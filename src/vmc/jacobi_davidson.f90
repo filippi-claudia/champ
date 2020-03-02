@@ -331,8 +331,8 @@ contains
           if (idtask==0) then
             correction= compute_DPR( residues, parameters, eigenvalues_sub, diag_mtx, diag_stx, has_converged)
           end if
-        case("GJD")
 
+        case("GJD")
           if (i==1) then
             if (idtask>0) then 
               allocate(ritz_vectors(parameters%nparm,size_update))
@@ -341,6 +341,7 @@ contains
           
           call MPI_BCAST(ritz_vectors, parameters%nparm * size_update, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
           correction = compute_GJD( fun_mtx_gemv, fun_stx_gemv, parameters, ritz_vectors, residues, eigenvalues)
+          
         end select
 
         if (idtask==0) then 
