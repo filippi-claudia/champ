@@ -411,7 +411,20 @@
    private
    public   :: da_energy_ave, da_energy_err
    save
-end module force_fin
+ end module force_fin
+
+ module force_mat_n
+   !> Arguments: force_o
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'sr.h'
+
+   real(dp) :: force_o(6*MCENT,MCONF)
+
+   private
+   public   ::  force_o 
+   save
+ end module force_mat_n  
 
  module ghostatom
    !> Arguments: newghostype, nghostcent
@@ -454,3 +467,5 @@ end module force_fin
    public   ::  cjas1, cjas2
    save
  end module jaspar1
+
+

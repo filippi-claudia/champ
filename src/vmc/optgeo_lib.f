@@ -92,14 +92,15 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use da_energy_now, only: da_energy, da_psi
+      use force_mat_n, only: force_o
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'sr.h'
 
 
-      common /force_mat_n/ force_o(6*MCENT,MCONF)
 
       ii=0
       do 10 i=1,ncent

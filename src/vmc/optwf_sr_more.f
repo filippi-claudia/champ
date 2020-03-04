@@ -499,7 +499,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use force_fin, only: da_energy_ave, da_energy_err
+      use force_mat_n, only: force_o
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
@@ -512,7 +514,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
  
-      common /force_mat_n/ force_o(6*MCENT,MCONF)
 
       common /mpiconf/ idtask,nproc
 
