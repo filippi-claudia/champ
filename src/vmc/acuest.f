@@ -15,7 +15,9 @@ c routine to accumulate estimators for energy etc.
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estpsi, only: apsi, aref, detref
       use estsig, only: ecm21s, ecum1s
+      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -46,7 +48,6 @@ c routine to accumulate estimators for energy etc.
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-      common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad)
      &,ekin(nrad),ekin2(nrad)
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)

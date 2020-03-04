@@ -299,6 +299,25 @@
    save
  end module estsig
 
+ module estsum
+  !> Arguments: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+  use precision_kinds, only: dp
+  include 'force.h'
+  include 'mstates.h'
+
+  real(dp) :: acc
+  real(dp) :: esum(MSTATES,MFORCE)
+  real(dp) :: esum1(MSTATES)
+  real(dp) :: pesum(MSTATES)
+  real(dp) :: r2sum
+  real(dp) :: tjfsum(MSTATES)
+  real(dp) :: tpbsum(MSTATES)
+
+  private
+  public   :: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+  save
+ end module estsum
+
  module estpsi
    !> Arguments: apsi, aref, detref
    use precision_kinds, only: dp
@@ -379,4 +398,7 @@
    real(dp) :: cjas1(MWF)
    real(dp) :: cjas2(MWF)
 
+   private
+   public   ::  cjas1, cjas2
+   save
  end module jaspar1

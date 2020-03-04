@@ -7,7 +7,9 @@ c written by Claudia Filippi
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estpsi, only: apsi, aref, detref
       use estsig, only: ecm21s, ecum1s
+      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -24,7 +26,6 @@ c written by Claudia Filippi
 
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
 
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
 

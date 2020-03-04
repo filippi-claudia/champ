@@ -7,7 +7,9 @@ c Written by Claudia Filippi
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
       use estpsi, only: apsi, aref, detref
       use estsig, only: ecm21s, ecum1s
+      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -29,7 +31,6 @@ c Written by Claudia Filippi
       common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)
       common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
-      common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
 
 
       logical wid

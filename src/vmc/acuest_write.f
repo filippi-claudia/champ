@@ -7,7 +7,9 @@ c routine to write out estimators for energy etc.
 
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -27,7 +29,6 @@ c routine to write out estimators for energy etc.
       common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)
       common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
-      common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
 
       dimension enow(MSTATES,MFORCE)
 

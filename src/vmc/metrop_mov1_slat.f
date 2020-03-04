@@ -18,7 +18,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
 
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -54,7 +56,6 @@ c    Last 2 are prob. best
 
       common /contr3/ mode
       common /const2/ deltar,deltat
-      common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
       common /stats/ rejmax
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
