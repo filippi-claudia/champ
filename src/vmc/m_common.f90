@@ -18,7 +18,6 @@
  module atom
    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
    use precision_kinds, only: dp  
-
    include 'vmc.h'
 
    real(dp) :: cent( 3, MCENT)
@@ -237,7 +236,6 @@
  end module dets_equiv
 
  module distances_sav
-
   !> Arguments: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
   use precision_kinds, only: dp
   include 'vmc.h'
@@ -387,6 +385,33 @@
    public   :: iforce_analy 
    save
  end module force_analy 
+
+ module forcest
+   !> Arguments: fcm2, fcum
+   use precision_kinds, only: dp
+   include 'force.h'
+   include 'mstates.h'
+
+   real(dp) :: fcm2(MSTATES,MFORCE)
+   real(dp) :: fcum(MSTATES,MFORCE)
+
+   private
+   public   ::  fcm2, fcum
+   save
+ end module forcest
+
+ module forcestr
+   !> Arguments: delc
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'force.h'
+ 
+   real(dp) :: delc(3,MCENT,MFORCE)
+ 
+   private
+   public   ::  delc 
+   save
+ end module forcestr
 
  module force_dmc
    !> Arguments: itausec, nwprod

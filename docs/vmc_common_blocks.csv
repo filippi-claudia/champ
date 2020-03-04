@@ -45,10 +45,10 @@ ewald_basis,4,DONE
 force_analy,35,DONE
 force_dmc,1,DONE
 force_fin,4,DONE
-force_mat_n,2,Todo
-forcepar,20,Todo
-forcest,6,Todo
-forcestr,8,Todo
+force_mat_n,2,DONE
+forcepar,20, DONE
+forcest,6, DONE
+forcestr,8,DONE
 forcewt,8,Todo
 gauss_ecp,2,Todo
 ghostatom,15,DONE

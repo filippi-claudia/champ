@@ -19,7 +19,9 @@ c job where it left off
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use forcepar, only: deltot, istrech, nforce
+      use forcest, only: fcm2, fcum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -48,7 +50,6 @@ c job where it left off
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
-      common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)
       common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
       common /stats/ rejmax

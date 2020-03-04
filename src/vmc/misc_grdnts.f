@@ -145,7 +145,9 @@ c   calculated using correlated smapling.
       subroutine finwrt_grdnts_zmat(forces_ave,forces_err)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
       implicit real*8(a-h,o-z)
+
 
       include 'force.h'
       include 'vmc.h'
@@ -157,7 +159,6 @@ c   calculated using correlated smapling.
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
-      common /forcestr/ delc(3,MCENT,MFORCE)
       dimension forces_ave(MFORCE),forces_err(MFORCE)
       dimension grdnts_ave(MFORCE),grdnts_err(MFORCE)     
 
@@ -298,7 +299,9 @@ c   Subroutine which calculates the displacement for energy gradients
 c   using Z matrix (internal) coordinates
       subroutine grdzmat_displ(k_in,ic_in,ia_in,delfactor)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use forcestr, only: delc
       implicit real*8(a-h,o-z)
+
       include 'force.h'
       include 'vmc.h'
 
@@ -309,7 +312,6 @@ c   using Z matrix (internal) coordinates
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
-      common /forcestr/ delc(3,MCENT,MFORCE)
       dimension czint_t1(3,MCENT),czcart_t1(3,MCENT)
 
 
@@ -382,7 +384,9 @@ c   from energy differences  calculated using correlated smapling.
       subroutine finwrt_diaghess_zmat(forces_ave,forces_err)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
       implicit real*8(a-h,o-z)
+
 
       include 'force.h'
       include 'vmc.h'
@@ -394,7 +398,6 @@ c   from energy differences  calculated using correlated smapling.
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
-      common /forcestr/ delc(3,MCENT,MFORCE)
       dimension forces_ave(MFORCE),forces_err(MFORCE)
       dimension diaghess_ave(MFORCE),diaghess_err(MFORCE)     
 

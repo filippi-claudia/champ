@@ -17,7 +17,9 @@ c routine to accumulate estimators for energy etc.
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use forcepar, only: deltot, istrech, nforce
+      use forcest, only: fcm2, fcum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -40,7 +42,6 @@ c routine to accumulate estimators for energy etc.
       include 'optorb_cblk.h'
       include 'pseudo.h'
 
-      common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)
       common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar

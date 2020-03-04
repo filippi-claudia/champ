@@ -14,7 +14,9 @@ c rigidly with that nucleus
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use force_dmc, only: itausec, nwprod
       use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -26,7 +28,6 @@ c rigidly with that nucleus
       include 'force.h'
       include 'pcm.h'
 
-      common /forcestr/ delc(3,MCENT,MFORCE)
 
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype

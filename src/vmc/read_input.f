@@ -1276,14 +1276,15 @@ C$INPUT forces_displace inp
 CKEYDOC Displacement parameters and wave function types
 
       use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /forcestr/ delc(3,MCENT,MFORCE)
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
@@ -2011,7 +2012,9 @@ c     Written by Omar Valsson
 
 
       use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -2022,7 +2025,6 @@ c     Written by Omar Valsson
      &                  igrdcidx(MFORCE)
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
-      common /forcestr/ delc(3,MCENT,MFORCE)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       call p2gti('atoms:natom',ncent,1)
@@ -2078,7 +2080,9 @@ CKEYDOC atoms energy gradients are to be calculated for.
 c      Written by Omar Valsson.
 
       use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -2089,7 +2093,6 @@ c      Written by Omar Valsson.
      &                  igrdcidx(MFORCE)
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
-      common /forcestr/ delc(3,MCENT,MFORCE)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),         
      &                 czcart_ref(3,3),izcmat(3,MCENT),
@@ -2289,13 +2292,14 @@ C$INPUT efield i i a=<input>
 c-----------------------------------------------------------------------
       subroutine set_displace_zero(nforce_tmp)
       use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'pcm.h'
 
-      common /forcestr/ delc(3,MCENT,MFORCE)
       common /pcm_force/ sch_s(MCHS,MFORCE)
 
       call p2gti('atoms:natom',ncent,1)
