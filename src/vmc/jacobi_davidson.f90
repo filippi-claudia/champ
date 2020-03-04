@@ -656,23 +656,21 @@ contains
     end do
 
     correction = 0.0_dp
-    r = - residues - compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted,  &
+    r = residues - get_projection(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted,  &
       correction(:,:not_cnv), parameters)
     p = r
     rnorms_old = norm2(r,1)**2
 
-    
+
     do k= 1, kmax
       write(6,'(''DAV: GJD inner iteration     : '', I10)') k
       write( 6, '(''DAV: GJD inner resd'',1000f12.5)')( rnorms_old( j), j= 1,not_cnv)
      
-      Ap = compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted, p, parameters)
+      Ap = get_projection(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted, p, parameters)
      
       do i=1, not_cnv
         alpha  = rnorms_old(i) / dot_product(p(:,i), Ap(:,i))
-
         correction(:,i) = correction(:,i) + alpha * p(:,i)
-
         r(:,i) = r(:,i) - alpha * p(:,i)
       end do
 
@@ -685,7 +683,6 @@ contains
         write( 6, '(''DAV: GJD rnorm_old'',1000f12.5)') rnorms_old(i)
         p(:,i) = r(:,i) + rnorms_new(i)/rnorms_old(i) * p(:,i)
         write( 6, '(''DAV: GJD norm p'',1000f12.5)') norm2(p(:,i))
-
       end do
 
       rnorms_old = rnorms_new
@@ -706,7 +703,7 @@ contains
   end function compute_GJD
 
 
-  function compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, x, parameters) result(papx)
+  function get_projection(fun_mtx_gemv, fun_stx_gemv, eigenvalues, ritz_vectors, x, parameters) result(papx)
 
     type( davidson_parameters)               :: parameters
     real( dp), dimension( :, :), intent( in) :: ritz_vectors
