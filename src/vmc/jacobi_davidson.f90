@@ -677,12 +677,7 @@ contains
       rnorms_new = norm2(r,1)**2
 
       do i=1,not_cnv
-        write( 6, '(''DAV: GJD norm p'',1000f12.5)') norm2(p(:,i))
-        write( 6, '(''DAV: GJD norm r'',1000f12.5)') norm2(r(:,i))
-        write( 6, '(''DAV: GJD rnorm_new'',1000f12.5)') rnorms_new(i)
-        write( 6, '(''DAV: GJD rnorm_old'',1000f12.5)') rnorms_old(i)
         p(:,i) = r(:,i) + rnorms_new(i)/rnorms_old(i) * p(:,i)
-        write( 6, '(''DAV: GJD norm p'',1000f12.5)') norm2(p(:,i))
       end do
 
       rnorms_old = rnorms_new
@@ -771,7 +766,7 @@ contains
     deallocate(mtx_tmp)
     deallocate(stx_tmp)
 
-  end function compute_PAPx
+  end function get_projection
 
 
   function project_vects(ritz_vectors, x) result(px)
