@@ -286,6 +286,19 @@
    save
  end module estcum
  
+ module estsig
+   !> Arguments: ecm21s, ecum1s
+   use precision_kinds, only: dp
+   include 'mstates.h'
+
+   real(dp) :: ecm21s(MSTATES)
+   real(dp) :: ecum1s(MSTATES)
+
+   private
+   public   ::  ecm21s, ecum1s
+   save
+ end module estsig
+
  module estpsi
    !> Arguments: apsi, aref, detref
    use precision_kinds, only: dp
@@ -366,7 +379,4 @@
    real(dp) :: cjas1(MWF)
    real(dp) :: cjas2(MWF)
 
-   private
-   public   ::  cjas1, cjas2
-   save
  end module jaspar1

@@ -11,7 +11,9 @@ c job where it left off
 
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use estsig, only: ecm21s, ecum1s
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -32,7 +34,6 @@ c job where it left off
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
-      common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
       common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)
       common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
