@@ -351,6 +351,21 @@
    save
  end module est2cm
 
+ module ewald
+   !> Arguments: b_coul, b_coul_sim, y_coul, y_coul_sim
+   use precision_kinds, only: dp
+   include 'ewald.h'
+
+   real(dp) :: b_coul(NCOEFX)
+   real(dp) :: b_coul_sim(NCOEFX)
+   real(dp) :: y_coul(NGNORMX)
+   real(dp) :: y_coul_sim(NGNORM_SIMX)
+
+   private
+   public   ::  b_coul, b_coul_sim, y_coul, y_coul_sim
+   save
+ end module ewald
+
  module force_analy 
    !> Arguments: iforce_analy 
 

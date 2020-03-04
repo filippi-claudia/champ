@@ -4,7 +4,10 @@ c Written by Cyrus Umrigar
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -34,13 +37,6 @@ c    &,nlrad(MCTYPE)
      &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
      &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
      &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
       common /test/ f,vbare_coul(NGNORM_SIM_BIGX),vbare_jas(NGNORM_SIM_BIGX)
      &,vbare_psp(NGNORM_BIGX)
@@ -1760,7 +1756,10 @@ c Written by Cyrus Umrigar
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -1778,13 +1777,6 @@ c Written by Cyrus Umrigar
      &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
      &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
      &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
       dimension r(3)
 
@@ -1819,7 +1811,10 @@ c Written by Cyrus Umrigar
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -1837,13 +1832,6 @@ c Written by Cyrus Umrigar
      &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
      &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
      &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
       dimension r(3)
 
@@ -1883,7 +1871,10 @@ c Written by Cyrus Umrigar
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -1902,13 +1893,6 @@ c Written by Cyrus Umrigar
      &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
      &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
      &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
@@ -1968,7 +1952,10 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -1987,13 +1974,6 @@ c Written by Cyrus Umrigar
      &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
      &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
      &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
