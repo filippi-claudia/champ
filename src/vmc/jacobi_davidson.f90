@@ -455,12 +455,14 @@ contains
 
     ! Free memory
     deallocate( V, mtxV, stxV)
-    deallocate(correction, ritz_vectors)
-    if (idtask == 0) then  
-      deallocate( eigenvalues_sub)
+    call check_deallocate_matrix(correction)
+    call check_deallocate_matrix(ritz_vectors)
+    call check_deallocate_vector( eigenvalues_sub)
+    call check_deallocate_matrix( residues )
+
+    if (idtask == 0) then    
       deallocate( eigenvectors_sub)
       deallocate( diag_mtx, diag_stx)
-      deallocate( residues )
       deallocate( lambda, tmp_res_array)
       deallocate( mtx_proj)
       call check_deallocate_matrix( stx_proj)
