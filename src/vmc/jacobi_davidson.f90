@@ -628,7 +628,7 @@ contains
     real( dp) :: alpha
 
     integer :: i, j, k, m
-    integer, PARAMETER :: kmax = 5
+    integer, PARAMETER :: kmax = 2
     integer :: not_cnv
 
     not_cnv = count( .not. has_converged(:) )
@@ -656,7 +656,7 @@ contains
     end do
 
     correction = 0.0_dp
-    r = residues - get_projection(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted,  &
+    r = -residues_sorted - get_projection(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted,  &
       correction(:,:not_cnv), parameters)
     p = r
     rnorms_old = norm2(r,1)**2
