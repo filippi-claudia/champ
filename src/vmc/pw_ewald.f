@@ -6,7 +6,9 @@ c Written by Cyrus Umrigar
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
 
+      use ewald_basis, only: vps_basis_fourier
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -40,7 +42,6 @@ c    &,nlrad(MCTYPE)
 c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
       common /test/ f,vbare_coul(NGNORM_SIM_BIGX),vbare_jas(NGNORM_SIM_BIGX)
      &,vbare_psp(NGNORM_BIGX)
-      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
 
       common /tempor/ dist_nn
 
@@ -1216,13 +1217,14 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
+      use ewald_basis, only: vps_basis_fourier
       implicit real*8(a-h,o-z)
+
       complex*16 ti,et,em
 
       include 'ewald.h'
       parameter(NPTS=1001)
 
-      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
       dimension c(*),y(NPTS)
 
 c integrates sin(g*x)*x**i for i=lowest_pow+1 to n+np+lowest_pow and x from 0 to 1
@@ -1290,13 +1292,14 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
+      use ewald_basis, only: vps_basis_fourier
       implicit real*8(a-h,o-z)
+
       complex*16 ti,et,em
 
       include 'ewald.h'
       parameter(NPTS=1001)
 
-      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
       dimension c(*),d(NPX*(NCOEFX+1)),y(NPTS)
 
 c integral of sin(g*x)*x**i for i=1 to np*(n+1)+1 and x from 0 to 1
@@ -1366,13 +1369,14 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
+      use ewald_basis, only: vps_basis_fourier
       implicit real*8(a-h,o-z)
+
       complex*16 ti,et,em
 
       include 'ewald.h'
       parameter(NPTS=1001)
 
-      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
       dimension c(*),d(NPX*(NCOEFX+1)),y(NPTS)
 
 c integral of sin(g*x)*x**i for i=1 to np*(n+1)+1 and x from 0 to 1

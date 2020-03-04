@@ -366,6 +366,18 @@
    save
  end module ewald
 
+ module ewald_basis
+   !> Arguments: vps_basis_fourier
+   use precision_kinds, only: dp
+   include 'ewald.h'
+
+   real(dp) :: vps_basis_fourier(NGNORM_BIGX)
+
+   private
+   public   :: vps_basis_fourier
+   save
+ end module ewald_basis
+
  module force_analy 
    !> Arguments: iforce_analy 
 
