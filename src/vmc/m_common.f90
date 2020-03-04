@@ -413,6 +413,20 @@
    save
  end module forcestr
 
+ module forcewt
+   !> Arguments: wcum, wsum
+   use precision_kinds, only: dp
+   include 'mstates.h'
+   include 'force.h'
+
+   real(dp) :: wcum(MSTATES,MFORCE)
+   real(dp) :: wsum(MSTATES,MFORCE)
+
+   private
+   public   ::  wcum, wsum 
+   save
+end module forcewt
+
  module force_dmc
    !> Arguments: itausec, nwprod
    use precision_kinds, only: dp

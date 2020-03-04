@@ -49,7 +49,7 @@ force_mat_n,2,DONE
 forcepar,20, DONE
 forcest,6, DONE
 forcestr,8,DONE
-forcewt,8,Todo
+forcewt,8,DONE
 gauss_ecp,2,Todo
 ghostatom,15,DONE
 gradhess_all,4,Todo

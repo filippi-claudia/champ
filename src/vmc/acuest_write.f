@@ -10,7 +10,9 @@ c routine to write out estimators for energy etc.
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use forcepar, only: deltot, istrech, nforce
       use forcest, only: fcm2, fcum
+      use forcewt, only: wcum, wsum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -29,7 +31,6 @@ c routine to write out estimators for energy etc.
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 
-      common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
 
       dimension enow(MSTATES,MFORCE)

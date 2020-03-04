@@ -13,7 +13,9 @@ c routine to print out final results
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use forcepar, only: deltot, istrech, nforce
       use forcest, only: fcm2, fcum
+      use forcewt, only: wcum, wsum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -33,7 +35,6 @@ c routine to print out final results
       include 'optci.h'
       parameter (one=1.d0,half=.5d0)
 
-      common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
       common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar

@@ -15,7 +15,9 @@ c job where it left off
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use forcepar, only: deltot, istrech, nforce
       use forcest, only: fcm2, fcum
+      use forcewt, only: wcum, wsum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -38,7 +40,6 @@ c job where it left off
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-      common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
 

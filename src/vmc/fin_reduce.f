@@ -7,7 +7,9 @@ c MPI version written by Claudia Filippi
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use forcepar, only: deltot, istrech, nforce
+      use forcewt, only: wcum, wsum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -19,7 +21,6 @@ c MPI version written by Claudia Filippi
       include 'mpif.h'
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)

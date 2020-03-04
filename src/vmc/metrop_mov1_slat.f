@@ -20,7 +20,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use elec, only: ndn, nup
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use forcepar, only: deltot, istrech, nforce
+      use forcewt, only: wcum, wsum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -64,7 +66,6 @@ c    Last 2 are prob. best
       common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
  
 c TMP
       common /multislater/ detu(MDET),detd(MDET)
