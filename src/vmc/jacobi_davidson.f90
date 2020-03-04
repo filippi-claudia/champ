@@ -659,7 +659,7 @@ contains
     r = - residues - compute_PAPx(fun_mtx_gemv, fun_stx_gemv, eigenvalues_sorted, ritz_vectors_sorted,  &
       correction(:,:not_cnv), parameters)
     p = r
-    rnorms_old = norm2(r,1)
+    rnorms_old = norm2(r,1)**2
 
     
     do k= 1, kmax
@@ -676,7 +676,7 @@ contains
         r(:,i) = r(:,i) - alpha * p(:,i)
       end do
 
-      rnorms_new = norm2(r,1)
+      rnorms_new = norm2(r,1)**2
 
       do i=1,not_cnv
         write( 6, '(''DAV: GJD norm p'',1000f12.5)') norm2(p(:,i))
