@@ -312,6 +312,17 @@ contains
       
       !! ENDIF ID TASK
       end if 
+
+      ! Check for convergence
+      ! all the procs need to know when to exit
+      call MPI_BCAST( has_converged, parameters%lowest, MPI_LOGICAL, 0, MPI_COMM_WORLD, ier)
+      if( all(has_converged)) then
+        iters= i
+        if (idtask==0) then
+          write( 6, '(''DAV: roots are converged'')') 
+        endif
+        exit outer_loop
+      end if
       
       ! Append correction vectors
       if( parameters%basis_size + size_update <= nvecx) then 
@@ -370,17 +381,6 @@ contains
           update_proj = .false.
         end if
 
-      end if
-
-      ! Check for convergence
-      ! all the procs need to know when to exit
-      call MPI_BCAST( has_converged, parameters%lowest, MPI_LOGICAL, 0, MPI_COMM_WORLD, ier)
-      if( all(has_converged)) then
-        iters= i
-        if (idtask==0) then
-          write( 6, '(''DAV: roots are converged'')') 
-        endif
-        exit outer_loop
       end if
 
       ! broadcast the basis vector
