@@ -476,14 +476,15 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use force_fin, only: da_energy_ave, da_energy_err
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'vmc.h'
       include 'force.h'
 
       common /force_analy/ iforce_analy
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
 
       if(iforce_analy.eq.0)return
 
@@ -497,7 +498,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
-      implicit real*8 (a-h,o-z)
+      use force_fin, only: da_energy_ave, da_energy_err
+      implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'sr.h'
@@ -505,7 +508,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'force.h'
       include 'mstates.h'
 
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf

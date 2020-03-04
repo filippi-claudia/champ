@@ -40,14 +40,15 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         use coords_int
         use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
-        implicit real*8(a-h,o-z)
+        use force_fin, only: da_energy_ave, da_energy_err
+      implicit real*8(a-h,o-z)
+
       
         include 'vmc.h'
         include 'force.h'
         
         common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-        common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
-        common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
+          common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                   czcart_ref(3,3),izcmat(3,MCENT),
      &                   izmatrix
         

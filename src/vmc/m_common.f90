@@ -400,6 +400,19 @@
    save
  end module force_dmc
 
+ module force_fin
+   !> Arguments: da_energy_ave, da_energy_err
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: da_energy_ave(3,MCENT)
+   real(dp) :: da_energy_err(3)
+
+   private
+   public   :: da_energy_ave, da_energy_err
+   save
+end module force_fin
+
  module ghostatom
    !> Arguments: newghostype, nghostcent
    use precision_kinds, only: dp

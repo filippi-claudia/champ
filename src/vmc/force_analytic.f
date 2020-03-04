@@ -358,7 +358,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine force_analy_fin(wcum,iblk,eave)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use force_fin, only: da_energy_ave, da_energy_err
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
@@ -368,7 +370,6 @@ c-----------------------------------------------------------------------
 
       common /force_analy/ iforce_analy
 
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
