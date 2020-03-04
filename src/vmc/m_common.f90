@@ -388,6 +388,18 @@
    save
  end module force_analy 
 
+ module force_dmc
+   !> Arguments: itausec, nwprod
+   use precision_kinds, only: dp
+
+   integer  :: itausec
+   integer  :: nwprod
+
+   private
+   public   ::   itausec, nwprod
+   save
+ end module force_dmc
+
  module ghostatom
    !> Arguments: newghostype, nghostcent
    use precision_kinds, only: dp

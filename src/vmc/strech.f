@@ -12,7 +12,9 @@ c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use force_dmc, only: itausec, nwprod
       implicit real*8(a-h,o-z)
+
 
       character*12 mode
 
@@ -24,7 +26,6 @@ c rigidly with that nucleus
 
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcestr/ delc(3,MCENT,MFORCE)
-      common /force_dmc/ itausec,nwprod
 
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
