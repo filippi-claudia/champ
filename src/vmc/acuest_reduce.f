@@ -8,7 +8,9 @@ c Written by Claudia Filippi
       use estpsi, only: apsi, aref, detref
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -26,7 +28,6 @@ c Written by Claudia Filippi
 
 
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
 
       common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)
       common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)

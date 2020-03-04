@@ -19,7 +19,9 @@ c and sa, pa, da asymptotic functions
      &vnew, vold, xnew, xold
       use jaspar1, only: cjas1, cjas2
       use elec, only: ndn, nup
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -42,7 +44,6 @@ c and sa, pa, da asymptotic functions
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       character*25 fmt

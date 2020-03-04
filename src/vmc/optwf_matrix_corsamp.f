@@ -3,7 +3,9 @@ c written by Claudia Filippi
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -23,7 +25,6 @@ c written by Claudia Filippi
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)

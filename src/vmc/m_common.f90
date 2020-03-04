@@ -426,6 +426,20 @@
    save
  end module force_mat_n  
 
+ module forcepar
+   !> Arguments: deltot, istrech, nforce
+   use precision_kinds, only: dp
+   include 'force.h'
+
+   real(dp) :: deltot(MFORCE)
+   integer  :: istrech
+   integer  :: nforce
+
+   private
+   public   ::  deltot, istrech, nforce 
+   save
+ end module forcepar
+
  module ghostatom
    !> Arguments: newghostype, nghostcent
    use precision_kinds, only: dp
@@ -467,5 +481,3 @@
    public   ::  cjas1, cjas2
    save
  end module jaspar1
-
-

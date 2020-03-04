@@ -13,7 +13,9 @@ c rigidly with that nucleus
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use force_dmc, only: itausec, nwprod
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
 
       character*12 mode
@@ -24,7 +26,6 @@ c rigidly with that nucleus
       include 'force.h'
       include 'pcm.h'
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcestr/ delc(3,MCENT,MFORCE)
 
 

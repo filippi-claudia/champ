@@ -37,7 +37,9 @@ c and Anthony Scemema
 
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -106,7 +108,6 @@ c and Anthony Scemema
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
@@ -1274,13 +1275,14 @@ c-----------------------------------------------------------------------
 C$INPUT forces_displace inp
 CKEYDOC Displacement parameters and wave function types
 
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcestr/ delc(3,MCENT,MFORCE)
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -1657,12 +1659,13 @@ c Set the jastrow to be equal
 c----------------------------------------------------------------------
       subroutine inputforces
 c Set all force displacements to zero
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       call p2gti('atoms:natom',ncent,1)
@@ -2007,7 +2010,9 @@ c     Written by Omar Valsson
 
 
 
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -2017,7 +2022,6 @@ c     Written by Omar Valsson
      &                  igrdcidx(MFORCE)
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcestr/ delc(3,MCENT,MFORCE)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
@@ -2073,7 +2077,9 @@ CKEYDOC atoms energy gradients are to be calculated for.
 
 c      Written by Omar Valsson.
 
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -2083,7 +2089,6 @@ c      Written by Omar Valsson.
      &                  igrdcidx(MFORCE)
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcestr/ delc(3,MCENT,MFORCE)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),         
@@ -2283,12 +2288,13 @@ C$INPUT efield i i a=<input>
       end
 c-----------------------------------------------------------------------
       subroutine set_displace_zero(nforce_tmp)
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'pcm.h'
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcestr/ delc(3,MCENT,MFORCE)
       common /pcm_force/ sch_s(MCHS,MFORCE)
 

@@ -84,7 +84,9 @@ c   for cartesian coordinates of atoms from energy differences
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_cart(forces_ave,forces_err)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
       include 'force.h'
       include 'vmc.h'
 
@@ -92,7 +94,6 @@ c   calculated using correlated smapling.
      &                  igrdcidx(MFORCE)
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       dimension forces_ave(MFORCE),forces_err(MFORCE)
       dimension grdnts_ave(MFORCE),grdnts_err(MFORCE)     
 
@@ -143,7 +144,9 @@ c   for Z matrix coordinates of atoms from energy differences
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_zmat(forces_ave,forces_err)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
       include 'force.h'
       include 'vmc.h'
 
@@ -151,7 +154,6 @@ c   calculated using correlated smapling.
      &                  igrdcidx(MFORCE)
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
@@ -379,7 +381,9 @@ c   part of the Hessian for Z matrix coordinates of atoms
 c   from energy differences  calculated using correlated smapling.
       subroutine finwrt_diaghess_zmat(forces_ave,forces_err)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
       include 'force.h'
       include 'vmc.h'
 
@@ -387,7 +391,6 @@ c   from energy differences  calculated using correlated smapling.
      &                  igrdcidx(MFORCE)
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
