@@ -64,6 +64,9 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
     ! eigenvalues of the reduced hamiltonian
   REAL*8, ALLOCATABLE :: hhr(:,:), ssr(:,:)
   REAL*8, ALLOCATABLE :: psi(:,:), hpsi(:,:), spsi(:,:)
+  REAL*8, ALLOCATABLE :: res(:,:)
+  REAL*8, ALLOCATABLE :: res_norm(:)
+
     ! work space, contains psi
     ! the product of H and psi
     ! the product of S and psi
@@ -118,6 +121,8 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
   !
   ALLOCATE( ssr( nvecx, nvecx ), STAT=ierr )
   ALLOCATE( hhr( nvecx, nvecx ), STAT=ierr )
+  ALLOCATE( res(nparmx, nvecx), STAT=ierr )
+  ALLOCATE( res_norm(nvec), STAT=ierr)
   !
   notcnv = nvec
   nbase  = nvec
@@ -183,6 +188,8 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      IF(idtask.eq.0) then
      !
      dav_iter = kter
+     write( 6,'(''REG: -----------------------------'')')
+     write(6,'(''REG: Iteration: '', I10)') kter
      !
      np = 0
      !
@@ -300,7 +307,7 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      !
      CALL rdiaghg( nbase, nvec, hr, sr, nvecx, ew, vr )
      !
-     write(6,'(''LIN_D: EIG '',100e15.6)') (ew(j),j=1,nvec)
+     ! write(6,'(''LIN_D: EIG '',100e15.6)') (ew(j),j=1,nvec)
      IF(ipr.gt.1) then
        do i=1,nbase
          write(6,'(''REG VEC'',100e10.3)') (vr(i,j),j=1,nvec)
@@ -309,19 +316,48 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      !
      ! ... test for convergence
      !
+   !   WHERE( btype(1:nvec) == 1 )
+   !      !
+   !      conv(1:nvec) = ( ( ABS( ew(1:nvec) - e(1:nvec) ) < ethr ) )
+   !      !
+   !   ELSEWHERE
+   !      !
+   !      conv(1:nvec) = ( ( ABS( ew(1:nvec) - e(1:nvec) ) < empty_ethr ) )
+   !      !
+   !   END WHERE
+   !   !
+   !   notcnv = COUNT( .NOT. conv(:) )
+     !
+     e(1:nvec) = ew(1:nvec)
+     
+     CALL DGEMM( 'N', 'N', nparm, nbase, nbase, 1.D0, &
+                    spsi, nparmx, vr, nvecx, 0.D0, res, nparmx )
+     !
+     DO np = 1, nbase
+        !
+        res(:,np) = - ew(np) * res(:,np)
+        !
+     END DO
+     !
+     CALL DGEMM( 'N', 'N', nparm, nbase, nbase, 1.D0, &
+                 hpsi, nparmx, vr, nvecx, 1.D0, res, nparmx )     
+
+     res_norm = norm2(res(:,:nvec),1)
+     write(6,'(''REG: EIG '',100e15.6)') (e(j),j=1,nvec)
+     write(6,'(''REG: RES '',100e15.6)') (res_norm(j),j=1,nvec)
+
      WHERE( btype(1:nvec) == 1 )
         !
-        conv(1:nvec) = ( ( ABS( ew(1:nvec) - e(1:nvec) ) < ethr ) )
+        conv(1:nvec) = (  res_norm < ethr  )
         !
      ELSEWHERE
         !
-        conv(1:nvec) = ( ( ABS( ew(1:nvec) - e(1:nvec) ) < empty_ethr ) )
+        conv(1:nvec) = ( res_norm < empty_ethr )
         !
      END WHERE
-     !
-     notcnv = COUNT( .NOT. conv(:) )
-     !
-     e(1:nvec) = ew(1:nvec)
+
+     notcnv = COUNT(.not. conv(:))
+
      !
      END IF ! idtask.eq.0
      !
