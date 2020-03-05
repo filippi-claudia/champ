@@ -154,7 +154,9 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_orb_fin(wcum,ecum)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -173,7 +175,6 @@ c-----------------------------------------------------------------------
      &de_o(MPARMJ,MXREDUCED,MSTATES),dj_ho(MPARMJ,MXREDUCED,MSTATES)
 
 
-      common /gradhess_mix_jas_orb/  h_mix_jas_orb(2*MPARMJ,MXREDUCED),s_mix_jas_orb(MPARMJ,MXREDUCED)
 
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 

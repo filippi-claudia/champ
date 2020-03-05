@@ -549,6 +549,20 @@ end module forcewt
    save
  end module gradhess_mix_jas_ci
 
+ module gradhess_mix_jas_orb
+   !> Arguments: h_mix_jas_orb, s_mix_jas_orb
+   use precision_kinds, only: dp
+   include 'optorb.h'
+   include 'optjas.h'
+
+   real(dp) :: h_mix_jas_orb(2*MPARMJ,MXREDUCED)
+   real(dp) :: s_mix_jas_orb(MPARMJ,MXREDUCED)
+
+   private
+   public   ::  h_mix_jas_orb, s_mix_jas_orb
+   save
+ end module gradhess_mix_jas_orb
+
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
    use precision_kinds, only: dp
