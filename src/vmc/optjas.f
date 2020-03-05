@@ -641,7 +641,9 @@ c Written by Claudia Filippi
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use gradhess_jas, only: grad_jas, h_jas, s_jas
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -666,7 +668,6 @@ c Written by Claudia Filippi
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /gradhess_jas/ grad_jas(MPARMJ),h_jas(MPARMJ,MPARMJ),s_jas(MPARMJ,MPARMJ)
 
 
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight

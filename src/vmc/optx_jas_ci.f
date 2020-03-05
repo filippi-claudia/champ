@@ -110,7 +110,9 @@ c-----------------------------------------------------------------------
 
       use dets, only: cdet, ndet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
+      use gradhess_jas, only: grad_jas, h_jas, s_jas
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -143,7 +145,6 @@ c-----------------------------------------------------------------------
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
-      common /gradhess_jas/ grad_jas(MPARMJ),h_jas(MPARMJ,MPARMJ),s_jas(MPARMJ,MPARMJ)
       common /gradhess_mix_jas_ci/  h_mix_jas_ci(2*MPARMJ,MXCITERM),s_mix_jas_ci(MPARMJ,MXCITERM)
 
 

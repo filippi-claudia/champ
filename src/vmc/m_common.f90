@@ -521,6 +521,20 @@ end module forcewt
    save
  end module gradhess_ci
 
+ module gradhess_jas
+   !> Arguments: grad_jas, h_jas, s_jas
+   use precision_kinds, only: dp
+   include 'optjas.h'
+ 
+   real(dp) :: grad_jas(MPARMJ)
+   real(dp) :: h_jas(MPARMJ,MPARMJ)
+   real(dp) :: s_jas(MPARMJ,MPARMJ)
+ 
+   private
+   public   ::  grad_jas, h_jas, s_jas
+   save
+ end module gradhess_jas
+
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
    use precision_kinds, only: dp
