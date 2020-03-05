@@ -490,7 +490,6 @@ end module forcewt
    integer  :: necp_power(MGAUSS,MPS_L,MCTYPE)
    integer  :: necp_term(MPS_L,MCTYPE)
  
-   save
    private
    public   ::  ecp_coef, ecp_exponent, necp_power, necp_term
    save
@@ -507,6 +506,20 @@ end module forcewt
    public   :: newghostype, nghostcent
    save
  end module ghostatom
+
+ module gradhess_ci
+   !> Arguments: grad_ci, h_ci, s_ci
+   use precision_kinds, only: dp
+   include 'optci.h'
+
+   real(dp) :: grad_ci(MXCITERM)
+   real(dp) :: h_ci(MXCITERM,MXCIREDUCED)
+   real(dp) :: s_ci(MXCITERM,MXCIREDUCED)
+
+   private
+   public   ::  grad_ci, h_ci, s_ci
+   save
+ end module gradhess_ci
 
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is

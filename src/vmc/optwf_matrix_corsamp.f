@@ -637,7 +637,9 @@ c Solve linear equations
 c-----------------------------------------------------------------------
       subroutine combine_derivatives
 
+      use gradhess_ci, only: grad_ci, h_ci, s_ci
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
@@ -647,7 +649,6 @@ c-----------------------------------------------------------------------
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
 
       common /gradhess_jas/ grad_jas(MPARMJ),h_jas(MPARMJ,MPARMJ),s_jas(MPARMJ,MPARMJ)
-      common /gradhess_ci/  grad_ci(MXCITERM),h_ci(MXCITERM,MXCIREDUCED),s_ci(MXCITERM,MXCIREDUCED)
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
       common /gradhess_mix_jas_ci/  h_mix_jas_ci(2*MPARMJ,MXCITERM),s_mix_jas_ci(MPARMJ,MXCITERM)

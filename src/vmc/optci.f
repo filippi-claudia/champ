@@ -309,7 +309,9 @@ c-----------------------------------------------------------------------
 
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use gradhess_ci, only: grad_ci, h_ci, s_ci
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -326,7 +328,6 @@ c-----------------------------------------------------------------------
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
-      common /gradhess_ci/  grad_ci(MXCITERM),h_ci(MXCITERM,MXCIREDUCED),s_ci(MXCITERM,MXCIREDUCED)
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
 
