@@ -639,7 +639,9 @@ c-----------------------------------------------------------------------
 
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use gradhess_jas, only: grad_jas, h_jas, s_jas
+      use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -652,7 +654,6 @@ c-----------------------------------------------------------------------
 
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
-      common /gradhess_mix_jas_ci/  h_mix_jas_ci(2*MPARMJ,MXCITERM),s_mix_jas_ci(MPARMJ,MXCITERM)
       common /gradhess_mix_jas_orb/ h_mix_jas_orb(2*MPARMJ,MXREDUCED),s_mix_jas_orb(MPARMJ,MXREDUCED)
       common /gradhess_mix_orb_ci/  h_mix_ci_orb(2*MXCITERM,MXREDUCED),s_mix_ci_orb(MXCITERM,MXREDUCED)
 

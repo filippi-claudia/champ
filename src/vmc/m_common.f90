@@ -534,6 +534,20 @@ end module forcewt
    public   ::  grad_jas, h_jas, s_jas
    save
  end module gradhess_jas
+ 
+ module gradhess_mix_jas_ci
+   !> Arguments: h_mix_jas_ci, s_mix_jas_ci
+   use precision_kinds, only: dp
+   include 'optjas.h'
+   include 'optci_cblk.h'
+
+   real(dp) :: h_mix_jas_ci(2*MPARMJ,MXCITERM)
+   real(dp) :: s_mix_jas_ci(MPARMJ,MXCITERM)
+
+   private
+   public   ::  h_mix_jas_ci, s_mix_jas_ci
+   save
+ end module gradhess_mix_jas_ci
 
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
