@@ -4,7 +4,10 @@
 
       use derivjas, only: d2g, g, go, gvalue
 
+      use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -16,8 +19,6 @@
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
-      common /gradhessjo/ gvalue_old(MPARMJ),denergy_old(MPARMJ,MSTATES)
-     &,d1d2a_old(MCTYPE),d2d2a_old(MCTYPE),d1d2b_old(2),d2d2b_old(2)
 
 
       common /mix_jas_orb/ dj_o(MPARMJ,MXREDUCED,MSTATES),dj_oe(MPARMJ,MXREDUCED,MSTATES),

@@ -507,6 +507,25 @@ end module forcewt
    save
  end module ghostatom
 
+ module gradhessjo
+   !> Arguments: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'mstates.h'
+   include 'optjas.h'
+
+   real(dp) :: d1d2a_old(MCTYPE)
+   real(dp) :: d1d2b_old(2)
+   real(dp) :: d2d2a_old(MCTYPE)
+   real(dp) :: d2d2b_old(2)
+   real(dp) :: denergy_old(MPARMJ,MSTATES)
+   real(dp) :: gvalue_old(MPARMJ)
+
+   private
+   public   ::  d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+   save
+ end module gradhessjo
+
  module gradhess_ci
    !> Arguments: grad_ci, h_ci, s_ci
    use precision_kinds, only: dp
