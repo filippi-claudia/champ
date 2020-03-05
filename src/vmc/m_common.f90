@@ -615,6 +615,18 @@ end module forcewt
    save
  end module gradjerr
 
+ module grdnthes
+   !> Arguments: hessian_zmat
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: hessian_zmat(3,MCENT)
+
+   private
+   public   ::  hessian_zmat 
+   save
+ end module grdnthes
+
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
    use precision_kinds, only: dp

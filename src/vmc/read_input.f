@@ -2185,7 +2185,9 @@ C$INPUT hessian_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
 CKEYDOC atoms energy gradients are to be calculated for.
 
+      use grdnthes, only: hessian_zmat
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -2194,7 +2196,6 @@ CKEYDOC atoms energy gradients are to be calculated for.
       common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
      &                  igrdcidx(MFORCE)
 
-      common /grdnthes/ hessian_zmat(3,MCENT)
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
@@ -2342,7 +2343,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine hessian_zmat_define
 
+      use grdnthes, only: hessian_zmat
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -2351,7 +2354,6 @@ c-----------------------------------------------------------------------
       common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
      &                  igrdcidx(MFORCE)
 
-      common /grdnthes/ hessian_zmat(3,MCENT)
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
