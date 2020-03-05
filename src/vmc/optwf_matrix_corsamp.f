@@ -641,7 +641,9 @@ c-----------------------------------------------------------------------
       use gradhess_jas, only: grad_jas, h_jas, s_jas
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
+      use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -656,7 +658,6 @@ c-----------------------------------------------------------------------
 
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
-      common /gradhess_mix_orb_ci/  h_mix_ci_orb(2*MXCITERM,MXREDUCED),s_mix_ci_orb(MXCITERM,MXREDUCED)
 
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 
