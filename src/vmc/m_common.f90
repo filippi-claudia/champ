@@ -596,6 +596,25 @@ end module forcewt
    save
  end module gradhess_mix_orb_ci
 
+ module gradjerr
+   !> Arguments: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+   use precision_kinds, only: dp
+   include 'optjas.h'
+   include 'mstates.h'
+
+   real(dp) :: dj_bsum(MPARMJ,MSTATES)
+   real(dp) :: dj_e_bsum(MPARMJ,MSTATES)
+   real(dp) :: dj_e_save(MPARMJ,MSTATES)
+   real(dp) :: dj_save(MPARMJ,MSTATES)
+   real(dp) :: e_bsum(MSTATES)
+   real(dp) :: grad_jas_bcm2(MPARMJ,MSTATES)
+   real(dp) :: grad_jas_bcum(MPARMJ,MSTATES)
+
+   private
+   public   ::  dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+   save
+ end module gradjerr
+
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
    use precision_kinds, only: dp
