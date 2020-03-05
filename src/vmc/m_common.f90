@@ -539,7 +539,7 @@ end module forcewt
    !> Arguments: h_mix_jas_ci, s_mix_jas_ci
    use precision_kinds, only: dp
    include 'optjas.h'
-   include 'optci_cblk.h'
+   include 'optci.h'
 
    real(dp) :: h_mix_jas_ci(2*MPARMJ,MXCITERM)
    real(dp) :: s_mix_jas_ci(MPARMJ,MXCITERM)
