@@ -479,10 +479,26 @@ end module forcewt
    save
  end module forcepar
 
+ module gauss_ecp
+   !> Arguments: ecp_coef, ecp_exponent, necp_power, necp_term
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'pseudo.h'
+ 
+   real(dp) :: ecp_coef(MGAUSS,MPS_L,MCTYPE)
+   real(dp) :: ecp_exponent(MGAUSS,MPS_L,MCTYPE)
+   integer  :: necp_power(MGAUSS,MPS_L,MCTYPE)
+   integer  :: necp_term(MPS_L,MCTYPE)
+ 
+   save
+   private
+   public   ::  ecp_coef, ecp_exponent, necp_power, necp_term
+   save
+ end module gauss_ecp
+
  module ghostatom
    !> Arguments: newghostype, nghostcent
    use precision_kinds, only: dp
-   include 'vmc.h'
 
    integer  :: newghostype
    integer  :: nghostcent
@@ -495,7 +511,6 @@ end module forcewt
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
    use precision_kinds, only: dp
-   include 'vmc.h'
 
    integer  :: is
    integer  :: nspin1

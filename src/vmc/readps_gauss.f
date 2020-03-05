@@ -15,7 +15,10 @@ c
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -31,9 +34,6 @@ c
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /gauss_ecp/ necp_term(MPS_L,MCTYPE),necp_power(MGAUSS
-     &     ,MPS_L,MCTYPE),ecp_coef(MGAUSS,MPS_L,MCTYPE)
-     &     ,ecp_exponent(MGAUSS,MPS_L,MCTYPE)
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
@@ -182,12 +182,12 @@ c     enddo
       end
 c-----------------------------------------------------------------------
       subroutine gauss_pot(r,l,ict,vpot,dvpot)
+      use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pseudo.h'
-      common /gauss_ecp/ necp_term(MPS_L,MCTYPE),necp_power(MGAUSS
-     &     ,MPS_L,MCTYPE),ecp_coef(MGAUSS,MPS_L,MCTYPE)
-     &     ,ecp_exponent(MGAUSS,MPS_L,MCTYPE)
 
       v = 0.d0
       dv = 0.d0
