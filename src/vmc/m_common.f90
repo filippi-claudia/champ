@@ -742,3 +742,16 @@ end module forcewt
    public   ::  cjas1, cjas2
    save
  end module jaspar1
+
+ module jaspar2
+   !> Arguments: a1, a2
+   use precision_kinds, only: dp
+   include 'force.h'
+
+   real(dp) :: a1(83,3,MWF)
+   real(dp) :: a2(83,3,MWF)
+
+   private 
+   public :: a1, a2 
+   save
+ end module jaspar2

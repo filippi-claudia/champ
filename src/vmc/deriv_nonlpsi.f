@@ -4,7 +4,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar1, only: cjas1, cjas2
       use elec, only: ndn, nup
+      use jaspar2, only: a1, a2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -20,7 +22,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
