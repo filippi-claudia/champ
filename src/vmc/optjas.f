@@ -192,7 +192,9 @@ c Written by Claudia Filippi
 
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
 
+      use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -210,7 +212,6 @@ c Written by Claudia Filippi
      &,d2j(MPARMJ,MPARMJ,MSTATES),d2j_e(MPARMJ,MPARMJ,MSTATES),de_e(MPARMJ,MSTATES)
      &,e2(MPARMJ,MSTATES),dj_e2(MPARMJ,MSTATES),de_de(MPARMJ,MPARMJ,MSTATES)
 
-      common /ijasnonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2)
 
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
@@ -445,7 +446,9 @@ c Written by Claudia Filippi
 
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
 
+      use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -457,7 +460,6 @@ c Written by Claudia Filippi
       common /bparm/ nspin2b,nocuspb
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
-      common /ijasnonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2)
 
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm

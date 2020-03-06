@@ -7,7 +7,9 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use derivjas, only: d2g, g, go, gvalue
 
       use elec, only: ndn, nup
+      use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -45,7 +47,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
-      common /ijasnonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2)
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 

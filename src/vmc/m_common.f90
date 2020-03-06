@@ -670,6 +670,21 @@ end module forcewt
    save
  end module header
 
+ module ijasnonlin
+   !> Arguments: d1d2a, d1d2b, d2d2a, d2d2b
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: d1d2a(MCTYPE)
+   real(dp) :: d1d2b(2)
+   real(dp) :: d2d2a(MCTYPE)
+   real(dp) :: d2d2b(2)
+
+   private 
+   public :: d1d2a, d1d2b, d2d2a, d2d2b 
+   save
+ end module ijasnonlin
+
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
    use precision_kinds, only: dp
