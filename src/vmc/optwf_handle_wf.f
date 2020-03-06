@@ -565,7 +565,7 @@ c-----------------------------------------------------------------------
 
       entry restore_lcao_best
 
-      if(ioptorb.eq.0) return
+c     if(ioptorb.eq.0) return
 
       do 20 i=1,norb
        do 20 j=1,nbasis
@@ -601,7 +601,7 @@ c-----------------------------------------------------------------------
 
       entry restore_ci_best
 
-      if(ioptci.eq.0) return
+c     if(ioptci.eq.0) return
 
       do 30 j=1,nstates
         do 30 i=1,ndet

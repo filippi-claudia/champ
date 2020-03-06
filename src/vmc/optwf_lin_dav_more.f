@@ -1,4 +1,4 @@
-      subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
+      subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,index_more,adiag,ethr)
 
       implicit real*8(a-h,o-z)
 
@@ -21,7 +21,7 @@
       common /mpiconf/ idtask,nproc
 
       dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,MSTATES),index_overlap(MVEC),anorm(MVEC)
-      dimension deltap(*),deltap_more(MPARM*MSTATES,5)
+      dimension deltap(*),deltap_more(MPARM*MSTATES,5),index_more(5,MSTATES)
 
       call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
 
@@ -94,7 +94,7 @@ c idtask.eq.0
           enddo
 
          else                   
-c else means if i optimize jastrow and or orbitals
+c elseif I do not optimize jastrow and or orbitals
 
           do istate=1,nstates
             call sort(nvec,overlap_psi(1,istate),index_overlap)
@@ -105,9 +105,10 @@ c else means if i optimize jastrow and or orbitals
               deltap(i+nparm*(istate-1))=evc(i,i_overlap_max)/anorm(i_overlap_max)
             enddo
 
-c save 5 additional vectors with large overlap
+c Save 5 additional vectors with large overlap
             do ivec=1,5
               idx_ivec=index_overlap(nvec-ivec)
+              index_more(ivec,istate)=idx_ivec
               do i=1,nparm
                 deltap_more(i+nparm*(istate-1),ivec)=evc(i,idx_ivec)/anorm(idx_ivec)
               enddo
@@ -129,8 +130,8 @@ c     enddo
         do ivec=1,5
           call MPI_BCAST(deltap_more(1,ivec),nparm*nstates,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         enddo
+        call MPI_BCAST(index_more,5*nstates,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       endif
-
 
       return              ! deltap
       end
