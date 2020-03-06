@@ -14,7 +14,10 @@ c routine to print out final results
       use forcepar, only: deltot, istrech, nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -48,8 +51,6 @@ c routine to print out final results
 
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
 
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
 
       common /tmpnode/ distance_node_sum

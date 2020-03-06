@@ -11,13 +11,14 @@ c   energy gradients (cartesian).
       subroutine inpwrt_grdnts_cart()
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
       implicit real*8(a-h,o-z)
+
 
       include 'force.h'
       include 'vmc.h'
 
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
 
       write(6,*)
       write(6,'(''Correlated sampling used to calculate energy gradients (Cartesian)'')')
@@ -44,13 +45,14 @@ c   energy gradients (z matrix/internal).
       subroutine inpwrt_grdnts_zmat()
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
       implicit real*8(a-h,o-z)
+
 
       include 'force.h'
       include 'vmc.h'
 
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
@@ -89,14 +91,15 @@ c   calculated using correlated smapling.
       use forcepar, only: deltot, istrech, nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'force.h'
       include 'vmc.h'
 
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
       dimension forces_ave(MFORCE),forces_err(MFORCE)
       dimension grdnts_ave(MFORCE),grdnts_err(MFORCE)     
 
@@ -151,15 +154,16 @@ c   calculated using correlated smapling.
       use forcestr, only: delc
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
       implicit real*8(a-h,o-z)
+
 
 
 
       include 'force.h'
       include 'vmc.h'
 
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
@@ -306,14 +310,15 @@ c   using Z matrix (internal) coordinates
       use forcestr, only: delc
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'force.h'
       include 'vmc.h'
 
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
@@ -392,15 +397,16 @@ c   from energy differences  calculated using correlated smapling.
       use forcestr, only: delc
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
       implicit real*8(a-h,o-z)
+
 
 
 
       include 'force.h'
       include 'vmc.h'
 
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix

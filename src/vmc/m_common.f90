@@ -642,6 +642,22 @@ end module forcewt
     save
  end module grdntsmv
 
+ module grdntspar
+   !> Arguments: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+   use precision_kinds, only: dp
+
+   real(dp) :: delgrdba
+   real(dp) :: delgrdbl
+   real(dp) :: delgrdda
+   real(dp) :: delgrdxyz
+   integer  :: igrdtype
+   integer  :: ngradnts
+
+   private 
+   public :: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts 
+   save
+ end module grdntspar
+
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
    use precision_kinds, only: dp

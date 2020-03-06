@@ -38,7 +38,10 @@ c and Anthony Scemema
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use forcepar, only: deltot, istrech, nforce
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -120,8 +123,6 @@ c and Anthony Scemema
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nbj_current
 
 
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix
@@ -2015,7 +2016,10 @@ c     Written by Omar Valsson
       use forcestr, only: delc
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -2024,8 +2028,6 @@ c     Written by Omar Valsson
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       call p2gti('atoms:natom',ncent,1)
@@ -2084,7 +2086,10 @@ c      Written by Omar Valsson.
       use forcestr, only: delc
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -2093,8 +2098,6 @@ c      Written by Omar Valsson.
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),         
      &                 czcart_ref(3,3),izcmat(3,MCENT),
