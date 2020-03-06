@@ -40,7 +40,9 @@ c and Anthony Scemema
       use forcepar, only: deltot, istrech, nforce
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
 
+      use header, only: date, title
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -71,7 +73,6 @@ c and Anthony Scemema
       include 'properties.h'
       include '3dgrid_flags.h'
 
-      common /header/ title,date
 
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Z
@@ -132,9 +133,8 @@ c and Anthony Scemema
       character*12 mode
       common /contr3/ mode
 
-      character*20 title,fmt
+      character*20 fmt
       character*32 keyname
-      character*24 date
       character*10 eunit
       character*16 cseed
       character*20 dl_alg

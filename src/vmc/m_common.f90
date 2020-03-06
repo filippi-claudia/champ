@@ -658,6 +658,18 @@ end module forcewt
    save
  end module grdntspar
 
+ module header
+   !> Arguments: date, title
+   use precision_kinds, only: dp
+
+   character*20 title
+   character*24 date
+
+   private 
+   public :: date, title 
+   save
+ end module header
+
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
    use precision_kinds, only: dp

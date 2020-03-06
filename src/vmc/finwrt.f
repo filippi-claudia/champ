@@ -16,6 +16,7 @@ c routine to print out final results
       use forcewt, only: wcum, wsum
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
 
+      use header, only: date, title
       implicit real*8(a-h,o-z)
 
 
@@ -28,9 +29,8 @@ c routine to print out final results
 
 
 
+
       character*12 mode
-      character*20 title
-      character*24 date
       include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
@@ -42,7 +42,6 @@ c routine to print out final results
       common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contr3/ mode
-      common /header/ title,date
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
 
