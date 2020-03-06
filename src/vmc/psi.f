@@ -8,7 +8,10 @@ c periodic systems.
       use jaspar1, only: cjas1, cjas2
       use elec, only: ndn, nup
       use jaspar2, only: a1, a2
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -25,8 +28,6 @@ c periodic systems.
      &,ifock,i3body,irewgt,iaver,istrch
 
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
@@ -85,7 +86,10 @@ c periodic systems.
 c-----------------------------------------------------------------------
       function psia(ri,it)
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
 
@@ -93,8 +97,6 @@ c-----------------------------------------------------------------------
 
       parameter(zero=0.d0,one=1.d0)
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
@@ -126,15 +128,16 @@ c-----------------------------------------------------------------------
       function psib(rij,isb,ipar)
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
       parameter(zero=0.d0,one=1.d0)
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)

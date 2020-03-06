@@ -5,7 +5,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar1, only: cjas1, cjas2
       use elec, only: ndn, nup
       use jaspar2, only: a1, a2
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -22,8 +25,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
@@ -115,15 +116,16 @@ c                 jj=jj+1
 c-----------------------------------------------------------------------
       function deriv_psianl(rri,gn,it)
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
       parameter(one=1.d0)
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
@@ -176,15 +178,16 @@ c-----------------------------------------------------------------------
       function deriv_psibnl(u,gn,isb,ipar)
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
       parameter(one=1.d0)
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)

@@ -3,7 +3,10 @@ c Written by Cyrus Umrigar
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -13,8 +16,6 @@ c Written by Cyrus Umrigar
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
@@ -110,7 +111,10 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Scale interparticle distances.
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -119,8 +123,6 @@ c Scale interparticle distances.
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -254,7 +256,10 @@ c Scale interparticle distances and calculate the 1st derivative
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -263,8 +268,6 @@ c gradient and laplacian.
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -430,7 +433,10 @@ c Scale interparticle distances and calculate the 1st and 2nd derivs
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -439,8 +445,6 @@ c gradient and laplacian.
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -633,13 +637,14 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist.
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -654,13 +659,14 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st deriv.
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -676,13 +682,14 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st two derivs.
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype

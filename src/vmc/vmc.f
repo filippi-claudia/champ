@@ -21,7 +21,10 @@ c and sa, pa, da asymptotic functions
       use elec, only: ndn, nup
       use forcepar, only: deltot, istrech, nforce
       use jaspar2, only: a1, a2
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -39,8 +42,6 @@ c and sa, pa, da asymptotic functions
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)

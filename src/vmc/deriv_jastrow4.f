@@ -10,7 +10,10 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -29,8 +32,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /bparm/ nspin2b,nocuspb
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)

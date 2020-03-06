@@ -755,3 +755,21 @@ end module forcewt
    public :: a1, a2 
    save
  end module jaspar2
+
+ module jaspar3
+   !> Arguments: a, b, c, fck, nord, scalek
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'force.h'
+
+   real(dp) :: a(MORDJ1,MWF)
+   real(dp) :: b(MORDJ1,2,MWF)
+   real(dp) :: c(83,MCTYPE,MWF)
+   real(dp) :: fck(15,MCTYPE,MWF)
+   integer  :: nord
+   real(dp) :: scalek(MWF)
+
+   private 
+   public :: a, b, c, fck, nord, scalek 
+   save
+ end module jaspar3

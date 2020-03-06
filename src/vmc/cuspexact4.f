@@ -2,7 +2,10 @@
 c Written by Cyrus Umrigar
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -44,8 +47,6 @@ c e-n cusp) depend only on independent variables.  On the other hand
 c the one from the 2nd order e-n cusp depends only on other dependent
 c variables.
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /cuspmat4/ d(NEQSX,MTERMS),icusp(NEQSX),nterms
 

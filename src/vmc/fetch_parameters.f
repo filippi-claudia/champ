@@ -22,13 +22,14 @@ c-----------------------------------------------------------------------
       subroutine fetch_jastrow(p,n)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
 
