@@ -8,7 +8,10 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -43,8 +46,6 @@ c Calculates energy
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc

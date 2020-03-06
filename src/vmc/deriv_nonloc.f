@@ -9,7 +9,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use derivjas, only: d2g, g, go, gvalue
 
       use elec, only: ndn, nup
+      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -36,8 +39,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
 
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
 
       common /force_analy/ iforce_analy

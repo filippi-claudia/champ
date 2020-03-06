@@ -8,7 +8,10 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
       use elec, only: ndn, nup
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
+      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -31,8 +34,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
       common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
 

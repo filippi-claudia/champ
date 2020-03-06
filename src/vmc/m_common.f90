@@ -696,7 +696,24 @@ end module forcewt
    private 
    public :: inout, inside 
    save
-end module insout
+ end module insout
+
+ module jaso
+   !> Arguments: d2ijo, d2o, fijo, fjo, fso, fsumo
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+    real(dp) :: d2ijo(MELEC,MELEC)
+    real(dp) :: d2o
+    real(dp) :: fijo(3,MELEC,MELEC)
+    real(dp) :: fjo(3,MELEC)
+    real(dp) :: fso(MELEC,MELEC)
+    real(dp) :: fsumo
+
+    private 
+    public :: d2ijo, d2o, fijo, fjo, fso, fsumo 
+    save
+ end module jaso
 
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
