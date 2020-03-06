@@ -2013,7 +2013,10 @@ c     Written by Omar Valsson
 
       use forcepar, only: deltot, istrech, nforce
       use forcestr, only: delc
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -2021,8 +2024,6 @@ c     Written by Omar Valsson
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -2081,7 +2082,10 @@ c      Written by Omar Valsson.
 
       use forcepar, only: deltot, istrech, nforce
       use forcestr, only: delc
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -2089,8 +2093,6 @@ c      Written by Omar Valsson.
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -2153,14 +2155,15 @@ C$INPUT modify_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
 CKEYDOC atoms energy gradients are to be calculated for.
 
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
@@ -2186,15 +2189,16 @@ CKEYDOC Read for which Z matrix (internal) coordiantes of
 CKEYDOC atoms energy gradients are to be calculated for.
 
       use grdnthes, only: hessian_zmat
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
 
 
       call p2gti('atoms:natom',ncent,1)
@@ -2322,14 +2326,15 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine modify_zmat_define
 
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
@@ -2344,15 +2349,16 @@ c-----------------------------------------------------------------------
       subroutine hessian_zmat_define
 
       use grdnthes, only: hessian_zmat
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
 
 
       call p2gti('atoms:natom',ncent,1)

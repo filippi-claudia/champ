@@ -627,6 +627,21 @@ end module forcewt
    save
  end module grdnthes
 
+ module grdntsmv
+   !> Arguments: igrdaidx, igrdcidx, igrdmv
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'force.h'
+
+    integer  :: igrdaidx(MFORCE)
+    integer  :: igrdcidx(MFORCE)
+    integer  :: igrdmv(3,MCENT)
+
+    private 
+    public :: igrdaidx, igrdcidx, igrdmv 
+    save
+ end module grdntsmv
+
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
    use precision_kinds, only: dp
