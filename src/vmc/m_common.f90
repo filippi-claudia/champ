@@ -670,18 +670,6 @@ end module forcewt
    save
  end module header
 
-
- module icount_ci
-   !> Arguments: icount
-   use precision_kinds, only: dp
-
-   integer  :: icount
-
-   private 
-   public :: icount 
-   save
- end module icount_ci
-
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
    use precision_kinds, only: dp
