@@ -11,7 +11,9 @@ c &pcm xn_pcm 1. yn_pcm 1. zn_pcm 1.
 c----------------------------------------------------------------------
       subroutine pcm_setup_grid
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use insout, only: inout, inside
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pcm_3dgrid.h'
@@ -222,12 +224,11 @@ c      stop
 
 c----------------------------------------------------------------------
       subroutine spline_pcm(r,f,ier)
+      use insout, only: inout, inside
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'pcm_3dgrid.h'
 
-      real*8 inside, inout  
-      common /insout/ inside,inout  
 
 c     Input:
       real*8    r(3)    ! Cartesian coordinates

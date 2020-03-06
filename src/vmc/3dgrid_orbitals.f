@@ -11,6 +11,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
 
 
+
       include 'force.h'
       include 'vmc.h'
       include '3dgrid.h'
@@ -294,13 +295,11 @@ c----------------------------------------------------------------------
 
 
       subroutine spline_mo(r,iorb,f,df,ddf,ier)
+      use insout, only: inout, inside
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_spline.h'
-
-      real*8 inside, inout  
-      common /insout/ inside,inout  
 
 c     Input:
       integer   iorb    ! Index of the MO to spline
@@ -589,14 +588,14 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use insout, only: inout, inside
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
 
-      real*8 inside,inout  
-      common /insout/ inside,inout  
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       dimension r(3),dr(3),orb(MELEC,MORB),ix(3)
@@ -666,16 +665,15 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use insout, only: inout, inside
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
-      real*8 inside, inout  
-      common /insout/ inside,inout  
 
       dimension r(3),dr(3),orb(3,MELEC,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
@@ -746,16 +744,15 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use insout, only: inout, inside
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
-      real*8 inside, inout  
-      common /insout/ inside,inout  
 
       dimension r(3),dr(3),orb(MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
@@ -824,16 +821,15 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use insout, only: inout, inside
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
-      real*8 inside, inout  
-      common /insout/ inside,inout  
 
       dimension r(3),dr(3),orb(3,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)

@@ -685,6 +685,19 @@ end module forcewt
    save
  end module ijasnonlin
 
+ module insout
+   !> Arguments: inout, inside
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   integer  :: inout
+   integer  :: inside
+
+   private 
+   public :: inout, inside 
+   save
+end module insout
+
  module jaspar
    !> Arguments: nspin1, nspin2, sspin, sspinn, is
    use precision_kinds, only: dp
