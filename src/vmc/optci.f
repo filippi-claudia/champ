@@ -427,7 +427,9 @@ c h_0,0, h_0,ci, h_ci,0, s_0,ci, s_ci,0
 
 c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
+      use icount_ci, only: icount
       implicit real*8(a-h,o-z)
+
 c compute averages and print then out
       include 'vmc.h'
       include 'force.h'
@@ -435,7 +437,6 @@ c compute averages and print then out
       include 'optci_cblk.h'
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /icount_ci/ icount
 
       dimension oav(MXCITERM),deav(MXCITERM)
       dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)
