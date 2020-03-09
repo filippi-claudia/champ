@@ -11,7 +11,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use elec, only: ndn, nup
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
 
+      use jaspointer, only: npoint, npointa
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -37,7 +39,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
-      common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
 
 
 

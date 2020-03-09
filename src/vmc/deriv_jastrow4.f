@@ -15,7 +15,9 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use jaspointer, only: npoint, npointa
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -38,7 +40,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       common /bparm/ nspin2b,nocuspb
 
 
-      common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
 
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
       common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,83,MCTYPE)

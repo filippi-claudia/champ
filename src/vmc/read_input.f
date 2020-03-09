@@ -1709,7 +1709,9 @@ C$INPUT jasderiv inp
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar4, only: a4, norda, nordb, nordc
+      use jaspointer, only: npoint, npointa
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -1727,7 +1729,6 @@ C$INPUT jasderiv inp
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
-      common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 

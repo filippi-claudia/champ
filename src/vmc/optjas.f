@@ -193,7 +193,9 @@ c Written by Claudia Filippi
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
 
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
+      use jaspointer, only: npoint, npointa
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -218,7 +220,6 @@ c Written by Claudia Filippi
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
-      common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
 
       dimension enew(*),eold(*),wtg_new(*),wtg_old(*)
 

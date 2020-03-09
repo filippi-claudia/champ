@@ -808,3 +808,16 @@ end module forcewt
    public :: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi 
    save
  end module jaspar6
+
+ module jaspointer
+   !> Arguments: npoint, npointa
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   integer  :: npoint(MCTYP3X)
+   integer  :: npointa(3*MCTYP3X)
+
+   private 
+   public :: npoint, npointa 
+   save
+ end module jaspointer
