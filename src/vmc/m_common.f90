@@ -821,3 +821,16 @@ end module forcewt
    public :: npoint, npointa 
    save
  end module jaspointer
+
+ module jd_scratch
+   !> Arguments: qr, rr
+   use precision_kinds, only: dp
+   include 'sr.h'
+
+   real(dp) :: qr(MPARM)
+   real(dp) :: rr(MPARM)
+
+   private 
+   public :: qr, rr 
+   save
+ end module jd_scratch

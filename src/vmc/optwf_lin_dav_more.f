@@ -140,12 +140,13 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine amul(n,q,r)
 
-      implicit real*8 (a-h,o-z)
+      use jd_scratch, only: qr, rr
+      implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'sr.h'
 
-      common /jd_scratch/ qr(MPARM),rr(MPARM)
 
       complex*16 q(n),r(n)
       do i=1,n
@@ -166,12 +167,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine bmul(n,q,r)
 
-      implicit real*8 (a-h,o-z)
+      use jd_scratch, only: qr, rr
+      implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'sr.h'
 
-      common /jd_scratch/ qr(MPARM),rr(MPARM)
 
       complex*16 q(n),r(n)
       do i=1,n
