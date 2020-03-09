@@ -1,6 +1,6 @@
       program main
 c Written by Claudia Filippi
-
+      use mpiconf, only: idtask, nproc, wid
       implicit real*8(a-h,o-z)
       character*12 mode
       character method*20
@@ -14,8 +14,6 @@ c mpif.h is system, mpi_qmc.h is ours
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /contr3/ mode
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       call mpi_init(ierr)
 

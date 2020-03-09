@@ -6,7 +6,9 @@
       use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
      &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
      &vnew, vold, xnew, xold
+      use mpiconf, only: idtask, nproc, wid
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -18,8 +20,6 @@
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       character*20 filename
 

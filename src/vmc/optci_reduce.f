@@ -1,15 +1,14 @@
       subroutine optci_reduce
 
+      use mpiconf, only: idtask, nproc, wid
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'optci.h'
       include 'optci_cblk.h'
       include 'mstates.h'
       include 'mpif.h'
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
 c     parameter(MXTMP=max(MXORBTERM,MXMATDIM))
 c     max does not work with g77

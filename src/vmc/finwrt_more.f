@@ -8,21 +8,13 @@ c written by Claudia Filippi
       use estpsi, only: apsi, aref, detref
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+      use mpiconf, only: idtask, nproc, wid
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'mpif.h'
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar

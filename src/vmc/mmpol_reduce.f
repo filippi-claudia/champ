@@ -1,11 +1,10 @@
       subroutine mmpol_reduce
 
+      use mpiconf, only: idtask, nproc, wid
       implicit real*8(a-h,o-z)
+
       include 'mpif.h'
       include 'mmpol.h'
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension eek1_collect(MCHMM),eek1cm2_collect(MCHMM)
       dimension eek2_collect(MCHMM),eek2cm2_collect(MCHMM)

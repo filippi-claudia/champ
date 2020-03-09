@@ -2,7 +2,9 @@
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use mpiconf, only: idtask, nproc
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
@@ -22,7 +24,6 @@
 
       common /optwf_func/ omega,omega_hes,ifunc_omega
 
-      common /mpiconf/ idtask,nproc
 
       dimension obs(MOBS,MSTATES),obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
       dimension hii(MPARM),sii(MPARM)

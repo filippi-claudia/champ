@@ -5,7 +5,9 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use mpiconf, only: idtask, nproc
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
@@ -23,7 +25,6 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       common /optwf_func/ omega,omega_hes,ifunc_omega
 
-      common /mpiconf/ idtask,nproc
 
       dimension obs(MOBS,MSTATES),obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
 
@@ -210,12 +211,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine pcg(n,b,x,i,imax,imod,eps)
 c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
-      implicit none
+      use mpiconf, only: idtask, nproc
+      implicit real*8(a-h,o-z)
+
       include 'mpif.h'
       integer m_parm_opt
       parameter(m_parm_opt=59000)
-      integer n,imax,imod,i,j,idtask,nproc
-      common /mpiconf/ idtask,nproc
+      integer n,imax,imod,i,j
       real*8 b(*),x(*),eps
       real*8 r(m_parm_opt),d(m_parm_opt),q(m_parm_opt),s(m_parm_opt)
       real*8 delta_0,delta_new,delta_old,alpha,beta,ddot
@@ -422,7 +424,9 @@ c endif idtask.eq.0
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_rescale_deltap(nparm,deltap)
 
+      use mpiconf, only: idtask, nproc
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'vmc.h'
@@ -431,7 +435,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /mpiconf/ idtask,nproc
 
       dimension deltap(*)
 
@@ -500,7 +503,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use force_fin, only: da_energy_ave, da_energy_err
       use force_mat_n, only: force_o
+      use mpiconf, only: idtask, nproc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -515,7 +520,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
  
 
-      common /mpiconf/ idtask,nproc
 
       parameter (MTEST=1500)
       dimension cloc(MTEST,MTEST),c(MTEST,MTEST),oloc(MPARM),o(MPARM),p(MPARM),tmp(MPARM)

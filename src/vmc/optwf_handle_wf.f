@@ -1,12 +1,13 @@
 c-----------------------------------------------------------------------
       subroutine write_wf(iwf_fit,iter)
+      use mpiconf, only: idtask, nproc
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'vmc.h'
       include 'force.h'
 
-      common /mpiconf/ idtask,nproc
 
       character*40 filetype,wf,itn
 

@@ -886,6 +886,8 @@ end module forcewt
    real(dp) :: peQMdp
    real(dp) :: peQMq
 
+   private 
+   public :: eek_pol, peQMdp, peQMq
    save
  end module mmpol_hpsi
 
@@ -898,5 +900,18 @@ end module forcewt
    real(dp) :: dmmpolo
    real(dp) :: eeko(3,MCHMM)
 
+   private 
+   public :: cmmpolo, dmmpolo, eeko
    save
  end module mmpolo
+
+ module mpiconf
+   !> Arguments: idtask, nproc, wid
+    integer  :: idtask
+    integer  :: nproc
+    logical  :: wid 
+
+    private 
+    public :: idtask, nproc, wid 
+    save
+ end module mpiconf

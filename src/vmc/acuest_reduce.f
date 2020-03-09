@@ -11,7 +11,9 @@ c Written by Claudia Filippi
       use forcepar, only: deltot, istrech, nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
+      use mpiconf, only: idtask, nproc, wid
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -36,8 +38,6 @@ c Written by Claudia Filippi
 
 
 
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       character*20 filename
 

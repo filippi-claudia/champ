@@ -16,16 +16,8 @@ c job where it left off
       use forcepar, only: deltot, istrech, nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
+      use mpiconf, only: idtask, nproc, wid
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
 
 
       include 'vmc.h'
@@ -44,8 +36,6 @@ c job where it left off
      &ekin(nrad),ekin2(nrad)
 
 
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension irn(4,0:nprocx),istatus(MPI_STATUS_SIZE)
       dimension irn_tmp(4,0:nprocx)

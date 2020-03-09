@@ -8,12 +8,8 @@ c MPI version written by Claudia Filippi
       use estsig, only: ecm21s, ecum1s
       use forcepar, only: deltot, istrech, nforce
       use forcewt, only: wcum, wsum
+      use mpiconf, only: idtask, nproc, wid
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -26,8 +22,6 @@ c MPI version written by Claudia Filippi
      &ekin(nrad),ekin2(nrad)
 
 
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension rprobt(nrad),tryt(nrad),suct(nrad)
       dimension collect(MSTATES)
