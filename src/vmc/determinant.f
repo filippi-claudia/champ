@@ -9,7 +9,8 @@ c Modified by A. Scemama
       include 'mstates.h'
       include '3dgrid_flags.h'
 
-      parameter (one=1.d0,half=0.5d0)
+      character*12 mode
+      common /contr3/ mode
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
@@ -47,7 +48,7 @@ c compute orbitals
         nel=ndn
       endif
 
-      detiab(kref,iab)=one
+      detiab(kref,iab)=1.d0
 
       jk=-nel
       do j=1,nel
@@ -86,10 +87,15 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
 
       if(ipr.ge.4) write(6,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
 
+c for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
+      if(index(mode,'dmc').eq.0) then
+
       icheck=icheck+1
       if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.10) then
         call check_detref(ipass,icheck,newref)
         if(newref.gt.0) goto 10
+      endif
+
       endif
 
       return
@@ -117,8 +123,6 @@ c-----------------------------------------------------------------------
       common /multislater/detiab(MDET,2)
 
       common /estpsi/ detref(2),apsi(MSTATES),aref
-
-      parameter (one=1.d0,half=0.5d0)
 
       iflag=0
       if(ipass.le.2) return
@@ -153,8 +157,6 @@ c-----------------------------------------------------------------------
       include 'force.h'
       include 'optjas.h'
       include 'mstates.h'
-
-      parameter (one=1.d0,half=0.5d0)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
