@@ -876,3 +876,15 @@ end module forcewt
    public :: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci 
    save
  end module mix_jas_ci
+
+ module mmpol_hpsi
+   !> Arguments: eek_pol, peQMdp, peQMq
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+
+   real(dp) :: eek_pol(3,MCHMM)
+   real(dp) :: peQMdp
+   real(dp) :: peQMq
+
+   save
+ end module mmpol_hpsi

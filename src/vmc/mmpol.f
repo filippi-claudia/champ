@@ -398,10 +398,11 @@ c     For the accepted configuration, the electronic field is computed
 c     on MM sites  eek_pol(1,k),eek_pol(2,k),eek_pol(3,k)
 C     ***************************************************************
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      IMPLICIT REAL*8 (A-H,O-Z)
+      use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
+      implicit real*8(a-h,o-z)
+
       include 'mmpol.h'
       include 'vmc.h'
-      common /mmpol_hpsi/ peQMdp,peQMq,eek_pol(3,MCHMM)
 
 
       dimension coord(3,*)

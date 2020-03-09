@@ -10,7 +10,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use elec, only: ndn, nup
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
 
+      use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -52,7 +54,6 @@ c Calculates energy
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
       common /pcm_hpsi/ pepcms,pepcmv,qopcm,enfpcm(MCHS)
-      common /mmpol_hpsi/ peQMdp,peQMq,eek_pol(3,MCHMM)
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
