@@ -888,3 +888,15 @@ end module forcewt
 
    save
  end module mmpol_hpsi
+
+ module mmpolo
+   !> Arguments: cmmpolo, dmmpolo, eeko
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+
+   real(dp) :: cmmpolo
+   real(dp) :: dmmpolo
+   real(dp) :: eeko(3,MCHMM)
+
+   save
+ end module mmpolo
