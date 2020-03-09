@@ -310,7 +310,9 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use gradhess_ci, only: grad_ci, h_ci, s_ci
+      use linear_norm, only: oav, ci_oav
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -321,7 +323,7 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optci_cblk.h'
 
-      dimension oav(MXCITERM),deav(MXCITERM)
+      dimension deav(MXCITERM)
       dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)
       dimension ooav(MXCIMATDIM),ooerr(MXCIMATDIM)
       dimension ooeav(MXCIMATDIM)
@@ -331,7 +333,6 @@ c-----------------------------------------------------------------------
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
 
-      common /linear_norm/ ci_oav(MXCITERM)
       dimension oelocav(MXCITERM),eav(MXCITERM)
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -427,6 +428,7 @@ c h_0,0, h_0,ci, h_ci,0, s_0,ci, s_ci,0
 
 c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
+      use linear_norm, only: oav
       implicit real*8(a-h,o-z)
 c compute averages and print then out
       include 'vmc.h'
@@ -437,7 +439,7 @@ c compute averages and print then out
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /icount_ci/ icount
 
-      dimension oav(MXCITERM),deav(MXCITERM)
+      dimension deav(MXCITERM)
       dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)
       dimension ooav(MXCIMATDIM),ooerr(MXCIMATDIM)
       dimension ooeav(MXCIMATDIM)

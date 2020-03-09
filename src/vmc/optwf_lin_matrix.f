@@ -1,6 +1,8 @@
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
+      use linear_norm, only: oav
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -16,7 +18,6 @@
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_save
       common /optwf_corsam/ add_diag_tmp(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
-      common /linear_norm/ oav(MXCITERM)
 
       dimension h(mparmx,*),s(mparmx,*)
       dimension h_sav(mparmx,*),s_sav(*)
@@ -312,7 +313,9 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use linear_norm, only: oav
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -333,7 +336,6 @@ c-----------------------------------------------------------------------
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparmsav
 
-      common /linear_norm/ oav(MXCITERM)
 
       dimension dparm(*)
       dimension h(mparmx,*),h_sav(mparmx,*)

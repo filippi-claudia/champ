@@ -847,3 +847,16 @@ end module forcewt
    public :: dtdx2n, dtdx2o 
    save
  end module kinet
+
+ module linear_norm
+   !> Arguments: oav, ci_oav
+   use precision_kinds, only: dp
+   include 'optci.h'
+
+   real(dp) :: oav(MXCITERM)
+   real(dp) :: ci_oav(MXCITERM) 
+
+   private 
+   public :: oav, ci_oav
+   save
+ end module linear_norm
