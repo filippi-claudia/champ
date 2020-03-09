@@ -13,7 +13,10 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,8 +37,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /bparm/ nspin2b,nocuspb
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
 
       common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
 

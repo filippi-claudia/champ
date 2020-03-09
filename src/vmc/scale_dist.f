@@ -6,7 +6,10 @@ c Written by Cyrus Umrigar
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -18,8 +21,6 @@ c Written by Cyrus Umrigar
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /bparm/ nspin2b,nocuspb
 
 c isc = 2,3 are exponential scalings
@@ -114,7 +115,10 @@ c Scale interparticle distances.
 
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -124,8 +128,6 @@ c Scale interparticle distances.
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c isc = 2,3 are exponential scalings
@@ -259,7 +261,10 @@ c gradient and laplacian.
 
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -269,8 +274,6 @@ c gradient and laplacian.
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c isc = 2,3 are exponential scalings
@@ -436,7 +439,10 @@ c gradient and laplacian.
 
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -446,8 +452,6 @@ c gradient and laplacian.
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /scale_more/ dd3
@@ -640,14 +644,15 @@ c that appropriate for C terms, for dist.
 
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       rr=1-c1_jas6*scalek(iwf)*rr
@@ -662,14 +667,15 @@ c that appropriate for C terms, for dist and 1st deriv.
 
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       rr=1-c1_jas6*scalek(iwf)*rr
@@ -685,14 +691,15 @@ c that appropriate for C terms, for dist and 1st two derivs.
 
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       rr=1-c1_jas6*scalek(iwf)*rr

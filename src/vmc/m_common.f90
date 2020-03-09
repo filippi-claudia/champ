@@ -789,3 +789,22 @@ end module forcewt
    public :: a4, norda, nordb, nordc 
    save
  end module jaspar4
+
+ module jaspar6
+   !> Arguments: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: asymp_jasa(MCTYPE)
+   real(dp) :: asymp_jasb(2)
+   real(dp) :: asymp_r
+   real(dp) :: c1_jas6
+   real(dp) :: c1_jas6i
+   real(dp) :: c2_jas6
+   real(dp) :: cutjas
+   real(dp) :: cutjasi
+
+   private 
+   public :: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi 
+   save
+ end module jaspar6

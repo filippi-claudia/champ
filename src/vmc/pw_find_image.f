@@ -12,13 +12,14 @@ c Warning:  I need to fix the above:
 c Also return rlenmin to set cutr to 1/2 the shortest lattice vector.  I think that is
 c good enough -- no need to use 1/2 the shortest perpendicular distance.
 
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       parameter (eps=1.d-12)
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
 
       dimension rlatt(3,3)
 

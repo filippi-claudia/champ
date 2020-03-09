@@ -7,7 +7,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -24,8 +27,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &,ifock,i3body,irewgt,iaver,istrch
 
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /chck/ bot
 
@@ -81,7 +82,10 @@ c-----------------------------------------------------------------------
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -89,8 +93,6 @@ c-----------------------------------------------------------------------
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
@@ -113,7 +115,10 @@ c-----------------------------------------------------------------------
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -122,8 +127,6 @@ c-----------------------------------------------------------------------
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
@@ -149,7 +152,10 @@ c-----------------------------------------------------------------------
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -157,8 +163,6 @@ c-----------------------------------------------------------------------
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
@@ -181,7 +185,10 @@ c-----------------------------------------------------------------------
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -190,8 +197,6 @@ c-----------------------------------------------------------------------
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
