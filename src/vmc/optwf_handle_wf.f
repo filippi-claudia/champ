@@ -55,7 +55,9 @@ c-----------------------------------------------------------------------
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -64,7 +66,6 @@ c-----------------------------------------------------------------------
       character*50 fmt
       character*40 filename,filetype
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
@@ -293,13 +294,14 @@ c-----------------------------------------------------------------------
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
 
       dimension a4_save(MORDJ1,MCTYPE,MWF),b_save(MORDJ1,2,MWF),
@@ -429,13 +431,14 @@ c-----------------------------------------------------------------------
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
 
       mparmja=2+max(0,norda-1)
@@ -515,13 +518,14 @@ c-----------------------------------------------------------------------
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
 
       dimension a4_best(MORDJ1,MCTYPE,MWF),b_best(MORDJ1,2,MWF),
@@ -658,13 +662,14 @@ c-----------------------------------------------------------------------
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -805,13 +810,14 @@ c-----------------------------------------------------------------------
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj

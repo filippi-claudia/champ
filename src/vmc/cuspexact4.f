@@ -4,7 +4,9 @@ c Written by Cyrus Umrigar
 
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -47,7 +49,6 @@ c e-n cusp) depend only on independent variables.  On the other hand
 c the one from the 2nd order e-n cusp depends only on other dependent
 c variables.
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /cuspmat4/ d(NEQSX,MTERMS),icusp(NEQSX),nterms
 
       do 100 it=1,nctype

@@ -773,3 +773,19 @@ end module forcewt
    public :: a, b, c, fck, nord, scalek 
    save
  end module jaspar3
+
+ module jaspar4
+   !> Arguments: a4, norda, nordb, nordc
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'force.h'
+
+   real(dp) :: a4(MORDJ1,MCTYPE,MWF)
+   integer  :: norda
+   integer  :: nordb
+   integer  :: nordc
+
+   private 
+   public :: a4, norda, nordb, nordc 
+   save
+ end module jaspar4

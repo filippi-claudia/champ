@@ -44,7 +44,9 @@ c and Anthony Scemema
       use jaspar2, only: a1, a2
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -92,7 +94,6 @@ c and Anthony Scemema
      &,ifock,i3body,irewgt,iaver,istrch
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
@@ -1069,7 +1070,9 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       use jaspar2, only: a1, a2
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1081,7 +1084,6 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /bparm/ nspin2b,nocuspb
@@ -1620,7 +1622,9 @@ c Set the jastrow to be equal
       use jaspar2, only: a1, a2
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1632,7 +1636,6 @@ c Set the jastrow to be equal
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /bparm/ nspin2b,nocuspb
@@ -1702,7 +1705,9 @@ c-----------------------------------------------------------------------
 C$INPUT jasderiv inp
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'optjas.h'
@@ -1714,7 +1719,6 @@ C$INPUT jasderiv inp
       common /numbas/ arg(MCTYPE),r0(MCTYPE)
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj

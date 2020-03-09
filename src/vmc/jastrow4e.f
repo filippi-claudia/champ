@@ -11,7 +11,9 @@ c Jastrow 6   must be used with one of isc=6,7
 
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -26,7 +28,6 @@ c Jastrow 6   must be used with one of isc=6,7
 
       common /bparm/ nspin2b,nocuspb
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
 

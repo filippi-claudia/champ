@@ -6,7 +6,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use elec, only: ndn, nup
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -22,7 +24,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &,ifock,i3body,irewgt,iaver,istrch
 
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -79,14 +80,15 @@ c-----------------------------------------------------------------------
 
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -110,7 +112,9 @@ c-----------------------------------------------------------------------
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -118,7 +122,6 @@ c-----------------------------------------------------------------------
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -145,14 +148,15 @@ c-----------------------------------------------------------------------
 
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -176,7 +180,9 @@ c-----------------------------------------------------------------------
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -184,7 +190,6 @@ c-----------------------------------------------------------------------
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
      &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype

@@ -24,13 +24,14 @@ c-----------------------------------------------------------------------
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj

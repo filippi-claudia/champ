@@ -1,6 +1,8 @@
       subroutine cuspinit4(iprin)
 c Written by Cyrus Umrigar
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -8,7 +10,6 @@ c Written by Cyrus Umrigar
 c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       parameter(NEQSX=6*MORDJ,MTERMS=55)
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
       if(nordc.eq.0) return
@@ -67,7 +68,9 @@ c-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -75,7 +78,6 @@ c-----------------------------------------------------------------------
 c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       parameter(NEQSX=6*MORDJ,MTERMS=55)
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
 
