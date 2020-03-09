@@ -860,3 +860,19 @@ end module forcewt
    public :: oav, ci_oav
    save
  end module linear_norm
+
+ module mix_jas_ci
+   !> Arguments: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'optjas.h'
+
+   real(dp) :: de_o_ci(MPARMJ,MDET)
+   real(dp) :: dj_de_ci(MPARMJ,MDET)
+   real(dp) :: dj_o_ci(MPARMJ,MDET)
+   real(dp) :: dj_oe_ci(MPARMJ,MDET)
+
+   private 
+   public :: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci 
+   save
+ end module mix_jas_ci

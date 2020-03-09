@@ -4,7 +4,10 @@
 
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
 
+      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -18,8 +21,6 @@
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
 
-      common /mix_jas_ci/ dj_o_ci(MPARMJ,MDET),dj_de_ci(MPARMJ,MDET),
-     &de_o_ci(MPARMJ,MDET),dj_oe_ci(MPARMJ,MDET)
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -38,15 +39,16 @@
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_init
 
+      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /mix_jas_ci/ dj_o_ci(MPARMJ,MDET),dj_de_ci(MPARMJ,MDET),
-     &de_o_ci(MPARMJ,MDET),dj_oe_ci(MPARMJ,MDET)
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -65,15 +67,16 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_dump(iu)
 
+      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /mix_jas_ci/ dj_o_ci(MPARMJ,MDET),dj_de_ci(MPARMJ,MDET),
-     &de_o_ci(MPARMJ,MDET),dj_oe_ci(MPARMJ,MDET)
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -86,15 +89,16 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_rstrt(iu)
 
+      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /mix_jas_ci/ dj_o_ci(MPARMJ,MDET),dj_de_ci(MPARMJ,MDET),
-     &de_o_ci(MPARMJ,MDET),dj_oe_ci(MPARMJ,MDET)
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
@@ -115,7 +119,10 @@ c-----------------------------------------------------------------------
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
+      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -142,8 +149,6 @@ c-----------------------------------------------------------------------
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,njb_current
 
-      common /mix_jas_ci/ dj_o_ci(MPARMJ,MDET),dj_de_ci(MPARMJ,MDET),
-     &de_o_ci(MPARMJ,MDET),dj_oe_ci(MPARMJ,MDET)
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj

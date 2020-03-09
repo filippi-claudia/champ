@@ -1,7 +1,10 @@
       subroutine optx_jas_ci_reduce
 c Written by Claudia Filippi
 
+      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'mstates.h'
@@ -12,8 +15,6 @@ c Written by Claudia Filippi
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
-      common /mix_jas_ci/ dj_o_ci(MPARMJ,MDET),dj_de_ci(MPARMJ,MDET),
-     &de_o_ci(MPARMJ,MDET),dj_oe_ci(MPARMJ,MDET)
 
       dimension collect(MPARMJ,MDET)
 
