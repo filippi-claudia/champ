@@ -834,3 +834,16 @@ end module forcewt
    public :: qr, rr 
    save
  end module jd_scratch
+
+ module kinet
+   !> Arguments: dtdx2n, dtdx2o
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: dtdx2n(MELEC)
+   real(dp) :: dtdx2o(MELEC)
+
+   private 
+   public :: dtdx2n, dtdx2o 
+   save
+ end module kinet

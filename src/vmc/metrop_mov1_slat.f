@@ -21,7 +21,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use forcepar, only: deltot, istrech, nforce
       use forcewt, only: wcum, wsum
+      use kinet, only: dtdx2n, dtdx2o
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -63,7 +65,6 @@ c    Last 2 are prob. best
       common /stats/ rejmax
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
-      common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
  
