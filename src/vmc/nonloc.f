@@ -417,7 +417,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -425,8 +428,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include 'mstates.h'
       include '3dgrid_flags.h'
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /dorb/ iworbd(MELEC,MDET)
 

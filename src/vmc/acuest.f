@@ -19,7 +19,10 @@ c routine to accumulate estimators for energy etc.
       use forcepar, only: deltot, istrech, nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -55,8 +58,6 @@ c routine to accumulate estimators for energy etc.
      &,ekin(nrad),ekin2(nrad)
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multislater/ detu(MDET),detd(MDET)
 

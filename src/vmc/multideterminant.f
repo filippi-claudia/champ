@@ -5,7 +5,10 @@
 
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -31,8 +34,6 @@ c dimensioned at least max(nup**2,ndn**2)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detiab(MDET,2)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -247,7 +248,10 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
       use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -269,8 +273,6 @@ c-----------------------------------------------------------------------
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
@@ -334,7 +336,10 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
       use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -351,8 +356,6 @@ c-----------------------------------------------------------------------
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
@@ -412,7 +415,10 @@ c-----------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -432,8 +438,6 @@ c-----------------------------------------------------------------------
       common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
      & ,tildem(MELEC,MORB,2)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
@@ -539,7 +543,10 @@ c-----------------------------------------------------------------------
 
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -548,8 +555,6 @@ c-----------------------------------------------------------------------
       include 'force.h'
       include 'mstates.h'
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /dorb/ iworbd(MELEC,MDET)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
@@ -764,10 +769,11 @@ c     endif
       end
 c-----------------------------------------------------------------------
       function idiff(j,i,iab)
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
       idiff=1
       if(numrep_det(i,iab).ne.numrep_det(j,iab))return
       do k=1,numrep_det(i,iab)

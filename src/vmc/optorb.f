@@ -5,7 +5,10 @@
 
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -32,8 +35,6 @@
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
@@ -760,7 +761,10 @@ c-----------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -780,8 +784,6 @@ c-----------------------------------------------------------------------
       common /optorb_mix/ norbopt,norbvirt,iwmix_virt(MORB,MORB)
 
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       data icount_orbdef /1/
 

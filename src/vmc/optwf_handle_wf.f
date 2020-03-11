@@ -171,7 +171,10 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -183,8 +186,6 @@ c-----------------------------------------------------------------------
       common /dorb/ iworbd(MELEC,MDET)
 
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj

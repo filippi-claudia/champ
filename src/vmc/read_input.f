@@ -1035,15 +1035,16 @@ c-----------------------------------------------------------------------
 C$INPUT multideterminants inp i 
 CKEYDOC CI coefficients and occupation of determinants in wf
       use dets, only: cdet, ndet
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'inputflags.h'
       common /dorb/ iworbd(MELEC,MDET)
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       if(nd.ne.ndet-1) call fatal_error('INPUT: problem in multidet')
 

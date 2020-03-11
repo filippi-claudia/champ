@@ -6,7 +6,10 @@ c Written by Claudia Filippi by modifying hpsi
 
       use elec, only: ndn, nup
       use estpsi, only: apsi, aref, detref
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -33,8 +36,6 @@ c Calculates wave function
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)

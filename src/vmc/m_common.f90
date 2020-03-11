@@ -915,3 +915,21 @@ end module forcewt
     public :: idtask, nproc, wid 
     save
  end module mpiconf
+
+ module multidet
+   !> Arguments: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   integer  :: iactv(2)
+   integer  :: irepcol_det(MELEC,MDET,2)
+   integer  :: ireporb_det(MELEC,MDET,2)
+   integer  :: ivirt(2)
+   integer  :: iwundet(MDET,2)
+   integer  :: kref
+   integer  :: numrep_det(MDET,2)
+
+   private
+   public :: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+   save
+ end module multidet

@@ -7,7 +7,10 @@
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
       use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -25,8 +28,6 @@
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -58,7 +59,10 @@ c-----------------------------------------------------------------------
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
       use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -77,8 +81,6 @@ c-----------------------------------------------------------------------
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
@@ -164,7 +166,10 @@ c-----------------------------------------------------------------------
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
       use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -186,8 +191,6 @@ c-----------------------------------------------------------------------
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 

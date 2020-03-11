@@ -11,7 +11,10 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
 
       use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -57,8 +60,6 @@ c Calculates energy
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
