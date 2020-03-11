@@ -5,7 +5,6 @@ c Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-
       include 'vmc.h'
       include 'mstates.h'
       include 'optjas.h'
