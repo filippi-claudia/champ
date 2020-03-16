@@ -7,7 +7,10 @@ c 2) a gaussian basis
       use atom, only:  znuc, cent, pecent, iwctype, nctype, ncent
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -23,9 +26,6 @@ c 2) a gaussian basis
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
 
 c Check that nbasis in lcao matches specified basis on all centers

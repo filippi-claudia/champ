@@ -48,7 +48,10 @@ c and Anthony Scemema
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use ncusp, only: ncnstr, ncuspc, nfock, nfockc, norbc
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -106,9 +109,6 @@ c and Anthony Scemema
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
       common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
@@ -1147,16 +1147,16 @@ C$INPUT basis inp i
 CKEYDOC Basis function types and pointers to radial parts tables
 C$INPUT qmc_bf_info inp i
 CKEYDOC alternative name for keyword basis because of GAMBLE input
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
       include 'numbas.h'
       include 'inputflags.h'
 
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
       common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
@@ -1445,7 +1445,10 @@ c Initialize flags used to identify presence/absence of blocks in input
 c-----------------------------------------------------------------------
       subroutine flagcheck
 c Check that the required blocks are there in the input
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'numbas.h'
@@ -1454,9 +1457,6 @@ c Check that the required blocks are there in the input
       include 'efield.h'
       include 'inputflags.h'
 
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /optorb_mix/ norbopt,norbvirt,iwmix_virt(MORB,MORB)
 
@@ -1563,16 +1563,16 @@ c Check that the required blocks are there in the input
 c----------------------------------------------------------------------
       subroutine inputzex
 c Set the exponents to one when using a numerical basis
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
       include 'numbas.h'
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
       call p2gtid('general:nwftype',nwftype,1,1)
       call p2gtid('general:iperiodic',iperiodic,0,1)
@@ -1712,7 +1712,10 @@ C$INPUT jasderiv inp
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspointer, only: npoint, npointa
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1723,9 +1726,6 @@ C$INPUT jasderiv inp
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
       common /bparm/ nspin2b,nocuspb
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj

@@ -948,3 +948,25 @@ end module forcewt
    public :: ncnstr, ncuspc, nfock, nfockc, norbc
    save
  end module ncusp
+
+ module numbas
+   !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'force.h'
+   include 'numbas.h'
+
+   real(dp) :: arg(MCTYPE)
+   real(dp) :: d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
+   integer  :: igrid(MCTYPE)
+   integer  :: iwrwf(MBASIS,MCTYPE)
+   integer  :: nr(MCTYPE)
+   integer  :: nrbas(MCTYPE)
+   integer  :: numr
+   real(dp) :: r0(MCTYPE)
+   real(dp) :: rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
+
+   private
+   public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+   save
+ end module numbas
