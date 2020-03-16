@@ -5,7 +5,9 @@ c routine to calculate basis functions for electron k
       use ghostatom, only: newghostype, nghostcent
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use numbas1, only: iwlbas, nbastyp
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -20,7 +22,6 @@ c routine to calculate basis functions for electron k
      &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
 
-      common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

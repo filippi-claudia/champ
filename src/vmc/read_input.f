@@ -50,7 +50,9 @@ c and Anthony Scemema
       use ncusp, only: ncnstr, ncuspc, nfock, nfockc, norbc
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use numbas1, only: iwlbas, nbastyp
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -110,7 +112,6 @@ c and Anthony Scemema
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
 
-      common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
       common /numbas2/ ibas0(MCENT),ibas1(MCENT)
 
@@ -1149,7 +1150,9 @@ C$INPUT qmc_bf_info inp i
 CKEYDOC alternative name for keyword basis because of GAMBLE input
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use numbas1, only: iwlbas, nbastyp
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -1158,7 +1161,6 @@ CKEYDOC alternative name for keyword basis because of GAMBLE input
       include 'inputflags.h'
 
 
-      common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
       call p2gti('atoms:nctype',nctype,1)
       call p2gtid('atoms:addghostype',newghostype,0,1)

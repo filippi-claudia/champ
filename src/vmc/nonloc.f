@@ -328,7 +328,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use elec, only: ndn, nup
+      use numbas1, only: iwlbas, nbastyp
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -347,7 +349,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
       dimension x(3),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension orbn(*),dorbn(3,*),da_orbn(3,MCENT,*),dtmp(3)

@@ -222,7 +222,9 @@ c-------------------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
+      use numbas1, only: iwlbas, nbastyp
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -235,7 +237,6 @@ c-------------------------------------------------------------------------------
      &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
       common /numbas2/ ibas0(MCENT),ibas1(MCENT)
 

@@ -970,3 +970,16 @@ end module forcewt
    public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
    save
  end module numbas
+
+ module numbas1
+   !> Arguments: iwlbas, nbastyp
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   integer  :: iwlbas(MBASIS,MCTYPE)
+   integer  :: nbastyp(MCTYPE)
+
+   private
+   public :: iwlbas, nbastyp
+   save
+ end module numbas1
