@@ -51,7 +51,9 @@ c and Anthony Scemema
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
       use numbas1, only: iwlbas, nbastyp
+      use numbas2, only: ibas0, ibas1
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -113,7 +115,6 @@ c and Anthony Scemema
 
 
 
-      common /numbas2/ ibas0(MCENT),ibas1(MCENT)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /dorb/ iworbd(MELEC,MDET)

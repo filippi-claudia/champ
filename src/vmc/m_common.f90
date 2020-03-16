@@ -983,3 +983,16 @@ end module forcewt
    public :: iwlbas, nbastyp
    save
  end module numbas1
+
+ module numbas2
+   !> Arguments: ibas0, ibas1
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   integer  :: ibas0(MCENT)
+   integer  :: ibas1(MCENT)
+
+   private
+   public :: ibas0, ibas1
+   save
+ end module numbas2

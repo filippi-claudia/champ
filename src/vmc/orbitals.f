@@ -223,7 +223,9 @@ c-------------------------------------------------------------------------------
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
       use numbas1, only: iwlbas, nbastyp
+      use numbas2, only: ibas0, ibas1
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -238,7 +240,6 @@ c-------------------------------------------------------------------------------
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
-      common /numbas2/ ibas0(MCENT),ibas1(MCENT)
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
