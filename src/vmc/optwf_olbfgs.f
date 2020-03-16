@@ -5,7 +5,9 @@
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
       character*20 dl_alg
@@ -17,7 +19,6 @@
 
       common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 

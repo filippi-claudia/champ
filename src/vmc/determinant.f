@@ -105,7 +105,9 @@ c-----------------------------------------------------------------------
       use estpsi, only: apsi, aref, detref
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -115,7 +117,6 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
@@ -163,7 +164,9 @@ c-----------------------------------------------------------------------
 
       use derivjas, only: d2g, g, go, gvalue
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -178,7 +181,6 @@ c-----------------------------------------------------------------------
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb

@@ -158,7 +158,9 @@ c           do 26 m=1,nbasis
 c------------------------------------------------------------------------------------
       subroutine virtual_orbitals
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 c compute values of extra ('virtual') orbitals needed for optorb operators
 c assuming that basis function values in phin are up to date
@@ -173,7 +175,6 @@ c assuming that basis function values in phin are up to date
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension bhin(melec,mbasis),dbhin(3,melec,mbasis),d2bhin(melec,mbasis)
 

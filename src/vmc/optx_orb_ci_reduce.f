@@ -1,14 +1,15 @@
       subroutine optx_orb_ci_reduce
 c Written by Claudia Filippi
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'optorb.h'
       include 'optci.h'
       include 'mpif.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       common /mix_orb_ci/ ci_o_o(MXCITERM,MXREDUCED),ci_o_oe(MXCITERM,MXREDUCED),

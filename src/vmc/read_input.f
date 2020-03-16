@@ -52,7 +52,9 @@ c and Anthony Scemema
 
       use numbas1, only: iwlbas, nbastyp
       use numbas2, only: ibas0, ibas1
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -121,7 +123,6 @@ c and Anthony Scemema
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
@@ -1718,7 +1719,9 @@ C$INPUT jasderiv inp
       use jaspointer, only: npoint, npointa
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1736,7 +1739,6 @@ C$INPUT jasderiv inp
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       na1=1
       na2=nctype

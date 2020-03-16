@@ -9,7 +9,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use elec, only: ndn, nup
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -48,7 +50,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       common /multislater/ detu(MDET),detd(MDET)
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb

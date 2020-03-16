@@ -57,7 +57,9 @@ c-----------------------------------------------------------------------
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -69,7 +71,6 @@ c-----------------------------------------------------------------------
 
       common /bparm/ nspin2b,nocuspb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
@@ -128,7 +129,9 @@ c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -139,7 +142,6 @@ c-----------------------------------------------------------------------
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       character*40 filename,filetype
 
@@ -173,7 +175,9 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -187,7 +191,6 @@ c-----------------------------------------------------------------------
 
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptci.eq.0) return
@@ -249,12 +252,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_wf
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptjas.ne.0) call save_jastrow
       if(ioptorb.ne.0) call save_lcao 
@@ -264,11 +268,12 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine restore_wf(iadiag)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptjas.ne.0) call restore_jastrow(iadiag)
       if(ioptorb.ne.0) call restore_lcao(iadiag)
@@ -569,13 +574,14 @@ c Restore parameters corresponding to run generating hessian
       end
 c-----------------------------------------------------------------------
       subroutine save_lcao_best
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension coef_best(MBASIS,MORB,MWF)
 
@@ -602,7 +608,9 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -610,7 +618,6 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension cdet_best(MDET,MSTATES),ccsf_best(MDET,MSTATES)
       save cdet_best,ccsf_best
@@ -665,7 +672,9 @@ c-----------------------------------------------------------------------
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -678,7 +687,6 @@ c-----------------------------------------------------------------------
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension dparm(*)
 
@@ -709,7 +717,9 @@ c Check parameters a2 and b2 > -scalek
       end
 c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -718,7 +728,6 @@ c-----------------------------------------------------------------------
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension acoef(MBASIS,MORB),dparm(*)
@@ -747,7 +756,9 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -755,7 +766,6 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension dparm(*)
@@ -875,13 +885,14 @@ c Calculate rms change in parameters
 c-----------------------------------------------------------------------
       subroutine save_nparms
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optorb.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       save nparmj_sav,norbterm_sav,nciterm_sav,nparmd_sav,nreduced_sav
@@ -922,14 +933,15 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine set_nparms_tot
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
         
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
 c Note: we do not vary the first (i0) CI coefficient unless a run where we only optimize the CI coefs
@@ -965,7 +977,9 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use derivjas, only: d2g, g, go, gvalue
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -982,7 +996,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
 

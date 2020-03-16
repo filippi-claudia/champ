@@ -5,7 +5,9 @@ c Written by Claudia Filippi
 
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -24,7 +26,6 @@ c Written by Claudia Filippi
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension collect(MPARMJ,MSTATES),collect2(MPARMJ,MPARMJ,MSTATES)

@@ -9,7 +9,9 @@
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -24,7 +26,6 @@
 
       parameter (MEXCIT=10)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
@@ -195,7 +196,9 @@ c Written by Claudia Filippi
 
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use jaspointer, only: npoint, npointa
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -217,7 +220,6 @@ c Written by Claudia Filippi
 
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
@@ -375,7 +377,9 @@ c Written by Claudia Filippi
 
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -392,7 +396,6 @@ c Written by Claudia Filippi
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension dj_e_b(83),dj_b(83)
@@ -449,7 +452,9 @@ c Written by Claudia Filippi
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
 
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -464,7 +469,6 @@ c Written by Claudia Filippi
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
@@ -492,7 +496,9 @@ c Written by Claudia Filippi
 
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -509,7 +515,6 @@ c Written by Claudia Filippi
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
@@ -555,7 +560,9 @@ c Written by Claudia Filippi
 
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -572,7 +579,6 @@ c Written by Claudia Filippi
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
@@ -599,7 +605,9 @@ c Written by Claudia Filippi
 
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -616,7 +624,6 @@ c Written by Claudia Filippi
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
@@ -650,7 +657,9 @@ c Written by Claudia Filippi
       use gradhess_jas, only: grad_jas, h_jas, s_jas
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -672,7 +681,6 @@ c Written by Claudia Filippi
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
 
 

@@ -1010,3 +1010,18 @@ end module forcewt
    public :: iwmix_virt, norbopt, norbvirt
    save
  end module optorb_mix
+
+ module optwf_contrl
+   !> Arguments: ioptci, ioptjas, ioptorb, nparm
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+    integer  :: ioptci
+    integer  :: ioptjas
+    integer  :: ioptorb
+    integer  :: nparm
+
+    private
+    public :: ioptci, ioptjas, ioptorb, nparm
+    save
+ end module optwf_contrl

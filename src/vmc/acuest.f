@@ -21,7 +21,9 @@ c routine to accumulate estimators for energy etc.
       use forcewt, only: wcum, wsum
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -61,7 +63,6 @@ c routine to accumulate estimators for energy etc.
 
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension xstrech(3,MELEC),enow(MSTATES,MFORCE)
 

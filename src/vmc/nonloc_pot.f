@@ -7,7 +7,9 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -19,7 +21,6 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
      &,vpsp_det(*),dvpsp_dj(*),t_vpsp(MCENT,MPS_QUAD,*)

@@ -7,7 +7,9 @@
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -39,7 +41,6 @@
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
       dimension orbprim(*),eorbprim(*)
@@ -106,7 +107,9 @@ c-----------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -117,7 +120,6 @@ c-----------------------------------------------------------------------
 
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       common /zcompact/ zmat(MORB,MELEC,2,MSTATES),dzmat(MORB,MELEC,2,MSTATES)
      & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)
@@ -147,7 +149,9 @@ c-----------------------------------------------------------------------
       subroutine optorb_sum(wtg_new,wtg_old,enew,eold,iflag)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -156,7 +160,6 @@ c-----------------------------------------------------------------------
       include 'optorb_cblk.h'
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension wtg_new(*),wtg_old(*),enew(*),eold(*)
 
@@ -253,7 +256,9 @@ c-----------------------------------------------------------------------
       subroutine optorb_cum(wsum,esum)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -262,7 +267,6 @@ c-----------------------------------------------------------------------
       include 'optorb_cblk.h'
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension wsum(*),esum(*)
 
@@ -314,7 +318,9 @@ c-----------------------------------------------------------------------
       subroutine optorb_init(iflg)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -323,7 +329,6 @@ c-----------------------------------------------------------------------
       include 'optorb_cblk.h'
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0) return
 
@@ -387,7 +392,9 @@ c-----------------------------------------------------------------------
       subroutine optorb_save
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -396,7 +403,6 @@ c-----------------------------------------------------------------------
       include 'optorb_cblk.h'
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0) return
 
@@ -414,7 +420,9 @@ c-----------------------------------------------------------------------
       subroutine optorb_restore
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -423,7 +431,6 @@ c-----------------------------------------------------------------------
       include 'optorb_cblk.h'
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0) return
 
@@ -439,14 +446,15 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
       dimension oav(*),eoav(*),fo(*),foerr(*)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       errn(x,x2,n)=dsqrt(dabs(x2/dble(n)-(x/dble(n))**2)/dble(n))
 
@@ -465,7 +473,9 @@ c-----------------------------------------------------------------------
       subroutine optorb_dump(iu)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -474,7 +484,6 @@ c-----------------------------------------------------------------------
       include 'optorb_cblk.h'
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0) return
 
@@ -499,7 +508,9 @@ c-----------------------------------------------------------------------
       subroutine optorb_rstrt(iu)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -508,7 +519,6 @@ c-----------------------------------------------------------------------
       include 'optorb_cblk.h'
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0) return
       read(iu) morbprim,morbterm,mreduced
@@ -545,7 +555,9 @@ c-----------------------------------------------------------------------
       subroutine optorb_fin(wcum,ecum)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -557,7 +569,6 @@ c-----------------------------------------------------------------------
 
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
@@ -973,7 +984,9 @@ c-----------------------------------------------------------------------
       subroutine check_orbitals
 
 c Do not compute virtual orbitals during single-electron move
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -982,7 +995,6 @@ c Do not compute virtual orbitals during single-electron move
       include 'optci.h'
       include 'optorb.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_save
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       save nadorb_save

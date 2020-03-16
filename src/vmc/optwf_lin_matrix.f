@@ -1,7 +1,9 @@
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
       use linear_norm, only: oav
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -15,7 +17,6 @@
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_save
       common /optwf_corsam/ add_diag_tmp(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
 
@@ -314,7 +315,9 @@ c-----------------------------------------------------------------------
 
       use dets, only: cdet, ndet
       use linear_norm, only: oav
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -334,7 +337,6 @@ c-----------------------------------------------------------------------
       common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparmsav
 
 
       dimension dparm(*)

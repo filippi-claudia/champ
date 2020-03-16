@@ -2,7 +2,9 @@
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -13,7 +15,6 @@
       include 'mpif.h'
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension collect(MXORBOP+MXMATDIM)
 

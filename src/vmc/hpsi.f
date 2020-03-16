@@ -13,7 +13,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -38,7 +40,6 @@ c Calculates energy
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

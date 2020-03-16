@@ -1,6 +1,8 @@
       subroutine optx_orb_ci_sum(p,q)
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optci.h'
@@ -11,7 +13,6 @@
       common /mix_orb_ci/ ci_o_o(MXCITERM,MXREDUCED),ci_o_oe(MXCITERM,MXREDUCED),
      &ci_de_o(MXCITERM,MXREDUCED),ci_o_ho(MXCITERM,MXREDUCED)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -27,12 +28,13 @@
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_init
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optci.h'
       include 'optorb.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       common /mix_orb_ci/ ci_o_o(MXCITERM,MXREDUCED),ci_o_oe(MXCITERM,MXREDUCED),
      &ci_de_o(MXCITERM,MXREDUCED),ci_o_ho(MXCITERM,MXREDUCED)
@@ -51,7 +53,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_dump(iu)
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optci.h'
       include 'optorb.h'
@@ -59,7 +63,6 @@ c-----------------------------------------------------------------------
       common /mix_orb_ci/ ci_o_o(MXCITERM,MXREDUCED),ci_o_oe(MXCITERM,MXREDUCED),
      &ci_de_o(MXCITERM,MXREDUCED),ci_o_ho(MXCITERM,MXREDUCED)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
       write(iu) ((ci_o_o(i,j),ci_o_oe(i,j),ci_o_ho(i,j),ci_de_o(i,j),i=1,nciterm),j=1,nreduced)
@@ -69,7 +72,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_rstrt(iu)
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optci.h'
       include 'optorb.h'
@@ -77,7 +82,6 @@ c-----------------------------------------------------------------------
       common /mix_orb_ci/ ci_o_o(MXCITERM,MXREDUCED),ci_o_oe(MXCITERM,MXREDUCED),
      &ci_de_o(MXCITERM,MXREDUCED),ci_o_ho(MXCITERM,MXREDUCED)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
       write(iu) ((ci_o_o(i,j),ci_o_oe(i,j),ci_o_ho(i,j),ci_de_o(i,j),i=1,nciterm),j=1,nreduced)
@@ -91,7 +95,9 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -116,7 +122,6 @@ c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension oelocav(MXCITERM),eav(MXCITERM)

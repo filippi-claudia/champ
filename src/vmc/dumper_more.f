@@ -21,7 +21,9 @@ c job where it left off
       use forcepar, only: deltot, istrech, nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -59,7 +61,6 @@ c job where it left off
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT)
      &,znucx(MCTYPE),n1sx(MCTYPE),n2sx(MCTYPE),n2px(3,MCTYPE)

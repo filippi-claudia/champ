@@ -6,7 +6,9 @@ c written by Claudia Filippi
       use forcepar, only: deltot, istrech, nforce
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -26,7 +28,6 @@ c written by Claudia Filippi
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
@@ -548,13 +549,14 @@ c Always increase nblk by a factor of 2 every other iteration
 c-----------------------------------------------------------------------
       subroutine quad_min
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
       parameter(MFUNC=3)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
       dimension add_diag_log(MFUNC),a(MFUNC,MFUNC),b(MFUNC)
@@ -642,7 +644,9 @@ c-----------------------------------------------------------------------
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -661,7 +665,6 @@ c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
 c Note: we do not vary the first (i0) CI coefficient unless full CI

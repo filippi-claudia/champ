@@ -7,7 +7,9 @@
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -45,7 +47,6 @@ c dimensioned at least max(nup**2,ndn**2)
       common /zcompact/ zmat(MORB,MELEC,2,MSTATES),dzmat(MORB,MELEC,2,MSTATES)
      & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
