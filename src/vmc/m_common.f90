@@ -996,3 +996,17 @@ end module forcewt
    public :: ibas0, ibas1
    save
  end module numbas2
+
+ module optorb_mix
+   !> Arguments: iwmix_virt, norbopt, norbvirt
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   integer  :: iwmix_virt(MORB,MORB)
+   integer  :: norbopt
+   integer  :: norbvirt
+
+   private
+   public :: iwmix_virt, norbopt, norbvirt
+   save
+ end module optorb_mix

@@ -763,7 +763,9 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use optorb_mix, only: iwmix_virt, norbopt, norbvirt
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -781,7 +783,6 @@ c-----------------------------------------------------------------------
 
       common /dorb/ iworbd(MELEC,MDET)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /optorb_mix/ norbopt,norbvirt,iwmix_virt(MORB,MORB)
 
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
 

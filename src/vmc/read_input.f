@@ -1450,7 +1450,9 @@ c-----------------------------------------------------------------------
 c Check that the required blocks are there in the input
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use optorb_mix, only: iwmix_virt, norbopt, norbvirt
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -1461,7 +1463,6 @@ c Check that the required blocks are there in the input
       include 'inputflags.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /optorb_mix/ norbopt,norbvirt,iwmix_virt(MORB,MORB)
 
       call p2gtid('general:nforce',nforce,1,1)
       if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
@@ -1850,13 +1851,14 @@ c-----------------------------------------------------------------------
       subroutine read_optorb_mixvirt(moopt,movirt,fn)
 C$INPUT optorb_mixvirt i i a=<input>
 CKEYDOC Read which virtual orbitals are mixed with the occupied ones
-      implicit double precision(a-h,o-z)
+      use optorb_mix, only: iwmix_virt, norbopt, norbvirt
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /optorb_mix/ norbopt,norbvirt,iwmix_virt(MORB,MORB)
 
       character fn*(*)
       character atmp*80
