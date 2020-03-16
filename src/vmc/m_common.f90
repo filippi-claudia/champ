@@ -933,3 +933,18 @@ end module forcewt
    public :: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
    save
  end module multidet
+
+ module ncusp
+   !> Arguments: ncnstr, ncuspc, nfock, nfockc, norbc
+   use precision_kinds, only: dp
+
+   integer  :: ncnstr
+   integer  :: ncuspc
+   integer  :: nfock
+   integer  :: nfockc
+   integer  :: norbc
+
+   private
+   public :: ncnstr, ncuspc, nfock, nfockc, norbc
+   save
+ end module ncusp

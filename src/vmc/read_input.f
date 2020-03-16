@@ -47,7 +47,9 @@ c and Anthony Scemema
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use ncusp, only: ncnstr, ncuspc, nfock, nfockc, norbc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -97,7 +99,6 @@ c and Anthony Scemema
      &,ifock,i3body,irewgt,iaver,istrch
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
       common /bparm/ nspin2b,nocuspb
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
