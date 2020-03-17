@@ -317,7 +317,9 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use linear_norm, only: oav
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -335,7 +337,6 @@ c-----------------------------------------------------------------------
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
 
 

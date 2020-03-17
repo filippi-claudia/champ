@@ -1053,3 +1053,17 @@ end module forcewt
    public :: ifunc_omega, omega, omega_hes
    save
  end module optwf_func
+
+ module optwf_nparmj
+   !> Arguments: nparma, nparmb, nparmc, nparmf
+   include 'vmc.h'
+
+   integer  :: nparma(MCTYP3X)
+   integer  :: nparmb(3)
+   integer  :: nparmc(MCTYPE)
+   integer  :: nparmf(MCTYPE)
+
+   private
+   public :: nparma, nparmb, nparmc, nparmf
+   save
+ end module optwf_nparmj

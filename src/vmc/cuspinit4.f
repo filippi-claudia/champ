@@ -69,7 +69,9 @@ c-----------------------------------------------------------------------
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -86,7 +88,6 @@ c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
       neqs=2*(nordc-1)
 
