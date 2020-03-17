@@ -1082,3 +1082,18 @@ end module forcewt
    public :: nparmd, nparme, nparmg, nparmj, nparml, nparms
    save
  end module optwf_parms
+
+ module optwf_wjas
+   !> Arguments: iwjasa, iwjasb, iwjasc, iwjasf
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   integer  :: iwjasa(83,MCTYP3X)
+   integer  :: iwjasb(83,3)
+   integer  :: iwjasc(83,MCTYPE)
+   integer  :: iwjasf(15,MCTYPE)
+
+   private
+   public :: iwjasa, iwjasb, iwjasc, iwjasf
+   save
+ end module optwf_wjas

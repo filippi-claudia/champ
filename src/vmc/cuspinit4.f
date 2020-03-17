@@ -71,7 +71,9 @@ c-----------------------------------------------------------------------
       use jaspar4, only: a4, norda, nordb, nordc
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -88,7 +90,6 @@ c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,83,MCTYPE)
      &,cdep(NEQSX,83,MCTYPE)
 
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
       neqs=2*(nordc-1)
 

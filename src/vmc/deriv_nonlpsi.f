@@ -12,7 +12,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &cutjas, cutjasi
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -37,7 +39,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
       common /cuspmat/ cm(NEQSX,NEQSX),iwc3(NEQSX),neqs,ishe
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
@@ -127,7 +128,9 @@ c-----------------------------------------------------------------------
      &cutjas, cutjasi
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -141,7 +144,6 @@ c-----------------------------------------------------------------------
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
@@ -193,7 +195,9 @@ c-----------------------------------------------------------------------
      &cutjas, cutjasi
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -207,7 +211,6 @@ c-----------------------------------------------------------------------
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

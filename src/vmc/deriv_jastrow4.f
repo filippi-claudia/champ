@@ -19,7 +19,9 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -53,7 +55,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo

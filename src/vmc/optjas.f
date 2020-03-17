@@ -200,7 +200,9 @@ c Written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -225,7 +227,6 @@ c Written by Claudia Filippi
 
 
 
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
       dimension enew(*),eold(*),wtg_new(*),wtg_old(*)
 
