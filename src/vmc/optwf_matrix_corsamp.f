@@ -7,7 +7,9 @@ c written by Claudia Filippi
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_corsam, only: add_diag, add_diag_tmp, energy, energy_err, force, force_err
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -28,7 +30,6 @@ c written by Claudia Filippi
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 
@@ -550,14 +551,15 @@ c-----------------------------------------------------------------------
       subroutine quad_min
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_corsam, only: add_diag, add_diag_tmp, energy, energy_err, force, force_err
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
       parameter(MFUNC=3)
 
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
       dimension add_diag_log(MFUNC),a(MFUNC,MFUNC),b(MFUNC)
 

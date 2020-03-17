@@ -9,7 +9,9 @@ c written by Claudia Filippi
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use mpiconf, only: idtask, nproc, wid
+      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -19,7 +21,6 @@ c written by Claudia Filippi
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
 
       dimension istatus(MPI_STATUS_SIZE)
 

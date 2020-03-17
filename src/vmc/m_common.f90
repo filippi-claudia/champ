@@ -1025,3 +1025,20 @@ end module forcewt
     public :: ioptci, ioptjas, ioptorb, nparm
     save
  end module optwf_contrl
+
+ module optwf_corsam
+   !> Arguments: add_diag_tmp, energy, energy_err, force, force_err
+   use precision_kinds, only: dp
+   include 'force.h'
+
+   real(dp) :: add_diag(MFORCE)
+   real(dp) :: add_diag_tmp(MFORCE)
+   real(dp) :: energy(MFORCE)
+   real(dp) :: energy_err(MFORCE)
+   real(dp) :: force(MFORCE)
+   real(dp) :: force_err(MFORCE)
+
+   private
+   public :: add_diag, add_diag_tmp, energy, energy_err, force, force_err
+   save
+ end module optwf_corsam

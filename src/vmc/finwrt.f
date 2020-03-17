@@ -17,7 +17,9 @@ c routine to print out final results
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
 
       use header, only: date, title
+      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -48,7 +50,6 @@ c routine to print out final results
 
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
 

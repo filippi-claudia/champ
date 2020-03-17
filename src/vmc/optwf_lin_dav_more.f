@@ -5,7 +5,9 @@
 
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -21,7 +23,6 @@
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
 
       dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,MSTATES),index_overlap(MVEC),anorm(MVEC)

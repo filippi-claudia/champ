@@ -5,7 +5,9 @@
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -17,7 +19,6 @@
       character*20 method_sav
 
       common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
       common /optwf_func/ omega,omega_hes,ifunc_omega
       common /sa_check/ energy_all(MSTATES),energy_err_all(MSTATES) 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo

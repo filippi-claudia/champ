@@ -2,7 +2,9 @@
 
       use linear_norm, only: oav
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -17,7 +19,6 @@
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
 
       common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_corsam/ add_diag_tmp(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
 
       dimension h(mparmx,*),s(mparmx,*)
