@@ -2329,14 +2329,15 @@ c-----------------------------------------------------------------------
       subroutine set_displace_zero(nforce_tmp)
       use forcepar, only: deltot, istrech, nforce
       use forcestr, only: delc
+      use pcm_force, only: sch_s
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
       include 'pcm.h'
 
-      common /pcm_force/ sch_s(MCHS,MFORCE)
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')

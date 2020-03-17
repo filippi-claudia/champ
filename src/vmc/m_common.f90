@@ -1120,3 +1120,16 @@ end module forcewt
    public :: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma, xms
    save
  end module pars
+
+ module pcm_force
+   !> Arguments: sch_s
+   use precision_kinds, only: dp
+   include 'pcm.h'
+   include 'force.h'
+
+   real(dp) :: sch_s(MCHS,MFORCE)
+
+   private
+   public :: sch_s
+   save
+ end module pcm_force
