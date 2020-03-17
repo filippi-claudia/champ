@@ -1097,3 +1097,26 @@ end module forcewt
    public :: iwjasa, iwjasb, iwjasc, iwjasf
    save
  end module optwf_wjas
+
+ module pars
+   !> Arguments: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma, xms
+   use precision_kinds, only: dp
+
+   real(dp) :: Z
+   real(dp) :: a00
+   real(dp) :: a20
+   real(dp) :: a21
+   real(dp) :: c0000
+   real(dp) :: c1110
+   real(dp) :: c2000
+   real(dp) :: eps_fock
+   real(dp) :: xm1
+   real(dp) :: xm12
+   real(dp) :: xm2
+   real(dp) :: xma
+   real(dp) :: xms
+
+   private
+   public :: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma, xms
+   save
+ end module pars
