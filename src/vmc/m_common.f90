@@ -1148,3 +1148,15 @@ end module forcewt
    public :: enfpcm, pepcms, pepcmv, qopcm
    save
  end module pcm_hpsi
+
+ module pcm_num_spl2
+   !> Arguments: bc, wk
+   use precision_kinds, only: dp
+
+   real(dp) :: bc
+   real(dp) :: wk
+
+   private
+   public :: bc, wk
+   save
+ end module pcm_num_spl2
