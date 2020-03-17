@@ -74,14 +74,15 @@
       subroutine pcm_reduce_chvol
 
       use mpiconf, only: idtask, nproc, wid
+      use pcm_xv_new, only: xv_new
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'mpi_qmc.h'
       include 'pcm.h'
 
 
-      common /pcm_xv_new/ xv_new(3,MCHV)
 
       dimension nchv_proc(0:NPROCX),charge(NPROCX)
       dimension icount(0:NPROCX),idispl(0:NPROCX)

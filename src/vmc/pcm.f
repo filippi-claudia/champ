@@ -249,11 +249,12 @@ c        of the electron field  at the point on the surface is computed
 C     ***************************************************************
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      use pcm_xv_new, only: xv_new
       implicit real*8(a-h,o-z)
+
 
       include 'pcm.h'
       include 'vmc.h'
-      common /pcm_xv_new/ xv_new(3,MCHV)
 
 c
       dimension coord(3,*)
@@ -369,10 +370,11 @@ c............................................................
 c      update of volume charges and penupol
 c............................................................
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      IMPLICIT REAL*8 (A-H,O-Z)
+      use pcm_xv_new, only: xv_new
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pcm.h'
-      common /pcm_xv_new/ xv_new(3,MCHV)
 
       iupdate=0
       if(ipcm.eq.0.or.ipcm.eq.3) return

@@ -1160,3 +1160,15 @@ end module forcewt
    public :: bc, wk
    save
  end module pcm_num_spl2
+
+ module pcm_xv_new
+   !> Arguments: xv_new
+   use precision_kinds, only: dp
+   include 'pcm.h'
+
+   real(dp) :: xv_new(3,MCHV)
+
+   private
+   public :: xv_new
+   save
+ end module pcm_xv_new
