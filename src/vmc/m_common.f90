@@ -1172,3 +1172,18 @@ end module forcewt
    public :: xv_new
    save
  end module pcm_xv_new
+
+ module pcmo
+   !> Arguments: enfpcmo, qopcmo, spcmo, vpcmo
+   use precision_kinds, only: dp
+   include 'pcm.h'
+
+   real(dp) :: enfpcmo(MCHS)
+   real(dp) :: qopcmo
+   real(dp) :: spcmo
+   real(dp) :: vpcmo
+
+   private
+   public :: enfpcmo, qopcmo, spcmo, vpcmo
+   save
+ end module pcmo

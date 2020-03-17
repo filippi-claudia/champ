@@ -106,10 +106,10 @@ orbital_num_spl2,1,Todo
 orbval,28,Todo
 pars,4,DONE
 pcm_force,2,DONE
-pcm_hpsi,4,Todo
-pcm_num_spl2,1,Todo
-pcm_xv_new,3,Todo
-pcmo,2,Todo
+pcm_hpsi,4,DONE
+pcm_num_spl2,1,DONE
+pcm_xv_new,3,DONE
+pcmo,2,DONE
 periodic,16,Todo
 phifun,14,Todo
 pseudo_champ,3,Todo

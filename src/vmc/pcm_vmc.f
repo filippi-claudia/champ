@@ -119,11 +119,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_save
       use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      use pcmo, only: enfpcmo, qopcmo, spcmo, vpcmo
       implicit real*8(a-h,o-z)
 
 
+
       include 'pcm.h'
-      common /pcmo/ spcmo,vpcmo,qopcmo,enfpcmo(MCHS)
 
       if(ipcm.eq.0) return
       spcmo=pcms
@@ -139,11 +140,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_sum(p,q)
       use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      use pcmo, only: enfpcmo, qopcmo, spcmo, vpcmo
       implicit real*8(a-h,o-z)
 
 
+
       include 'pcm.h'
-      common /pcmo/ spcmo,vpcmo,qopcmo,enfpcmo(MCHS)
 
       if(ipcm.eq.0) return
       spcmsum=spcmsum+p*pcms+q*spcmo
