@@ -14,7 +14,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -57,7 +59,6 @@ c Calculates energy
      &,lpot(MCTYPE),nloc
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-      common /pcm_hpsi/ pepcms,pepcmv,qopcm,enfpcm(MCHS)
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 

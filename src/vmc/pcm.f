@@ -248,10 +248,11 @@ c     3) for the accepted configuration, the normal component
 c        of the electron field  at the point on the surface is computed 
 C     ***************************************************************
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      IMPLICIT REAL*8 (A-H,O-Z)
+      use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      implicit real*8(a-h,o-z)
+
       include 'pcm.h'
       include 'vmc.h'
-      common /pcm_hpsi/ pepcms,pepcmv,qopcm,enfpcm(MCHS)
       common /pcm_xv_new/ xv_new(3,MCHV)
 
 c

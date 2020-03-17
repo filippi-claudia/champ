@@ -1133,3 +1133,18 @@ end module forcewt
    public :: sch_s
    save
  end module pcm_force
+
+ module pcm_hpsi
+   !> Arguments: enfpcm, pepcms, pepcmv, qopcm
+   use precision_kinds, only: dp
+   include 'pcm.h'
+
+   real(dp) :: enfpcm(MCHS)
+   real(dp) :: pepcms
+   real(dp) :: pepcmv
+   real(dp) :: qopcm
+
+   private
+   public :: enfpcm, pepcms, pepcmv, qopcm
+   save
+ end module pcm_hpsi
