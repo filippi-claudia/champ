@@ -378,7 +378,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_func, only: ifunc_omega, omega, omega_hes
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -386,7 +388,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'sr.h'
       include 'mstates.h'
  
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
@@ -490,7 +491,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_func, only: ifunc_omega, omega, omega_hes
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -499,7 +502,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'mstates.h'
 
 
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
@@ -611,7 +613,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_func, only: ifunc_omega, omega, omega_hes
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -620,7 +624,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'mstates.h'
 
  
-      common /optwf_func/ omega,omega_hes,ifunc_omega
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 

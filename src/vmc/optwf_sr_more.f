@@ -6,7 +6,9 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use mpiconf, only: idtask, nproc
+      use optwf_func, only: ifunc_omega, omega, omega_hes
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -23,7 +25,6 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       common /sr_index/ jelo,jelo2,jelohfj
 
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
 
       dimension obs(MOBS,MSTATES),obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
@@ -301,7 +302,9 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_func, only: ifunc_omega, omega, omega_hes
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
 
@@ -317,7 +320,6 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
 
       common /sr_index/ jelo,jelo2,jelohfj
 
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       dimension z(*),r(*),aux(0:MCONF),aux1(0:MCONF),rloc(MPARM),r_s(MPARM),oz_jasci(MCONF)
       dimension tmp(MPARM),tmp2(MPARM)

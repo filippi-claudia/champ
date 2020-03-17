@@ -1013,8 +1013,6 @@ end module forcewt
 
  module optwf_contrl
    !> Arguments: ioptci, ioptjas, ioptorb, nparm
-   use precision_kinds, only: dp
-   include 'vmc.h'
 
     integer  :: ioptci
     integer  :: ioptjas
@@ -1042,3 +1040,16 @@ end module forcewt
    public :: add_diag, add_diag_tmp, energy, energy_err, force, force_err
    save
  end module optwf_corsam
+
+ module optwf_func
+   !> Arguments: ifunc_omega, omega, omega_hes
+   use precision_kinds, only: dp
+
+   integer  :: ifunc_omega
+   real(dp) :: omega
+   real(dp) :: omega_hes
+
+   private
+   public :: ifunc_omega, omega, omega_hes
+   save
+ end module optwf_func

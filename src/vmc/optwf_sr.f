@@ -6,7 +6,9 @@
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_func, only: ifunc_omega, omega, omega_hes
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -17,7 +19,6 @@
       include 'sr.h'
 
       common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 

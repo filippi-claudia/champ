@@ -4,7 +4,9 @@
 
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_func, only: ifunc_omega, omega, omega_hes
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -23,7 +25,6 @@
 
       common /sr_index/ jelo,jelo2,jelohfj
 
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
 
       dimension obs(MOBS,MSTATES),obs_wtg(MSTATES),obs_wtg_tot(MSTATES)

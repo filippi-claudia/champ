@@ -7,7 +7,9 @@
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_func, only: ifunc_omega, omega, omega_hes
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -20,7 +22,6 @@
       character*20 method_sav
 
       common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
@@ -185,12 +186,13 @@ c enddo iteration
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_lin_d(ndim,nvec,psi,hpsi )
-      implicit real*8 (a-h,o-z)
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      implicit real*8(a-h,o-z)
+
 
       include 'sr.h'
       include 'mstates.h'
 
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       dimension psi(MPARM,*),hpsi(MPARM,*)
 
@@ -207,12 +209,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_lin_d(ndim,nvec,psi,spsi )
-      implicit real*8 (a-h,o-z)
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      implicit real*8(a-h,o-z)
+
 
       include 'sr.h'
       include 'mstates.h'
  
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       dimension psi(MPARM,*),spsi(MPARM,*)
 
