@@ -96,7 +96,9 @@ c-----------------------------------------------------------------------
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -122,7 +124,6 @@ c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
 
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension oelocav(MXCITERM),eav(MXCITERM)
 

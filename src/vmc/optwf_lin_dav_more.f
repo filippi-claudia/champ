@@ -6,7 +6,9 @@
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -19,7 +21,6 @@
       include 'force.h'
       include 'mstates.h'
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 

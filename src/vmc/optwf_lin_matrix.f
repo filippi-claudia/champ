@@ -3,7 +3,9 @@
       use linear_norm, only: oav
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -18,7 +20,6 @@
 
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
 
       dimension h(mparmx,*),s(mparmx,*)
@@ -318,7 +319,9 @@ c-----------------------------------------------------------------------
       use linear_norm, only: oav
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -335,7 +338,6 @@ c-----------------------------------------------------------------------
 
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
 

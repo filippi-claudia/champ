@@ -8,7 +8,9 @@ c written by Claudia Filippi
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag, add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,7 +36,6 @@ c written by Claudia Filippi
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension grad_sav(MPARMALL),h_sav(MPARMALL,MPARMALL),s_sav(MPARMALL2)
       dimension work(MWORK),work2(MPARMALL,MPARMALL)
@@ -647,7 +648,9 @@ c-----------------------------------------------------------------------
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -667,7 +670,6 @@ c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
 c Note: we do not vary the first (i0) CI coefficient unless full CI
 

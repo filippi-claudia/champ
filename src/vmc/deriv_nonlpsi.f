@@ -11,7 +11,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -35,7 +37,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
       common /cuspmat/ cm(NEQSX,NEQSX),iwc3(NEQSX),neqs,ishe
@@ -125,7 +126,9 @@ c-----------------------------------------------------------------------
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -138,7 +141,6 @@ c-----------------------------------------------------------------------
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
@@ -190,7 +192,9 @@ c-----------------------------------------------------------------------
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -203,7 +207,6 @@ c-----------------------------------------------------------------------
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap

@@ -556,7 +556,9 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -570,7 +572,6 @@ c-----------------------------------------------------------------------
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
 
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 

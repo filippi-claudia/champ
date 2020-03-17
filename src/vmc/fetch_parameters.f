@@ -27,7 +27,9 @@ c-----------------------------------------------------------------------
       use jaspar4, only: a4, norda, nordb, nordc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -38,7 +40,6 @@ c-----------------------------------------------------------------------
 
       common /bparm/ nspin2b,nocuspb
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
 
@@ -66,7 +67,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine fetch_lcao(p,n)
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -76,7 +79,6 @@ c-----------------------------------------------------------------------
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension p(*)
 
@@ -94,7 +96,9 @@ c-----------------------------------------------------------------------
 
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -103,7 +107,6 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
 
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension p(*)
 

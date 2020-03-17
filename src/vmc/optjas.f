@@ -10,7 +10,9 @@
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -26,7 +28,6 @@
 
       parameter (MEXCIT=10)
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -198,7 +199,9 @@ c Written by Claudia Filippi
       use jaspointer, only: npoint, npointa
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -222,7 +225,6 @@ c Written by Claudia Filippi
 
 
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
       dimension enew(*),eold(*),wtg_new(*),wtg_old(*)
@@ -379,7 +381,9 @@ c Written by Claudia Filippi
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -397,7 +401,6 @@ c Written by Claudia Filippi
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension dj_e_b(83),dj_b(83)
 
@@ -454,7 +457,9 @@ c Written by Claudia Filippi
 
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -470,7 +475,6 @@ c Written by Claudia Filippi
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
 
@@ -498,7 +502,9 @@ c Written by Claudia Filippi
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -516,7 +522,6 @@ c Written by Claudia Filippi
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
 
@@ -562,7 +567,9 @@ c Written by Claudia Filippi
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -580,7 +587,6 @@ c Written by Claudia Filippi
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
 c to do: write out which parameters are being varied -> check for restart
@@ -607,7 +613,9 @@ c Written by Claudia Filippi
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -625,7 +633,6 @@ c Written by Claudia Filippi
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
 
@@ -659,7 +666,9 @@ c Written by Claudia Filippi
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -687,7 +696,6 @@ c Written by Claudia Filippi
 
       common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension hess1(MPARMJ,MPARMJ),hess2(MPARMJ,MPARMJ),hess3(MPARMJ,MPARMJ),grad_now(MPARMJ),gerr(MPARMJ)
       dimension ecum(*),wcum(*)

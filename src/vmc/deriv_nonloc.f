@@ -13,7 +13,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use jaspointer, only: npoint, npointa
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -37,7 +39,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       common /bparm/ nspin2b,nocuspb
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
       common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
 
 

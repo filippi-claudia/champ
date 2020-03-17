@@ -1067,3 +1067,18 @@ end module forcewt
    public :: nparma, nparmb, nparmc, nparmf
    save
  end module optwf_nparmj
+
+ module optwf_parms
+   !> Arguments: nparmd, nparme, nparmg, nparmj, nparml, nparms
+
+   integer  :: nparmd
+   integer  :: nparme
+   integer  :: nparmg
+   integer  :: nparmj
+   integer  :: nparml
+   integer  :: nparms
+
+   private
+   public :: nparmd, nparme, nparmg, nparmj, nparml, nparms
+   save
+ end module optwf_parms
