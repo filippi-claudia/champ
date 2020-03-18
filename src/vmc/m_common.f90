@@ -1187,3 +1187,64 @@ end module forcewt
    public :: enfpcmo, qopcmo, spcmo, vpcmo
    save
  end module pcmo
+
+ module periodic
+   !> Arguments: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt, glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim, ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb, ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec, np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell, vcell_sim, znuc2_sum, znuc_sum
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'ewald.h'
+
+   real(dp) :: cutg
+   real(dp) :: cutg_big
+   real(dp) :: cutg_sim
+   real(dp) :: cutg_sim_big
+   real(dp) :: cutr
+   real(dp) :: cutr_sim
+   real(dp) :: glatt(3,3)
+   real(dp) :: glatt_inv(3,3)
+   real(dp) :: glatt_sim(3,3)
+   real(dp) :: gnorm(NGNORM_BIGX)
+   real(dp) :: gnorm_sim(NGNORM_SIM_BIGX)
+   real(dp) :: gvec(3,NGVEC_BIGX)
+   real(dp) :: gvec_sim(3,NGVEC_SIM_BIGX)
+   integer  :: igmult(NGNORM_BIGX)
+   integer  :: igmult_sim(NGNORM_SIM_BIGX)
+   integer  :: igvec(3,NGVEC_BIGX)
+   integer  :: igvec_sim(3,NGVEC_SIM_BIGX)
+   integer  :: ireal_imag(MORB)
+   integer  :: isrange
+   integer  :: k_inv(IVOL_RATIO)
+   integer  :: kvec(3,IVOL_RATIO)
+   integer  :: nband(IVOL_RATIO)
+   integer  :: ncoef
+   integer  :: ng1d(3)
+   integer  :: ng1d_sim(3)
+   integer  :: ngnorm
+   integer  :: ngnorm_big
+   integer  :: ngnorm_orb
+   integer  :: ngnorm_sim
+   integer  :: ngnorm_sim_big
+   integer  :: ngvec
+   integer  :: ngvec_big
+   integer  :: ngvec_orb
+   integer  :: ngvec_sim
+   integer  :: ngvec_sim_big
+   integer  :: nkvec
+   integer  :: np
+   integer  :: npoly
+   real(dp) :: rknorm(IVOL_RATIO)
+   real(dp) :: rkvec(3,IVOL_RATIO)
+   real(dp) :: rkvec_shift(3)
+   real(dp) :: rlatt(3,3)
+   real(dp) :: rlatt_inv(3,3)
+   real(dp) :: rlatt_sim(3,3)
+   real(dp) :: rlatt_sim_inv(3,3)
+   real(dp) :: vcell
+   real(dp) :: vcell_sim
+   real(dp) :: znuc2_sum
+   real(dp) :: znuc_sum
+
+   private
+   public :: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt, glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim, ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb, ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec, np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell, vcell_sim, znuc2_sum, znuc_sum
+   save
+ end module periodic
