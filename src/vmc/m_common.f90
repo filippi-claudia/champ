@@ -1355,3 +1355,16 @@ end module forcewt
     public :: rlobx, rloby, rloby2
     save
  end module rlobxy
+
+ module sa_check
+   !> Arguments: energy_all, energy_err_all
+   use precision_kinds, only: dp
+   include 'mstates.h'
+
+    real(dp) :: energy_all(MSTATES)
+    real(dp) :: energy_err_all(MSTATES)
+
+    private
+    public :: energy_all, energy_err_all
+    save
+ end module sa_check
