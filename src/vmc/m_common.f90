@@ -1300,3 +1300,24 @@ end module forcewt
    public :: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
    save
  end module pseudo_fahy
+
+ module pseudo_tm
+   !> Arguments: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'pseudo.h'
+
+    real(dp) :: arg(MCTYPE)
+    real(dp) :: arg_ps(MCTYPE)
+    real(dp) :: d2pot(MPS_GRID,MCTYPE,MPS_L)
+    integer  :: nr_ps(MCTYPE)
+    real(dp) :: r0(MCTYPE)
+    real(dp) :: r0_ps(MCTYPE)
+    real(dp) :: rmax(MCTYPE)
+    real(dp) :: rmax_ps(MCTYPE)
+    real(dp) :: vpseudo(MPS_GRID,MCTYPE,MPS_L)
+
+    private
+    public :: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
+    save
+ end module pseudo_tm

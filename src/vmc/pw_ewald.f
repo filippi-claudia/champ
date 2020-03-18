@@ -13,7 +13,10 @@ c Written by Cyrus Umrigar
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
+      use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -31,8 +34,6 @@ c Written by Cyrus Umrigar
 c     common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
 c    &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
 c    &,nlrad(MCTYPE)
-      common /pseudo_tm/ rmax(MCTYPE),arg(MCTYPE),r0(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),nr_ps(MCTYPE)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
