@@ -1341,3 +1341,17 @@ end module forcewt
    public :: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
    save
  end module pworbital
+
+ module rlobxy
+   !> Arguments: rlobx, rloby, rloby2
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+    real(dp) :: rlobx(NSPLIN)
+    real(dp) :: rloby(NSPLIN)
+    real(dp) :: rloby2(NSPLIN)
+
+    private
+    public :: rlobx, rloby, rloby2
+    save
+ end module rlobxy

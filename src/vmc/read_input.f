@@ -56,7 +56,9 @@ c and Anthony Scemema
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
      &xms
+      use rlobxy, only: rlobx, rloby, rloby2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -100,7 +102,6 @@ c and Anthony Scemema
       include '3dgrid_flags.h'
 
 
-      common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
       common /const2/ deltar,deltat
       common /contrl_per/ iperiodic,ibasis
