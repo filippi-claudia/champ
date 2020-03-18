@@ -1281,3 +1281,22 @@ end module forcewt
    public :: igrid_ps, rmax_coul, rmax_nloc
    save
  end module pseudo_champ
+
+ module pseudo_fahy
+   !> Arguments: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'pseudo.h'
+
+   real(dp) :: drad(MCTYPE)
+   real(dp) :: dradl(MCTYPE)
+   integer  :: nlrad(MCTYPE)
+   integer  :: npotl(MCTYPE)
+   real(dp) :: potl(MPS_GRID,MCTYPE)
+   real(dp) :: ptnlc(MPS_GRID,MCTYPE,MPS_L)
+   real(dp) :: rcmax(MCTYPE)
+
+   private
+   public :: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
+   save
+ end module pseudo_fahy

@@ -2,7 +2,10 @@
 c Written by Claudia Filippi
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use pseudo_fahy, only: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -11,9 +14,6 @@ c Written by Claudia Filippi
       character*20 filename,atomtyp
 
 
-      common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
-     &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
-     &,nlrad(MCTYPE)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
@@ -93,15 +93,15 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use pseudo_fahy, only: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
       include 'pseudo.h'
 
-      common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
-     &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
-     &,nlrad(MCTYPE)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
