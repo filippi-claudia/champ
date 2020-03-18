@@ -7,7 +7,10 @@ c routine to calculate the values of the basis functions and their derivatives
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -28,9 +31,6 @@ c nsa < 0   r^2*exp(-a*r^2)
 c npa < 0   (xyz)*exp(-a*r^2)
 c nda < 0   (zr,x2y2...)*exp(-a*r^2)
 
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

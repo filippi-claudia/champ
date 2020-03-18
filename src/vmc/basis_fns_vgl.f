@@ -9,7 +9,10 @@ c vgl -> value, gradient, laplacian
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
       use numbas1, only: iwlbas, nbastyp
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -25,9 +28,6 @@ c vgl -> value, gradient, laplacian
       parameter (ten=10.d0,half=.5d0)
       parameter (twelve=12.d0)
 
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
 
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
@@ -502,12 +502,12 @@ c-------------------------------------------------------------------
 c-------------------------------------------------------------------
       subroutine n0_inc(l,k,ic)
 
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
 
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
 
       if(abs(phin(l,k))+abs(dphin(1,l,k))+abs(dphin(2,l,k))+abs(dphin(3,l,k)).gt.1.d-20)then
        n0_nbasis(k)=n0_nbasis(k)+1

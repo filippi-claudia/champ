@@ -1248,3 +1248,22 @@ end module forcewt
    public :: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt, glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim, ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb, ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec, np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell, vcell_sim, znuc2_sum, znuc_sum
    save
  end module periodic
+
+ module phifun
+   !> Arguments: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: d2phin(MBASIS,MELEC)
+   real(dp) :: d2phin_all(3,3,MBASIS,MELEC)
+   real(dp) :: d3phin(3,MBASIS,MELEC)
+   real(dp) :: dphin(3,MBASIS,MELEC)
+   integer  :: n0_ibasis(MBASIS,MELEC)
+   integer  :: n0_ic(MBASIS,MELEC)
+   integer  :: n0_nbasis(MELEC)
+   real(dp) :: phin(MBASIS,MELEC)
+
+   private
+   public :: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
+   save
+ end module phifun

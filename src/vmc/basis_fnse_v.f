@@ -6,7 +6,10 @@ c routine to calculate basis functions for electron k
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
       use numbas1, only: iwlbas, nbastyp
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -18,9 +21,6 @@ c routine to calculate basis functions for electron k
 
       parameter (one=1.d0,three=3.d0,half=0.5d0)
 
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
 
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype

@@ -6,7 +6,10 @@ c Modified by A. Scemama
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
       use elec, only: ndn, nup
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -27,9 +30,6 @@ c dimensioned at least max(nup**2,ndn**2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /force_analy/ iforce_analy
 
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -159,7 +159,10 @@ c-------------------------------------------------------------------------------
       subroutine virtual_orbitals
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
       implicit real*8(a-h,o-z)
+
 
 
 c compute values of extra ('virtual') orbitals needed for optorb operators
@@ -169,9 +172,6 @@ c assuming that basis function values in phin are up to date
       include 'force.h'
       include 'optorb.h'
 
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -225,7 +225,10 @@ c-------------------------------------------------------------------------------
 
       use numbas1, only: iwlbas, nbastyp
       use numbas2, only: ibas0, ibas1
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -235,9 +238,6 @@ c-------------------------------------------------------------------------------
       include 'numbas.h'
       include 'force.h'
 
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
@@ -282,7 +282,10 @@ c-------------------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -295,9 +298,6 @@ c-------------------------------------------------------------------------------
       parameter(one=1.d0)
 
       common /contrl_per/ iperiodic,ibasis
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /dorb/ iworbd(MELEC,MDET)

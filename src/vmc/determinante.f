@@ -5,7 +5,10 @@
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -18,9 +21,6 @@
       parameter(one=1.d0)
 
       common /contrl_per/ iperiodic,ibasis
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /dorb/ iworbd(MELEC,MDET)
