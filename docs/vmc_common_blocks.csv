@@ -112,7 +112,7 @@ pcm_xv_new,3,DONE
 pcmo,2,DONE
 periodic,16,DONE
 phifun,14,DONE
-pseudo_champ,3,Todo
+pseudo_champ,3,DONE
 pseudo_fahy,3,Todo
 pseudo_tm,7,Todo
 pworbital,5,Todo

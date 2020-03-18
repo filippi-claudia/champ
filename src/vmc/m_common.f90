@@ -1267,3 +1267,17 @@ end module forcewt
    public :: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
    save
  end module phifun
+
+ module pseudo_champ
+   !> Arguments: igrid_ps, rmax_coul, rmax_nloc
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   integer  :: igrid_ps(MCTYPE)
+   real(dp) :: rmax_coul(MCTYPE)
+   real(dp) :: rmax_nloc(MCTYPE)
+
+   private
+   public :: igrid_ps, rmax_coul, rmax_nloc
+   save
+ end module pseudo_champ

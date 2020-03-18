@@ -20,7 +20,9 @@ c The prefered grid is 3.
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -36,7 +38,6 @@ c The prefered grid is 3.
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /pseudo_champ/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),igrid_ps(MCTYPE)
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
@@ -271,7 +272,9 @@ c-----------------------------------------------------------------------
 c compute pseudopotential for electron iel
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
@@ -282,7 +285,6 @@ c compute pseudopotential for electron iel
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /pseudo_champ/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),igrid_ps(MCTYPE)
 
       dimension r_en(MELEC,MCENT)
 
@@ -322,7 +324,9 @@ c ewald without going through getvps_tm.
 c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
@@ -332,7 +336,6 @@ c We assume that rmax_nloc(ict) <= rmax_coul(ict).
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /pseudo_champ/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),igrid_ps(MCTYPE)
 
       if(r.lt.rmax_coul(ict)) then
 
