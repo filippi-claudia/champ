@@ -12,7 +12,10 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
+      use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -21,8 +24,6 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       include 'ewald.h'
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /pworbital/c_rp(NGVECX,MORB),c_rm(NGVECX,MORB),c_ip(NGVECX,MORB)
-     &,c_im(NGVECX,MORB),ngorb(MORB),isortg(NGVECX,MORB),isortk(IVOL_RATIO),icmplx
 
       dimension x(3,MELEC),orb(MELEC,*),dorb(3,MELEC,*),ddorb(MELEC,*)
       dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
@@ -196,7 +197,10 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
+      use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -205,8 +209,6 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       include 'ewald.h'
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /pworbital/c_rp(NGVECX,MORB),c_rm(NGVECX,MORB),c_ip(NGVECX,MORB)
-     &,c_im(NGVECX,MORB),ngorb(MORB),isortg(NGVECX,MORB),isortk(IVOL_RATIO),icmplx
 
       dimension x(3),orb(*),dorb(3,*),ddorb(*)
       dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)

@@ -1321,3 +1321,23 @@ end module forcewt
     public :: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
     save
  end module pseudo_tm
+
+ module pworbital
+   !> Arguments: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'ewald.h'
+
+   real(dp) :: c_im(NGVECX,MORB)
+   real(dp) :: c_ip(NGVECX,MORB)
+   real(dp) :: c_rm(NGVECX,MORB)
+   real(dp) :: c_rp(NGVECX,MORB)
+   integer  :: icmplx
+   integer  :: isortg(NGVECX,MORB)
+   integer  :: isortk(IVOL_RATIO)
+   integer  :: ngorb(MORB)
+
+   private
+   public :: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+   save
+ end module pworbital
