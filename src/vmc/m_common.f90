@@ -1420,3 +1420,15 @@ end module forcewt
    public :: slmin
    save
  end module slatn
+
+ module sr_index
+   !> Arguments: jelo, jelo2, jelohfj
+
+   integer  :: jelo
+   integer  :: jelo2
+   integer  :: jelohfj
+
+   private
+   public :: jelo, jelo2, jelohfj
+   save
+ end module sr_index

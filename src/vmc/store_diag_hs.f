@@ -6,7 +6,9 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: iweight, nweight, weights
+      use sr_index, only: jelo, jelo2, jelohfj
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -24,7 +26,6 @@
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
-      common /sr_index/ jelo,jelo2,jelohfj
 
 
 
