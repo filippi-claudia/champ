@@ -7,7 +7,9 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       use mpiconf, only: idtask, nproc
       use optwf_func, only: ifunc_omega, omega, omega_hes
+      use sa_weights, only: iweight, nweight, weights
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -21,7 +23,6 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
       common /sr_index/ jelo,jelo2,jelohfj
 
@@ -303,7 +304,9 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_func, only: ifunc_omega, omega, omega_hes
+      use sa_weights, only: iweight, nweight, weights
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
@@ -316,7 +319,6 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
       common /sr_index/ jelo,jelo2,jelohfj
 

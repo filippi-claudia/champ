@@ -166,7 +166,9 @@ c-----------------------------------------------------------------------
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use sa_weights, only: iweight, nweight, weights
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -189,7 +191,6 @@ c-----------------------------------------------------------------------
 
 
 
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
 
       dimension wcum(*),ecum(*),grad_orb(MXREDUCED)

@@ -18,7 +18,9 @@ c routine to print out final results
 
       use header, only: date, title
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use sa_weights, only: iweight, nweight, weights
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -48,7 +50,6 @@ c routine to print out final results
      &ekin(nrad),ekin2(nrad)
 
 
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)

@@ -557,7 +557,9 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use sa_weights, only: iweight, nweight, weights
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -576,7 +578,6 @@ c-----------------------------------------------------------------------
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 
 
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
       dimension oav(MXORBOP),eoav(MXORBOP),fo(MXORBOP),foerr(MXORBOP)
       dimension wcum(*),ecum(*)

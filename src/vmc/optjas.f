@@ -668,7 +668,9 @@ c Written by Claudia Filippi
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use sa_weights, only: iweight, nweight, weights
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -695,7 +697,6 @@ c Written by Claudia Filippi
 
 
 
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
 
       dimension hess1(MPARMJ,MPARMJ),hess2(MPARMJ,MPARMJ),hess3(MPARMJ,MPARMJ),grad_now(MPARMJ),gerr(MPARMJ)

@@ -57,7 +57,9 @@ c and Anthony Scemema
       use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
      &xms
       use rlobxy, only: rlobx, rloby, rloby2
+      use sa_weights, only: iweight, nweight, weights
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -128,7 +130,6 @@ c and Anthony Scemema
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
@@ -1917,13 +1918,14 @@ c----------------------------------------------------------------------
       subroutine read_dmatrix(no,ns,fn)
 C$INPUT dmatrix i i a=<input> 
 CKEYDOC Read diagonal density matrix information.
-      implicit double precision(a-h,o-z)
+      use sa_weights, only: iweight, nweight, weights
+      implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       character fn*(*)
