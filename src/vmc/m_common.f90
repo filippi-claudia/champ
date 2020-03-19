@@ -1361,12 +1361,12 @@ end module forcewt
    use precision_kinds, only: dp
    include 'mstates.h'
 
-    real(dp) :: energy_all(MSTATES)
-    real(dp) :: energy_err_all(MSTATES)
+   real(dp) :: energy_all(MSTATES)
+   real(dp) :: energy_err_all(MSTATES)
 
-    private
-    public :: energy_all, energy_err_all
-    save
+   private
+   public :: energy_all, energy_err_all
+   save
  end module sa_check
 
  module sa_weights
@@ -1374,11 +1374,22 @@ end module forcewt
    use precision_kinds, only: dp
    include 'mstates.h'
 
-    integer  :: iweight(MSTATES)
-    integer  :: nweight
-    real(dp) :: weights(MSTATES)
+   integer  :: iweight(MSTATES)
+   integer  :: nweight
+   real(dp) :: weights(MSTATES)
 
-    private
-    public :: iweight, nweight, weights
-    save
+   private
+   public :: iweight, nweight, weights
+   save
  end module sa_weights
+
+ module scale_more
+   !> Arguments: dd3
+   use precision_kinds, only: dp
+
+   real(dp) :: dd3
+
+   private
+   public :: dd3
+   save
+ end module scale_more

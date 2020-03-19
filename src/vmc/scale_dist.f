@@ -441,7 +441,9 @@ c gradient and laplacian.
 
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use scale_more, only: dd3
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -454,7 +456,6 @@ c gradient and laplacian.
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /scale_more/ dd3
 
 c isc = 2,3 are exponential scalings
 c isc = 4,5 are inverse power scalings

@@ -378,13 +378,14 @@ c-----------------------------------------------------------------------
 
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use jaspar4, only: a4, norda, nordb, nordc
+      use scale_more, only: dd3
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
  
-      common /scale_more/ dd3
 
 
       dimension rvec_en(3),rr(-2:MORDJ)
