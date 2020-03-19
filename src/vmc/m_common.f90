@@ -1468,3 +1468,20 @@ end module forcewt
    public :: rejmax
    save
  end module stats
+
+ module step
+   !> Arguments: ekin, ekin2, rprob, suc, trunfb, try
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: ekin(nrad)
+   real(dp) :: ekin2(nrad)
+   real(dp) :: rprob(nrad)
+   real(dp) :: suc(nrad)
+   real(dp) :: trunfb(nrad)
+   real(dp) :: try(nrad)
+
+   private
+   public :: ekin, ekin2, rprob, suc, trunfb, try
+   save
+ end module step

@@ -19,7 +19,10 @@ c routine to print out final results
       use header, only: date, title
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       use sa_weights, only: iweight, nweight, weights
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -46,8 +49,6 @@ c routine to print out final results
       common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contr3/ mode
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
 
 
 

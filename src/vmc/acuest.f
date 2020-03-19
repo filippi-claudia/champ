@@ -22,7 +22,10 @@ c routine to accumulate estimators for energy etc.
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -56,8 +59,6 @@ c routine to accumulate estimators for energy etc.
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad)
-     &,ekin(nrad),ekin2(nrad)
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 

@@ -23,7 +23,10 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use forcewt, only: wcum, wsum
       use kinet, only: dtdx2n, dtdx2o
       use stats, only: rejmax
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -64,8 +67,6 @@ c    Last 2 are prob. best
 
       common /contr3/ mode
       common /const2/ deltar,deltat
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
  

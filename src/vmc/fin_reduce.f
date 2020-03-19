@@ -9,7 +9,10 @@ c MPI version written by Claudia Filippi
       use forcepar, only: deltot, istrech, nforce
       use forcewt, only: wcum, wsum
       use mpiconf, only: idtask, nproc, wid
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -18,8 +21,6 @@ c MPI version written by Claudia Filippi
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
 
 
 

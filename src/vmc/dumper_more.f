@@ -23,7 +23,10 @@ c job where it left off
       use forcewt, only: wcum, wsum
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use stats, only: rejmax
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -57,8 +60,6 @@ c job where it left off
 
 
 
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
