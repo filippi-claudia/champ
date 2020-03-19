@@ -130,7 +130,7 @@ sr_mat_n,20,DONE
 stats,2,DONE
 step,6,DONE
 tempor,1,DONE
-tempor_test,2,Todo
+tempor_test,2,DONE
 test,1,Todo
 tmpnode,2,Todo
 vardep,3,Todo

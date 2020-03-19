@@ -182,7 +182,10 @@ c However, that causes problems when running with mpi, so comment out that part.
      &vcell_sim, znuc2_sum, znuc_sum
       use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
 
+      use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -196,8 +199,6 @@ c However, that causes problems when running with mpi, so comment out that part.
 c Warning: Temporary
 c     dimension igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC_BIGX),c_real(NGVEC_BIGX),c_imag(NGVEC_BIGX)
 c    &,rkvec_tmp(3),rkvec_tmp2(3)
-      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC_BIGX),c_real(NGVEC_BIGX),c_imag(NGVEC_BIGX)
-     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(IVOL_RATIO),ngvec_dft
 
 c Warning: Temporary
 c Warning: why do I print out zeros if I dimension to MORB rather than IVOL_RATIO?
@@ -423,7 +424,10 @@ c This is the straightforward evaluation for checking purposes only.
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
+      use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -433,8 +437,6 @@ c This is the straightforward evaluation for checking purposes only.
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC_BIGX),c_real(NGVEC_BIGX),c_imag(NGVEC_BIGX)
-     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(IVOL_RATIO),ngvec_dft
 
       dimension x(3),orb(MELEC,*),dorb(3,MELEC,*),ddorb(MELEC,*)
 c     dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
