@@ -1,5 +1,8 @@
       subroutine dl_iter(iter,nparm,dl_alg,dl_mom,sr_tau,dl_momentum,dl_EG_sq,dl_EG,deltap,parameters)
-      implicit real*8 (a-h,o-z)
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg
+      implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -10,8 +13,6 @@
       real*8 dl_EG_corr, dl_EG_sq_corr, dl_momentum_prev, parm_old, dl_EG_old
       real*8 damp
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension deltap(*),dl_momentum(*),dl_EG(*),dl_EG_sq(*),parameters(*)
 c Damping parameter for Nesterov gradient descent

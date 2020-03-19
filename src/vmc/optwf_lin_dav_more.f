@@ -7,13 +7,10 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+    
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'mpif.h'
       include 'sr.h'
@@ -21,8 +18,6 @@
       include 'force.h'
       include 'mstates.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 
 
@@ -209,7 +204,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -217,8 +215,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'sr.h'
       include 'mstates.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 
       dimension psi(MPARM,*),hpsi(MPARM,*),aux(MCONF),hpsiloc(MPARM,MVEC)
@@ -304,7 +300,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -312,8 +311,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'sr.h'
       include 'mstates.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 
       dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF)
@@ -380,7 +377,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega, omega_hes
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -391,8 +391,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
  
 
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 
       dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux(MCONF)
@@ -493,7 +491,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega, omega_hes
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -504,8 +505,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 
       dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF),h_sr_sym(MPARM)
@@ -615,7 +614,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega, omega_hes
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -625,8 +627,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'mstates.h'
 
  
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 
       dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux0(MCONF),aux1(MCONF),aux2(MCONF)
@@ -739,14 +739,15 @@ c end loop vec
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine g_psi_lin_d( ndim, nvec, nb1, psi, ew )
 
-      implicit real*8 (a-h,o-z)
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'sr.h'
       include 'mstates.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension psi(MPARM,*),ew(*)
       dimension s(MPARM),h(MPARM)
@@ -810,7 +811,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -821,8 +825,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'force.h'
       include 'mstates.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension psi(MPARM,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,MSTATES),anorm_loc(MVEC)
 

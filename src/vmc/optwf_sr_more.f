@@ -9,12 +9,9 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: iweight, nweight, weights
       use sr_index, only: jelo, jelo2, jelohfj
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       include 'mpif.h'
       include 'sr.h'
@@ -23,13 +20,11 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       include 'mstates.h'
       include 'optorb.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 
 
 
-      dimension obs(MOBS,MSTATES),obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
+      dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
 
       call p2gtid('optgeo:izvzb',izvzb,0,1)
       call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
@@ -281,12 +276,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine asolve(n,b,x)
 c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
-      implicit real*8 (a-h,o-z)
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
       include 'sr.h'
       include 'mstates.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension x(*),b(*)
 
@@ -307,21 +303,17 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: iweight, nweight, weights
       use sr_index, only: jelo, jelo2, jelohfj
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
-
-
-
       include 'mpif.h'
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'sr.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 
 
@@ -431,7 +423,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_rescale_deltap(nparm,deltap)
 
       use mpiconf, only: idtask, nproc
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+    
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
@@ -439,8 +435,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'sr.h'
       include 'mstates.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension deltap(*)
 
@@ -510,7 +504,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use force_fin, only: da_energy_ave, da_energy_err
       use force_mat_n, only: force_o
       use mpiconf, only: idtask, nproc
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -522,8 +519,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'mstates.h'
 
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
  
 
 

@@ -994,7 +994,10 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1016,8 +1019,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 
       dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)

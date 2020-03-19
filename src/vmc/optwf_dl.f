@@ -6,7 +6,10 @@
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -22,8 +25,6 @@
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension deltap(MPARM)
 c deep learning 'momentum' variables

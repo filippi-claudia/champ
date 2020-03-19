@@ -7,12 +7,9 @@
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: iweight, nweight, weights
       use sr_index, only: jelo, jelo2, jelohfj
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
 
       include 'mpif.h'
@@ -23,13 +20,11 @@
       include 'optorb.h'
 
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
 
 
 
-      dimension obs(MOBS,MSTATES),obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
+      dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
       dimension hii(MPARM),sii(MPARM)
 
       write(6,*) 'nparm_p1,nparm',nparm_p1,nparm
