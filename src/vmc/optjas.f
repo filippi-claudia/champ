@@ -11,7 +11,10 @@
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use scratch, only: denergy_det, dtildem, xmatd, xmatu
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -52,8 +55,6 @@
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
 
-      common /scratch/ dtildem(MELEC,MORB,2),denergy_det(MDET,2)
-     &,xmatu(MELEC**2),xmatd(MELEC**2) 
 
       dimension psid(*),dvpsp_dj(*),energy(*),vj(3,*)
       dimension deloc_dj(MPARMJ)

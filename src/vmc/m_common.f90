@@ -1393,3 +1393,18 @@ end module forcewt
    public :: dd3
    save
  end module scale_more
+
+ module scratch
+   !> Arguments: denergy_det, dtildem, xmatd, xmatu
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: denergy_det(MDET,2)
+   real(dp) :: dtildem(MELEC,MORB,2)
+   real(dp) :: xmatd(MELEC**2)
+   real(dp) :: xmatu(MELEC**2)
+
+   private
+   public :: denergy_det, dtildem, xmatd, xmatu
+   save
+ end module scratch
