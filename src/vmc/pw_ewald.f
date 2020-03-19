@@ -15,7 +15,9 @@ c Written by Cyrus Umrigar
      &vcell_sim, znuc2_sum, znuc_sum
       use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
 
+      use tempor, only: dist_nn
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -40,7 +42,6 @@ c Note vbare_coul is used both for prim. and simul. cells, so dimension it for s
       common /test/ f,vbare_coul(NGNORM_SIM_BIGX),vbare_jas(NGNORM_SIM_BIGX)
      &,vbare_psp(NGNORM_BIGX)
 
-      common /tempor/ dist_nn
 
       dimension r(MPS_GRID),vps_short(MPS_GRID),work(MPS_GRID)
       dimension rdist(3),gdist(3),rdist_sim(3),gdist_sim(3),rkvec_shift_tmp(3)

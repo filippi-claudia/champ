@@ -1485,3 +1485,14 @@ end module forcewt
    public :: ekin, ekin2, rprob, suc, trunfb, try
    save
  end module step
+
+ module tempor
+   !> Arguments: dist_nn
+   use precision_kinds, only: dp
+
+   real(dp) :: dist_nn
+
+   private
+   public :: dist_nn
+   save
+ end module tempor
