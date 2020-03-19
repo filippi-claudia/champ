@@ -7,7 +7,9 @@ c Written by Claudia Filippi
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use slatn, only: slmin
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -29,7 +31,6 @@ c Written by Claudia Filippi
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /slatn/ slmin(MMAT_DIM)
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
 

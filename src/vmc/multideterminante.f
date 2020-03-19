@@ -7,7 +7,9 @@
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use slatn, only: slmin
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -25,7 +27,6 @@
 
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /slatn/ slmin(MMAT_DIM)
       common /multislatern/ detn(MDET)
      &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
 

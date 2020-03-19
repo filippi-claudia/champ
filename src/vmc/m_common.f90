@@ -1408,3 +1408,15 @@ end module forcewt
    public :: denergy_det, dtildem, xmatd, xmatu
    save
  end module scratch
+
+ module slatn
+   !> Arguments: slmin
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: slmin(MMAT_DIM)
+
+   private
+   public :: slmin
+   save
+ end module slatn

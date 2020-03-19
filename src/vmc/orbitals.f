@@ -284,7 +284,9 @@ c-------------------------------------------------------------------------------
       use elec, only: ndn, nup
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
+      use slatn, only: slmin
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -309,7 +311,6 @@ c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /slatn/ slmin(MMAT_DIM)
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
 
