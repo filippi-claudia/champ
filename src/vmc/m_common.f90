@@ -1515,3 +1515,18 @@ end module forcewt
    public :: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
    save
  end module tempor_test
+
+ module test
+   !> Arguments: f, vbare_coul, vbare_jas, vbare_psp
+   use precision_kinds, only: dp
+   include 'ewald.h'
+
+   real(dp) :: f
+   real(dp) :: vbare_coul(NGNORM_SIM_BIGX)
+   real(dp) :: vbare_jas(NGNORM_SIM_BIGX)
+   real(dp) :: vbare_psp(NGNORM_BIGX)
+
+   private
+   public :: f, vbare_coul, vbare_jas, vbare_psp
+   save
+ end module test

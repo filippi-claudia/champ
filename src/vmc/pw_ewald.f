@@ -16,7 +16,10 @@ c Written by Cyrus Umrigar
       use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
 
       use tempor, only: dist_nn
+      use test, only: f, vbare_coul, vbare_jas, vbare_psp
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -39,8 +42,6 @@ c    &,nlrad(MCTYPE)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
-      common /test/ f,vbare_coul(NGNORM_SIM_BIGX),vbare_jas(NGNORM_SIM_BIGX)
-     &,vbare_psp(NGNORM_BIGX)
 
 
       dimension r(MPS_GRID),vps_short(MPS_GRID),work(MPS_GRID)
