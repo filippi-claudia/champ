@@ -1439,21 +1439,32 @@ end module forcewt
    include 'sr.h'
    include 'mstates.h'
 
-    real(dp) :: elocal(MCONF,MSTATES)
-    real(dp) :: h_sr(MPARM)
-    integer  :: jefj
-    integer  :: jfj
-    integer  :: jhfj
-    integer  :: nconf
-    real(dp) :: obs(MOBS,MSTATES)
-    real(dp) :: s_diag(MPARM,MSTATES)
-    real(dp) :: s_ii_inv(MPARM)
-    real(dp) :: sr_ho(MPARM,MCONF)
-    real(dp) :: sr_o(MPARM,MCONF)
-    real(dp) :: wtg(MCONF,MSTATES)
-    real(dp) :: obs_tot(MOBS,MSTATES)
+   real(dp) :: elocal(MCONF,MSTATES)
+   real(dp) :: h_sr(MPARM)
+   integer  :: jefj
+   integer  :: jfj
+   integer  :: jhfj
+   integer  :: nconf
+   real(dp) :: obs(MOBS,MSTATES)
+   real(dp) :: s_diag(MPARM,MSTATES)
+   real(dp) :: s_ii_inv(MPARM)
+   real(dp) :: sr_ho(MPARM,MCONF)
+   real(dp) :: sr_o(MPARM,MCONF)
+   real(dp) :: wtg(MCONF,MSTATES)
+   real(dp) :: obs_tot(MOBS,MSTATES)
 
-    private
-    public :: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
-    save
+   private
+   public :: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
+   save
  end module sr_mat_n
+
+ module stats
+   !> Arguments: rejmax
+   use precision_kinds, only: dp
+
+   real(dp) :: rejmax
+
+   private
+   public :: rejmax
+   save
+ end module stats
