@@ -8,7 +8,9 @@ c Written by Claudia Filippi by modifying hpsi
       use estpsi, only: apsi, aref, detref
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,7 +36,6 @@ c Calculates wave function
      &,ifock,i3body,irewgt,iaver,istrch
 
 
-      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
 
       common /multislatern/ detn(MDET)
