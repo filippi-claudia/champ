@@ -25,7 +25,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
 
+      use tmpnode, only: distance_node_sum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -75,7 +77,6 @@ c TMP
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
 
-      common /tmpnode/ distance_node_sum
 
       dimension xstrech(3,MELEC)
       dimension xaxis(3),yaxis(3),zaxis(3),idist(MELEC)

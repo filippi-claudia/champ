@@ -1530,3 +1530,14 @@ end module forcewt
    public :: f, vbare_coul, vbare_jas, vbare_psp
    save
  end module test
+
+ module tmpnode
+   !> Arguments: distance_node_sum
+   use precision_kinds, only: dp
+
+   real(dp) :: distance_node_sum
+
+   private
+   public :: distance_node_sum
+   save
+ end module tmpnode

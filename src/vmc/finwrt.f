@@ -21,7 +21,9 @@ c routine to print out final results
       use sa_weights, only: iweight, nweight, weights
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
 
+      use tmpnode, only: distance_node_sum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -55,7 +57,6 @@ c routine to print out final results
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
 
-      common /tmpnode/ distance_node_sum
 
       err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
       err1(x,x2,j)=dsqrt(dabs(x2/wcum(j,1)-(x/wcum(j,1))**2)/passes)
