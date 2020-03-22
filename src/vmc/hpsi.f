@@ -15,7 +15,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -43,7 +45,6 @@ c Calculates energy
 
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)

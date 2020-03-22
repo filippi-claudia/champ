@@ -14,7 +14,9 @@ c Jastrow 6   must be used with one of isc=6,7
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -35,7 +37,6 @@ c Jastrow 6   must be used with one of isc=6,7
       common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
      &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       parameter (half=.5d0,eps=1.d-12)
 

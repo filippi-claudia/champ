@@ -117,7 +117,9 @@ c Scale interparticle distances.
 
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -128,7 +130,6 @@ c Scale interparticle distances.
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c isc = 2,3 are exponential scalings
 c isc = 4,5 are inverse power scalings
@@ -263,7 +264,9 @@ c gradient and laplacian.
 
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -274,7 +277,6 @@ c gradient and laplacian.
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c isc = 2,3 are exponential scalings
 c isc = 4,5 are inverse power scalings
@@ -442,7 +444,9 @@ c gradient and laplacian.
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use scale_more, only: dd3
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -454,7 +458,6 @@ c gradient and laplacian.
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
 c isc = 2,3 are exponential scalings
@@ -647,14 +650,15 @@ c that appropriate for C terms, for dist.
 
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       rr=1-c1_jas6*scalek(iwf)*rr
 
@@ -670,14 +674,15 @@ c that appropriate for C terms, for dist and 1st deriv.
 
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       rr=1-c1_jas6*scalek(iwf)*rr
       dd1=-c1_jas6*scalek(iwf)*dd1
@@ -694,14 +699,15 @@ c that appropriate for C terms, for dist and 1st two derivs.
 
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       rr=1-c1_jas6*scalek(iwf)*rr
       dd1=-c1_jas6*scalek(iwf)*dd1

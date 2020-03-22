@@ -134,7 +134,9 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -153,7 +155,6 @@ c-----------------------------------------------------------------------
 
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension slmi(MMAT_DIM)
       dimension aa(MELEC,MORB),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)

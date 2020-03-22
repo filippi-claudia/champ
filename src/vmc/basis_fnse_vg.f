@@ -9,7 +9,9 @@ c vg -> value,gradient
 
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -22,7 +24,6 @@ c vg -> value,gradient
       parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0,half=0.5d0)
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension wfv(4,MRWF)
       dimension xc(3),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)

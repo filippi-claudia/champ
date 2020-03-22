@@ -8,7 +8,9 @@ c Modified by A. Scemama
       use elec, only: ndn, nup
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -27,7 +29,6 @@ c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
       common /contrl_per/ iperiodic,ibasis
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /force_analy/ iforce_analy
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -227,7 +228,9 @@ c-------------------------------------------------------------------------------
       use numbas2, only: ibas0, ibas1
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -245,7 +248,6 @@ c-------------------------------------------------------------------------------
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension dum(MELEC,MORB,MCENT),aux(MELEC)
       dimension tphin(3*MELEC,MBASIS),t2phin_all(3*3*MELEC,MBASIS),t3phin(3*MELEC,MBASIS)
@@ -285,7 +287,9 @@ c-------------------------------------------------------------------------------
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
       use slatn, only: slmin
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -314,7 +318,6 @@ c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 

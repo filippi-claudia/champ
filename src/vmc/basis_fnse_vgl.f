@@ -9,7 +9,9 @@ c routine to calculate the values of the basis functions and their derivatives
 
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -32,7 +34,6 @@ c npa < 0   (xyz)*exp(-a*r^2)
 c nda < 0   (zr,x2y2...)*exp(-a*r^2)
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 

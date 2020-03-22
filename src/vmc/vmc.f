@@ -24,7 +24,9 @@ c and sa, pa, da asymptotic functions
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -47,7 +49,6 @@ c and sa, pa, da asymptotic functions
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       character*25 fmt
 

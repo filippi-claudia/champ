@@ -9,7 +9,9 @@ c written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag, add_diag_tmp, energy, energy_err, force, force_err
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -30,7 +32,6 @@ c written by Claudia Filippi
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)

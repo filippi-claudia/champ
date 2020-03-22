@@ -9,7 +9,9 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use ghostatom, only: newghostype, nghostcent
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -25,7 +27,6 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       real*4  bc(MXNSTEP,MXNSTEP,3:8,MELEC/2+1), wk(80*MXNSTEP3)
       common /orbital_num_spl2/ bc, wk
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar

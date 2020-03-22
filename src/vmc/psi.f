@@ -15,7 +15,9 @@ c periodic systems.
      &cutjas, cutjasi
       use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
      &xms
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,7 +36,6 @@ c periodic systems.
      &,ifock,i3body,irewgt,iaver,istrch
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /chck/ bot
 
       dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ)
@@ -94,7 +95,9 @@ c-----------------------------------------------------------------------
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -105,7 +108,6 @@ c-----------------------------------------------------------------------
 
       parameter(zero=0.d0,one=1.d0)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
@@ -138,7 +140,9 @@ c-----------------------------------------------------------------------
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -148,7 +152,6 @@ c-----------------------------------------------------------------------
 
       parameter(zero=0.d0,one=1.d0)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

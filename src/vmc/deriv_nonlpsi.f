@@ -15,7 +15,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
      &xms
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -38,7 +40,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &,ifock,i3body,irewgt,iaver,istrch
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
       common /cuspmat/ cm(NEQSX,NEQSX),iwc3(NEQSX),neqs,ishe
@@ -130,7 +131,9 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -143,7 +146,6 @@ c-----------------------------------------------------------------------
 
       parameter(one=1.d0)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
@@ -197,7 +199,9 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -210,7 +214,6 @@ c-----------------------------------------------------------------------
 
       parameter(one=1.d0)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap

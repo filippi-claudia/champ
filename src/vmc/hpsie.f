@@ -8,7 +8,9 @@ c Written by Claudia Filippi by modifying hpsi
       use estpsi, only: apsi, aref, detref
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -28,7 +30,6 @@ c Calculates wave function
 
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

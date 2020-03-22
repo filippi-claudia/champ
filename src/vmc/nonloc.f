@@ -333,7 +333,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use numbas1, only: iwlbas, nbastyp
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -343,7 +345,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include '3dgrid_flags.h'
 
       common /contrl_per/ iperiodic,ibasis
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
 

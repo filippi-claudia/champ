@@ -25,7 +25,9 @@ c job where it left off
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
 
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -60,7 +62,6 @@ c job where it left off
 
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
 

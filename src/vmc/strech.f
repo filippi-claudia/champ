@@ -16,7 +16,9 @@ c rigidly with that nucleus
       use forcepar, only: deltot, istrech, nforce
       use forcestr, only: delc
       use pcm_force, only: sch_s
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -32,7 +34,6 @@ c rigidly with that nucleus
 
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
       common /contr3/ mode

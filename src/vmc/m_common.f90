@@ -1541,3 +1541,17 @@ end module forcewt
    public :: distance_node_sum
    save
  end module tmpnode
+
+ module wfsec
+   !> Arguments: iwf, iwftype, nwftype
+   use precision_kinds, only: dp
+   include 'force.h'
+
+   integer  :: iwf
+   integer  :: iwftype(MFORCE)
+   integer  :: nwftype
+
+   private
+   public :: iwf, iwftype, nwftype
+   save
+ end module wfsec

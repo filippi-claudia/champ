@@ -4,7 +4,9 @@ c Written by Claudia Filippi
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -14,7 +16,6 @@ c Written by Claudia Filippi
 
       parameter(one=1.d0)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 

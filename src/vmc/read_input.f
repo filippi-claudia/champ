@@ -58,7 +58,9 @@ c and Anthony Scemema
      &xms
       use rlobxy, only: rlobx, rloby, rloby2
       use sa_weights, only: iweight, nweight, weights
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -127,7 +129,6 @@ c and Anthony Scemema
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
 
@@ -1296,7 +1297,9 @@ CKEYDOC Displacement parameters and wave function types
 
       use forcepar, only: deltot, istrech, nforce
       use forcestr, only: delc
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1305,7 +1308,6 @@ CKEYDOC Displacement parameters and wave function types
       include 'inputflags.h'
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
@@ -1685,13 +1687,14 @@ c----------------------------------------------------------------------
       subroutine inputforces
 c Set all force displacements to zero
       use forcepar, only: deltot, istrech, nforce
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
@@ -2049,7 +2052,9 @@ c     Written by Omar Valsson
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
 
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -2059,7 +2064,6 @@ c     Written by Omar Valsson
       include 'force.h'
       include 'inputflags.h'
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('GRADIENTS_CARTESIAN: ncent > MCENT')
@@ -2119,7 +2123,9 @@ c      Written by Omar Valsson.
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
 
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -2129,7 +2135,6 @@ c      Written by Omar Valsson.
       include 'force.h'
       include 'inputflags.h'
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),         
      &                 czcart_ref(3,3),izcmat(3,MCENT),
      &                 izmatrix

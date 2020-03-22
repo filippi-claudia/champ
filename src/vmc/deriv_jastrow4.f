@@ -20,7 +20,9 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -44,7 +46,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /bparm/ nspin2b,nocuspb
 
 
