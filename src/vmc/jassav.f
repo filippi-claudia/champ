@@ -4,9 +4,7 @@ c Written by Claudia Filippi
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
 
-      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
-
 
 
 
@@ -17,6 +15,7 @@ c Written by Claudia Filippi
       common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
      &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
 
+      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
       fsumo=fsumn
       do 10 i=1,nelec

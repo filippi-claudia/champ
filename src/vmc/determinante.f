@@ -108,9 +108,7 @@ c-----------------------------------------------------------------------
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use slatn, only: slmin
-      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
-
 
 
 
@@ -146,6 +144,7 @@ c-----------------------------------------------------------------------
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
 
+      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
       dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,MORB)
       dimension ymat_tmp(MORB,MELEC)

@@ -168,9 +168,7 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
-      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
-
 
 
 
@@ -200,6 +198,7 @@ c-----------------------------------------------------------------------
      & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)

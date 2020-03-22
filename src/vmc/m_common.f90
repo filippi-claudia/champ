@@ -1541,16 +1541,3 @@ end module forcewt
    public :: distance_node_sum
    save
  end module tmpnode
-
- module velocity_jastrow
-   !> Arguments: vj, vjn
-   use precision_kinds, only: dp
-   include 'vmc.h'
-
-   real(dp) :: vj(3,MELEC)
-   real(dp) :: vjn(3,MELEC)
-
-   private
-   public :: vj, vjn
-   save
- end module velocity_jastrow

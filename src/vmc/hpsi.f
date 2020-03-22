@@ -15,9 +15,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
-      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
-
 
 
 
@@ -62,6 +60,7 @@ c Calculates energy
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
+      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
 
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
