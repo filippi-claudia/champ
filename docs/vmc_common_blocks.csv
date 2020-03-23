@@ -132,11 +132,11 @@ step,6,DONE
 tempor,1,DONE
 tempor_test,2,DONE
 test,1,DONE
-tmpnode,2,Todo
+tmpnode,2,DONE
 vardep,3,Todo
-velocity_jastrow,7,Todo
-wfsec,49,Todo
-ycompact,6,Todo
+velocity_jastrow,7,DONE
+wfsec,49,DONE
+ycompact,6,DONE
 ycompactn,3,Todo
 zcompact,4,Todo
 zmatrix,10,Todo

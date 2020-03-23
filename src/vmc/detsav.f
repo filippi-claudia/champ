@@ -8,7 +8,9 @@ c Written by Claudia Filippi
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use slatn, only: slmin
+      use ycompact, only: dymat, ymat
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -38,7 +40,6 @@ c Written by Claudia Filippi
 
       common /multimatn/ aan(MELEC,MORB),wfmatn(MEXCIT**2,MDET)
 
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
       common /ycompactn/ ymatn(MORB,MELEC,MSTATES)
 

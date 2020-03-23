@@ -61,7 +61,9 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use ycompact, only: dymat, ymat
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -82,7 +84,6 @@ c-----------------------------------------------------------------------
       common /multislater/ detu(MDET),detd(MDET)
 
 
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
       common /zcompact/ zmat(MORB,MELEC,2,MSTATES),dzmat(MORB,MELEC,2,MSTATES)
      & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)

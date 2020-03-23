@@ -1555,3 +1555,17 @@ end module forcewt
    public :: iwf, iwftype, nwftype
    save
  end module wfsec
+
+ module ycompact
+   !> Arguments: dymat, ymat
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'mstates.h'
+
+   real(dp) :: dymat(MORB,MELEC,2,MSTATES)
+   real(dp) :: ymat(MORB,MELEC,2,MSTATES)
+
+   private
+   public :: dymat, ymat
+   save
+ end module ycompact

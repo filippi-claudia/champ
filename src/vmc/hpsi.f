@@ -16,7 +16,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
       use wfsec, only: iwf, iwftype, nwftype
+      use ycompact, only: dymat, ymat
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -67,7 +69,6 @@ c Calculates energy
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
 
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
       common /force_analy/ iforce_analy
 
