@@ -1569,3 +1569,16 @@ end module forcewt
    public :: dymat, ymat
    save
  end module ycompact
+
+ module ycompactn
+   !> Arguments: ymatn
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'mstates.h'
+
+   real(dp) :: ymatn(MORB,MELEC,MSTATES)
+
+   private
+   public :: ymatn
+   save
+ end module ycompactn

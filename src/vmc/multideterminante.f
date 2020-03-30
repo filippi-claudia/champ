@@ -8,7 +8,9 @@
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use slatn, only: slmin
+      use ycompactn, only: ymatn
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -38,7 +40,6 @@
 
       common /multimatn/ aan(MELEC,MORB),wfmatn(MEXCIT**2,MDET)
 
-      common /ycompactn/ ymatn(MORB,MELEC,MSTATES)
 
       dimension gmat(MELEC,MORB,3),gmatn(MEXCIT**2,3)
       dimension b(MORB,3),ddx_mdet(3)

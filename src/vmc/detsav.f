@@ -9,7 +9,9 @@ c Written by Claudia Filippi
 
       use slatn, only: slmin
       use ycompact, only: dymat, ymat
+      use ycompactn, only: ymatn
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -41,7 +43,6 @@ c Written by Claudia Filippi
       common /multimatn/ aan(MELEC,MORB),wfmatn(MEXCIT**2,MDET)
 
 
-      common /ycompactn/ ymatn(MORB,MELEC,MSTATES)
 
       common /orbval/ orbo(MELEC,MORB),dorbo(3,MELEC,MORB),ddorbo(MELEC,MORB),ndetorb,nadorb
 
