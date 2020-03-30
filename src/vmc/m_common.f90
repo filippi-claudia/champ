@@ -1582,3 +1582,19 @@ end module forcewt
    public :: ymatn
    save
  end module ycompactn
+
+ module zcompact
+   !> Arguments: aaz, dzmat, emz, zmat
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'mstates.h'
+
+   real(dp) :: aaz(MELEC,MELEC,2,MSTATES)
+   real(dp) :: dzmat(MORB,MELEC,2,MSTATES)
+   real(dp) :: emz(MELEC,MELEC,2,MSTATES)
+   real(dp) :: zmat(MORB,MELEC,2,MSTATES)
+
+   private
+   public :: aaz, dzmat, emz, zmat
+   save
+ end module zcompact

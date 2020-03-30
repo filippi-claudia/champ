@@ -137,7 +137,7 @@ vardep,3,Todo
 velocity_jastrow,7,DONE
 wfsec,49,DONE
 ycompact,6,DONE
-ycompactn,3,Todo
-zcompact,4,Todo
+ycompactn,3,DONE
+zcompact,4,DONE
 zmatrix,10,Todo
 zmatrix_grad,1,Todo

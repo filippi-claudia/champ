@@ -62,7 +62,10 @@ c-----------------------------------------------------------------------
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use ycompact, only: dymat, ymat
+      use zcompact, only: aaz, dzmat, emz, zmat
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -85,8 +88,6 @@ c-----------------------------------------------------------------------
 
 
 
-      common /zcompact/ zmat(MORB,MELEC,2,MSTATES),dzmat(MORB,MELEC,2,MSTATES)
-     & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -169,7 +170,10 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use zcompact, only: aaz, dzmat, emz, zmat
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -195,8 +199,6 @@ c-----------------------------------------------------------------------
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
-      common /zcompact/ zmat(MORB,MELEC,2,MSTATES),dzmat(MORB,MELEC,2,MSTATES)
-     & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)

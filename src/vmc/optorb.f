@@ -108,7 +108,10 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use zcompact, only: aaz, dzmat, emz, zmat
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -121,8 +124,6 @@ c-----------------------------------------------------------------------
 
 
 
-      common /zcompact/ zmat(MORB,MELEC,2,MSTATES),dzmat(MORB,MELEC,2,MSTATES)
-     & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)
 
       dimension psid(*),eloc(*),deloc(*)
 

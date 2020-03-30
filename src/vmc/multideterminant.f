@@ -9,7 +9,10 @@
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use ycompact, only: dymat, ymat
+      use zcompact, only: aaz, dzmat, emz, zmat
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -45,8 +48,6 @@ c dimensioned at least max(nup**2,ndn**2)
      & ,tildem(MELEC,MORB,2)
 
 
-      common /zcompact/ zmat(MORB,MELEC,2,MSTATES),dzmat(MORB,MELEC,2,MSTATES)
-     & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)
 
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
