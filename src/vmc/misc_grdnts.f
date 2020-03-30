@@ -46,16 +46,13 @@ c   energy gradients (z matrix/internal).
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
 
       implicit real*8(a-h,o-z)
 
 
       include 'force.h'
       include 'vmc.h'
-
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
 
       write(6,*)
       write(6,'(''Correlated sampling used to calculate energy gradients (Z matrix)'')')
@@ -155,18 +152,13 @@ c   calculated using correlated smapling.
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
 
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'force.h'
       include 'vmc.h'
 
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
       dimension forces_ave(MFORCE),forces_err(MFORCE)
       dimension grdnts_ave(MFORCE),grdnts_err(MFORCE)     
 
@@ -311,6 +303,7 @@ c   using Z matrix (internal) coordinates
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
 
       implicit real*8(a-h,o-z)
 
@@ -319,9 +312,6 @@ c   using Z matrix (internal) coordinates
       include 'force.h'
       include 'vmc.h'
 
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
       dimension czint_t1(3,MCENT),czcart_t1(3,MCENT)
 
 
@@ -355,13 +345,10 @@ c   Subroutine which prints out at the start of a run
 c   information regarding the Z matrix.
       subroutine inpwrt_zmatrix()
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
       implicit real*8(a-h,o-z)
       include 'force.h'
       include 'vmc.h'
-
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
 
       write(6,'(''---------- Z matrix information ----------'')')
       write(6,'(''Geometry in internal coordinates:'')')
@@ -398,6 +385,7 @@ c   from energy differences  calculated using correlated smapling.
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
 
       implicit real*8(a-h,o-z)
 
@@ -407,9 +395,6 @@ c   from energy differences  calculated using correlated smapling.
       include 'force.h'
       include 'vmc.h'
 
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
       dimension forces_ave(MFORCE),forces_err(MFORCE)
       dimension diaghess_ave(MFORCE),diaghess_err(MFORCE)     
 
@@ -547,6 +532,7 @@ c -----------------------------------------------------------------------
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
 
       implicit real*8(a-h,o-z)
 
@@ -556,9 +542,6 @@ c -----------------------------------------------------------------------
       parameter (eps=1.d-5,epsi=0.5d0/eps)
       parameter (MCENT3=3*MCENT)
 
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
       common /zmatrix_grad/ transform_grd(MCENT3,MCENT3)
 
       common /force_analy/ iforce_analy,iuse_zmat

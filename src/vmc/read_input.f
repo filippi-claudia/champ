@@ -59,31 +59,8 @@ c and Anthony Scemema
       use rlobxy, only: rlobx, rloby, rloby2
       use sa_weights, only: iweight, nweight, weights
       use wfsec, only: iwf, iwftype, nwftype
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
@@ -135,11 +112,6 @@ c and Anthony Scemema
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nbj_current
-
-
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
@@ -2122,6 +2094,7 @@ c      Written by Omar Valsson.
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
 
       use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
@@ -2135,9 +2108,6 @@ c      Written by Omar Valsson.
       include 'force.h'
       include 'inputflags.h'
 
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),         
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('GRADIENTS_ZMATRIX: ncent > MCENT')
@@ -2266,16 +2236,13 @@ CKEYDOC coordinates.
 
 c      Written by Omar Valsson
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
 
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
-
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
 
       
       do 10 ic=1,3

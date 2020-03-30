@@ -1598,3 +1598,19 @@ end module forcewt
    public :: aaz, dzmat, emz, zmat
    save
  end module zcompact
+
+ module zmatrix
+   !> Arguments: czcart, czint, czcart_ref, izcmat, izmatrix  
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: czcart(3,MCENT)
+   real(dp) :: czint(3,MCENT)
+   real(dp) :: czcart_ref(3,3)
+   integer  :: izcmat(3,MCENT)
+   integer  :: izmatrix
+
+   private
+   public :: czcart, czint, czcart_ref, izcmat, izmatrix 
+   save
+ end module zmatrix

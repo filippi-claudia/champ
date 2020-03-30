@@ -41,6 +41,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
         use force_fin, only: da_energy_ave, da_energy_err
+        use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
       implicit real*8(a-h,o-z)
 
       
@@ -48,9 +49,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         include 'force.h'
         
         common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-          common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                   czcart_ref(3,3),izcmat(3,MCENT),
-     &                   izmatrix
         
         if (iforce_analy.eq.0) return
         
