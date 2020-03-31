@@ -9,7 +9,9 @@
      &phin
       use slatn, only: slmin
       use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -25,7 +27,6 @@
       parameter(one=1.d0)
 
       common /contrl_per/ iperiodic,ibasis
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -111,7 +112,9 @@ c-----------------------------------------------------------------------
       use slatn, only: slmin
       use ycompact, only: dymat, ymat
       use ycompactn, only: ymatn
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -129,7 +132,6 @@ c-----------------------------------------------------------------------
 
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
       common /slater/ slmi(MMAT_DIM,2)

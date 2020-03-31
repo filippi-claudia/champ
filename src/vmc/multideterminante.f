@@ -9,7 +9,9 @@
 
       use slatn, only: slmin
       use ycompactn, only: ymatn
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -33,7 +35,6 @@
      &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
@@ -136,7 +137,9 @@ c-----------------------------------------------------------------------
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -152,7 +155,6 @@ c-----------------------------------------------------------------------
       common /dorb/ iworbd(MELEC,MDET)
 
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
 

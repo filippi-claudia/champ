@@ -123,7 +123,9 @@ c Presently not used.
      &vcell_sim, znuc2_sum, znuc_sum
       use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -131,7 +133,6 @@ c Presently not used.
       include 'force.h'
       include 'ewald.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       dimension rkvec_tmp(3)
 
@@ -184,7 +185,9 @@ c However, that causes problems when running with mpi, so comment out that part.
 
       use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -194,7 +197,6 @@ c However, that causes problems when running with mpi, so comment out that part.
       include 'force.h'
       include 'ewald.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 c Warning: Temporary
 c     dimension igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC_BIGX),c_real(NGVEC_BIGX),c_imag(NGVEC_BIGX)
@@ -426,7 +428,9 @@ c This is the straightforward evaluation for checking purposes only.
      &vcell_sim, znuc2_sum, znuc_sum
       use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -435,7 +439,6 @@ c This is the straightforward evaluation for checking purposes only.
       include 'force.h'
       include 'ewald.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
       dimension x(3),orb(MELEC,*),dorb(3,MELEC,*),ddorb(MELEC,*)

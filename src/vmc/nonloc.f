@@ -12,7 +12,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use Bloc_dj, only: b_dj
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -44,7 +46,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -335,7 +336,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
       use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -349,7 +352,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
 
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -597,7 +599,9 @@ c-----------------------------------------------------------------------
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use elec, only: ndn, nup
       use Bloc_da, only: b_da, db
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -617,7 +621,6 @@ c-----------------------------------------------------------------------
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
       common /force_analy/ iforce_analy

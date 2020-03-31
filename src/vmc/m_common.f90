@@ -107,7 +107,22 @@
    public :: bot
    save
  end module chck
- 
+
+ module coefs
+   !> Arguments: coef, nbasis, norb
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'force.h'
+
+   real(dp) :: coef(MBASIS,MORB,MWF)
+   integer  :: nbasis
+   integer  :: norb
+
+   private
+   public :: coef, nbasis, norb
+   save
+ end module coefs
+
  module config
    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
    use precision_kinds, only: dp
@@ -1694,6 +1709,8 @@ end module forcewt
  end module zmatrix
 
  
+ 
+
  
 
  

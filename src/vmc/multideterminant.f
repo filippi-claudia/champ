@@ -11,7 +11,9 @@
       use ycompact, only: dymat, ymat
       use zcompact, only: aaz, dzmat, emz, zmat
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -50,7 +52,6 @@ c dimensioned at least max(nup**2,ndn**2)
 
 
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       common /denergy_det/ denergy_det(MDET,2)
 
@@ -254,7 +255,9 @@ c-----------------------------------------------------------------------
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -269,7 +272,6 @@ c-----------------------------------------------------------------------
       parameter (MEXCIT=10)
 
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
@@ -342,7 +344,9 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -354,7 +358,6 @@ c-----------------------------------------------------------------------
 
       parameter (MEXCIT=10)
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
@@ -421,7 +424,9 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -432,7 +437,6 @@ c-----------------------------------------------------------------------
 
       parameter (MEXCIT=10)
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -550,7 +554,9 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -561,7 +567,6 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
 
       common /dorb/ iworbd(MELEC,MDET)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       dimension iswapped(MELEC),itotphase(MDET)
 

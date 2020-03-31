@@ -5,7 +5,9 @@ c Set normalization of basis fns.
 
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -16,7 +18,6 @@ c Set normalization of basis fns.
       parameter (five=5.d0,six=6.d0,seven=7.d0)
       parameter (third=1.d0/3.d0)
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension anorm(*)

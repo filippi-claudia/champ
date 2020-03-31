@@ -14,7 +14,9 @@
       use scratch, only: denergy_det, dtildem, xmatd, xmatu
 
       use Bloc_dj, only: b_dj
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -44,7 +46,6 @@
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)

@@ -14,7 +14,9 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
      &vcell_sim, znuc2_sum, znuc_sum
       use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -23,7 +25,6 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       include 'force.h'
       include 'ewald.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       dimension x(3),orb(*)
 c     dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)

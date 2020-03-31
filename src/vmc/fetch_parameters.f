@@ -70,7 +70,9 @@ c-----------------------------------------------------------------------
       subroutine fetch_lcao(p,n)
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -79,7 +81,6 @@ c-----------------------------------------------------------------------
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
       dimension p(*)

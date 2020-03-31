@@ -62,7 +62,9 @@ c and Anthony Scemema
       use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
       use bparm, only: nocuspb, nspin2b
       use casula, only: i_vpsp, icasula, t_vpsp
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -96,7 +98,6 @@ c and Anthony Scemema
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
@@ -909,14 +910,15 @@ CKEYDOC norb: number of orbitals for trial wave function
 CKEYDOC nbasis: number of basis functiobns
 CKEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
 CKEYDOC filename: file containing orbitals coefficients
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
 c fs NOTE: additional variable norbv for efp orbitals removed 
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       character filename*(*)
 
@@ -966,13 +968,14 @@ c-----------------------------------------------------------------------
       subroutine read_exponents(iu,iwft)
 C$INPUT exponents inp i=1
 CKEYDOC Basis function exponents (only if no numerical basis)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
       include 'inputflags.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       call incpos(iu,itmp,1)
       read(iu,*) (zex(i,iwft),i=1,nbasis)
@@ -1551,14 +1554,15 @@ c----------------------------------------------------------------------
 c Set the exponents to one when using a numerical basis
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
       include 'numbas.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       call p2gtid('general:nwftype',nwftype,1,1)
       call p2gtid('general:iperiodic',iperiodic,0,1)
@@ -1591,12 +1595,13 @@ c Set the cdet to be equal
 c----------------------------------------------------------------------
       subroutine inputlcao(nwftype)
 c Set the lcao to be equal
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
        do 10 iwft=2,nwftype
          do 10 i=1,norb
@@ -1810,11 +1815,12 @@ c-----------------------------------------------------------------------
       subroutine read_sym(nsym,mo,fn)
 C$INPUT sym_labels i i a=<input>
 CKEYDOC Read symmetry information
-      implicit double precision(a-h,o-z)
+      use coefs, only: coef, nbasis, norb
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
 
       character fn*(*)
@@ -1841,13 +1847,14 @@ c-----------------------------------------------------------------------
 C$INPUT optorb_mixvirt i i a=<input>
 CKEYDOC Read which virtual orbitals are mixed with the occupied ones
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       character fn*(*)
       character atmp*80
@@ -1874,11 +1881,12 @@ c-----------------------------------------------------------------------
 C$INPUT energies i a=<input>
 C$INPUT eigenvalues i a=<input>
 CKEYDOC Read orbital energies 
-      implicit double precision(a-h,o-z)
+      use coefs, only: coef, nbasis, norb
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
 
       character fn*(*)
@@ -1899,7 +1907,9 @@ c----------------------------------------------------------------------
 C$INPUT dmatrix i i a=<input> 
 CKEYDOC Read diagonal density matrix information.
       use sa_weights, only: iweight, nweight, weights
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -1907,7 +1917,6 @@ CKEYDOC Read diagonal density matrix information.
       include 'mstates.h'
 
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       character fn*(*)
 
       dimension dmat(MORB),iwdmat(MSTATES)

@@ -134,7 +134,9 @@ c-----------------------------------------------------------------------
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -144,7 +146,6 @@ c-----------------------------------------------------------------------
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
       character*40 filename,filetype
@@ -357,11 +358,12 @@ c Restore parameters corresponding to run generating hessian
 
 c-----------------------------------------------------------------------
       subroutine save_lcao
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       dimension coef_save(MBASIS,MORB,MWF)
 
@@ -386,7 +388,9 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -394,7 +398,6 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
 
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       dimension cdet_save(MDET,MSTATES),ccsf_save(MDET,MSTATES)
       save cdet_save,ccsf_save
@@ -474,12 +477,13 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       do 20 i=1,norb+nadorb
        do 20 j=1,nbasis
@@ -512,12 +516,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine copy_zex(iadiag)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       do 20 i=1,nbasis
    20   zex(i,iadiag)=zex(i,1)
@@ -583,12 +588,13 @@ c Restore parameters corresponding to run generating hessian
 c-----------------------------------------------------------------------
       subroutine save_lcao_best
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
       dimension coef_best(MBASIS,MORB,MWF)
@@ -731,7 +737,9 @@ c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -740,7 +748,6 @@ c-----------------------------------------------------------------------
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
       dimension acoef(MBASIS,MORB),dparm(*)

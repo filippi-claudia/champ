@@ -26,7 +26,9 @@ c job where it left off
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
 
       use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -58,7 +60,6 @@ c job where it left off
 
       common /const2/ deltar,deltat
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
 

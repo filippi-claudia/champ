@@ -2,7 +2,9 @@
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -18,7 +20,6 @@
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump
      &     ,irstar
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /dorb/ iworbd(MELEC,MDET)
 

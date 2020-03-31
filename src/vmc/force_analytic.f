@@ -9,14 +9,15 @@
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -61,7 +62,9 @@ c-----------------------------------------------------------------------
       use ycompact, only: dymat, ymat
       use zcompact, only: aaz, dzmat, emz, zmat
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -74,7 +77,6 @@ c-----------------------------------------------------------------------
       include 'force.h'
       include 'mstates.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -170,7 +172,9 @@ c-----------------------------------------------------------------------
       use zcompact, only: aaz, dzmat, emz, zmat
 
       use Bloc_da, only: b_da, db
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -179,7 +183,6 @@ c-----------------------------------------------------------------------
 
       parameter (MEXCIT=10)
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)

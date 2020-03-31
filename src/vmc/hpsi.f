@@ -18,7 +18,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use wfsec, only: iwf, iwftype, nwftype
       use ycompact, only: dymat, ymat
       use casula, only: i_vpsp, icasula, t_vpsp
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -45,7 +47,6 @@ c Calculates energy
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
 

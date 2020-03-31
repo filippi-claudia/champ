@@ -9,7 +9,9 @@ c 2) a gaussian basis
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -24,7 +26,6 @@ c 2) a gaussian basis
       include 'basis.h'
       include 'numbas.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
 

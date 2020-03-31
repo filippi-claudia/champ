@@ -9,7 +9,9 @@ c Modified by A. Scemama
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
       use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -31,7 +33,6 @@ c dimensioned at least max(nup**2,ndn**2)
       common /contrl_per/ iperiodic,ibasis
       common /force_analy/ iforce_analy
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
@@ -162,7 +163,9 @@ c-------------------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -173,7 +176,6 @@ c assuming that basis function values in phin are up to date
       include 'force.h'
       include 'optorb.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
 
@@ -229,7 +231,9 @@ c-------------------------------------------------------------------------------
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
       use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -241,7 +245,6 @@ c-------------------------------------------------------------------------------
       include 'numbas.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
 
@@ -288,7 +291,9 @@ c-------------------------------------------------------------------------------
      &phin
       use slatn, only: slmin
       use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -304,7 +309,6 @@ c-------------------------------------------------------------------------------
       parameter(one=1.d0)
 
       common /contrl_per/ iperiodic,ibasis
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /dorb/ iworbd(MELEC,MDET)
 

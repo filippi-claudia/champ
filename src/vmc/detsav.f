@@ -10,7 +10,9 @@ c Written by Claudia Filippi
       use slatn, only: slmin
       use ycompact, only: dymat, ymat
       use ycompactn, only: ymatn
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -25,7 +27,6 @@ c Written by Claudia Filippi
       parameter (MEXCIT=10)
 
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
 

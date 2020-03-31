@@ -106,7 +106,9 @@ c-----------------------------------------------------------------------
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -118,7 +120,6 @@ c-----------------------------------------------------------------------
 
 
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -168,7 +169,9 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use Bloc_da, only: b_da
       use Bloc_dj, only: b_dj
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -185,7 +188,6 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
 
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb

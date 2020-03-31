@@ -25,7 +25,9 @@ c and sa, pa, da asymptotic functions
 
       use jaspar4, only: a4, norda, nordb, nordc
       use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -45,7 +47,6 @@ c and sa, pa, da asymptotic functions
       include 'pseudo.h'
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
