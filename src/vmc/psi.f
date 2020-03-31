@@ -16,7 +16,9 @@ c periodic systems.
       use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
      &xms
       use wfsec, only: iwf, iwftype, nwftype
+      use chck, only: bot
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -36,7 +38,6 @@ c periodic systems.
      &,ifock,i3body,irewgt,iaver,istrch
 
 
-      common /chck/ bot
 
       dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ)
 

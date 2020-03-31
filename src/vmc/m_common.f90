@@ -1683,3 +1683,15 @@ end module forcewt
 
  
  
+
+ module chck
+   !> Arguments: bot
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+    real(dp) :: bot
+
+    private
+    public :: bot
+    save
+ end module chck
