@@ -11,7 +11,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use Bloc_dj, only: b_dj
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -57,7 +59,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
      & ,tildem(MELEC,MORB,2)
-      common /Bloc_dj/ b_dj(MORB,MELEC,MPARMJ)
       common /b_tmove/ b_t(MORB,MPS_QUAD,MCENT,MELEC),iskip(MELEC,MCENT)
       common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
      & da_nonloc(3,MCENT)

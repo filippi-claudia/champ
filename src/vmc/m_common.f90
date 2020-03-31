@@ -57,6 +57,19 @@
    save
  end module Bloc_da
    
+ module Bloc_dj
+   !> Arguments: b_dj
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'optjas.h'
+
+   real(dp) :: b_dj(MORB,MELEC,MPARMJ)
+
+   private
+   public :: b_dj
+   save
+ end module Bloc_dj
+
  module config
    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
    use precision_kinds, only: dp
@@ -1641,5 +1654,3 @@ end module forcewt
    public :: czcart, czint, czcart_ref, izcmat, izmatrix 
    save
  end module zmatrix
-
- 

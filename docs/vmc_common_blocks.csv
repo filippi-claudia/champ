@@ -1,9 +1,9 @@
 # common_block_name , appearences , status_of_refactoring
 atom,113,DONE
-b_tmove,2,Todo
+b_tmove,2,DONE
 Bloc,10,Todo
-Bloc_da,4,Todo
-Bloc_dj,4,Todo
+Bloc_da,4,DONE
+Bloc_dj,4,DONE
 bparm,24,Todo
 casula,2,Todo
 cblock_tracking,1,Todo

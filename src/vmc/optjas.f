@@ -13,7 +13,9 @@
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use scratch, only: denergy_det, dtildem, xmatd, xmatu
 
+      use Bloc_dj, only: b_dj
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -50,7 +52,6 @@
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
-      common /Bloc_dj/ b_dj(MORB,MELEC,MPARMJ)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
