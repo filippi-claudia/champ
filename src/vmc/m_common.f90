@@ -94,8 +94,20 @@
    private
    public :: i_vpsp, icasula, t_vpsp
    save
-end module casula
+ end module casula
 
+ module chck
+  !> Arguments: bot
+  use precision_kinds, only: dp
+  include 'vmc.h'
+
+   real(dp) :: bot
+
+   private
+   public :: bot
+   save
+ end module chck
+ 
  module config
    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
    use precision_kinds, only: dp
@@ -1684,14 +1696,4 @@ end module forcewt
  
  
 
- module chck
-   !> Arguments: bot
-   use precision_kinds, only: dp
-   include 'vmc.h'
-
-    real(dp) :: bot
-
-    private
-    public :: bot
-    save
- end module chck
+ 
