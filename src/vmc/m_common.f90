@@ -29,6 +29,20 @@
    public   :: znuc, cent, pecent, iwctype, nctype, ncent 
    save
  end module atom
+
+ module b_tmove
+   !> Arguments: b_t, iskip
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'pseudo.h'
+
+   real(dp) :: b_t(MORB,MPS_QUAD,MCENT,MELEC)
+   integer  :: iskip(MELEC,MCENT)
+
+   private
+   public :: b_t, iskip
+   save
+ end module b_tmove
    
  module config
    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
