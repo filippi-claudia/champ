@@ -166,7 +166,9 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use Bloc_da, only: b_da
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -194,7 +196,6 @@ c-----------------------------------------------------------------------
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
       common /Bloc_dj/ b_dj(MORB,MELEC,MPARMJ)
-      common /Bloc_da/ b_da(3,MELEC,MORB,MCENT)
 
 c compute kinetic contribution of B+Btilde to compute Eloc
       do i=1,nelec

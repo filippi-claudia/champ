@@ -43,6 +43,19 @@
    public :: b_t, iskip
    save
  end module b_tmove
+
+ module Bloc_da
+   !> Arguments: b_da, db
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: b_da(3,MELEC,MORB,MCENT)
+   real(dp) :: db(3,MELEC,MORB,MCENT) 
+
+   private
+   public :: b_da, db
+   save
+ end module Bloc_da
    
  module config
    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
@@ -1628,3 +1641,5 @@ end module forcewt
    public :: czcart, czint, czcart_ref, izcmat, izmatrix 
    save
  end module zmatrix
+
+ 

@@ -13,9 +13,6 @@
 
 
 
-
-
-
       include 'vmc.h'
       include 'force.h'
 
@@ -172,13 +169,8 @@ c-----------------------------------------------------------------------
 
       use zcompact, only: aaz, dzmat, emz, zmat
 
+      use Bloc_da, only: b_da, db
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -212,7 +204,6 @@ c-----------------------------------------------------------------------
 
       common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
      & ,tildem(MELEC,MORB,2)
-      common /Bloc_da/ b_da(3,MELEC,MORB,MCENT)
 
 
       dimension da_energy_ref(3,MCENT)

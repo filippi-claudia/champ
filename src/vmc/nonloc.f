@@ -594,7 +594,9 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use elec, only: ndn, nup
+      use Bloc_da, only: b_da, db
       implicit real*8(a-h,o-z)
+
 
 
       parameter (one=1.d0)
@@ -615,7 +617,6 @@ c-----------------------------------------------------------------------
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /Bloc_da/ db(3,MELEC,MORB,MCENT)
 
       common /force_analy/ iforce_analy
 
