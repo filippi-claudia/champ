@@ -8,7 +8,9 @@ c Written by Cyrus Umrigar
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -21,7 +23,6 @@ c Written by Cyrus Umrigar
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /bparm/ nspin2b,nocuspb
 
 c isc = 2,3 are exponential scalings
 c isc = 4,5 are inverse power scalings

@@ -70,6 +70,17 @@
    save
  end module Bloc_dj
 
+ module bparm
+   !> Arguments: nocuspb, nspin2b
+   
+   integer  :: nocuspb
+   integer  :: nspin2b
+   
+   private
+   public :: nocuspb, nspin2b
+   save
+ end module bparm
+
  module config
    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
    use precision_kinds, only: dp
@@ -1654,3 +1665,5 @@ end module forcewt
    public :: czcart, czint, czcart_ref, izcmat, izmatrix 
    save
  end module zmatrix
+
+ 

@@ -471,7 +471,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -489,7 +491,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &,ifock,i3body,irewgt,iaver,istrch
 
 
-      common /bparm/ nspin2b,nocuspb
 
 
       common /force_analy/ iforce_analy

@@ -14,7 +14,9 @@ c numerical Laplacian for periodic systems.
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use wfsec, only: iwf, iwftype, nwftype
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -39,7 +41,6 @@ c subroutine to calculate jastrow factor,its derivatives
 c and the potential
 
 
-      common /bparm/ nspin2b,nocuspb
 
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)

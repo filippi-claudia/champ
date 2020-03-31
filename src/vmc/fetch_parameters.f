@@ -29,7 +29,9 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -40,7 +42,6 @@ c-----------------------------------------------------------------------
       include 'vmc.h'
       include 'force.h'
 
-      common /bparm/ nspin2b,nocuspb
 
 
 

@@ -15,7 +15,9 @@ c Jastrow 6   must be used with one of isc=6,7
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use wfsec, only: iwf, iwftype, nwftype
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -31,7 +33,6 @@ c Jastrow 6   must be used with one of isc=6,7
      &,ifock,i3body,irewgt,iaver,istrch
 
 
-      common /bparm/ nspin2b,nocuspb
 
 
       common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)

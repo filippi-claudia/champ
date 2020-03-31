@@ -60,7 +60,9 @@ c and Anthony Scemema
       use sa_weights, only: iweight, nweight, weights
       use wfsec, only: iwf, iwftype, nwftype
       use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
@@ -93,7 +95,6 @@ c and Anthony Scemema
      &,ifock,i3body,irewgt,iaver,istrch
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /bparm/ nspin2b,nocuspb
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
@@ -1056,7 +1057,9 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1070,7 +1073,6 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /bparm/ nspin2b,nocuspb
 
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
@@ -1612,7 +1614,9 @@ c Set the jastrow to be equal
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1626,7 +1630,6 @@ c Set the jastrow to be equal
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /bparm/ nspin2b,nocuspb
 
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
@@ -1702,7 +1705,9 @@ C$INPUT jasderiv inp
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1718,7 +1723,6 @@ C$INPUT jasderiv inp
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /bparm/ nspin2b,nocuspb
 
 
 

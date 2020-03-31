@@ -61,7 +61,9 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -75,7 +77,6 @@ c-----------------------------------------------------------------------
       character*50 fmt
       character*40 filename,filetype
 
-      common /bparm/ nspin2b,nocuspb
 
 
       if(ioptjas.eq.0) return
@@ -306,14 +307,15 @@ c-----------------------------------------------------------------------
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /bparm/ nspin2b,nocuspb
 
       dimension a4_save(MORDJ1,MCTYPE,MWF),b_save(MORDJ1,2,MWF),
      &c_save(83,MCTYPE,MWF)
@@ -443,14 +445,15 @@ c-----------------------------------------------------------------------
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /bparm/ nspin2b,nocuspb
 
       mparmja=2+max(0,norda-1)
       mparmjb=2+max(0,nordb-1)
@@ -530,14 +533,15 @@ c-----------------------------------------------------------------------
       use jaspar3, only: a, b, c, fck, nord, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /bparm/ nspin2b,nocuspb
 
       dimension a4_best(MORDJ1,MCTYPE,MWF),b_best(MORDJ1,2,MWF),
      &c_best(83,MCTYPE,MWF)
@@ -680,7 +684,9 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -691,7 +697,6 @@ c-----------------------------------------------------------------------
       include 'vmc.h'
       include 'force.h'
 
-      common /bparm/ nspin2b,nocuspb
 
 
 
@@ -835,7 +840,9 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -845,7 +852,6 @@ c-----------------------------------------------------------------------
       include 'vmc.h'
       include 'force.h'
 
-      common /bparm/ nspin2b,nocuspb
 
 
       iflag=0

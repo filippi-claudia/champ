@@ -15,7 +15,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -39,7 +41,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
 
-      common /bparm/ nspin2b,nocuspb
 
 
 

@@ -203,7 +203,9 @@ c Written by Claudia Filippi
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -218,7 +220,6 @@ c Written by Claudia Filippi
       include 'force.h'
       include 'mstates.h'
 
-      common /bparm/ nspin2b,nocuspb
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
@@ -461,7 +462,9 @@ c Written by Claudia Filippi
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -473,7 +476,6 @@ c Written by Claudia Filippi
       include 'force.h'
       include 'mstates.h'
 
-      common /bparm/ nspin2b,nocuspb
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
@@ -671,7 +673,9 @@ c Written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use sa_weights, only: iweight, nweight, weights
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -686,7 +690,6 @@ c Written by Claudia Filippi
 
       common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
-      common /bparm/ nspin2b,nocuspb
 
       common /gradhessj/ dj(MPARMJ,MSTATES),dj_e(MPARMJ,MSTATES),dj_de(MPARMJ,MPARMJ,MSTATES)
      &,dj_dj(MPARMJ,MPARMJ,MSTATES),dj_dj_e(MPARMJ,MPARMJ,MSTATES),de(MPARMJ,MSTATES)
