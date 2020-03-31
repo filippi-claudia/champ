@@ -61,7 +61,9 @@ c and Anthony Scemema
       use wfsec, only: iwf, iwftype, nwftype
       use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
       use bparm, only: nocuspb, nspin2b
+      use casula, only: i_vpsp, icasula, t_vpsp
       implicit real*8(a-h,o-z)
+
 
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
@@ -110,7 +112,6 @@ c and Anthony Scemema
 
 
 
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nbj_current
 

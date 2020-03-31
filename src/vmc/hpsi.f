@@ -17,7 +17,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
       use wfsec, only: iwf, iwftype, nwftype
       use ycompact, only: dymat, ymat
+      use casula, only: i_vpsp, icasula, t_vpsp
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -61,7 +63,6 @@ c Calculates energy
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
