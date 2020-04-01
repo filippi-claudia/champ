@@ -63,7 +63,9 @@ c and Anthony Scemema
       use bparm, only: nocuspb, nspin2b
       use casula, only: i_vpsp, icasula, t_vpsp
       use coefs, only: coef, nbasis, norb
+      use const2, only: deltar, deltat
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -90,7 +92,6 @@ c and Anthony Scemema
 
 
 
-      common /const2/ deltar,deltat
       common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq

@@ -27,7 +27,9 @@ c job where it left off
 
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
+      use const2, only: deltar, deltat
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -58,7 +60,6 @@ c job where it left off
 
       parameter(half=0.5d0,small=1.d-6)
 
-      common /const2/ deltar,deltat
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 

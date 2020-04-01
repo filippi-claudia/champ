@@ -26,7 +26,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
 
       use tmpnode, only: distance_node_sum
+      use const2, only: deltar, deltat
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -68,7 +70,6 @@ c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best
 
       common /contr3/ mode
-      common /const2/ deltar,deltat
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
  

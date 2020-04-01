@@ -18,7 +18,9 @@ c Written by Cyrus Umrigar
       use tempor, only: dist_nn
       use test, only: f, vbare_coul, vbare_jas, vbare_psp
 
+      use constant, only: twopi
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -35,7 +37,6 @@ c Written by Cyrus Umrigar
       parameter (eps=1.d-12)
 
       common /contrl_per/ iperiodic,ibasis
-      common /constant/ twopi
 c     common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
 c    &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
 c    &,nlrad(MCTYPE)
@@ -965,12 +966,13 @@ c Note: vps_short overwritten
 c g > 0 (4pi/vcell)*(int r*vps_short*sin(g*r)*dr)/g
 c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
+      use constant, only: twopi
       implicit real*8(a-h,o-z)
+
 
       include 'ewald.h'
       include 'pseudo.h'
 
-      common /constant/ twopi
 
       dimension r(*),vps_short(*),gnorm(*),y(MPS_GRID),vbare_psp(NGNORM_BIGX)
 
@@ -1004,11 +1006,12 @@ c-----------------------------------------------------------------------
      &,cutr,vcell,ncoef,np,b,y,chisq,ifcon,isrange)
 c Written by Cyrus Umrigar and Claudia Filippi
 
+      use constant, only: twopi
       implicit real*8(a-h,o-z)
+
 
 c     parameter(NPX=6)
 
-      common /constant/ twopi
 
       include 'ewald.h'
 
