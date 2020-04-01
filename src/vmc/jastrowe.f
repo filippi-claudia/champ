@@ -2,15 +2,16 @@
 c Written by Claudia Filippi by modifying jastrow
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
 
       parameter (zero=0.d0)
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
       include 'pseudo.h'
 

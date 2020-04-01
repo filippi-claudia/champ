@@ -19,7 +19,10 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use ycompact, only: dymat, ymat
       use casula, only: i_vpsp, icasula, t_vpsp
       use coefs, only: coef, nbasis, norb
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -44,8 +47,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
 c Calculates energy
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 
 

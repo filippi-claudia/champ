@@ -16,7 +16,10 @@ c Jastrow 6   must be used with one of isc=6,7
      &cutjas, cutjasi
       use wfsec, only: iwf, iwftype, nwftype
       use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -29,8 +32,6 @@ c Jastrow 6   must be used with one of isc=6,7
       include 'vmc.h'
       include 'force.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 
 

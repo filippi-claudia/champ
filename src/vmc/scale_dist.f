@@ -9,7 +9,10 @@ c Written by Cyrus Umrigar
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -20,8 +23,6 @@ c Written by Cyrus Umrigar
       include 'force.h'
       parameter (third=1.d0/3.d0)
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 
 c isc = 2,3 are exponential scalings
@@ -119,15 +120,16 @@ c Scale interparticle distances.
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
 
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
@@ -266,15 +268,16 @@ c gradient and laplacian.
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
 
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
@@ -446,7 +449,10 @@ c gradient and laplacian.
      &cutjas, cutjasi
       use scale_more, only: dd3
       use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -454,8 +460,6 @@ c gradient and laplacian.
 
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 

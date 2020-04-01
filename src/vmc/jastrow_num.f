@@ -15,7 +15,10 @@ c numerical Laplacian for periodic systems.
      &cutjas, cutjasi
       use wfsec, only: iwf, iwftype, nwftype
       use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,8 +37,6 @@ c numerical Laplacian for periodic systems.
       include 'vmc.h'
       include 'force.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 c subroutine to calculate jastrow factor,its derivatives
 c and the potential

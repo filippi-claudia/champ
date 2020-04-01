@@ -474,7 +474,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -489,8 +492,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       parameter (half=.5d0)
 
       common /contrl_per/ iperiodic,ibasis
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 
 

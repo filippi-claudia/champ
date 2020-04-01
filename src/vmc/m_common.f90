@@ -206,6 +206,24 @@
   public :: twopi
   save
  end module constant
+ module contr2
+   !> Arguments: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt, isc, istrch
+
+    integer  :: i3body
+    integer  :: ianalyt_lap
+    integer  :: iaver
+    integer  :: icusp
+    integer  :: icusp2
+    integer  :: ifock
+    integer  :: ijas
+    integer  :: irewgt
+    integer  :: isc
+    integer  :: istrch
+
+    private
+    public :: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt, isc, istrch
+    save
+ end module contr2
 
  module contrl_per
    !> Arguments: iperiodic, ibasis 
@@ -1730,3 +1748,4 @@ end module forcewt
    public :: czcart, czint, czcart_ref, izcmat, izmatrix 
    save
  end module zmatrix
+ 

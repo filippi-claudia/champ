@@ -2,7 +2,10 @@
 c Written by Claudia Filippi
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
       parameter (zero=0.d0)
 
@@ -10,8 +13,6 @@ c Written by Claudia Filippi
       include 'force.h'
       include 'pseudo.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 
       dimension x(3,*),v(3,*),div_vj(MELEC)

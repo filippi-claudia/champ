@@ -9,7 +9,10 @@ c Written by Claudia Filippi by modifying hpsi
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -31,8 +34,6 @@ c Calculates wave function
 
 
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)

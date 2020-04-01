@@ -12,8 +12,8 @@ coefs,70,DONE
 config,6,DONE
 const,92,DONE
 const2,3,DONE
-constant,3,Todo
-contr2,33,Todo
+constant,3,TODO
+contr2,33,TODO
 contr3,10,Todo
 contrl,30,Todo
 contrl_per,21,DONE

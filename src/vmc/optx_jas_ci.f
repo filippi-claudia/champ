@@ -133,7 +133,10 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -152,8 +155,6 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
       common /gradhessj/ dj(MPARMJ,MSTATES),dj_e(MPARMJ,MSTATES),dj_de(MPARMJ,MPARMJ,MSTATES)
      &,dj_dj(MPARMJ,MPARMJ,MSTATES),dj_dj_e(MPARMJ,MPARMJ,MSTATES),de(MPARMJ,MSTATES)

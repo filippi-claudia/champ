@@ -17,7 +17,10 @@ c periodic systems.
      &xms
       use wfsec, only: iwf, iwftype, nwftype
       use chck, only: bot
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,8 +37,6 @@ c periodic systems.
       parameter (zero=0.d0,one=1.d0,two=2.d0)
 
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 
 
@@ -97,7 +98,10 @@ c-----------------------------------------------------------------------
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -110,8 +114,6 @@ c-----------------------------------------------------------------------
       parameter(zero=0.d0,one=1.d0)
 
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
       psia=zero
       if(ijas.lt.4.or.ijas.gt.6) return
@@ -142,7 +144,10 @@ c-----------------------------------------------------------------------
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -154,8 +159,6 @@ c-----------------------------------------------------------------------
       parameter(zero=0.d0,one=1.d0)
 
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
       psib=zero
       if(ijas.lt.4.or.ijas.gt.6) return

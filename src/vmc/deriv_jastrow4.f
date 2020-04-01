@@ -22,7 +22,10 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       use wfsec, only: iwf, iwftype, nwftype
       use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -45,8 +48,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       include 'optjas.h'
       parameter(NEQSX=6*MORDJ,MTERMS=55)
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 
 

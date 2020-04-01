@@ -64,7 +64,10 @@ c and Anthony Scemema
       use casula, only: i_vpsp, icasula, t_vpsp
       use coefs, only: coef, nbasis, norb
       use const2, only: deltar, deltat
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -96,8 +99,6 @@ c and Anthony Scemema
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
@@ -1063,7 +1064,10 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1076,8 +1080,6 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       include 'force.h'
       include 'inputflags.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
@@ -1622,7 +1624,10 @@ c Set the jastrow to be equal
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1635,8 +1640,6 @@ c Set the jastrow to be equal
       include 'force.h'
       include 'inputflags.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
@@ -1713,7 +1716,10 @@ C$INPUT jasderiv inp
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1728,8 +1734,6 @@ C$INPUT jasderiv inp
       include 'numbas.h'
       include 'force.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 
 
