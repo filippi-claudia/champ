@@ -196,16 +196,6 @@
    save
  end module const2
 
- module contr3
-   !> Arguments: mode
-
-   character*12 :: mode
-
-   private
-   public :: mode
-   save
- end module contr3
-
  module constant
   !> Arguments: twopi
   use precision_kinds, only: dp
@@ -216,6 +206,7 @@
   public :: twopi
   save
  end module constant
+
  module contr2
    !> Arguments: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt, isc, istrch
 
@@ -235,6 +226,16 @@
     save
  end module contr2
 
+ module contr3
+  !> Arguments: mode
+
+  character*12 :: mode
+
+  private
+  public :: mode
+  save
+end module contr3
+
  module contrl_per
    !> Arguments: iperiodic, ibasis 
 
@@ -245,6 +246,31 @@
    save
  end module contrl_per
  
+ module contrldmc
+   !> Arguments: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot
+   use precision_kinds, only: dp
+   include 'force.h'
+
+   integer  :: iacc_rej
+   integer  :: icross
+   integer  :: icuspg
+   integer  :: icut_br
+   integer  :: icut_e
+   integer  :: idiv_v
+   integer  :: idmc
+   integer  :: ipq
+   integer  :: itau_eff
+   integer  :: nfprod
+   real(dp) :: rttau
+   real(dp) :: tau
+   real(dp) :: taueff(MFORCE)
+   real(dp) :: tautot
+
+   private
+   public :: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot
+   save
+ end module contrldmc
+
  module csfs
    !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
    use precision_kinds, only: dp

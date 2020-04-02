@@ -65,7 +65,10 @@ c and Anthony Scemema
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
       use contr3, only: mode
+      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
+     &itau_eff, nfprod, rttau, tau, taueff, tautot
       implicit real*8(a-h,o-z)
+
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
@@ -89,8 +92,6 @@ c and Anthony Scemema
 
       common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
