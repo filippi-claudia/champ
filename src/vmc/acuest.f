@@ -3,7 +3,6 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
      &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
@@ -20,27 +19,11 @@ c routine to accumulate estimators for energy etc.
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use contr3, only: mode
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      character*12 mode
 
       parameter (half=.5d0)
       include 'vmc.h'
@@ -54,7 +37,6 @@ c routine to accumulate estimators for energy etc.
 
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contr3/ mode
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)

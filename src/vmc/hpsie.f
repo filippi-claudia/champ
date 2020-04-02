@@ -11,15 +11,9 @@ c Written by Claudia Filippi by modifying hpsi
       use wfsec, only: iwf, iwftype, nwftype
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-      character*12 mode
 
       include 'vmc.h'
       include 'pseudo.h'

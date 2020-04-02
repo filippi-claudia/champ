@@ -5,7 +5,6 @@ c routine to print out final results
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use denupdn, only: rprobdn, rprobup
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
@@ -15,31 +14,15 @@ c routine to print out final results
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-
       use header, only: date, title
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       use sa_weights, only: iweight, nweight, weights
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
-
       use tmpnode, only: distance_node_sum
+      use contr3, only: mode
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      character*12 mode
       include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
@@ -50,7 +33,6 @@ c routine to print out final results
 
       common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contr3/ mode
 
 
 

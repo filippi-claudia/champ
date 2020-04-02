@@ -1,10 +1,11 @@
       program main
 c Written by Claudia Filippi
       use mpiconf, only: idtask, nproc, wid
-      implicit real*8(a-h,o-z)
-      character*12 mode
-      character method*20
+      use contr3, only: mode
 
+      implicit real*8(a-h,o-z)
+
+      character method*20
       character*40 filename
 
 c mpif.h is system, mpi_qmc.h is ours
@@ -12,8 +13,6 @@ c mpif.h is system, mpi_qmc.h is ours
       include 'mpif.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-
-      common /contr3/ mode
 
       call mpi_init(ierr)
 

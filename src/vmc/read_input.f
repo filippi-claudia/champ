@@ -1,10 +1,8 @@
       subroutine read_input
 c Written by Friedemann Schautz
 
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
-
-      character*12 mode
-      common /contr3/ mode
 
 c Initialize flags
       call flaginit
@@ -66,12 +64,8 @@ c and Anthony Scemema
       use const2, only: deltar, deltat
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
@@ -93,8 +87,6 @@ c and Anthony Scemema
       include 'properties.h'
       include '3dgrid_flags.h'
 
-
-
       common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
@@ -111,17 +103,8 @@ c and Anthony Scemema
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /dorb/ iworbd(MELEC,MDET)
-
-
-
-
-
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nbj_current
-
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-
-      character*12 mode
-      common /contr3/ mode
 
       character*20 fmt
       character*32 keyname

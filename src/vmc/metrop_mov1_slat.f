@@ -15,7 +15,6 @@ c    (Kluwer Academic Publishers, Boston, 1999)
      &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
      &tjfoo, vnew, vold, xnew, xold
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
@@ -24,24 +23,11 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use kinet, only: dtdx2n, dtdx2o
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
-
       use tmpnode, only: distance_node_sum
       use const2, only: deltar, deltat
+      use contr3, only: mode
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
-
-
-      character*12 mode
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,half=0.5d0)
       parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
@@ -69,7 +55,6 @@ c The foll. still need to be tried:
 c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best
 
-      common /contr3/ mode
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
  
@@ -77,11 +62,8 @@ c TMP
       common /multislater/ detu(MDET),detd(MDET)
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-
-
       dimension xstrech(3,MELEC)
       dimension xaxis(3),yaxis(3),zaxis(3),idist(MELEC)
-
       dimension ddx_ref(3)
       dimension psidn(MSTATES),wtg(MSTATES)
 

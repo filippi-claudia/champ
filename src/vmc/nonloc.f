@@ -4,25 +4,16 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_energy_now, only: da_energy, da_psi
       use da_orbval, only: da_d2orb, da_dorb, da_orb
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use Bloc_dj, only: b_dj
       use coefs, only: coef, nbasis, norb
+      use contr3, only: mode
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
 
       parameter (one=1.d0)
 
@@ -35,9 +26,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      character*12 mode
-
-      common /contr3/ mode
 
       common /contrl_per/ iperiodic,ibasis
 
@@ -45,26 +33,17 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-
-
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
-
       common /multislater/ detu(MDET),detd(MDET)
-
-
-
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
       common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
      & ,tildem(MELEC,MORB,2)
       common /b_tmove/ b_t(MORB,MPS_QUAD,MCENT,MELEC),iskip(MELEC,MCENT)
       common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
      & da_nonloc(3,MCENT)
-
-
       common /force_analy/ iforce_analy
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)

@@ -17,26 +17,15 @@ c rigidly with that nucleus
       use forcestr, only: delc
       use pcm_force, only: sch_s
       use wfsec, only: iwf, iwftype, nwftype
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-      character*12 mode
 
       parameter (zero=0.d0,one=1.d0)
 
       include 'vmc.h'
       include 'force.h'
       include 'pcm.h'
-
-
-
-
-
-      common /contr3/ mode
 
       dimension x(3,MELEC),xstrech(3,MELEC),centsav(3,MCENT),pecentn(MFORCE)
       dimension wt(MCENT),dvol(3,3),dwt(3,MCENT),dwtsm(3)

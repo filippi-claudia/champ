@@ -11,23 +11,14 @@ c routine to write out estimators for energy etc.
       use forcepar, only: deltot, istrech, nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-      character*12 mode
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'pseudo.h'
 
-      common /contr3/ mode
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 

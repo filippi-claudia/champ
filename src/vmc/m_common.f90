@@ -196,6 +196,16 @@
    save
  end module const2
 
+ module contr3
+   !> Arguments: mode
+
+   character*12 :: mode
+
+   private
+   public :: mode
+   save
+ end module contr3
+
  module constant
   !> Arguments: twopi
   use precision_kinds, only: dp
