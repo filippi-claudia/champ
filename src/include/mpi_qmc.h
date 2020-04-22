@@ -1,1 +1,1 @@
-      parameter(NPROCX=1024)
+      parameter(NPROCX=1524)
