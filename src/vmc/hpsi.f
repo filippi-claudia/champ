@@ -21,7 +21,10 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use coefs, only: coef, nbasis, norb
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
+      use Bloc, only: b, tildem, xmatd, xmatu
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -69,8 +72,6 @@ c Calculates energy
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
 
-      common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
-     & ,tildem(MELEC,MORB,2)
 
 
       common /force_analy/ iforce_analy

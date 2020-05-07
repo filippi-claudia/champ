@@ -2,28 +2,17 @@
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use derivjas, only: d2g, g, go, gvalue
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use scratch, only: denergy_det, dtildem, xmatd, xmatu
-
+      use scratch, only: denergy_det, dtildem
+      use Bloc, only: xmatd, xmatu
       use Bloc_dj, only: b_dj
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
 
       include 'vmc.h'
@@ -33,7 +22,6 @@
       include 'pseudo.h'
 
       parameter (MEXCIT=10)
-
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)

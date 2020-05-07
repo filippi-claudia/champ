@@ -13,7 +13,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use coefs, only: coef, nbasis, norb
       use contr3, only: mode
 
+      use Bloc, only: b, tildem, xmatd, xmatu
+
       implicit real*8(a-h,o-z)
+
 
       parameter (one=1.d0)
 
@@ -39,8 +42,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
-     & ,tildem(MELEC,MORB,2)
       common /b_tmove/ b_t(MORB,MPS_QUAD,MCENT,MELEC),iskip(MELEC,MCENT)
       common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
      & da_nonloc(3,MCENT)

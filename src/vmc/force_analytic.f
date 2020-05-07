@@ -13,23 +13,16 @@
       implicit real*8(a-h,o-z)
 
 
-
-
       include 'vmc.h'
       include 'force.h'
 
       common /dorb/ iworbd(MELEC,MDET)
-
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
-
-
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
-
 
       dimension da_psi_ref(3,MCENT)
 
@@ -173,7 +166,10 @@ c-----------------------------------------------------------------------
 
       use Bloc_da, only: b_da, db
       use coefs, only: coef, nbasis, norb
+      use Bloc, only: b, tildem, xmat, xmatd, xmatu
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -205,8 +201,6 @@ c-----------------------------------------------------------------------
       common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
      & da_nonloc(3,MCENT)
 
-      common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
-     & ,tildem(MELEC,MORB,2)
 
 
       dimension da_energy_ref(3,MCENT)

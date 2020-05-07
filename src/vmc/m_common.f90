@@ -1570,17 +1570,15 @@ end module forcewt
  end module scale_more
 
  module scratch
-   !> Arguments: denergy_det, dtildem, xmatd, xmatu
+   !> Arguments: denergy_det, dtildem
    use precision_kinds, only: dp
    include 'vmc.h'
 
    real(dp) :: denergy_det(MDET,2)
    real(dp) :: dtildem(MELEC,MORB,2)
-   real(dp) :: xmatd(MELEC**2)
-   real(dp) :: xmatu(MELEC**2)
 
    private
-   public :: denergy_det, dtildem, xmatd, xmatu
+   public :: denergy_det, dtildem
    save
  end module scratch
 
@@ -1790,3 +1788,18 @@ end module forcewt
    save
  end module zmatrix
  
+ module Bloc
+   !> Arguments: b, tildem, xmat, xmatd, xmatu
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+    real(dp) :: b(MORB,MELEC)
+    real(dp) :: tildem(MELEC,MORB,2)
+    real(dp) :: xmat(MELEC**2,2) 
+    real(dp) :: xmatd(MELEC**2)
+    real(dp) :: xmatu(MELEC**2)
+
+    private 
+    public :: b, tildem, xmat, xmatd, xmatu 
+    save
+ end module Bloc

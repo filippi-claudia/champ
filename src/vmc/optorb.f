@@ -9,7 +9,10 @@
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use coefs, only: coef, nbasis, norb
+      use Bloc, only: b, tildem, xmatd, xmatu
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -39,8 +42,6 @@
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
 
-      common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
-     & ,tildem(MELEC,MORB,2)
 
 
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)

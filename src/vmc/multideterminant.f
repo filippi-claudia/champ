@@ -12,15 +12,9 @@
       use zcompact, only: aaz, dzmat, emz, zmat
 
       use coefs, only: coef, nbasis, norb
+      use Bloc, only: b, tildem, xmat, xmatd, xmatu
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -46,8 +40,6 @@ c dimensioned at least max(nup**2,ndn**2)
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
-     & ,tildem(MELEC,MORB,2)
 
 
 
@@ -253,15 +245,11 @@ c-----------------------------------------------------------------------
       use dets_equiv, only: cdet_equiv, dcdet_equiv
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
+      use Bloc, only: b, tildem, xmat, xmatd, xmatu
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
 
       include 'vmc.h'
@@ -281,8 +269,6 @@ c-----------------------------------------------------------------------
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
-     & ,tildem(MELEC,MORB,2)
 
       common /denergy_det/ denergy_det(MDET,2)
 
@@ -343,14 +329,10 @@ c-----------------------------------------------------------------------
       use dets_equiv, only: cdet_equiv, dcdet_equiv
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use coefs, only: coef, nbasis, norb
+      use Bloc, only: b, tildem, xmat, xmatd, xmatu
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -359,15 +341,8 @@ c-----------------------------------------------------------------------
       parameter (MEXCIT=10)
 
 
-
-      common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
-     & ,tildem(MELEC,MORB,2)
-
-
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-
       common /denergy_det/ denergy_det(MDET,2)
-
 
       dimension dymat(MORB,MELEC),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
 
@@ -425,7 +400,10 @@ c-----------------------------------------------------------------------
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use coefs, only: coef, nbasis, norb
+      use Bloc, only: b, tildem, xmat, xmatd, xmatu
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -443,8 +421,6 @@ c-----------------------------------------------------------------------
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
 
-      common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
-     & ,tildem(MELEC,MORB,2)
 
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)

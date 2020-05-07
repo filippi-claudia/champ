@@ -170,7 +170,10 @@ c-----------------------------------------------------------------------
       use Bloc_da, only: b_da
       use Bloc_dj, only: b_dj
       use coefs, only: coef, nbasis, norb
+      use Bloc, only: b, tildem, xmatd, xmatu
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -197,8 +200,6 @@ c-----------------------------------------------------------------------
       common /force_analy/ iforce_analy
 
 
-      common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
-     & ,tildem(MELEC,MORB,2)
 
 c compute kinetic contribution of B+Btilde to compute Eloc
       do i=1,nelec
