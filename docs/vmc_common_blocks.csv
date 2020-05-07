@@ -1,7 +1,7 @@
 # common_block_name , appearences , status_of_refactoring
 atom,113,DONE
 b_tmove,2,DONE
-Bloc,10,Todo
+Bloc,10,DONE
 Bloc_da,4,DONE
 Bloc_dj,4,DONE
 bparm,24,DONE
@@ -15,7 +15,7 @@ const2,3,DONE
 constant,3,DONE
 contr2,33,DONE
 contr3,10,DONE
-contrl,30,Todo
+contrl,30,DONE
 contrl_per,21,DONE
 contrldmc,1,DONE
 csfs,74,DONE
