@@ -26,7 +26,6 @@
 
 
 
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
