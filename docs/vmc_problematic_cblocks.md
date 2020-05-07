@@ -7,7 +7,7 @@ Common blocks that were not deleted in the second round.
 Variables xmatd, xmatu are shared with common block /scratch/.
 \
 **SOLUTION:** \
-The common block scratch was used only by optjas.f. Solution is simple: delete xmatd, xmatu from scratch module and introduce a "use Bloc, only: xmatd, xmatu" statement.
+The common block scratch was used only by optjas.f. Solution is simple: delete xmatd, xmatu from scratch module and introduce a "use Bloc, only: xmatd, xmatu" statement.\
 FYI: \
 common /Bloc/ \
 b(MORB,MELEC), xmat(MELEC * * 2,2), xmatu(MELEC* * 2), xmatd(MELEC * * 2)
@@ -18,7 +18,7 @@ contrl shares variable nconf with common block /sr_mat_n/.\
 **SOLUTION:** \
 Variable nconf was changed to n_conf (only used in read_input.f for dmc calculations) before doing the python refactoring, that is: \
 common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-To:
+To:\
 common /contrl/ nstep,nblk,nblkeq,n_conf,nconf_new,isite,idump,irstar
 
 ***#21 common block /cuspmat4/***\
