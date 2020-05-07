@@ -7,7 +7,7 @@ Common blocks that were not deleted in the second round.
 Variables xmatd, xmatu are shared with common block /scratch/.
 \
 **SOLUTION:** \
-CB scratch block was used only by optjas.f. Delete xmatd, xmatu from scratch module and introduce a "use Bloc, only: xmatd, xmatu" statement. 
+The common block scratch was used only by optjas.f. Solution is simple: delete xmatd, xmatu from scratch module and introduce a "use Bloc, only: xmatd, xmatu" statement.
 FYI: \
 common /Bloc/ \
 b(MORB,MELEC), xmat(MELEC * * 2,2), xmatu(MELEC* * 2), xmatd(MELEC * * 2)
