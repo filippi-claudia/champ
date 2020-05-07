@@ -91,6 +91,7 @@ Common blocks /icount_ci/, /icount_orb/ and /icount_prop/ are initialized in opt
       data icount_prop /1/
 
       end
+      
 However, /icount_ci/ in optci.f is used as:\
 common /icount_ci/ icount 
 
