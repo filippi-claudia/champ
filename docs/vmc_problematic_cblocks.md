@@ -2,7 +2,7 @@
 
 Common blocks that were not deleted in the second round. 
 
-- [ ] ***#3 common block /Bloc/***\
+- [x] ***#3 common block /Bloc/***\
 **PROBLEM:** \
 Variables xmatd, xmatu are shared with common block /scratch/.
 \
@@ -12,7 +12,7 @@ FYI: \
 common /Bloc/ \
 b(MORB,MELEC), xmat(MELEC * * 2,2), xmatu(MELEC* * 2), xmatd(MELEC * * 2)
 
-- [ ] ***#17 common block /contrl/***\
+- [x] ***#17 common block /contrl/***\
 **PROBLEM:** \
 contrl shares variable nconf with common block /sr_mat_n/.\
 **SOLUTION:** \
