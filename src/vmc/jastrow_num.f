@@ -5,7 +5,27 @@ c **Warning** This routine needs to be upgraded to calculate distances
 c correctly for periodic systems if we add in capability to use
 c numerical Laplacian for periodic systems.
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use elec, only: ndn, nup
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
+      use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
 
       parameter (zero=0.d0,one=1.d0,two=2.d0)
       parameter (half=.5d0)
@@ -17,25 +37,12 @@ c numerical Laplacian for periodic systems.
       include 'vmc.h'
       include 'force.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
 c subroutine to calculate jastrow factor,its derivatives
 c and the potential
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
 
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /bparm/ nspin2b,nocuspb
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 

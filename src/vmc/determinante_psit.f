@@ -1,20 +1,24 @@
 c-----------------------------------------------------------------------
       subroutine determinante_psit(iel,determ,istate)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /elec/ nup,ndn
 
       common /multislater/ detu(MDET),detd(MDET)
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       determ=0
 

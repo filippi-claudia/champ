@@ -1,6 +1,27 @@
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use ycompact, only: dymat, ymat
+      use zcompact, only: aaz, dzmat, emz, zmat
+
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -14,11 +35,6 @@ c as many ups as downs. If this is not true then be careful if
 c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -27,22 +43,15 @@ c dimensioned at least max(nup**2,ndn**2)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detiab(MDET,2)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
      & ,tildem(MELEC,MORB,2)
 
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
-      common /zcompact/ zmat(MORB,MELEC,2,MSTATES),dzmat(MORB,MELEC,2,MSTATES)
-     & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       common /denergy_det/ denergy_det(MDET,2)
 
@@ -239,7 +248,22 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
+      use dets_equiv, only: cdet_equiv, dcdet_equiv
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -247,12 +271,7 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
       parameter (MEXCIT=10)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
@@ -260,15 +279,12 @@ c-----------------------------------------------------------------------
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
 
       common /denergy_det/ denergy_det(MDET,2)
-      common /dets_equiv/ cdet_equiv(MDET),dcdet_equiv(MDET)
 
       dimension detu(MDET),detd(MDET),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
 
@@ -322,30 +338,36 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
+      use dets_equiv, only: cdet_equiv, dcdet_equiv
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       parameter (MEXCIT=10)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
       common /denergy_det/ denergy_det(MDET,2)
 
-      common /dets_equiv/ cdet_equiv(MDET),dcdet_equiv(MDET)
 
       dimension dymat(MORB,MELEC),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
 
@@ -397,18 +419,25 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       parameter (MEXCIT=10)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
@@ -417,8 +446,6 @@ c-----------------------------------------------------------------------
       common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
      & ,tildem(MELEC,MORB,2)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
@@ -470,24 +497,28 @@ c           do krep=ivirt(iab),norb+nadorb
 c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use elec, only: ndn, nup
+      use ycompact, only: dymat, ymat
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       parameter (MEXCIT=10)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /multislater/ detiab(MDET,2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
       if((iel.ne.nup.and.iel.ne.nelec).or.ndn.eq.0) return
 
@@ -516,20 +547,26 @@ c     enddo
 c-----------------------------------------------------------------------
       subroutine multideterminants_define(iflag,icheck)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /dorb/ iworbd(MELEC,MDET)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       dimension iswapped(MELEC),itotphase(MDET)
 
@@ -742,10 +779,11 @@ c     endif
       end
 c-----------------------------------------------------------------------
       function idiff(j,i,iab)
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
       idiff=1
       if(numrep_det(i,iab).ne.numrep_det(j,iab))return
       do k=1,numrep_det(i,iab)

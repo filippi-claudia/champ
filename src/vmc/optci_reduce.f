@@ -1,6 +1,10 @@
       subroutine optci_reduce
 
+      use mpiconf, only: idtask, nproc, wid
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
       include 'optci.h'
@@ -8,15 +12,11 @@
       include 'mstates.h'
       include 'mpif.h'
 
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
-
 c     parameter(MXTMP=max(MXORBTERM,MXMATDIM))
 c     max does not work with g77
       parameter(MXTMP=MXCITERM+MXCIMATDIM)
       dimension collect(MXTMP),collect2(MXCITERM,MXCIREDUCED)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if (iefficiency.gt.0) then
         call mpi_reduce(effcum,collect,nstates_psig

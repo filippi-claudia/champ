@@ -1,12 +1,11 @@
       subroutine write_geometry(iter)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
       implicit real*8(a-h,o-z)
       include 'vmc.h'
 
       character*40 filename,itn
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       if(iter.lt.0) then
         filename='geo_optimal_final'
@@ -37,19 +36,19 @@
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine compute_positions
+
         use coords_int
-        implicit real*8(a-h,o-z)
+        use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+        use force_fin, only: da_energy_ave, da_energy_err
+        use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      implicit real*8(a-h,o-z)
+
       
         include 'vmc.h'
         include 'force.h'
         
-        common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
-        
         common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-        common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
-        common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                   czcart_ref(3,3),izcmat(3,MCENT),
-     &                   izmatrix
         
         if (iforce_analy.eq.0) return
         
@@ -88,17 +87,18 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine force_store(l)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use da_energy_now, only: da_energy, da_psi
+      use force_mat_n, only: force_o
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
       include 'sr.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
-
-      common /force_mat_n/ force_o(6*MCENT,MCONF)
 
       ii=0
       do 10 i=1,ncent

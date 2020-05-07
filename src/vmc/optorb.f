@@ -1,6 +1,22 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,9 +24,6 @@
       include 'optorb_cblk.h'
 
       parameter (MEXCIT=10)
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -20,21 +33,15 @@
 
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
       dimension orbprim(*),eorbprim(*)
@@ -98,22 +105,26 @@ c ns_current reset in optorb_sum
 c-----------------------------------------------------------------------
       subroutine optorb_compute(psid,eloc,deloc)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use zcompact, only: aaz, dzmat, emz, zmat
+
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /zcompact/ zmat(MORB,MELEC,2,MSTATES),dzmat(MORB,MELEC,2,MSTATES)
-     & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)
 
       dimension psid(*),eloc(*),deloc(*)
 
@@ -138,17 +149,19 @@ c     enddo
       end
 c-----------------------------------------------------------------------
       subroutine optorb_sum(wtg_new,wtg_old,enew,eold,iflag)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension wtg_new(*),wtg_old(*),enew(*),eold(*)
 
@@ -243,17 +256,19 @@ c     ns_current=0
       end
 c-----------------------------------------------------------------------
       subroutine optorb_cum(wsum,esum)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension wsum(*),esum(*)
 
@@ -303,17 +318,19 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine optorb_init(iflg)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0) return
 
@@ -375,17 +392,19 @@ C$ iflg = 0: init *cum, *cm2 as well
       end
 c-----------------------------------------------------------------------
       subroutine optorb_save
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0) return
 
@@ -401,17 +420,19 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_restore
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0) return
 
@@ -427,14 +448,15 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
       dimension oav(*),eoav(*),fo(*),foerr(*)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       errn(x,x2,n)=dsqrt(dabs(x2/dble(n)-(x/dble(n))**2)/dble(n))
 
@@ -451,17 +473,19 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_dump(iu)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0) return
 
@@ -484,17 +508,19 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_rstrt(iu)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptorb.eq.0) return
       read(iu) morbprim,morbterm,mreduced
@@ -529,7 +555,16 @@ c nreduced has to be set since it will only be known for non-continuation runs
       end
 c-----------------------------------------------------------------------
       subroutine optorb_fin(wcum,ecum)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use sa_weights, only: iweight, nweight, weights
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -540,16 +575,11 @@ c-----------------------------------------------------------------------
 
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
       dimension oav(MXORBOP),eoav(MXORBOP),fo(MXORBOP),foerr(MXORBOP)
       dimension wcum(*),ecum(*)
@@ -743,7 +773,20 @@ c replaced column
       end
 c-----------------------------------------------------------------------
       subroutine optorb_define
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use optorb_mix, only: iwmix_virt, norbopt, norbvirt
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
@@ -752,19 +795,12 @@ c-----------------------------------------------------------------------
       include 'optorb_cblk.h'
       include 'inputflags.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /elec/ nup,ndn
 
       common /dorb/ iworbd(MELEC,MDET)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /optorb_mix/ norbopt,norbvirt,iwmix_virt(MORB,MORB)
 
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       data icount_orbdef /1/
 
@@ -953,7 +989,9 @@ c-----------------------------------------------------------------------
       subroutine check_orbitals
 
 c Do not compute virtual orbitals during single-electron move
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -962,7 +1000,6 @@ c Do not compute virtual orbitals during single-electron move
       include 'optci.h'
       include 'optorb.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_save
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       save nadorb_save

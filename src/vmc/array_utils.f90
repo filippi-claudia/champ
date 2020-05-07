@@ -9,7 +9,7 @@ module array_utils
   private
   !> \public
   public :: concatenate, diagonal,eye, generate_diagonal_dominant, norm, &
-       generate_preconditioner, write_matrix, write_vector, check_deallocate_matrices, &
+       initialize_subspace, write_matrix, write_vector, check_deallocate_matrices, &
        check_deallocate_matrix
 
 contains
@@ -134,7 +134,7 @@ contains
 
   end function diagonal  
 
-  function generate_preconditioner(diag, dim_sub, dim_base) result(precond)
+  function initialize_subspace(diag, dim_sub, dim_base) result(precond)
     !> \brief generates a diagonal preconditioner for `matrix`.
     !> \return diagonal matrix
 
@@ -158,7 +158,7 @@ contains
        precond(k, i) = 1.d0
     end do
     
-  end function generate_preconditioner
+  end function initialize_subspace
 
   function search_key(keys, i) result(k)
     !> \brief Search for a given index `i` in a vector `keys`

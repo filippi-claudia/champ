@@ -2,7 +2,22 @@ c Orbitals on a 3d grid with spline fit
 c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       subroutine setup_3dsplorb
+
+      use atom, only: cent, ncent
+
+      use ghostatom, only: newghostype, nghostcent
+      use ghostatom, only: newghostype, nghostcent
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
+      use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
 
       include 'force.h'
       include 'vmc.h'
@@ -10,17 +25,9 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       include '3dgrid_flags.h'
       include '3dgrid_spline.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /ghostatom/ newghostype,nghostcent
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       real*4  bc(MXNSTEP,MXNSTEP,3:8,MELEC/2+1), wk(80*MXNSTEP3)
       common /orbital_num_spl2/ bc, wk
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
@@ -290,13 +297,11 @@ c----------------------------------------------------------------------
 
 
       subroutine spline_mo(r,iorb,f,df,ddf,ier)
+      use insout, only: inout, inside
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_spline.h'
-
-      real*8 inside, inout  
-      common /insout/ inside,inout  
 
 c     Input:
       integer   iorb    ! Index of the MO to spline
@@ -384,6 +389,9 @@ c
 c Lagrange interpolation routines
 
       subroutine setup_3dlagorb
+
+      use atom, only: cent, ncent
+
       implicit real*8(a-h,o-z)
 
       include 'force.h'
@@ -392,9 +400,6 @@ c Lagrange interpolation routines
       include '3dgrid_flags.h'
       include '3dgrid_lagrange.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /ghostatom/ newghostype,nghostcent
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -585,15 +590,16 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use insout, only: inout, inside
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
 
-      real*8 inside,inout  
-      common /insout/ inside,inout  
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       dimension r(3),dr(3),orb(MELEC,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
@@ -662,16 +668,16 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use insout, only: inout, inside
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
-      real*8 inside, inout  
-      common /insout/ inside,inout  
 
       dimension r(3),dr(3),orb(3,MELEC,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
@@ -742,16 +748,16 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use insout, only: inout, inside
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
-      real*8 inside, inout  
-      common /insout/ inside,inout  
 
       dimension r(3),dr(3),orb(MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
@@ -820,16 +826,16 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use insout, only: inout, inside
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
-      real*8 inside, inout  
-      common /insout/ inside,inout  
 
       dimension r(3),dr(3),orb(3,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
@@ -890,13 +896,13 @@ c Compute displacements
       end
 c-----------------------------------------------------------------------
       subroutine orb3d_dump(iu)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_flags.h'
-      integer norb
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       if (i3dgrid.eq.0) return
 
@@ -914,13 +920,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine orb3d_rstrt(iu)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_flags.h'
-      integer norb
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       if (i3dgrid.eq.0) return
 
@@ -937,12 +943,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_dump(iu)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_spline.h'
       include 'force.h'
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
  
       do i=1,8
        do m=1,norb
@@ -954,12 +961,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_rstrt(iu)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_spline.h'
       include 'force.h'
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       do i=1,8
        do m=1,norb
@@ -970,12 +978,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine lagorb_dump(iu)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
       include 'force.h'
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
  
       do i=1,5
        do m=1,norb
@@ -987,12 +996,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine lagorb_rstrt(iu)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
       include 'force.h'
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       do i=1,5
        do m=1,norb

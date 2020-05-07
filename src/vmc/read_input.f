@@ -1,10 +1,8 @@
       subroutine read_input
 c Written by Friedemann Schautz
 
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
-
-      character*12 mode
-      common /contr3/ mode
 
 c Initialize flags
       call flaginit
@@ -27,8 +25,50 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use ghostatom, only: newghostype, nghostcent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use jaspar1, only: cjas1, cjas2
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use forcepar, only: deltot, istrech, nforce
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
+      use header, only: date, title
+      use jaspar2, only: a1, a2
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use ncusp, only: ncnstr, ncuspc, nfock, nfockc, norbc
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
+      use numbas1, only: iwlbas, nbastyp
+      use numbas2, only: ibas0, ibas1
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
+     &xms
+      use rlobxy, only: rlobx, rloby, rloby2
+      use sa_weights, only: iweight, nweight, weights
+      use wfsec, only: iwf, iwftype, nwftype
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use bparm, only: nocuspb, nspin2b
+      use casula, only: i_vpsp, icasula, t_vpsp
+      use coefs, only: coef, nbasis, norb
+      use const2, only: deltar, deltat
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
+      use contr3, only: mode
+      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
+     &itau_eff, nfprod, rttau, tau, taueff, tautot
       implicit real*8(a-h,o-z)
+
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
@@ -50,83 +90,25 @@ c and Anthony Scemema
       include 'properties.h'
       include '3dgrid_flags.h'
 
-      common /header/ title,date
-
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
-      common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
-
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /const2/ deltar,deltat
       common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /elec/ nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
-      common /bparm/ nspin2b,nocuspb
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
-      common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
-      common /numbas2/ ibas0(MCENT),ibas1(MCENT)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /dorb/ iworbd(MELEC,MDET)
-
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
-
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nbj_current
-
-      common /ghostatom/ newghostype,nghostcent
-
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
-
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
-      character*12 mode
-      common /contr3/ mode
-
-      character*20 title,fmt
+      character*20 fmt
       character*32 keyname
-      character*24 date
       character*10 eunit
       character*16 cseed
       character*20 dl_alg
@@ -888,13 +870,12 @@ c-----------------------------------------------------------------------
 C$INPUT znuc inp
 CKEYDOC nuclear charge for each atom type and ghost type
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'inputflags.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       call p2gti('atoms:nctype',nctype,1)
       call p2gtid('atoms:addghostype',newghostype,0,1)
@@ -915,14 +896,15 @@ CKEYDOC norb: number of orbitals for trial wave function
 CKEYDOC nbasis: number of basis functiobns
 CKEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
 CKEYDOC filename: file containing orbitals coefficients
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
 c fs NOTE: additional variable norbv for efp orbitals removed 
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       character filename*(*)
 
@@ -949,12 +931,11 @@ c-----------------------------------------------------------------------
       subroutine read_geometry(iu)
 C$INPUT geometry inp
 CKEYDOC position and type for each atom and ghost atom
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'inputflags.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       call p2gti('atoms:natom',ncent,1)
       call p2gtid('atoms:nghostcent',nghostcent,0,1)
@@ -973,13 +954,14 @@ c-----------------------------------------------------------------------
       subroutine read_exponents(iu,iwft)
 C$INPUT exponents inp i=1
 CKEYDOC Basis function exponents (only if no numerical basis)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
       include 'inputflags.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       call incpos(iu,itmp,1)
       read(iu,*) (zex(i,iwft),i=1,nbasis)
@@ -991,13 +973,14 @@ c-----------------------------------------------------------------------
       subroutine read_determinants(iu,nd,iwft)
 C$INPUT determinants inp i i=1
 CKEYDOC CI coefficients and occupation of determinants in wf
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'inputflags.h'
       common /dorb/ iworbd(MELEC,MDET)
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       ndet=nd
       if(ndet.gt.MDET) then
@@ -1023,15 +1006,17 @@ c-----------------------------------------------------------------------
       subroutine read_multideterminants(iu,nd)
 C$INPUT multideterminants inp i 
 CKEYDOC CI coefficients and occupation of determinants in wf
+      use dets, only: cdet, ndet
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'inputflags.h'
       common /dorb/ iworbd(MELEC,MDET)
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       if(nd.ne.ndet-1) call fatal_error('INPUT: problem in multidet')
 
@@ -1053,23 +1038,32 @@ c-----------------------------------------------------------------------
       subroutine read_jastrow_parameter(iu,iwft)
 C$INPUT jastrow_parameter inp i=1
 CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar1, only: cjas1, cjas2
+      use elec, only: ndn, nup
+      use jaspar2, only: a1, a2
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-      common /elec/ nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /bparm/ nspin2b,nocuspb
 
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
@@ -1126,18 +1120,19 @@ C$INPUT basis inp i
 CKEYDOC Basis function types and pointers to radial parts tables
 C$INPUT qmc_bf_info inp i
 CKEYDOC alternative name for keyword basis because of GAMBLE input
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
+      use numbas1, only: iwlbas, nbastyp
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
       include 'numbas.h'
       include 'inputflags.h'
 
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
-      common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
       call p2gti('atoms:nctype',nctype,1)
       call p2gtid('atoms:addghostype',newghostype,0,1)
@@ -1265,16 +1260,19 @@ c-----------------------------------------------------------------------
 C$INPUT forces_displace inp
 CKEYDOC Displacement parameters and wave function types
 
+      use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcestr/ delc(3,MCENT,MFORCE)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
@@ -1298,14 +1296,15 @@ CKEYDOC Displacement parameters and wave function types
 c-----------------------------------------------------------------------
       subroutine read_csf(ncsf_read,nstates_read,fn)
 C$INPUT csf i i=1 a=<input>
-      implicit double precision (a-h,o-z)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optci.h'
       include 'inputflags.h'
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       character fn*(*)
 
@@ -1334,14 +1333,16 @@ c-----------------------------------------------------------------------
       subroutine read_csfmap(fn)
 C$INPUT csfmap a=<input>
 CKEYDOC Read mapping between csf and determinants.
-      implicit double precision (a-h,o-z)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       character fn*(*)
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 c
       call ptfile(iu,fn,'old')
 c
@@ -1419,7 +1420,12 @@ c Initialize flags used to identify presence/absence of blocks in input
 c-----------------------------------------------------------------------
       subroutine flagcheck
 c Check that the required blocks are there in the input
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
+      use optorb_mix, only: iwmix_virt, norbopt, norbvirt
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'numbas.h'
@@ -1428,11 +1434,7 @@ c Check that the required blocks are there in the input
       include 'efield.h'
       include 'inputflags.h'
 
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /optorb_mix/ norbopt,norbvirt,iwmix_virt(MORB,MORB)
 
       call p2gtid('general:nforce',nforce,1,1)
       if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
@@ -1516,15 +1518,16 @@ c Check that the required blocks are there in the input
 c-----------------------------------------------------------------------
       subroutine inputcsf
 c Check that the required blocks are there in the input
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'mstates.h'
       include 'inputflags.h'
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       nstates=1
       ncsf=0
@@ -1536,16 +1539,17 @@ c Check that the required blocks are there in the input
 c----------------------------------------------------------------------
       subroutine inputzex
 c Set the exponents to one when using a numerical basis
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
       include 'numbas.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
       call p2gtid('general:nwftype',nwftype,1,1)
       call p2gtid('general:iperiodic',iperiodic,0,1)
@@ -1562,12 +1566,13 @@ c Set the exponents to one when using a numerical basis
 c----------------------------------------------------------------------
       subroutine inputdet(nwftype)
 c Set the cdet to be equal
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
        do 10 iwft=2,nwftype
          do 10 k=1,ndet
@@ -1577,12 +1582,13 @@ c Set the cdet to be equal
 c----------------------------------------------------------------------
       subroutine inputlcao(nwftype)
 c Set the lcao to be equal
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
        do 10 iwft=2,nwftype
          do 10 i=1,norb
@@ -1593,23 +1599,31 @@ c Set the lcao to be equal
 c----------------------------------------------------------------------
       subroutine inputjastrow(nwftype)
 c Set the jastrow to be equal
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar1, only: cjas1, cjas2
+      use jaspar2, only: a1, a2
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /bparm/ nspin2b,nocuspb
 
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
@@ -1641,13 +1655,15 @@ c Set the jastrow to be equal
 c----------------------------------------------------------------------
       subroutine inputforces
 c Set all force displacements to zero
+      use forcepar, only: deltot, istrech, nforce
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
       include 'force.h'
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
@@ -1673,29 +1689,37 @@ c Set all force displacements to zero
 c-----------------------------------------------------------------------
       subroutine read_jasderiv(iu)
 C$INPUT jasderiv inp
-      implicit real*8 (a-h,o-z)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspointer, only: npoint, npointa
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
+      implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'optjas.h'
       include 'numbas.h'
       include 'force.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /bparm/ nspin2b,nocuspb
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
-      common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       na1=1
       na2=nctype
@@ -1780,11 +1804,12 @@ c-----------------------------------------------------------------------
       subroutine read_sym(nsym,mo,fn)
 C$INPUT sym_labels i i a=<input>
 CKEYDOC Read symmetry information
-      implicit double precision(a-h,o-z)
+      use coefs, only: coef, nbasis, norb
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
 
       character fn*(*)
@@ -1810,13 +1835,15 @@ c-----------------------------------------------------------------------
       subroutine read_optorb_mixvirt(moopt,movirt,fn)
 C$INPUT optorb_mixvirt i i a=<input>
 CKEYDOC Read which virtual orbitals are mixed with the occupied ones
-      implicit double precision(a-h,o-z)
+      use optorb_mix, only: iwmix_virt, norbopt, norbvirt
+      use coefs, only: coef, nbasis, norb
+      implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /optorb_mix/ norbopt,norbvirt,iwmix_virt(MORB,MORB)
 
       character fn*(*)
       character atmp*80
@@ -1843,11 +1870,12 @@ c-----------------------------------------------------------------------
 C$INPUT energies i a=<input>
 C$INPUT eigenvalues i a=<input>
 CKEYDOC Read orbital energies 
-      implicit double precision(a-h,o-z)
+      use coefs, only: coef, nbasis, norb
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
 
       character fn*(*)
@@ -1867,15 +1895,17 @@ c----------------------------------------------------------------------
       subroutine read_dmatrix(no,ns,fn)
 C$INPUT dmatrix i i a=<input> 
 CKEYDOC Read diagonal density matrix information.
-      implicit double precision(a-h,o-z)
+      use sa_weights, only: iweight, nweight, weights
+      use coefs, only: coef, nbasis, norb
+      implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       character fn*(*)
 
       dimension dmat(MORB),iwdmat(MSTATES)
@@ -1916,14 +1946,15 @@ CKEYDOC Read diagonal density matrix information.
       end
 c----------------------------------------------------------------------
       subroutine get_weights(field,weights,iweight,nweight)
-      implicit double precision (a-h,o-z)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 c weights for state averaging
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       dimension weights(MSTATES),iweight(MSTATES)
 
@@ -1990,19 +2021,24 @@ c     Written by Omar Valsson
 
 
 
+      use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcestr/ delc(3,MCENT,MFORCE)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('GRADIENTS_CARTESIAN: ncent > MCENT')
@@ -2056,22 +2092,25 @@ CKEYDOC atoms energy gradients are to be calculated for.
 
 c      Written by Omar Valsson.
 
+      use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcestr/ delc(3,MCENT,MFORCE)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),         
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('GRADIENTS_ZMATRIX: ncent > MCENT')
@@ -2128,14 +2167,15 @@ C$INPUT modify_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
 CKEYDOC atoms energy gradients are to be calculated for.
 
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
@@ -2160,16 +2200,18 @@ C$INPUT hessian_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
 CKEYDOC atoms energy gradients are to be calculated for.
 
+      use grdnthes, only: hessian_zmat
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
 
-      common /grdnthes/ hessian_zmat(3,MCENT)
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
@@ -2196,18 +2238,14 @@ CKEYDOC It is need when calculating forces in Z matrix
 CKEYDOC coordinates.
 
 c      Written by Omar Valsson
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
 
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,
-     &              iwctype(MCENT),nctype,ncent
-      common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
-     &                 czcart_ref(3,3),izcmat(3,MCENT),
-     &                 izmatrix
 
       
       do 10 ic=1,3
@@ -2267,14 +2305,17 @@ C$INPUT efield i i a=<input>
       end
 c-----------------------------------------------------------------------
       subroutine set_displace_zero(nforce_tmp)
+      use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
+      use pcm_force, only: sch_s
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'pcm.h'
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcestr/ delc(3,MCENT,MFORCE)
-      common /pcm_force/ sch_s(MCHS,MFORCE)
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
@@ -2295,14 +2336,15 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine modify_zmat_define
 
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
@@ -2316,16 +2358,18 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine hessian_zmat_define
 
+      use grdnthes, only: hessian_zmat
+      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'inputflags.h'
 
-      common /grdntsmv/ igrdmv(3,MCENT),igrdaidx(MFORCE),
-     &                  igrdcidx(MFORCE)
 
-      common /grdnthes/ hessian_zmat(3,MCENT)
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')

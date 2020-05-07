@@ -2,10 +2,27 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use denupdn, only: rprobdn, rprobup
+      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use estsig, only: ecm21s, ecum1s
+      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+      use forcepar, only: deltot, istrech, nforce
+      use forcest, only: fcm2, fcum
+      use forcewt, only: wcum, wsum
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use header, only: date, title
+      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use sa_weights, only: iweight, nweight, weights
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use tmpnode, only: distance_node_sum
+      use contr3, only: mode
+
       implicit real*8(a-h,o-z)
-      character*12 mode
-      character*20 title
-      character*24 date
+
       include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
@@ -13,37 +30,15 @@ c routine to print out final results
       include 'optci.h'
       parameter (one=1.d0,half=.5d0)
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)
-      common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
       common /contrl_per/ iperiodic,ibasis
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contr3/ mode
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
-      common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),pecum(MSTATES),tpbcum(MSTATES),tjfcum(MSTATES),r2cum,iblk
-      common /est2cm/ ecm21(MSTATES),ecm2(MSTATES,MFORCE),pecm2(MSTATES),tpbcm2(MSTATES),tjfcm2(MSTATES),r2cm2
-      common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
-      common /header/ title,date
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
-      common /denupdn/ rprobup(nrad),rprobdn(nrad)
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
 
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
 
-      common /tmpnode/ distance_node_sum
 
       err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
       err1(x,x2,j)=dsqrt(dabs(x2/wcum(j,1)-(x/wcum(j,1))**2)/passes)

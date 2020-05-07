@@ -1,6 +1,19 @@
       subroutine optwf_lin_d
 
-      implicit real*8 (a-h,o-z)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      implicit real*8(a-h,o-z)
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,17 +21,9 @@
 
       character*20 method_sav
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       dimension grad(MPARM*MSTATES), grad_more(MPARM*MSTATES,5)
 
@@ -181,12 +186,13 @@ c enddo iteration
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_lin_d(ndim,nvec,psi,hpsi )
-      implicit real*8 (a-h,o-z)
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      implicit real*8(a-h,o-z)
+
 
       include 'sr.h'
       include 'mstates.h'
 
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       dimension psi(MPARM,*),hpsi(MPARM,*)
 
@@ -203,12 +209,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_lin_d(ndim,nvec,psi,spsi )
-      implicit real*8 (a-h,o-z)
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      implicit real*8(a-h,o-z)
+
 
       include 'sr.h'
       include 'mstates.h'
  
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       dimension psi(MPARM,*),spsi(MPARM,*)
 
@@ -222,14 +229,16 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine select_ci_root(iroot)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       do 30 i=1,ndet
    30   cdet(i,1,1)=cdet(i,iroot,1)

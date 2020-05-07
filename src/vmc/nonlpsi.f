@@ -1,28 +1,38 @@
       function psinl(u,rshifti,rshiftj,rri,rrj,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar1, only: cjas1, cjas2
+      use elec, only: ndn, nup
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
+     &xms
+      use wfsec, only: iwf, iwftype, nwftype
+      use chck, only: bot
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
 
       parameter (one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
 
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
-      common /elec/ nup,ndn
 
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /chck/ bot
 
       dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ),rshifti(3),rshiftj(3)
 
@@ -73,18 +83,23 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function psianl(rri,it)
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f
@@ -102,19 +117,25 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function psibnl(u,isb,ipar)
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f
@@ -136,18 +157,23 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsianl(rri,it)
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f
@@ -165,19 +191,25 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsibnl(u,isb,ipar)
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f

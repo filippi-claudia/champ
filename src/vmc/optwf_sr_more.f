@@ -3,7 +3,15 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_hs(nparm,sr_adiag)
 c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
-      implicit real*8 (a-h,o-z)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use mpiconf, only: idtask, nproc
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      use sa_weights, only: iweight, nweight, weights
+      use sr_index, only: jelo, jelo2, jelohfj
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
 
       include 'mpif.h'
       include 'sr.h'
@@ -12,19 +20,11 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       include 'mstates.h'
       include 'optorb.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
-      common /sr_index/ jelo,jelo2,jelohfj
 
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
-      common /mpiconf/ idtask,nproc
 
-      dimension obs(MOBS,MSTATES),obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
+      dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
 
       call p2gtid('optgeo:izvzb',izvzb,0,1)
       call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
@@ -209,12 +209,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine pcg(n,b,x,i,imax,imod,eps)
 c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
-      implicit none
+      use mpiconf, only: idtask, nproc
+      implicit real*8(a-h,o-z)
+
       include 'mpif.h'
       integer m_parm_opt
       parameter(m_parm_opt=59000)
-      integer n,imax,imod,i,j,idtask,nproc
-      common /mpiconf/ idtask,nproc
+      integer n,imax,imod,i,j
       real*8 b(*),x(*),eps
       real*8 r(m_parm_opt),d(m_parm_opt),q(m_parm_opt),s(m_parm_opt)
       real*8 delta_0,delta_new,delta_old,alpha,beta,ddot
@@ -275,12 +276,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine asolve(n,b,x)
 c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
-      implicit real*8 (a-h,o-z)
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
       include 'sr.h'
       include 'mstates.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension x(*),b(*)
 
@@ -296,24 +298,24 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine atimes_n(n,z,r)
 c r=a*z, i cicli doppi su n e nconf sono parallelizzati
 
-      implicit real*8 (a-h,o-z)
-      include 'mpif.h'
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      use sa_weights, only: iweight, nweight, weights
+      use sr_index, only: jelo, jelo2, jelohfj
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
+      include 'mpif.h'
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'sr.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
 
-      common /sr_index/ jelo,jelo2,jelohfj
 
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       dimension z(*),r(*),aux(0:MCONF),aux1(0:MCONF),rloc(MPARM),r_s(MPARM),oz_jasci(MCONF)
       dimension tmp(MPARM),tmp2(MPARM)
@@ -420,16 +422,19 @@ c endif idtask.eq.0
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_rescale_deltap(nparm,deltap)
 
+      use mpiconf, only: idtask, nproc
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+    
       implicit real*8(a-h,o-z)
+
+
 
       include 'mpif.h'
       include 'vmc.h'
       include 'sr.h'
       include 'mstates.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /mpiconf/ idtask,nproc
 
       dimension deltap(*)
 
@@ -471,16 +476,18 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_position_bcast
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use force_fin, only: da_energy_ave, da_energy_err
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
-
       common /force_analy/ iforce_analy
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
 
       if(iforce_analy.eq.0)return
 
@@ -492,7 +499,18 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine forces_zvzb(nparm)
 
-      implicit real*8 (a-h,o-z)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use force_fin, only: da_energy_ave, da_energy_err
+      use force_mat_n, only: force_o
+      use mpiconf, only: idtask, nproc
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
+
+
+
 
       include 'mpif.h'
       include 'sr.h'
@@ -500,17 +518,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'force.h'
       include 'mstates.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
-
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
  
-      common /force_mat_n/ force_o(6*MCENT,MCONF)
 
-      common /mpiconf/ idtask,nproc
 
       parameter (MTEST=1500)
       dimension cloc(MTEST,MTEST),c(MTEST,MTEST),oloc(MPARM),o(MPARM),p(MPARM),tmp(MPARM)

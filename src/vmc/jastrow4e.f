@@ -2,34 +2,43 @@
 c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use elec, only: ndn, nup
+      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use wfsec, only: iwf, iwftype, nwftype
+      use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /elec/ nup,ndn
 
-      common /bparm/ nspin2b,nocuspb
 
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
 
       common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
      &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       parameter (half=.5d0,eps=1.d-12)
 

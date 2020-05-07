@@ -1,26 +1,32 @@
       subroutine optx_jas_ci_sum(p,q,enew,eold)
 
+      use derivjas, only: d2g, g, go, gvalue
+
+      use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+
+      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /bparm/ nspin2b,nocuspb
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
-      common /gradhessjo/ gvalue_old(MPARMJ),denergy_old(MPARMJ,MSTATES)
-     &,d1d2a_old(MCTYPE),d2d2a_old(MCTYPE),d1d2b_old(2),d2d2b_old(2)
 
-      common /mix_jas_ci/ dj_o_ci(MPARMJ,MDET),dj_de_ci(MPARMJ,MDET),
-     &de_o_ci(MPARMJ,MDET),dj_oe_ci(MPARMJ,MDET)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
@@ -36,18 +42,21 @@
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_init
 
+      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /mix_jas_ci/ dj_o_ci(MPARMJ,MDET),dj_de_ci(MPARMJ,MDET),
-     &de_o_ci(MPARMJ,MDET),dj_oe_ci(MPARMJ,MDET)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
@@ -63,18 +72,21 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_dump(iu)
 
+      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /mix_jas_ci/ dj_o_ci(MPARMJ,MDET),dj_de_ci(MPARMJ,MDET),
-     &de_o_ci(MPARMJ,MDET),dj_oe_ci(MPARMJ,MDET)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
       write(iu) ((dj_o_ci(i,j),dj_oe_ci(i,j),dj_de_ci(i,j),de_o_ci(i,j),i=1,nparmj),j=1,nciterm)
@@ -84,18 +96,21 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_rstrt(iu)
 
+      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /mix_jas_ci/ dj_o_ci(MPARMJ,MDET),dj_de_ci(MPARMJ,MDET),
-     &de_o_ci(MPARMJ,MDET),dj_oe_ci(MPARMJ,MDET)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
       read(iu) ((dj_o_ci(i,j),dj_oe_ci(i,j),dj_de_ci(i,j),de_o_ci(i,j),i=1,nparmj),j=1,nciterm)
@@ -104,7 +119,35 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_fin(passes,eave)
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use gradhess_ci, only: grad_ci, h_ci, s_ci
+      use gradhess_jas, only: grad_jas, h_jas, s_jas
+      use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
+      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+
+      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'mstates.h'
       include 'optjas.h'
@@ -112,36 +155,19 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /bparm/ nspin2b,nocuspb
 
       common /gradhessj/ dj(MPARMJ,MSTATES),dj_e(MPARMJ,MSTATES),dj_de(MPARMJ,MPARMJ,MSTATES)
      &,dj_dj(MPARMJ,MPARMJ,MSTATES),dj_dj_e(MPARMJ,MPARMJ,MSTATES),de(MPARMJ,MSTATES)
      &,d2j(MPARMJ,MPARMJ,MSTATES),d2j_e(MPARMJ,MPARMJ,MSTATES),de_e(MPARMJ,MSTATES)
      &,e2(MPARMJ,MSTATES),dj_e2(MPARMJ,MSTATES),de_de(MPARMJ,MPARMJ,MSTATES)
 
-      common /gradjerr/ grad_jas_bcum(MPARMJ,MSTATES),grad_jas_bcm2(MPARMJ,MSTATES),
-     &dj_e_bsum(MPARMJ,MSTATES),dj_bsum(MPARMJ,MSTATES),dj_e_save(MPARMJ,MSTATES),
-     &dj_save(MPARMJ,MSTATES),e_bsum(MSTATES)
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,njb_current
 
-      common /mix_jas_ci/ dj_o_ci(MPARMJ,MDET),dj_de_ci(MPARMJ,MDET),
-     &de_o_ci(MPARMJ,MDET),dj_oe_ci(MPARMJ,MDET)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
-      common /gradhess_jas/ grad_jas(MPARMJ),h_jas(MPARMJ,MPARMJ),s_jas(MPARMJ,MPARMJ)
-      common /gradhess_ci/ grad_ci(MXCITERM),h_ci(MXCITERM,MXCIREDUCED),s_ci(MXCITERM,MXCIREDUCED)
-      common /gradhess_mix_jas_ci/  h_mix_jas_ci(2*MPARMJ,MXCITERM),s_mix_jas_ci(MPARMJ,MXCITERM)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       dimension oelocav(MXCITERM),eav(MXCITERM)
 

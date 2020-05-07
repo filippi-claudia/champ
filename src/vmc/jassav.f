@@ -1,17 +1,19 @@
       subroutine jassav(iel,iflag)
 c Written by Claudia Filippi
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
 
       include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
      &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 

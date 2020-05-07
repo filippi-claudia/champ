@@ -1,12 +1,13 @@
 c-----------------------------------------------------------------------
       subroutine write_wf(iwf_fit,iter)
+      use mpiconf, only: idtask, nproc
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'vmc.h'
       include 'force.h'
 
-      common /mpiconf/ idtask,nproc
 
       character*40 filetype,wf,itn
 
@@ -49,25 +50,34 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
 
       character*50 fmt
       character*40 filename,filetype
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /bparm/ nspin2b,nocuspb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
       if(ioptjas.eq.0) return
 
@@ -121,20 +131,22 @@ c tmp
       end
 c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'numbas.h'
 
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       character*40 filename,filetype
 
@@ -163,7 +175,19 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine write_ci(iwf_fit,filetype)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -172,15 +196,8 @@ c-----------------------------------------------------------------------
 
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptci.eq.0) return
 
@@ -241,12 +258,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_wf
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptjas.ne.0) call save_jastrow
       if(ioptorb.ne.0) call save_lcao 
@@ -256,11 +274,12 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine restore_wf(iadiag)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptjas.ne.0) call restore_jastrow(iadiag)
       if(ioptorb.ne.0) call restore_lcao(iadiag)
@@ -282,17 +301,22 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_jastrow
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /bparm/ nspin2b,nocuspb
 
       dimension a4_save(MORDJ1,MCTYPE,MWF),b_save(MORDJ1,2,MWF),
      &c_save(83,MCTYPE,MWF)
@@ -334,11 +358,12 @@ c Restore parameters corresponding to run generating hessian
 
 c-----------------------------------------------------------------------
       subroutine save_lcao
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       dimension coef_save(MBASIS,MORB,MWF)
 
@@ -360,16 +385,19 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       dimension cdet_save(MDET,MSTATES),ccsf_save(MDET,MSTATES)
       save cdet_save,ccsf_save
@@ -413,17 +441,22 @@ c reset kref=1
       end
 c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
+ 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /bparm/ nspin2b,nocuspb
 
       mparmja=2+max(0,norda-1)
       mparmjb=2+max(0,nordb-1)
@@ -444,12 +477,13 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       do 20 i=1,norb+nadorb
        do 20 j=1,nbasis
@@ -459,14 +493,16 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine copy_ci(iadiag)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       do 30 j=1,nstates
         do 30 i=1,ndet
@@ -480,12 +516,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine copy_zex(iadiag)
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       do 20 i=1,nbasis
    20   zex(i,iadiag)=zex(i,1)
@@ -494,17 +531,22 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_jastrow_best
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /bparm/ nspin2b,nocuspb
 
       dimension a4_best(MORDJ1,MCTYPE,MWF),b_best(MORDJ1,2,MWF),
      &c_best(83,MCTYPE,MWF)
@@ -545,13 +587,15 @@ c Restore parameters corresponding to run generating hessian
       end
 c-----------------------------------------------------------------------
       subroutine save_lcao_best
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension coef_best(MBASIS,MORB,MWF)
 
@@ -575,16 +619,19 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci_best
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension cdet_best(MDET,MSTATES),ccsf_best(MDET,MSTATES)
       save cdet_best,ccsf_best
@@ -632,23 +679,32 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /bparm/ nspin2b,nocuspb
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension dparm(*)
 
@@ -679,17 +735,20 @@ c Check parameters a2 and b2 > -scalek
       end
 c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension acoef(MBASIS,MORB),dparm(*)
 
@@ -714,17 +773,21 @@ c Update the orbitals
       end
 c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension dparm(*)
 
@@ -774,21 +837,29 @@ c90     write(6,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
       end
 c-----------------------------------------------------------------------
       subroutine check_parms_jas(iflag)
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /bparm/ nspin2b,nocuspb
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
       iflag=0
       iflaga=0
@@ -839,14 +910,16 @@ c Calculate rms change in parameters
 c-----------------------------------------------------------------------
       subroutine save_nparms
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optorb.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       save nparmj_sav,norbterm_sav,nciterm_sav,nparmd_sav,nreduced_sav
 
@@ -886,15 +959,17 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine set_nparms_tot
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
         
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
 c Note: we do not vary the first (i0) CI coefficient unless a run where we only optimize the CI coefs
 
@@ -923,7 +998,24 @@ c-----------------------------------------------------------------------
       subroutine optwf_store(l,wt,psid,energy)
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use derivjas, only: d2g, g, go, gvalue
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -936,23 +1028,11 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
       dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)
 

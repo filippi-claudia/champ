@@ -1,6 +1,11 @@
       subroutine optorb_reduce
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
       include 'force.h'
@@ -9,10 +14,7 @@
       include 'optorb_cblk.h'
       include 'mpif.h'
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension collect(MXORBOP+MXMATDIM)
 

@@ -1,12 +1,11 @@
       subroutine prop_reduce
 
+      use mpiconf, only: idtask, nproc, wid
       implicit real*8(a-h,o-z)
+
 
       include 'properties.h'
       include 'mpif.h'
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension vpcollect(MAXPROP),vp2collect(MAXPROP)
 

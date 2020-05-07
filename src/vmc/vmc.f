@@ -10,7 +10,34 @@ c Currently this program contains
 c 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater basis states.
 c and sa, pa, da asymptotic functions
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
+     &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
+     &vnew, vold, xnew, xold
+      use jaspar1, only: cjas1, cjas2
+      use elec, only: ndn, nup
+      use forcepar, only: deltot, istrech, nforce
+      use jaspar2, only: a1, a2
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
@@ -19,29 +46,10 @@ c and sa, pa, da asymptotic functions
       include 'numbas.h'
       include 'pseudo.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /elec/ nup,ndn
-      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-     &,vnew(3,MELEC),psi2o(MSTATES,MFORCE),psi2n(MFORCE),eold(MSTATES,MFORCE),enew(MFORCE)
-     &,peo(MSTATES),pen,tjfn,tjfo(MSTATES),psido(MSTATES),psijo
-     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       character*25 fmt
 

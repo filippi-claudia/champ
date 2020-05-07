@@ -1,5 +1,12 @@
 c$$$      subroutine pw_setup_input
-c$$$      implicit real*8(a-h,o-z)
+c$$$      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
+     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+     &vcell_sim, znuc2_sum, znuc_sum
+      implicit real*8(a-h,o-z)
+
 c$$$
 c$$$      include 'vmc.h'
 c$$$      include 'ewald.h'
@@ -11,8 +18,7 @@ c$$$c  rlatt      lattice vectors of primitive cell
 c$$$c  rlatt_sim  lattice vectors of simulation cell
 c$$$c  rkvec_shift k-shift for generating k-vector lattice
 c$$$
-c$$$      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-c$$$     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
+c$$$c$$$     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
 c$$$     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
 c$$$     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
 c$$$     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
@@ -66,23 +72,19 @@ c$$$      return
 c$$$      end
 c----------------------------------------------------------------------
       subroutine do_read_lattice(iu)
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
+     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+     &vcell_sim, znuc2_sum, znuc_sum
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'ewald.h'
       include 'inputflags.h'
 
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
       call incpos(iu,itmp,1)
       read(iu,*) alattice
@@ -113,26 +115,24 @@ c Written by Cyrus Umrigar
 c Reads in pw basis orbitals that have already been converted to be real.
 c Presently not used.
 
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
+     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+     &vcell_sim, znuc2_sum, znuc_sum
+      use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /pworbital/c_rp(NGVECX,MORB),c_rm(NGVECX,MORB),c_ip(NGVECX,MORB)
-     &,c_im(NGVECX,MORB),ngorb(MORB),isortg(NGVECX,MORB),isortk(IVOL_RATIO),icmplx
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
       dimension rkvec_tmp(3)
 
@@ -174,33 +174,33 @@ c Also, I first write out a temporary fort.3 and then delete it just because
 c it is only after one has processed all the k-pts that one knows how big ngvec_orb is.
 c However, that causes problems when running with mpi, so comment out that part.
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
+     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+     &vcell_sim, znuc2_sum, znuc_sum
+      use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+
+      use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
+
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /pworbital/c_rp(NGVECX,MORB),c_rm(NGVECX,MORB),c_ip(NGVECX,MORB)
-     &,c_im(NGVECX,MORB),ngorb(MORB),isortg(NGVECX,MORB),isortk(IVOL_RATIO),icmplx
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
 c Warning: Temporary
 c     dimension igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC_BIGX),c_real(NGVEC_BIGX),c_imag(NGVEC_BIGX)
 c    &,rkvec_tmp(3),rkvec_tmp2(3)
-      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC_BIGX),c_real(NGVEC_BIGX),c_imag(NGVEC_BIGX)
-     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(IVOL_RATIO),ngvec_dft
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
 c Warning: Temporary
 c Warning: why do I print out zeros if I dimension to MORB rather than IVOL_RATIO?
@@ -419,28 +419,27 @@ c At present it is assumed that k-vectors are in the correct order, but
 c if not one could use isortk to map iorb.
 c This is the straightforward evaluation for checking purposes only.
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
+     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+     &vcell_sim, znuc2_sum, znuc_sum
+      use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
+
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
-      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC_BIGX),c_real(NGVEC_BIGX),c_imag(NGVEC_BIGX)
-     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(IVOL_RATIO),ngvec_dft
 
       dimension x(3),orb(MELEC,*),dorb(3,MELEC,*),ddorb(MELEC,*)
 c     dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)

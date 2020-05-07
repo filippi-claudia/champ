@@ -3,7 +3,22 @@ c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt rout
 c routine to calculate the values of the basis functions and their derivatives
 c vgl -> value, gradient, laplacian
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use ghostatom, only: newghostype, nghostcent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
+      use numbas1, only: iwlbas, nbastyp
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'basis.h'
@@ -15,20 +30,8 @@ c vgl -> value, gradient, laplacian
       parameter (ten=10.d0,half=.5d0)
       parameter (twelve=12.d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /ghostatom/ newghostype,nghostcent
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
-      common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /force_analy/ iforce_analy
 
@@ -500,12 +503,12 @@ c-------------------------------------------------------------------
 c-------------------------------------------------------------------
       subroutine n0_inc(l,k,ic)
 
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
 
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
 
       if(abs(phin(l,k))+abs(dphin(1,l,k))+abs(dphin(2,l,k))+abs(dphin(3,l,k)).gt.1.d-20)then
        n0_nbasis(k)=n0_nbasis(k)+1

@@ -1,7 +1,23 @@
       subroutine optwf_matrix_corsamp
 c written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use forcepar, only: deltot, istrech, nforce
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_corsam, only: add_diag, add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -15,22 +31,12 @@ c written by Claudia Filippi
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension grad_sav(MPARMALL),h_sav(MPARMALL,MPARMALL),s_sav(MPARMALL2)
       dimension work(MWORK),work2(MPARMALL,MPARMALL)
@@ -546,14 +552,16 @@ c Always increase nblk by a factor of 2 every other iteration
 c-----------------------------------------------------------------------
       subroutine quad_min
 
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_corsam, only: add_diag, add_diag_tmp, energy, energy_err, force, force_err
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
 
       parameter(MFUNC=3)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
       dimension add_diag_log(MFUNC),a(MFUNC,MFUNC),b(MFUNC)
 
@@ -635,7 +643,21 @@ c Solve linear equations
 c-----------------------------------------------------------------------
       subroutine combine_derivatives
 
+      use gradhess_ci, only: grad_ci, h_ci, s_ci
+      use gradhess_jas, only: grad_jas, h_jas, s_jas
+      use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
+      use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
+      use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
@@ -644,18 +666,11 @@ c-----------------------------------------------------------------------
         
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
 
-      common /gradhess_jas/ grad_jas(MPARMJ),h_jas(MPARMJ,MPARMJ),s_jas(MPARMJ,MPARMJ)
-      common /gradhess_ci/  grad_ci(MXCITERM),h_ci(MXCITERM,MXCIREDUCED),s_ci(MXCITERM,MXCIREDUCED)
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
-      common /gradhess_mix_jas_ci/  h_mix_jas_ci(2*MPARMJ,MXCITERM),s_mix_jas_ci(MPARMJ,MXCITERM)
-      common /gradhess_mix_jas_orb/ h_mix_jas_orb(2*MPARMJ,MXREDUCED),s_mix_jas_orb(MPARMJ,MXREDUCED)
-      common /gradhess_mix_orb_ci/  h_mix_ci_orb(2*MXCITERM,MXREDUCED),s_mix_ci_orb(MXCITERM,MXREDUCED)
 
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
 c Note: we do not vary the first (i0) CI coefficient unless full CI
 

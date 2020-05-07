@@ -7,7 +7,13 @@ c c) subtracts out local part from all except highest l component.
 c Also eval pot. at 0 and initializes quadrature pts.
 c 
 c Modified by F. Schautz to use fancy file names
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use pseudo_tm, only: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo 
+
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
@@ -21,12 +27,7 @@ c Modified by F. Schautz to use fancy file names
 
       parameter (ncoef=5)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /pseudo_tm/ rmax(MCTYPE),arg(MCTYPE),r0(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),nr_ps(MCTYPE)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
@@ -234,16 +235,16 @@ c-----------------------------------------------------------------------
 c compute tm-pseudopotential for electron iel
       subroutine getvps_tm(r_en,iel)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use pseudo_tm, only: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo 
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /pseudo_tm/ rmax(MCTYPE),arg(MCTYPE),r0(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),nr_ps(MCTYPE)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
@@ -278,12 +279,13 @@ c-----------------------------------------------------------------------
 c get spline_fit at r of TM potential for center ic and angular momentum l
 c stored on shifted exponential grid
 
+      use pseudo_tm, only: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo 
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pseudo.h'
 
-      common /pseudo_tm/ rmax(MCTYPE),arg(MCTYPE),r0(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),nr_ps(MCTYPE)
 
       dlogag=dlog(arg(ic))
       xr=(dlog((r+r0(ic))/r0(ic)))/dlogag+1.d0

@@ -8,8 +8,26 @@ c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
+     &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
+     &tjfoo, vnew, vold, xnew, xold
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+      use forcepar, only: deltot, istrech, nforce
+      use forcewt, only: wcum, wsum
+      use kinet, only: dtdx2n, dtdx2o
+      use stats, only: rejmax
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use tmpnode, only: distance_node_sum
+      use const2, only: deltar, deltat
+      use contr3, only: mode
+
       implicit real*8(a-h,o-z)
-      character*12 mode
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,half=0.5d0)
       parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
@@ -37,41 +55,15 @@ c The foll. still need to be tried:
 c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best
 
-      common /contr3/ mode
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /const2/ deltar,deltat
-      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-     &,vnew(3,MELEC),psi2o(MSTATES,MFORCE),psi2n(MFORCE),eold(MSTATES,MFORCE),enew(MFORCE)
-     &,peo(MSTATES),pen,tjfn(MSTATES),tjfo,psido(MSTATES),psijo
-     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-      common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
-      common /stats/ rejmax
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
-      common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
  
 c TMP
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /multislater/ detu(MDET),detd(MDET)
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-
-      common /tmpnode/ distance_node_sum
-
       dimension xstrech(3,MELEC)
       dimension xaxis(3),yaxis(3),zaxis(3),idist(MELEC)
-
       dimension ddx_ref(3)
       dimension psidn(MSTATES),wtg(MSTATES)
 
@@ -641,7 +633,7 @@ c form expected values of e, pe, etc.
         esum(istate,1)=esum(istate,1)+eold(istate,1)*wtg(istate)
         pesum(istate)=pesum(istate)+peo(istate)*wtg(istate)
         tpbsum(istate)=tpbsum(istate)+(eold(istate,1)-peo(istate))*wtg(istate)
-  360   tjfsum(istate)=tjfsum(istate)+tjfo*wtg(istate)
+  360   tjfsum(istate)=tjfsum(istate)+tjfoo*wtg(istate)
 
       if(ipr.gt.1) write(6,'(''energy reweighted '',d12.4)') eold(1,1)*wtg(1)
 

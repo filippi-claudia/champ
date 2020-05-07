@@ -20,23 +20,30 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_jastrow(p,n)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /bparm/ nspin2b,nocuspb
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension p(*)
 
@@ -61,17 +68,20 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_lcao(p,n)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension p(*)
 
@@ -85,17 +95,21 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_ci(p,n)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension p(*)
 

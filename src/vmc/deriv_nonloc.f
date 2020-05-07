@@ -1,8 +1,36 @@
       subroutine deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,value,gn,vjn,da_ratio_jn)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use derivjas, only: d2g, g, go, gvalue
+
+      use elec, only: ndn, nup
+      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+
+      use jaspointer, only: npoint, npointa
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
+
+
 
       include 'vmc.h'
       include 'mstates.h'
@@ -12,29 +40,12 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       parameter (half=.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
-      common /elec/ nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /bparm/ nspin2b,nocuspb
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
-      common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
-      common /da_jastrow4val/ da_j(3,MELEC,MCENT),da_d2j(3,MELEC,MCENT),da_vj(3,3,MELEC,MCENT)
 
       common /force_analy/ iforce_analy
 

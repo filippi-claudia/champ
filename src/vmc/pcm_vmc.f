@@ -118,11 +118,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_save
-      implicit double precision(a-h,o-z)
+      use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      use pcmo, only: enfpcmo, qopcmo, spcmo, vpcmo
+      implicit real*8(a-h,o-z)
+
+
 
       include 'pcm.h'
-      common /pcm_hpsi/ pcms,pcmv,qopcm,enfpcm(MCHS)
-      common /pcmo/ spcmo,vpcmo,qopcmo,enfpcmo(MCHS)
 
       if(ipcm.eq.0) return
       spcmo=pcms
@@ -137,11 +139,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_sum(p,q)
-      implicit double precision(a-h,o-z)
+      use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      use pcmo, only: enfpcmo, qopcmo, spcmo, vpcmo
+      implicit real*8(a-h,o-z)
+
+
 
       include 'pcm.h'
-      common /pcm_hpsi/ pcms,pcmv,qopcm,enfpcm(MCHS)
-      common /pcmo/ spcmo,vpcmo,qopcmo,enfpcmo(MCHS)
 
       if(ipcm.eq.0) return
       spcmsum=spcmsum+p*pcms+q*spcmo

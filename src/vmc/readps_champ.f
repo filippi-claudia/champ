@@ -18,7 +18,15 @@ c         =2, exponential,         r(i)=r0_ps*exp((i-1)*h_ps)
 c         =3, shifted exponential, r(i)=r0_ps*(exp((i-1)*h_ps)-1)
 c The prefered grid is 3.
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
+      use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
+
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
@@ -27,16 +35,10 @@ c The prefered grid is 3.
       character*256 filename,pooldir,pp_id
       character*80 title
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /pseudo_tm/ rmax_ps(MCTYPE),arg_ps(MCTYPE),r0_ps(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),nr_ps(MCTYPE)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /pseudo_champ/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),igrid_ps(MCTYPE)
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
@@ -270,20 +272,21 @@ c-----------------------------------------------------------------------
       subroutine getvps_champ(r_en,iel)
 c compute pseudopotential for electron iel
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
+      use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
+
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /pseudo_tm/ rmax_ps(MCTYPE),arg_ps(MCTYPE),r0_ps(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),nr_ps(MCTYPE)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /pseudo_champ/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),igrid_ps(MCTYPE)
 
       dimension r_en(MELEC,MCENT)
 
@@ -322,19 +325,20 @@ c Note: I check if r < rmax_coul(ict) because this routine is called from
 c ewald without going through getvps_tm.
 c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
+      use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
+
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /pseudo_tm/ rmax_ps(MCTYPE),arg_ps(MCTYPE),r0_ps(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),nr_ps(MCTYPE)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /pseudo_champ/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),igrid_ps(MCTYPE)
 
       if(r.lt.rmax_coul(ict)) then
 

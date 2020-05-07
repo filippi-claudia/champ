@@ -1,6 +1,14 @@
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
+      use linear_norm, only: oav
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
@@ -12,11 +20,7 @@
 
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_save
-      common /optwf_corsam/ add_diag_tmp(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
-      common /linear_norm/ oav(MXCITERM)
 
       dimension h(mparmx,*),s(mparmx,*)
       dimension h_sav(mparmx,*),s_sav(*)
@@ -309,7 +313,22 @@ c-----------------------------------------------------------------------
       subroutine compute_dparm(nparm,mparmx,lwork,dparm,h,h_sav,s,s_sav,work,eig_vec,
      &                     add_diag,energy_sav,energy_err_sav)
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use linear_norm, only: oav
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
@@ -321,17 +340,9 @@ c-----------------------------------------------------------------------
 
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparmsav
 
-      common /linear_norm/ oav(MXCITERM)
 
       dimension dparm(*)
       dimension h(mparmx,*),h_sav(mparmx,*)

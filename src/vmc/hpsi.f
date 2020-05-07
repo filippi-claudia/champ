@@ -3,7 +3,39 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+
+      use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      use wfsec, only: iwf, iwftype, nwftype
+      use ycompact, only: dymat, ymat
+      use casula, only: i_vpsp, icasula, t_vpsp
+      use coefs, only: coef, nbasis, norb
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
@@ -15,20 +47,10 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
 c Calculates energy
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-      common /elec/ nup,ndn
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
@@ -39,25 +61,17 @@ c Calculates energy
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-      common /pcm_hpsi/ pepcms,pepcmv,qopcm,enfpcm(MCHS)
-      common /mmpol_hpsi/ peQMdp,peQMq,eek_pol(3,MCHMM)
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
 
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
       common /force_analy/ iforce_analy
 

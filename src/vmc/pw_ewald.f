@@ -1,7 +1,33 @@
       subroutine set_ewald
 c Written by Cyrus Umrigar
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+
+      use ewald_basis, only: vps_basis_fourier
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
+     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+     &vcell_sim, znuc2_sum, znuc_sum
+      use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
+
+      use tempor, only: dist_nn
+      use test, only: f, vbare_coul, vbare_jas, vbare_psp
+
+      use constant, only: twopi
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
@@ -11,41 +37,13 @@ c Written by Cyrus Umrigar
       parameter (eps=1.d-12)
 
       common /contrl_per/ iperiodic,ibasis
-      common /constant/ twopi
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 c     common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
 c    &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
 c    &,nlrad(MCTYPE)
-      common /pseudo_tm/ rmax(MCTYPE),arg(MCTYPE),r0(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),nr_ps(MCTYPE)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
-      common /test/ f,vbare_coul(NGNORM_SIM_BIGX),vbare_jas(NGNORM_SIM_BIGX)
-     &,vbare_psp(NGNORM_BIGX)
-      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
 
-      common /tempor/ dist_nn
 
       dimension r(MPS_GRID),vps_short(MPS_GRID),work(MPS_GRID)
       dimension rdist(3),gdist(3),rdist_sim(3),gdist_sim(3),rkvec_shift_tmp(3)
@@ -856,23 +854,19 @@ c related by primitive cell reciprocal lattice vectors to inverses of
 c other vectors.  We should come back to the issue of whether that is
 c a symmetry one could use later on.
 
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
+     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+     &vcell_sim, znuc2_sum, znuc_sum
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'ewald.h'
       parameter (eps=1.d-6)
 
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
       dimension rkvec_try(3),rkvec_latt(3)
 
@@ -972,12 +966,13 @@ c Note: vps_short overwritten
 c g > 0 (4pi/vcell)*(int r*vps_short*sin(g*r)*dr)/g
 c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
+      use constant, only: twopi
       implicit real*8(a-h,o-z)
+
 
       include 'ewald.h'
       include 'pseudo.h'
 
-      common /constant/ twopi
 
       dimension r(*),vps_short(*),gnorm(*),y(MPS_GRID),vbare_psp(NGNORM_BIGX)
 
@@ -1011,11 +1006,12 @@ c-----------------------------------------------------------------------
      &,cutr,vcell,ncoef,np,b,y,chisq,ifcon,isrange)
 c Written by Cyrus Umrigar and Claudia Filippi
 
+      use constant, only: twopi
       implicit real*8(a-h,o-z)
+
 
 c     parameter(NPX=6)
 
-      common /constant/ twopi
 
       include 'ewald.h'
 
@@ -1219,13 +1215,14 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
+      use ewald_basis, only: vps_basis_fourier
       implicit real*8(a-h,o-z)
+
       complex*16 ti,et,em
 
       include 'ewald.h'
       parameter(NPTS=1001)
 
-      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
       dimension c(*),y(NPTS)
 
 c integrates sin(g*x)*x**i for i=lowest_pow+1 to n+np+lowest_pow and x from 0 to 1
@@ -1293,13 +1290,14 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
+      use ewald_basis, only: vps_basis_fourier
       implicit real*8(a-h,o-z)
+
       complex*16 ti,et,em
 
       include 'ewald.h'
       parameter(NPTS=1001)
 
-      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
       dimension c(*),d(NPX*(NCOEFX+1)),y(NPTS)
 
 c integral of sin(g*x)*x**i for i=1 to np*(n+1)+1 and x from 0 to 1
@@ -1369,13 +1367,14 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
+      use ewald_basis, only: vps_basis_fourier
       implicit real*8(a-h,o-z)
+
       complex*16 ti,et,em
 
       include 'ewald.h'
       parameter(NPTS=1001)
 
-      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
       dimension c(*),d(NPX*(NCOEFX+1)),y(NPTS)
 
 c integral of sin(g*x)*x**i for i=1 to np*(n+1)+1 and x from 0 to 1
@@ -1572,10 +1571,11 @@ c-----------------------------------------------------------------------
       function ewald_pot(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell)
 c Written by Cyrus Umrigar
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
 
+
       include 'ewald.h'
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension rvec(3),gvec(3,*),gnorm(*),igmult(*),y(*)
 
@@ -1601,10 +1601,11 @@ c-----------------------------------------------------------------------
       function ewald_pot_psp(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell,ict,l,z)
 c Written by Cyrus Umrigar
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       implicit real*8(a-h,o-z)
 
+
       include 'ewald.h'
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension rvec(3),gvec(3,*),gnorm(*),igmult(*),y(*)
 
@@ -1755,33 +1756,25 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald_old
 c Written by Cyrus Umrigar
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
+     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+     &vcell_sim, znuc2_sum, znuc_sum
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
       include 'pseudo.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
       dimension r(3)
 
@@ -1814,33 +1807,25 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald
 c Written by Cyrus Umrigar
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
+     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+     &vcell_sim, znuc2_sum, znuc_sum
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
       include 'pseudo.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
       dimension r(3)
 
@@ -1877,35 +1862,28 @@ c-----------------------------------------------------------------------
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
+     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+     &vcell_sim, znuc2_sum, znuc_sum
       implicit real*8(a-h,o-z)
+
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
       include 'pseudo.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
@@ -1963,33 +1941,26 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
+     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+     &vcell_sim, znuc2_sum, znuc_sum
       implicit real*8(a-h,o-z)
+
+
+
 
       include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
       include 'pseudo.h'
 
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),rlatt_sim_inv(3,3),glatt_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension x(3,*)

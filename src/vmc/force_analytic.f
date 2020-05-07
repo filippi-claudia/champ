@@ -1,13 +1,23 @@
       subroutine compute_force(psid,denergy)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_energy_now, only: da_energy, da_psi
+      use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -16,15 +26,10 @@
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
-      common /da_jastrow4val/ da_j(3,MELEC,MCENT),da_d2j(3,MELEC,MCENT),da_vj(3,3,MELEC,MCENT)
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
       dimension da_psi_ref(3,MCENT)
 
@@ -44,16 +49,34 @@ c     write(6,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_energy_now, only: da_energy, da_psi
+      use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use ycompact, only: dymat, ymat
+      use zcompact, only: aaz, dzmat, emz, zmat
+
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -62,20 +85,12 @@ c-----------------------------------------------------------------------
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
-      common /zcompact/ zmat(MORB,MELEC,2,MSTATES),dzmat(MORB,MELEC,2,MSTATES)
-     & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
-      common /da_jastrow4val/ da_j(3,MELEC,MCENT),da_d2j(3,MELEC,MCENT),da_vj(3,3,MELEC,MCENT)
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
       dimension b_a(MORB,MELEC),b_kref(MELEC*MELEC),tildem_a(MELEC,MORB),xmat(MELEC*MELEC,2),work(MELEC)
       dimension da_psi_ref(3,MCENT)
@@ -145,8 +160,22 @@ c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_energy_now, only: da_energy, da_psi
+      use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
 
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use zcompact, only: aaz, dzmat, emz, zmat
+
+      use Bloc_da, only: b_da, db
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'mstates.h'
@@ -154,10 +183,6 @@ c-----------------------------------------------------------------------
 
       parameter (MEXCIT=10)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -166,19 +191,13 @@ c-----------------------------------------------------------------------
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
-      common /zcompact/ zmat(MORB,MELEC,2,MSTATES),dzmat(MORB,MELEC,2,MSTATES)
-     & ,emz(MELEC,MELEC,2,MSTATES),aaz(MELEC,MELEC,2,MSTATES)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
-      common /da_jastrow4val/ da_j(3,MELEC,MCENT),da_d2j(3,MELEC,MCENT),da_vj(3,3,MELEC,MCENT)
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
@@ -188,9 +207,7 @@ c-----------------------------------------------------------------------
 
       common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
      & ,tildem(MELEC,MORB,2)
-      common /Bloc_da/ b_da(3,MELEC,MORB,MCENT)
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
       dimension da_energy_ref(3,MCENT)
 
@@ -259,13 +276,13 @@ c     write(6,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_init(iflag)
-      implicit double precision(a-h,o-z)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use da_energy_now, only: da_energy, da_psi
+      implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
       common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
      & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
@@ -292,13 +309,13 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine force_analy_sum(p,q,eloc,eloco)
-      implicit double precision(a-h,o-z)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use da_energy_now, only: da_energy, da_psi
+      implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
 
       common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
      & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
@@ -317,11 +334,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_cum(wsum,eave,wcum)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit double precision(a-h,o-z)
 
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
      & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
@@ -341,10 +357,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_fin(wcum,iblk,eave)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use force_fin, only: da_energy_ave, da_energy_err
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
@@ -353,7 +370,6 @@ c-----------------------------------------------------------------------
 
       common /force_analy/ iforce_analy
 
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
@@ -376,10 +392,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_dump(iu)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
@@ -396,10 +411,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_rstrt(iu)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 

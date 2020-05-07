@@ -1,7 +1,37 @@
       function deriv_psinl(u,rshifti,rshiftj,rri,rrj,gn,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar1, only: cjas1, cjas2
+      use elec, only: ndn, nup
+      use jaspar2, only: a1, a2
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
+     &xms
+      use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
@@ -9,26 +39,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       parameter(NEQSX=6*MORDJ,MTERMS=55)
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
 
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /elec/ nup,ndn
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
       common /cuspmat/ cm(NEQSX,NEQSX),iwc3(NEQSX),neqs,ishe
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
@@ -111,26 +124,34 @@ c                 jj=jj+1
 c-----------------------------------------------------------------------
       function deriv_psianl(rri,gn,it)
 
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
 
       parameter(one=1.d0)
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
       dimension gn(*)
 
@@ -171,26 +192,35 @@ c written for general iwf, whereas others (asymp_r) assume iwf=1.
 c-----------------------------------------------------------------------
       function deriv_psibnl(u,gn,isb,ipar)
 
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar3, only: a, b, c, fck, nord, scalek
+
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
+     &cutjas, cutjasi
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use wfsec, only: iwf, iwftype, nwftype
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
 
       parameter(one=1.d0)
 
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar6/ cutjas,cutjasi,c1_jas6i,c1_jas6,c2_jas6,
-     &asymp_r,asymp_jasa(MCTYPE),asymp_jasb(2)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
 
       dimension gn(*)
 

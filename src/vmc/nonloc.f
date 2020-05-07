@@ -1,6 +1,20 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_energy_now, only: da_energy, da_psi
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use Bloc_dj, only: b_dj
+      use coefs, only: coef, nbasis, norb
+      use contr3, only: mode
+
       implicit real*8(a-h,o-z)
+
       parameter (one=1.d0)
 
       include 'vmc.h'
@@ -12,49 +26,24 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      character*12 mode
 
-      common /contr3/ mode
-
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /elec/ nup,ndn
-
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
-
       common /multislater/ detu(MDET),detd(MDET)
-
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
-
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
-
       common /Bloc/ b(MORB,MELEC),xmat(MELEC**2,2)
      & ,tildem(MELEC,MORB,2)
-      common /Bloc_dj/ b_dj(MORB,MELEC,MPARMJ)
       common /b_tmove/ b_t(MORB,MPS_QUAD,MCENT,MELEC),iskip(MELEC,MCENT)
       common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
      & da_nonloc(3,MCENT)
-
-      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
-
       common /force_analy/ iforce_analy
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
@@ -252,7 +241,13 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
+
       parameter (one=1.d0)
 
       include 'vmc.h'
@@ -261,12 +256,8 @@ c-----------------------------------------------------------------------
       include 'pseudo.h'
       include 'ewald.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
 
-      common /elec/ nup,ndn
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
@@ -317,28 +308,32 @@ c-----------------------------------------------------------------------
       subroutine orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use elec, only: ndn, nup
+      use numbas1, only: iwlbas, nbastyp
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
+      use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include '3dgrid_flags.h'
 
       common /contrl_per/ iperiodic,ibasis
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /elec/ nup,ndn
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
       dimension x(3),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension orbn(*),dorbn(3,*),da_orbn(3,MCENT,*),dtmp(3)
@@ -406,17 +401,20 @@ c-----------------------------------------------------------------------
       subroutine nonlocd(iel,orb,detu,detd,slmui,slmdi,ratio)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include '3dgrid_flags.h'
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
       dimension x(3)
@@ -447,7 +445,24 @@ c-----------------------------------------------------------------------
       subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'ewald.h'
       include 'force.h'
@@ -455,20 +470,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       parameter (half=.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /elec/ nup,ndn
 
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /bparm/ nspin2b,nocuspb
 
-      common /da_jastrow4val/ da_j(3,MELEC,MCENT),da_d2j(3,MELEC,MCENT),da_vj(3,3,MELEC,MCENT)
 
       common /force_analy/ iforce_analy
 
@@ -569,7 +574,17 @@ c-----------------------------------------------------------------------
       subroutine compute_da_bnl(i,ic,ict,iq,r_en_sav,rvec_en_sav,costh,
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use elec, only: ndn, nup
+      use Bloc_da, only: b_da, db
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
       parameter (one=1.d0)
 
       include 'vmc.h'
@@ -577,11 +592,6 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
       include 'pseudo.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
@@ -591,9 +601,7 @@ c-----------------------------------------------------------------------
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /Bloc_da/ db(3,MELEC,MORB,MCENT)
 
       common /force_analy/ iforce_analy
 

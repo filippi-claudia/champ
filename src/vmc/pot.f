@@ -1,18 +1,23 @@
       subroutine pot_nn(cent,znuc,iwctype,ncent,pecent)
 c Written by Cyrus Umrigar
 c get nuclear potential energy
+      USE contrl_per !, ONLY:  iperiodic,ibasis
+      USE force_analy
+      USE da_pseudo , only:  da_pecent, da_vps
+
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'pseudo.h'
 
-      common /contrl_per/ iperiodic,ibasis
+!      common /contrl_per/ iperiodic,ibasis
       dimension znuc(MCTYPE),cent(3,MCENT),iwctype(MCENT)
 
-      common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
-     & da_nonloc(3,MCENT)
+!      common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
+!     & da_nonloc(3,MCENT)
 
-      common /force_analy/ iforce_analy
+!      common /force_analy/ iforce_analy
 
       if(iperiodic.eq.0) then
         pecent=0

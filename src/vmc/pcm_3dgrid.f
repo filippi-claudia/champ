@@ -10,13 +10,16 @@ c &pcm x0_pcm 0. y0_pcm 0. z0_pcm 0.
 c &pcm xn_pcm 1. yn_pcm 1. zn_pcm 1.
 c----------------------------------------------------------------------
       subroutine pcm_setup_grid
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use insout, only: inout, inside
+      use pcm_num_spl2, only: bc, wk
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
       include 'pcm_3dgrid.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 CACTIVATE
@@ -155,7 +158,6 @@ c     xy_max = 1+2+3 = 6
 c     xz_max = 1+3+3 = 7
 c     yz_max = 2+3+3 = 8
       real*8  bc(MGRID_PCM,MGRID_PCM,3:8), wk(80*MGRID_PCM3)
-      common /pcm_num_spl2/ bc, wk
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       dimension r(3)
@@ -223,12 +225,11 @@ c      stop
 
 c----------------------------------------------------------------------
       subroutine spline_pcm(r,f,ier)
+      use insout, only: inout, inside
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'pcm_3dgrid.h'
 
-      real*8 inside, inout  
-      common /insout/ inside,inout  
 
 c     Input:
       real*8    r(3)    ! Cartesian coordinates

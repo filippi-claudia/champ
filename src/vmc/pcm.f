@@ -5,12 +5,10 @@ c...........................................................
 c     read data for pcm calculations
 c     comput nuclei-qpol interactions (penups,penupv)
 c...........................................................
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h' 
       include 'pcm.h'
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       DATA PI/3.1415927D0/
       if(ipcm.eq.0)return
@@ -140,15 +138,13 @@ c Written by Amovilli-Floris
 C     ***************************************************************
 C     contribution from nuclei to polarization charghes
 C     ***************************************************************
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       IMPLICIT REAL*8 (A-H,O-Z)
       double precision ah_vec,det
 C     
       include 'pcm.h'
       include 'vmc.h' 
 C    
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-
       dimension ah_vec(MCHS*MCHS),bhn(MCHS),ah(MCHS,MCHS)
 
 c
@@ -251,14 +247,14 @@ c
 c     3) for the accepted configuration, the normal component 
 c        of the electron field  at the point on the surface is computed 
 C     ***************************************************************
-      IMPLICIT REAL*8 (A-H,O-Z)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      use pcm_xv_new, only: xv_new
+      implicit real*8(a-h,o-z)
+
+
       include 'pcm.h'
       include 'vmc.h'
-      common /pcm_hpsi/ pepcms,pepcmv,qopcm,enfpcm(MCHS)
-      common /pcm_xv_new/ xv_new(3,MCHV)
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
 c
       dimension coord(3,*)
@@ -373,12 +369,12 @@ c............................................................
 c............................................................
 c      update of volume charges and penupol
 c............................................................
-      IMPLICIT REAL*8 (A-H,O-Z)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use pcm_xv_new, only: xv_new
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pcm.h'
-      common /pcm_xv_new/ xv_new(3,MCHV)
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       iupdate=0
       if(ipcm.eq.0.or.ipcm.eq.3) return
@@ -411,12 +407,10 @@ c..............................................................
 c............................................................
 c     compute penupv of volume charges 
 c............................................................
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       IMPLICIT REAL*8 (A-H,O-Z)
       include 'vmc.h' 
       include 'pcm.h'
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       if(ipcm.eq.0) return
 
@@ -787,12 +781,11 @@ C     ***************************************************************
 c     This subroutine computes the coordinates of point charges 
 c     on the cavity surface
 C     ***************************************************************
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       implicit real*8 (a-h,o-z)
       include 'pcm.h'
       include 'vmc.h'
 c
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 c....................................................................
       common/spc/nsf,num(50)
       common/spc1/rsf(50),qsf(50,3),csf(750,4,50)
@@ -1359,13 +1352,12 @@ c        ...exit
 C     ***************************************************************
 C     march/2014: compute surface charges for a stretched cavity
 C     ***************************************************************
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       IMPLICIT double precision (A-H,O-Z)
 C     
       include 'pcm.h'
       include 'vmc.h' 
 C    
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
       dimension ah_vec(MCHS*MCHS),ah(MCHS,MCHS)
       dimension q_strech(MCHS),efield(MCHS)

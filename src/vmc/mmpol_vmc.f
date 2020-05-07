@@ -115,11 +115,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_save
-      implicit double precision(a-h,o-z)
+      use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
+      use mmpolo, only: cmmpolo, dmmpolo, eeko
+      implicit real*8(a-h,o-z)
+
+
 
       include 'mmpol.h'
-      common /mmpol_hpsi/QMdp,QMq,eek_pol(3,MCHMM)
-      common /mmpolo/ dmmpolo,cmmpolo,eeko(3,MCHMM)
 
       if(immpol.eq.0) return
       dmmpolo=QMdp
@@ -135,11 +137,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_sum(p,q)
-      implicit double precision(a-h,o-z)
+      use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
+      use mmpolo, only: cmmpolo, dmmpolo, eeko
+      implicit real*8(a-h,o-z)
+
+
 
       include 'mmpol.h'
-      common /mmpol_hpsi/QMdp,QMq,eek_pol(3,MCHMM)
-      common /mmpolo/ dmmpolo,cmmpolo,eeko(3,MCHMM)
 
 
       if(immpol.eq.0) return

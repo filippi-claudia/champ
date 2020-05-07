@@ -1,5 +1,13 @@
       subroutine verify_orbitals
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
@@ -12,13 +20,9 @@
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump
      &     ,irstar
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
 c orbital indices in determinants of trial wave function
       ndetorb=0

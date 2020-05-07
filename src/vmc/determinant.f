@@ -2,7 +2,16 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
@@ -11,19 +20,14 @@ c Modified by A. Scemama
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
      &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multislater/detiab(MDET,2)
 
@@ -97,26 +101,31 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use estpsi, only: apsi, aref, detref
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'mstates.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multislater/detiab(MDET,2)
 
-      common /estpsi/ detref(2),apsi(MSTATES),aref
 
       parameter (one=1.d0,half=0.5d0)
 
@@ -148,7 +157,29 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
+      use derivjas, only: d2g, g, go, gvalue
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use Bloc_da, only: b_da
+      use Bloc_dj, only: b_dj
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
@@ -156,32 +187,18 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
       common /force_analy/ iforce_analy
 
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT)
-     &,da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
-      common /da_jastrow4val/ da_j(3,MELEC,MCENT),da_d2j(3,MELEC,MCENT),da_vj(3,3,MELEC,MCENT)
 
       common /Bloc/ b(MORB,MELEC),xmatu(MELEC**2),xmatd(MELEC**2)
      & ,tildem(MELEC,MORB,2)
-      common /Bloc_dj/ b_dj(MORB,MELEC,MPARMJ)
-      common /Bloc_da/ b_da(3,MELEC,MORB,MCENT)
 
 c compute kinetic contribution of B+Btilde to compute Eloc
       do i=1,nelec

@@ -4,8 +4,17 @@ c Reads in localized orbitals, in either
 c Modified by A. Scemama (printing in a GAMESS-like format)
 c 1) a slater basis
 c 2) a gaussian basis
+      use atom, only:  znuc, cent, pecent, iwctype, nctype, ncent
+      use ghostatom, only: newghostype, nghostcent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
 
       parameter (zero=0.d0,one=1.d0)
       parameter(nprime=10)
@@ -17,16 +26,8 @@ c 2) a gaussian basis
       include 'basis.h'
       include 'numbas.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
 
-      common /ghostatom/ newghostype,nghostcent
 
 c Check that nbasis in lcao matches specified basis on all centers
       ncheck=0

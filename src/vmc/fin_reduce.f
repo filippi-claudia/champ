@@ -1,27 +1,28 @@
       subroutine fin_reduce
 c MPI version written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use estsig, only: ecm21s, ecum1s
+      use forcepar, only: deltot, istrech, nforce
+      use forcewt, only: wcum, wsum
+      use mpiconf, only: idtask, nproc, wid
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'mpif.h'
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),pecum(MSTATES),tpbcum(MSTATES),tjfcum(MSTATES),r2cum,iblk
-      common /est2cm/ ecm21(MSTATES),ecm2(MSTATES,MFORCE),pecm2(MSTATES),tpbcm2(MSTATES),tjfcm2(MSTATES),r2cm2
-      common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
-      common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension rprobt(nrad),tryt(nrad),suct(nrad)
       dimension collect(MSTATES)

@@ -2,8 +2,54 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use ghostatom, only: newghostype, nghostcent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
+     &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
+     &vnew, vold, xnew, xold
+      use jaspar1, only: cjas1, cjas2
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use denupdn, only: rprobdn, rprobup
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use estsig, only: ecm21s, ecum1s
+      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+      use forcepar, only: deltot, istrech, nforce
+      use forcest, only: fcm2, fcum
+      use forcewt, only: wcum, wsum
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use stats, only: rejmax
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+
+      use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
+      use const2, only: deltar, deltat
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -14,42 +60,12 @@ c job where it left off
 
       parameter(half=0.5d0,small=1.d-6)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /const2/ deltar,deltat
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-     &,vnew(3,MELEC),psi2o(MSTATES,MFORCE),psi2n(MFORCE),eold(MSTATES,MFORCE),enew(MFORCE)
-     &,peo(MSTATES),pen,tjfn,tjfo(MSTATES),psido(MSTATES),psijo
-     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /ghostatom/ newghostype,nghostcent
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /elec/ nup,ndn
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
 
-      common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
-      common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),pecum(MSTATES),tpbcum(MSTATES),tjfcum(MSTATES),r2cum,iblk
-      common /est2cm/ ecm21(MSTATES),ecm2(MSTATES,MFORCE),pecm2(MSTATES),tpbcm2(MSTATES),tjfcm2(MSTATES),r2cm2
-      common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)
-      common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
-      common /stats/ rejmax
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
-      common /denupdn/ rprobup(nrad),rprobdn(nrad)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT)
      &,znucx(MCTYPE),n1sx(MCTYPE),n2sx(MCTYPE),n2px(3,MCTYPE)

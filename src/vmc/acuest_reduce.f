@@ -1,7 +1,28 @@
       subroutine acuest_reduce(enow)
 c Written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
+      use estpsi, only: apsi, aref, detref
+      use estsig, only: ecm21s, ecum1s
+      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+      use forcepar, only: deltot, istrech, nforce
+      use forcest, only: fcm2, fcum
+      use forcewt, only: wcum, wsum
+      use mpiconf, only: idtask, nproc, wid
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
@@ -13,22 +34,10 @@ c Written by Claudia Filippi
 
 
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
 
-      common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)
-      common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
-      common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
-      common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),avcum(MSTATES*3),r2cum,iblk
-      common /est2cm/ ecm21(MSTATES),ecm2(MSTATES,MFORCE),avcm2(MSTATES*3),r2cm2
-      common /estsig/ ecum1s(MSTATES),ecm21s(MSTATES)
-      common /estpsi/ detref(2),apsi(MSTATES),aref
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       character*20 filename
 

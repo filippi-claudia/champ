@@ -1,6 +1,31 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use derivjas, only: d2g, g, go, gvalue
+
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use scratch, only: denergy_det, dtildem, xmatd, xmatu
+
+      use Bloc_dj, only: b_dj
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,11 +33,7 @@
       include 'pseudo.h'
 
       parameter (MEXCIT=10)
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -24,28 +45,17 @@
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
-      common /Bloc_dj/ b_dj(MORB,MELEC,MPARMJ)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /scratch/ dtildem(MELEC,MORB,2),denergy_det(MDET,2)
-     &,xmatu(MELEC**2),xmatd(MELEC**2) 
 
       dimension psid(*),dvpsp_dj(*),energy(*),vj(3,*)
       dimension deloc_dj(MPARMJ)
@@ -178,37 +188,48 @@ c d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
 c-----------------------------------------------------------------------
       subroutine optjas_sum(wtg_new,wtg_old,enew,eold,iflag)
 c Written by Claudia Filippi
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use derivjas, only: d2g, g, go, gvalue
+
+      use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+
+      use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
+      use jaspointer, only: npoint, npointa
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /bparm/ nspin2b,nocuspb
 
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
 
       common /gradhessj/ dj(MPARMJ,MSTATES),dj_e(MPARMJ,MSTATES),dj_de(MPARMJ,MPARMJ,MSTATES)
      &,dj_dj(MPARMJ,MPARMJ,MSTATES),dj_dj_e(MPARMJ,MPARMJ,MSTATES),de(MPARMJ,MSTATES)
      &,d2j(MPARMJ,MPARMJ,MSTATES),d2j_e(MPARMJ,MPARMJ,MSTATES),de_e(MPARMJ,MSTATES)
      &,e2(MPARMJ,MSTATES),dj_e2(MPARMJ,MSTATES),de_de(MPARMJ,MPARMJ,MSTATES)
-      common /gradhessjo/ gvalue_old(MPARMJ),denergy_old(MPARMJ,MSTATES)
-     &,d1d2a_old(MCTYPE),d2d2a_old(MCTYPE),d1d2b_old(2),d2d2b_old(2)
 
-      common /ijasnonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2)
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /optwf_wjas/ iwjasa(83,MCTYP3X),iwjasb(83,3),iwjasc(83,MCTYPE),iwjasf(15,MCTYPE)
-      common /optwf_nparmj/ nparma(MCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE)
-      common /jaspointer/ npoint(MCTYP3X),npointa(3*MCTYP3X)
 
       dimension enew(*),eold(*),wtg_new(*),wtg_old(*)
 
@@ -359,7 +380,17 @@ c-----------------------------------------------------------------------
       subroutine optjas_cum(wsum,enow)
 c Written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
@@ -370,17 +401,10 @@ c Written by Claudia Filippi
      &,d2j(MPARMJ,MPARMJ,MSTATES),d2j_e(MPARMJ,MPARMJ,MSTATES),de_e(MPARMJ,MSTATES)
      &,e2(MPARMJ,MSTATES),dj_e2(MPARMJ,MSTATES),de_de(MPARMJ,MPARMJ,MSTATES)
 
-      common /gradjerr/ grad_jas_bcum(MPARMJ,MSTATES),grad_jas_bcm2(MPARMJ,MSTATES),
-     &dj_e_bsum(MPARMJ,MSTATES),dj_bsum(MPARMJ,MSTATES),dj_e_save(MPARMJ,MSTATES),
-     &dj_save(MPARMJ,MSTATES),e_bsum(MSTATES)
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension dj_e_b(83),dj_b(83)
 
@@ -427,28 +451,35 @@ c-----------------------------------------------------------------------
       subroutine optjas_save
 c Written by Claudia Filippi
 
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use derivjas, only: d2g, g, go, gvalue
+
+      use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+
+      use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /bparm/ nspin2b,nocuspb
 
-      common /gradhessjo/ gvalue_old(MPARMJ),denergy_old(MPARMJ,MSTATES)
-     &,d1d2a_old(MCTYPE),d2d2a_old(MCTYPE),d1d2b_old(2),d2d2b_old(2)
       common /deloc_dj/ denergy(MPARMJ,MSTATES)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ)
-     &,d2g(MPARMJ),go(MELEC,MELEC,MPARMJ)
-      common /ijasnonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2)
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
 
@@ -471,7 +502,17 @@ c-----------------------------------------------------------------------
       subroutine optjas_init
 c Written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'optjas.h'
       include 'mstates.h'
@@ -482,17 +523,10 @@ c Written by Claudia Filippi
      &,d2j(MPARMJ,MPARMJ,MSTATES),d2j_e(MPARMJ,MPARMJ,MSTATES),de_e(MPARMJ,MSTATES)
      &,e2(MPARMJ,MSTATES),dj_e2(MPARMJ,MSTATES),de_de(MPARMJ,MPARMJ,MSTATES)
 
-      common /gradjerr/ grad_jas_bcum(MPARMJ,MSTATES),grad_jas_bcm2(MPARMJ,MSTATES),
-     &dj_e_bsum(MPARMJ,MSTATES),dj_bsum(MPARMJ,MSTATES),dj_e_save(MPARMJ,MSTATES),
-     &dj_save(MPARMJ,MSTATES),e_bsum(MSTATES)
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
 
@@ -533,7 +567,17 @@ c-----------------------------------------------------------------------
       subroutine optjas_dump(iu)
 c Written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
@@ -544,17 +588,10 @@ c Written by Claudia Filippi
      &,d2j(MPARMJ,MPARMJ,MSTATES),d2j_e(MPARMJ,MPARMJ,MSTATES),de_e(MPARMJ,MSTATES)
      &,e2(MPARMJ,MSTATES),dj_e2(MPARMJ,MSTATES),de_de(MPARMJ,MPARMJ,MSTATES)
 
-      common /gradjerr/ grad_jas_bcum(MPARMJ,MSTATES),grad_jas_bcm2(MPARMJ,MSTATES),
-     &dj_e_bsum(MPARMJ,MSTATES),dj_bsum(MPARMJ,MSTATES),dj_e_save(MPARMJ,MSTATES),
-     &dj_save(MPARMJ,MSTATES),e_bsum(MSTATES)
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
 c to do: write out which parameters are being varied -> check for restart
@@ -576,7 +613,17 @@ c-----------------------------------------------------------------------
       subroutine optjas_rstrt(iu)
 c Written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
@@ -587,17 +634,10 @@ c Written by Claudia Filippi
      &,d2j(MPARMJ,MPARMJ,MSTATES),d2j_e(MPARMJ,MPARMJ,MSTATES),de_e(MPARMJ,MSTATES)
      &,e2(MPARMJ,MSTATES),dj_e2(MPARMJ,MSTATES),de_de(MPARMJ,MPARMJ,MSTATES)
 
-      common /gradjerr/ grad_jas_bcum(MPARMJ,MSTATES),grad_jas_bcm2(MPARMJ,MSTATES),
-     &dj_e_bsum(MPARMJ,MSTATES),dj_bsum(MPARMJ,MSTATES),dj_e_save(MPARMJ,MSTATES),
-     &dj_save(MPARMJ,MSTATES),e_bsum(MSTATES)
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       if(ioptjas.eq.0) return
 
@@ -621,41 +661,49 @@ c Written by Claudia Filippi
 c-----------------------------------------------------------------------
       subroutine optjas_fin(wcum,ecum)
 c Written by Claudia Filippi
+
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use gradhess_jas, only: grad_jas, h_jas, s_jas
+      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use sa_weights, only: iweight, nweight, weights
+      use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /bparm/ nspin2b,nocuspb
 
       common /gradhessj/ dj(MPARMJ,MSTATES),dj_e(MPARMJ,MSTATES),dj_de(MPARMJ,MPARMJ,MSTATES)
      &,dj_dj(MPARMJ,MPARMJ,MSTATES),dj_dj_e(MPARMJ,MPARMJ,MSTATES),de(MPARMJ,MSTATES)
      &,d2j(MPARMJ,MPARMJ,MSTATES),d2j_e(MPARMJ,MPARMJ,MSTATES),de_e(MPARMJ,MSTATES)
      &,e2(MPARMJ,MSTATES),dj_e2(MPARMJ,MSTATES),de_de(MPARMJ,MPARMJ,MSTATES)
 
-      common /gradjerr/ grad_jas_bcum(MPARMJ,MSTATES),grad_jas_bcm2(MPARMJ,MSTATES),
-     &dj_e_bsum(MPARMJ,MSTATES),dj_bsum(MPARMJ,MSTATES),dj_e_save(MPARMJ,MSTATES),
-     &dj_save(MPARMJ,MSTATES),e_bsum(MSTATES)
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /gradhess_jas/ grad_jas(MPARMJ),h_jas(MPARMJ,MPARMJ),s_jas(MPARMJ,MPARMJ)
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /sa_weights/ weights(MSTATES),iweight(MSTATES),nweight
-
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
 
       dimension hess1(MPARMJ,MPARMJ),hess2(MPARMJ,MPARMJ),hess3(MPARMJ,MPARMJ),grad_now(MPARMJ),gerr(MPARMJ)
       dimension ecum(*),wcum(*)

@@ -2,28 +2,27 @@
 c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+      use forcepar, only: deltot, istrech, nforce
+      use forcest, only: fcm2, fcum
+      use forcewt, only: wcum, wsum
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
-      character*12 mode
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'pseudo.h'
 
-      common /contr3/ mode
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fcum(MSTATES,MFORCE),fcm2(MSTATES,MFORCE)
-      common /forcewt/ wsum(MSTATES,MFORCE),wcum(MSTATES,MFORCE)
 
-      common /estsum/ esum1(MSTATES),esum(MSTATES,MFORCE),pesum(MSTATES),tpbsum(MSTATES),tjfsum(MSTATES),r2sum,acc
-      common /estcum/ ecum1(MSTATES),ecum(MSTATES,MFORCE),pecum(MSTATES),tpbcum(MSTATES),tjfcum(MSTATES),r2cum,iblk
-      common /est2cm/ ecm21(MSTATES),ecm2(MSTATES,MFORCE),pecm2(MSTATES),tpbcm2(MSTATES),tjfcm2(MSTATES),r2cm2
 
       dimension enow(MSTATES,MFORCE)
 

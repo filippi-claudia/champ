@@ -10,29 +10,22 @@ c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
 
 c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
-
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use force_dmc, only: itausec, nwprod
+      use forcepar, only: deltot, istrech, nforce
+      use forcestr, only: delc
+      use pcm_force, only: sch_s
+      use wfsec, only: iwf, iwftype, nwftype
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
-      character*12 mode
+
 
       parameter (zero=0.d0,one=1.d0)
 
       include 'vmc.h'
       include 'force.h'
       include 'pcm.h'
-
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcestr/ delc(3,MCENT,MFORCE)
-      common /force_dmc/ itausec,nwprod
-
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-
-      common /pcm_force/ sch_s(MCHS,MFORCE)
-
-      common /contr3/ mode
 
       dimension x(3,MELEC),xstrech(3,MELEC),centsav(3,MCENT),pecentn(MFORCE)
       dimension wt(MCENT),dvol(3,3),dwt(3,MCENT),dwtsm(3)

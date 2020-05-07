@@ -2,7 +2,21 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
+      use elec, only: ndn, nup
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
+      use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -16,18 +30,10 @@ c as many ups as downs. If this is not true then be careful if
 c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /force_analy/ iforce_analy
 
-      common /elec/ nup,ndn
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension bhin(melec,mbasis),dbhin(3*melec,mbasis),d2bhin(melec,mbasis)
@@ -153,7 +159,16 @@ c           do 26 m=1,nbasis
       end
 c------------------------------------------------------------------------------------
       subroutine virtual_orbitals
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
 c compute values of extra ('virtual') orbitals needed for optorb operators
 c assuming that basis function values in phin are up to date
 
@@ -161,14 +176,8 @@ c assuming that basis function values in phin are up to date
       include 'force.h'
       include 'optorb.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension bhin(melec,mbasis),dbhin(3,melec,mbasis),d2bhin(melec,mbasis)
 
@@ -212,30 +221,36 @@ c25   continue
       end
 c------------------------------------------------------------------------------------
       subroutine da_orbitals
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
-      implicit real*8 (a-h,o-z)
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use da_orbval, only: da_d2orb, da_dorb, da_orb
+
+      use numbas1, only: iwlbas, nbastyp
+      use numbas2, only: ibas0, ibas1
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
+      use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
+      implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
 
       include 'vmc.h'
       include 'numbas.h'
       include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /numbas1/ nbastyp(MCTYPE), iwlbas(MBASIS,MCTYPE)
 
-      common /numbas2/ ibas0(MCENT),ibas1(MCENT)
 
-      common /da_orbval/ da_orb(3,MELEC,MORB,MCENT),da_d2orb(3,MELEC,MORB,MCENT),da_dorb(3,3,MELEC,MORB,MCENT)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension dum(MELEC,MORB,MCENT),aux(MELEC)
       dimension tphin(3*MELEC,MBASIS),t2phin_all(3*3*MELEC,MBASIS),t3phin(3*MELEC,MBASIS)
@@ -269,7 +284,22 @@ c-------------------------------------------------------------------------------
 c------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
+      use slatn, only: slmin
+      use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
 
       include 'vmc.h'
       include 'force.h'
@@ -278,14 +308,7 @@ c-------------------------------------------------------------------------------
 
       parameter(one=1.d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /elec/ nup,ndn
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -296,11 +319,9 @@ c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /slatn/ slmin(MMAT_DIM)
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 

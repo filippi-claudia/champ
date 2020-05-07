@@ -1,6 +1,24 @@
       subroutine multideterminante(iel)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use slatn, only: slmin
+      use ycompactn, only: ymatn
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,31 +26,21 @@
       parameter (one=1.d0,half=0.5d0)
       parameter (MEXCIT=10)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /dorb/ iworbd(MELEC,MDET)
 
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /slatn/ slmin(MMAT_DIM)
       common /multislatern/ detn(MDET)
      &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
       common /multimatn/ aan(MELEC,MORB),wfmatn(MEXCIT**2,MDET)
 
-      common /ycompactn/ ymatn(MORB,MELEC,MSTATES)
 
       dimension gmat(MELEC,MORB,3),gmatn(MEXCIT**2,3)
       dimension b(MORB,3),ddx_mdet(3)
@@ -123,7 +131,20 @@ c compute wave function
 c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -131,19 +152,12 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
       parameter (MEXCIT=10)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /dorb/ iworbd(MELEC,MDET)
 
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+
 
       dimension slmi(MMAT_DIM)
       dimension aa(MELEC,MORB),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)

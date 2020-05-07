@@ -1,23 +1,34 @@
       subroutine detsav(iel,iflag)
 c Written by Claudia Filippi
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use slatn, only: slmin
+      use ycompact, only: dymat, ymat
+      use ycompactn, only: ymatn
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       parameter (MEXCIT=10)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /elec/ nup,ndn
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -25,7 +36,6 @@ c Written by Claudia Filippi
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /slatn/ slmin(MMAT_DIM)
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
 
@@ -33,9 +43,7 @@ c Written by Claudia Filippi
 
       common /multimatn/ aan(MELEC,MORB),wfmatn(MEXCIT**2,MDET)
 
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
-      common /ycompactn/ ymatn(MORB,MELEC,MSTATES)
 
       common /orbval/ orbo(MELEC,MORB),dorbo(3,MELEC,MORB),ddorbo(MELEC,MORB),ndetorb,nadorb
 

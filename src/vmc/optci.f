@@ -1,6 +1,13 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,16 +15,12 @@
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /multislater/ detu(MDET),detd(MDET)
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       dimension ciprim(MDET),cieprim(MDET)
       dimension eloc_det(MDET,2)
@@ -68,13 +71,14 @@ c Correlation matrix <Oi*Oj> is computed in ci_sum
       end
 c-----------------------------------------------------------------------
       subroutine optci_init(iflg)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -116,13 +120,14 @@ C$ iflg = 0: init *cum, *cm2 as well
 
 c-----------------------------------------------------------------------
       subroutine optci_save
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -136,13 +141,14 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_restore
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -156,14 +162,15 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_sum(p,q,enew,eold)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
       include 'inputflags.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -185,14 +192,15 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_cum(wsum)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
       include 'inputflags.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -215,14 +223,15 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_dump(iu)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -236,13 +245,14 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_rstrt(iu)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -267,7 +277,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_avrg(wcum,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
@@ -277,7 +289,6 @@ c-----------------------------------------------------------------------
       dimension ooav(MXCIMATDIM),ooerr(MXCIMATDIM)
       dimension ooeav(MXCIMATDIM)
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
@@ -303,29 +314,35 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_fin(iblk,passes,etot)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use gradhess_ci, only: grad_ci, h_ci, s_ci
+      use linear_norm, only: oav, ci_oav
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      dimension oav(MXCITERM),deav(MXCITERM)
+      dimension deav(MXCITERM)
       dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)
       dimension ooav(MXCIMATDIM),ooerr(MXCIMATDIM)
       dimension ooeav(MXCIMATDIM)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /elec/ nup,ndn
 
-      common /gradhess_ci/  grad_ci(MXCITERM),h_ci(MXCITERM,MXCIREDUCED),s_ci(MXCITERM,MXCIREDUCED)
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /linear_norm/ ci_oav(MXCITERM)
       dimension oelocav(MXCITERM),eav(MXCITERM)
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -421,17 +438,19 @@ c h_0,0, h_0,ci, h_ci,0, s_0,ci, s_ci,0
 
 c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
+      use linear_norm, only: oav
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
 c compute averages and print then out
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
       common /icount_ci/ icount
 
-      dimension oav(MXCITERM),deav(MXCITERM)
+      dimension deav(MXCITERM)
       dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)
       dimension ooav(MXCIMATDIM),ooerr(MXCIMATDIM)
       dimension ooeav(MXCIMATDIM)
@@ -513,7 +532,14 @@ c     print the OkEL
 
 c-----------------------------------------------------------------------
       subroutine optci_define
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
@@ -521,11 +547,7 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
       include 'inputflags.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       nciprim = ndet
 

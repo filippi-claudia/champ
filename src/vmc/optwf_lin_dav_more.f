@@ -1,5 +1,15 @@
       subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use mpiconf, only: idtask, nproc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+    
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
@@ -8,17 +18,8 @@
       include 'force.h'
       include 'mstates.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
-      common /optwf_parms/ nparml,nparme,nparmd,nparms,nparmg,nparmj
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
-      common /mpiconf/ idtask,nproc
 
       dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,MSTATES),index_overlap(MVEC),anorm(MVEC)
       dimension deltap(*),deltap_more(MPARM*MSTATES,5)
@@ -54,19 +55,13 @@
        elseif(lin_jdav.eq.1) then
        write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &       ethr, e, itype, notcnv, idav_iter, ipr, .true.)
-
-       elseif(lin_jdav.eq.2) then
-       write(6,*) "USING DAVIDSON WRAP: DENSE VERSION"
-        call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &       ethr, e, itype, notcnv, idav_iter, ipr, .false.)
+     &       ethr, e, itype, notcnv, idav_iter, ipr)
        else
-         call fatal_error('LIND: lin_jdav < 3')
+         call fatal_error('LIND: lin_jdav < 2')
       endif
 
       call my_second(2,'david ')
       call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)
-      write(6,*) "HEREEEE"
 c idtask.eq.0
       if(idtask.eq.0)  then
 
@@ -111,7 +106,6 @@ c else means if i optimize jastrow and or orbitals
               deltap(i+nparm*(istate-1))=evc(i,i_overlap_max)/anorm(i_overlap_max)
             enddo
 
-       write(6,*) "HEREEEE 2"
 c save 5 additional vectors with large overlap
             do ivec=1,5
               idx_ivec=index_overlap(nvec-ivec)
@@ -145,12 +139,13 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine amul(n,q,r)
 
-      implicit real*8 (a-h,o-z)
+      use jd_scratch, only: qr, rr
+      implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'sr.h'
 
-      common /jd_scratch/ qr(MPARM),rr(MPARM)
 
       complex*16 q(n),r(n)
       do i=1,n
@@ -171,12 +166,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine bmul(n,q,r)
 
-      implicit real*8 (a-h,o-z)
+      use jd_scratch, only: qr, rr
+      implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'sr.h'
 
-      common /jd_scratch/ qr(MPARM),rr(MPARM)
 
       complex*16 q(n),r(n)
       do i=1,n
@@ -206,17 +202,20 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
-      implicit real*8 (a-h,o-z)
+      use mpiconf, only: idtask, nproc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
+
+
 
       include 'mpif.h'
       include 'sr.h'
       include 'mstates.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
-      common /mpiconf/ idtask,nproc
 
       dimension psi(MPARM,*),hpsi(MPARM,*),aux(MCONF),hpsiloc(MPARM,MVEC)
 
@@ -299,17 +298,20 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
-      implicit real*8 (a-h,o-z)
+      use mpiconf, only: idtask, nproc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
+
+
 
       include 'mpif.h'
       include 'sr.h'
       include 'mstates.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
-      common /mpiconf/ idtask,nproc
 
       dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF)
 
@@ -372,20 +374,24 @@ c     STOP
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
-      implicit real*8 (a-h,o-z)
+      use mpiconf, only: idtask, nproc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
+
+
+
 
       include 'mpif.h'
       include 'sr.h'
       include 'mstates.h'
  
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
-      common /mpiconf/ idtask,nproc
 
       dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux(MCONF)
 
@@ -482,20 +488,24 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
-      implicit real*8 (a-h,o-z)
+      use mpiconf, only: idtask, nproc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
+
+
+
 
       include 'mpif.h'
       include 'sr.h'
       include 'mstates.h'
 
 
-      common /optwf_func/ omega,omega_hes,ifunc_omega
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
-      common /mpiconf/ idtask,nproc
 
       dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF),h_sr_sym(MPARM)
 
@@ -601,19 +611,23 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
-      implicit real*8 (a-h,o-z)
+      use mpiconf, only: idtask, nproc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
+
+
+
 
       include 'mpif.h'
       include 'sr.h'
       include 'mstates.h'
 
  
-      common /optwf_func/ omega,omega_hes,ifunc_omega
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
-      common /mpiconf/ idtask,nproc
 
       dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux0(MCONF),aux1(MCONF),aux2(MCONF)
       dimension grad_ene(MPARM)
@@ -725,14 +739,15 @@ c end loop vec
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine g_psi_lin_d( ndim, nvec, nb1, psi, ew )
 
-      implicit real*8 (a-h,o-z)
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'sr.h'
       include 'mstates.h'
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension psi(MPARM,*),ew(*)
       dimension s(MPARM),h(MPARM)
@@ -792,7 +807,17 @@ c         if(i.ne.ivec+nb1-1) psi(i,ivec)=psi(i,ivec)/(h(i)+s_diag(1,1)-ew(ivec)
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
-      implicit real*8 (a-h,o-z)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use mpiconf, only: idtask, nproc
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg, obs_tot
+      implicit real*8(a-h,o-z)
+
+
+
+
 
       include 'mpif.h'
       include 'sr.h'
@@ -800,12 +825,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'force.h'
       include 'mstates.h'
 
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm_sav
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs_tot(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
-      common /mpiconf/ idtask,nproc
 
       dimension psi(MPARM,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,MSTATES),anorm_loc(MVEC)
 

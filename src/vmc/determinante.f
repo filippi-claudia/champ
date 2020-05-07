@@ -1,6 +1,24 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
+     &phin
+      use slatn, only: slmin
+      use wfsec, only: iwf, iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,19 +26,10 @@
 
       parameter(one=1.d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /elec/ nup,ndn
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC),d2phin_all(3,3,MBASIS,MELEC),d3phin(3,MBASIS,MELEC)
-     &,n0_nbasis(MELEC),n0_ibasis(MBASIS,MELEC),n0_ic(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -29,11 +38,9 @@ c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /slatn/ slmin(MMAT_DIM)
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -95,7 +102,27 @@ c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use slatn, only: slmin
+      use ycompact, only: dymat, ymat
+      use ycompactn, only: ymatn
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -103,20 +130,13 @@ c-----------------------------------------------------------------------
       parameter (MEXCIT=10)
       parameter (one=1.d0,half=0.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
-      common /slatn/ slmin(MMAT_DIM)
 
       common /multislater/ detu(MDET),detd(MDET)
       common /multislatern/ detn(MDET)
@@ -125,13 +145,9 @@ c-----------------------------------------------------------------------
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
       common /multimatn/ aan(MELEC,MORB),wfmatn(MEXCIT**2,MDET)
 
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
-      common /ycompactn/ ymatn(MORB,MELEC,MSTATES)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
@@ -295,7 +311,16 @@ c iel has different spin than the electron moved
 c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -303,13 +328,8 @@ c-----------------------------------------------------------------------
       parameter (MEXCIT=10)
       parameter (one=1.d0,half=0.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /elec/ nup,ndn
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
       dimension slmi(MMAT_DIM),dorb(3,MORB)
       dimension ddx_ref(3)

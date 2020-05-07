@@ -1,6 +1,20 @@
       subroutine optwf_mix
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
-      implicit real*8 (a-h,o-z)
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_func, only: ifunc_omega, omega, omega_hes
+      use sa_check, only: energy_all, energy_err_all
+      implicit real*8(a-h,o-z)
+
+
+
+
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -8,17 +22,8 @@
 
       character*20 method_sav
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE),sigma
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
-      common /optwf_func/ omega,omega_hes,ifunc_omega
-      common /sa_check/ energy_all(MSTATES),energy_err_all(MSTATES) 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       dimension deltap(MPARM*MSTATES),deltap_more(MPARM*MSTATES,5)
       dimension energy_old(MSTATES), energy_err_old(MSTATES), i_deltap(MSTATES), energy_davidson(6,MSTATES) 
@@ -275,14 +280,16 @@ c enddo iteration
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine change_ci(dparm_new,istate)
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
       dimension dparm_new(*)
 

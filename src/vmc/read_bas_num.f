@@ -1,9 +1,17 @@
       subroutine read_bas_num(iwf)
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 c Written by Claudia Filippi
 c Modified by F. Schautz to use fancy file names
 c Reads in localized orbitals on a radial grid
 
+      use ghostatom, only: newghostype, nghostcent
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
       implicit real*8(a-h,o-z)
+
+
+
       include 'vmc.h'
       include 'numbas.h'
       include 'pseudo.h'
@@ -14,16 +22,9 @@ c Reads in localized orbitals on a radial grid
 
       parameter(NCOEF=5)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /numexp/ce(NCOEF,MRWF,MCTYPE,MFORCE),ae(2,MRWF,MCTYPE,MFORCE)
-      common /ghostatom/ newghostype,nghostcent
 
       dimension x(MRWF_PTS),work(MRWF_PTS),y(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
      &,l(MBASIS),icusp(MCTYPE)

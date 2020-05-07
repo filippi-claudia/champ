@@ -1,6 +1,19 @@
       subroutine optwf_dl
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
-      implicit real*8 (a-h,o-z)
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+     &sr_o, wtg
+      implicit real*8(a-h,o-z)
+
+
+
+
+
       character*20 dl_alg
 
       include 'vmc.h'
@@ -8,19 +21,10 @@
       include 'mstates.h'
       include 'sr.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
 
       dimension deltap(MPARM)
 c deep learning 'momentum' variables
