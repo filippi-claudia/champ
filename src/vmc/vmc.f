@@ -26,17 +26,8 @@ c and sa, pa, da asymptotic functions
       use jaspar4, only: a4, norda, nordb, nordc
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
 
 
       include 'vmc.h'
@@ -46,7 +37,6 @@ c and sa, pa, da asymptotic functions
       include 'numbas.h'
       include 'pseudo.h'
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
@@ -67,7 +57,7 @@ c        nstep  = number of metropolis steps/block
 c        nblk   = number of blocks od nstep steps after the
 c                equilibrium steps
 c        nblkeq = number of equilibrium blocks
-c        nconf  = target number of mc configurations (dmc only)
+c        n_conf  = target number of mc configurations (dmc only)
 c        nconf_new = number of mc configurations generated for optim and dmc
 c        idump  =  1 dump out stuff for a restart
 c        irstar =  1 pick up stuff for a restart

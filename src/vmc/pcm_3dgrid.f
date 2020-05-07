@@ -13,14 +13,15 @@ c----------------------------------------------------------------------
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use insout, only: inout, inside
       use pcm_num_spl2, only: bc, wk
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
 
       include 'vmc.h'
       include 'pcm_3dgrid.h'
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 CACTIVATE
 c     if (irstar.ne.1) then
@@ -126,7 +127,9 @@ c     Print the parameters to the output file
       end ! subroutine pcm_setup_grid
 c----------------------------------------------------------------------
       function ipcm_int_from_cart(value,iaxis)
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
       include 'pcm_3dgrid.h'
       
@@ -158,7 +161,6 @@ c     xy_max = 1+2+3 = 6
 c     xz_max = 1+3+3 = 7
 c     yz_max = 2+3+3 = 8
       real*8  bc(MGRID_PCM,MGRID_PCM,3:8), wk(80*MGRID_PCM3)
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       dimension r(3)
 

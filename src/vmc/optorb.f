@@ -781,7 +781,9 @@ c-----------------------------------------------------------------------
 
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
       use coefs, only: coef, nbasis, norb
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -796,7 +798,6 @@ c-----------------------------------------------------------------------
       include 'optorb_cblk.h'
       include 'inputflags.h'
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       common /dorb/ iworbd(MELEC,MDET)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb

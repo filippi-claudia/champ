@@ -11,7 +11,9 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
      &phin
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -30,7 +32,6 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       real*4  bc(MXNSTEP,MXNSTEP,3:8,MELEC/2+1), wk(80*MXNSTEP3)
       common /orbital_num_spl2/ bc, wk
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 c     Note:
 c     The boundary condition array ranges from 3 to 8. This way, if we code
@@ -408,7 +409,7 @@ c Lagrange interpolation routines
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,n_conf,nconf_new,isite,idump,irstar
 
       character*(32) filename
       integer a,b,c

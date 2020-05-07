@@ -8,7 +8,9 @@
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -21,7 +23,6 @@
       include 'mstates.h'
       include 'sr.h'
 
-      common /contrl/ nstep,nblk,nblkeq,nconf_old,nconf_new,isite,idump,irstar
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 

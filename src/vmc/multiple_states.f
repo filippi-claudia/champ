@@ -36,11 +36,12 @@ c----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------
       subroutine efficiency_prt(passes)
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optci.h'
       include 'mstates.h'
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       if(iefficiency.eq.0) return
 

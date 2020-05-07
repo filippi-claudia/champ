@@ -12,14 +12,15 @@ c routine to write out estimators for energy etc.
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
       use contr3, only: mode
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'pseudo.h'
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 
 

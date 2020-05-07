@@ -207,6 +207,25 @@
   save
  end module constant
 
+ module contrl
+  !> Arguments: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+  use precision_kinds, only: dp
+  include 'vmc.h'
+
+   integer  :: idump
+   integer  :: irstar
+   integer  :: isite
+   integer  :: n_conf
+   integer  :: nblk
+   integer  :: nblkeq
+   integer  :: nconf_new
+   integer  :: nstep
+
+   private 
+   public :: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep 
+   save
+ end module contrl
+
  module contr2
    !> Arguments: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt, isc, istrch
 

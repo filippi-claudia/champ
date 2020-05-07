@@ -38,10 +38,11 @@
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_fin(wcum,iblk)
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
       include 'mmpol.h'
     
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       data hatokc/627.509541d0/
 

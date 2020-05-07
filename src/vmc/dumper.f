@@ -19,7 +19,9 @@ c job where it left off
       use mpiconf, only: idtask, nproc, wid
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
 
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -30,7 +32,6 @@ c job where it left off
       include 'mpi_qmc.h'
       include 'mpif.h'
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)

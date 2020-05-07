@@ -10,7 +10,9 @@ c written by Claudia Filippi
       use optwf_corsam, only: add_diag, add_diag_tmp, energy, energy_err, force, force_err
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use wfsec, only: iwf, iwftype, nwftype
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -29,7 +31,6 @@ c written by Claudia Filippi
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,MPARMALL2=MPARMALL*(MPARMALL+1)/2)
       parameter(MWORK=50*MPARMALL)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 
 

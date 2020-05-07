@@ -15,7 +15,14 @@ common /Bloc/ \
 								b(MORB,MELEC), xmat(MELEC * * 2,2), xmatu(MELEC* * 2), xmatd(MELEC * * 2) 
 
 #3 common block /contrl/ 
-Why **PROBLEMATIC**? \
+**PROBLEMATIC** \
+contrl shares variable nconf with common block /sr_mat_n/.
+
+**SOLUTION:**
+Variable nconf was changed to n_conf (only used in read_input.f for dmc calculations) before doing the python refactoring: \
+common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+To:
+common /contrl/ nstep,nblk,nblkeq,n_conf,nconf_new,isite,idump,irstar
 
 cuspmat4,5,Todo
 da_energy_ave,7,Todo

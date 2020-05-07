@@ -17,13 +17,14 @@ c----------------------------------------------------------------------
       use atom, only: znuc, cent, iwctype, ncent
 
       use ghostatom, only: newghostype, nghostcent
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include '3dgrid.h'
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 CACTIVATE
 c     if (irstar.ne.1) then

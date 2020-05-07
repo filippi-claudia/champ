@@ -23,7 +23,9 @@ c routine to accumulate estimators for energy etc.
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use contr3, only: mode
 
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
       parameter (half=.5d0)
       include 'vmc.h'
@@ -36,7 +38,6 @@ c routine to accumulate estimators for energy etc.
       include 'pseudo.h'
 
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
