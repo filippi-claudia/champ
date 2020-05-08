@@ -179,7 +179,7 @@ TODO
 **PROBLEM:** \
 NEQSX parameter must be include in an input file.\
 **SOLUTION:** \
-TODO
+NEQSX and MTERMS were included in the vmc.h file.
 
 - [ ] ***#142 common block /zmatrix_grad/***\
 **PROBLEM:** \
