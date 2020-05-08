@@ -23,7 +23,7 @@ common /contrl/ nstep,nblk,nblkeq,n_conf,nconf_new,isite,idump,irstar
 
 - [ ] ***#21 common block /cuspmat4/***\
 **PROBLEM:** \
-It riquires to move the parameters NEQSX and MTERMS to an include file.\
+It requires to move the parameters NEQSX and MTERMS to an include file (done!) and to solve icusp(NEQSX) array issue: this variable also appears as an integer and an array with dimensions icusp(MCTYPE) throughout the code.\ 
 **SOLUTION:** \
 TODO
 
@@ -175,7 +175,7 @@ Unknown. \
 **SOLUTION:** \
 TODO
 
-- [ ] ***#135 common block /vardep/***\
+- [x] ***#135 common block /vardep/***\
 **PROBLEM:** \
 NEQSX parameter must be include in an input file.\
 **SOLUTION:** \

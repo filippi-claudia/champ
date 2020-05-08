@@ -1,17 +1,13 @@
       subroutine deriv_jastrow4(x,v,d2,value)
 c Written by Cyrus Umrigar and Claudia Filippi
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use derivjas, only: d2g, g, go, gvalue
-
       use elec, only: ndn, nup
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-
+      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use jaspar3, only: a, b, c, fck, nord, scalek
-
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
@@ -24,41 +20,20 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use bparm, only: nocuspb, nspin2b
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
+
+      use vardep, only: cdep, iwdepend, nvdepend
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
-      parameter(NEQSX=6*MORDJ,MTERMS=55)
-
-
-
 
 
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
-      common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,83,MCTYPE)
-     &,cdep(NEQSX,83,MCTYPE)
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-
-
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 

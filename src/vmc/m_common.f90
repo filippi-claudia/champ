@@ -44,6 +44,22 @@
    save
  end module b_tmove
 
+ module Bloc
+   !> Arguments: b, tildem, xmat, xmatd, xmatu
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: b(MORB,MELEC)
+   real(dp) :: tildem(MELEC,MORB,2)
+   real(dp) :: xmat(MELEC**2,2) 
+   real(dp) :: xmatd(MELEC**2)
+   real(dp) :: xmatu(MELEC**2)
+
+   private 
+   public :: b, tildem, xmat, xmatd, xmatu 
+   save
+ end module Bloc
+
  module Bloc_da
    !> Arguments: b_da, db
    use precision_kinds, only: dp
@@ -72,7 +88,6 @@
 
  module bparm
    !> Arguments: nocuspb, nspin2b
-   
    integer  :: nocuspb
    integer  :: nspin2b
    
@@ -309,6 +324,21 @@ end module contr3
    public   :: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
    save
  end module csfs
+
+ module cuspmat
+   !> Arguments: cm, ishe, iwc3, neqs
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: cm(NEQSX,NEQSX)
+   integer  :: ishe
+   integer  :: iwc3(NEQSX)
+   integer  :: neqs
+
+   private 
+   public :: cm, ishe, iwc3, neqs 
+   save
+ end module cuspmat
  
  module da_jastrow4val
    !> Arguments: da_d2j, da_j, da_vj
@@ -1734,6 +1764,20 @@ end module forcewt
    save
  end module tmpnode
 
+ module vardep
+   !> Arguments: cdep, iwdepend, nvdepend
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: cdep(NEQSX,83,MCTYPE)
+   integer  :: iwdepend(NEQSX,83,MCTYPE)
+   integer  :: nvdepend(NEQSX,MCTYPE)
+
+   private 
+   public :: cdep, iwdepend, nvdepend 
+   save
+ end module vardep
+
  module wfsec
    !> Arguments: iwf, iwftype, nwftype
    use precision_kinds, only: dp
@@ -1806,19 +1850,3 @@ end module forcewt
    public :: czcart, czint, czcart_ref, izcmat, izmatrix 
    save
  end module zmatrix
- 
- module Bloc
-   !> Arguments: b, tildem, xmat, xmatd, xmatu
-   use precision_kinds, only: dp
-   include 'vmc.h'
-
-    real(dp) :: b(MORB,MELEC)
-    real(dp) :: tildem(MELEC,MORB,2)
-    real(dp) :: xmat(MELEC**2,2) 
-    real(dp) :: xmatd(MELEC**2)
-    real(dp) :: xmatu(MELEC**2)
-
-    private 
-    public :: b, tildem, xmat, xmatd, xmatu 
-    save
- end module Bloc

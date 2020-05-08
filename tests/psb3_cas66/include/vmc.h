@@ -23,4 +23,12 @@
       parameter(MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2)
       parameter(MORDJ1=MORDJ+1,delri=(nrad-1)/radmax)
 
+! PLT@eScienceCenter(2020) Moved the parameter here:
+! "For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
+!  For Jastrow3 NEQSX=2*MORDJ should be sufficient.
+!  I am setting NEQSX=6*MORDJ simply because that is how it was for
+!  Jastrow3 for reasons I do not understand."
+!     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
+      parameter(NEQSX=6*MORDJ,MTERMS=55)
+
       common /method_opt/ method

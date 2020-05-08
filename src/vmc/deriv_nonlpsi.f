@@ -6,7 +6,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use elec, only: ndn, nup
       use jaspar2, only: a1, a2
       use jaspar3, only: a, b, c, fck, nord, scalek
-
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
@@ -18,35 +17,18 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use wfsec, only: iwf, iwftype, nwftype
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
+      use cuspmat, only: cm, ishe, iwc3, neqs
+
+      use vardep, only: cdep, iwdepend, nvdepend
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
       include 'vmc.h'
       include 'force.h'
 
-      parameter(NEQSX=6*MORDJ,MTERMS=55)
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
-
-
-
-
-
-      common /cuspmat/ cm(NEQSX,NEQSX),iwc3(NEQSX),neqs,ishe
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
-      common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,83,MCTYPE)
-     &,cdep(NEQSX,83,MCTYPE)
 
       dimension rshifti(3),rshiftj(3),gn(*)
       dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ)
@@ -136,14 +118,6 @@ c-----------------------------------------------------------------------
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'

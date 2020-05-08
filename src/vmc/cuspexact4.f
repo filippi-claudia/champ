@@ -1,23 +1,12 @@
       subroutine cuspexact4(iprin,iadiag)
 c Written by Cyrus Umrigar
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-
       use jaspar3, only: a, b, c, fck, nord, scalek
-
       use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
 
-
-
       include 'vmc.h'
       include 'force.h'
-
-c For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
-c For Jastrow3 NEQSX=2*MORDJ should be sufficient.
-c I am setting NEQSX=6*MORDJ simply because that is how it was for
-c Jastrow3 for reasons I do not understand.
-c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
-      parameter(NEQSX=6*MORDJ,MTERMS=55)
 
 c The last 2 columns are what we care about in the foll. table
 c------------------------------------------------------------------------------

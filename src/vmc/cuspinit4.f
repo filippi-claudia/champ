@@ -3,12 +3,8 @@ c Written by Cyrus Umrigar
       use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
 
-
       include 'vmc.h'
       include 'force.h'
-
-c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
-      parameter(NEQSX=6*MORDJ,MTERMS=55)
 
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
@@ -67,28 +63,20 @@ c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
 c-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-
       use jaspar4, only: a4, norda, nordb, nordc
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+
+      use vardep, only: cdep, iwdepend, nvdepend
+
       implicit real*8(a-h,o-z)
-
-
-
 
 
       include 'vmc.h'
       include 'force.h'
 
-c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
-      parameter(NEQSX=6*MORDJ,MTERMS=55)
-
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
-
-
-      common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,83,MCTYPE)
-     &,cdep(NEQSX,83,MCTYPE)
 
 
       neqs=2*(nordc-1)

@@ -4,17 +4,13 @@ c Written by Claudia Filippi
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
+
       implicit real*8(a-h,o-z)
 
-
       parameter (zero=0.d0)
-
       include 'vmc.h'
       include 'force.h'
       include 'pseudo.h'
-
-
-
       dimension x(3,*),v(3,*),div_vj(MELEC)
 
       do 10 i=1,nelec
