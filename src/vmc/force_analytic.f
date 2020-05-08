@@ -272,14 +272,15 @@ c-----------------------------------------------------------------------
       subroutine force_analy_init(iflag)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use da_energy_now, only: da_energy, da_psi
+      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
 
 
-      common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
-     & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
 
       common /force_analy/ iforce_analy
 
@@ -305,14 +306,15 @@ c-----------------------------------------------------------------------
       subroutine force_analy_sum(p,q,eloc,eloco)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use da_energy_now, only: da_energy, da_psi
+      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
 
 
-      common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
-     & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
 
       common /force_analy/ iforce_analy
 
@@ -329,12 +331,13 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine force_analy_cum(wsum,eave,wcum)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      implicit double precision(a-h,o-z)
+      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+
+      implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
 
-      common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
-     & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
 
       common /force_analy/ iforce_analy
 
@@ -354,14 +357,15 @@ c-----------------------------------------------------------------------
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use force_fin, only: da_energy_ave, da_energy_err
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
 
 
-      common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
-     & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
 
       common /force_analy/ iforce_analy
 
@@ -389,13 +393,14 @@ c-----------------------------------------------------------------------
       subroutine force_analy_dump(iu)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
 
 
-      common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
-     & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
 
       common /force_analy/ iforce_analy
 
@@ -409,13 +414,14 @@ c-----------------------------------------------------------------------
       subroutine force_analy_rstrt(iu)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
 
 
-      common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
-     & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
 
       common /force_analy/ iforce_analy
 

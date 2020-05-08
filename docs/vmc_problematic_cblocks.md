@@ -27,11 +27,11 @@ It requires to move the parameters NEQSX and MTERMS to an include file (done!) a
 **SOLUTION:** \
 TODO
 
-- [ ] ***#22 common block /da_energy_ave/***\
+- [x] ***#22 common block /da_energy_ave/***\
 **PROBLEM:** \
 Common block force_fin uses array with same name as da_energy_ave.\
 **SOLUTION:** \
-TODO
+I changed the name of the (common block) module from da_energy_ave to da_energy_ave_m.
 
 - [ ] ***#27  common block /deloc_dj/***\
 **PROBLEM:** \

@@ -339,7 +339,23 @@ end module contr3
    public :: cm, ishe, iwc3, neqs 
    save
  end module cuspmat
- 
+
+ module da_energy_ave_m
+   !> Arguments: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: da_energy_cm2(3,MCENT)
+   real(dp) :: da_energy_cum(3,MCENT)
+   real(dp) :: da_energy_sum(3,MCENT)
+   real(dp) :: da_psi_cum(3,MCENT)
+   real(dp) :: da_psi_sum(3,MCENT)
+
+   private 
+   public :: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum 
+   save
+ end module da_energy_ave_m 
+
  module da_jastrow4val
    !> Arguments: da_d2j, da_j, da_vj
    use precision_kinds, only: dp
@@ -1850,3 +1866,4 @@ end module forcewt
    public :: czcart, czint, czcart_ref, izcmat, izmatrix 
    save
  end module zmatrix
+ 

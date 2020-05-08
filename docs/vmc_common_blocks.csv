@@ -20,7 +20,7 @@ contrl_per,21,DONE
 contrldmc,1,DONE
 csfs,74,DONE
 cuspmat4,5,Todo
-da_energy_ave,7,Todo
+da_energy_ave,7,DONE
 da_energy_now,8,DONE
 da_jastrow4val,8,DONE
 da_orbval,8,DONE
@@ -133,7 +133,7 @@ tempor,1,DONE
 tempor_test,2,DONE
 test,1,DONE
 tmpnode,2,DONE
-vardep,3,Todo
+vardep,3,DONE
 velocity_jastrow,7,DONE
 wfsec,49,DONE
 ycompact,6,DONE

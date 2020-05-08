@@ -2,13 +2,14 @@
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use mpiconf, only: idtask, nproc, wid
+      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'vmc.h'
 
-      common /da_energy_ave/ da_energy_sum(3,MCENT),da_psi_sum(3,MCENT),
-     & da_energy_cum(3,MCENT),da_psi_cum(3,MCENT),da_energy_cm2(3,MCENT)
 
       common /force_analy/ iforce_analy
 
