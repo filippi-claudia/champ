@@ -31,13 +31,12 @@ TODO
 **PROBLEM:** \
 Common block force_fin uses array with same name as da_energy_ave.\
 **SOLUTION:** \
-I changed the name of the (common block) module from da_energy_ave to da_energy_ave_m.
+I have changed the name of the (common block) module from da_energy_ave to da_energy_ave_m.
 
-- [ ] ***#27  common block /deloc_dj/***\
+- [x] ***#27  common block /deloc_dj/***\
 **PROBLEM:** \
 optjas.f allocates an array with the same name as deloc_dj.\
-**SOLUTION:** \
-TODO
+I have changed the name of the (common block) module from deloc_dj to deloc_dj_m.
 
 - [ ] ***#28 common block /denergy_det/***\
 **PROBLEM:** \

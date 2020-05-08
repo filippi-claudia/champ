@@ -413,6 +413,19 @@ end module contr3
    save
  end module da_energy_now
 
+ module deloc_dj_m
+   !> Arguments: denergy
+   use precision_kinds, only: dp
+   include 'optjas.h'
+   include 'mstates.h'
+
+   real(dp) :: denergy(MPARMJ,MSTATES)
+
+   private 
+   public :: denergy 
+   save
+ end module deloc_dj_m
+
  module denupdn
    !> Arguments: rprobdn, rprobup
    use precision_kinds, only: dp
@@ -1866,4 +1879,5 @@ end module forcewt
    public :: czcart, czint, czcart_ref, izcmat, izmatrix 
    save
  end module zmatrix
+ 
  

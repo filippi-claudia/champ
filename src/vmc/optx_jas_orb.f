@@ -1,17 +1,12 @@
       subroutine optx_jas_orb_sum(wtg_new,wtg_old,iflag)
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use derivjas, only: d2g, g, go, gvalue
-
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use deloc_dj_m, only: denergy
       implicit real*8(a-h,o-z)
-
-
-
 
 
       include 'vmc.h'
@@ -20,9 +15,6 @@
       include 'optjas.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
-
-      common /deloc_dj/ denergy(MPARMJ,MSTATES)
-
 
 
       common /mix_jas_orb/ dj_o(MPARMJ,MXREDUCED,MSTATES),dj_oe(MPARMJ,MXREDUCED,MSTATES),

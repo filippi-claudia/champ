@@ -1009,7 +1009,9 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg
+      use deloc_dj_m, only: denergy
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1027,13 +1029,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       include 'sr.h'
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-
-
-
-      common /deloc_dj/ denergy(MPARMJ,MSTATES)
-
-
-
       dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)
 
       call p2gtid('optgeo:izvzb',izvzb,0,1)

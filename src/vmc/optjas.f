@@ -12,7 +12,9 @@
       use Bloc, only: xmatd, xmatu
       use Bloc_dj, only: b_dj
       use coefs, only: coef, nbasis, norb
+      use deloc_dj_m, only: denergy
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -35,7 +37,6 @@
 
 
 
-      common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
@@ -192,7 +193,9 @@ c Written by Claudia Filippi
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       use bparm, only: nocuspb, nspin2b
+      use deloc_dj_m, only: denergy
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -209,7 +212,6 @@ c Written by Claudia Filippi
       include 'mstates.h'
 
 
-      common /deloc_dj/ denergy(MPARMJ,MSTATES)
 
       common /gradhessj/ dj(MPARMJ,MSTATES),dj_e(MPARMJ,MSTATES),dj_de(MPARMJ,MPARMJ,MSTATES)
      &,dj_dj(MPARMJ,MPARMJ,MSTATES),dj_dj_e(MPARMJ,MPARMJ,MSTATES),de(MPARMJ,MSTATES)
@@ -451,22 +453,14 @@ c Written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use bparm, only: nocuspb, nspin2b
+      use deloc_dj_m, only: denergy
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
 
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
       include 'mstates.h'
-
-
-      common /deloc_dj/ denergy(MPARMJ,MSTATES)
-
 
 
       if(ioptjas.eq.0) return

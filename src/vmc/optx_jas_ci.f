@@ -1,19 +1,14 @@
       subroutine optx_jas_ci_sum(p,q,enew,eold)
 
       use derivjas, only: d2g, g, go, gvalue
-
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
-
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use bparm, only: nocuspb, nspin2b
+
+      use deloc_dj_m, only: denergy
       implicit real*8(a-h,o-z)
-
-
-
-
 
 
       include 'vmc.h'
@@ -21,11 +16,6 @@
       include 'optjas.h'
       include 'optci.h'
       include 'optci_cblk.h'
-
-
-      common /deloc_dj/ denergy(MPARMJ,MSTATES)
-
-
 
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
