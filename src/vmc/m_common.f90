@@ -511,6 +511,18 @@ end module contr3
   save
  end module distances_sav
 
+ module dorb_m
+   !> Arguments: iworbd
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   integer  :: iworbd(MELEC,MDET)
+
+   private 
+   public :: iworbd 
+   save
+end module dorb_m
+
  module elec
   !> Arguments: ndn, nup
   use precision_kinds, only: dp
@@ -1892,14 +1904,4 @@ end module forcewt
    save
  end module zmatrix
  
- module dorb
-   !> Arguments: iworbd
-   use precision_kinds, only: dp
-   include 'vmc.h'
-
-    integer  :: iworbd(MELEC,MDET)
-
-    private 
-    public :: iworbd 
-    save
- end module dorb
+ 
