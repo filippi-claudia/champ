@@ -12,7 +12,9 @@
       use Bloc, only: b, tildem, xmat, xmatd, xmatu
       use denergy_det_m, only: denergy_det
 
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -27,7 +29,6 @@ c as many ups as downs. If this is not true then be careful if
 c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
-      common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -246,7 +247,9 @@ c-----------------------------------------------------------------------
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem, xmat, xmatd, xmatu
       use denergy_det_m, only: denergy_det
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -255,7 +258,6 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
       parameter (MEXCIT=10)
 
-      common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -526,7 +528,9 @@ c-----------------------------------------------------------------------
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use coefs, only: coef, nbasis, norb
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -537,7 +541,6 @@ c-----------------------------------------------------------------------
       include 'force.h'
       include 'mstates.h'
 
-      common /dorb/ iworbd(MELEC,MDET)
 
       dimension iswapped(MELEC),itotphase(MDET)
 

@@ -11,7 +11,9 @@ c Written by Claudia Filippi
       use ycompact, only: dymat, ymat
       use ycompactn, only: ymatn
       use coefs, only: coef, nbasis, norb
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -27,7 +29,6 @@ c Written by Claudia Filippi
       parameter (MEXCIT=10)
 
 
-      common /dorb/ iworbd(MELEC,MDET)
 
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)

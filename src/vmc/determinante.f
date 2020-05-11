@@ -10,7 +10,9 @@
       use slatn, only: slmin
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -28,7 +30,6 @@
 
       common /contrl_per/ iperiodic,ibasis
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
-      common /dorb/ iworbd(MELEC,MDET)
 
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
@@ -113,7 +114,9 @@ c-----------------------------------------------------------------------
       use ycompact, only: dymat, ymat
       use ycompactn, only: ymatn
       use coefs, only: coef, nbasis, norb
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -130,7 +133,6 @@ c-----------------------------------------------------------------------
       parameter (MEXCIT=10)
       parameter (one=1.d0,half=0.5d0)
 
-      common /dorb/ iworbd(MELEC,MDET)
 
 
 
@@ -316,7 +318,9 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -328,7 +332,6 @@ c-----------------------------------------------------------------------
       parameter (MEXCIT=10)
       parameter (one=1.d0,half=0.5d0)
 
-      common /dorb/ iworbd(MELEC,MDET)
 
 
       dimension slmi(MMAT_DIM),dorb(3,MORB)

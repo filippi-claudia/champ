@@ -406,7 +406,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -416,7 +418,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include '3dgrid_flags.h'
 
 
-      common /dorb/ iworbd(MELEC,MDET)
 
       dimension x(3)
       dimension detu(*),detd(*),slmui(MMAT_DIM),slmdi(MMAT_DIM)

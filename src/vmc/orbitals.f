@@ -292,7 +292,9 @@ c-------------------------------------------------------------------------------
       use slatn, only: slmin
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -310,7 +312,6 @@ c-------------------------------------------------------------------------------
 
       common /contrl_per/ iperiodic,ibasis
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
-      common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)

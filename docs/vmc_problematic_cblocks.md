@@ -62,11 +62,11 @@ After multiple checks and several trials, number differences keep appearing. I c
 **SOLUTION:** \
 TODO
 
-- [ ] ***#35 common block /dorb/***\
+- [x] ***#35 common block /dorb/***\
 **PROBLEM:** \
  Common block /orbval/ has an array with same name as dorb common block.
 **SOLUTION:** \
-TODO
+I have changed the name of the (common block) module from denergy_det to dorb_m. 
 
 - [ ] ***#54 common block /gradhess_all/***\
 **PROBLEM:** \

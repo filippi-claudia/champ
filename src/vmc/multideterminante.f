@@ -10,7 +10,9 @@
       use slatn, only: slmin
       use ycompactn, only: ymatn
       use coefs, only: coef, nbasis, norb
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -27,7 +29,6 @@
       parameter (MEXCIT=10)
 
 
-      common /dorb/ iworbd(MELEC,MDET)
 
       common /multislater/ detu(MDET),detd(MDET)
 
@@ -138,7 +139,9 @@ c-----------------------------------------------------------------------
 
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -152,7 +155,6 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
       parameter (MEXCIT=10)
 
-      common /dorb/ iworbd(MELEC,MDET)
 
 
 

@@ -11,7 +11,9 @@
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem, xmatd, xmatu
 
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,7 +36,6 @@
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /dorb/ iworbd(MELEC,MDET)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -782,7 +783,9 @@ c-----------------------------------------------------------------------
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
       use coefs, only: coef, nbasis, norb
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -799,7 +802,6 @@ c-----------------------------------------------------------------------
       include 'inputflags.h'
 
 
-      common /dorb/ iworbd(MELEC,MDET)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)

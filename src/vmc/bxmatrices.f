@@ -4,10 +4,8 @@
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -19,9 +17,6 @@
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
-
-
-      common /dorb/ iworbd(MELEC,MDET)
 
       dimension b(MORB,MELEC),btemp(MELEC**2,2),xmatu(MELEC**2),xmatd(MELEC**2),work(MELEC)
 

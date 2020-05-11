@@ -182,7 +182,9 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -194,7 +196,6 @@ c-----------------------------------------------------------------------
 
       character*40 filename,filetype
 
-      common /dorb/ iworbd(MELEC,MDET)
 
 
 

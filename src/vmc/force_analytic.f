@@ -10,13 +10,14 @@
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
       use coefs, only: coef, nbasis, norb
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
 
-      common /dorb/ iworbd(MELEC,MDET)
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
@@ -56,7 +57,9 @@ c-----------------------------------------------------------------------
       use zcompact, only: aaz, dzmat, emz, zmat
 
       use coefs, only: coef, nbasis, norb
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -70,7 +73,6 @@ c-----------------------------------------------------------------------
       include 'force.h'
       include 'mstates.h'
 
-      common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -168,7 +170,9 @@ c-----------------------------------------------------------------------
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem, xmat, xmatd, xmatu
 
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -179,7 +183,6 @@ c-----------------------------------------------------------------------
 
       parameter (MEXCIT=10)
 
-      common /dorb/ iworbd(MELEC,MDET)
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)

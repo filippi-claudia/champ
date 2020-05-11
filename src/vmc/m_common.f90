@@ -1892,3 +1892,14 @@ end module forcewt
    save
  end module zmatrix
  
+ module dorb
+   !> Arguments: iworbd
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+    integer  :: iworbd(MELEC,MDET)
+
+    private 
+    public :: iworbd 
+    save
+ end module dorb

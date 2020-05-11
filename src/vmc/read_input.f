@@ -68,7 +68,9 @@ c and Anthony Scemema
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
      &itau_eff, nfprod, rttau, tau, taueff, tautot
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -104,7 +106,6 @@ c and Anthony Scemema
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /dorb/ iworbd(MELEC,MDET)
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nbj_current
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
@@ -975,13 +976,14 @@ c-----------------------------------------------------------------------
 C$INPUT determinants inp i i=1
 CKEYDOC CI coefficients and occupation of determinants in wf
       use dets, only: cdet, ndet
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'inputflags.h'
-      common /dorb/ iworbd(MELEC,MDET)
 
       ndet=nd
       if(ndet.gt.MDET) then
@@ -1010,14 +1012,15 @@ CKEYDOC CI coefficients and occupation of determinants in wf
       use dets, only: cdet, ndet
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'inputflags.h'
-      common /dorb/ iworbd(MELEC,MDET)
 
       if(nd.ne.ndet-1) call fatal_error('INPUT: problem in multidet')
 

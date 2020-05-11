@@ -4,7 +4,9 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use coefs, only: coef, nbasis, norb
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -17,7 +19,6 @@
       include 'inputflags.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /dorb/ iworbd(MELEC,MDET)
 
 
 c orbital indices in determinants of trial wave function

@@ -7,7 +7,9 @@ c Modified by A. Scemama
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -20,7 +22,6 @@ c Modified by A. Scemama
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /dorb/ iworbd(MELEC,MDET)
 
 
       common /slater/ slmi(MMAT_DIM,2)
