@@ -38,7 +38,7 @@ I have changed the name of the (common block) module from da_energy_ave to da_en
 optjas.f allocates an array with the same name as deloc_dj.\
 I have changed the name of the (common block) module from deloc_dj to deloc_dj_m.
 
-- [ ] ***#28 common block /denergy_det/***\
+- [x] ***#28 common block /denergy_det/***\
 **PROBLEM:** \
 Common block and variable have the same name, e.i:\
 common /denergy_det/ denergy_det(MDET,2)\
