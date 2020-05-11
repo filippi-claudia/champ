@@ -43,7 +43,7 @@ I have changed the name of the (common block) module from deloc_dj to deloc_dj_m
 Common block and variable have the same name, e.i:\
 common /denergy_det/ denergy_det(MDET,2)\
 **SOLUTION:** \
-TODO
+I have changed the name of the (common block) module from denergy_det to denergy_det_m. 
 
 - [ ] ***#33 common block /distance/***\
 **PROBLEM:** \

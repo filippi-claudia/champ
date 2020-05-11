@@ -426,6 +426,18 @@ end module contr3
    save
  end module deloc_dj_m
 
+ module denergy_det_m
+   !> Arguments: denergy_det
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+    real(dp) :: denergy_det(MDET,2)
+
+    private 
+    public :: denergy_det 
+    save
+ end module denergy_det_m
+
  module denupdn
    !> Arguments: rprobdn, rprobup
    use precision_kinds, only: dp
@@ -1879,5 +1891,4 @@ end module forcewt
    public :: czcart, czint, czcart_ref, izcmat, izmatrix 
    save
  end module zmatrix
- 
  

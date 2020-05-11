@@ -2,17 +2,15 @@
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use ycompact, only: dymat, ymat
       use zcompact, only: aaz, dzmat, emz, zmat
-
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem, xmat, xmatd, xmatu
+      use denergy_det_m, only: denergy_det
 
       implicit real*8(a-h,o-z)
 
@@ -45,7 +43,6 @@ c dimensioned at least max(nup**2,ndn**2)
 
 
 
-      common /denergy_det/ denergy_det(MDET,2)
 
       common /force_analy/ iforce_analy
 
@@ -248,9 +245,8 @@ c-----------------------------------------------------------------------
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem, xmat, xmatd, xmatu
-
+      use denergy_det_m, only: denergy_det
       implicit real*8(a-h,o-z)
-
 
       include 'vmc.h'
       include 'force.h'
@@ -258,7 +254,6 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0,half=0.5d0)
       parameter (MEXCIT=10)
-
 
       common /dorb/ iworbd(MELEC,MDET)
 
@@ -270,7 +265,6 @@ c-----------------------------------------------------------------------
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /denergy_det/ denergy_det(MDET,2)
 
       dimension detu(MDET),detd(MDET),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
 
@@ -332,7 +326,9 @@ c-----------------------------------------------------------------------
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem, xmat, xmatd, xmatu
 
+      use denergy_det_m, only: denergy_det
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -342,7 +338,6 @@ c-----------------------------------------------------------------------
 
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-      common /denergy_det/ denergy_det(MDET,2)
 
       dimension dymat(MORB,MELEC),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
 
