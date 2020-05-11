@@ -32,3 +32,6 @@
       parameter(NEQSX=6*MORDJ,MTERMS=55)
 
       common /method_opt/ method
+! Also addded: 
+      parameter (MCENT3=3*MCENT)
+! from misc_grdnts.f

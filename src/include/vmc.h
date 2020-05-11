@@ -30,5 +30,8 @@
 !  Jastrow3 for reasons I do not understand."
 !     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       parameter(NEQSX=6*MORDJ,MTERMS=55)
+! Also addded: 
+      parameter (MCENT3=3*MCENT)
+! from misc_grdnts.f
 
       common /method_opt/ method

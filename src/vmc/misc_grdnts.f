@@ -533,6 +533,7 @@ c -----------------------------------------------------------------------
 
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
       use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use zmatrix_grad, only: transform_grd
 
       implicit real*8(a-h,o-z)
 
@@ -540,15 +541,11 @@ c -----------------------------------------------------------------------
       include 'vmc.h'
 
       parameter (eps=1.d-5,epsi=0.5d0/eps)
-      parameter (MCENT3=3*MCENT)
-
-      common /zmatrix_grad/ transform_grd(MCENT3,MCENT3)
 
       common /force_analy/ iforce_analy,iuse_zmat
 
       dimension czcartp(3,MCENT),czcartm(3,MCENT)
       dimension bwilson(MCENT3,MCENT3),gmat(MCENT3*MCENT3)
-
       dimension force_cart(3,*),force_int(MCENT3)
 
       do 10 ic=1,3

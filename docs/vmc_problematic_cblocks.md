@@ -31,19 +31,19 @@ TODO
 **PROBLEM:** \
 Common block force_fin uses array with same name as da_energy_ave.\
 **SOLUTION:** \
-I have changed the name of the (common block) module from da_energy_ave to da_energy_ave_m.
+To change the name of the (common block) module from da_energy_ave to da_energy_ave_m.
 
 - [x] ***#27  common block /deloc_dj/***\
 **PROBLEM:** \
 optjas.f allocates an array with the same name as deloc_dj.\
-I have changed the name of the (common block) module from deloc_dj to deloc_dj_m.
+To change the name of the (common block) module from deloc_dj to deloc_dj_m.
 
 - [x] ***#28 common block /denergy_det/***\
 **PROBLEM:** \
 Common block and variable have the same name, e.i:\
 common /denergy_det/ denergy_det(MDET,2)\
 **SOLUTION:** \
-I have changed the name of the (common block) module from denergy_det to denergy_det_m. 
+To change the name of the (common block) module from denergy_det to denergy_det_m. 
 
 - [ ] ***#33 common block /distance/***\
 **PROBLEM:** \
@@ -66,7 +66,7 @@ TODO
 **PROBLEM:** \
  Common block /orbval/ has an array with same name as dorb common block.
 **SOLUTION:** \
-I have changed the name of the (common block) module from denergy_det to dorb_m. 
+To change the name of the (common block) module from denergy_det to dorb_m. 
 
 - [ ] ***#54 common block /gradhess_all/***\
 **PROBLEM:** \
@@ -104,7 +104,7 @@ TODO
 
 - [ ] ***#68 common block /icount_orb/***
 **PROBLEM:** \
-Same as #67.
+Same as #67.\
 **SOLUTION:** \
 TODO
 
@@ -180,8 +180,11 @@ NEQSX parameter must be include in an input file.\
 **SOLUTION:** \
 NEQSX and MTERMS were included in the vmc.h file.
 
-- [ ] ***#142 common block /zmatrix_grad/***\
+- [x] ***#142 common block /zmatrix_grad/***\
 **PROBLEM:** \
 Parameter MCENT3 defined in misc_grdnts.f should be included in an include file.\
 **SOLUTION:** \
-TODO
+To add:\
+parameter (MCENT3=3*MCENT)
+
+In the vmc.h file.

@@ -1904,4 +1904,14 @@ end module forcewt
    save
  end module zmatrix
  
- 
+ module zmatrix_grad
+   !> Arguments: transform_grd
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: transform_grd(MCENT3,MCENT3)
+
+   private 
+   public :: transform_grd 
+   save
+ end module zmatrix_grad
