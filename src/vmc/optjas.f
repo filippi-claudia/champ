@@ -13,9 +13,9 @@
       use Bloc_dj, only: b_dj
       use coefs, only: coef, nbasis, norb
       use deloc_dj_m, only: denergy
+      use multimat, only: aa, wfmat
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -23,29 +23,14 @@
       include 'optjas.h'
       include 'pseudo.h'
 
-      parameter (MEXCIT=10)
-
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
-
       common /multislater/ detu(MDET),detd(MDET)
-
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-
-
-
-
-
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-
-
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
-
-
       dimension psid(*),dvpsp_dj(*),energy(*),vj(3,*)
       dimension deloc_dj(MPARMJ)
 

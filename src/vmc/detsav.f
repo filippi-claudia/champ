@@ -12,40 +12,21 @@ c Written by Claudia Filippi
       use ycompactn, only: ymatn
       use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
+      use multimat, only: aa, wfmat
+      use multimatn, only: aan, wfmatn
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-
-      parameter (MEXCIT=10)
-
-
-
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
-
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-
-      common /multimatn/ aan(MELEC,MORB),wfmatn(MEXCIT**2,MDET)
-
-
-
       common /orbval/ orbo(MELEC,MORB),dorbo(3,MELEC,MORB),ddorbo(MELEC,MORB),ndetorb,nadorb
 
       if(iel.le.nup) then

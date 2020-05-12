@@ -5,15 +5,12 @@
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use da_orbval, only: da_d2orb, da_dorb, da_orb
-
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -160,29 +157,21 @@ c-----------------------------------------------------------------------
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use da_orbval, only: da_d2orb, da_dorb, da_orb
-
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use zcompact, only: aaz, dzmat, emz, zmat
-
       use Bloc_da, only: b_da, db
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem, xmat, xmatd, xmatu
-
       use dorb_m, only: iworbd
+      use multimat, only: aa, wfmat
+
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'vmc.h'
       include 'pseudo.h'
       include 'mstates.h'
       include 'force.h'
-
-      parameter (MEXCIT=10)
-
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -191,7 +180,6 @@ c-----------------------------------------------------------------------
       common /multislater/ detu(MDET),detd(MDET)
 
 
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb

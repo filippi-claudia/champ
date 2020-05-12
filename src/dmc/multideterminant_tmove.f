@@ -7,7 +7,6 @@
       include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
-      parameter (MEXCIT=10)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /dets/ cdet(MDET,MSTATES,MWF),ndet

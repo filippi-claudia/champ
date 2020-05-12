@@ -2,25 +2,16 @@
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem, xmatd, xmatu
-
       use dorb_m, only: iworbd
+      use multimat, only: aa, wfmat
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -28,22 +19,12 @@
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      parameter (MEXCIT=10)
-
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
-
-
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
-
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-
-
-
 
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
       dimension orbprim(*),eorbprim(*)
@@ -994,8 +975,8 @@ c-----------------------------------------------------------------------
 
 c Do not compute virtual orbitals during single-electron move
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      implicit real*8(a-h,o-z)
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'

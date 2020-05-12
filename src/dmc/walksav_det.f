@@ -8,8 +8,6 @@ c Written by Claudia Filippi
       include 'force.h'
       include 'mstates.h'
 
-      parameter (MEXCIT=10)
-
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn

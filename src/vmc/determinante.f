@@ -4,22 +4,14 @@
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
       use slatn, only: slmin
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -36,9 +28,7 @@ c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
-
       common /multislater/ detu(MDET),detd(MDET)
-
       common /multislatern/ detn(MDET)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
 
@@ -105,52 +95,32 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use slatn, only: slmin
       use ycompact, only: dymat, ymat
       use ycompactn, only: ymatn
       use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
+      use multimat, only: aa, wfmat
+      use multimatn, only: aan, wfmatn
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      parameter (MEXCIT=10)
       parameter (one=1.d0,half=0.5d0)
-
-
-
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
-
       common /multislater/ detu(MDET),detd(MDET)
       common /multislatern/ detn(MDET)
      &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
-
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-      common /multimatn/ aan(MELEC,MORB),wfmatn(MEXCIT**2,MDET)
-
-
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
-
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
       dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,MORB)
@@ -317,19 +287,14 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use dorb_m, only: iworbd
+
       implicit real*8(a-h,o-z)
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      parameter (MEXCIT=10)
       parameter (one=1.d0,half=0.5d0)
 
 

@@ -114,17 +114,17 @@ Same as #67.\
 **SOLUTION:** \
 TODO
 
-- [ ] ***#88 common block /multimat/***\
+- [x] ***#88 common block /multimat/***\
 **PROBLEM:** \
 MEXCIT parameter must be included in a include file.\
 **SOLUTION:** \
-TODO
+I included NCOEF parameter in the vmc.h file. 
 
-- [ ] ***#89 common block /multimatn/***\
+- [x] ***#89 common block /multimatn/***\
 **PROBLEM:** \
 MEXCIT parameter must be included in a include file.\
 **SOLUTION:** \
-TODO
+I included NCOEF parameter in the vmc.h file. 
 
 - [ ] ***#90 common block /multislater/***\
 **PROBLEM:** \
@@ -142,7 +142,7 @@ TODO
 **PROBLEM:** \
 NCOEF must be include in a include file.\
 **SOLUTION:** \
-I included the NCOEF parameter in the vmc.h file. 
+I included NCOEF parameter in the vmc.h file. 
 
 - [ ] ***#104 common block /orbital_num_spl2/***
 **PROBLEM:** \

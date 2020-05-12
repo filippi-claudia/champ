@@ -2,50 +2,31 @@
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use slatn, only: slmin
       use ycompactn, only: ymatn
       use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
+      use multimat, only: aa, wfmat
+      use multimatn, only: aan, wfmatn
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
-      parameter (MEXCIT=10)
-
-
 
       common /multislater/ detu(MDET),detd(MDET)
-
       common /multislatern/ detn(MDET)
      &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
-
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
-
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-
-      common /multimatn/ aan(MELEC,MORB),wfmatn(MEXCIT**2,MDET)
-
 
       dimension gmat(MELEC,MORB,3),gmatn(MEXCIT**2,3)
       dimension b(MORB,3),ddx_mdet(3)
-
       dimension orb_sav(MORB)
 
       if(ndet.eq.1) return
@@ -136,34 +117,20 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
-      parameter (MEXCIT=10)
-
-
-
-
-
-
 
       dimension slmi(MMAT_DIM)
       dimension aa(MELEC,MORB),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
-
       dimension b(MORB,3),dorb(3,MORB)
       dimension gmat(MELEC,MORB,3)
       dimension velocity(3)

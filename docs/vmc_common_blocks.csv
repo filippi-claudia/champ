@@ -34,6 +34,7 @@ dets_equiv,2,DONE
 distance,14,Todo
 distances_sav,2,DONE
 dorb,24,DONE
+dymat,12,Todo
 elec,53,DONE
 est2cm,8,DONE
 estcum,8,DONE
@@ -86,8 +87,8 @@ mmpol_hpsi,4,DONE
 mmpolo,2,DONE
 mpiconf,25,DONE
 multidet,26,DONE
-multimat,10,Todo
-multimatn,3,Todo
+multimat,10,DONE
+multimatn,3,DONE
 multislater,23,Todo
 multislatern,8,Todo
 ncusp,1,DONE

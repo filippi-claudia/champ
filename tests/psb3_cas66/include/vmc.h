@@ -39,4 +39,9 @@
       parameter(NCOEF=5)
 ! from read_bas_num.f and splfit.f.
 
+! Also added:
+      parameter (MEXCIT=10)
+! from determinante.f, detsav.f, force_analytic.f, hpsie.f,
+!      multideterminant.f, multideterminante.f, optjas.f, optorb.f
+
       common /method_opt/ method

@@ -11,17 +11,16 @@
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem, xmat, xmatd, xmatu
       use denergy_det_m, only: denergy_det
-
       use dorb_m, only: iworbd
-      implicit real*8(a-h,o-z)
+      use multimat, only: aa, wfmat
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
-      parameter (MEXCIT=10)
 
 c note that the dimension of the slater matrices is assumed
 c to be given by MMAT_DIM = (MELEC/2)**2, that is there are
@@ -29,22 +28,12 @@ c as many ups as downs. If this is not true then be careful if
 c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
-
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detiab(MDET,2)
-
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
-
-
-
-
-
       common /force_analy/ iforce_analy
 
       dimension eloc_det(MDET,2)
@@ -248,25 +237,20 @@ c-----------------------------------------------------------------------
       use Bloc, only: b, tildem, xmat, xmatd, xmatu
       use denergy_det_m, only: denergy_det
       use dorb_m, only: iworbd
-      implicit real*8(a-h,o-z)
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
-      parameter (MEXCIT=10)
-
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
-
-
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
 
       dimension detu(MDET),detd(MDET),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
 
@@ -329,17 +313,13 @@ c-----------------------------------------------------------------------
       use Bloc, only: b, tildem, xmat, xmatd, xmatu
 
       use denergy_det_m, only: denergy_det
-      implicit real*8(a-h,o-z)
+      use multimat, only: aa, wfmat
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-
-      parameter (MEXCIT=10)
-
-
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
       dimension dymat(MORB,MELEC),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
 
@@ -395,32 +375,20 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem, xmat, xmatd, xmatu
+      use multimat, only: aa, wfmat
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      parameter (MEXCIT=10)
-
-
       common /slater/ slmi(MMAT_DIM,2)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
      &,ddx(3,MELEC),d2dx2(MELEC)
-
-
-
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
       dimension ymat(MORB,MELEC,2),dymat(MORB,MELEC,2)
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
@@ -464,7 +432,6 @@ c           do krep=ivirt(iab),norb+nadorb
 
   100 continue
 
-
       return
       end
 c-----------------------------------------------------------------------
@@ -472,26 +439,17 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use elec, only: ndn, nup
       use ycompact, only: dymat, ymat
+      use multimat, only: aa, wfmat
+
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      parameter (MEXCIT=10)
-
-
-
       common /multislater/ detiab(MDET,2)
-
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-
 
       if((iel.ne.nup.and.iel.ne.nelec).or.ndn.eq.0) return
 
@@ -522,25 +480,17 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-
 
       dimension iswapped(MELEC),itotphase(MDET)
 

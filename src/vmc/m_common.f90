@@ -1206,6 +1206,32 @@ end module forcewt
    save
  end module multidet
 
+ module multimat
+   !> Arguments: aa, wfmat
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: aa(MELEC,MORB,2)
+   real(dp) :: wfmat(MEXCIT**2,MDET,2)
+
+   private 
+   public :: aa, wfmat 
+   save
+ end module multimat
+
+ module multimatn
+   !> Arguments: aan, wfmatn
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: aan(MELEC,MORB)
+   real(dp) :: wfmatn(MEXCIT**2,MDET)
+
+   private 
+   public :: aan, wfmatn 
+   save
+ end module multimatn
+
  module numexp
    !> Arguments: ae, ce
    use precision_kinds, only: dp
