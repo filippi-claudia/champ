@@ -5,15 +5,16 @@ c 1st and 2nd derivs also calculated if ider=1.
 
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use numexp, only: ae, ce
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'numbas.h'
       include 'force.h'
 
-      parameter(NCOEF=5,sixth=1.d0/6.d0)
+      parameter(sixth=1.d0/6.d0)
 
-      common /numexp/ce(NCOEF,MRWF,MCTYPE,MFORCE),ae(2,MRWF,MCTYPE,MFORCE)
 
       dimension wfv(4)
 

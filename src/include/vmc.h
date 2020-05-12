@@ -23,6 +23,7 @@
       parameter(MCTYP3X=5,NSPLIN=1001,MORDJ=7,radmax=10.d0,nrad=3001)
       parameter(MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2)
       parameter(MORDJ1=MORDJ+1,delri=(nrad-1)/radmax)
+
 ! PLT@eScienceCenter(2020) Moved the parameter here:
 ! "For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
 !  For Jastrow3 NEQSX=2*MORDJ should be sufficient.
@@ -30,8 +31,13 @@
 !  Jastrow3 for reasons I do not understand."
 !     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       parameter(NEQSX=6*MORDJ,MTERMS=55)
+
 ! Also addded: 
       parameter (MCENT3=3*MCENT)
 ! from misc_grdnts.f
+
+! Also added:
+      parameter(NCOEF=5)
+! from read_bas_num.f and splfit.f.
 
       common /method_opt/ method

@@ -13,7 +13,6 @@ c Modified by F. Schautz to use fancy file names
 
       implicit real*8(a-h,o-z)
 
-
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
@@ -25,16 +24,13 @@ c Modified by F. Schautz to use fancy file names
       character*20 atomtyp,atomsymbol
       character*256 filename,pooldir,pp_id
 
-      parameter (ncoef=5)
-
-
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
-      dimension r(MPS_GRID),y(ncoef),ce(ncoef),dmatr(ncoef*ncoef),ipiv(ncoef)
+      dimension r(MPS_GRID),y(NCOEF),ce(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
       dimension work(MPS_GRID)
 
 c pool directory for pseudopotentials
@@ -164,23 +160,23 @@ c         write(6,'(''vps'',f8.4,f12.6,d12.4)') r(j),vpseudo(j,ic,i)/2,vpseudo(j
       do 190 i=1,npotd
 c small radii pot(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
         ll=0
-        do 120 jj=1,ncoef
+        do 120 jj=1,NCOEF
           y(jj)=vpseudo(jj+1,ic,i)
-          do 120 ii=1,ncoef
+          do 120 ii=1,NCOEF
             ll=ll+1
   120       dmatr(ll)=r(ii+1)**(jj-1)
-        call dgesv(ncoef,1,dmatr,ncoef,ipiv,y,ncoef,info)
+        call dgesv(NCOEF,1,dmatr,NCOEF,ipiv,y,NCOEF,info)
 
-        do 125 icoef=1,ncoef
+        do 125 icoef=1,NCOEF
   125     ce(icoef)=y(icoef)
 
         if(ipr.gt.1) then
-c         write(45,'(''coefficients'',1p10e22.10)') (ce(iff),iff=1,ncoef)
+c         write(45,'(''coefficients'',1p10e22.10)') (ce(iff),iff=1,NCOEF)
           write(45,'(''check the small radius expansion for l= '',i3)')i-1
           write(45,'(''irad, rad, extrapolated, correct value, diff'')')
           do 130 ir=1,10
             val=ce(1)
-            do 128 icoef=2,ncoef
+            do 128 icoef=2,NCOEF
   128         val=val+ce(icoef)*r(ir)**(icoef-1)
 c             if(ir.eq.1) vpseudo(ir,ic,i)=val
   130       write(45,'(i2,1p3e16.8,1p1e11.2)')
@@ -190,7 +186,7 @@ c             if(ir.eq.1) vpseudo(ir,ic,i)=val
         vpseudo(1,ic,i)=ce(1)
 
         dpot1=ce(2)
-        do 135 icoef=3,ncoef
+        do 135 icoef=3,NCOEF
   135     dpot1=dpot1+(icoef-1)*ce(icoef)*r(1)**(icoef-2)
 
         dpotn=0.d0

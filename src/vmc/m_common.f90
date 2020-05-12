@@ -1206,6 +1206,21 @@ end module forcewt
    save
  end module multidet
 
+ module numexp
+   !> Arguments: ae, ce
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'force.h'
+   include 'numbas.h'
+ 
+   real(dp) :: ae(2,MRWF,MCTYPE,MFORCE)
+   real(dp) :: ce(NCOEF,MRWF,MCTYPE,MFORCE)
+ 
+   private 
+   public :: ae, ce 
+   save
+ end module numexp
+
  module ncusp
    !> Arguments: ncnstr, ncuspc, nfock, nfockc, norbc
    use precision_kinds, only: dp

@@ -8,8 +8,8 @@ c Reads in localized orbitals on a radial grid
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
+      use numexp, only: ae, ce
       implicit real*8(a-h,o-z)
-
 
 
       include 'vmc.h'
@@ -20,11 +20,9 @@ c Reads in localized orbitals on a radial grid
       character*256 filename,pooldir,bas_id
       character*20 wforce,atomtyp,atomsymbol
 
-      parameter(NCOEF=5)
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /numexp/ce(NCOEF,MRWF,MCTYPE,MFORCE),ae(2,MRWF,MCTYPE,MFORCE)
 
       dimension x(MRWF_PTS),work(MRWF_PTS),y(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
      &,l(MBASIS),icusp(MCTYPE)
@@ -108,17 +106,17 @@ c new convention
         if(nloc.eq.0.and.l(irb).eq.0.and.icusp(ic).eq.1) then
 
 c small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4
-          do 15 ii=1,ncoef-1
+          do 15 ii=1,NCOEF-1
   15        dmatr(ii)=1.d0-znuc(ic)*x(ii)
           y(1)=rwf(1,irb,ic,iwf)
-          ll=ncoef-1
-          do 16 jj=2,ncoef-1
+          ll=NCOEF-1
+          do 16 jj=2,NCOEF-1
             y(jj)=rwf(jj,irb,ic,iwf)
-            do 16 ii=2,ncoef-1
+            do 16 ii=2,NCOEF-1
               ll=ll+1
   16          dmatr(ll)=x(ii)**jj
 
-          call dgesv(ncoef-1,1,dmatr,ncoef-1,ipiv,y,NCOEF,info)
+          call dgesv(NCOEF-1,1,dmatr,NCOEF-1,ipiv,y,NCOEF,info)
           ce(1,irb,ic,iwf)=y(1)
           ce(2,irb,ic,iwf)=-znuc(ic)*ce(1,irb,ic,iwf)
           ce(3,irb,ic,iwf)=y(2)
@@ -129,14 +127,14 @@ c small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4
 
 c small radii wf(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
           ll=0
-          do 25 jj=1,ncoef
+          do 25 jj=1,NCOEF
             y(jj)=rwf(jj,irb,ic,iwf)
-            do 25 ii=1,ncoef
+            do 25 ii=1,NCOEF
               ll=ll+1
   25          dmatr(ll)=x(ii)**(jj-1)
-          call dgesv(ncoef,1,dmatr,ncoef,ipiv,y,NCOEF,info)
+          call dgesv(NCOEF,1,dmatr,NCOEF,ipiv,y,NCOEF,info)
 
-          do 26 icoef=1,ncoef
+          do 26 icoef=1,NCOEF
   26        ce(icoef,irb,ic,iwf)=y(icoef)
 
         endif
@@ -145,18 +143,18 @@ c       if(ipr.gt.1) then
           write(45,'(''basis = '',i4)') irb
           write(45,'(''check the small radius expansion'')')
           write(45,'(''coefficients'',1p10e22.10)')
-     &               (ce(iff,irb,ic,iwf),iff=1,ncoef)
+     &               (ce(iff,irb,ic,iwf),iff=1,NCOEF)
           write(45,'(''check the small radius expansion'')')
           write(45,'(''irad, rad, extrapolated value, correct value'')')
           do 30 ir=1,10
             val=ce(1,irb,ic,iwf)
-            do 28 icoef=2,ncoef
+            do 28 icoef=2,NCOEF
   28        val=val+ce(icoef,irb,ic,iwf)*x(ir)**(icoef-1)
   30        write(45,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
 c       endif
 
         dwf1=0.d0
-        do 32 icoef=2,ncoef
+        do 32 icoef=2,NCOEF
   32      dwf1=dwf1+(icoef-1)*ce(icoef,irb,ic,iwf)*x(1)**(icoef-2)
 
 c large radii wf(r)=a0*exp(-ak*r)

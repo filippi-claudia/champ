@@ -138,11 +138,11 @@ It has equivalent arguments to common block /orbval/.\
 **SOLUTION:** \
 TODO
 
-- [ ] ***#96 common block /numexp/***\
+- [x] ***#96 common block /numexp/***\
 **PROBLEM:** \
 NCOEF must be include in a include file.\
 **SOLUTION:** \
-TODO
+I included the NCOEF parameter in the vmc.h file. 
 
 - [ ] ***#104 common block /orbital_num_spl2/***
 **PROBLEM:** \

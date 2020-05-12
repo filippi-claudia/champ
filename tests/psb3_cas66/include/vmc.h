@@ -31,7 +31,12 @@
 !     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       parameter(NEQSX=6*MORDJ,MTERMS=55)
 
-      common /method_opt/ method
 ! Also addded: 
       parameter (MCENT3=3*MCENT)
 ! from misc_grdnts.f
+
+! Also added:
+      parameter(NCOEF=5)
+! from read_bas_num.f and splfit.f.
+
+      common /method_opt/ method
