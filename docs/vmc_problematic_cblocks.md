@@ -99,7 +99,7 @@ common /icount_prop/ icount
 
 Besides, icount variable is used in other subroutines like pcm.f without calling the block, and in pcm_reduce.f, giving even dimensions to the variable:
 dimension icount(0:NPROCX),idispl(0:NPROCX)\
-- [ ] **SOLUTION:** \
+**SOLUTION:** \
 TODO
 
 - [ ] ***#68 common block /icount_orb/***
