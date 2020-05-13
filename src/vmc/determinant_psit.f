@@ -4,10 +4,9 @@
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use wfsec, only: iwf, iwftype, nwftype
+      use contrl_per, only: iperiodic, ibasis
+
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -15,10 +14,7 @@
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /contrl_per/ iperiodic,ibasis
-
       common /multislater/ detu(MDET),detd(MDET)
-
 
       determ=0
 

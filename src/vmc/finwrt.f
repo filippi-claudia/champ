@@ -20,26 +20,20 @@ c routine to print out final results
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use tmpnode, only: distance_node_sum
       use contr3, only: mode
-
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
-      implicit real*8(a-h,o-z)
+      use contrl_per, only: iperiodic,ibasis
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
       include 'mstates.h'
       include 'optci.h'
+
       parameter (one=1.d0,half=.5d0)
 
-
-      common /contrl_per/ iperiodic,ibasis
-
-
-
-
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
-
 
       err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
       err1(x,x2,j)=dsqrt(dabs(x2/wcum(j,1)-(x/wcum(j,1))**2)/passes)

@@ -12,11 +12,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use Bloc_dj, only: b_dj
       use coefs, only: coef, nbasis, norb
       use contr3, only: mode
-
       use Bloc, only: b, tildem, xmatd, xmatu
+      use contrl_per, only: iperiodic,ibasis
 
       implicit real*8(a-h,o-z)
-
 
       parameter (one=1.d0)
 
@@ -28,9 +27,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include 'optjas.h'
       include 'optorb.h'
       include 'optorb_cblk.h'
-
-
-      common /contrl_per/ iperiodic,ibasis
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
@@ -246,8 +242,9 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use elec, only: ndn, nup
-      implicit real*8(a-h,o-z)
+      use contrl_per, only: iperiodic,ibasis
 
+      implicit real*8(a-h,o-z)
 
       parameter (one=1.d0)
 
@@ -256,9 +253,6 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
       include 'pseudo.h'
       include 'ewald.h'
-
-      common /contrl_per/ iperiodic,ibasis
-
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
@@ -317,20 +311,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
      &phin
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
+      use contrl_per, only: iperiodic,ibasis
+
       implicit real*8(a-h,o-z)
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include '3dgrid_flags.h'
-
-      common /contrl_per/ iperiodic,ibasis
-
-
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -457,13 +445,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm, only: nocuspb, nspin2b
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
+      use contrl_per, only: iperiodic,ibasis
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'ewald.h'
@@ -471,11 +455,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       include 'mstates.h'
 
       parameter (half=.5d0)
-
-      common /contrl_per/ iperiodic,ibasis
-
-
-
 
       common /force_analy/ iforce_analy
 

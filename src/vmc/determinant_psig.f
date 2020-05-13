@@ -2,6 +2,7 @@
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use contrl_per, only: iperiodic, ibasis
 
       implicit real*8(a-h,o-z)
 
@@ -11,7 +12,6 @@
       include 'optci.h'
       include 'mstates.h'
 
-      common /contrl_per/ iperiodic,ibasis
 
 
       dimension psid(*)

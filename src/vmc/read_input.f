@@ -26,28 +26,23 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-
       use jaspar, only: nspin1, nspin2, sspin, sspinn, is
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use jaspar1, only: cjas1, cjas2
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use forcepar, only: deltot, istrech, nforce
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-
       use header, only: date, title
       use jaspar2, only: a1, a2
       use jaspar3, only: a, b, c, fck, nord, scalek
-
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
      &cutjas, cutjasi
       use ncusp, only: ncnstr, ncuspc, nfock, nfockc, norbc
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
-
       use numbas1, only: iwlbas, nbastyp
       use numbas2, only: ibas0, ibas1
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
@@ -69,10 +64,9 @@ c and Anthony Scemema
      &itau_eff, nfprod, rttau, tau, taueff, tautot
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       use dorb_m, only: iworbd
+      use contrl_per, only: iperiodic,ibasis
+
       implicit real*8(a-h,o-z)
-
-
-
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
@@ -94,7 +88,6 @@ c and Anthony Scemema
       include 'properties.h'
       include '3dgrid_flags.h'
 
-      common /contrl_per/ iperiodic,ibasis
 
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)

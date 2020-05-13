@@ -18,19 +18,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm, only: nocuspb, nspin2b
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
+      use contrl_per, only: iperiodic, ibasis
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'mstates.h'
@@ -39,13 +28,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       include 'optjas.h'
 
       parameter (half=.5d0)
-
-      common /contrl_per/ iperiodic,ibasis
-
-
-
-
-
 
       common /force_analy/ iforce_analy
 

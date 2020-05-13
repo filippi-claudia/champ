@@ -4,18 +4,14 @@ c Modified by A. Scemama
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_orbval, only: da_d2orb, da_dorb, da_orb
-
       use elec, only: ndn, nup
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
+      use contrl_per, only: iperiodic,ibasis
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -30,7 +26,6 @@ c as many ups as downs. If this is not true then be careful if
 c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
-      common /contrl_per/ iperiodic,ibasis
       common /force_analy/ iforce_analy
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -232,22 +227,13 @@ c-------------------------------------------------------------------------------
      &phin
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
+      use contrl_per, only: iperiodic, ibasis
+      
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'numbas.h'
       include 'force.h'
-
-
-
-
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -293,15 +279,9 @@ c-------------------------------------------------------------------------------
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
+      use contrl_per, only: iperiodic, ibasis
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -310,7 +290,6 @@ c-------------------------------------------------------------------------------
 
       parameter(one=1.d0)
 
-      common /contrl_per/ iperiodic,ibasis
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)

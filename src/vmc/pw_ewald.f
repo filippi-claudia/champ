@@ -2,10 +2,8 @@
 c Written by Cyrus Umrigar
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
-
       use ewald_basis, only: vps_basis_fourier
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
      &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
@@ -14,20 +12,12 @@ c Written by Cyrus Umrigar
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
       use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
-
       use tempor, only: dist_nn
       use test, only: f, vbare_coul, vbare_jas, vbare_psp
-
       use constant, only: twopi
+      use contrl_per, only: iperiodic, ibasis
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -36,7 +26,6 @@ c Written by Cyrus Umrigar
 
       parameter (eps=1.d-12)
 
-      common /contrl_per/ iperiodic,ibasis
 c     common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
 c    &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
 c    &,nlrad(MCTYPE)

@@ -10,6 +10,7 @@
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
+      use contrl_per, only: iperiodic,ibasis
 
       implicit real*8(a-h,o-z)
 
@@ -20,9 +21,7 @@
 
       parameter(one=1.d0)
 
-      common /contrl_per/ iperiodic,ibasis
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
-
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
