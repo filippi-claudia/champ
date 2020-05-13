@@ -1913,6 +1913,19 @@ end module pseudo
    save
  end module vardep
 
+ module velocity_jastrow
+   !> Arguments: vj, vjn
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: vj(3,MELEC)
+   real(dp) :: vjn(3,MELEC)
+
+   private 
+   public :: vj, vjn 
+   save
+ end module velocity_jastrow
+
  module wfsec
    !> Arguments: iwf, iwftype, nwftype
    use precision_kinds, only: dp
@@ -1998,15 +2011,4 @@ end module pseudo
    save
  end module zmatrix_grad
 
- module velocity_jastrow
-   !> Arguments: vj, vjn
-   use precision_kinds, only: dp
-   include 'vmc.h'
-
-    real(dp) :: vj(3,MELEC)
-    real(dp) :: vjn(3,MELEC)
-
-    private 
-    public :: vj, vjn 
-    save
- end module velocity_jastrow
+ 
