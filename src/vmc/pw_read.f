@@ -1,10 +1,10 @@
 c$$$      subroutine pw_setup_input
 c$$$      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
+c$$$    &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
+c$$$    &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+c$$$    &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
+c$$$    &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
+c$$$    &vcell_sim, znuc2_sum, znuc_sum
       implicit real*8(a-h,o-z)
 
 c$$$
@@ -27,7 +27,7 @@ c$$$     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
 c$$$     &,znuc_sum,znuc2_sum,vcell,vcell_sim
 c$$$     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
 c$$$     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-c$$$     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
+c$$$     &,ng1d(3),ng1d_sim(3),npoly,ncoef_per,np,isrange
 c$$$
 c$$$c note that if iperiodic=0, norb is fetched in read_lcao
 c$$$      call p2gti('periodic:norb',norb,1)
@@ -35,8 +35,8 @@ c$$$
 c$$$c npoly is the polynomial order for short-range part
 c$$$      call p2gti('periodic:npoly',npoly,1)
 c$$$      call p2gti('periodic:np',np,1)
-c$$$      ncoef=npoly+1
-c$$$      if(ncoef.gt.NCOEFX) call fatal_error('INPUT: ncoef gt NCOEFX')
+c$$$      ncoef_per=npoly+1
+c$$$      if(ncoef_per.gt.NCOEFX) call fatal_error('INPUT: ncoef_per gt NCOEFX')
 c$$$
 c$$$      call p2gtf('periodic:cutg',cutg,1)
 c$$$      call p2gtf('periodic:cutg_sim',cutg_sim,1)
@@ -74,7 +74,7 @@ c----------------------------------------------------------------------
       subroutine do_read_lattice(iu)
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
      &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
@@ -117,7 +117,7 @@ c Presently not used.
 
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
      &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
@@ -177,7 +177,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
      &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
@@ -422,7 +422,7 @@ c This is the straightforward evaluation for checking purposes only.
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
      &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum

@@ -7,7 +7,7 @@ c Written by Cyrus Umrigar
       use ewald_basis, only: vps_basis_fourier
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
      &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
@@ -44,7 +44,7 @@ c Temporary
       pi=4.d0*datan(1.d0)
       twopi=2*pi
 
-      ncoef=npoly+1
+      ncoef_per=npoly+1
 
 c Check that the lattice vectors are the smallest possible ones and return the smallest
 c which is used to set the range of the real-space Ewald sums so that only one image
@@ -235,7 +235,7 @@ c Fourier transfom of 1/r
    70   vbare_coul(k)=2*twopi/(vcell*gnorm(k)**2)
 
       call separate(vbare_coul,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm
-     &,cutr,vcell,ncoef,np,b_coul,y_coul,chisq,ifcon,isrange)
+     &,cutr,vcell,ncoef_per,np,b_coul,y_coul,chisq,ifcon,isrange)
 
       if(chisq.gt.0) then
         write(6,'(''Rms error in 1/r separation in primitive cell'',d12.5)') dsqrt(chisq)
@@ -248,7 +248,7 @@ c Fourier transfom of 1/r
       if(ipr.eq.1) write(6,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm)
       if(ipr.ge.2) write(6,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm_big)
       if(ipr.ge.0) write(6,'(''y_coul = '',20d12.4)') (y_coul(k),k=1,ngnorm)
-      if(ipr.ge.0) write(6,'(''b_coul = '',20d12.4)') (b_coul(k),k=1,ncoef)
+      if(ipr.ge.0) write(6,'(''b_coul = '',20d12.4)') (b_coul(k),k=1,ncoef_per)
 
 c debug n-n interaction (primitive cell)
       if(ipr.ge.0) then
@@ -265,7 +265,7 @@ c debug n-n interaction (primitive cell)
            else
             wt=1
           endif
-   74     sum=sum+wt*rr**2*vsrange(rr,cutr,lowest_pow,ncoef,np,b_coul)
+   74     sum=sum+wt*rr**2*vsrange(rr,cutr,lowest_pow,ncoef_per,np,b_coul)
         const=2*twopi*sum*dx/vcell
         write(6,'(''const='',9f12.8)') const
 
@@ -275,7 +275,7 @@ c debug n-n interaction (primitive cell)
           r_tmp(2)=0
           r_tmp(3)=0
           rr=sqrt(r_tmp(1)**2+r_tmp(2)**2+r_tmp(3)**2)
-          vs=vsrange(rr,cutr,lowest_pow,ncoef,np,b_coul)
+          vs=vsrange(rr,cutr,lowest_pow,ncoef_per,np,b_coul)
           vl=vlrange_old(r_tmp,gvec,ngnorm,igmult,y_coul)
           test=vs+vl
 c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_coul)
@@ -307,7 +307,7 @@ c Fourier transform of -1/r*(1-exp(-r/f)) for Jastrow
    80   vbare_jas(k)=-vbare_coul(k)/(1+(f*gnorm_sim(k))**2)
 
       call separate(vbare_coul,b0,lowest_pow,ngnorm_sim_big,igmult_sim,gnorm_sim,ngnorm_sim
-     &,cutr_sim,vcell_sim,ncoef,np,b_coul_sim,y_coul_sim,chisq,ifcon,isrange)
+     &,cutr_sim,vcell_sim,ncoef_per,np,b_coul_sim,y_coul_sim,chisq,ifcon,isrange)
 
       if(chisq.gt.0) then
         write(6,'(''Rms error in 1/r separation in simulation cell'',d12.5)') dsqrt(chisq)
@@ -320,7 +320,7 @@ c Fourier transform of -1/r*(1-exp(-r/f)) for Jastrow
       if(ipr.eq.1) write(6,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm_sim)
       if(ipr.ge.2) write(6,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm_sim_big)
       if(ipr.ge.0) write(6,'(''y_coul_sim = '',20d12.4)') (y_coul_sim(k),k=1,ngnorm_sim)
-      if(ipr.ge.0) write(6,'(''b_coul_sim = '',20d12.4)') (b_coul_sim(k),k=1,ncoef)
+      if(ipr.ge.0) write(6,'(''b_coul_sim = '',20d12.4)') (b_coul_sim(k),k=1,ncoef_per)
 
 c debug e-e interaction (simulation cell)
 c Note vbare_coul is used both for primitive and simulation cells
@@ -340,7 +340,7 @@ c rms error only for latter 3/4 of interval
            else
             wt=1
           endif
-   84     sum=sum+wt*rr**2*vsrange(rr,cutr_sim,lowest_pow,ncoef,np,b_coul_sim)
+   84     sum=sum+wt*rr**2*vsrange(rr,cutr_sim,lowest_pow,ncoef_per,np,b_coul_sim)
         const=2*twopi*sum*dx/vcell_sim
         write(6,'(''const='',9f12.8)') const
 
@@ -350,7 +350,7 @@ c rms error only for latter 3/4 of interval
           r_tmp(2)=0
           r_tmp(3)=0
           rr=sqrt(r_tmp(1)**2+r_tmp(2)**2+r_tmp(3)**2)
-          vs=vsrange(rr,cutr_sim,lowest_pow,ncoef,np,b_coul_sim)
+          vs=vsrange(rr,cutr_sim,lowest_pow,ncoef_per,np,b_coul_sim)
           vl=vlrange_old(r_tmp,gvec_sim,ngnorm_sim,igmult_sim,y_coul_sim)
           test=vs+vl
 c         true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_coul)
@@ -378,7 +378,7 @@ c e-e Jastrow
       isrange=0
 
       call separate(vbare_jas,b0,lowest_pow,ngnorm_sim_big,igmult_sim,gnorm_sim,ngnorm_sim
-     &,cutr_sim,vcell_sim,ncoef,np,b_jas,y_jas,chisq,ifcon,isrange)
+     &,cutr_sim,vcell_sim,ncoef_per,np,b_jas,y_jas,chisq,ifcon,isrange)
 
       if(chisq.gt.0) then
         write(6,'(''Rms error in Jastrow separation'',d12.5)') dsqrt(chisq)
@@ -391,7 +391,7 @@ c e-e Jastrow
       if(ipr.eq.1) write(6,'(''vbare_jas = '',20d12.4)') (vbare_jas(k),k=1,ngnorm_sim)
       if(ipr.ge.2) write(6,'(''vbare_jas = '',20d12.4)') (vbare_jas(k),k=1,ngnorm_sim_big)
       if(ipr.ge.0) write(6,'(''y_jas = '',20d12.4)') (y_jas(k),k=1,ngnorm_sim)
-      if(ipr.ge.0) write(6,'(''b_jas = '',20d12.4)') (b_jas(k),k=1,ncoef)
+      if(ipr.ge.0) write(6,'(''b_jas = '',20d12.4)') (b_jas(k),k=1,ncoef_per)
 
 c debug e-e Jastrow
 c Since Jastrow has singlularity at 0, cannot match there, so evaluate
@@ -407,7 +407,7 @@ c rms error only for latter 3/4 of interval
           r_tmp(2)=0
           r_tmp(3)=0
           rr=sqrt(r_tmp(1)**2+r_tmp(2)**2+r_tmp(3)**2)
-          test=vsrange(rr,cutr_sim,lowest_pow,ncoef,np,b_jas)
+          test=vsrange(rr,cutr_sim,lowest_pow,ncoef_per,np,b_jas)
           test=test+vlrange_old(r_tmp,gvec_sim,ngnorm_sim,igmult_sim,y_jas)
           true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_jas)
           if(4*i.ge.npts) rms=rms+(true-test)**2
@@ -545,7 +545,7 @@ c If isrange=0,1 set ifcon=1, if isrange=2,3 set ifcon=0
       isrange=1
 
       call separate(vbare_psp,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm
-     &,cutr,vcell,ncoef,np,b_psp(1,ict),y_psp(1,ict),chisq,ifcon,isrange)
+     &,cutr,vcell,ncoef_per,np,b_psp(1,ict),y_psp(1,ict),chisq,ifcon,isrange)
 
       if(chisq.gt.0) then
         write(6,'(''Rms error in pseudopotential separation'',d12.5)') dsqrt(chisq)
@@ -558,7 +558,7 @@ c If isrange=0,1 set ifcon=1, if isrange=2,3 set ifcon=0
       if(ipr.eq.1) write(6,'(''vbare_psp = '',20d12.4)') (vbare_psp(k),k=1,ngnorm)
       if(ipr.ge.2) write(6,'(''vbare_psp = '',20d12.4)') (vbare_psp(k),k=1,ngnorm_big)
       if(ipr.ge.0) write(6,'(''y_psp = '',20d12.4)') (y_psp(k,ict),k=1,ngnorm)
-      if(ipr.ge.0) write(6,'(''b_psp = '',20d12.4)') (b_psp(k,ict),k=1,ncoef)
+      if(ipr.ge.0) write(6,'(''b_psp = '',20d12.4)') (b_psp(k,ict),k=1,ncoef_per)
 
 c If sim cell is not primitive cell, vbare_coul has been overwritten, so restore it
 c n-n, e-n interactions (primitive cell)
@@ -583,10 +583,10 @@ c bare long-range parts.  The psp does not have a singularity so we can test it 
           r_tmp(2)=0
           r_tmp(3)=0
           rr=sqrt(r_tmp(1)**2+r_tmp(2)**2+r_tmp(3)**2)
-          if(isrange.eq.0) vs=vsrange(rr,cutr,lowest_pow,ncoef,np,b_psp(1,ict))
-          if(isrange.eq.1) vs=vsrange1(rr,cutr,lowest_pow,ncoef,np,b_psp(1,ict),ict,lpot(ict))
-          if(isrange.eq.2) vs=vsrange2(rr,cutr,lowest_pow,ncoef,np,b_psp(1,ict),ict,lpot(ict))
-          if(isrange.eq.3) vs=vsrange3(rr,cutr,lowest_pow,ncoef,np,b_psp(1,ict),ict,lpot(ict))
+          if(isrange.eq.0) vs=vsrange(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict))
+          if(isrange.eq.1) vs=vsrange1(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
+          if(isrange.eq.2) vs=vsrange2(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
+          if(isrange.eq.3) vs=vsrange3(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
           vl=vlrange_old(r_tmp,gvec,ngnorm,igmult,y_psp(1,ict))
           test=vs+vl
 c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_psp)
@@ -846,7 +846,7 @@ c a symmetry one could use later on.
 
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
      &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
@@ -993,7 +993,7 @@ c g=0 component
       end
 c-----------------------------------------------------------------------
       subroutine separate(v,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm
-     &,cutr,vcell,ncoef,np,b,y,chisq,ifcon,isrange)
+     &,cutr,vcell,ncoef_per,np,b,y,chisq,ifcon,isrange)
 c Written by Cyrus Umrigar and Claudia Filippi
 
       use constant, only: twopi
@@ -1008,19 +1008,19 @@ c     parameter(NPX=6)
       dimension a(NCOEFX,NCOEFX),c(NCOEFX+NPX),work(NCOEFX)
       dimension v(*),b(*),y(*),igmult(*),gnorm(*)
 
-      if(ncoef+np.gt.NCOEFX+NPX) call fatal_error ('ncoef+np > NCOEFX+NPX in separate')
+      if(ncoef_per+np.gt.NCOEFX+NPX) call fatal_error ('ncoef_per+np > NCOEFX+NPX in separate')
 
       anorm=2*twopi*cutr**3/vcell
 
 c check for imposed conditions
       if(ifcon.ne.1) then
-        nfree=ncoef
+        nfree=ncoef_per
         i0=1
         beta1=0.d0
         beta2=0.d0
        else
 c one less equation because of cusp conditions
-        nfree=ncoef-1
+        nfree=ncoef_per-1
         i0=2
 c setting up cusp condition constraints
         if(lowest_pow.eq.-1) then
@@ -1036,13 +1036,13 @@ c e-e cusp conditions
         endif
       endif
 
-      write(6,'(/,''Ncoef ='',i5)') ncoef
+      write(6,'(/,''Ncoef ='',i5)') ncoef_per
       write(6,'(''Beta1,beta2 ='',2f15.8)') beta1,beta2
 
 c zero right and left hand side of fitting equation
-      do 10 i=1,ncoef
+      do 10 i=1,ncoef_per
         b(i)=0.d0
-        do 10 j=1,ncoef
+        do 10 j=1,ncoef_per
    10     a(j,i)=0.d0
 
       chisq=0.d0
@@ -1051,13 +1051,13 @@ c go over k values larger than those explicitly used
         gr=gnorm(k)*cutr
         ig=k
         if(isrange.eq.0) then
-          call integral_sin_poly(gr,lowest_pow,ncoef,np,anorm,c)
+          call integral_sin_poly(gr,lowest_pow,ncoef_per,np,anorm,c)
          elseif(isrange.eq.1) then
-          call integral_sin_poly1(gr,ig,lowest_pow,ncoef,np,anorm,c)
+          call integral_sin_poly1(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
          elseif(isrange.eq.2) then
-          call integral_sin_poly2(gr,ig,lowest_pow,ncoef,np,anorm,c)
+          call integral_sin_poly2(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
          elseif(isrange.eq.3) then
-          call integral_sin_poly3(gr,ig,lowest_pow,ncoef,np,anorm,c)
+          call integral_sin_poly3(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
         endif
 
 c Constraints.  That for c(2) is for cusp constraint only.
@@ -1067,14 +1067,14 @@ c Constraints.  That for c(2) is for cusp constraint only.
         chisq=chisq+igmult(k)*vk**2
 
 c add to right hand side
-        do 20 i=i0,ncoef
+        do 20 i=i0,ncoef_per
           b(i)=b(i)+igmult(k)*vk*c(i)
 c add to left hand side
-          do 20 j=i0,ncoef
+          do 20 j=i0,ncoef_per
    20       a(j,i)=a(j,i)+igmult(k)*c(i)*c(j)
 
-c     write(6,'(''a='',10d14.5)') ((a(i,j),i=i0,ncoef),j=i0,ncoef)
-c     write(6,'(''b='',10d14.5)') (b(i),i=i0,ncoef)
+c     write(6,'(''a='',10d14.5)') ((a(i,j),i=i0,ncoef_per),j=i0,ncoef_per)
+c     write(6,'(''b='',10d14.5)') (b(i),i=i0,ncoef_per)
 
 c invert right hand side
       if(nfree.gt.0) then
@@ -1085,15 +1085,15 @@ c invert right hand side
       endif
 
 c make a spare copy of right hand side
-      do 30 i=i0,ncoef
+      do 30 i=i0,ncoef_per
    30   work(i)=b(i)
 
 c solve linear equations
       call dposl(a(i0,i0),NCOEFX,nfree,b(i0))
-c     write(6,*) (b(i),i=i0,ncoef)
+c     write(6,*) (b(i),i=i0,ncoef_per)
 
 c b is now the solution (t in Ceperley's paper)
-      do 40 i=i0,ncoef
+      do 40 i=i0,ncoef_per
    40   chisq=chisq-work(i)*b(i)
 c     if(chisq.gt.0) then
 c       write(6,'(''Rms error '',d12.5)') dsqrt(chisq)
@@ -1111,19 +1111,19 @@ c subtract effect of short range potential on fourier components
         gr=gnorm(k)*cutr
         ig=k
         if(isrange.eq.0) then
-          call integral_sin_poly(gr,lowest_pow,ncoef,np,anorm,c)
+          call integral_sin_poly(gr,lowest_pow,ncoef_per,np,anorm,c)
          elseif(isrange.eq.1) then
-          call integral_sin_poly1(gr,ig,lowest_pow,ncoef,np,anorm,c)
+          call integral_sin_poly1(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
          elseif(isrange.eq.2) then
-          call integral_sin_poly2(gr,ig,lowest_pow,ncoef,np,anorm,c)
+          call integral_sin_poly2(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
          elseif(isrange.eq.3) then
-          call integral_sin_poly3(gr,ig,lowest_pow,ncoef,np,anorm,c)
+          call integral_sin_poly3(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
         endif
         y(k)=v(k)
-        do 50 i=1,ncoef
+        do 50 i=1,ncoef_per
    50     y(k)=y(k)-c(i)*b(i)
 
-c     write(6,'(''Poly coefs (t) = '',5d14.6)') (b(i),i=1,ncoef)
+c     write(6,'(''Poly coefs (t) = '',5d14.6)') (b(i),i=1,ncoef_per)
 c     write(6,'(''Yk = '',20d12.4)') (y(k),k=1,ngnorm)
 
       return
@@ -1274,7 +1274,7 @@ c-----------------------------------------------------------------------
       subroutine integral_sin_poly2(g,ig,lowest_pow,n,np,anorm,c)
 c Written by Cyrus Umrigar and Claudia Filippi
 c (anorm/g) * integral_0^1 x*sin(g*x)*h(x) where
-c h(x)= \sum_{i=1}^ncoef b_i (1-x^np)^{i+1}, x=r/cutr
+c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^np)^{i+1}, x=r/cutr
 c anorm = 4*pi*cutr^3/volume
 c g = g*cutr
 c x = r/cutr
@@ -1351,7 +1351,7 @@ c-----------------------------------------------------------------------
       subroutine integral_sin_poly3(g,ig,lowest_pow,n,np,anorm,c)
 c Written by Cyrus Umrigar and Claudia Filippi
 c (anorm/g) * integral_0^1 x*sin(g*x)*h(x) where
-c h(x)= \sum_{i=1}^ncoef b_i (1-x^np)^{i+1}, x=r/cutr
+c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^np)^{i+1}, x=r/cutr
 c anorm = 4*pi*cutr^3/volume
 c g = g*cutr
 c x = r/cutr
@@ -1438,9 +1438,9 @@ c Binomial coefficients ^nC_m
       end
 c-----------------------------------------------------------------------
 
-      function vsrange(r,cutr,lowest_pow,ncoef,np,b)
+      function vsrange(r,cutr,lowest_pow,ncoef_per,np,b)
 c Written by Cyrus Umrigar and Claudia Filippi
-c h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
+c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
 
       implicit real*8(a-h,o-z)
 
@@ -1453,8 +1453,8 @@ c h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
       vsrange=0
       if(x.gt.1.d0) return
 
-      do 10 i=1,ncoef
-   10   vsrange=b(ncoef-i+1)+x*vsrange
+      do 10 i=1,ncoef_per
+   10   vsrange=b(ncoef_per-i+1)+x*vsrange
 
       vsrange=vsrange*(1-x)**np
 
@@ -1464,9 +1464,9 @@ c h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
       end
 c-----------------------------------------------------------------------
 
-      function vsrange1(r,cutr,lowest_pow,ncoef,np,b,ict,l)
+      function vsrange1(r,cutr,lowest_pow,ncoef_per,np,b,ict,l)
 c Written by Cyrus Umrigar
-c h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
+c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
 
       implicit real*8(a-h,o-z)
 
@@ -1479,16 +1479,16 @@ c h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
       vsrange1=0
       if(x.gt.1.d0) return
 
-c     do 10 i=1,ncoef
-c  10   vsrange1=b(ncoef-i+1)+x*vsrange1
-      do 10 i=1,ncoef-1
-   10   vsrange1=b(ncoef-i)+x*vsrange1
+c     do 10 i=1,ncoef_per
+c  10   vsrange1=b(ncoef_per-i+1)+x*vsrange1
+      do 10 i=1,ncoef_per-1
+   10   vsrange1=b(ncoef_per-i)+x*vsrange1
 
       vsrange1=vsrange1*(1-x)**np
 
       call splfit_tm(r,l,ict,vpot)
 c     write(6,'(''ict,l,r,vsrange1,vpot'',2i3,9f9.5)') ict,l,r,vsrange1,vpot
-      vsrange1=vsrange1+b(ncoef)*vpot
+      vsrange1=vsrange1+b(ncoef_per)*vpot
 
 c     if(lowest_pow.eq.-1) vsrange1=vsrange1/x
 
@@ -1496,9 +1496,9 @@ c     if(lowest_pow.eq.-1) vsrange1=vsrange1/x
       end
 c-----------------------------------------------------------------------
 
-      function vsrange2(r,cutr,lowest_pow,ncoef,np,b,ict,l)
+      function vsrange2(r,cutr,lowest_pow,ncoef_per,np,b,ict,l)
 c Written by Cyrus Umrigar
-c h(x)= \sum_{i=1}^ncoef b_i (1-x^np)^{i+1}, x=r/cutr
+c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^np)^{i+1}, x=r/cutr
 
       implicit real*8(a-h,o-z)
 
@@ -1512,16 +1512,16 @@ c h(x)= \sum_{i=1}^ncoef b_i (1-x^np)^{i+1}, x=r/cutr
       if(x.gt.1.d0) return
 
       term=1-x**np
-c     do 10 i=1,ncoef
-c  10   vsrange2=b(ncoef-i+1)+term*vsrange2
-      do 10 i=1,ncoef-1
-   10   vsrange2=b(ncoef-i)+term*vsrange2
+c     do 10 i=1,ncoef_per
+c  10   vsrange2=b(ncoef_per-i+1)+term*vsrange2
+      do 10 i=1,ncoef_per-1
+   10   vsrange2=b(ncoef_per-i)+term*vsrange2
 
       vsrange2=vsrange2*term*term
 
       call splfit_tm(r,l,ict,vpot)
 c     write(6,'(''ict,l,r,vsrange2,vpot'',2i3,9f9.5)') ict,l,r,vsrange2,vpot
-      vsrange2=vsrange2+b(ncoef)*vpot
+      vsrange2=vsrange2+b(ncoef_per)*vpot
 
 c     if(lowest_pow.eq.-1) vsrange2=vsrange2/x
 
@@ -1529,9 +1529,9 @@ c     if(lowest_pow.eq.-1) vsrange2=vsrange2/x
       end
 c-----------------------------------------------------------------------
 
-      function vsrange3(r,cutr,lowest_pow,ncoef,np,b,ict,l)
+      function vsrange3(r,cutr,lowest_pow,ncoef_per,np,b,ict,l)
 c Written by Cyrus Umrigar
-c h(x)= \sum_{i=1}^ncoef b_i (1-x^{i+1})^np, x=r/cutr
+c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^{i+1})^np, x=r/cutr
 
       implicit real*8(a-h,o-z)
 
@@ -1544,13 +1544,13 @@ c h(x)= \sum_{i=1}^ncoef b_i (1-x^{i+1})^np, x=r/cutr
       vsrange3=0
       if(x.gt.1.d0) return
 
-c     do 10 i=1,ncoef
-      do 10 i=1,ncoef-1
+c     do 10 i=1,ncoef_per
+      do 10 i=1,ncoef_per-1
    10   vsrange3=vsrange3+b(i)*(1-x**(i+1))**np
 
       call splfit_tm(r,l,ict,vpot)
 c     write(6,'(''ict,l,r,vsrange3,vpot'',2i3,9f9.5)') ict,l,r,vsrange3,vpot
-      vsrange3=vsrange3+b(ncoef)*vpot
+      vsrange3=vsrange3+b(ncoef_per)*vpot
 
 c     if(lowest_pow.eq.-1) vsrange3=vsrange3/x
 
@@ -1752,7 +1752,7 @@ c Written by Cyrus Umrigar
 
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
      &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
@@ -1779,7 +1779,7 @@ c Written by Cyrus Umrigar
    10       r(k)=cent(k,j)-cent(k,i)
           call find_image3(r,rnorm)
           if(i.ne.j) then
-            vs=vs+zprod*vsrange(rnorm,cutr,lowest_pow,ncoef,np,b_coul)
+            vs=vs+zprod*vsrange(rnorm,cutr,lowest_pow,ncoef_per,np,b_coul)
           endif
           vlr=vlrange_old(r,gvec,ngnorm,igmult,y_coul)
           if(i.eq.j) vlr=0.5d0*vlr
@@ -1803,7 +1803,7 @@ c Written by Cyrus Umrigar
 
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
      &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
@@ -1829,7 +1829,7 @@ c short-range sum
           do 10 k=1,3
    10       r(k)=cent(k,j)-cent(k,i)
           call find_image3(r,rnorm)
-   40     vs=vs+zprod*vsrange(rnorm,cutr,lowest_pow,ncoef,np,b_coul)
+   40     vs=vs+zprod*vsrange(rnorm,cutr,lowest_pow,ncoef_per,np,b_coul)
 
 c long-range sum
 c     call cossin_old2(glatt,igvec,ngvec,cent,ncent,ng1d,cos_g,sin_g)
@@ -1859,7 +1859,7 @@ c Written by Cyrus Umrigar
 
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
      &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
@@ -1893,14 +1893,14 @@ c         call find_image3(rvec_en(1,j,i),r_en(j,i))
           call find_image4(rshift(1,j,i),rvec_en(1,j,i),r_en(j,i))
           if(nloc.eq.0) then
             lowest_pow=-1
-            vs=vs-znuc(iwctype(i))*vsrange(r_en(j,i),cutr,lowest_pow,ncoef,np,b_coul)
+            vs=vs-znuc(iwctype(i))*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
            else
             lowest_pow=0
-c           vs=vs+vsrange(r_en(j,i),cutr,lowest_pow,ncoef,np,b_psp(1,ict))
-            if(isrange.eq.0) vs=vs+vsrange(r_en(j,i),cutr,lowest_pow,ncoef,np,b_psp(1,ict))
-            if(isrange.eq.1) vs=vs+vsrange1(r_en(j,i),cutr,lowest_pow,ncoef,np,b_psp(1,ict),ict,lpot(ict))
-            if(isrange.eq.2) vs=vs+vsrange2(r_en(j,i),cutr,lowest_pow,ncoef,np,b_psp(1,ict),ict,lpot(ict))
-            if(isrange.eq.3) vs=vs+vsrange3(r_en(j,i),cutr,lowest_pow,ncoef,np,b_psp(1,ict),ict,lpot(ict))
+c           vs=vs+vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict))
+            if(isrange.eq.0) vs=vs+vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict))
+            if(isrange.eq.1) vs=vs+vsrange1(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
+            if(isrange.eq.2) vs=vs+vsrange2(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
+            if(isrange.eq.3) vs=vs+vsrange3(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
           endif
    40 continue
 
@@ -1937,7 +1937,7 @@ c Written by Cyrus Umrigar
 
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
      &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
+     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
      &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
      &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      &vcell_sim, znuc2_sum, znuc_sum
@@ -1967,7 +1967,7 @@ c short-range sum
           do 10 k=1,3
    10       rvec_ee(k,ij)=x(k,i)-x(k,j)
           call find_image3(rvec_ee(1,ij),r_ee(ij))
-   40     vs=vs+vsrange(r_ee(ij),cutr_sim,lowest_pow,ncoef,np,b_coul_sim)
+   40     vs=vs+vsrange(r_ee(ij),cutr_sim,lowest_pow,ncoef_per,np,b_coul_sim)
 
 c long-range sum
 c     call cossin_old2(glatt_sim,igvec_sim,ngvec_sim,xold,nelec,ng1d_sim,cos_g,sin_g)
