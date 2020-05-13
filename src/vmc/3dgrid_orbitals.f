@@ -12,14 +12,8 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
 
       include 'force.h'
       include 'vmc.h'
@@ -392,6 +386,7 @@ c Lagrange interpolation routines
       subroutine setup_3dlagorb
 
       use atom, only: cent, ncent
+      use wfsec, only: iwf, iwftype, nwftype
 
       implicit real*8(a-h,o-z)
 
@@ -406,8 +401,6 @@ c Lagrange interpolation routines
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
-
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /contrl/ nstep,nblk,nblkeq,n_conf,nconf_new,isite,idump,irstar
 
