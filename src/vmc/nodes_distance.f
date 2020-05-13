@@ -5,7 +5,9 @@ c Written by Claudia Filippi
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use wfsec, only: iwf, iwftype, nwftype
+      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -17,7 +19,6 @@ c Written by Claudia Filippi
       parameter(one=1.d0)
 
 
-      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
       dimension v(3,*),vdonly(3,MELEC)
 

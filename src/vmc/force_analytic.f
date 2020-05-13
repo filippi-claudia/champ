@@ -170,7 +170,9 @@ c-----------------------------------------------------------------------
 
       use da_pseudo, only: da_nonloc, da_pecent, da_vps
 
+      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -189,7 +191,6 @@ c-----------------------------------------------------------------------
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
 
 

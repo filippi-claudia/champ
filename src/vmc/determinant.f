@@ -174,7 +174,9 @@ c-----------------------------------------------------------------------
       use Bloc, only: b, tildem, xmatd, xmatu
 
       use force_analy, only: iforce_analy
+      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -198,7 +200,6 @@ c-----------------------------------------------------------------------
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
 
 

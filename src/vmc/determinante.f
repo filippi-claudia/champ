@@ -105,7 +105,9 @@ c-----------------------------------------------------------------------
       use multimat, only: aa, wfmat
       use multimatn, only: aan, wfmatn
 
+      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -120,7 +122,6 @@ c-----------------------------------------------------------------------
       common /multislatern/ detn(MDET)
      &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
       dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,MORB)
       dimension ymat_tmp(MORB,MELEC)

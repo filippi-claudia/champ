@@ -26,7 +26,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use force_analy, only: iforce_analy
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -72,7 +74,6 @@ c Calculates energy
 
 
 
-      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
 
 
