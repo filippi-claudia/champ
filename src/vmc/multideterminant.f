@@ -14,7 +14,9 @@
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
 
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -34,7 +36,6 @@ c dimensioned at least max(nup**2,ndn**2)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detiab(MDET,2)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /force_analy/ iforce_analy
 
       dimension eloc_det(MDET,2)
       dimension vj(3,MELEC),vpsp_det(*)

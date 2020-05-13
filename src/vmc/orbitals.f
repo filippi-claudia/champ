@@ -11,7 +11,9 @@ c Modified by A. Scemama
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic,ibasis
 
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -26,7 +28,6 @@ c as many ups as downs. If this is not true then be careful if
 c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
-      common /force_analy/ iforce_analy
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 

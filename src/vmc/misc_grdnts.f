@@ -535,14 +535,15 @@ c -----------------------------------------------------------------------
       use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
       use zmatrix_grad, only: transform_grd
 
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
       include 'force.h'
       include 'vmc.h'
 
       parameter (eps=1.d-5,epsi=0.5d0/eps)
 
-      common /force_analy/ iforce_analy,iuse_zmat
 
       dimension czcartp(3,MCENT),czcartm(3,MCENT)
       dimension bwilson(MCENT3,MCENT3),gmat(MCENT3*MCENT3)

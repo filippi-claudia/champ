@@ -173,7 +173,9 @@ c-----------------------------------------------------------------------
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem, xmatd, xmatu
 
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -198,7 +200,6 @@ c-----------------------------------------------------------------------
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
-      common /force_analy/ iforce_analy
 
 
 

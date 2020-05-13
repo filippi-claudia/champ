@@ -23,7 +23,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
      &isc, istrch
       use Bloc, only: b, tildem, xmatd, xmatu
 
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -74,7 +76,6 @@ c Calculates energy
 
 
 
-      common /force_analy/ iforce_analy
 
       dimension coord(3,*),psid(*),energy(*)
       dimension denergy(MSTATES),eloc_det(MDET,2),vpsp_det(2),dvpsp_dj(MPARMJ)

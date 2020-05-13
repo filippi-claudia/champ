@@ -42,14 +42,15 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         use force_fin, only: da_energy_ave, da_energy_err
         use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
       
         include 'vmc.h'
         include 'force.h'
         
-        common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-        
+          
         if (iforce_analy.eq.0) return
         
         call compute_position_bcast

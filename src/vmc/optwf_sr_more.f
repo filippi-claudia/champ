@@ -480,14 +480,15 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use force_fin, only: da_energy_ave, da_energy_err
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
       include 'vmc.h'
       include 'force.h'
 
-      common /force_analy/ iforce_analy
 
       if(iforce_analy.eq.0)return
 

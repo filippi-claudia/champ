@@ -66,7 +66,9 @@ c and Anthony Scemema
       use dorb_m, only: iworbd
       use contrl_per, only: iperiodic,ibasis
 
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
@@ -100,7 +102,6 @@ c and Anthony Scemema
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nbj_current
-      common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
       character*20 fmt
       character*32 keyname

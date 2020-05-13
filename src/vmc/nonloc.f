@@ -15,7 +15,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use Bloc, only: b, tildem, xmatd, xmatu
       use contrl_per, only: iperiodic,ibasis
 
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
       parameter (one=1.d0)
 
@@ -41,7 +43,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       common /b_tmove/ b_t(MORB,MPS_QUAD,MCENT,MELEC),iskip(MELEC,MCENT)
       common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
      & da_nonloc(3,MCENT)
-      common /force_analy/ iforce_analy
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),rr_en_sav(MCENT),rr_en2_sav(MCENT)
@@ -244,7 +245,9 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use contrl_per, only: iperiodic,ibasis
 
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
       parameter (one=1.d0)
 
@@ -257,7 +260,6 @@ c-----------------------------------------------------------------------
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
-      common /force_analy/ iforce_analy
 
       dimension x(3),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),dd1(MELEC,MCENT)
@@ -447,7 +449,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &isc, istrch
       use contrl_per, only: iperiodic,ibasis
 
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'ewald.h'
@@ -456,7 +460,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       parameter (half=.5d0)
 
-      common /force_analy/ iforce_analy
 
       dimension fso(MELEC,*)
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,*)
@@ -561,7 +564,9 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use Bloc_da, only: b_da, db
       use coefs, only: coef, nbasis, norb
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -584,7 +589,6 @@ c-----------------------------------------------------------------------
 
 
 
-      common /force_analy/ iforce_analy
 
       dimension rvec_en_sav(3,MCENT),r_en_sav(MCENT)
 

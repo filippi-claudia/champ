@@ -4,14 +4,15 @@
       use mpiconf, only: idtask, nproc, wid
       use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
       include 'vmc.h'
 
 
-      common /force_analy/ iforce_analy
 
       dimension collect(3*MCENT)
 

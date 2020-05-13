@@ -18,7 +18,9 @@ c Jastrow 6   must be used with one of isc=6,7
       use bparm, only: nocuspb, nspin2b
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -38,7 +40,6 @@ c Jastrow 6   must be used with one of isc=6,7
 
 
 
-      common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
       parameter (half=.5d0,eps=1.d-12)
 

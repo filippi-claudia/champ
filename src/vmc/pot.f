@@ -6,7 +6,9 @@ c get nuclear potential energy
       USE da_pseudo , only:  da_pecent, da_vps
 
 
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -17,8 +19,7 @@ c get nuclear potential energy
 !      common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
 !     & da_nonloc(3,MCENT)
 
-!      common /force_analy/ iforce_analy
-
+!
       if(iperiodic.eq.0) then
         pecent=0
         do 20 i=2,ncent

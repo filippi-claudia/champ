@@ -12,7 +12,9 @@ c vgl -> value, gradient, laplacian
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
       use wfsec, only: iwf, iwftype, nwftype
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -33,7 +35,6 @@ c vgl -> value, gradient, laplacian
 
 
 
-      common /force_analy/ iforce_analy
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension dy(3),ddy(3,3),dlapy(3)

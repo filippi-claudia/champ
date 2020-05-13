@@ -9,7 +9,9 @@
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_check, only: energy_all, energy_err_all
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -24,7 +26,6 @@
 
       character*20 method_sav
 
-      common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
       dimension deltap(MPARM*MSTATES),deltap_more(MPARM*MSTATES,5)
       dimension energy_old(MSTATES), energy_err_old(MSTATES), i_deltap(MSTATES), energy_davidson(6,MSTATES) 

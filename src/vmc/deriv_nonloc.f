@@ -19,7 +19,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
       use contrl_per, only: iperiodic, ibasis
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'mstates.h'
@@ -29,7 +31,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       parameter (half=.5d0)
 
-      common /force_analy/ iforce_analy
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,*)
       dimension r_en(MELEC,MCENT),rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT)
