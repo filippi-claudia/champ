@@ -779,6 +779,30 @@ end module forcewt
    save
  end module ghostatom
 
+ module gradhessj
+   !> Arguments: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2, e2
+   use precision_kinds, only: dp
+   include 'mstates.h'
+   include 'optjas.h'
+
+   real(dp) :: d2j(MPARMJ,MPARMJ,MSTATES)
+   real(dp) :: d2j_e(MPARMJ,MPARMJ,MSTATES)
+   real(dp) :: de(MPARMJ,MSTATES)
+   real(dp) :: de_de(MPARMJ,MPARMJ,MSTATES)
+   real(dp) :: de_e(MPARMJ,MSTATES)
+   real(dp) :: dj(MPARMJ,MSTATES)
+   real(dp) :: dj_de(MPARMJ,MPARMJ,MSTATES)
+   real(dp) :: dj_dj(MPARMJ,MPARMJ,MSTATES)
+   real(dp) :: dj_dj_e(MPARMJ,MPARMJ,MSTATES)
+   real(dp) :: dj_e(MPARMJ,MSTATES)
+   real(dp) :: dj_e2(MPARMJ,MSTATES)
+   real(dp) :: e2(MPARMJ,MSTATES)
+
+   private 
+   public :: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2, e2 
+   save
+ end module gradhessj
+
  module gradhessjo
    !> Arguments: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
    use precision_kinds, only: dp
