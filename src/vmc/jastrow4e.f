@@ -18,7 +18,10 @@ c Jastrow 6   must be used with one of isc=6,7
       use bparm, only: nocuspb, nspin2b
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
+      use jasn, only: d2ijn, d2n, fijn, fjn, fsn, fsumn
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -36,8 +39,6 @@ c Jastrow 6   must be used with one of isc=6,7
 
 
 
-      common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
-     &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
 
 
       parameter (half=.5d0,eps=1.d-12)

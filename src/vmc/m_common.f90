@@ -2011,4 +2011,19 @@ end module pseudo
    save
  end module zmatrix_grad
 
- 
+ module jasn
+   !> Arguments: d2ijn, d2n, fijn, fjn, fsn, fsumn
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+    real(dp) :: d2ijn(MELEC,MELEC)
+    real(dp) :: d2n
+    real(dp) :: fijn(3,MELEC,MELEC)
+    real(dp) :: fjn(3,MELEC)
+    real(dp) :: fsn(MELEC,MELEC)
+    real(dp) :: fsumn
+
+    private 
+    public :: d2ijn, d2n, fijn, fjn, fsn, fsumn 
+    save
+ end module jasn

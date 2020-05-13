@@ -5,7 +5,10 @@ c Written by Claudia Filippi
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
 
       use velocity_jastrow, only: vj, vjn
+      use jasn, only: d2ijn, d2n, fijn, fjn, fsn, fsumn
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -14,8 +17,6 @@ c Written by Claudia Filippi
 
       include 'force.h'
 
-      common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
-     &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
 
 
       fsumo=fsumn
