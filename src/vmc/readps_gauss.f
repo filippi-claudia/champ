@@ -16,7 +16,10 @@ c
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
 
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -26,8 +29,6 @@ c
       character*80 label
       character*256 filename,pooldir,pp_id
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
@@ -129,13 +130,14 @@ c compute gauss-pseudopotential for electron iel
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
       common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
      & da_nonloc(3,MCENT)

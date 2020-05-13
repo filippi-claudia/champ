@@ -27,7 +27,10 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const2, only: deltar, deltat
       use contr3, only: mode
 
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,half=0.5d0)
       parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
@@ -55,8 +58,6 @@ c The foll. still need to be tried:
 c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
  
 c TMP
       common /multislater/ detu(MDET),detd(MDET)

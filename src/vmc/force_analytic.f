@@ -166,7 +166,10 @@ c-----------------------------------------------------------------------
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
 
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -186,8 +189,6 @@ c-----------------------------------------------------------------------
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
       common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
      & da_nonloc(3,MCENT)

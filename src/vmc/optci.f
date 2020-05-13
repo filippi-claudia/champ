@@ -4,7 +4,10 @@
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -17,8 +20,6 @@
 
       common /multislater/ detu(MDET),detd(MDET)
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
 
 

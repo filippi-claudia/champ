@@ -11,7 +11,10 @@ c Modified by F. Schautz to use fancy file names
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use pseudo_tm, only: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo 
 
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -24,8 +27,6 @@ c Modified by F. Schautz to use fancy file names
       character*20 atomtyp,atomsymbol
       character*256 filename,pooldir,pp_id
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
@@ -234,15 +235,16 @@ c compute tm-pseudopotential for electron iel
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use pseudo_tm, only: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo 
 
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
       dimension r_en(MELEC,MCENT)
 

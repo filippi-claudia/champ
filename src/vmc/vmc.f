@@ -27,7 +27,10 @@ c and sa, pa, da asymptotic functions
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -38,8 +41,6 @@ c and sa, pa, da asymptotic functions
       include 'pseudo.h'
 
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
       character*25 fmt
 

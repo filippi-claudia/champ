@@ -1610,6 +1610,23 @@ end module forcewt
    save
  end module phifun
 
+ module pseudo
+   !> Arguments: lpot, nloc, vps, vpso
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'pseudo.h'
+   include 'force.h'
+
+   integer  :: lpot(MCTYPE)
+   integer  :: nloc
+   real(dp) :: vps(MELEC,MCENT,MPS_L)
+   real(dp) :: vpso(MELEC,MCENT,MPS_L,MFORCE)
+
+   private 
+   public :: lpot, nloc, vps, vpso 
+   save
+end module pseudo
+
  module pseudo_champ
    !> Arguments: igrid_ps, rmax_coul, rmax_nloc
    use precision_kinds, only: dp
@@ -1980,3 +1997,4 @@ end module forcewt
    public :: transform_grd 
    save
  end module zmatrix_grad
+

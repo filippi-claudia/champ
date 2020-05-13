@@ -4,7 +4,10 @@ c Written by Claudia Filippi
 
       use pseudo_fahy, only: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
 
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -14,8 +17,6 @@ c Written by Claudia Filippi
       character*20 filename,atomtyp
 
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
@@ -95,15 +96,16 @@ c Written by Claudia Filippi
 
       use pseudo_fahy, only: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
 
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
       include 'pseudo.h'
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
       dimension rad(MELEC,MCENT)
 

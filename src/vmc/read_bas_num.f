@@ -9,7 +9,10 @@ c Reads in localized orbitals on a radial grid
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
       use numexp, only: ae, ce
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -21,8 +24,6 @@ c Reads in localized orbitals on a radial grid
       character*20 wforce,atomtyp,atomsymbol
 
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
       dimension x(MRWF_PTS),work(MRWF_PTS),y(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
      &,l(MBASIS),icusp(MCTYPE)

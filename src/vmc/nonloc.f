@@ -16,7 +16,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use contrl_per, only: iperiodic,ibasis
 
       use force_analy, only: iforce_analy
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
       parameter (one=1.d0)
@@ -30,8 +33,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
@@ -565,7 +566,10 @@ c-----------------------------------------------------------------------
       use Bloc_da, only: b_da, db
       use coefs, only: coef, nbasis, norb
       use force_analy, only: iforce_analy
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -579,8 +583,6 @@ c-----------------------------------------------------------------------
       include 'pseudo.h'
 
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
       common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
      & da_nonloc(3,MCENT)
 

@@ -23,7 +23,10 @@ c The prefered grid is 3.
       use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
       use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
 
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -36,8 +39,6 @@ c The prefered grid is 3.
       character*80 title
 
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
@@ -276,7 +277,10 @@ c compute pseudopotential for electron iel
       use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
       use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
 
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -284,8 +288,6 @@ c compute pseudopotential for electron iel
       include 'force.h'
 
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
 
       dimension r_en(MELEC,MCENT)
@@ -329,15 +331,16 @@ c We assume that rmax_nloc(ict) <= rmax_coul(ict).
       use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
       use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
 
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
 
       if(r.lt.rmax_coul(ict)) then

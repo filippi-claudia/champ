@@ -67,7 +67,10 @@ c and Anthony Scemema
       use contrl_per, only: iperiodic,ibasis
 
       use force_analy, only: iforce_analy
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
@@ -92,8 +95,6 @@ c and Anthony Scemema
 
 
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 

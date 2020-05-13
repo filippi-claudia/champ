@@ -24,7 +24,10 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use Bloc, only: b, tildem, xmatd, xmatu
 
       use force_analy, only: iforce_analy
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -67,8 +70,6 @@ c Calculates energy
       common /multislater/ detu(MDET),detd(MDET)
 
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
