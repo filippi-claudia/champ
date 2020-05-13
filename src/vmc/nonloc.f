@@ -18,7 +18,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use force_analy, only: iforce_analy
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use da_pseudo, only: da_nonloc, da_pecent, da_vps
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -42,8 +45,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       common /multislater/ detu(MDET),detd(MDET)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       common /b_tmove/ b_t(MORB,MPS_QUAD,MCENT,MELEC),iskip(MELEC,MCENT)
-      common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
-     & da_nonloc(3,MCENT)
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),rr_en_sav(MCENT),rr_en2_sav(MCENT)
@@ -568,7 +569,10 @@ c-----------------------------------------------------------------------
       use force_analy, only: iforce_analy
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use da_pseudo, only: da_nonloc, da_pecent, da_vps
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -583,8 +587,6 @@ c-----------------------------------------------------------------------
       include 'pseudo.h'
 
 
-      common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
-     & da_nonloc(3,MCENT)
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad

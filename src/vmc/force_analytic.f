@@ -168,7 +168,10 @@ c-----------------------------------------------------------------------
 
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use da_pseudo, only: da_nonloc, da_pecent, da_vps
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -190,8 +193,6 @@ c-----------------------------------------------------------------------
 
 
 
-      common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
-     & da_nonloc(3,MCENT)
 
 
 

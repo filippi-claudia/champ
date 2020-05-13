@@ -7,7 +7,10 @@ c get nuclear potential energy
 
 
       use force_analy, only: iforce_analy
+      use da_pseudo, only: da_nonloc, da_pecent, da_vps
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -16,8 +19,7 @@ c get nuclear potential energy
 !      common /contrl_per/ iperiodic,ibasis
       dimension znuc(MCTYPE),cent(3,MCENT),iwctype(MCENT)
 
-!      common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
-!     & da_nonloc(3,MCENT)
+!!     & da_nonloc(3,MCENT)
 
 !
       if(iperiodic.eq.0) then

@@ -132,15 +132,16 @@ c compute gauss-pseudopotential for electron iel
 
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use da_pseudo, only: da_nonloc, da_pecent, da_vps
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
 
-      common /da_pseudo/ da_pecent(3,MCENT),da_vps(3,MELEC,MCENT,MPS_L),
-     & da_nonloc(3,MCENT)
 
       dimension r_en(MELEC,MCENT),rvec_en(3,MELEC,MCENT)
 
