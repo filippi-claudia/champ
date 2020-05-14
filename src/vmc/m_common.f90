@@ -994,6 +994,23 @@ end module forcewt
    save
  end module insout
 
+ module jasn
+   !> Arguments: d2ijn, d2n, fijn, fjn, fsn, fsumn
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: d2ijn(MELEC,MELEC)
+   real(dp) :: d2n
+   real(dp) :: fijn(3,MELEC,MELEC)
+   real(dp) :: fjn(3,MELEC)
+   real(dp) :: fsn(MELEC,MELEC)
+   real(dp) :: fsumn
+
+   private 
+   public :: d2ijn, d2n, fijn, fjn, fsn, fsumn 
+   save
+ end module jasn
+
  module jaso
    !> Arguments: d2ijo, d2o, fijo, fjo, fso, fsumo
    use precision_kinds, only: dp
@@ -2010,20 +2027,3 @@ end module pseudo
    public :: transform_grd 
    save
  end module zmatrix_grad
-
- module jasn
-   !> Arguments: d2ijn, d2n, fijn, fjn, fsn, fsumn
-   use precision_kinds, only: dp
-   include 'vmc.h'
-
-    real(dp) :: d2ijn(MELEC,MELEC)
-    real(dp) :: d2n
-    real(dp) :: fijn(3,MELEC,MELEC)
-    real(dp) :: fjn(3,MELEC)
-    real(dp) :: fsn(MELEC,MELEC)
-    real(dp) :: fsumn
-
-    private 
-    public :: d2ijn, d2n, fijn, fjn, fsn, fsumn 
-    save
- end module jasn

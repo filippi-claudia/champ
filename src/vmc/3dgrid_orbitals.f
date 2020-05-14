@@ -13,7 +13,9 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use coefs, only: coef, nbasis, norb
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
 
+      use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
+
 
       include 'force.h'
       include 'vmc.h'
@@ -398,10 +400,8 @@ c Lagrange interpolation routines
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
-
       common /contrl/ nstep,nblk,nblkeq,n_conf,nconf_new,isite,idump,irstar
 
       character*(32) filename
@@ -824,12 +824,10 @@ c
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
 
-
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
-
 
       dimension r(3),dr(3),orb(3,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
@@ -914,7 +912,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine orb3d_rstrt(iu)
+
       use coefs, only: coef, nbasis, norb
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
