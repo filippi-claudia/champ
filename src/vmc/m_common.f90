@@ -1351,6 +1351,20 @@ end module forcewt
    save
  end module numbas2
 
+ module optorb
+   !> Arguments: dmat_diag, irrep, orb_energy
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: dmat_diag(MORB)
+   integer  :: irrep(MORB)
+   real(dp) :: orb_energy(MORB)
+
+   private 
+   public :: dmat_diag, irrep, orb_energy 
+   save
+ end module optorb
+
  module optorb_mix
    !> Arguments: iwmix_virt, norbopt, norbvirt
    use precision_kinds, only: dp
@@ -2027,3 +2041,5 @@ end module pseudo
    public :: transform_grd 
    save
  end module zmatrix_grad
+
+ 

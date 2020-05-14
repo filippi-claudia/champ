@@ -1804,12 +1804,13 @@ c-----------------------------------------------------------------------
 C$INPUT sym_labels i i a=<input>
 CKEYDOC Read symmetry information
       use coefs, only: coef, nbasis, norb
+      use optorb, only: dmat_diag, irrep, orb_energy
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
-      common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
 
       character fn*(*)
       character atmp*80
@@ -1870,12 +1871,13 @@ C$INPUT energies i a=<input>
 C$INPUT eigenvalues i a=<input>
 CKEYDOC Read orbital energies 
       use coefs, only: coef, nbasis, norb
+      use optorb, only: dmat_diag, irrep, orb_energy
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
 
-      common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
 
       character fn*(*)
 
@@ -1896,7 +1898,9 @@ C$INPUT dmatrix i i a=<input>
 CKEYDOC Read diagonal density matrix information.
       use sa_weights, only: iweight, nweight, weights
       use coefs, only: coef, nbasis, norb
+      use optorb, only: dmat_diag, irrep, orb_energy
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -1904,7 +1908,6 @@ CKEYDOC Read diagonal density matrix information.
       include 'force.h'
       include 'mstates.h'
 
-      common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
       character fn*(*)
 
       dimension dmat(MORB),iwdmat(MSTATES)

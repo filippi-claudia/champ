@@ -765,7 +765,9 @@ c-----------------------------------------------------------------------
       use coefs, only: coef, nbasis, norb
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       use dorb_m, only: iworbd
+      use optorb, only: dmat_diag, irrep, orb_energy
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -785,7 +787,6 @@ c-----------------------------------------------------------------------
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /optorb/ orb_energy(MORB),dmat_diag(MORB),irrep(MORB)
 
       data icount_orbdef /1/
 
