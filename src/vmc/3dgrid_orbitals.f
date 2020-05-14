@@ -14,7 +14,12 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
 
       use coefs, only: coef, nbasis, norb
+      use phifun, only: d2phin, dphin, phin
+
+      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
+
 
 
       include 'force.h'
@@ -400,9 +405,6 @@ c Lagrange interpolation routines
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
-      common /contrl/ nstep,nblk,nblkeq,n_conf,nconf_new,isite,idump,irstar
 
       character*(32) filename
       integer a,b,c
