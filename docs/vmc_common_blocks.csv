@@ -34,7 +34,6 @@ dets_equiv,2,DONE
 distance,14,Todo
 distances_sav,2,DONE
 dorb,24,DONE
-dymat,12,Todo
 elec,53,DONE
 est2cm,8,DONE
 estcum,8,DONE
@@ -142,3 +141,6 @@ ycompactn,3,DONE
 zcompact,4,DONE
 zmatrix,10,DONE
 zmatrix_grad,1,DONE
+orbval, ?, Todo
+pseudo, ?, DONE
+jasn, ?, DONE 

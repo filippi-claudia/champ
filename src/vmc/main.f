@@ -2,6 +2,7 @@
 c Written by Claudia Filippi
       use mpiconf, only: idtask, nproc, wid
       use contr3, only: mode
+      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
 
       implicit real*8(a-h,o-z)
 
@@ -11,8 +12,6 @@ c Written by Claudia Filippi
 c mpif.h is system, mpi_qmc.h is ours
       include 'mpi_qmc.h'
       include 'mpif.h'
-
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       call mpi_init(ierr)
 

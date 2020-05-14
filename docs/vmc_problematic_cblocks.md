@@ -185,6 +185,12 @@ NEQSX and MTERMS were included in the vmc.h file.
 Parameter MCENT3 defined in misc_grdnts.f should be included in an include file.\
 **SOLUTION:** \
 To add:\
-parameter (MCENT3=3*MCENT)
+parameter (MCENT3=3*MCENT)\
+in the vmc.h file.\
 
-In the vmc.h file.
+- [x] ***#142 common block /orbval/***\
+**PROBLEM:** \
+Shares dorb and ddorb with common block /slater/.\
+**SOLUTION:** \
+TODO\
+
