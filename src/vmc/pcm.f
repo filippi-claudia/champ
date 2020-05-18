@@ -782,14 +782,16 @@ c     This subroutine computes the coordinates of point charges
 c     on the cavity surface
 C     ***************************************************************
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      implicit real*8 (a-h,o-z)
+      use spc, only: nsf, num
+      use spc1, only: csf, qsf, rsf
+      use spc2, only: nxyz, sfxyz, usf
+
+      implicit real*8(a-h,o-z)
+
       include 'pcm.h'
       include 'vmc.h'
 c
 c....................................................................
-      common/spc/nsf,num(50)
-      common/spc1/rsf(50),qsf(50,3),csf(750,4,50)
-      common/spc2/sfxyz(5000,4),usf(5000,3),nxyz
 c....................................................................
       dimension dist(2000000),ijpair(2000000,2)
       dimension inda1(5000),xpolt(3,5000)
@@ -1042,13 +1044,15 @@ c..................................................
 
 
       subroutine prep
-      implicit real*8 (a-h,o-z)
+      use spc, only: nsf, num
+      use spc1, only: csf, qsf, rsf
+      implicit real*8(a-h,o-z)
+
+
       dimension x(1000),y(1000),z(1000)
       dimension xm(1000),ym(1000),zm(1000)
       dimension el1(1000),el2(1000)
       dimension elm1(1000),elm2(1000)
-      common/spc/nsf,num(50)
-      common/spc1/rsf(50),qsf(50,3),csf(750,4,50)
       maxit=100
       epsilon=0.d0
       pi2=8.d0*datan(1.d0)
@@ -1155,13 +1159,15 @@ c     f1=r0*dsin(theta)
       end
 
       subroutine prep1
-      implicit real*8 (a-h,o-z)
+      use spc, only: nsf, num
+      use spc1, only: csf, qsf, rsf
+      implicit real*8(a-h,o-z)
+
+
       dimension x(1000),y(1000),z(1000)
       dimension xm(1000),ym(1000),zm(1000)
       dimension el1(1000),el2(1000)
       dimension elm1(1000),elm2(1000)
-      common/spc/nsf,num(50)
-      common/spc1/rsf(50),qsf(50,3),csf(750,4,50)
       maxit=300
       epsilon=0.d0
       pi2=8.d0*datan(1.d0)
