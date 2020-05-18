@@ -26,7 +26,10 @@ c routine to accumulate estimators for energy etc.
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -41,8 +44,6 @@ c routine to accumulate estimators for energy etc.
       include 'pseudo.h'
 
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 

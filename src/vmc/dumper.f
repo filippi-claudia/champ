@@ -22,7 +22,10 @@ c job where it left off
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -35,8 +38,6 @@ c job where it left off
       include 'mpi_qmc.h'
       include 'mpif.h'
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
 
 

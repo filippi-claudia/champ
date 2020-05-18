@@ -13,7 +13,10 @@ c Modified by F. Schautz to use fancy file names
 
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -28,8 +31,6 @@ c Modified by F. Schautz to use fancy file names
       character*256 filename,pooldir,pp_id
 
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
       dimension r(MPS_GRID),y(NCOEF),ce(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
       dimension work(MPS_GRID)

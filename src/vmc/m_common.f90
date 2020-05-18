@@ -1820,6 +1820,25 @@ end module pseudo
    save
  end module pworbital
 
+ module qua
+   !> Arguments: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+   use precision_kinds, only: dp
+   include 'pseudo.h'
+
+   integer  :: nquad
+   real(dp) :: wq(MPS_QUAD)
+   real(dp) :: xq(MPS_QUAD)
+   real(dp) :: xq0(MPS_QUAD)
+   real(dp) :: yq(MPS_QUAD)
+   real(dp) :: yq0(MPS_QUAD)
+   real(dp) :: zq(MPS_QUAD)
+   real(dp) :: zq0(MPS_QUAD)
+
+   private
+   public :: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+   save
+ end module qua
+
  module rlobxy
    !> Arguments: rlobx, rloby, rloby2
    use precision_kinds, only: dp

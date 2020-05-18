@@ -6,7 +6,10 @@ c Written by Claudia Filippi
 
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -18,8 +21,6 @@ c Written by Claudia Filippi
 
 
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
 c nquad = number of quadrature points
 c nlang = number of non-local potentials

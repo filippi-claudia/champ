@@ -70,7 +70,10 @@ c and Anthony Scemema
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
 
       use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -97,8 +100,6 @@ c and Anthony Scemema
 
 
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
 
 

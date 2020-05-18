@@ -156,11 +156,11 @@ It shares variables with common block /multislatern/, they should be condensed i
 **SOLUTION:** \
 TODO
 
-- [ ] ***#118 common block /qua/***\
+- [x] ***#118 common block /qua/***\
 **PROBLEM:** \
 Unclear why but tests numbers are not reproducible.\
 **SOLUTION:** \
-TODO
+I missed call to the common block in roqua.f.
 
 - [ ] ***#120 common block /rnyucm/***\
 **PROBLEM:** \
@@ -184,13 +184,12 @@ NEQSX and MTERMS were included in the vmc.h file.
 **PROBLEM:** \
 Parameter MCENT3 defined in misc_grdnts.f should be included in an include file.\
 **SOLUTION:** \
-To add:\
+To add: \
 parameter (MCENT3=3*MCENT)\
 in the vmc.h file.\
 
-- [x] ***#142 common block /orbval/***\
+- [ ] ***#142 common block /orbval/***\
 **PROBLEM:** \
 Shares dorb and ddorb with common block /slater/.\
 **SOLUTION:** \
-TODO\
-
+TODO \

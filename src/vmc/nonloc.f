@@ -19,7 +19,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use b_tmove , only: b_t,iskip
       use da_pseudo, only: da_nonloc, da_pecent, da_vps
 
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+
       implicit real*8(a-h,o-z)
+
 
       parameter (one=1.d0)
 
@@ -32,8 +35,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
      &,fppu(MMAT_DIM),fppd(MMAT_DIM)
@@ -243,7 +244,10 @@ c-----------------------------------------------------------------------
       use contrl_per, only: iperiodic,ibasis
 
       use force_analy, only: iforce_analy
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+
       implicit real*8(a-h,o-z)
+
 
 
       parameter (one=1.d0)
@@ -254,8 +258,6 @@ c-----------------------------------------------------------------------
       include 'pseudo.h'
       include 'ewald.h'
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
 
       dimension x(3),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
@@ -566,7 +568,10 @@ c-----------------------------------------------------------------------
 
       use da_pseudo, only: da_nonloc, da_pecent, da_vps
 
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -583,8 +588,6 @@ c-----------------------------------------------------------------------
 
 
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
 
 

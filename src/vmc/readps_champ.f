@@ -25,7 +25,10 @@ c The prefered grid is 3.
 
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -41,8 +44,6 @@ c The prefered grid is 3.
 
 
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
       dimension r(MPS_GRID),work(MPS_GRID),lpot_max(MPS_L)
 
