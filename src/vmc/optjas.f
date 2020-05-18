@@ -363,20 +363,16 @@ c Written by Claudia Filippi
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
      &e2
+      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
       implicit real*8(a-h,o-z)
-
-
-
 
 
       include 'vmc.h'
       include 'optjas.h'
+      include 'optorb.h'
       include 'force.h'
       include 'mstates.h'
 
-
-
-      common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
 
@@ -476,21 +472,15 @@ c Written by Claudia Filippi
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
      &e2
+      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
       implicit real*8(a-h,o-z)
-
-
-
 
 
       include 'vmc.h'
       include 'optjas.h'
+      include 'optorb.h'
       include 'mstates.h'
       include 'force.h'
-
-
-
-      common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
-
 
 
       if(ioptjas.eq.0) return
@@ -540,20 +530,16 @@ c Written by Claudia Filippi
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
      &e2
+      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
       implicit real*8(a-h,o-z)
-
-
-
 
 
       include 'vmc.h'
       include 'optjas.h'
+      include 'optorb.h'
       include 'force.h'
       include 'mstates.h'
 
-
-
-      common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
 
@@ -585,20 +571,17 @@ c Written by Claudia Filippi
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
      &e2
+
+      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
       implicit real*8(a-h,o-z)
-
-
-
 
 
       include 'vmc.h'
       include 'optjas.h'
+      include 'optorb.h'
       include 'force.h'
       include 'mstates.h'
 
-
-
-      common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
 
@@ -641,7 +624,9 @@ c Written by Claudia Filippi
      &isc, istrch
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
      &e2
+      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -654,16 +639,9 @@ c Written by Claudia Filippi
 
       include 'vmc.h'
       include 'optjas.h'
+      include 'optorb.h'
       include 'force.h'
       include 'mstates.h'
-
-
-
-
-      common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
-
-
-
 
 
 

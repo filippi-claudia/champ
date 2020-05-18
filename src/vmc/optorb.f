@@ -10,7 +10,7 @@
       use Bloc, only: b, tildem, xmatd, xmatu
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
-
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -93,7 +93,7 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use zcompact, only: aaz, dzmat, emz, zmat
-
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
 
@@ -135,6 +135,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
 
@@ -242,6 +243,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
 
@@ -304,6 +306,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
 
@@ -378,6 +381,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
 
@@ -406,6 +410,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
 
@@ -432,6 +437,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -459,6 +465,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
 
@@ -494,6 +501,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
 
@@ -543,6 +551,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use sa_weights, only: iweight, nweight, weights
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
 
@@ -719,6 +728,7 @@ c Approximation: diagonal perturbative approach
       end
 c-----------------------------------------------------------------------
       subroutine detratio_col(nel,orb,icol,sinvt,ratio,isltnew)
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 c values of new orbital
       dimension orb(nel)
@@ -766,6 +776,7 @@ c-----------------------------------------------------------------------
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       use dorb_m, only: iworbd
       use optorb, only: dmat_diag, irrep, orb_energy
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
 
@@ -976,7 +987,7 @@ c-----------------------------------------------------------------------
 
 c Do not compute virtual orbitals during single-electron move
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'

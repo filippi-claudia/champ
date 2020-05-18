@@ -2,30 +2,22 @@
 c Written by Claudia Filippi
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
      &e2
+
+      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
       implicit real*8(a-h,o-z)
-
-
-
-
 
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optjas.h'
+      include 'optorb.h'
       include 'mpif.h'
-
-
-
-      common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
-
 
 
       dimension collect(MPARMJ,MSTATES),collect2(MPARMJ,MPARMJ,MSTATES)

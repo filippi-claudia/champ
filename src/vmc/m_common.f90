@@ -911,6 +911,21 @@ end module forcewt
    save
  end module gradjerr
 
+ module gradjerrb
+  !> Arguments: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
+  use precision_kinds, only: dp
+  include 'vmc.h'
+
+   integer  :: nbj_current
+   integer  :: ngrad_jas_bcum
+   integer  :: ngrad_jas_blocks
+   integer  :: njb_current
+
+   private 
+   public :: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current 
+   save
+ end module gradjerrb
+
  module grdnthes
    !> Arguments: hessian_zmat
    use precision_kinds, only: dp
@@ -1364,6 +1379,46 @@ end module forcewt
    public :: dmat_diag, irrep, orb_energy 
    save
  end module optorb
+
+ module optorb_cblock   ! from optorb.h 
+
+   ! norbterm: number of terms (possibly after a transformation)
+   ! norbprim: number of primitive terms (determinant ratios)
+   integer :: norbterm
+   integer :: norbprim
+
+   ! PLT: From old common block /orb004/
+   integer :: nefp_blocks
+   integer :: nb_current
+   integer :: norb_f_bcum
+
+   ! reduced correlation matrix pointers
+   ! threshold in terms of std dev. , limit for keeping operators
+   ! if iuse_trafo: linearly transformed operators sampled instead of primitive
+   !     replacement operators 
+   ! PLT: From old common blocks /orb006/ and /orb008/.
+   integer :: isample_cmat
+   integer :: nreduced 
+   integer :: iuse_trafiuse_trafoo 
+
+   ! Dumping block averages for error analysis. 
+   ! PLT: From old common blocks /orb009/ and /orb010/.
+   integer :: idump_blockav 
+   integer :: iorbsample 
+   integer :: ns_current
+
+   ! Printing flags:
+   integer :: iorbprt
+   integer :: iorbprt_sav
+
+   private 
+   public :: norbterm, norbprim
+   public :: nefp_blocks, nb_current, norb_f_bcum
+   public :: isample_cmat, nreduced, iuse_trafiuse_trafoo 
+   public :: idump_blockav, iorbsample, ns_current 
+   public :: iorbprt, iorbprt_sav
+   save
+ end module optorb_cblock 
 
  module optorb_mix
    !> Arguments: iwmix_virt, norbopt, norbvirt
@@ -2041,5 +2096,5 @@ end module pseudo
    public :: transform_grd 
    save
  end module zmatrix_grad
-
+ 
  

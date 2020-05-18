@@ -11,6 +11,7 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       use sr_index, only: jelo, jelo2, jelohfj
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
+      use optorb_cblock, only: norbterm, norbprim 
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
@@ -210,6 +211,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
       use mpiconf, only: idtask, nproc
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
@@ -278,6 +280,7 @@ c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'sr.h'
@@ -305,6 +308,7 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
       use sr_index, only: jelo, jelo2, jelohfj
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
@@ -426,6 +430,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
     
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -481,6 +486,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use force_fin, only: da_energy_ave, da_energy_err
       use force_analy, only: iforce_analy
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -507,6 +513,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use mpiconf, only: idtask, nproc
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 

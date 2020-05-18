@@ -1,6 +1,7 @@
       subroutine optx_orb_ci_sum(p,q)
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -29,6 +30,7 @@ c-----------------------------------------------------------------------
       subroutine optx_orb_ci_init
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -54,6 +56,7 @@ c-----------------------------------------------------------------------
       subroutine optx_orb_ci_dump(iu)
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -73,6 +76,7 @@ c-----------------------------------------------------------------------
       subroutine optx_orb_ci_rstrt(iu)
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -97,6 +101,7 @@ c-----------------------------------------------------------------------
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 

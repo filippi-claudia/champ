@@ -6,10 +6,9 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use bparm, only: nocuspb, nspin2b
-
       use deloc_dj_m, only: denergy
-      implicit real*8(a-h,o-z)
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'mstates.h'
@@ -33,7 +32,6 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_init
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       implicit real*8(a-h,o-z)
@@ -127,18 +125,9 @@ c-----------------------------------------------------------------------
      &isc, istrch
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
      &e2
+
+      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
 
 
       include 'vmc.h'
@@ -147,15 +136,6 @@ c-----------------------------------------------------------------------
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
-
-
-
-
-      common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,njb_current
-
-
-
-
 
 
       dimension oelocav(MXCITERM),eav(MXCITERM)

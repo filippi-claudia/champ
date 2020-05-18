@@ -1,7 +1,7 @@
       subroutine optorb_reduce
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
+      use optorb_cblock, only: norbterm,  norbprim
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       implicit real*8(a-h,o-z)
 

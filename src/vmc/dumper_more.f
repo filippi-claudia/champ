@@ -24,32 +24,11 @@ c job where it left off
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
-
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use const2, only: deltar, deltat
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
       include 'vmc.h'
@@ -61,12 +40,6 @@ c job where it left off
       include 'optci.h'
 
       parameter(half=0.5d0,small=1.d-6)
-
-
-
-
-
-
 
       dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT)
      &,znucx(MCTYPE),n1sx(MCTYPE),n2sx(MCTYPE),n2px(3,MCTYPE)

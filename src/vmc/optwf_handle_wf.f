@@ -1,6 +1,7 @@
 c-----------------------------------------------------------------------
       subroutine write_wf(iwf_fit,iter)
       use mpiconf, only: idtask, nproc
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -35,6 +36,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine write_wf_best
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
@@ -62,6 +64,7 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       use bparm, only: nocuspb, nspin2b
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -135,6 +138,7 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use coefs, only: coef, nbasis, norb
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -183,6 +187,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use dorb_m, only: iworbd
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -248,6 +253,7 @@ c
       end
 c-----------------------------------------------------------------------
       subroutine setup_wf
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
   
       do 10 k=2,3
@@ -260,6 +266,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_wf
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -276,6 +283,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine restore_wf(iadiag)
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -290,6 +298,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_wf_best(ioptjas,ioptorb,ioptci)
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
@@ -310,6 +319,7 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: a4, norda, nordb, nordc
       use bparm, only: nocuspb, nspin2b
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -360,6 +370,7 @@ c Restore parameters corresponding to run generating hessian
 c-----------------------------------------------------------------------
       subroutine save_lcao
       use coefs, only: coef, nbasis, norb
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -390,6 +401,7 @@ c-----------------------------------------------------------------------
 
       use dets, only: cdet, ndet
       use coefs, only: coef, nbasis, norb
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -450,6 +462,7 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: a4, norda, nordb, nordc
       use bparm, only: nocuspb, nspin2b
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -479,6 +492,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
       use coefs, only: coef, nbasis, norb
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -497,6 +511,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -518,6 +533,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_zex(iadiag)
       use coefs, only: coef, nbasis, norb
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -540,6 +556,7 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: a4, norda, nordb, nordc
       use bparm, only: nocuspb, nspin2b
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -590,6 +607,7 @@ c-----------------------------------------------------------------------
       subroutine save_lcao_best
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use coefs, only: coef, nbasis, norb
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -624,6 +642,7 @@ c-----------------------------------------------------------------------
 
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -663,6 +682,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine compute_parameters(dparm,iflag,iadiag)
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       dimension dparm(*)
@@ -692,6 +712,7 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       use bparm, only: nocuspb, nspin2b
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -739,6 +760,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use coefs, only: coef, nbasis, norb
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -779,6 +801,7 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -849,6 +872,7 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       use bparm, only: nocuspb, nspin2b
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -886,6 +910,7 @@ c-----------------------------------------------------------------------
       subroutine test_solution_parm(nparm,dparm,
      &              dparm_norm,dparm_norm_min,add_diag,iflag)
 
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -913,6 +938,7 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -962,6 +988,7 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -1012,6 +1039,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
      &sr_o, wtg
       use deloc_dj_m, only: denergy
       use force_analy, only: iforce_analy
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 

@@ -65,11 +65,13 @@ c and Anthony Scemema
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       use dorb_m, only: iworbd
       use contrl_per, only: iperiodic,ibasis
-
       use force_analy, only: iforce_analy
       use pseudo, only: lpot, nloc, vps, vpso
+      use optorb_cblock, only: norbterm, norbprim, idump_blockav
 
+      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -102,7 +104,6 @@ c and Anthony Scemema
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-      common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nbj_current
 
       character*20 fmt
       character*32 keyname

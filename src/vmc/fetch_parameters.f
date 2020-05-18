@@ -1,5 +1,6 @@
 c-----------------------------------------------------------------------
       subroutine fetch_parameters(p)
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       dimension p(*)
@@ -30,6 +31,7 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       use bparm, only: nocuspb, nspin2b
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -71,6 +73,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use coefs, only: coef, nbasis, norb
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -100,6 +103,7 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
