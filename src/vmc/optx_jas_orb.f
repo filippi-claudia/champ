@@ -6,7 +6,10 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use deloc_dj_m, only: denergy
+      use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -17,8 +20,6 @@
       include 'optorb_cblk.h'
 
 
-      common /mix_jas_orb/ dj_o(MPARMJ,MXREDUCED,MSTATES),dj_oe(MPARMJ,MXREDUCED,MSTATES),
-     &de_o(MPARMJ,MXREDUCED,MSTATES),dj_ho(MPARMJ,MXREDUCED,MSTATES)
 
 
       dimension wtg_new(*),wtg_old(*)
@@ -60,7 +61,10 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -71,8 +75,6 @@ c-----------------------------------------------------------------------
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /mix_jas_orb/ dj_o(MPARMJ,MXREDUCED,MSTATES),dj_oe(MPARMJ,MXREDUCED,MSTATES),
-     &de_o(MPARMJ,MXREDUCED,MSTATES),dj_ho(MPARMJ,MXREDUCED,MSTATES)
 
 
 
@@ -98,7 +100,10 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -109,8 +114,6 @@ c-----------------------------------------------------------------------
       include 'optorb.h'
       include 'optorb_cblk.h'
 
-      common /mix_jas_orb/ dj_o(MPARMJ,MXREDUCED,MSTATES),dj_oe(MPARMJ,MXREDUCED,MSTATES),
-     &de_o(MPARMJ,MXREDUCED,MSTATES),dj_ho(MPARMJ,MXREDUCED,MSTATES)
 
 
 
@@ -129,7 +132,10 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -139,8 +145,6 @@ c-----------------------------------------------------------------------
       include 'optjas.h'
       include 'optorb.h'
 
-      common /mix_jas_orb/ dj_o(MPARMJ,MXREDUCED,MSTATES),dj_oe(MPARMJ,MXREDUCED,MSTATES),
-     &de_o(MPARMJ,MXREDUCED,MSTATES),dj_ho(MPARMJ,MXREDUCED,MSTATES)
 
 
 
@@ -161,7 +165,10 @@ c-----------------------------------------------------------------------
       use sa_weights, only: iweight, nweight, weights
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
      &e2
+      use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -177,8 +184,6 @@ c-----------------------------------------------------------------------
       include 'optorb_cblk.h'
 
 
-      common /mix_jas_orb/ dj_o(MPARMJ,MXREDUCED,MSTATES),dj_oe(MPARMJ,MXREDUCED,MSTATES),
-     &de_o(MPARMJ,MXREDUCED,MSTATES),dj_ho(MPARMJ,MXREDUCED,MSTATES)
 
 
 

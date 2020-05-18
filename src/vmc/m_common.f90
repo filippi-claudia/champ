@@ -1205,6 +1205,23 @@ end module forcewt
    save
  end module mix_jas_ci
 
+ module mix_jas_orb
+   !> Arguments: de_o, dj_ho, dj_o, dj_oe
+   use precision_kinds, only: dp
+   include 'optorb.h'
+   include 'optjas.h'
+   include 'mstates.h'
+ 
+   real(dp) :: de_o(MPARMJ,MXREDUCED,MSTATES)
+   real(dp) :: dj_ho(MPARMJ,MXREDUCED,MSTATES)
+   real(dp) :: dj_o(MPARMJ,MXREDUCED,MSTATES)
+   real(dp) :: dj_oe(MPARMJ,MXREDUCED,MSTATES)
+ 
+   private 
+   public :: de_o, dj_ho, dj_o, dj_oe 
+   save
+ end module mix_jas_orb
+
  module mix_orb_ci
    !> Arguments: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
    use precision_kinds, only: dp
@@ -2112,5 +2129,4 @@ end module pseudo
    public :: transform_grd 
    save
  end module zmatrix_grad
- 
  
