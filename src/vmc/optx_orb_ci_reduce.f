@@ -3,7 +3,10 @@ c Written by Claudia Filippi
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -13,8 +16,6 @@ c Written by Claudia Filippi
       include 'mpif.h'
 
 
-      common /mix_orb_ci/ ci_o_o(MXCITERM,MXREDUCED),ci_o_oe(MXCITERM,MXREDUCED),
-     &ci_de_o(MXCITERM,MXREDUCED),ci_o_ho(MXCITERM,MXREDUCED)
 
       dimension collect(MXCITERM,MXREDUCED)
 

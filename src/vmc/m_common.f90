@@ -1205,6 +1205,22 @@ end module forcewt
    save
  end module mix_jas_ci
 
+ module mix_orb_ci
+   !> Arguments: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
+   use precision_kinds, only: dp
+   include 'optci.h'
+   include 'optorb.h'
+
+   real(dp) :: ci_de_o(MXCITERM,MXREDUCED)
+   real(dp) :: ci_o_ho(MXCITERM,MXREDUCED)
+   real(dp) :: ci_o_o(MXCITERM,MXREDUCED)
+   real(dp) :: ci_o_oe(MXCITERM,MXREDUCED)
+
+   private 
+   public :: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe 
+   save
+ end module mix_orb_ci
+
  module mmpol_hpsi
    !> Arguments: eek_pol, peQMdp, peQMq
    use precision_kinds, only: dp
