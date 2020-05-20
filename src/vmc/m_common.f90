@@ -1883,6 +1883,21 @@ end module pseudo
     save
  end module rlobxy
 
+ module rnyucm
+   !> Arguments: l, m
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   integer  :: l(4)
+   integer  :: m(4)
+   data m / 502,1521,4071,2107/
+   data l /   0,   0,   0,   1/
+
+   private
+   public :: l, m
+   save
+end module rnyucm
+
  module sa_check
    !> Arguments: energy_all, energy_err_all
    use precision_kinds, only: dp
@@ -2216,3 +2231,5 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
+
+
