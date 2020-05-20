@@ -1399,6 +1399,21 @@ end module forcewt
    save
  end module numbas2
 
+ module orb_mat_001
+   !> Arguments: orb_o, orb_oe, orb_ho
+   use precision_kinds, only: dp
+   include 'optorb.h'
+   include 'mstates.h'
+
+   real(dp) :: orb_ho(MXORBOP,MSTATES)
+   real(dp) :: orb_o(MXORBOP,MSTATES)
+   real(dp) :: orb_oe(MXORBOP,MSTATES)
+   private
+
+   public :: orb_o, orb_oe, orb_ho
+   save
+ end module orb_mat_001
+
  module optorb
    !> Arguments: dmat_diag, irrep, orb_energy
    use precision_kinds, only: dp

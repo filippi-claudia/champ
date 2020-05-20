@@ -8,7 +8,9 @@
       use deloc_dj_m, only: denergy
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
+      use orb_mat_001, only: orb_ho, orb_o, orb_oe
       implicit real*8(a-h,o-z)
+
 
 
 

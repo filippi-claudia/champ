@@ -4,7 +4,9 @@
       use optorb_cblock, only: norbterm, norbprim
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
 
+      use orb_mat_001, only: orb_ho, orb_o, orb_oe
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'

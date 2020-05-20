@@ -1,8 +1,6 @@
 !     Common blocks (matrices) for efpci 
 ! 
 ! ratios  determinant/twf (efpci operators)
-      common /orb_mat_001/ orb_o(MXORBOP,MSTATES),orb_oe(MXORBOP,MSTATES)
-      common /orb_mat_001/ orb_ho(MXORBOP,MSTATES)
 ! old ratios
       common /orb_mat_002/ orb_o_old(MXORBOP,MSTATES),orb_oe_old(MXORBOP,MSTATES)
       common /orb_mat_002/ orb_ho_old(MXORBOP,MSTATES)

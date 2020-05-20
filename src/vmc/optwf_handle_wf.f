@@ -1040,7 +1040,9 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use deloc_dj_m, only: denergy
       use force_analy, only: iforce_analy
       use optorb_cblock, only: norbterm, norbprim
+      use orb_mat_001, only: orb_ho, orb_o, orb_oe
       implicit real*8(a-h,o-z)
+
 
 
 
