@@ -1414,6 +1414,21 @@ end module forcewt
    save
  end module orb_mat_001
 
+ module orb_mat_002
+  !> Arguments: orb_oe_old, orb_o_old, orb_ho_old
+  use precision_kinds, only: dp
+  include 'optorb.h'
+  include 'mstates.h'
+
+   real(dp) :: orb_ho_old(MXORBOP,MSTATES)
+   real(dp) :: orb_o_old(MXORBOP,MSTATES)
+   real(dp) :: orb_oe_old(MXORBOP,MSTATES)
+   private
+
+   public :: orb_oe_old, orb_o_old, orb_ho_old
+   save
+end module orb_mat_002
+
  module optorb
    !> Arguments: dmat_diag, irrep, orb_energy
    use precision_kinds, only: dp
@@ -2201,5 +2216,3 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
- 
- 

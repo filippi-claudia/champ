@@ -139,7 +139,9 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
+      use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -387,7 +389,9 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
+      use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -418,7 +422,9 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
+      use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
       implicit real*8(a-h,o-z)
+
 
 
 
