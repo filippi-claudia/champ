@@ -1415,19 +1415,86 @@ end module forcewt
  end module orb_mat_001
 
  module orb_mat_002
-  !> Arguments: orb_oe_old, orb_o_old, orb_ho_old
-  use precision_kinds, only: dp
-  include 'optorb.h'
-  include 'mstates.h'
+   !> Arguments: orb_ho_old, orb_o_old, orb_oe_old
+   use precision_kinds, only: dp
+   include 'optorb.h'
+   include 'mstates.h'
 
    real(dp) :: orb_ho_old(MXORBOP,MSTATES)
    real(dp) :: orb_o_old(MXORBOP,MSTATES)
    real(dp) :: orb_oe_old(MXORBOP,MSTATES)
    private
 
-   public :: orb_oe_old, orb_o_old, orb_ho_old
+   public :: orb_ho_old, orb_o_old, orb_oe_old
    save
-end module orb_mat_002
+ end module orb_mat_002
+
+ module orb_mat_003
+   !> Arguments: orb_o_sum, orb_o_cum
+   use precision_kinds, only: dp
+   include 'optorb.h'
+   include 'mstates.h'
+
+   real(dp) :: orb_o_cum(MXORBOP,MSTATES)
+   real(dp) :: orb_o_sum(MXORBOP,MSTATES)
+   private
+
+   public :: orb_o_sum, orb_o_cum
+   save
+ end module orb_mat_003
+
+ module orb_mat_004
+   !> Arguments: orb_oe_sum, orb_oe_cum
+   use precision_kinds, only: dp
+   include 'optorb.h'
+   include 'mstates.h'
+
+   real(dp) :: orb_oe_cum(MXORBOP,MSTATES)
+   real(dp) :: orb_oe_sum(MXORBOP,MSTATES)
+   private
+
+   public :: orb_oe_sum, orb_oe_cum
+   save
+ end module orb_mat_004
+
+ module orb_mat_005
+   !> Arguments: orb_ho_cum
+   use precision_kinds, only: dp
+   include 'optorb.h'
+   include 'mstates.h'
+
+   real(dp) :: orb_ho_cum(MXORBOP,MSTATES)
+   private
+
+   public :: orb_ho_cum
+   save
+ end module orb_mat_005
+
+ module orb_mat_006
+   !> Arguments: orb_oo_cum
+   use precision_kinds, only: dp
+   include 'optorb.h'
+   include 'mstates.h'
+
+   real(dp) :: orb_oo_cum(MXMATDIM2,MSTATES)
+   private
+
+   public :: orb_oo_cum
+   save
+ end module orb_mat_006
+
+ module orb_mat_007
+   !> Arguments: orb_oho_cum
+   use precision_kinds, only: dp
+   include 'optorb.h'
+   include 'mstates.h'
+
+   real(dp) :: orb_oho_cum(MXMATDIM,MSTATES)
+   private
+
+   public :: orb_oho_cum
+   save
+ end module orb_mat_007
 
  module optorb
    !> Arguments: dmat_diag, irrep, orb_energy
@@ -2231,5 +2298,3 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
-
-

@@ -139,7 +139,19 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
+      use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
+      use orb_mat_003, only: orb_o_cum, orb_o_sum
+      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use orb_mat_005, only: orb_ho_cum
+      use orb_mat_006, only: orb_oo_cum
+      use orb_mat_007, only: orb_oho_cum
       implicit real*8(a-h,o-z)
+
+
+
+
+
+
 
 
 
@@ -248,7 +260,11 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use orb_mat_003, only: orb_o_cum, orb_o_sum
+      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
       implicit real*8(a-h,o-z)
+
+
 
 
       include 'vmc.h'
@@ -311,7 +327,17 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use orb_mat_003, only: orb_o_cum, orb_o_sum
+      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use orb_mat_005, only: orb_ho_cum
+      use orb_mat_006, only: orb_oo_cum
+      use orb_mat_007, only: orb_oho_cum
       implicit real*8(a-h,o-z)
+
+
+
+
+
 
 
       include 'vmc.h'
@@ -387,7 +413,9 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
+      use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -418,7 +446,9 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
+      use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -446,7 +476,11 @@ c-----------------------------------------------------------------------
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use orb_mat_003, only: orb_o_cum, orb_o_sum
+      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h'
       include 'mstates.h'
@@ -474,7 +508,17 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use orb_mat_003, only: orb_o_cum, orb_o_sum
+      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use orb_mat_005, only: orb_ho_cum
+      use orb_mat_006, only: orb_oo_cum
+      use orb_mat_007, only: orb_oho_cum
       implicit real*8(a-h,o-z)
+
+
+
+
+
 
 
       include 'vmc.h'
@@ -510,7 +554,17 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use orb_mat_003, only: orb_o_cum, orb_o_sum
+      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use orb_mat_005, only: orb_ho_cum
+      use orb_mat_006, only: orb_oo_cum
+      use orb_mat_007, only: orb_oho_cum
       implicit real*8(a-h,o-z)
+
+
+
+
+
 
 
       include 'vmc.h'
@@ -560,7 +614,13 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use sa_weights, only: iweight, nweight, weights
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use orb_mat_005, only: orb_ho_cum
+      use orb_mat_006, only: orb_oo_cum
+      use orb_mat_007, only: orb_oho_cum
       implicit real*8(a-h,o-z)
+
+
+
 
 
 

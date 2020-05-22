@@ -2,21 +2,12 @@
 ! 
 ! ratios  determinant/twf (efpci operators)
 ! old ratios
-      common /orb_mat_002/ orb_o_old(MXORBOP,MSTATES),orb_oe_old(MXORBOP,MSTATES)
-      common /orb_mat_002/ orb_ho_old(MXORBOP,MSTATES)
 
 ! sum, cum, square of operators
-      common /orb_mat_003/ orb_o_sum(MXORBOP,MSTATES),orb_o_cum(MXORBOP,MSTATES)
-      common /orb_mat_003/ orb_o_cm2(MXORBOP,MSTATES)
 
 ! sum, cum, square of operator * energy
-      common /orb_mat_004/ orb_oe_sum(MXORBOP,MSTATES),orb_oe_cum(MXORBOP,MSTATES)
-      common /orb_mat_004/ orb_oe_cm2(MXORBOP,MSTATES)
 
 ! sum, cum of operator products (no error on products anymore)
-      common /orb_mat_005/ orb_ho_cum(MXORBOP,MSTATES)
-      common /orb_mat_006/ orb_oo_cum(MXMATDIM2,MSTATES)
-      common /orb_mat_007/ orb_oho_cum(MXMATDIM,MSTATES)
 
 ! block average of 'forces' : number of blocks in av, sum and sum**2
       common /orb_mat_024/ orb_e_bsum(MSTATES),orb_w_bsum(MSTATES)

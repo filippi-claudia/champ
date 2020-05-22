@@ -9,7 +9,9 @@
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
+      use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -169,7 +171,13 @@ c-----------------------------------------------------------------------
      &e2
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
+      use orb_mat_003, only: orb_o_cum, orb_o_sum
+      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use orb_mat_005, only: orb_ho_cum
       implicit real*8(a-h,o-z)
+
+
+
 
 
 
