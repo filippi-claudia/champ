@@ -153,6 +153,7 @@ TODO
 - [ ] ***#105 common block /orbval/***
 **PROBLEM:** \
 It shares variables with common block /multislatern/, they should be condensed in just one.\
+Shares dorb and ddorb with common block /slater/.\
 **SOLUTION:** \
 TODO
 
@@ -188,8 +189,4 @@ To add: \
 parameter (MCENT3=3*MCENT)\
 in the vmc.h file.\
 
-- [ ] ***#142 common block /orbval/***\
-**PROBLEM:** \
-Shares dorb and ddorb with common block /slater/.\
-**SOLUTION:** \
-TODO \
+
