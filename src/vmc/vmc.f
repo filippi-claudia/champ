@@ -28,8 +28,8 @@ c and sa, pa, da asymptotic functions
       use coefs, only: coef, nbasis, norb
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       use pseudo, only: lpot, nloc, vps, vpso
-      implicit real*8(a-h,o-z)
 
+      implicit real*8(a-h,o-z)
 
 
 
@@ -40,6 +40,7 @@ c and sa, pa, da asymptotic functions
       include 'numbas.h'
       include 'pseudo.h'
 
+      common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
 
       character*25 fmt
 
