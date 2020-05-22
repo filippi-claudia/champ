@@ -162,13 +162,13 @@ Unclear why but tests numbers are not reproducible.\
 **SOLUTION:** \
 I missed call to the common block in roqua.f.
 
-- [ ] ***#120 common block /rnyucm/***\
+- [x] ***#120 common block /rnyucm/***\
 **PROBLEM:** \
-m(4),l(4) variables are incompatible with implicit-real statement. We need to change the variable names.\
+m(4) and l(4) have no connection with l1, l2, l3, l4 and m1, m2, m3, m4 variables.\
 **SOLUTION:** \
-TODO
+l1, l2, l3, l4 and m1, m2, m3, m4 are changed by l(1), l(2), l(3) ...
 
-- [ ] ***#125 common block /slater/***\
+- [x] ***#125 common block /slater/***\
 **PROBLEM:** \
 Unknown. \
 **SOLUTION:** \

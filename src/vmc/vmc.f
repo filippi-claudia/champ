@@ -40,7 +40,6 @@ c and sa, pa, da asymptotic functions
       include 'numbas.h'
       include 'pseudo.h'
 
-      common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
 
       character*25 fmt
 
