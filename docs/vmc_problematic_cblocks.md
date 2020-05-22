@@ -169,7 +169,7 @@ m(4) and l(4) have no connection with l1, l2, l3, l4 and m1, m2, m3, m4 variable
 **SOLUTION:** \
 l1, l2, l3, l4 and m1, m2, m3, m4 are changed by l(1), l(2), l(3) ...
 
-- [x] ***#125 common block /slater/***\
+- [ ] ***#125 common block /slater/***\
 **PROBLEM:** \
 Unknown. \
 **SOLUTION:** \
