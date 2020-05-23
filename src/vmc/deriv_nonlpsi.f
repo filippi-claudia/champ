@@ -24,6 +24,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       implicit real*8(a-h,o-z)
 
 
+
       include 'vmc.h'
       include 'force.h'
 

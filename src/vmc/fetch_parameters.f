@@ -70,19 +70,18 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_lcao(p,n)
+
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use coefs, only: coef, nbasis, norb
       use optorb_cblock, only: norbterm, norbprim
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
 
 

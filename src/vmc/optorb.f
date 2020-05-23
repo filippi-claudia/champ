@@ -11,13 +11,15 @@
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use orb_mat_022, only: ideriv
+      use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
@@ -97,18 +99,10 @@ c-----------------------------------------------------------------------
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       implicit real*8(a-h,o-z)
 
-
-
-
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
-
-
-
 
 
       dimension psid(*),eloc(*),deloc(*)
@@ -145,23 +139,14 @@ c-----------------------------------------------------------------------
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
+      use orb_mat_030, only: orb_ecum, orb_wcum
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
-
-
 
       dimension wtg_new(*),wtg_old(*),enew(*),eold(*)
 
@@ -262,16 +247,14 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
+
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
 
 
@@ -332,19 +315,16 @@ c-----------------------------------------------------------------------
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
+      use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
+      use orb_mat_030, only: orb_ecum, orb_wcum
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
 
 
@@ -414,18 +394,13 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
+
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
-
-
 
       if(ioptorb.eq.0) return
 
@@ -447,16 +422,13 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
+
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
 
 
@@ -478,14 +450,14 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
+
       dimension oav(*),eoav(*),fo(*),foerr(*)
 
 
@@ -513,19 +485,15 @@ c-----------------------------------------------------------------------
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
+      use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
+      use orb_mat_030, only: orb_ecum, orb_wcum
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
 
 
@@ -550,8 +518,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_rstrt(iu)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
       use orb_mat_003, only: orb_o_cum, orb_o_sum
@@ -559,19 +527,15 @@ c-----------------------------------------------------------------------
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
+      use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
+      use orb_mat_030, only: orb_ecum, orb_wcum
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
 
 
@@ -617,30 +581,20 @@ c-----------------------------------------------------------------------
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
+      use orb_mat_030, only: orb_ecum, orb_wcum
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
       include 'optci.h'
       include 'optjas.h'
 
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
 
-
-
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
-
-
-
       dimension oav(MXORBOP),eoav(MXORBOP),fo(MXORBOP),foerr(MXORBOP)
       dimension wcum(*),ecum(*)
 
@@ -845,22 +799,15 @@ c-----------------------------------------------------------------------
       use dorb_m, only: iworbd
       use optorb, only: dmat_diag, irrep, orb_energy
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use orb_mat_022, only: ideriv
+      use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
       include 'inputflags.h'
 
 

@@ -33,7 +33,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include 'ewald.h'
       include 'optjas.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
       common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
      &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)

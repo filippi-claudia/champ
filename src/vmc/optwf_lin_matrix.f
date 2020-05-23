@@ -4,11 +4,8 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+
       implicit real*8(a-h,o-z)
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -16,7 +13,6 @@
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
 
@@ -321,14 +317,8 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -336,13 +326,8 @@ c-----------------------------------------------------------------------
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
-
-
-
-
 
       dimension dparm(*)
       dimension h(mparmx,*),h_sav(mparmx,*)

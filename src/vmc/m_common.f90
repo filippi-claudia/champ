@@ -1496,6 +1496,64 @@ end module forcewt
    save
  end module orb_mat_007
 
+ module orb_mat_022
+   !> Arguments: ideriv
+   use precision_kinds, only: dp
+   include 'optorb.h'
+   include 'mstates.h'
+
+   integer  :: ideriv(2,MXORBOP)
+   private
+
+   public :: ideriv
+   save
+ end module orb_mat_022
+
+ module orb_mat_024
+   !> Arguments: orb_oe_bsum, orb_f_bcum, orb_e_bsum, orb_w_bsum, orb_o_bsum, orb_f_bcm2
+   use precision_kinds, only: dp
+   include 'optorb.h'
+   include 'mstates.h'
+
+   real(dp) :: orb_e_bsum(MSTATES)
+   real(dp) :: orb_f_bcm2(MXORBOP,MSTATES)
+   real(dp) :: orb_f_bcum(MXORBOP,MSTATES)
+   real(dp) :: orb_o_bsum(MXORBOP,MSTATES)
+   real(dp) :: orb_oe_bsum(MXORBOP,MSTATES)
+   real(dp) :: orb_w_bsum(MSTATES)
+   private
+
+   public :: orb_oe_bsum, orb_f_bcum, orb_e_bsum, orb_w_bsum, orb_o_bsum, orb_f_bcm2
+   save
+ end module orb_mat_024
+
+ module orb_mat_030
+   !> Arguments: orb_wcum, orb_ecum
+   use precision_kinds, only: dp
+   include 'mstates.h'
+
+   real(dp) :: orb_ecum(MSTATES)
+   real(dp) :: orb_wcum(MSTATES)
+   private
+
+   public :: orb_wcum, orb_ecum
+   save
+ end module orb_mat_030
+
+ module orb_mat_033
+   !> Arguments: irepcol_ref, ideriv_ref, ideriv_iab
+   use precision_kinds, only: dp
+   include 'optorb.h'
+
+   integer  :: ideriv_iab(MXORBOP)
+   integer  :: ideriv_ref(MXORBOP,2)
+   integer  :: irepcol_ref(MXORBOP,2)
+   private
+
+   public :: irepcol_ref, ideriv_ref, ideriv_iab
+   save
+ end module orb_mat_033
+
  module optorb
    !> Arguments: dmat_diag, irrep, orb_energy
    use precision_kinds, only: dp
@@ -2298,3 +2356,5 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
+
+ 

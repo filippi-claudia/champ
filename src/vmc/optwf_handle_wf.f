@@ -761,15 +761,14 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use coefs, only: coef, nbasis, norb
       use optorb_cblock, only: norbterm, norbprim
+      use orb_mat_022, only: ideriv
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
 
 
@@ -804,14 +803,9 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
-
-
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-
-
 
       dimension dparm(*)
 
@@ -1027,11 +1021,8 @@ c-----------------------------------------------------------------------
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use derivjas, only: d2g, g, go, gvalue
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
@@ -1041,22 +1032,14 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use force_analy, only: iforce_analy
       use optorb_cblock, only: norbterm, norbprim
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optjas.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
       include 'optci.h'
       include 'optci_cblk.h'
       include 'sr.h'

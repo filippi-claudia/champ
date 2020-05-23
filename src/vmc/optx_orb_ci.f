@@ -3,12 +3,10 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optorb_cblock, only: norbterm, norbprim
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
+
       implicit real*8(a-h,o-z)
-
-
 
 
       include 'vmc.h'
@@ -16,8 +14,6 @@
       include 'optci.h'
       include 'optci_cblk.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
-
 
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -111,20 +107,11 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optorb_cblock, only: norbterm, norbprim
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
       use orb_mat_005, only: orb_ho_cum
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -132,7 +119,6 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optci_cblk.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
       include 'optjas.h'
 
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)

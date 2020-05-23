@@ -7,24 +7,16 @@
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use deloc_dj_m, only: denergy
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
+
       implicit real*8(a-h,o-z)
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optjas.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
-
-
-
 
       dimension wtg_new(*),wtg_old(*)
 
@@ -62,25 +54,17 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_orb_init
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
       implicit real*8(a-h,o-z)
 
-
-
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optjas.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
-
-
-
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -108,17 +92,11 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
-
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optjas.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
-
-
 
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -162,7 +140,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_orb_fin(wcum,ecum)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
@@ -170,20 +147,11 @@ c-----------------------------------------------------------------------
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
      &e2
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
       use orb_mat_005, only: orb_ho_cum
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -191,7 +159,6 @@ c-----------------------------------------------------------------------
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
-      include 'optorb_cblk.h'
 
 
 
