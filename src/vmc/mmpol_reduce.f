@@ -2,7 +2,9 @@
 
       use mpiconf, only: idtask, nproc, wid
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'

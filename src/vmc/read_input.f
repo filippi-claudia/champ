@@ -73,7 +73,9 @@ c and Anthony Scemema
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
 
 

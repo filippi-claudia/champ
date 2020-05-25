@@ -1238,6 +1238,20 @@ end module forcewt
    save
  end module mix_orb_ci
 
+ module mmpol_cntrl
+   !> Arguments: isites_mmpol, immpolprt, icall_mm, ich_mmpol, immpol
+
+   integer  :: icall_mm
+   integer  :: ich_mmpol
+   integer  :: immpol
+   integer  :: immpolprt
+   integer  :: isites_mmpol
+   private
+
+   public :: isites_mmpol, immpolprt, icall_mm, ich_mmpol, immpol
+   save
+ end module mmpol_cntrl
+
  module mmpol_hpsi
    !> Arguments: eek_pol, peQMdp, peQMq
    use precision_kinds, only: dp
@@ -1252,6 +1266,21 @@ end module forcewt
    save
  end module mmpol_hpsi
 
+ module mmpol_parms
+   !> Arguments: x_mmpol, nchmm, chmm, rqq
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+ 
+   real(dp) :: chmm(MCHMM)
+   integer  :: nchmm
+   real(dp) :: rqq(MCHMM,MCHMM)
+   real(dp) :: x_mmpol(3,MCHMM)
+   private
+ 
+   public :: x_mmpol, nchmm, chmm, rqq
+   save
+ end module mmpol_parms
+ 
  module mmpolo
    !> Arguments: cmmpolo, dmmpolo, eeko
    use precision_kinds, only: dp
@@ -2358,16 +2387,4 @@ module spc2
  end module zmatrix_grad
 
  
- module mmpol_cntrl
-   !> Arguments: isites_mmpol, immpolprt, icall_mm, ich_mmpol, immpol
-
-    integer  :: icall_mm
-    integer  :: ich_mmpol
-    integer  :: immpol
-    integer  :: immpolprt
-    integer  :: isites_mmpol
-    private
-
-    public :: isites_mmpol, immpolprt, icall_mm, ich_mmpol, immpol
-    save
- end module mmpol_cntrl
+ 

@@ -11,7 +11,9 @@ c     computes charges-dipoles interactions (peq_dp)
 c...........................................................
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h' 
       include 'mmpol.h'
@@ -86,7 +88,9 @@ c     peqq  (charges-charges interaction)
 c............................................................
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h' 
       include 'mmpol.h'
@@ -146,7 +150,9 @@ c............................................................
 c     compute u_self and u_dd (self and dipole-dipole interaction) 
 c............................................................
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h' 
       include 'mmpol.h'
@@ -196,7 +202,9 @@ c     compute penu_dp (nuclei-induced dipoles on MM sites interaction)
 c............................................................
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h' 
       include 'mmpol.h'
@@ -229,7 +237,9 @@ c     compute penu_q  (nuclei-charges interaction)
 c............................................................
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h' 
       include 'mmpol.h'
@@ -256,7 +266,9 @@ c-----------------------------------------------------------------------
 C     ***************************************************************
 C     contribution inverse A matrix to compute dipoles as mu=Ainv E
 C     ***************************************************************
-      IMPLICIT REAL*8 (A-H,O-Z)
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      implicit real*8(a-h,o-z)
+
 C     
       include 'mmpol.h'
       include 'vmc.h' 
@@ -324,7 +336,9 @@ C     contribution from nuclei to polarization charghes
 C     ***************************************************************
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
       real*8 ah_vec,det
 C     
@@ -369,7 +383,9 @@ c    computes electric field due to fixed MM charges on MM sites
 c    and potential interaction MM charges-dipoles (peq_dp) 
 c............................................................
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h' 
       include 'mmpol.h'
@@ -414,7 +430,9 @@ C     ***************************************************************
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
 
       include 'mmpol.h'
@@ -469,7 +487,9 @@ c     It includes both H(QM/MM) and H(MM).
 c     peQMdp and peQMq are therefore mixed terms
 c......................................................
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
       include 'mmpol.h'
 
@@ -506,7 +526,9 @@ c Written by Amovilli-Floris
 c......................................................
 c       Calculate e-/dipoles interactions 
 c......................................................
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
       include 'mmpol.h'
 
       dimension x(3)
@@ -548,7 +570,9 @@ c......................................................
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_dipoles(eek_ave,eek_err)
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
       include 'mmpol.h'
 
@@ -657,7 +681,9 @@ c    AVERAGES   subroutines
 c-----------------------------------------------------------------------
       subroutine mmpol_init(iflag)
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
 
       include 'mmpol.h'
@@ -695,7 +721,9 @@ c-----------------------------------------------------------------------
       subroutine mmpol_dump(iu)
 
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
 
       include 'mmpol.h'
@@ -715,7 +743,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_rstrt(iu)
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
 
       include 'mmpol.h'

@@ -42,7 +42,9 @@ c-----------------------------------------------------------------------
       subroutine mmpol_fin(wcum,iblk)
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
 
       include 'mmpol.h'
@@ -123,7 +125,9 @@ c-----------------------------------------------------------------------
       use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
       use mmpolo, only: cmmpolo, dmmpolo, eeko
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -147,7 +151,9 @@ c-----------------------------------------------------------------------
       use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
       use mmpolo, only: cmmpolo, dmmpolo, eeko
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -170,7 +176,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_cum(wsum)
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       implicit real*8(a-h,o-z)
+
 
 
       include 'mmpol.h'
