@@ -1252,6 +1252,19 @@ end module forcewt
    save
  end module mmpol_cntrl
 
+ module mmpol_dipol
+   !> Arguments: dipo, alfa
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+
+   real(dp) :: alfa(MCHMM)
+   real(dp) :: dipo(3,MCHMM)
+   private
+
+   public :: dipo, alfa
+   save
+ end module mmpol_dipol
+
  module mmpol_hpsi
    !> Arguments: eek_pol, peQMdp, peQMq
    use precision_kinds, only: dp
@@ -2386,5 +2399,4 @@ module spc2
    save
  end module zmatrix_grad
 
- 
  
