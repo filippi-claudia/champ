@@ -1,5 +1,5 @@
       subroutine pcm_prt(wcum,iblk)
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'pcm.h'
 
@@ -161,7 +161,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_cum(wsum)
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'pcm.h'
 

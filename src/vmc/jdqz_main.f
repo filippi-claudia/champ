@@ -18,7 +18,7 @@ c
       parameter ( gmres = 1, cgstab = 2 )
       integer kmax, jmax, jmin, method, m, l, maxnmv, maxstep, order
       integer testspace
-      double precision eps, lock
+      real*8 eps, lock
       double complex shift
       integer n, lwork
       double complex work(n,*), eivec(n,*), alpha(*), beta(*)
@@ -43,8 +43,8 @@ c
       integer i, j, k, info, mxmv, step
       integer d, u, v, w, aux, av, bv, q, z, kz, itmp, tp
       integer solvestep
-      double precision rnrm, rwork(3*ldvs), deps
-      double precision dtmp
+      real*8 rnrm, rwork(3*ldvs), deps
+      real*8 dtmp
       double complex zalpha, zbeta, targeta, targetb, evcond
       double complex shifta, shiftb
       double complex zero, one
@@ -52,7 +52,7 @@ c
 c
 c     .. Functions ..
 c
-      double precision dznrm2
+      real*8 dznrm2
 c
 c     .. Data ..
 c
@@ -402,7 +402,7 @@ c
 c     .. Parameters ..
 c
       integer l, n, mxmv, nk, lwork, ldqkz, jpiv(*)
-      double precision  eps
+      real*8  eps
       double complex x(*), r(*), kz(n,*), qq(n,*), work(n,*),
      $     zalpha, zbeta, invqkz(ldqkz,*), f(*)
 
@@ -417,10 +417,10 @@ c
       integer u, q, w, rr, xp, bp
       logical rcomp, xadd
 
-      double precision maxnorm, delta, bpnorm, tr0norm, trlnorm
+      real*8 maxnorm, delta, bpnorm, tr0norm, trlnorm
       double complex varrho, hatgamma
 
-      double precision rnrm, rnrm0, eps1, dznrm2
+      real*8 rnrm, rnrm0, eps1, dznrm2
       double complex alpha, beta, omega, gamma, rho0, rho1,
      $     yr(mxl), ys(mxl), z(mxl,mxl), ztmp
 
@@ -598,7 +598,7 @@ c
 c     .. Parameters ..
 c
       integer mxm, mxmv, n, k, ldqkz, ipiv(*)
-      double precision eps
+      real*8 eps
       double complex x(*), r(*), kz(n,*), q(n,*), v(n,*),
      $     alpha, beta, invqkz(ldqkz,*), f(*), tp(*)
 
@@ -631,7 +631,7 @@ ctex@    \variable{integer mxm}
 ctex@       On entry, mxm specifies the degree of the Minimal Residual
 ctex@       polynomial.
 ctex@
-ctex@    \variable{{double precision} eps}
+ctex@    \variable{{real*8} eps}
 ctex@       On entry, eps specifies the stop tolerance. On exit, eps contains
 ctex@       the relative norm of the last residual.
 ctex@
@@ -697,12 +697,12 @@ c
       parameter (maxm = 100)
 
       integer i, m, m1, nmv
-      double precision rnrm0, rnrm, eps1, c(maxm)
+      real*8 rnrm0, rnrm, eps1, c(maxm)
       double complex hh(maxm,maxm-1), rs(maxm), s(maxm), y(maxm), rcs
       double complex zero, one
       parameter (zero = (0.0d0,0.0d0), one = (1.0d0,0.0d0))
 
-      double precision  dznrm2
+      real*8  dznrm2
       double complex ztmp, zdotc
 c
 c     .. Executable Statements ..

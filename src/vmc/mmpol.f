@@ -314,7 +314,7 @@ C     contribution from nuclei to polarization charghes
 C     ***************************************************************
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       IMPLICIT REAL*8 (A-H,O-Z)
-      double precision ah_vec,det
+      real*8 ah_vec,det
 C     
       include 'mmpol.h'
       include 'vmc.h' 
@@ -530,7 +530,7 @@ c......................................................
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_dipoles(eek_ave,eek_err)
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'mmpol.h'
 
@@ -638,7 +638,7 @@ c-----------------------------------------------------------------------
 c    AVERAGES   subroutines
 c-----------------------------------------------------------------------
       subroutine mmpol_init(iflag)
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'mmpol.h'
 
@@ -674,7 +674,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_dump(iu)
 
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'mmpol.h'
 
@@ -692,7 +692,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_rstrt(iu)
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'mmpol.h'
 
@@ -712,7 +712,7 @@ c......................................................
 c     end AVERAGES subroutines
 c......................................................
       subroutine mmpol_matinv(a,nsub,determinant)
-      implicit double precision (a-h,o-z)
+      implicit real*8 (a-h,o-z)
       include 'mmpol.h'
 
 c routine to calculate inverse and determinant of matrix a

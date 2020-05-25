@@ -90,12 +90,12 @@ c-----------------------------------------------------------------------
       subroutine sort(n,arr,indx)
 C     index sort from numerical recepires
 C     sorts in ascending order
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
       integer n,indx(n),m,nstack
-      double precision arr(n)
+      real*8 arr(n)
       parameter (m=7,nstack=50)
       integer i,indxt,ir,itemp,j,jstack,k,l,istack(nstack)
-      double precision a
+      real*8 a
       do 11 j=1,n
         indx(j)=j
 11    continue

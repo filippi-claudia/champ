@@ -2000,7 +2000,7 @@ c----------------------------------------------------------------------
       subroutine read_cavity_spheres(iu,nspheres)
 C$INPUT cavity_spheres inp i 
 CKEYDOC Read centers of cavity spheres and radii
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'pcm.h'

@@ -2,7 +2,7 @@ C -------------------------- gen2p -------------------------------------
 C keywords from file all.p2
 C ----------------------------------------------------------------------
       subroutine p2init
-      implicit double precision (a-h,o-z)
+      implicit real*8 (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
       call p2ini0
@@ -207,7 +207,7 @@ C ----------------------------------------------------------------------
       fmts(49)='aaa'
       end
       subroutine p2inid
-      implicit double precision (a-h,o-z)
+      implicit real*8 (a-h,o-z)
       include 'inc/p2_dim.inc'
       include 'inc/p2.inc'
       include 'inc/p2defv.inc'
@@ -317,7 +317,7 @@ C ----------------------------------------------------------------------
       ip2dfl=1
       end
       subroutine p2call(ikw,itmp,ftmp,is1,is2,lne,iend,MXF,iu)
-      implicit double precision (a-h,o-z)
+      implicit real*8 (a-h,o-z)
       include 'inc/p2etc.inc'
       dimension itmp(MXF)
       dimension ftmp(MXF)

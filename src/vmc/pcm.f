@@ -140,7 +140,7 @@ C     contribution from nuclei to polarization charghes
 C     ***************************************************************
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       IMPLICIT REAL*8 (A-H,O-Z)
-      double precision ah_vec,det
+      real*8 ah_vec,det
 C     
       include 'pcm.h'
       include 'vmc.h' 
@@ -553,7 +553,7 @@ c    AVERAGES   subroutines
 c......................................................
 
       subroutine pcm_init(iflag)
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'pcm.h'
 
@@ -589,7 +589,7 @@ c......................................................
 c-----------------------------------------------------------------------
       subroutine pcm_dump(iu)
 
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'pcm.h'
 
@@ -607,7 +607,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_rstrt(iu)
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'pcm.h'
 
@@ -627,7 +627,7 @@ c     end AVERAGES subroutines
 c......................................................
 
       subroutine qpcm_charges(enfpcm_ave,enfpcm_err,qpol,sqpol2)
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'pcm.h'
 
@@ -715,7 +715,7 @@ c................................................................
 c     da modificare per stati eccitati
 c................................................................
       subroutine qpcm_charges2(enfpcm_ave,enfpcm_err,qpol)
-      implicit double precision(a-h,o-z)
+      implicit real*8(a-h,o-z)
 
       include 'pcm.h'
 
@@ -1279,7 +1279,7 @@ c.............IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!........
 c........................................................
 c
 c     subroutine qpcm_matinv(a,nsub,det)
-c     implicit double precision (a-h,o-z)
+c     implicit real*8 (a-h,o-z)
 c     include 'pcm.h'
 c
 c routine to calculate inverse and determinant of matrix a
@@ -1309,7 +1309,7 @@ c........................................................
 c........................................................
 
       subroutine qpcm_matinv(a,nsub,determinant)
-      implicit double precision (a-h,o-z)
+      implicit real*8 (a-h,o-z)
       include 'pcm.h'
 
 c routine to calculate inverse and determinant of matrix a
@@ -1359,7 +1359,7 @@ C     ***************************************************************
 C     march/2014: compute surface charges for a stretched cavity
 C     ***************************************************************
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      IMPLICIT double precision (A-H,O-Z)
+      IMPLICIT real*8 (A-H,O-Z)
 C     
       include 'pcm.h'
       include 'vmc.h' 

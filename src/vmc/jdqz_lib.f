@@ -130,7 +130,7 @@ c
       logical tlts
       integer k, m1, m2, m3
       double complex f, f1, f2, c1, c2, r, sn
-      double precision cs
+      real*8 cs
 c
 c     .. Executable statements ..
 c
@@ -249,7 +249,7 @@ c
 c     .. Local ..
 c
       integer i, j
-      double precision dtmp, optval
+      real*8 dtmp, optval
 c
 c     .. Executable statements ..
 c
@@ -1638,7 +1638,7 @@ c
 c     .. Local ..
 c
       integer i
-      double precision s0, s1, dznrm2
+      real*8 s0, s1, dznrm2
       double complex znrm
 c
 c     .. Executable statements ..
@@ -1668,12 +1668,12 @@ c     .. Parameters ..
 c
       implicit none
       integer n
-      double precision s0, s1
+      real*8 s0, s1
       double complex v(*), w(*), znrm
 c
 c     .. Local ..
 c
-      double precision kappa, dznrm2
+      real*8 kappa, dznrm2
       double complex ztmp, zdotc
       parameter (kappa=1d2)
 c

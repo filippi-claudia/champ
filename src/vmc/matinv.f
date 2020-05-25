@@ -1,5 +1,5 @@
       subroutine matinv(a,nsub,determinant)
-      implicit double precision (a-h,o-z)
+      implicit real*8 (a-h,o-z)
       include 'vmc.h'
 
 c routine to calculate inverse and determinant of matrix a
