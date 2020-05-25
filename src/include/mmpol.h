@@ -2,7 +2,6 @@
 
       character*80 mmpolfile_sites, mmpolfile_chmm
 
-      common /mmpol_unit/ mmpolfile_sites, mmpolfile_chmm
       common /mmpol_parms/ x_mmpol(3,MCHMM),rqq(MCHMM,MCHMM),chmm(MCHMM), nchmm
       common /mmpol_dipol/ alfa(MCHMM),dipo(3,MCHMM)
       common /mmpol_ahpol/ ah_pol(3*MCHMM,3*MCHMM), bh_pol(3*MCHMM)
