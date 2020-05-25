@@ -72,7 +72,9 @@ c and Anthony Scemema
       use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
+      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       implicit real*8(a-h,o-z)
+
 
 
 

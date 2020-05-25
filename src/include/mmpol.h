@@ -2,7 +2,6 @@
 
       character*80 mmpolfile_sites, mmpolfile_chmm
 
-      common /mmpol_cntrl/ immpol,ich_mmpol,isites_mmpol,icall_mm,immpolprt
       common /mmpol_unit/ mmpolfile_sites, mmpolfile_chmm
       common /mmpol_parms/ x_mmpol(3,MCHMM),rqq(MCHMM,MCHMM),chmm(MCHMM), nchmm
       common /mmpol_dipol/ alfa(MCHMM),dipo(3,MCHMM)

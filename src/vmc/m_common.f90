@@ -2358,3 +2358,16 @@ module spc2
  end module zmatrix_grad
 
  
+ module mmpol_cntrl
+   !> Arguments: isites_mmpol, immpolprt, icall_mm, ich_mmpol, immpol
+
+    integer  :: icall_mm
+    integer  :: ich_mmpol
+    integer  :: immpol
+    integer  :: immpolprt
+    integer  :: isites_mmpol
+    private
+
+    public :: isites_mmpol, immpolprt, icall_mm, ich_mmpol, immpol
+    save
+ end module mmpol_cntrl

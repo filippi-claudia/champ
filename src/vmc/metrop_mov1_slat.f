@@ -29,7 +29,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
 
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       implicit real*8(a-h,o-z)
+
 
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,half=0.5d0)

@@ -1,7 +1,9 @@
       subroutine mmpol_reduce
 
       use mpiconf, only: idtask, nproc, wid
+      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'mmpol.h'

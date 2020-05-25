@@ -27,7 +27,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use pseudo, only: lpot, nloc, vps, vpso
 
       use velocity_jastrow, only: vj, vjn
+      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       implicit real*8(a-h,o-z)
+
 
 
 
