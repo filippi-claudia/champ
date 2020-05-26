@@ -2399,4 +2399,15 @@ module spc2
    save
  end module zmatrix_grad
 
- 
+ module mmpol_ahpol
+   !> Arguments: ah_pol, bh_pol
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+
+    real(dp) :: ah_pol(3*MCHMM,3*MCHMM)
+    real(dp) :: bh_pol(3*MCHMM)
+    private
+
+    public :: ah_pol, bh_pol
+    save
+ end module mmpol_ahpol

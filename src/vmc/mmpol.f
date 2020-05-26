@@ -276,7 +276,9 @@ C     contribution inverse A matrix to compute dipoles as mu=Ainv E
 C     ***************************************************************
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
+      use mmpol_ahpol, only: ah_pol, bh_pol
       implicit real*8(a-h,o-z)
+
 
 
 C     
@@ -588,7 +590,9 @@ c-----------------------------------------------------------------------
       subroutine mmpol_dipoles(eek_ave,eek_err)
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
+      use mmpol_ahpol, only: ah_pol, bh_pol
       implicit real*8(a-h,o-z)
+
 
 
 
