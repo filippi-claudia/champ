@@ -31,4 +31,4 @@ build
 # emacs
 *~
 # local scripts
-compile.zsh
+compile_mac.zsh
