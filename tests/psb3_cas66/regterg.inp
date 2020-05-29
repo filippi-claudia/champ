@@ -14,7 +14,7 @@ load det_optjci
 &optwf ioptwf 1 ioptci 1 ioptjas 0 ioptorb 0
 &optwf method lin_d multiple_adiag 0
 &optwf ncore 0 nextorb 600 no_active 1
-&optwf lin_eps 0.1 lin_adiag 0.01
+&optwf lin_eps 0.001 lin_adiag 0.01
 &optwf lin_jdav 0 lin_nvec 10 lin_nvecx 100
 &optwf nblk_max 300 nopt_iter 1
 &optwf isample_cmat 0 energy_tol 0.0
