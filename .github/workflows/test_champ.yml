@@ -22,7 +22,7 @@ jobs:
 
     - name: Testing_code
       run: |  
-            vmc.mov1 < README.md 
+            ./bin/vmc.mov1 < README.md 
 #           cp ./tests/psb3_cas66/include/* ./src/include 
 #           cd build  
 #           make -j
