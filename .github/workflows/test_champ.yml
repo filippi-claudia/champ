@@ -43,11 +43,11 @@ jobs:
       run: |  
            cp ./tests/psb3_cas66/include/* ./src/include 
            cat ./tests/psb3_cas66/include/sr.h | sed s/80000/10000/g > ./src/include/sr.h
+           cat ./src/include/sr.h | grep MPARM  
            cd build  
            make -j
-           cd -
-           lscpu
-           ./bin/vmc.mov1 < ./tests/psb3_cas66/sr_n.inp 
+           cd ../tests/psb3_cas66
+           ../../bin/vmc.mov1 < sr_n.inp 
 # Testing
 #    - name: Test code with python script 
 #      run: conda install numpy
