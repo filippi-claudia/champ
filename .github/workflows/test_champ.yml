@@ -42,7 +42,7 @@ jobs:
            CONDA_PREFIX: /usr/share/miniconda
       run: |  
            cp ./tests/psb3_cas66/include/* ./src/include 
-           cat ./psb3_cas66/include/sr.h | sed s/80000/10000/g > ./src/include/sr.h
+           cat ./tests/psb3_cas66/include/sr.h | sed s/80000/10000/g > ./src/include/sr.h
            cd build  
            make -j
            cd -
