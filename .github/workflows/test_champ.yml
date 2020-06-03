@@ -14,6 +14,8 @@ jobs:
       run: |
            sudo apt install gfortran libmkl-full-dev openmpi-bin gawk libgfortran openmpi-mpifort blas
            gawk --version
+
+    - name: Building_code
       run: |
            cmake -H. -Bbuild -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_PREFIX_PATH=/usr/include/mkl
            cmake --build build -- -j2
