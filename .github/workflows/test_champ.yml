@@ -37,11 +37,11 @@ jobs:
            cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
            cd build && ctest -V
 
-    - name: Building_code  
+    - name: Testing_code
       env:
            CONDA_PREFIX: /usr/share/miniconda
       run: |  
-           /usr/bin/cp ./tests/psb3_cas66/include/* ./src/include 
+           cp ./tests/psb3_cas66/include/* ./src/include 
            cd build  
            make -j
 # Testing
