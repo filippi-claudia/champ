@@ -5,41 +5,21 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v1
 
-    - name: Conda_installation 
-      uses: s-weigand/setup-conda@master
-      with:
-        update-conda: true
-        python-version: 3.7
-        conda-channels: anaconda, conda-forge
-
-    - run: conda --version 
-    - run: which python
-
     - name: Install_compilers_and_libraries 
       run: |
-           conda install libgfortran openmpi-mpifort blas
-           sudo apt-get install gawk
+           sudo apt install gfortran libmkl-full-dev openmpi-bin gawk libgfortran openmpi-mpifort blas
            gawk --version 
 
-#    - name: List_folders
-#      run: ls -ltRh /usr/share/miniconda 
-
-    - name: Building_code  
-      env:
-           CONDA_PREFIX: /usr/share/miniconda
       run: |  
-           cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort  -DCMAKE_INSTALL_PREFIX=/usr/share/miniconda
-           cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
-           cd build && ctest -V
+           cmake -H. -Bbuild -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_PREFIX_PATH=/usr/include/mkl
+           cmake --build build -- -j2
 
     - name: Testing_code
-      env:
-           CONDA_PREFIX: /usr/share/miniconda
       run: |  
            cp ./tests/psb3_cas66/include/* ./src/include 
            cat ./tests/psb3_cas66/include/sr.h | sed s/80000/10000/g > ./src/include/sr.h
