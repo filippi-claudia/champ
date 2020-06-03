@@ -24,10 +24,11 @@ jobs:
       run: |  
            cp ./tests/psb3_cas66/include/* ./src/include 
            cat ./tests/psb3_cas66/include/sr.h | sed s/80000/10000/g > ./src/include/sr.h
-           cat ./src/include/sr.h | grep MPARM  
            cd build  
            make -j
            cd ../tests/psb3_cas66
+           pwd
+           cat ../../src/include/sr.h | grep MPARM  
            ../../bin/vmc.mov1 < sr_n.inp 
 # Testing
 #    - name: Test code with python script 
