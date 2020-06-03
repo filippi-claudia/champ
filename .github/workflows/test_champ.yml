@@ -23,7 +23,6 @@ jobs:
     - name: Testing_code
       run: |  
            cp ./tests/psb3_cas66/include/* ./src/include 
-#           cat ./tests/psb3_cas66/include/sr.h | sed -e s/"MCONF\=80000"/"MCONF\=1000"/g > ./src/include/sr.h
            cd build  
            make -j
            cd ../tests/psb3_cas66
@@ -31,6 +30,7 @@ jobs:
            cat ../../src/include/sr.h | grep MPARM  
            ../../bin/vmc.mov1 < sr_n.inp 
 # Testing
+#           cat ./tests/psb3_cas66/include/sr.h | sed -e s/"MCONF\=80000"/"MCONF\=1000"/g > ./src/include/sr.h
 #    - name: Test code with python script 
 #      run: conda install numpy
 # -DBLAS_blas_LIBRARY=/usr/share/miniconda/pkgs/libcblas-3.8.0-14_openblas/lib/libopenblasp-r0.3.7.so
