@@ -22,7 +22,9 @@ jobs:
 
     - name: Testing_code
       run: |  
+           ulimit -s unlimited
            cp ./tests/psb3_cas66/include/* ./src/include 
+           cat ./tests/psb3_cas66/include/sr.h | sed -e s/"MCONF\=80000"/"MCONF\=1000"/g > ./src/include/sr.h
            cd build  
            make -j
            cd ../tests/psb3_cas66
