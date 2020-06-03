@@ -22,13 +22,15 @@ jobs:
 
     - name: Testing_code
       run: |  
-           cp ./tests/psb3_cas66/include/* ./src/include 
-           cd build  
-           make -j
-           cd ../tests/psb3_cas66
-           pwd
-           cat ../../src/include/sr.h | grep MPARM  
-           ../../bin/vmc.mov1 < sr_n.inp 
+            vmc.mov1 < README.md 
+#           cp ./tests/psb3_cas66/include/* ./src/include 
+#           cd build  
+#           make -j
+#           cd ../tests/psb3_cas66
+#           pwd
+#           cat ../../src/include/sr.h | grep MPARM  
+#           ../../bin/vmc.mov1 < sr_n.inp 
+
 # Testing
 #           cat ./tests/psb3_cas66/include/sr.h | sed -e s/"MCONF\=80000"/"MCONF\=1000"/g > ./src/include/sr.h
 #    - name: Test code with python script 
