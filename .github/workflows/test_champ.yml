@@ -44,6 +44,8 @@ jobs:
            cp ./tests/psb3_cas66/include/* ./src/include 
            cd build  
            make -j
+           lscpu
+           ./bin/vmc.mov1 < ./tests/psb3_cas66/tests/psb3_cas66/sr_n.inp 
 # Testing
 #    - name: Test code with python script 
 #      run: conda install numpy
