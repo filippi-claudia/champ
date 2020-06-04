@@ -27,7 +27,7 @@ jobs:
            ulimit -s unlimited
            cp ./tests/psb3_cas66/include/* ./src/include 
            cat ./tests/psb3_cas66/include/sr.h | sed -e s/"MCONF\=80000"/"MCONF\=1000"/g > ./src/include/sr.h
-           cat ./tests/psb3_cas66/include/optci.h | sed -e s/"MXCITERM\=4600"/"MXCITERM\=600"/g -r s/"MXCIREDUCED\=2000"/"MXCIREDUCED=10""> ./src/include/optci.h
+           cat ./tests/psb3_cas66/include/optci.h | sed -e s/"MXCITERM\=4600"/"MXCITERM\=600"/g -r s/"MXCIREDUCED\=2000"/"MXCIREDUCED=10"> ./src/include/optci.h
            cd build  
            make -j
            cd ../tests/psb3_cas66
