@@ -10,9 +10,11 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - run: conda --version 
+
     - name: Install_compilers_and_libraries 
       run: |
-           sudo apt install gfortran libmkl-full-dev openmpi-bin gawk openmpi-bin libblas-dev liblapack-dev 
+           sudo apt install gfortran libmkl-full-dev openmpi-bin gawk openmpi-bin libblas-dev liblapack-dev # valgrind
            gawk --version
 
     - name: Building_code
@@ -25,16 +27,10 @@ jobs:
            ulimit -s unlimited
            cp ./tests/psb3_cas66/include/* ./src/include 
            cat ./tests/psb3_cas66/include/sr.h | sed -e s/"MCONF\=80000"/"MCONF\=1000"/g > ./src/include/sr.h
+           cat ./tests/psb3_cas66/include/optci.h | sed -e s/"MXCITERM\=4600"/"MXCITERM\=600"/g -r s/"MXCIREDUCED\=2000"/"MXCIREDUCED=10""> ./src/include/optci.h
            cd build  
            make -j
            cd ../tests/psb3_cas66
            pwd
            cat ../../src/include/sr.h | grep MPARM  
            ../../bin/vmc.mov1 < sr_n.inp 
-#            ./bin/vmc.mov1 < README.md 
-
-# Testing
-#           cat ./tests/psb3_cas66/include/sr.h | sed -e s/"MCONF\=80000"/"MCONF\=1000"/g > ./src/include/sr.h
-#    - name: Test code with python script 
-#      run: conda install numpy
-# -DBLAS_blas_LIBRARY=/usr/share/miniconda/pkgs/libcblas-3.8.0-14_openblas/lib/libopenblasp-r0.3.7.so
