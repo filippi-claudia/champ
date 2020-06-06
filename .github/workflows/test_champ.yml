@@ -33,7 +33,7 @@ jobs:
 
     - name: Test sr_n
       run: |  
-           cd ../tests/psb3_cas66
+           cd ./tests/psb3_cas66
            ../../bin/vmc.mov1 < sr_n.inp
 
     - name: Test regterg
@@ -46,5 +46,5 @@ jobs:
 
     - name: Test vmc_optall
       run: |  
-           cd ../butadiene-3wfs/TZ-1M-128
+           cd ./butadiene-3wfs/TZ-1M-128
            ../../bin/vmc.mov1 < vmc_optall.inp
