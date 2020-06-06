@@ -48,5 +48,5 @@ jobs:
 
     - name: Test vmc_optall
       run: |  
-           cd ./butadiene-3wfs/TZ-1M-128
+           cd ./tests/butadiene-3wfs/TZ-1M-128
            ../../bin/vmc.mov1 < vmc_optall.inp
