@@ -31,6 +31,6 @@ jobs:
            cd build  
            make -j
            cd ../tests/psb3_cas66
-           pwd
-           cat ../../src/include/sr.h | grep MPARM  
            ../../bin/vmc.mov1 < sr_n.inp 
+           ../../bin/vmc.mov1 < regterg.inp 
+           ../../bin/vmc.mov1 < free.inp 
