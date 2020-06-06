@@ -38,10 +38,12 @@ jobs:
 
     - name: Test regterg
       run: |  
+           cd ./tests/psb3_cas66
            ../../bin/vmc.mov1 < regterg.inp
            
     - name: Test free
       run: |  
+           cd ./tests/psb3_cas66
            ../../bin/vmc.mov1 < free.inp 
 
     - name: Test vmc_optall
