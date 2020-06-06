@@ -21,11 +21,6 @@ jobs:
       run: |
            cmake -H. -Bbuild -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_PREFIX_PATH=/usr/include/mkl
            cmake --build build -- -j2
-  test: 
-
-    runs-on: ubuntu-20.04
-
-    steps:
 
     - name: Building_code_for_testing
       run: |  
@@ -36,15 +31,20 @@ jobs:
            cd build  
            make -j
 
-    - name: Test sr_n.inp
+    - name: Test sr_n
       run: |  
            cd ../tests/psb3_cas66
            ../../bin/vmc.mov1 < sr_n.inp
 
-    - name: Test regterg.inp
+    - name: Test regterg
       run: |  
            ../../bin/vmc.mov1 < regterg.inp
            
-    - name: Test free.inp 
+    - name: Test free
       run: |  
            ../../bin/vmc.mov1 < free.inp 
+
+    - name: Test vmc_optall
+      run: |  
+           cd ../butadiene-3wfs/TZ-1M-128
+           ../../bin/vmc.mov1 < vmc_optall.inp
