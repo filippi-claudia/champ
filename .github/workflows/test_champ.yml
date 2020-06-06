@@ -21,8 +21,13 @@ jobs:
       run: |
            cmake -H. -Bbuild -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_PREFIX_PATH=/usr/include/mkl
            cmake --build build -- -j2
+  test: 
 
-    - name: Testing_code
+    runs-on: ubuntu-20.04
+
+    steps:
+
+    - name: Building_code_for_testing
       run: |  
            ulimit -s unlimited
            cp ./tests/psb3_cas66/include/* ./src/include 
@@ -30,7 +35,16 @@ jobs:
            cat ./tests/psb3_cas66/include/optci.h | sed -e s/"MXCITERM\=4600"/"MXCITERM\=600"/g -e s/"MXCIREDUCED\=2000"/"MXCIREDUCED=10"/g > ./src/include/optci.h
            cd build  
            make -j
+
+    - name: Test sr_n.inp
+      run: |  
            cd ../tests/psb3_cas66
-           ../../bin/vmc.mov1 < sr_n.inp 
-           ../../bin/vmc.mov1 < regterg.inp 
+           ../../bin/vmc.mov1 < sr_n.inp
+
+    - name: Test regterg.inp
+      run: |  
+           ../../bin/vmc.mov1 < regterg.inp
+           
+    - name: Test free.inp 
+      run: |  
            ../../bin/vmc.mov1 < free.inp 
