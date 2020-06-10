@@ -29,19 +29,19 @@ jobs:
            cd ./tests/CI_test
 
            echo "Running sr_n.inp ..."
-           ../../bin/vmc.mov1 < sr_n.inp       > sr_n_serial.out
+           ../../bin/vmc.mov1 < sr_n.inp
            echo "... done!"
 
            echo "Running regterg.inp ..."
-           ../../bin/vmc.mov1 < regterg.inp    > regterg_serial.out
+           ../../bin/vmc.mov1 < regterg.inp
            echo "... done!"
 
            echo "Running free.inp ..."
-           ../../bin/vmc.mov1 < free.inp       > free_serial.out 
+           ../../bin/vmc.mov1 < free.inp
            echo "... done!"
 
            echo "Running vmc_optall.inp ..."
-           ../../bin/vmc.mov1 < vmc_optall.inp > vmc_optall_serial.out
+           ../../bin/vmc.mov1 < vmc_optall.inp
            echo "... done!"
 
 #    - name: Test parallel
