@@ -19,34 +19,37 @@ jobs:
 
     - name: Building_code
       run: |
+           cp ./tests/CI_test/include/* ./src/include 
            cmake -H. -Bbuild -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_PREFIX_PATH=/usr/include/mkl
            cmake --build build -- -j2
 
-    - name: Building_code_for_testing
+    - name: Test serial 
       run: |  
-           ulimit -s unlimited
-           cp ./tests/psb3_cas66/include/* ./src/include 
-           cat ./tests/psb3_cas66/include/sr.h | sed -e s/"MCONF\=80000"/"MCONF\=10000"/g > ./src/include/sr.h
-           cat ./tests/psb3_cas66/include/optci.h | sed -e s/"MXCITERM\=4600"/"MXCITERM\=600"/g -e s/"MXCIREDUCED\=2000"/"MXCIREDUCED=10"/g > ./src/include/optci.h
-           cd build  
-           make -j
+           lscpu
+           cd ./tests/CI_test
 
-    - name: Test sr_n
-      run: |  
-           cd ./tests/psb3_cas66
-           ../../bin/vmc.mov1 < sr_n.inp
+           echo "Running sr_n.inp ..."
+           ../../bin/vmc.mov1 < sr_n.inp       > sr_n_serial.out
+           echo "... done!"
 
-    - name: Test regterg
-      run: |  
-           cd ./tests/psb3_cas66
-           ../../bin/vmc.mov1 < regterg.inp
-           
-    - name: Test free
-      run: |  
-           cd ./tests/psb3_cas66
-           ../../bin/vmc.mov1 < free.inp 
+           echo "Running regterg.inp ..."
+           ../../bin/vmc.mov1 < regterg.inp    > regterg_serial.out
+           echo "... done!"
 
-    - name: Test vmc_optall
-      run: |  
-           cd ./tests/butadiene-3wfs/TZ-1M-128
-           ../../../bin/vmc.mov1 < vmc_optall.inp
+           echo "Running free.inp ..."
+           ../../bin/vmc.mov1 < free.inp       > free_serial.out 
+           echo "... done!"
+
+           echo "Running vmc_optall.inp ..."
+           ../../bin/vmc.mov1 < vmc_optall.inp > vmc_optall_serial.out
+           echo "... done!"
+
+#    - name: Test parallel
+#      run: |  
+#           echo running sr_n.inp
+#           cd ./tests/CI_test
+#           mpirun --version
+#           mpirun -np 2 ../../bin/vmc.mov1  < sr_n.inp 
+#           mpirun -np 2 ../../bin/vmc.mov1  < regterg.inp  
+#           mpirun -np 2 ../../bin/vmc.mov1  < free.inp
+#           mpirun -np 2 ../../bin/vmc.mov1  < vmc_optall.inp
