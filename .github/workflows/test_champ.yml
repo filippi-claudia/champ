@@ -22,7 +22,7 @@ jobs:
            cp ./tests/CI_test/include/* ./src/include 
            cmake -H. -Bbuild -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_PREFIX_PATH=/usr/include/mkl
            cmake --build build -- -j2
-           ctest -V
+           cd build && ctest --verbose
 
 #    - name: Test serial 
 #      run: |  
