@@ -702,11 +702,13 @@ c-----------------------------------------------------------------------
 c    AVERAGES   subroutines
 c-----------------------------------------------------------------------
       subroutine mmpol_init(iflag)
+
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
+      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'mmpol.h'
 
@@ -744,9 +746,10 @@ c-----------------------------------------------------------------------
 
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
+      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'mmpol.h'
 
@@ -764,11 +767,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_rstrt(iu)
+
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
+      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'mmpol.h'
 

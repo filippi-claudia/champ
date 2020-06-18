@@ -15,7 +15,9 @@ add_executable(dmc.mov1
 #  Add headers
 target_include_directories(dmc.mov1
   PUBLIC
-  ${CMAKE_SOURCE_DIR}/src/include)
+  ${CMAKE_SOURCE_DIR}/src/include
+  ${CMAKE_SOURCE_DIR}/build/src/vmc
+  )
 
 # compilation
 target_compile_options(dmc.mov1

@@ -95,6 +95,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_sum(p,q,iw)
+
+      use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2
+      use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+
       implicit real*8(a-h,o-z)
  
       include 'dmc.h'
@@ -118,6 +122,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_cum(wsum)
+
+      use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2
+      use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+
       implicit real*8(a-h,o-z)
  
       include 'dmc.h'

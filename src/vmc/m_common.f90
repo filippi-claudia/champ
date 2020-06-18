@@ -2411,3 +2411,27 @@ module spc2
     public :: ah_pol, bh_pol
     save
  end module mmpol_ahpol
+
+ module mmpol_averages
+   !> Arguments: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2, cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+
+    real(dp) :: cmmpol_cm2
+    real(dp) :: cmmpol_cum
+    real(dp) :: cmmpol_sum
+    real(dp) :: dmmpol_cm2
+    real(dp) :: dmmpol_cum
+    real(dp) :: dmmpol_sum
+    real(dp) :: eek1_cm2(MCHMM)
+    real(dp) :: eek1_cum(MCHMM)
+    real(dp) :: eek2_cm2(MCHMM)
+    real(dp) :: eek2_cum(MCHMM)
+    real(dp) :: eek3_cm2(MCHMM)
+    real(dp) :: eek3_cum(MCHMM)
+    real(dp) :: eek_sum(3,MCHMM)
+    private
+
+    public :: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2, cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+    save
+ end module mmpol_averages
