@@ -1246,8 +1246,8 @@ end module forcewt
    integer  :: immpol
    integer  :: immpolprt
    integer  :: isites_mmpol
-   private
 
+   private
    public :: isites_mmpol, immpolprt, icall_mm, ich_mmpol, immpol
    save
  end module mmpol_cntrl
@@ -1259,8 +1259,8 @@ end module forcewt
 
    real(dp) :: alfa(MCHMM)
    real(dp) :: dipo(3,MCHMM)
-   private
 
+   private
    public :: dipo, alfa
    save
  end module mmpol_dipol
@@ -1307,6 +1307,103 @@ end module forcewt
    public :: cmmpolo, dmmpolo, eeko
    save
  end module mmpolo
+
+ module mmpol_ahpol
+   !> Arguments: ah_pol, bh_pol
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+
+   real(dp) :: ah_pol(3*MCHMM,3*MCHMM)
+   real(dp) :: bh_pol(3*MCHMM)
+
+   private
+   public :: ah_pol, bh_pol
+   save
+ end module mmpol_ahpol
+
+ module mmpol_averages
+   !> Arguments: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2, cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+ 
+    real(dp) :: cmmpol_cm2
+    real(dp) :: cmmpol_cum
+    real(dp) :: cmmpol_sum
+    real(dp) :: dmmpol_cm2
+    real(dp) :: dmmpol_cum
+    real(dp) :: dmmpol_sum
+    real(dp) :: eek1_cm2(MCHMM)
+    real(dp) :: eek1_cum(MCHMM)
+    real(dp) :: eek2_cm2(MCHMM)
+    real(dp) :: eek2_cum(MCHMM)
+    real(dp) :: eek3_cm2(MCHMM)
+    real(dp) :: eek3_cum(MCHMM)
+    real(dp) :: eek_sum(3,MCHMM)
+ 
+    private
+    public :: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum
+    public :: eek2_cm2, cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+    save
+ end module mmpol_averages
+
+ module mmpol_fdc
+   !> Arguments: a_cutoff, rcolm, screen1, screen2
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+ 
+   real(dp) :: a_cutoff
+   real(dp) :: rcolm
+   real(dp) :: screen1(MCHMM,MCHMM)
+   real(dp) :: screen2(MCHMM,MCHMM)
+ 
+   private
+   public :: a_cutoff, rcolm, screen1, screen2
+   save
+ end module mmpol_fdc
+ 
+ module mmpol_field
+   !> Arguments: eqk_pol, enk_pol
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+ 
+   real(dp) :: enk_pol(3,MCHMM)
+   real(dp) :: eqk_pol(3,MCHMM)
+ 
+   private
+   public :: eqk_pol, enk_pol
+   save
+ end module mmpol_field
+
+ module mmpol_inds
+   !> Arguments: inds_pol
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+ 
+   integer  :: inds_pol(MCHMM)
+ 
+   private
+   public :: inds_pol
+   save
+ end module mmpol_inds
+
+ module mmpol_pot
+   !> Arguments: peqq, pepol_dp, pepol_q, penu_q, peq_dp, penu_dp, u_dd, u_self
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   real(dp) :: penu_dp
+   real(dp) :: penu_q
+   real(dp) :: pepol_dp
+   real(dp) :: pepol_q
+   real(dp) :: peq_dp
+   real(dp) :: peqq
+   real(dp) :: u_dd
+   real(dp) :: u_self
+
+   private
+   public :: peqq, pepol_dp, pepol_q, penu_q, peq_dp, penu_dp, u_dd, u_self
+   save
+ end module mmpol_pot
 
  module mpiconf
    !> Arguments: idtask, nproc, wid
@@ -2399,87 +2496,4 @@ module spc2
    save
  end module zmatrix_grad
 
- module mmpol_ahpol
-   !> Arguments: ah_pol, bh_pol
-   use precision_kinds, only: dp
-   include 'mmpol.h'
-
-    real(dp) :: ah_pol(3*MCHMM,3*MCHMM)
-    real(dp) :: bh_pol(3*MCHMM)
-    private
-
-    public :: ah_pol, bh_pol
-    save
- end module mmpol_ahpol
-
- module mmpol_averages
-   !> Arguments: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2, cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
-   use precision_kinds, only: dp
-   include 'mmpol.h'
-
-    real(dp) :: cmmpol_cm2
-    real(dp) :: cmmpol_cum
-    real(dp) :: cmmpol_sum
-    real(dp) :: dmmpol_cm2
-    real(dp) :: dmmpol_cum
-    real(dp) :: dmmpol_sum
-    real(dp) :: eek1_cm2(MCHMM)
-    real(dp) :: eek1_cum(MCHMM)
-    real(dp) :: eek2_cm2(MCHMM)
-    real(dp) :: eek2_cum(MCHMM)
-    real(dp) :: eek3_cm2(MCHMM)
-    real(dp) :: eek3_cum(MCHMM)
-    real(dp) :: eek_sum(3,MCHMM)
-    private
-
-    public :: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum
-    public :: eek2_cm2, cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
-    save
- end module mmpol_averages
-
- module mmpol_field
-   !> Arguments: eqk_pol, enk_pol
-   use precision_kinds, only: dp
-   include 'mmpol.h'
-
-    real(dp) :: enk_pol(3,MCHMM)
-    real(dp) :: eqk_pol(3,MCHMM)
-    private
-
-    public :: eqk_pol, enk_pol
-    save
- end module mmpol_field
-
- module mmpol_pot
-   !> Arguments: peqq, pepol_dp, pepol_q, penu_q, peq_dp, penu_dp, u_dd, u_self
-   use precision_kinds, only: dp
-   include 'vmc.h'
-
-    real(dp) :: penu_dp
-    real(dp) :: penu_q
-    real(dp) :: pepol_dp
-    real(dp) :: pepol_q
-    real(dp) :: peq_dp
-    real(dp) :: peqq
-    real(dp) :: u_dd
-    real(dp) :: u_self
-    private
-
-    public :: peqq, pepol_dp, pepol_q, penu_q, peq_dp, penu_dp, u_dd, u_self
-    save
- end module mmpol_pot
-
- module mmpol_fdc
-   !> Arguments: a_cutoff, rcolm, screen1, screen2
-   use precision_kinds, only: dp
-   include 'mmpol.h'
-
-    real(dp) :: a_cutoff
-    real(dp) :: rcolm
-    real(dp) :: screen1(MCHMM,MCHMM)
-    real(dp) :: screen2(MCHMM,MCHMM)
-    private
-
-    public :: a_cutoff, rcolm, screen1, screen2
-    save
- end module mmpol_fdc
+ 

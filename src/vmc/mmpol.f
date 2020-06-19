@@ -15,7 +15,10 @@ c...........................................................
       use mmpol_dipol, only: alfa, dipo
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
 
+      use mmpol_inds, only: inds_pol
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h' 
       include 'mmpol.h'
@@ -94,7 +97,10 @@ c............................................................
       use mmpol_dipol, only: alfa, dipo
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use mmpol_inds, only: inds_pol
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -162,7 +168,10 @@ c............................................................
       use mmpol_dipol, only: alfa, dipo
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use mmpol_inds, only: inds_pol
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -290,7 +299,10 @@ C     ***************************************************************
       use mmpol_dipol, only: alfa, dipo
       use mmpol_ahpol, only: ah_pol, bh_pol
       use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use mmpol_inds, only: inds_pol
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -420,7 +432,10 @@ c............................................................
       use mmpol_field, only: enk_pol, eqk_pol
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use mmpol_inds, only: inds_pol
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -625,7 +640,10 @@ c-----------------------------------------------------------------------
       use mmpol_ahpol, only: ah_pol, bh_pol
       use mmpol_field, only: enk_pol, eqk_pol
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
+      use mmpol_inds, only: inds_pol
+
       implicit real*8(a-h,o-z)
+
 
 
 
