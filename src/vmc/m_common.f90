@@ -2449,3 +2449,22 @@ module spc2
     public :: eqk_pol, enk_pol
     save
  end module mmpol_field
+
+ module mmpol_pot
+   !> Arguments: peqq, pepol_dp, pepol_q, penu_q, peq_dp, penu_dp, u_dd, u_self
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+    real(dp) :: penu_dp
+    real(dp) :: penu_q
+    real(dp) :: pepol_dp
+    real(dp) :: pepol_q
+    real(dp) :: peq_dp
+    real(dp) :: peqq
+    real(dp) :: u_dd
+    real(dp) :: u_self
+    private
+
+    public :: peqq, pepol_dp, pepol_q, penu_q, peq_dp, penu_dp, u_dd, u_self
+    save
+ end module mmpol_pot

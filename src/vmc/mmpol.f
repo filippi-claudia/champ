@@ -13,9 +13,9 @@ c...........................................................
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
+      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h' 
       include 'mmpol.h'
@@ -92,7 +92,9 @@ c............................................................
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
+      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -156,7 +158,9 @@ c............................................................
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
+      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -210,7 +214,9 @@ c............................................................
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
+      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -246,7 +252,9 @@ c............................................................
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h' 
@@ -351,7 +359,9 @@ C     ***************************************************************
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
       use mmpol_field, only: enk_pol, eqk_pol
+      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -402,7 +412,9 @@ c............................................................
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
       use mmpol_field, only: enk_pol, eqk_pol
+      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -508,7 +520,9 @@ c     peQMdp and peQMq are therefore mixed terms
 c......................................................
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       implicit real*8(a-h,o-z)
+
 
 
       include 'mmpol.h'
@@ -548,7 +562,9 @@ c       Calculate e-/dipoles interactions
 c......................................................
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
+      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       implicit real*8(a-h,o-z)
+
 
 
       include 'mmpol.h'
@@ -596,7 +612,9 @@ c-----------------------------------------------------------------------
       use mmpol_dipol, only: alfa, dipo
       use mmpol_ahpol, only: ah_pol, bh_pol
       use mmpol_field, only: enk_pol, eqk_pol
+      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       implicit real*8(a-h,o-z)
+
 
 
 
