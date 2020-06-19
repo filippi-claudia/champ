@@ -93,7 +93,9 @@ c............................................................
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
+      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -159,7 +161,9 @@ c............................................................
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
+      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -285,7 +289,9 @@ C     ***************************************************************
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
       use mmpol_ahpol, only: ah_pol, bh_pol
+      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -413,7 +419,9 @@ c............................................................
       use mmpol_dipol, only: alfa, dipo
       use mmpol_field, only: enk_pol, eqk_pol
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
+      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -463,7 +471,9 @@ C     ***************************************************************
       use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -563,7 +573,9 @@ c......................................................
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
+      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
       implicit real*8(a-h,o-z)
+
 
 
 

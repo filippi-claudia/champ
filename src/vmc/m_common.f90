@@ -2468,3 +2468,18 @@ module spc2
     public :: peqq, pepol_dp, pepol_q, penu_q, peq_dp, penu_dp, u_dd, u_self
     save
  end module mmpol_pot
+
+ module mmpol_fdc
+   !> Arguments: a_cutoff, rcolm, screen1, screen2
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+
+    real(dp) :: a_cutoff
+    real(dp) :: rcolm
+    real(dp) :: screen1(MCHMM,MCHMM)
+    real(dp) :: screen2(MCHMM,MCHMM)
+    private
+
+    public :: a_cutoff, rcolm, screen1, screen2
+    save
+ end module mmpol_fdc

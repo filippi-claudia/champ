@@ -74,7 +74,9 @@ c and Anthony Scemema
 
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
       implicit real*8(a-h,o-z)
+
 
 
 
