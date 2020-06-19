@@ -10,15 +10,14 @@ c Modified by A. Scemama
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic,ibasis
-
       use force_analy, only: iforce_analy
-      implicit real*8(a-h,o-z)
+      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-      include '3dgrid_flags.h'
 
       parameter (one=1.d0,half=0.5d0)
 
@@ -282,12 +281,14 @@ c-------------------------------------------------------------------------------
       use dorb_m, only: iworbd
       use contrl_per, only: iperiodic, ibasis
 
+      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-      include '3dgrid_flags.h'
 
       parameter(one=1.d0)
 

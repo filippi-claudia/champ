@@ -75,14 +75,9 @@ c and Anthony Scemema
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
@@ -102,12 +97,6 @@ c and Anthony Scemema
       include 'efield.h'
       include 'mstates.h'
       include 'properties.h'
-      include '3dgrid_flags.h'
-
-
-
-
-
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb

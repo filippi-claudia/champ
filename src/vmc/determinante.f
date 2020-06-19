@@ -17,7 +17,6 @@
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-      include '3dgrid_flags.h'
 
       parameter(one=1.d0)
 

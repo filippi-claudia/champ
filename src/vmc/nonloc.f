@@ -312,14 +312,13 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic,ibasis
+      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
 
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-      include '3dgrid_flags.h'
-
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -403,7 +402,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-      include '3dgrid_flags.h'
 
 
 

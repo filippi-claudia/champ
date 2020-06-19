@@ -767,6 +767,35 @@ end module forcewt
    save
  end module gauss_ecp
 
+ module grid3d_param
+   !> Arguments: nstep3d, endpt, origin, step3d
+   use precision_kinds, only: dp
+
+   real(dp) :: endpt(3)
+   integer  :: nstep3d(3)
+   real(dp) :: origin(3)
+   real(dp) :: step3d(3)
+   private
+
+   public :: nstep3d, endpt, origin, step3d
+   save
+ end module grid3d_param
+
+ module grid3dflag
+   !> Arguments: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
+   use precision_kinds, only: dp
+   include 'vmc.h'
+
+   integer  :: i3ddensity
+   integer  :: i3dgrid
+   integer  :: i3dlagorb
+   integer  :: i3dsplorb
+   private
+
+   public :: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
+   save
+ end module grid3dflag
+
  module ghostatom
    !> Arguments: newghostype, nghostcent
    use precision_kinds, only: dp
@@ -2495,17 +2524,3 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
- 
- module grid3d_param
-   !> Arguments: nstep3d, endpt, origin, step3d
-   use precision_kinds, only: dp
-
-    real(dp) :: endpt(3)
-    integer  :: nstep3d(3)
-    real(dp) :: origin(3)
-    real(dp) :: step3d(3)
-    private
-
-    public :: nstep3d, endpt, origin, step3d
-    save
- end module grid3d_param

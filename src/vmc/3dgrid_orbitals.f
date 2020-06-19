@@ -15,19 +15,15 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       use coefs, only: coef, nbasis, norb
       use phifun, only: d2phin, dphin, phin
-
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       use grid3d_param, only: endpt, nstep3d, origin, step3d
+
       implicit real*8(a-h,o-z)
-
-
-
 
 
       include 'force.h'
       include 'vmc.h'
       include '3dgrid.h'
-      include '3dgrid_flags.h'
       include '3dgrid_spline.h'
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
@@ -404,7 +400,6 @@ c Lagrange interpolation routines
       include 'force.h'
       include 'vmc.h'
       include '3dgrid.h'
-      include '3dgrid_flags.h'
       include '3dgrid_lagrange.h'
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
@@ -904,13 +899,15 @@ c-----------------------------------------------------------------------
       subroutine orb3d_dump(iu)
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
-      include '3dgrid_flags.h'
 
       if (i3dgrid.eq.0) return
 
@@ -932,13 +929,15 @@ c-----------------------------------------------------------------------
       use coefs, only: coef, nbasis, norb
 
       use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
-      include '3dgrid_flags.h'
 
       if (i3dgrid.eq.0) return
 

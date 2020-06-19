@@ -6,19 +6,14 @@ c Modified by A. Scemama
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use dorb_m, only: iworbd
+
       implicit real*8(a-h,o-z)
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'mstates.h'
-      include '3dgrid_flags.h'
 
       parameter (one=1.d0,half=0.5d0)
 
