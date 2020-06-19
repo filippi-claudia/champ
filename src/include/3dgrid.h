@@ -14,7 +14,6 @@
       parameter (MXNSTEP3=MXNSTEP2*MXNSTEP)
 
       real*4 grid3d(MXNSTEP,MXNSTEP,MXNSTEP), cart_from_int(MXNSTEP,3)
-      common /grid3d_array/ cart_from_int
       common /grid3d_data/  grid3d
 
 
