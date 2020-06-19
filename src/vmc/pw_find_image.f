@@ -98,7 +98,9 @@ c rlatt   = lattice vectors
 c r       = rlatt * r_basis
 c r_basis = rlatt_inv * r
 
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
       dimension r(3),r_basis(3),rlatt(3,3),rlatt_inv(3,3)
 

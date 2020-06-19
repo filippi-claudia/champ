@@ -17,7 +17,9 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use phifun, only: d2phin, dphin, phin
 
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -300,6 +302,7 @@ c----------------------------------------------------------------------
 
       subroutine spline_mo(r,iorb,f,df,ddf,ier)
       use insout, only: inout, inside
+      use grid3d_param, only: nstep3d, endpt, origin, step3d
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include '3dgrid.h'
@@ -394,6 +397,7 @@ c Lagrange interpolation routines
 
       use atom, only: cent, ncent
       use wfsec, only: iwf, iwftype, nwftype
+      use grid3d_param, only: nstep3d, endpt, origin, step3d
 
       implicit real*8(a-h,o-z)
 
@@ -588,7 +592,9 @@ c
 
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -666,7 +672,9 @@ c
 
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -746,7 +754,9 @@ c
 
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -824,7 +834,9 @@ c
 
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -891,7 +903,9 @@ c Compute displacements
 c-----------------------------------------------------------------------
       subroutine orb3d_dump(iu)
       use coefs, only: coef, nbasis, norb
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -917,7 +931,9 @@ c-----------------------------------------------------------------------
 
       use coefs, only: coef, nbasis, norb
 
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -940,7 +956,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine splorb_dump(iu)
       use coefs, only: coef, nbasis, norb
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include '3dgrid.h'
@@ -958,7 +976,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine splorb_rstrt(iu)
       use coefs, only: coef, nbasis, norb
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include '3dgrid.h'
@@ -975,7 +995,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_dump(iu)
       use coefs, only: coef, nbasis, norb
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include '3dgrid.h'
@@ -993,7 +1015,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_rstrt(iu)
       use coefs, only: coef, nbasis, norb
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include '3dgrid.h'

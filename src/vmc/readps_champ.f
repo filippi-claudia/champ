@@ -27,7 +27,9 @@ c The prefered grid is 3.
 
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
 
 

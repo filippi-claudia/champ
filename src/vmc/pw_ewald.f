@@ -19,7 +19,9 @@ c Written by Cyrus Umrigar
 
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
