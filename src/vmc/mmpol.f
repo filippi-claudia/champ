@@ -350,7 +350,9 @@ C     ***************************************************************
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
+      use mmpol_field, only: enk_pol, eqk_pol
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -399,7 +401,9 @@ c............................................................
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
+      use mmpol_field, only: enk_pol, eqk_pol
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -591,7 +595,9 @@ c-----------------------------------------------------------------------
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
       use mmpol_ahpol, only: ah_pol, bh_pol
+      use mmpol_field, only: enk_pol, eqk_pol
       implicit real*8(a-h,o-z)
+
 
 
 

@@ -2436,3 +2436,16 @@ module spc2
     public :: eek2_cm2, cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
     save
  end module mmpol_averages
+
+ module mmpol_field
+   !> Arguments: eqk_pol, enk_pol
+   use precision_kinds, only: dp
+   include 'mmpol.h'
+
+    real(dp) :: enk_pol(3,MCHMM)
+    real(dp) :: eqk_pol(3,MCHMM)
+    private
+
+    public :: eqk_pol, enk_pol
+    save
+ end module mmpol_field
