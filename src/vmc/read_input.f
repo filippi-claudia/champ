@@ -68,10 +68,8 @@ c and Anthony Scemema
       use force_analy, only: iforce_analy
       use pseudo, only: lpot, nloc, vps, vpso
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
-
       use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
@@ -949,13 +947,15 @@ c-----------------------------------------------------------------------
 C$INPUT exponents inp i=1
 CKEYDOC Basis function exponents (only if no numerical basis)
       use coefs, only: coef, nbasis, norb
+      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
+     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
+     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'basis.h'
       include 'inputflags.h'
-
 
       call incpos(iu,itmp,1)
       read(iu,*) (zex(i,iwft),i=1,nbasis)
@@ -1117,18 +1117,17 @@ CKEYDOC Basis function types and pointers to radial parts tables
 C$INPUT qmc_bf_info inp i
 CKEYDOC alternative name for keyword basis because of GAMBLE input
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
-
       use numbas1, only: iwlbas, nbastyp
-      implicit real*8(a-h,o-z)
+      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
+     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
+     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'basis.h'
       include 'numbas.h'
       include 'inputflags.h'
-
-
 
       call p2gti('atoms:nctype',nctype,1)
       call p2gtid('atoms:addghostype',newghostype,0,1)
@@ -1536,14 +1535,15 @@ c----------------------------------------------------------------------
       subroutine inputzex
 c Set the exponents to one when using a numerical basis
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
-
       use coefs, only: coef, nbasis, norb
-      implicit real*8(a-h,o-z)
+      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
+     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
+     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'basis.h'
       include 'numbas.h'
 
 

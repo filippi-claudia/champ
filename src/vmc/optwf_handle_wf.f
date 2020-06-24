@@ -65,14 +65,8 @@ c-----------------------------------------------------------------------
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
       use bparm, only: nocuspb, nspin2b
       use optorb_cblock, only: norbterm, norbprim
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -532,13 +526,17 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine copy_zex(iadiag)
+
       use coefs, only: coef, nbasis, norb
       use optorb_cblock, only: norbterm, norbprim
+      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
+     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
+     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'basis.h'
 
 
       do 20 i=1,nbasis

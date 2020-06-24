@@ -2,6 +2,9 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
+      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
+     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
+     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
 
       implicit real*8(a-h,o-z)
       include 'vmc.h'
@@ -9,7 +12,6 @@ c job where it left off
       include 'force.h'
       include 'mstates.h'
       include 'pseudo.h'
-      include 'basis.h'
       include 'mpif.h'
       include 'mpi_qmc.h'
       parameter (zero=0.d0,one=1.d0)

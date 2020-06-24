@@ -3,6 +3,9 @@ c Written by Cyrus Umrigar with major contributions by Claudia Filippi.
 c Uses the diffusion Monte Carlo algorithm described in:
 c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
 c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
+      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
+     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
+     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
 
       implicit real*8(a-h,o-z)
 
@@ -11,7 +14,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       include 'force.h'
       include 'pseudo.h'
       include 'numbas.h'
-      include 'basis.h'
       include 'ewald.h'
 
       parameter (one=1.d0,four=4.d0)

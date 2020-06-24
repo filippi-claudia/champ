@@ -13,17 +13,14 @@ c vgl -> value, gradient, laplacian
      &phin
       use wfsec, only: iwf, iwftype, nwftype
       use force_analy, only: iforce_analy
+      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
+     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
+     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
-      include 'basis.h'
       include 'numbas.h'
       include 'pseudo.h'
 

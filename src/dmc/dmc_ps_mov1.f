@@ -39,12 +39,16 @@ c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
+     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
+     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+
       implicit real*8(a-h,o-z)
+      
       include 'vmc.h'
       include 'dmc.h'
       include 'pseudo.h'
       include 'force.h'
-      include 'basis.h'
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod

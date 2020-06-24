@@ -28,14 +28,16 @@ c job where it left off
       use coefs, only: coef, nbasis, norb
       use const2, only: deltar, deltat
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
-      implicit real*8(a-h,o-z)
+      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
+     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
+     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'pseudo.h'
-      include 'basis.h'
       include 'optorb.h'
       include 'optci.h'
 
