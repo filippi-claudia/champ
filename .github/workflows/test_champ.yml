@@ -24,6 +24,7 @@ jobs:
            cmake --build build -- -j2
            cd build/tests/CI_test && ctest --verbose
 
+
 # To be tested:
 #            cd build/tests/CI_test && mpirun -s all -np 2 ../../bin/vmc.mov1  < sr_n.inp
 
