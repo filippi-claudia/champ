@@ -144,12 +144,6 @@ NCOEF must be include in a include file.\
 **SOLUTION:** \
 I included NCOEF parameter in the vmc.h file. 
 
-- [ ] ***#104 common block /orbital_num_spl2/***
-**PROBLEM:** \
-Variables bc and wk are used in 3dgrid_orbitals.f with different dimensions.\
-**SOLUTION:** \
-TODO
-
 - [ ] ***#105 common block /orbval/***
 **PROBLEM:** \
 It shares variables with common block /multislatern/, they should be condensed in just one.\

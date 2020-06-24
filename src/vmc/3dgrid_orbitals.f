@@ -30,7 +30,6 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       real*4  bc(MXNSTEP,MXNSTEP,3:8,MELEC/2+1), wk(80*MXNSTEP3)
-      common /orbital_num_spl2/ bc, wk
 
 c     Note:
 c     The boundary condition array ranges from 3 to 8. This way, if we code
