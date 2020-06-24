@@ -1632,6 +1632,21 @@ end module forcewt
    save
  end module numbas2
 
+ module orbital_num_lag
+   !> Arguments: denom
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include '3dgrid.h'
+   include '3dgrid_lagrange.h'
+
+   real(dp) :: denom(LAGSTART:LAGEND,3)
+   real(dp) :: step_inv(3,3)
+   private
+
+   public :: denom, step_inv
+   save
+end module orbital_num_lag
+
  module orb_mat_001
    !> Arguments: orb_o, orb_oe, orb_ho
    use precision_kinds, only: dp
@@ -2590,17 +2605,4 @@ module spc2
    save
  end module zmatrix_grad
 
- module orbital_num_lag
-   !> Arguments: denom
-   use precision_kinds, only: dp
-   include 'vmc.h'
-   include '3dgrid.h'
-   include '3dgrid_lagrange.h'
 
-    real(dp) :: denom(LAGSTART:LAGEND,3)
-    real(dp) :: step_inv(3,3)
-    private
-
-    public :: denom, step_inv
-    save
- end module orbital_num_lag
