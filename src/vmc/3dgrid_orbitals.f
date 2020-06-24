@@ -12,14 +12,13 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
-
       use coefs, only: coef, nbasis, norb
       use phifun, only: d2phin, dphin, phin
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use orbital_num_lag, only: denom, step_inv
 
       implicit real*8(a-h,o-z)
-
 
       include 'force.h'
       include 'vmc.h'
@@ -393,6 +392,7 @@ c Lagrange interpolation routines
       use atom, only: cent, ncent
       use wfsec, only: iwf, iwftype, nwftype
       use grid3d_param, only: nstep3d, endpt, origin, step3d
+      use orbital_num_lag, only: denom, step_inv
 
       implicit real*8(a-h,o-z)
 
@@ -587,9 +587,9 @@ c
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use orbital_num_lag, only: denom, step_inv
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -667,15 +667,14 @@ c
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use orbital_num_lag, only: denom, step_inv
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
-
 
       dimension r(3),dr(3),orb(3,MELEC,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
@@ -749,9 +748,9 @@ c
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use orbital_num_lag, only: denom, step_inv
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -829,8 +828,9 @@ c
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
-      implicit real*8(a-h,o-z)
+      use orbital_num_lag, only: denom, step_inv
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
@@ -992,8 +992,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine lagorb_dump(iu)
+
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use orbital_num_lag, only: denom, step_inv
+
       implicit real*8(a-h,o-z)
 
 
@@ -1012,8 +1015,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine lagorb_rstrt(iu)
+
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use orbital_num_lag, only: denom, step_inv
+
       implicit real*8(a-h,o-z)
 
 

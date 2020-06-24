@@ -2589,3 +2589,18 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
+
+ module orbital_num_lag
+   !> Arguments: denom
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include '3dgrid.h'
+   include '3dgrid_lagrange.h'
+
+    real(dp) :: denom(LAGSTART:LAGEND,3)
+    real(dp) :: step_inv(3,3)
+    private
+
+    public :: denom, step_inv
+    save
+ end module orbital_num_lag

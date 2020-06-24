@@ -13,17 +13,13 @@ c routine to write out estimators for energy etc.
       use forcewt, only: wcum, wsum
       use contr3, only: mode
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
-      implicit real*8(a-h,o-z)
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'pseudo.h'
-
-
-
-
 
       dimension enow(MSTATES,MFORCE)
 
