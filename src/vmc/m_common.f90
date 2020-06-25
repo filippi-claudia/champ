@@ -2605,4 +2605,19 @@ module spc2
    save
  end module zmatrix_grad
 
+ module efield_blk
+   !> Arguments: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
+   use precision_kinds, only: dp
+   include 'efield.h'
 
+    real(dp) :: ascreen(MCHARGES)
+    real(dp) :: bscreen(MCHARGES)
+    real(dp) :: qcharge(MCHARGES)
+    real(dp) :: xcharge(MCHARGES)
+    real(dp) :: ycharge(MCHARGES)
+    real(dp) :: zcharge(MCHARGES)
+    private
+
+    public :: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
+    save
+ end module efield_blk

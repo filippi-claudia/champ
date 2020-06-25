@@ -1,6 +1,9 @@
       subroutine efield_extpot_ene(coord,nelec,efield_pot)
 
+      use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'efield.h'
 
@@ -19,9 +22,12 @@
       end
 c-----------------------------------------------------------------------
       subroutine efield_compute_extint
+
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'efield.h'
 

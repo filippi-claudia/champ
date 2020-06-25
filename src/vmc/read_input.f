@@ -2277,7 +2277,10 @@ c      Written by Omar Valsson
 c-----------------------------------------------------------------------
       subroutine read_efield(ncharges_tmp,iscreen_tmp,filename)
 C$INPUT efield i i a=<input>
+      use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'efield.h'
