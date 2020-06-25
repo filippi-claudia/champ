@@ -43,8 +43,8 @@ jobs:
            echo running sr_n.inp
            cd ./tests/CI_test
            mpirun --version
-           cp ../../vmc.mov1  ./
-           mpirun -s -np 2  ./vmc.mov1  < sr_n.inp 
+#           cp ../../vmc.mov1  ./
+           mpirun  --preload-files=../../bin/vmc.mov1  -np 2  ./vmc.mov1  < sr_n.inp 
 #           mpirun -np 2 ../../bin/vmc.mov1  < regterg.inp  
 #           mpirun -np 2 ../../bin/vmc.mov1  < free.inp
 #           mpirun -np 2 ../../bin/vmc.mov1  < vmc_optall.inp
