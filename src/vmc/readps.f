@@ -10,17 +10,11 @@ c Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-
-
-
       include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
       character*20 filename,atomtyp
-
-
-
 
 c nquad = number of quadrature points
 c nlang = number of non-local potentials

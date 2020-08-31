@@ -17,13 +17,10 @@ c Modified by A. Scemama
 
       parameter (one=1.d0,half=0.5d0)
 
-
-
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
      &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
-
 
       common /multislater/detiab(MDET,2)
 
@@ -166,7 +163,7 @@ c-----------------------------------------------------------------------
       use Bloc_da, only: b_da
       use Bloc_dj, only: b_dj
       use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem, xmatd, xmatu
+      use Bloc, only: b, tildem
 
       use force_analy, only: iforce_analy
       use velocity_jastrow, only: vj, vjn

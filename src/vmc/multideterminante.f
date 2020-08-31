@@ -20,7 +20,7 @@
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /multislater/ detu(MDET),detd(MDET)
+      common /multislater/ detiab(MDET,2)
       common /multislatern/ detn(MDET)
      &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -99,8 +99,8 @@ c compute wave function
  400  continue
 
       do 800 istate=1,nstates
-        if(iab.eq.1) call compute_ymat(iab,detn,detd,wfmatn,ymatn(1,1,istate),istate)
-        if(iab.eq.2) call compute_ymat(iab,detu,detn,wfmatn,ymatn(1,1,istate),istate)
+        if(iab.eq.1) call compute_ymat(iab,detn,detiab(1,2),wfmatn,ymatn(1,1,istate),istate)
+        if(iab.eq.2) call compute_ymat(iab,detiab(1,1),detn,wfmatn,ymatn(1,1,istate),istate)
  800  continue
 
       do iorb=1,norb

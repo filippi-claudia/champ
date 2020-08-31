@@ -46,7 +46,7 @@ c routine to accumulate estimators for energy etc.
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
-      common /multislater/ detu(MDET),detd(MDET)
+      common /multislater/ detiab(MDET,2)
 
 
       dimension xstrech(3,MELEC),enow(MSTATES,MFORCE)
@@ -132,10 +132,10 @@ c statistical fluctuations without blocking
         apsi(istate)=apsi(istate)+dabs(psido(istate))
   30  continue
     
-      aref=aref+dabs(detu(kref)*detd(kref))
+      aref=aref+dabs(detiab(kref,1)*detiab(kref,2))
 
-      detref(1)=detref(1)+dlog10(dabs(detu(kref)))
-      detref(2)=detref(2)+dlog10(dabs(detd(kref)))
+      detref(1)=detref(1)+dlog10(dabs(detiab(kref,1)))
+      detref(2)=detref(2)+dlog10(dabs(detiab(kref,2)))
 
       call acues1_reduce
 

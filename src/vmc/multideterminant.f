@@ -9,7 +9,7 @@
       use ycompact, only: dymat, ymat
       use zcompact, only: aaz, dzmat, emz, zmat
       use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem, xmat, xmatd, xmatu
+      use Bloc, only: b, tildem, xmat
       use denergy_det_m, only: denergy_det
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
@@ -31,8 +31,8 @@ c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
       common /slater/ slmi(MMAT_DIM,2)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
+     &,fp(3,MMAT_DIM,2)
+     &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detiab(MDET,2)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -235,7 +235,7 @@ c-----------------------------------------------------------------------
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem, xmat, xmatd, xmatu
+      use Bloc, only: b, tildem, xmat
       use denergy_det_m, only: denergy_det
       use dorb_m, only: iworbd
 
@@ -247,9 +247,9 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
+      common /slater/ slmi(MMAT_DIM,2)
+     &,fp(3,MMAT_DIM,2)
+     &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -311,7 +311,7 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
       use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem, xmat, xmatd, xmatu
+      use Bloc, only: b, tildem, xmat
 
       use denergy_det_m, only: denergy_det
       use multimat, only: aa, wfmat
@@ -377,7 +377,7 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
       use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem, xmat, xmatd, xmatu
+      use Bloc, only: b, tildem, xmat
       use multimat, only: aa, wfmat
 
       implicit real*8(a-h,o-z)
@@ -387,8 +387,8 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
 
       common /slater/ slmi(MMAT_DIM,2)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
+     &,fp(3,MMAT_DIM,2)
+     &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
 
       dimension ymat(MORB,MELEC,2),dymat(MORB,MELEC,2)

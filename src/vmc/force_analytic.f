@@ -2,25 +2,13 @@
 
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_j, da_vj
-      use da_orbval, only: da_d2orb, da_dorb, da_orb
-      use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use coefs, only: coef, nbasis, norb
-      use dorb_m, only: iworbd
+      use da_energy_now, only: da_energy, da_psi
 
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
-     &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detu(MDET),detd(MDET)
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension da_psi_ref(3,MCENT)
 
@@ -57,34 +45,20 @@ c-----------------------------------------------------------------------
       use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-
-
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
 
       common /slater/ slmi(MMAT_DIM,2)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
+     &,fp(3,MMAT_DIM,2)
+     &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detu(MDET),detd(MDET)
-
-
-
+      common /multislater/ detiab(MDET,2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-
-
-      dimension b_a(MORB,MELEC),b_kref(MELEC*MELEC),tildem_a(MELEC,MORB),xmat(MELEC*MELEC,2),work(MELEC)
+      dimension b_a(MORB,MELEC),b_kref(MELEC*MELEC),tildem_a(MELEC,MORB)
       dimension da_psi_ref(3,MCENT)
 
       do 400 ic=1,ncent
@@ -135,7 +109,7 @@ c compute force for reference determinant
 c enddo iab
           enddo
 
-          da_psi(k,ic)=trace*detu(kref)*detd(kref)/psid
+          da_psi(k,ic)=trace*detiab(kref,1)*detiab(kref,2)/psid
 
  400  continue
 
@@ -162,7 +136,7 @@ c-----------------------------------------------------------------------
       use zcompact, only: aaz, dzmat, emz, zmat
       use Bloc_da, only: b_da, db
       use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem, xmat, xmatd, xmatu
+      use Bloc, only: b, tildem, xmat
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
 
@@ -173,29 +147,18 @@ c-----------------------------------------------------------------------
       use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
 
-
-
-
       include 'vmc.h'
       include 'pseudo.h'
       include 'mstates.h'
       include 'force.h'
 
       common /slater/ slmi(MMAT_DIM,2)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
+     &,fp(3,MMAT_DIM,2)
+     &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detu(MDET),detd(MDET)
-
-
-
+      common /multislater/ detiab(MDET,2)
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
-
-
-
-
 
       dimension da_energy_ref(3,MCENT)
 
@@ -237,7 +200,7 @@ c compute force for reference determinant
 c enddo iab
           enddo
 
-          da_energy(k,ic)=trace*detu(kref)*detd(kref)/psid
+          da_energy(k,ic)=trace*detiab(kref,1)*detiab(kref,2)/psid
   400 continue
 
       do 800 ic=1,ncent
@@ -266,17 +229,12 @@ c-----------------------------------------------------------------------
       subroutine force_analy_init(iflag)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use da_energy_now, only: da_energy, da_psi
-      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
-
-
-
       include 'vmc.h'
-
-
 
 
       if(iforce_analy.eq.0) return
@@ -301,7 +259,7 @@ c-----------------------------------------------------------------------
       subroutine force_analy_sum(p,q,eloc,eloco)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use da_energy_now, only: da_energy, da_psi
-      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
@@ -327,7 +285,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine force_analy_cum(wsum,eave,wcum)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
@@ -354,7 +312,7 @@ c-----------------------------------------------------------------------
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use force_fin, only: da_energy_ave, da_energy_err
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
-      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
@@ -391,7 +349,7 @@ c-----------------------------------------------------------------------
       subroutine force_analy_dump(iu)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
-      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
@@ -413,7 +371,7 @@ c-----------------------------------------------------------------------
       subroutine force_analy_rstrt(iu)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
-      use da_energy_ave_m, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)

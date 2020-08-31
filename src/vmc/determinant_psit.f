@@ -2,9 +2,7 @@
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
-      use wfsec, only: iwf, iwftype, nwftype
-      use contrl_per, only: iperiodic, ibasis
+      use wfsec, only: iwf
 
       implicit real*8(a-h,o-z)
 
@@ -12,14 +10,11 @@
       include 'force.h'
       include 'mstates.h'
 
-      parameter (one=1.d0,half=0.5d0)
-
-      common /multislater/ detu(MDET),detd(MDET)
+      common /multislater/ detiab(MDET,2)
 
       determ=0
-
       do 110 k=1,ndet
-  110   determ=determ+detu(k)*detd(k)*cdet(k,istate,iwf)
+  110   determ=determ+detiab(k,1)*detiab(k,2)*cdet(k,istate,iwf)
 
 
       return

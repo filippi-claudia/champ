@@ -12,7 +12,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use Bloc_dj, only: b_dj
       use coefs, only: coef, nbasis, norb
       use contr3, only: mode
-      use Bloc, only: b, tildem, xmatd, xmatu
+      use Bloc, only: b, tildem
       use contrl_per, only: iperiodic,ibasis
       use force_analy, only: iforce_analy
       use pseudo, only: lpot, nloc, vps, vpso
@@ -34,11 +34,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       include 'optjas.h'
       include 'optorb.h'
 
-      common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
+      common /slater/ slmi(MMAT_DIM,2)
+     &,fp(3,MMAT_DIM,2)
+     &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detu(MDET),detd(MDET)
+      common /multislater/ detiab(MDET,2)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
@@ -121,7 +121,7 @@ c loop quadrature points
               iel=i
               call orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 
-              call nonlocd(iel,orbn,detu,detd,slmui,slmdi,det_ratio)
+              call nonlocd(iel,orbn,detiab(1,1),detiab(1,2),slmi(1,1),slmi(1,2),det_ratio)
               if(ioptjas.gt.0) then
                 call deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,psij_ratio,dpsij_ratio,vjn,da_ratio_jn)
                else
@@ -192,8 +192,8 @@ c endif iskip
 c end loop nelec, ncent
   100 continue
 
-      if(ipr.ge.4) write(6,'(''vpsp_det,detu(1),detd(1),r_en(1)='',100d12.4)')
-     &,(vpsp_det(iab),iab=1,2),detu(1),detd(1),r_en(1,1)
+      if(ipr.ge.4) write(6,'(''vpsp_det,det,r_en(1)='',100d12.4)')
+     &,(vpsp_det(iab),detiab(1,iab),iab=1,2),r_en(1,1)
 
       return
       end

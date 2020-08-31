@@ -1,16 +1,10 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
-     &phin
       use slatn, only: slmin
-      use wfsec, only: iwf, iwftype, nwftype
-      use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
-      use contrl_per, only: iperiodic,ibasis
 
       implicit real*8(a-h,o-z)
 
@@ -18,73 +12,51 @@
       include 'force.h'
       include 'mstates.h'
 
-      parameter(one=1.d0)
-
-c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
-
-      common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
+      common /slater/ slmi(MMAT_DIM,2)
+     &,fp(3,MMAT_DIM,2)
+     &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detu(MDET),detd(MDET)
+      common /multislater/ detiab(MDET,2)
       common /multislatern/ detn(MDET)
-     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-
+     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
       call orbitalse(iel,x,rvec_en,r_en,iflag)
 
       if(iel.le.nup) then
+        iab=1
+        nel=nup
+        ish=0
+       else
+        iab=2
+        nel=ndn
+        ish=nup
+      endif
 
-      ikel=nup*(iel-1)
+      ikel=nel*(iel-ish-1)
 
       ratio_kref=0
-      do 30 j=1,nup
-   30   ratio_kref=ratio_kref+slmui(j+ikel)*orb(iworbd(j,kref))
+      do 55 j=1,nel
+   55   ratio_kref=ratio_kref+slmi(j+ikel,iab)*orbn(iworbd(j+ish,kref))
 
-      detn(kref)=detu(kref)*ratio_kref
+      detn(kref)=detiab(kref,iab)*ratio_kref
 
       if(ratio_kref.eq.0.d0) return
 
-      do 45 i=1,nup
-        if(i.ne.iel) then
-          ik=nup*(i-1)
+      do 70 i=1,nel
+        if(i+ish.ne.iel) then
+          ik=nel*(i-1)
           sum=0
-          do 35 j=1,nup
-   35       sum=sum+slmui(j+ik)*orb(iworbd(j,kref))
+          do 60 j=1,nel
+   60       sum=sum+slmi(j+ik,iab)*orbn(iworbd(j+ish,kref))
           sum=sum/ratio_kref
-          do 40 j=1,nup
-   40       slmin(j+ik)=slmui(j+ik)-slmui(j+ikel)*sum
-          endif
-   45   continue
-        do 50 j=1,nup
-   50     slmin(j+ikel)=slmui(j+ikel)/ratio_kref
-
-      else
-
-      ikel=ndn*(iel-nup-1)
-
-      ratio_kref=0
-      do 55 j=1,ndn
-   55   ratio_kref=ratio_kref+slmdi(j+ikel)*orb(iworbd(j+nup,kref))
-
-      detn(kref)=detd(kref)*ratio_kref
-      do 70 i=1,ndn
-        if(i+nup.ne.iel) then
-          ik=ndn*(i-1)
-          sum=0
-          do 60 j=1,ndn
-   60       sum=sum+slmdi(j+ik)*orb(iworbd(j+nup,kref))
-          sum=sum/ratio_kref
-          do 65 j=1,ndn
-   65      slmin(j+ik)=slmdi(j+ik)-slmdi(j+ikel)*sum
+          do 65 j=1,nel
+   65      slmin(j+ik)=slmi(j+ik,iab)-slmi(j+ikel,iab)*sum
         endif
    70 continue
-      do 75 j=1,ndn
-   75   slmin(j+ikel)=slmdi(j+ikel)/ratio_kref
-
-      endif
+      do 75 j=1,nel
+   75   slmin(j+ikel)=slmi(j+ikel,iab)/ratio_kref
 
       return
       end
@@ -93,7 +65,6 @@ c-----------------------------------------------------------------------
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
       use slatn, only: slmin
@@ -112,12 +83,10 @@ c-----------------------------------------------------------------------
       include 'force.h'
       include 'mstates.h'
 
-      parameter (one=1.d0,half=0.5d0)
-
       common /slater/ slmi(MMAT_DIM,2)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
-      common /multislater/ detu(MDET),detd(MDET)
+     &,fp(3,MMAT_DIM,2)
+     &,fpp(MMAT_DIM,2)
+      common /multislater/ detiab(MDET,2)
       common /multislatern/ detn(MDET)
      &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -148,7 +117,7 @@ c All quantities saved (old) avaliable
         call determinante_ref_grad(iel,slmi(1,iab),dorb_tmp,vref)
 
         if(iguiding.eq.0) then
-          detratio=detu(kref)*detd(kref)/psid(1)
+          detratio=detiab(kref,1)*detiab(kref,2)/psid(1)
           call multideterminante_grad(iel,dorb_tmp,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat(1,1,iab,1),vd)
 
           do kk=1,3
@@ -161,7 +130,7 @@ c All quantities saved (old) avaliable
           do i=1,nstates
             istate=iweight_g(i)
 
-            detratio=detu(kref)*detd(kref)/psid(istate)
+            detratio=detiab(kref,1)*detiab(kref,2)/psid(istate)
             call multideterminante_grad(iel,dorb_tmp,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat(1,1,iab,istate),vd_s)
 
             do kk=1,3
@@ -189,9 +158,9 @@ c Within single-electron move - quantities of electron iel not saved
         if(iguiding.eq.0) then
 
           if(iab.eq.1) then
-            detratio=detn(kref)*detd(kref)/psid(1)
+            detratio=detn(kref)*detiab(kref,2)/psid(1)
            else
-            detratio=detu(kref)*detn(kref)/psid(1)
+            detratio=detiab(kref,1)*detn(kref)/psid(1)
           endif
           call multideterminante_grad(iel,dorbn,detratio,slmin,aan,wfmatn,ymatn,vd)
 
@@ -208,9 +177,9 @@ c Within single-electron move - quantities of electron iel not saved
             istate=iweight_g(i)
 
             if(iab.eq.1) then
-              detratio=detn(kref)*detd(kref)/psid(istate)
+              detratio=detn(kref)*detiab(kref,2)/psid(istate)
              else
-              detratio=detu(kref)*detn(kref)/psid(istate)
+              detratio=detiab(kref,1)*detn(kref)/psid(istate)
             endif
             call multideterminante_grad(iel,dorbn,detratio,slmin,aan,wfmatn,ymatn(1,1,istate),vd_s)
 
@@ -245,9 +214,9 @@ c iel has same spin as electron moved
         if(iflag_move.eq.2) then
 
           if(iab.eq.1) then
-            detratio=detn(kref)*detd(kref)/psid(1)
+            detratio=detn(kref)*detiab(kref,2)/psid(1)
            else
-            detratio=detu(kref)*detn(kref)/psid(1)
+            detratio=detiab(kref,1)*detn(kref)/psid(1)
           endif
 
           call determinante_ref_grad(iel,slmin,dorb_tmp,vref)
@@ -257,16 +226,16 @@ c iel has same spin as electron moved
 c iel has different spin than the electron moved
          else
           if(iab.eq.1) then
-            detratio=detu(kref)*detn(kref)/psid(1)
+            detratio=detiab(kref,1)*detn(kref)/psid(1)
            else
-            detratio=detn(kref)*detd(kref)/psid(1)
+            detratio=detn(kref)*detiab(kref,2)/psid(1)
           endif
 
           call determinante_ref_grad(iel,slmi(1,iab),dorb_tmp,vref)
 
-          if(iel.eq.1) call compute_ymat(1,detu,detn,wfmat(1,1,1),ymat_tmp,1)
+          if(iel.eq.1) call compute_ymat(1,detiab(1,1),detn,wfmat(1,1,1),ymat_tmp,1)
 
-          if(iel.eq.nup+1) call compute_ymat(2,detn,detd,wfmat(1,1,2),ymat_tmp,1)
+          if(iel.eq.nup+1) call compute_ymat(2,detn,detiab(1,2),wfmat(1,1,2),ymat_tmp,1)
 
           call multideterminante_grad(iel,dorb_tmp,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat_tmp(1,1),vd)
         endif
@@ -283,7 +252,6 @@ c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
       use dorb_m, only: iworbd
@@ -293,10 +261,6 @@ c-----------------------------------------------------------------------
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-
-      parameter (one=1.d0,half=0.5d0)
-
-
 
       dimension slmi(MMAT_DIM),dorb(3,MORB)
       dimension ddx_ref(3)

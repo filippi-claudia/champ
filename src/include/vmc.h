@@ -18,7 +18,7 @@
 
       character*20 method
 
-      parameter(MELEC=32,MORB=150,MBASIS=150,MDET=5000,MCENT=20)
+      parameter(MELEC=32,MORB=500,MBASIS=500,MDET=5000,MCENT=20)
       parameter(MCTYPE=3)
       parameter(MCTYP3X=5,NSPLIN=1001,MORDJ=7,radmax=10.d0,nrad=3001)
       parameter(MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2)

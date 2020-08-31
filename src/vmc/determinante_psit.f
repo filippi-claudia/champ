@@ -7,26 +7,22 @@ c-----------------------------------------------------------------------
       use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
 
-
-
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
 
-
-      common /multislater/ detu(MDET),detd(MDET)
+      common /multislater/ detiab(MDET,2)
       common /multislatern/ detn(MDET)
-     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
+     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
 
 
       determ=0
 
       do 110 k=1,ndet
         if(iel.le.nup) then
-          det=detn(k)*detd(k)
+          det=detn(k)*detiab(k,2)
          else
-          det=detu(k)*detn(k)
+          det=detiab(k,1)*detn(k)
         endif
 
         determ=determ+det*cdet(k,istate,iwf)

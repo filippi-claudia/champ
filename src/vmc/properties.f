@@ -111,7 +111,7 @@ c compute averages and print then out
       include 'properties.h'
       dimension pav(MAXPROP),perr(MAXPROP)
 
-      common /icount_prop/ icount
+      common /icount_prop/ icount_prop
 
 c ipropprt 0 no printout
 c          1 each iteration full printout
@@ -120,12 +120,12 @@ c         -1 force printout
 
       if(iprop.eq.0.or.ipropprt.eq.0) return
 
-      if(ipropprt.gt.0.and.icount.ne.ipropprt) then
-        icount=icount+1
+      if(ipropprt.gt.0.and.icount_prop.ne.ipropprt) then
+        icount_prop=icount_prop+1
         return
       endif
 
-      icount=1
+      icount_prop=1
 
       call prop_avrg(w,iblk,pav(1),perr(1))
       

@@ -62,9 +62,8 @@ c    Last 2 are prob. best
 
  
 c TMP
-      common /multislater/ detu(MDET),detd(MDET)
       common /multislatern/ detn(MDET)
-     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
+     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
       dimension xstrech(3,MELEC)
       dimension xaxis(3),yaxis(3),zaxis(3),idist(MELEC)
       dimension ddx_ref(3)

@@ -21,7 +21,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use coefs, only: coef, nbasis, norb
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
-      use Bloc, only: b, tildem, xmatd, xmatu
+      use Bloc, only: b, tildem
 
       use force_analy, only: iforce_analy
       use pseudo, only: lpot, nloc, vps, vpso
@@ -29,24 +29,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use velocity_jastrow, only: vj, vjn
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -59,27 +41,14 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
 c Calculates energy
 
-
-
-
-
-
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
-      common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
+      common /slater/ slmi(MMAT_DIM,2)
+     &,fp(3,MMAT_DIM,2)
+     &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detu(MDET),detd(MDET)
-
-
-
-
-
-
-
-
+      common /multislater/ detiab(MDET,2)
 
       dimension coord(3,*),psid(*),energy(*)
       dimension denergy(MSTATES),eloc_det(MDET,2),vpsp_det(2),dvpsp_dj(MPARMJ)
@@ -174,7 +143,7 @@ c compute energy using Ymat
           do 20 jrep=ivirt(iab),norb
             do 20 irep=iactv(iab),nel
    20         denergy(istate)=denergy(istate)+ymat(jrep,irep,iab,istate)*tildem(irep,jrep,iab)
-        denergy(istate)=denergy(istate)*detu(kref)*detd(kref)/psid(istate)
+        denergy(istate)=denergy(istate)*detiab(kref,1)*detiab(kref,2)/psid(istate)
 
         energy(istate)=denergy(istate)+eloc_det(kref,1)+eloc_det(kref,2)+e_other
 
@@ -183,8 +152,8 @@ c compute energy using Ymat
           write(6,'(''psid,psij'',9d12.5)') psid(istate),psij
           write(6,'(''psitot   '',e18.11)') psid(istate)*exp(psij)
 c         do k=1,ndet
-c           write(6,'(''psitot_k '',i6,3e18.8)') k, detu(k),detd(k),detu(k)*detd(k)*exp(psij)
-c           write(6,'(''psitot_k '',i6,3e18.8)') k, detu(k),detd(k),cdet(k,1,1)*detu(k)*detd(k)*exp(psij)
+c           write(6,'(''psitot_k '',i6,3e18.8)') k, detiab(k,1),detiab(k,2),detiab(k,1)*detiab(k,2)*exp(psij)
+c           write(6,'(''psitot_k '',i6,3e18.8)') k, detiab(k,1),detiab(k,2),cdet(k,1,1)*detiab(k,1)*detiab(k,2)*exp(psij)
 c         enddo
 c         do 25 i=1,nelec
 c           do 25 k=1,3

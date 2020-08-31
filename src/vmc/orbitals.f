@@ -4,7 +4,6 @@ c Modified by A. Scemama
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use da_orbval, only: da_d2orb, da_dorb, da_orb
-      use elec, only: ndn, nup
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
       use wfsec, only: iwf, iwftype, nwftype
@@ -18,15 +17,6 @@ c Modified by A. Scemama
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-
-      parameter (one=1.d0,half=0.5d0)
-
-c note that the dimension of the slater matrices is assumed
-c to be given by MMAT_DIM = (MELEC/2)**2, that is there are
-c as many ups as downs. If this is not true then be careful if
-c nelec is close to MELEC. The Slater matrices must be
-c dimensioned at least max(nup**2,ndn**2)
-
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -154,15 +144,13 @@ c           do 26 m=1,nbasis
       end
 c------------------------------------------------------------------------------------
       subroutine virtual_orbitals
+
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
-
-
-
 
 c compute values of extra ('virtual') orbitals needed for optorb operators
 c assuming that basis function values in phin are up to date
@@ -172,7 +160,6 @@ c assuming that basis function values in phin are up to date
       include 'optorb.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
 
       dimension bhin(melec,mbasis),dbhin(3,melec,mbasis),d2bhin(melec,mbasis)
 
@@ -237,8 +224,6 @@ c-------------------------------------------------------------------------------
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-
-      dimension dum(MELEC,MORB,MCENT),aux(MELEC)
       dimension tphin(3*MELEC,MBASIS),t2phin_all(3*3*MELEC,MBASIS),t3phin(3*MELEC,MBASIS)
 
       do ibasis=1,nbasis
@@ -271,11 +256,8 @@ c-------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
      &phin
-      use slatn, only: slmin
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
@@ -290,20 +272,10 @@ c-------------------------------------------------------------------------------
       include 'force.h'
       include 'mstates.h'
 
-      parameter(one=1.d0)
-
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 
-      common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
-     &,ddx(3,MELEC),d2dx2(MELEC)
-
-      common /multislater/ detu(MDET),detd(MDET)
-
       common /multislatern/ detn(MDET)
-     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-
+     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -315,11 +287,11 @@ c get the value and gradients from the 3d-interpolated orbitals
 c spline interplolation
         if(i3dsplorb.ge.1) then
           do 15 iorb=1,norb
-            ddorb(iorb)=0    ! Don't compute the laplacian
-            dorb(1,iorb)=1   ! compute the gradients
-            dorb(2,iorb)=1   ! compute the gradients
-            dorb(3,iorb)=1   ! compute the gradients
-   15       call spline_mo (x(1,iel),iorb,orb(iorb),dorb(1,iorb),ddorb(iorb),ier)
+            ddorbn(iorb)=0    ! Don't compute the laplacian
+            dorbn(1,iorb)=1   ! compute the gradients
+            dorbn(2,iorb)=1   ! compute the gradients
+            dorbn(3,iorb)=1   ! compute the gradients
+   15       call spline_mo (x(1,iel),iorb,orbn(iorb),dorbn(1,iorb),ddorbn(iorb),ier)
 
 c Lagrange interpolation
          elseif(i3dlagorb.ge.1) then
@@ -340,19 +312,19 @@ c get basis functions for electron iel
           endif
 
           do 25 iorb=1,norb
-            orb(iorb)=0
-            dorb(1,iorb)=0
-            dorb(2,iorb)=0
-            dorb(3,iorb)=0
-            ddorb(iorb)=0
+            orbn(iorb)=0
+            dorbn(1,iorb)=0
+            dorbn(2,iorb)=0
+            dorbn(3,iorb)=0
+            ddorbn(iorb)=0
 c           do 25 m=1,nbasis
             do 25 m0=1,n0_nbasis(iel)
              m=n0_ibasis(m0,iel)
-             orb(iorb)=orb(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-             dorb(1,iorb)=dorb(1,iorb)+coef(m,iorb,iwf)*dphin(1,m,iel)
-             dorb(2,iorb)=dorb(2,iorb)+coef(m,iorb,iwf)*dphin(2,m,iel)
-             dorb(3,iorb)=dorb(3,iorb)+coef(m,iorb,iwf)*dphin(3,m,iel)
-             if(iflag.gt.0) ddorb(iorb)=ddorb(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
+             orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
+             dorbn(1,iorb)=dorbn(1,iorb)+coef(m,iorb,iwf)*dphin(1,m,iel)
+             dorbn(2,iorb)=dorbn(2,iorb)+coef(m,iorb,iwf)*dphin(2,m,iel)
+             dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(3,m,iel)
+             if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
    25     continue
         endif
        else

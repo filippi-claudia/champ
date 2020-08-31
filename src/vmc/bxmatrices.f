@@ -12,11 +12,10 @@
       include 'mstates.h'
       include 'pseudo.h'
 
-      common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
+      common /slater/ slmi(MMAT_DIM,2)
+     &,fp(3,MMAT_DIM,2)
+     &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detu(MDET),detd(MDET)
 
       dimension b(MORB,MELEC),btemp(MELEC**2,2),xmatu(MELEC**2),xmatd(MELEC**2),work(MELEC)
 
@@ -34,8 +33,8 @@
           do 110 j=1,nel
   110       btemp(j+ish,iab)=b(iworbd(j+iel,kref),i+iel)
 
-      call multiply_slmi_mderiv_simple(nup,btemp(1,1),work,slmui(1),xmatu)
-      call multiply_slmi_mderiv_simple(ndn,btemp(1,2),work,slmdi(1),xmatd)
+      call multiply_slmi_mderiv_simple(nup,btemp(1,1),work,slmi(1,1),xmatu)
+      call multiply_slmi_mderiv_simple(ndn,btemp(1,2),work,slmi(1,2),xmatd)
 
       return
       end

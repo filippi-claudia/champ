@@ -3,17 +3,15 @@ c Written by Claudia Filippi by modifying hpsi
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use elec, only: ndn, nup
       use estpsi, only: apsi, aref, detref
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
       use wfsec, only: iwf, iwftype, nwftype
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
       use contr3, only: mode
-
       use velocity_jastrow, only: vj, vjn
-      implicit real*8(a-h,o-z)
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'pseudo.h'
@@ -25,7 +23,7 @@ c Written by Claudia Filippi by modifying hpsi
 c Calculates wave function
 
       common /multislatern/ detn(MDET)
-     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
+     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension coord(3,*),psid(*)

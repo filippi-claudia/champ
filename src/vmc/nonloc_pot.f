@@ -13,15 +13,10 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
 
       implicit real*8(a-h,o-z)
 
-
-
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'pseudo.h'
-
-
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
      &,vpsp_det(*),dvpsp_dj(*),t_vpsp(MCENT,MPS_QUAD,*)

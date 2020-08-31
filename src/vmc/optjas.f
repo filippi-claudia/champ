@@ -9,7 +9,7 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use scratch, only: denergy_det, dtildem
-      use Bloc, only: xmatd, xmatu
+      use Bloc, only: xmat
       use Bloc_dj, only: b_dj
       use coefs, only: coef, nbasis, norb
       use deloc_dj_m, only: denergy
@@ -26,11 +26,11 @@
       include 'optjas.h'
       include 'pseudo.h'
 
-      common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
+      common /slater/ slmi(MMAT_DIM,2)
+     &,fp(3,MMAT_DIM,2)
+     &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detu(MDET),detd(MDET)
+      common /multislater/ detiab(MDET,2)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
       dimension psid(*),dvpsp_dj(*),energy(*),vj(3,*)
       dimension deloc_dj(MPARMJ)
@@ -47,48 +47,40 @@
 
         deloc_dj_kref=deloc_dj(iparm)
         do 100 istate=1,nstates
- 100      denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref*detu(kref)*detd(kref)
+ 100      denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref*detiab(kref,1)*detiab(kref,2)
 
 C       test=0
 C       do j=1,nup
 C         do i=1,nup
-C           test=test+slmui(j+(i-1)*nup)*b_dj(j,i,iparm)
-C           test=test+slmdi(j+(i-1)*ndn)*b_dj(j,i+nup,iparm)
+C           test=test+slmi(j+(i-1)*nup,1)*b_dj(j,i,iparm)
+C           test=test+slmi(j+(i-1)*ndn,2)*b_dj(j,i+nup,iparm)
 C         enddo
 C       enddo
 
         if(ndet.gt.1) then
 
-        call bxmatrix(kref,xmatu,xmatd,b_dj(1,1,iparm))
+        call bxmatrix(kref,xmat(1,1),xmat(1,2),b_dj(1,1,iparm))
 
         do iab=1,2
+          if(iab.eq.1) then
+            ish=0
+            nel=nup
+           else
+            ish=nup
+            nel=ndn
+          endif
           do jrep=ivirt(iab),norb
-            if(iab.eq.1) then
-              do irep=1,nup
+              do irep=1,nel
   
                 dum2=0.d0
                 dum3=0.d0
-                do i=1,nup
-                 dum2=dum2+slmui(irep+(i-1)*nup)*b_dj(jrep,i,iparm)
-                 dum3=dum3+xmatu(i+(irep-1)*nup)*orb(i,jrep)
+                do i=1,nel
+                 dum2=dum2+slmi(irep+(i-1)*nel,iab)*b_dj(jrep,i+ish,iparm)
+                 dum3=dum3+xmat(i+(irep-1)*nel,iab)*orb(i+ish,jrep)
                 enddo
                 dtildem(irep,jrep,iab)=dum2-dum3
 
               enddo
-             else
-              do irep=1,ndn
-
-                dum2=0.d0
-                dum3=0.d0
-                do i=1,ndn
-                 dum2=dum2+slmdi(irep+(i-1)*ndn)*b_dj(jrep,i+nup,iparm)
-                 dum3=dum3+xmatd(i+(irep-1)*ndn)*orb(i+nup,jrep)
-                enddo
-                dtildem(irep,jrep,iab)=dum2-dum3
-
-              enddo
-            endif
-
           enddo
         enddo
 
@@ -130,7 +122,7 @@ C       enddo
           deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref
 
           do istate=1,nstates
-             denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detu(k)*detd(k)
+             denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detiab(k,1)*detiab(k,2)
           enddo
 
           endif

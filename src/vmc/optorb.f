@@ -2,12 +2,10 @@
 
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem, xmatd, xmatu
+      use Bloc, only: b, tildem
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
       use optorb_cblock, only: norbterm, norbprim, idump_blockav
@@ -21,11 +19,7 @@
       include 'mstates.h'
       include 'optorb.h'
 
-      common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
-     &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detu(MDET),detd(MDET)
+      common /multislater/ detiab(MDET,2)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
@@ -37,7 +31,7 @@ c     ns_current=ns_current+1
 c     if(ns_current.ne.iorbsample) return
 c ns_current reset in optorb_sum
 
-      detratio=detu(kref)*detd(kref)/psid
+      detratio=detiab(kref,1)*detiab(kref,2)/psid
       do 200 iterm=1,norbterm
 
         io=ideriv(1,iterm)

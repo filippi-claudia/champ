@@ -13,13 +13,6 @@ c written by Claudia Filippi
       use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -31,13 +24,7 @@ c written by Claudia Filippi
       parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,MPARMALL2=MPARMALL*(MPARMALL+1)/2)
       parameter(MWORK=50*MPARMALL)
 
-
-
-
-
       common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
-
-
 
       dimension grad_sav(MPARMALL),h_sav(MPARMALL,MPARMALL),s_sav(MPARMALL2)
       dimension work(MWORK),work2(MPARMALL,MPARMALL)

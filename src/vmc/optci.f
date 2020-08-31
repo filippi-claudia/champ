@@ -8,9 +8,6 @@
 
       implicit real*8(a-h,o-z)
 
-
-
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -18,10 +15,7 @@
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /multislater/ detu(MDET),detd(MDET)
-
-
-
+      common /multislater/ detiab(MDET,2)
 
       dimension ciprim(MDET),cieprim(MDET)
       dimension eloc_det(MDET,2)
@@ -31,7 +25,7 @@
       psidi=1.d0/psid
 
       do 1 k=1,nciprim
-        ciprim(k)=detu(k)*detd(k)*psidi
+        ciprim(k)=detiab(k,1)*detiab(k,2)*psidi
         cieprim(k)=(eloc_det(k,1)+eloc_det(k,2)+e_other)*ciprim(k)
    1  continue
 
@@ -450,7 +444,7 @@ c compute averages and print then out
       include 'optci.h'
       include 'optci_cblk.h'
 
-      common /icount_ci/ icount
+      common /icount_ci/ icount_ci
 
       dimension deav(MXCITERM)
       dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)
@@ -467,12 +461,12 @@ c         1 each iteration full printout
 c        >1 after iciprt iterations reduced printout
 c        -1 force printout
 
-      if(iciprt.gt.0.and.icount.ne.iciprt) then
-        icount=icount+1
+      if(iciprt.gt.0.and.icount_ci.ne.iciprt) then
+        icount_ci=icount_ci+1
         return
       endif
 
-      icount=1
+      icount_ci=1
 
       call optci_avrg(w,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
 

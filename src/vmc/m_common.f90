@@ -110,18 +110,16 @@
  end module b_tmove
 
  module Bloc
-   !> Arguments: b, tildem, xmat, xmatd, xmatu
+   !> Arguments: b, tildem, xmat
    use precision_kinds, only: dp
    include 'vmc.h'
 
    real(dp) :: b(MORB,MELEC)
    real(dp) :: tildem(MELEC,MORB,2)
    real(dp) :: xmat(MELEC**2,2) 
-   real(dp) :: xmatd(MELEC**2)
-   real(dp) :: xmatu(MELEC**2)
 
    private 
-   public :: b, tildem, xmat, xmatd, xmatu 
+   public :: b, tildem, xmat
    save
  end module Bloc
 
@@ -405,7 +403,7 @@ end module contr3
    save
  end module cuspmat
 
- module da_energy_ave_m
+ module da_energy_sumcum
    !> Arguments: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
    use precision_kinds, only: dp
    include 'vmc.h'
@@ -419,7 +417,7 @@ end module contr3
    private 
    public :: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum 
    save
- end module da_energy_ave_m 
+ end module da_energy_sumcum
 
  module da_jastrow4val
    !> Arguments: da_d2j, da_j, da_vj
@@ -2257,17 +2255,17 @@ end module pseudo
  end module rlobxy
 
  module rnyucm
-   !> Arguments: l, m
+   !> Arguments: ll, lm
    use precision_kinds, only: dp
    include 'vmc.h'
 
-   integer  :: l(4)
-   integer  :: m(4)
-   data m / 502,1521,4071,2107/
-   data l /   0,   0,   0,   1/
+   integer  :: ll(4)
+   integer  :: mm(4)
+   data mm / 502,1521,4071,2107/
+   data ll /   0,   0,   0,   1/
 
    private
-   public :: l, m
+   public :: ll, mm
    save
 end module rnyucm
 
