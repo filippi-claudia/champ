@@ -20,7 +20,7 @@ c routine to print out final results
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use tmpnode, only: distance_node_sum
       use contr3, only: mode
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use contrl_per, only: iperiodic,ibasis
 
       implicit real*8(a-h,o-z)

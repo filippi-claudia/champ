@@ -4,14 +4,14 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use mpiconf, only: idtask, nproc
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: iweight, nweight, weights
       use sr_index, only: jelo, jelo2, jelohfj
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
       use optorb_cblock, only: norbterm, norbprim 
+
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
@@ -66,7 +66,7 @@ c for omega functional
 
       do istate=1,nstates
         obs(jwtg,istate)=0.d0
-        do iconf=1,nconf
+        do iconf=1,nconf_n
           obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
         enddo
         obs_wtg(istate)=obs(jwtg,istate)
@@ -83,7 +83,7 @@ c for omega functional
         enddo
 
         ish=(istate-1)*norbterm
-        do iconf=1,nconf
+        do iconf=1,nconf_n
           obs(jelo,istate)=obs(jelo,istate)+elocal(iconf,istate)*wtg(iconf,istate)
           do i=1,nparm_jasci
             obs(jfj +i-1,istate)=obs(jfj +i-1,istate)+sr_o(i,iconf)*wtg(iconf,istate)
@@ -153,7 +153,7 @@ c for omega functional
       do i=jhfj,n_obs
        obs(i,1)=0.d0
       enddo
-      do iconf=1,nconf
+      do iconf=1,nconf_n
        obs(jelo2,1)=obs(jelo2,1)+elocal(iconf,1)*elocal(iconf,1)*wtg(iconf,1)
        do i=1,nparm
          obs(jhfj+i-1,1)=obs(jhfj+i-1,1)+sr_ho(i,iconf)*wtg(iconf,1)
@@ -278,7 +278,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine asolve(n,b,x)
 c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
       use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
@@ -299,14 +299,14 @@ c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine atimes_n(n,z,r)
-c r=a*z, i cicli doppi su n e nconf sono parallelizzati
+c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: iweight, nweight, weights
       use sr_index, only: jelo, jelo2, jelohfj
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
       use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
@@ -334,7 +334,7 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
 
       if(ifunc_omega.eq.0) then 
 
-      do iconf=1,nconf
+      do iconf=1,nconf_n
         oz_jasci(iconf)=ddot(nparm_jasci,z,1,sr_o(1,iconf),1)
       enddo
 
@@ -342,17 +342,17 @@ c r=a*z, i cicli doppi su n e nconf sono parallelizzati
         wts=weights(istate)
 
         i0=nparm_jasci+(istate-1)*norbterm+1
-        do iconf=1,nconf
+        do iconf=1,nconf_n
           oz_orb=ddot(norbterm,z(nparm_jasci+1),1,sr_o(i0,iconf),1)
           aux(iconf)=(oz_jasci(iconf)+oz_orb)*wtg(iconf,istate)
         enddo
 
         do i=1,nparm_jasci
-          rloc(i)=ddot(nconf,aux(1),1,sr_o(i,1),MPARM)
+          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
         enddo
         do i=nparm_jasci+1,n
           i0=i+(istate-1)*norbterm
-          rloc(i)=ddot(nconf,aux(1),1,sr_o(i0,1),MPARM)
+          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i0,1),MPARM)
         enddo
         call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
         
@@ -370,14 +370,14 @@ c ifunc_omega.gt.0
 
       if(ifunc_omega.eq.1.or.ifunc_omega.eq.2) omega_hes=omega
 
-      do iconf=1,nconf
+      do iconf=1,nconf_n
         hoz=ddot(n,z,1,sr_ho(1,iconf),1)
         oz=ddot(n,z,1,sr_o(1,iconf),1)
         aux(iconf)=(hoz-omega_hes*oz)*wtg(iconf,1)
       enddo
       do i=1,n
-        rloc(i)=ddot(nconf,aux(1),1,sr_ho(i,1),MPARM)
-        rloc(i)=rloc(i)-omega_hes*ddot(nconf,aux(1),1,sr_o(i,1),MPARM)
+        rloc(i)=ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
+        rloc(i)=rloc(i)-omega_hes*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
       enddo
       call MPI_REDUCE(rloc,r,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
@@ -427,7 +427,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_rescale_deltap(nparm,deltap)
 
       use mpiconf, only: idtask, nproc
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
     
       use optorb_cblock, only: norbterm, norbprim
@@ -511,7 +511,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use force_fin, only: da_energy_ave, da_energy_err
       use force_mat_n, only: force_o
       use mpiconf, only: idtask, nproc
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
       use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
@@ -555,7 +555,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         do 10 j=i,nparm
   10      cloc(i,j)=0.d0
 
-      do l=1,nconf
+      do l=1,nconf_n
         do i=1,nparm
           tmp(i)=(sr_ho(i,l)-elocal(l,1)*sr_o(i,l))*sqrt(wtg(l,1))
         enddo
@@ -607,14 +607,14 @@ c ZV
           ia=ia+1
 
 c         test=0.d0
-c         do l=1,nconf
+c         do l=1,nconf_n
 c           test=test+(force_o(ia+ish,l)-2*obs(2,1)*force_o(ia,l))*wtg(l,1)*wtoti
 c         enddo
 c         write(6,*) 'TEST ',test
          
           do i=1,nparm
             oloc(i)=0.d0
-            do l=1,nconf
+            do l=1,nconf_n
               oloc(i)=oloc(i)+(sr_ho(i,l)-elocal(l,1)*sr_o(i,l))*
      &                        (force_o(ia+ish,l)-2*energy_tot*force_o(ia,l))*wtg(l,1)
             enddo

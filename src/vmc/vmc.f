@@ -24,7 +24,7 @@ c and sa, pa, da asymptotic functions
       use jaspar4, only: a4, norda, nordb, nordc
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use pseudo, only: lpot, nloc, vps, vpso
       use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
@@ -56,7 +56,7 @@ c        nstep  = number of metropolis steps/block
 c        nblk   = number of blocks od nstep steps after the
 c                equilibrium steps
 c        nblkeq = number of equilibrium blocks
-c        n_conf  = target number of mc configurations (dmc only)
+c        nconf  = target number of mc configurations (dmc only)
 c        nconf_new = number of mc configurations generated for optim and dmc
 c        idump  =  1 dump out stuff for a restart
 c        irstar =  1 pick up stuff for a restart

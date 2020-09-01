@@ -11,10 +11,10 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
      &phin
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use coefs, only: coef, nbasis, norb
       use phifun, only: d2phin, dphin, phin
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       use orbital_num_lag, only: denom, step_inv
 

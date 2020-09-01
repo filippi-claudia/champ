@@ -10,7 +10,7 @@ c written by Claudia Filippi
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use mpiconf, only: idtask, nproc, wid
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
 

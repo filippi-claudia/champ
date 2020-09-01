@@ -1,21 +1,18 @@
       subroutine dl_more(iter,nparm,dl_momentum,dl_EG_sq,dl_EG,deltap,parameters)
 
       use mpiconf, only: idtask, nproc
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg
-      implicit real*8(a-h,o-z)
 
+      implicit real*8(a-h,o-z)
 
       character*20 dl_alg
 
       include 'mpif.h'
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'sr.h'
-
-
 
       dimension deltap(*),dl_momentum(*),dl_EG_sq(*),dl_EG(*),parameters(*)
 

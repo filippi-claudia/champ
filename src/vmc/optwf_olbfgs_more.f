@@ -1,8 +1,8 @@
       subroutine olbfgs_more(iter, nparm, deltap, parameters)
       use olbfgs, only: update_hessian, olbfgs_iteration
-
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg
+
       implicit real*8(a-h,o-z)
 
       character*20 dl_alg
