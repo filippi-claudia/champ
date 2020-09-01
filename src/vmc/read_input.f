@@ -62,7 +62,7 @@ c and Anthony Scemema
       use contr3, only: mode
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
      &itau_eff, nfprod, rttau, tau, taueff, tautot
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use dorb_m, only: iworbd
       use contrl_per, only: iperiodic,ibasis
       use force_analy, only: iforce_analy
@@ -120,7 +120,7 @@ c  eunit      'Hartree'
 c  nstep      number of steps per block
 c  nblk       number of blocks
 c  nblkeq     number of equilibration blocks
-c  n_conf      target number of MC configurations in dmc
+c  nconf      target number of MC configurations in dmc
 c  nconf_new  number of new MC configs. saved per processor.
 c  idump      dump restart file
 c  irstar     restart from restart file
@@ -343,7 +343,7 @@ c Parameters for blocking/start/dump
         if(index(mode,'dmc').ne.0) then
           call p2gti('blocking_dmc:nstep',nstep,1)
           call p2gti('blocking_dmc:nblk',nblk,1)
-          call p2gti('blocking_dmc:n_conf',n_conf,1)
+          call p2gti('blocking_dmc:nconf',nconf,1)
           call p2gtid('blocking_dmc:nblkeq',nblkeq,2,1)
           call p2gtid('blocking_dmc:nconf_new',nconf_new,0,1)
         endif
@@ -361,9 +361,9 @@ c Make sure that the printout is not huge
         if(index(mode,'vmc').ne.0) then
           write(6,'(''no. configurations saved ='',t30,i10)') nconf_new
          elseif(index(mode,'dmc').ne.0) then
-          write(6,'(''target walker population ='',t30,i10)') n_conf
-          if(n_conf.le.0) call fatal_error('INPUT: target population <= 0')
-          if(n_conf.gt.MWALK) call fatal_error('INPUT: target population > MWALK')
+          write(6,'(''target walker population ='',t30,i10)') nconf
+          if(nconf.le.0) call fatal_error('INPUT: target population <= 0')
+          if(nconf.gt.MWALK) call fatal_error('INPUT: target population > MWALK')
           write(6,'(''no. configurations saved ='',t31,i10)') nconf_new
         endif
 
@@ -557,7 +557,7 @@ c  ipcm=3 runs qmc with fixed polarization charges
         write(6,'(''pcm file (cavity) ='',t30,a20)') pcmfile_cavity
         write(6,'(''pcm file (chs)    ='',t30,a20)') pcmfile_chs
         write(6,'(''pcm file (chv)    ='',t30,a20)') pcmfile_chv
-        write(6,'(''pcm n_conf sampled for chv ='',t30,i10)') nscv
+        write(6,'(''pcm nconf sampled for chv ='',t30,i10)') nscv
         write(6,'(''pcm frequency for chv ='',t30,i10)') iscov
         write(6,'(''pcm epsilon_solvent ='',t30,f7.3)') eps_solv
         write(6,'(''pcm rcolv ='',t30,f7.3)') rcolv

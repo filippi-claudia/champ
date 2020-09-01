@@ -7,7 +7,7 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
     
       implicit real*8(a-h,o-z)
@@ -204,7 +204,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
@@ -243,18 +243,18 @@ c loop vec
 
       call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-      do iconf=1,nconf
+      do iconf=1,nconf_n
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=0.5d0*ddot(nconf,aux(1),1,sr_o(i,1),MPARM)
+       hpsiloc(i+i0,ivec)=0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
       enddo
 
-      do iconf=1,nconf
+      do iconf=1,nconf_n
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)+0.5d0*ddot(nconf,aux(1),1,sr_ho(i,1),MPARM)
+       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)+0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
       enddo
 
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -300,7 +300,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
@@ -335,11 +335,11 @@ c loop vec
 
       call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-      do iconf=1,nconf
+      do iconf=1,nconf_n
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=ddot(nconf,aux(1),1,sr_o(i,1),MPARM)
+       spsiloc(i+i0,ivec)=ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
       enddo
 
       call MPI_REDUCE(spsiloc(1+i0,ivec),spsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -377,7 +377,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega, omega_hes
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
@@ -421,23 +421,23 @@ c loop vec
 
       call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-      do iconf=1,nconf
+      do iconf=1,nconf_n
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=-0.5d0*ddot(nconf,aux(1),1,sr_o(i,1),MPARM)
+       hpsiloc(i+i0,ivec)=-0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
       enddo
 
 c     do i=1,nparm+1
 c       write(6,*) 'H1 ',hpsi(i,ivec)
 c     enddo
 
-      do iconf=1,nconf
+      do iconf=1,nconf_n
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)-0.5d0*ddot(nconf,aux(1),1,sr_ho(i,1),MPARM)
-     &                                      +omega*ddot(nconf,aux(1),1,sr_o(i,1),MPARM)
+       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)-0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
+     &                                      +omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
       enddo
 
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -491,7 +491,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega, omega_hes
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
@@ -546,20 +546,20 @@ c loop vec
 
       call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-      do iconf=1,nconf
+      do iconf=1,nconf_n
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=omega*omega*ddot(nconf,aux(1),1,sr_o(i,1),MPARM)
-     &                         -omega*ddot(nconf,aux(1),1,sr_ho(i,1),MPARM)
+       spsiloc(i+i0,ivec)=omega*omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+     &                         -omega*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
       enddo
 
-      do iconf=1,nconf
+      do iconf=1,nconf_n
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=spsiloc(i+i0,ivec)-omega*ddot(nconf,aux(1),1,sr_o(i,1),MPARM)
-     &                                            +ddot(nconf,aux(1),1,sr_ho(i,1),MPARM)
+       spsiloc(i+i0,ivec)=spsiloc(i+i0,ivec)-omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+     &                                            +ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
       enddo
 
       call MPI_REDUCE(spsiloc(1+i0,ivec),spsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -614,7 +614,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega, omega_hes
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
@@ -683,7 +683,7 @@ c loop vec
 
       call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-      do iconf=1,nconf
+      do iconf=1,nconf_n
         hoz=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)
         oz =ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)
         aux0(iconf)=(hoz-oz*elocal(iconf,1))*wtg(iconf,1)
@@ -691,9 +691,9 @@ c loop vec
         aux2(iconf)=oz*wtg(iconf,1)
       enddo
       do i=1,nparm
-        hpsiloc(i+i0,ivec)=ddot(nconf,aux0(1),1,sr_ho(i,1),MPARM)
-     &                    +ddot(nconf,aux2(1),1,sr_o(i,1),MPARM)*var
-     &                    +ddot(nconf,aux1(1),1,sr_o(i,1),MPARM)
+        hpsiloc(i+i0,ivec)=ddot(nconf_n,aux0(1),1,sr_ho(i,1),MPARM)
+     &                    +ddot(nconf_n,aux2(1),1,sr_o(i,1),MPARM)*var
+     &                    +ddot(nconf_n,aux1(1),1,sr_o(i,1),MPARM)
       enddo
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
@@ -739,7 +739,7 @@ c end loop vec
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine g_psi_lin_d( ndim, nvec, nb1, psi, ew )
 
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
@@ -811,7 +811,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
@@ -843,7 +843,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         do istate=1,nstates
           overlap_psiloc(ivec,istate)=0.d0
         enddo
-        do iconf=1,nconf
+        do iconf=1,nconf_n
           dum=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)
           anorm_loc(ivec)=anorm_loc(ivec)+dum*dum*wtg(iconf,1)
           overlap_psiloc(ivec,1)=overlap_psiloc(ivec,1)+dum*wtg(iconf,1)

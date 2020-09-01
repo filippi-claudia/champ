@@ -1024,7 +1024,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg
       use deloc_dj_m, only: denergy
       use force_analy, only: iforce_analy
@@ -1076,7 +1076,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
         sr_o(ii+istate,l)=psid(istate)
       enddo
       
-      nconf=l
+      nconf_n=l
 
       if(method.eq.'sr_n'.and.i_sr_rescale.eq.0.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
 

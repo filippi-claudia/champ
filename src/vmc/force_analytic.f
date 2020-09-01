@@ -311,7 +311,7 @@ c-----------------------------------------------------------------------
       subroutine force_analy_fin(wcum,iblk,eave)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use force_fin, only: da_energy_ave, da_energy_err
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy
@@ -348,7 +348,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine force_analy_dump(iu)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy
@@ -370,7 +370,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine force_analy_rstrt(iu)
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy

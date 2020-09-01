@@ -38,7 +38,7 @@
 
 c-----------------------------------------------------------------------
       subroutine pcm_fin(wcum,iblk)
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
       include 'pcm.h'

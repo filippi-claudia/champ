@@ -16,7 +16,7 @@ c----------------------------------------------------------------------
 
       use atom, only: znuc, cent, iwctype, ncent
       use ghostatom, only: newghostype, nghostcent
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use grid3d_param, only: endpt, nstep3d, origin, step3d
 
       implicit real*8(a-h,o-z)

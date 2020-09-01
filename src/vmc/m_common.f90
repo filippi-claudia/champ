@@ -286,21 +286,21 @@
  end module constant
 
  module contrl
-  !> Arguments: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+  !> Arguments: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
   use precision_kinds, only: dp
   include 'vmc.h'
 
    integer  :: idump
    integer  :: irstar
    integer  :: isite
-   integer  :: n_conf
+   integer  :: nconf
    integer  :: nblk
    integer  :: nblkeq
    integer  :: nconf_new
    integer  :: nstep
 
    private 
-   public :: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep 
+   public :: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep 
    save
  end module contrl
 
@@ -2383,7 +2383,7 @@ module spc2
  end module sr_index
 
  module sr_mat_n
-   !> Arguments: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
+   !> Arguments: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
    use precision_kinds, only: dp
    include 'sr.h'
    include 'mstates.h'
@@ -2393,7 +2393,7 @@ module spc2
    integer  :: jefj
    integer  :: jfj
    integer  :: jhfj
-   integer  :: nconf
+   integer  :: nconf_n 
    real(dp) :: obs(MOBS,MSTATES)
    real(dp) :: s_diag(MPARM,MSTATES)
    real(dp) :: s_ii_inv(MPARM)
@@ -2403,7 +2403,7 @@ module spc2
    real(dp) :: obs_tot(MOBS,MSTATES)
 
    private
-   public :: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
+   public :: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
    save
  end module sr_mat_n
 

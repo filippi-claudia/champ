@@ -1,16 +1,15 @@
       subroutine store_diag_hs(nparm_p1,hii,sii)
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: iweight, nweight, weights
       use sr_index, only: jelo, jelo2, jelohfj
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf, obs, s_diag, s_ii_inv, sr_ho,
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
      &sr_o, wtg, obs_tot
-      implicit real*8(a-h,o-z)
 
+      implicit real*8(a-h,o-z)
 
       include 'mpif.h'
       include 'sr.h'
@@ -18,11 +17,6 @@
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-
-
-
-
-
 
       dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
       dimension hii(MPARM),sii(MPARM)

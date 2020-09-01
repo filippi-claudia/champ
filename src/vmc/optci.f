@@ -316,7 +316,7 @@ c-----------------------------------------------------------------------
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use linear_norm, only: oav, ci_oav
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
 

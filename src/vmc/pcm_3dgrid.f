@@ -13,7 +13,7 @@ c----------------------------------------------------------------------
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use insout, only: inout, inside
       use pcm_num_spl2, only: bc, wk
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
 
@@ -129,7 +129,7 @@ c     Print the parameters to the output file
       end ! subroutine pcm_setup_grid
 c----------------------------------------------------------------------
       function ipcm_int_from_cart(value,iaxis)
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
 

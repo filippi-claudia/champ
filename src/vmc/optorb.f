@@ -789,7 +789,7 @@ c-----------------------------------------------------------------------
 
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
       use coefs, only: coef, nbasis, norb
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use dorb_m, only: iworbd
       use optorb, only: dmat_diag, irrep, orb_energy
       use optorb_cblock, only: norbterm, norbprim, idump_blockav

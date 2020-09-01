@@ -10,7 +10,7 @@ c written by Claudia Filippi
       use optwf_corsam, only: add_diag, add_diag_tmp, energy, energy_err, force, force_err
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use wfsec, only: iwf, iwftype, nwftype
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'

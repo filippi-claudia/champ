@@ -8,7 +8,7 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       use optwf_func, only: ifunc_omega, omega, omega_hes
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 

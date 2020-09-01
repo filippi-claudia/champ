@@ -19,7 +19,7 @@ c job where it left off
       use mpiconf, only: idtask, nproc, wid
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
 
-      use contrl, only: idump, irstar, isite, n_conf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use pseudo, only: lpot, nloc, vps, vpso
 
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
