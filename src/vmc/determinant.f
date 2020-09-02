@@ -165,7 +165,7 @@ c-----------------------------------------------------------------------
       use coefs, only: coef, nbasis, norb
       use Bloc, only: b, tildem
 
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
 

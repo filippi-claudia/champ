@@ -485,7 +485,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
       use force_fin, only: da_energy_ave, da_energy_err
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 

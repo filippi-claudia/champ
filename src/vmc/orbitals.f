@@ -9,7 +9,7 @@ c Modified by A. Scemama
       use wfsec, only: iwf, iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic,ibasis
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
 
       implicit real*8(a-h,o-z)

@@ -9,7 +9,7 @@
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_check, only: energy_all, energy_err_all
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
 
 

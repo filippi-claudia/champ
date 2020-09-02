@@ -19,7 +19,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
      &isc, istrch
       use contrl_per, only: iperiodic, ibasis
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
 
 

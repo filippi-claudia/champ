@@ -42,7 +42,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         use force_fin, only: da_energy_ave, da_energy_err
         use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
 
 

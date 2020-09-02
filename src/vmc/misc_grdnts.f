@@ -535,7 +535,7 @@ c -----------------------------------------------------------------------
       use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
       use zmatrix_grad, only: transform_grd
 
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
 
 

@@ -729,12 +729,15 @@ end module contr3
  end module ewald_basis
 
  module force_analy 
-   !> Arguments: iforce_analy 
+   !> Arguments: iforce_analy, iuse_zmat, alfgeo 
+   use precision_kinds, only: dp
 
    integer  :: iforce_analy 
+   integer  :: iuse_zmat
+   real(dp) :: alfgeo
 
    private
-   public   :: iforce_analy 
+   public   :: iforce_analy, iuse_zmat, alfgeo 
    save
  end module force_analy 
 

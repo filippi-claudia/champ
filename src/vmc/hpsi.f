@@ -23,7 +23,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
      &isc, istrch
       use Bloc, only: b, tildem
 
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, nloc, vps, vpso
 
       use velocity_jastrow, only: vj, vjn

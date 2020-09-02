@@ -9,7 +9,7 @@
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
 
 

@@ -14,7 +14,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use contr3, only: mode
       use Bloc, only: b, tildem
       use contrl_per, only: iperiodic,ibasis
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, nloc, vps, vpso
       use b_tmove , only: b_t,iskip
       use da_pseudo, only: da_nonloc, da_pecent, da_vps
@@ -242,7 +242,7 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use contrl_per, only: iperiodic,ibasis
 
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
       implicit real*8(a-h,o-z)
@@ -445,7 +445,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &isc, istrch
       use contrl_per, only: iperiodic,ibasis
 
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
 
 
@@ -560,7 +560,7 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use Bloc_da, only: b_da, db
       use coefs, only: coef, nbasis, norb
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, nloc, vps, vpso
 
       use da_pseudo, only: da_nonloc, da_pecent, da_vps
