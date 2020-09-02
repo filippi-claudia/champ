@@ -5,18 +5,16 @@ c **Warning** This routine needs to be upgraded to calculate distances
 c correctly for periodic systems if we add in capability to use
 c numerical Laplacian for periodic systems.
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use elec, only: ndn, nup
-      use jaspar3, only: a, b, c, fck, nord, scalek
+      use atom, only: cent, iwctype, ncent
+      use jaspar, only: nspin2, sspin, sspinn, is
+      use const, only: nelec
+      use elec, only: nup
+      use jaspar3, only: a, c, scalek
 
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
-     &cutjas, cutjasi
-      use wfsec, only: iwf, iwftype, nwftype
+      use jaspar6, only: c1_jas6
+      use wfsec, only: iwf
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
+      use contr2, only: ijas
       implicit real*8(a-h,o-z)
 
 

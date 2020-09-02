@@ -1,8 +1,7 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: kref
       use slatn, only: slmin
       use dorb_m, only: iworbd
 
@@ -63,15 +62,13 @@
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use csfs, only: nstates
+      use elec, only: nup
+      use multidet, only: kref
       use slatn, only: slmin
-      use ycompact, only: dymat, ymat
+      use ycompact, only: ymat
       use ycompactn, only: ymatn
-      use coefs, only: coef, nbasis, norb
-      use dorb_m, only: iworbd
+      use coefs, only: norb
       use multimat, only: aa, wfmat
       use multimatn, only: aan, wfmatn
 
@@ -251,9 +248,8 @@ c iel has different spin than the electron moved
 c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: kref
       use dorb_m, only: iworbd
 
       implicit real*8(a-h,o-z)

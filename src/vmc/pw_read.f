@@ -72,12 +72,7 @@ c$$$      return
 c$$$      end
 c----------------------------------------------------------------------
       subroutine do_read_lattice(iu)
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
+      use periodic, only: rkvec_shift, rlatt, rlatt_sim
       implicit real*8(a-h,o-z)
 
 
@@ -115,15 +110,12 @@ c Written by Cyrus Umrigar
 c Reads in pw basis orbitals that have already been converted to be real.
 c Presently not used.
 
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
-      use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+      use periodic, only: nband
+      use periodic, only: ngvec, nkvec
+      use periodic, only: rkvec
+      use pworbital, only: c_im, c_ip, c_rm, c_rp
 
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       implicit real*8(a-h,o-z)
 
 
@@ -174,18 +166,17 @@ c Also, I first write out a temporary fort.3 and then delete it just because
 c it is only after one has processed all the k-pts that one knows how big ngvec_orb is.
 c However, that causes problems when running with mpi, so comment out that part.
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
-      use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+      use const, only: nelec
+      use periodic, only: glatt
+      use periodic, only: igmult, igvec
+      use periodic, only: ireal_imag, k_inv, kvec, nband, ngnorm, ngnorm_orb
+      use periodic, only: ngvec, ngvec_orb, nkvec
+      use periodic, only: rknorm, rkvec, rkvec_shift
+      use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx
 
       use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
 
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       implicit real*8(a-h,o-z)
 
 
@@ -419,16 +410,15 @@ c At present it is assumed that k-vectors are in the correct order, but
 c if not one could use isortk to map iorb.
 c This is the straightforward evaluation for checking purposes only.
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
-      use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
+      use const, only: nelec, ipr
+      use periodic, only: glatt
+      use periodic, only: gvec
+      use periodic, only: ireal_imag, k_inv, nband
+      use periodic, only: nkvec
+      use periodic, only: rkvec
+      use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft
 
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       implicit real*8(a-h,o-z)
 
 

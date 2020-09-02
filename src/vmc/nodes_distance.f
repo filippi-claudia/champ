@@ -1,10 +1,7 @@
       subroutine nodes_distance(v,distance_node,iflag)
 c Written by Claudia Filippi
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
-      use wfsec, only: iwf, iwftype, nwftype
+      use const, only: nelec
       use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
 

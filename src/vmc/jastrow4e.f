@@ -2,22 +2,22 @@
 c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: iwctype, ncent
 
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use elec, only: ndn, nup
+      use jaspar, only: sspinn
+      use const, only: nelec
+      use elec, only: nup
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
 
-      use jaspar3, only: a, b, c, fck, nord, scalek
+      use jaspar3, only: a, b, c
 
       use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
-     &cutjas, cutjasi
-      use wfsec, only: iwf, iwftype, nwftype
+      use jaspar6, only: asymp_jasa, asymp_jasb
+      use jaspar6, only: cutjas
+      use wfsec, only: iwf
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
+      use contr2, only: ijas
+      use contr2, only: isc
       use jasn, only: d2ijn, d2n, fijn, fjn, fsn, fsumn
 
       implicit real*8(a-h,o-z)

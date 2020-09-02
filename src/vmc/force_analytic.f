@@ -1,9 +1,9 @@
       subroutine compute_force(psid,denergy)
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use da_jastrow4val, only: da_d2j, da_j, da_vj
-      use da_energy_now, only: da_energy, da_psi
+      use atom, only: ncent
+      use const, only: nelec
+      use da_jastrow4val, only: da_j
+      use da_energy_now, only: da_psi
 
       implicit real*8(a-h,o-z)
 
@@ -28,20 +28,19 @@ c     write(6,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: ncent
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use da_energy_now, only: da_energy, da_psi
-      use da_jastrow4val, only: da_d2j, da_j, da_vj
-      use da_orbval, only: da_d2orb, da_dorb, da_orb
+      use const, only: nelec, ipr
+      use da_energy_now, only: da_psi
+      use da_jastrow4val, only: da_j
+      use da_orbval, only: da_orb
 
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: ivirt, kref
 
-      use ycompact, only: dymat, ymat
-      use zcompact, only: aaz, dzmat, emz, zmat
+      use zcompact, only: aaz, zmat
 
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
 
@@ -126,25 +125,24 @@ c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use atom, only: iwctype, ncent
+      use const, only: hb, nelec
       use da_energy_now, only: da_energy, da_psi
-      use da_jastrow4val, only: da_d2j, da_j, da_vj
-      use da_orbval, only: da_d2orb, da_dorb, da_orb
+      use da_jastrow4val, only: da_d2j, da_vj
+      use da_orbval, only: da_orb
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: ivirt, kref
       use zcompact, only: aaz, dzmat, emz, zmat
-      use Bloc_da, only: b_da, db
-      use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem, xmat
+      use Bloc_da, only: b_da
+      use coefs, only: norb
+      use Bloc, only: xmat
       use dorb_m, only: iworbd
-      use multimat, only: aa, wfmat
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot
 
-      use da_pseudo, only: da_nonloc, da_pecent, da_vps
+      use da_pseudo, only: da_pecent, da_vps
 
-      use velocity_jastrow, only: vj, vjn
+      use velocity_jastrow, only: vj
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -227,8 +225,7 @@ c     write(6,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_init(iflag)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use da_energy_now, only: da_energy, da_psi
+      use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
@@ -257,9 +254,9 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine force_analy_sum(p,q,eloc,eloco)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: ncent
       use da_energy_now, only: da_energy, da_psi
-      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+      use da_energy_sumcum, only: da_energy_sum, da_psi_sum
 
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
@@ -284,7 +281,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_cum(wsum,eave,wcum)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
@@ -309,10 +306,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_fin(wcum,iblk,eave)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: ncent
       use force_fin, only: da_energy_ave, da_energy_err
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
@@ -347,9 +343,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_dump(iu)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+      use atom, only: ncent
+      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
@@ -369,9 +364,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_rstrt(iu)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+      use atom, only: ncent
+      use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)

@@ -1,6 +1,6 @@
       subroutine cuspinit4(iprin)
 c Written by Cyrus Umrigar
-      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar4, only: nordc
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -62,11 +62,10 @@ c Written by Cyrus Umrigar
       end
 c-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use jaspar4, only: a4, norda, nordb, nordc
-      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use atom, only: nctype
+      use jaspar4, only: nordc
+      use optwf_nparmj, only: nparmc
+      use optwf_wjas, only: iwjasc
 
       use vardep, only: cdep, iwdepend, nvdepend
 

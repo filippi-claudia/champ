@@ -3,13 +3,11 @@ c Written by Claudia Filippi; modified by Cyrus Umrigar
 c Calculates the local and nonlocal components of the pseudopotential
 c Calculates non-local potential derivatives
 c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use contrl_per, only: iperiodic, ibasis
+      use atom, only: iwctype, ncent
+      use const, only: nelec
+      use contrl_per, only: iperiodic
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot, nloc, vps
 
       implicit real*8(a-h,o-z)
 

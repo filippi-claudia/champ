@@ -1,27 +1,24 @@
       subroutine deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,value,gn,vjn,da_ratio_jn)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: iwctype, nctype, ncent
 
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use da_jastrow4val, only: da_d2j, da_j, da_vj
-      use derivjas, only: d2g, g, go, gvalue
-
-      use elec, only: ndn, nup
-      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-
+      use jaspar, only: nspin2, sspinn, is
+      use const, only: nelec
+      use da_jastrow4val, only: da_j
+      use derivjas, only: go, gvalue
+      use elec, only: nup
+      use jaso, only: fso
       use jaspointer, only: npoint, npointa
-      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use optwf_nparmj, only: nparma, nparmb, nparmc
+      use optwf_parms, only: nparmj
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
-      use contrl_per, only: iperiodic, ibasis
+      use contr2, only: ijas
+      use contr2, only: isc
+      use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
-      implicit real*8(a-h,o-z)
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'mstates.h'
@@ -30,7 +27,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       include 'optjas.h'
 
       parameter (half=.5d0)
-
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,*)
       dimension r_en(MELEC,MCENT),rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT)

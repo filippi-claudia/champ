@@ -1,15 +1,12 @@
       subroutine multideterminante(iel)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use dets, only: cdet, ndet
+      use csfs, only: nstates
+      use dets, only: ndet
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
       use slatn, only: slmin
       use ycompactn, only: ymatn
-      use coefs, only: coef, nbasis, norb
-      use dorb_m, only: iworbd
-      use multimat, only: aa, wfmat
+      use coefs, only: norb
       use multimatn, only: aan, wfmatn
 
       implicit real*8(a-h,o-z)
@@ -113,12 +110,10 @@ c compute wave function
 c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
+      use dets, only: ndet
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use wfsec, only: iwf, iwftype, nwftype
-      use coefs, only: coef, nbasis, norb
+      use multidet, only: iactv, ivirt, kref
+      use coefs, only: norb
       use dorb_m, only: iworbd
 
       implicit real*8(a-h,o-z)

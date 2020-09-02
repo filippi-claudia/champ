@@ -1,10 +1,8 @@
       subroutine jastrow(x,v,d2,value,ifr)
 c Written by Cyrus Umrigar
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
+      use const, only: nelec
+      use optwf_contrl, only: ioptjas
       implicit real*8(a-h,o-z)
 
 

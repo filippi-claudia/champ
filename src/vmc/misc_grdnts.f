@@ -9,9 +9,9 @@ c -----------------------------------------------------------------------
 c   Subroutine which at the start up prints out information about the 
 c   energy gradients (cartesian).
       subroutine inpwrt_grdnts_cart()
-      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+      use grdntsmv, only: igrdaidx, igrdcidx
 
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use grdntspar, only: delgrdxyz, ngradnts
 
       implicit real*8(a-h,o-z)
 
@@ -43,10 +43,10 @@ c -----------------------------------------------------------------------
 c   Subroutine which at the start up prints out information about the 
 c   energy gradients (z matrix/internal).
       subroutine inpwrt_grdnts_zmat()
-      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+      use grdntsmv, only: igrdaidx, igrdcidx
 
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
+      use zmatrix, only: izcmat
 
       implicit real*8(a-h,o-z)
 
@@ -84,11 +84,11 @@ c   Subroutine which calculates and printouts energy gradients
 c   for cartesian coordinates of atoms from energy differences 
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_cart(forces_ave,forces_err)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use forcepar, only: deltot, istrech, nforce
+      use atom, only: iwctype, ncent
+      use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use grdntspar, only: delgrdxyz, ngradnts
 
       implicit real*8(a-h,o-z)
 
@@ -146,13 +146,12 @@ c   Subroutine which calculates and printouts energy gradients
 c   for Z matrix coordinates of atoms from energy differences 
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_zmat(forces_ave,forces_err)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use forcepar, only: deltot, istrech, nforce
-      use forcestr, only: delc
+      use atom, only: iwctype, ncent
+      use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
+      use zmatrix, only: izcmat
 
       implicit real*8(a-h,o-z)
 
@@ -298,12 +297,11 @@ c -----------------------------------------------------------------------
 c   Subroutine which calculates the displacement for energy gradients
 c   using Z matrix (internal) coordinates
       subroutine grdzmat_displ(k_in,ic_in,ia_in,delfactor)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: ncent
       use forcestr, only: delc
-      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat
 
       implicit real*8(a-h,o-z)
 
@@ -344,8 +342,8 @@ c -----------------------------------------------------------------------
 c   Subroutine which prints out at the start of a run 
 c   information regarding the Z matrix.
       subroutine inpwrt_zmatrix()
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use atom, only: iwctype, ncent
+      use zmatrix, only: czcart, czint, izcmat
       implicit real*8(a-h,o-z)
       include 'force.h'
       include 'vmc.h'
@@ -379,13 +377,12 @@ c   Subroutine which calculates and print outs the diagonal
 c   part of the Hessian for Z matrix coordinates of atoms 
 c   from energy differences  calculated using correlated smapling.
       subroutine finwrt_diaghess_zmat(forces_ave,forces_err)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use forcepar, only: deltot, istrech, nforce
-      use forcestr, only: delc
+      use atom, only: iwctype, ncent
+      use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
+      use zmatrix, only: izcmat
 
       implicit real*8(a-h,o-z)
 
@@ -529,13 +526,12 @@ c   from energy differences  calculated using correlated smapling.
       end     
 c -----------------------------------------------------------------------
       subroutine transform_grad_zmat(force_cart)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: cent, ncent
 
-      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
-      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
-      use zmatrix_grad, only: transform_grd
-
+      use grdntsmv, only: igrdmv
+      use zmatrix, only: czcart, czint, czcart_ref, izcmat
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+
       implicit real*8(a-h,o-z)
 
 

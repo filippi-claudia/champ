@@ -1,14 +1,14 @@
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use dets, only: cdet, ndet
+      use const, only: hb, nelec
+      use csfs, only: nstates
+      use dets, only: ndet
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use optwf_contrl, only: ioptorb
       use ycompact, only: dymat, ymat
       use zcompact, only: aaz, dzmat, emz, zmat
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       use Bloc, only: b, tildem, xmat
       use denergy_det_m, only: denergy_det
       use dorb_m, only: iworbd
@@ -228,16 +228,13 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use const, only: nelec
       use dets, only: cdet, ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
-      use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use wfsec, only: iwf, iwftype, nwftype
-      use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem, xmat
+      use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det
+      use wfsec, only: iwf
+      use coefs, only: norb
       use denergy_det_m, only: denergy_det
-      use dorb_m, only: iworbd
 
       implicit real*8(a-h,o-z)
 
@@ -305,16 +302,14 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
+      use const, only: nelec
+      use dets, only: ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
-      use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem, xmat
+      use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det
+      use coefs, only: norb
+      use Bloc, only: tildem
 
-      use denergy_det_m, only: denergy_det
-      use multimat, only: aa, wfmat
+      use multimat, only: wfmat
 
       implicit real*8(a-h,o-z)
 
@@ -372,13 +367,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem, xmat
-      use multimat, only: aa, wfmat
+      use multidet, only: iactv, ivirt
+      use coefs, only: norb
+      use Bloc, only: tildem, xmat
+      use multimat, only: aa
 
       implicit real*8(a-h,o-z)
 
@@ -438,11 +431,11 @@ c           do krep=ivirt(iab),norb+nadorb
 c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use const, only: nelec
+      use csfs, only: nstates
       use elec, only: ndn, nup
-      use ycompact, only: dymat, ymat
-      use multimat, only: aa, wfmat
+      use ycompact, only: ymat
+      use multimat, only: wfmat
 
       implicit real*8(a-h,o-z)
 
@@ -479,12 +472,12 @@ c     enddo
 c-----------------------------------------------------------------------
       subroutine multideterminants_define(iflag,icheck)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use const, only: nelec
+      use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       use dorb_m, only: iworbd
 
       implicit real*8(a-h,o-z)
@@ -704,7 +697,7 @@ c     endif
       end
 c-----------------------------------------------------------------------
       function idiff(j,i,iab)
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: irepcol_det, ireporb_det, numrep_det
 
       implicit real*8(a-h,o-z)
 

@@ -1,6 +1,6 @@
       subroutine prop_reduce
 
-      use mpiconf, only: idtask, nproc, wid
+      use mpiconf, only: wid
       implicit real*8(a-h,o-z)
 
 

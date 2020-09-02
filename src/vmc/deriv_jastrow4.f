@@ -1,25 +1,25 @@
       subroutine deriv_jastrow4(x,v,d2,value)
 c Written by Cyrus Umrigar and Claudia Filippi
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use atom, only: iwctype, nctype, ncent
+      use const, only: nelec
       use derivjas, only: d2g, g, go, gvalue
-      use elec, only: ndn, nup
+      use elec, only: nup
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use jaspar3, only: a, b, c, fck, nord, scalek
+      use jaspar, only: sspinn
+      use jaspar3, only: a, b, c
       use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
-     &cutjas, cutjasi
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r
+      use jaspar6, only: cutjas
       use jaspointer, only: npoint, npointa
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
-      use wfsec, only: iwf, iwftype, nwftype
+      use optwf_contrl, only: ioptjas
+      use optwf_nparmj, only: nparma, nparmb
+      use optwf_parms, only: nparmj
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc
+      use wfsec, only: iwf
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
+      use contr2, only: ijas
+      use contr2, only: isc
 
       use vardep, only: cdep, iwdepend, nvdepend
 

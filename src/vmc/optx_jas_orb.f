@@ -1,10 +1,10 @@
       subroutine optx_jas_orb_sum(wtg_new,wtg_old,iflag)
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use derivjas, only: d2g, g, go, gvalue
-      use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use csfs, only: nstates
+      use derivjas, only: gvalue
+      use gradhessjo, only: denergy_old, gvalue_old
+      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_parms, only: nparmj
       use deloc_dj_m, only: denergy
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
@@ -53,9 +53,9 @@
 c-----------------------------------------------------------------------
       subroutine optx_jas_orb_init
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use csfs, only: nstates
+      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
       implicit real*8(a-h,o-z)
@@ -84,10 +84,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_orb_dump(iu)
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
       implicit real*8(a-h,o-z)
@@ -110,10 +110,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_orb_rstrt(iu)
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
       implicit real*8(a-h,o-z)
@@ -139,16 +139,15 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optx_jas_orb_fin(wcum,ecum)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use sa_weights, only: iweight, nweight, weights
-      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
-     &e2
+      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_parms, only: nparmj
+      use sa_weights, only: weights
+      use gradhessj, only: de, dj, dj_e
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-      use orb_mat_003, only: orb_o_cum, orb_o_sum
-      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use orb_mat_003, only: orb_o_cum
+      use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
 
       implicit real*8(a-h,o-z)

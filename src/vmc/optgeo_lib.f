@@ -1,6 +1,6 @@
       subroutine write_geometry(iter)
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: cent, iwctype, nctype, ncent
 
       implicit real*8(a-h,o-z)
       include 'vmc.h'
@@ -38,14 +38,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine compute_positions
 
         use coords_int
-        use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-
-        use force_fin, only: da_energy_ave, da_energy_err
-        use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
-      implicit real*8(a-h,o-z)
-
-
+        use atom, only: cent, ncent
+        use force_fin, only: da_energy_ave
+        use zmatrix, only: czint, izcmat
+        use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+        implicit real*8(a-h,o-z)
       
         include 'vmc.h'
         include 'force.h'
@@ -88,7 +85,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine force_store(l)
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: ncent
 
       use da_energy_now, only: da_energy, da_psi
       use force_mat_n, only: force_o

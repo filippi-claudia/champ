@@ -1,10 +1,10 @@
       subroutine readps
 c Written by Claudia Filippi
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, iwctype, nctype
 
       use pseudo_fahy, only: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot
 
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
@@ -87,11 +87,11 @@ c     call gesqua (nquad,xq,yq,zq,wq)
 c-----------------------------------------------------------------------
       subroutine getvps(rad,iel)
 c Written by Claudia Filippi
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, iwctype, ncent
 
-      use pseudo_fahy, only: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
+      use pseudo_fahy, only: drad, dradl, npotl, potl, ptnlc, rcmax
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot, vps
 
       implicit real*8(a-h,o-z)
 

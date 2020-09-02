@@ -1,9 +1,6 @@
       subroutine bxmatrix(kref,xmatu,xmatd,b)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
       use elec, only: ndn, nup
-      use coefs, only: coef, nbasis, norb
       use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
 

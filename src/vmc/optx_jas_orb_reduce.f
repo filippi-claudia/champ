@@ -1,10 +1,10 @@
       subroutine optx_jas_orb_reduce
 c Written by Claudia Filippi
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
       implicit real*8(a-h,o-z)

@@ -1,17 +1,17 @@
       subroutine fin_reduce
 c MPI version written by Claudia Filippi
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
-      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use est2cm, only: ecm21
+      use estcum, only: ecum1, iblk
       use estsig, only: ecm21s, ecum1s
-      use forcepar, only: deltot, istrech, nforce
-      use forcewt, only: wcum, wsum
-      use mpiconf, only: idtask, nproc, wid
-      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use forcepar, only: nforce
+      use forcewt, only: wcum
+      use mpiconf, only: nproc, wid
+      use step, only: rprob, suc, try
 
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: nstep
       implicit real*8(a-h,o-z)
 
 

@@ -1,8 +1,7 @@
       subroutine optx_orb_ci_reduce
 c Written by Claudia Filippi
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
 
       implicit real*8(a-h,o-z)

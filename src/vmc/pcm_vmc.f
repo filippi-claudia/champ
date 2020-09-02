@@ -38,7 +38,7 @@
 
 c-----------------------------------------------------------------------
       subroutine pcm_fin(wcum,iblk)
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: nblk, nstep
       implicit real*8(a-h,o-z)
 
       include 'pcm.h'
@@ -119,7 +119,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_save
-      use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      use pcm_hpsi, only: enfpcm, qopcm
       use pcmo, only: enfpcmo, qopcmo, spcmo, vpcmo
       implicit real*8(a-h,o-z)
 
@@ -140,7 +140,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_sum(p,q)
-      use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      use pcm_hpsi, only: enfpcm, qopcm
       use pcmo, only: enfpcmo, qopcmo, spcmo, vpcmo
       implicit real*8(a-h,o-z)
 

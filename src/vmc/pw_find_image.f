@@ -12,8 +12,7 @@ c Warning:  I need to fix the above:
 c Also return rlenmin to set cutr to 1/2 the shortest lattice vector.  I think that is
 c good enough -- no need to use 1/2 the shortest perpendicular distance.
 
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
-     &cutjas, cutjasi
+      use jaspar6, only: cutjas
       implicit real*8(a-h,o-z)
 
 
@@ -98,7 +97,7 @@ c rlatt   = lattice vectors
 c r       = rlatt * r_basis
 c r_basis = rlatt_inv * r
 
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use grid3d_param, only: origin
       implicit real*8(a-h,o-z)
 
 
@@ -267,12 +266,7 @@ c Written by Cyrus Umrigar
 c For any vector r (from one particle to another) it replaces the vector
 c by its closest image and finds its norm
 
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
+      use periodic, only: rlatt, rlatt_inv
       implicit real*8(a-h,o-z)
 
 
@@ -352,12 +346,7 @@ c Written by Cyrus Umrigar
 c For any vector r (from one particle to another) it replaces the vector
 c by its closest image and finds its norm and the shift needed.
 
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
+      use periodic, only: rlatt, rlatt_inv
       implicit real*8(a-h,o-z)
 
 

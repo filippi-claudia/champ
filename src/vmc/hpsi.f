@@ -3,31 +3,24 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
+      use const, only: hb, nelec, ipr
+      use csfs, only: nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
-      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-
-      use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
-      use wfsec, only: iwf, iwftype, nwftype
-      use ycompact, only: dymat, ymat
-      use casula, only: i_vpsp, icasula, t_vpsp
-      use coefs, only: coef, nbasis, norb
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
-      use Bloc, only: b, tildem
-
+      use mmpol_hpsi, only: peQMdp, peQMq
+      use multidet, only: iactv, ivirt, kref
+      use pcm_hpsi, only: pepcms, pepcmv
+      use wfsec, only: iwf, iwftype
+      use ycompact, only: ymat
+      use casula, only: i_vpsp, t_vpsp
+      use coefs, only: norb
+      use contr2, only: ianalyt_lap
+      use Bloc, only: tildem
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: nloc
+      use velocity_jastrow, only: vj
+      use mmpol_cntrl, only: immpol
 
-      use velocity_jastrow, only: vj, vjn
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'

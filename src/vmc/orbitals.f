@@ -2,15 +2,14 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use da_orbval, only: da_d2orb, da_dorb, da_orb
-      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
-     &phin
-      use wfsec, only: iwf, iwftype, nwftype
+      use const, only: nelec, ipr
+      use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
+      use phifun, only: phin
+      use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
-      use contrl_per, only: iperiodic,ibasis
+      use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
-      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+      use grid3dflag, only: i3dlagorb, i3dsplorb
 
       implicit real*8(a-h,o-z)
 
@@ -145,10 +144,10 @@ c           do 26 m=1,nbasis
 c------------------------------------------------------------------------------------
       subroutine virtual_orbitals
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
-     &phin
+      use const, only: nelec
+      use optwf_contrl, only: ioptci, ioptorb
+      use phifun, only: d2phin, dphin
+      use phifun, only: phin
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
 
@@ -203,18 +202,16 @@ c25   continue
       end
 c------------------------------------------------------------------------------------
       subroutine da_orbitals
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: ncent
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use const, only: nelec
       use da_orbval, only: da_d2orb, da_dorb, da_orb
 
-      use numbas1, only: iwlbas, nbastyp
       use numbas2, only: ibas0, ibas1
-      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
-     &phin
-      use wfsec, only: iwf, iwftype, nwftype
+      use phifun, only: d2phin_all, d3phin, dphin
+      use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
-      use contrl_per, only: iperiodic, ibasis
+      use contrl_per, only: ibasis
       
       implicit real*8(a-h,o-z)
 
@@ -255,15 +252,13 @@ c-------------------------------------------------------------------------------
 c------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
-     &phin
-      use wfsec, only: iwf, iwftype, nwftype
+      use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
+      use phifun, only: phin
+      use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
-      use dorb_m, only: iworbd
-      use contrl_per, only: iperiodic, ibasis
+      use contrl_per, only: iperiodic
 
-      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+      use grid3dflag, only: i3dlagorb, i3dsplorb
 
       implicit real*8(a-h,o-z)
 

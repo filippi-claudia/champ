@@ -9,11 +9,10 @@ c     computes nuclei-dipoles  interactions (penu_dp)
 c     computes charges-charges interactions (peqq)
 c     computes charges-dipoles interactions (peq_dp)
 c...........................................................
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, isites_mmpol
+      use mmpol_parms, only: chmm, nchmm, x_mmpol
       use mmpol_dipol, only: alfa, dipo
-      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
+      use mmpol_pot, only: penu_dp, penu_q, peq_dp, peqq, u_self
 
       use mmpol_inds, only: inds_pol
 
@@ -91,12 +90,11 @@ c............................................................
 c     compute distances and screening between sites and
 c     peqq  (charges-charges interaction) 
 c............................................................
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_dipol, only: alfa, dipo
-      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
-      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use mmpol_dipol, only: alfa
+      use mmpol_pot, only: peqq
+      use mmpol_fdc, only: a_cutoff, screen1, screen2
       use mmpol_inds, only: inds_pol
 
       implicit real*8(a-h,o-z)
@@ -163,11 +161,11 @@ c-----------------------------------------------------------------------
 c............................................................
 c     compute u_self and u_dd (self and dipole-dipole interaction) 
 c............................................................
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
-      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
-      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use mmpol_pot, only: u_dd, u_self
+      use mmpol_fdc, only: screen1, screen2
       use mmpol_inds, only: inds_pol
 
       implicit real*8(a-h,o-z)
@@ -223,11 +221,11 @@ c-----------------------------------------------------------------------
 c............................................................
 c     compute penu_dp (nuclei-induced dipoles on MM sites interaction) 
 c............................................................
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_dipol, only: alfa, dipo
-      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
+      use atom, only: znuc, cent, iwctype, ncent
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm, x_mmpol
+      use mmpol_dipol, only: dipo
+      use mmpol_pot, only: penu_dp
       implicit real*8(a-h,o-z)
 
 
@@ -262,10 +260,10 @@ c-----------------------------------------------------------------------
 c............................................................
 c     compute penu_q  (nuclei-charges interaction) 
 c............................................................
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
+      use atom, only: znuc, cent, iwctype, ncent
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: chmm, nchmm, x_mmpol
+      use mmpol_pot, only: penu_q
       implicit real*8(a-h,o-z)
 
 
@@ -295,10 +293,10 @@ c-----------------------------------------------------------------------
 C     ***************************************************************
 C     contribution inverse A matrix to compute dipoles as mu=Ainv E
 C     ***************************************************************
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_dipol, only: alfa, dipo
-      use mmpol_ahpol, only: ah_pol, bh_pol
-      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use mmpol_parms, only: nchmm, rqq, x_mmpol
+      use mmpol_dipol, only: alfa
+      use mmpol_ahpol, only: ah_pol
+      use mmpol_fdc, only: screen1, screen2
       use mmpol_inds, only: inds_pol
 
       implicit real*8(a-h,o-z)
@@ -372,12 +370,12 @@ c-----------------------------------------------------------------------
 C     ***************************************************************
 C     contribution from nuclei to polarization charghes
 C     ***************************************************************
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_dipol, only: alfa, dipo
-      use mmpol_field, only: enk_pol, eqk_pol
-      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
+      use atom, only: znuc, cent, iwctype, ncent
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm, x_mmpol
+      use mmpol_dipol, only: dipo
+      use mmpol_field, only: enk_pol
+      use mmpol_pot, only: penu_dp
       implicit real*8(a-h,o-z)
 
 
@@ -426,12 +424,12 @@ c............................................................
 c    computes electric field due to fixed MM charges on MM sites
 c    and potential interaction MM charges-dipoles (peq_dp) 
 c............................................................
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_dipol, only: alfa, dipo
-      use mmpol_field, only: enk_pol, eqk_pol
-      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
-      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use mmpol_dipol, only: dipo
+      use mmpol_field, only: eqk_pol
+      use mmpol_pot, only: peq_dp
+      use mmpol_fdc, only: screen1
       use mmpol_inds, only: inds_pol
 
       implicit real*8(a-h,o-z)
@@ -482,11 +480,10 @@ C     ***************************************************************
 c     For the accepted configuration, the electronic field is computed 
 c     on MM sites  eek_pol(1,k),eek_pol(2,k),eek_pol(3,k)
 C     ***************************************************************
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use mmpol_hpsi, only: eek_pol
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm, x_mmpol
+      use mmpol_fdc, only: rcolm
       implicit real*8(a-h,o-z)
 
 
@@ -543,8 +540,8 @@ c     H(environment) is defined.
 c     It includes both H(QM/MM) and H(MM).
 c     peQMdp and peQMq are therefore mixed terms
 c......................................................
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_cntrl, only: icall_mm
+      use mmpol_parms, only: nchmm
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       implicit real*8(a-h,o-z)
 
@@ -585,10 +582,10 @@ c Written by Amovilli-Floris
 c......................................................
 c       Calculate e-/dipoles interactions 
 c......................................................
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_dipol, only: alfa, dipo
-      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
-      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use mmpol_parms, only: chmm, nchmm, x_mmpol
+      use mmpol_dipol, only: dipo
+      use mmpol_pot, only: pepol_dp, pepol_q
+      use mmpol_fdc, only: rcolm
       implicit real*8(a-h,o-z)
 
 
@@ -635,11 +632,11 @@ c......................................................
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_dipoles(eek_ave,eek_err)
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_parms, only: chmm, nchmm, x_mmpol
       use mmpol_dipol, only: alfa, dipo
       use mmpol_ahpol, only: ah_pol, bh_pol
       use mmpol_field, only: enk_pol, eqk_pol
-      use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
+      use mmpol_pot, only: u_dd, u_self
       use mmpol_inds, only: inds_pol
 
       implicit real*8(a-h,o-z)
@@ -757,8 +754,8 @@ c    AVERAGES   subroutines
 c-----------------------------------------------------------------------
       subroutine mmpol_init(iflag)
 
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
 
@@ -798,10 +795,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_dump(iu)
 
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
-      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm
+      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
+      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
 
       implicit real*8(a-h,o-z)
 
@@ -822,10 +819,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_rstrt(iu)
 
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
-      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm
+      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
+      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
 
       implicit real*8(a-h,o-z)
 

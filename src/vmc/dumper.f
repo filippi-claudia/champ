@@ -3,26 +3,23 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
-     &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
-     &vnew, vold, xnew, xold
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use const, only: nelec
+      use config, only: xold
+      use csfs, only: nstates
 
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
-      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use estcum, only: ecum, ecum1, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
-      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: deltot, istrech, nforce
+      use estsum, only: acc
+      use forcepar, only: nforce
       use forcest, only: fcm2, fcum
-      use forcewt, only: wcum, wsum
+      use forcewt, only: wcum
       use mpiconf, only: idtask, nproc, wid
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
 
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: nloc
 
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use qua, only: nquad, wq, xq, yq, zq
 
       implicit real*8(a-h,o-z)
 

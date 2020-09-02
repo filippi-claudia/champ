@@ -1,14 +1,13 @@
       subroutine basis_norm(iwf,anorm,iflag)
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt routine
 c Set normalization of basis fns.
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: iwctype, ncent
 
-      use ghostatom, only: newghostype, nghostcent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use ghostatom, only: nghostcent
+      use const, only: pi
       use coefs, only: coef, nbasis, norb
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
+      use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
+      use basis, only: n4s, n4p
 
       implicit real*8(a-h,o-z)
 

@@ -1,13 +1,8 @@
       subroutine optwf_olbfgs
       use olbfgs, only: initialize_olbfgs
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use optwf_corsam, only: energy, energy_err, force
+      use contrl, only: nblk
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
 
       implicit real*8(a-h,o-z)
@@ -18,9 +13,6 @@
       include 'force.h'
       include 'mstates.h'
       include 'sr.h'
-
-
-
 
 c vector of wave function parameters
       dimension deltap(MPARM), parameters(MPARM)

@@ -23,7 +23,7 @@
 c-----------------------------------------------------------------------
       subroutine efield_compute_extint
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, iwctype, ncent
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
       implicit real*8(a-h,o-z)

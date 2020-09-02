@@ -1,22 +1,14 @@
       subroutine optwf_lin_d
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
+      use csfs, only: nstates
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
-      use optwf_func, only: ifunc_omega, omega, omega_hes
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use optwf_corsam, only: energy, energy_err, force
+      use optwf_func, only: ifunc_omega, omega
+      use contrl, only: nblk
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -24,8 +16,6 @@
       include 'sr.h'
 
       character*20 method_sav
-
-
 
       dimension grad(MPARM*MSTATES), grad_more(MPARM*MSTATES,5)
 
@@ -188,7 +178,7 @@ c enddo iteration
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_lin_d(ndim,nvec,psi,hpsi )
-      use optwf_func, only: ifunc_omega, omega, omega_hes
+      use optwf_func, only: ifunc_omega
       implicit real*8(a-h,o-z)
 
 
@@ -211,7 +201,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_lin_d(ndim,nvec,psi,spsi )
-      use optwf_func, only: ifunc_omega, omega, omega_hes
+      use optwf_func, only: ifunc_omega
       implicit real*8(a-h,o-z)
 
 
@@ -231,7 +221,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine select_ci_root(iroot)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: ccsf, ncsf
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)

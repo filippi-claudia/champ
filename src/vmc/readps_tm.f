@@ -7,11 +7,11 @@ c c) subtracts out local part from all except highest l component.
 c Also eval pot. at 0 and initializes quadrature pts.
 c 
 c Modified by F. Schautz to use fancy file names
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use pseudo_tm, only: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo 
+      use atom, only: znuc, nctype
+      use const, only: ipr
+      use pseudo_tm, only: arg, d2pot, nr_ps, r0, rmax, vpseudo
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot, nloc, vps
 
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
@@ -233,10 +233,10 @@ c-----------------------------------------------------------------------
 c compute tm-pseudopotential for electron iel
       subroutine getvps_tm(r_en,iel)
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use pseudo_tm, only: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo 
+      use atom, only: znuc, iwctype, ncent
+      use pseudo_tm, only: rmax
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot, vps
 
       implicit real*8(a-h,o-z)
 
@@ -278,7 +278,7 @@ c-----------------------------------------------------------------------
 c get spline_fit at r of TM potential for center ic and angular momentum l
 c stored on shifted exponential grid
 
-      use pseudo_tm, only: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo 
+      use pseudo_tm, only: arg, d2pot, r0, vpseudo
 
       implicit real*8(a-h,o-z)
 

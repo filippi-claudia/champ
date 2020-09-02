@@ -1,7 +1,6 @@
       subroutine optx_orb_ci_sum(p,q)
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim
+      use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
@@ -30,8 +29,7 @@
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_init
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim
+      use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
 
       implicit real*8(a-h,o-z)
@@ -57,8 +55,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_dump(iu)
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim
+      use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
 
       implicit real*8(a-h,o-z)
@@ -78,8 +75,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_rstrt(iu)
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim
+      use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
 
       implicit real*8(a-h,o-z)
@@ -98,17 +94,17 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_fin(passes,eave)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: ccsf, ncsf
 
-      use dets, only: cdet, ndet
-      use gradhess_ci, only: grad_ci, h_ci, s_ci
+      use dets, only: cdet
+      use gradhess_ci, only: grad_ci
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optorb_cblock, only: norbterm, norbprim
+      use optwf_contrl, only: ioptci, ioptorb
+      use optwf_parms, only: nparmj
+      use optorb_cblock, only: norbprim
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-      use orb_mat_003, only: orb_o_cum, orb_o_sum
-      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use orb_mat_003, only: orb_o_cum
+      use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
       use gradhess_all, only: MPARMALL, grad, h, s
 

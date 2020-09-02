@@ -14,9 +14,8 @@ c----------------------------------------------------------------------
 
       subroutine setup_grid()
 
-      use atom, only: znuc, cent, iwctype, ncent
-      use ghostatom, only: newghostype, nghostcent
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use atom, only: cent, ncent
+      use contrl, only: irstar
       use grid3d_param, only: endpt, nstep3d, origin, step3d
 
       implicit real*8(a-h,o-z)
@@ -152,7 +151,7 @@ c     Print the parameters to the output file
 c----------------------------------------------------------------------
 
       function int_from_cart(value,iaxis)
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use grid3d_param, only: endpt, origin, step3d
       implicit real*8(a-h,o-z)
 
 
@@ -172,7 +171,7 @@ c----------------------------------------------------------------------
       subroutine write_cube(cube_file)
 
       use atom, only: znuc, cent, iwctype, ncent
-      use grid3d_param, only: nstep3d, endpt, origin, step3d
+      use grid3d_param, only: nstep3d, origin, step3d
 
       implicit real*8(a-h,o-z)
 

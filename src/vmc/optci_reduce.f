@@ -1,7 +1,6 @@
       subroutine optci_reduce
 
-      use mpiconf, only: idtask, nproc, wid
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
 
