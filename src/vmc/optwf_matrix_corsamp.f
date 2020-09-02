@@ -2,15 +2,15 @@
 c written by Claudia Filippi
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use forcepar, only: deltot, istrech, nforce
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag, add_diag_tmp, energy, energy_err, force, force_err
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use wfsec, only: iwf, iwftype, nwftype
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use gradhess_all, only: MPARMALL, grad, h, s
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -21,10 +21,9 @@ c written by Claudia Filippi
       include 'optorb.h'
       include 'numbas.h'
 
-      parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,MPARMALL2=MPARMALL*(MPARMALL+1)/2)
+      parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
       parameter(MWORK=50*MPARMALL)
 
-      common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
 
       dimension grad_sav(MPARMALL),h_sav(MPARMALL,MPARMALL),s_sav(MPARMALL2)
       dimension work(MWORK),work2(MPARMALL,MPARMALL)
@@ -638,13 +637,9 @@ c-----------------------------------------------------------------------
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use gradhess_all, only: MPARMALL, grad, h, s
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -652,13 +647,7 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optorb.h'
         
-      parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
-
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
-
-
-      common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
-
 
 c Note: we do not vary the first (i0) CI coefficient unless full CI
 

@@ -584,7 +584,24 @@ end module contr3
    private 
    public :: iworbd 
    save
-end module dorb_m
+ end module dorb_m
+
+ module efield_blk
+   !> Arguments: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
+   use precision_kinds, only: dp
+   include 'efield.h'
+ 
+   real(dp) :: ascreen(MCHARGES)
+   real(dp) :: bscreen(MCHARGES)
+   real(dp) :: qcharge(MCHARGES)
+   real(dp) :: xcharge(MCHARGES)
+   real(dp) :: ycharge(MCHARGES)
+   real(dp) :: zcharge(MCHARGES)
+   private
+ 
+   public :: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
+   save
+ end module efield_blk
 
  module elec
   !> Arguments: ndn, nup
@@ -870,6 +887,24 @@ end module forcewt
    public   :: newghostype, nghostcent
    save
  end module ghostatom
+
+ module gradhess_all
+   !> Arguments: MPARMALL, grad, h, s
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'optjas.h'
+   include 'optci.h'
+   include 'optorb.h'
+
+   parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
+   real(dp) :: grad(MPARMALL)
+   real(dp) :: h(MPARMALL,MPARMALL)
+   real(dp) :: s(MPARMALL,MPARMALL)
+   private
+
+   public :: MPARMALL, grad, h, s
+   save
+ end module gradhess_all
 
  module gradhessj
    !> Arguments: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2, e2
@@ -2602,20 +2637,3 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
-
- module efield_blk
-   !> Arguments: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
-   use precision_kinds, only: dp
-   include 'efield.h'
-
-    real(dp) :: ascreen(MCHARGES)
-    real(dp) :: bscreen(MCHARGES)
-    real(dp) :: qcharge(MCHARGES)
-    real(dp) :: xcharge(MCHARGES)
-    real(dp) :: ycharge(MCHARGES)
-    real(dp) :: zcharge(MCHARGES)
-    private
-
-    public :: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
-    save
- end module efield_blk

@@ -4,6 +4,7 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use gradhess_all, only: MPARMALL
 
       implicit real*8(a-h,o-z)
 
@@ -14,7 +15,7 @@
       include 'optci.h'
       include 'optorb.h'
 
-      parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
+      parameter(eps=1.d-12)
 
 
 
@@ -169,8 +170,11 @@ c       add_diag=0
       end
 c-----------------------------------------------------------------------
       subroutine regularize_geneig(n,mparmx,h,s,work,seig_valinv,hmod)
+
+      use gradhess_all, only: MPARMALL
       
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -178,7 +182,8 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optorb.h'
       include 'numbas.h'
-      parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
+
+      parameter(eps=1.d-12)
       parameter(MWORK=50*MPARMALL)
       parameter(eps_eigval=1.d-14)
       
@@ -251,7 +256,10 @@ c     write(6,*) 'elapsed time to build Hmod:',t_hmod-t_sdiag
 c-----------------------------------------------------------------------
       subroutine solve_geneig(n,mparmx,hmod,s,seig_valinv,work,eig,eigi,eig_vec)
       
+      use gradhess_all, only: MPARMALL
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -259,7 +267,8 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optorb.h'
       include 'numbas.h'
-      parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
+
+      parameter(eps=1.d-12)
       parameter(MWORK=50*MPARMALL)
       
       dimension seig_valinv(*)
@@ -317,6 +326,7 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use gradhess_all, only: MPARMALL
 
       implicit real*8(a-h,o-z)
 
@@ -327,7 +337,7 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optorb.h'
 
-      parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
+      parameter(eps=1.d-12)
 
       dimension dparm(*)
       dimension h(mparmx,*),h_sav(mparmx,*)
