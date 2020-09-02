@@ -1,16 +1,16 @@
       subroutine detsav(iel,iflag)
 c Written by Claudia Filippi
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use dets, only: cdet, ndet
+      use dets, only: ndet
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: ivirt, kref, numrep_det
 
       use slatn, only: slmin
-      use ycompact, only: dymat, ymat
+      use ycompact, only: ymat
       use ycompactn, only: ymatn
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
       use multimatn, only: aan, wfmatn

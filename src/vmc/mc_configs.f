@@ -1,13 +1,11 @@
       subroutine mc_configs_start
       
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, iwctype, ncent
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
-     &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
-     &vnew, vold, xnew, xold
-      use mpiconf, only: idtask, nproc, wid
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use const, only: nelec
+      use config, only: xnew, xold
+      use mpiconf, only: idtask, nproc
+      use contrl, only: irstar, isite, nconf_new
       implicit real*8(a-h,o-z)
 
 

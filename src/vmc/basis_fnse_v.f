@@ -1,18 +1,15 @@
       subroutine basis_fnse_v(k,rvec_en,r_en)
 c Written by Claudia Filippi by modifying basis_fns
 c routine to calculate basis functions for electron k
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use ghostatom, only: newghostype, nghostcent
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use atom, only: iwctype, ncent
+      use ghostatom, only: nghostcent
+      use numbas, only: iwrwf, nrbas, numr
 
       use numbas1, only: iwlbas, nbastyp
-      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
-     &phin
-      use wfsec, only: iwf, iwftype, nwftype
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_nbasis
+      use phifun, only: phin
+      use wfsec, only: iwf
       use force_analy, only: iforce_analy
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
 
       implicit real*8(a-h,o-z)
 

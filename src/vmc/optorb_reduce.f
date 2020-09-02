@@ -1,14 +1,14 @@
       subroutine optorb_reduce
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use optorb_cblock, only: norbterm,  norbprim
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use orb_mat_003, only: orb_o_cum, orb_o_sum
-      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use csfs, only: nstates
+      use optorb_cblock, only: norbterm
+      use optwf_contrl, only: ioptorb
+      use orb_mat_003, only: orb_o_cum
+      use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
-      use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
+      use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
 
       implicit real*8(a-h,o-z)

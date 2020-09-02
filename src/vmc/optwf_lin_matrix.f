@@ -1,9 +1,9 @@
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
       use linear_norm, only: oav
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
-      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_corsam, only: energy, energy_err, force
+      use optwf_parms, only: nparmd, nparmj
 
       implicit real*8(a-h,o-z)
 
@@ -309,14 +309,12 @@ c-----------------------------------------------------------------------
       subroutine compute_dparm(nparm,mparmx,lwork,dparm,h,h_sav,s,s_sav,work,eig_vec,
      &                     add_diag,energy_sav,energy_err_sav)
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: ccsf, ncsf, nstates
 
-      use dets, only: cdet, ndet
+      use dets, only: cdet
       use linear_norm, only: oav
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
-      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
+      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_parms, only: nparmd, nparmj
 
       implicit real*8(a-h,o-z)
 

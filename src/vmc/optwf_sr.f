@@ -1,11 +1,8 @@
       subroutine optwf_sr
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_corsam, only: energy, energy_err, force
       use optwf_func, only: ifunc_omega, omega, omega_hes
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: nblk
       use force_analy, only: iforce_analy
 
       implicit real*8(a-h,o-z)
@@ -175,8 +172,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr(nparm,deltap,sr_adiag,sr_eps,i)
 c solve S*deltap=h_sr (call in optwf)
 
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg
+      use sr_mat_n, only: h_sr
       implicit real*8(a-h,o-z)
 
       include 'mstates.h'

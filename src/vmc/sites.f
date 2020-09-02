@@ -1,6 +1,6 @@
       subroutine sites(x,nelec,nsite)
 c Written by Cyrus Umrigar
-      use atom, only:  znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, iwctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
 

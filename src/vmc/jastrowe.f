@@ -1,9 +1,7 @@
       subroutine jastrowe(iel,x,v,d2,value,iflag)
 c Written by Claudia Filippi by modifying jastrow
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
+      use const, only: nelec
       implicit real*8(a-h,o-z)
 
 

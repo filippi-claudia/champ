@@ -2,17 +2,17 @@
 c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use const, only: nelec
+      use csfs, only: nstates
 
-      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
-      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
-      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: deltot, istrech, nforce
+      use est2cm, only: ecm2, pecm2, tjfcm2, tpbcm2
+      use estcum, only: ecum, iblk, pecum, tjfcum, tpbcum
+      use estsum, only: acc
+      use forcepar, only: deltot, nforce
       use forcest, only: fcm2, fcum
-      use forcewt, only: wcum, wsum
+      use forcewt, only: wcum
       use contr3, only: mode
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: nstep
 
       implicit real*8(a-h,o-z)
 

@@ -1,10 +1,9 @@
 c-----------------------------------------------------------------------
       subroutine determinante_psit(iel,determ,istate)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
-      use wfsec, only: iwf, iwftype, nwftype
+      use elec, only: nup
+      use wfsec, only: iwf
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'

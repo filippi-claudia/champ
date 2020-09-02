@@ -1,14 +1,11 @@
       subroutine optwf_mix
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
-      use optwf_func, only: ifunc_omega, omega, omega_hes
+      use optwf_corsam, only: energy, energy_err, force
       use sa_check, only: energy_all, energy_err_all
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: nblk
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
@@ -282,7 +279,7 @@ c enddo iteration
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine change_ci(dparm_new,istate)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)

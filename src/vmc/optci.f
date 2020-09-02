@@ -1,10 +1,8 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use pseudo, only: lpot, nloc, vps, vpso
+      use optwf_contrl, only: ioptci
 
       implicit real*8(a-h,o-z)
 
@@ -66,7 +64,7 @@ c Correlation matrix <Oi*Oj> is computed in ci_sum
       end
 c-----------------------------------------------------------------------
       subroutine optci_init(iflg)
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -115,7 +113,7 @@ C$ iflg = 0: init *cum, *cm2 as well
 
 c-----------------------------------------------------------------------
       subroutine optci_save
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -136,7 +134,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_restore
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -157,7 +155,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_sum(p,q,enew,eold)
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -187,7 +185,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_cum(wsum)
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -218,7 +216,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_dump(iu)
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
 
@@ -240,7 +238,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_rstrt(iu)
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -272,7 +270,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_avrg(wcum,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -309,14 +307,12 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_fin(iblk,passes,etot)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: ccsf, ncsf
 
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
+      use dets, only: cdet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use linear_norm, only: oav, ci_oav
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
       implicit real*8(a-h,o-z)
 
 
@@ -435,7 +431,7 @@ c h_0,0, h_0,ci, h_ci,0, s_0,ci, s_ci,0
 c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
       use linear_norm, only: oav
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
 c compute averages and print then out
@@ -528,10 +524,10 @@ c     print the OkEL
 
 c-----------------------------------------------------------------------
       subroutine optci_define
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: ncsf
 
-      use dets, only: cdet, ndet
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use dets, only: ndet
+      use optwf_contrl, only: ioptjas, ioptorb
       implicit real*8(a-h,o-z)
 
 

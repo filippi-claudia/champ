@@ -2,10 +2,10 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
+      use const, only: ipr
+      use dets, only: ndet
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: kref
       use dorb_m, only: iworbd
 
       implicit real*8(a-h,o-z)
@@ -94,12 +94,12 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use estpsi, only: apsi, aref, detref
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use const, only: ipr
+      use estpsi, only: detref
+      use multidet, only: kref
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use coefs, only: coef, nbasis, norb
+      use optwf_contrl, only: ioptorb
+      use coefs, only: norb
       implicit real*8(a-h,o-z)
 
 
@@ -150,23 +150,23 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: ncent
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use da_jastrow4val, only: da_d2j, da_j, da_vj
-      use da_orbval, only: da_d2orb, da_dorb, da_orb
+      use const, only: hb, nelec
+      use da_jastrow4val, only: da_vj
+      use da_orbval, only: da_d2orb, da_dorb
 
-      use derivjas, only: d2g, g, go, gvalue
+      use derivjas, only: g
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_contrl, only: ioptjas
+      use optwf_parms, only: nparmj
       use Bloc_da, only: b_da
       use Bloc_dj, only: b_dj
-      use coefs, only: coef, nbasis, norb
-      use Bloc, only: b, tildem
+      use coefs, only: norb
+      use Bloc, only: b
 
       use force_analy, only: iforce_analy
-      use velocity_jastrow, only: vj, vjn
+      use velocity_jastrow, only: vj
       implicit real*8(a-h,o-z)
 
 

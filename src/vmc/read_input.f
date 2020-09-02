@@ -26,53 +26,51 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
+      use jaspar, only: nspin1, nspin2, is
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use jaspar1, only: cjas1, cjas2
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: cxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
-      use forcepar, only: deltot, istrech, nforce
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-      use header, only: date, title
+      use forcepar, only: nforce
+      use grdntspar, only: igrdtype, ngradnts
+      use header, only: title
       use jaspar2, only: a1, a2
-      use jaspar3, only: a, b, c, fck, nord, scalek
+      use jaspar3, only: a, b, c, nord, scalek
       use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
-     &cutjas, cutjasi
-      use ncusp, only: ncnstr, ncuspc, nfock, nfockc, norbc
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
-      use numbas1, only: iwlbas, nbastyp
+      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
+      use jaspar6, only: cutjas, cutjasi
+      use numbas, only: numr
+      use numbas1, only: nbastyp
       use numbas2, only: ibas0, ibas1
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
-     &xms
-      use rlobxy, only: rlobx, rloby, rloby2
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_parms, only: nparmj
+      use pars, only: Z, a20, a21
+      use rlobxy, only: rlobx
       use sa_weights, only: iweight, nweight, weights
-      use wfsec, only: iwf, iwftype, nwftype
-      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use wfsec, only: nwftype
+      use zmatrix, only: izmatrix
       use bparm, only: nocuspb, nspin2b
-      use casula, only: i_vpsp, icasula, t_vpsp
+      use casula, only: i_vpsp, icasula
       use coefs, only: coef, nbasis, norb
       use const2, only: deltar, deltat
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
+      use contr2, only: ianalyt_lap, ijas
+      use contr2, only: isc
       use contr3, only: mode
-      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
-     &itau_eff, nfprod, rttau, tau, taueff, tautot
+      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
+      use contrldmc, only: itau_eff, nfprod, rttau, tau
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use dorb_m, only: iworbd
-      use contrl_per, only: iperiodic,ibasis
+      use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy
-      use pseudo, only: lpot, nloc, vps, vpso
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
-      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_fdc, only: a_cutoff, rcolm, screen1, screen2
+      use pseudo, only: nloc
+      use optorb_cblock, only: idump_blockav
+      use gradjerrb, only: ngrad_jas_blocks
+      use qua, only: nquad, wq, xq, yq, zq
+      use mmpol_cntrl, only: ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_parms, only: chmm
+      use mmpol_fdc, only: a_cutoff, rcolm
       use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
 
       implicit real*8(a-h,o-z)
@@ -862,7 +860,7 @@ c-----------------------------------------------------------------------
 C$INPUT znuc inp
 CKEYDOC nuclear charge for each atom type and ghost type
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, nctype
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -923,7 +921,7 @@ c-----------------------------------------------------------------------
       subroutine read_geometry(iu)
 C$INPUT geometry inp
 CKEYDOC position and type for each atom and ghost atom
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: cent, iwctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'inputflags.h'
@@ -946,10 +944,8 @@ c-----------------------------------------------------------------------
       subroutine read_exponents(iu,iwft)
 C$INPUT exponents inp i=1
 CKEYDOC Basis function exponents (only if no numerical basis)
-      use coefs, only: coef, nbasis, norb
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+      use coefs, only: nbasis
+      use basis, only: zex
 
       implicit real*8(a-h,o-z)
 
@@ -1001,10 +997,9 @@ c-----------------------------------------------------------------------
       subroutine read_multideterminants(iu,nd)
 C$INPUT multideterminants inp i 
 CKEYDOC CI coefficients and occupation of determinants in wf
-      use dets, only: cdet, ndet
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use dets, only: ndet
+      use multidet, only: irepcol_det, ireporb_det, numrep_det
 
-      use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
 
 
@@ -1034,18 +1029,15 @@ c-----------------------------------------------------------------------
       subroutine read_jastrow_parameter(iu,iwft)
 C$INPUT jastrow_parameter inp i=1
 CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use jaspar1, only: cjas1, cjas2
-      use elec, only: ndn, nup
-      use jaspar2, only: a1, a2
-      use jaspar3, only: a, b, c, fck, nord, scalek
+      use jaspar, only: nspin1, nspin2
+      use elec, only: ndn
+      use jaspar3, only: a, b, c, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
-     &cutjas, cutjasi
+      use jaspar6, only: cutjas
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
+      use contr2, only: ifock, ijas
+      use contr2, only: isc
       implicit real*8(a-h,o-z)
 
 
@@ -1116,11 +1108,11 @@ C$INPUT basis inp i
 CKEYDOC Basis function types and pointers to radial parts tables
 C$INPUT qmc_bf_info inp i
 CKEYDOC alternative name for keyword basis because of GAMBLE input
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use numbas, only: iwrwf, numr
       use numbas1, only: iwlbas, nbastyp
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+      use basis, only: n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
+      use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
+      use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
 
       implicit real*8(a-h,o-z)
 
@@ -1255,9 +1247,9 @@ c-----------------------------------------------------------------------
 C$INPUT forces_displace inp
 CKEYDOC Displacement parameters and wave function types
 
-      use forcepar, only: deltot, istrech, nforce
+      use forcepar, only: nforce
       use forcestr, only: delc
-      use wfsec, only: iwf, iwftype, nwftype
+      use wfsec, only: iwftype
       implicit real*8(a-h,o-z)
 
 
@@ -1291,7 +1283,7 @@ CKEYDOC Displacement parameters and wave function types
 c-----------------------------------------------------------------------
       subroutine read_csf(ncsf_read,nstates_read,fn)
 C$INPUT csf i i=1 a=<input>
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: ccsf, ncsf, nstates
 
       implicit real*8(a-h,o-z)
 
@@ -1415,9 +1407,9 @@ c Initialize flags used to identify presence/absence of blocks in input
 c-----------------------------------------------------------------------
       subroutine flagcheck
 c Check that the required blocks are there in the input
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use numbas, only: numr
 
-      use optorb_mix, only: iwmix_virt, norbopt, norbvirt
+      use optorb_mix, only: norbopt, norbvirt
       implicit real*8(a-h,o-z)
 
 
@@ -1513,7 +1505,7 @@ c Check that the required blocks are there in the input
 c-----------------------------------------------------------------------
       subroutine inputcsf
 c Check that the required blocks are there in the input
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: ncsf, nstates
 
       implicit real*8(a-h,o-z)
 
@@ -1534,11 +1526,9 @@ c Check that the required blocks are there in the input
 c----------------------------------------------------------------------
       subroutine inputzex
 c Set the exponents to one when using a numerical basis
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
-      use coefs, only: coef, nbasis, norb
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
+      use numbas, only: numr
+      use coefs, only: nbasis
+      use basis, only: zex
 
       implicit real*8(a-h,o-z)
 
@@ -1595,17 +1585,13 @@ c Set the lcao to be equal
 c----------------------------------------------------------------------
       subroutine inputjastrow(nwftype)
 c Set the jastrow to be equal
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use jaspar1, only: cjas1, cjas2
-      use jaspar2, only: a1, a2
-      use jaspar3, only: a, b, c, fck, nord, scalek
+      use jaspar, only: nspin1, nspin2
+      use jaspar3, only: a, b, c, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
-     &cutjas, cutjasi
-      use bparm, only: nocuspb, nspin2b
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
+      use bparm, only: nspin2b
+      use contr2, only: ifock, ijas
+      use contr2, only: isc
       implicit real*8(a-h,o-z)
 
 
@@ -1651,8 +1637,8 @@ c Set the jastrow to be equal
 c----------------------------------------------------------------------
       subroutine inputforces
 c Set all force displacements to zero
-      use forcepar, only: deltot, istrech, nforce
-      use wfsec, only: iwf, iwftype, nwftype
+      use forcepar, only: nforce
+      use wfsec, only: iwftype, nwftype
       implicit real*8(a-h,o-z)
 
 
@@ -1685,19 +1671,18 @@ c Set all force displacements to zero
 c-----------------------------------------------------------------------
       subroutine read_jasderiv(iu)
 C$INPUT jasderiv inp
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use jaspar4, only: a4, norda, nordb, nordc
+      use atom, only: nctype
+      use jaspar, only: nspin1, is
+      use jaspar4, only: norda, nordb, nordc
       use jaspointer, only: npoint, npointa
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use numbas, only: numr
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
-      use bparm, only: nocuspb, nspin2b
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
+      use optwf_parms, only: nparmj
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc
+      use bparm, only: nspin2b
+      use contr2, only: ijas
+      use contr2, only: isc
       implicit real*8(a-h,o-z)
 
 
@@ -1800,8 +1785,8 @@ c-----------------------------------------------------------------------
       subroutine read_sym(nsym,mo,fn)
 C$INPUT sym_labels i i a=<input>
 CKEYDOC Read symmetry information
-      use coefs, only: coef, nbasis, norb
-      use optorb, only: dmat_diag, irrep, orb_energy
+      use coefs, only: norb
+      use optorb, only: irrep
       implicit real*8(a-h,o-z)
 
 
@@ -1833,7 +1818,7 @@ c-----------------------------------------------------------------------
 C$INPUT optorb_mixvirt i i a=<input>
 CKEYDOC Read which virtual orbitals are mixed with the occupied ones
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       implicit real*8(a-h,o-z)
 
 
@@ -1867,8 +1852,8 @@ c-----------------------------------------------------------------------
 C$INPUT energies i a=<input>
 C$INPUT eigenvalues i a=<input>
 CKEYDOC Read orbital energies 
-      use coefs, only: coef, nbasis, norb
-      use optorb, only: dmat_diag, irrep, orb_energy
+      use coefs, only: norb
+      use optorb, only: orb_energy
       implicit real*8(a-h,o-z)
 
 
@@ -1894,8 +1879,8 @@ c----------------------------------------------------------------------
 C$INPUT dmatrix i i a=<input> 
 CKEYDOC Read diagonal density matrix information.
       use sa_weights, only: iweight, nweight, weights
-      use coefs, only: coef, nbasis, norb
-      use optorb, only: dmat_diag, irrep, orb_energy
+      use coefs, only: norb
+      use optorb, only: dmat_diag
       implicit real*8(a-h,o-z)
 
 
@@ -1945,7 +1930,7 @@ CKEYDOC Read diagonal density matrix information.
       end
 c----------------------------------------------------------------------
       subroutine get_weights(field,weights,iweight,nweight)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
@@ -2020,13 +2005,13 @@ c     Written by Omar Valsson
 
 
 
-      use forcepar, only: deltot, istrech, nforce
+      use forcepar, only: nforce
       use forcestr, only: delc
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use grdntspar, only: delgrdxyz, igrdtype, ngradnts
 
-      use wfsec, only: iwf, iwftype, nwftype
+      use wfsec, only: iwftype
       implicit real*8(a-h,o-z)
 
 
@@ -2091,14 +2076,14 @@ CKEYDOC atoms energy gradients are to be calculated for.
 
 c      Written by Omar Valsson.
 
-      use forcepar, only: deltot, istrech, nforce
+      use forcepar, only: nforce
       use forcestr, only: delc
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, igrdtype, ngradnts
+      use zmatrix, only: izmatrix
 
-      use wfsec, only: iwf, iwftype, nwftype
+      use wfsec, only: iwftype
       implicit real*8(a-h,o-z)
 
 
@@ -2166,7 +2151,7 @@ C$INPUT modify_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
 CKEYDOC atoms energy gradients are to be calculated for.
 
-      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+      use grdntsmv, only: igrdmv
 
       implicit real*8(a-h,o-z)
 
@@ -2200,7 +2185,6 @@ CKEYDOC Read for which Z matrix (internal) coordiantes of
 CKEYDOC atoms energy gradients are to be calculated for.
 
       use grdnthes, only: hessian_zmat
-      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       implicit real*8(a-h,o-z)
 
@@ -2237,7 +2221,7 @@ CKEYDOC It is need when calculating forces in Z matrix
 CKEYDOC coordinates.
 
 c      Written by Omar Valsson
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: cent, ncent
       use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
 
       implicit real*8(a-h,o-z)
@@ -2307,7 +2291,6 @@ C$INPUT efield i i a=<input>
       end
 c-----------------------------------------------------------------------
       subroutine set_displace_zero(nforce_tmp)
-      use forcepar, only: deltot, istrech, nforce
       use forcestr, only: delc
       use pcm_force, only: sch_s
       implicit real*8(a-h,o-z)
@@ -2338,7 +2321,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine modify_zmat_define
 
-      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+      use grdntsmv, only: igrdmv
 
       implicit real*8(a-h,o-z)
 
@@ -2361,7 +2344,6 @@ c-----------------------------------------------------------------------
       subroutine hessian_zmat_define
 
       use grdnthes, only: hessian_zmat
-      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       implicit real*8(a-h,o-z)
 

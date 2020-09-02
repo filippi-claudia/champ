@@ -8,18 +8,17 @@ c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, iwctype, ncent
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
-     &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
-     &tjfoo, vnew, vold, xnew, xold
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
+      use const, only: pi, fbias, nelec, ipr
+      use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
+      use config, only: psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon
+      use config, only: tjfoo, vnew, vold, xnew, xold
+      use csfs, only: nstates
+      use elec, only: nup
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: deltot, istrech, nforce
-      use forcewt, only: wcum, wsum
+      use forcepar, only: nforce
+      use forcewt, only: wsum
       use kinet, only: dtdx2n, dtdx2o
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
@@ -27,9 +26,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const2, only: deltar, deltat
       use contr3, only: mode
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: nloc
 
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
+      use mmpol_cntrl, only: ich_mmpol
       implicit real*8(a-h,o-z)
 
 

@@ -1,13 +1,9 @@
       subroutine verify_orbitals
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use coefs, only: coef, nbasis, norb
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use const, only: nelec
+      use dets, only: ndet
+      use optwf_contrl, only: ioptorb
+      use coefs, only: norb
       use dorb_m, only: iworbd
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
 
       implicit real*8(a-h,o-z)
 

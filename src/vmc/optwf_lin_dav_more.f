@@ -1,14 +1,14 @@
       subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use const, only: ipr
+      use csfs, only: nstates
 
-      use mpiconf, only: idtask, nproc
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
-      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
+      use mpiconf, only: idtask
+      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_corsam, only: energy, force
+      use optwf_parms, only: nparmd, nparmj
+      use sr_mat_n, only: jfj
+      use sr_mat_n, only: obs_tot
     
       implicit real*8(a-h,o-z)
 
@@ -202,10 +202,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
-      use mpiconf, only: idtask, nproc
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
+      use mpiconf, only: idtask
+      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
+      use sr_mat_n, only: sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
 
@@ -298,10 +298,10 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
-      use mpiconf, only: idtask, nproc
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
+      use mpiconf, only: idtask
+      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use sr_mat_n, only: jefj, jfj, jhfj, nconf_n
+      use sr_mat_n, only: sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
 
@@ -374,11 +374,11 @@ c     STOP
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
-      use mpiconf, only: idtask, nproc
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_func, only: ifunc_omega, omega, omega_hes
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
+      use mpiconf, only: idtask
+      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use optwf_func, only: omega
+      use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
+      use sr_mat_n, only: sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
 
@@ -488,11 +488,11 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
-      use mpiconf, only: idtask, nproc
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_func, only: ifunc_omega, omega, omega_hes
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
+      use mpiconf, only: idtask
+      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use optwf_func, only: omega
+      use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, sr_ho
+      use sr_mat_n, only: sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
 
@@ -611,11 +611,11 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
-      use mpiconf, only: idtask, nproc
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_func, only: ifunc_omega, omega, omega_hes
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
+      use mpiconf, only: idtask
+      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use optwf_func, only: ifunc_omega, omega
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
+      use sr_mat_n, only: sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
 
@@ -739,8 +739,8 @@ c end loop vec
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine g_psi_lin_d( ndim, nvec, nb1, psi, ew )
 
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
+      use sr_mat_n, only: jefj, jfj, jhfj, s_diag
+      use sr_mat_n, only: obs_tot
       implicit real*8(a-h,o-z)
 
 
@@ -807,12 +807,12 @@ c         if(i.ne.ivec+nb1-1) psi(i,ivec)=psi(i,ivec)/(h(i)+s_diag(1,1)-ew(ivec)
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
       use mpiconf, only: idtask, nproc
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
+      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use sr_mat_n, only: nconf_n
+      use sr_mat_n, only: sr_o, wtg, obs_tot
       implicit real*8(a-h,o-z)
 
 

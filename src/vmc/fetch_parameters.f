@@ -1,6 +1,5 @@
 c-----------------------------------------------------------------------
       subroutine fetch_parameters(p)
-      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
       dimension p(*)
@@ -21,17 +20,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_jastrow(p,n)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use jaspar3, only: a, b, c, fck, nord, scalek
+      use atom, only: nctype
+      use jaspar3, only: a, b, c
 
-      use jaspar4, only: a4, norda, nordb, nordc
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
-      use bparm, only: nocuspb, nspin2b
-      use optorb_cblock, only: norbterm, norbprim
+      use jaspar4, only: a4
+      use optwf_contrl, only: ioptjas
+      use optwf_nparmj, only: nparma, nparmb, nparmc
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       implicit real*8(a-h,o-z)
 
 
@@ -71,10 +66,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine fetch_lcao(p,n)
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use coefs, only: coef, nbasis, norb
-      use optorb_cblock, only: norbterm, norbprim
+      use optwf_contrl, only: ioptorb
+      use optorb_cblock, only: norbterm
 
       implicit real*8(a-h,o-z)
 
@@ -97,12 +90,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_ci(p,n)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: ccsf, ncsf, nstates
 
       use dets, only: cdet, ndet
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optorb_cblock, only: norbterm, norbprim
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
 

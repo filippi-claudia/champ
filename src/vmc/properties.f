@@ -8,7 +8,7 @@ c     1   2   3   4      5      6
 c     <x> <y> <z> <x**2> <y**2> <z**2> 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine prop_compute(coord)
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use const, only: nelec
       implicit real*8(a-h,o-z)
 
       include 'properties.h'
@@ -104,7 +104,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine prop_prt(w,iblk,iu)
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use const, only: nelec
       implicit real*8(a-h,o-z)
 
 c compute averages and print then out

@@ -1,23 +1,12 @@
       function deriv_psinl(u,rshifti,rshiftj,rri,rrj,gn,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use jaspar1, only: cjas1, cjas2
-      use elec, only: ndn, nup
-      use jaspar2, only: a1, a2
-      use jaspar3, only: a, b, c, fck, nord, scalek
-      use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
-     &cutjas, cutjasi
-      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
-      use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
-     &xms
-      use wfsec, only: iwf, iwftype, nwftype
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
-      use cuspmat, only: cm, ishe, iwc3, neqs
+      use jaspar3, only: a, c
+      use jaspar4, only: nordc
+      use jaspar6, only: asymp_r
+      use optwf_wjas, only: iwjasc
+      use wfsec, only: iwf
+      use contr2, only: ijas
 
       use vardep, only: cdep, iwdepend, nvdepend
 
@@ -107,17 +96,14 @@ c                 jj=jj+1
 c-----------------------------------------------------------------------
       function deriv_psianl(rri,gn,it)
 
-      use jaspar3, only: a, b, c, fck, nord, scalek
+      use jaspar3, only: a, c
 
-      use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
-     &cutjas, cutjasi
-      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
-      use wfsec, only: iwf, iwftype, nwftype
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
+      use jaspar4, only: a4, norda
+      use jaspar6, only: asymp_jasa, asymp_r
+      use optwf_nparmj, only: nparma
+      use optwf_wjas, only: iwjasa
+      use wfsec, only: iwf
+      use contr2, only: ijas
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -167,18 +153,15 @@ c written for general iwf, whereas others (asymp_r) assume iwf=1.
 c-----------------------------------------------------------------------
       function deriv_psibnl(u,gn,isb,ipar)
 
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use jaspar3, only: a, b, c, fck, nord, scalek
+      use jaspar, only: sspinn, is
+      use jaspar3, only: a, b, c
 
-      use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6,
-     &cutjas, cutjasi
-      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
-      use wfsec, only: iwf, iwftype, nwftype
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
+      use jaspar4, only: nordb
+      use jaspar6, only: asymp_jasb, asymp_r
+      use optwf_nparmj, only: nparmb
+      use optwf_wjas, only: iwjasb
+      use wfsec, only: iwf
+      use contr2, only: ijas
       implicit real*8(a-h,o-z)
 
 

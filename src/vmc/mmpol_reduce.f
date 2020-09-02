@@ -1,10 +1,10 @@
       subroutine mmpol_reduce
 
-      use mpiconf, only: idtask, nproc, wid
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
-      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
+      use mpiconf, only: wid
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm
+      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
+      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
 
       implicit real*8(a-h,o-z)
 

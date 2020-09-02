@@ -1,6 +1,6 @@
       subroutine pcm_reduce
 
-      use mpiconf, only: idtask, nproc, wid
+      use mpiconf, only: wid
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
@@ -73,7 +73,7 @@
 
       subroutine pcm_reduce_chvol
 
-      use mpiconf, only: idtask, nproc, wid
+      use mpiconf, only: nproc
       use pcm_xv_new, only: xv_new
       implicit real*8(a-h,o-z)
 

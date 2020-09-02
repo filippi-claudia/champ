@@ -1,7 +1,7 @@
       subroutine jassav(iel,iflag)
 c Written by Claudia Filippi
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use const, only: nelec
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
 
       use velocity_jastrow, only: vj, vjn

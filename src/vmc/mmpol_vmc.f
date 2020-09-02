@@ -1,8 +1,7 @@
       subroutine mmpol_prt(wcum,iblk)
 
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
-      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
+      use mmpol_cntrl, only: immpol, immpolprt
+      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
 
       implicit real*8(a-h,o-z)
 
@@ -44,11 +43,10 @@
 c-----------------------------------------------------------------------
       subroutine mmpol_fin(wcum,iblk)
 
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
-      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm
+      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
+      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
 
       implicit real*8(a-h,o-z)
 
@@ -127,10 +125,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_save
-      use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
+      use mmpol_hpsi, only: eek_pol
       use mmpolo, only: cmmpolo, dmmpolo, eeko
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm
       implicit real*8(a-h,o-z)
 
 
@@ -154,12 +152,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_sum(p,q)
 
-      use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
+      use mmpol_hpsi, only: eek_pol
       use mmpolo, only: cmmpolo, dmmpolo, eeko
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
-      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
-      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm
+      use mmpol_averages, only: cmmpol_sum, dmmpol_sum
+      use mmpol_averages, only: eek_sum
 
       implicit real*8(a-h,o-z)
 
@@ -180,8 +178,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_cum(wsum)
 
-      use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, immpolprt, isites_mmpol
-      use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
 

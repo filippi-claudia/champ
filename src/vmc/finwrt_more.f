@@ -1,16 +1,13 @@
       subroutine finwrt_more
 c written by Claudia Filippi
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
-      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use estcum, only: iblk
       use estpsi, only: apsi, aref, detref
-      use estsig, only: ecm21s, ecum1s
-      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use mpiconf, only: idtask, nproc, wid
-      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use mpiconf, only: nproc, wid
+      use optwf_corsam, only: energy, energy_err, force, force_err
+      use contrl, only: nstep
       implicit real*8(a-h,o-z)
 
 

@@ -1,25 +1,25 @@
       subroutine set_ewald
 c Written by Cyrus Umrigar
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use atom, only: znuc, pecent, iwctype, nctype, ncent
+      use const, only: pi, ipr
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
       use ewald_basis, only: vps_basis_fourier
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
-      use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt
+      use periodic, only: glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim
+      use periodic, only: isrange, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big
+      use periodic, only: ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_sim, ngvec_sim_big
+      use periodic, only: np, npoly, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell
+      use periodic, only: vcell_sim, znuc2_sum, znuc_sum
+      use pseudo_tm, only: d2pot, nr_ps, vpseudo
       use tempor, only: dist_nn
       use test, only: f, vbare_coul, vbare_jas, vbare_psp
       use constant, only: twopi
-      use contrl_per, only: iperiodic, ibasis
+      use contrl_per, only: iperiodic
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot, nloc, vps
 
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use grid3d_param, only: origin
       implicit real*8(a-h,o-z)
 
 
@@ -846,12 +846,12 @@ c related by primitive cell reciprocal lattice vectors to inverses of
 c other vectors.  We should come back to the issue of whether that is
 c a symmetry one could use later on.
 
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
+      use periodic, only: cutg, cutg_sim
+      use periodic, only: glatt_inv, gvec, gvec_sim, igvec_sim
+      use periodic, only: k_inv, kvec
+      use periodic, only: ngvec, ngvec_sim, nkvec
+      use periodic, only: rknorm, rkvec, rkvec_shift, vcell
+      use periodic, only: vcell_sim
       implicit real*8(a-h,o-z)
 
 
@@ -1563,7 +1563,7 @@ c-----------------------------------------------------------------------
       function ewald_pot(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell)
 c Written by Cyrus Umrigar
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use const, only: pi
       implicit real*8(a-h,o-z)
 
 
@@ -1593,7 +1593,7 @@ c-----------------------------------------------------------------------
       function ewald_pot_psp(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell,ict,l,z)
 c Written by Cyrus Umrigar
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use const, only: pi
       implicit real*8(a-h,o-z)
 
 
@@ -1748,16 +1748,15 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald_old
 c Written by Cyrus Umrigar
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, pecent, iwctype, ncent
 
-      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+      use ewald, only: b_coul, y_coul
 
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
+      use periodic, only: cutr
+      use periodic, only: gvec, igmult
+      use periodic, only: ncoef_per, ngnorm
+      use periodic, only: np, vcell
+      use periodic, only: vcell_sim, znuc2_sum
       implicit real*8(a-h,o-z)
 
 
@@ -1799,16 +1798,16 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald
 c Written by Cyrus Umrigar
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, pecent, iwctype, ncent
 
-      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+      use ewald, only: b_coul, y_coul
 
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
+      use periodic, only: cutr, glatt
+      use periodic, only: igmult, igvec
+      use periodic, only: ncoef_per, ng1d, ngnorm
+      use periodic, only: ngvec
+      use periodic, only: np, vcell
+      use periodic, only: vcell_sim, znuc2_sum, znuc_sum
       implicit real*8(a-h,o-z)
 
 
@@ -1854,18 +1853,18 @@ c-----------------------------------------------------------------------
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, iwctype, ncent
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+      use const, only: nelec, ipr
+      use ewald, only: b_coul, y_coul
 
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
-      use pseudo, only: lpot, nloc, vps, vpso
+      use periodic, only: cutr, glatt
+      use periodic, only: igmult, igvec
+      use periodic, only: isrange, ncoef_per, ng1d, ngnorm
+      use periodic, only: ngvec
+      use periodic, only: np
+      use periodic, only: znuc_sum
+      use pseudo, only: lpot, nloc
 
       implicit real*8(a-h,o-z)
 
@@ -1934,15 +1933,14 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
+      use const, only: nelec, ipr
+      use ewald, only: b_coul_sim, y_coul_sim
 
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
+      use periodic, only: cutr_sim
+      use periodic, only: glatt_sim, igmult_sim, igvec_sim
+      use periodic, only: ncoef_per, ng1d_sim
+      use periodic, only: ngnorm_sim, ngvec_sim
+      use periodic, only: np
       implicit real*8(a-h,o-z)
 
 

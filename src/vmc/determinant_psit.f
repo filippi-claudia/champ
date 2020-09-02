@@ -1,6 +1,5 @@
       subroutine determinant_psit(determ,istate)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use dets, only: cdet, ndet
       use wfsec, only: iwf
 

@@ -1,8 +1,8 @@
       subroutine cuspexact4(iprin,iadiag)
 c Written by Cyrus Umrigar
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use jaspar3, only: a, b, c, fck, nord, scalek
-      use jaspar4, only: a4, norda, nordb, nordc
+      use atom, only: nctype
+      use jaspar3, only: a, c
+      use jaspar4, only: nordc
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'

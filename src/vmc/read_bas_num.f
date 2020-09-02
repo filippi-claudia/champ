@@ -1,15 +1,15 @@
       subroutine read_bas_num(iwf)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, nctype
 c Written by Claudia Filippi
 c Modified by F. Schautz to use fancy file names
 c Reads in localized orbitals on a radial grid
 
-      use ghostatom, only: newghostype, nghostcent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use ghostatom, only: newghostype
+      use const, only: ipr
+      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
 
       use numexp, only: ae, ce
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: nloc
 
       implicit real*8(a-h,o-z)
 

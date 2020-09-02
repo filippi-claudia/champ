@@ -2,26 +2,26 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use atom, only: ncent
+      use const, only: nelec
+      use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
-      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: deltot, istrech, nforce
+      use estsum, only: acc
+      use forcepar, only: deltot, nforce
       use forcest, only: fcm2, fcum
-      use forcewt, only: wcum, wsum
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-      use header, only: date, title
-      use optwf_corsam, only: add_diag_tmp, energy, energy_err, force, force_err
-      use sa_weights, only: iweight, nweight, weights
-      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use forcewt, only: wcum
+      use grdntspar, only: igrdtype, ngradnts
+      use header, only: title
+      use optwf_corsam, only: energy, energy_err, force, force_err
+      use sa_weights, only: weights
+      use step, only: rprob, suc, try
       use tmpnode, only: distance_node_sum
       use contr3, only: mode
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use contrl_per, only: iperiodic,ibasis
+      use contrl, only: nblk, nstep
+      use contrl_per, only: iperiodic
 
       implicit real*8(a-h,o-z)
 

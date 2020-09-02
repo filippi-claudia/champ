@@ -1,10 +1,10 @@
       subroutine pot_local(pe)
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use ghostatom, only: newghostype, nghostcent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use contrl_per, only: iperiodic, ibasis
+      use atom, only: znuc, pecent, iwctype, ncent
+      use ghostatom, only: nghostcent
+      use const, only: nelec, ipr
+      use contrl_per, only: iperiodic
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: nloc
 
       implicit real*8(a-h,o-z)
 

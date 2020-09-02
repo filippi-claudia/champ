@@ -12,13 +12,12 @@ c          coefficient power exponent
 c
 c NOTE: as usual power n means r**(n-2)
 c
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use atom, only: nctype
       use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot
 
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use qua, only: nquad, wq, xq0, yq0, zq0
 
       implicit real*8(a-h,o-z)
 
@@ -129,11 +128,11 @@ c-----------------------------------------------------------------------
 c compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(rvec_en,r_en,iel)
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, iwctype, ncent
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot, vps
 
-      use da_pseudo, only: da_nonloc, da_pecent, da_vps
+      use da_pseudo, only: da_vps
 
       implicit real*8(a-h,o-z)
 

@@ -3,19 +3,18 @@ c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt rout
 c routine to calculate the values of the basis functions and their derivatives
 c vgl -> value, gradient, laplacian
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use ghostatom, only: newghostype, nghostcent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use atom, only: iwctype, ncent
+      use ghostatom, only: nghostcent
+      use const, only: pi, nelec
+      use numbas, only: iwrwf, nrbas, numr
 
       use numbas1, only: iwlbas, nbastyp
-      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
-     &phin
-      use wfsec, only: iwf, iwftype, nwftype
+      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_nbasis
+      use phifun, only: phin
+      use wfsec, only: iwf
       use force_analy, only: iforce_analy
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
+      use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
+      use basis, only: n4s, n4p
 
       implicit real*8(a-h,o-z)
 
@@ -501,8 +500,8 @@ c-------------------------------------------------------------------
 c-------------------------------------------------------------------
       subroutine n0_inc(l,k,ic)
 
-      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
-     &phin
+      use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
+      use phifun, only: phin
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'

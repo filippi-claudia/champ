@@ -3,14 +3,14 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_hs(nparm,sr_adiag)
 c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use mpiconf, only: idtask, nproc
-      use optwf_func, only: ifunc_omega, omega, omega_hes
-      use sa_weights, only: iweight, nweight, weights
+      use csfs, only: nstates
+      use mpiconf, only: idtask
+      use optwf_func, only: ifunc_omega, omega
+      use sa_weights, only: weights
       use sr_index, only: jelo, jelo2, jelohfj
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
-      use optorb_cblock, only: norbterm, norbprim 
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
+      use sr_mat_n, only: sr_o, wtg, obs_tot
+      use optorb_cblock, only: norbterm
 
       implicit real*8(a-h,o-z)
 
@@ -210,8 +210,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine pcg(n,b,x,i,imax,imod,eps)
 c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
-      use mpiconf, only: idtask, nproc
-      use optorb_cblock, only: norbterm, norbprim
+      use mpiconf, only: idtask
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
@@ -278,9 +277,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine asolve(n,b,x)
 c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
-      use optorb_cblock, only: norbterm, norbprim
+      use sr_mat_n, only: s_ii_inv
       implicit real*8(a-h,o-z)
 
       include 'sr.h'
@@ -301,14 +298,14 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine atimes_n(n,z,r)
 c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
       use optwf_func, only: ifunc_omega, omega, omega_hes
-      use sa_weights, only: iweight, nweight, weights
+      use sa_weights, only: weights
       use sr_index, only: jelo, jelo2, jelohfj
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
-      use optorb_cblock, only: norbterm, norbprim
+      use sr_mat_n, only: jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
+      use sr_mat_n, only: sr_o, wtg, obs_tot
+      use optorb_cblock, only: norbterm
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
@@ -426,11 +423,10 @@ c endif idtask.eq.0
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_rescale_deltap(nparm,deltap)
 
-      use mpiconf, only: idtask, nproc
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
+      use mpiconf, only: idtask
+      use sr_mat_n, only: jefj, jfj, jhfj
+      use sr_mat_n, only: obs_tot
     
-      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -482,11 +478,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_position_bcast
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: ncent
 
-      use force_fin, only: da_energy_ave, da_energy_err
+      use force_fin, only: da_energy_ave
       use force_analy, only: iforce_analy
-      use optorb_cblock, only: norbterm, norbprim
       implicit real*8(a-h,o-z)
 
 
@@ -506,14 +501,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine forces_zvzb(nparm)
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: ncent
 
-      use force_fin, only: da_energy_ave, da_energy_err
+      use force_fin, only: da_energy_ave
       use force_mat_n, only: force_o
-      use mpiconf, only: idtask, nproc
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg, obs_tot
-      use optorb_cblock, only: norbterm, norbprim
+      use mpiconf, only: idtask
+      use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs, sr_ho
+      use sr_mat_n, only: sr_o, wtg
       implicit real*8(a-h,o-z)
 
 

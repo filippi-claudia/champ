@@ -5,16 +5,15 @@ c isortg could be used to map g-vectors from iv to ig and
 c isortk could be used to map k-vectors.
 c At present it is assumed that both g- and k-vectors are in the correct order.
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
-      use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+      use const, only: nelec, ipr
+      use periodic, only: glatt
+      use periodic, only: glatt_sim, gnorm, gvec, igmult, igvec
+      use periodic, only: ireal_imag, k_inv, kvec, nband, ng1d, ng1d_sim, ngnorm_orb
+      use periodic, only: ngvec_orb, nkvec
+      use periodic, only: rknorm, rkvec, rkvec_shift
+      use pworbital, only: c_im, c_ip, c_rm, c_rp, isortg, isortk, ngorb
 
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       implicit real*8(a-h,o-z)
 
 
@@ -191,16 +190,15 @@ c isortg could be used to map g-vectors from iv to ig and
 c isortk could be used to map k-vectors.
 c At present it is assumed that both g- and k-vectors are in the correct order.
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt,
-     &glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb,
-     &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
-     &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     &vcell_sim, znuc2_sum, znuc_sum
-      use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+      use const, only: nelec, ipr
+      use periodic, only: glatt
+      use periodic, only: glatt_sim, gnorm, gvec, igmult, igvec
+      use periodic, only: ireal_imag, k_inv, kvec, nband, ng1d, ng1d_sim, ngnorm_orb
+      use periodic, only: ngvec_orb, nkvec
+      use periodic, only: rknorm, rkvec, rkvec_shift
+      use pworbital, only: c_im, c_ip, c_rm, c_rp, isortg, isortk, ngorb
 
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       implicit real*8(a-h,o-z)
 
 

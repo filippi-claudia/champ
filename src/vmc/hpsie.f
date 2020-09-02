@@ -1,15 +1,12 @@
       subroutine psie(iel,coord,psid,psij,ipass,iflag)
 c Written by Claudia Filippi by modifying hpsi
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use estpsi, only: apsi, aref, detref
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use wfsec, only: iwf, iwftype, nwftype
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
-      use contr3, only: mode
-      use velocity_jastrow, only: vj, vjn
+      use csfs, only: nstates
+      use estpsi, only: apsi, aref
+      use multidet, only: kref
+      use wfsec, only: iwf, iwftype
+      use contr2, only: ianalyt_lap
+      use velocity_jastrow, only: vjn
 
       implicit real*8(a-h,o-z)
 

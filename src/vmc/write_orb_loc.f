@@ -4,14 +4,14 @@ c Reads in localized orbitals, in either
 c Modified by A. Scemama (printing in a GAMESS-like format)
 c 1) a slater basis
 c 2) a gaussian basis
-      use atom, only:  znuc, cent, pecent, iwctype, nctype, ncent
-      use ghostatom, only: newghostype, nghostcent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use atom, only: znuc, iwctype, nctype, ncent
+      use ghostatom, only: newghostype
+      use const, only: nelec
+      use numbas, only: numr
       use coefs, only: coef, nbasis, norb
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
+      use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
+      use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
 
       implicit real*8(a-h,o-z)
 

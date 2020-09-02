@@ -1,13 +1,12 @@
       subroutine distances(iel,x)
 c Written by Cyrus Umrigar
 c calculate interparticle distances
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use ghostatom, only: newghostype, nghostcent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use atom, only: cent, ncent
+      use ghostatom, only: nghostcent
+      use const, only: nelec
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
-      use contrl_per, only:  iperiodic,ibasis
+      use contrl_per, only: iperiodic
 
-      use pseudo, only: lpot, nloc, vps, vpso
 
       implicit real*8(a-h,o-z)
 
@@ -102,9 +101,9 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c restore interparticle distances (called if move rejected)
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use ghostatom, only: newghostype, nghostcent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use atom, only: ncent
+      use ghostatom, only: nghostcent
+      use const, only: nelec
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       implicit real*8(a-h,o-z)
 

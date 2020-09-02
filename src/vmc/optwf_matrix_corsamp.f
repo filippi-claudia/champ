@@ -1,16 +1,15 @@
       subroutine optwf_matrix_corsamp
 c written by Claudia Filippi
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use forcepar, only: deltot, istrech, nforce
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use forcepar, only: nforce
+      use numbas, only: numr
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: add_diag, add_diag_tmp, energy, energy_err, force, force_err
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use wfsec, only: iwf, iwftype, nwftype
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
+      use wfsec, only: iwftype, nwftype
+      use contrl, only: idump, irstar, isite, nblk
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -540,8 +539,7 @@ c Always increase nblk by a factor of 2 every other iteration
 c-----------------------------------------------------------------------
       subroutine quad_min
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: add_diag, add_diag_tmp, energy, energy_err, force, force_err
+      use optwf_corsam, only: add_diag, energy, force, force_err
       implicit real*8(a-h,o-z)
 
 
@@ -631,13 +629,13 @@ c Solve linear equations
 c-----------------------------------------------------------------------
       subroutine combine_derivatives
 
-      use gradhess_ci, only: grad_ci, h_ci, s_ci
-      use gradhess_jas, only: grad_jas, h_jas, s_jas
+      use gradhess_ci, only: h_ci, s_ci
+      use gradhess_jas, only: h_jas, s_jas
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_parms, only: nparmj
       implicit real*8(a-h,o-z)
 
 

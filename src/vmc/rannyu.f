@@ -2,7 +2,7 @@
 c NYU linear congruential random number generator.
 c Uses 48 bits, rather than the usual 32 bits.
 
-      use rnyucm, only: ll, mm
+      use rnyucm, only: ll
       implicit real*8(a-h,o-z)
 
       integer iseed(4)
@@ -63,7 +63,7 @@ c     Therefore use original verion of code instead of this one.
 c-----------------------------------------------------------------------
 
       subroutine savern(iseed)
-      use rnyucm, only: ll, mm
+      use rnyucm, only: ll
       implicit real*8(a-h,o-z)
 
       integer iseed(4)

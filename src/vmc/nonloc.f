@@ -1,25 +1,20 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use da_energy_now, only: da_energy, da_psi
-      use da_orbval, only: da_d2orb, da_dorb, da_orb
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
-      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use atom, only: iwctype, ncent
+      use const, only: nelec, ipr
+      use elec, only: nup
+      use jaso, only: fso
+      use optwf_contrl, only: ioptjas
+      use optwf_parms, only: nparmj
       use Bloc_dj, only: b_dj
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       use contr3, only: mode
-      use Bloc, only: b, tildem
-      use contrl_per, only: iperiodic,ibasis
+      use Bloc, only: b
       use force_analy, only: iforce_analy
-      use pseudo, only: lpot, nloc, vps, vpso
-      use b_tmove , only: b_t,iskip
-      use da_pseudo, only: da_nonloc, da_pecent, da_vps
+      use pseudo, only: lpot, vps
+      use b_tmove, only: b_t, iskip
 
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use qua, only: nquad, wq, xq, yq, zq
 
       implicit real*8(a-h,o-z)
 
@@ -236,14 +231,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: cent, ncent
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use elec, only: ndn, nup
-      use contrl_per, only: iperiodic,ibasis
+      use contrl_per, only: iperiodic
 
       use force_analy, only: iforce_analy
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use qua, only: xq, yq, zq
 
       implicit real*8(a-h,o-z)
 
@@ -303,16 +296,14 @@ c-----------------------------------------------------------------------
       subroutine orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: iwctype, ncent
 
-      use elec, only: ndn, nup
-      use numbas1, only: iwlbas, nbastyp
-      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
-     &phin
-      use wfsec, only: iwf, iwftype, nwftype
+      use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
+      use phifun, only: phin
+      use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
-      use contrl_per, only: iperiodic,ibasis
-      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+      use contrl_per, only: iperiodic
+      use grid3dflag, only: i3dlagorb, i3dsplorb
 
       implicit real*8(a-h,o-z)
 
@@ -389,9 +380,8 @@ c-----------------------------------------------------------------------
       subroutine nonlocd(iel,orb,detu,detd,slmui,slmdi,ratio)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
-      use dets, only: cdet, ndet
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: kref
 
       use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
@@ -433,17 +423,15 @@ c-----------------------------------------------------------------------
       subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: iwctype, ncent
 
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use da_jastrow4val, only: da_d2j, da_j, da_vj
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
+      use jaspar, only: sspinn, is
+      use const, only: nelec
+      use da_jastrow4val, only: da_j
+      use elec, only: nup
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
-      use contrl_per, only: iperiodic,ibasis
+      use contr2, only: isc
+      use contrl_per, only: iperiodic
 
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
@@ -554,18 +542,16 @@ c-----------------------------------------------------------------------
       subroutine compute_da_bnl(i,ic,ict,iq,r_en_sav,rvec_en_sav,costh,
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: ncent
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use elec, only: ndn, nup
-      use Bloc_da, only: b_da, db
-      use coefs, only: coef, nbasis, norb
+      use Bloc_da, only: db
+      use coefs, only: norb
       use force_analy, only: iforce_analy
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot, vps
 
-      use da_pseudo, only: da_nonloc, da_pecent, da_vps
+      use da_pseudo, only: da_vps
 
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use qua, only: wq, xq, yq, zq
 
       implicit real*8(a-h,o-z)
 

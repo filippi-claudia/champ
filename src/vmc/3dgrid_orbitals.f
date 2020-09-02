@@ -7,16 +7,15 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       use ghostatom, only: newghostype, nghostcent
       use ghostatom, only: newghostype, nghostcent
-      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
-     &phin
-      use wfsec, only: iwf, iwftype, nwftype
+      use phifun, only: d2phin, dphin
+      use phifun, only: phin
+      use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use coefs, only: coef, nbasis, norb
       use phifun, only: d2phin, dphin, phin
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use grid3d_param, only: endpt, nstep3d, origin
 
       implicit real*8(a-h,o-z)
 

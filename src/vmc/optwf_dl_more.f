@@ -1,8 +1,7 @@
       subroutine dl_more(iter,nparm,dl_momentum,dl_EG_sq,dl_EG,deltap,parameters)
 
-      use mpiconf, only: idtask, nproc
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho,
-     &sr_o, wtg
+      use mpiconf, only: idtask
+      use sr_mat_n, only: h_sr
 
       implicit real*8(a-h,o-z)
 

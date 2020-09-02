@@ -10,13 +10,13 @@ c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
 
 c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use atom, only: znuc, cent, pecent, iwctype, ncent
+      use const, only: nelec
       use force_dmc, only: itausec, nwprod
       use forcepar, only: deltot, istrech, nforce
       use forcestr, only: delc
       use pcm_force, only: sch_s
-      use wfsec, only: iwf, iwftype, nwftype
+      use wfsec, only: iwftype
       use contr3, only: mode
       implicit real*8(a-h,o-z)
 

@@ -1,11 +1,10 @@
       subroutine optx_jas_ci_sum(p,q,enew,eold)
 
-      use derivjas, only: d2g, g, go, gvalue
-      use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+      use derivjas, only: gvalue
+      use gradhessjo, only: denergy_old, gvalue_old
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use bparm, only: nocuspb, nspin2b
+      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_parms, only: nparmj
       use deloc_dj_m, only: denergy
 
       implicit real*8(a-h,o-z)
@@ -32,8 +31,8 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_init
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_parms, only: nparmj
       implicit real*8(a-h,o-z)
 
 
@@ -62,8 +61,8 @@ c-----------------------------------------------------------------------
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_parms, only: nparmj
       implicit real*8(a-h,o-z)
 
 
@@ -86,8 +85,8 @@ c-----------------------------------------------------------------------
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_parms, only: nparmj
       implicit real*8(a-h,o-z)
 
 
@@ -107,26 +106,19 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_fin(passes,eave)
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: ccsf, ncsf
 
-      use dets, only: cdet, ndet
-      use gradhess_ci, only: grad_ci, h_ci, s_ci
-      use gradhess_jas, only: grad_jas, h_jas, s_jas
+      use dets, only: cdet
+      use gradhess_ci, only: grad_ci
+      use gradhess_jas, only: grad_jas
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
-      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use bparm, only: nocuspb, nspin2b
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
-      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
-     &e2
+      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_parms, only: nparmj
+      use gradhessj, only: de, dj, dj_e
 
-      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
       implicit real*8(a-h,o-z)
 
 

@@ -36,7 +36,6 @@ c----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------
       subroutine efficiency_prt(passes)
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'

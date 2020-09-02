@@ -1,21 +1,20 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use derivjas, only: d2g, g, go, gvalue
+      use const, only: hb, nelec, ipr
+      use csfs, only: nstates
+      use derivjas, only: d2g, g
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use optwf_contrl, only: ioptjas
+      use optwf_parms, only: nparmj
       use scratch, only: denergy_det, dtildem
       use Bloc, only: xmat
       use Bloc_dj, only: b_dj
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: norb
       use deloc_dj_m, only: denergy
-      use multimat, only: aa, wfmat
+      use multimat, only: wfmat
 
-      use pseudo, only: lpot, nloc, vps, vpso
 
       implicit real*8(a-h,o-z)
 
@@ -156,24 +155,24 @@ c-----------------------------------------------------------------------
       subroutine optjas_sum(wtg_new,wtg_old,enew,eold,iflag)
 c Written by Claudia Filippi
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: nctype
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use derivjas, only: d2g, g, go, gvalue
+      use derivjas, only: gvalue
 
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
 
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
-      use jaspointer, only: npoint, npointa
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
-      use bparm, only: nocuspb, nspin2b
+      use jaspointer, only: npointa
+      use optwf_contrl, only: ioptjas
+      use optwf_nparmj, only: nparma, nparmb
+      use optwf_parms, only: nparmj
+      use optwf_wjas, only: iwjasa, iwjasb
+      use bparm, only: nspin2b
       use deloc_dj_m, only: denergy
-      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
-     &e2
+      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
+      use gradhessj, only: e2
       implicit real*8(a-h,o-z)
 
 
@@ -347,15 +346,14 @@ c-----------------------------------------------------------------------
       subroutine optjas_cum(wsum,enow)
 c Written by Claudia Filippi
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
-     &e2
-      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
+      use optwf_contrl, only: ioptjas
+      use optwf_parms, only: nparmj
+      use gradhessj, only: dj, dj_e
+      use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
       implicit real*8(a-h,o-z)
 
 
@@ -413,18 +411,18 @@ c-----------------------------------------------------------------------
       subroutine optjas_save
 c Written by Claudia Filippi
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: nctype
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use derivjas, only: d2g, g, go, gvalue
+      use derivjas, only: gvalue
 
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
 
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use bparm, only: nocuspb, nspin2b
+      use optwf_contrl, only: ioptjas
+      use optwf_parms, only: nparmj
+      use bparm, only: nspin2b
       use deloc_dj_m, only: denergy
       implicit real*8(a-h,o-z)
 
@@ -456,15 +454,15 @@ c-----------------------------------------------------------------------
       subroutine optjas_init
 c Written by Claudia Filippi
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
-     &e2
-      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
+      use optwf_contrl, only: ioptjas
+      use optwf_parms, only: nparmj
+      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
+      use gradhessj, only: e2
+      use gradjerrb, only: ngrad_jas_bcum
       implicit real*8(a-h,o-z)
 
 
@@ -514,15 +512,15 @@ c-----------------------------------------------------------------------
       subroutine optjas_dump(iu)
 c Written by Claudia Filippi
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+      use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
-     &e2
-      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
+      use optwf_contrl, only: ioptjas
+      use optwf_parms, only: nparmj
+      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
+      use gradhessj, only: e2
+      use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
       implicit real*8(a-h,o-z)
 
 
@@ -555,16 +553,16 @@ c-----------------------------------------------------------------------
       subroutine optjas_rstrt(iu)
 c Written by Claudia Filippi
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+      use gradjerr, only: dj_e_save, dj_save, grad_jas_bcm2, grad_jas_bcum
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
-     &e2
+      use optwf_contrl, only: ioptjas
+      use optwf_parms, only: nparmj
+      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
+      use gradhessj, only: e2
 
-      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
+      use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
       implicit real*8(a-h,o-z)
 
 
@@ -600,23 +598,17 @@ c-----------------------------------------------------------------------
       subroutine optjas_fin(wcum,ecum)
 c Written by Claudia Filippi
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
 
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
       use gradhess_jas, only: grad_jas, h_jas, s_jas
-      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+      use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use sa_weights, only: iweight, nweight, weights
-      use bparm, only: nocuspb, nspin2b
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
-      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2,
-     &e2
-      use gradjerrb, only: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
+      use optwf_contrl, only: ioptjas
+      use optwf_parms, only: nparmj
+      use sa_weights, only: weights
+      use gradhessj, only: d2j, d2j_e, de, dj, dj_de, dj_dj, dj_dj_e, dj_e
+      use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
       implicit real*8(a-h,o-z)
 
 

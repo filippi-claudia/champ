@@ -18,16 +18,16 @@ c         =2, exponential,         r(i)=r0_ps*exp((i-1)*h_ps)
 c         =3, shifted exponential, r(i)=r0_ps*(exp((i-1)*h_ps)-1)
 c The prefered grid is 3.
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+      use atom, only: znuc, nctype
+      use const, only: ipr
       use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
-      use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
+      use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, vpseudo
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot
 
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use grid3d_param, only: origin
       implicit real*8(a-h,o-z)
 
 
@@ -276,11 +276,10 @@ c-----------------------------------------------------------------------
       subroutine getvps_champ(r_en,iel)
 c compute pseudopotential for electron iel
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
-      use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
+      use atom, only: znuc, iwctype, ncent
+      use pseudo_champ, only: rmax_coul, rmax_nloc
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot, vps
 
       implicit real*8(a-h,o-z)
 
@@ -330,11 +329,11 @@ c Note: I check if r < rmax_coul(ict) because this routine is called from
 c ewald without going through getvps_tm.
 c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc
       use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
-      use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, rmax_ps, vpseudo
+      use pseudo_tm, only: arg_ps, d2pot, r0_ps, vpseudo
 
-      use pseudo, only: lpot, nloc, vps, vpso
+      use pseudo, only: lpot
 
       implicit real*8(a-h,o-z)
 

@@ -4,12 +4,12 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use ghostatom, only: newghostype, nghostcent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
-     &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
-     &vnew, vold, xnew, xold
+      use const, only: hb, delta, nelec
+      use config, only: eold, nearesto, psi2o
+      use config, only: psido, psijo, rmino, rvmino, tjfo
+      use config, only: vold, xnew, xold
       use jaspar1, only: cjas1, cjas2
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
       use denupdn, only: rprobdn, rprobup
       use dets, only: cdet, ndet
@@ -17,20 +17,20 @@ c job where it left off
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
-      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: deltot, istrech, nforce
+      use estsum, only: acc, esum, pesum, r2sum, tjfsum, tpbsum
+      use forcepar, only: nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptorb
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
-      use wfsec, only: iwf, iwftype, nwftype
+      use wfsec, only: iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use const2, only: deltar, deltat
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+      use contrl, only: nstep
+      use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
+      use basis, only: n4s, n4p
+      use basis, only: nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
 
       implicit real*8(a-h,o-z)
 

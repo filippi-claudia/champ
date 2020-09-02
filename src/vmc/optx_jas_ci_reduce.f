@@ -3,8 +3,8 @@ c Written by Claudia Filippi
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
+      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_parms, only: nparmj
       implicit real*8(a-h,o-z)
 
 

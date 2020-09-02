@@ -1,16 +1,13 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use multidet, only: ivirt, kref
+      use optwf_contrl, only: ioptorb
       use Bloc, only: b, tildem
-      use dorb_m, only: iworbd
-      use multimat, only: aa, wfmat
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use multimat, only: aa
+      use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
-      use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
+      use orb_mat_033, only: ideriv_ref, irepcol_ref
 
       implicit real*8(a-h,o-z)
 
@@ -84,12 +81,11 @@ c ns_current reset in optorb_sum
 c-----------------------------------------------------------------------
       subroutine optorb_compute(psid,eloc,deloc)
 
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: ioptorb
       use zcompact, only: aaz, dzmat, emz, zmat
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       implicit real*8(a-h,o-z)
 
@@ -122,14 +118,14 @@ c     enddo
       end
 c-----------------------------------------------------------------------
       subroutine optorb_sum(wtg_new,wtg_old,enew,eold,iflag)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use optwf_contrl, only: ioptorb
+      use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
-      use orb_mat_003, only: orb_o_cum, orb_o_sum
-      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use orb_mat_003, only: orb_o_sum
+      use orb_mat_004, only: orb_oe_sum
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
@@ -235,10 +231,10 @@ c     ns_current=0
       end
 c-----------------------------------------------------------------------
       subroutine optorb_cum(wsum,esum)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use optwf_contrl, only: ioptorb
+      use optorb_cblock, only: norbterm, idump_blockav
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
       use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
@@ -300,10 +296,10 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine optorb_init(iflg)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use optwf_contrl, only: ioptorb
+      use optorb_cblock, only: norbterm
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
       use orb_mat_005, only: orb_ho_cum
@@ -382,10 +378,10 @@ C$ iflg = 0: init *cum, *cm2 as well
       end
 c-----------------------------------------------------------------------
       subroutine optorb_save
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use optwf_contrl, only: ioptorb
+      use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
 
@@ -410,10 +406,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_restore
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use optwf_contrl, only: ioptorb
+      use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
 
@@ -440,11 +436,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
-      use orb_mat_003, only: orb_o_cum, orb_o_sum
-      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
-      use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
+      use optwf_contrl, only: ioptorb
+      use optorb_cblock, only: norbterm
+      use orb_mat_003, only: orb_o_cum
+      use orb_mat_004, only: orb_oe_cum
+      use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
 
       implicit real*8(a-h,o-z)
 
@@ -470,16 +466,16 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_dump(iu)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
-      use orb_mat_003, only: orb_o_cum, orb_o_sum
-      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use optwf_contrl, only: ioptorb
+      use optorb_cblock, only: norbterm, norbprim
+      use orb_mat_003, only: orb_o_cum
+      use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
-      use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
+      use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
 
       implicit real*8(a-h,o-z)
@@ -513,15 +509,15 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_rstrt(iu)
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
-      use orb_mat_003, only: orb_o_cum, orb_o_sum
-      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use csfs, only: nstates
+      use optwf_contrl, only: ioptorb
+      use optorb_cblock, only: norbterm, norbprim
+      use orb_mat_003, only: orb_o_cum
+      use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
-      use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
+      use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
 
       implicit real*8(a-h,o-z)
@@ -566,12 +562,12 @@ c nreduced has to be set since it will only be known for non-continuation runs
       end
 c-----------------------------------------------------------------------
       subroutine optorb_fin(wcum,ecum)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmd, nparme, nparmg, nparmj, nparml, nparms
-      use sa_weights, only: iweight, nweight, weights
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use optwf_contrl, only: ioptorb
+      use optwf_parms, only: nparmd, nparmj
+      use sa_weights, only: weights
+      use optorb_cblock, only: idump_blockav
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
@@ -744,7 +740,6 @@ c Approximation: diagonal perturbative approach
       end
 c-----------------------------------------------------------------------
       subroutine detratio_col(nel,orb,icol,sinvt,ratio,isltnew)
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 c values of new orbital
       dimension orb(nel)
@@ -782,17 +777,16 @@ c replaced column
       end
 c-----------------------------------------------------------------------
       subroutine optorb_define
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use dets, only: cdet, ndet
+      use const, only: nelec
+      use dets, only: ndet
       use elec, only: ndn, nup
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: kref
 
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
-      use coefs, only: coef, nbasis, norb
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use coefs, only: norb
       use dorb_m, only: iworbd
-      use optorb, only: dmat_diag, irrep, orb_energy
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
+      use optorb, only: irrep
+      use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
 
@@ -995,8 +989,6 @@ c-----------------------------------------------------------------------
       subroutine check_orbitals
 
 c Do not compute virtual orbitals during single-electron move
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optorb_cblock, only: norbterm, norbprim, idump_blockav
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'

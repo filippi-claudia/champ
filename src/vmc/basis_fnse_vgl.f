@@ -1,18 +1,18 @@
       subroutine basis_fnse_vgl(k,rvec_en,r_en)
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt routine
 c routine to calculate the values of the basis functions and their derivatives
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: iwctype, ncent
 
-      use ghostatom, only: newghostype, nghostcent
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use ghostatom, only: nghostcent
+      use const, only: pi
+      use numbas, only: iwrwf, nrbas, numr
 
-      use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis,
-     &phin
-      use wfsec, only: iwf, iwftype, nwftype
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+      use phifun, only: d2phin, dphin, n0_nbasis
+      use phifun, only: phin
+      use wfsec, only: iwf
+      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
+      use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
+      use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
 
       implicit real*8(a-h,o-z)
 

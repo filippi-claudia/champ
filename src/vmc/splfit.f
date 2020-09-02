@@ -3,7 +3,7 @@ c Written by Claudia Filippi
 c get spline_fit at r of basis fn irb of center ic and force iwf
 c 1st and 2nd derivs also calculated if ider=1.
 
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use numbas, only: arg, d2rwf, igrid, nr, r0, rwf
 
       use numexp, only: ae, ce
       implicit real*8(a-h,o-z)

@@ -5,7 +5,7 @@ c...........................................................
 c     read data for pcm calculations
 c     comput nuclei-qpol interactions (penups,penupv)
 c...........................................................
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, iwctype, ncent
       implicit real*8(a-h,o-z)
       include 'vmc.h' 
       include 'pcm.h'
@@ -248,7 +248,7 @@ c     3) for the accepted configuration, the normal component
 c        of the electron field  at the point on the surface is computed 
 C     ***************************************************************
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use pcm_hpsi, only: enfpcm, pepcms, pepcmv, qopcm
+      use pcm_hpsi, only: enfpcm, qopcm
       use pcm_xv_new, only: xv_new
       implicit real*8(a-h,o-z)
 
@@ -407,7 +407,7 @@ c..............................................................
 c............................................................
 c     compute penupv of volume charges 
 c............................................................
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, iwctype, ncent
       IMPLICIT REAL*8 (A-H,O-Z)
       include 'vmc.h' 
       include 'pcm.h'
@@ -781,7 +781,7 @@ C     ***************************************************************
 c     This subroutine computes the coordinates of point charges 
 c     on the cavity surface
 C     ***************************************************************
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: cent, iwctype, ncent
       use spc, only: nsf, num
       use spc1, only: csf, qsf, rsf
       use spc2, only: nxyz, sfxyz, usf
@@ -1045,7 +1045,7 @@ c..................................................
 
       subroutine prep
       use spc, only: nsf, num
-      use spc1, only: csf, qsf, rsf
+      use spc1, only: csf, rsf
       implicit real*8(a-h,o-z)
 
 
@@ -1160,7 +1160,7 @@ c     f1=r0*dsin(theta)
 
       subroutine prep1
       use spc, only: nsf, num
-      use spc1, only: csf, qsf, rsf
+      use spc1, only: csf, rsf
       implicit real*8(a-h,o-z)
 
 

@@ -10,25 +10,20 @@ c Currently this program contains
 c 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater basis states.
 c and sa, pa, da asymptotic functions
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use jaspar, only: nspin1, nspin2, sspin, sspinn, is
-      use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-      use config, only: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o,
-     &psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo,
-     &vnew, vold, xnew, xold
+      use jaspar, only: is
+      use const, only: pi, hb, delta, deltai, fbias, nelec, imetro
+      use config, only: enew, eold, pen, peo, psi2n, psi2o
+      use config, only: psido, psijo, tjfn, tjfo
+      use config, only: vnew, vold, xnew, xold
       use jaspar1, only: cjas1, cjas2
       use elec, only: ndn, nup
-      use forcepar, only: deltot, istrech, nforce
-      use jaspar2, only: a1, a2
-      use jaspar3, only: a, b, c, fck, nord, scalek
-      use jaspar4, only: a4, norda, nordb, nordc
-      use wfsec, only: iwf, iwftype, nwftype
-      use coefs, only: coef, nbasis, norb
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use pseudo, only: lpot, nloc, vps, vpso
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
+      use forcepar, only: nforce
+      use jaspar2, only: a1
+      use jaspar3, only: a, c
+      use wfsec, only: iwftype, nwftype
+      use coefs, only: coef, nbasis
+      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
+      use pseudo, only: nloc
 
       implicit real*8(a-h,o-z)
 
