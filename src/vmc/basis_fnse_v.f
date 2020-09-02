@@ -4,12 +4,11 @@ c routine to calculate basis functions for electron k
       use atom, only: iwctype, ncent
       use ghostatom, only: nghostcent
       use numbas, only: iwrwf, nrbas, numr
-
       use numbas1, only: iwlbas, nbastyp
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
 
       implicit real*8(a-h,o-z)
 
@@ -19,9 +18,6 @@ c routine to calculate basis functions for electron k
       include 'pseudo.h'
 
       parameter (one=1.d0,three=3.d0,half=0.5d0)
-
-
-
 
       dimension wfv(4,MRWF)
       dimension xc(3),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)

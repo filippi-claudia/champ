@@ -667,27 +667,16 @@ c-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
 
       use atom, only: nctype
-
       use jaspar3, only: a, b, c, scalek
-
       use jaspar4, only: a4
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
+      
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
-
-
-
 
       dimension dparm(*)
 
@@ -983,7 +972,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use sr_mat_n, only: elocal, nconf_n, sr_ho
       use sr_mat_n, only: sr_o, wtg
       use deloc_dj_m, only: denergy
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o
 

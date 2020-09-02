@@ -479,12 +479,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine compute_position_bcast
 
       use atom, only: ncent
-
       use force_fin, only: da_energy_ave
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'mpif.h'
       include 'vmc.h'
@@ -508,10 +506,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use mpiconf, only: idtask
       use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs, sr_ho
       use sr_mat_n, only: sr_o, wtg
+
       implicit real*8(a-h,o-z)
-
-
-
 
 
       include 'mpif.h'
@@ -519,10 +515,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-
-
- 
-
 
       parameter (MTEST=1500)
       dimension cloc(MTEST,MTEST),c(MTEST,MTEST),oloc(MPARM),o(MPARM),p(MPARM),tmp(MPARM)

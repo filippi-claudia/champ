@@ -530,6 +530,7 @@ c -----------------------------------------------------------------------
 
       use grdntsmv, only: igrdmv
       use zmatrix, only: czcart, czint, czcart_ref, izcmat
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
 
       implicit real*8(a-h,o-z)
 

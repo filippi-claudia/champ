@@ -10,10 +10,15 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use coefs, only: norb
       use contr3, only: mode
       use Bloc, only: b
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, vps
       use b_tmove, only: b_t, iskip
-
+      use Bloc, only: b, tildem
+      use contrl_per, only: iperiodic,ibasis
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use pseudo, only: lpot, nloc, vps, vpso
+      use b_tmove , only: b_t,iskip
+      use da_pseudo, only: da_nonloc, da_pecent, da_vps
       use qua, only: nquad, wq, xq, yq, zq
 
       implicit real*8(a-h,o-z)
@@ -232,15 +237,11 @@ c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
       use atom, only: cent, ncent
-
       use contrl_per, only: iperiodic
-
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use qua, only: xq, yq, zq
 
       implicit real*8(a-h,o-z)
-
-
 
       parameter (one=1.d0)
 
@@ -249,8 +250,6 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
       include 'pseudo.h'
       include 'ewald.h'
-
-
 
       dimension x(3),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),dd1(MELEC,MCENT)
@@ -433,7 +432,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contr2, only: isc
       use contrl_per, only: iperiodic
 
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
 
 
@@ -543,24 +542,14 @@ c-----------------------------------------------------------------------
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
       use atom, only: ncent
-
       use Bloc_da, only: db
       use coefs, only: norb
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, vps
-
       use da_pseudo, only: da_vps
-
       use qua, only: wq, xq, yq, zq
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
 
       parameter (one=1.d0)
 
@@ -569,17 +558,9 @@ c-----------------------------------------------------------------------
       include 'mstates.h'
       include 'pseudo.h'
 
-
-
-
-
-
-
       dimension rvec_en_sav(3,MCENT),r_en_sav(MCENT)
-
       dimension orbn(MORB),dorbn(3,MORB),vjn(3)
       dimension da_orbn(3,MCENT,MORB),da_ratio_jn(3,MCENT)
-
       dimension term_radial_da_vps(3)
 
       if(iforce_analy.eq.0) return

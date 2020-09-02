@@ -3,6 +3,7 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use contrl, only: nblk
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
 
       implicit real*8(a-h,o-z)
 
@@ -12,9 +13,6 @@
       include 'force.h'
       include 'mstates.h'
       include 'sr.h'
-
-
-
 
 c vector of wave function parameters
       dimension deltap(MPARM), parameters(MPARM)

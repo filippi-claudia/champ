@@ -151,34 +151,20 @@ c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
       use atom, only: ncent
-
       use const, only: hb, nelec
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb, da_dorb
-
       use derivjas, only: g
-
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
       use Bloc_da, only: b_da
       use Bloc_dj, only: b_dj
       use coefs, only: norb
       use Bloc, only: b
-
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use velocity_jastrow, only: vj
+      
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -187,14 +173,7 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0,half=0.5d0)
 
-
-
-
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
-
-
-
 
 c compute kinetic contribution of B+Btilde to compute Eloc
       do i=1,nelec

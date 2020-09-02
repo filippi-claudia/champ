@@ -2,19 +2,13 @@
 
 
       use csfs, only: nstates
-
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use optwf_func, only: ifunc_omega, omega
       use contrl, only: nblk
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -22,8 +16,6 @@
       include 'sr.h'
 
       character*20 method_sav
-
-
 
       dimension grad(MPARM*MSTATES), grad_more(MPARM*MSTATES,5)
 

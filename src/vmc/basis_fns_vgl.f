@@ -7,12 +7,11 @@ c vgl -> value, gradient, laplacian
       use ghostatom, only: nghostcent
       use const, only: pi, nelec
       use numbas, only: iwrwf, nrbas, numr
-
       use numbas1, only: iwlbas, nbastyp
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
 

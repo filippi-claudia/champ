@@ -5,13 +5,10 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use const, only: hb, nelec, ipr
       use csfs, only: nstates
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
-
       use mmpol_hpsi, only: peQMdp, peQMq
       use multidet, only: iactv, ivirt, kref
-
       use pcm_hpsi, only: pepcms, pepcmv
       use wfsec, only: iwf, iwftype
       use ycompact, only: ymat
@@ -19,12 +16,11 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use coefs, only: norb
       use contr2, only: ianalyt_lap
       use Bloc, only: tildem
-
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: nloc
-
       use velocity_jastrow, only: vj
       use mmpol_cntrl, only: immpol
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'

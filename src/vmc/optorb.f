@@ -572,8 +572,10 @@ c-----------------------------------------------------------------------
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_030, only: orb_ecum, orb_wcum
+      use gradhess_all, only: MPARMALL, grad, h, s
 
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -582,9 +584,6 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optjas.h'
 
-      parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
-
-      common /gradhess_all/ grad(MPARMALL),h(MPARMALL,MPARMALL),s(MPARMALL,MPARMALL)
       dimension oav(MXORBOP),eoav(MXORBOP),fo(MXORBOP),foerr(MXORBOP)
       dimension wcum(*),ecum(*)
 

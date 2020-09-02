@@ -4,6 +4,7 @@
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_corsam, only: energy, energy_err, force
       use optwf_parms, only: nparmd, nparmj
+      use gradhess_all, only: MPARMALL
 
       implicit real*8(a-h,o-z)
 
@@ -14,17 +15,13 @@
       include 'optci.h'
       include 'optorb.h'
 
-      parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
-
-
+      parameter(eps=1.d-12)
 
       dimension h(mparmx,*),s(mparmx,*)
       dimension h_sav(mparmx,*),s_sav(*)
-
       dimension eig(MPARMALL),eigi(MPARMALL),seig_inv(MPARMALL)
       dimension eig_vec(MPARMALL,*),hmod(MPARMALL,MPARMALL)
       dimension isort(MPARMALL)
-
       dimension work(*)
 
       save eig_min
@@ -169,8 +166,11 @@ c       add_diag=0
       end
 c-----------------------------------------------------------------------
       subroutine regularize_geneig(n,mparmx,h,s,work,seig_valinv,hmod)
+
+      use gradhess_all, only: MPARMALL
       
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -178,7 +178,8 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optorb.h'
       include 'numbas.h'
-      parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
+
+      parameter(eps=1.d-12)
       parameter(MWORK=50*MPARMALL)
       parameter(eps_eigval=1.d-14)
       
@@ -251,7 +252,10 @@ c     write(6,*) 'elapsed time to build Hmod:',t_hmod-t_sdiag
 c-----------------------------------------------------------------------
       subroutine solve_geneig(n,mparmx,hmod,s,seig_valinv,work,eig,eigi,eig_vec)
       
+      use gradhess_all, only: MPARMALL
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
@@ -259,7 +263,8 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optorb.h'
       include 'numbas.h'
-      parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
+
+      parameter(eps=1.d-12)
       parameter(MWORK=50*MPARMALL)
       
       dimension seig_valinv(*)
@@ -310,11 +315,11 @@ c-----------------------------------------------------------------------
      &                     add_diag,energy_sav,energy_err_sav)
 
       use csfs, only: ccsf, ncsf, nstates
-
       use dets, only: cdet
       use linear_norm, only: oav
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
+      use gradhess_all, only: MPARMALL
 
       implicit real*8(a-h,o-z)
 
@@ -325,7 +330,7 @@ c-----------------------------------------------------------------------
       include 'optci.h'
       include 'optorb.h'
 
-      parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED,eps=1.d-12)
+      parameter(eps=1.d-12)
 
       dimension dparm(*)
       dimension h(mparmx,*),h_sav(mparmx,*)

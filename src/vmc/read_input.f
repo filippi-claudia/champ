@@ -63,7 +63,7 @@ c and Anthony Scemema
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use dorb_m, only: iworbd
       use contrl_per, only: iperiodic, ibasis
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: nloc
       use optorb_cblock, only: idump_blockav
       use gradjerrb, only: ngrad_jas_blocks

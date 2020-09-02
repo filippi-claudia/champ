@@ -14,7 +14,7 @@
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
 
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
 
 

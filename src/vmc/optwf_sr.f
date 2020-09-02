@@ -3,7 +3,7 @@
       use optwf_corsam, only: energy, energy_err, force
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use contrl, only: nblk
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
 
       implicit real*8(a-h,o-z)
 
@@ -11,8 +11,6 @@
       include 'force.h'
       include 'mstates.h'
       include 'sr.h'
-
-
 
       dimension grad(MPARM*MSTATES)
 

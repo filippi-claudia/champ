@@ -8,9 +8,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use const, only: nelec
       use elec, only: nup
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-
       use jaspar3, only: a, b, c, scalek
-
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, c1_jas6
       use jaspar6, only: cutjas
@@ -18,29 +16,13 @@ c Jastrow 6   must be used with one of isc=6,7
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
       use contr2, only: isc
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
-
-
-
-
-
-
-
-
+      
       parameter (half=.5d0,eps=1.d-12)
 
       dimension x(3,*),v(3,*),div_vj(*)

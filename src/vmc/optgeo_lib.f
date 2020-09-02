@@ -39,13 +39,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         use coords_int
         use atom, only: cent, ncent
-
         use force_fin, only: da_energy_ave
         use zmatrix, only: czint, izcmat
-      use force_analy, only: iforce_analy
-      implicit real*8(a-h,o-z)
-
-
+        use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+        implicit real*8(a-h,o-z)
       
         include 'vmc.h'
         include 'force.h'

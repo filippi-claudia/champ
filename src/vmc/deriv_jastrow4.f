@@ -23,7 +23,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
       use vardep, only: cdep, iwdepend, nvdepend
 
-      use force_analy, only: iforce_analy
+      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       implicit real*8(a-h,o-z)
 
 
