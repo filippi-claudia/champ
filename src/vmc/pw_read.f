@@ -72,13 +72,18 @@ c$$$      return
 c$$$      end
 c----------------------------------------------------------------------
       subroutine do_read_lattice(iu)
-      use periodic, only: rkvec_shift, rlatt, rlatt_sim
-      implicit real*8(a-h,o-z)
 
+      use periodic, only: rkvec_shift, rlatt, rlatt_sim
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'ewald.h'
-      include 'inputflags.h'
 
 
       call incpos(iu,itmp,1)

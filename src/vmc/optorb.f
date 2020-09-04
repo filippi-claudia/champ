@@ -788,6 +788,11 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 
@@ -795,7 +800,6 @@ c-----------------------------------------------------------------------
       include 'force.h'
       include 'mstates.h'
       include 'optorb.h'
-      include 'inputflags.h'
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb

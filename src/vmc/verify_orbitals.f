@@ -4,6 +4,11 @@
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
       use dorb_m, only: iworbd
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 
@@ -13,10 +18,8 @@
       include 'optorb.h'
       include 'optci.h'
       include 'mstates.h'
-      include 'inputflags.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
 
 c orbital indices in determinants of trial wave function
       ndetorb=0

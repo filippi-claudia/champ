@@ -586,6 +586,18 @@ end module contr3
    save
  end module dorb_m
 
+ module efield
+   !> Arguments: iscreen, ncharges, iefield
+ 
+   integer  :: iefield
+   integer  :: iscreen
+   integer  :: ncharges
+
+   private
+   public :: iscreen, ncharges, iefield
+   save
+ end module efield
+
  module efield_blk
    !> Arguments: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
    use precision_kinds, only: dp
@@ -597,8 +609,8 @@ end module contr3
    real(dp) :: xcharge(MCHARGES)
    real(dp) :: ycharge(MCHARGES)
    real(dp) :: zcharge(MCHARGES)
+
    private
- 
    public :: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
    save
  end module efield_blk
@@ -858,8 +870,8 @@ end module forcewt
    integer  :: nstep3d(3)
    real(dp) :: origin(3)
    real(dp) :: step3d(3)
-   private
 
+   private
    public :: nstep3d, endpt, origin, step3d
    save
  end module grid3d_param
@@ -873,8 +885,8 @@ end module forcewt
    integer  :: i3dgrid
    integer  :: i3dlagorb
    integer  :: i3dsplorb
-   private
 
+   private
    public :: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
    save
  end module grid3dflag
@@ -903,8 +915,8 @@ end module forcewt
    real(dp) :: grad(MPARMALL)
    real(dp) :: h(MPARMALL,MPARMALL)
    real(dp) :: s(MPARMALL,MPARMALL)
-   private
 
+   private
    public :: MPARMALL, grad, h, s
    save
  end module gradhess_all
@@ -1125,6 +1137,43 @@ end module forcewt
    public :: d1d2a, d1d2b, d2d2a, d2d2b 
    save
  end module ijasnonlin
+
+ module inputflags
+   !> Arguments: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+   !             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+   !             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+   !             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+   !             ihessian_zmat 
+
+   integer :: iznuc
+   integer :: igeometry 
+   integer :: ibasis_num
+   integer :: ilcao
+   integer :: iexponents                              
+   integer :: ideterminants
+   integer :: ijastrow_parameter
+   integer :: ioptorb_def
+   integer :: ilattice
+   integer :: ici_def
+   integer :: iforces
+   integer :: icsfs
+   integer :: imstates
+   integer :: igradients
+   integer :: icharge_efield
+   integer :: imultideterminants
+   integer :: ioptorb_mixvirt
+   integer :: imodify_zmat
+   integer :: izmatrix_check
+   integer :: ihessian_zmat
+
+   private
+   public :: iznuc,igeometry,ibasis_num,ilcao,iexponents                              
+   public :: ideterminants,ijastrow_parameter, ioptorb_def,ilattice
+   public :: ici_def,iforces,icsfs,imstates,igradients,icharge_efield
+   public :: imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check
+   public :: ihessian_zmat
+   save
+ end module inputflags
 
  module insout
    !> Arguments: inout, inside
@@ -1418,8 +1467,8 @@ end module forcewt
    integer  :: nchmm
    real(dp) :: rqq(MCHMM,MCHMM)
    real(dp) :: x_mmpol(3,MCHMM)
+
    private
- 
    public :: x_mmpol, nchmm, chmm, rqq
    save
  end module mmpol_parms
@@ -1677,8 +1726,8 @@ end module forcewt
 
    real(dp) :: denom(LAGSTART:LAGEND,3)
    real(dp) :: step_inv(3,3)
-   private
 
+   private
    public :: denom, step_inv
    save
 end module orbital_num_lag
@@ -1692,8 +1741,8 @@ end module orbital_num_lag
    real(dp) :: orb_ho(MXORBOP,MSTATES)
    real(dp) :: orb_o(MXORBOP,MSTATES)
    real(dp) :: orb_oe(MXORBOP,MSTATES)
-   private
 
+   private
    public :: orb_o, orb_oe, orb_ho
    save
  end module orb_mat_001
@@ -1707,8 +1756,8 @@ end module orbital_num_lag
    real(dp) :: orb_ho_old(MXORBOP,MSTATES)
    real(dp) :: orb_o_old(MXORBOP,MSTATES)
    real(dp) :: orb_oe_old(MXORBOP,MSTATES)
-   private
 
+   private
    public :: orb_ho_old, orb_o_old, orb_oe_old
    save
  end module orb_mat_002
@@ -1721,8 +1770,8 @@ end module orbital_num_lag
 
    real(dp) :: orb_o_cum(MXORBOP,MSTATES)
    real(dp) :: orb_o_sum(MXORBOP,MSTATES)
-   private
 
+   private
    public :: orb_o_sum, orb_o_cum
    save
  end module orb_mat_003
@@ -1735,8 +1784,8 @@ end module orbital_num_lag
 
    real(dp) :: orb_oe_cum(MXORBOP,MSTATES)
    real(dp) :: orb_oe_sum(MXORBOP,MSTATES)
-   private
 
+   private
    public :: orb_oe_sum, orb_oe_cum
    save
  end module orb_mat_004
@@ -1748,8 +1797,8 @@ end module orbital_num_lag
    include 'mstates.h'
 
    real(dp) :: orb_ho_cum(MXORBOP,MSTATES)
-   private
 
+   private
    public :: orb_ho_cum
    save
  end module orb_mat_005
@@ -1761,8 +1810,8 @@ end module orbital_num_lag
    include 'mstates.h'
 
    real(dp) :: orb_oo_cum(MXMATDIM2,MSTATES)
-   private
 
+   private
    public :: orb_oo_cum
    save
  end module orb_mat_006
@@ -1774,8 +1823,8 @@ end module orbital_num_lag
    include 'mstates.h'
 
    real(dp) :: orb_oho_cum(MXMATDIM,MSTATES)
-   private
 
+   private
    public :: orb_oho_cum
    save
  end module orb_mat_007
@@ -1787,8 +1836,8 @@ end module orbital_num_lag
    include 'mstates.h'
 
    integer  :: ideriv(2,MXORBOP)
-   private
 
+   private
    public :: ideriv
    save
  end module orb_mat_022
@@ -1805,8 +1854,8 @@ end module orbital_num_lag
    real(dp) :: orb_o_bsum(MXORBOP,MSTATES)
    real(dp) :: orb_oe_bsum(MXORBOP,MSTATES)
    real(dp) :: orb_w_bsum(MSTATES)
-   private
 
+   private
    public :: orb_oe_bsum, orb_f_bcum, orb_e_bsum, orb_w_bsum, orb_o_bsum, orb_f_bcm2
    save
  end module orb_mat_024
@@ -1818,8 +1867,8 @@ end module orbital_num_lag
 
    real(dp) :: orb_ecum(MSTATES)
    real(dp) :: orb_wcum(MSTATES)
-   private
 
+   private
    public :: orb_wcum, orb_ecum
    save
  end module orb_mat_030
@@ -1832,8 +1881,8 @@ end module orbital_num_lag
    integer  :: ideriv_iab(MXORBOP)
    integer  :: ideriv_ref(MXORBOP,2)
    integer  :: irepcol_ref(MXORBOP,2)
-   private
 
+   private
    public :: irepcol_ref, ideriv_ref, ideriv_iab
    save
  end module orb_mat_033

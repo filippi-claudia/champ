@@ -21,7 +21,10 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use velocity_jastrow, only: vj
       use mmpol_cntrl, only: immpol
 
+      use efield, only: iefield, iscreen, ncharges
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pseudo.h'

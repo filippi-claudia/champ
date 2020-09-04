@@ -2,7 +2,10 @@
 
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
+      use efield, only: iefield, iscreen, ncharges
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'efield.h'
@@ -26,7 +29,10 @@ c-----------------------------------------------------------------------
       use atom, only: znuc, cent, iwctype, ncent
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
+      use efield, only: iefield, iscreen, ncharges
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'efield.h'

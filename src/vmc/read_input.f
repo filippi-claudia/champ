@@ -73,7 +73,10 @@ c and Anthony Scemema
       use mmpol_fdc, only: a_cutoff, rcolm
       use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
 
+      use efield, only: iefield, iscreen, ncharges
+
       implicit real*8(a-h,o-z)
+
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
@@ -861,11 +864,15 @@ C$INPUT znuc inp
 CKEYDOC nuclear charge for each atom type and ghost type
 
       use atom, only: znuc, nctype
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
-      include 'inputflags.h'
-
 
       call p2gti('atoms:nctype',nctype,1)
       call p2gtid('atoms:addghostype',newghostype,0,1)
@@ -886,12 +893,18 @@ CKEYDOC norb: number of orbitals for trial wave function
 CKEYDOC nbasis: number of basis functiobns
 CKEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
 CKEYDOC filename: file containing orbitals coefficients
+
       use coefs, only: coef, nbasis, norb
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
 
 c fs NOTE: additional variable norbv for efp orbitals removed 
 
@@ -921,11 +934,17 @@ c-----------------------------------------------------------------------
       subroutine read_geometry(iu)
 C$INPUT geometry inp
 CKEYDOC position and type for each atom and ghost atom
-      use atom, only: cent, iwctype, ncent
-      implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'inputflags.h'
 
+      use atom, only: cent, iwctype, ncent
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
+      implicit real*8(a-h,o-z)
+
+      include 'vmc.h'
 
       call p2gti('atoms:natom',ncent,1)
       call p2gtid('atoms:nghostcent',nghostcent,0,1)
@@ -944,14 +963,19 @@ c-----------------------------------------------------------------------
       subroutine read_exponents(iu,iwft)
 C$INPUT exponents inp i=1
 CKEYDOC Basis function exponents (only if no numerical basis)
+
       use coefs, only: nbasis
       use basis, only: zex
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
 
       call incpos(iu,itmp,1)
       read(iu,*) (zex(i,iwft),i=1,nbasis)
@@ -963,15 +987,20 @@ c-----------------------------------------------------------------------
       subroutine read_determinants(iu,nd,iwft)
 C$INPUT determinants inp i i=1
 CKEYDOC CI coefficients and occupation of determinants in wf
+
       use dets, only: cdet, ndet
       use dorb_m, only: iworbd
-      implicit real*8(a-h,o-z)
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-      include 'inputflags.h'
 
       ndet=nd
       if(ndet.gt.MDET) then
@@ -999,15 +1028,17 @@ C$INPUT multideterminants inp i
 CKEYDOC CI coefficients and occupation of determinants in wf
       use dets, only: ndet
       use multidet, only: irepcol_det, ireporb_det, numrep_det
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
-      include 'inputflags.h'
 
       if(nd.ne.ndet-1) call fatal_error('INPUT: problem in multidet')
 
@@ -1029,29 +1060,25 @@ c-----------------------------------------------------------------------
       subroutine read_jastrow_parameter(iu,iwft)
 C$INPUT jastrow_parameter inp i=1
 CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
+
       use jaspar, only: nspin1, nspin2
       use elec, only: ndn
       use jaspar3, only: a, b, c, scalek
-
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: cutjas
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ifock, ijas
       use contr2, only: isc
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
-
 
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
@@ -1113,13 +1140,18 @@ CKEYDOC alternative name for keyword basis because of GAMBLE input
       use basis, only: n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
       use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
       include 'numbas.h'
-      include 'inputflags.h'
 
       call p2gti('atoms:nctype',nctype,1)
       call p2gtid('atoms:addghostype',newghostype,0,1)
@@ -1250,16 +1282,16 @@ CKEYDOC Displacement parameters and wave function types
       use forcepar, only: nforce
       use forcestr, only: delc
       use wfsec, only: iwftype
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
-
-
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
@@ -1283,7 +1315,13 @@ CKEYDOC Displacement parameters and wave function types
 c-----------------------------------------------------------------------
       subroutine read_csf(ncsf_read,nstates_read,fn)
 C$INPUT csf i i=1 a=<input>
+
       use csfs, only: ccsf, ncsf, nstates
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 
@@ -1291,7 +1329,6 @@ C$INPUT csf i i=1 a=<input>
       include 'force.h'
       include 'mstates.h'
       include 'optci.h'
-      include 'inputflags.h'
 
       character fn*(*)
 
@@ -1381,8 +1418,15 @@ c
 c-----------------------------------------------------------------------
       subroutine flaginit
 c Initialize flags used to identify presence/absence of blocks in input
+
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
       implicit real*8(a-h,o-z)
-      include 'inputflags.h'
+
       iznuc=0
       igeometry=0
       ibasis_num=0
@@ -1407,11 +1451,17 @@ c Initialize flags used to identify presence/absence of blocks in input
 c-----------------------------------------------------------------------
       subroutine flagcheck
 c Check that the required blocks are there in the input
+
       use numbas, only: numr
-
       use optorb_mix, only: norbopt, norbvirt
-      implicit real*8(a-h,o-z)
+      use efield, only: iefield, iscreen, ncharges
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
@@ -1419,7 +1469,6 @@ c Check that the required blocks are there in the input
       include 'optci.h'
       include 'optorb.h'
       include 'efield.h'
-      include 'inputflags.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -1505,7 +1554,13 @@ c Check that the required blocks are there in the input
 c-----------------------------------------------------------------------
       subroutine inputcsf
 c Check that the required blocks are there in the input
+
       use csfs, only: ncsf, nstates
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 
@@ -1513,8 +1568,6 @@ c Check that the required blocks are there in the input
       include 'force.h'
       include 'optci.h'
       include 'mstates.h'
-      include 'inputflags.h'
-
 
       nstates=1
       ncsf=0
@@ -1585,27 +1638,23 @@ c Set the lcao to be equal
 c----------------------------------------------------------------------
       subroutine inputjastrow(nwftype)
 c Set the jastrow to be equal
+
       use jaspar, only: nspin1, nspin2
       use jaspar3, only: a, b, c, scalek
-
       use jaspar4, only: a4, norda, nordb, nordc
       use bparm, only: nspin2b
       use contr2, only: ifock, ijas
       use contr2, only: isc
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
-
 
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
@@ -1817,15 +1866,19 @@ c-----------------------------------------------------------------------
       subroutine read_optorb_mixvirt(moopt,movirt,fn)
 C$INPUT optorb_mixvirt i i a=<input>
 CKEYDOC Read which virtual orbitals are mixed with the occupied ones
+
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
       use coefs, only: norb
-      implicit real*8(a-h,o-z)
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
-
 
       character fn*(*)
       character atmp*80
@@ -2003,25 +2056,21 @@ CKEYDOC atoms energy gradients are to be calculated for.
 
 c     Written by Omar Valsson
 
-
-
       use forcepar, only: nforce
       use forcestr, only: delc
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
-
       use grdntspar, only: delgrdxyz, igrdtype, ngradnts
-
       use wfsec, only: iwftype
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
 
 
       call p2gti('atoms:natom',ncent,1)
@@ -2079,22 +2128,19 @@ c      Written by Omar Valsson.
       use forcepar, only: nforce
       use forcestr, only: delc
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
-
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, igrdtype, ngradnts
       use zmatrix, only: izmatrix
-
       use wfsec, only: iwftype
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
-
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('GRADIENTS_ZMATRIX: ncent > MCENT')
@@ -2152,13 +2198,16 @@ CKEYDOC Read for which Z matrix (internal) coordiantes of
 CKEYDOC atoms energy gradients are to be calculated for.
 
       use grdntsmv, only: igrdmv
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 
-
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
 
 
       call p2gti('atoms:natom',ncent,1)
@@ -2185,14 +2234,16 @@ CKEYDOC Read for which Z matrix (internal) coordiantes of
 CKEYDOC atoms energy gradients are to be calculated for.
 
       use grdnthes, only: hessian_zmat
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 
-
-
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
 
 
 
@@ -2221,14 +2272,19 @@ CKEYDOC It is need when calculating forces in Z matrix
 CKEYDOC coordinates.
 
 c      Written by Omar Valsson
+
       use atom, only: cent, ncent
       use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
 
       
       do 10 ic=1,3
@@ -2261,14 +2317,20 @@ c      Written by Omar Valsson
 c-----------------------------------------------------------------------
       subroutine read_efield(ncharges_tmp,iscreen_tmp,filename)
 C$INPUT efield i i a=<input>
+
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
+      use efield, only: iefield, iscreen, ncharges
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'efield.h'
-      include 'inputflags.h'
 
       character filename*(*)
 
@@ -2322,14 +2384,16 @@ c-----------------------------------------------------------------------
       subroutine modify_zmat_define
 
       use grdntsmv, only: igrdmv
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 
-
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
-
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
@@ -2344,16 +2408,16 @@ c-----------------------------------------------------------------------
       subroutine hessian_zmat_define
 
       use grdnthes, only: hessian_zmat
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 
-
-
       include 'vmc.h'
       include 'force.h'
-      include 'inputflags.h'
-
-
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')

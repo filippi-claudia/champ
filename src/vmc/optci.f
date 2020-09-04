@@ -155,15 +155,20 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_sum(p,q,enew,eold)
+
       use optwf_contrl, only: ioptci
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
-      include 'inputflags.h'
-
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -185,14 +190,20 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_cum(wsum)
+
       use optwf_contrl, only: ioptci
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
-      include 'inputflags.h'
 
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -524,22 +535,23 @@ c     print the OkEL
 
 c-----------------------------------------------------------------------
       subroutine optci_define
-      use csfs, only: ncsf
 
+      use csfs, only: ncsf
       use dets, only: ndet
       use optwf_contrl, only: ioptjas, ioptorb
+      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
+     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
+     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
+     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
+     &             ihessian_zmat 
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optci_cblk.h'
       include 'mstates.h'
-      include 'inputflags.h'
-
-
 
       nciprim = ndet
 
