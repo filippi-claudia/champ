@@ -7,4 +7,3 @@
 !     nciterm2:number of terms for Nightingale's method (EL(i) O(k))
 !     nciprim: number of primitive terms (determinant ratios)
 !     iciprt : print flag 
-      common /ci000/ nciterm, nciprim, iciprt

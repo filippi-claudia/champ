@@ -7,7 +7,10 @@
       use optwf_parms, only: nparmj
       use deloc_dj_m, only: denergy
 
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'mstates.h'
@@ -33,7 +36,10 @@ c-----------------------------------------------------------------------
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -63,7 +69,10 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -87,7 +96,10 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -119,7 +131,10 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use gradhessj, only: de, dj, dj_e
 
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'

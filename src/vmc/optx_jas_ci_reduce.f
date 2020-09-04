@@ -5,7 +5,10 @@ c Written by Claudia Filippi
 
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
 
 

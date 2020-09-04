@@ -636,7 +636,10 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmj
       use gradhess_all, only: MPARMALL, grad, h, s
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'

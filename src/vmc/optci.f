@@ -4,7 +4,10 @@
 
       use optwf_contrl, only: ioptci
 
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -65,7 +68,10 @@ c Correlation matrix <Oi*Oj> is computed in ci_sum
 c-----------------------------------------------------------------------
       subroutine optci_init(iflg)
       use optwf_contrl, only: ioptci
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -114,7 +120,10 @@ C$ iflg = 0: init *cum, *cm2 as well
 c-----------------------------------------------------------------------
       subroutine optci_save
       use optwf_contrl, only: ioptci
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -135,7 +144,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_restore
       use optwf_contrl, only: ioptci
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -163,7 +175,10 @@ c-----------------------------------------------------------------------
      &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
      &             ihessian_zmat 
 
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -198,7 +213,10 @@ c-----------------------------------------------------------------------
      &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
      &             ihessian_zmat 
 
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -228,7 +246,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_dump(iu)
       use optwf_contrl, only: ioptci
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -250,7 +271,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_rstrt(iu)
       use optwf_contrl, only: ioptci
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -282,7 +306,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_avrg(wcum,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
       use optwf_contrl, only: ioptci
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -324,7 +351,10 @@ c-----------------------------------------------------------------------
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use linear_norm, only: oav, ci_oav
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -443,7 +473,10 @@ c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
       use linear_norm, only: oav
       use optwf_contrl, only: ioptci
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
 c compute averages and print then out
       include 'vmc.h'
@@ -545,7 +578,10 @@ c-----------------------------------------------------------------------
      &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
      &             ihessian_zmat 
 
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'

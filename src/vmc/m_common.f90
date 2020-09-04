@@ -186,6 +186,18 @@
    save
  end module chck
 
+ module ci000
+   !> Arguments: iciprt, nciprim, nciterm
+ 
+   integer  :: iciprt
+   integer  :: nciprim
+   integer  :: nciterm
+   private
+ 
+   public :: iciprt, nciprim, nciterm
+   save
+ end module ci000
+
  module coefs
    !> Arguments: coef, nbasis, norb
    use precision_kinds, only: dp

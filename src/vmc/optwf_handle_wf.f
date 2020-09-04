@@ -877,7 +877,10 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -927,7 +930,10 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -976,7 +982,10 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o
 
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'

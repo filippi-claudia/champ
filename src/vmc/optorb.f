@@ -574,7 +574,10 @@ c-----------------------------------------------------------------------
       use orb_mat_030, only: orb_ecum, orb_wcum
       use gradhess_all, only: MPARMALL, grad, h, s
 
+      use ci000, only: iciprt, nciprim, nciterm
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
