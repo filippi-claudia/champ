@@ -73,7 +73,9 @@ c-----------------------------------------------------------------------
       use multimatn, only: aan, wfmatn
 
       use velocity_jastrow, only: vj, vjn
+      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'

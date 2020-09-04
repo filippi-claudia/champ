@@ -32,7 +32,9 @@ c job where it left off
       use basis, only: n4s, n4p
       use basis, only: nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
 
+      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'

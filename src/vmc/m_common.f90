@@ -1595,6 +1595,18 @@ end module forcewt
     save
  end module mpiconf
 
+ module mstates_ctrl
+    !> Arguments: iefficiency, nstates_psig, iguiding
+ 
+    integer  :: iefficiency
+    integer  :: iguiding
+    integer  :: nstates_psig
+    private
+ 
+    public :: iefficiency, nstates_psig, iguiding
+    save
+  end module mstates_ctrl
+
  module multidet
    !> Arguments: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
    use precision_kinds, only: dp
@@ -2689,3 +2701,5 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
+
+ 

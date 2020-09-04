@@ -1,7 +1,9 @@
       subroutine optci_reduce
 
       use optwf_contrl, only: ioptci
+      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       implicit real*8(a-h,o-z)
+
 
 
 

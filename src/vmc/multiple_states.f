@@ -1,7 +1,9 @@
 c----------------------------------------------------------------------
       subroutine efficiency_sample(ipass,determ_s,determ_psig)
 
+      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optci.h'
       include 'mstates.h'
@@ -25,7 +27,9 @@ c     write(88,*) (effcum(j)*effcum(j)/effcm2(j)/ipass,j=1,nstates_psig)
       end
 c----------------------------------------------------------------------
       subroutine efficiency_init
+      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'optci.h'
       include 'mstates.h'
@@ -36,7 +40,9 @@ c----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------
       subroutine efficiency_prt(passes)
+      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'optci.h'
@@ -54,7 +60,9 @@ c       write(6,*) effcum(j)*effcum(j)/passes,effcm2(j)
       end
 c----------------------------------------------------------------------
       subroutine efficiency_dump(iu)
+      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'optci.h'
@@ -67,7 +75,9 @@ c----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine efficiency_rstrt(iu)
+      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'optci.h'

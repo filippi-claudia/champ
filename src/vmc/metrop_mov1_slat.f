@@ -29,7 +29,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use pseudo, only: nloc
 
       use mmpol_cntrl, only: ich_mmpol
+      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       implicit real*8(a-h,o-z)
+
 
 
 

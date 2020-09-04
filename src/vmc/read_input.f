@@ -75,7 +75,9 @@ c and Anthony Scemema
 
       use efield, only: iefield, iscreen, ncharges
 
+      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       implicit real*8(a-h,o-z)
+
 
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
@@ -1461,7 +1463,9 @@ c Check that the required blocks are there in the input
      &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
      &             ihessian_zmat 
 
+      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
