@@ -22,7 +22,7 @@ jobs:
            cp ./tests/CI_test/include/* ./src/include 
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_PREFIX_PATH=/usr/include/mkl -DENABLE_TEST=ON
            cmake --build build -- -j2
-           cd build/tests/CI_test && ctest --verbose
+#           cd build/tests/CI_test && ctest --verbose
 
 
 # To be tested:
