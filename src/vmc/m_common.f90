@@ -192,8 +192,8 @@
    integer  :: iciprt
    integer  :: nciprim
    integer  :: nciterm
+
    private
- 
    public :: iciprt, nciprim, nciterm
    save
  end module ci000
@@ -205,11 +205,24 @@
 
    real(dp) :: ci_o(MXCITERM)
    real(dp) :: ci_oe(MXCITERM,MXCIREDUCED)
-   private
 
+   private
    public :: ci_oe, ci_o
    save
  end module ci001_blk
+
+ module ci002_blk
+   !> Arguments: ci_o_old, ci_oe_old
+   use precision_kinds, only: dp
+   include 'optci.h'
+ 
+    real(dp) :: ci_o_old(MXCITERM)
+    real(dp) :: ci_oe_old(MXCITERM,MXCIREDUCED)
+
+    private
+    public :: ci_o_old, ci_oe_old
+    save
+ end module ci002_blk
  
  module coefs
    !> Arguments: coef, nbasis, norb
@@ -2754,3 +2767,5 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
+
+

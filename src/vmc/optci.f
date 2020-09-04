@@ -125,7 +125,9 @@ c-----------------------------------------------------------------------
       use ci000, only: iciprt, nciprim, nciterm
 
       use ci001_blk, only: ci_o, ci_oe
+      use ci002_blk, only: ci_o_old, ci_oe_old
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -151,7 +153,9 @@ c-----------------------------------------------------------------------
       use ci000, only: iciprt, nciprim, nciterm
 
       use ci001_blk, only: ci_o, ci_oe
+      use ci002_blk, only: ci_o_old, ci_oe_old
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -184,7 +188,9 @@ c-----------------------------------------------------------------------
       use ci000, only: iciprt, nciprim, nciterm
 
       use ci001_blk, only: ci_o, ci_oe
+      use ci002_blk, only: ci_o_old, ci_oe_old
       implicit real*8(a-h,o-z)
+
 
 
 
