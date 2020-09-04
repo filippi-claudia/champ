@@ -1,22 +1,19 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
-
       use optwf_contrl, only: ioptci
-
       use ci000, only: iciprt, nciprim, nciterm
-
       use ci001_blk, only: ci_o, ci_oe
+      use ci003_blk, only: ci_e, ci_e_old
+      use ci004_blk, only: ci_de, ci_de_old
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'pseudo.h'
       include 'optci.h'
-      include 'optci_cblk.h'
 
       common /multislater/ detiab(MDET,2)
 
@@ -69,17 +66,20 @@ c Correlation matrix <Oi*Oj> is computed in ci_sum
       end
 c-----------------------------------------------------------------------
       subroutine optci_init(iflg)
+
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciprim, nciterm
+      use ci005_blk, only: ci_o_cum, ci_o_sum
+      use ci006_blk, only: ci_de_cum, ci_de_sum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
+      use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
+      use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
       implicit real*8(a-h,o-z)
-
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'optci_cblk.h'
-
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -121,21 +121,19 @@ C$ iflg = 0: init *cum, *cm2 as well
 
 c-----------------------------------------------------------------------
       subroutine optci_save
+
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciprim, nciterm
-
       use ci001_blk, only: ci_o, ci_oe
       use ci002_blk, only: ci_o_old, ci_oe_old
+      use ci003_blk, only: ci_e, ci_e_old
+      use ci004_blk, only: ci_de, ci_de_old
+
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'optci_cblk.h'
-
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -149,21 +147,19 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_restore
+
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciprim, nciterm
-
       use ci001_blk, only: ci_o, ci_oe
       use ci002_blk, only: ci_o_old, ci_oe_old
+      use ci003_blk, only: ci_e, ci_e_old
+      use ci004_blk, only: ci_de, ci_de_old
+
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'optci_cblk.h'
-
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -186,18 +182,20 @@ c-----------------------------------------------------------------------
      &             ihessian_zmat 
 
       use ci000, only: iciprt, nciprim, nciterm
-
       use ci001_blk, only: ci_o, ci_oe
       use ci002_blk, only: ci_o_old, ci_oe_old
+      use ci004_blk, only: ci_de, ci_de_old
+      use ci005_blk, only: ci_o_cum, ci_o_sum
+      use ci006_blk, only: ci_de_cum, ci_de_sum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
+      use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
+      use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
+
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'optci_cblk.h'
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -229,14 +227,17 @@ c-----------------------------------------------------------------------
 
       use ci000, only: iciprt, nciprim, nciterm
 
-      implicit real*8(a-h,o-z)
+      use ci005_blk, only: ci_o_cum, ci_o_sum
+      use ci006_blk, only: ci_de_cum, ci_de_sum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
+      use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
+      use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'optci_cblk.h'
-
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -259,17 +260,19 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_dump(iu)
+
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciprim, nciterm
+      use ci005_blk, only: ci_o_cum, ci_o_sum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
+      use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
+      use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'optci_cblk.h'
 
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -287,14 +290,16 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciprim, nciterm
 
-      implicit real*8(a-h,o-z)
+      use ci005_blk, only: ci_o_cum, ci_o_sum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
+      use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
+      use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
+      implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'optci_cblk.h'
-
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -319,21 +324,25 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_avrg(wcum,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
+
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciprim, nciterm
+      use ci005_blk, only: ci_o_cum, ci_o_sum
+      use ci006_blk, only: ci_de_cum, ci_de_sum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
+      use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
+      use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
       implicit real*8(a-h,o-z)
-
 
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'optci_cblk.h'
+
       dimension oav(MXCITERM),deav(MXCITERM)
       dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)
       dimension ooav(MXCIMATDIM),ooerr(MXCIMATDIM)
       dimension ooeav(MXCIMATDIM)
-
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
@@ -359,8 +368,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_fin(iblk,passes,etot)
-      use csfs, only: ccsf, ncsf
 
+      use csfs, only: ccsf, ncsf
       use dets, only: cdet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use linear_norm, only: oav, ci_oav
@@ -369,27 +378,15 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optci.h'
-      include 'optci_cblk.h'
 
       dimension deav(MXCITERM)
       dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)
       dimension ooav(MXCIMATDIM),ooerr(MXCIMATDIM)
       dimension ooeav(MXCIMATDIM)
-
-
-
-
       dimension oelocav(MXCITERM),eav(MXCITERM)
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -491,12 +488,10 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
 c compute averages and print then out
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'optci_cblk.h'
 
       common /icount_ci/ icount_ci
 
@@ -596,11 +591,9 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'optci_cblk.h'
       include 'mstates.h'
 
       nciprim = ndet

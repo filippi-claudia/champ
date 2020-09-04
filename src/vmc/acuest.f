@@ -8,7 +8,6 @@ c routine to accumulate estimators for energy etc.
       use config, only: psido, psijo, rmino, rvmino
       use config, only: vold, xold
       use csfs, only: nstates
-
       use denupdn, only: rprobdn, rprobup
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
@@ -21,24 +20,17 @@ c routine to accumulate estimators for energy etc.
       use multidet, only: kref
       use optwf_contrl, only: ioptorb
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
-
       use pseudo, only: nloc
-
       use qua, only: nquad, wq, xq, yq, zq
-
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+
       implicit real*8(a-h,o-z)
-
-
-
-
 
       parameter (half=.5d0)
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optci.h'
-      include 'optci_cblk.h'
       include 'optorb.h'
       include 'pseudo.h'
 

@@ -4,21 +4,16 @@
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
-
       use ci000, only: iciprt, nciprim, nciterm
-
       use ci001_blk, only: ci_o, ci_oe
       use ci002_blk, only: ci_o_old, ci_oe_old
+      use ci004_blk, only: ci_de, ci_de_old
+
       implicit real*8(a-h,o-z)
-
-
-
-
 
       include 'vmc.h'
       include 'mstates.h'
       include 'optci.h'
-      include 'optci_cblk.h'
       include 'optorb.h'
 
 
@@ -110,8 +105,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_fin(passes,eave)
-      use csfs, only: ccsf, ncsf
 
+      use csfs, only: ccsf, ncsf
       use dets, only: cdet
       use gradhess_ci, only: grad_ci
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
@@ -123,18 +118,17 @@ c-----------------------------------------------------------------------
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
       use gradhess_all, only: MPARMALL, grad, h, s
-
       use ci000, only: iciprt, nciprim, nciterm
+      use ci005_blk, only: ci_o_cum, ci_o_sum
+      use ci006_blk, only: ci_de_cum, ci_de_sum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
 
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'optci.h'
-      include 'optci_cblk.h'
       include 'optorb.h'
       include 'optjas.h'
 

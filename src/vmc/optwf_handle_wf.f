@@ -1,13 +1,13 @@
 c-----------------------------------------------------------------------
       subroutine write_wf(iwf_fit,iter)
-      use mpiconf, only: idtask
-      implicit real*8(a-h,o-z)
 
+      use mpiconf, only: idtask
+
+      implicit real*8(a-h,o-z)
 
       include 'mpif.h'
       include 'vmc.h'
       include 'force.h'
-
 
       character*40 filetype,wf,itn
 
@@ -981,13 +981,11 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o
-
       use ci000, only: iciprt, nciprim, nciterm
-
       use ci001_blk, only: ci_o, ci_oe
+      use ci003_blk, only: ci_e, ci_e_old
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'force.h'
@@ -995,7 +993,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       include 'optjas.h'
       include 'optorb.h'
       include 'optci.h'
-      include 'optci_cblk.h'
       include 'sr.h'
 
       dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)
