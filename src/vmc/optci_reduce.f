@@ -2,7 +2,9 @@
 
       use optwf_contrl, only: ioptci
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates2, only: effcm2, effcum
       implicit real*8(a-h,o-z)
+
 
 
 

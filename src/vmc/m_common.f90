@@ -1596,16 +1596,30 @@ end module forcewt
  end module mpiconf
 
  module mstates_ctrl
-    !> Arguments: iefficiency, nstates_psig, iguiding
+   !> Arguments: iefficiency, nstates_psig, iguiding
  
-    integer  :: iefficiency
-    integer  :: iguiding
-    integer  :: nstates_psig
+   integer  :: iefficiency
+   integer  :: iguiding
+   integer  :: nstates_psig
+   private
+ 
+   public :: iefficiency, nstates_psig, iguiding
+   save
+ end module mstates_ctrl
+ 
+ module mstates2
+   !> Arguments: effcum, effcm2
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'mstates.h'
+
+    real(dp) :: effcm2(MSTATES)
+    real(dp) :: effcum(MSTATES)
     private
- 
-    public :: iefficiency, nstates_psig, iguiding
+
+    public :: effcum, effcm2
     save
-  end module mstates_ctrl
+ end module mstates2
 
  module multidet
    !> Arguments: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
@@ -2701,5 +2715,3 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
-
- 
