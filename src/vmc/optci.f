@@ -6,7 +6,9 @@
 
       use ci000, only: iciprt, nciprim, nciterm
 
+      use ci001_blk, only: ci_o, ci_oe
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -122,7 +124,9 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciprim, nciterm
 
+      use ci001_blk, only: ci_o, ci_oe
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -146,7 +150,9 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciprim, nciterm
 
+      use ci001_blk, only: ci_o, ci_oe
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -177,7 +183,9 @@ c-----------------------------------------------------------------------
 
       use ci000, only: iciprt, nciprim, nciterm
 
+      use ci001_blk, only: ci_o, ci_oe
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'

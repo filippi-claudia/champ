@@ -198,6 +198,19 @@
    save
  end module ci000
 
+ module ci001_blk
+   !> Arguments: ci_oe, ci_o
+   use precision_kinds, only: dp
+   include 'optci.h'
+
+   real(dp) :: ci_o(MXCITERM)
+   real(dp) :: ci_oe(MXCITERM,MXCIREDUCED)
+   private
+
+   public :: ci_oe, ci_o
+   save
+ end module ci001_blk
+ 
  module coefs
    !> Arguments: coef, nbasis, norb
    use precision_kinds, only: dp

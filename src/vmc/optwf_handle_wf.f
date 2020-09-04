@@ -984,7 +984,9 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use ci000, only: iciprt, nciprim, nciterm
 
+      use ci001_blk, only: ci_o, ci_oe
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
