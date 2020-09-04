@@ -2,7 +2,6 @@
 ! 
 !     ratios  determinant/twf (ci operators)
 !     old ratios
-      common /ci002_blk/ ci_o_old(MXCITERM),ci_oe_old(MXCITERM,MXCIREDUCED)
 !
       common /ci003_blk/ ci_e(MXCITERM),ci_e_old(MXCITERM)
 !
