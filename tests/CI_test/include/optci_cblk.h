@@ -1,7 +1,6 @@
 !     Common blocks (matrices) for ci 
 ! 
 !     ratios  determinant/twf (ci operators)
-      common /ci001_blk/ ci_o(MXCITERM),ci_oe(MXCITERM,MXCIREDUCED)
 !     old ratios
       common /ci002_blk/ ci_o_old(MXCITERM),ci_oe_old(MXCITERM,MXCIREDUCED)
 !
