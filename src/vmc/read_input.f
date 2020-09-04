@@ -76,7 +76,10 @@ c and Anthony Scemema
       use efield, only: iefield, iscreen, ncharges
 
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates3, only: iweight_g, weights_g
+
       implicit real*8(a-h,o-z)
+
 
 
 

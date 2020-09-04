@@ -2,7 +2,10 @@
 
       use csfs, only: nstates
 
+      use mstates3, only: iweight_g, weights_g
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'

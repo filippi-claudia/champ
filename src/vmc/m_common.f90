@@ -1601,8 +1601,8 @@ end module forcewt
    integer  :: iefficiency
    integer  :: iguiding
    integer  :: nstates_psig
+
    private
- 
    public :: iefficiency, nstates_psig, iguiding
    save
  end module mstates_ctrl
@@ -1613,13 +1613,27 @@ end module forcewt
    include 'vmc.h'
    include 'mstates.h'
 
-    real(dp) :: effcm2(MSTATES)
-    real(dp) :: effcum(MSTATES)
-    private
+   real(dp) :: effcm2(MSTATES)
+   real(dp) :: effcum(MSTATES)
+   private
 
-    public :: effcum, effcm2
-    save
+   public :: effcum, effcm2
+   save
  end module mstates2
+
+ module mstates3
+   !> Arguments: weights_g, iweight_g
+   use precision_kinds, only: dp
+   include 'vmc.h'
+   include 'mstates.h'
+
+   integer  :: iweight_g(MSTATES)
+   real(dp) :: weights_g(MSTATES)
+   private
+
+   public :: weights_g, iweight_g
+   save
+ end module mstates3
 
  module multidet
    !> Arguments: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det

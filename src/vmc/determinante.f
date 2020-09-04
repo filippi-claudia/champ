@@ -74,7 +74,10 @@ c-----------------------------------------------------------------------
 
       use velocity_jastrow, only: vj, vjn
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates3, only: iweight_g, weights_g
+
       implicit real*8(a-h,o-z)
+
 
 
 
