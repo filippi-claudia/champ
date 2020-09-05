@@ -6,7 +6,14 @@ c     read data for pcm calculations
 c     comput nuclei-qpol interactions (penups,penupv)
 c...........................................................
       use atom, only: znuc, cent, iwctype, ncent
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h' 
       include 'pcm.h'
 
@@ -122,7 +129,14 @@ c........................................................................
 c......................................................
       subroutine pcm_qvol(n)
 c Written by Amovilli-Floris
+
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pcm.h'
 
@@ -138,8 +152,14 @@ c Written by Amovilli-Floris
 C     ***************************************************************
 C     contribution from nuclei to polarization charghes
 C     ***************************************************************
+
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      IMPLICIT REAL*8 (A-H,O-Z)
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
+      implicit real*8(a-h,o-z)
+
       real*8 ah_vec,det
 C     
       include 'pcm.h'
@@ -247,16 +267,20 @@ c
 c     3) for the accepted configuration, the normal component 
 c        of the electron field  at the point on the surface is computed 
 C     ***************************************************************
+
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use pcm_hpsi, only: enfpcm, qopcm
       use pcm_xv_new, only: xv_new
-      implicit real*8(a-h,o-z)
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      implicit real*8(a-h,o-z)
 
       include 'pcm.h'
       include 'vmc.h'
 
-c
       dimension coord(3,*)
       dimension fac(100)
 C     ***************************************************************
@@ -369,8 +393,14 @@ c............................................................
 c............................................................
 c      update of volume charges and penupol
 c............................................................
+
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use pcm_xv_new, only: xv_new
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -407,8 +437,15 @@ c..............................................................
 c............................................................
 c     compute penupv of volume charges 
 c............................................................
+
       use atom, only: znuc, cent, iwctype, ncent
-      IMPLICIT REAL*8 (A-H,O-Z)
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
+      implicit real*8(a-h,o-z)
+
       include 'vmc.h' 
       include 'pcm.h'
 
@@ -430,7 +467,13 @@ c..............................................................
       end
 
       subroutine pcm_write_chvol
+
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
+
       include 'pcm.h'
       open (52,file='chvol_new',form='formatted',status='unknown')
       rewind 52
@@ -452,7 +495,13 @@ c......................................................
 c       Calculate e-qpol interactions (pcm)
 c       and adds nuclei-qpol interactions
 c......................................................
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
+
       include 'pcm.h'
       include 'pcm_3dgrid.h'
 
@@ -505,7 +554,13 @@ c......................................................
 c       Calculate e-qpol interactions (pcm)
 c       and adds nuclei-qpol interactions
 c......................................................
+
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
+
       include 'pcm.h'
 
       dimension x(3)
@@ -553,6 +608,12 @@ c    AVERAGES   subroutines
 c......................................................
 
       subroutine pcm_init(iflag)
+
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
 
       include 'pcm.h'
@@ -589,6 +650,11 @@ c......................................................
 c-----------------------------------------------------------------------
       subroutine pcm_dump(iu)
 
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
 
       include 'pcm.h'
@@ -607,6 +673,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_rstrt(iu)
+
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
 
       include 'pcm.h'
@@ -627,6 +699,11 @@ c     end AVERAGES subroutines
 c......................................................
 
       subroutine qpcm_charges(enfpcm_ave,enfpcm_err,qpol,sqpol2)
+
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
 
       include 'pcm.h'
@@ -715,6 +792,11 @@ c................................................................
 c     da modificare per stati eccitati
 c................................................................
       subroutine qpcm_charges2(enfpcm_ave,enfpcm_err,qpol)
+
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
 
       include 'pcm.h'
@@ -781,10 +863,14 @@ C     ***************************************************************
 c     This subroutine computes the coordinates of point charges 
 c     on the cavity surface
 C     ***************************************************************
+
       use atom, only: cent, iwctype, ncent
       use spc, only: nsf, num
       use spc1, only: csf, qsf, rsf
       use spc2, only: nxyz, sfxyz, usf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       implicit real*8(a-h,o-z)
 
@@ -1358,8 +1444,13 @@ c        ...exit
 C     ***************************************************************
 C     march/2014: compute surface charges for a stretched cavity
 C     ***************************************************************
+
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      IMPLICIT real*8 (A-H,O-Z)
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
+      implicit real*8(a-h,o-z)
 C     
       include 'pcm.h'
       include 'vmc.h' 

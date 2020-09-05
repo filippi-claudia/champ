@@ -1,5 +1,7 @@
       subroutine pcm_prt(wcum,iblk)
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
       implicit real*8(a-h,o-z)
+
 
       include 'pcm.h'
 
@@ -39,7 +41,13 @@
 c-----------------------------------------------------------------------
       subroutine pcm_fin(wcum,iblk)
       use contrl, only: nblk, nstep
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze 
       implicit real*8(a-h,o-z)
+
+
 
       include 'pcm.h'
     
@@ -119,11 +127,15 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_save
+
       use pcm_hpsi, only: enfpcm, qopcm
       use pcmo, only: enfpcmo, qopcmo, spcmo, vpcmo
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'pcm.h'
 
@@ -142,7 +154,13 @@ c-----------------------------------------------------------------------
       subroutine pcm_sum(p,q)
       use pcm_hpsi, only: enfpcm, qopcm
       use pcmo, only: enfpcmo, qopcmo, spcmo, vpcmo
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze 
       implicit real*8(a-h,o-z)
+
+
 
 
 
@@ -161,6 +179,12 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_cum(wsum)
+
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze 
+
       implicit real*8(a-h,o-z)
 
       include 'pcm.h'

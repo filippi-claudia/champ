@@ -1,6 +1,11 @@
       subroutine pcm_reduce
 
       use mpiconf, only: wid
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
@@ -75,14 +80,16 @@
 
       use mpiconf, only: nproc
       use pcm_xv_new, only: xv_new
-      implicit real*8(a-h,o-z)
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      implicit real*8(a-h,o-z)
 
       include 'mpif.h'
       include 'mpi_qmc.h'
       include 'pcm.h'
-
-
 
       dimension nchv_proc(0:NPROCX),charge(NPROCX)
       dimension icount(0:NPROCX),idispl(0:NPROCX)

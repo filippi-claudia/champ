@@ -18,6 +18,11 @@ c rigidly with that nucleus
       use pcm_force, only: sch_s
       use wfsec, only: iwftype
       use contr3, only: mode
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+
       implicit real*8(a-h,o-z)
 
 

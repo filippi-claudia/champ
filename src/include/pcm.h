@@ -1,9 +1,4 @@
       parameter (MCHS=1,MCHV=1,MSPHERE=30)
-      character*80 pcmfile_cavity,pcmfile_chs,pcmfile_chv
-      common /pcm_cntrl/ ipcm,ichpol,isurf,icall,ipcmprt
-      common /pcm_unit/ pcmfile_cavity,pcmfile_chs,pcmfile_chv
-      common /pcm_parms/ xpol(3,MCHV),ch(MCHV),xe(MSPHERE),ye(MSPHERE),ze(MSPHERE),re(MSPHERE),re2(MSPHERE)
-      common /pcm_parms/ eps_solv,retk,surk,nesph,nchs,nchv,nch,ncopcm,nvopcm,nscv,iscov,nchs1,nchs2
       common /pcm_ameta/amdlg(MCHS),eta(3,MCHS)
       common /pcm_ah/ahca(MCHS,MCHS),bh(MCHS)
 

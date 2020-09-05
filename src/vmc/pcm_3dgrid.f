@@ -13,7 +13,9 @@ c----------------------------------------------------------------------
       use atom, only: cent, ncent
       use contrl, only: irstar
       use grid3d_param, only: origin
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -127,7 +129,9 @@ c     Print the parameters to the output file
       end ! subroutine pcm_setup_grid
 c----------------------------------------------------------------------
       function ipcm_int_from_cart(value,iaxis)
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
       implicit real*8(a-h,o-z)
+
 
 
       include 'pcm_3dgrid.h'
@@ -304,7 +308,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_3dgrid_rstrt(iu)
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'pcm_3dgrid.h'
 

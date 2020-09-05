@@ -2073,7 +2073,6 @@ end module orbital_num_lag
  end module optorb
 
  module optorb_cblock   ! from optorb.h 
-
    ! norbterm: number of terms (possibly after a transformation)
    ! norbprim: number of primitive terms (determinant ratios)
    integer :: norbterm
@@ -2236,6 +2235,20 @@ end module orbital_num_lag
    save
  end module pars
 
+ module pcm_cntrl
+    !> Arguments: ichpol, ipcm, ipcmprt, icall, isurf
+ 
+    integer  :: icall
+    integer  :: ichpol
+    integer  :: ipcm
+    integer  :: ipcmprt
+    integer  :: isurf
+
+    private
+    public :: ichpol, ipcm, ipcmprt, icall, isurf
+    save
+ end module pcm_cntrl
+
  module pcm_force
    !> Arguments: sch_s
    use precision_kinds, only: dp
@@ -2276,6 +2289,40 @@ end module orbital_num_lag
    save
  end module pcm_num_spl2
 
+ module pcm_parms
+   !> Arguments: re, nchv, nesph, ze, iscov, eps_solv, xpol, 
+   !             retk, ch, xe, nvopcm, nch, re2, ncopcm, surk, nscv, nchs, ye, nchs2, nchs1
+   use precision_kinds, only: dp
+   include 'pcm.h'
+
+   real(dp) :: ch(MCHV)
+   real(dp) :: eps_solv
+   integer  :: iscov
+   integer  :: nch
+   integer  :: nchs
+   integer  :: nchs1
+   integer  :: nchs2
+   integer  :: nchv
+   integer  :: ncopcm
+   integer  :: nesph
+   integer  :: nscv
+   integer  :: nvopcm
+   real(dp) :: re(MSPHERE)
+   real(dp) :: re2(MSPHERE)
+   real(dp) :: retk
+   real(dp) :: surk
+   real(dp) :: xe(MSPHERE)
+   real(dp) :: xpol(3,MCHV)
+   real(dp) :: ye(MSPHERE)
+   real(dp) :: ze(MSPHERE)
+
+   private
+   public :: re, nchv, nesph, ze, iscov, eps_solv, xpol
+   public :: ch, xe, nvopcm, nch, re2, ncopcm, surk
+   public :: retk, nscv, nchs, ye, nchs2, nchs1
+   save
+ end module pcm_parms
+
  module pcm_xv_new
    !> Arguments: xv_new
    use precision_kinds, only: dp
@@ -2287,6 +2334,18 @@ end module orbital_num_lag
    public :: xv_new
    save
  end module pcm_xv_new
+
+ module pcm_unit
+   !> Arguments: pcmfile_cavity, pcmfile_chv, pcmfile_chs
+ 
+    character*80 :: pcmfile_cavity
+    character*80 :: pcmfile_chs
+    character*80 :: pcmfile_chv
+
+   private
+   public :: pcmfile_cavity, pcmfile_chv, pcmfile_chs
+   save
+ end module pcm_unit
 
  module pcmo
    !> Arguments: enfpcmo, qopcmo, spcmo, vpcmo

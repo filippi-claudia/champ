@@ -23,7 +23,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use efield, only: iefield, iscreen, ncharges
 
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'

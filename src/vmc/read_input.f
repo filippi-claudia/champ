@@ -72,19 +72,17 @@ c and Anthony Scemema
       use mmpol_parms, only: chmm
       use mmpol_fdc, only: a_cutoff, rcolm
       use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
-
       use efield, only: iefield, iscreen, ncharges
-
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       use mstates3, only: iweight_g, weights_g
-
       use ci000, only: iciprt, nciprim, nciterm
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       implicit real*8(a-h,o-z)
-
-
-
-
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
@@ -2046,7 +2044,11 @@ c----------------------------------------------------------------------
       subroutine read_cavity_spheres(iu,nspheres)
 C$INPUT cavity_spheres inp i 
 CKEYDOC Read centers of cavity spheres and radii
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pcm.h'
@@ -2368,7 +2370,13 @@ c-----------------------------------------------------------------------
       subroutine set_displace_zero(nforce_tmp)
       use forcestr, only: delc
       use pcm_force, only: sch_s
+      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
+      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
       implicit real*8(a-h,o-z)
+
+
 
 
 
