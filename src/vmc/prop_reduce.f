@@ -1,7 +1,9 @@
       subroutine prop_reduce
 
       use mpiconf, only: wid
+      use prp000, only: iprop, ipropprt, nprop
       implicit real*8(a-h,o-z)
+
 
 
       include 'properties.h'

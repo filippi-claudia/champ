@@ -2240,12 +2240,12 @@ end module orbital_num_lag
    use precision_kinds, only: dp
    include 'pcm.h'
  
-    real(dp) :: ahca(MCHS,MCHS)
-    real(dp) :: bh(MCHS)
-    private
+   real(dp) :: ahca(MCHS,MCHS)
+   real(dp) :: bh(MCHS)
 
-    public :: ahca, bh
-    save
+   private
+   public :: ahca, bh
+   save
  end module pcm_ah
 
  module pcm_ameta
@@ -2255,8 +2255,8 @@ end module orbital_num_lag
  
    real(dp) :: amdlg(MCHS)
    real(dp) :: eta(3,MCHS)
-   private
 
+   private
    public :: amdlg, eta
    save
  end module pcm_ameta
@@ -2485,6 +2485,30 @@ end module orbital_num_lag
    public :: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
    save
  end module phifun
+
+ module prp000
+   !> Arguments: ipropprt, iprop, nprop
+ 
+   integer  :: iprop
+   integer  :: ipropprt
+   integer  :: nprop
+
+   private
+   public :: ipropprt, iprop, nprop
+   save
+ end module prp000
+ 
+ module prp001
+   !> Arguments: vprop
+   use precision_kinds, only: dp
+   include 'properties.h'
+
+   real(dp) :: vprop(MAXPROP)
+
+   private
+   public :: vprop
+   save
+ end module prp001
 
  module pseudo
    !> Arguments: lpot, nloc, vps, vpso
@@ -2958,8 +2982,4 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
-
- 
-
-
 

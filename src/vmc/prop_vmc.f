@@ -1,6 +1,10 @@
 c-----------------------------------------------------------------------
       subroutine prop_save
+      use prp000, only: iprop, ipropprt, nprop
+      use prp001, only: vprop
       implicit real*8(a-h,o-z)
+
+
       include 'properties.h'
       include 'prop_vmc.h'
 
@@ -11,7 +15,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine prop_sum(p,q)
+      use prp000, only: iprop, ipropprt, nprop
+      use prp001, only: vprop
       implicit real*8(a-h,o-z)
+
+
       include 'properties.h'
       include 'prop_vmc.h'
 
