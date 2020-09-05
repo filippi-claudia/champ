@@ -2235,6 +2235,32 @@ end module orbital_num_lag
    save
  end module pars
 
+ module pcm_ah
+   !> Arguments: ahca, bh
+   use precision_kinds, only: dp
+   include 'pcm.h'
+ 
+    real(dp) :: ahca(MCHS,MCHS)
+    real(dp) :: bh(MCHS)
+    private
+
+    public :: ahca, bh
+    save
+ end module pcm_ah
+
+ module pcm_ameta
+   !> Arguments: amdlg, eta
+   use precision_kinds, only: dp
+   include 'pcm.h'
+ 
+   real(dp) :: amdlg(MCHS)
+   real(dp) :: eta(3,MCHS)
+   private
+
+   public :: amdlg, eta
+   save
+ end module pcm_ameta
+
  module pcm_cntrl
     !> Arguments: ichpol, ipcm, ipcmprt, icall, isurf
  
@@ -2322,6 +2348,19 @@ end module orbital_num_lag
    public :: retk, nscv, nchs, ye, nchs2, nchs1
    save
  end module pcm_parms
+
+ module pcm_pot
+   !> Arguments: penupol, penups, penupv
+   use precision_kinds, only: dp
+ 
+   real(dp) :: penupol
+   real(dp) :: penups
+   real(dp) :: penupv
+   private
+ 
+   public :: penupol, penups, penupv
+   save
+ end module pcm_pot
 
  module pcm_xv_new
    !> Arguments: xv_new
@@ -2919,3 +2958,8 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
+
+ 
+
+
+

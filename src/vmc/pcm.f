@@ -12,7 +12,11 @@ c...........................................................
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_ameta, only: amdlg, eta
+      use pcm_pot, only: penupol, penups, penupv
       implicit real*8(a-h,o-z)
+
+
 
       include 'vmc.h' 
       include 'pcm.h'
@@ -158,7 +162,11 @@ C     ***************************************************************
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_ameta, only: amdlg, eta
+      use pcm_ah, only: ahca, bh
       implicit real*8(a-h,o-z)
+
+
 
       real*8 ah_vec,det
 C     
@@ -276,7 +284,9 @@ C     ***************************************************************
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_ameta, only: amdlg, eta
       implicit real*8(a-h,o-z)
+
 
       include 'pcm.h'
       include 'vmc.h'
@@ -401,7 +411,9 @@ c............................................................
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_pot, only: penupol, penups, penupv
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pcm.h'
@@ -444,7 +456,9 @@ c............................................................
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_pot, only: penupol, penups, penupv
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h' 
       include 'pcm.h'
@@ -500,7 +514,9 @@ c......................................................
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_pot, only: penupol, penups, penupv
       implicit real*8(a-h,o-z)
+
 
       include 'pcm.h'
       include 'pcm_3dgrid.h'
@@ -704,7 +720,9 @@ c......................................................
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_ah, only: ahca, bh
       implicit real*8(a-h,o-z)
+
 
       include 'pcm.h'
 
@@ -797,7 +815,11 @@ c................................................................
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_ameta, only: amdlg, eta
+      use pcm_ah, only: ahca, bh
       implicit real*8(a-h,o-z)
+
+
 
       include 'pcm.h'
 
@@ -872,7 +894,9 @@ C     ***************************************************************
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_ameta, only: amdlg, eta
       implicit real*8(a-h,o-z)
+
 
       include 'pcm.h'
       include 'vmc.h'
@@ -1450,7 +1474,9 @@ C     ***************************************************************
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_ameta, only: amdlg, eta
       implicit real*8(a-h,o-z)
+
 C     
       include 'pcm.h'
       include 'vmc.h' 

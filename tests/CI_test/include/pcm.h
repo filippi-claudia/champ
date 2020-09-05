@@ -1,5 +1,4 @@
       parameter (MCHS=1,MCHV=1,MSPHERE=30)
-      common /pcm_ameta/amdlg(MCHS),eta(3,MCHS)
       common /pcm_ah/ahca(MCHS,MCHS),bh(MCHS)
 
       common /pcm_pot/ penups,penupv,penupol,pepol

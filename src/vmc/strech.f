@@ -23,7 +23,11 @@ c rigidly with that nucleus
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_ameta, only: amdlg, eta
+      use pcm_pot, only: penupol, penups, penupv
       implicit real*8(a-h,o-z)
+
+
 
 
       parameter (zero=0.d0,one=1.d0)
