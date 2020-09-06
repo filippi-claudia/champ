@@ -5,6 +5,9 @@ C F.Schautz
 C----------------------------------------------
 
       subroutine prop_prt_dmc(iblk,ifinal,wgcum,wgcm2)
+
+      use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum 
+
       implicit real*8(a-h,o-z)
  
       include 'dmc.h'
@@ -80,10 +83,15 @@ c....dipole
       end
 c----------------------------------------------------------------------
       subroutine prop_save_dmc(iw)
+
+      use prp002, only: vprop_old
+
       implicit real*8(a-h,o-z)
+
       include 'dmc.h'
       include 'properties.h'
       include 'prop_dmc.h'
+
       if(iprop.eq.0) return
       do i=1,nprop
        vprop_old(i,iw)=vprop(i)
@@ -91,7 +99,12 @@ c----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------
       subroutine prop_sum_dmc(p,q,iw)
+
+      use prp002, only: vprop_old
+      use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum 
+
       implicit real*8(a-h,o-z)
+
       include 'dmc.h'
       include 'properties.h'
       include 'prop_dmc.h'
@@ -103,7 +116,11 @@ c----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------
       subroutine prop_splitj(iw,iw2)
+
+      use prp002, only: vprop_old
+
       implicit real*8(a-h,o-z)
+
       include 'dmc.h'
       include 'properties.h'
       include 'prop_dmc.h'

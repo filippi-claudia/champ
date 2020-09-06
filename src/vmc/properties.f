@@ -35,7 +35,10 @@ c     electron coordinates
 c-----------------------------------------------------------------------
       subroutine prop_init(iflg)
       use prp000, only: iprop, ipropprt, nprop
+      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+
       implicit real*8(a-h,o-z)
+
 
       include 'properties.h'
 
@@ -56,7 +59,10 @@ C$ iflg = 0: init *cum, *cm2 as well
 c-----------------------------------------------------------------------
       subroutine prop_cum(w)
       use prp000, only: iprop, ipropprt, nprop
+      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+
       implicit real*8(a-h,o-z)
+
 
       include 'properties.h'
 
@@ -71,7 +77,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine prop_avrg(wcum,iblk,pav,perr)
       use prp000, only: iprop, ipropprt, nprop
+      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+
       implicit real*8(a-h,o-z)
+
 
       include 'properties.h'
       dimension pav(MAXPROP),perr(MAXPROP)
@@ -87,7 +96,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine prop_dump(iu)
       use prp000, only: iprop, ipropprt, nprop
+      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+
       implicit real*8(a-h,o-z)
+
 
       include 'properties.h'
       if(iprop.eq.0) return
@@ -96,7 +108,10 @@ c-----------------------------------------------------------------------
       end
       subroutine prop_rstrt(iu)
       use prp000, only: iprop, ipropprt, nprop
+      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+
       implicit real*8(a-h,o-z)
+
 
       include 'properties.h'
       if(iprop.eq.0) return
@@ -122,7 +137,10 @@ c-----------------------------------------------------------------------
       subroutine prop_prt(w,iblk,iu)
       use const, only: nelec
       use prp000, only: iprop, ipropprt, nprop
+      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+
       implicit real*8(a-h,o-z)
+
 
 
 c compute averages and print then out

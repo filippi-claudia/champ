@@ -1,5 +1,7 @@
       subroutine prop_reduce(wgsum)
 
+      use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum
+
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'

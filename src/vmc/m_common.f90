@@ -2615,6 +2615,35 @@ end module orbital_num_lag
    save
  end module prp001
 
+ module prp002
+   !> Arguments: vprop_old
+   use precision_kinds, only: dp
+   include 'properties.h'
+   include 'dmc.h'
+ 
+   real(dp) :: vprop_old(MAXPROP,MWALK)
+   real(dp) :: vprop_old2(MAXPROP)
+
+   private
+   public :: vprop_old, vprop_old2
+   save
+ end module prp002
+
+ module prp003
+   !> Arguments: vprop_cm2, vprop_cum, cc_nuc, vprop_sum
+   use precision_kinds, only: dp
+   include 'properties.h'
+
+    real(dp) :: cc_nuc(3)
+    real(dp) :: vprop_cm2(MAXPROP)
+    real(dp) :: vprop_cum(MAXPROP)
+    real(dp) :: vprop_sum(MAXPROP)
+
+    private
+    public :: vprop_cm2, vprop_cum, cc_nuc, vprop_sum
+    save
+ end module prp003
+
  module pseudo
    !> Arguments: lpot, nloc, vps, vpso
    use precision_kinds, only: dp
@@ -3087,4 +3116,3 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
-
