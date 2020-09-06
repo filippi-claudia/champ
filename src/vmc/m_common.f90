@@ -2332,6 +2332,44 @@ end module orbital_num_lag
    save
  end module pcm_force
 
+ module pcm_grid3d_contrl
+   !> Arguments: ipcm_3dgrid
+   use precision_kinds, only: dp
+   include 'vmc.h'
+ 
+   integer  :: ipcm_3dgrid
+ 
+   private
+   public :: ipcm_3dgrid
+   save
+ end module pcm_grid3d_contrl
+
+ module pcm_grid3d_array
+   !> Arguments: pcm_cart_from_int
+   use precision_kinds, only: dp
+   include 'pcm_3dgrid.h'
+
+   real(dp) :: pcm_cart_from_int(MGRID_PCM,3)
+
+   private
+   public :: pcm_cart_from_int
+   save
+ end module pcm_grid3d_array
+ 
+ module pcm_grid3d_param
+   !> Arguments: pcm_endpt, pcm_origin, ipcm_nstep3d, pcm_step3d
+   use precision_kinds, only: dp
+ 
+   integer  :: ipcm_nstep3d(3)
+   real(dp) :: pcm_endpt(3)
+   real(dp) :: pcm_origin(3)
+   real(dp) :: pcm_step3d(3)
+ 
+   private
+   public :: pcm_endpt, pcm_origin, ipcm_nstep3d, pcm_step3d
+   save
+ end module pcm_grid3d_param
+
  module pcm_hpsi
    !> Arguments: enfpcm, pepcms, pepcmv, qopcm
    use precision_kinds, only: dp
@@ -3037,5 +3075,3 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
-
- 

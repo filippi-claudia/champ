@@ -84,7 +84,9 @@ c and Anthony Scemema
 
       use prp000, only: iprop, ipropprt, nprop
       use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_grid3d_contrl, only: ipcm_3dgrid
       implicit real*8(a-h,o-z)
+
 
 
 

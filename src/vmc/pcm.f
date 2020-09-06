@@ -529,7 +529,9 @@ c......................................................
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       use pcm_pot, only: penupol, penups, penupv
+      use pcm_grid3d_contrl, only: ipcm_3dgrid
       implicit real*8(a-h,o-z)
+
 
 
       include 'pcm.h'
