@@ -8,7 +8,10 @@
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
 
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'

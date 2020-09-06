@@ -12,7 +12,10 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use optorb_cblock, only: norbterm
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'sr.h'

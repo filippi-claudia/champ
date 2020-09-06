@@ -7,7 +7,10 @@ c Written by Claudia Filippi
       use optwf_parms, only: nparmj
       use ci000, only: iciprt, nciprim, nciterm
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
 

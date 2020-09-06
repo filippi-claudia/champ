@@ -8,7 +8,10 @@
       use contrl, only: nblk
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -243,8 +246,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine jdqz_driver( n, kmax, jmin, jmax, evc, eps,
      &                        e, e0, itype, notcnv, idav_iter , ipr )
-      implicit real*8 (a-h,o-z)
+
+      implicit real*8(a-h,o-z)
+
       include 'sr.h'
+      integer method
 c     parameter(lwork=10+6*MVEC+5*MVEC+3*MVEC)
       parameter(lwork=MPARM*100)
       dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC)

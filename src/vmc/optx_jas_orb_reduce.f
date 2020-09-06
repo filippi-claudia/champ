@@ -7,7 +7,10 @@ c Written by Claudia Filippi
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
 

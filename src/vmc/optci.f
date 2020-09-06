@@ -7,7 +7,10 @@
       use ci003_blk, only: ci_e, ci_e_old
       use ci004_blk, only: ci_de, ci_de_old
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -75,7 +78,10 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -129,7 +135,10 @@ c-----------------------------------------------------------------------
       use ci003_blk, only: ci_e, ci_e_old
       use ci004_blk, only: ci_de, ci_de_old
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -155,7 +164,10 @@ c-----------------------------------------------------------------------
       use ci003_blk, only: ci_e, ci_e_old
       use ci004_blk, only: ci_de, ci_de_old
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -191,7 +203,10 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -233,7 +248,10 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -268,7 +286,10 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -295,7 +316,10 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -333,7 +357,10 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -376,7 +403,10 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use ci000, only: iciprt, nciprim, nciterm
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -486,7 +516,10 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciprim, nciterm
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 c compute averages and print then out
       include 'vmc.h'
@@ -589,7 +622,10 @@ c-----------------------------------------------------------------------
 
       use ci000, only: iciprt, nciprim, nciterm
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'

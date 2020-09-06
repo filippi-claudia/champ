@@ -10,7 +10,10 @@
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -58,7 +61,10 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -90,7 +96,10 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -116,7 +125,10 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -150,7 +162,10 @@ c-----------------------------------------------------------------------
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'

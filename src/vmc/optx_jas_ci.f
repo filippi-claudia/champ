@@ -112,7 +112,10 @@ c-----------------------------------------------------------------------
       use ci006_blk, only: ci_de_cum, ci_de_sum
       use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'mstates.h'

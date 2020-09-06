@@ -9,7 +9,10 @@ c Written by Claudia Filippi
       use gradhessj, only: e2
 
       use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'

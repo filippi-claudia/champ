@@ -576,7 +576,10 @@ c-----------------------------------------------------------------------
 
       use ci000, only: iciprt, nciprim, nciterm
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -797,7 +800,10 @@ c-----------------------------------------------------------------------
      &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
      &             ihessian_zmat 
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'

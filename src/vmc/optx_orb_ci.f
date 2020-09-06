@@ -9,7 +9,10 @@
       use ci002_blk, only: ci_o_old, ci_oe_old
       use ci004_blk, only: ci_de, ci_de_old
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'mstates.h'
@@ -36,7 +39,10 @@ c-----------------------------------------------------------------------
 
       use ci000, only: iciprt, nciprim, nciterm
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -65,7 +71,10 @@ c-----------------------------------------------------------------------
 
       use ci000, only: iciprt, nciprim, nciterm
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -88,7 +97,10 @@ c-----------------------------------------------------------------------
 
       use ci000, only: iciprt, nciprim, nciterm
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -123,7 +135,10 @@ c-----------------------------------------------------------------------
       use ci006_blk, only: ci_de_cum, ci_de_sum
       use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'

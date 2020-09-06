@@ -1499,6 +1499,16 @@ end module forcewt
    save
  end module linear_norm
 
+ module method_opt
+   !> Arguments: method
+ 
+   character*20 :: method
+
+   private
+   public :: method
+   save
+ end module method_opt
+
  module mix_jas_ci
    !> Arguments: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
    use precision_kinds, only: dp

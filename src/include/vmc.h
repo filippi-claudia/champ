@@ -16,8 +16,6 @@
 
       real*8 radmax,delri
 
-      character*20 method
-
       parameter(MELEC=32,MORB=500,MBASIS=500,MDET=5000,MCENT=20)
       parameter(MCTYPE=3)
       parameter(MCTYP3X=5,NSPLIN=1001,MORDJ=7,radmax=10.d0,nrad=3001)
@@ -45,4 +43,3 @@
 ! from determinante.f, detsav.f, force_analytic.f, hpsie.f,
 !      multideterminant.f, multideterminante.f, optjas.f, optorb.f
 
-      common /method_opt/ method

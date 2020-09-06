@@ -10,7 +10,10 @@
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'optci.h'

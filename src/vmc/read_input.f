@@ -87,7 +87,10 @@ c and Anthony Scemema
       use pcm_grid3d_contrl, only: ipcm_3dgrid
       use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
 

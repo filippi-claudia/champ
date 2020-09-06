@@ -11,7 +11,10 @@
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'

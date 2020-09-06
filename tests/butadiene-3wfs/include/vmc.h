@@ -16,8 +16,6 @@ c are attempted.
 
       real*8 radmax,delri
 
-      character*20 method
-
       parameter(MELEC=50,MORB=500,MBASIS=500,MDET=40000,MCENT=10,MCTYPE=5,
      &MCTYP3X=5,NSPLIN=1001,MORDJ=7,radmax=10.d0,nrad=3001,
      &MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2,
@@ -40,7 +38,3 @@ c are attempted.
 
 ! Also added:
       parameter (MEXCIT=10)
-! from determinante.f, detsav.f, force_analytic.f, hpsie.f,
-!      multideterminant.f, multideterminante.f, optjas.f, optorb.f
-
-      common /method_opt/ method

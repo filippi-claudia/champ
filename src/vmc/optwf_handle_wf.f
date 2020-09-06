@@ -750,7 +750,10 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmj
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -932,7 +935,10 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use ci000, only: iciprt, nciprim, nciterm
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -985,7 +991,10 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use ci001_blk, only: ci_o, ci_oe
       use ci003_blk, only: ci_e, ci_e_old
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'

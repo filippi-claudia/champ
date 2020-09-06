@@ -6,7 +6,10 @@
       use contrl, only: nblk
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
 
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
       character*20 dl_alg
 

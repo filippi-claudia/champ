@@ -12,7 +12,10 @@ c MPI version written by Claudia Filippi
       use step, only: rprob, suc, try
 
       use contrl, only: nstep
+      use method_opt, only: method
+
       implicit real*8(a-h,o-z)
+
 
 
 
