@@ -11,6 +11,4 @@
       parameter (MGRID_PCM2=MGRID_PCM*MGRID_PCM)
       parameter (MGRID_PCM3=MGRID_PCM2*MGRID_PCM)
 
-      real*8 pcm_num_spl(8,MGRID_PCM,MGRID_PCM,MGRID_PCM)
-      common /pcm_num_spl/ pcm_num_spl
 

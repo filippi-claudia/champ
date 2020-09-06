@@ -19,7 +19,10 @@ c----------------------------------------------------------------------
 
       use pcm_grid3d_array, only: pcm_cart_from_int
 
+      use m_pcm_num_spl, only: pcm_num_spl
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -136,7 +139,10 @@ c----------------------------------------------------------------------
 
       use pcm_grid3d_array, only: pcm_cart_from_int
 
+      use m_pcm_num_spl, only: pcm_num_spl
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'pcm_3dgrid.h'
@@ -154,6 +160,7 @@ c PCM on a 3d grid with spline fit
 
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
+      use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)
 
@@ -344,7 +351,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splpcm_dump(iu)
+
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use m_pcm_num_spl, only: pcm_num_spl
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -358,7 +368,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine splpcm_rstrt(iu)
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use m_pcm_num_spl, only: pcm_num_spl
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pcm_3dgrid.h'

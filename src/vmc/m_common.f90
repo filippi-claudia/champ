@@ -2396,6 +2396,18 @@ end module orbital_num_lag
    save
  end module pcm_inda
 
+ module m_pcm_num_spl
+   !> Arguments: pcm_num_spl
+   use precision_kinds, only: dp
+   include 'pcm_3dgrid.h'
+ 
+   real(dp) :: pcm_num_spl(8,MGRID_PCM,MGRID_PCM,MGRID_PCM)
+
+   private
+   public :: pcm_num_spl
+   save
+ end module m_pcm_num_spl
+
  module pcm_num_spl2
    !> Arguments: bc, wk
    use precision_kinds, only: dp
@@ -3075,3 +3087,4 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
+
