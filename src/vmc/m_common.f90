@@ -2261,6 +2261,33 @@ end module orbital_num_lag
    save
  end module pcm_ameta
 
+ module pcm_averages
+   !> Arguments: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
+   ! qopcm_sum, qopcm_cum, qopcm_cm2, 
+   ! enfpcm_sum(MCHS), enfpcm_cum(MCHS), enfpcm_cm2(MCHS)
+   use precision_kinds, only: dp
+   include 'pcm.h'
+ 
+    real(dp) :: spcmsum
+    real(dp) :: spcmcum
+    real(dp) :: spcmcm2
+    real(dp) :: vpcmsum
+    real(dp) :: vpcmcum
+    real(dp) :: vpcmcm2
+    real(dp) :: qopcm_sum
+    real(dp) :: qopcm_cum
+    real(dp) :: qopcm_cm2
+    real(dp) :: enfpcm_sum(MCHS)
+    real(dp) :: enfpcm_cum(MCHS)
+    real(dp) :: enfpcm_cm2(MCHS)
+ 
+    private
+    public :: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
+    public :: qopcm_sum, qopcm_cum, qopcm_cm2
+    public :: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+    save
+ end module pcm_averages
+
  module pcm_cntrl
     !> Arguments: ichpol, ipcm, ipcmprt, icall, isurf
  
@@ -2274,6 +2301,23 @@ end module orbital_num_lag
     public :: ichpol, ipcm, ipcmprt, icall, isurf
     save
  end module pcm_cntrl
+ 
+ module pcm_fdc
+   !> Arguments: fs, rcol, feps, rcolt, rcolv, qfree, qvol
+   use precision_kinds, only: dp
+
+   real(dp) :: feps
+   real(dp) :: fs
+   real(dp) :: qfree
+   real(dp) :: qvol
+   real(dp) :: rcol
+   real(dp) :: rcolt
+   real(dp) :: rcolv
+
+   private
+   public :: fs, rcol, feps, rcolt, rcolv, qfree, qvol
+   save
+ end module pcm_fdc
 
  module pcm_force
    !> Arguments: sch_s
@@ -2302,6 +2346,17 @@ end module orbital_num_lag
    public :: enfpcm, pepcms, pepcmv, qopcm
    save
  end module pcm_hpsi
+
+ module pcm_inda
+   !> Arguments: inda
+   include 'pcm.h'
+ 
+   integer  :: inda(MCHS)
+
+   private
+   public :: inda
+   save
+ end module pcm_inda
 
  module pcm_num_spl2
    !> Arguments: bc, wk
@@ -2983,3 +3038,4 @@ module spc2
    save
  end module zmatrix_grad
 
+ 

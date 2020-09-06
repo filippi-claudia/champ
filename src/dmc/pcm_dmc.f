@@ -98,6 +98,11 @@ c     write(6,*) 'CIAO',qopcm,qopcmo(iw),iw,spcmo(iw),vpcmo(iw)
       end
 c-----------------------------------------------------------------------
       subroutine pcm_sum(p,q,iw)
+
+      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+
       implicit real*8(a-h,o-z)
  
       include 'dmc.h'
@@ -121,6 +126,11 @@ c     write(6,*) 'HELLO',qopcm,qopcmo(iw),iw
       end
 c-----------------------------------------------------------------------
       subroutine pcm_cum(wsum)
+
+      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+
       implicit real*8(a-h,o-z)
  
       include 'dmc.h'

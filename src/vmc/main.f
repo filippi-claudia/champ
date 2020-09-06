@@ -1,5 +1,6 @@
       program main
 c Written by Claudia Filippi
+
       use mpiconf, only: idtask, nproc, wid
       use contr3, only: mode
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr

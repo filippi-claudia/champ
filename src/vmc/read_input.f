@@ -83,7 +83,9 @@ c and Anthony Scemema
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       use prp000, only: iprop, ipropprt, nprop
+      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
       implicit real*8(a-h,o-z)
+
 
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
@@ -909,7 +911,9 @@ CKEYDOC filename: file containing orbitals coefficients
      &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
      &             ihessian_zmat 
 
+      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'

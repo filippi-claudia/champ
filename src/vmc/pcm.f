@@ -5,17 +5,20 @@ c...........................................................
 c     read data for pcm calculations
 c     comput nuclei-qpol interactions (penups,penupv)
 c...........................................................
+
       use atom, only: znuc, cent, iwctype, ncent
       use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
       use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
-
       use pcm_ameta, only: amdlg, eta
       use pcm_pot, only: penupol, penups, penupv
-      implicit real*8(a-h,o-z)
+      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
 
+      use pcm_inda, only: inda
+
+      implicit real*8(a-h,o-z)
 
 
       include 'vmc.h' 
@@ -139,7 +142,9 @@ c Written by Amovilli-Floris
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'pcm.h'
@@ -164,7 +169,12 @@ C     ***************************************************************
 
       use pcm_ameta, only: amdlg, eta
       use pcm_ah, only: ahca, bh
+      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_inda, only: inda
+
       implicit real*8(a-h,o-z)
+
+
 
 
 
@@ -285,7 +295,9 @@ C     ***************************************************************
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       use pcm_ameta, only: amdlg, eta
+      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
       implicit real*8(a-h,o-z)
+
 
 
       include 'pcm.h'
@@ -412,7 +424,9 @@ c............................................................
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       use pcm_pot, only: penupol, penups, penupv
+      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -575,7 +589,9 @@ c......................................................
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
+      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
       implicit real*8(a-h,o-z)
+
 
       include 'pcm.h'
 
@@ -629,6 +645,9 @@ c......................................................
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
 
       implicit real*8(a-h,o-z)
 
@@ -670,6 +689,9 @@ c-----------------------------------------------------------------------
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
 
       implicit real*8(a-h,o-z)
 
@@ -694,6 +716,9 @@ c-----------------------------------------------------------------------
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
 
       implicit real*8(a-h,o-z)
 
@@ -719,8 +744,11 @@ c......................................................
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
-
       use pcm_ah, only: ahca, bh
+      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+
+      use pcm_inda, only: inda
+
       implicit real*8(a-h,o-z)
 
 
@@ -817,7 +845,9 @@ c................................................................
 
       use pcm_ameta, only: amdlg, eta
       use pcm_ah, only: ahca, bh
+      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -895,7 +925,10 @@ C     ***************************************************************
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       use pcm_ameta, only: amdlg, eta
+      use pcm_inda, only: inda
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'pcm.h'
@@ -1475,7 +1508,12 @@ C     ***************************************************************
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       use pcm_ameta, only: amdlg, eta
+      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_inda, only: inda
+
       implicit real*8(a-h,o-z)
+
+
 
 C     
       include 'pcm.h'

@@ -25,7 +25,10 @@ c rigidly with that nucleus
 
       use pcm_ameta, only: amdlg, eta
       use pcm_pot, only: penupol, penups, penupv
+      use pcm_inda, only: inda
+
       implicit real*8(a-h,o-z)
+
 
 
 
