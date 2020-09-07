@@ -4,7 +4,6 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
 
       use const, only: nelec
-      use mstates_mod, only: MSTATES, MDETCSFX
       use config, only: xold
       use csfs, only: nstates
 

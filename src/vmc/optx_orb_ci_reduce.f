@@ -4,7 +4,7 @@ c Written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
 
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       use method_opt, only: method
 

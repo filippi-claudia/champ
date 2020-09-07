@@ -4,7 +4,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use const, only: hb, nelec, ipr
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
@@ -17,14 +17,14 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use coefs, only: norb
       use contr2, only: ianalyt_lap
       use Bloc, only: tildem
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       use pseudo, only: nloc
       use velocity_jastrow, only: vj
       use mmpol_cntrl, only: immpol
 
-      use efield, only: iefield, iscreen, ncharges
+      use efield, only: iefield
 
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: ipcm
       implicit real*8(a-h,o-z)
 
 

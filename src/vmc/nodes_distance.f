@@ -2,7 +2,6 @@
 c Written by Claudia Filippi
 
       use const, only: nelec
-      use mstates_mod, only: MSTATES, MDETCSFX
       use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
 

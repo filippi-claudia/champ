@@ -1,7 +1,6 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
       use elec, only: ndn, nup
-      use mstates_mod, only: MSTATES, MDETCSFX
       use multidet, only: kref
       use slatn, only: slmin
       use dorb_m, only: iworbd
@@ -63,7 +62,6 @@ c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
       use elec, only: nup
       use multidet, only: kref
       use slatn, only: slmin
@@ -74,7 +72,7 @@ c-----------------------------------------------------------------------
       use multimatn, only: aan, wfmatn
 
       use velocity_jastrow, only: vj, vjn
-      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates_ctrl, only: iguiding
       use mstates3, only: iweight_g, weights_g
 
       implicit real*8(a-h,o-z)
@@ -254,7 +252,6 @@ c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
       use elec, only: ndn, nup
-      use mstates_mod, only: MSTATES, MDETCSFX
       use multidet, only: kref
       use dorb_m, only: iworbd
 

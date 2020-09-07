@@ -2,7 +2,7 @@
 
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
-      use efield, only: iefield, iscreen, ncharges
+      use efield, only: iscreen, ncharges
 
       implicit real*8(a-h,o-z)
 
@@ -29,7 +29,7 @@ c-----------------------------------------------------------------------
       use atom, only: znuc, cent, iwctype, ncent
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
-      use efield, only: iefield, iscreen, ncharges
+      use efield, only: iscreen, ncharges
 
       implicit real*8(a-h,o-z)
 

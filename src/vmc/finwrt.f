@@ -3,7 +3,6 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
       use atom, only: ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
       use const, only: nelec
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
@@ -24,7 +23,7 @@ c routine to print out final results
       use contrl, only: nblk, nstep
       use contrl_per, only: iperiodic
 
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: iciprt
 
       implicit real*8(a-h,o-z)
 

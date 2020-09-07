@@ -1,7 +1,7 @@
       subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
 
       use const, only: ipr
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
       use csfs, only: nstates
 
       use mpiconf, only: idtask
@@ -203,7 +203,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
       use mpiconf, only: idtask
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
@@ -299,7 +298,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
       use mpiconf, only: idtask
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n
       use sr_mat_n, only: sr_o, wtg, obs_tot
@@ -375,7 +373,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
       use mpiconf, only: idtask
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
@@ -489,7 +486,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
       use mpiconf, only: idtask
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, sr_ho
@@ -612,7 +608,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
       use mpiconf, only: idtask
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
@@ -740,7 +735,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine g_psi_lin_d( ndim, nvec, nb1, psi, ew )
 
       use sr_mat_n, only: jefj, jfj, jhfj, s_diag
-      use mstates_mod, only: MSTATES, MDETCSFX
       use sr_mat_n, only: obs_tot
       implicit real*8(a-h,o-z)
 
@@ -808,7 +802,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
 
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptjas, ioptorb, nparm

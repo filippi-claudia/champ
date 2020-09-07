@@ -3,7 +3,6 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
       use const, only: ipr
-      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: kref
@@ -95,7 +94,6 @@ c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
       use const, only: ipr
-      use mstates_mod, only: MSTATES, MDETCSFX
       use estpsi, only: detref
       use multidet, only: kref
 
@@ -151,7 +149,6 @@ c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
       use atom, only: ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
       use const, only: hb, nelec
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb, da_dorb
@@ -162,7 +159,7 @@ c-----------------------------------------------------------------------
       use Bloc_dj, only: b_dj
       use coefs, only: norb
       use Bloc, only: b
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       use velocity_jastrow, only: vj
       
       implicit real*8(a-h,o-z)

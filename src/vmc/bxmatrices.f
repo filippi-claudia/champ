@@ -1,7 +1,6 @@
       subroutine bxmatrix(kref,xmatu,xmatd,b)
 
       use elec, only: ndn, nup
-      use mstates_mod, only: MSTATES, MDETCSFX
       use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
 

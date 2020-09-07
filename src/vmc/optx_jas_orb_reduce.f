@@ -2,7 +2,6 @@
 c Written by Claudia Filippi
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj

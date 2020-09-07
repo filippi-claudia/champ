@@ -1,7 +1,6 @@
       subroutine multideterminante(iel)
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
@@ -111,7 +110,6 @@ c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
       use dets, only: ndet
-      use mstates_mod, only: MSTATES, MDETCSFX
       use elec, only: ndn, nup
       use multidet, only: iactv, ivirt, kref
       use coefs, only: norb

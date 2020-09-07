@@ -4,7 +4,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
       use mpiconf, only: idtask
       use optwf_func, only: ifunc_omega, omega
       use sa_weights, only: weights
@@ -281,7 +281,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
       use sr_mat_n, only: s_ii_inv
-      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
 
       include 'sr.h'
@@ -302,7 +301,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: weights
@@ -427,7 +425,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_rescale_deltap(nparm,deltap)
 
       use mpiconf, only: idtask
-      use mstates_mod, only: MSTATES, MDETCSFX
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot
     
@@ -483,7 +480,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use atom, only: ncent
       use force_fin, only: da_energy_ave
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
 
       implicit real*8(a-h,o-z)
 
@@ -503,7 +500,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine forces_zvzb(nparm)
 
       use atom, only: ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use force_fin, only: da_energy_ave
       use force_mat_n, only: force_o

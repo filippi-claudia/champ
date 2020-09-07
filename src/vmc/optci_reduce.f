@@ -1,15 +1,14 @@
       subroutine optci_reduce
 
       use optwf_contrl, only: ioptci
-      use mstates_mod, only: MSTATES, MDETCSFX
-      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
-      use ci000, only: iciprt, nciprim, nciterm
-      use ci005_blk, only: ci_o_cum, ci_o_sum
-      use ci006_blk, only: ci_de_cum, ci_de_sum
-      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
-      use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
-      use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
+      use ci000, only: nciterm
+      use ci005_blk, only: ci_o_cum
+      use ci006_blk, only: ci_de_cum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum
+      use ci009_blk, only: ci_oo_cm2, ci_oo_cum
+      use ci010_blk, only: ci_ooe_cum
 
       use method_opt, only: method
 

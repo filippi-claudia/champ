@@ -2,7 +2,6 @@
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
       use atom, only: iwctype, nctype, ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use jaspar, only: nspin2, sspinn, is
       use const, only: nelec
@@ -17,7 +16,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contr2, only: ijas
       use contr2, only: isc
       use contrl_per, only: iperiodic
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
 
       implicit real*8(a-h,o-z)
 

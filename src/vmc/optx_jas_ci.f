@@ -1,15 +1,14 @@
       subroutine optx_jas_ci_sum(p,q,enew,eold)
 
       use derivjas, only: gvalue
-      use mstates_mod, only: MSTATES, MDETCSFX
       use gradhessjo, only: denergy_old, gvalue_old
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use deloc_dj_m, only: denergy
-      use ci000, only: iciprt, nciprim, nciterm
-      use ci001_blk, only: ci_o, ci_oe
-      use ci002_blk, only: ci_o_old, ci_oe_old
+      use ci000, only: nciterm
+      use ci001_blk, only: ci_o
+      use ci002_blk, only: ci_o_old
       use ci004_blk, only: ci_de, ci_de_old
 
       implicit real*8(a-h,o-z)
@@ -33,10 +32,9 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_init
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       implicit real*8(a-h,o-z)
 
@@ -59,10 +57,9 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_dump(iu)
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       implicit real*8(a-h,o-z)
 
@@ -79,10 +76,9 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_rstrt(iu)
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       implicit real*8(a-h,o-z)
 
@@ -99,7 +95,6 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_fin(passes,eave)
 
       use csfs, only: ccsf, ncsf
-      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: cdet
       use gradhess_ci, only: grad_ci
       use gradhess_jas, only: grad_jas
@@ -108,10 +103,10 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use gradhessj, only: de, dj, dj_e
-      use ci000, only: iciprt, nciprim, nciterm
-      use ci005_blk, only: ci_o_cum, ci_o_sum
-      use ci006_blk, only: ci_de_cum, ci_de_sum
-      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
+      use ci000, only: nciterm
+      use ci005_blk, only: ci_o_cum
+      use ci006_blk, only: ci_de_cum
+      use ci008_blk, only: ci_oe_cum
 
       use method_opt, only: method
 

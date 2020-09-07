@@ -44,9 +44,7 @@ c This requires changing all the metrop routines that call gammai.
 c Returns   gammai, iflag=1,    x <  a+4
 c          -gammac, iflag=-1,   x >= a+4 even though it is called gammai
 
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: re
       implicit real*8(a-h,o-z)
 
 c     parameter (itmax=100,eps=1.d-14, d3b2=1.5d0,d5b2=2.5d0,

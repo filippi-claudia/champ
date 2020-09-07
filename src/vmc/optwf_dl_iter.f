@@ -1,6 +1,5 @@
       subroutine dl_iter(iter,nparm,dl_alg,dl_mom,sr_tau,dl_momentum,dl_EG_sq,dl_EG,deltap,parameters)
       use sr_mat_n, only: h_sr
-      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
 
 

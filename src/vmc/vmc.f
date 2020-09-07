@@ -11,7 +11,6 @@ c 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater basis states.
 c and sa, pa, da asymptotic functions
 
       use jaspar, only: is
-      use mstates_mod, only: MSTATES, MDETCSFX
       use const, only: pi, hb, delta, deltai, fbias, nelec, imetro
       use config, only: enew, eold, pen, peo, psi2n, psi2o
       use config, only: psido, psijo, tjfn, tjfo

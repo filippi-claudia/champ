@@ -1,7 +1,6 @@
       subroutine dl_more(iter,nparm,dl_momentum,dl_EG_sq,dl_EG,deltap,parameters)
 
       use mpiconf, only: idtask
-      use mstates_mod, only: MSTATES, MDETCSFX
       use sr_mat_n, only: h_sr
 
       implicit real*8(a-h,o-z)

@@ -1,7 +1,6 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use atom, only: iwctype, ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
       use const, only: nelec, ipr
       use elec, only: nup
       use jaso, only: fso
@@ -14,12 +13,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, vps
       use b_tmove, only: b_t, iskip
-      use Bloc, only: b, tildem
-      use contrl_per, only: iperiodic,ibasis
+      use Bloc, only: b
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
-      use pseudo, only: lpot, nloc, vps, vpso
-      use b_tmove , only: b_t,iskip
-      use da_pseudo, only: da_nonloc, da_pecent, da_vps
+      use pseudo, only: lpot, vps
+      use b_tmove, only: b_t, iskip
       use qua, only: nquad, wq, xq, yq, zq
 
       implicit real*8(a-h,o-z)
@@ -237,9 +234,8 @@ c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
       use atom, only: cent, ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
       use contrl_per, only: iperiodic
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       use qua, only: xq, yq, zq
 
       implicit real*8(a-h,o-z)
@@ -296,7 +292,6 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use atom, only: iwctype, ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
@@ -380,7 +375,6 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use elec, only: ndn, nup
-      use mstates_mod, only: MSTATES, MDETCSFX
       use multidet, only: kref
 
       use dorb_m, only: iworbd
@@ -423,7 +417,6 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use atom, only: iwctype, ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use jaspar, only: sspinn, is
       use const, only: nelec
@@ -433,7 +426,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contr2, only: isc
       use contrl_per, only: iperiodic
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
@@ -542,10 +535,9 @@ c-----------------------------------------------------------------------
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
       use atom, only: ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
       use Bloc_da, only: db
       use coefs, only: norb
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       use pseudo, only: lpot, vps
       use da_pseudo, only: da_vps
       use qua, only: wq, xq, yq, zq

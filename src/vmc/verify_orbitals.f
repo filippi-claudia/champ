@@ -1,15 +1,9 @@
       subroutine verify_orbitals
       use const, only: nelec
-      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: ndet
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
       use dorb_m, only: iworbd
-      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
-     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
-     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
-     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
-     &             ihessian_zmat 
 
       implicit real*8(a-h,o-z)
 

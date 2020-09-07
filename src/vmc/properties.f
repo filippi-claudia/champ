@@ -9,7 +9,7 @@ c     <x> <y> <z> <x**2> <y**2> <z**2>
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine prop_compute(coord)
       use const, only: nelec
-      use prp000, only: iprop, ipropprt, nprop
+      use prp000, only: iprop, nprop
       use prp001, only: vprop
       implicit real*8(a-h,o-z)
 
@@ -34,8 +34,8 @@ c     electron coordinates
 
 c-----------------------------------------------------------------------
       subroutine prop_init(iflg)
-      use prp000, only: iprop, ipropprt, nprop
-      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+      use prp000, only: iprop, nprop
+      use prp003, only: vprop_cm2, vprop_cum, vprop_sum
 
       implicit real*8(a-h,o-z)
 
@@ -58,8 +58,8 @@ C$ iflg = 0: init *cum, *cm2 as well
 
 c-----------------------------------------------------------------------
       subroutine prop_cum(w)
-      use prp000, only: iprop, ipropprt, nprop
-      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+      use prp000, only: iprop, nprop
+      use prp003, only: vprop_cm2, vprop_cum, vprop_sum
 
       implicit real*8(a-h,o-z)
 
@@ -76,8 +76,8 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine prop_avrg(wcum,iblk,pav,perr)
-      use prp000, only: iprop, ipropprt, nprop
-      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+      use prp000, only: iprop, nprop
+      use prp003, only: vprop_cm2, vprop_cum
 
       implicit real*8(a-h,o-z)
 
@@ -95,8 +95,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine prop_dump(iu)
-      use prp000, only: iprop, ipropprt, nprop
-      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+      use prp000, only: iprop, nprop
+      use prp003, only: vprop_cm2, vprop_cum
 
       implicit real*8(a-h,o-z)
 
@@ -107,8 +107,8 @@ c-----------------------------------------------------------------------
       write(iu) (vprop_cum(i),vprop_cm2(i),i=1,nprop)
       end
       subroutine prop_rstrt(iu)
-      use prp000, only: iprop, ipropprt, nprop
-      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+      use prp000, only: iprop, nprop
+      use prp003, only: vprop_cm2, vprop_cum
 
       implicit real*8(a-h,o-z)
 
@@ -120,7 +120,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine prop_fin(passes,iblk,efin,eerr)
-      use prp000, only: iprop, ipropprt, nprop
+      use prp000, only: iprop, ipropprt
       implicit real*8(a-h,o-z)
 
       include 'properties.h'
@@ -136,8 +136,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine prop_prt(w,iblk,iu)
       use const, only: nelec
-      use prp000, only: iprop, ipropprt, nprop
-      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+      use prp000, only: iprop, ipropprt
+      use prp003, only: cc_nuc
 
       implicit real*8(a-h,o-z)
 

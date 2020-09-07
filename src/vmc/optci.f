@@ -1,12 +1,11 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptci
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciprim
       use ci001_blk, only: ci_o, ci_oe
-      use ci003_blk, only: ci_e, ci_e_old
-      use ci004_blk, only: ci_de, ci_de_old
+      use ci003_blk, only: ci_e
+      use ci004_blk, only: ci_de
 
       use method_opt, only: method
 
@@ -71,7 +70,7 @@ c-----------------------------------------------------------------------
       subroutine optci_init(iflg)
 
       use optwf_contrl, only: ioptci
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum, ci_o_sum
       use ci006_blk, only: ci_de_cum, ci_de_sum
       use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
@@ -129,7 +128,7 @@ c-----------------------------------------------------------------------
       subroutine optci_save
 
       use optwf_contrl, only: ioptci
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
       use ci001_blk, only: ci_o, ci_oe
       use ci002_blk, only: ci_o_old, ci_oe_old
       use ci003_blk, only: ci_e, ci_e_old
@@ -158,7 +157,7 @@ c-----------------------------------------------------------------------
       subroutine optci_restore
 
       use optwf_contrl, only: ioptci
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
       use ci001_blk, only: ci_o, ci_oe
       use ci002_blk, only: ci_o_old, ci_oe_old
       use ci003_blk, only: ci_e, ci_e_old
@@ -187,21 +186,16 @@ c-----------------------------------------------------------------------
       subroutine optci_sum(p,q,enew,eold)
 
       use optwf_contrl, only: ioptci
-      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
-     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
-     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
-     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
-     &             ihessian_zmat 
 
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
       use ci001_blk, only: ci_o, ci_oe
       use ci002_blk, only: ci_o_old, ci_oe_old
       use ci004_blk, only: ci_de, ci_de_old
-      use ci005_blk, only: ci_o_cum, ci_o_sum
-      use ci006_blk, only: ci_de_cum, ci_de_sum
-      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
-      use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
-      use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
+      use ci005_blk, only: ci_o_sum
+      use ci006_blk, only: ci_de_sum
+      use ci008_blk, only: ci_oe_sum
+      use ci009_blk, only: ci_oo_sum
+      use ci010_blk, only: ci_ooe_sum
 
       use method_opt, only: method
 
@@ -234,13 +228,8 @@ c-----------------------------------------------------------------------
       subroutine optci_cum(wsum)
 
       use optwf_contrl, only: ioptci
-      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
-     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
-     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
-     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
-     &             ihessian_zmat 
 
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       use ci005_blk, only: ci_o_cum, ci_o_sum
       use ci006_blk, only: ci_de_cum, ci_de_sum
@@ -280,11 +269,11 @@ c-----------------------------------------------------------------------
       subroutine optci_dump(iu)
 
       use optwf_contrl, only: ioptci
-      use ci000, only: iciprt, nciprim, nciterm
-      use ci005_blk, only: ci_o_cum, ci_o_sum
-      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
-      use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
-      use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
+      use ci000, only: nciprim, nciterm
+      use ci005_blk, only: ci_o_cum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum
+      use ci009_blk, only: ci_oo_cm2, ci_oo_cum
+      use ci010_blk, only: ci_ooe_cum
 
       use method_opt, only: method
 
@@ -309,12 +298,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_rstrt(iu)
       use optwf_contrl, only: ioptci
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciprim, nciterm
 
-      use ci005_blk, only: ci_o_cum, ci_o_sum
-      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
-      use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
-      use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
+      use ci005_blk, only: ci_o_cum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum
+      use ci009_blk, only: ci_oo_cm2, ci_oo_cum
+      use ci010_blk, only: ci_ooe_cum
 
       use method_opt, only: method
 
@@ -350,12 +339,12 @@ c-----------------------------------------------------------------------
       subroutine optci_avrg(wcum,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
 
       use optwf_contrl, only: ioptci
-      use ci000, only: iciprt, nciprim, nciterm
-      use ci005_blk, only: ci_o_cum, ci_o_sum
-      use ci006_blk, only: ci_de_cum, ci_de_sum
-      use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
-      use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
-      use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
+      use ci000, only: nciterm
+      use ci005_blk, only: ci_o_cum
+      use ci006_blk, only: ci_de_cum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum
+      use ci009_blk, only: ci_oo_cm2, ci_oo_cum
+      use ci010_blk, only: ci_ooe_cum
 
       use method_opt, only: method
 
@@ -397,12 +386,11 @@ c-----------------------------------------------------------------------
       subroutine optci_fin(iblk,passes,etot)
 
       use csfs, only: ccsf, ncsf
-      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: cdet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use linear_norm, only: oav, ci_oav
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: iciprt, nciterm
 
       use method_opt, only: method
 
@@ -514,7 +502,7 @@ c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
       use linear_norm, only: oav
       use optwf_contrl, only: ioptci
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: iciprt, nciterm
 
       use method_opt, only: method
 
@@ -612,16 +600,11 @@ c-----------------------------------------------------------------------
       subroutine optci_define
 
       use csfs, only: ncsf
-      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: ndet
       use optwf_contrl, only: ioptjas, ioptorb
-      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
-     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
-     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
-     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
-     &             ihessian_zmat 
+      use inputflags, only: ici_def
 
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciprim, nciterm
 
       use method_opt, only: method
 

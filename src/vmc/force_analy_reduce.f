@@ -4,7 +4,7 @@
       use mpiconf, only: wid
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'

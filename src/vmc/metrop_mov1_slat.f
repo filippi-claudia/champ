@@ -9,7 +9,7 @@ c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
       use atom, only: znuc, cent, iwctype, ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
 
       use const, only: pi, fbias, nelec, ipr
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
@@ -30,8 +30,8 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use pseudo, only: nloc
 
       use mmpol_cntrl, only: ich_mmpol
-      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use mstates_ctrl, only: iguiding
+      use pcm_cntrl, only: ichpol
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)

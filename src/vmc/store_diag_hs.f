@@ -1,7 +1,7 @@
       subroutine store_diag_hs(nparm_p1,hii,sii)
 
       use optwf_contrl, only: ioptjas, ioptorb, nparm
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
       use sr_index, only: jelo, jelo2, jelohfj
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot

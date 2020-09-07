@@ -1,7 +1,6 @@
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
       use const, only: hb, nelec
-      use mstates_mod, only: MSTATES, MDETCSFX
       use csfs, only: nstates
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -15,7 +14,7 @@
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
@@ -229,7 +228,6 @@ c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
       use const, only: nelec
-      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: cdet, ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
       use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det
@@ -303,7 +301,6 @@ c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
       use const, only: nelec
-      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
       use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det
@@ -368,7 +365,6 @@ c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
       use elec, only: ndn, nup
-      use mstates_mod, only: MSTATES, MDETCSFX
       use multidet, only: iactv, ivirt
       use coefs, only: norb
       use Bloc, only: tildem, xmat
@@ -432,7 +428,6 @@ c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
       use const, only: nelec
-      use mstates_mod, only: MSTATES, MDETCSFX
       use csfs, only: nstates
       use elec, only: ndn, nup
       use ycompact, only: ymat
@@ -473,7 +468,6 @@ c-----------------------------------------------------------------------
       subroutine multideterminants_define(iflag,icheck)
 
       use const, only: nelec
-      use mstates_mod, only: MSTATES, MDETCSFX
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup

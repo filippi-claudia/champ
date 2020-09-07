@@ -4,7 +4,6 @@ c Calculates the local and nonlocal components of the pseudopotential
 c Calculates non-local potential derivatives
 c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
       use atom, only: iwctype, ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
       use const, only: nelec
       use contrl_per, only: iperiodic
 

@@ -3,13 +3,12 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
       use const, only: nelec, ipr
-      use mstates_mod, only: MSTATES, MDETCSFX
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       use grid3dflag, only: i3dlagorb, i3dsplorb
 
       implicit real*8(a-h,o-z)
@@ -253,7 +252,6 @@ c-------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
-      use mstates_mod, only: MSTATES, MDETCSFX
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb

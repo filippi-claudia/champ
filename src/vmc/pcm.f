@@ -7,14 +7,14 @@ c     comput nuclei-qpol interactions (penups,penupv)
 c...........................................................
 
       use atom, only: znuc, cent, iwctype, ncent
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: icall, ichpol, ipcm, isurf
       use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: ch, eps_solv, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, nesph, re
+      use pcm_parms, only: surk, xe, xpol, ye, ze
       use pcm_ameta, only: amdlg, eta
       use pcm_pot, only: penupol, penups, penupv
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: feps, fs, rcol, rcolt
 
       use pcm_inda, only: inda
 
@@ -137,12 +137,10 @@ c......................................................
       subroutine pcm_qvol(n)
 c Written by Amovilli-Floris
 
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_cntrl, only: ipcm
+      use pcm_parms, only: nscv
 
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: fs, qvol
       implicit real*8(a-h,o-z)
 
 
@@ -294,7 +292,7 @@ C     ***************************************************************
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
-      use pcm_ameta, only: amdlg, eta
+      use pcm_ameta, only: eta
       use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
       implicit real*8(a-h,o-z)
 
@@ -416,7 +414,7 @@ c............................................................
 c      update of volume charges and penupol
 c............................................................
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, iwctype, ncent
       use pcm_xv_new, only: xv_new
       use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
@@ -424,7 +422,7 @@ c............................................................
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       use pcm_pot, only: penupol, penups, penupv
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: qvol
       implicit real*8(a-h,o-z)
 
 
@@ -465,12 +463,12 @@ c     compute penupv of volume charges
 c............................................................
 
       use atom, only: znuc, cent, iwctype, ncent
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
-      use pcm_pot, only: penupol, penups, penupv
+      use pcm_pot, only: penupv
       implicit real*8(a-h,o-z)
 
 
@@ -523,12 +521,12 @@ c......................................................
 c       Calculate e-qpol interactions (pcm)
 c       and adds nuclei-qpol interactions
 c......................................................
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: icall
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
-      use pcm_pot, only: penupol, penups, penupv
+      use pcm_pot, only: penups, penupv
       use pcm_grid3d_contrl, only: ipcm_3dgrid
       implicit real*8(a-h,o-z)
 
@@ -591,7 +589,7 @@ c......................................................
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: rcol, rcolv
       implicit real*8(a-h,o-z)
 
 
@@ -714,13 +712,13 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_rstrt(iu)
 
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
-      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
-      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+      use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_cum, enfpcm_cm2
 
       implicit real*8(a-h,o-z)
 
@@ -847,7 +845,7 @@ c................................................................
 
       use pcm_ameta, only: amdlg, eta
       use pcm_ah, only: ahca, bh
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: feps, qvol
       implicit real*8(a-h,o-z)
 
 
@@ -922,9 +920,9 @@ C     ***************************************************************
       use spc, only: nsf, num
       use spc1, only: csf, qsf, rsf
       use spc2, only: nxyz, sfxyz, usf
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nesph, re
+      use pcm_parms, only: surk, xe, xpol, ye, ze
 
       use pcm_ameta, only: amdlg, eta
       use pcm_inda, only: inda

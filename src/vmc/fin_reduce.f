@@ -2,7 +2,7 @@
 c MPI version written by Claudia Filippi
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
 
       use est2cm, only: ecm21
       use estcum, only: ecum1, iblk

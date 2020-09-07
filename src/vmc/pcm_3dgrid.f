@@ -14,12 +14,10 @@ c----------------------------------------------------------------------
       use atom, only: cent, ncent
       use contrl, only: irstar
       use grid3d_param, only: origin
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
 
       use pcm_grid3d_array, only: pcm_cart_from_int
 
-      use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)
 
@@ -134,12 +132,9 @@ c     Print the parameters to the output file
 c----------------------------------------------------------------------
       function ipcm_int_from_cart(value,iaxis)
 
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_grid3d_param, only: pcm_endpt, pcm_origin, pcm_step3d
 
-      use pcm_grid3d_array, only: pcm_cart_from_int
 
-      use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)
 
@@ -158,7 +153,7 @@ c----------------------------------------------------------------------
 c PCM on a 3d grid with spline fit
       subroutine pcm_setup_3dspl
 
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_grid3d_param, only: ipcm_nstep3d
       use pcm_grid3d_array, only: pcm_cart_from_int
       use m_pcm_num_spl, only: pcm_num_spl
 
@@ -247,7 +242,7 @@ c      stop
 c----------------------------------------------------------------------
       subroutine spline_pcm(r,f,ier)
 
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
       use insout, only: inout, inside
 
@@ -328,7 +323,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_3dgrid_rstrt(iu)
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: ipcm
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
 
@@ -352,7 +347,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine splpcm_dump(iu)
 
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_grid3d_param, only: ipcm_nstep3d
       use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)
@@ -367,7 +362,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splpcm_rstrt(iu)
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_grid3d_param, only: ipcm_nstep3d
       use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)

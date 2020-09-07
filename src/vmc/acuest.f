@@ -3,7 +3,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
       use atom, only: znuc, cent, pecent, iwctype, ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
       use const, only: nelec, ipr
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino
@@ -23,7 +23,7 @@ c routine to accumulate estimators for energy etc.
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq
-      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates_ctrl, only: iguiding
 
       implicit real*8(a-h,o-z)
 

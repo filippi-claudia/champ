@@ -1,8 +1,8 @@
       subroutine prop_reduce
 
       use mpiconf, only: wid
-      use prp000, only: iprop, ipropprt, nprop
-      use prp003, only: cc_nuc, vprop_cm2, vprop_cum, vprop_sum
+      use prp000, only: iprop, nprop
+      use prp003, only: vprop_cm2, vprop_cum
 
       implicit real*8(a-h,o-z)
 

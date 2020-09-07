@@ -29,7 +29,6 @@ c     write(6,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
       use atom, only: ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use const, only: nelec, ipr
       use da_energy_now, only: da_psi
@@ -126,7 +125,6 @@ c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
 c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
       use atom, only: iwctype, ncent
-      use mstates_mod, only: MSTATES, MDETCSFX
       use const, only: hb, nelec
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_vj
@@ -228,7 +226,7 @@ c-----------------------------------------------------------------------
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -258,7 +256,7 @@ c-----------------------------------------------------------------------
       use da_energy_now, only: da_energy, da_psi
       use da_energy_sumcum, only: da_energy_sum, da_psi_sum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
@@ -284,7 +282,7 @@ c-----------------------------------------------------------------------
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
@@ -310,7 +308,7 @@ c-----------------------------------------------------------------------
       use force_fin, only: da_energy_ave, da_energy_err
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
@@ -346,7 +344,7 @@ c-----------------------------------------------------------------------
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
@@ -367,7 +365,7 @@ c-----------------------------------------------------------------------
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 

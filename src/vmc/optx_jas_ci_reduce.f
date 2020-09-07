@@ -2,11 +2,10 @@
 c Written by Claudia Filippi
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       use method_opt, only: method
 

@@ -2,7 +2,6 @@
 c written by Claudia Filippi
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
       use forcepar, only: nforce
       use numbas, only: numr
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
@@ -635,8 +634,8 @@ c-----------------------------------------------------------------------
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmj
-      use gradhess_all, only: MPARMALL, grad, h, s
-      use ci000, only: iciprt, nciprim, nciterm
+      use gradhess_all, only: h, s
+      use ci000, only: nciterm
 
       use method_opt, only: method
 

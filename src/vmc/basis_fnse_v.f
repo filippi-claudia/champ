@@ -8,7 +8,7 @@ c routine to calculate basis functions for electron k
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
 
       implicit real*8(a-h,o-z)
 

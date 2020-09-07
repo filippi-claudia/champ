@@ -2,7 +2,6 @@
 c written by Claudia Filippi
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use estcum, only: iblk
       use estpsi, only: apsi, aref, detref

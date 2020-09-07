@@ -1,10 +1,8 @@
       subroutine optwf_olbfgs
       use olbfgs, only: initialize_olbfgs
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use contrl, only: nblk
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
 
       use method_opt, only: method
 

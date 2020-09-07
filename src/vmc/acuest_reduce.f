@@ -2,7 +2,7 @@
 c Written by Claudia Filippi
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
 
       use est2cm, only: ecm2, avcm2
       use estcum, only: ecum, iblk, avcum

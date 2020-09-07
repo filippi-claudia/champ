@@ -1,6 +1,5 @@
       subroutine olbfgs_more(iter, nparm, deltap, parameters)
       use olbfgs, only: update_hessian, olbfgs_iteration
-      use mstates_mod, only: MSTATES, MDETCSFX
       use sr_mat_n, only: h_sr
 
       implicit real*8(a-h,o-z)

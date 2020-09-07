@@ -1,7 +1,6 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
       use elec, only: ndn, nup
-      use mstates_mod, only: MSTATES, MDETCSFX
       use multidet, only: ivirt, kref
       use optwf_contrl, only: ioptorb
       use Bloc, only: b, tildem
@@ -82,7 +81,6 @@ c-----------------------------------------------------------------------
       subroutine optorb_compute(psid,eloc,deloc)
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use zcompact, only: aaz, dzmat, emz, zmat
@@ -119,7 +117,6 @@ c     enddo
 c-----------------------------------------------------------------------
       subroutine optorb_sum(wtg_new,wtg_old,enew,eold,iflag)
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
@@ -232,7 +229,6 @@ c     ns_current=0
 c-----------------------------------------------------------------------
       subroutine optorb_cum(wsum,esum)
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm, idump_blockav
@@ -297,7 +293,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_init(iflg)
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
@@ -379,7 +374,6 @@ C$ iflg = 0: init *cum, *cm2 as well
 c-----------------------------------------------------------------------
       subroutine optorb_save
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
@@ -407,7 +401,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_restore
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
@@ -437,7 +430,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
       use optwf_contrl, only: ioptorb
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optorb_cblock, only: norbterm
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
@@ -467,7 +459,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_dump(iu)
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm, norbprim
@@ -510,7 +501,6 @@ c-----------------------------------------------------------------------
       subroutine optorb_rstrt(iu)
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm, norbprim
       use orb_mat_003, only: orb_o_cum
@@ -563,7 +553,6 @@ c nreduced has to be set since it will only be known for non-continuation runs
 c-----------------------------------------------------------------------
       subroutine optorb_fin(wcum,ecum)
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
@@ -573,9 +562,9 @@ c-----------------------------------------------------------------------
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_030, only: orb_ecum, orb_wcum
-      use gradhess_all, only: MPARMALL, grad, h, s
+      use gradhess_all, only: grad, h, s
 
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       use method_opt, only: method
 
@@ -783,7 +772,6 @@ c replaced column
 c-----------------------------------------------------------------------
       subroutine optorb_define
       use const, only: nelec
-      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: kref
@@ -795,11 +783,6 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
-      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
-     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
-     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
-     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
-     &             ihessian_zmat 
 
       use method_opt, only: method
 
@@ -1000,7 +983,6 @@ c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
 c-----------------------------------------------------------------------
       subroutine check_orbitals
 
-      use mstates_mod, only: MSTATES, MDETCSFX
 c Do not compute virtual orbitals during single-electron move
       implicit real*8(a-h,o-z)
 

@@ -2,12 +2,12 @@
 
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use optwf_func, only: ifunc_omega, omega
       use contrl, only: nblk
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy, alfgeo
 
       use method_opt, only: method
 
@@ -182,7 +182,6 @@ c enddo iteration
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_lin_d(ndim,nvec,psi,hpsi )
       use optwf_func, only: ifunc_omega
-      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
 
 
@@ -205,7 +204,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_lin_d(ndim,nvec,psi,spsi )
       use optwf_func, only: ifunc_omega
-      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
 
 
@@ -225,7 +223,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine select_ci_root(iroot)
       use csfs, only: ccsf, ncsf
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)

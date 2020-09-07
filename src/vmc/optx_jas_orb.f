@@ -1,7 +1,6 @@
       subroutine optx_jas_orb_sum(wtg_new,wtg_old,iflag)
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
       use derivjas, only: gvalue
       use gradhessjo, only: denergy_old, gvalue_old
       use optwf_contrl, only: ioptjas, ioptorb
@@ -57,7 +56,6 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_orb_init
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
@@ -91,7 +89,6 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_orb_dump(iu)
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
@@ -120,7 +117,6 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_orb_rstrt(iu)
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
@@ -152,7 +148,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_orb_fin(wcum,ecum)
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj

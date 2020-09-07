@@ -35,7 +35,6 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine write_wf_best
-      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
       
       include 'vmc.h'
@@ -168,7 +167,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine write_ci(iwf_fit,filetype)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       use multidet, only: kref
@@ -251,7 +249,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_wf
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
-      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -376,7 +373,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_ci
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
@@ -481,7 +478,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_ci(iadiag)
       use csfs, only: ccsf, ncsf, nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
@@ -607,7 +603,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_ci_best
       use csfs, only: ccsf, ncsf, nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
+      use mstates_mod, only: MSTATES
 
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci
@@ -709,7 +705,6 @@ c Check parameters a2 and b2 > -scalek
 c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
       use optwf_contrl, only: ioptorb
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_parms, only: nparmd, nparmj
       use coefs, only: coef, nbasis, norb
       use optorb_cblock, only: norbterm
@@ -747,7 +742,6 @@ c Update the orbitals
 c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
@@ -881,7 +875,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       implicit real*8(a-h,o-z)
 
@@ -934,7 +928,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       use method_opt, only: method
 
@@ -978,7 +972,6 @@ c-----------------------------------------------------------------------
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
       use derivjas, only: gvalue
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_func, only: ifunc_omega
@@ -986,12 +979,12 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use sr_mat_n, only: elocal, nconf_n, sr_ho
       use sr_mat_n, only: sr_o, wtg
       use deloc_dj_m, only: denergy
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o
-      use ci000, only: iciprt, nciprim, nciterm
-      use ci001_blk, only: ci_o, ci_oe
-      use ci003_blk, only: ci_e, ci_e_old
+      use ci000, only: nciterm
+      use ci001_blk, only: ci_o
+      use ci003_blk, only: ci_e
 
       use method_opt, only: method
 

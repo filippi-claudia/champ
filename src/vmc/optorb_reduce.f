@@ -1,7 +1,6 @@
       subroutine optorb_reduce
 
       use csfs, only: nstates
-      use mstates_mod, only: MSTATES, MDETCSFX
       use optorb_cblock, only: norbterm
       use optwf_contrl, only: ioptorb
       use orb_mat_003, only: orb_o_cum
