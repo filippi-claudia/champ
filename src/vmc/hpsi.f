@@ -3,6 +3,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
+      use efield_mod, only: MCHARGES
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -38,7 +39,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       include 'force.h'
       include 'pcm.h'
       include 'mmpol.h'
-      include 'efield.h'
       include 'optjas.h'
 
 c Calculates energy
