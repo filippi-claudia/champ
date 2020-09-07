@@ -14,6 +14,61 @@
         dp = selected_real_kind(2 * precision(1.0_sp)), &
         qp = selected_real_kind(2 * precision(1.0_dp))
  end module precision_kinds
+ 
+ module vmc
+  !> Arguments:
+  use precision_kinds, only: dp
+
+  ! MELEC  >= number of electrons
+  ! MORB   >= number of orbitals
+  ! MBASIS >= number of basis functions
+  ! MDET   >= number of determinants
+  ! MCENT  >= number of centers
+  ! MCTYPE >= number of center types
+  ! MCTYP3X=max(3,MCTYPE)
+  
+  ! Slater matrices are dimensioned (MELEC/2)**2 assuming 
+  ! equal numbers of up and down spins. MELEC has to be 
+  ! correspondingly larger if spin polarized calculations 
+  ! are attempted.
+
+  ! PLT@eScienceCenter(2020) Moved the parameter here:
+  ! "For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
+  !  For Jastrow3 NEQSX=2*MORDJ should be sufficient.
+  !  I am setting NEQSX=6*MORDJ simply because that is how it was for
+  !  Jastrow3 for reasons I do not understand."
+  !     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
+
+  integer :: MMAT_DIM20
+  real(dp), parameter :: radmax=10.d0
+  integer, parameter :: nrad=3001
+  real(dp), parameter :: delri=(nrad-1)/radmax
+  
+
+  integer, parameter :: MELEC=32, MORB=500, MBASIS=500, MDET=5000, MCENT=20
+  integer, parameter :: MCTYPE=3
+  integer, parameter :: MCTYP3X=5,NSPLIN=1001,MORDJ=7
+  
+  integer, parameter :: MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2
+  integer, parameter :: MORDJ1=MORDJ+1
+  
+
+  integer, parameter :: NEQSX=6*MORDJ, MTERMS=55
+  integer, parameter :: MCENT3=3*MCENT 
+
+  integer, parameter :: NCOEF=5
+  integer, parameter :: MEXCIT=10
+
+  private
+  public :: MELEC,MORB,MBASIS,MDET,MCENT,MCTYPE,MCTYP3X
+  public :: NSPLIN,nrad,MORDJ,MORDJ1,MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+  public :: radmax, delri
+  
+  public :: NEQSX, MTERMS
+  public :: MCENT3, NCOEF, MEXCIT
+
+  save
+ end module vmc
 
  module vmc
   !> Arguments:
@@ -73,11 +128,7 @@
  module atom
    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCENT, MCTYPE
 
    real(dp) :: cent( 3, MCENT)
    real(dp) :: znuc( MCTYPE)
@@ -92,11 +143,7 @@
  module basis
    !> Arguments: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz, n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz, n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MBASIS, MCTYPE
    include 'force.h'
 
    !  ncent  = number of centers                                                                              
@@ -161,11 +208,7 @@
  module b_tmove
    !> Arguments: b_t, iskip
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MORB, MCENT
    include 'pseudo.h'
 
    real(dp) :: b_t(MORB,MPS_QUAD,MCENT,MELEC)
@@ -179,11 +222,7 @@
  module Bloc
    !> Arguments: b, tildem, xmat
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MORB
 
    real(dp) :: b(MORB,MELEC)
    real(dp) :: tildem(MELEC,MORB,2)
@@ -197,11 +236,7 @@
  module Bloc_da
    !> Arguments: b_da, db
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MORB, MCENT
 
    real(dp) :: b_da(3,MELEC,MORB,MCENT)
    real(dp) :: db(3,MELEC,MORB,MCENT) 
@@ -214,11 +249,7 @@
  module Bloc_dj
    !> Arguments: b_dj
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MORB
    include 'optjas.h'
 
    real(dp) :: b_dj(MORB,MELEC,MPARMJ)
@@ -241,11 +272,7 @@
  module casula
    !> Arguments: i_vpsp, icasula, t_vpsp
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MCENT
    include 'pseudo.h'
 
    integer  :: i_vpsp
@@ -260,11 +287,6 @@
  module chck
   !> Arguments: bot
   use precision_kinds, only: dp
-  use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-  use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-  use vmc, only: radmax, delri
-  use vmc, only: NEQSX, MTERMS
-  use vmc, only: MCENT3, NCOEF, MEXCIT
 
    real(dp) :: bot
 
@@ -407,11 +429,7 @@
  module coefs
    !> Arguments: coef, nbasis, norb
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MORB, MBASIS
    include 'force.h'
 
    real(dp) :: coef(MBASIS,MORB,MWF)
@@ -426,11 +444,7 @@
  module config
    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC
    use mstates_mod, only: MSTATES
    include 'force.h'
 
@@ -471,11 +485,6 @@
  module const
    !> Arguments: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
 
    real(dp) :: delta
    real(dp) :: deltai
@@ -517,11 +526,6 @@
 
  module contrl
   !> Arguments: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-  use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-  use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-  use vmc, only: radmax, delri
-  use vmc, only: NEQSX, MTERMS
-  use vmc, only: MCENT3, NCOEF, MEXCIT
 
    integer  :: idump
    integer  :: irstar
@@ -604,11 +608,7 @@ end module contr3
  module csfs
    !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MDET
    use mstates_mod, only: MSTATES, MDETCSFX
    include 'force.h'
 
@@ -628,11 +628,7 @@ end module contr3
  module cuspmat
    !> Arguments: cm, ishe, iwc3, neqs
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: NEQSX
 
    real(dp) :: cm(NEQSX,NEQSX)
    integer  :: ishe
@@ -647,11 +643,7 @@ end module contr3
  module da_energy_sumcum
    !> Arguments: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCENT
 
    real(dp) :: da_energy_cm2(3,MCENT)
    real(dp) :: da_energy_cum(3,MCENT)
@@ -667,11 +659,7 @@ end module contr3
  module da_jastrow4val
    !> Arguments: da_d2j, da_j, da_vj
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MCENT
 
    real(dp) :: da_d2j(3,MELEC,MCENT)
    real(dp) :: da_j(3,MELEC,MCENT)
@@ -685,11 +673,7 @@ end module contr3
  module da_orbval
    !> Arguments: da_d2orb, da_dorb, da_orb
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MORB, MCENT
 
    real(dp) :: da_d2orb(3,MELEC,MORB,MCENT)
    real(dp) :: da_dorb(3,3,MELEC,MORB,MCENT)
@@ -704,11 +688,7 @@ end module contr3
    !> Arguments: da_pecent, da_vps, da_nonloc  
 
    use precision_kinds, only: dp
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc, only: MELEC, MCENT
 
    include 'pseudo.h'
 
@@ -723,11 +703,7 @@ end module contr3
  module da_energy_now
    !> Arguments: da_energy, da_psi
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCENT
  
    real(dp) :: da_energy(3,MCENT)
    real(dp) :: da_psi(3,MCENT)
@@ -753,11 +729,7 @@ end module contr3
  module denergy_det_m
    !> Arguments: denergy_det
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MDET
 
     real(dp) :: denergy_det(MDET,2)
 
@@ -769,11 +741,7 @@ end module contr3
  module denupdn
    !> Arguments: rprobdn, rprobup
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: nrad
 
    real(dp) :: rprobdn(nrad)
    real(dp) :: rprobup(nrad)
@@ -786,11 +754,7 @@ end module contr3
  module derivjas
    !> Arguments: d2g, g, go, gvalue
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC
    include 'optjas.h'
 
    real(dp) :: d2g(MPARMJ)
@@ -806,11 +770,7 @@ end module contr3
  module dets
    !> Arguments: cdet, ndet
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MDET
    use mstates_mod, only: MSTATES
    include 'force.h'
 
@@ -825,11 +785,7 @@ end module contr3
  module dets_equiv
   !> Arguments: cdet_equiv, dcdet_equiv
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MDET
 
    real(dp) :: cdet_equiv(MDET)
    real(dp) :: dcdet_equiv(MDET)
@@ -842,11 +798,7 @@ end module contr3
  module distances_sav
   !> Arguments: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
   use precision_kinds, only: dp
-  use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-  use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-  use vmc, only: radmax, delri
-  use vmc, only: NEQSX, MTERMS
-  use vmc, only: MCENT3, NCOEF, MEXCIT
+  use vmc, only: MELEC, MCENT
 
   real(dp) :: r_ee_sav(MELEC)
   real(dp) :: r_en_sav(MCENT)
@@ -861,11 +813,7 @@ end module contr3
 
  module dorb_m
    !> Arguments: iworbd
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MDET
 
    integer  :: iworbd(MELEC,MDET)
 
@@ -905,11 +853,6 @@ end module contr3
 
  module elec
   !> Arguments: ndn, nup
-  use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-  use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-  use vmc, only: radmax, delri
-  use vmc, only: NEQSX, MTERMS
-  use vmc, only: MCENT3, NCOEF, MEXCIT
 
   integer  :: ndn
   integer  :: nup
@@ -1061,11 +1004,7 @@ end module contr3
  module forcestr
    !> Arguments: delc
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCENT
    include 'force.h'
  
    real(dp) :: delc(3,MCENT,MFORCE)
@@ -1103,11 +1042,7 @@ end module forcewt
  module force_fin
    !> Arguments: da_energy_ave, da_energy_err
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCENT
 
    real(dp) :: da_energy_ave(3,MCENT)
    real(dp) :: da_energy_err(3)
@@ -1120,11 +1055,7 @@ end module forcewt
  module force_mat_n
    !> Arguments: force_o
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCENT
    include 'sr.h'
 
    real(dp) :: force_o(6*MCENT,MCONF)
@@ -1151,11 +1082,7 @@ end module forcewt
  module gauss_ecp
    !> Arguments: ecp_coef, ecp_exponent, necp_power, necp_term
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE
    include 'pseudo.h'
  
    real(dp) :: ecp_coef(MGAUSS,MPS_L,MCTYPE)
@@ -1184,11 +1111,6 @@ end module forcewt
 
  module grid3dflag
    !> Arguments: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
 
    integer  :: i3ddensity
    integer  :: i3dgrid
@@ -1214,11 +1136,6 @@ end module forcewt
  module gradhess_all
    !> Arguments: MPARMALL, grad, h, s
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
    include 'optjas.h'
    include 'optci.h'
    include 'optorb.h'
@@ -1260,11 +1177,7 @@ end module forcewt
  module gradhessjo
    !> Arguments: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE
    use mstates_mod, only: MSTATES
    include 'optjas.h'
 
@@ -1371,11 +1284,6 @@ end module forcewt
 
  module gradjerrb
   !> Arguments: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
-  use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-  use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-  use vmc, only: radmax, delri
-  use vmc, only: NEQSX, MTERMS
-  use vmc, only: MCENT3, NCOEF, MEXCIT
 
    integer  :: nbj_current
    integer  :: ngrad_jas_bcum
@@ -1390,11 +1298,7 @@ end module forcewt
  module grdnthes
    !> Arguments: hessian_zmat
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCENT
 
    real(dp) :: hessian_zmat(3,MCENT)
 
@@ -1405,11 +1309,7 @@ end module forcewt
 
  module grdntsmv
    !> Arguments: igrdaidx, igrdcidx, igrdmv
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCENT
    include 'force.h'
 
     integer  :: igrdaidx(MFORCE)
@@ -1451,11 +1351,7 @@ end module forcewt
  module ijasnonlin
    !> Arguments: d1d2a, d1d2b, d2d2a, d2d2b
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE
 
    real(dp) :: d1d2a(MCTYPE)
    real(dp) :: d1d2b(2)
@@ -1506,11 +1402,6 @@ end module forcewt
 
  module insout
    !> Arguments: inout, inside
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
 
    integer  :: inout
    integer  :: inside
@@ -1523,11 +1414,7 @@ end module forcewt
  module jasn
    !> Arguments: d2ijn, d2n, fijn, fjn, fsn, fsumn
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC
 
    real(dp) :: d2ijn(MELEC,MELEC)
    real(dp) :: d2n
@@ -1544,11 +1431,7 @@ end module forcewt
  module jaso
    !> Arguments: d2ijo, d2o, fijo, fjo, fso, fsumo
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC
 
     real(dp) :: d2ijo(MELEC,MELEC)
     real(dp) :: d2o
@@ -1606,11 +1489,8 @@ end module forcewt
  module jaspar3
    !> Arguments: a, b, c, fck, nord, scalek
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE
+   use vmc, only: MORDJ1
    include 'force.h'
 
    real(dp) :: a(MORDJ1,MWF)
@@ -1628,11 +1508,8 @@ end module forcewt
  module jaspar4
    !> Arguments: a4, norda, nordb, nordc
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE
+   use vmc, only: MORDJ1
    include 'force.h'
 
    real(dp) :: a4(MORDJ1,MCTYPE,MWF)
@@ -1648,11 +1525,7 @@ end module forcewt
  module jaspar6
    !> Arguments: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE
 
    real(dp) :: asymp_jasa(MCTYPE)
    real(dp) :: asymp_jasb(2)
@@ -1670,11 +1543,7 @@ end module forcewt
 
  module jaspointer
    !> Arguments: npoint, npointa
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYP3X
 
    integer  :: npoint(MCTYP3X)
    integer  :: npointa(3*MCTYP3X)
@@ -1700,11 +1569,7 @@ end module forcewt
  module kinet
    !> Arguments: dtdx2n, dtdx2o
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC
 
    real(dp) :: dtdx2n(MELEC)
    real(dp) :: dtdx2o(MELEC)
@@ -1740,11 +1605,7 @@ end module forcewt
  module mix_jas_ci
    !> Arguments: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MDET
    include 'optjas.h'
 
    real(dp) :: de_o_ci(MPARMJ,MDET)
@@ -1940,11 +1801,6 @@ end module forcewt
  module mmpol_pot
    !> Arguments: peqq, pepol_dp, pepol_q, penu_q, peq_dp, penu_dp, u_dd, u_self
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
 
    real(dp) :: penu_dp
    real(dp) :: penu_q
@@ -1996,11 +1852,6 @@ end module forcewt
  module mstates2
    !> Arguments: effcum, effcm2
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
    use mstates_mod, only: MSTATES
 
    real(dp) :: effcm2(MSTATES)
@@ -2014,11 +1865,6 @@ end module forcewt
  module mstates3
    !> Arguments: weights_g, iweight_g
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
    use mstates_mod, only: MSTATES
 
    integer  :: iweight_g(MSTATES)
@@ -2031,11 +1877,7 @@ end module forcewt
 
  module multidet
    !> Arguments: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MDET
 
    integer  :: iactv(2)
    integer  :: irepcol_det(MELEC,MDET,2)
@@ -2053,11 +1895,8 @@ end module forcewt
  module multimat
    !> Arguments: aa, wfmat
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MORB, MDET
+   use vmc, only: MEXCIT
 
    real(dp) :: aa(MELEC,MORB,2)
    real(dp) :: wfmat(MEXCIT**2,MDET,2)
@@ -2070,11 +1909,8 @@ end module forcewt
  module multimatn
    !> Arguments: aan, wfmatn
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MORB, MDET
+   use vmc, only: MEXCIT
 
    real(dp) :: aan(MELEC,MORB)
    real(dp) :: wfmatn(MEXCIT**2,MDET)
@@ -2087,11 +1923,8 @@ end module forcewt
  module numexp
    !> Arguments: ae, ce
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE
+   use vmc, only: NCOEF
    include 'force.h'
    include 'numbas.h'
  
@@ -2120,11 +1953,7 @@ end module forcewt
  module numbas
    !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MBASIS, MCTYPE
    include 'force.h'
    include 'numbas.h'
 
@@ -2145,11 +1974,7 @@ end module forcewt
 
  module numbas1
    !> Arguments: iwlbas, nbastyp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MBASIS, MCTYPE
 
    integer  :: iwlbas(MBASIS,MCTYPE)
    integer  :: nbastyp(MCTYPE)
@@ -2161,11 +1986,7 @@ end module forcewt
 
  module numbas2
    !> Arguments: ibas0, ibas1
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCENT
 
    integer  :: ibas0(MCENT)
    integer  :: ibas1(MCENT)
@@ -2178,11 +1999,7 @@ end module forcewt
  module orbital_num_lag
    !> Arguments: denom
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC
    include '3dgrid.h'
    include '3dgrid_lagrange.h'
 
@@ -2349,11 +2166,7 @@ end module orbital_num_lag
  module optorb
    !> Arguments: dmat_diag, irrep, orb_energy
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MORB
 
    real(dp) :: dmat_diag(MORB)
    integer  :: irrep(MORB)
@@ -2405,11 +2218,7 @@ end module orbital_num_lag
 
  module optorb_mix
    !> Arguments: iwmix_virt, norbopt, norbvirt
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MORB
 
    integer  :: iwmix_virt(MORB,MORB)
    integer  :: norbopt
@@ -2465,11 +2274,7 @@ end module orbital_num_lag
 
  module optwf_nparmj
    !> Arguments: nparma, nparmb, nparmc, nparmf
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE, MCTYP3X
 
    integer  :: nparma(MCTYP3X)
    integer  :: nparmb(3)
@@ -2498,11 +2303,7 @@ end module orbital_num_lag
 
  module optwf_wjas
    !> Arguments: iwjasa, iwjasb, iwjasc, iwjasf
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE, MCTYP3X
 
    integer  :: iwjasa(83,MCTYP3X)
    integer  :: iwjasb(83,3)
@@ -2636,11 +2437,6 @@ end module orbital_num_lag
 
  module pcm_grid3d_contrl
    !> Arguments: ipcm_3dgrid
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
  
    integer  :: ipcm_3dgrid
  
@@ -2814,11 +2610,7 @@ end module orbital_num_lag
  module periodic
    !> Arguments: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt, glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim, ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb, ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec, np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell, vcell_sim, znuc2_sum, znuc_sum
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MORB
    include 'ewald.h'
 
    real(dp) :: cutg
@@ -2884,11 +2676,7 @@ end module orbital_num_lag
  module phifun
    !> Arguments: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MBASIS
 
    real(dp) :: d2phin(MBASIS,MELEC)
    real(dp) :: d2phin_all(3,3,MBASIS,MELEC)
@@ -2960,11 +2748,7 @@ end module orbital_num_lag
  module pseudo
    !> Arguments: lpot, nloc, vps, vpso
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MCENT, MCTYPE
    include 'pseudo.h'
    include 'force.h'
 
@@ -2981,11 +2765,7 @@ end module pseudo
  module pseudo_champ
    !> Arguments: igrid_ps, rmax_coul, rmax_nloc
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE
 
    integer  :: igrid_ps(MCTYPE)
    real(dp) :: rmax_coul(MCTYPE)
@@ -2999,11 +2779,7 @@ end module pseudo
  module pseudo_fahy
    !> Arguments: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE
    include 'pseudo.h'
 
    real(dp) :: drad(MCTYPE)
@@ -3022,11 +2798,7 @@ end module pseudo
  module pseudo_tm
    !> Arguments: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE
    include 'pseudo.h'
 
     real(dp) :: arg(MCTYPE)
@@ -3047,11 +2819,7 @@ end module pseudo
  module pworbital
    !> Arguments: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MORB
    include 'ewald.h'
 
    real(dp) :: c_im(NGVECX,MORB)
@@ -3090,11 +2858,7 @@ end module pseudo
  module rlobxy
    !> Arguments: rlobx, rloby, rloby2
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: NSPLIN
 
     real(dp) :: rlobx(NSPLIN)
     real(dp) :: rloby(NSPLIN)
@@ -3107,11 +2871,6 @@ end module pseudo
 
  module rnyucm
    !> Arguments: ll, lm
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
 
    integer  :: ll(4)
    integer  :: mm(4)
@@ -3164,11 +2923,7 @@ end module rnyucm
  module scratch
    !> Arguments: denergy_det, dtildem
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MORB, MDET
 
    real(dp) :: denergy_det(MDET,2)
    real(dp) :: dtildem(MELEC,MORB,2)
@@ -3181,11 +2936,7 @@ end module rnyucm
  module slatn
    !> Arguments: slmin
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MMAT_DIM
 
    real(dp) :: slmin(MMAT_DIM)
 
@@ -3282,11 +3033,7 @@ module spc2
  module step
    !> Arguments: ekin, ekin2, rprob, suc, trunfb, try
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: nrad
 
    real(dp) :: ekin(nrad)
    real(dp) :: ekin2(nrad)
@@ -3359,11 +3106,8 @@ module spc2
  module vardep
    !> Arguments: cdep, iwdepend, nvdepend
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCTYPE
+   use vmc, only: NEQSX
 
    real(dp) :: cdep(NEQSX,83,MCTYPE)
    integer  :: iwdepend(NEQSX,83,MCTYPE)
@@ -3377,11 +3121,7 @@ module spc2
  module velocity_jastrow
    !> Arguments: vj, vjn
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC
 
    real(dp) :: vj(3,MELEC)
    real(dp) :: vjn(3,MELEC)
@@ -3407,11 +3147,7 @@ module spc2
  module ycompact
    !> Arguments: dymat, ymat
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MORB
    use mstates_mod, only: MSTATES
 
    real(dp) :: dymat(MORB,MELEC,2,MSTATES)
@@ -3425,11 +3161,7 @@ module spc2
  module ycompactn
    !> Arguments: ymatn
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MORB
    use mstates_mod, only: MSTATES
 
    real(dp) :: ymatn(MORB,MELEC,MSTATES)
@@ -3442,11 +3174,7 @@ module spc2
  module zcompact
    !> Arguments: aaz, dzmat, emz, zmat
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MELEC, MORB
    use mstates_mod, only: MSTATES
 
    real(dp) :: aaz(MELEC,MELEC,2,MSTATES)
@@ -3462,11 +3190,7 @@ module spc2
  module zmatrix
    !> Arguments: czcart, czint, czcart_ref, izcmat, izmatrix  
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCENT
 
    real(dp) :: czcart(3,MCENT)
    real(dp) :: czint(3,MCENT)
@@ -3482,11 +3206,7 @@ module spc2
  module zmatrix_grad
    !> Arguments: transform_grd
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-   use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-   use vmc, only: radmax, delri
-   use vmc, only: NEQSX, MTERMS
-   use vmc, only: MCENT3, NCOEF, MEXCIT
+   use vmc, only: MCENT3
 
    real(dp) :: transform_grd(MCENT3,MCENT3)
 
