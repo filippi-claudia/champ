@@ -15,115 +15,7 @@
         qp = selected_real_kind(2 * precision(1.0_dp))
  end module precision_kinds
  
- module vmc
-  !> Arguments:
-  use precision_kinds, only: dp
-
-  ! MELEC  >= number of electrons
-  ! MORB   >= number of orbitals
-  ! MBASIS >= number of basis functions
-  ! MDET   >= number of determinants
-  ! MCENT  >= number of centers
-  ! MCTYPE >= number of center types
-  ! MCTYP3X=max(3,MCTYPE)
-  
-  ! Slater matrices are dimensioned (MELEC/2)**2 assuming 
-  ! equal numbers of up and down spins. MELEC has to be 
-  ! correspondingly larger if spin polarized calculations 
-  ! are attempted.
-
-  ! PLT@eScienceCenter(2020) Moved the parameter here:
-  ! "For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
-  !  For Jastrow3 NEQSX=2*MORDJ should be sufficient.
-  !  I am setting NEQSX=6*MORDJ simply because that is how it was for
-  !  Jastrow3 for reasons I do not understand."
-  !     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
-
-  integer :: MMAT_DIM20
-  real(dp), parameter :: radmax=10.d0
-  integer, parameter :: nrad=3001
-  real(dp), parameter :: delri=(nrad-1)/radmax
-  
-
-  integer, parameter :: MELEC=32, MORB=500, MBASIS=500, MDET=5000, MCENT=20
-  integer, parameter :: MCTYPE=3
-  integer, parameter :: MCTYP3X=5,NSPLIN=1001,MORDJ=7
-  
-  integer, parameter :: MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2
-  integer, parameter :: MORDJ1=MORDJ+1
-  
-
-  integer, parameter :: NEQSX=6*MORDJ, MTERMS=55
-  integer, parameter :: MCENT3=3*MCENT 
-
-  integer, parameter :: NCOEF=5
-  integer, parameter :: MEXCIT=10
-
-  private
-  public :: MELEC,MORB,MBASIS,MDET,MCENT,MCTYPE,MCTYP3X
-  public :: NSPLIN,nrad,MORDJ,MORDJ1,MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-  public :: radmax, delri
-  
-  public :: NEQSX, MTERMS
-  public :: MCENT3, NCOEF, MEXCIT
-
-  save
- end module vmc
-
- module vmc
-  !> Arguments:
-  use precision_kinds, only: dp
-
-  ! MELEC  >= number of electrons
-  ! MORB   >= number of orbitals
-  ! MBASIS >= number of basis functions
-  ! MDET   >= number of determinants
-  ! MCENT  >= number of centers
-  ! MCTYPE >= number of center types
-  ! MCTYP3X=max(3,MCTYPE)
-  
-  ! Slater matrices are dimensioned (MELEC/2)**2 assuming 
-  ! equal numbers of up and down spins. MELEC has to be 
-  ! correspondingly larger if spin polarized calculations 
-  ! are attempted.
-
-  ! PLT@eScienceCenter(2020) Moved the parameter here:
-  ! "For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
-  !  For Jastrow3 NEQSX=2*MORDJ should be sufficient.
-  !  I am setting NEQSX=6*MORDJ simply because that is how it was for
-  !  Jastrow3 for reasons I do not understand."
-  !     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
-
-  integer :: MMAT_DIM20
-  real(dp), parameter :: radmax=10.d0
-  integer, parameter :: nrad=3001
-  real(dp), parameter :: delri=(nrad-1)/radmax
-  
-
-  integer, parameter :: MELEC=32, MORB=500, MBASIS=500, MDET=5000, MCENT=20
-  integer, parameter :: MCTYPE=3
-  integer, parameter :: MCTYP3X=5,NSPLIN=1001,MORDJ=7
-  
-  integer, parameter :: MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2
-  integer, parameter :: MORDJ1=MORDJ+1
-  
-
-  integer, parameter :: NEQSX=6*MORDJ, MTERMS=55
-  integer, parameter :: MCENT3=3*MCENT 
-
-  integer, parameter :: NCOEF=5
-  integer, parameter :: MEXCIT=10
-
-  private
-  public :: MELEC,MORB,MBASIS,MDET,MCENT,MCTYPE,MCTYP3X
-  public :: NSPLIN,nrad,MORDJ,MORDJ1,MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-  public :: radmax, delri
-  
-  public :: NEQSX, MTERMS
-  public :: MCENT3, NCOEF, MEXCIT
-
-  save
- end module vmc
+ 
 
  module atom
    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
@@ -1095,33 +987,6 @@ end module forcewt
    save
  end module gauss_ecp
 
- module grid3d_param
-   !> Arguments: nstep3d, endpt, origin, step3d
-   use precision_kinds, only: dp
-
-   real(dp) :: endpt(3)
-   integer  :: nstep3d(3)
-   real(dp) :: origin(3)
-   real(dp) :: step3d(3)
-
-   private
-   public :: nstep3d, endpt, origin, step3d
-   save
- end module grid3d_param
-
- module grid3dflag
-   !> Arguments: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
-
-   integer  :: i3ddensity
-   integer  :: i3dgrid
-   integer  :: i3dlagorb
-   integer  :: i3dsplorb
-
-   private
-   public :: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
-   save
- end module grid3dflag
-
  module ghostatom
    !> Arguments: newghostype, nghostcent
 
@@ -1336,6 +1201,92 @@ end module forcewt
    public :: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts 
    save
  end module grdntspar
+ 
+ module grid_mod
+  !> Arguments
+  ! flags and dimensions for the 3d grid objects
+  use precision_kinds, only: dp, sp
+  
+  integer, parameter :: MXNSTEP = 1
+  ! integer, parameter :: MXNSTEP = 50
+  integer, parameter :: MXNSTEP2 = MXNSTEP*MXNSTEP
+  integer, parameter :: MXNSTEP3 = MXNSTEP2*MXNSTEP
+  
+  integer, parameter :: IUNDEFINED = -1234567890
+  real(dp), parameter :: UNDEFINED = -1234567890.d0, SHIFT = 2.d0
+  
+  real(sp) grid3d(MXNSTEP,MXNSTEP,MXNSTEP), cart_from_int(MXNSTEP,3)
+
+  private 
+  public :: MXNSTEP, MXNSTEP2, MXNSTEP3
+  public :: IUNDEFINED, UNDEFINED, SHIFT 
+  public :: grid3d, cart_from_int
+  save 
+
+ end module grid_mod
+
+ module grid_spline_mod
+  !> Arguments
+  use precision_kinds, only: sp
+  use vmc, only: MELEC
+  use grid_mod, only: MXNSTEP
+
+  integer, parameter :: MORB_OCC = MELEC/2+3
+  real(sp) orb_num_spl(8,MXNSTEP,MXNSTEP,MXNSTEP,MORB_OCC)
+
+  PRIVATE
+  PUBLIC :: MORB_OCC
+  PUBLIC :: orb_num_spl
+  save 
+
+ end module grid_spline_mod
+
+ module grid_lagrange_mod
+  !> argument
+  use precision_kinds, only: sp
+  use grid_mod, only: MXNSTEP
+  use vmc, only: MELEC
+  ! Number of Lagrange interpolation points/axis
+  integer, parameter :: LAGMAX=4
+  integer, parameter :: LAGSTART = -LAGMAX/2, LAGEND=LAGSTART+LAGMAX-1
+  integer, parameter ::  MORB_OCC = MELEC/2
+  
+  !  Spline fits of the orbitals
+  ! and boundary conditions (for the creation of the fit)
+  real(sp) orb_num_lag(5,MXNSTEP,MXNSTEP,MXNSTEP,MORB_OCC)
+
+  private 
+  public :: LAGMAX, LAGSTART, LAGEND, MORB_OCC
+  public :: orb_num_lag
+  save
+ end module grid_lagrange_mod
+
+ module grid3d_param
+   !> Arguments: nstep3d, endpt, origin, step3d
+   use precision_kinds, only: dp
+
+   real(dp) :: endpt(3)
+   integer  :: nstep3d(3)
+   real(dp) :: origin(3)
+   real(dp) :: step3d(3)
+
+   private
+   public :: nstep3d, endpt, origin, step3d
+   save
+ end module grid3d_param
+
+ module grid3dflag
+   !> Arguments: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
+
+   integer  :: i3ddensity
+   integer  :: i3dgrid
+   integer  :: i3dlagorb
+   integer  :: i3dsplorb
+
+   private
+   public :: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
+   save
+ end module grid3dflag
 
  module header
    !> Arguments: date, title
@@ -1995,65 +1946,6 @@ end module forcewt
    public :: ibas0, ibas1
    save
  end module numbas2
-
- module grid_mod
-  !> Arguments
-  ! flags and dimensions for the 3d grid objects
-  use precision_kinds, only: dp, sp
-  
-  integer, parameter :: MXNSTEP = 1
-  ! integer, parameter :: MXNSTEP = 50
-  integer, parameter :: MXNSTEP2 = MXNSTEP*MXNSTEP
-  integer, parameter :: MXNSTEP3 = MXNSTEP2*MXNSTEP
-  
-  integer, parameter :: IUNDEFINED = -1234567890
-  real(dp), parameter :: UNDEFINED = -1234567890.d0, SHIFT = 2.d0
-  
-  real(sp) grid3d(MXNSTEP,MXNSTEP,MXNSTEP), cart_from_int(MXNSTEP,3)
-
-  private 
-  public :: MXNSTEP, MXNSTEP2, MXNSTEP3
-  public :: IUNDEFINED, UNDEFINED, SHIFT 
-  public :: grid3d, cart_from_int
-  save 
-
-end module grid_mod
-
-module grid_spline_mod
-  !> Arguments
-  use precision_kinds, only: sp
-  use vmc, only: MELEC
-  use grid_mod, only: MXNSTEP
-
-  integer, parameter :: MORB_OCC = MELEC/2+3
-  real(sp) orb_num_spl(8,MXNSTEP,MXNSTEP,MXNSTEP,MORB_OCC)
-
-  PRIVATE
-  PUBLIC :: MORB_OCC
-  PUBLIC :: orb_num_spl
-  save 
-
-end module grid_spline_mod
-
-module grid_lagrange_mod
-  !> argument
-  use precision_kinds, only: sp
-  use grid_mod, only: MXNSTEP
-  use vmc, only: MELEC
-  ! Number of Lagrange interpolation points/axis
-  integer, parameter :: LAGMAX=4
-  integer, parameter :: LAGSTART = -LAGMAX/2, LAGEND=LAGSTART+LAGMAX-1
-  integer, parameter ::  MORB_OCC = MELEC/2
-  
-  !  Spline fits of the orbitals
-  ! and boundary conditions (for the creation of the fit)
-  real(sp) orb_num_lag(5,MXNSTEP,MXNSTEP,MXNSTEP,MORB_OCC)
-
-  private 
-  public :: LAGMAX, LAGSTART, LAGEND, MORB_OCC
-  public :: orb_num_lag
-  save
-end module grid_lagrange_mod
 
  module orbital_num_lag
    !> Arguments: denom
@@ -3188,6 +3080,62 @@ module spc2
    public :: vj, vjn 
    save
  end module velocity_jastrow
+ 
+ module vmc
+  !> Arguments:
+  use precision_kinds, only: dp
+
+  ! MELEC  >= number of electrons
+  ! MORB   >= number of orbitals
+  ! MBASIS >= number of basis functions
+  ! MDET   >= number of determinants
+  ! MCENT  >= number of centers
+  ! MCTYPE >= number of center types
+  ! MCTYP3X=max(3,MCTYPE)
+  
+  ! Slater matrices are dimensioned (MELEC/2)**2 assuming 
+  ! equal numbers of up and down spins. MELEC has to be 
+  ! correspondingly larger if spin polarized calculations 
+  ! are attempted.
+
+  ! PLT@eScienceCenter(2020) Moved the parameter here:
+  ! "For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
+  !  For Jastrow3 NEQSX=2*MORDJ should be sufficient.
+  !  I am setting NEQSX=6*MORDJ simply because that is how it was for
+  !  Jastrow3 for reasons I do not understand."
+  !     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
+
+  integer :: MMAT_DIM20
+  real(dp), parameter :: radmax=10.d0
+  integer, parameter :: nrad=3001
+  real(dp), parameter :: delri=(nrad-1)/radmax
+  
+
+  integer, parameter :: MELEC=32, MORB=500, MBASIS=500, MDET=5000, MCENT=20
+  integer, parameter :: MCTYPE=3
+  integer, parameter :: MCTYP3X=5,NSPLIN=1001,MORDJ=7
+  
+  integer, parameter :: MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2
+  integer, parameter :: MORDJ1=MORDJ+1
+  
+
+  integer, parameter :: NEQSX=6*MORDJ, MTERMS=55
+  integer, parameter :: MCENT3=3*MCENT 
+
+  integer, parameter :: NCOEF=5
+  integer, parameter :: MEXCIT=10
+
+  private
+  public :: MELEC,MORB,MBASIS,MDET,MCENT,MCTYPE,MCTYP3X
+  public :: NSPLIN,nrad,MORDJ,MORDJ1,MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+  public :: radmax, delri
+  
+  public :: NEQSX, MTERMS
+  public :: MCENT3, NCOEF, MEXCIT
+
+  save
+ end module vmc
+
 
  module wfsec
    !> Arguments: iwf, iwftype, nwftype
