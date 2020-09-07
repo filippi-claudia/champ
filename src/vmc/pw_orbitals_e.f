@@ -5,11 +5,9 @@ c isortg could be used to map g-vectors from iv to ig and
 c isortk could be used to map k-vectors.
 c At present it is assumed that both g- and k-vectors are in the correct order.
 
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use ewald_mod, only: IVOL_RATIO
+      use ewald_mod, only: NGVECX
+      use vmc, only: MELEC
       use const, only: nelec, ipr
       use periodic, only: glatt
       use periodic, only: glatt_sim, gnorm, gvec, igmult, igvec
@@ -22,7 +20,6 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       implicit real*8(a-h,o-z)
 
       include 'force.h'
-      include 'ewald.h'
 
 
       dimension x(3),orb(*)
