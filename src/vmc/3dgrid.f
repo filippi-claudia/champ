@@ -14,6 +14,9 @@ c----------------------------------------------------------------------
 
       subroutine setup_grid()
 
+      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
+      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
+      use grid_mod, only: grid3d, cart_from_int
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -25,7 +28,6 @@ c----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include '3dgrid.h'
 
 CACTIVATE
 c     if (irstar.ne.1) then
@@ -155,11 +157,13 @@ c     Print the parameters to the output file
 c----------------------------------------------------------------------
 
       function int_from_cart(value,iaxis)
+      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
+      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
+      use grid_mod, only: grid3d, cart_from_int
       use grid3d_param, only: endpt, origin, step3d
       implicit real*8(a-h,o-z)
 
 
-      include '3dgrid.h'
       
       if (( value.lt.origin(iaxis) ).or.
      &    ( value.ge.endpt (iaxis) )) then
@@ -174,6 +178,9 @@ c----------------------------------------------------------------------
 
       subroutine write_cube(cube_file)
 
+      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
+      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
+      use grid_mod, only: grid3d, cart_from_int
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -184,7 +191,6 @@ c----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include '3dgrid.h'
 
       character*(*) cube_file
 
