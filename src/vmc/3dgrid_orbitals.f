@@ -5,14 +5,10 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       use grid_spline_mod, only: MORB_OCC
       use grid_spline_mod, only: orb_num_spl
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use grid_mod, only: MXNSTEP, MXNSTEP3
+      use grid_mod, only: cart_from_int
+      use vmc, only: MELEC, MCENT
+      use vmc, only: MMAT_DIM2
       use atom, only: cent, ncent
 
       use ghostatom, only: newghostype, nghostcent
@@ -301,18 +297,12 @@ c----------------------------------------------------------------------
 
 
       subroutine spline_mo(r,iorb,f,df,ddf,ier)
-      use grid_spline_mod, only: MORB_OCC
       use grid_spline_mod, only: orb_num_spl
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use grid_mod, only: MXNSTEP
+      use grid_mod, only: IUNDEFINED
+      use grid_mod, only: cart_from_int
       use insout, only: inout, inside
-      use grid3d_param, only: nstep3d, endpt, origin, step3d
+      use grid3d_param, only: nstep3d, step3d
       implicit real*8(a-h,o-z)
 
 c     Input:
@@ -402,20 +392,15 @@ c Lagrange interpolation routines
 
       subroutine setup_3dlagorb
 
-      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND, MORB_OCC
+      use grid_lagrange_mod, only: LAGSTART, LAGEND, MORB_OCC
       use grid_lagrange_mod, only: orb_num_lag
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
       use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc, only: MELEC, MORB, MCENT
+      use vmc, only: MMAT_DIM2
       use atom, only: cent, ncent
-      use wfsec, only: iwf, iwftype, nwftype
-      use grid3d_param, only: nstep3d, endpt, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use wfsec, only: iwf
+      use grid3d_param, only: nstep3d, endpt, origin
+      use orbital_num_lag, only: denom
 
       implicit real*8(a-h,o-z)
 
@@ -604,20 +589,14 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND, MORB_OCC
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use grid_mod, only: cart_from_int
+      use vmc, only: MELEC, MORB
       use insout, only: inout, inside
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
 
       implicit real*8(a-h,o-z)
 
@@ -691,20 +670,14 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND, MORB_OCC
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use grid_mod, only: cart_from_int
+      use vmc, only: MELEC, MORB
       use insout, only: inout, inside
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
 
       implicit real*8(a-h,o-z)
 
@@ -779,20 +752,14 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND, MORB_OCC
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use grid_mod, only: cart_from_int
+      use vmc, only: MORB
       use insout, only: inout, inside
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
 
       implicit real*8(a-h,o-z)
 
@@ -866,20 +833,14 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND, MORB_OCC
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use grid_mod, only: cart_from_int
+      use vmc, only: MORB
       use insout, only: inout, inside
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
 
       implicit real*8(a-h,o-z)
 
@@ -944,17 +905,10 @@ c Compute displacements
       end
 c-----------------------------------------------------------------------
       subroutine orb3d_dump(iu)
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
-      use coefs, only: coef, nbasis, norb
+      use grid_mod, only: cart_from_int
+      use coefs, only: norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+      use grid3dflag, only: i3dgrid, i3dlagorb, i3dsplorb
 
       implicit real*8(a-h,o-z)
 
@@ -979,18 +933,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine orb3d_rstrt(iu)
 
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
-      use coefs, only: coef, nbasis, norb
+      use grid_mod, only: cart_from_int
+      use coefs, only: norb
 
       use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+      use grid3dflag, only: i3dgrid, i3dlagorb, i3dsplorb
 
       implicit real*8(a-h,o-z)
 
@@ -1013,18 +960,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_dump(iu)
-      use grid_spline_mod, only: MORB_OCC
       use grid_spline_mod, only: orb_num_spl
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
       implicit real*8(a-h,o-z)
 
 
@@ -1040,18 +978,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_rstrt(iu)
-      use grid_spline_mod, only: MORB_OCC
       use grid_spline_mod, only: orb_num_spl
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
       implicit real*8(a-h,o-z)
 
 
@@ -1067,19 +996,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_dump(iu)
 
-      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND, MORB_OCC
       use grid_lagrange_mod, only: orb_num_lag
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
 
       implicit real*8(a-h,o-z)
 
@@ -1097,19 +1016,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_rstrt(iu)
 
-      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND, MORB_OCC
       use grid_lagrange_mod, only: orb_num_lag
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
 
       implicit real*8(a-h,o-z)
 
