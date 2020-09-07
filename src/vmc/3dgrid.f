@@ -14,14 +14,9 @@ c----------------------------------------------------------------------
 
       subroutine setup_grid()
 
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
+      use grid_mod, only: MXNSTEP
       use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
       use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: cent, ncent
       use contrl, only: irstar
       use grid3d_param, only: endpt, nstep3d, origin, step3d
@@ -157,9 +152,7 @@ c     Print the parameters to the output file
 c----------------------------------------------------------------------
 
       function int_from_cart(value,iaxis)
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
+      use grid_mod, only: IUNDEFINED
       use grid3d_param, only: endpt, origin, step3d
       implicit real*8(a-h,o-z)
 
@@ -178,14 +171,7 @@ c----------------------------------------------------------------------
 
       subroutine write_cube(cube_file)
 
-      use grid_mod, only: MXNSTEP, MXNSTEP2, MXNSTEP3
-      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use grid_mod, only: grid3d
       use atom, only: znuc, cent, iwctype, ncent
       use grid3d_param, only: nstep3d, origin, step3d
 
