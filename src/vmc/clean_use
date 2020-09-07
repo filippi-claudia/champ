@@ -2,9 +2,11 @@
 
 for file in $(ls -d *.f*); do
 	echo $file;
-	~/refac/refac/clean_use.py $file -ow
-	cd ../../build
-	make
-	([ $? -eq 0 ] && echo "success") || exit $?
-	cd ../src/vmc
+	#~/refac/refac/clean_use.py $file -ow
+	~/refac/refac/replace_include_by_module.py $file mstates.h m_common.f90 mstates_mod -ow
+
+	#cd ../../build
+	#make
+	#([ $? -eq 0 ] && echo "success") || exit $?
+	#cd ../src/vmc
 done
