@@ -1,5 +1,6 @@
       subroutine efield_extpot_ene(coord,nelec,efield_pot)
 
+      use efield_mod, only: MCHARGES
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -12,7 +13,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'efield.h'
 
       dimension coord(3,*)
 
@@ -30,6 +30,7 @@
 c-----------------------------------------------------------------------
       subroutine efield_compute_extint
 
+      use efield_mod, only: MCHARGES
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -43,7 +44,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'efield.h'
 
 
       efield_nucext=0
