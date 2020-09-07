@@ -65,7 +65,6 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/pot.f
     ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_grid.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_vmc.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/mmpol.f
     ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
