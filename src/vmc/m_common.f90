@@ -1234,9 +1234,9 @@ end module forcewt
   integer, parameter :: MORB_OCC = MELEC/2+3
   real(sp) orb_num_spl(8,MXNSTEP,MXNSTEP,MXNSTEP,MORB_OCC)
 
-  PRIVATE
-  PUBLIC :: MORB_OCC
-  PUBLIC :: orb_num_spl
+  private 
+  public :: MORB_OCC
+  public :: orb_num_spl
   save 
 
  end module grid_spline_mod
