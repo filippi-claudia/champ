@@ -762,6 +762,26 @@ end module contr3
   save
  end module elec
 
+ module embed
+  ! tables for hartree and exchange potentials 
+  ! max interpolation order
+  integer, parameter :: MXTABI = 6 
+  ! max number of  hartree, exchangetables 
+  integer, parameter :: MXHTAB=1
+  integer, parameter :: MXXTAB=1
+  integer, parameter :: MXTAB=MXHTAB+MXXTAB
+  ! max number of gridpoints in hartree table
+  integer, parameter :: MXHGRID=1
+  ! max number of gridpoints in exchange tables
+  integer, parameter :: MXXGRID=1
+
+  private 
+  public :: MXTABI, MXTAB, MXHTAB, MXXTAB
+  public :: MXHGRID, MXXGRID
+  save 
+ end module embed
+
+
  module estcum
    !> Arguments: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
    use precision_kinds, only: dp
