@@ -1,5 +1,10 @@
       subroutine readps
 c Written by Claudia Filippi
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, iwctype, nctype
 
       use pseudo_fahy, only: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
@@ -10,7 +15,6 @@ c Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
@@ -87,6 +91,11 @@ c     call gesqua (nquad,xq,yq,zq,wq)
 c-----------------------------------------------------------------------
       subroutine getvps(rad,iel)
 c Written by Claudia Filippi
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, iwctype, ncent
 
       use pseudo_fahy, only: drad, dradl, npotl, potl, ptnlc, rcmax
@@ -96,7 +105,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
 
       include 'pseudo.h'

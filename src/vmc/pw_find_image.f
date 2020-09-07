@@ -12,11 +12,15 @@ c Warning:  I need to fix the above:
 c Also return rlenmin to set cutr to 1/2 the shortest lattice vector.  I think that is
 c good enough -- no need to use 1/2 the shortest perpendicular distance.
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar6, only: cutjas
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       parameter (eps=1.d-12)
 
 
@@ -266,11 +270,15 @@ c Written by Cyrus Umrigar
 c For any vector r (from one particle to another) it replaces the vector
 c by its closest image and finds its norm
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use periodic, only: rlatt, rlatt_inv
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'ewald.h'
 
 
@@ -346,11 +354,15 @@ c Written by Cyrus Umrigar
 c For any vector r (from one particle to another) it replaces the vector
 c by its closest image and finds its norm and the shift needed.
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use periodic, only: rlatt, rlatt_inv
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'ewald.h'
 
 

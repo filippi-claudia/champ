@@ -1,4 +1,9 @@
       subroutine force_analy_reduce
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
 
       use mpiconf, only: wid
@@ -8,7 +13,6 @@
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'vmc.h'
 
       dimension collect(3*MCENT)
 

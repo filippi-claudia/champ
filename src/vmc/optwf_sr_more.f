@@ -3,6 +3,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_hs(nparm,sr_adiag)
 c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use mpiconf, only: idtask
@@ -20,7 +25,6 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       include 'mpif.h'
       include 'sr.h'
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -300,6 +304,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine atimes_n(n,z,r)
 c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use optwf_func, only: ifunc_omega, omega, omega_hes
@@ -311,7 +320,6 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
       include 'sr.h'
@@ -424,6 +432,11 @@ c endif idtask.eq.0
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_rescale_deltap(nparm,deltap)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mpiconf, only: idtask
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot
@@ -433,7 +446,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'vmc.h'
       include 'sr.h'
 
 
@@ -478,6 +490,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_position_bcast
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
       use force_fin, only: da_energy_ave
       use force_analy, only: iforce_analy
@@ -485,7 +502,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -499,6 +515,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine forces_zvzb(nparm)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
 
       use force_fin, only: da_energy_ave
@@ -512,7 +533,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       include 'mpif.h'
       include 'sr.h'
-      include 'vmc.h'
       include 'force.h'
 
       parameter (MTEST=1500)

@@ -1,5 +1,10 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use elec, only: ndn, nup
       use multidet, only: ivirt, kref
       use optwf_contrl, only: ioptorb
@@ -11,7 +16,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -80,6 +84,11 @@ c ns_current reset in optorb_sum
 c-----------------------------------------------------------------------
       subroutine optorb_compute(psid,eloc,deloc)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use optwf_contrl, only: ioptorb
@@ -88,7 +97,6 @@ c-----------------------------------------------------------------------
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -116,6 +124,11 @@ c     enddo
       end
 c-----------------------------------------------------------------------
       subroutine optorb_sum(wtg_new,wtg_old,enew,eold,iflag)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use optwf_contrl, only: ioptorb
@@ -131,7 +144,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -228,6 +240,11 @@ c     ns_current=0
       end
 c-----------------------------------------------------------------------
       subroutine optorb_cum(wsum,esum)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use optwf_contrl, only: ioptorb
@@ -238,7 +255,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -292,6 +308,11 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine optorb_init(iflg)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use optwf_contrl, only: ioptorb
@@ -307,7 +328,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -373,6 +393,11 @@ C$ iflg = 0: init *cum, *cm2 as well
       end
 c-----------------------------------------------------------------------
       subroutine optorb_save
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use optwf_contrl, only: ioptorb
@@ -382,7 +407,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -400,6 +424,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_restore
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use optwf_contrl, only: ioptorb
@@ -409,7 +438,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -429,6 +457,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
       use orb_mat_003, only: orb_o_cum
@@ -437,7 +470,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'optorb.h'
 
       dimension oav(*),eoav(*),fo(*),foerr(*)
@@ -458,6 +490,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_dump(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use optwf_contrl, only: ioptorb
@@ -472,7 +509,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -500,6 +536,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_rstrt(iu)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm, norbprim
@@ -513,7 +554,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -552,6 +592,11 @@ c nreduced has to be set since it will only be known for non-continuation runs
       end
 c-----------------------------------------------------------------------
       subroutine optorb_fin(wcum,ecum)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use optwf_contrl, only: ioptorb
@@ -573,7 +618,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
       include 'optci.h'
@@ -771,6 +815,11 @@ c replaced column
       end
 c-----------------------------------------------------------------------
       subroutine optorb_define
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -789,7 +838,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -982,11 +1030,15 @@ c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
       end
 c-----------------------------------------------------------------------
       subroutine check_orbitals
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
 
 c Do not compute virtual orbitals during single-electron move
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'optci.h'

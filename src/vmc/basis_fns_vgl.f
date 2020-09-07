@@ -3,6 +3,11 @@ c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt rout
 c routine to calculate the values of the basis functions and their derivatives
 c vgl -> value, gradient, laplacian
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use ghostatom, only: nghostcent
       use const, only: pi, nelec
@@ -17,7 +22,6 @@ c vgl -> value, gradient, laplacian
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'numbas.h'
       include 'pseudo.h'
@@ -499,11 +503,15 @@ c-------------------------------------------------------------------
 c-------------------------------------------------------------------
       subroutine n0_inc(l,k,ic)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
 
 
       if(abs(phin(l,k))+abs(dphin(1,l,k))+abs(dphin(2,l,k))+abs(dphin(3,l,k)).gt.1.d-20)then

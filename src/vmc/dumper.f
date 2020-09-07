@@ -3,6 +3,11 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
       use config, only: xold
       use csfs, only: nstates
@@ -28,7 +33,6 @@ c job where it left off
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'pseudo.h'
       include 'mpi_qmc.h'

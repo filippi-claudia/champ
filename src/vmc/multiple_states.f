@@ -1,12 +1,16 @@
 c----------------------------------------------------------------------
       subroutine efficiency_sample(ipass,determ_s,determ_psig)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'optci.h'
 
       dimension determ_s(*)
@@ -28,12 +32,16 @@ c     write(88,*) (effcum(j)*effcum(j)/effcm2(j)/ipass,j=1,nstates_psig)
       end
 c----------------------------------------------------------------------
       subroutine efficiency_init
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mstates_ctrl, only: nstates_psig
       use mstates2, only: effcm2, effcum
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'optci.h'
       do 100 j=1,nstates_psig
         effcum(j)=0
@@ -42,13 +50,17 @@ c----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------
       subroutine efficiency_prt(passes)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
       include 'optci.h'
 
       if(iefficiency.eq.0) return
@@ -63,13 +75,17 @@ c       write(6,*) effcum(j)*effcum(j)/passes,effcm2(j)
       end
 c----------------------------------------------------------------------
       subroutine efficiency_dump(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
       include 'optci.h'
 
       if(iefficiency.eq.0) return
@@ -79,13 +95,17 @@ c----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine efficiency_rstrt(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
       include 'optci.h'
 
       if(iefficiency.eq.0) return

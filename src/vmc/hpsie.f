@@ -1,6 +1,11 @@
       subroutine psie(iel,coord,psid,psij,ipass,iflag)
 c Written by Claudia Filippi by modifying hpsi
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
       use estpsi, only: apsi, aref
       use multidet, only: kref
@@ -10,7 +15,6 @@ c Written by Claudia Filippi by modifying hpsi
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
       include 'optjas.h'

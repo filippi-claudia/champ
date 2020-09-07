@@ -4,6 +4,11 @@ c Reads in localized orbitals, in either
 c Modified by A. Scemama (printing in a GAMESS-like format)
 c 1) a slater basis
 c 2) a gaussian basis
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, iwctype, nctype, ncent
       use ghostatom, only: newghostype
       use const, only: nelec
@@ -18,7 +23,6 @@ c 2) a gaussian basis
       parameter (zero=0.d0,one=1.d0)
       parameter(nprime=10)
 
-      include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
       include 'pseudo.h'

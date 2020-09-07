@@ -1,12 +1,16 @@
 c-----------------------------------------------------------------------
       subroutine write_wf(iwf_fit,iter)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mpiconf, only: idtask
 
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'vmc.h'
       include 'force.h'
 
       character*40 filetype,wf,itn
@@ -35,9 +39,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine write_wf_best
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       implicit real*8(a-h,o-z)
       
-      include 'vmc.h'
       include 'force.h'
 
       call restore_jastrow_best
@@ -51,6 +59,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
 
       use jaspar, only: nspin1, nspin2
@@ -62,7 +75,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
       character*50 fmt
@@ -122,6 +134,11 @@ c tmp
       end
 c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use numbas, only: numr
 
       use optwf_contrl, only: ioptorb
@@ -130,7 +147,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'numbas.h'
 
@@ -166,6 +182,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine write_ci(iwf_fit,filetype)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
@@ -180,7 +201,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
       character*40 filename,filetype
@@ -248,10 +268,14 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_wf
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -263,10 +287,14 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine restore_wf(iadiag)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -278,8 +306,12 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_wf_best(ioptjas,ioptorb,ioptci)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
       include 'force.h'
 
       if(ioptjas.ne.0) call save_jastrow_best
@@ -291,6 +323,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_jastrow
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
 
       use jaspar3, only: a, b, c
@@ -301,7 +338,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -345,10 +381,14 @@ c Restore parameters corresponding to run generating hessian
 
 c-----------------------------------------------------------------------
       subroutine save_lcao
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -372,6 +412,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
 
@@ -380,7 +425,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -428,6 +472,11 @@ c reset kref=1
 c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
  
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
 
       use jaspar3, only: a, b, c, scalek
@@ -438,7 +487,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -461,10 +509,14 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -477,13 +529,17 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine copy_ci(iadiag)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ccsf, ncsf, nstates
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -500,12 +556,16 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_zex(iadiag)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use coefs, only: nbasis
       use basis, only: zex
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -517,6 +577,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
 
       use jaspar3, only: a, b, c
@@ -527,7 +592,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -570,12 +634,16 @@ c Restore parameters corresponding to run generating hessian
       end
 c-----------------------------------------------------------------------
       subroutine save_lcao_best
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -602,6 +670,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci_best
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ccsf, ncsf, nstates
       use mstates_mod, only: MSTATES
 
@@ -611,7 +684,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -663,6 +735,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
       use jaspar3, only: a, b, c, scalek
       use jaspar4, only: a4
@@ -672,7 +749,6 @@ c-----------------------------------------------------------------------
       
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
       dimension dparm(*)
@@ -704,6 +780,11 @@ c Check parameters a2 and b2 > -scalek
       end
 c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
       use coefs, only: coef, nbasis, norb
@@ -712,7 +793,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -741,6 +821,11 @@ c Update the orbitals
       end
 c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       use dets, only: cdet, ndet
@@ -751,7 +836,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
 
       dimension dparm(*)
@@ -803,6 +887,11 @@ c90     write(6,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
 c-----------------------------------------------------------------------
       subroutine check_parms_jas(iflag)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
 
       use jaspar3, only: a, b, scalek
@@ -818,7 +907,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -846,10 +934,13 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine test_solution_parm(nparm,dparm,
      &              dparm_norm,dparm_norm_min,add_diag,iflag)
-
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
 
       dimension dparm(*)
 
@@ -872,6 +963,11 @@ c Calculate rms change in parameters
 c-----------------------------------------------------------------------
       subroutine save_nparms
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
@@ -881,7 +977,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'optorb.h'
@@ -925,6 +1020,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine set_nparms_tot
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
@@ -937,7 +1037,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'optci.h'
@@ -971,6 +1070,11 @@ c-----------------------------------------------------------------------
       subroutine optwf_store(l,wt,psid,energy)
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
       use derivjas, only: gvalue
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
@@ -991,7 +1095,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'optorb.h'

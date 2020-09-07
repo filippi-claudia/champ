@@ -3,6 +3,11 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       subroutine setup_3dsplorb
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: cent, ncent
 
       use ghostatom, only: newghostype, nghostcent
@@ -20,7 +25,6 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       implicit real*8(a-h,o-z)
 
       include 'force.h'
-      include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_spline.h'
 
@@ -251,7 +255,7 @@ c       call r8mktricubw(cart_from_int(1,1),nstep3d(1),
         if (ier.eq.1) 
      >   call fatal_error ('Error in r8mktricubw')
         write (45,*) 'orbital ', iorb, 'splined'
-       end do
+       enddo
       endif ! ( irstar .ne. 0 )
 
 c DEBUG
@@ -294,10 +298,14 @@ c----------------------------------------------------------------------
 
 
       subroutine spline_mo(r,iorb,f,df,ddf,ier)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use insout, only: inout, inside
       use grid3d_param, only: nstep3d, endpt, origin, step3d
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_spline.h'
 
@@ -388,6 +396,11 @@ c Lagrange interpolation routines
 
       subroutine setup_3dlagorb
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: cent, ncent
       use wfsec, only: iwf, iwftype, nwftype
       use grid3d_param, only: nstep3d, endpt, origin, step3d
@@ -396,7 +409,6 @@ c Lagrange interpolation routines
       implicit real*8(a-h,o-z)
 
       include 'force.h'
-      include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
 
@@ -583,6 +595,11 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
@@ -590,7 +607,6 @@ c
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
@@ -663,6 +679,11 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
@@ -670,7 +691,6 @@ c
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
@@ -744,6 +764,11 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
@@ -751,7 +776,6 @@ c
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
@@ -824,6 +848,11 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use insout, only: inout, inside
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
@@ -831,7 +860,6 @@ c
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
@@ -895,6 +923,11 @@ c Compute displacements
       end
 c-----------------------------------------------------------------------
       subroutine orb3d_dump(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
@@ -903,7 +936,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
 
@@ -924,6 +956,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine orb3d_rstrt(iu)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use coefs, only: coef, nbasis, norb
 
       use grid3d_param, only: endpt, nstep3d, origin, step3d
@@ -933,7 +970,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include '3dgrid.h'
 
@@ -952,12 +988,16 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_dump(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_spline.h'
       include 'force.h'
@@ -972,12 +1012,16 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_rstrt(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_spline.h'
       include 'force.h'
@@ -992,6 +1036,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_dump(iu)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       use orbital_num_lag, only: denom, step_inv
@@ -999,7 +1048,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
       include 'force.h'
@@ -1015,6 +1063,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_rstrt(iu)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use coefs, only: coef, nbasis, norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       use orbital_num_lag, only: denom, step_inv
@@ -1022,7 +1075,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include '3dgrid.h'
       include '3dgrid_lagrange.h'
       include 'force.h'

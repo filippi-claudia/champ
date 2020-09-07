@@ -6,6 +6,11 @@ c     read data for pcm calculations
 c     comput nuclei-qpol interactions (penups,penupv)
 c...........................................................
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
       use pcm_cntrl, only: icall, ichpol, ipcm, isurf
       use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
@@ -21,7 +26,6 @@ c...........................................................
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h' 
       include 'pcm.h'
 
       DATA PI/3.1415927D0/
@@ -137,6 +141,11 @@ c......................................................
       subroutine pcm_qvol(n)
 c Written by Amovilli-Floris
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: nscv
 
@@ -144,7 +153,6 @@ c Written by Amovilli-Floris
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'pcm.h'
 
       if(ipcm.eq.0) return
@@ -160,6 +168,11 @@ C     ***************************************************************
 C     contribution from nuclei to polarization charghes
 C     ***************************************************************
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
@@ -179,7 +192,6 @@ C     ***************************************************************
       real*8 ah_vec,det
 C     
       include 'pcm.h'
-      include 'vmc.h' 
 C    
       dimension ah_vec(MCHS*MCHS),bhn(MCHS),ah(MCHS,MCHS)
 
@@ -284,6 +296,11 @@ c     3) for the accepted configuration, the normal component
 c        of the electron field  at the point on the surface is computed 
 C     ***************************************************************
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use pcm_hpsi, only: enfpcm, qopcm
       use pcm_xv_new, only: xv_new
@@ -299,7 +316,6 @@ C     ***************************************************************
 
 
       include 'pcm.h'
-      include 'vmc.h'
 
       dimension coord(3,*)
       dimension fac(100)
@@ -414,6 +430,11 @@ c............................................................
 c      update of volume charges and penupol
 c............................................................
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
       use pcm_xv_new, only: xv_new
       use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
@@ -427,7 +448,6 @@ c............................................................
 
 
 
-      include 'vmc.h'
       include 'pcm.h'
 
       iupdate=0
@@ -462,6 +482,11 @@ c............................................................
 c     compute penupv of volume charges 
 c............................................................
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
@@ -472,7 +497,7 @@ c............................................................
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h' 
+       
       include 'pcm.h'
 
       if(ipcm.eq.0) return
@@ -839,6 +864,11 @@ c     da modificare per stati eccitati
 c................................................................
       subroutine qpcm_charges2(enfpcm_ave,enfpcm_err,qpol)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
@@ -916,6 +946,11 @@ c     This subroutine computes the coordinates of point charges
 c     on the cavity surface
 C     ***************************************************************
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: cent, iwctype, ncent
       use spc, only: nsf, num
       use spc1, only: csf, qsf, rsf
@@ -932,7 +967,6 @@ C     ***************************************************************
 
 
       include 'pcm.h'
-      include 'vmc.h'
 c
 c....................................................................
 c....................................................................
@@ -1517,7 +1551,6 @@ C     ***************************************************************
 
 C     
       include 'pcm.h'
-      include 'vmc.h' 
 C    
 
       dimension ah_vec(MCHS*MCHS),ah(MCHS,MCHS)

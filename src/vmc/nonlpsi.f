@@ -1,6 +1,11 @@
       function psinl(u,rshifti,rshiftj,rri,rrj,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c
 
       use jaspar4, only: nordc
@@ -18,7 +23,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
       parameter (one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
@@ -75,6 +79,11 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function psianl(rri,it)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c
 
       use jaspar4, only: a4, norda
@@ -87,7 +96,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -107,6 +115,11 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function psibnl(u,isb,ipar)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar, only: sspinn
       use jaspar3, only: a, b, c
 
@@ -121,7 +134,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -145,6 +157,11 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsianl(rri,it)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c
 
       use jaspar4, only: a4, norda
@@ -157,7 +174,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -177,6 +193,11 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsibnl(u,isb,ipar)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar, only: sspinn
       use jaspar3, only: a, b, c
 
@@ -191,7 +212,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
 

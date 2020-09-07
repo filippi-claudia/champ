@@ -12,6 +12,11 @@ c          coefficient power exponent
 c
 c NOTE: as usual power n means r**(n-2)
 c
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
       use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
 
@@ -23,7 +28,6 @@ c
 
 
 
-      include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
@@ -128,6 +132,11 @@ c-----------------------------------------------------------------------
 c compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(rvec_en,r_en,iel)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, iwctype, ncent
 
       use pseudo, only: lpot, vps
@@ -137,7 +146,6 @@ c compute gauss-pseudopotential for electron iel
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
@@ -178,11 +186,15 @@ c     enddo
       end
 c-----------------------------------------------------------------------
       subroutine gauss_pot(r,l,ict,vpot,dvpot)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'pseudo.h'
 
       v = 0.d0

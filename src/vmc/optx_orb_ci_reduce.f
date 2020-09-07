@@ -1,6 +1,11 @@
       subroutine optx_orb_ci_reduce
 c Written by Claudia Filippi
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
 
@@ -15,7 +20,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'vmc.h'
       include 'optorb.h'
       include 'optci.h'
       include 'mpif.h'

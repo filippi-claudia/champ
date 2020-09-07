@@ -1,5 +1,10 @@
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use linear_norm, only: oav
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_corsam, only: energy, energy_err, force
@@ -14,7 +19,6 @@
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'optci.h'
@@ -172,11 +176,15 @@ c       add_diag=0
 c-----------------------------------------------------------------------
       subroutine regularize_geneig(n,mparmx,h,s,work,seig_valinv,hmod)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use gradhess_all, only: MPARMALL
       
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'optci.h'
@@ -256,11 +264,15 @@ c     write(6,*) 'elapsed time to build Hmod:',t_hmod-t_sdiag
 c-----------------------------------------------------------------------
       subroutine solve_geneig(n,mparmx,hmod,s,seig_valinv,work,eig,eigi,eig_vec)
       
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use gradhess_all, only: MPARMALL
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'optci.h'
@@ -317,6 +329,11 @@ c-----------------------------------------------------------------------
       subroutine compute_dparm(nparm,mparmx,lwork,dparm,h,h_sav,s,s_sav,work,eig_vec,
      &                     add_diag,energy_sav,energy_err_sav)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ccsf, ncsf, nstates
       use dets, only: cdet
       use linear_norm, only: oav
@@ -332,7 +349,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'optci.h'

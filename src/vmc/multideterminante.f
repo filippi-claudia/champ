@@ -1,5 +1,10 @@
       subroutine multideterminante(iel)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -11,7 +16,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
       parameter (one=1.d0,half=0.5d0)
@@ -109,6 +113,11 @@ c compute wave function
 c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, ivirt, kref
@@ -117,7 +126,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
       parameter (one=1.d0,half=0.5d0)

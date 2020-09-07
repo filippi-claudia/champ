@@ -1,6 +1,11 @@
       subroutine distances(iel,x)
 c Written by Cyrus Umrigar
 c calculate interparticle distances
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: cent, ncent
       use ghostatom, only: nghostcent
       use const, only: nelec
@@ -11,7 +16,6 @@ c calculate interparticle distances
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'pseudo.h'
 
@@ -101,6 +105,11 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c restore interparticle distances (called if move rejected)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
       use ghostatom, only: nghostcent
       use const, only: nelec
@@ -110,7 +119,6 @@ c restore interparticle distances (called if move rejected)
 
 
 
-      include 'vmc.h'
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 

@@ -1,5 +1,10 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: hb, nelec, ipr
       use csfs, only: nstates
       use derivjas, only: d2g, g
@@ -19,7 +24,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'pseudo.h'
@@ -154,6 +158,11 @@ c-----------------------------------------------------------------------
       subroutine optjas_sum(wtg_new,wtg_old,enew,eold,iflag)
 c Written by Claudia Filippi
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
 
       use csfs, only: nstates
@@ -185,7 +194,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
 
@@ -344,6 +352,11 @@ c-----------------------------------------------------------------------
       subroutine optjas_cum(wsum,enow)
 c Written by Claudia Filippi
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
@@ -355,7 +368,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'optorb.h'
       include 'force.h'
@@ -408,6 +420,11 @@ c-----------------------------------------------------------------------
       subroutine optjas_save
 c Written by Claudia Filippi
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
 
       use csfs, only: nstates
@@ -424,7 +441,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
 
@@ -450,6 +466,11 @@ c-----------------------------------------------------------------------
       subroutine optjas_init
 c Written by Claudia Filippi
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
@@ -462,7 +483,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'optorb.h'
       include 'force.h'
@@ -507,6 +527,11 @@ c-----------------------------------------------------------------------
       subroutine optjas_dump(iu)
 c Written by Claudia Filippi
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
@@ -519,7 +544,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'optorb.h'
       include 'force.h'
@@ -547,6 +571,11 @@ c-----------------------------------------------------------------------
       subroutine optjas_rstrt(iu)
 c Written by Claudia Filippi
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use gradjerr, only: dj_e_save, dj_save, grad_jas_bcm2, grad_jas_bcum
@@ -560,7 +589,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'optorb.h'
       include 'force.h'
@@ -592,6 +620,11 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use gradhess_jas, only: grad_jas, h_jas, s_jas
@@ -617,7 +650,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'optorb.h'
       include 'force.h'

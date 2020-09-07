@@ -1,6 +1,11 @@
       function deriv_psinl(u,rshifti,rshiftj,rri,rrj,gn,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
@@ -14,7 +19,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
@@ -96,6 +100,11 @@ c                 jj=jj+1
 c-----------------------------------------------------------------------
       function deriv_psianl(rri,gn,it)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c
 
       use jaspar4, only: a4, norda
@@ -106,7 +115,6 @@ c-----------------------------------------------------------------------
       use contr2, only: ijas
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
       parameter(one=1.d0)
@@ -153,6 +161,11 @@ c written for general iwf, whereas others (asymp_r) assume iwf=1.
 c-----------------------------------------------------------------------
       function deriv_psibnl(u,gn,isb,ipar)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar, only: sspinn, is
       use jaspar3, only: a, b, c
 
@@ -172,7 +185,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
       parameter(one=1.d0)

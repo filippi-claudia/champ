@@ -73,12 +73,16 @@ c$$$      end
 c----------------------------------------------------------------------
       subroutine do_read_lattice(iu)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use periodic, only: rkvec_shift, rlatt, rlatt_sim
       use inputflags, only: ilattice
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'ewald.h'
 
 
@@ -111,6 +115,11 @@ c Written by Cyrus Umrigar
 c Reads in pw basis orbitals that have already been converted to be real.
 c Presently not used.
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use periodic, only: nband
       use periodic, only: ngvec, nkvec
       use periodic, only: rkvec
@@ -122,7 +131,6 @@ c Presently not used.
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
 
@@ -167,6 +175,11 @@ c Also, I first write out a temporary fort.3 and then delete it just because
 c it is only after one has processed all the k-pts that one knows how big ngvec_orb is.
 c However, that causes problems when running with mpi, so comment out that part.
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
       use periodic, only: glatt
       use periodic, only: igmult, igvec
@@ -185,7 +198,6 @@ c However, that causes problems when running with mpi, so comment out that part.
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
 
@@ -411,6 +423,11 @@ c At present it is assumed that k-vectors are in the correct order, but
 c if not one could use isortk to map iorb.
 c This is the straightforward evaluation for checking purposes only.
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec, ipr
       use periodic, only: glatt
       use periodic, only: gvec
@@ -426,7 +443,6 @@ c This is the straightforward evaluation for checking purposes only.
 
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'ewald.h'
 

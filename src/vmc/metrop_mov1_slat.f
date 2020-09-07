@@ -8,6 +8,11 @@ c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
 
@@ -48,7 +53,6 @@ c     parameter (g3b2=.886226925452758d0)
       parameter (g5b2=1.329340388179137d0)
 c g3b2, g5b2 are gamma3/2), gamma(5/2)
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
       include 'pcm.h'

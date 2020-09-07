@@ -1,5 +1,10 @@
       subroutine efield_extpot_ene(coord,nelec,efield_pot)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
       use efield, only: iscreen, ncharges
@@ -7,7 +12,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'efield.h'
 
       dimension coord(3,*)
@@ -26,6 +30,11 @@
 c-----------------------------------------------------------------------
       subroutine efield_compute_extint
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
@@ -34,7 +43,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'efield.h'
 
 

@@ -2,6 +2,11 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec, ipr
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
@@ -13,7 +18,6 @@ c Modified by A. Scemama
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -143,6 +147,11 @@ c           do 26 m=1,nbasis
 c------------------------------------------------------------------------------------
       subroutine virtual_orbitals
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
       use optwf_contrl, only: ioptci, ioptorb
       use phifun, only: d2phin, dphin
@@ -153,7 +162,6 @@ c-------------------------------------------------------------------------------
 c compute values of extra ('virtual') orbitals needed for optorb operators
 c assuming that basis function values in phin are up to date
 
-      include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
 
@@ -201,6 +209,11 @@ c25   continue
       end
 c------------------------------------------------------------------------------------
       subroutine da_orbitals
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
 
       use const, only: nelec
@@ -214,7 +227,6 @@ c-------------------------------------------------------------------------------
       
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'numbas.h'
       include 'force.h'
 
@@ -251,6 +263,11 @@ c-------------------------------------------------------------------------------
 c------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
@@ -262,7 +279,6 @@ c-------------------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
 
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)

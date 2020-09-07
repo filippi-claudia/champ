@@ -1,4 +1,9 @@
       subroutine read_bas_num(iwf)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, nctype
 c Written by Claudia Filippi
 c Modified by F. Schautz to use fancy file names
@@ -15,7 +20,6 @@ c Reads in localized orbitals on a radial grid
 
 
 
-      include 'vmc.h'
       include 'numbas.h'
       include 'pseudo.h'
       include 'force.h'

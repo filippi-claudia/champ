@@ -1,5 +1,10 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
       use optwf_contrl, only: ioptci
       use ci000, only: nciprim
@@ -12,7 +17,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'pseudo.h'
       include 'optci.h'
@@ -69,6 +73,11 @@ c Correlation matrix <Oi*Oj> is computed in ci_sum
 c-----------------------------------------------------------------------
       subroutine optci_init(iflg)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum, ci_o_sum
@@ -82,7 +91,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
 
@@ -127,6 +135,11 @@ C$ iflg = 0: init *cum, *cm2 as well
 c-----------------------------------------------------------------------
       subroutine optci_save
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci
       use ci000, only: nciterm
       use ci001_blk, only: ci_o, ci_oe
@@ -139,7 +152,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
 
@@ -156,6 +168,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_restore
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci
       use ci000, only: nciterm
       use ci001_blk, only: ci_o, ci_oe
@@ -168,7 +185,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
 
@@ -185,6 +201,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_sum(p,q,enew,eold)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci
 
       use ci000, only: nciterm
@@ -202,7 +223,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
 
@@ -227,6 +247,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_cum(wsum)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci
 
       use ci000, only: nciterm
@@ -242,7 +267,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
 
@@ -268,6 +292,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_dump(iu)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci
       use ci000, only: nciprim, nciterm
       use ci005_blk, only: ci_o_cum
@@ -280,7 +309,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
 
@@ -297,6 +325,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_rstrt(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci
       use ci000, only: nciprim, nciterm
 
@@ -310,7 +343,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
 
@@ -338,6 +370,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_avrg(wcum,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum
@@ -351,7 +388,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
 
@@ -385,6 +421,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_fin(iblk,passes,etot)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ccsf, ncsf
       use dets, only: cdet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
@@ -397,7 +438,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
 
@@ -500,6 +540,11 @@ c h_0,0, h_0,ci, h_ci,0, s_0,ci, s_ci,0
 
 c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use linear_norm, only: oav
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciterm
@@ -510,7 +555,6 @@ c-----------------------------------------------------------------------
 
 
 c compute averages and print then out
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
 
@@ -599,6 +643,11 @@ c     print the OkEL
 c-----------------------------------------------------------------------
       subroutine optci_define
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ncsf
       use dets, only: ndet
       use optwf_contrl, only: ioptjas, ioptorb
@@ -611,7 +660,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'optci.h'
 

@@ -5,6 +5,11 @@ c **Warning** This routine needs to be upgraded to calculate distances
 c correctly for periodic systems if we add in capability to use
 c numerical Laplacian for periodic systems.
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: cent, iwctype, ncent
       use jaspar, only: nspin2, sspin, sspinn, is
       use const, only: nelec
@@ -32,7 +37,6 @@ c numerical Laplacian for periodic systems.
       parameter (d1b12=8.333333333333333d-2,d2b3=0.666666666666667d0,
      &d4b3=1.333333333333333d0)
 
-      include 'vmc.h'
       include 'force.h'
 
 

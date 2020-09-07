@@ -1,5 +1,10 @@
       subroutine optx_jas_ci_sum(p,q,enew,eold)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use derivjas, only: gvalue
       use gradhessjo, only: denergy_old, gvalue_old
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
@@ -13,7 +18,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'optci.h'
 
@@ -31,6 +35,11 @@
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_init
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
@@ -38,7 +47,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'optci.h'
 
@@ -56,6 +64,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_dump(iu)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
@@ -63,7 +76,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'optci.h'
 
@@ -75,6 +87,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_rstrt(iu)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
@@ -82,7 +99,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'optci.h'
 
@@ -94,6 +110,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_fin(passes,eave)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ccsf, ncsf
       use dets, only: cdet
       use gradhess_ci, only: grad_ci
@@ -113,7 +134,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
       include 'optci.h'

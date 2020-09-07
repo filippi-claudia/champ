@@ -11,6 +11,11 @@ c &pcm xn_pcm 1. yn_pcm 1. zn_pcm 1.
 c----------------------------------------------------------------------
       subroutine pcm_setup_grid
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: cent, ncent
       use contrl, only: irstar
       use grid3d_param, only: origin
@@ -23,7 +28,6 @@ c----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'pcm_3dgrid.h'
 
 
@@ -153,6 +157,11 @@ c----------------------------------------------------------------------
 c PCM on a 3d grid with spline fit
       subroutine pcm_setup_3dspl
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use pcm_grid3d_param, only: ipcm_nstep3d
       use pcm_grid3d_array, only: pcm_cart_from_int
       use m_pcm_num_spl, only: pcm_num_spl
@@ -160,7 +169,6 @@ c PCM on a 3d grid with spline fit
       implicit real*8(a-h,o-z)
 
       include 'force.h'
-      include 'vmc.h'
       include 'pcm_3dgrid.h'
 
 c     Note:
@@ -242,12 +250,16 @@ c      stop
 c----------------------------------------------------------------------
       subroutine spline_pcm(r,f,ier)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
       use insout, only: inout, inside
 
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
       include 'pcm_3dgrid.h'
 
 
@@ -306,8 +318,12 @@ c     Work:
 
 c-----------------------------------------------------------------------
       subroutine pcm_3dgrid_dump(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
       include 'pcm_3dgrid.h'
 
       if (ipcm.eq.0.or.ipcm_grid.eq.0) return
@@ -323,6 +339,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_3dgrid_rstrt(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use pcm_cntrl, only: ipcm
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
@@ -331,7 +352,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'pcm_3dgrid.h'
 
       if (ipcm.eq.0.or.ipcm_grid.eq.0) return
@@ -347,12 +367,16 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine splpcm_dump(iu)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use pcm_grid3d_param, only: ipcm_nstep3d
       use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'pcm_3dgrid.h'
  
       do i=1,8
@@ -362,13 +386,17 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splpcm_rstrt(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use pcm_grid3d_param, only: ipcm_nstep3d
       use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'pcm_3dgrid.h'
 
       do i=1,8

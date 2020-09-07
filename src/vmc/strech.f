@@ -10,6 +10,11 @@ c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
 
 c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, pecent, iwctype, ncent
       use const, only: nelec
       use force_dmc, only: itausec, nwprod
@@ -35,7 +40,6 @@ c rigidly with that nucleus
 
       parameter (zero=0.d0,one=1.d0)
 
-      include 'vmc.h'
       include 'force.h'
       include 'pcm.h'
 

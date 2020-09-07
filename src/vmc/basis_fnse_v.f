@@ -1,6 +1,11 @@
       subroutine basis_fnse_v(k,rvec_en,r_en)
 c Written by Claudia Filippi by modifying basis_fns
 c routine to calculate basis functions for electron k
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use ghostatom, only: nghostcent
       use numbas, only: iwrwf, nrbas, numr
@@ -12,7 +17,6 @@ c routine to calculate basis functions for electron k
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       include 'numbas.h'
       include 'pseudo.h'

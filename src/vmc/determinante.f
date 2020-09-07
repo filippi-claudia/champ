@@ -1,5 +1,10 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use elec, only: ndn, nup
       use multidet, only: kref
       use slatn, only: slmin
@@ -7,7 +12,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -61,6 +65,11 @@
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
       use elec, only: nup
       use multidet, only: kref
@@ -80,7 +89,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
       include 'force.h'
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -251,13 +259,17 @@ c iel has different spin than the electron moved
 c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
       dimension slmi(MMAT_DIM),dorb(3,MORB)

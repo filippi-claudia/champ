@@ -1,5 +1,10 @@
       subroutine compute_force(psid,denergy)
 
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
       use const, only: nelec
       use da_jastrow4val, only: da_j
@@ -7,7 +12,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
       dimension da_psi_ref(3,MCENT)
@@ -28,6 +32,11 @@ c     write(6,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
 
       use const, only: nelec, ipr
@@ -44,7 +53,6 @@ c-----------------------------------------------------------------------
       use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
 
 
@@ -124,6 +132,11 @@ c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use const, only: hb, nelec
       use da_energy_now, only: da_energy, da_psi
@@ -144,7 +157,6 @@ c-----------------------------------------------------------------------
       use velocity_jastrow, only: vj
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'pseudo.h'
       include 'force.h'
 
@@ -223,13 +235,17 @@ c     write(6,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_init(iflag)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
 
 
       if(iforce_analy.eq.0) return
@@ -252,6 +268,11 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine force_analy_sum(p,q,eloc,eloco)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
       use da_energy_now, only: da_energy, da_psi
       use da_energy_sumcum, only: da_energy_sum, da_psi_sum
@@ -262,7 +283,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
 
 
 
@@ -279,6 +299,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_cum(wsum,eave,wcum)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
@@ -287,7 +312,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
 
 
 
@@ -304,6 +328,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_fin(wcum,iblk,eave)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
       use force_fin, only: da_energy_ave, da_energy_err
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
@@ -314,7 +343,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
 
 
 
@@ -341,6 +369,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_dump(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
@@ -349,7 +382,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
 
 
 
@@ -362,6 +394,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_rstrt(iu)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
@@ -370,7 +407,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
 
 
 
