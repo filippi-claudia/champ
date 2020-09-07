@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
       use ghostatom, only: newghostype, nghostcent
       use const, only: hb, delta, nelec
       use config, only: eold, nearesto, psi2o
@@ -38,7 +39,6 @@ c job where it left off
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'pseudo.h'
       include 'optorb.h'
       include 'optci.h'

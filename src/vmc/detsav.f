@@ -2,6 +2,7 @@
 c Written by Claudia Filippi
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -18,7 +19,6 @@ c Written by Claudia Filippi
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)

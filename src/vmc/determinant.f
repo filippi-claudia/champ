@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
       use const, only: ipr
+      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: kref
@@ -13,7 +14,6 @@ c Modified by A. Scemama
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
-      include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
 
@@ -95,6 +95,7 @@ c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
       use const, only: ipr
+      use mstates_mod, only: MSTATES, MDETCSFX
       use estpsi, only: detref
       use multidet, only: kref
 
@@ -109,7 +110,6 @@ c-----------------------------------------------------------------------
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
-      include 'mstates.h'
 
 
 
@@ -151,6 +151,7 @@ c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
       use atom, only: ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
       use const, only: hb, nelec
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb, da_dorb
@@ -169,7 +170,6 @@ c-----------------------------------------------------------------------
       include 'vmc.h'
       include 'force.h'
       include 'optjas.h'
-      include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
 

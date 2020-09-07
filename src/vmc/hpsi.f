@@ -4,6 +4,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use const, only: hb, nelec, ipr
+      use mstates_mod, only: MSTATES, MDETCSFX
       use csfs, only: nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
@@ -35,7 +36,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       include 'mmpol.h'
       include 'efield.h'
       include 'optjas.h'
-      include 'mstates.h'
 
 c Calculates energy
 

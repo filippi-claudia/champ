@@ -2,13 +2,13 @@ c----------------------------------------------------------------------
       subroutine efficiency_sample(ipass,determ_s,determ_psig)
 
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates_mod, only: MSTATES, MDETCSFX
       use mstates2, only: effcm2, effcum
       implicit real*8(a-h,o-z)
 
 
       include 'vmc.h'
       include 'optci.h'
-      include 'mstates.h'
 
       dimension determ_s(*)
 
@@ -30,13 +30,13 @@ c     write(88,*) (effcum(j)*effcum(j)/effcm2(j)/ipass,j=1,nstates_psig)
 c----------------------------------------------------------------------
       subroutine efficiency_init
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates_mod, only: MSTATES, MDETCSFX
       use mstates2, only: effcm2, effcum
       implicit real*8(a-h,o-z)
 
 
       include 'vmc.h'
       include 'optci.h'
-      include 'mstates.h'
       do 100 j=1,nstates_psig
         effcum(j)=0
   100   effcm2(j)=0
@@ -45,6 +45,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       subroutine efficiency_prt(passes)
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates_mod, only: MSTATES, MDETCSFX
       use mstates2, only: effcm2, effcum
       implicit real*8(a-h,o-z)
 
@@ -52,7 +53,6 @@ c----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'optci.h'
-      include 'mstates.h'
 
       if(iefficiency.eq.0) return
 
@@ -67,6 +67,7 @@ c       write(6,*) effcum(j)*effcum(j)/passes,effcm2(j)
 c----------------------------------------------------------------------
       subroutine efficiency_dump(iu)
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates_mod, only: MSTATES, MDETCSFX
       use mstates2, only: effcm2, effcum
       implicit real*8(a-h,o-z)
 
@@ -74,7 +75,6 @@ c----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'optci.h'
-      include 'mstates.h'
 
       if(iefficiency.eq.0) return
 
@@ -84,6 +84,7 @@ c----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine efficiency_rstrt(iu)
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates_mod, only: MSTATES, MDETCSFX
       use mstates2, only: effcm2, effcum
       implicit real*8(a-h,o-z)
 
@@ -91,7 +92,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'optci.h'
-      include 'mstates.h'
 
       if(iefficiency.eq.0) return
 

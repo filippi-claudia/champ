@@ -1,6 +1,7 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
       use elec, only: ndn, nup
+      use mstates_mod, only: MSTATES, MDETCSFX
       use multidet, only: ivirt, kref
       use optwf_contrl, only: ioptorb
       use Bloc, only: b, tildem
@@ -13,7 +14,6 @@
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
       common /multislater/ detiab(MDET,2)
@@ -82,6 +82,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_compute(psid,eloc,deloc)
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use zcompact, only: aaz, dzmat, emz, zmat
@@ -91,7 +92,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
 
@@ -119,6 +119,7 @@ c     enddo
 c-----------------------------------------------------------------------
       subroutine optorb_sum(wtg_new,wtg_old,enew,eold,iflag)
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
@@ -135,7 +136,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
       dimension wtg_new(*),wtg_old(*),enew(*),eold(*)
@@ -232,6 +232,7 @@ c     ns_current=0
 c-----------------------------------------------------------------------
       subroutine optorb_cum(wsum,esum)
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm, idump_blockav
@@ -243,7 +244,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
 
@@ -297,6 +297,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_init(iflg)
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
@@ -313,7 +314,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
 
@@ -379,6 +379,7 @@ C$ iflg = 0: init *cum, *cm2 as well
 c-----------------------------------------------------------------------
       subroutine optorb_save
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
@@ -389,7 +390,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
       if(ioptorb.eq.0) return
@@ -407,6 +407,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_restore
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
@@ -417,7 +418,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
 
@@ -437,6 +437,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
       use optwf_contrl, only: ioptorb
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optorb_cblock, only: norbterm
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
@@ -445,7 +446,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
-      include 'mstates.h'
       include 'optorb.h'
 
       dimension oav(*),eoav(*),fo(*),foerr(*)
@@ -467,6 +467,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_dump(iu)
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm, norbprim
@@ -482,7 +483,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
 
@@ -510,6 +510,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_rstrt(iu)
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm, norbprim
       use orb_mat_003, only: orb_o_cum
@@ -524,7 +525,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
 
@@ -563,6 +563,7 @@ c nreduced has to be set since it will only be known for non-continuation runs
 c-----------------------------------------------------------------------
       subroutine optorb_fin(wcum,ecum)
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_contrl, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
@@ -585,7 +586,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
       include 'optci.h'
       include 'optjas.h'
@@ -783,6 +783,7 @@ c replaced column
 c-----------------------------------------------------------------------
       subroutine optorb_define
       use const, only: nelec
+      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: kref
@@ -807,7 +808,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
 
@@ -1000,12 +1000,12 @@ c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
 c-----------------------------------------------------------------------
       subroutine check_orbitals
 
+      use mstates_mod, only: MSTATES, MDETCSFX
 c Do not compute virtual orbitals during single-electron move
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'

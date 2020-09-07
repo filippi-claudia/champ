@@ -1,6 +1,7 @@
       subroutine optci_reduce
 
       use optwf_contrl, only: ioptci
+      use mstates_mod, only: MSTATES, MDETCSFX
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       use mstates2, only: effcm2, effcum
       use ci000, only: iciprt, nciprim, nciterm
@@ -17,7 +18,6 @@
 
       include 'vmc.h'
       include 'optci.h'
-      include 'mstates.h'
       include 'mpif.h'
 
 c     parameter(MXTMP=max(MXORBTERM,MXMATDIM))

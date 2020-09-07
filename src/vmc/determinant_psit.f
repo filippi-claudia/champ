@@ -1,13 +1,13 @@
       subroutine determinant_psit(determ,istate)
 
       use dets, only: cdet, ndet
+      use mstates_mod, only: MSTATES, MDETCSFX
       use wfsec, only: iwf
 
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       common /multislater/ detiab(MDET,2)
 

@@ -3,6 +3,7 @@ c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
       use const, only: nelec
+      use mstates_mod, only: MSTATES, MDETCSFX
       use csfs, only: nstates
 
       use est2cm, only: ecm2, pecm2, tjfcm2, tpbcm2
@@ -18,7 +19,6 @@ c routine to write out estimators for energy etc.
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'pseudo.h'
 
       dimension enow(MSTATES,MFORCE)

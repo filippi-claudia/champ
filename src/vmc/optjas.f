@@ -1,6 +1,7 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
       use const, only: hb, nelec, ipr
+      use mstates_mod, only: MSTATES, MDETCSFX
       use csfs, only: nstates
       use derivjas, only: d2g, g
       use dets, only: cdet, ndet
@@ -21,7 +22,6 @@
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'pseudo.h'
 
@@ -156,6 +156,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
       use atom, only: nctype
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use csfs, only: nstates
 
@@ -189,7 +190,6 @@ c Written by Claudia Filippi
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -347,6 +347,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
@@ -361,7 +362,6 @@ c Written by Claudia Filippi
       include 'optjas.h'
       include 'optorb.h'
       include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -412,6 +412,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
       use atom, only: nctype
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use csfs, only: nstates
 
@@ -430,7 +431,6 @@ c Written by Claudia Filippi
       include 'vmc.h'
       include 'optjas.h'
       include 'force.h'
-      include 'mstates.h'
 
 
       if(ioptjas.eq.0) return
@@ -455,6 +455,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
 
@@ -469,7 +470,6 @@ c Written by Claudia Filippi
       include 'vmc.h'
       include 'optjas.h'
       include 'optorb.h'
-      include 'mstates.h'
       include 'force.h'
 
 
@@ -513,6 +513,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
 
@@ -528,7 +529,6 @@ c Written by Claudia Filippi
       include 'optjas.h'
       include 'optorb.h'
       include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -554,6 +554,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use gradjerr, only: dj_e_save, dj_save, grad_jas_bcm2, grad_jas_bcum
 
@@ -570,7 +571,6 @@ c Written by Claudia Filippi
       include 'optjas.h'
       include 'optorb.h'
       include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -600,6 +600,7 @@ c Written by Claudia Filippi
 
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use gradhess_jas, only: grad_jas, h_jas, s_jas
       use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
@@ -628,7 +629,6 @@ c Written by Claudia Filippi
       include 'optjas.h'
       include 'optorb.h'
       include 'force.h'
-      include 'mstates.h'
 
 
 

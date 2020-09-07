@@ -1,6 +1,7 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciprim, nciterm
       use ci001_blk, only: ci_o, ci_oe
@@ -14,7 +15,6 @@
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'pseudo.h'
       include 'optci.h'
 
@@ -397,6 +397,7 @@ c-----------------------------------------------------------------------
       subroutine optci_fin(iblk,passes,etot)
 
       use csfs, only: ccsf, ncsf
+      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: cdet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use linear_norm, only: oav, ci_oav
@@ -410,7 +411,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optci.h'
 
       dimension deav(MXCITERM)
@@ -612,6 +612,7 @@ c-----------------------------------------------------------------------
       subroutine optci_define
 
       use csfs, only: ncsf
+      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: ndet
       use optwf_contrl, only: ioptjas, ioptorb
       use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
@@ -630,7 +631,6 @@ c-----------------------------------------------------------------------
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'mstates.h'
 
       nciprim = ndet
 

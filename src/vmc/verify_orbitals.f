@@ -1,5 +1,6 @@
       subroutine verify_orbitals
       use const, only: nelec
+      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: ndet
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
@@ -17,7 +18,6 @@
       include 'embed.h'
       include 'optorb.h'
       include 'optci.h'
-      include 'mstates.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 

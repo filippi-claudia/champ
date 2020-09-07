@@ -2,6 +2,7 @@
 
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use optwf_func, only: ifunc_omega, omega
@@ -15,7 +16,6 @@
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'sr.h'
 
       character*20 method_sav
@@ -182,11 +182,11 @@ c enddo iteration
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_lin_d(ndim,nvec,psi,hpsi )
       use optwf_func, only: ifunc_omega
+      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
 
 
       include 'sr.h'
-      include 'mstates.h'
 
 
       dimension psi(MPARM,*),hpsi(MPARM,*)
@@ -205,11 +205,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_lin_d(ndim,nvec,psi,spsi )
       use optwf_func, only: ifunc_omega
+      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
 
 
       include 'sr.h'
-      include 'mstates.h'
  
 
       dimension psi(MPARM,*),spsi(MPARM,*)
@@ -225,6 +225,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine select_ci_root(iroot)
       use csfs, only: ccsf, ncsf
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
@@ -232,7 +233,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
       do 30 i=1,ndet

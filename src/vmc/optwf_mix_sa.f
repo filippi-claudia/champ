@@ -1,6 +1,7 @@
       subroutine optwf_mix
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use sa_check, only: energy_all, energy_err_all
@@ -16,7 +17,6 @@
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'sr.h'
 
       character*20 method_sav
@@ -278,6 +278,7 @@ c enddo iteration
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine change_ci(dparm_new,istate)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
@@ -285,7 +286,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
       dimension dparm_new(*)

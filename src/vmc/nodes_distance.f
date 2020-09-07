@@ -2,6 +2,7 @@
 c Written by Claudia Filippi
 
       use const, only: nelec
+      use mstates_mod, only: MSTATES, MDETCSFX
       use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
 
@@ -11,7 +12,6 @@ c Written by Claudia Filippi
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       parameter(one=1.d0)
 

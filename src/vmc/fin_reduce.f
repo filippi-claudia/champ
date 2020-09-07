@@ -2,6 +2,7 @@
 c MPI version written by Claudia Filippi
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use est2cm, only: ecm21
       use estcum, only: ecum1, iblk
@@ -21,7 +22,6 @@ c MPI version written by Claudia Filippi
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'mpif.h'
 
 

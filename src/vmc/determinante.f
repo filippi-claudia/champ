@@ -1,6 +1,7 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
       use elec, only: ndn, nup
+      use mstates_mod, only: MSTATES, MDETCSFX
       use multidet, only: kref
       use slatn, only: slmin
       use dorb_m, only: iworbd
@@ -9,7 +10,6 @@
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
@@ -63,6 +63,7 @@ c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
       use elec, only: nup
       use multidet, only: kref
       use slatn, only: slmin
@@ -83,7 +84,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
@@ -254,6 +254,7 @@ c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
       use elec, only: ndn, nup
+      use mstates_mod, only: MSTATES, MDETCSFX
       use multidet, only: kref
       use dorb_m, only: iworbd
 
@@ -261,7 +262,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       dimension slmi(MMAT_DIM),dorb(3,MORB)
       dimension ddx_ref(3)

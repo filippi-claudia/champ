@@ -1,6 +1,7 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use atom, only: iwctype, ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
       use const, only: nelec, ipr
       use elec, only: nup
       use jaso, only: fso
@@ -28,7 +29,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'pseudo.h'
       include 'ewald.h'
       include 'optjas.h'
@@ -237,6 +237,7 @@ c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
       use atom, only: cent, ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use qua, only: xq, yq, zq
@@ -247,7 +248,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'pseudo.h'
       include 'ewald.h'
 
@@ -296,6 +296,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use atom, only: iwctype, ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
@@ -308,7 +309,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -380,6 +380,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use elec, only: ndn, nup
+      use mstates_mod, only: MSTATES, MDETCSFX
       use multidet, only: kref
 
       use dorb_m, only: iworbd
@@ -390,7 +391,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -423,6 +423,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use atom, only: iwctype, ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use jaspar, only: sspinn, is
       use const, only: nelec
@@ -439,7 +440,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       include 'vmc.h'
       include 'ewald.h'
       include 'force.h'
-      include 'mstates.h'
 
       parameter (half=.5d0)
 
@@ -542,6 +542,7 @@ c-----------------------------------------------------------------------
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
       use atom, only: ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
       use Bloc_da, only: db
       use coefs, only: norb
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
@@ -555,7 +556,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'pseudo.h'
 
       dimension rvec_en_sav(3,MCENT),r_en_sav(MCENT)

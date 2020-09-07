@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
       use atom, only: ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
       use const, only: nelec
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
@@ -31,7 +32,6 @@ c routine to print out final results
       include 'vmc.h'
       include 'force.h'
       include 'optorb.h'
-      include 'mstates.h'
       include 'optci.h'
 
       parameter (one=1.d0,half=.5d0)

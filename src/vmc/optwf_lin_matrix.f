@@ -1,6 +1,7 @@
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
       use linear_norm, only: oav
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_corsam, only: energy, energy_err, force
       use optwf_parms, only: nparmd, nparmj
@@ -16,7 +17,6 @@
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
@@ -174,12 +174,12 @@ c-----------------------------------------------------------------------
       subroutine regularize_geneig(n,mparmx,h,s,work,seig_valinv,hmod)
 
       use gradhess_all, only: MPARMALL
+      use mstates_mod, only: MSTATES, MDETCSFX
       
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
@@ -259,12 +259,12 @@ c-----------------------------------------------------------------------
       subroutine solve_geneig(n,mparmx,hmod,s,seig_valinv,work,eig,eigi,eig_vec)
       
       use gradhess_all, only: MPARMALL
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
@@ -321,6 +321,7 @@ c-----------------------------------------------------------------------
      &                     add_diag,energy_sav,energy_err_sav)
 
       use csfs, only: ccsf, ncsf, nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: cdet
       use linear_norm, only: oav
       use optwf_contrl, only: ioptjas, ioptorb
@@ -337,7 +338,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'

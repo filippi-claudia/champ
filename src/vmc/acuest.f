@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
       use atom, only: znuc, cent, pecent, iwctype, ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
       use const, only: nelec, ipr
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino
@@ -29,7 +30,6 @@ c routine to accumulate estimators for energy etc.
       parameter (half=.5d0)
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optci.h'
       include 'optorb.h'
       include 'pseudo.h'

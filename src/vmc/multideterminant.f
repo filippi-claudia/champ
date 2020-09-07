@@ -1,6 +1,7 @@
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
       use const, only: hb, nelec
+      use mstates_mod, only: MSTATES, MDETCSFX
       use csfs, only: nstates
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -20,7 +21,6 @@
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
 
@@ -229,6 +229,7 @@ c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
       use const, only: nelec
+      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: cdet, ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
       use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det
@@ -240,7 +241,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
 
@@ -303,6 +303,7 @@ c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
       use const, only: nelec
+      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
       use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det
@@ -315,7 +316,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       dimension dymat(MORB,MELEC),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
 
@@ -368,6 +368,7 @@ c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
       use elec, only: ndn, nup
+      use mstates_mod, only: MSTATES, MDETCSFX
       use multidet, only: iactv, ivirt
       use coefs, only: norb
       use Bloc, only: tildem, xmat
@@ -377,7 +378,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
@@ -432,6 +432,7 @@ c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
       use const, only: nelec
+      use mstates_mod, only: MSTATES, MDETCSFX
       use csfs, only: nstates
       use elec, only: ndn, nup
       use ycompact, only: ymat
@@ -441,7 +442,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       common /multislater/ detiab(MDET,2)
 
@@ -473,6 +473,7 @@ c-----------------------------------------------------------------------
       subroutine multideterminants_define(iflag,icheck)
 
       use const, only: nelec
+      use mstates_mod, only: MSTATES, MDETCSFX
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
@@ -484,7 +485,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       dimension iswapped(MELEC),itotphase(MDET)
 

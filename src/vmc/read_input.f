@@ -26,6 +26,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
       use jaspar, only: nspin1, nspin2, is
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
@@ -112,7 +113,6 @@ c and Anthony Scemema
       include 'pcm.h'
       include 'pcm_3dgrid.h'
       include 'efield.h'
-      include 'mstates.h'
       include 'properties.h'
 
 
@@ -1009,6 +1009,7 @@ C$INPUT determinants inp i i=1
 CKEYDOC CI coefficients and occupation of determinants in wf
 
       use dets, only: cdet, ndet
+      use mstates_mod, only: MSTATES, MDETCSFX
       use dorb_m, only: iworbd
       use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
      &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
@@ -1020,7 +1021,6 @@ CKEYDOC CI coefficients and occupation of determinants in wf
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       ndet=nd
       if(ndet.gt.MDET) then
@@ -1047,6 +1047,7 @@ c-----------------------------------------------------------------------
 C$INPUT multideterminants inp i 
 CKEYDOC CI coefficients and occupation of determinants in wf
       use dets, only: ndet
+      use mstates_mod, only: MSTATES, MDETCSFX
       use multidet, only: irepcol_det, ireporb_det, numrep_det
       use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
      &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
@@ -1058,7 +1059,6 @@ CKEYDOC CI coefficients and occupation of determinants in wf
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       if(nd.ne.ndet-1) call fatal_error('INPUT: problem in multidet')
 
@@ -1337,6 +1337,7 @@ c-----------------------------------------------------------------------
 C$INPUT csf i i=1 a=<input>
 
       use csfs, only: ccsf, ncsf, nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
       use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
      &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
      &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
@@ -1347,7 +1348,6 @@ C$INPUT csf i i=1 a=<input>
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optci.h'
 
       character fn*(*)
@@ -1378,6 +1378,7 @@ c-----------------------------------------------------------------------
 C$INPUT csfmap a=<input>
 CKEYDOC Read mapping between csf and determinants.
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
@@ -1385,7 +1386,6 @@ CKEYDOC Read mapping between csf and determinants.
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       character fn*(*)
 c
       call ptfile(iu,fn,'old')
@@ -1578,6 +1578,7 @@ c-----------------------------------------------------------------------
 c Check that the required blocks are there in the input
 
       use csfs, only: ncsf, nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
       use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
      &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
      &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
@@ -1592,7 +1593,6 @@ c Check that the required blocks are there in the input
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'mstates.h'
 
       nstates=1
       ncsf=0
@@ -1631,12 +1631,12 @@ c----------------------------------------------------------------------
       subroutine inputdet(nwftype)
 c Set the cdet to be equal
       use dets, only: cdet, ndet
+      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
 
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
        do 10 iwft=2,nwftype
          do 10 k=1,ndet
@@ -1957,6 +1957,7 @@ c----------------------------------------------------------------------
 C$INPUT dmatrix i i a=<input> 
 CKEYDOC Read diagonal density matrix information.
       use sa_weights, only: iweight, nweight, weights
+      use mstates_mod, only: MSTATES, MDETCSFX
       use coefs, only: norb
       use optorb, only: dmat_diag
       implicit real*8(a-h,o-z)
@@ -1966,7 +1967,6 @@ CKEYDOC Read diagonal density matrix information.
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       character fn*(*)
 
@@ -2009,12 +2009,12 @@ CKEYDOC Read diagonal density matrix information.
 c----------------------------------------------------------------------
       subroutine get_weights(field,weights,iweight,nweight)
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 c weights for state averaging
 
 

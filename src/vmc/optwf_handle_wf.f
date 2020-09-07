@@ -35,10 +35,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine write_wf_best
+      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
+      
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       call restore_jastrow_best
       call restore_lcao_best
@@ -167,6 +168,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine write_ci(iwf_fit,filetype)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       use multidet, only: kref
@@ -182,7 +184,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       character*40 filename,filetype
 
@@ -250,11 +251,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_wf
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
       if(ioptjas.ne.0) call save_jastrow
@@ -375,6 +376,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_ci
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
@@ -383,7 +385,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -480,6 +481,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_ci(iadiag)
       use csfs, only: ccsf, ncsf, nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
@@ -487,7 +489,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
       do 30 j=1,nstates
@@ -606,6 +607,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_ci_best
       use csfs, only: ccsf, ncsf, nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci
@@ -615,7 +617,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -708,6 +709,7 @@ c Check parameters a2 and b2 > -scalek
 c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
       use optwf_contrl, only: ioptorb
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_parms, only: nparmd, nparmj
       use coefs, only: coef, nbasis, norb
       use optorb_cblock, only: norbterm
@@ -717,7 +719,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
 
@@ -746,6 +747,7 @@ c Update the orbitals
 c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
@@ -757,7 +759,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       dimension dparm(*)
 
@@ -977,6 +978,7 @@ c-----------------------------------------------------------------------
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
       use derivjas, only: gvalue
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_func, only: ifunc_omega
@@ -998,7 +1000,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'optorb.h'
       include 'optci.h'

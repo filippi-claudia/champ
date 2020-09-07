@@ -2,6 +2,7 @@
 c Written by Claudia Filippi by modifying hpsi
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
       use estpsi, only: apsi, aref
       use multidet, only: kref
       use wfsec, only: iwf, iwftype
@@ -15,7 +16,6 @@ c Written by Claudia Filippi by modifying hpsi
       include 'force.h'
       include 'optjas.h'
       include 'optci.h'
-      include 'mstates.h'
 
 c Calculates wave function
 

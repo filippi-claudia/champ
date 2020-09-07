@@ -9,6 +9,7 @@ c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
       use atom, only: znuc, cent, iwctype, ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use const, only: pi, fbias, nelec, ipr
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
@@ -49,7 +50,6 @@ c g3b2, g5b2 are gamma3/2), gamma(5/2)
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optci.h'
       include 'pcm.h'
       include 'mmpol.h'

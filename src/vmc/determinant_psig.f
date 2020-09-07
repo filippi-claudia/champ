@@ -1,6 +1,7 @@
       subroutine determinant_psig(psid,psig)
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use mstates3, only: iweight_g, weights_g
 
@@ -11,7 +12,6 @@
       include 'vmc.h'
       include 'force.h'
       include 'optci.h'
-      include 'mstates.h'
 
 
 

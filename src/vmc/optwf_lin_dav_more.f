@@ -1,6 +1,7 @@
       subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
 
       use const, only: ipr
+      use mstates_mod, only: MSTATES, MDETCSFX
       use csfs, only: nstates
 
       use mpiconf, only: idtask
@@ -16,7 +17,6 @@
       include 'sr.h'
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -203,6 +203,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
       use mpiconf, only: idtask
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
@@ -213,7 +214,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       include 'mpif.h'
       include 'sr.h'
-      include 'mstates.h'
 
 
 
@@ -299,6 +299,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
       use mpiconf, only: idtask
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n
       use sr_mat_n, only: sr_o, wtg, obs_tot
@@ -309,7 +310,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       include 'mpif.h'
       include 'sr.h'
-      include 'mstates.h'
 
 
 
@@ -375,6 +375,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
       use mpiconf, only: idtask
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
@@ -387,7 +388,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       include 'mpif.h'
       include 'sr.h'
-      include 'mstates.h'
  
 
 
@@ -489,6 +489,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
       use mpiconf, only: idtask
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, sr_ho
@@ -501,7 +502,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       include 'mpif.h'
       include 'sr.h'
-      include 'mstates.h'
 
 
 
@@ -612,6 +612,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
       use mpiconf, only: idtask
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
@@ -624,7 +625,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       include 'mpif.h'
       include 'sr.h'
-      include 'mstates.h'
 
  
 
@@ -740,13 +740,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine g_psi_lin_d( ndim, nvec, nb1, psi, ew )
 
       use sr_mat_n, only: jefj, jfj, jhfj, s_diag
+      use mstates_mod, only: MSTATES, MDETCSFX
       use sr_mat_n, only: obs_tot
       implicit real*8(a-h,o-z)
 
 
       include 'mpif.h'
       include 'sr.h'
-      include 'mstates.h'
 
 
       dimension psi(MPARM,*),ew(*)
@@ -808,6 +808,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -823,7 +824,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'sr.h'
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
       dimension psi(MPARM,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,MSTATES),anorm_loc(MVEC)

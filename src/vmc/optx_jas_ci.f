@@ -1,6 +1,7 @@
       subroutine optx_jas_ci_sum(p,q,enew,eold)
 
       use derivjas, only: gvalue
+      use mstates_mod, only: MSTATES, MDETCSFX
       use gradhessjo, only: denergy_old, gvalue_old
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
       use optwf_contrl, only: ioptci, ioptjas
@@ -14,7 +15,6 @@
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
 
@@ -33,6 +33,7 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_init
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use ci000, only: iciprt, nciprim, nciterm
@@ -40,7 +41,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
 
@@ -59,6 +59,7 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_dump(iu)
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use ci000, only: iciprt, nciprim, nciterm
@@ -66,7 +67,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
 
@@ -79,6 +79,7 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_rstrt(iu)
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use ci000, only: iciprt, nciprim, nciterm
@@ -86,7 +87,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
 
@@ -99,6 +99,7 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_fin(passes,eave)
 
       use csfs, only: ccsf, ncsf
+      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: cdet
       use gradhess_ci, only: grad_ci
       use gradhess_jas, only: grad_jas
@@ -118,7 +119,6 @@ c-----------------------------------------------------------------------
 
 
       include 'vmc.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'force.h'
       include 'optci.h'

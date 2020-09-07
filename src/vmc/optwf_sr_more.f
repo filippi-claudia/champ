@@ -4,6 +4,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
       use mpiconf, only: idtask
       use optwf_func, only: ifunc_omega, omega
       use sa_weights, only: weights
@@ -21,7 +22,6 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       include 'sr.h'
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
 
@@ -281,10 +281,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
       use sr_mat_n, only: s_ii_inv
+      use mstates_mod, only: MSTATES, MDETCSFX
       implicit real*8(a-h,o-z)
 
       include 'sr.h'
-      include 'mstates.h'
 
 
       dimension x(*),b(*)
@@ -302,6 +302,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: weights
@@ -314,7 +315,6 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       include 'mpif.h'
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
       include 'sr.h'
 
@@ -427,6 +427,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_rescale_deltap(nparm,deltap)
 
       use mpiconf, only: idtask
+      use mstates_mod, only: MSTATES, MDETCSFX
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot
     
@@ -437,7 +438,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'mpif.h'
       include 'vmc.h'
       include 'sr.h'
-      include 'mstates.h'
 
 
       dimension deltap(*)
@@ -503,6 +503,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine forces_zvzb(nparm)
 
       use atom, only: ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use force_fin, only: da_energy_ave
       use force_mat_n, only: force_o
@@ -517,7 +518,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'sr.h'
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       parameter (MTEST=1500)
       dimension cloc(MTEST,MTEST),c(MTEST,MTEST),oloc(MPARM),o(MPARM),p(MPARM),tmp(MPARM)

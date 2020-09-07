@@ -2,6 +2,7 @@
 c Written by Claudia Filippi
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use est2cm, only: ecm2, avcm2
       use estcum, only: ecum, iblk, avcum
@@ -25,7 +26,6 @@ c Written by Claudia Filippi
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
       include 'mpif.h'
 

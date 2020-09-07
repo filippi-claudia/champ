@@ -67,13 +67,13 @@ c-----------------------------------------------------------------------
       subroutine fetch_lcao(p,n)
 
       use optwf_contrl, only: ioptorb
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optorb_cblock, only: norbterm
 
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
 
@@ -91,6 +91,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine fetch_ci(p,n)
       use csfs, only: ccsf, ncsf, nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci
@@ -101,7 +102,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
 

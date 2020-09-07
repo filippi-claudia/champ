@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
       use const, only: nelec, ipr
+      use mstates_mod, only: MSTATES, MDETCSFX
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
@@ -15,7 +16,6 @@ c Modified by A. Scemama
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -253,6 +253,7 @@ c-------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
+      use mstates_mod, only: MSTATES, MDETCSFX
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
@@ -265,7 +266,6 @@ c-------------------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 

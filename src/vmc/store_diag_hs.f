@@ -1,6 +1,7 @@
       subroutine store_diag_hs(nparm_p1,hii,sii)
 
       use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use mstates_mod, only: MSTATES, MDETCSFX
       use sr_index, only: jelo, jelo2, jelohfj
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot
@@ -11,7 +12,6 @@
       include 'sr.h'
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optorb.h'
 
       dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)

@@ -2,6 +2,7 @@
 c written by Claudia Filippi
 
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES, MDETCSFX
       use forcepar, only: nforce
       use numbas, only: numr
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
@@ -14,7 +15,6 @@ c written by Claudia Filippi
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'

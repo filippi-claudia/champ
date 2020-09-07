@@ -1,6 +1,7 @@
       subroutine optx_orb_ci_sum(p,q)
 
       use optwf_contrl, only: ioptci, ioptorb
+      use mstates_mod, only: MSTATES, MDETCSFX
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
@@ -15,7 +16,6 @@
 
 
       include 'vmc.h'
-      include 'mstates.h'
       include 'optci.h'
       include 'optorb.h'
 
@@ -119,6 +119,7 @@ c-----------------------------------------------------------------------
       subroutine optx_orb_ci_fin(passes,eave)
 
       use csfs, only: ccsf, ncsf
+      use mstates_mod, only: MSTATES, MDETCSFX
       use dets, only: cdet
       use gradhess_ci, only: grad_ci
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
@@ -142,7 +143,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'optci.h'
       include 'optorb.h'
       include 'optjas.h'

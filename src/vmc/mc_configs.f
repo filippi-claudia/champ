@@ -1,6 +1,7 @@
       subroutine mc_configs_start
       
       use atom, only: znuc, iwctype, ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use const, only: nelec
       use config, only: xnew, xold
@@ -16,7 +17,6 @@
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
 

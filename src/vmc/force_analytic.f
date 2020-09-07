@@ -29,6 +29,7 @@ c     write(6,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
       use atom, only: ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       use const, only: nelec, ipr
       use da_energy_now, only: da_psi
@@ -46,7 +47,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
 
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -126,6 +126,7 @@ c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
 c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
       use atom, only: iwctype, ncent
+      use mstates_mod, only: MSTATES, MDETCSFX
       use const, only: hb, nelec
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_vj
@@ -147,7 +148,6 @@ c-----------------------------------------------------------------------
 
       include 'vmc.h'
       include 'pseudo.h'
-      include 'mstates.h'
       include 'force.h'
 
       common /slater/ slmi(MMAT_DIM,2)

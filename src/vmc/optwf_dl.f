@@ -2,6 +2,7 @@
 
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use mstates_mod, only: MSTATES, MDETCSFX
       use optwf_corsam, only: energy, energy_err, force
       use contrl, only: nblk
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
@@ -15,7 +16,6 @@
 
       include 'vmc.h'
       include 'force.h'
-      include 'mstates.h'
       include 'sr.h'
 
       dimension deltap(MPARM)
