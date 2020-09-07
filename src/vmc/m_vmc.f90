@@ -1,4 +1,4 @@
- module vmc_mod
+ module vmc
   !> Arguments:
   use precision_kinds, only: dp
 
@@ -51,4 +51,4 @@
   public :: MCENT3, NCOEF, MEXCIT
 
   save
- end module
+ end module vmc
