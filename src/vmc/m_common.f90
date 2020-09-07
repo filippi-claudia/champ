@@ -1736,6 +1736,16 @@ end module forcewt
     save
  end module mpiconf
 
+ module mstates_mod
+  !> Arguments: MSTATES, MDETCSFX
+  integer, parameter :: MSTATES=3
+  integer, parameter :: MDETCSFX=20
+
+  private 
+  public :: MSTATES, MDETCSFX
+  save 
+ end module mstates_mod
+
  module mstates_ctrl
    !> Arguments: iefficiency, nstates_psig, iguiding
  
