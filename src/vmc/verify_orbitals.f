@@ -4,6 +4,8 @@
       use vmc, only: radmax, delri
       use vmc, only: NEQSX, MTERMS
       use vmc, only: MCENT3, NCOEF, MEXCIT
+      use embed, only: MXTABI, MXTAB, MXHTAB, MXXTAB
+      use embed, only: MXHGRID, MXXGRID
       use const, only: nelec
       use dets, only: ndet
       use optwf_contrl, only: ioptorb
@@ -13,7 +15,6 @@
       implicit real*8(a-h,o-z)
 
       include 'force.h'
-      include 'embed.h'
       include 'optorb.h'
       include 'optci.h'
 
@@ -44,3 +45,4 @@ c orbital indices in determinants of trial wave function
 
       return
       end
+

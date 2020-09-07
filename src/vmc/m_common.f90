@@ -737,7 +737,7 @@ end module contr3
  module efield_blk
    !> Arguments: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
    use precision_kinds, only: dp
-   include 'efield.h'
+   use efield_mod, only: MCHARGES
  
    real(dp) :: ascreen(MCHARGES)
    real(dp) :: bscreen(MCHARGES)
