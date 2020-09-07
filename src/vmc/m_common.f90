@@ -867,10 +867,33 @@ end module contr3
    save
  end module est2cm
 
+
+ module ewald_mod
+  ! NP         is the number of factors of (r/cutr-1) we multiply polynomial by
+  ! IVOL_RATIO is the ratio of the simulation to primitive cell volumes
+  ! IBIG_RATIO is the ratio of the number of vectors or norms before the optimal Ewald separation
+  !            to the number after the separation
+  ! NSYM       is the ratio of the number of vectors to the number of norms
+  !            and depends on the symmetry of the lattice.
+  integer, parameter :: NCOEFX=10, NPX=4, IVOL_RATIO=10, IBIG_RATIO=15, NSYM=8
+  integer, parameter :: NGNORMX=1000, NGVECX=NGNORMX*NSYM, NG1DX=60
+  integer, parameter :: NGNORM_SIMX=NGNORMX*IVOL_RATIO, NGVEC_SIMX=NGVECX*IVOL_RATIO
+  integer, parameter :: NGNORM_BIGX=IBIG_RATIO*NGNORMX, NGVEC_BIGX=IBIG_RATIO*NGVECX
+  integer, parameter :: NGNORM_SIM_BIGX=IBIG_RATIO*NGNORM_SIMX, NGVEC_SIM_BIGX=IBIG_RATIO*NGVEC_SIMX
+
+  private 
+  public :: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM
+  public :: NGNORMX, NGVECX, NG1DX
+  public :: NGNORM_SIMX, NGVEC_SIMX
+  public :: NGNORM_BIGX, NGVEC_BIGX
+  public :: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
+  save 
+ end module ewald_mod
+    
  module ewald
    !> Arguments: b_coul, b_coul_sim, y_coul, y_coul_sim
    use precision_kinds, only: dp
-   include 'ewald.h'
+   use ewald_mod, only: NCOEFX, NGNORMX, NGNORM_SIMX
 
    real(dp) :: b_coul(NCOEFX)
    real(dp) :: b_coul_sim(NCOEFX)
@@ -885,7 +908,7 @@ end module contr3
  module ewald_basis
    !> Arguments: vps_basis_fourier
    use precision_kinds, only: dp
-   include 'ewald.h'
+   use ewald_mod, only: NGNORM_BIGX
 
    real(dp) :: vps_basis_fourier(NGNORM_BIGX)
 
