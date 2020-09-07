@@ -25,6 +25,7 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
+      use efield_mod, only: MCHARGES
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -114,7 +115,6 @@ c and Anthony Scemema
       include 'mmpol.h'
       include 'pcm.h'
       include 'pcm_3dgrid.h'
-      include 'efield.h'
       include 'properties.h'
 
 
@@ -1476,6 +1476,7 @@ c-----------------------------------------------------------------------
       subroutine flagcheck
 c Check that the required blocks are there in the input
 
+      use efield_mod, only: MCHARGES
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -1498,7 +1499,6 @@ c Check that the required blocks are there in the input
       include 'numbas.h'
       include 'optci.h'
       include 'optorb.h'
-      include 'efield.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -2391,6 +2391,7 @@ c-----------------------------------------------------------------------
       subroutine read_efield(ncharges_tmp,iscreen_tmp,filename)
 C$INPUT efield i i a=<input>
 
+      use efield_mod, only: MCHARGES
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -2403,7 +2404,6 @@ C$INPUT efield i i a=<input>
       implicit real*8(a-h,o-z)
 
       include 'force.h'
-      include 'efield.h'
 
       character filename*(*)
 

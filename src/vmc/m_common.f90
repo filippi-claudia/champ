@@ -714,6 +714,14 @@ end module contr3
    save
  end module dorb_m
 
+ module efield_mod
+  !> Arguments: MCHARGES
+  integer, parameter :: MCHARGES = 100
+  private
+  public :: MCHARGES
+  save
+ end module efield_mod
+
  module efield
    !> Arguments: iscreen, ncharges, iefield
  
