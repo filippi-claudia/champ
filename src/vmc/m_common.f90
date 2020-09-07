@@ -2610,9 +2610,13 @@ end module orbital_num_lag
 
  module periodic
    !> Arguments: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt, glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim, ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb, ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec, np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell, vcell_sim, znuc2_sum, znuc_sum
+   use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM
+   use ewald_mod, only: NGNORMX, NGVECX, NG1DX
+   use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
+   use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
+   use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
    use precision_kinds, only: dp
    use vmc, only: MORB
-   include 'ewald.h'
 
    real(dp) :: cutg
    real(dp) :: cutg_big
@@ -2819,9 +2823,13 @@ end module pseudo
 
  module pworbital
    !> Arguments: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+   use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM
+   use ewald_mod, only: NGNORMX, NGVECX, NG1DX
+   use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
+   use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
+   use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
    use precision_kinds, only: dp
    use vmc, only: MORB
-   include 'ewald.h'
 
    real(dp) :: c_im(NGVECX,MORB)
    real(dp) :: c_ip(NGVECX,MORB)
@@ -3061,8 +3069,12 @@ module spc2
 
  module tempor_test
    !> Arguments: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
+   use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM
+   use ewald_mod, only: NGNORMX, NGVECX, NG1DX
+   use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
+   use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
+   use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
    use precision_kinds, only: dp
-   include 'ewald.h'
 
    real(dp) :: c_imag(NGVEC_BIGX)
    real(dp) :: c_real(NGVEC_BIGX)
@@ -3080,8 +3092,12 @@ module spc2
 
  module test
    !> Arguments: f, vbare_coul, vbare_jas, vbare_psp
+   use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM
+   use ewald_mod, only: NGNORMX, NGVECX, NG1DX
+   use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
+   use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
+   use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
    use precision_kinds, only: dp
-   include 'ewald.h'
 
    real(dp) :: f
    real(dp) :: vbare_coul(NGNORM_SIM_BIGX)
