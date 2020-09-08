@@ -2,7 +2,6 @@
 rm -rf build bin
 module load pre2019
 module load cmake/3.7.2 lapack/mkl blas/mkl intel/2018b mpi/impi/18.0.4
-/usr/bin/cp ./tests/psb3_cas66/include/* ./src/include ; \
 cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
 
