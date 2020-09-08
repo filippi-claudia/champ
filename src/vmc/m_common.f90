@@ -2502,7 +2502,7 @@ end module orbital_num_lag
 
  module pcm_3dgrid
   !     flags and dimensions for the 3d grid objects
-  use numeric_kinds, only: dp
+  use precision_kinds, only: dp
   integer, parameter :: MGRID_PCM=1
   integer, parameter :: IUNDEFINED = -1234567890
   integer, parameter :: MGRID_PCM2=MGRID_PCM*MGRID_PCM
