@@ -70,6 +70,15 @@
   save
  end module vmc
  
+  module mstates_mod
+  !> Arguments: MSTATES, MDETCSFX
+  integer, parameter :: MSTATES=3
+  integer, parameter :: MDETCSFX=20
+
+  private 
+  public :: MSTATES, MDETCSFX
+  save 
+ end module mstates_mod
 
  module atom
    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
@@ -1882,16 +1891,6 @@ end module forcewt
     public :: idtask, nproc, wid 
     save
  end module mpiconf
-
- module mstates_mod
-  !> Arguments: MSTATES, MDETCSFX
-  integer, parameter :: MSTATES=3
-  integer, parameter :: MDETCSFX=20
-
-  private 
-  public :: MSTATES, MDETCSFX
-  save 
- end module mstates_mod
 
  module mstates_ctrl
    !> Arguments: iefficiency, nstates_psig, iguiding
