@@ -210,7 +210,14 @@
    public :: b_da, db
    save
  end module Bloc_da
-   
+ 
+ module optjas 
+  integer, parameter :: MPARMJ = 100
+  private 
+  public :: MPARMJ
+  save 
+ end module optjas
+ 
  module Bloc_dj
    !> Arguments: b_dj
    use precision_kinds, only: dp
