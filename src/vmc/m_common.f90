@@ -2485,7 +2485,7 @@ end module orbital_num_lag
   real(dp), parameter :: UNDEFINED = -1234567890.d0
 
   private 
-  public : MGRID_PCM, MGRID_PCM2, MGRID_PCM3
+  public :: MGRID_PCM, MGRID_PCM2, MGRID_PCM3
   public :: UNDEFINED, IUNDEFINED 
   save 
  end module pcm_3dgrid
@@ -2599,8 +2599,8 @@ end module orbital_num_lag
 
  module pcm_grid3d_array
    !> Arguments: pcm_cart_from_int
+   use pcm_3dgrid, only: MGRID_PCM
    use precision_kinds, only: dp
-   include 'pcm_3dgrid.h'
 
    real(dp) :: pcm_cart_from_int(MGRID_PCM,3)
 
@@ -2651,8 +2651,8 @@ end module orbital_num_lag
 
  module m_pcm_num_spl
    !> Arguments: pcm_num_spl
+   use pcm_3dgrid, only: MGRID_PCM
    use precision_kinds, only: dp
-   include 'pcm_3dgrid.h'
  
    real(dp) :: pcm_num_spl(8,MGRID_PCM,MGRID_PCM,MGRID_PCM)
 

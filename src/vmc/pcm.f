@@ -162,14 +162,14 @@ C     ***************************************************************
       use vmc, only: radmax, delri
       use vmc, only: NEQSX, MTERMS
       use vmc, only: MCENT3, NCOEF, MEXCIT
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, iwctype, ncent
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       use pcm_ameta, only: amdlg, eta
       use pcm_ah, only: ahca, bh
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: feps, fs, qvol, rcol, rcolt
       use pcm_inda, only: inda
 
       implicit real*8(a-h,o-z)
@@ -293,7 +293,7 @@ C     ***************************************************************
       use atom, only: znuc, cent, iwctype, ncent
       use pcm_hpsi, only: enfpcm, qopcm
       use pcm_xv_new, only: xv_new
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
@@ -419,11 +419,6 @@ c      update of volume charges and penupol
 c............................................................
 
       use pcm, only: MCHS, MCHV, MSPHERE
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
       use pcm_xv_new, only: xv_new
       use pcm_cntrl, only: ipcm
@@ -502,6 +497,8 @@ c..............................................................
 
       subroutine pcm_write_chvol
 
+      use pcm_3dgrid, only: MGRID_PCM, MGRID_PCM2, MGRID_PCM3
+      use pcm_3dgrid, only: UNDEFINED, IUNDEFINED
       use pcm, only: MCHS, MCHV, MSPHERE
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
@@ -541,7 +538,6 @@ c......................................................
 
 
 
-      include 'pcm_3dgrid.h'
 
       dimension coord(3,*)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
@@ -650,7 +646,7 @@ c......................................................
       subroutine pcm_init(iflag)
 
       use pcm, only: MCHS, MCHV, MSPHERE
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
@@ -750,9 +746,9 @@ c......................................................
       subroutine qpcm_charges(enfpcm_ave,enfpcm_err,qpol,sqpol2)
 
       use pcm, only: MCHS, MCHV, MSPHERE
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: ch, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nesph, re
+      use pcm_parms, only: surk, xe, xpol, ye, ze
       use pcm_ah, only: ahca, bh
       use pcm_fdc, only: feps, qvol
 
@@ -847,12 +843,7 @@ c     da modificare per stati eccitati
 c................................................................
       subroutine qpcm_charges2(enfpcm_ave,enfpcm_err,qpol)
 
-      use pcm, only: MCHS, MCHV, MSPHERE
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use pcm, only: MCHS
       use pcm_parms, only: ch, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nesph, re
       use pcm_parms, only: surk, xe, xpol, ye, ze
