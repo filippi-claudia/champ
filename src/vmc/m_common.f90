@@ -1753,8 +1753,8 @@ end module forcewt
 
  module mmpol_dipol
    !> Arguments: dipo, alfa
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
 
    real(dp) :: alfa(MCHMM)
    real(dp) :: dipo(3,MCHMM)
@@ -1766,8 +1766,8 @@ end module forcewt
 
  module mmpol_hpsi
    !> Arguments: eek_pol, peQMdp, peQMq
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
 
    real(dp) :: eek_pol(3,MCHMM)
    real(dp) :: peQMdp
@@ -1780,8 +1780,8 @@ end module forcewt
 
  module mmpol_parms
    !> Arguments: x_mmpol, nchmm, chmm, rqq
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
  
    real(dp) :: chmm(MCHMM)
    integer  :: nchmm
@@ -1795,8 +1795,8 @@ end module forcewt
  
  module mmpolo
    !> Arguments: cmmpolo, dmmpolo, eeko
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
 
    real(dp) :: cmmpolo
    real(dp) :: dmmpolo
@@ -1809,8 +1809,8 @@ end module forcewt
 
  module mmpol_ahpol
    !> Arguments: ah_pol, bh_pol
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
 
    real(dp) :: ah_pol(3*MCHMM,3*MCHMM)
    real(dp) :: bh_pol(3*MCHMM)
@@ -1822,8 +1822,8 @@ end module forcewt
 
  module mmpol_averages
    !> Arguments: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2, cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
  
     real(dp) :: cmmpol_cm2
     real(dp) :: cmmpol_cum
@@ -1847,8 +1847,8 @@ end module forcewt
 
  module mmpol_fdc
    !> Arguments: a_cutoff, rcolm, screen1, screen2
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
  
    real(dp) :: a_cutoff
    real(dp) :: rcolm
@@ -1862,8 +1862,8 @@ end module forcewt
  
  module mmpol_field
    !> Arguments: eqk_pol, enk_pol
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
  
    real(dp) :: enk_pol(3,MCHMM)
    real(dp) :: eqk_pol(3,MCHMM)
@@ -1874,8 +1874,8 @@ end module forcewt
  end module mmpol_field
 
  module mmpol_inds
+   use mmpol_mod, only: MCHMM
    !> Arguments: inds_pol
-   include 'mmpol.h'
  
    integer  :: inds_pol(MCHMM)
  
