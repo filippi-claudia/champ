@@ -220,9 +220,9 @@
  
  module Bloc_dj
    !> Arguments: b_dj
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
    use vmc, only: MELEC, MORB
-   include 'optjas.h'
 
    real(dp) :: b_dj(MORB,MELEC,MPARMJ)
 
@@ -703,9 +703,9 @@ end module contr3
 
  module deloc_dj_m
    !> Arguments: denergy
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optjas.h'
 
    real(dp) :: denergy(MPARMJ,MSTATES)
 
@@ -741,9 +741,9 @@ end module contr3
 
  module derivjas
    !> Arguments: d2g, g, go, gvalue
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
    use vmc, only: MELEC
-   include 'optjas.h'
 
    real(dp) :: d2g(MPARMJ)
    real(dp) :: g(3,MELEC,MPARMJ)
@@ -1147,9 +1147,9 @@ end module forcewt
 
  module gradhess_all
    !> Arguments: MPARMALL, grad, h, s
+   use optjas, only: MPARMJ
    use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optjas.h'
    include 'optorb.h'
 
    parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
@@ -1164,9 +1164,9 @@ end module forcewt
 
  module gradhessj
    !> Arguments: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2, e2
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optjas.h'
 
    real(dp) :: d2j(MPARMJ,MPARMJ,MSTATES)
    real(dp) :: d2j_e(MPARMJ,MPARMJ,MSTATES)
@@ -1188,10 +1188,10 @@ end module forcewt
 
  module gradhessjo
    !> Arguments: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
    use vmc, only: MCTYPE
    use mstates_mod, only: MSTATES
-   include 'optjas.h'
 
    real(dp) :: d1d2a_old(MCTYPE)
    real(dp) :: d1d2b_old(2)
@@ -1221,8 +1221,8 @@ end module forcewt
 
  module gradhess_jas
    !> Arguments: grad_jas, h_jas, s_jas
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'optjas.h'
  
    real(dp) :: grad_jas(MPARMJ)
    real(dp) :: h_jas(MPARMJ,MPARMJ)
@@ -1235,9 +1235,9 @@ end module forcewt
  
  module gradhess_mix_jas_ci
    !> Arguments: h_mix_jas_ci, s_mix_jas_ci
+   use optjas, only: MPARMJ
    use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optjas.h'
 
    real(dp) :: h_mix_jas_ci(2*MPARMJ,MXCITERM)
    real(dp) :: s_mix_jas_ci(MPARMJ,MXCITERM)
@@ -1249,9 +1249,9 @@ end module forcewt
 
  module gradhess_mix_jas_orb
    !> Arguments: h_mix_jas_orb, s_mix_jas_orb
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
    include 'optorb.h'
-   include 'optjas.h'
 
    real(dp) :: h_mix_jas_orb(2*MPARMJ,MXREDUCED)
    real(dp) :: s_mix_jas_orb(MPARMJ,MXREDUCED)
@@ -1277,9 +1277,9 @@ end module forcewt
 
  module gradjerr
    !> Arguments: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optjas.h'
 
    real(dp) :: dj_bsum(MPARMJ,MSTATES)
    real(dp) :: dj_e_bsum(MPARMJ,MSTATES)
@@ -1702,9 +1702,9 @@ end module forcewt
 
  module mix_jas_ci
    !> Arguments: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
    use vmc, only: MDET
-   include 'optjas.h'
 
    real(dp) :: de_o_ci(MPARMJ,MDET)
    real(dp) :: dj_de_ci(MPARMJ,MDET)
@@ -1718,10 +1718,10 @@ end module forcewt
 
  module mix_jas_orb
    !> Arguments: de_o, dj_ho, dj_o, dj_oe
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
    include 'optorb.h'
-   include 'optjas.h'
  
    real(dp) :: de_o(MPARMJ,MXREDUCED,MSTATES)
    real(dp) :: dj_ho(MPARMJ,MXREDUCED,MSTATES)
