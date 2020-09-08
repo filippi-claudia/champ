@@ -133,7 +133,6 @@ c-----------------------------------------------------------------------
 
 
       include 'optorb.h'
-      include 'optjas.h'
 
 
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)

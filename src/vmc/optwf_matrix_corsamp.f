@@ -12,7 +12,6 @@ c written by Claudia Filippi
       
       implicit real*8(a-h,o-z)
 
-      include 'optjas.h'
       include 'optorb.h'
 
       parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
@@ -637,7 +636,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optjas.h'
       include 'optorb.h'
         
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)

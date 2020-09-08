@@ -902,7 +902,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optjas.h'
       include 'optorb.h'
         
 
@@ -933,6 +932,7 @@ c-----------------------------------------------------------------------
       subroutine optwf_store(l,wt,psid,energy)
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
+      use optjas, only: MPARMJ
       use csfs, only: nstates
       use derivjas, only: gvalue
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
@@ -953,7 +953,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       implicit real*8(a-h,o-z)
 
 
-      include 'optjas.h'
       include 'optorb.h'
       include 'sr.h'
 

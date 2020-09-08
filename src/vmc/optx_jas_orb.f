@@ -15,7 +15,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'optjas.h'
       include 'optorb.h'
 
       dimension wtg_new(*),wtg_old(*)
@@ -63,7 +62,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'optjas.h'
       include 'optorb.h'
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -95,7 +93,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'optjas.h'
       include 'optorb.h'
 
 
@@ -124,7 +121,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optjas.h'
       include 'optorb.h'
 
 
@@ -155,7 +151,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'optjas.h'
       include 'optorb.h'
 
 

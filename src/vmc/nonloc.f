@@ -1,6 +1,6 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use optjas, only: MPARMJ
       use vmc, only: MELEC, MORB, MDET, MCENT
       use vmc, only: MMAT_DIM
       use atom, only: iwctype, ncent
@@ -28,7 +28,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       parameter (one=1.d0)
 
       include 'pseudo.h'
-      include 'optjas.h'
       include 'optorb.h'
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -233,7 +232,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MCENT
       use atom, only: cent, ncent
       use contrl_per, only: iperiodic
@@ -290,7 +288,6 @@ c-----------------------------------------------------------------------
       subroutine orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MCENT
       use atom, only: iwctype, ncent
 
@@ -373,7 +370,6 @@ c-----------------------------------------------------------------------
       subroutine nonlocd(iel,orb,detu,detd,slmui,slmdi,ratio)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MMAT_DIM
       use elec, only: ndn, nup
       use multidet, only: kref
@@ -415,7 +411,6 @@ c-----------------------------------------------------------------------
       subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MCENT
       use atom, only: iwctype, ncent
 
@@ -532,7 +527,6 @@ c-----------------------------------------------------------------------
       subroutine compute_da_bnl(i,ic,ict,iq,r_en_sav,rvec_en_sav,costh,
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MORB, MCENT
       use atom, only: ncent
       use Bloc_da, only: db

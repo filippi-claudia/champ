@@ -13,7 +13,6 @@ c Written by Claudia Filippi by modifying hpsi
       implicit real*8(a-h,o-z)
 
       include 'pseudo.h'
-      include 'optjas.h'
 
 c Calculates wave function
 

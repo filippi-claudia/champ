@@ -13,7 +13,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'optjas.h'
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
@@ -36,7 +35,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'optjas.h'
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
@@ -59,7 +57,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'optjas.h'
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
       write(iu) ((dj_o_ci(i,j),dj_oe_ci(i,j),dj_de_ci(i,j),de_o_ci(i,j),i=1,nparmj),j=1,nciterm)
@@ -76,7 +73,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'optjas.h'
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
       read(iu) ((dj_o_ci(i,j),dj_oe_ci(i,j),dj_de_ci(i,j),de_o_ci(i,j),i=1,nparmj),j=1,nciterm)
@@ -106,7 +102,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'optjas.h'
 
 
       dimension oelocav(MXCITERM),eav(MXCITERM)

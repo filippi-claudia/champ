@@ -3,6 +3,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
+      use optjas, only: MPARMJ
       use vmc, only: MELEC, MDET, MCENT
       use vmc, only: MMAT_DIM, MMAT_DIM2
       use const, only: hb, nelec, ipr
@@ -33,7 +34,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       include 'pseudo.h'
       include 'pcm.h'
-      include 'optjas.h'
 
 c Calculates energy
 

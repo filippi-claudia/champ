@@ -14,7 +14,6 @@
 
 
 
-      include 'optjas.h'
       include 'optorb.h'
 
       parameter(eps=1.d-12)
@@ -173,7 +172,6 @@ c-----------------------------------------------------------------------
       
       implicit real*8(a-h,o-z)
 
-      include 'optjas.h'
       include 'optorb.h'
 
       parameter(eps=1.d-12)
@@ -253,7 +251,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'optjas.h'
       include 'optorb.h'
 
       parameter(eps=1.d-12)
@@ -322,7 +319,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optjas.h'
       include 'optorb.h'
 
       parameter(eps=1.d-12)

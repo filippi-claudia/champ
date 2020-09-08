@@ -103,7 +103,6 @@ c and Anthony Scemema
 
       include 'dmc.h'
       include 'pseudo.h'
-      include 'optjas.h'
       include 'optorb.h'
       include 'sr.h'
       include 'pcm.h'
@@ -1661,6 +1660,7 @@ c Set all force displacements to zero
 c-----------------------------------------------------------------------
       subroutine read_jasderiv(iu)
 C$INPUT jasderiv inp
+      use optjas, only: MPARMJ
       use atom, only: nctype
       use jaspar, only: nspin1, is
       use jaspar4, only: norda, nordb, nordc
@@ -1684,7 +1684,6 @@ C$INPUT jasderiv inp
 
 
 
-      include 'optjas.h'
 
 
 

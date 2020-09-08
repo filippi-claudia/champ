@@ -556,7 +556,6 @@ c-----------------------------------------------------------------------
 
 
       include 'optorb.h'
-      include 'optjas.h'
 
       dimension oav(MXORBOP),eoav(MXORBOP),fo(MXORBOP),foerr(MXORBOP)
       dimension wcum(*),ecum(*)
@@ -965,7 +964,6 @@ c-----------------------------------------------------------------------
 c Do not compute virtual orbitals during single-electron move
       implicit real*8(a-h,o-z)
 
-      include 'optjas.h'
       include 'optorb.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
