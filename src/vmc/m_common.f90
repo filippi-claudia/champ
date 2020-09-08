@@ -2077,11 +2077,11 @@ end module forcewt
 
  module numexp
    !> Arguments: ae, ce
+   use numbas_mod, only: MRWF
    use force, only: MFORCE
    use precision_kinds, only: dp
    use vmc, only: MCTYPE
    use vmc, only: NCOEF
-   include 'numbas.h'
  
    real(dp) :: ae(2,MRWF,MCTYPE,MFORCE)
    real(dp) :: ce(NCOEF,MRWF,MCTYPE,MFORCE)
@@ -2107,10 +2107,10 @@ end module forcewt
 
  module numbas
    !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+   use numbas_mod, only: MRWF, MRWF_PTS
    use force, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MBASIS, MCTYPE
-   include 'numbas.h'
 
    real(dp) :: arg(MCTYPE)
    real(dp) :: d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
