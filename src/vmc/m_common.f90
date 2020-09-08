@@ -80,6 +80,16 @@
   save 
  end module mstates_mod
 
+ module force
+  integer, parameter :: MFORCE=3
+  integer, parameter :: MFORCE_WT_PRD=1000
+  integer, parameter :: MWF=3
+
+  private 
+  public :: MFORCE, MFORCE_WT_PRD, MWF
+  save
+ end module force
+
  module atom
    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
    use precision_kinds, only: dp
@@ -97,9 +107,9 @@
 
  module basis
    !> Arguments: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz, n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz, n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
+   use force, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MBASIS, MCTYPE
-   include 'force.h'
 
    !  ncent  = number of centers                                                                              
    !  zex    = screening constants for each basis function
@@ -383,9 +393,9 @@
 
  module coefs
    !> Arguments: coef, nbasis, norb
+   use force, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MORB, MBASIS
-   include 'force.h'
 
    real(dp) :: coef(MBASIS,MORB,MWF)
    integer  :: nbasis
@@ -398,10 +408,10 @@
 
  module config
    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
+   use force, only: MFORCE
    use precision_kinds, only: dp
    use vmc, only: MELEC
    use mstates_mod, only: MSTATES
-   include 'force.h'
 
    real(dp) :: delttn(MELEC)
    real(dp) :: enew(MFORCE)
@@ -537,8 +547,8 @@ end module contr3
  
  module contrldmc
    !> Arguments: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot
+   use force, only: MFORCE
    use precision_kinds, only: dp
-   include 'force.h'
 
    integer  :: iacc_rej
    integer  :: icross
@@ -562,10 +572,10 @@ end module contr3
 
  module csfs
    !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+   use force, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MDET
    use mstates_mod, only: MSTATES, MDETCSFX
-   include 'force.h'
 
    real(dp) :: ccsf(MDET,MSTATES,MWF)
    real(dp) :: cxdet(MDET*MDETCSFX)
@@ -724,10 +734,10 @@ end module contr3
 
  module dets
    !> Arguments: cdet, ndet
+   use force, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MDET
    use mstates_mod, only: MSTATES
-   include 'force.h'
 
    real(dp) :: cdet(MDET,MSTATES,MWF)
    integer  :: ndet
@@ -847,9 +857,9 @@ end module contr3
 
  module estcum
    !> Arguments: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
+   use force, only: MFORCE
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'force.h'
 
    real(dp) :: ecum(MSTATES,MFORCE)
    real(dp) :: ecum1(MSTATES)
@@ -880,9 +890,9 @@ end module contr3
 
  module estsum
   !> Arguments: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+  use force, only: MFORCE
   use precision_kinds, only: dp
   use mstates_mod, only: MSTATES
-  include 'force.h'
 
   real(dp) :: acc
   real(dp) :: esum(MSTATES,MFORCE)
@@ -913,9 +923,9 @@ end module contr3
 
  module est2cm
    !> Arguments: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
+   use force, only: MFORCE
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'force.h'
 
    real(dp) :: ecm2(MSTATES,MFORCE)
    real(dp) :: ecm21(MSTATES)
@@ -995,9 +1005,9 @@ end module contr3
 
  module forcest
    !> Arguments: fcm2, fcum
+   use force, only: MFORCE
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'force.h'
 
    real(dp) :: fcm2(MSTATES,MFORCE)
    real(dp) :: fcum(MSTATES,MFORCE)
@@ -1009,9 +1019,9 @@ end module contr3
 
  module forcestr
    !> Arguments: delc
+   use force, only: MFORCE
    use precision_kinds, only: dp
    use vmc, only: MCENT
-   include 'force.h'
  
    real(dp) :: delc(3,MCENT,MFORCE)
  
@@ -1022,9 +1032,9 @@ end module contr3
 
  module forcewt
    !> Arguments: wcum, wsum
+   use force, only: MFORCE
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'force.h'
 
    real(dp) :: wcum(MSTATES,MFORCE)
    real(dp) :: wsum(MSTATES,MFORCE)
@@ -1073,8 +1083,8 @@ end module forcewt
 
  module forcepar
    !> Arguments: deltot, istrech, nforce
+   use force, only: MFORCE
    use precision_kinds, only: dp
-   include 'force.h'
 
    real(dp) :: deltot(MFORCE)
    integer  :: istrech
@@ -1288,8 +1298,8 @@ end module forcewt
 
  module grdntsmv
    !> Arguments: igrdaidx, igrdcidx, igrdmv
+   use force, only: MFORCE
    use vmc, only: MCENT
-   include 'force.h'
 
     integer  :: igrdaidx(MFORCE)
     integer  :: igrdcidx(MFORCE)
@@ -1527,8 +1537,8 @@ end module forcewt
 
  module jaspar1
    !> Arguments: cjas1, cjas2
+   use force, only: MWF
    use precision_kinds, only: dp
-   include 'force.h'
 
    real(dp) :: cjas1(MWF)
    real(dp) :: cjas2(MWF)
@@ -1540,8 +1550,8 @@ end module forcewt
 
  module jaspar2
    !> Arguments: a1, a2
+   use force, only: MWF
    use precision_kinds, only: dp
-   include 'force.h'
 
    real(dp) :: a1(83,3,MWF)
    real(dp) :: a2(83,3,MWF)
@@ -1553,10 +1563,10 @@ end module forcewt
 
  module jaspar3
    !> Arguments: a, b, c, fck, nord, scalek
+   use force, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MCTYPE
    use vmc, only: MORDJ1
-   include 'force.h'
 
    real(dp) :: a(MORDJ1,MWF)
    real(dp) :: b(MORDJ1,2,MWF)
@@ -1572,10 +1582,10 @@ end module forcewt
 
  module jaspar4
    !> Arguments: a4, norda, nordb, nordc
+   use force, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MCTYPE
    use vmc, only: MORDJ1
-   include 'force.h'
 
    real(dp) :: a4(MORDJ1,MCTYPE,MWF)
    integer  :: norda
@@ -1977,10 +1987,10 @@ end module forcewt
 
  module numexp
    !> Arguments: ae, ce
+   use force, only: MFORCE
    use precision_kinds, only: dp
    use vmc, only: MCTYPE
    use vmc, only: NCOEF
-   include 'force.h'
    include 'numbas.h'
  
    real(dp) :: ae(2,MRWF,MCTYPE,MFORCE)
@@ -2007,9 +2017,9 @@ end module forcewt
 
  module numbas
    !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+   use force, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MBASIS, MCTYPE
-   include 'force.h'
    include 'numbas.h'
 
    real(dp) :: arg(MCTYPE)
@@ -2054,7 +2064,6 @@ end module forcewt
  module orbital_num_lag
    !> Arguments: denom
    use precision_kinds, only: dp
-   use vmc, only: MELEC
    use grid_lagrange_mod, only: LAGSTART, LAGEND
 
    real(dp) :: denom(LAGSTART:LAGEND,3)
@@ -2298,8 +2307,8 @@ end module orbital_num_lag
 
  module optwf_corsam
    !> Arguments: add_diag_tmp, energy, energy_err, force, force_err
+   use force, only: MFORCE
    use precision_kinds, only: dp
-   include 'force.h'
 
    real(dp) :: add_diag(MFORCE)
    real(dp) :: add_diag_tmp(MFORCE)
@@ -2478,9 +2487,9 @@ end module orbital_num_lag
 
  module pcm_force
    !> Arguments: sch_s
+   use force, only: MFORCE
    use precision_kinds, only: dp
    include 'pcm.h'
-   include 'force.h'
 
    real(dp) :: sch_s(MCHS,MFORCE)
 
@@ -2663,9 +2672,7 @@ end module orbital_num_lag
 
  module periodic
    !> Arguments: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt, glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim, ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb, ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec, np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell, vcell_sim, znuc2_sum, znuc_sum
-   use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM
-   use ewald_mod, only: NGNORMX, NGVECX, NG1DX
-   use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
+   use ewald_mod, only: IVOL_RATIO
    use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
    use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
    use precision_kinds, only: dp
@@ -2805,10 +2812,10 @@ end module orbital_num_lag
 
  module pseudo
    !> Arguments: lpot, nloc, vps, vpso
+   use force, only: MFORCE
    use precision_kinds, only: dp
    use vmc, only: MELEC, MCENT, MCTYPE
    include 'pseudo.h'
-   include 'force.h'
 
    integer  :: lpot(MCTYPE)
    integer  :: nloc
@@ -2876,11 +2883,8 @@ end module pseudo
 
  module pworbital
    !> Arguments: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
-   use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM
-   use ewald_mod, only: NGNORMX, NGVECX, NG1DX
-   use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
-   use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
-   use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
+   use ewald_mod, only: IVOL_RATIO
+   use ewald_mod, only: NGVECX
    use precision_kinds, only: dp
    use vmc, only: MORB
 
@@ -3122,11 +3126,8 @@ module spc2
 
  module tempor_test
    !> Arguments: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
-   use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM
-   use ewald_mod, only: NGNORMX, NGVECX, NG1DX
-   use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
-   use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
-   use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
+   use ewald_mod, only: IVOL_RATIO
+   use ewald_mod, only: NGVEC_BIGX
    use precision_kinds, only: dp
 
    real(dp) :: c_imag(NGVEC_BIGX)
@@ -3145,11 +3146,8 @@ module spc2
 
  module test
    !> Arguments: f, vbare_coul, vbare_jas, vbare_psp
-   use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM
-   use ewald_mod, only: NGNORMX, NGVECX, NG1DX
-   use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
-   use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
-   use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
+   use ewald_mod, only: NGNORM_BIGX
+   use ewald_mod, only: NGNORM_SIM_BIGX
    use precision_kinds, only: dp
 
    real(dp) :: f
@@ -3202,8 +3200,8 @@ module spc2
  end module velocity_jastrow
  
  module wfsec
+   use force, only: MFORCE
    !> Arguments: iwf, iwftype, nwftype
-   include 'force.h'
 
    integer  :: iwf
    integer  :: iwftype(MFORCE)
