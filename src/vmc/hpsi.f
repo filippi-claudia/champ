@@ -3,13 +3,8 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use efield_mod, only: MCHARGES
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc, only: MELEC, MDET, MCENT
+      use vmc, only: MMAT_DIM, MMAT_DIM2
       use const, only: hb, nelec, ipr
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
@@ -38,7 +33,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       include 'pseudo.h'
       include 'pcm.h'
-      include 'mmpol.h'
       include 'optjas.h'
 
 c Calculates energy

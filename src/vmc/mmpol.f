@@ -9,11 +9,7 @@ c     computes nuclei-dipoles  interactions (penu_dp)
 c     computes charges-charges interactions (peqq)
 c     computes charges-dipoles interactions (peq_dp)
 c...........................................................
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use mmpol_mod, only: mmpolfile_sites
       use mmpol_cntrl, only: icall_mm, ich_mmpol, immpol, isites_mmpol
       use mmpol_parms, only: chmm, nchmm, x_mmpol
       use mmpol_dipol, only: alfa, dipo
@@ -25,7 +21,6 @@ c...........................................................
 
 
        
-      include 'mmpol.h'
 
 
       data PI/3.1415927D0/
@@ -95,11 +90,6 @@ c............................................................
 c     compute distances and screening between sites and
 c     peqq  (charges-charges interaction) 
 c............................................................
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa
@@ -115,7 +105,6 @@ c............................................................
 
 
        
-      include 'mmpol.h'
 
 
       if(immpol.eq.0) return
@@ -171,11 +160,6 @@ c-----------------------------------------------------------------------
 c............................................................
 c     compute u_self and u_dd (self and dipole-dipole interaction) 
 c............................................................
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa, dipo
@@ -191,7 +175,6 @@ c............................................................
 
 
        
-      include 'mmpol.h'
 
       if(immpol.eq.0) return
 
@@ -236,11 +219,6 @@ c-----------------------------------------------------------------------
 c............................................................
 c     compute penu_dp (nuclei-induced dipoles on MM sites interaction) 
 c............................................................
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm, x_mmpol
@@ -252,7 +230,6 @@ c............................................................
 
 
        
-      include 'mmpol.h'
 
 
       if(immpol.eq.0) return
@@ -280,11 +257,6 @@ c-----------------------------------------------------------------------
 c............................................................
 c     compute penu_q  (nuclei-charges interaction) 
 c............................................................
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, x_mmpol
@@ -294,7 +266,6 @@ c............................................................
 
 
        
-      include 'mmpol.h'
 
 
       if(immpol.eq.0) return
@@ -318,11 +289,7 @@ c-----------------------------------------------------------------------
 C     ***************************************************************
 C     contribution inverse A matrix to compute dipoles as mu=Ainv E
 C     ***************************************************************
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use mmpol_mod, only: MCHMM
       use mmpol_parms, only: nchmm, rqq, x_mmpol
       use mmpol_dipol, only: alfa
       use mmpol_ahpol, only: ah_pol
@@ -336,7 +303,6 @@ C     ***************************************************************
 
 
 C     
-      include 'mmpol.h'
        
 C    
       dimension ahpol_vec(3*MCHMM*3*MCHMM)
@@ -400,11 +366,6 @@ c-----------------------------------------------------------------------
 C     ***************************************************************
 C     contribution from nuclei to polarization charghes
 C     ***************************************************************
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm, x_mmpol
@@ -419,7 +380,6 @@ C     ***************************************************************
 
       real*8 ah_vec,det
 C     
-      include 'mmpol.h'
        
 C    
 c
@@ -459,11 +419,6 @@ c............................................................
 c    computes electric field due to fixed MM charges on MM sites
 c    and potential interaction MM charges-dipoles (peq_dp) 
 c............................................................
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
       use mmpol_dipol, only: dipo
@@ -481,7 +436,6 @@ c............................................................
 
 
        
-      include 'mmpol.h'
 
       if(immpol.eq.0) return
 
@@ -520,11 +474,6 @@ C     ***************************************************************
 c     For the accepted configuration, the electronic field is computed 
 c     on MM sites  eek_pol(1,k),eek_pol(2,k),eek_pol(3,k)
 C     ***************************************************************
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mmpol_hpsi, only: eek_pol
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm, x_mmpol
@@ -534,7 +483,6 @@ C     ***************************************************************
 
 
 
-      include 'mmpol.h'
 
 
       dimension coord(3,*)
@@ -591,7 +539,6 @@ c......................................................
 
 
 
-      include 'mmpol.h'
 
       dimension coord(3,*)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
@@ -635,7 +582,6 @@ c......................................................
 
 
 
-      include 'mmpol.h'
 
       dimension x(3)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
@@ -676,6 +622,7 @@ c......................................................
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_dipoles(eek_ave,eek_err)
+      use mmpol_mod, only: MCHMM
       use mmpol_parms, only: chmm, nchmm, x_mmpol
       use mmpol_dipol, only: alfa, dipo
       use mmpol_ahpol, only: ah_pol, bh_pol
@@ -691,7 +638,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'mmpol.h'
 
       dimension eek_ave(3,MCHMM),eek_err(3,MCHMM)
       dimension dp(3*MCHMM)
@@ -805,7 +751,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'mmpol.h'
 
       if(immpol.eq.0) return
 
@@ -846,7 +791,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'mmpol.h'
 
       if(immpol.eq.0) return
       write(iu) dmmpol_cum,dmmpol_cm2
@@ -870,7 +814,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'mmpol.h'
 
       if(immpol.eq.0) return
       read(iu) dmmpol_cum,dmmpol_cm2
@@ -888,8 +831,8 @@ c......................................................
 c     end AVERAGES subroutines
 c......................................................
       subroutine mmpol_matinv(a,nsub,determinant)
+      use mmpol_mod, only: MCHMM
       implicit real*8 (a-h,o-z)
-      include 'mmpol.h'
 
 c routine to calculate inverse and determinant of matrix a
 c assumed to be dimensioned a(nsub,nsub).

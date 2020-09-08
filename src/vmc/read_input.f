@@ -25,7 +25,8 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mmpol_mod, only: mmpolfile_sites, mmpolfile_chmm
+      use force, only: MFORCE, MWF
       use vmc, only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use jaspar, only: nspin1, nspin2, is
@@ -106,7 +107,6 @@ c and Anthony Scemema
       include 'optci.h'
       include 'optorb.h'
       include 'sr.h'
-      include 'mmpol.h'
       include 'pcm.h'
       include 'pcm_3dgrid.h'
       include 'properties.h'
@@ -904,7 +904,6 @@ CKEYDOC nbasis: number of basis functiobns
 CKEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
 CKEYDOC filename: file containing orbitals coefficients
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MORB, MBASIS
       use coefs, only: coef, nbasis, norb
       use inputflags, only: ilcao
@@ -968,7 +967,6 @@ c-----------------------------------------------------------------------
 C$INPUT exponents inp i=1
 CKEYDOC Basis function exponents (only if no numerical basis)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use coefs, only: nbasis
       use basis, only: zex
       use inputflags, only: iexponents
@@ -987,7 +985,6 @@ c-----------------------------------------------------------------------
 C$INPUT determinants inp i i=1
 CKEYDOC CI coefficients and occupation of determinants in wf
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MDET
       use dets, only: cdet, ndet
       use dorb_m, only: iworbd
@@ -1020,7 +1017,6 @@ c-----------------------------------------------------------------------
       subroutine read_multideterminants(iu,nd)
 C$INPUT multideterminants inp i 
 CKEYDOC CI coefficients and occupation of determinants in wf
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use dets, only: ndet
       use multidet, only: irepcol_det, ireporb_det, numrep_det
       use inputflags, only: imultideterminants
@@ -1049,7 +1045,6 @@ c-----------------------------------------------------------------------
 C$INPUT jastrow_parameter inp i=1
 CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use jaspar, only: nspin1, nspin2
       use elec, only: ndn
       use jaspar3, only: a, b, c, scalek
@@ -1118,7 +1113,6 @@ C$INPUT basis inp i
 CKEYDOC Basis function types and pointers to radial parts tables
 C$INPUT qmc_bf_info inp i
 CKEYDOC alternative name for keyword basis because of GAMBLE input
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCTYPE
       use numbas, only: iwrwf, numr
       use numbas1, only: iwlbas, nbastyp
@@ -1258,7 +1252,7 @@ c-----------------------------------------------------------------------
 C$INPUT forces_displace inp
 CKEYDOC Displacement parameters and wave function types
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force, only: MFORCE
       use vmc, only: MCENT
       use forcepar, only: nforce
       use forcestr, only: delc
@@ -1291,7 +1285,6 @@ c-----------------------------------------------------------------------
       subroutine read_csf(ncsf_read,nstates_read,fn)
 C$INPUT csf i i=1 a=<input>
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MDET
       use csfs, only: ccsf, ncsf, nstates
       use mstates_mod, only: MSTATES
@@ -1328,7 +1321,6 @@ c-----------------------------------------------------------------------
       subroutine read_csfmap(fn)
 C$INPUT csfmap a=<input>
 CKEYDOC Read mapping between csf and determinants.
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MDET
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MDETCSFX
@@ -1423,7 +1415,7 @@ c-----------------------------------------------------------------------
       subroutine flagcheck
 c Check that the required blocks are there in the input
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force, only: MFORCE, MWF
       use vmc, only: MELEC, MORB
       use numbas, only: numr
       use optorb_mix, only: norbopt, norbvirt
@@ -1527,7 +1519,6 @@ c-----------------------------------------------------------------------
       subroutine inputcsf
 c Check that the required blocks are there in the input
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use csfs, only: ncsf, nstates
       use inputflags, only: ici_def
 
@@ -1548,7 +1539,7 @@ c Check that the required blocks are there in the input
 c----------------------------------------------------------------------
       subroutine inputzex
 c Set the exponents to one when using a numerical basis
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force, only: MWF
       use numbas, only: numr
       use coefs, only: nbasis
       use basis, only: zex
@@ -1573,7 +1564,6 @@ c Set the exponents to one when using a numerical basis
 c----------------------------------------------------------------------
       subroutine inputdet(nwftype)
 c Set the cdet to be equal
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
 
@@ -1587,7 +1577,6 @@ c Set the cdet to be equal
 c----------------------------------------------------------------------
       subroutine inputlcao(nwftype)
 c Set the lcao to be equal
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
 
@@ -1604,7 +1593,6 @@ c----------------------------------------------------------------------
       subroutine inputjastrow(nwftype)
 c Set the jastrow to be equal
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use jaspar, only: nspin1, nspin2
       use jaspar3, only: a, b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
@@ -1645,7 +1633,7 @@ c Set the jastrow to be equal
 c----------------------------------------------------------------------
       subroutine inputforces
 c Set all force displacements to zero
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force, only: MWF
       use vmc, only: MCENT
       use forcepar, only: nforce
       use wfsec, only: iwftype, nwftype
@@ -1679,7 +1667,6 @@ c Set all force displacements to zero
 c-----------------------------------------------------------------------
       subroutine read_jasderiv(iu)
 C$INPUT jasderiv inp
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use atom, only: nctype
       use jaspar, only: nspin1, is
       use jaspar4, only: norda, nordb, nordc
@@ -1792,7 +1779,6 @@ c-----------------------------------------------------------------------
       subroutine read_sym(nsym,mo,fn)
 C$INPUT sym_labels i i a=<input>
 CKEYDOC Read symmetry information
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use coefs, only: norb
       use optorb, only: irrep
       implicit real*8(a-h,o-z)
@@ -1824,7 +1810,6 @@ c-----------------------------------------------------------------------
 C$INPUT optorb_mixvirt i i a=<input>
 CKEYDOC Read which virtual orbitals are mixed with the occupied ones
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
       use coefs, only: norb
       use inputflags, only: ioptorb_mixvirt
@@ -1857,7 +1842,6 @@ c-----------------------------------------------------------------------
 C$INPUT energies i a=<input>
 C$INPUT eigenvalues i a=<input>
 CKEYDOC Read orbital energies 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use coefs, only: norb
       use optorb, only: orb_energy
       implicit real*8(a-h,o-z)
@@ -1882,7 +1866,6 @@ c----------------------------------------------------------------------
       subroutine read_dmatrix(no,ns,fn)
 C$INPUT dmatrix i i a=<input> 
 CKEYDOC Read diagonal density matrix information.
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MORB
       use sa_weights, only: iweight, nweight, weights
       use mstates_mod, only: MSTATES
@@ -1934,7 +1917,6 @@ CKEYDOC Read diagonal density matrix information.
       end
 c----------------------------------------------------------------------
       subroutine get_weights(field,weights,iweight,nweight)
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
 
@@ -2008,7 +1990,6 @@ CKEYDOC atoms energy gradients are to be calculated for.
 
 c     Written by Omar Valsson
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use forcepar, only: nforce
       use forcestr, only: delc
@@ -2073,7 +2054,6 @@ CKEYDOC atoms energy gradients are to be calculated for.
 
 c      Written by Omar Valsson.
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use forcepar, only: nforce
       use forcestr, only: delc
@@ -2141,7 +2121,6 @@ C$INPUT modify_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
 CKEYDOC atoms energy gradients are to be calculated for.
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use grdntsmv, only: igrdmv
       use inputflags, only: imodify_zmat
@@ -2173,7 +2152,6 @@ C$INPUT hessian_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
 CKEYDOC atoms energy gradients are to be calculated for.
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use grdnthes, only: hessian_zmat
       use inputflags, only: ihessian_zmat
@@ -2209,7 +2187,6 @@ CKEYDOC coordinates.
 
 c      Written by Omar Valsson
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use atom, only: cent, ncent
       use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
@@ -2250,7 +2227,6 @@ c-----------------------------------------------------------------------
       subroutine read_efield(ncharges_tmp,iscreen_tmp,filename)
 C$INPUT efield i i a=<input>
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use efield_mod, only: MCHARGES
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
       use efield, only: iscreen, ncharges
@@ -2280,7 +2256,6 @@ C$INPUT efield i i a=<input>
       end
 c-----------------------------------------------------------------------
       subroutine set_displace_zero(nforce_tmp)
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use forcestr, only: delc
       use pcm_force, only: sch_s
@@ -2314,7 +2289,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine modify_zmat_define
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use grdntsmv, only: igrdmv
 
@@ -2333,7 +2307,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine hessian_zmat_define
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use grdnthes, only: hessian_zmat
 

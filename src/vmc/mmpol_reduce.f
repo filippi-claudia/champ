@@ -1,5 +1,6 @@
       subroutine mmpol_reduce
 
+      use mmpol_mod, only: MCHMM
       use mpiconf, only: wid
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm
@@ -9,7 +10,6 @@
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'mmpol.h'
 
       dimension eek1_collect(MCHMM),eek1cm2_collect(MCHMM)
       dimension eek2_collect(MCHMM),eek2cm2_collect(MCHMM)

@@ -8,12 +8,9 @@ c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc, only: MELEC, MORB, MDET
+      use vmc, only: nrad
+      use vmc, only: delri
       use atom, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
 
@@ -56,7 +53,6 @@ c g3b2, g5b2 are gamma3/2), gamma(5/2)
 
       include 'optci.h'
       include 'pcm.h'
-      include 'mmpol.h'
       include 'pseudo.h'
 
 c The moves are now being made in local r,theta phi coordinates.

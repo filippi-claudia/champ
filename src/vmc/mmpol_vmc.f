@@ -5,7 +5,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'mmpol.h'
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
@@ -43,6 +42,7 @@
 c-----------------------------------------------------------------------
       subroutine mmpol_fin(wcum,iblk)
 
+      use mmpol_mod, only: MCHMM
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
@@ -50,7 +50,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'mmpol.h'
     
 
       data hatokc/627.509541d0/
@@ -135,7 +134,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'mmpol.h'
 
       if(immpol.eq.0) return
       dmmpolo=QMdp
@@ -161,7 +159,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'mmpol.h'
 
       if(immpol.eq.0) return
       dmmpol_sum=dmmpol_sum+p*QMdp+q*dmmpolo
@@ -185,7 +182,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'mmpol.h'
 
       if(immpol.eq.0) return
       dmmpolnow=dmmpol_sum/wsum
