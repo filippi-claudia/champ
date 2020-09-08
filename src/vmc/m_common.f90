@@ -1147,7 +1147,6 @@ end module forcewt
 
  module optorb_mod
   ! flags and dimensions for orbital optimization
-  !
   ! maximal number of terms, max dim of reduced matrices
   integer, parameter :: MXORBOP=8000
   integer, parameter :: MXREDUCED=1
@@ -2466,6 +2465,15 @@ end module orbital_num_lag
    public :: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma, xms
    save
  end module pars
+
+ module pcm 
+  integer, parameter :: MCHS=1
+  integer, parameter :: MCHV=1
+  integer, parameter :: MSPHERE=30
+  private 
+  public :: MCHS, MCHV, MSPHERE
+  save 
+ end module pcm
 
  module pcm_ah
    !> Arguments: ahca, bh
