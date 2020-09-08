@@ -1,11 +1,6 @@
       subroutine optwf_mix
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use sr_mod, only: MPARM, MVEC
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
@@ -21,7 +16,6 @@
 
 
 
-      include 'sr.h'
 
       character*20 method_sav
 
@@ -281,12 +275,6 @@ c enddo iteration
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine change_ci(dparm_new,istate)
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf
 
       use dets, only: cdet, ndet

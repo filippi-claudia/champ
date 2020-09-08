@@ -1,11 +1,5 @@
       subroutine dl_more(iter,nparm,dl_momentum,dl_EG_sq,dl_EG,deltap,parameters)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use mpiconf, only: idtask
       use sr_mat_n, only: h_sr
 
@@ -14,7 +8,6 @@
       character*20 dl_alg
 
       include 'mpif.h'
-      include 'sr.h'
 
       dimension deltap(*),dl_momentum(*),dl_EG_sq(*),dl_EG(*),parameters(*)
 

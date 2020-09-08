@@ -1,12 +1,7 @@
       subroutine optwf_dl
 
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use sr_mod, only: MPARM
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use contrl, only: nblk
@@ -18,7 +13,6 @@
 
       character*20 dl_alg
 
-      include 'sr.h'
 
       dimension deltap(MPARM)
 c deep learning 'momentum' variables

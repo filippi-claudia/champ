@@ -1112,15 +1112,15 @@ end module forcewt
   integer, parameter :: MVEC=160
 
   private
-  public :: NPARMS, MOBS, MCONF, MVEC
+  public :: MPARM, MOBS, MCONF, MVEC
   save
  end module sr_mod 
  
  module force_mat_n
    !> Arguments: force_o
+   use sr_mod, only: MCONF
    use precision_kinds, only: dp
    use vmc, only: MCENT
-   include 'sr.h'
 
    real(dp) :: force_o(6*MCENT,MCONF)
 
@@ -1692,8 +1692,8 @@ end module forcewt
 
  module jd_scratch
    !> Arguments: qr, rr
+   use sr_mod, only: MPARM
    use precision_kinds, only: dp
-   include 'sr.h'
 
    real(dp) :: qr(MPARM)
    real(dp) :: rr(MPARM)
@@ -3184,9 +3184,9 @@ module spc2
 
  module sr_mat_n
    !> Arguments: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
+   use sr_mod, only: MPARM, MOBS, MCONF
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'sr.h'
 
    real(dp) :: elocal(MCONF,MSTATES)
    real(dp) :: h_sr(MPARM)

@@ -3,6 +3,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_hs(nparm,sr_adiag)
 c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
+      use sr_mod, only: MOBS
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use mpiconf, only: idtask
@@ -19,7 +20,6 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
 
       include 'mpif.h'
-      include 'sr.h'
 
 
 
@@ -280,7 +280,6 @@ c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
       use sr_mat_n, only: s_ii_inv
       implicit real*8(a-h,o-z)
 
-      include 'sr.h'
 
 
       dimension x(*),b(*)
@@ -297,6 +296,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine atimes_n(n,z,r)
 c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
+      use sr_mod, only: MPARM, MCONF
       use csfs, only: nstates
 
       use optwf_func, only: ifunc_omega, omega, omega_hes
@@ -308,7 +308,6 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'sr.h'
 
 
 
@@ -427,7 +426,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'sr.h'
 
 
       dimension deltap(*)
@@ -490,6 +488,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine forces_zvzb(nparm)
 
+      use sr_mod, only: MPARM
       use atom, only: ncent
 
       use force_fin, only: da_energy_ave
@@ -502,7 +501,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'sr.h'
 
       parameter (MTEST=1500)
       dimension cloc(MTEST,MTEST),c(MTEST,MTEST),oloc(MPARM),o(MPARM),p(MPARM),tmp(MPARM)

@@ -1,6 +1,7 @@
       subroutine optwf_lin_d
 
 
+      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
       use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -20,7 +21,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'sr.h'
 
       character*20 method_sav
 
@@ -185,11 +185,11 @@ c enddo iteration
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_lin_d(ndim,nvec,psi,hpsi )
+      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
       use optwf_func, only: ifunc_omega
       implicit real*8(a-h,o-z)
 
 
-      include 'sr.h'
 
 
       dimension psi(MPARM,*),hpsi(MPARM,*)
@@ -207,11 +207,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_lin_d(ndim,nvec,psi,spsi )
+      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
       use optwf_func, only: ifunc_omega
       implicit real*8(a-h,o-z)
 
 
-      include 'sr.h'
  
 
       dimension psi(MPARM,*),spsi(MPARM,*)
@@ -249,12 +249,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       return
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine jdqz_driver( n, kmax, jmin, jmax, evc, eps,
+      subroutine jdqz_driver( n, kmax, jmin, jmax, evc, eps,     
      &                        e, e0, itype, notcnv, idav_iter , ipr )
-
+      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
       implicit real*8(a-h,o-z)
 
-      include 'sr.h'
       integer method
 c     parameter(lwork=10+6*MVEC+5*MVEC+3*MVEC)
       parameter(lwork=MPARM*100)

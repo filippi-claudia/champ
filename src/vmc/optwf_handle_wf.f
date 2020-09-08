@@ -929,6 +929,7 @@ c-----------------------------------------------------------------------
       subroutine optwf_store(l,wt,psid,energy)
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
+      use sr_mod, only: MPARM, MCONF
       use optjas, only: MPARMJ
       use csfs, only: nstates
       use derivjas, only: gvalue
@@ -950,7 +951,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       implicit real*8(a-h,o-z)
 
 
-      include 'sr.h'
 
       dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)
 
