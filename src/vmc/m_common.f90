@@ -2846,6 +2846,14 @@ end module orbital_num_lag
    save
  end module phifun
 
+ module properties
+  !> Arguments: MAXPROP
+  integer, parameter :: MAXPROP=6
+  private
+  public :: MAXPROP
+  save 
+ end module properties
+
  module prp000
    !> Arguments: ipropprt, iprop, nprop
  
