@@ -25,6 +25,7 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
+      use optci, only: MXCITERM
       use mmpol_mod, only: mmpolfile_sites, mmpolfile_chmm
       use force, only: MFORCE, MWF
       use vmc, only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
@@ -103,7 +104,6 @@ c and Anthony Scemema
       include 'dmc.h'
       include 'pseudo.h'
       include 'optjas.h'
-      include 'optci.h'
       include 'optorb.h'
       include 'sr.h'
       include 'pcm.h'
@@ -1291,7 +1291,6 @@ C$INPUT csf i i=1 a=<input>
 
       implicit real*8(a-h,o-z)
 
-      include 'optci.h'
 
       character fn*(*)
 
@@ -1429,7 +1428,6 @@ c Check that the required blocks are there in the input
       implicit real*8(a-h,o-z)
 
 
-      include 'optci.h'
       include 'optorb.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -1525,7 +1523,6 @@ c Check that the required blocks are there in the input
       implicit real*8(a-h,o-z)
 
 
-      include 'optci.h'
 
       nstates=1
       ncsf=0

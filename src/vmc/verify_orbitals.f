@@ -1,12 +1,5 @@
       subroutine verify_orbitals
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
-      use embed, only: MXTABI, MXTAB, MXHTAB, MXXTAB
-      use embed, only: MXHGRID, MXXGRID
+      use vmc, only: MELEC, MORB
       use const, only: nelec
       use dets, only: ndet
       use optwf_contrl, only: ioptorb
@@ -16,7 +9,6 @@
       implicit real*8(a-h,o-z)
 
       include 'optorb.h'
-      include 'optci.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 

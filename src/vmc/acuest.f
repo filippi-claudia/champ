@@ -2,12 +2,9 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use force, only: MFORCE
+      use vmc, only: MELEC, MDET, MCENT
+      use vmc, only: nrad, MMAT_DIM2
       use atom, only: znuc, cent, pecent, iwctype, ncent
       use mstates_mod, only: MSTATES
       use const, only: nelec, ipr
@@ -34,7 +31,6 @@ c routine to accumulate estimators for energy etc.
       implicit real*8(a-h,o-z)
 
       parameter (half=.5d0)
-      include 'optci.h'
       include 'optorb.h'
       include 'pseudo.h'
 

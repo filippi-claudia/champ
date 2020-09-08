@@ -2,12 +2,9 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use force, only: MFORCE
+      use vmc, only: nrad
+      use vmc, only: delri
       use atom, only: ncent
       use const, only: nelec
       use csfs, only: nstates
@@ -35,7 +32,6 @@ c routine to print out final results
 
 
       include 'optorb.h'
-      include 'optci.h'
 
       parameter (one=1.d0,half=.5d0)
 

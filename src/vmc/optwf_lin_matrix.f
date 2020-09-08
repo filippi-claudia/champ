@@ -2,7 +2,7 @@
 
       use linear_norm, only: oav
       use optwf_contrl, only: ioptjas, ioptorb
-      use optwf_corsam, only: energy, energy_err, force
+      use optwf_corsam, only: energy, energy_err
       use optwf_parms, only: nparmd, nparmj
       use gradhess_all, only: MPARMALL
 
@@ -15,7 +15,6 @@
 
 
       include 'optjas.h'
-      include 'optci.h'
       include 'optorb.h'
 
       parameter(eps=1.d-12)
@@ -175,7 +174,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       include 'optjas.h'
-      include 'optci.h'
       include 'optorb.h'
 
       parameter(eps=1.d-12)
@@ -256,7 +254,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       include 'optjas.h'
-      include 'optci.h'
       include 'optorb.h'
 
       parameter(eps=1.d-12)
@@ -309,6 +306,7 @@ c-----------------------------------------------------------------------
       subroutine compute_dparm(nparm,mparmx,lwork,dparm,h,h_sav,s,s_sav,work,eig_vec,
      &                     add_diag,energy_sav,energy_err_sav)
 
+      use optci, only: MXCITERM, MXCIMATDIM
       use csfs, only: ccsf, ncsf, nstates
       use dets, only: cdet
       use linear_norm, only: oav
@@ -325,7 +323,6 @@ c-----------------------------------------------------------------------
 
 
       include 'optjas.h'
-      include 'optci.h'
       include 'optorb.h'
 
       parameter(eps=1.d-12)

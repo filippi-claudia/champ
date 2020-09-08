@@ -1,12 +1,8 @@
       subroutine psie(iel,coord,psid,psij,ipass,iflag)
 c Written by Claudia Filippi by modifying hpsi
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc, only: MELEC, MORB, MDET, MCENT
+      use vmc, only: MMAT_DIM2
       use csfs, only: nstates
       use estpsi, only: apsi, aref
       use multidet, only: kref
@@ -18,7 +14,6 @@ c Written by Claudia Filippi by modifying hpsi
 
       include 'pseudo.h'
       include 'optjas.h'
-      include 'optci.h'
 
 c Calculates wave function
 

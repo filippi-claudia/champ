@@ -1,10 +1,5 @@
       subroutine optx_orb_ci_sum(p,q)
 
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
@@ -19,7 +14,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'optci.h'
       include 'optorb.h'
 
 
@@ -37,11 +31,6 @@
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_init
 
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
 
@@ -54,7 +43,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optci.h'
       include 'optorb.h'
 
 
@@ -73,11 +61,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_dump(iu)
 
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
 
@@ -90,7 +73,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optci.h'
       include 'optorb.h'
 
 
@@ -103,11 +85,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_rstrt(iu)
 
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
 
@@ -120,7 +97,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optci.h'
       include 'optorb.h'
 
 
@@ -133,12 +109,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_fin(passes,eave)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use optci, only: MXCITERM
       use csfs, only: ccsf, ncsf
       use dets, only: cdet
       use gradhess_ci, only: grad_ci
@@ -161,7 +132,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'optci.h'
       include 'optorb.h'
       include 'optjas.h'
 

@@ -849,7 +849,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optci.h'
       include 'optorb.h'
 
 
@@ -904,7 +903,6 @@ c-----------------------------------------------------------------------
 
 
       include 'optjas.h'
-      include 'optci.h'
       include 'optorb.h'
         
 
@@ -957,7 +955,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       include 'optjas.h'
       include 'optorb.h'
-      include 'optci.h'
       include 'sr.h'
 
       dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)
