@@ -79,6 +79,7 @@
 
       subroutine pcm_reduce_chvol
 
+      use mpi_qmc, only: NPROCX
       use mpiconf, only: nproc
       use pcm_xv_new, only: xv_new
       use pcm_cntrl, only: ipcm
@@ -91,7 +92,6 @@
 
 
       include 'mpif.h'
-      include 'mpi_qmc.h'
       include 'pcm.h'
 
       dimension nchv_proc(0:NPROCX),charge(NPROCX)

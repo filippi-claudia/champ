@@ -11,7 +11,6 @@ c Written by Claudia Filippi
       character*40 filename
 
 c mpif.h is system, mpi_qmc.h is ours
-      include 'mpi_qmc.h'
       include 'mpif.h'
 
       call mpi_init(ierr)

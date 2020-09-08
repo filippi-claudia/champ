@@ -3,12 +3,8 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use mpi_qmc, only: NPROCX
+      use vmc, only: nrad
       use const, only: nelec
       use config, only: xold
       use csfs, only: nstates
@@ -35,15 +31,14 @@ c job where it left off
 
 
       include 'pseudo.h'
-      include 'mpi_qmc.h'
       include 'mpif.h'
 
 
 
 
-      dimension irn(4,0:nprocx),istatus(MPI_STATUS_SIZE)
-      dimension irn_tmp(4,0:nprocx)
-      dimension ircounts(0:nprocx),idispls(0:nprocx)
+      dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
+      dimension irn_tmp(4,0:NPROCX)
+      dimension ircounts(0:NPROCX),idispls(0:NPROCX)
 
       rewind 10
 
