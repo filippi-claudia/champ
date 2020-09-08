@@ -297,8 +297,8 @@
 
  module ci001_blk
    !> Arguments: ci_oe, ci_o
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
 
    real(dp) :: ci_o(MXCITERM)
    real(dp) :: ci_oe(MXCITERM,MXCIREDUCED)
@@ -310,8 +310,8 @@
 
  module ci002_blk
    !> Arguments: ci_o_old, ci_oe_old
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
  
     real(dp) :: ci_o_old(MXCITERM)
     real(dp) :: ci_oe_old(MXCITERM,MXCIREDUCED)
@@ -323,8 +323,8 @@
 
  module ci003_blk
    !> Arguments: ci_e_old, ci_e
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
 
    real(dp) :: ci_e(MXCITERM)
    real(dp) :: ci_e_old(MXCITERM)
@@ -336,8 +336,8 @@
 
  module ci004_blk
    !> Arguments: ci_de, ci_de_old
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
  
    real(dp) :: ci_de(MXCITERM)
    real(dp) :: ci_de_old(MXCITERM)
@@ -349,8 +349,8 @@
 
  module ci005_blk
     !> Arguments: ci_o_cum, ci_o_sum
+    use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
     use precision_kinds, only: dp
-    include 'optci.h'
  
     real(dp) :: ci_o_cum(MXCITERM)
     real(dp) :: ci_o_sum(MXCITERM)
@@ -362,8 +362,8 @@
  
  module ci006_blk
    !> Arguments: ci_de_cum, ci_de_sum
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
  
     real(dp) :: ci_de_cum(MXCITERM)
     real(dp) :: ci_de_sum(MXCITERM)
@@ -375,8 +375,8 @@
 
  module ci008_blk
    !> Arguments: ci_oe_cm2, ci_oe_sum, ci_oe_cum
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
  
    real(dp) :: ci_oe_cm2(MXCITERM,MXCIREDUCED)
    real(dp) :: ci_oe_cum(MXCITERM,MXCIREDUCED)
@@ -389,8 +389,8 @@
 
  module ci009_blk
    !> Arguments: ci_oo_sum, ci_oo_cm2, ci_oo_cum
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
  
    real(dp) :: ci_oo_cm2(MXCIMATDIM)
    real(dp) :: ci_oo_cum(MXCIMATDIM)
@@ -403,8 +403,8 @@
 
  module ci010_blk
    !> Arguments: ci_ooe_cum, ci_ooe_sum
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
  
    real(dp) :: ci_ooe_cum(MXCIMATDIM)
    real(dp) :: ci_ooe_sum(MXCIMATDIM)
@@ -1147,9 +1147,9 @@ end module forcewt
 
  module gradhess_all
    !> Arguments: MPARMALL, grad, h, s
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
    include 'optjas.h'
-   include 'optci.h'
    include 'optorb.h'
 
    parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
@@ -1207,8 +1207,8 @@ end module forcewt
 
  module gradhess_ci
    !> Arguments: grad_ci, h_ci, s_ci
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
 
    real(dp) :: grad_ci(MXCITERM)
    real(dp) :: h_ci(MXCITERM,MXCIREDUCED)
@@ -1235,9 +1235,9 @@ end module forcewt
  
  module gradhess_mix_jas_ci
    !> Arguments: h_mix_jas_ci, s_mix_jas_ci
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
    include 'optjas.h'
-   include 'optci.h'
 
    real(dp) :: h_mix_jas_ci(2*MPARMJ,MXCITERM)
    real(dp) :: s_mix_jas_ci(MPARMJ,MXCITERM)
@@ -1263,9 +1263,9 @@ end module forcewt
 
  module gradhess_mix_orb_ci
    !> Arguments: h_mix_ci_orb, s_mix_ci_orb
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
    include 'optorb.h'
-   include 'optci.h'
 
    real(dp) :: h_mix_ci_orb(2*MXCITERM,MXREDUCED)
    real(dp) :: s_mix_ci_orb(MXCITERM,MXREDUCED)
@@ -1679,8 +1679,8 @@ end module forcewt
 
  module linear_norm
    !> Arguments: oav, ci_oav
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
 
    real(dp) :: oav(MXCITERM)
    real(dp) :: ci_oav(MXCITERM) 
@@ -1735,8 +1735,8 @@ end module forcewt
 
  module mix_orb_ci
    !> Arguments: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
+   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
    include 'optorb.h'
 
    real(dp) :: ci_de_o(MXCITERM,MXREDUCED)
