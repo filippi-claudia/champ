@@ -15,7 +15,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
 
-      include 'properties.h'
 c     electron coordinates
       dimension coord(3,*)
 
@@ -40,7 +39,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'properties.h'
 
       if(iprop.eq.0) return
 
@@ -64,7 +62,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'properties.h'
 
       if(iprop.eq.0) return
       do i=1,nprop
@@ -76,13 +73,13 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine prop_avrg(wcum,iblk,pav,perr)
+      use properties, only: MAXPROP
       use prp000, only: iprop, nprop
       use prp003, only: vprop_cm2, vprop_cum
 
       implicit real*8(a-h,o-z)
 
 
-      include 'properties.h'
       dimension pav(MAXPROP),perr(MAXPROP)
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
@@ -101,7 +98,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'properties.h'
       if(iprop.eq.0) return
       write(iu) nprop
       write(iu) (vprop_cum(i),vprop_cm2(i),i=1,nprop)
@@ -113,7 +109,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'properties.h'
       if(iprop.eq.0) return
       read(iu) nprop
       read(iu) (vprop_cum(i),vprop_cm2(i),i=1,nprop)
@@ -123,7 +118,6 @@ c-----------------------------------------------------------------------
       use prp000, only: iprop, ipropprt
       implicit real*8(a-h,o-z)
 
-      include 'properties.h'
 
       if(iprop.eq.0) return
       write(6,'(''--- additional properties ---'')')
@@ -135,6 +129,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine prop_prt(w,iblk,iu)
+      use properties, only: MAXPROP
       use const, only: nelec
       use prp000, only: iprop, ipropprt
       use prp003, only: cc_nuc
@@ -144,7 +139,6 @@ c-----------------------------------------------------------------------
 
 
 c compute averages and print then out
-      include 'properties.h'
       dimension pav(MAXPROP),perr(MAXPROP)
 
       common /icount_prop/ icount_prop

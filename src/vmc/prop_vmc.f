@@ -6,7 +6,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'properties.h'
 
       if(iprop.eq.0) return
       do i=1,nprop
@@ -24,7 +23,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'properties.h'
 
       if(iprop.eq.0) return
       do i=1,nprop

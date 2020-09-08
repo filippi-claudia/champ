@@ -25,6 +25,7 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
+      use properties, only: MAXPROP
       use optorb_mod, only: MXORBOP, MXREDUCED
       use optci, only: MXCITERM
       use mmpol_mod, only: mmpolfile_sites, mmpolfile_chmm
@@ -105,7 +106,6 @@ c and Anthony Scemema
       include 'dmc.h'
       include 'pseudo.h'
       include 'sr.h'
-      include 'properties.h'
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb

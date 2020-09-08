@@ -2868,8 +2868,8 @@ end module orbital_num_lag
  
  module prp001
    !> Arguments: vprop
+   use properties, only: MAXPROP
    use precision_kinds, only: dp
-   include 'properties.h'
 
    real(dp) :: vprop(MAXPROP)
 
@@ -2880,8 +2880,8 @@ end module orbital_num_lag
 
  module prp002
    !> Arguments: vprop_old
+   use properties, only: MAXPROP
    use precision_kinds, only: dp
-   include 'properties.h'
    include 'dmc.h'
  
    real(dp) :: vprop_old(MAXPROP,MWALK)
@@ -2894,8 +2894,8 @@ end module orbital_num_lag
 
  module prp003
    !> Arguments: vprop_cm2, vprop_cum, cc_nuc, vprop_sum
+   use properties, only: MAXPROP
    use precision_kinds, only: dp
-   include 'properties.h'
 
     real(dp) :: cc_nuc(3)
     real(dp) :: vprop_cm2(MAXPROP)

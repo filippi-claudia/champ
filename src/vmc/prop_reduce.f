@@ -1,5 +1,6 @@
       subroutine prop_reduce
 
+      use properties, only: MAXPROP
       use mpiconf, only: wid
       use prp000, only: iprop, nprop
       use prp003, only: vprop_cm2, vprop_cum
@@ -9,7 +10,6 @@
 
 
 
-      include 'properties.h'
       include 'mpif.h'
 
       dimension vpcollect(MAXPROP),vp2collect(MAXPROP)
