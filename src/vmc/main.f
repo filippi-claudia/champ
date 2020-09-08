@@ -1,6 +1,7 @@
       program main
 c Written by Claudia Filippi
 
+      use mpi_qmc, only: NPROCX
       use mpiconf, only: idtask, nproc, wid
       use contr3, only: mode
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
