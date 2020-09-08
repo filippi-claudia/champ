@@ -1726,6 +1726,17 @@ end module forcewt
    save
  end module mix_orb_ci
 
+ module mmpol_mod
+  !> Arguments MCHMM, mmpolfile_sites, mmpolfile_chmm
+  
+  integer, parameter :: MCHMM=1
+  character*80 mmpolfile_sites
+  character*80 mmpolfile_chmm
+  private 
+  public :: MCHMM, mmpolfile_sites, mmpolfile_chmm
+  save
+ end module mmpol_mod
+
  module mmpol_cntrl
    !> Arguments: isites_mmpol, immpolprt, icall_mm, ich_mmpol, immpol
 
