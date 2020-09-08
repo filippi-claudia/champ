@@ -41,7 +41,7 @@
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine compute_positions
 
-        use force, only: MFORCE, MFORCE_WT_PRD, MWF
+        use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
         use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
         use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
         use vmc, only: radmax, delri

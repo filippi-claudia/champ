@@ -2,7 +2,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
-      use force, only: MFORCE
+      use force_mod, only: MFORCE
       use vmc, only: MELEC, MDET, MCENT
       use vmc, only: nrad, MMAT_DIM2
       use atom, only: znuc, cent, pecent, iwctype, ncent

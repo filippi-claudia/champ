@@ -1,6 +1,6 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -65,7 +65,7 @@
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -259,7 +259,7 @@ c iel has different spin than the electron moved
 c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri

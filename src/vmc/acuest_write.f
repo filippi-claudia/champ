@@ -2,7 +2,7 @@
 c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
-      use force, only: MFORCE
+      use force_mod, only: MFORCE
       use const, only: nelec
       use mstates_mod, only: MSTATES
       use csfs, only: nstates

@@ -1,7 +1,7 @@
       subroutine acuest_reduce(enow)
 c Written by Claudia Filippi
 
-      use force, only: MFORCE
+      use force_mod, only: MFORCE
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
 

@@ -11,7 +11,7 @@ c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
 c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
       use pcm, only: MCHS, MCHV
-      use force, only: MFORCE, MFORCE_WT_PRD
+      use force_mod, only: MFORCE, MFORCE_WT_PRD
       use vmc, only: MELEC, MCENT
       use atom, only: znuc, cent, pecent, iwctype, ncent
       use const, only: nelec

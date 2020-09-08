@@ -31,7 +31,7 @@ c and Anthony Scemema
       use optorb_mod, only: MXORBOP, MXREDUCED
       use optci, only: MXCITERM
       use mmpol_mod, only: mmpolfile_sites, mmpolfile_chmm
-      use force, only: MFORCE, MWF
+      use force_mod, only: MFORCE, MWF
       use vmc, only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use jaspar, only: nspin1, nspin2, is
@@ -1248,7 +1248,7 @@ c-----------------------------------------------------------------------
 C$INPUT forces_displace inp
 CKEYDOC Displacement parameters and wave function types
 
-      use force, only: MFORCE
+      use force_mod, only: MFORCE
       use vmc, only: MCENT
       use forcepar, only: nforce
       use forcestr, only: delc
@@ -1410,7 +1410,7 @@ c-----------------------------------------------------------------------
       subroutine flagcheck
 c Check that the required blocks are there in the input
 
-      use force, only: MFORCE, MWF
+      use force_mod, only: MFORCE, MWF
       use vmc, only: MELEC, MORB
       use numbas, only: numr
       use optorb_mix, only: norbopt, norbvirt
@@ -1530,7 +1530,7 @@ c Check that the required blocks are there in the input
 c----------------------------------------------------------------------
       subroutine inputzex
 c Set the exponents to one when using a numerical basis
-      use force, only: MWF
+      use force_mod, only: MWF
       use numbas, only: numr
       use coefs, only: nbasis
       use basis, only: zex
@@ -1623,7 +1623,7 @@ c Set the jastrow to be equal
 c----------------------------------------------------------------------
       subroutine inputforces
 c Set all force displacements to zero
-      use force, only: MWF
+      use force_mod, only: MWF
       use vmc, only: MCENT
       use forcepar, only: nforce
       use wfsec, only: iwftype, nwftype

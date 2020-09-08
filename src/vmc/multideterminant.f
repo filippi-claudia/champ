@@ -1,6 +1,6 @@
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -231,7 +231,7 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -308,7 +308,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -376,7 +376,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -443,7 +443,7 @@ c           do krep=ivirt(iab),norb+nadorb
 c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -487,7 +487,7 @@ c     enddo
 c-----------------------------------------------------------------------
       subroutine multideterminants_define(iflag,icheck)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri

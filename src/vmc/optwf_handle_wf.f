@@ -275,7 +275,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_jastrow
 
-      use force, only: MWF
+      use force_mod, only: MWF
       use vmc, only: MCTYPE
       use vmc, only: MORDJ1
       use atom, only: nctype
@@ -330,7 +330,7 @@ c Restore parameters corresponding to run generating hessian
 
 c-----------------------------------------------------------------------
       subroutine save_lcao
-      use force, only: MWF
+      use force_mod, only: MWF
       use vmc, only: MORB, MBASIS
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
@@ -494,7 +494,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
-      use force, only: MWF
+      use force_mod, only: MWF
       use vmc, only: MCTYPE
       use vmc, only: MORDJ1
       use atom, only: nctype
@@ -548,7 +548,7 @@ c Restore parameters corresponding to run generating hessian
       end
 c-----------------------------------------------------------------------
       subroutine save_lcao_best
-      use force, only: MWF
+      use force_mod, only: MWF
       use vmc, only: MORB, MBASIS
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb

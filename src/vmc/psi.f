@@ -4,7 +4,7 @@ c **Warning** This routine needs to be upgraded to check rshifts
 c if we add in the capability to use numerical Laplacian for
 c periodic systems.
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -87,7 +87,7 @@ c periodic systems.
 c-----------------------------------------------------------------------
       function psia(ri,it)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -135,7 +135,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       function psib(rij,isb,ipar)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri

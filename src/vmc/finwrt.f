@@ -2,7 +2,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
-      use force, only: MFORCE
+      use force_mod, only: MFORCE
       use vmc, only: nrad
       use vmc, only: delri
       use atom, only: ncent

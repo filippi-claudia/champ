@@ -1,7 +1,7 @@
       function deriv_psinl(u,rshifti,rshiftj,rri,rrj,gn,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -100,7 +100,7 @@ c                 jj=jj+1
 c-----------------------------------------------------------------------
       function deriv_psianl(rri,gn,it)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -161,7 +161,7 @@ c written for general iwf, whereas others (asymp_r) assume iwf=1.
 c-----------------------------------------------------------------------
       function deriv_psibnl(u,gn,isb,ipar)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri

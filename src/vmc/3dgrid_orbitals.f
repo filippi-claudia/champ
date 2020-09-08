@@ -3,7 +3,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       subroutine setup_3dsplorb
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_spline_mod, only: MORB_OCC
       use grid_spline_mod, only: orb_num_spl
       use grid_mod, only: MXNSTEP, MXNSTEP3
@@ -392,7 +392,7 @@ c Lagrange interpolation routines
 
       subroutine setup_3dlagorb
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGSTART, LAGEND, MORB_OCC
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: grid3d, cart_from_int
@@ -589,7 +589,7 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
@@ -670,7 +670,7 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
@@ -752,7 +752,7 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
@@ -833,7 +833,7 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
@@ -905,7 +905,7 @@ c Compute displacements
       end
 c-----------------------------------------------------------------------
       subroutine orb3d_dump(iu)
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_mod, only: cart_from_int
       use coefs, only: norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
@@ -933,7 +933,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine orb3d_rstrt(iu)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_mod, only: cart_from_int
       use coefs, only: norb
 
@@ -960,7 +960,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_dump(iu)
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_spline_mod, only: orb_num_spl
       use coefs, only: norb
       use grid3d_param, only: nstep3d
@@ -978,7 +978,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_rstrt(iu)
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_spline_mod, only: orb_num_spl
       use coefs, only: norb
       use grid3d_param, only: nstep3d
@@ -996,7 +996,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_dump(iu)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: orb_num_lag
       use coefs, only: norb
       use grid3d_param, only: nstep3d
@@ -1016,7 +1016,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_rstrt(iu)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: orb_num_lag
       use coefs, only: norb
       use grid3d_param, only: nstep3d

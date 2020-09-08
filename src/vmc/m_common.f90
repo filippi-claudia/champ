@@ -80,7 +80,7 @@
   save 
  end module mstates_mod
 
- module force
+ module force_mod
   integer, parameter :: MFORCE=3
   integer, parameter :: MFORCE_WT_PRD=1000
   integer, parameter :: MWF=3
@@ -88,7 +88,7 @@
   private 
   public :: MFORCE, MFORCE_WT_PRD, MWF
   save
- end module force
+ end module force_mod
 
  module atom
    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
@@ -107,7 +107,7 @@
 
  module basis
    !> Arguments: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz, n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz, n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
-   use force, only: MWF
+   use force_mod, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MBASIS, MCTYPE
 
@@ -429,7 +429,7 @@
 
  module coefs
    !> Arguments: coef, nbasis, norb
-   use force, only: MWF
+   use force_mod, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MORB, MBASIS
 
@@ -444,7 +444,7 @@
 
  module config
    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
    use vmc, only: MELEC
    use mstates_mod, only: MSTATES
@@ -583,7 +583,7 @@ end module contr3
  
  module contrldmc
    !> Arguments: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
 
    integer  :: iacc_rej
@@ -608,7 +608,7 @@ end module contr3
 
  module csfs
    !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-   use force, only: MWF
+   use force_mod, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MDET
    use mstates_mod, only: MSTATES, MDETCSFX
@@ -770,7 +770,7 @@ end module contr3
 
  module dets
    !> Arguments: cdet, ndet
-   use force, only: MWF
+   use force_mod, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MDET
    use mstates_mod, only: MSTATES
@@ -893,7 +893,7 @@ end module contr3
 
  module estcum
    !> Arguments: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
 
@@ -926,7 +926,7 @@ end module contr3
 
  module estsum
   !> Arguments: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-  use force, only: MFORCE
+  use force_mod, only: MFORCE
   use precision_kinds, only: dp
   use mstates_mod, only: MSTATES
 
@@ -959,7 +959,7 @@ end module contr3
 
  module est2cm
    !> Arguments: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
 
@@ -1041,7 +1041,7 @@ end module contr3
 
  module forcest
    !> Arguments: fcm2, fcum
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
 
@@ -1055,7 +1055,7 @@ end module contr3
 
  module forcestr
    !> Arguments: delc
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
    use vmc, only: MCENT
  
@@ -1068,7 +1068,7 @@ end module contr3
 
  module forcewt
    !> Arguments: wcum, wsum
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
 
@@ -1131,7 +1131,7 @@ end module forcewt
 
  module forcepar
    !> Arguments: deltot, istrech, nforce
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
 
    real(dp) :: deltot(MFORCE)
@@ -1360,7 +1360,7 @@ end module forcewt
 
  module grdntsmv
    !> Arguments: igrdaidx, igrdcidx, igrdmv
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use vmc, only: MCENT
 
     integer  :: igrdaidx(MFORCE)
@@ -1599,7 +1599,7 @@ end module forcewt
 
  module jaspar1
    !> Arguments: cjas1, cjas2
-   use force, only: MWF
+   use force_mod, only: MWF
    use precision_kinds, only: dp
 
    real(dp) :: cjas1(MWF)
@@ -1612,7 +1612,7 @@ end module forcewt
 
  module jaspar2
    !> Arguments: a1, a2
-   use force, only: MWF
+   use force_mod, only: MWF
    use precision_kinds, only: dp
 
    real(dp) :: a1(83,3,MWF)
@@ -1625,7 +1625,7 @@ end module forcewt
 
  module jaspar3
    !> Arguments: a, b, c, fck, nord, scalek
-   use force, only: MWF
+   use force_mod, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MCTYPE
    use vmc, only: MORDJ1
@@ -1644,7 +1644,7 @@ end module forcewt
 
  module jaspar4
    !> Arguments: a4, norda, nordb, nordc
-   use force, only: MWF
+   use force_mod, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MCTYPE
    use vmc, only: MORDJ1
@@ -2078,7 +2078,7 @@ end module forcewt
  module numexp
    !> Arguments: ae, ce
    use numbas_mod, only: MRWF
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
    use vmc, only: MCTYPE
    use vmc, only: NCOEF
@@ -2108,7 +2108,7 @@ end module forcewt
  module numbas
    !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
    use numbas_mod, only: MRWF, MRWF_PTS
-   use force, only: MWF
+   use force_mod, only: MWF
    use precision_kinds, only: dp
    use vmc, only: MBASIS, MCTYPE
 
@@ -2397,7 +2397,7 @@ end module orbital_num_lag
 
  module optwf_corsam
    !> Arguments: add_diag_tmp, energy, energy_err, force, force_err
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
 
    real(dp) :: add_diag(MFORCE)
@@ -2602,7 +2602,7 @@ end module orbital_num_lag
  module pcm_force
    !> Arguments: sch_s
    use pcm, only: MCHS
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
 
    real(dp) :: sch_s(MCHS,MFORCE)
@@ -2935,7 +2935,7 @@ end module orbital_num_lag
  module pseudo
    !> Arguments: lpot, nloc, vps, vpso
    use pseudo_mod, only: MPS_L
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
    use vmc, only: MELEC, MCENT, MCTYPE
 
@@ -3332,7 +3332,7 @@ module spc2
  end module velocity_jastrow
  
  module wfsec
-   use force, only: MFORCE
+   use force_mod, only: MFORCE
    !> Arguments: iwf, iwftype, nwftype
 
    integer  :: iwf
