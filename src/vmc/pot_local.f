@@ -1,10 +1,6 @@
       subroutine pot_local(pe)
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc, only: MELEC, MCENT
+      use vmc, only: MMAT_DIM2
       use atom, only: znuc, pecent, iwctype, ncent
       use ghostatom, only: nghostcent
       use const, only: nelec, ipr
@@ -15,7 +11,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'pseudo.h'
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 

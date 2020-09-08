@@ -18,7 +18,6 @@ c Reads in localized orbitals on a radial grid
 
 
 
-      include 'pseudo.h'
 
       character*256 filename,pooldir,bas_id
       character*20 wforce,atomtyp,atomsymbol

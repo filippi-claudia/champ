@@ -1,16 +1,11 @@
       subroutine bxmatrix(kref,xmatu,xmatd,b)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc, only: MELEC, MORB
+      use vmc, only: MMAT_DIM
       use elec, only: ndn, nup
       use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)

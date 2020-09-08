@@ -22,7 +22,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'pseudo.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)

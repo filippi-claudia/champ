@@ -18,7 +18,6 @@ c vg -> value,gradient
 
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
 
       parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0,half=0.5d0)
 

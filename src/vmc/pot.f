@@ -3,17 +3,12 @@ c Written by Cyrus Umrigar
 c get nuclear potential energy
       USE contrl_per , ONLY:  iperiodic,ibasis
       USE da_pseudo , only:  da_pecent, da_vps
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc, only: MCENT, MCTYPE
       use force_analy, only: iforce_analy
       use da_pseudo, only: da_nonloc, da_pecent, da_vps
 
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
 
       dimension znuc(MCTYPE),cent(3,MCENT),iwctype(MCENT)
 

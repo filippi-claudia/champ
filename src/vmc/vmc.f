@@ -28,7 +28,6 @@ c and sa, pa, da asymptotic functions
       implicit real*8(a-h,o-z)
 
 
-      include 'pseudo.h'
 
 
       character*25 fmt

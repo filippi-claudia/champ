@@ -25,6 +25,7 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
+      use pseudo_mod, only: MPS_QUAD
       use properties, only: MAXPROP
       use optorb_mod, only: MXORBOP, MXREDUCED
       use optci, only: MXCITERM
@@ -104,7 +105,6 @@ c and Anthony Scemema
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
       include 'dmc.h'
-      include 'pseudo.h'
       include 'sr.h'
 
 

@@ -313,7 +313,6 @@ c Written by Lubos Mitas
         use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
         implicit real*8(a-h,o-z)
 
-        include 'pseudo.h'
 
  2	x1=1.d0-2.d0*rannyu(0)
 	x2=1.d0-2.d0*rannyu(0)

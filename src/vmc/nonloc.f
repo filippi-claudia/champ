@@ -1,5 +1,6 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
+      use pseudo_mod, only: MPS_QUAD
       use optjas, only: MPARMJ
       use vmc, only: MELEC, MORB, MDET, MCENT
       use vmc, only: MMAT_DIM
@@ -27,7 +28,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       parameter (one=1.d0)
 
-      include 'pseudo.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
@@ -241,7 +241,6 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0)
 
-      include 'pseudo.h'
 
       dimension x(3),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),dd1(MELEC,MCENT)
@@ -539,7 +538,6 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0)
 
-      include 'pseudo.h'
 
       dimension rvec_en_sav(3,MCENT),r_en_sav(MCENT)
       dimension orbn(MORB),dorbn(3,MORB),vjn(3)

@@ -14,7 +14,6 @@ c routine to calculate basis functions for electron k
 
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
 
       parameter (one=1.d0,three=3.d0,half=0.5d0)
 

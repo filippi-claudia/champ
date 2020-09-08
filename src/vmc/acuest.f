@@ -31,7 +31,6 @@ c routine to accumulate estimators for energy etc.
       implicit real*8(a-h,o-z)
 
       parameter (half=.5d0)
-      include 'pseudo.h'
 
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)

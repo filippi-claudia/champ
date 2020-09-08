@@ -1,7 +1,7 @@
       subroutine set_ewald
 c Written by Cyrus Umrigar
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
+      use pseudo_mod, only: MPS_L, MPS_GRID
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
       use vmc, only: MCTYPE
@@ -28,7 +28,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'pseudo.h'
 
       parameter (eps=1.d-12)
 
@@ -960,12 +959,12 @@ c Note: vps_short overwritten
 c g > 0 (4pi/vcell)*(int r*vps_short*sin(g*r)*dr)/g
 c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
+      use pseudo_mod, only: MPS_GRID
       use ewald_mod, only: NGNORM_BIGX
       use constant, only: twopi
       implicit real*8(a-h,o-z)
 
 
-      include 'pseudo.h'
 
 
       dimension r(*),vps_short(*),gnorm(*),y(MPS_GRID),vbare_psp(NGNORM_BIGX)
@@ -1737,7 +1736,6 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald_old
 c Written by Cyrus Umrigar
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use atom, only: znuc, cent, pecent, iwctype, ncent
 
       use ewald, only: b_coul, y_coul
@@ -1751,7 +1749,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'pseudo.h'
 
 
       dimension r(3)
@@ -1785,7 +1782,6 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald
 c Written by Cyrus Umrigar
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use atom, only: znuc, cent, pecent, iwctype, ncent
 
       use ewald, only: b_coul, y_coul
@@ -1800,7 +1796,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'pseudo.h'
 
 
       dimension r(3)
@@ -1838,7 +1833,6 @@ c-----------------------------------------------------------------------
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MCENT
       use vmc, only: MMAT_DIM2
       use atom, only: znuc, cent, iwctype, ncent
@@ -1860,7 +1854,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'pseudo.h'
 
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
@@ -1918,7 +1911,6 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MCENT
       use vmc, only: MMAT_DIM2
       use const, only: nelec, ipr
@@ -1934,7 +1926,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'pseudo.h'
 
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)

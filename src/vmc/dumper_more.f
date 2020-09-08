@@ -39,7 +39,6 @@ c job where it left off
       implicit real*8(a-h,o-z)
 
 
-      include 'pseudo.h'
 
       parameter(half=0.5d0,small=1.d-6)
 

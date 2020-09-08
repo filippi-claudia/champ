@@ -30,7 +30,6 @@ c job where it left off
 
 
 
-      include 'pseudo.h'
       include 'mpif.h'
 
 

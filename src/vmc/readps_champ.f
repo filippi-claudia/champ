@@ -18,12 +18,7 @@ c         =2, exponential,         r(i)=r0_ps*exp((i-1)*h_ps)
 c         =3, shifted exponential, r(i)=r0_ps*(exp((i-1)*h_ps)-1)
 c The prefered grid is 3.
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use pseudo_mod, only: MPS_L, MPS_GRID
       use atom, only: znuc, nctype
       use const, only: ipr
       use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
@@ -41,7 +36,6 @@ c The prefered grid is 3.
 
 
 
-      include 'pseudo.h'
 
       character*20 atomtyp,atomsymbol
       character*256 filename,pooldir,pp_id
@@ -280,12 +274,7 @@ c-----------------------------------------------------------------------
       subroutine getvps_champ(r_en,iel)
 c compute pseudopotential for electron iel
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc, only: MELEC, MCENT
       use atom, only: znuc, iwctype, ncent
       use pseudo_champ, only: rmax_coul, rmax_nloc
 
@@ -295,7 +284,6 @@ c compute pseudopotential for electron iel
 
 
 
-      include 'pseudo.h'
 
 
 
@@ -337,12 +325,7 @@ c Note: I check if r < rmax_coul(ict) because this routine is called from
 c ewald without going through getvps_tm.
 c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use pseudo_mod, only: MPS_GRID
       use atom, only: znuc
       use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
       use pseudo_tm, only: arg_ps, d2pot, r0_ps, vpseudo
@@ -353,7 +336,6 @@ c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
 
 
-      include 'pseudo.h'
 
 
 

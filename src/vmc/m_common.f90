@@ -179,15 +179,15 @@
   integer, parameter :: MGAUSS=100 
 
   private 
-  public :: MPS_L, MPS_QUAD, MPS_GRID MGAUSS
+  public :: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
   save
  end module pseudo_mod
 
  module b_tmove
    !> Arguments: b_t, iskip
+   use pseudo_mod, only: MPS_QUAD
    use precision_kinds, only: dp
    use vmc, only: MELEC, MORB, MCENT
-   include 'pseudo.h'
 
    real(dp) :: b_t(MORB,MPS_QUAD,MCENT,MELEC)
    integer  :: iskip(MELEC,MCENT)
@@ -256,9 +256,9 @@
 
  module casula
    !> Arguments: i_vpsp, icasula, t_vpsp
+   use pseudo_mod, only: MPS_QUAD
    use precision_kinds, only: dp
    use vmc, only: MELEC, MCENT
-   include 'pseudo.h'
 
    integer  :: i_vpsp
    integer  :: icasula
@@ -688,10 +688,10 @@ end module contr3
  module da_pseudo
    !> Arguments: da_pecent, da_vps, da_nonloc  
 
+   use pseudo_mod, only: MPS_L
    use precision_kinds, only: dp
       use vmc, only: MELEC, MCENT
 
-   include 'pseudo.h'
 
    real(dp) :: da_pecent( 3, MCENT), da_vps( 3, MELEC, MCENT, MPS_L)
    real(dp) :: da_nonloc( 3, MCENT)= 0.0D0 
@@ -1133,9 +1133,9 @@ end module forcewt
 
  module gauss_ecp
    !> Arguments: ecp_coef, ecp_exponent, necp_power, necp_term
+   use pseudo_mod, only: MPS_L, MGAUSS
    use precision_kinds, only: dp
    use vmc, only: MCTYPE
-   include 'pseudo.h'
  
    real(dp) :: ecp_coef(MGAUSS,MPS_L,MCTYPE)
    real(dp) :: ecp_exponent(MGAUSS,MPS_L,MCTYPE)
@@ -2922,10 +2922,10 @@ end module orbital_num_lag
 
  module pseudo
    !> Arguments: lpot, nloc, vps, vpso
+   use pseudo_mod, only: MPS_L
    use force, only: MFORCE
    use precision_kinds, only: dp
    use vmc, only: MELEC, MCENT, MCTYPE
-   include 'pseudo.h'
 
    integer  :: lpot(MCTYPE)
    integer  :: nloc
@@ -2953,9 +2953,9 @@ end module pseudo
 
  module pseudo_fahy
    !> Arguments: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
+   use pseudo_mod, only: MPS_L, MPS_GRID
    use precision_kinds, only: dp
    use vmc, only: MCTYPE
-   include 'pseudo.h'
 
    real(dp) :: drad(MCTYPE)
    real(dp) :: dradl(MCTYPE)
@@ -2972,9 +2972,9 @@ end module pseudo
 
  module pseudo_tm
    !> Arguments: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
+   use pseudo_mod, only: MPS_L, MPS_GRID
    use precision_kinds, only: dp
    use vmc, only: MCTYPE
-   include 'pseudo.h'
 
     real(dp) :: arg(MCTYPE)
     real(dp) :: arg_ps(MCTYPE)
@@ -3014,8 +3014,8 @@ end module pseudo
 
  module qua
    !> Arguments: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+   use pseudo_mod, only: MPS_QUAD
    use precision_kinds, only: dp
-   include 'pseudo.h'
 
    integer  :: nquad
    real(dp) :: wq(MPS_QUAD)

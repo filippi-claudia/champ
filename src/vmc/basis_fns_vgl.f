@@ -19,7 +19,6 @@ c vgl -> value, gradient, laplacian
 
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
 
       parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0)
       parameter (five=5.d0,six=6.d0,seven=7.d0,eight=8.d0)

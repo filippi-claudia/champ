@@ -32,7 +32,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
 
 
-      include 'pseudo.h'
 
 c Calculates energy
 

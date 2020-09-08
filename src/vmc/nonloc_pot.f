@@ -3,12 +3,8 @@ c Written by Claudia Filippi; modified by Cyrus Umrigar
 c Calculates the local and nonlocal components of the pseudopotential
 c Calculates non-local potential derivatives
 c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use pseudo_mod, only: MPS_QUAD
+      use vmc, only: MELEC, MCENT
       use atom, only: iwctype, ncent
       use const, only: nelec
       use contrl_per, only: iperiodic
@@ -17,7 +13,6 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
 
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
      &,vpsp_det(*),dvpsp_dj(*),t_vpsp(MCENT,MPS_QUAD,*)

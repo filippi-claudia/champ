@@ -13,7 +13,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'pseudo.h'
 
       common /multislater/ detiab(MDET,2)
 
