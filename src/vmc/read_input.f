@@ -105,7 +105,6 @@ c and Anthony Scemema
       include 'dmc.h'
       include 'pseudo.h'
       include 'sr.h'
-      include 'pcm.h'
       include 'pcm_3dgrid.h'
       include 'properties.h'
 
@@ -1961,7 +1960,6 @@ CKEYDOC Read centers of cavity spheres and radii
       implicit real*8(a-h,o-z)
 
 
-      include 'pcm.h'
 
       nesph=nspheres 
       do i=1,nesph
@@ -2258,7 +2256,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'pcm.h'
 
 
       call p2gti('atoms:natom',ncent,1)

@@ -5,7 +5,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'pcm.h'
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
@@ -43,6 +42,7 @@
 c-----------------------------------------------------------------------
       subroutine pcm_fin(wcum,iblk)
 
+      use pcm, only: MCHS
       use contrl, only: nblk, nstep
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: iscov, nch, nchs
@@ -54,7 +54,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'pcm.h'
     
 
       data hatokc/627.509541d0/
@@ -140,7 +139,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'pcm.h'
 
       if(ipcm.eq.0) return
       spcmo=pcms
@@ -165,7 +163,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'pcm.h'
 
       if(ipcm.eq.0) return
       spcmsum=spcmsum+p*pcms+q*spcmo
@@ -189,7 +186,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'pcm.h'
 
       if(ipcm.eq.0) return
       spcmnow=spcmsum/wsum

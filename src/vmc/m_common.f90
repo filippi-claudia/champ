@@ -297,7 +297,7 @@
 
  module ci001_blk
    !> Arguments: ci_oe, ci_o
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCITERM, MXCIREDUCED
    use precision_kinds, only: dp
 
    real(dp) :: ci_o(MXCITERM)
@@ -310,7 +310,7 @@
 
  module ci002_blk
    !> Arguments: ci_o_old, ci_oe_old
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCITERM, MXCIREDUCED
    use precision_kinds, only: dp
  
     real(dp) :: ci_o_old(MXCITERM)
@@ -323,7 +323,7 @@
 
  module ci003_blk
    !> Arguments: ci_e_old, ci_e
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
 
    real(dp) :: ci_e(MXCITERM)
@@ -336,7 +336,7 @@
 
  module ci004_blk
    !> Arguments: ci_de, ci_de_old
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
  
    real(dp) :: ci_de(MXCITERM)
@@ -349,7 +349,7 @@
 
  module ci005_blk
     !> Arguments: ci_o_cum, ci_o_sum
-    use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+    use optci, only: MXCITERM
     use precision_kinds, only: dp
  
     real(dp) :: ci_o_cum(MXCITERM)
@@ -362,7 +362,7 @@
  
  module ci006_blk
    !> Arguments: ci_de_cum, ci_de_sum
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
  
     real(dp) :: ci_de_cum(MXCITERM)
@@ -375,7 +375,7 @@
 
  module ci008_blk
    !> Arguments: ci_oe_cm2, ci_oe_sum, ci_oe_cum
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCITERM, MXCIREDUCED
    use precision_kinds, only: dp
  
    real(dp) :: ci_oe_cm2(MXCITERM,MXCIREDUCED)
@@ -389,7 +389,7 @@
 
  module ci009_blk
    !> Arguments: ci_oo_sum, ci_oo_cm2, ci_oo_cum
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCIMATDIM
    use precision_kinds, only: dp
  
    real(dp) :: ci_oo_cm2(MXCIMATDIM)
@@ -403,7 +403,7 @@
 
  module ci010_blk
    !> Arguments: ci_ooe_cum, ci_ooe_sum
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCIMATDIM
    use precision_kinds, only: dp
  
    real(dp) :: ci_ooe_cum(MXCIMATDIM)
@@ -1162,7 +1162,7 @@ end module forcewt
  module gradhess_all
    !> Arguments: MPARMALL, grad, h, s
    use optjas, only: MPARMJ
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCIREDUCED
    use precision_kinds, only: dp
    include 'optorb.h'
 
@@ -1221,7 +1221,7 @@ end module forcewt
 
  module gradhess_ci
    !> Arguments: grad_ci, h_ci, s_ci
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCITERM, MXCIREDUCED
    use precision_kinds, only: dp
 
    real(dp) :: grad_ci(MXCITERM)
@@ -1250,7 +1250,7 @@ end module forcewt
  module gradhess_mix_jas_ci
    !> Arguments: h_mix_jas_ci, s_mix_jas_ci
    use optjas, only: MPARMJ
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
 
    real(dp) :: h_mix_jas_ci(2*MPARMJ,MXCITERM)
@@ -1277,7 +1277,7 @@ end module forcewt
 
  module gradhess_mix_orb_ci
    !> Arguments: h_mix_ci_orb, s_mix_ci_orb
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
    include 'optorb.h'
 
@@ -1693,7 +1693,7 @@ end module forcewt
 
  module linear_norm
    !> Arguments: oav, ci_oav
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
 
    real(dp) :: oav(MXCITERM)
@@ -1749,7 +1749,7 @@ end module forcewt
 
  module mix_orb_ci
    !> Arguments: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-   use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
    include 'optorb.h'
 
@@ -2477,8 +2477,8 @@ end module orbital_num_lag
 
  module pcm_ah
    !> Arguments: ahca, bh
+   use pcm, only: MCHS
    use precision_kinds, only: dp
-   include 'pcm.h'
  
    real(dp) :: ahca(MCHS,MCHS)
    real(dp) :: bh(MCHS)
@@ -2490,8 +2490,8 @@ end module orbital_num_lag
 
  module pcm_ameta
    !> Arguments: amdlg, eta
+   use pcm, only: MCHS
    use precision_kinds, only: dp
-   include 'pcm.h'
  
    real(dp) :: amdlg(MCHS)
    real(dp) :: eta(3,MCHS)
@@ -2505,8 +2505,8 @@ end module orbital_num_lag
    !> Arguments: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
    ! qopcm_sum, qopcm_cum, qopcm_cm2, 
    ! enfpcm_sum(MCHS), enfpcm_cum(MCHS), enfpcm_cm2(MCHS)
+   use pcm, only: MCHS
    use precision_kinds, only: dp
-   include 'pcm.h'
  
     real(dp) :: spcmsum
     real(dp) :: spcmcum
@@ -2561,9 +2561,9 @@ end module orbital_num_lag
 
  module pcm_force
    !> Arguments: sch_s
+   use pcm, only: MCHS
    use force, only: MFORCE
    use precision_kinds, only: dp
-   include 'pcm.h'
 
    real(dp) :: sch_s(MCHS,MFORCE)
 
@@ -2610,8 +2610,8 @@ end module orbital_num_lag
 
  module pcm_hpsi
    !> Arguments: enfpcm, pepcms, pepcmv, qopcm
+   use pcm, only: MCHS
    use precision_kinds, only: dp
-   include 'pcm.h'
 
    real(dp) :: enfpcm(MCHS)
    real(dp) :: pepcms
@@ -2624,8 +2624,8 @@ end module orbital_num_lag
  end module pcm_hpsi
 
  module pcm_inda
+   use pcm, only: MCHS
    !> Arguments: inda
-   include 'pcm.h'
  
    integer  :: inda(MCHS)
 
@@ -2661,8 +2661,8 @@ end module orbital_num_lag
  module pcm_parms
    !> Arguments: re, nchv, nesph, ze, iscov, eps_solv, xpol, 
    !             retk, ch, xe, nvopcm, nch, re2, ncopcm, surk, nscv, nchs, ye, nchs2, nchs1
+   use pcm, only: MCHV, MSPHERE
    use precision_kinds, only: dp
-   include 'pcm.h'
 
    real(dp) :: ch(MCHV)
    real(dp) :: eps_solv
@@ -2707,8 +2707,8 @@ end module orbital_num_lag
 
  module pcm_xv_new
    !> Arguments: xv_new
+   use pcm, only: MCHV
    use precision_kinds, only: dp
-   include 'pcm.h'
 
    real(dp) :: xv_new(3,MCHV)
 
@@ -2731,8 +2731,8 @@ end module orbital_num_lag
 
  module pcmo
    !> Arguments: enfpcmo, qopcmo, spcmo, vpcmo
+   use pcm, only: MCHS
    use precision_kinds, only: dp
-   include 'pcm.h'
 
    real(dp) :: enfpcmo(MCHS)
    real(dp) :: qopcmo

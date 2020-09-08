@@ -1,5 +1,6 @@
       subroutine pcm_reduce
 
+      use pcm, only: MCHS
       use mpiconf, only: wid
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: nchs
@@ -10,7 +11,6 @@
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'pcm.h'
 
       dimension collect(MCHS)
  
@@ -79,6 +79,7 @@
 
       subroutine pcm_reduce_chvol
 
+      use pcm, only: MCHV
       use mpi_qmc, only: NPROCX
       use mpiconf, only: nproc
       use pcm_xv_new, only: xv_new
@@ -92,7 +93,6 @@
 
 
       include 'mpif.h'
-      include 'pcm.h'
 
       dimension nchv_proc(0:NPROCX),charge(NPROCX)
       dimension icount(0:NPROCX),idispl(0:NPROCX)
