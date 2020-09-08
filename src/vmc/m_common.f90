@@ -1909,7 +1909,7 @@ end module forcewt
   public :: NPROCX
   save
  end module mpi_qmc
-  
+
  module mpiconf
    !> Arguments: idtask, nproc, wid
     integer  :: idtask
@@ -2003,6 +2003,15 @@ end module forcewt
    public :: aan, wfmatn 
    save
  end module multimatn
+
+ module numbas_mod
+  !> Arguments: MRWF_PTS, MRWF
+  integer, parameter :: MRWF_PTS=4000
+  integer, parameter :: MRWF=200
+  private 
+  public :: MRWF, MRWF_PTS
+  save 
+ end module numbas_mod 
 
  module numexp
    !> Arguments: ae, ce
