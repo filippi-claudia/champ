@@ -170,6 +170,19 @@
    save
  end module basis
 
+ module pseudo_mod
+  !>Arguments : MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+  integer, parameter :: MPS_L=4
+  integer, parameter :: MPS_QUAD=86
+  integer, parameter :: MPS_GRID=1200
+  ! for gauss ecp
+  integer, parameter :: MGAUSS=100 
+
+  private 
+  public :: MPS_L, MPS_QUAD, MPS_GRID MGAUSS
+  save
+ end module pseudo_mod
+
  module b_tmove
    !> Arguments: b_t, iskip
    use precision_kinds, only: dp
