@@ -1902,6 +1902,14 @@ end module forcewt
    save
  end module mmpol_pot
 
+ module mpi_qmc
+  !> Arguments NPROCX
+  integer, parameter :: NPROCX=1024
+  private
+  public :: NPROCX
+  save
+ end module mpi_qmc
+  
  module mpiconf
    !> Arguments: idtask, nproc, wid
     integer  :: idtask
