@@ -25,6 +25,7 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
+      use optorb_mod, only: MXORBOP, MXREDUCED
       use optci, only: MXCITERM
       use mmpol_mod, only: mmpolfile_sites, mmpolfile_chmm
       use force, only: MFORCE, MWF
@@ -103,7 +104,6 @@ c and Anthony Scemema
 
       include 'dmc.h'
       include 'pseudo.h'
-      include 'optorb.h'
       include 'sr.h'
       include 'pcm.h'
       include 'pcm_3dgrid.h'
@@ -1427,7 +1427,6 @@ c Check that the required blocks are there in the input
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 

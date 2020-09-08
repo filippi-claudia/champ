@@ -1,11 +1,5 @@
       subroutine store_diag_hs(nparm_p1,hii,sii)
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use mstates_mod, only: MSTATES
       use sr_index, only: jelo, jelo2, jelohfj
@@ -16,7 +10,6 @@
 
       include 'mpif.h'
       include 'sr.h'
-      include 'optorb.h'
 
       dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
       dimension hii(MPARM),sii(MPARM)

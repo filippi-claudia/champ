@@ -28,7 +28,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       parameter (one=1.d0)
 
       include 'pseudo.h'
-      include 'optorb.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)

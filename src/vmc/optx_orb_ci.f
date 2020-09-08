@@ -14,7 +14,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -43,7 +42,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optorb.h'
 
 
 
@@ -73,7 +71,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optorb.h'
 
 
 
@@ -97,7 +94,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optorb.h'
 
 
 
@@ -109,6 +105,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_fin(passes,eave)
 
+      use optorb_mod, only: MXORBOP, MXMATDIM
       use optci, only: MXCITERM
       use csfs, only: ccsf, ncsf
       use dets, only: cdet
@@ -132,7 +129,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
 
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)

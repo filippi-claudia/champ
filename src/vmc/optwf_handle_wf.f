@@ -688,7 +688,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'optorb.h'
 
 
 
@@ -849,7 +848,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optorb.h'
 
 
       save nparmj_sav,norbterm_sav,nciterm_sav,nparmd_sav,nreduced_sav
@@ -902,7 +900,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optorb.h'
         
 
 c Note: we do not vary the first (i0) CI coefficient unless a run where we only optimize the CI coefs
@@ -953,7 +950,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
       include 'sr.h'
 
       dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)

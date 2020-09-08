@@ -1,6 +1,7 @@
       subroutine optx_orb_ci_reduce
 c Written by Claudia Filippi
 
+      use optorb_mod, only: MXREDUCED
       use optci, only: MXCITERM
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
@@ -16,7 +17,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'optorb.h'
       include 'mpif.h'
 
 

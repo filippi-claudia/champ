@@ -31,7 +31,6 @@ c routine to accumulate estimators for energy etc.
       implicit real*8(a-h,o-z)
 
       parameter (half=.5d0)
-      include 'optorb.h'
       include 'pseudo.h'
 
 

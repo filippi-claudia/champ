@@ -17,7 +17,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'optorb.h'
       include 'mpif.h'
 
 

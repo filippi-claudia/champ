@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-include_name=optjas.h
-module_name=optjas
-for file in $(grep -l -F optjas.h *.f); do
+include_name=optorb.h
+module_name=optorb_mod
+for file in $(grep -l -F optorb.h *.f); do
 	echo $file $include_name $module_name;
 	~/refac/refac/replace_include_by_module.py $file $include_name m_common.f90 $module_name -ow
 	~/refac/refac/clean_use.py $file -ow

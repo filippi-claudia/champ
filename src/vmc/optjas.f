@@ -352,7 +352,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
 
 
@@ -453,7 +452,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
 
       if(ioptjas.eq.0) return
@@ -507,7 +505,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
 
 
@@ -545,7 +542,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
 
 
@@ -600,7 +596,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'optorb.h'
 
 
 

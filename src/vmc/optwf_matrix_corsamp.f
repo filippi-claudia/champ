@@ -12,7 +12,6 @@ c written by Claudia Filippi
       
       implicit real*8(a-h,o-z)
 
-      include 'optorb.h'
 
       parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
       parameter(MWORK=50*MPARMALL)
@@ -620,6 +619,7 @@ c Solve linear equations
 c-----------------------------------------------------------------------
       subroutine combine_derivatives
 
+      use optorb_mod, only: MXORBOP, MXMATDIM
       use gradhess_ci, only: h_ci, s_ci
       use gradhess_jas, only: h_jas, s_jas
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
@@ -636,7 +636,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optorb.h'
         
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 

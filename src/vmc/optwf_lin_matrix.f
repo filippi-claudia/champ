@@ -14,7 +14,6 @@
 
 
 
-      include 'optorb.h'
 
       parameter(eps=1.d-12)
 
@@ -172,7 +171,6 @@ c-----------------------------------------------------------------------
       
       implicit real*8(a-h,o-z)
 
-      include 'optorb.h'
 
       parameter(eps=1.d-12)
       parameter(MWORK=50*MPARMALL)
@@ -251,7 +249,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'optorb.h'
 
       parameter(eps=1.d-12)
       parameter(MWORK=50*MPARMALL)
@@ -319,7 +316,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optorb.h'
 
       parameter(eps=1.d-12)
 

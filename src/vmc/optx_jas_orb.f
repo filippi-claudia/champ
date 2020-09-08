@@ -15,7 +15,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
       dimension wtg_new(*),wtg_old(*)
 
@@ -62,7 +61,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -93,7 +91,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -121,7 +118,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'optorb.h'
 
 
 
@@ -135,6 +131,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optx_jas_orb_fin(wcum,ecum)
+      use optorb_mod, only: MXREDUCED
       use csfs, only: nstates
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use optwf_contrl, only: ioptjas, ioptorb
@@ -151,7 +148,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
 
 

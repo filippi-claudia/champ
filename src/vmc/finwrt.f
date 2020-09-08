@@ -31,7 +31,6 @@ c routine to print out final results
       implicit real*8(a-h,o-z)
 
 
-      include 'optorb.h'
 
       parameter (one=1.d0,half=.5d0)
 

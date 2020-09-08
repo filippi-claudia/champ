@@ -8,7 +8,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'optorb.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
