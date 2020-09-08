@@ -7,12 +7,11 @@
 #SBATCH -t 00:05:00                 # time (D-HH:MM)
 #SBATCH -o slurm.%N.%j.out        # STDOUT
 #SBATCH -e slurm.%N.%j.err        # STDERR
-##SBATCH --mail-user=p.l.t.lopeztarifa@vu.nl # send-to address
 ##SBATCH --dependency=afterok:57135
 #
 module load pre2019
 module load intel/2018b mpi/impi/18.0.4
-SRC=/home/plopez/Programs/champ/bin
+SRC=$HOME/champ/bin
 JOBNAME=$(echo $1 | sed s/\.inp//g)
 echo "JOBNAME is: $JOBNAME"
 ######## LOAD MODULES  #########

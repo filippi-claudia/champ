@@ -3,11 +3,11 @@
 CHAMP=$HOME/champ 
 
 cd $CHAMP
-# rm -rf build bin
-# module load pre2019
-# module load cmake/3.7.2 lapack/mkl blas/mkl intel/2018b mpi/impi/18.0.4
-# cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-# cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
+rm -rf build bin
+module load pre2019
+module load cmake/3.7.2 lapack/mkl blas/mkl intel/2018b mpi/impi/18.0.4
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
 
 cd $CHAMP/tests/psb3_cas66 ; \
 cp $CHAMP/tools/test_champ.sh ./ ; \
@@ -15,24 +15,24 @@ cp $CHAMP/tools/test_champ.sh ./ ; \
 ########### Test 1
 echo "" ; \
 echo "Running test 1: free.inp" ; \
-#sbatch test_champ.cmd free.inp ; sleep 40 ; \
-#grep "eigenvalue            1  :" free.out ; \
+sbatch test_champ.cmd free.inp ; sleep 40 ; \
+grep "eigenvalue            1  :" free.out ; \
 echo "That should be:" ; \
 echo " eigenvalue            1  :   -43.4420580939622" ; \
 echo "" ; \
 
 ########### Test 2
 echo "Running test 2: regterg.inp" ; \
-#sbatch test_champ.cmd regterg.inp ; sleep 20 ; \
-#grep "LIN_D: state, vec, energy   1   1" regterg.out ; \
+sbatch test_champ.cmd regterg.inp ; sleep 20 ; \
+grep "LIN_D: state, vec, energy   1   1" regterg.out ; \
 echo "That should be:" ; \
 echo "LIN_D: state, vec, energy   1   1   -43.51855     0.10377" ; \
 echo "" ; \
 
 ########### Test 3
 echo "Running test 3:" ; \
-#sbatch test_champ.cmd sr_n.inp ; sleep 20 ; \
-#grep "delta0" sr_n.out ; \
+sbatch test_champ.cmd sr_n.inp ; sleep 20 ; \
+grep "delta0" sr_n.out ; \
 echo "That should be:" ; \
 echo "delta0 =   0.888765908731205" ; \
 echo "" ; \
@@ -41,8 +41,8 @@ echo "" ; \
 echo "Running test 4:" ; \
 cd $CHAMP/tests/butadiene-3wfs/TZ-1M-128 ; \
 cp $CHAMP/tools/test_champ.sh ./ ; \
-#sbatch test_champ.cmd vmc_optall.inp ; sleep 180 ; \
-#grep "total E =" vmc_optall.out | cut -f 1-11 -d  " " ; \
+sbatch test_champ.cmd vmc_optall.inp ; sleep 180 ; \
+grep "total E =" vmc_optall.out | cut -f 1-11 -d  " " ; \
 echo "That should be:" ; \
 echo "totalE=-26.1345117" ; \
 echo "totalE=-26.1560896" ; \
@@ -56,9 +56,9 @@ cd $CHAMP/tests/butadiene_sr; \
 cp $CHAMP/tools/test_champ.sh ./ ; \
 cat vmc_sr.inp | sed s/"iforce_analy 0"/"iforce_analy 1"/g > tmp
 rm -rf vmc_sr.inp ; mv tmp vmc_sr.inp ;
-# sbatch test_champ.cmd vmc_sr.inp ; sleep 180 ;
-# echo "Last geometry is:"
-# grep -10 "Norm of parm variation" vmc_sr.out | tail -10
+sbatch test_champ.cmd vmc_sr.inp ; sleep 180 ;
+echo "Last geometry is:"
+grep -10 "Norm of parm variation" vmc_sr.out | tail -10
 echo "That won't concide with but should be something like:"
 echo "CENT   -1.30663316596991      -0.506629269169022      -2.976475069589144E-002"
 echo "CENT    1.46036019041281       0.594626857099687       0.106276790635788"
