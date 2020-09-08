@@ -1103,7 +1103,19 @@ end module forcewt
    public   :: da_energy_ave, da_energy_err
    save
  end module force_fin
+ 
+ module sr_mod
+  !> Arguments:
+  integer, parameter :: MPARM=15100
+  integer, parameter :: MOBS=10+6*MPARM
+  integer, parameter :: MCONF=10000
+  integer, parameter :: MVEC=160
 
+  private
+  public :: NPARMS, MOBS, MCONF, MVEC
+  save
+ end module sr_mod 
+ 
  module force_mat_n
    !> Arguments: force_o
    use precision_kinds, only: dp

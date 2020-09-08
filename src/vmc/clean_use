@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-include_name=pseudo.h
-module_name=pseudo_mod
-for file in $(grep -l -F pseudo.h *.f*); do
+include_name=sr.h
+module_name=sr_mod
+for file in $(grep -l -F sr.h *.f*); do
 	echo $file $include_name $module_name;
 	~/refac/refac/replace_include_by_module.py $file $include_name m_common.f90 $module_name -ow
 	~/refac/refac/clean_use.py $file -ow
