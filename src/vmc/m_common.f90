@@ -1186,10 +1186,10 @@ end module forcewt
 
  module gradhess_all
    !> Arguments: MPARMALL, grad, h, s
+   use optorb_mod, only: MXREDUCED
    use optjas, only: MPARMJ
    use optci, only: MXCIREDUCED
    use precision_kinds, only: dp
-   include 'optorb.h'
 
    parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
    real(dp) :: grad(MPARMALL)
@@ -1288,9 +1288,9 @@ end module forcewt
 
  module gradhess_mix_jas_orb
    !> Arguments: h_mix_jas_orb, s_mix_jas_orb
+   use optorb_mod, only: MXREDUCED
    use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'optorb.h'
 
    real(dp) :: h_mix_jas_orb(2*MPARMJ,MXREDUCED)
    real(dp) :: s_mix_jas_orb(MPARMJ,MXREDUCED)
@@ -1302,9 +1302,9 @@ end module forcewt
 
  module gradhess_mix_orb_ci
    !> Arguments: h_mix_ci_orb, s_mix_ci_orb
+   use optorb_mod, only: MXREDUCED
    use optci, only: MXCITERM
    use precision_kinds, only: dp
-   include 'optorb.h'
 
    real(dp) :: h_mix_ci_orb(2*MXCITERM,MXREDUCED)
    real(dp) :: s_mix_ci_orb(MXCITERM,MXREDUCED)
@@ -1757,10 +1757,10 @@ end module forcewt
 
  module mix_jas_orb
    !> Arguments: de_o, dj_ho, dj_o, dj_oe
+   use optorb_mod, only: MXREDUCED
    use optjas, only: MPARMJ
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optorb.h'
  
    real(dp) :: de_o(MPARMJ,MXREDUCED,MSTATES)
    real(dp) :: dj_ho(MPARMJ,MXREDUCED,MSTATES)
@@ -1774,9 +1774,9 @@ end module forcewt
 
  module mix_orb_ci
    !> Arguments: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
+   use optorb_mod, only: MXREDUCED
    use optci, only: MXCITERM
    use precision_kinds, only: dp
-   include 'optorb.h'
 
    real(dp) :: ci_de_o(MXCITERM,MXREDUCED)
    real(dp) :: ci_o_ho(MXCITERM,MXREDUCED)
@@ -2166,9 +2166,9 @@ end module orbital_num_lag
 
  module orb_mat_001
    !> Arguments: orb_o, orb_oe, orb_ho
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optorb.h'
 
    real(dp) :: orb_ho(MXORBOP,MSTATES)
    real(dp) :: orb_o(MXORBOP,MSTATES)
@@ -2181,9 +2181,9 @@ end module orbital_num_lag
 
  module orb_mat_002
    !> Arguments: orb_ho_old, orb_o_old, orb_oe_old
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optorb.h'
 
    real(dp) :: orb_ho_old(MXORBOP,MSTATES)
    real(dp) :: orb_o_old(MXORBOP,MSTATES)
@@ -2196,9 +2196,9 @@ end module orbital_num_lag
 
  module orb_mat_003
    !> Arguments: orb_o_sum, orb_o_cum
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optorb.h'
 
    real(dp) :: orb_o_cum(MXORBOP,MSTATES)
    real(dp) :: orb_o_sum(MXORBOP,MSTATES)
@@ -2210,9 +2210,9 @@ end module orbital_num_lag
 
  module orb_mat_004
    !> Arguments: orb_oe_sum, orb_oe_cum
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optorb.h'
 
    real(dp) :: orb_oe_cum(MXORBOP,MSTATES)
    real(dp) :: orb_oe_sum(MXORBOP,MSTATES)
@@ -2224,9 +2224,9 @@ end module orbital_num_lag
 
  module orb_mat_005
    !> Arguments: orb_ho_cum
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optorb.h'
 
    real(dp) :: orb_ho_cum(MXORBOP,MSTATES)
 
@@ -2237,9 +2237,9 @@ end module orbital_num_lag
 
  module orb_mat_006
    !> Arguments: orb_oo_cum
+   use optorb_mod, only: MXMATDIM2
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optorb.h'
 
    real(dp) :: orb_oo_cum(MXMATDIM2,MSTATES)
 
@@ -2250,9 +2250,9 @@ end module orbital_num_lag
 
  module orb_mat_007
    !> Arguments: orb_oho_cum
+   use optorb_mod, only: MXMATDIM
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optorb.h'
 
    real(dp) :: orb_oho_cum(MXMATDIM,MSTATES)
 
@@ -2262,8 +2262,8 @@ end module orbital_num_lag
  end module orb_mat_007
 
  module orb_mat_022
+   use optorb_mod, only: MXORBOP
    !> Arguments: ideriv
-   include 'optorb.h'
 
    integer  :: ideriv(2,MXORBOP)
 
@@ -2274,9 +2274,9 @@ end module orbital_num_lag
 
  module orb_mat_024
    !> Arguments: orb_oe_bsum, orb_f_bcum, orb_e_bsum, orb_w_bsum, orb_o_bsum, orb_f_bcm2
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
    use mstates_mod, only: MSTATES
-   include 'optorb.h'
 
    real(dp) :: orb_e_bsum(MSTATES)
    real(dp) :: orb_f_bcm2(MXORBOP,MSTATES)
@@ -2304,8 +2304,8 @@ end module orbital_num_lag
  end module orb_mat_030
 
  module orb_mat_033
+   use optorb_mod, only: MXORBOP
    !> Arguments: irepcol_ref, ideriv_ref, ideriv_iab
-   include 'optorb.h'
 
    integer  :: ideriv_iab(MXORBOP)
    integer  :: ideriv_ref(MXORBOP,2)
