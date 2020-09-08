@@ -2475,6 +2475,21 @@ end module orbital_num_lag
   save 
  end module pcm
 
+ module pcm_3dgrid
+  !     flags and dimensions for the 3d grid objects
+  use numeric_kinds, only: dp
+  integer, parameter :: MGRID_PCM=1
+  integer, parameter :: IUNDEFINED = -1234567890
+  integer, parameter :: MGRID_PCM2=MGRID_PCM*MGRID_PCM
+  integer, parameter :: MGRID_PCM3=MGRID_PCM2*MGRID_PCM
+  real(dp), parameter :: UNDEFINED = -1234567890.d0
+
+  private 
+  public : MGRID_PCM, MGRID_PCM2, MGRID_PCM3
+  public :: UNDEFINED, IUNDEFINED 
+  save 
+ end module pcm_3dgrid
+ 
  module pcm_ah
    !> Arguments: ahca, bh
    use pcm, only: MCHS
