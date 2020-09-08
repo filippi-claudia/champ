@@ -1,5 +1,6 @@
       subroutine optwf_mix
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -20,7 +21,6 @@
 
 
 
-      include 'force.h'
       include 'sr.h'
 
       character*20 method_sav
@@ -281,6 +281,7 @@ c enddo iteration
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine change_ci(dparm_new,istate)
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -292,7 +293,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
 
 
       dimension dparm_new(*)

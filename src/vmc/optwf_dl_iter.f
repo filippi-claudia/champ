@@ -1,4 +1,5 @@
       subroutine dl_iter(iter,nparm,dl_alg,dl_mom,sr_tau,dl_momentum,dl_EG_sq,dl_EG,deltap,parameters)
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -8,7 +9,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'sr.h'
 
       character*20 dl_alg

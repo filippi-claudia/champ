@@ -1,5 +1,6 @@
       subroutine cuspinit4(iprin)
 c Written by Cyrus Umrigar
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -8,7 +9,6 @@ c Written by Cyrus Umrigar
       use jaspar4, only: nordc
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
@@ -66,6 +66,7 @@ c Written by Cyrus Umrigar
       end
 c-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -81,7 +82,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
 
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 

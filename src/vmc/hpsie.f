@@ -1,6 +1,7 @@
       subroutine psie(iel,coord,psid,psij,ipass,iflag)
 c Written by Claudia Filippi by modifying hpsi
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -16,7 +17,6 @@ c Written by Claudia Filippi by modifying hpsi
       implicit real*8(a-h,o-z)
 
       include 'pseudo.h'
-      include 'force.h'
       include 'optjas.h'
       include 'optci.h'
 

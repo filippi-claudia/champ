@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt rout
 c routine to calculate the values of the basis functions and their derivatives
 c vgl -> value, gradient, laplacian
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -22,7 +23,6 @@ c vgl -> value, gradient, laplacian
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'numbas.h'
       include 'pseudo.h'
 

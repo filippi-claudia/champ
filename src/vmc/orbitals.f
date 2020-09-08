@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -18,7 +19,6 @@ c Modified by A. Scemama
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -147,6 +147,7 @@ c           do 26 m=1,nbasis
 c------------------------------------------------------------------------------------
       subroutine virtual_orbitals
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -162,7 +163,6 @@ c-------------------------------------------------------------------------------
 c compute values of extra ('virtual') orbitals needed for optorb operators
 c assuming that basis function values in phin are up to date
 
-      include 'force.h'
       include 'optorb.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -209,6 +209,7 @@ c25   continue
       end
 c------------------------------------------------------------------------------------
       subroutine da_orbitals
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -228,7 +229,6 @@ c-------------------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       include 'numbas.h'
-      include 'force.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -263,6 +263,7 @@ c-------------------------------------------------------------------------------
 c------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -279,7 +280,6 @@ c-------------------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
 
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 

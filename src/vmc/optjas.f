@@ -1,5 +1,6 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -24,7 +25,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optjas.h'
       include 'pseudo.h'
 
@@ -158,6 +158,7 @@ c-----------------------------------------------------------------------
       subroutine optjas_sum(wtg_new,wtg_old,enew,eold,iflag)
 c Written by Claudia Filippi
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -195,7 +196,6 @@ c Written by Claudia Filippi
 
 
       include 'optjas.h'
-      include 'force.h'
 
 
 
@@ -352,6 +352,7 @@ c-----------------------------------------------------------------------
       subroutine optjas_cum(wsum,enow)
 c Written by Claudia Filippi
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -370,7 +371,6 @@ c Written by Claudia Filippi
 
       include 'optjas.h'
       include 'optorb.h'
-      include 'force.h'
 
 
 
@@ -420,6 +420,7 @@ c-----------------------------------------------------------------------
       subroutine optjas_save
 c Written by Claudia Filippi
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -442,7 +443,6 @@ c Written by Claudia Filippi
 
 
       include 'optjas.h'
-      include 'force.h'
 
 
       if(ioptjas.eq.0) return
@@ -466,6 +466,7 @@ c-----------------------------------------------------------------------
       subroutine optjas_init
 c Written by Claudia Filippi
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -485,7 +486,6 @@ c Written by Claudia Filippi
 
       include 'optjas.h'
       include 'optorb.h'
-      include 'force.h'
 
 
       if(ioptjas.eq.0) return
@@ -527,6 +527,7 @@ c-----------------------------------------------------------------------
       subroutine optjas_dump(iu)
 c Written by Claudia Filippi
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -546,7 +547,6 @@ c Written by Claudia Filippi
 
       include 'optjas.h'
       include 'optorb.h'
-      include 'force.h'
 
 
 
@@ -571,6 +571,7 @@ c-----------------------------------------------------------------------
       subroutine optjas_rstrt(iu)
 c Written by Claudia Filippi
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -591,7 +592,6 @@ c Written by Claudia Filippi
 
       include 'optjas.h'
       include 'optorb.h'
-      include 'force.h'
 
 
 
@@ -620,6 +620,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -652,7 +653,6 @@ c Written by Claudia Filippi
 
       include 'optjas.h'
       include 'optorb.h'
-      include 'force.h'
 
 
 

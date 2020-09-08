@@ -1,5 +1,6 @@
       subroutine compute_force(psid,denergy)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -12,7 +13,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       dimension da_psi_ref(3,MCENT)
 
@@ -32,6 +32,7 @@ c     write(6,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -53,7 +54,6 @@ c-----------------------------------------------------------------------
       use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -132,6 +132,7 @@ c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -158,7 +159,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       include 'pseudo.h'
-      include 'force.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)

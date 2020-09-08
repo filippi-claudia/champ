@@ -1,5 +1,6 @@
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -19,7 +20,6 @@
 
 
 
-      include 'force.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
@@ -176,6 +176,7 @@ c       add_diag=0
 c-----------------------------------------------------------------------
       subroutine regularize_geneig(n,mparmx,h,s,work,seig_valinv,hmod)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -185,7 +186,6 @@ c-----------------------------------------------------------------------
       
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
@@ -264,6 +264,7 @@ c     write(6,*) 'elapsed time to build Hmod:',t_hmod-t_sdiag
 c-----------------------------------------------------------------------
       subroutine solve_geneig(n,mparmx,hmod,s,seig_valinv,work,eig,eigi,eig_vec)
       
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -273,7 +274,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
@@ -329,6 +329,7 @@ c-----------------------------------------------------------------------
       subroutine compute_dparm(nparm,mparmx,lwork,dparm,h,h_sav,s,s_sav,work,eig_vec,
      &                     add_diag,energy_sav,energy_err_sav)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -349,7 +350,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'force.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'

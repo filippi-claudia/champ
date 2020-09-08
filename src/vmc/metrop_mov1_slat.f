@@ -8,6 +8,7 @@ c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -53,7 +54,6 @@ c     parameter (g3b2=.886226925452758d0)
       parameter (g5b2=1.329340388179137d0)
 c g3b2, g5b2 are gamma3/2), gamma(5/2)
 
-      include 'force.h'
       include 'optci.h'
       include 'pcm.h'
       include 'mmpol.h'

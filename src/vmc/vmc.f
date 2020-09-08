@@ -10,6 +10,7 @@ c Currently this program contains
 c 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater basis states.
 c and sa, pa, da asymptotic functions
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -33,7 +34,6 @@ c and sa, pa, da asymptotic functions
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'numbas.h'
       include 'pseudo.h'
 

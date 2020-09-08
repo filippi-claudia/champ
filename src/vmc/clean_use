@@ -6,7 +6,7 @@ module_name=force
 for file in $(grep -l force.h *.f); do
 	echo $file $include_name $module_name;
 	#~/refac/refac/clean_use.py $file -ow
-	# ~/refac/refac/replace_include_by_module.py $file $include_name m_common.f90 $module_name -ow
+	~/refac/refac/replace_include_by_module.py $file $include_name m_common.f90 $module_name -ow
 
 	#cd ../../build
 	#make

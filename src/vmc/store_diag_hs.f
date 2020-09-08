@@ -1,5 +1,6 @@
       subroutine store_diag_hs(nparm_p1,hii,sii)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -15,7 +16,6 @@
 
       include 'mpif.h'
       include 'sr.h'
-      include 'force.h'
       include 'optorb.h'
 
       dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)

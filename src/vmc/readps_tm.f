@@ -7,6 +7,7 @@ c c) subtracts out local part from all except highest l component.
 c Also eval pot. at 0 and initializes quadrature pts.
 c 
 c Modified by F. Schautz to use fancy file names
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -25,7 +26,6 @@ c Modified by F. Schautz to use fancy file names
 
 
       include 'pseudo.h'
-      include 'force.h'
 
       character*2 icorr,nameat
       character*3 irel
@@ -237,6 +237,7 @@ c-----------------------------------------------------------------------
 c compute tm-pseudopotential for electron iel
       subroutine getvps_tm(r_en,iel)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -251,7 +252,6 @@ c compute tm-pseudopotential for electron iel
 
 
       include 'pseudo.h'
-      include 'force.h'
 
 
 

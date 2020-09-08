@@ -18,6 +18,7 @@ c         =2, exponential,         r(i)=r0_ps*exp((i-1)*h_ps)
 c         =3, shifted exponential, r(i)=r0_ps*(exp((i-1)*h_ps)-1)
 c The prefered grid is 3.
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -41,7 +42,6 @@ c The prefered grid is 3.
 
 
       include 'pseudo.h'
-      include 'force.h'
 
       character*20 atomtyp,atomsymbol
       character*256 filename,pooldir,pp_id
@@ -280,6 +280,7 @@ c-----------------------------------------------------------------------
       subroutine getvps_champ(r_en,iel)
 c compute pseudopotential for electron iel
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -295,7 +296,6 @@ c compute pseudopotential for electron iel
 
 
       include 'pseudo.h'
-      include 'force.h'
 
 
 
@@ -337,6 +337,7 @@ c Note: I check if r < rmax_coul(ict) because this routine is called from
 c ewald without going through getvps_tm.
 c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -353,7 +354,6 @@ c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
 
       include 'pseudo.h'
-      include 'force.h'
 
 
 

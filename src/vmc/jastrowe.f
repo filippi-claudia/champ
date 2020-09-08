@@ -1,6 +1,7 @@
       subroutine jastrowe(iel,x,v,d2,value,iflag)
 c Written by Claudia Filippi by modifying jastrow
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -17,7 +18,6 @@ c Written by Claudia Filippi by modifying jastrow
 
       include 'pseudo.h'
 
-      include 'force.h'
 
 
       dimension x(3,*),v(3,*)

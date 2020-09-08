@@ -25,6 +25,7 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use jaspar, only: nspin1, nspin2, is
@@ -99,7 +100,6 @@ c and Anthony Scemema
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
       include 'dmc.h'
-      include 'force.h'
       include 'pseudo.h'
       include 'numbas.h'
       include 'optjas.h'
@@ -904,6 +904,7 @@ CKEYDOC nbasis: number of basis functiobns
 CKEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
 CKEYDOC filename: file containing orbitals coefficients
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MORB, MBASIS
       use coefs, only: coef, nbasis, norb
       use inputflags, only: ilcao
@@ -912,7 +913,6 @@ CKEYDOC filename: file containing orbitals coefficients
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
 
 c fs NOTE: additional variable norbv for efp orbitals removed 
 
@@ -968,13 +968,13 @@ c-----------------------------------------------------------------------
 C$INPUT exponents inp i=1
 CKEYDOC Basis function exponents (only if no numerical basis)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use coefs, only: nbasis
       use basis, only: zex
       use inputflags, only: iexponents
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       call incpos(iu,itmp,1)
       read(iu,*) (zex(i,iwft),i=1,nbasis)
@@ -987,6 +987,7 @@ c-----------------------------------------------------------------------
 C$INPUT determinants inp i i=1
 CKEYDOC CI coefficients and occupation of determinants in wf
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MDET
       use dets, only: cdet, ndet
       use dorb_m, only: iworbd
@@ -994,7 +995,6 @@ CKEYDOC CI coefficients and occupation of determinants in wf
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       ndet=nd
       if(ndet.gt.MDET) then
@@ -1020,13 +1020,13 @@ c-----------------------------------------------------------------------
       subroutine read_multideterminants(iu,nd)
 C$INPUT multideterminants inp i 
 CKEYDOC CI coefficients and occupation of determinants in wf
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use dets, only: ndet
       use multidet, only: irepcol_det, ireporb_det, numrep_det
       use inputflags, only: imultideterminants
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       if(nd.ne.ndet-1) call fatal_error('INPUT: problem in multidet')
 
@@ -1049,6 +1049,7 @@ c-----------------------------------------------------------------------
 C$INPUT jastrow_parameter inp i=1
 CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use jaspar, only: nspin1, nspin2
       use elec, only: ndn
       use jaspar3, only: a, b, c, scalek
@@ -1061,7 +1062,6 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
@@ -1118,6 +1118,7 @@ C$INPUT basis inp i
 CKEYDOC Basis function types and pointers to radial parts tables
 C$INPUT qmc_bf_info inp i
 CKEYDOC alternative name for keyword basis because of GAMBLE input
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCTYPE
       use numbas, only: iwrwf, numr
       use numbas1, only: iwlbas, nbastyp
@@ -1129,7 +1130,6 @@ CKEYDOC alternative name for keyword basis because of GAMBLE input
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'numbas.h'
 
       call p2gti('atoms:nctype',nctype,1)
@@ -1258,6 +1258,7 @@ c-----------------------------------------------------------------------
 C$INPUT forces_displace inp
 CKEYDOC Displacement parameters and wave function types
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use forcepar, only: nforce
       use forcestr, only: delc
@@ -1266,7 +1267,6 @@ CKEYDOC Displacement parameters and wave function types
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
@@ -1291,6 +1291,7 @@ c-----------------------------------------------------------------------
       subroutine read_csf(ncsf_read,nstates_read,fn)
 C$INPUT csf i i=1 a=<input>
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MDET
       use csfs, only: ccsf, ncsf, nstates
       use mstates_mod, only: MSTATES
@@ -1298,7 +1299,6 @@ C$INPUT csf i i=1 a=<input>
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'optci.h'
 
       character fn*(*)
@@ -1328,6 +1328,7 @@ c-----------------------------------------------------------------------
       subroutine read_csfmap(fn)
 C$INPUT csfmap a=<input>
 CKEYDOC Read mapping between csf and determinants.
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MDET
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MDETCSFX
@@ -1336,7 +1337,6 @@ CKEYDOC Read mapping between csf and determinants.
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       character fn*(*)
 c
       call ptfile(iu,fn,'old')
@@ -1423,6 +1423,7 @@ c-----------------------------------------------------------------------
       subroutine flagcheck
 c Check that the required blocks are there in the input
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB
       use numbas, only: numr
       use optorb_mix, only: norbopt, norbvirt
@@ -1437,7 +1438,6 @@ c Check that the required blocks are there in the input
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'numbas.h'
       include 'optci.h'
       include 'optorb.h'
@@ -1527,6 +1527,7 @@ c-----------------------------------------------------------------------
       subroutine inputcsf
 c Check that the required blocks are there in the input
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use csfs, only: ncsf, nstates
       use inputflags, only: ici_def
 
@@ -1535,7 +1536,6 @@ c Check that the required blocks are there in the input
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optci.h'
 
       nstates=1
@@ -1548,13 +1548,13 @@ c Check that the required blocks are there in the input
 c----------------------------------------------------------------------
       subroutine inputzex
 c Set the exponents to one when using a numerical basis
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use numbas, only: numr
       use coefs, only: nbasis
       use basis, only: zex
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'numbas.h'
 
 
@@ -1573,11 +1573,11 @@ c Set the exponents to one when using a numerical basis
 c----------------------------------------------------------------------
       subroutine inputdet(nwftype)
 c Set the cdet to be equal
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
 
        do 10 iwft=2,nwftype
          do 10 k=1,ndet
@@ -1587,11 +1587,11 @@ c Set the cdet to be equal
 c----------------------------------------------------------------------
       subroutine inputlcao(nwftype)
 c Set the lcao to be equal
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
 
 
        do 10 iwft=2,nwftype
@@ -1604,6 +1604,7 @@ c----------------------------------------------------------------------
       subroutine inputjastrow(nwftype)
 c Set the jastrow to be equal
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use jaspar, only: nspin1, nspin2
       use jaspar3, only: a, b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
@@ -1613,7 +1614,6 @@ c Set the jastrow to be equal
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
@@ -1645,6 +1645,7 @@ c Set the jastrow to be equal
 c----------------------------------------------------------------------
       subroutine inputforces
 c Set all force displacements to zero
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use forcepar, only: nforce
       use wfsec, only: iwftype, nwftype
@@ -1652,7 +1653,6 @@ c Set all force displacements to zero
 
 
 
-      include 'force.h'
 
 
       call p2gti('atoms:natom',ncent,1)
@@ -1679,6 +1679,7 @@ c Set all force displacements to zero
 c-----------------------------------------------------------------------
       subroutine read_jasderiv(iu)
 C$INPUT jasderiv inp
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use atom, only: nctype
       use jaspar, only: nspin1, is
       use jaspar4, only: norda, nordb, nordc
@@ -1704,7 +1705,6 @@ C$INPUT jasderiv inp
 
       include 'optjas.h'
       include 'numbas.h'
-      include 'force.h'
 
 
 
@@ -1792,12 +1792,12 @@ c-----------------------------------------------------------------------
       subroutine read_sym(nsym,mo,fn)
 C$INPUT sym_labels i i a=<input>
 CKEYDOC Read symmetry information
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use coefs, only: norb
       use optorb, only: irrep
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
 
 
       character fn*(*)
@@ -1824,13 +1824,13 @@ c-----------------------------------------------------------------------
 C$INPUT optorb_mixvirt i i a=<input>
 CKEYDOC Read which virtual orbitals are mixed with the occupied ones
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
       use coefs, only: norb
       use inputflags, only: ioptorb_mixvirt
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       character fn*(*)
       character atmp*80
@@ -1857,12 +1857,12 @@ c-----------------------------------------------------------------------
 C$INPUT energies i a=<input>
 C$INPUT eigenvalues i a=<input>
 CKEYDOC Read orbital energies 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use coefs, only: norb
       use optorb, only: orb_energy
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
 
 
       character fn*(*)
@@ -1882,6 +1882,7 @@ c----------------------------------------------------------------------
       subroutine read_dmatrix(no,ns,fn)
 C$INPUT dmatrix i i a=<input> 
 CKEYDOC Read diagonal density matrix information.
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MORB
       use sa_weights, only: iweight, nweight, weights
       use mstates_mod, only: MSTATES
@@ -1892,7 +1893,6 @@ CKEYDOC Read diagonal density matrix information.
 
 
 
-      include 'force.h'
 
       character fn*(*)
 
@@ -1934,12 +1934,12 @@ CKEYDOC Read diagonal density matrix information.
       end
 c----------------------------------------------------------------------
       subroutine get_weights(field,weights,iweight,nweight)
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 c weights for state averaging
 
 
@@ -2008,6 +2008,7 @@ CKEYDOC atoms energy gradients are to be calculated for.
 
 c     Written by Omar Valsson
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use forcepar, only: nforce
       use forcestr, only: delc
@@ -2018,7 +2019,6 @@ c     Written by Omar Valsson
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
 
       call p2gti('atoms:natom',ncent,1)
@@ -2073,6 +2073,7 @@ CKEYDOC atoms energy gradients are to be calculated for.
 
 c      Written by Omar Valsson.
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use forcepar, only: nforce
       use forcestr, only: delc
@@ -2084,7 +2085,6 @@ c      Written by Omar Valsson.
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('GRADIENTS_ZMATRIX: ncent > MCENT')
@@ -2141,13 +2141,13 @@ C$INPUT modify_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
 CKEYDOC atoms energy gradients are to be calculated for.
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use grdntsmv, only: igrdmv
       use inputflags, only: imodify_zmat
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
 
       call p2gti('atoms:natom',ncent,1)
@@ -2173,13 +2173,13 @@ C$INPUT hessian_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
 CKEYDOC atoms energy gradients are to be calculated for.
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use grdnthes, only: hessian_zmat
       use inputflags, only: ihessian_zmat
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
 
 
@@ -2209,6 +2209,7 @@ CKEYDOC coordinates.
 
 c      Written by Omar Valsson
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use atom, only: cent, ncent
       use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
@@ -2216,7 +2217,6 @@ c      Written by Omar Valsson
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       
       do 10 ic=1,3
@@ -2250,6 +2250,7 @@ c-----------------------------------------------------------------------
       subroutine read_efield(ncharges_tmp,iscreen_tmp,filename)
 C$INPUT efield i i a=<input>
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use efield_mod, only: MCHARGES
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
       use efield, only: iscreen, ncharges
@@ -2257,7 +2258,6 @@ C$INPUT efield i i a=<input>
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       character filename*(*)
 
@@ -2280,6 +2280,7 @@ C$INPUT efield i i a=<input>
       end
 c-----------------------------------------------------------------------
       subroutine set_displace_zero(nforce_tmp)
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use forcestr, only: delc
       use pcm_force, only: sch_s
@@ -2291,7 +2292,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'force.h'
       include 'pcm.h'
 
 
@@ -2314,12 +2314,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine modify_zmat_define
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use grdntsmv, only: igrdmv
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
@@ -2333,12 +2333,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine hessian_zmat_define
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MCENT
       use grdnthes, only: hessian_zmat
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')

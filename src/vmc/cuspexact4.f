@@ -1,5 +1,6 @@
       subroutine cuspexact4(iprin,iadiag)
 c Written by Cyrus Umrigar
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -10,7 +11,6 @@ c Written by Cyrus Umrigar
       use jaspar4, only: nordc
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
 c The last 2 columns are what we care about in the foll. table
 c------------------------------------------------------------------------------

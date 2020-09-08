@@ -109,6 +109,7 @@ c Written by Cyrus Umrigar
 c Reads in pw basis orbitals that have already been converted to be real.
 c Presently not used.
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use periodic, only: nband
       use periodic, only: ngvec, nkvec
@@ -121,7 +122,6 @@ c Presently not used.
 
 
 
-      include 'force.h'
 
 
       dimension rkvec_tmp(3)
@@ -164,6 +164,7 @@ c Also, I first write out a temporary fort.3 and then delete it just because
 c it is only after one has processed all the k-pts that one knows how big ngvec_orb is.
 c However, that causes problems when running with mpi, so comment out that part.
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
       use ewald_mod, only: NGVEC_BIGX
@@ -186,7 +187,6 @@ c However, that causes problems when running with mpi, so comment out that part.
 
 
 
-      include 'force.h'
 
 
 c Warning: Temporary
@@ -410,6 +410,7 @@ c At present it is assumed that k-vectors are in the correct order, but
 c if not one could use isortk to map iorb.
 c This is the straightforward evaluation for checking purposes only.
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
       use ewald_mod, only: NGVEC_BIGX
@@ -429,7 +430,6 @@ c This is the straightforward evaluation for checking purposes only.
 
 
 
-      include 'force.h'
 
 
 

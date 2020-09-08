@@ -5,6 +5,7 @@ c isortg could be used to map g-vectors from iv to ig and
 c isortk could be used to map k-vectors.
 c At present it is assumed that both g- and k-vectors are in the correct order.
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
       use vmc, only: MELEC
@@ -23,7 +24,6 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
 
 
 
-      include 'force.h'
 
 
       dimension x(3,MELEC),orb(MELEC,*),dorb(3,MELEC,*),ddorb(MELEC,*)
@@ -191,6 +191,7 @@ c isortg could be used to map g-vectors from iv to ig and
 c isortk could be used to map k-vectors.
 c At present it is assumed that both g- and k-vectors are in the correct order.
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
       use const, only: nelec, ipr
@@ -208,7 +209,6 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
 
 
 
-      include 'force.h'
 
 
       dimension x(3),orb(*),dorb(3,*),ddorb(*)

@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -15,7 +16,6 @@ c Modified by A. Scemama
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'optjas.h'
 
       parameter (one=1.d0,half=0.5d0)
@@ -97,6 +97,7 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -114,7 +115,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'force.h'
       include 'optjas.h'
 
 
@@ -156,6 +156,7 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -177,7 +178,6 @@ c-----------------------------------------------------------------------
       
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'optjas.h'
 
       parameter (one=1.d0,half=0.5d0)

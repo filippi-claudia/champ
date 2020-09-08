@@ -41,6 +41,7 @@
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine compute_positions
 
+        use force, only: MFORCE, MFORCE_WT_PRD, MWF
         use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
         use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
         use vmc, only: radmax, delri
@@ -53,7 +54,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         use force_analy, only: iforce_analy, iuse_zmat, alfgeo
         implicit real*8(a-h,o-z)
       
-        include 'force.h'
         
           
         if (iforce_analy.eq.0) return

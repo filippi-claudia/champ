@@ -1,6 +1,7 @@
       subroutine optwf_matrix_corsamp
 c written by Claudia Filippi
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -17,7 +18,6 @@ c written by Claudia Filippi
       
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
@@ -541,6 +541,7 @@ c Always increase nblk by a factor of 2 every other iteration
 c-----------------------------------------------------------------------
       subroutine quad_min
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -550,7 +551,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
 
       parameter(MFUNC=3)
 
@@ -635,6 +635,7 @@ c Solve linear equations
 c-----------------------------------------------------------------------
       subroutine combine_derivatives
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -656,7 +657,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'force.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'

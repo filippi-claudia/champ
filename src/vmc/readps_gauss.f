@@ -12,6 +12,7 @@ c          coefficient power exponent
 c
 c NOTE: as usual power n means r**(n-2)
 c
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -29,7 +30,6 @@ c
 
 
       include 'pseudo.h'
-      include 'force.h'
 
       character*20 atomtyp,atomsymbol
       character*80 label
@@ -132,6 +132,7 @@ c-----------------------------------------------------------------------
 c compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(rvec_en,r_en,iel)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -147,7 +148,6 @@ c compute gauss-pseudopotential for electron iel
 
 
       include 'pseudo.h'
-      include 'force.h'
 
 
 

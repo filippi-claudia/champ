@@ -1,5 +1,6 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -17,7 +18,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'pseudo.h'
       include 'optci.h'
 
@@ -73,6 +73,7 @@ c Correlation matrix <Oi*Oj> is computed in ci_sum
 c-----------------------------------------------------------------------
       subroutine optci_init(iflg)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -91,7 +92,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optci.h'
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -135,6 +135,7 @@ C$ iflg = 0: init *cum, *cm2 as well
 c-----------------------------------------------------------------------
       subroutine optci_save
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -152,7 +153,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optci.h'
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -168,6 +168,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_restore
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -185,7 +186,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optci.h'
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -201,6 +201,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_sum(p,q,enew,eold)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -223,7 +224,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optci.h'
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -247,6 +247,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_cum(wsum)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -267,7 +268,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optci.h'
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -292,6 +292,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_dump(iu)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -309,7 +310,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optci.h'
 
 
@@ -325,6 +325,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_rstrt(iu)
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -343,7 +344,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optci.h'
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -370,6 +370,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_avrg(wcum,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -388,7 +389,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optci.h'
 
       dimension oav(MXCITERM),deav(MXCITERM)
@@ -421,6 +421,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_fin(iblk,passes,etot)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -438,7 +439,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optci.h'
 
       dimension deav(MXCITERM)
@@ -540,6 +540,7 @@ c h_0,0, h_0,ci, h_ci,0, s_0,ci, s_ci,0
 
 c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -555,7 +556,6 @@ c-----------------------------------------------------------------------
 
 
 c compute averages and print then out
-      include 'force.h'
       include 'optci.h'
 
       common /icount_ci/ icount_ci
@@ -643,6 +643,7 @@ c     print the OkEL
 c-----------------------------------------------------------------------
       subroutine optci_define
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -660,7 +661,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'optci.h'
 
       nciprim = ndet

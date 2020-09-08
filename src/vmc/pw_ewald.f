@@ -1,6 +1,7 @@
       subroutine set_ewald
 c Written by Cyrus Umrigar
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
       use vmc, only: MCTYPE
@@ -27,7 +28,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'force.h'
       include 'pseudo.h'
 
       parameter (eps=1.d-12)
@@ -1737,6 +1737,7 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald_old
 c Written by Cyrus Umrigar
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use atom, only: znuc, cent, pecent, iwctype, ncent
 
       use ewald, only: b_coul, y_coul
@@ -1750,7 +1751,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'force.h'
       include 'pseudo.h'
 
 
@@ -1785,6 +1785,7 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald
 c Written by Cyrus Umrigar
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use atom, only: znuc, cent, pecent, iwctype, ncent
 
       use ewald, only: b_coul, y_coul
@@ -1799,7 +1800,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'force.h'
       include 'pseudo.h'
 
 
@@ -1838,6 +1838,7 @@ c-----------------------------------------------------------------------
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MCENT
       use vmc, only: MMAT_DIM2
       use atom, only: znuc, cent, iwctype, ncent
@@ -1859,7 +1860,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'force.h'
       include 'pseudo.h'
 
 
@@ -1918,6 +1918,7 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MCENT
       use vmc, only: MMAT_DIM2
       use const, only: nelec, ipr
@@ -1933,7 +1934,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'force.h'
       include 'pseudo.h'
 
 

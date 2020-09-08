@@ -1,5 +1,6 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MDET, MCENT
       use vmc, only: MMAT_DIM
       use atom, only: iwctype, ncent
@@ -26,7 +27,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       parameter (one=1.d0)
 
-      include 'force.h'
       include 'pseudo.h'
       include 'optjas.h'
       include 'optorb.h'
@@ -233,6 +233,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MCENT
       use atom, only: cent, ncent
       use contrl_per, only: iperiodic
@@ -243,7 +244,6 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0)
 
-      include 'force.h'
       include 'pseudo.h'
 
       dimension x(3),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
@@ -290,6 +290,7 @@ c-----------------------------------------------------------------------
       subroutine orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MCENT
       use atom, only: iwctype, ncent
 
@@ -302,7 +303,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -373,6 +373,7 @@ c-----------------------------------------------------------------------
       subroutine nonlocd(iel,orb,detu,detd,slmui,slmdi,ratio)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MMAT_DIM
       use elec, only: ndn, nup
       use multidet, only: kref
@@ -383,7 +384,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
 
 
-      include 'force.h'
 
 
 
@@ -415,6 +415,7 @@ c-----------------------------------------------------------------------
       subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MCENT
       use atom, only: iwctype, ncent
 
@@ -430,7 +431,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
 
       parameter (half=.5d0)
 
@@ -532,6 +532,7 @@ c-----------------------------------------------------------------------
       subroutine compute_da_bnl(i,ic,ict,iq,r_en_sav,rvec_en_sav,costh,
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MORB, MCENT
       use atom, only: ncent
       use Bloc_da, only: db
@@ -545,7 +546,6 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0)
 
-      include 'force.h'
       include 'pseudo.h'
 
       dimension rvec_en_sav(3,MCENT),r_en_sav(MCENT)

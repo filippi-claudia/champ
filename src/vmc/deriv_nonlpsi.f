@@ -1,6 +1,7 @@
       function deriv_psinl(u,rshifti,rshiftj,rri,rrj,gn,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -19,7 +20,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
 
 
-      include 'force.h'
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
@@ -100,6 +100,7 @@ c                 jj=jj+1
 c-----------------------------------------------------------------------
       function deriv_psianl(rri,gn,it)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -115,7 +116,6 @@ c-----------------------------------------------------------------------
       use contr2, only: ijas
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       parameter(one=1.d0)
 
@@ -161,6 +161,7 @@ c written for general iwf, whereas others (asymp_r) assume iwf=1.
 c-----------------------------------------------------------------------
       function deriv_psibnl(u,gn,isb,ipar)
 
+      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc, only: radmax, delri
@@ -185,7 +186,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'force.h'
 
       parameter(one=1.d0)
 
