@@ -1145,6 +1145,21 @@ end module forcewt
    save
  end module ghostatom
 
+ module optorb_mod
+  ! flags and dimensions for orbital optimization
+  !
+  ! maximal number of terms, max dim of reduced matrices
+  integer, parameter :: MXORBOP=8000
+  integer, parameter :: MXREDUCED=1
+  integer, parameter :: MXMATDIM=MXREDUCED*(MXREDUCED+1)
+  integer, parameter :: MXMATDIM2=MXMATDIM/2
+  integer, parameter :: MXREP=10
+  private
+  public :: MXORBOP, MXREDUCED, MXMATDIM, MXMATDIM2, MXREP
+  save
+ end module optorb_mod
+
+
  module gradhess_all
    !> Arguments: MPARMALL, grad, h, s
    use optjas, only: MPARMJ
