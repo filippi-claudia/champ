@@ -260,9 +260,25 @@
    save
  end module chck
 
+ module optci
+  !> Arguments:
+  !     flags and dimensions for generalized CI expectation values
+  !     maximal number of terms, max dim of reduced matrices
+  integer, parameter :: MXCITERM=5000
+  integer, parameter :: MXCIREDUCED=1
+  integer, parameter :: MXCIMATDIM=MXCITERM*(MXCIREDUCED+1)/2
+
+  private
+  public :: MXCITERM, MXCIREDUCED, MXCIMATDIM
+  save 
+ end module optci
+  
  module ci000
    !> Arguments: iciprt, nciprim, nciterm
- 
+   !     iciprt : print flag 
+   !     nciterm: number of terms (possibly after a transformation)
+   !     nciprim: number of primitive terms (determinant ratios)
+   
    integer  :: iciprt
    integer  :: nciprim
    integer  :: nciterm
