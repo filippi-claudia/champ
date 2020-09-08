@@ -3236,6 +3236,7 @@ module spc2
  end module step
 
  module svd_mod
+  ! Not used anywhere !
   !> Arguments:
   integer, parameter :: MBUF=10000
   integer, parameter :: MXDIM=3000
@@ -3243,7 +3244,7 @@ module spc2
   public :: MBUF, MXDIM 
   save 
  end module svd_mod 
- 
+
  module tempor
    !> Arguments: dist_nn
    use precision_kinds, only: dp
