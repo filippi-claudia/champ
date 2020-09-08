@@ -102,7 +102,6 @@ c and Anthony Scemema
 
       include 'dmc.h'
       include 'pseudo.h'
-      include 'numbas.h'
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
@@ -1113,6 +1112,7 @@ C$INPUT basis inp i
 CKEYDOC Basis function types and pointers to radial parts tables
 C$INPUT qmc_bf_info inp i
 CKEYDOC alternative name for keyword basis because of GAMBLE input
+      use numbas_mod, only: MRWF
       use vmc, only: MCTYPE
       use numbas, only: iwrwf, numr
       use numbas1, only: iwlbas, nbastyp
@@ -1124,7 +1124,6 @@ CKEYDOC alternative name for keyword basis because of GAMBLE input
       implicit real*8(a-h,o-z)
 
 
-      include 'numbas.h'
 
       call p2gti('atoms:nctype',nctype,1)
       call p2gtid('atoms:addghostype',newghostype,0,1)
@@ -1430,7 +1429,6 @@ c Check that the required blocks are there in the input
       implicit real*8(a-h,o-z)
 
 
-      include 'numbas.h'
       include 'optci.h'
       include 'optorb.h'
 
@@ -1546,7 +1544,6 @@ c Set the exponents to one when using a numerical basis
 
       implicit real*8(a-h,o-z)
 
-      include 'numbas.h'
 
 
       call p2gtid('general:nwftype',nwftype,1,1)
@@ -1691,7 +1688,6 @@ C$INPUT jasderiv inp
 
 
       include 'optjas.h'
-      include 'numbas.h'
 
 
 

@@ -1,12 +1,6 @@
       subroutine optwf_matrix_corsamp
 c written by Claudia Filippi
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
       use forcepar, only: nforce
       use numbas, only: numr
@@ -21,7 +15,6 @@ c written by Claudia Filippi
       include 'optjas.h'
       include 'optci.h'
       include 'optorb.h'
-      include 'numbas.h'
 
       parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
       parameter(MWORK=50*MPARMALL)
@@ -541,12 +534,6 @@ c Always increase nblk by a factor of 2 every other iteration
 c-----------------------------------------------------------------------
       subroutine quad_min
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use optwf_corsam, only: add_diag, energy, force, force_err
       implicit real*8(a-h,o-z)
 
@@ -635,12 +622,6 @@ c Solve linear equations
 c-----------------------------------------------------------------------
       subroutine combine_derivatives
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
       use gradhess_ci, only: h_ci, s_ci
       use gradhess_jas, only: h_jas, s_jas
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci

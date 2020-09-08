@@ -4,7 +4,6 @@ c Reads in localized orbitals, in either
 c Modified by A. Scemama (printing in a GAMESS-like format)
 c 1) a slater basis
 c 2) a gaussian basis
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
       use atom, only: znuc, iwctype, nctype, ncent
       use ghostatom, only: newghostype
       use const, only: nelec
@@ -20,7 +19,6 @@ c 2) a gaussian basis
       parameter(nprime=10)
 
       include 'pseudo.h'
-      include 'numbas.h'
 
 
 c Check that nbasis in lcao matches specified basis on all centers

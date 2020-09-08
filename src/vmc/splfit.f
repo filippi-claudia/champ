@@ -3,19 +3,13 @@ c Written by Claudia Filippi
 c get spline_fit at r of basis fn irb of center ic and force iwf
 c 1st and 2nd derivs also calculated if ider=1.
 
-      use force, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc, only: NCOEF
       use numbas, only: arg, d2rwf, igrid, nr, r0, rwf
 
       use numexp, only: ae, ce
       implicit real*8(a-h,o-z)
 
 
-      include 'numbas.h'
 
       parameter(sixth=1.d0/6.d0)
 
