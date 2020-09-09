@@ -1,3 +1,4 @@
+#!/bin/bash
 #SBATCH -p short                   # partition (queue)
 ##SBATCH -p normal                   # partition (queue)
 ##SBATCH -N 2                      # number of nodes
@@ -14,12 +15,12 @@ module load pre2019
 module load intel/2018b mpi/impi/18.0.4
 SRC=/home/plopez/Programs/champ/bin
 JOBNAME=$(echo $1 | sed s/\.inp//g)
-echo "JOBNAME is: $JOBNAME"
+echo "JOBNAME is: $JOBNAME" 
 ######## LOAD MODULES  #########
 date
  ls -l
  beginning=`date +%s`
- srun  $SRC/vmc.mov1  < $JOBNAME.inp > $JOBNAME.out
+ srun  $SRC/vmc.mov1  < $JOBNAME.inp > $JOBNAME.out 
  end=`date +%s`
  ls -l
 date
@@ -32,3 +33,4 @@ date
   echo "Job execution "human" time:" >> $JOBNAME.out
   echo $hour hours $min minutes $sec seconds >> $JOBNAME.out
   echo "---------------------------------------" >> $JOBNAME.out
+#
