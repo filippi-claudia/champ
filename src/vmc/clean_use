@@ -1,15 +1,11 @@
 #!/bin/bash
 
-
-include_name=svd.h
-module_name=svd_mod
-for file in $(grep -l -F svd.h *.f*); do
-	echo $file $include_name $module_name;
-	~/refac/refac/replace_include_by_module.py $file $include_name m_common.f90 $module_name -ow
-	~/refac/refac/clean_use.py $file -ow
-	
-	#cd ../../build
-	#make
-	#([ $? -eq 0 ] && echo "success") || exit $?
-	#cd ../src/vmc
+for file in $(ls -d *.f); do
+	#echo $file;
+	~/refac/refac/fix_case_issue.py $file m_common.f90
+	# ~/refac/refac/clean_use.py $file -ow
+	# cd ../../build
+	# make
+	# ([ $? -eq 0 ] && echo "success") || exit $?
+	# cd ../src/vmc
 done

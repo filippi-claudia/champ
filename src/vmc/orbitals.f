@@ -18,7 +18,7 @@ c Modified by A. Scemama
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      dimension bhin(melec,mbasis),dbhin(3*melec,mbasis),d2bhin(melec,mbasis)
+      dimension bhin(MELEC,MBASIS),dbhin(3*MELEC,MBASIS),d2bhin(MELEC,MBASIS)
 
       ier=1
       if(iperiodic.eq.0) then
@@ -101,9 +101,9 @@ c          enddo
 c          d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
 c         enddo
 c        enddo
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   melec,  coef(1,1,iwf),mbasis,0.d0,orb,   melec)
-c        call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*melec,  coef(1,1,iwf),mbasis,0.d0,dorb,3*melec)
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, melec,  coef(1,1,iwf),mbasis,0.d0,ddorb, melec)
+c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   MELEC,  coef(1,1,iwf),MBASIS,0.d0,orb,   MELEC)
+c        call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*MELEC,  coef(1,1,iwf),MBASIS,0.d0,dorb,3*MELEC)
+c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, MELEC,  coef(1,1,iwf),MBASIS,0.d0,ddorb, MELEC)
          do 26 iorb=1,norb+nadorb
            do 26 i=1,nelec
             orb(i,iorb)=0
@@ -156,7 +156,7 @@ c assuming that basis function values in phin are up to date
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      dimension bhin(melec,mbasis),dbhin(3,melec,mbasis),d2bhin(melec,mbasis)
+      dimension bhin(MELEC,MBASIS),dbhin(3,MELEC,MBASIS),d2bhin(MELEC,MBASIS)
 
       if (nadorb.eq.0.or.(ioptorb.eq.0.and.ioptci.eq.0)) return
 
@@ -169,15 +169,15 @@ c primary geometry only:
       endif
 
       do i=1,nelec
-        call dcopy(nbasis,phin(1,i),1,bhin(i,1),melec)
-        call dcopy(nbasis,dphin(1,1,i),3,dbhin(1,i,1),3*melec)
-        call dcopy(nbasis,dphin(2,1,i),3,dbhin(2,i,1),3*melec)
-        call dcopy(nbasis,dphin(3,1,i),3,dbhin(3,i,1),3*melec)
-        call dcopy(nbasis,d2phin(1,i),1,d2bhin(i,1),melec)
+        call dcopy(nbasis,phin(1,i),1,bhin(i,1),MELEC)
+        call dcopy(nbasis,dphin(1,1,i),3,dbhin(1,i,1),3*MELEC)
+        call dcopy(nbasis,dphin(2,1,i),3,dbhin(2,i,1),3*MELEC)
+        call dcopy(nbasis,dphin(3,1,i),3,dbhin(3,i,1),3*MELEC)
+        call dcopy(nbasis,d2phin(1,i),1,d2bhin(i,1),MELEC)
       enddo
-      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,  bhin,  melec,coef(1,norb+1,iwf),mbasis,0.d0,  orb(  1,norb+1),  melec)
-      call dgemm('n','n',3*nelec,nadorb,nbasis,1.d0, dbhin,3*melec,coef(1,norb+1,iwf),mbasis,0.d0, dorb(1,1,norb+1),3*melec)
-      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,d2bhin,  melec,coef(1,norb+1,iwf),mbasis,0.d0,ddorb(  1,norb+1),  melec)
+      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,  bhin,  MELEC,coef(1,norb+1,iwf),MBASIS,0.d0,  orb(  1,norb+1),  MELEC)
+      call dgemm('n','n',3*nelec,nadorb,nbasis,1.d0, dbhin,3*MELEC,coef(1,norb+1,iwf),MBASIS,0.d0, dorb(1,1,norb+1),3*MELEC)
+      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,d2bhin,  MELEC,coef(1,norb+1,iwf),MBASIS,0.d0,ddorb(  1,norb+1),  MELEC)
 
 c     do 25 iorb=norb+1,norb+nadorb
 c       do 25 i=1,nelec
@@ -233,13 +233,13 @@ c-------------------------------------------------------------------------------
        enddo
       enddo
       n=3*nelec
-      m=3*melec
+      m=3*MELEC
       do 50 ic=1,ncent
         k=ibas1(ic)-ibas0(ic)+1
         j=ibas0(ic)
-      call dgemm('n','n',  n,norb,k,-1.d0,tphin(1,j)     ,  m,coef(j,1,iwf),mbasis,0.d0,da_orb(1,1,1,ic)   ,  m)
-      call dgemm('n','n',  n,norb,k,-1.d0,t3phin(1,j)    ,  m,coef(j,1,iwf),mbasis,0.d0,da_d2orb(1,1,1,ic) ,  m)
-  50  call dgemm('n','n',3*n,norb,k,-1.d0,t2phin_all(1,j),3*m,coef(j,1,iwf),mbasis,0.d0,da_dorb(1,1,1,1,ic),3*m)
+      call dgemm('n','n',  n,norb,k,-1.d0,tphin(1,j)     ,  m,coef(j,1,iwf),MBASIS,0.d0,da_orb(1,1,1,ic)   ,  m)
+      call dgemm('n','n',  n,norb,k,-1.d0,t3phin(1,j)    ,  m,coef(j,1,iwf),MBASIS,0.d0,da_d2orb(1,1,1,ic) ,  m)
+  50  call dgemm('n','n',3*n,norb,k,-1.d0,t2phin_all(1,j),3*m,coef(j,1,iwf),MBASIS,0.d0,da_dorb(1,1,1,1,ic),3*m)
 
       return
       end

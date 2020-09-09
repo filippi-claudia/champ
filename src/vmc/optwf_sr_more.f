@@ -506,7 +506,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       dimension cloc(MTEST,MTEST),c(MTEST,MTEST),oloc(MPARM),o(MPARM),p(MPARM),tmp(MPARM)
       dimension ipvt(MTEST),work(MTEST)
 
-      if(nparm.gt.MTEST) stop 'mparm>MTEST'
+      if(nparm.gt.MTEST) stop 'MPARM>MTEST'
 
       jwtg=1
       jelo=2

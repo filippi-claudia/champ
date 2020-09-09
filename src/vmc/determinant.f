@@ -195,12 +195,12 @@ c compute derivative of kinetic contribution of B+Btilde wrt nuclear coordinates
         do ic=1,ncent
           do i=1,nelec
             do l=1,3
-              call daxpy(norb,2*vj(1,i),da_dorb(l,1,i,1,ic),9*melec,b_da(l,i,1,ic),3*melec)
-              call daxpy(norb,2*vj(2,i),da_dorb(l,2,i,1,ic),9*melec,b_da(l,i,1,ic),3*melec)
-              call daxpy(norb,2*vj(3,i),da_dorb(l,3,i,1,ic),9*melec,b_da(l,i,1,ic),3*melec)
-              call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1,i,1),3*melec,b_da(l,i,1,ic),3*melec)
-              call daxpy(norb,2*da_vj(l,2,i,ic),dorb(2,i,1),3*melec,b_da(l,i,1,ic),3*melec)
-              call daxpy(norb,2*da_vj(l,3,i,ic),dorb(3,i,1),3*melec,b_da(l,i,1,ic),3*melec)
+              call daxpy(norb,2*vj(1,i),da_dorb(l,1,i,1,ic),9*MELEC,b_da(l,i,1,ic),3*MELEC)
+              call daxpy(norb,2*vj(2,i),da_dorb(l,2,i,1,ic),9*MELEC,b_da(l,i,1,ic),3*MELEC)
+              call daxpy(norb,2*vj(3,i),da_dorb(l,3,i,1,ic),9*MELEC,b_da(l,i,1,ic),3*MELEC)
+              call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1,i,1),3*MELEC,b_da(l,i,1,ic),3*MELEC)
+              call daxpy(norb,2*da_vj(l,2,i,ic),dorb(2,i,1),3*MELEC,b_da(l,i,1,ic),3*MELEC)
+              call daxpy(norb,2*da_vj(l,3,i,ic),dorb(3,i,1),3*MELEC,b_da(l,i,1,ic),3*MELEC)
               do iorb=1,norb
                 b_da(l,i,iorb,ic)=-hb*b_da(l,i,iorb,ic)
               enddo

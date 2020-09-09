@@ -19,7 +19,7 @@ c mpif.h is system, mpi_qmc.h is ours
       call mpi_comm_rank(MPI_COMM_WORLD,idtask,ierr)
       call mpi_comm_size(MPI_COMM_WORLD,nproc,ierr)
 
-      if(nproc.gt.nprocx) stop 'nproc>nprocx in main'
+      if(nproc.gt.NPROCX) stop 'nproc>NPROCX in main'
 
       wid=(idtask.eq.0)
 
