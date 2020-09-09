@@ -1042,7 +1042,7 @@ end module forcewt
    include 'optci.h'
    include 'optorb.h'
 
-   parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
+   integer, parameter :: MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED
    real(dp) :: grad(MPARMALL)
    real(dp) :: h(MPARMALL,MPARMALL)
    real(dp) :: s(MPARMALL,MPARMALL)
