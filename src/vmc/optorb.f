@@ -125,7 +125,7 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_030, only: orb_ecum, orb_wcum
       
-      use optorb_cblock, only isample_cmat, nreduced
+      use optorb_cblock, only: isample_cmat, nreduced
 
       implicit real*8(a-h,o-z)
 

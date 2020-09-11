@@ -1,12 +1,14 @@
 c-----------------------------------------------------------------------
       subroutine fetch_parameters(p)
-      implicit real*8(a-h,o-z)
-
-      dimension p(*)
 
       ! this was not in master but I think it's needed
       ! this is so confusng ... 
       use optwf_contrl, only: nparm
+      
+      implicit real*8(a-h,o-z)
+
+      dimension p(*)
+      
 
       n=0
 

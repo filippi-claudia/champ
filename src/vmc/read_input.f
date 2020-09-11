@@ -946,7 +946,7 @@ CKEYDOC position and type for each atom and ghost atom
 
       use vmc, only: MCENT
       use atom, only: cent, iwctype, ncent
-      use ghostatom, only: newghostcent
+      use ghostatom, only: nghostcent
       use inputflags, only: igeometry
 
       implicit real*8(a-h,o-z)
@@ -1438,18 +1438,18 @@ c Check that the required blocks are there in the input
       use inputflags, only: ihessian_zmat
 
       use mstates_ctrl, only: iguiding
-      implicit real*8(a-h,o-z)
+
 
       ! might not be needed
       use mstates_mod, only: MSTATES
       use atom, only: znuc 
-      use contrl_per only: iperiodic, ibasis
+      use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy, iuse_zmat
       use forcepar, only: nforce
       use optwf_contrl, only: ioptci, ioptorb
-      use wfsec, only nwftype
+      use wfsec, only: nwftype
 
-      
+      implicit real*8(a-h,o-z)      
 
 
 
