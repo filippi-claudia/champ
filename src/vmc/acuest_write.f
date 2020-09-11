@@ -35,11 +35,11 @@ c write out header first time
      &,t108,''accept'',t119,''iter'')')
 
 c write out current values of averages
-      denom=dfloat(nstep*iblk)
+      acc_denom=dfloat(nstep*iblk)
       if(index(mode,'mov1').eq.0) then
-        accept=acc/denom
+        accept=acc/acc_denom
        else
-        accept=acc/(denom*nelec)
+        accept=acc/(acc_denom*nelec)
       endif
 
       do 25 ifr=1,nforce

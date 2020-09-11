@@ -36,6 +36,10 @@ c job where it left off
       use basis, only: nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
 
       use mstates_ctrl, only: iguiding
+
+      ! I'm 50% sure it's needed
+      ! it was in master as part of the include optorb.h 
+      use optorb_cblock, only: ns_current
       implicit real*8(a-h,o-z)
 
 

@@ -21,6 +21,7 @@
 
       if(ioptorb.eq.0) return
 
+      
 c     ns_current=ns_current+1
 c     if(ns_current.ne.iorbsample) return
 c ns_current reset in optorb_sum
@@ -123,6 +124,8 @@ c-----------------------------------------------------------------------
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_030, only: orb_ecum, orb_wcum
+      
+      use optorb_cblock, only isample_cmat, nreduced
 
       implicit real*8(a-h,o-z)
 
@@ -228,6 +231,8 @@ c-----------------------------------------------------------------------
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
       use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
 
+      use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
+
       implicit real*8(a-h,o-z)
 
 
@@ -292,6 +297,8 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
       use orb_mat_030, only: orb_ecum, orb_wcum
+
+      use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
 
       implicit real*8(a-h,o-z)
 
@@ -415,6 +422,8 @@ c-----------------------------------------------------------------------
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
 
+      use optorb_cblock, only:  norb_f_bcum
+
       implicit real*8(a-h,o-z)
 
 
@@ -447,6 +456,8 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
+
+      use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
 
       implicit real*8(a-h,o-z)
 
@@ -486,9 +497,9 @@ c-----------------------------------------------------------------------
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
 
+      use optorb_cblock, only: nreduced, nefp_blocks, norb_f_bcum
+
       implicit real*8(a-h,o-z)
-
-
 
 
       if(ioptorb.eq.0) return
@@ -540,6 +551,8 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
 
       use method_opt, only: method
+
+      use optorb_cblock, only: nreduced
 
       implicit real*8(a-h,o-z)
 
@@ -756,9 +769,9 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+
       implicit real*8(a-h,o-z)
-
-
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb

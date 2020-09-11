@@ -56,6 +56,10 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
 
+      ! was not declared in master but is only used
+      ! to read variable ... 
+      use contr2, only: ianalyt_lap, ijas, ifock
+
       implicit real*8(a-h,o-z)
 
 
@@ -166,10 +170,6 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci
       use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
-
-
-
-
 
 
 
@@ -841,7 +841,8 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
-      use optorb_cblock, only: norbterm
+      use optorb_cblock, only: norbterm, nreduced
+      
       use ci000, only: nciterm
 
       implicit real*8(a-h,o-z)

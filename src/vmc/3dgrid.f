@@ -173,6 +173,7 @@ c----------------------------------------------------------------------
 
       use grid_mod, only: grid3d
       use atom, only: znuc, cent, iwctype, ncent
+      use ghostatom, only: nghostcent
       use grid3d_param, only: nstep3d, origin, step3d
 
       implicit real*8(a-h,o-z)

@@ -96,6 +96,7 @@ c and Anthony Scemema
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nefp_blocks, isample_cmat, iorbsample
       implicit real*8(a-h,o-z)
 
 
@@ -875,6 +876,7 @@ CKEYDOC nuclear charge for each atom type and ghost type
 
       use vmc, only: MCTYPE
       use atom, only: znuc, nctype
+      use ghostatom, only: newghostype
       use inputflags, only: iznuc
 
       implicit real*8(a-h,o-z)
@@ -905,6 +907,10 @@ CKEYDOC filename: file containing orbitals coefficients
       use inputflags, only: ilcao
 
       use pcm_fdc, only: fs
+
+      ! was not in master but is needed
+      use wfsec, only: nwftype 
+
       implicit real*8(a-h,o-z)
 
 
@@ -940,6 +946,7 @@ CKEYDOC position and type for each atom and ghost atom
 
       use vmc, only: MCENT
       use atom, only: cent, iwctype, ncent
+      use ghostatom, only: newghostcent
       use inputflags, only: igeometry
 
       implicit real*8(a-h,o-z)
@@ -986,6 +993,8 @@ CKEYDOC CI coefficients and occupation of determinants in wf
       use dorb_m, only: iworbd
       use inputflags, only: ideterminants
 
+      ! not sure if needed but it's called
+      use const, only: nelec
       implicit real*8(a-h,o-z)
 
 
@@ -1051,6 +1060,8 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       use contr2, only: isc
       use inputflags, only: ijastrow_parameter
 
+      use atom, only: ncent, nctype
+      
       implicit real*8(a-h,o-z)
 
 
@@ -1117,6 +1128,9 @@ CKEYDOC alternative name for keyword basis because of GAMBLE input
       use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
       use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
       use inputflags, only: ibasis_num
+
+      use atom, only: nctype
+      use ghostatom, only: newghostype
 
       implicit real*8(a-h,o-z)
 
@@ -1254,6 +1268,8 @@ CKEYDOC Displacement parameters and wave function types
       use forcestr, only: delc
       use wfsec, only: iwftype
       use inputflags, only: iforces
+
+      use atom, only: ncent
 
       implicit real*8(a-h,o-z)
 
@@ -1424,6 +1440,17 @@ c Check that the required blocks are there in the input
       use mstates_ctrl, only: iguiding
       implicit real*8(a-h,o-z)
 
+      ! might not be needed
+      use mstates_mod, only: MSTATES
+      use atom, only: znuc 
+      use contrl_per only: iperiodic, ibasis
+      use force_analy, only: iforce_analy, iuse_zmat
+      use forcepar, only: nforce
+      use optwf_contrl, only: ioptci, ioptorb
+      use wfsec, only nwftype
+
+      
+
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -1516,6 +1543,8 @@ c Check that the required blocks are there in the input
 
       use ci000, only: nciprim, nciterm
 
+      ! are they needed ??!!
+      use optwf_contrl, only: ioptci
       implicit real*8(a-h,o-z)
 
 
@@ -1534,6 +1563,10 @@ c Set the exponents to one when using a numerical basis
       use numbas, only: numr
       use coefs, only: nbasis
       use basis, only: zex
+
+      ! are they needed ??!!
+      use contrl_per, only: iperiodic
+      use wfsec, only: nwftype
 
       implicit real*8(a-h,o-z)
 
@@ -1590,6 +1623,8 @@ c Set the jastrow to be equal
       use contr2, only: ifock, ijas
       use contr2, only: isc
 
+      use atom, only: ncent, nctype
+
       implicit real*8(a-h,o-z)
 
 
@@ -1627,6 +1662,9 @@ c Set all force displacements to zero
       use vmc, only: MCENT
       use forcepar, only: nforce
       use wfsec, only: iwftype, nwftype
+
+      use atom, only: ncent
+
       implicit real*8(a-h,o-z)
 
 
@@ -1986,6 +2024,8 @@ c     Written by Omar Valsson
       use wfsec, only: iwftype
       use inputflags, only: igradients
 
+      use atom, only: ncent
+
       implicit real*8(a-h,o-z)
 
 
@@ -2051,6 +2091,8 @@ c      Written by Omar Valsson.
       use wfsec, only: iwftype
       use inputflags, only: igradients
 
+      use atom, only: ncent
+
       implicit real*8(a-h,o-z)
 
 
@@ -2113,6 +2155,8 @@ CKEYDOC atoms energy gradients are to be calculated for.
       use grdntsmv, only: igrdmv
       use inputflags, only: imodify_zmat
 
+      use atom, only: ncent
+
       implicit real*8(a-h,o-z)
 
 
@@ -2143,6 +2187,7 @@ CKEYDOC atoms energy gradients are to be calculated for.
       use vmc, only: MCENT
       use grdnthes, only: hessian_zmat
       use inputflags, only: ihessian_zmat
+      use atom, only: ncent
 
       implicit real*8(a-h,o-z)
 
@@ -2249,6 +2294,9 @@ c-----------------------------------------------------------------------
       use pcm_force, only: sch_s
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, nchs
+
+      use atom, only: ncent
+
       implicit real*8(a-h,o-z)
 
 
@@ -2278,7 +2326,7 @@ c-----------------------------------------------------------------------
 
       use vmc, only: MCENT
       use grdntsmv, only: igrdmv
-
+      use atom, only: ncent
       implicit real*8(a-h,o-z)
 
 
@@ -2296,6 +2344,8 @@ c-----------------------------------------------------------------------
 
       use vmc, only: MCENT
       use grdnthes, only: hessian_zmat
+      use atom, only: ncent
+      
 
       implicit real*8(a-h,o-z)
 
