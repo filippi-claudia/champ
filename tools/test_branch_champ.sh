@@ -13,14 +13,27 @@
 
 module load pre2019
 module load intel/2018b mpi/impi/18.0.4
-SRC=$HOME/champ/bin
 JOBNAME=$(echo $1 | sed s/\.inp//g)
+SRC_CUR=$2
+SRC_REF=$3
+
 echo "JOBNAME is: $JOBNAME"
+echo "CURRENT is: $SRC_CUR"
+echo "REF is    : $SRC_REF"
+
 ######## LOAD MODULES  #########
 date
  ls -l
  beginning=`date +%s`
- srun  $SRC/vmc.mov1  < $JOBNAME.inp > $JOBNAME.out
+
+ rm $JOBNAME.out
+
+ srun  $SRC_CUR/vmc.mov1  < $JOBNAME.inp > $JOBNAME.out
+ mv $JOBNAME.out $JOBNAME.cur.out
+
+ srun  $SRC_REF/vmc.mov1  < $JOBNAME.inp > $JOBNAME.out
+ mv $JOBNAME.out $JOBNAME.ref.out
+
  end=`date +%s`
  ls -l
 date
