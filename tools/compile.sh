@@ -1,21 +1,18 @@
 #! /bin/bash
-
-CHAMP=$HOME/champ 
-
-cd $CHAMP
 rm -rf build bin
 module load pre2019
 module load cmake/3.7.2 lapack/mkl blas/mkl intel/2018b mpi/impi/18.0.4
+/usr/bin/cp ./tests/psb3_cas66/include/* ./src/include ; \
 cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
 
-cd $CHAMP/tests/psb3_cas66 ; \
-cp $CHAMP/tools/test_champ.sh ./ ; \
+cd ./tests/psb3_cas66 ; \
+cp ../../tools/test_champ.sh ./ ; \
 
 ########### Test 1
 echo "" ; \
 echo "Running test 1: free.inp" ; \
-sbatch test_champ.cmd free.inp ; sleep 40 ; \
+sbatch test_champ.sh free.inp ; sleep 40 ; \
 grep "eigenvalue            1  :" free.out ; \
 echo "That should be:" ; \
 echo " eigenvalue            1  :   -43.4420580939622" ; \
@@ -23,7 +20,7 @@ echo "" ; \
 
 ########### Test 2
 echo "Running test 2: regterg.inp" ; \
-sbatch test_champ.cmd regterg.inp ; sleep 20 ; \
+sbatch test_champ.sh regterg.inp ; sleep 20 ; \
 grep "LIN_D: state, vec, energy   1   1" regterg.out ; \
 echo "That should be:" ; \
 echo "LIN_D: state, vec, energy   1   1   -43.51855     0.10377" ; \
@@ -31,7 +28,7 @@ echo "" ; \
 
 ########### Test 3
 echo "Running test 3:" ; \
-sbatch test_champ.cmd sr_n.inp ; sleep 20 ; \
+sbatch test_champ.sh sr_n.inp ; sleep 20 ; \
 grep "delta0" sr_n.out ; \
 echo "That should be:" ; \
 echo "delta0 =   0.888765908731205" ; \
@@ -42,12 +39,17 @@ echo "Running test 4:" ; \
 cd $CHAMP/tests/butadiene-3wfs/TZ-1M-128 ; \
 cp $CHAMP/tools/test_champ.sh ./ ; \
 sbatch test_champ.cmd vmc_optall.inp ; sleep 180 ; \
+>>>>>>> origin/refac-problematic
 grep "total E =" vmc_optall.out | cut -f 1-11 -d  " " ; \
 echo "That should be:" ; \
 echo "totalE=-26.1345117" ; \
 echo "totalE=-26.1560896" ; \
 echo "totalE=-26.1885011" ; \
+<<<<<<< HEAD
 echo "totalE=-26.2094842"
+=======
+echo "totalE=-26.2094842" 
+>>>>>>> origin/refac-problematic
 echo "" ; \
 
 ########### Test 5
