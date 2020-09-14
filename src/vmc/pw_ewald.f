@@ -1,6 +1,10 @@
       subroutine set_ewald
 c Written by Cyrus Umrigar
 
+      use pseudo_mod, only: MPS_L, MPS_GRID
+      use ewald_mod, only: NGNORMX, NGVECX, NG1DX
+      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
+      use vmc, only: MCTYPE
       use atom, only: znuc, pecent, iwctype, nctype, ncent
       use const, only: pi, ipr
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
@@ -24,10 +28,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'ewald.h'
-      include 'pseudo.h'
 
       parameter (eps=1.d-12)
 
@@ -701,6 +701,8 @@ c-----------------------------------------------------------------------
 
       subroutine shells(cutg,glatt,gdist,igvec,gvec,gnorm,igmult,ngvec_big,
      & ngnorm_big,ng1d,icell)
+      use ewald_mod, only: NGVEC_BIGX
+      use ewald_mod, only: NGVEC_SIM_BIGX
 c Written by Cyrus Umrigar
 
 c icell = 0  primitive cell
@@ -708,7 +710,6 @@ c         1  simulation cell
 
       implicit real*8(a-h,o-z)
 
-      include 'ewald.h'
 
       dimension glatt(3,*),gdist(3),igvec(3,*),gvec(3,*),gnorm(*),igmult(*),ng1d(*)
       dimension gnorm_tmp(NGVEC_SIM_BIGX)
@@ -768,12 +769,13 @@ c         do 10 i3=-ng1d(3),ng1d(3)
 c-----------------------------------------------------------------------
 
       subroutine sort(igvec,gvec,gnorm_tmp,gnorm,igmult,ngvec_big,ngnorm_big,icell)
+      use ewald_mod, only: NGNORM_BIGX
+      use ewald_mod, only: NGNORM_SIM_BIGX
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
       parameter(eps=1.d-12)
 
-      include 'ewald.h'
 
       dimension igvec(3,*),gvec(3,*),gnorm_tmp(*),gnorm(*),igmult(*)
 
@@ -846,6 +848,7 @@ c related by primitive cell reciprocal lattice vectors to inverses of
 c other vectors.  We should come back to the issue of whether that is
 c a symmetry one could use later on.
 
+      use ewald_mod, only: NSYM
       use periodic, only: cutg, cutg_sim
       use periodic, only: glatt_inv, gvec, gvec_sim, igvec_sim
       use periodic, only: k_inv, kvec
@@ -855,8 +858,6 @@ c a symmetry one could use later on.
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'ewald.h'
       parameter (eps=1.d-6)
 
 
@@ -958,12 +959,12 @@ c Note: vps_short overwritten
 c g > 0 (4pi/vcell)*(int r*vps_short*sin(g*r)*dr)/g
 c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
+      use pseudo_mod, only: MPS_GRID
+      use ewald_mod, only: NGNORM_BIGX
       use constant, only: twopi
       implicit real*8(a-h,o-z)
 
 
-      include 'ewald.h'
-      include 'pseudo.h'
 
 
       dimension r(*),vps_short(*),gnorm(*),y(MPS_GRID),vbare_psp(NGNORM_BIGX)
@@ -998,6 +999,7 @@ c-----------------------------------------------------------------------
      &,cutr,vcell,ncoef_per,np,b,y,chisq,ifcon,isrange)
 c Written by Cyrus Umrigar and Claudia Filippi
 
+      use ewald_mod, only: NCOEFX, NPX
       use constant, only: twopi
       implicit real*8(a-h,o-z)
 
@@ -1005,7 +1007,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
 c     parameter(NPX=6)
 
 
-      include 'ewald.h'
 
       dimension a(NCOEFX,NCOEFX),c(NCOEFX+NPX),work(NCOEFX)
       dimension v(*),b(*),y(*),igmult(*),gnorm(*)
@@ -1212,7 +1213,6 @@ c output coefficients c
 
       complex*16 ti,et,em
 
-      include 'ewald.h'
       parameter(NPTS=1001)
 
       dimension c(*),y(NPTS)
@@ -1282,12 +1282,12 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
+      use ewald_mod, only: NCOEFX, NPX
       use ewald_basis, only: vps_basis_fourier
       implicit real*8(a-h,o-z)
 
       complex*16 ti,et,em
 
-      include 'ewald.h'
       parameter(NPTS=1001)
 
       dimension c(*),d(NPX*(NCOEFX+1)),y(NPTS)
@@ -1359,12 +1359,12 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
+      use ewald_mod, only: NCOEFX, NPX
       use ewald_basis, only: vps_basis_fourier
       implicit real*8(a-h,o-z)
 
       complex*16 ti,et,em
 
-      include 'ewald.h'
       parameter(NPTS=1001)
 
       dimension c(*),d(NPX*(NCOEFX+1)),y(NPTS)
@@ -1446,7 +1446,6 @@ c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
 
       implicit real*8(a-h,o-z)
 
-      include 'ewald.h'
 
       dimension b(*)
 
@@ -1472,7 +1471,6 @@ c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
 
       implicit real*8(a-h,o-z)
 
-      include 'ewald.h'
 
       dimension b(*)
 
@@ -1504,7 +1502,6 @@ c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^np)^{i+1}, x=r/cutr
 
       implicit real*8(a-h,o-z)
 
-      include 'ewald.h'
 
       dimension b(*)
 
@@ -1537,7 +1534,6 @@ c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^{i+1})^np, x=r/cutr
 
       implicit real*8(a-h,o-z)
 
-      include 'ewald.h'
 
       dimension b(*)
 
@@ -1567,7 +1563,6 @@ c Written by Cyrus Umrigar
       implicit real*8(a-h,o-z)
 
 
-      include 'ewald.h'
 
       dimension rvec(3),gvec(3,*),gnorm(*),igmult(*),y(*)
 
@@ -1597,7 +1592,6 @@ c Written by Cyrus Umrigar
       implicit real*8(a-h,o-z)
 
 
-      include 'ewald.h'
 
       dimension rvec(3),gvec(3,*),gnorm(*),igmult(*),y(*)
 
@@ -1622,11 +1616,11 @@ c     write(6,'(''rr,ewald_pot_psp'',f8.4,9f9.5)') rr,-z*(2*ewald_pot_psp+y(1)),
       end
 c-----------------------------------------------------------------------
       function vlrange_old(rvec,gvec,ngnorm,igmult,y)
+      use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-      include 'ewald.h'
 
       dimension rvec(3),gvec(3,*),igmult(*),y(*)
 c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_SIM_BIGX)
@@ -1647,12 +1641,11 @@ c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_
 c-----------------------------------------------------------------------
 
       function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
+      use vmc, only: MELEC
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
 
       dimension znuc(*),iwctype(*),igmult(*),cos_g(MELEC,*),sin_g(MELEC,*),y(*)
 
@@ -1675,12 +1668,11 @@ c Written by Cyrus Umrigar
 c-----------------------------------------------------------------------
 
       function vlrange_ee_old2(nelec,ngnorm,igmult,cos_g,sin_g,y)
+      use vmc, only: MELEC
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
 
       dimension igmult(*),cos_g(MELEC,*),sin_g(MELEC,*),y(*)
 
@@ -1706,8 +1698,6 @@ c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
 
       dimension igmult(*),cos1_sum(*),cos2_sum(*),sin1_sum(*),sin2_sum(*),y(*)
 
@@ -1728,8 +1718,6 @@ c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
 
       dimension igmult(*),cos1_sum(*),cos2_sum(*),sin1_sum(*),sin2_sum(*)
 
@@ -1761,10 +1749,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'ewald.h'
-      include 'pseudo.h'
 
 
       dimension r(3)
@@ -1812,10 +1796,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'ewald.h'
-      include 'pseudo.h'
 
 
       dimension r(3)
@@ -1853,6 +1833,8 @@ c-----------------------------------------------------------------------
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
+      use vmc, only: MELEC, MCENT
+      use vmc, only: MMAT_DIM2
       use atom, only: znuc, cent, iwctype, ncent
 
       use const, only: nelec, ipr
@@ -1872,10 +1854,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'ewald.h'
-      include 'pseudo.h'
 
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
@@ -1933,6 +1911,8 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
+      use vmc, only: MELEC, MCENT
+      use vmc, only: MMAT_DIM2
       use const, only: nelec, ipr
       use ewald, only: b_coul_sim, y_coul_sim
 
@@ -1946,10 +1926,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'ewald.h'
-      include 'pseudo.h'
 
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
@@ -1988,12 +1964,12 @@ c     vl=vl+0.5d0*y_coul_sim(1)*nelec**2
 c-----------------------------------------------------------------------
 
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
+      use ewald_mod, only: NG1DX
+      use vmc, only: MELEC
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
 
       dimension glatt(3,3),igvec(3,*),r(3,*),cos_g(MELEC,*),sin_g(MELEC,*)
      &,ng1d(3)
@@ -2035,6 +2011,8 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_psi(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift,iflag)
+      use ewald_mod, only: NG1DX
+      use vmc, only: MELEC
 c Written by Cyrus Umrigar
 c iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positions.
@@ -2043,8 +2021,6 @@ c Presently using cossin_psi_g and cossin_psi_k instead.
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
 
       dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
      &,cos_g(MELEC,*),sin_g(MELEC,*)
@@ -2112,14 +2088,14 @@ c-----------------------------------------------------------------------
 c     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
+      use ewald_mod, only: NG1DX
+      use vmc, only: MELEC
 c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c Needed for orbitals and their Laplacian.
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
 
 c     dimension glatt(3,3),gnorm(*),igmult(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
 c    &,cos_g(MELEC,*),sin_g(MELEC,*)
@@ -2206,14 +2182,13 @@ c-----------------------------------------------------------------------
 c     subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
+      use vmc, only: MELEC
 c Written by Cyrus Umrigar
 c Needed for orbitals and their Laplacian.
 c For the k-vectors do it straightforwardly since there are few of them
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
 
 c     dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
 c    &,cos_g(MELEC,*),sin_g(MELEC,*)
@@ -2249,13 +2224,13 @@ c could be merged, but I did not do that to get a small gain in efficiency.
 c-----------------------------------------------------------------------
 
       subroutine cossin_n(znuc,iwctype,glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
+      use ewald_mod, only: NG1DX
+      use vmc, only: MCENT
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for nuclei
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
 
       dimension znuc(*),iwctype(*),glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,MCENT),sin_gr(-NG1DX:NG1DX,3,MCENT)
@@ -2298,13 +2273,13 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
 c-----------------------------------------------------------------------
 
       subroutine cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,r,nr,ng1d,cos_sum,sin_sum)
+      use ewald_mod, only: NGNORMX, NG1DX
+      use vmc, only: MCENT, MCTYPE
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
 
       dimension y_psp(NGNORMX,MCTYPE),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
      &,ng1d(3),cos_sum(*),sin_sum(*)
@@ -2351,13 +2326,13 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
 c-----------------------------------------------------------------------
 
       subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
+      use ewald_mod, only: NG1DX
+      use vmc, only: MELEC
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
 
       dimension glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,MELEC),sin_gr(-NG1DX:NG1DX,3,MELEC)

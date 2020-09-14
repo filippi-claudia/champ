@@ -1,5 +1,11 @@
       subroutine set_scale_dist(ipr)
 c Written by Cyrus Umrigar
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
 
       use jaspar, only: sspinn, is
@@ -19,8 +25,6 @@ c Written by Cyrus Umrigar
 
 
 
-      include 'vmc.h'
-      include 'force.h'
       parameter (third=1.d0/3.d0)
 
 
@@ -115,6 +119,12 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Scale interparticle distances.
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c, scalek
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
@@ -128,8 +138,6 @@ c Scale interparticle distances.
 
 
 
-      include 'vmc.h'
-      include 'force.h'
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
@@ -263,6 +271,12 @@ c Scale interparticle distances and calculate the 1st derivative
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c, scalek
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
@@ -276,8 +290,6 @@ c gradient and laplacian.
 
 
 
-      include 'vmc.h'
-      include 'force.h'
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
@@ -443,6 +455,12 @@ c Scale interparticle distances and calculate the 1st and 2nd derivs
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c, scalek
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
@@ -458,8 +476,6 @@ c gradient and laplacian.
 
 
 
-      include 'vmc.h'
-      include 'force.h'
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
@@ -651,6 +667,12 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist.
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c, scalek
 
       use jaspar6, only: c1_jas6
@@ -660,8 +682,6 @@ c that appropriate for C terms, for dist.
 
 
 
-      include 'vmc.h'
-      include 'force.h'
 
 
       rr=1-c1_jas6*scalek(iwf)*rr
@@ -674,6 +694,12 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st deriv.
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c, scalek
 
       use jaspar6, only: c1_jas6
@@ -683,8 +709,6 @@ c that appropriate for C terms, for dist and 1st deriv.
 
 
 
-      include 'vmc.h'
-      include 'force.h'
 
 
       rr=1-c1_jas6*scalek(iwf)*rr
@@ -698,6 +722,12 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st two derivs.
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c, scalek
 
       use jaspar6, only: c1_jas6
@@ -707,8 +737,6 @@ c that appropriate for C terms, for dist and 1st two derivs.
 
 
 
-      include 'vmc.h'
-      include 'force.h'
 
 
       rr=1-c1_jas6*scalek(iwf)*rr

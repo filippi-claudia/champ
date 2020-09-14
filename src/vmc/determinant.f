@@ -2,6 +2,8 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
+      use vmc, only: MELEC, MORB, MDET, MCENT
+      use vmc, only: MMAT_DIM
       use const, only: ipr
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -10,10 +12,6 @@ c Modified by A. Scemama
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'optjas.h'
-      include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
 
@@ -94,6 +92,7 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
+      use vmc, only: MELEC, MORB, MDET
       use const, only: ipr
       use estpsi, only: detref
       use multidet, only: kref
@@ -106,10 +105,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'optjas.h'
-      include 'mstates.h'
 
 
 
@@ -150,6 +145,7 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
+      use vmc, only: MELEC, MORB
       use atom, only: ncent
       use const, only: hb, nelec
       use da_jastrow4val, only: da_vj
@@ -161,15 +157,11 @@ c-----------------------------------------------------------------------
       use Bloc_dj, only: b_dj
       use coefs, only: norb
       use Bloc, only: b
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       use velocity_jastrow, only: vj
       
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'optjas.h'
-      include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
 
@@ -203,12 +195,12 @@ c compute derivative of kinetic contribution of B+Btilde wrt nuclear coordinates
         do ic=1,ncent
           do i=1,nelec
             do l=1,3
-              call daxpy(norb,2*vj(1,i),da_dorb(l,1,i,1,ic),9*melec,b_da(l,i,1,ic),3*melec)
-              call daxpy(norb,2*vj(2,i),da_dorb(l,2,i,1,ic),9*melec,b_da(l,i,1,ic),3*melec)
-              call daxpy(norb,2*vj(3,i),da_dorb(l,3,i,1,ic),9*melec,b_da(l,i,1,ic),3*melec)
-              call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1,i,1),3*melec,b_da(l,i,1,ic),3*melec)
-              call daxpy(norb,2*da_vj(l,2,i,ic),dorb(2,i,1),3*melec,b_da(l,i,1,ic),3*melec)
-              call daxpy(norb,2*da_vj(l,3,i,ic),dorb(3,i,1),3*melec,b_da(l,i,1,ic),3*melec)
+              call daxpy(norb,2*vj(1,i),da_dorb(l,1,i,1,ic),9*MELEC,b_da(l,i,1,ic),3*MELEC)
+              call daxpy(norb,2*vj(2,i),da_dorb(l,2,i,1,ic),9*MELEC,b_da(l,i,1,ic),3*MELEC)
+              call daxpy(norb,2*vj(3,i),da_dorb(l,3,i,1,ic),9*MELEC,b_da(l,i,1,ic),3*MELEC)
+              call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1,i,1),3*MELEC,b_da(l,i,1,ic),3*MELEC)
+              call daxpy(norb,2*da_vj(l,2,i,ic),dorb(2,i,1),3*MELEC,b_da(l,i,1,ic),3*MELEC)
+              call daxpy(norb,2*da_vj(l,3,i,ic),dorb(3,i,1),3*MELEC,b_da(l,i,1,ic),3*MELEC)
               do iorb=1,norb
                 b_da(l,i,iorb,ic)=-hb*b_da(l,i,iorb,ic)
               enddo

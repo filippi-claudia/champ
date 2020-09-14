@@ -1,11 +1,13 @@
       subroutine optx_jas_ci_reduce
 c Written by Claudia Filippi
 
+      use optjas, only: MPARMJ
+      use vmc, only: MDET
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
 
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       use method_opt, only: method
 
@@ -15,10 +17,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'vmc.h'
-      include 'mstates.h'
-      include 'optjas.h'
-      include 'optci.h'
       include 'mpif.h'
 
 

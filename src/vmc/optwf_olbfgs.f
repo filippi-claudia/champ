@@ -1,9 +1,9 @@
       subroutine optwf_olbfgs
+      use sr_mod, only: MPARM
       use olbfgs, only: initialize_olbfgs
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use contrl, only: nblk
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
 
       use method_opt, only: method
 
@@ -12,10 +12,6 @@
 
       character*20 dl_alg
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'sr.h'
 
 c vector of wave function parameters
       dimension deltap(MPARM), parameters(MPARM)

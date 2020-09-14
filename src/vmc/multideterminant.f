@@ -1,5 +1,11 @@
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: hb, nelec
       use csfs, only: nstates
       use dets, only: ndet
@@ -14,13 +20,10 @@
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
 
@@ -228,6 +231,12 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
       use dets, only: cdet, ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
@@ -238,9 +247,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
 
@@ -302,6 +308,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
       use dets, only: ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
@@ -313,9 +325,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
       dimension dymat(MORB,MELEC),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
 
@@ -367,6 +376,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use elec, only: ndn, nup
       use multidet, only: iactv, ivirt
       use coefs, only: norb
@@ -375,9 +390,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
@@ -431,6 +443,12 @@ c           do krep=ivirt(iab),norb+nadorb
 c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
       use csfs, only: nstates
       use elec, only: ndn, nup
@@ -439,9 +457,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
       common /multislater/ detiab(MDET,2)
 
@@ -472,6 +487,12 @@ c     enddo
 c-----------------------------------------------------------------------
       subroutine multideterminants_define(iflag,icheck)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use dets, only: cdet, ndet
@@ -482,9 +503,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
       dimension iswapped(MELEC),itotphase(MDET)
 
@@ -697,11 +715,15 @@ c     endif
       end
 c-----------------------------------------------------------------------
       function idiff(j,i,iab)
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use multidet, only: irepcol_det, ireporb_det, numrep_det
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       idiff=1
       if(numrep_det(i,iab).ne.numrep_det(j,iab))return
       do k=1,numrep_det(i,iab)

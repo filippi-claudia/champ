@@ -1,6 +1,8 @@
       subroutine basis_fnse_v(k,rvec_en,r_en)
 c Written by Claudia Filippi by modifying basis_fns
 c routine to calculate basis functions for electron k
+      use numbas_mod, only: MRWF
+      use vmc, only: MELEC, MCENT
       use atom, only: iwctype, ncent
       use ghostatom, only: nghostcent
       use numbas, only: iwrwf, nrbas, numr
@@ -8,14 +10,10 @@ c routine to calculate basis functions for electron k
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'numbas.h'
-      include 'pseudo.h'
 
       parameter (one=1.d0,three=3.d0,half=0.5d0)
 

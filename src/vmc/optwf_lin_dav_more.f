@@ -1,6 +1,8 @@
       subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
 
+      use sr_mod, only: MPARM, MVEC
       use const, only: ipr
+      use mstates_mod, only: MSTATES
       use csfs, only: nstates
 
       use mpiconf, only: idtask
@@ -13,10 +15,6 @@
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'sr.h'
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -144,7 +142,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'sr.h'
 
 
       complex*16 q(n),r(n)
@@ -171,7 +168,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'sr.h'
 
 
       complex*16 q(n),r(n)
@@ -202,6 +198,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
+      use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
@@ -212,8 +209,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'sr.h'
-      include 'mstates.h'
 
 
 
@@ -298,6 +293,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
+      use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n
@@ -308,8 +304,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'sr.h'
-      include 'mstates.h'
 
 
 
@@ -374,6 +368,7 @@ c     STOP
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
+      use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
@@ -386,8 +381,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'sr.h'
-      include 'mstates.h'
  
 
 
@@ -488,6 +481,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
+      use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
@@ -500,8 +494,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'sr.h'
-      include 'mstates.h'
 
 
 
@@ -611,6 +603,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
+      use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega
@@ -623,8 +616,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'sr.h'
-      include 'mstates.h'
 
  
 
@@ -739,14 +730,13 @@ c end loop vec
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine g_psi_lin_d( ndim, nvec, nb1, psi, ew )
 
+      use sr_mod, only: MPARM
       use sr_mat_n, only: jefj, jfj, jhfj, s_diag
       use sr_mat_n, only: obs_tot
       implicit real*8(a-h,o-z)
 
 
       include 'mpif.h'
-      include 'sr.h'
-      include 'mstates.h'
 
 
       dimension psi(MPARM,*),ew(*)
@@ -807,7 +797,9 @@ c         if(i.ne.ivec+nb1-1) psi(i,ivec)=psi(i,ivec)/(h(i)+s_diag(1,1)-ew(ivec)
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
+      use sr_mod, only: MPARM, MVEC
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES
 
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -820,10 +812,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'sr.h'
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
       dimension psi(MPARM,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,MSTATES),anorm_loc(MVEC)

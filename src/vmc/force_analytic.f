@@ -1,5 +1,6 @@
       subroutine compute_force(psid,denergy)
 
+      use vmc, only: MCENT
       use atom, only: ncent
       use const, only: nelec
       use da_jastrow4val, only: da_j
@@ -7,8 +8,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
 
       dimension da_psi_ref(3,MCENT)
 
@@ -28,6 +27,8 @@ c     write(6,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
+      use vmc, only: MELEC, MORB, MDET, MCENT
+      use vmc, only: MMAT_DIM
       use atom, only: ncent
 
       use const, only: nelec, ipr
@@ -44,9 +45,6 @@ c-----------------------------------------------------------------------
       use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -125,6 +123,8 @@ c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
+      use vmc, only: MELEC, MORB, MDET, MCENT
+      use vmc, only: MMAT_DIM
       use atom, only: iwctype, ncent
       use const, only: hb, nelec
       use da_energy_now, only: da_energy, da_psi
@@ -145,10 +145,6 @@ c-----------------------------------------------------------------------
       use velocity_jastrow, only: vj
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'mstates.h'
-      include 'force.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
@@ -228,10 +224,9 @@ c-----------------------------------------------------------------------
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
 
 
       if(iforce_analy.eq.0) return
@@ -258,13 +253,12 @@ c-----------------------------------------------------------------------
       use da_energy_now, only: da_energy, da_psi
       use da_energy_sumcum, only: da_energy_sum, da_psi_sum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
 
 
-      include 'vmc.h'
 
 
 
@@ -284,12 +278,11 @@ c-----------------------------------------------------------------------
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
 
 
 
@@ -310,13 +303,12 @@ c-----------------------------------------------------------------------
       use force_fin, only: da_energy_ave, da_energy_err
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
 
 
-      include 'vmc.h'
 
 
 
@@ -346,12 +338,11 @@ c-----------------------------------------------------------------------
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
 
 
 
@@ -367,12 +358,11 @@ c-----------------------------------------------------------------------
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
 
 
 

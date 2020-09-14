@@ -2,7 +2,10 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE
+      use vmc, only: nrad
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use mstates_mod, only: MSTATES
       use ghostatom, only: newghostype, nghostcent
       use const, only: hb, delta, nelec
       use config, only: eold, nearesto, psi2o
@@ -32,16 +35,10 @@ c job where it left off
       use basis, only: n4s, n4p
       use basis, only: nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
 
-      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates_ctrl, only: iguiding
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'pseudo.h'
-      include 'optorb.h'
-      include 'optci.h'
 
       parameter(half=0.5d0,small=1.d-6)
 

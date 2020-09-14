@@ -1,5 +1,11 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use elec, only: ndn, nup
       use multidet, only: kref
       use slatn, only: slmin
@@ -7,9 +13,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
@@ -62,6 +65,12 @@
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
       use elec, only: nup
       use multidet, only: kref
@@ -73,7 +82,7 @@ c-----------------------------------------------------------------------
       use multimatn, only: aan, wfmatn
 
       use velocity_jastrow, only: vj, vjn
-      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates_ctrl, only: iguiding
       use mstates3, only: iweight_g, weights_g
 
       implicit real*8(a-h,o-z)
@@ -81,9 +90,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
@@ -253,15 +259,18 @@ c iel has different spin than the electron moved
 c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
       dimension slmi(MMAT_DIM),dorb(3,MORB)
       dimension ddx_ref(3)

@@ -36,27 +36,32 @@ echo "" ; \
 
 ########### Test 4
 echo "Running test 4:" ; \
-cd /home/plopez/Programs/champ/tests/butadiene-3wfs/TZ-1M-128 ; \
-cp ~/Programs/test_champ.sh ./ ; \
-sbatch test_champ.sh vmc_optall.inp ; sleep 180 ; \
+cd $CHAMP/tests/butadiene-3wfs/TZ-1M-128 ; \
+cp $CHAMP/tools/test_champ.sh ./ ; \
+sbatch test_champ.cmd vmc_optall.inp ; sleep 180 ; \
+>>>>>>> origin/refac-problematic
 grep "total E =" vmc_optall.out | cut -f 1-11 -d  " " ; \
 echo "That should be:" ; \
 echo "totalE=-26.1345117" ; \
 echo "totalE=-26.1560896" ; \
 echo "totalE=-26.1885011" ; \
+<<<<<<< HEAD
+echo "totalE=-26.2094842"
+=======
 echo "totalE=-26.2094842" 
+>>>>>>> origin/refac-problematic
 echo "" ; \
 
 ########### Test 5
 echo "Running test 5:" ; \
-cd /home/plopez/Programs/champ/tests/butadiene_sr; \
-cp ~/Programs/test_champ.sh ./ ; \
+cd $CHAMP/tests/butadiene_sr; \
+cp $CHAMP/tools/test_champ.sh ./ ; \
 cat vmc_sr.inp | sed s/"iforce_analy 0"/"iforce_analy 1"/g > tmp
-rm -rf vmc_sr.inp ; mv tmp vmc_sr.inp ; 
-sbatch test_champ.sh vmc_sr.inp ; sleep 180 ; 
+rm -rf vmc_sr.inp ; mv tmp vmc_sr.inp ;
+sbatch test_champ.cmd vmc_sr.inp ; sleep 180 ;
 echo "Last geometry is:"
 grep -10 "Norm of parm variation" vmc_sr.out | tail -10
-echo "That won't concide with but should be something like:" 
+echo "That won't concide with but should be something like:"
 echo "CENT   -1.30663316596991      -0.506629269169022      -2.976475069589144E-002"
 echo "CENT    1.46036019041281       0.594626857099687       0.106276790635788"
 echo "CENT   -3.06356735543629       0.189040601049533       3.238462977910284E-002"

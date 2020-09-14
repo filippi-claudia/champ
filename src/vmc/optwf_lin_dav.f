@@ -1,22 +1,26 @@
       subroutine optwf_lin_d
 
 
+      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use optwf_func, only: ifunc_omega, omega
       use contrl, only: nblk
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy, alfgeo
 
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'sr.h'
 
       character*20 method_sav
 
@@ -181,12 +185,11 @@ c enddo iteration
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_lin_d(ndim,nvec,psi,hpsi )
+      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
       use optwf_func, only: ifunc_omega
       implicit real*8(a-h,o-z)
 
 
-      include 'sr.h'
-      include 'mstates.h'
 
 
       dimension psi(MPARM,*),hpsi(MPARM,*)
@@ -204,12 +207,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_lin_d(ndim,nvec,psi,spsi )
+      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
       use optwf_func, only: ifunc_omega
       implicit real*8(a-h,o-z)
 
 
-      include 'sr.h'
-      include 'mstates.h'
  
 
       dimension psi(MPARM,*),spsi(MPARM,*)
@@ -224,15 +226,18 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine select_ci_root(iroot)
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ccsf, ncsf
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
       do 30 i=1,ndet
@@ -244,12 +249,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       return
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine jdqz_driver( n, kmax, jmin, jmax, evc, eps,
+      subroutine jdqz_driver( n, kmax, jmin, jmax, evc, eps,     
      &                        e, e0, itype, notcnv, idav_iter , ipr )
-
+      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
       implicit real*8(a-h,o-z)
 
-      include 'sr.h'
       integer method
 c     parameter(lwork=10+6*MVEC+5*MVEC+3*MVEC)
       parameter(lwork=MPARM*100)

@@ -4,6 +4,12 @@ c **Warning** This routine needs to be upgraded to check rshifts
 c if we add in the capability to use numerical Laplacian for
 c periodic systems.
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c
 
       use jaspar4, only: nordc
@@ -23,8 +29,6 @@ c periodic systems.
 
 
 
-      include 'vmc.h'
-      include 'force.h'
       parameter (zero=0.d0,one=1.d0,two=2.d0)
 
 
@@ -83,6 +87,12 @@ c periodic systems.
 c-----------------------------------------------------------------------
       function psia(ri,it)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a
 
       use jaspar4, only: a4, norda
@@ -97,9 +107,7 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
 
-      include 'force.h'
 
       parameter(zero=0.d0,one=1.d0)
 
@@ -127,6 +135,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       function psib(rij,isb,ipar)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar, only: sspinn
       use jaspar3, only: a, b
 
@@ -142,8 +156,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
-      include 'force.h'
 
       parameter(zero=0.d0,one=1.d0)
 

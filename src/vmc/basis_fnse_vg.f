@@ -3,6 +3,8 @@ c Written by Claudia Filippi by modifying basis_fns
 c routine to calculate basis functions and derivatives for electron k
 c vg -> value,gradient
 
+      use numbas_mod, only: MRWF
+      use vmc, only: MELEC, MCENT
       use atom, only: iwctype, ncent
       use ghostatom, only: nghostcent
       use numbas, only: iwrwf, nrbas, numr
@@ -16,10 +18,6 @@ c vg -> value,gradient
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'numbas.h'
-      include 'pseudo.h'
 
       parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0,half=0.5d0)
 

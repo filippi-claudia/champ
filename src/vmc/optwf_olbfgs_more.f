@@ -6,10 +6,6 @@
 
       character*20 dl_alg
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'sr.h'
 
       include 'mpif.h'
 

@@ -1,5 +1,6 @@
       subroutine optorb_reduce
 
+      use optorb_mod, only: MXORBOP, MXMATDIM
       use csfs, only: nstates
       use optorb_cblock, only: norbterm
       use optwf_contrl, only: ioptorb
@@ -16,10 +17,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
       include 'mpif.h'
 
       dimension collect(MXORBOP+MXMATDIM)

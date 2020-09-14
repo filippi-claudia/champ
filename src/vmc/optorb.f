@@ -1,5 +1,6 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
+      use vmc, only: MELEC, MORB, MDET
       use elec, only: ndn, nup
       use multidet, only: ivirt, kref
       use optwf_contrl, only: ioptorb
@@ -11,10 +12,6 @@
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
       common /multislater/ detiab(MDET,2)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -89,10 +86,6 @@ c-----------------------------------------------------------------------
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
 
       dimension psid(*),eloc(*),deloc(*)
@@ -133,10 +126,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
       dimension wtg_new(*),wtg_old(*),enew(*),eold(*)
 
@@ -241,10 +230,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
 
 
@@ -311,10 +296,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
 
 
@@ -387,10 +368,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
       if(ioptorb.eq.0) return
 
@@ -415,10 +392,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
 
 
@@ -444,9 +417,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
       dimension oav(*),eoav(*),fo(*),foerr(*)
 
@@ -480,10 +450,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
 
 
@@ -522,10 +488,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
 
 
@@ -562,6 +524,7 @@ c nreduced has to be set since it will only be known for non-continuation runs
       end
 c-----------------------------------------------------------------------
       subroutine optorb_fin(wcum,ecum)
+      use optorb_mod, only: MXORBOP
       use csfs, only: nstates
 
       use optwf_contrl, only: ioptorb
@@ -572,9 +535,9 @@ c-----------------------------------------------------------------------
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_030, only: orb_ecum, orb_wcum
-      use gradhess_all, only: MPARMALL, grad, h, s
+      use gradhess_all, only: grad, h, s
 
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       use method_opt, only: method
 
@@ -583,12 +546,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
-      include 'optci.h'
-      include 'optjas.h'
 
       dimension oav(MXORBOP),eoav(MXORBOP),fo(MXORBOP),foerr(MXORBOP)
       dimension wcum(*),ecum(*)
@@ -782,6 +739,8 @@ c replaced column
       end
 c-----------------------------------------------------------------------
       subroutine optorb_define
+      use optorb_mod, only: MXORBOP, MXREDUCED
+      use vmc, only: MELEC, MORB, MDET
       use const, only: nelec
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -794,21 +753,12 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
-      use inputflags, only: iznuc,igeometry,ibasis_num,ilcao,iexponents,
-     &             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
-     &             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
-     &             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
-     &             ihessian_zmat 
 
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
@@ -999,16 +949,11 @@ c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
       end
 c-----------------------------------------------------------------------
       subroutine check_orbitals
+      use vmc, only: MELEC, MORB
 
 c Do not compute virtual orbitals during single-electron move
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optjas.h'
-      include 'optci.h'
-      include 'optorb.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 

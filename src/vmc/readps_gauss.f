@@ -12,6 +12,7 @@ c          coefficient power exponent
 c
 c NOTE: as usual power n means r**(n-2)
 c
+      use pseudo_mod, only: MPS_L, MGAUSS
       use atom, only: nctype
       use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
 
@@ -23,9 +24,6 @@ c
 
 
 
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'force.h'
 
       character*20 atomtyp,atomsymbol
       character*80 label
@@ -128,6 +126,7 @@ c-----------------------------------------------------------------------
 c compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(rvec_en,r_en,iel)
 
+      use vmc, only: MELEC, MCENT
       use atom, only: znuc, iwctype, ncent
 
       use pseudo, only: lpot, vps
@@ -137,9 +136,6 @@ c compute gauss-pseudopotential for electron iel
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'force.h'
 
 
 
@@ -182,8 +178,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'pseudo.h'
 
       v = 0.d0
       dv = 0.d0

@@ -3,6 +3,8 @@ c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt rout
 c routine to calculate the values of the basis functions and their derivatives
 c vgl -> value, gradient, laplacian
 
+      use numbas_mod, only: MRWF
+      use vmc, only: MELEC, MCENT
       use atom, only: iwctype, ncent
       use ghostatom, only: nghostcent
       use const, only: pi, nelec
@@ -11,16 +13,12 @@ c vgl -> value, gradient, laplacian
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'numbas.h'
-      include 'pseudo.h'
 
       parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0)
       parameter (five=5.d0,six=6.d0,seven=7.d0,eight=8.d0)
@@ -503,7 +501,6 @@ c-------------------------------------------------------------------
       use phifun, only: phin
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
 
 
       if(abs(phin(l,k))+abs(dphin(1,l,k))+abs(dphin(2,l,k))+abs(dphin(3,l,k)).gt.1.d-20)then

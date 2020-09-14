@@ -9,6 +9,12 @@ c -----------------------------------------------------------------------
 c   Subroutine which at the start up prints out information about the 
 c   energy gradients (cartesian).
       subroutine inpwrt_grdnts_cart()
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use grdntsmv, only: igrdaidx, igrdcidx
 
       use grdntspar, only: delgrdxyz, ngradnts
@@ -16,8 +22,6 @@ c   energy gradients (cartesian).
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
-      include 'vmc.h'
 
 
       write(6,*)
@@ -43,6 +47,12 @@ c -----------------------------------------------------------------------
 c   Subroutine which at the start up prints out information about the 
 c   energy gradients (z matrix/internal).
       subroutine inpwrt_grdnts_zmat()
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use grdntsmv, only: igrdaidx, igrdcidx
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
@@ -51,8 +61,6 @@ c   energy gradients (z matrix/internal).
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
-      include 'vmc.h'
 
       write(6,*)
       write(6,'(''Correlated sampling used to calculate energy gradients (Z matrix)'')')
@@ -84,6 +92,12 @@ c   Subroutine which calculates and printouts energy gradients
 c   for cartesian coordinates of atoms from energy differences 
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_cart(forces_ave,forces_err)
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
@@ -94,8 +108,6 @@ c   calculated using correlated smapling.
 
 
 
-      include 'force.h'
-      include 'vmc.h'
 
       dimension forces_ave(MFORCE),forces_err(MFORCE)
       dimension grdnts_ave(MFORCE),grdnts_err(MFORCE)     
@@ -146,6 +158,12 @@ c   Subroutine which calculates and printouts energy gradients
 c   for Z matrix coordinates of atoms from energy differences 
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_zmat(forces_ave,forces_err)
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
@@ -155,8 +173,6 @@ c   calculated using correlated smapling.
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
-      include 'vmc.h'
 
       dimension forces_ave(MFORCE),forces_err(MFORCE)
       dimension grdnts_ave(MFORCE),grdnts_err(MFORCE)     
@@ -297,6 +313,12 @@ c -----------------------------------------------------------------------
 c   Subroutine which calculates the displacement for energy gradients
 c   using Z matrix (internal) coordinates
       subroutine grdzmat_displ(k_in,ic_in,ia_in,delfactor)
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
       use forcestr, only: delc
 
@@ -307,8 +329,6 @@ c   using Z matrix (internal) coordinates
 
 
 
-      include 'force.h'
-      include 'vmc.h'
 
       dimension czint_t1(3,MCENT),czcart_t1(3,MCENT)
 
@@ -342,11 +362,15 @@ c -----------------------------------------------------------------------
 c   Subroutine which prints out at the start of a run 
 c   information regarding the Z matrix.
       subroutine inpwrt_zmatrix()
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use zmatrix, only: czcart, czint, izcmat
       implicit real*8(a-h,o-z)
-      include 'force.h'
-      include 'vmc.h'
 
       write(6,'(''---------- Z matrix information ----------'')')
       write(6,'(''Geometry in internal coordinates:'')')
@@ -377,6 +401,12 @@ c   Subroutine which calculates and print outs the diagonal
 c   part of the Hessian for Z matrix coordinates of atoms 
 c   from energy differences  calculated using correlated smapling.
       subroutine finwrt_diaghess_zmat(forces_ave,forces_err)
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
@@ -389,8 +419,6 @@ c   from energy differences  calculated using correlated smapling.
 
 
 
-      include 'force.h'
-      include 'vmc.h'
 
       dimension forces_ave(MFORCE),forces_err(MFORCE)
       dimension diaghess_ave(MFORCE),diaghess_err(MFORCE)     
@@ -526,17 +554,21 @@ c   from energy differences  calculated using correlated smapling.
       end     
 c -----------------------------------------------------------------------
       subroutine transform_grad_zmat(force_cart)
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: cent, ncent
 
       use grdntsmv, only: igrdmv
       use zmatrix, only: czcart, czint, czcart_ref, izcmat
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iuse_zmat
 
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
-      include 'vmc.h'
 
       parameter (eps=1.d-5,epsi=0.5d0/eps)
 

@@ -1,5 +1,9 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
+      use pseudo_mod, only: MPS_QUAD
+      use optjas, only: MPARMJ
+      use vmc, only: MELEC, MORB, MDET, MCENT
+      use vmc, only: MMAT_DIM
       use atom, only: iwctype, ncent
       use const, only: nelec, ipr
       use elec, only: nup
@@ -13,12 +17,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, vps
       use b_tmove, only: b_t, iskip
-      use Bloc, only: b, tildem
-      use contrl_per, only: iperiodic,ibasis
+      use Bloc, only: b
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
-      use pseudo, only: lpot, nloc, vps, vpso
-      use b_tmove , only: b_t,iskip
-      use da_pseudo, only: da_nonloc, da_pecent, da_vps
+      use pseudo, only: lpot, vps
+      use b_tmove, only: b_t, iskip
       use qua, only: nquad, wq, xq, yq, zq
 
       implicit real*8(a-h,o-z)
@@ -26,13 +28,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       parameter (one=1.d0)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'pseudo.h'
-      include 'ewald.h'
-      include 'optjas.h'
-      include 'optorb.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
@@ -236,20 +231,16 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
+      use vmc, only: MELEC, MCENT
       use atom, only: cent, ncent
       use contrl_per, only: iperiodic
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       use qua, only: xq, yq, zq
 
       implicit real*8(a-h,o-z)
 
       parameter (one=1.d0)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'pseudo.h'
-      include 'ewald.h'
 
       dimension x(3),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),dd1(MELEC,MCENT)
@@ -295,6 +286,7 @@ c-----------------------------------------------------------------------
       subroutine orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
+      use vmc, only: MELEC, MORB, MCENT
       use atom, only: iwctype, ncent
 
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
@@ -306,9 +298,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
@@ -379,6 +368,7 @@ c-----------------------------------------------------------------------
       subroutine nonlocd(iel,orb,detu,detd,slmui,slmdi,ratio)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
+      use vmc, only: MMAT_DIM
       use elec, only: ndn, nup
       use multidet, only: kref
 
@@ -388,9 +378,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -422,6 +409,7 @@ c-----------------------------------------------------------------------
       subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
+      use vmc, only: MELEC, MCENT
       use atom, only: iwctype, ncent
 
       use jaspar, only: sspinn, is
@@ -432,14 +420,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contr2, only: isc
       use contrl_per, only: iperiodic
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'ewald.h'
-      include 'force.h'
-      include 'mstates.h'
 
       parameter (half=.5d0)
 
@@ -541,10 +525,11 @@ c-----------------------------------------------------------------------
       subroutine compute_da_bnl(i,ic,ict,iq,r_en_sav,rvec_en_sav,costh,
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
+      use vmc, only: MORB, MCENT
       use atom, only: ncent
       use Bloc_da, only: db
       use coefs, only: norb
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       use pseudo, only: lpot, vps
       use da_pseudo, only: da_vps
       use qua, only: wq, xq, yq, zq
@@ -553,10 +538,6 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'pseudo.h'
 
       dimension rvec_en_sav(3,MCENT),r_en_sav(MCENT)
       dimension orbn(MORB),dorbn(3,MORB),vjn(3)

@@ -1,18 +1,16 @@
       subroutine pcm_reduce
 
+      use pcm, only: MCHS
       use mpiconf, only: wid
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
-      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
-      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+      use pcm_cntrl, only: ipcm
+      use pcm_parms, only: nchs
+      use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_cum, enfpcm_cm2
      
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'pcm.h'
 
       dimension collect(MCHS)
  
@@ -81,20 +79,20 @@
 
       subroutine pcm_reduce_chvol
 
+      use pcm, only: MCHV
+      use mpi_qmc, only: NPROCX
       use mpiconf, only: nproc
       use pcm_xv_new, only: xv_new
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_cntrl, only: ipcm
+      use pcm_parms, only: ch, nch, nchs
+      use pcm_parms, only: nchv, nscv
+      use pcm_parms, only: xpol
 
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: fs, qvol
       implicit real*8(a-h,o-z)
 
 
       include 'mpif.h'
-      include 'mpi_qmc.h'
-      include 'pcm.h'
 
       dimension nchv_proc(0:NPROCX),charge(NPROCX)
       dimension icount(0:NPROCX),idispl(0:NPROCX)

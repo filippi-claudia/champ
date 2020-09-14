@@ -7,22 +7,20 @@ c     comput nuclei-qpol interactions (penups,penupv)
 c...........................................................
 
       use atom, only: znuc, cent, iwctype, ncent
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: icall, ichpol, ipcm, isurf
       use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: ch, eps_solv, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nchv, nesph, re
+      use pcm_parms, only: surk, xe, xpol, ye, ze
       use pcm_ameta, only: amdlg, eta
       use pcm_pot, only: penupol, penups, penupv
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: feps, fs, rcol, rcolt
 
       use pcm_inda, only: inda
 
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h' 
-      include 'pcm.h'
 
       DATA PI/3.1415927D0/
       if(ipcm.eq.0)return
@@ -137,17 +135,13 @@ c......................................................
       subroutine pcm_qvol(n)
 c Written by Amovilli-Floris
 
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_cntrl, only: ipcm
+      use pcm_parms, only: nscv
 
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: fs, qvol
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'pcm.h'
 
       if(ipcm.eq.0) return
 
@@ -162,14 +156,20 @@ C     ***************************************************************
 C     contribution from nuclei to polarization charghes
 C     ***************************************************************
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use pcm, only: MCHS, MCHV, MSPHERE
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use atom, only: znuc, cent, iwctype, ncent
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       use pcm_ameta, only: amdlg, eta
       use pcm_ah, only: ahca, bh
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: feps, fs, qvol, rcol, rcolt
       use pcm_inda, only: inda
 
       implicit real*8(a-h,o-z)
@@ -180,8 +180,6 @@ C     ***************************************************************
 
       real*8 ah_vec,det
 C     
-      include 'pcm.h'
-      include 'vmc.h' 
 C    
       dimension ah_vec(MCHS*MCHS),bhn(MCHS),ah(MCHS,MCHS)
 
@@ -286,22 +284,26 @@ c     3) for the accepted configuration, the normal component
 c        of the electron field  at the point on the surface is computed 
 C     ***************************************************************
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use pcm, only: MCHS, MCHV, MSPHERE
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use atom, only: znuc, cent, iwctype, ncent
       use pcm_hpsi, only: enfpcm, qopcm
       use pcm_xv_new, only: xv_new
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
-      use pcm_ameta, only: amdlg, eta
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_ameta, only: eta
+      use pcm_fdc, only: fs, qvol, rcol, rcolt
       implicit real*8(a-h,o-z)
 
 
 
-      include 'pcm.h'
-      include 'vmc.h'
 
       dimension coord(3,*)
       dimension fac(100)
@@ -416,21 +418,20 @@ c............................................................
 c      update of volume charges and penupol
 c............................................................
 
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use pcm, only: MCHS, MCHV, MSPHERE
+      use atom, only: znuc, cent, iwctype, ncent
       use pcm_xv_new, only: xv_new
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
-      use pcm_pot, only: penupol, penups, penupv
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_pot, only: penupol, penupv
+      use pcm_fdc, only: qvol
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
-      include 'pcm.h'
 
       iupdate=0
       if(ipcm.eq.0.or.ipcm.eq.3) return
@@ -464,18 +465,18 @@ c............................................................
 c     compute penupv of volume charges 
 c............................................................
 
+      use pcm, only: MCHS, MCHV, MSPHERE
       use atom, only: znuc, cent, iwctype, ncent
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
-      use pcm_pot, only: penupol, penups, penupv
+      use pcm_pot, only: penupv
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h' 
-      include 'pcm.h'
+       
 
       if(ipcm.eq.0) return
 
@@ -496,13 +497,15 @@ c..............................................................
 
       subroutine pcm_write_chvol
 
+      use pcm_3dgrid, only: MGRID_PCM, MGRID_PCM2, MGRID_PCM3
+      use pcm_3dgrid, only: UNDEFINED, IUNDEFINED
+      use pcm, only: MCHS, MCHV, MSPHERE
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       implicit real*8(a-h,o-z)
 
-      include 'pcm.h'
       open (52,file='chvol_new',form='formatted',status='unknown')
       rewind 52
 
@@ -523,19 +526,18 @@ c......................................................
 c       Calculate e-qpol interactions (pcm)
 c       and adds nuclei-qpol interactions
 c......................................................
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm, only: MCHS, MCHV, MSPHERE
+      use pcm_cntrl, only: icall
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
-      use pcm_pot, only: penupol, penups, penupv
+      use pcm_pot, only: penups, penupv
       use pcm_grid3d_contrl, only: ipcm_3dgrid
       implicit real*8(a-h,o-z)
 
 
 
-      include 'pcm.h'
-      include 'pcm_3dgrid.h'
 
       dimension coord(3,*)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
@@ -587,15 +589,15 @@ c       Calculate e-qpol interactions (pcm)
 c       and adds nuclei-qpol interactions
 c......................................................
 
+      use pcm, only: MCHS, MCHV, MSPHERE
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: rcol, rcolv
       implicit real*8(a-h,o-z)
 
 
-      include 'pcm.h'
 
       dimension x(3)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
@@ -643,7 +645,8 @@ c......................................................
 
       subroutine pcm_init(iflag)
 
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm, only: MCHS, MCHV, MSPHERE
+      use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
@@ -653,7 +656,6 @@ c......................................................
 
       implicit real*8(a-h,o-z)
 
-      include 'pcm.h'
 
 
       if(ipcm.eq.0) return
@@ -687,17 +689,17 @@ c......................................................
 c-----------------------------------------------------------------------
       subroutine pcm_dump(iu)
 
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm, only: MCHS, MCHV, MSPHERE
+      use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
-      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
-      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+      use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_cum, enfpcm_cm2
 
       implicit real*8(a-h,o-z)
 
-      include 'pcm.h'
 
       if(ipcm.eq.0) return
       write(iu) spcmcum,spcmcm2
@@ -714,17 +716,17 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_rstrt(iu)
 
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm, only: MCHS, MCHV, MSPHERE
+      use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
-      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
-      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+      use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_cum, enfpcm_cm2
 
       implicit real*8(a-h,o-z)
 
-      include 'pcm.h'
 
       if(ipcm.eq.0) return
       read(iu) spcmcum,spcmcm2
@@ -743,18 +745,18 @@ c......................................................
 
       subroutine qpcm_charges(enfpcm_ave,enfpcm_err,qpol,sqpol2)
 
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm, only: MCHS, MCHV, MSPHERE
+      use pcm_parms, only: ch, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nesph, re
+      use pcm_parms, only: surk, xe, xpol, ye, ze
       use pcm_ah, only: ahca, bh
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: feps, qvol
 
       use pcm_inda, only: inda
 
       implicit real*8(a-h,o-z)
 
 
-      include 'pcm.h'
 
       dimension ch_new(MCHS),enfpcm_ave(*),enfpcm_err(*)
       dimension sch(MCHS),sch2(MCHS)
@@ -841,19 +843,19 @@ c     da modificare per stati eccitati
 c................................................................
       subroutine qpcm_charges2(enfpcm_ave,enfpcm_err,qpol)
 
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm, only: MCHS
+      use pcm_parms, only: ch, nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nesph, re
+      use pcm_parms, only: surk, xe, xpol, ye, ze
 
       use pcm_ameta, only: amdlg, eta
       use pcm_ah, only: ahca, bh
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: feps, qvol
       implicit real*8(a-h,o-z)
 
 
 
 
-      include 'pcm.h'
 
       dimension ch_new(MCHS)
       dimension env(MCHS)
@@ -922,9 +924,9 @@ C     ***************************************************************
       use spc, only: nsf, num
       use spc1, only: csf, qsf, rsf
       use spc2, only: nxyz, sfxyz, usf
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: nch, nchs, nchs1, nchs2
+      use pcm_parms, only: nesph, re
+      use pcm_parms, only: surk, xe, xpol, ye, ze
 
       use pcm_ameta, only: amdlg, eta
       use pcm_inda, only: inda
@@ -933,8 +935,6 @@ C     ***************************************************************
 
 
 
-      include 'pcm.h'
-      include 'vmc.h'
 c
 c....................................................................
 c....................................................................
@@ -1304,6 +1304,7 @@ c     f1=r0*dsin(theta)
       end
 
       subroutine prep1
+      use pcm, only: MCHS
       use spc, only: nsf, num
       use spc1, only: csf, rsf
       implicit real*8(a-h,o-z)
@@ -1454,8 +1455,8 @@ c........................................................
 c........................................................
 
       subroutine qpcm_matinv(a,nsub,determinant)
+      use pcm, only: MCHS
       implicit real*8 (a-h,o-z)
-      include 'pcm.h'
 
 c routine to calculate inverse and determinant of matrix a
 c assumed to be dimensioned a(nsub,nsub).
@@ -1503,7 +1504,7 @@ c        ...exit
 C     ***************************************************************
 C     march/2014: compute surface charges for a stretched cavity
 C     ***************************************************************
-
+      use pcm, only: MCHS
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
@@ -1518,8 +1519,6 @@ C     ***************************************************************
 
 
 C     
-      include 'pcm.h'
-      include 'vmc.h' 
 C    
 
       dimension ah_vec(MCHS*MCHS),ah(MCHS,MCHS)

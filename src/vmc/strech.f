@@ -10,6 +10,9 @@ c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
 
 c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
+      use pcm, only: MCHS, MCHV
+      use force_mod, only: MFORCE, MFORCE_WT_PRD
+      use vmc, only: MELEC, MCENT
       use atom, only: znuc, cent, pecent, iwctype, ncent
       use const, only: nelec
       use force_dmc, only: itausec, nwprod
@@ -18,13 +21,13 @@ c rigidly with that nucleus
       use pcm_force, only: sch_s
       use wfsec, only: iwftype
       use contr3, only: mode
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_cntrl, only: ipcm
+      use pcm_parms, only: ch, nch, nchs
+      use pcm_parms, only: nesph
+      use pcm_parms, only: xpol
 
-      use pcm_ameta, only: amdlg, eta
-      use pcm_pot, only: penupol, penups, penupv
+      use pcm_ameta, only: eta
+      use pcm_pot, only: penups, penupv
       use pcm_inda, only: inda
 
       implicit real*8(a-h,o-z)
@@ -35,9 +38,6 @@ c rigidly with that nucleus
 
       parameter (zero=0.d0,one=1.d0)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'pcm.h'
 
       dimension x(3,MELEC),xstrech(3,MELEC),centsav(3,MCENT),pecentn(MFORCE)
       dimension wt(MCENT),dvol(3,3),dwt(3,MCENT),dwtsm(3)

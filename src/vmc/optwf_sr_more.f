@@ -3,7 +3,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine sr_hs(nparm,sr_adiag)
 c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
+      use sr_mod, only: MOBS
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES
       use mpiconf, only: idtask
       use optwf_func, only: ifunc_omega, omega
       use sa_weights, only: weights
@@ -18,11 +20,6 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
 
       include 'mpif.h'
-      include 'sr.h'
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
 
 
@@ -283,8 +280,6 @@ c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
       use sr_mat_n, only: s_ii_inv
       implicit real*8(a-h,o-z)
 
-      include 'sr.h'
-      include 'mstates.h'
 
 
       dimension x(*),b(*)
@@ -301,6 +296,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine atimes_n(n,z,r)
 c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
+      use sr_mod, only: MPARM, MCONF
       use csfs, only: nstates
 
       use optwf_func, only: ifunc_omega, omega, omega_hes
@@ -312,11 +308,6 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
-      include 'sr.h'
 
 
 
@@ -435,9 +426,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'vmc.h'
-      include 'sr.h'
-      include 'mstates.h'
 
 
       dimension deltap(*)
@@ -483,13 +471,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use atom, only: ncent
       use force_fin, only: da_energy_ave
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
 
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'vmc.h'
-      include 'force.h'
 
 
       if(iforce_analy.eq.0)return
@@ -502,6 +488,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine forces_zvzb(nparm)
 
+      use sr_mod, only: MPARM
       use atom, only: ncent
 
       use force_fin, only: da_energy_ave
@@ -514,16 +501,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       include 'mpif.h'
-      include 'sr.h'
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
       parameter (MTEST=1500)
       dimension cloc(MTEST,MTEST),c(MTEST,MTEST),oloc(MPARM),o(MPARM),p(MPARM),tmp(MPARM)
       dimension ipvt(MTEST),work(MTEST)
 
-      if(nparm.gt.MTEST) stop 'mparm>MTEST'
+      if(nparm.gt.MTEST) stop 'MPARM>MTEST'
 
       jwtg=1
       jelo=2
