@@ -45,11 +45,7 @@ echo "That should be:" ; \
 echo "totalE=-26.1345117" ; \
 echo "totalE=-26.1560896" ; \
 echo "totalE=-26.1885011" ; \
-<<<<<<< HEAD
-echo "totalE=-26.2094842"
-=======
 echo "totalE=-26.2094842" 
->>>>>>> origin/refac-problematic
 echo "" ; \
 
 ########### Test 5
