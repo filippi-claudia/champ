@@ -2066,6 +2066,17 @@ end module forcewt
    save
  end module multimatn
 
+ module m_icount
+   !> Arguments: icount_ci, icount_orb, icount_prop 
+   integer :: icount_ci = 1 
+   integer :: icount_orb = 1
+   integer :: icount_prop = 1 
+ 
+   private   
+   public :: icount_ci, icount_orb, icount_prop 
+   save 
+end module m_icount 
+
  module numbas_mod
   !> Arguments: MRWF_PTS, MRWF
   integer, parameter :: MRWF_PTS=4000
