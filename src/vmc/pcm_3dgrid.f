@@ -11,22 +11,20 @@ c &pcm xn_pcm 1. yn_pcm 1. zn_pcm 1.
 c----------------------------------------------------------------------
       subroutine pcm_setup_grid
 
+      use pcm_3dgrid, only: MGRID_PCM
+      use pcm_3dgrid, only: UNDEFINED, IUNDEFINED
       use atom, only: cent, ncent
       use contrl, only: irstar
       use grid3d_param, only: origin
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
 
       use pcm_grid3d_array, only: pcm_cart_from_int
 
-      use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
-      include 'pcm_3dgrid.h'
 
 
 CACTIVATE
@@ -134,18 +132,15 @@ c     Print the parameters to the output file
 c----------------------------------------------------------------------
       function ipcm_int_from_cart(value,iaxis)
 
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_3dgrid, only: IUNDEFINED
+      use pcm_grid3d_param, only: pcm_endpt, pcm_origin, pcm_step3d
 
-      use pcm_grid3d_array, only: pcm_cart_from_int
 
-      use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)
 
 
 
-      include 'pcm_3dgrid.h'
       
       if (value.lt.pcm_origin(iaxis).or.value.ge.pcm_endpt(iaxis)) then
         ipcm_int_from_cart = IUNDEFINED
@@ -158,15 +153,13 @@ c----------------------------------------------------------------------
 c PCM on a 3d grid with spline fit
       subroutine pcm_setup_3dspl
 
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_3dgrid, only: MGRID_PCM, MGRID_PCM3
+      use pcm_grid3d_param, only: ipcm_nstep3d
       use pcm_grid3d_array, only: pcm_cart_from_int
       use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
-      include 'vmc.h'
-      include 'pcm_3dgrid.h'
 
 c     Note:
 c     The boundary condition array ranges from 3 to 8. This way, if we code
@@ -247,13 +240,13 @@ c      stop
 c----------------------------------------------------------------------
       subroutine spline_pcm(r,f,ier)
 
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_3dgrid, only: MGRID_PCM
+      use pcm_3dgrid, only: IUNDEFINED
+      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
       use insout, only: inout, inside
 
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'pcm_3dgrid.h'
 
 
 c     Input:
@@ -312,8 +305,6 @@ c     Work:
 c-----------------------------------------------------------------------
       subroutine pcm_3dgrid_dump(iu)
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'pcm_3dgrid.h'
 
       if (ipcm.eq.0.or.ipcm_grid.eq.0) return
 
@@ -328,7 +319,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_3dgrid_rstrt(iu)
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use pcm_cntrl, only: ipcm
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
 
@@ -336,8 +327,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
-      include 'pcm_3dgrid.h'
 
       if (ipcm.eq.0.or.ipcm_grid.eq.0) return
 
@@ -352,13 +341,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine splpcm_dump(iu)
 
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_grid3d_param, only: ipcm_nstep3d
       use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'pcm_3dgrid.h'
  
       do i=1,8
         write(iu)(((pcm_num_spl(i,j,k,l),j=1,ipcm_nstep3d(1)),k=1,ipcm_nstep3d(2)), l=1,ipcm_nstep3d(3))
@@ -367,14 +354,12 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splpcm_rstrt(iu)
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_grid3d_param, only: ipcm_nstep3d
       use m_pcm_num_spl, only: pcm_num_spl
 
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'pcm_3dgrid.h'
 
       do i=1,8
         read(iu)(((pcm_num_spl(i,j,k,l),j=1,ipcm_nstep3d(1)),k=1,ipcm_nstep3d(2)),l=1,ipcm_nstep3d(3))

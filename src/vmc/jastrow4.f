@@ -3,6 +3,12 @@ c Written by Cyrus Umrigar, modified by C. Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use jaspar, only: sspinn
       use const, only: nelec
@@ -16,12 +22,10 @@ c Jastrow 6   must be used with one of isc=6,7
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
       use contr2, only: isc
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
       
       parameter (half=.5d0,eps=1.d-12)
 
@@ -362,6 +366,12 @@ c     write(6,'(''nterms4='',i5)') nterms4
 c-----------------------------------------------------------------------
       subroutine da_jastrow4(iwf,i,ic,it,rvec_en,r,rr,feni,fenii,dd1,dd2)
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use jaspar4, only: a4, norda
       use scale_more, only: dd3
@@ -369,8 +379,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
-      include 'force.h'
  
 
 

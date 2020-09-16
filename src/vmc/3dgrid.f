@@ -14,14 +14,15 @@ c----------------------------------------------------------------------
 
       subroutine setup_grid()
 
+      use grid_mod, only: MXNSTEP
+      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
+      use grid_mod, only: grid3d, cart_from_int
       use atom, only: cent, ncent
       use contrl, only: irstar
       use grid3d_param, only: endpt, nstep3d, origin, step3d
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include '3dgrid.h'
 
 CACTIVATE
 c     if (irstar.ne.1) then
@@ -151,11 +152,11 @@ c     Print the parameters to the output file
 c----------------------------------------------------------------------
 
       function int_from_cart(value,iaxis)
+      use grid_mod, only: IUNDEFINED
       use grid3d_param, only: endpt, origin, step3d
       implicit real*8(a-h,o-z)
 
 
-      include '3dgrid.h'
       
       if (( value.lt.origin(iaxis) ).or.
      &    ( value.ge.endpt (iaxis) )) then
@@ -170,13 +171,13 @@ c----------------------------------------------------------------------
 
       subroutine write_cube(cube_file)
 
+      use grid_mod, only: grid3d
       use atom, only: znuc, cent, iwctype, ncent
+      use ghostatom, only: nghostcent
       use grid3d_param, only: nstep3d, origin, step3d
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include '3dgrid.h'
 
       character*(*) cube_file
 

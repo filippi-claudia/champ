@@ -1,6 +1,12 @@
       subroutine finwrt_more
 c written by Claudia Filippi
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc, only: radmax, delri
+      use vmc, only: NEQSX, MTERMS
+      use vmc, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use estcum, only: iblk
@@ -12,9 +18,6 @@ c written by Claudia Filippi
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
       include 'mpif.h'
 
 

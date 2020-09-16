@@ -16,7 +16,6 @@ c good enough -- no need to use 1/2 the shortest perpendicular distance.
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       parameter (eps=1.d-12)
 
 
@@ -270,8 +269,6 @@ c by its closest image and finds its norm
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'ewald.h'
 
 
       dimension r(3),r_basis(3)
@@ -350,8 +347,6 @@ c by its closest image and finds its norm and the shift needed.
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'ewald.h'
 
 
       dimension r(3),r_basis(3),rshift(3)

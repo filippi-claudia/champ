@@ -1,6 +1,8 @@
       subroutine optx_jas_orb_reduce
 c Written by Claudia Filippi
 
+      use optorb_mod, only: MXREDUCED
+      use optjas, only: MPARMJ
       use csfs, only: nstates
 
       use optwf_contrl, only: ioptjas, ioptorb
@@ -16,11 +18,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optjas.h'
-      include 'optorb.h'
       include 'mpif.h'
 
 

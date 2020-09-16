@@ -28,11 +28,6 @@ c and sa, pa, da asymptotic functions
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'numbas.h'
-      include 'pseudo.h'
 
 
       character*25 fmt

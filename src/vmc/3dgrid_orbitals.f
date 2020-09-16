@@ -3,6 +3,13 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       subroutine setup_3dsplorb
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_spline_mod, only: MORB_OCC
+      use grid_spline_mod, only: orb_num_spl
+      use grid_mod, only: MXNSTEP, MXNSTEP3
+      use grid_mod, only: cart_from_int
+      use vmc, only: MELEC, MCENT
+      use vmc, only: MMAT_DIM2
       use atom, only: cent, ncent
 
       use ghostatom, only: newghostype, nghostcent
@@ -19,10 +26,6 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
-      include 'vmc.h'
-      include '3dgrid.h'
-      include '3dgrid_spline.h'
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
@@ -251,7 +254,7 @@ c       call r8mktricubw(cart_from_int(1,1),nstep3d(1),
         if (ier.eq.1) 
      >   call fatal_error ('Error in r8mktricubw')
         write (45,*) 'orbital ', iorb, 'splined'
-       end do
+       enddo
       endif ! ( irstar .ne. 0 )
 
 c DEBUG
@@ -294,12 +297,13 @@ c----------------------------------------------------------------------
 
 
       subroutine spline_mo(r,iorb,f,df,ddf,ier)
+      use grid_spline_mod, only: orb_num_spl
+      use grid_mod, only: MXNSTEP
+      use grid_mod, only: IUNDEFINED
+      use grid_mod, only: cart_from_int
       use insout, only: inout, inside
-      use grid3d_param, only: nstep3d, endpt, origin, step3d
+      use grid3d_param, only: nstep3d, step3d
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include '3dgrid.h'
-      include '3dgrid_spline.h'
 
 c     Input:
       integer   iorb    ! Index of the MO to spline
@@ -388,17 +392,24 @@ c Lagrange interpolation routines
 
       subroutine setup_3dlagorb
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_lagrange_mod, only: LAGSTART, LAGEND, MORB_OCC
+      use grid_lagrange_mod, only: orb_num_lag
+      use grid_mod, only: grid3d, cart_from_int
+      use vmc, only: MELEC, MORB, MCENT
+      use vmc, only: MMAT_DIM2
       use atom, only: cent, ncent
-      use wfsec, only: iwf, iwftype, nwftype
-      use grid3d_param, only: nstep3d, endpt, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use wfsec, only: iwf
+      use grid3d_param, only: nstep3d, endpt, origin
+      use orbital_num_lag, only: denom
+
+      use coefs, only: coef, nbasis, norb
+      use ghostatom, only: nghostcent
+      use contrl, only: irstar
+      use phifun, only: phin, dphin, d2phin
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
-      include 'vmc.h'
-      include '3dgrid.h'
-      include '3dgrid_lagrange.h'
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
      &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
@@ -583,17 +594,18 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
+      use grid_lagrange_mod, only: orb_num_lag
+      use grid_mod, only: cart_from_int
+      use vmc, only: MELEC, MORB
       use insout, only: inout, inside
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include '3dgrid.h'
-      include '3dgrid_lagrange.h'
 
 
       dimension r(3),dr(3),orb(MELEC,MORB),ix(3)
@@ -663,17 +675,18 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
+      use grid_lagrange_mod, only: orb_num_lag
+      use grid_mod, only: cart_from_int
+      use vmc, only: MELEC, MORB
       use insout, only: inout, inside
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include '3dgrid.h'
-      include '3dgrid_lagrange.h'
 
       dimension r(3),dr(3),orb(3,MELEC,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
@@ -744,17 +757,18 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
+      use grid_lagrange_mod, only: orb_num_lag
+      use grid_mod, only: cart_from_int
+      use vmc, only: MORB
       use insout, only: inout, inside
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include '3dgrid.h'
-      include '3dgrid_lagrange.h'
 
 
       dimension r(3),dr(3),orb(MORB),ix(3)
@@ -824,17 +838,18 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
+      use grid_lagrange_mod, only: orb_num_lag
+      use grid_mod, only: cart_from_int
+      use vmc, only: MORB
       use insout, only: inout, inside
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include '3dgrid.h'
-      include '3dgrid_lagrange.h'
 
       dimension r(3),dr(3),orb(3,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
@@ -895,17 +910,16 @@ c Compute displacements
       end
 c-----------------------------------------------------------------------
       subroutine orb3d_dump(iu)
-      use coefs, only: coef, nbasis, norb
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_mod, only: cart_from_int
+      use coefs, only: norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+      use grid3dflag, only: i3dgrid, i3dlagorb, i3dsplorb
 
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include '3dgrid.h'
 
       if (i3dgrid.eq.0) return
 
@@ -924,18 +938,17 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine orb3d_rstrt(iu)
 
-      use coefs, only: coef, nbasis, norb
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_mod, only: cart_from_int
+      use coefs, only: norb
 
       use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+      use grid3dflag, only: i3dgrid, i3dlagorb, i3dsplorb
 
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include '3dgrid.h'
 
       if (i3dgrid.eq.0) return
 
@@ -952,15 +965,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_dump(iu)
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_spline_mod, only: orb_num_spl
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include '3dgrid.h'
-      include '3dgrid_spline.h'
-      include 'force.h'
  
       do i=1,8
        do m=1,norb
@@ -972,15 +983,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_rstrt(iu)
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_spline_mod, only: orb_num_spl
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include '3dgrid.h'
-      include '3dgrid_spline.h'
-      include 'force.h'
 
       do i=1,8
        do m=1,norb
@@ -992,17 +1001,14 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_dump(iu)
 
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_lagrange_mod, only: orb_num_lag
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
 
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include '3dgrid.h'
-      include '3dgrid_lagrange.h'
-      include 'force.h'
  
       do i=1,5
        do m=1,norb
@@ -1015,17 +1021,14 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_rstrt(iu)
 
-      use coefs, only: coef, nbasis, norb
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use orbital_num_lag, only: denom, step_inv
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use grid_lagrange_mod, only: orb_num_lag
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
 
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include '3dgrid.h'
-      include '3dgrid_lagrange.h'
-      include 'force.h'
 
       do i=1,5
        do m=1,norb

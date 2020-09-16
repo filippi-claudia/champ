@@ -8,10 +8,6 @@
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'optci.h'
-      include 'mstates.h'
 
 
 

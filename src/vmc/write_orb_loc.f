@@ -18,11 +18,6 @@ c 2) a gaussian basis
       parameter (zero=0.d0,one=1.d0)
       parameter(nprime=10)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'ewald.h'
-      include 'pseudo.h'
-      include 'numbas.h'
 
 
 c Check that nbasis in lcao matches specified basis on all centers

@@ -1,6 +1,8 @@
       subroutine store_diag_hs(nparm_p1,hii,sii)
 
+      use sr_mod, only: MPARM
       use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use mstates_mod, only: MSTATES
       use sr_index, only: jelo, jelo2, jelohfj
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot
@@ -8,11 +10,6 @@
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'sr.h'
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
       dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
       dimension hii(MPARM),sii(MPARM)

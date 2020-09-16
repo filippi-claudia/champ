@@ -8,7 +8,11 @@ c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
+      use vmc, only: MELEC, MORB, MDET
+      use vmc, only: nrad
+      use vmc, only: delri
       use atom, only: znuc, cent, iwctype, ncent
+      use mstates_mod, only: MSTATES
 
       use const, only: pi, fbias, nelec, ipr
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
@@ -29,8 +33,8 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use pseudo, only: nloc
 
       use mmpol_cntrl, only: ich_mmpol
-      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
-      use pcm_cntrl, only: icall, ichpol, ipcm, ipcmprt, isurf
+      use mstates_ctrl, only: iguiding
+      use pcm_cntrl, only: ichpol
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
@@ -47,13 +51,6 @@ c     parameter (g3b2=.886226925452758d0)
       parameter (g5b2=1.329340388179137d0)
 c g3b2, g5b2 are gamma3/2), gamma(5/2)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optci.h'
-      include 'pcm.h'
-      include 'mmpol.h'
-      include 'pseudo.h'
 
 c The moves are now being made in local r,theta phi coordinates.
 

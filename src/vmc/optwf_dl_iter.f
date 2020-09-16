@@ -3,10 +3,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'sr.h'
 
       character*20 dl_alg
       real*8 dl_EG_corr, dl_EG_sq_corr, dl_momentum_prev, parm_old, dl_EG_old

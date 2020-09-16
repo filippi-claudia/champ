@@ -18,6 +18,7 @@ c         =2, exponential,         r(i)=r0_ps*exp((i-1)*h_ps)
 c         =3, shifted exponential, r(i)=r0_ps*(exp((i-1)*h_ps)-1)
 c The prefered grid is 3.
 
+      use pseudo_mod, only: MPS_L, MPS_GRID
       use atom, only: znuc, nctype
       use const, only: ipr
       use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
@@ -35,9 +36,6 @@ c The prefered grid is 3.
 
 
 
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'force.h'
 
       character*20 atomtyp,atomsymbol
       character*256 filename,pooldir,pp_id
@@ -276,6 +274,7 @@ c-----------------------------------------------------------------------
       subroutine getvps_champ(r_en,iel)
 c compute pseudopotential for electron iel
 
+      use vmc, only: MELEC, MCENT
       use atom, only: znuc, iwctype, ncent
       use pseudo_champ, only: rmax_coul, rmax_nloc
 
@@ -285,9 +284,6 @@ c compute pseudopotential for electron iel
 
 
 
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'force.h'
 
 
 
@@ -329,6 +325,7 @@ c Note: I check if r < rmax_coul(ict) because this routine is called from
 c ewald without going through getvps_tm.
 c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
+      use pseudo_mod, only: MPS_GRID
       use atom, only: znuc
       use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
       use pseudo_tm, only: arg_ps, d2pot, r0_ps, vpseudo
@@ -339,9 +336,6 @@ c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
 
 
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'force.h'
 
 
 

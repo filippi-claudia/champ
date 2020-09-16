@@ -1,5 +1,8 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
+      use optjas, only: MPARMJ
+      use vmc, only: MELEC, MORB, MDET
+      use vmc, only: MMAT_DIM
       use const, only: hb, nelec, ipr
       use csfs, only: nstates
       use derivjas, only: d2g, g
@@ -19,11 +22,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optjas.h'
-      include 'pseudo.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)
@@ -186,10 +184,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'vmc.h'
-      include 'optjas.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -357,11 +351,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'optjas.h'
-      include 'optorb.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -427,10 +416,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'optjas.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
       if(ioptjas.eq.0) return
@@ -466,11 +451,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'optjas.h'
-      include 'optorb.h'
-      include 'mstates.h'
-      include 'force.h'
 
 
       if(ioptjas.eq.0) return
@@ -524,11 +504,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'optjas.h'
-      include 'optorb.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -566,11 +541,6 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'optjas.h'
-      include 'optorb.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
 
@@ -599,6 +569,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
 
+      use optjas, only: MPARMJ
       use csfs, only: nstates
 
       use gradhess_jas, only: grad_jas, h_jas, s_jas
@@ -624,11 +595,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'vmc.h'
-      include 'optjas.h'
-      include 'optorb.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
 

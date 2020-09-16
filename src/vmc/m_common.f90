@@ -14,11 +14,86 @@
         dp = selected_real_kind(2 * precision(1.0_sp)), &
         qp = selected_real_kind(2 * precision(1.0_dp))
  end module precision_kinds
+ 
+ module vmc
+  !> Arguments:
+  use precision_kinds, only: dp
+
+  ! MELEC  >= number of electrons
+  ! MORB   >= number of orbitals
+  ! MBASIS >= number of basis functions
+  ! MDET   >= number of determinants
+  ! MCENT  >= number of centers
+  ! MCTYPE >= number of center types
+  ! MCTYP3X=max(3,MCTYPE)
+  
+  ! Slater matrices are dimensioned (MELEC/2)**2 assuming 
+  ! equal numbers of up and down spins. MELEC has to be 
+  ! correspondingly larger if spin polarized calculations 
+  ! are attempted.
+
+  ! PLT@eScienceCenter(2020) Moved the parameter here:
+  ! "For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
+  !  For Jastrow3 NEQSX=2*MORDJ should be sufficient.
+  !  I am setting NEQSX=6*MORDJ simply because that is how it was for
+  !  Jastrow3 for reasons I do not understand."
+  !     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
+
+  integer :: MMAT_DIM20
+  real(dp), parameter :: radmax=10.d0
+  integer, parameter :: nrad=3001
+  real(dp), parameter :: delri=(nrad-1)/radmax
+  
+
+  integer, parameter :: MELEC=32, MORB=500, MBASIS=500, MDET=5000, MCENT=20
+  integer, parameter :: MCTYPE=3
+  integer, parameter :: MCTYP3X=5,NSPLIN=1001,MORDJ=7
+  
+  integer, parameter :: MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2
+  integer, parameter :: MORDJ1=MORDJ+1
+  
+
+  integer, parameter :: NEQSX=6*MORDJ, MTERMS=55
+  integer, parameter :: MCENT3=3*MCENT 
+
+  integer, parameter :: NCOEF=5
+  integer, parameter :: MEXCIT=10
+
+  private
+  public :: MELEC,MORB,MBASIS,MDET,MCENT,MCTYPE,MCTYP3X
+  public :: NSPLIN,nrad,MORDJ,MORDJ1,MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+  public :: radmax, delri
+  
+  public :: NEQSX, MTERMS
+  public :: MCENT3, NCOEF, MEXCIT
+
+  save
+ end module vmc
+ 
+  module mstates_mod
+  !> Arguments: MSTATES, MDETCSFX
+  integer, parameter :: MSTATES=3
+  integer, parameter :: MDETCSFX=20
+
+  private 
+  public :: MSTATES, MDETCSFX
+  save 
+ end module mstates_mod
+
+ module force_mod
+  integer, parameter :: MFORCE=3
+  integer, parameter :: MFORCE_WT_PRD=1000
+  integer, parameter :: MWF=3
+
+  private 
+  public :: MFORCE, MFORCE_WT_PRD, MWF
+  save
+ end module force_mod
 
  module atom
    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
-   use precision_kinds, only: dp  
-   include 'vmc.h'
+   use precision_kinds, only: dp
+   use vmc, only: MCENT, MCTYPE
 
    real(dp) :: cent( 3, MCENT)
    real(dp) :: znuc( MCTYPE)
@@ -32,9 +107,9 @@
 
  module basis
    !> Arguments: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz, n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz, n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
+   use force_mod, only: MWF
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'force.h'
+   use vmc, only: MBASIS, MCTYPE
 
    !  ncent  = number of centers                                                                              
    !  zex    = screening constants for each basis function
@@ -95,11 +170,24 @@
    save
  end module basis
 
+ module pseudo_mod
+  !>Arguments : MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+  integer, parameter :: MPS_L=4
+  integer, parameter :: MPS_QUAD=86
+  integer, parameter :: MPS_GRID=1200
+  ! for gauss ecp
+  integer, parameter :: MGAUSS=100 
+
+  private 
+  public :: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+  save
+ end module pseudo_mod
+
  module b_tmove
    !> Arguments: b_t, iskip
+   use pseudo_mod, only: MPS_QUAD
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'pseudo.h'
+   use vmc, only: MELEC, MORB, MCENT
 
    real(dp) :: b_t(MORB,MPS_QUAD,MCENT,MELEC)
    integer  :: iskip(MELEC,MCENT)
@@ -112,7 +200,7 @@
  module Bloc
    !> Arguments: b, tildem, xmat
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC, MORB
 
    real(dp) :: b(MORB,MELEC)
    real(dp) :: tildem(MELEC,MORB,2)
@@ -126,7 +214,7 @@
  module Bloc_da
    !> Arguments: b_da, db
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC, MORB, MCENT
 
    real(dp) :: b_da(3,MELEC,MORB,MCENT)
    real(dp) :: db(3,MELEC,MORB,MCENT) 
@@ -135,12 +223,19 @@
    public :: b_da, db
    save
  end module Bloc_da
-   
+ 
+ module optjas 
+  integer, parameter :: MPARMJ = 100
+  private 
+  public :: MPARMJ
+  save 
+ end module optjas
+ 
  module Bloc_dj
    !> Arguments: b_dj
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'optjas.h'
+   use vmc, only: MELEC, MORB
 
    real(dp) :: b_dj(MORB,MELEC,MPARMJ)
 
@@ -161,9 +256,9 @@
 
  module casula
    !> Arguments: i_vpsp, icasula, t_vpsp
+   use pseudo_mod, only: MPS_QUAD
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'pseudo.h'
+   use vmc, only: MELEC, MCENT
 
    integer  :: i_vpsp
    integer  :: icasula
@@ -177,7 +272,6 @@
  module chck
   !> Arguments: bot
   use precision_kinds, only: dp
-  include 'vmc.h'
 
    real(dp) :: bot
 
@@ -186,9 +280,25 @@
    save
  end module chck
 
+ module optci
+  !> Arguments:
+  !     flags and dimensions for generalized CI expectation values
+  !     maximal number of terms, max dim of reduced matrices
+  integer, parameter :: MXCITERM=5000
+  integer, parameter :: MXCIREDUCED=1
+  integer, parameter :: MXCIMATDIM=MXCITERM*(MXCIREDUCED+1)/2
+
+  private
+  public :: MXCITERM, MXCIREDUCED, MXCIMATDIM
+  save 
+ end module optci
+  
  module ci000
    !> Arguments: iciprt, nciprim, nciterm
- 
+   !     iciprt : print flag 
+   !     nciterm: number of terms (possibly after a transformation)
+   !     nciprim: number of primitive terms (determinant ratios)
+   
    integer  :: iciprt
    integer  :: nciprim
    integer  :: nciterm
@@ -200,8 +310,8 @@
 
  module ci001_blk
    !> Arguments: ci_oe, ci_o
+   use optci, only: MXCITERM, MXCIREDUCED
    use precision_kinds, only: dp
-   include 'optci.h'
 
    real(dp) :: ci_o(MXCITERM)
    real(dp) :: ci_oe(MXCITERM,MXCIREDUCED)
@@ -213,8 +323,8 @@
 
  module ci002_blk
    !> Arguments: ci_o_old, ci_oe_old
+   use optci, only: MXCITERM, MXCIREDUCED
    use precision_kinds, only: dp
-   include 'optci.h'
  
     real(dp) :: ci_o_old(MXCITERM)
     real(dp) :: ci_oe_old(MXCITERM,MXCIREDUCED)
@@ -226,8 +336,8 @@
 
  module ci003_blk
    !> Arguments: ci_e_old, ci_e
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
-   include 'optci.h'
 
    real(dp) :: ci_e(MXCITERM)
    real(dp) :: ci_e_old(MXCITERM)
@@ -239,8 +349,8 @@
 
  module ci004_blk
    !> Arguments: ci_de, ci_de_old
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
-   include 'optci.h'
  
    real(dp) :: ci_de(MXCITERM)
    real(dp) :: ci_de_old(MXCITERM)
@@ -252,8 +362,8 @@
 
  module ci005_blk
     !> Arguments: ci_o_cum, ci_o_sum
+    use optci, only: MXCITERM
     use precision_kinds, only: dp
-    include 'optci.h'
  
     real(dp) :: ci_o_cum(MXCITERM)
     real(dp) :: ci_o_sum(MXCITERM)
@@ -265,8 +375,8 @@
  
  module ci006_blk
    !> Arguments: ci_de_cum, ci_de_sum
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
-   include 'optci.h'
  
     real(dp) :: ci_de_cum(MXCITERM)
     real(dp) :: ci_de_sum(MXCITERM)
@@ -278,8 +388,8 @@
 
  module ci008_blk
    !> Arguments: ci_oe_cm2, ci_oe_sum, ci_oe_cum
+   use optci, only: MXCITERM, MXCIREDUCED
    use precision_kinds, only: dp
-   include 'optci.h'
  
    real(dp) :: ci_oe_cm2(MXCITERM,MXCIREDUCED)
    real(dp) :: ci_oe_cum(MXCITERM,MXCIREDUCED)
@@ -292,8 +402,8 @@
 
  module ci009_blk
    !> Arguments: ci_oo_sum, ci_oo_cm2, ci_oo_cum
+   use optci, only: MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
  
    real(dp) :: ci_oo_cm2(MXCIMATDIM)
    real(dp) :: ci_oo_cum(MXCIMATDIM)
@@ -306,8 +416,8 @@
 
  module ci010_blk
    !> Arguments: ci_ooe_cum, ci_ooe_sum
+   use optci, only: MXCIMATDIM
    use precision_kinds, only: dp
-   include 'optci.h'
  
    real(dp) :: ci_ooe_cum(MXCIMATDIM)
    real(dp) :: ci_ooe_sum(MXCIMATDIM)
@@ -319,9 +429,9 @@
 
  module coefs
    !> Arguments: coef, nbasis, norb
+   use force_mod, only: MWF
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'force.h'
+   use vmc, only: MORB, MBASIS
 
    real(dp) :: coef(MBASIS,MORB,MWF)
    integer  :: nbasis
@@ -334,10 +444,10 @@
 
  module config
    !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'force.h'
-   include 'mstates.h'
+   use vmc, only: MELEC
+   use mstates_mod, only: MSTATES
 
    real(dp) :: delttn(MELEC)
    real(dp) :: enew(MFORCE)
@@ -376,7 +486,6 @@
  module const
    !> Arguments: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
    use precision_kinds, only: dp
-   include 'vmc.h'
 
    real(dp) :: delta
    real(dp) :: deltai
@@ -418,8 +527,6 @@
 
  module contrl
   !> Arguments: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-  use precision_kinds, only: dp
-  include 'vmc.h'
 
    integer  :: idump
    integer  :: irstar
@@ -476,8 +583,8 @@ end module contr3
  
  module contrldmc
    !> Arguments: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'force.h'
 
    integer  :: iacc_rej
    integer  :: icross
@@ -501,10 +608,10 @@ end module contr3
 
  module csfs
    !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+   use force_mod, only: MWF
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'mstates.h'
-   include 'force.h'
+   use vmc, only: MDET
+   use mstates_mod, only: MSTATES, MDETCSFX
 
    real(dp) :: ccsf(MDET,MSTATES,MWF)
    real(dp) :: cxdet(MDET*MDETCSFX)
@@ -522,7 +629,7 @@ end module contr3
  module cuspmat
    !> Arguments: cm, ishe, iwc3, neqs
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: NEQSX
 
    real(dp) :: cm(NEQSX,NEQSX)
    integer  :: ishe
@@ -537,7 +644,7 @@ end module contr3
  module da_energy_sumcum
    !> Arguments: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCENT
 
    real(dp) :: da_energy_cm2(3,MCENT)
    real(dp) :: da_energy_cum(3,MCENT)
@@ -553,7 +660,7 @@ end module contr3
  module da_jastrow4val
    !> Arguments: da_d2j, da_j, da_vj
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC, MCENT
 
    real(dp) :: da_d2j(3,MELEC,MCENT)
    real(dp) :: da_j(3,MELEC,MCENT)
@@ -567,7 +674,7 @@ end module contr3
  module da_orbval
    !> Arguments: da_d2orb, da_dorb, da_orb
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC, MORB, MCENT
 
    real(dp) :: da_d2orb(3,MELEC,MORB,MCENT)
    real(dp) :: da_dorb(3,3,MELEC,MORB,MCENT)
@@ -581,10 +688,10 @@ end module contr3
  module da_pseudo
    !> Arguments: da_pecent, da_vps, da_nonloc  
 
-   use precision_kinds, only: dp  
+   use pseudo_mod, only: MPS_L
+   use precision_kinds, only: dp
+      use vmc, only: MELEC, MCENT
 
-   include 'vmc.h'
-   include 'pseudo.h'
 
    real(dp) :: da_pecent( 3, MCENT), da_vps( 3, MELEC, MCENT, MPS_L)
    real(dp) :: da_nonloc( 3, MCENT)= 0.0D0 
@@ -597,7 +704,7 @@ end module contr3
  module da_energy_now
    !> Arguments: da_energy, da_psi
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCENT
  
    real(dp) :: da_energy(3,MCENT)
    real(dp) :: da_psi(3,MCENT)
@@ -609,9 +716,9 @@ end module contr3
 
  module deloc_dj_m
    !> Arguments: denergy
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'optjas.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: denergy(MPARMJ,MSTATES)
 
@@ -623,7 +730,7 @@ end module contr3
  module denergy_det_m
    !> Arguments: denergy_det
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MDET
 
     real(dp) :: denergy_det(MDET,2)
 
@@ -635,7 +742,7 @@ end module contr3
  module denupdn
    !> Arguments: rprobdn, rprobup
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: nrad
 
    real(dp) :: rprobdn(nrad)
    real(dp) :: rprobup(nrad)
@@ -647,9 +754,9 @@ end module contr3
 
  module derivjas
    !> Arguments: d2g, g, go, gvalue
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'optjas.h'
+   use vmc, only: MELEC
 
    real(dp) :: d2g(MPARMJ)
    real(dp) :: g(3,MELEC,MPARMJ)
@@ -663,10 +770,10 @@ end module contr3
 
  module dets
    !> Arguments: cdet, ndet
+   use force_mod, only: MWF
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'force.h'
-   include 'mstates.h'
+   use vmc, only: MDET
+   use mstates_mod, only: MSTATES
 
    real(dp) :: cdet(MDET,MSTATES,MWF)
    integer  :: ndet
@@ -679,7 +786,7 @@ end module contr3
  module dets_equiv
   !> Arguments: cdet_equiv, dcdet_equiv
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MDET
 
    real(dp) :: cdet_equiv(MDET)
    real(dp) :: dcdet_equiv(MDET)
@@ -692,7 +799,7 @@ end module contr3
  module distances_sav
   !> Arguments: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
   use precision_kinds, only: dp
-  include 'vmc.h'
+  use vmc, only: MELEC, MCENT
 
   real(dp) :: r_ee_sav(MELEC)
   real(dp) :: r_en_sav(MCENT)
@@ -707,8 +814,7 @@ end module contr3
 
  module dorb_m
    !> Arguments: iworbd
-   use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC, MDET
 
    integer  :: iworbd(MELEC,MDET)
 
@@ -716,6 +822,14 @@ end module contr3
    public :: iworbd 
    save
  end module dorb_m
+
+ module efield_mod
+  !> Arguments: MCHARGES
+  integer, parameter :: MCHARGES = 100
+  private
+  public :: MCHARGES
+  save
+ end module efield_mod
 
  module efield
    !> Arguments: iscreen, ncharges, iefield
@@ -732,7 +846,7 @@ end module contr3
  module efield_blk
    !> Arguments: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
    use precision_kinds, only: dp
-   include 'efield.h'
+   use efield_mod, only: MCHARGES
  
    real(dp) :: ascreen(MCHARGES)
    real(dp) :: bscreen(MCHARGES)
@@ -748,8 +862,6 @@ end module contr3
 
  module elec
   !> Arguments: ndn, nup
-  use precision_kinds, only: dp
-  include 'vmc.h'
 
   integer  :: ndn
   integer  :: nup
@@ -759,11 +871,31 @@ end module contr3
   save
  end module elec
 
+ module embed
+  ! tables for hartree and exchange potentials 
+  ! max interpolation order
+  integer, parameter :: MXTABI = 6 
+  ! max number of  hartree, exchangetables 
+  integer, parameter :: MXHTAB=1
+  integer, parameter :: MXXTAB=1
+  integer, parameter :: MXTAB=MXHTAB+MXXTAB
+  ! max number of gridpoints in hartree table
+  integer, parameter :: MXHGRID=1
+  ! max number of gridpoints in exchange tables
+  integer, parameter :: MXXGRID=1
+
+  private 
+  public :: MXTABI, MXTAB, MXHTAB, MXXTAB
+  public :: MXHGRID, MXXGRID
+  save 
+ end module embed
+
+
  module estcum
    !> Arguments: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'mstates.h'
-   include 'force.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: ecum(MSTATES,MFORCE)
    real(dp) :: ecum1(MSTATES)
@@ -782,7 +914,7 @@ end module contr3
  module estsig
    !> Arguments: ecm21s, ecum1s
    use precision_kinds, only: dp
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: ecm21s(MSTATES)
    real(dp) :: ecum1s(MSTATES)
@@ -794,9 +926,9 @@ end module contr3
 
  module estsum
   !> Arguments: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+  use force_mod, only: MFORCE
   use precision_kinds, only: dp
-  include 'force.h'
-  include 'mstates.h'
+  use mstates_mod, only: MSTATES
 
   real(dp) :: acc
   real(dp) :: esum(MSTATES,MFORCE)
@@ -814,7 +946,7 @@ end module contr3
  module estpsi
    !> Arguments: apsi, aref, detref
    use precision_kinds, only: dp
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: apsi(MSTATES)
    real(dp) :: aref
@@ -827,9 +959,9 @@ end module contr3
 
  module est2cm
    !> Arguments: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'mstates.h'
-   include 'force.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: ecm2(MSTATES,MFORCE)
    real(dp) :: ecm21(MSTATES)
@@ -844,10 +976,33 @@ end module contr3
    save
  end module est2cm
 
+
+ module ewald_mod
+  ! NP         is the number of factors of (r/cutr-1) we multiply polynomial by
+  ! IVOL_RATIO is the ratio of the simulation to primitive cell volumes
+  ! IBIG_RATIO is the ratio of the number of vectors or norms before the optimal Ewald separation
+  !            to the number after the separation
+  ! NSYM       is the ratio of the number of vectors to the number of norms
+  !            and depends on the symmetry of the lattice.
+  integer, parameter :: NCOEFX=10, NPX=4, IVOL_RATIO=10, IBIG_RATIO=15, NSYM=8
+  integer, parameter :: NGNORMX=1000, NGVECX=NGNORMX*NSYM, NG1DX=60
+  integer, parameter :: NGNORM_SIMX=NGNORMX*IVOL_RATIO, NGVEC_SIMX=NGVECX*IVOL_RATIO
+  integer, parameter :: NGNORM_BIGX=IBIG_RATIO*NGNORMX, NGVEC_BIGX=IBIG_RATIO*NGVECX
+  integer, parameter :: NGNORM_SIM_BIGX=IBIG_RATIO*NGNORM_SIMX, NGVEC_SIM_BIGX=IBIG_RATIO*NGVEC_SIMX
+
+  private 
+  public :: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM
+  public :: NGNORMX, NGVECX, NG1DX
+  public :: NGNORM_SIMX, NGVEC_SIMX
+  public :: NGNORM_BIGX, NGVEC_BIGX
+  public :: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
+  save 
+ end module ewald_mod
+    
  module ewald
    !> Arguments: b_coul, b_coul_sim, y_coul, y_coul_sim
    use precision_kinds, only: dp
-   include 'ewald.h'
+   use ewald_mod, only: NCOEFX, NGNORMX, NGNORM_SIMX
 
    real(dp) :: b_coul(NCOEFX)
    real(dp) :: b_coul_sim(NCOEFX)
@@ -862,7 +1017,7 @@ end module contr3
  module ewald_basis
    !> Arguments: vps_basis_fourier
    use precision_kinds, only: dp
-   include 'ewald.h'
+   use ewald_mod, only: NGNORM_BIGX
 
    real(dp) :: vps_basis_fourier(NGNORM_BIGX)
 
@@ -886,9 +1041,9 @@ end module contr3
 
  module forcest
    !> Arguments: fcm2, fcum
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'force.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: fcm2(MSTATES,MFORCE)
    real(dp) :: fcum(MSTATES,MFORCE)
@@ -900,9 +1055,9 @@ end module contr3
 
  module forcestr
    !> Arguments: delc
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'force.h'
+   use vmc, only: MCENT
  
    real(dp) :: delc(3,MCENT,MFORCE)
  
@@ -913,9 +1068,9 @@ end module contr3
 
  module forcewt
    !> Arguments: wcum, wsum
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'mstates.h'
-   include 'force.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: wcum(MSTATES,MFORCE)
    real(dp) :: wsum(MSTATES,MFORCE)
@@ -927,7 +1082,6 @@ end module forcewt
 
  module force_dmc
    !> Arguments: itausec, nwprod
-   use precision_kinds, only: dp
 
    integer  :: itausec
    integer  :: nwprod
@@ -940,7 +1094,7 @@ end module forcewt
  module force_fin
    !> Arguments: da_energy_ave, da_energy_err
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCENT
 
    real(dp) :: da_energy_ave(3,MCENT)
    real(dp) :: da_energy_err(3)
@@ -949,12 +1103,24 @@ end module forcewt
    public   :: da_energy_ave, da_energy_err
    save
  end module force_fin
+ 
+ module sr_mod
+  !> Arguments:
+  integer, parameter :: MPARM=15100
+  integer, parameter :: MOBS=10+6*MPARM
+  integer, parameter :: MCONF=10000
+  integer, parameter :: MVEC=160
 
+  private
+  public :: MPARM, MOBS, MCONF, MVEC
+  save
+ end module sr_mod 
+ 
  module force_mat_n
    !> Arguments: force_o
+   use sr_mod, only: MCONF
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'sr.h'
+   use vmc, only: MCENT
 
    real(dp) :: force_o(6*MCENT,MCONF)
 
@@ -965,8 +1131,8 @@ end module forcewt
 
  module forcepar
    !> Arguments: deltot, istrech, nforce
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'force.h'
 
    real(dp) :: deltot(MFORCE)
    integer  :: istrech
@@ -979,9 +1145,9 @@ end module forcewt
 
  module gauss_ecp
    !> Arguments: ecp_coef, ecp_exponent, necp_power, necp_term
+   use pseudo_mod, only: MPS_L, MGAUSS
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'pseudo.h'
+   use vmc, only: MCTYPE
  
    real(dp) :: ecp_coef(MGAUSS,MPS_L,MCTYPE)
    real(dp) :: ecp_exponent(MGAUSS,MPS_L,MCTYPE)
@@ -993,38 +1159,8 @@ end module forcewt
    save
  end module gauss_ecp
 
- module grid3d_param
-   !> Arguments: nstep3d, endpt, origin, step3d
-   use precision_kinds, only: dp
-
-   real(dp) :: endpt(3)
-   integer  :: nstep3d(3)
-   real(dp) :: origin(3)
-   real(dp) :: step3d(3)
-
-   private
-   public :: nstep3d, endpt, origin, step3d
-   save
- end module grid3d_param
-
- module grid3dflag
-   !> Arguments: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
-   use precision_kinds, only: dp
-   include 'vmc.h'
-
-   integer  :: i3ddensity
-   integer  :: i3dgrid
-   integer  :: i3dlagorb
-   integer  :: i3dsplorb
-
-   private
-   public :: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
-   save
- end module grid3dflag
-
  module ghostatom
    !> Arguments: newghostype, nghostcent
-   use precision_kinds, only: dp
 
    integer  :: newghostype
    integer  :: nghostcent
@@ -1034,15 +1170,28 @@ end module forcewt
    save
  end module ghostatom
 
+ module optorb_mod
+  ! flags and dimensions for orbital optimization
+  ! maximal number of terms, max dim of reduced matrices
+  integer, parameter :: MXORBOP=8000
+  integer, parameter :: MXREDUCED=1
+  integer, parameter :: MXMATDIM=MXREDUCED*(MXREDUCED+1)
+  integer, parameter :: MXMATDIM2=MXMATDIM/2
+  integer, parameter :: MXREP=10
+  private
+  public :: MXORBOP, MXREDUCED, MXMATDIM, MXMATDIM2, MXREP
+  save
+ end module optorb_mod
+
+
  module gradhess_all
    !> Arguments: MPARMALL, grad, h, s
+   use optorb_mod, only: MXREDUCED
+   use optjas, only: MPARMJ
+   use optci, only: MXCIREDUCED
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'optjas.h'
-   include 'optci.h'
-   include 'optorb.h'
 
-   parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
+   integer, parameter :: MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED
    real(dp) :: grad(MPARMALL)
    real(dp) :: h(MPARMALL,MPARMALL)
    real(dp) :: s(MPARMALL,MPARMALL)
@@ -1054,9 +1203,9 @@ end module forcewt
 
  module gradhessj
    !> Arguments: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2, e2
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'mstates.h'
-   include 'optjas.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: d2j(MPARMJ,MPARMJ,MSTATES)
    real(dp) :: d2j_e(MPARMJ,MPARMJ,MSTATES)
@@ -1078,10 +1227,10 @@ end module forcewt
 
  module gradhessjo
    !> Arguments: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'mstates.h'
-   include 'optjas.h'
+   use vmc, only: MCTYPE
+   use mstates_mod, only: MSTATES
 
    real(dp) :: d1d2a_old(MCTYPE)
    real(dp) :: d1d2b_old(2)
@@ -1097,8 +1246,8 @@ end module forcewt
 
  module gradhess_ci
    !> Arguments: grad_ci, h_ci, s_ci
+   use optci, only: MXCITERM, MXCIREDUCED
    use precision_kinds, only: dp
-   include 'optci.h'
 
    real(dp) :: grad_ci(MXCITERM)
    real(dp) :: h_ci(MXCITERM,MXCIREDUCED)
@@ -1111,8 +1260,8 @@ end module forcewt
 
  module gradhess_jas
    !> Arguments: grad_jas, h_jas, s_jas
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'optjas.h'
  
    real(dp) :: grad_jas(MPARMJ)
    real(dp) :: h_jas(MPARMJ,MPARMJ)
@@ -1125,9 +1274,9 @@ end module forcewt
  
  module gradhess_mix_jas_ci
    !> Arguments: h_mix_jas_ci, s_mix_jas_ci
+   use optjas, only: MPARMJ
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
-   include 'optjas.h'
-   include 'optci.h'
 
    real(dp) :: h_mix_jas_ci(2*MPARMJ,MXCITERM)
    real(dp) :: s_mix_jas_ci(MPARMJ,MXCITERM)
@@ -1139,9 +1288,9 @@ end module forcewt
 
  module gradhess_mix_jas_orb
    !> Arguments: h_mix_jas_orb, s_mix_jas_orb
+   use optorb_mod, only: MXREDUCED
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'optjas.h'
 
    real(dp) :: h_mix_jas_orb(2*MPARMJ,MXREDUCED)
    real(dp) :: s_mix_jas_orb(MPARMJ,MXREDUCED)
@@ -1153,9 +1302,9 @@ end module forcewt
 
  module gradhess_mix_orb_ci
    !> Arguments: h_mix_ci_orb, s_mix_ci_orb
+   use optorb_mod, only: MXREDUCED
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'optci.h'
 
    real(dp) :: h_mix_ci_orb(2*MXCITERM,MXREDUCED)
    real(dp) :: s_mix_ci_orb(MXCITERM,MXREDUCED)
@@ -1167,9 +1316,9 @@ end module forcewt
 
  module gradjerr
    !> Arguments: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'optjas.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: dj_bsum(MPARMJ,MSTATES)
    real(dp) :: dj_e_bsum(MPARMJ,MSTATES)
@@ -1186,8 +1335,6 @@ end module forcewt
 
  module gradjerrb
   !> Arguments: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
-  use precision_kinds, only: dp
-  include 'vmc.h'
 
    integer  :: nbj_current
    integer  :: ngrad_jas_bcum
@@ -1202,7 +1349,7 @@ end module forcewt
  module grdnthes
    !> Arguments: hessian_zmat
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCENT
 
    real(dp) :: hessian_zmat(3,MCENT)
 
@@ -1213,9 +1360,8 @@ end module forcewt
 
  module grdntsmv
    !> Arguments: igrdaidx, igrdcidx, igrdmv
-   use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'force.h'
+   use force_mod, only: MFORCE
+   use vmc, only: MCENT
 
     integer  :: igrdaidx(MFORCE)
     integer  :: igrdcidx(MFORCE)
@@ -1241,10 +1387,95 @@ end module forcewt
    public :: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts 
    save
  end module grdntspar
+ 
+ module grid_mod
+  !> Arguments
+  ! flags and dimensions for the 3d grid objects
+  use precision_kinds, only: dp, sp
+  
+  integer, parameter :: MXNSTEP = 1
+  ! integer, parameter :: MXNSTEP = 50
+  integer, parameter :: MXNSTEP2 = MXNSTEP*MXNSTEP
+  integer, parameter :: MXNSTEP3 = MXNSTEP2*MXNSTEP
+  
+  integer, parameter :: IUNDEFINED = -1234567890
+  real(dp), parameter :: UNDEFINED = -1234567890.d0, SHIFT = 2.d0
+  
+  real(sp) grid3d(MXNSTEP,MXNSTEP,MXNSTEP), cart_from_int(MXNSTEP,3)
+
+  private 
+  public :: MXNSTEP, MXNSTEP2, MXNSTEP3
+  public :: IUNDEFINED, UNDEFINED, SHIFT 
+  public :: grid3d, cart_from_int
+  save 
+
+ end module grid_mod
+
+ module grid_spline_mod
+  !> Arguments
+  use precision_kinds, only: sp
+  use vmc, only: MELEC
+  use grid_mod, only: MXNSTEP
+
+  integer, parameter :: MORB_OCC = MELEC/2+3
+  real(sp) orb_num_spl(8,MXNSTEP,MXNSTEP,MXNSTEP,MORB_OCC)
+
+  private 
+  public :: MORB_OCC
+  public :: orb_num_spl
+  save 
+
+ end module grid_spline_mod
+
+ module grid_lagrange_mod
+  !> argument
+  use precision_kinds, only: sp
+  use grid_mod, only: MXNSTEP
+  use vmc, only: MELEC
+  ! Number of Lagrange interpolation points/axis
+  integer, parameter :: LAGMAX=4
+  integer, parameter :: LAGSTART = -LAGMAX/2, LAGEND=LAGSTART+LAGMAX-1
+  integer, parameter ::  MORB_OCC = MELEC/2
+  
+  !  Spline fits of the orbitals
+  ! and boundary conditions (for the creation of the fit)
+  real(sp) orb_num_lag(5,MXNSTEP,MXNSTEP,MXNSTEP,MORB_OCC)
+
+  private 
+  public :: LAGMAX, LAGSTART, LAGEND, MORB_OCC
+  public :: orb_num_lag
+  save
+ end module grid_lagrange_mod
+
+ module grid3d_param
+   !> Arguments: nstep3d, endpt, origin, step3d
+   use precision_kinds, only: dp
+
+   real(dp) :: endpt(3)
+   integer  :: nstep3d(3)
+   real(dp) :: origin(3)
+   real(dp) :: step3d(3)
+
+   private
+   public :: nstep3d, endpt, origin, step3d
+   save
+ end module grid3d_param
+
+ module grid3dflag
+   !> Arguments: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
+
+   integer  :: i3ddensity
+   integer  :: i3dgrid
+   integer  :: i3dlagorb
+   integer  :: i3dsplorb
+
+   private
+   public :: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
+   save
+ end module grid3dflag
 
  module header
    !> Arguments: date, title
-   use precision_kinds, only: dp
 
    character*20 title
    character*24 date
@@ -1257,7 +1488,7 @@ end module forcewt
  module ijasnonlin
    !> Arguments: d1d2a, d1d2b, d2d2a, d2d2b
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCTYPE
 
    real(dp) :: d1d2a(MCTYPE)
    real(dp) :: d1d2b(2)
@@ -1308,8 +1539,6 @@ end module forcewt
 
  module insout
    !> Arguments: inout, inside
-   use precision_kinds, only: dp
-   include 'vmc.h'
 
    integer  :: inout
    integer  :: inside
@@ -1322,7 +1551,7 @@ end module forcewt
  module jasn
    !> Arguments: d2ijn, d2n, fijn, fjn, fsn, fsumn
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC
 
    real(dp) :: d2ijn(MELEC,MELEC)
    real(dp) :: d2n
@@ -1339,7 +1568,7 @@ end module forcewt
  module jaso
    !> Arguments: d2ijo, d2o, fijo, fjo, fso, fsumo
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC
 
     real(dp) :: d2ijo(MELEC,MELEC)
     real(dp) :: d2o
@@ -1370,8 +1599,8 @@ end module forcewt
 
  module jaspar1
    !> Arguments: cjas1, cjas2
+   use force_mod, only: MWF
    use precision_kinds, only: dp
-   include 'force.h'
 
    real(dp) :: cjas1(MWF)
    real(dp) :: cjas2(MWF)
@@ -1383,8 +1612,8 @@ end module forcewt
 
  module jaspar2
    !> Arguments: a1, a2
+   use force_mod, only: MWF
    use precision_kinds, only: dp
-   include 'force.h'
 
    real(dp) :: a1(83,3,MWF)
    real(dp) :: a2(83,3,MWF)
@@ -1396,9 +1625,10 @@ end module forcewt
 
  module jaspar3
    !> Arguments: a, b, c, fck, nord, scalek
+   use force_mod, only: MWF
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'force.h'
+   use vmc, only: MCTYPE
+   use vmc, only: MORDJ1
 
    real(dp) :: a(MORDJ1,MWF)
    real(dp) :: b(MORDJ1,2,MWF)
@@ -1414,9 +1644,10 @@ end module forcewt
 
  module jaspar4
    !> Arguments: a4, norda, nordb, nordc
+   use force_mod, only: MWF
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'force.h'
+   use vmc, only: MCTYPE
+   use vmc, only: MORDJ1
 
    real(dp) :: a4(MORDJ1,MCTYPE,MWF)
    integer  :: norda
@@ -1431,7 +1662,7 @@ end module forcewt
  module jaspar6
    !> Arguments: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCTYPE
 
    real(dp) :: asymp_jasa(MCTYPE)
    real(dp) :: asymp_jasb(2)
@@ -1449,8 +1680,7 @@ end module forcewt
 
  module jaspointer
    !> Arguments: npoint, npointa
-   use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCTYP3X
 
    integer  :: npoint(MCTYP3X)
    integer  :: npointa(3*MCTYP3X)
@@ -1462,8 +1692,8 @@ end module forcewt
 
  module jd_scratch
    !> Arguments: qr, rr
+   use sr_mod, only: MPARM
    use precision_kinds, only: dp
-   include 'sr.h'
 
    real(dp) :: qr(MPARM)
    real(dp) :: rr(MPARM)
@@ -1476,7 +1706,7 @@ end module forcewt
  module kinet
    !> Arguments: dtdx2n, dtdx2o
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC
 
    real(dp) :: dtdx2n(MELEC)
    real(dp) :: dtdx2o(MELEC)
@@ -1488,8 +1718,8 @@ end module forcewt
 
  module linear_norm
    !> Arguments: oav, ci_oav
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
-   include 'optci.h'
 
    real(dp) :: oav(MXCITERM)
    real(dp) :: ci_oav(MXCITERM) 
@@ -1511,9 +1741,9 @@ end module forcewt
 
  module mix_jas_ci
    !> Arguments: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'optjas.h'
+   use vmc, only: MDET
 
    real(dp) :: de_o_ci(MPARMJ,MDET)
    real(dp) :: dj_de_ci(MPARMJ,MDET)
@@ -1527,10 +1757,10 @@ end module forcewt
 
  module mix_jas_orb
    !> Arguments: de_o, dj_ho, dj_o, dj_oe
+   use optorb_mod, only: MXREDUCED
+   use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'optjas.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
  
    real(dp) :: de_o(MPARMJ,MXREDUCED,MSTATES)
    real(dp) :: dj_ho(MPARMJ,MXREDUCED,MSTATES)
@@ -1544,9 +1774,9 @@ end module forcewt
 
  module mix_orb_ci
    !> Arguments: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
+   use optorb_mod, only: MXREDUCED
+   use optci, only: MXCITERM
    use precision_kinds, only: dp
-   include 'optci.h'
-   include 'optorb.h'
 
    real(dp) :: ci_de_o(MXCITERM,MXREDUCED)
    real(dp) :: ci_o_ho(MXCITERM,MXREDUCED)
@@ -1557,6 +1787,17 @@ end module forcewt
    public :: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe 
    save
  end module mix_orb_ci
+
+ module mmpol_mod
+  !> Arguments MCHMM, mmpolfile_sites, mmpolfile_chmm
+  
+  integer, parameter :: MCHMM=1
+  character*80 mmpolfile_sites
+  character*80 mmpolfile_chmm
+  private 
+  public :: MCHMM, mmpolfile_sites, mmpolfile_chmm
+  save
+ end module mmpol_mod
 
  module mmpol_cntrl
    !> Arguments: isites_mmpol, immpolprt, icall_mm, ich_mmpol, immpol
@@ -1574,8 +1815,8 @@ end module forcewt
 
  module mmpol_dipol
    !> Arguments: dipo, alfa
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
 
    real(dp) :: alfa(MCHMM)
    real(dp) :: dipo(3,MCHMM)
@@ -1587,8 +1828,8 @@ end module forcewt
 
  module mmpol_hpsi
    !> Arguments: eek_pol, peQMdp, peQMq
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
 
    real(dp) :: eek_pol(3,MCHMM)
    real(dp) :: peQMdp
@@ -1601,8 +1842,8 @@ end module forcewt
 
  module mmpol_parms
    !> Arguments: x_mmpol, nchmm, chmm, rqq
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
  
    real(dp) :: chmm(MCHMM)
    integer  :: nchmm
@@ -1616,8 +1857,8 @@ end module forcewt
  
  module mmpolo
    !> Arguments: cmmpolo, dmmpolo, eeko
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
 
    real(dp) :: cmmpolo
    real(dp) :: dmmpolo
@@ -1630,8 +1871,8 @@ end module forcewt
 
  module mmpol_ahpol
    !> Arguments: ah_pol, bh_pol
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
 
    real(dp) :: ah_pol(3*MCHMM,3*MCHMM)
    real(dp) :: bh_pol(3*MCHMM)
@@ -1643,8 +1884,8 @@ end module forcewt
 
  module mmpol_averages
    !> Arguments: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2, cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
  
     real(dp) :: cmmpol_cm2
     real(dp) :: cmmpol_cum
@@ -1668,8 +1909,8 @@ end module forcewt
 
  module mmpol_fdc
    !> Arguments: a_cutoff, rcolm, screen1, screen2
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
  
    real(dp) :: a_cutoff
    real(dp) :: rcolm
@@ -1683,8 +1924,8 @@ end module forcewt
  
  module mmpol_field
    !> Arguments: eqk_pol, enk_pol
+   use mmpol_mod, only: MCHMM
    use precision_kinds, only: dp
-   include 'mmpol.h'
  
    real(dp) :: enk_pol(3,MCHMM)
    real(dp) :: eqk_pol(3,MCHMM)
@@ -1695,9 +1936,8 @@ end module forcewt
  end module mmpol_field
 
  module mmpol_inds
+   use mmpol_mod, only: MCHMM
    !> Arguments: inds_pol
-   use precision_kinds, only: dp
-   include 'mmpol.h'
  
    integer  :: inds_pol(MCHMM)
  
@@ -1709,7 +1949,6 @@ end module forcewt
  module mmpol_pot
    !> Arguments: peqq, pepol_dp, pepol_q, penu_q, peq_dp, penu_dp, u_dd, u_self
    use precision_kinds, only: dp
-   include 'vmc.h'
 
    real(dp) :: penu_dp
    real(dp) :: penu_q
@@ -1724,6 +1963,14 @@ end module forcewt
    public :: peqq, pepol_dp, pepol_q, penu_q, peq_dp, penu_dp, u_dd, u_self
    save
  end module mmpol_pot
+
+ module mpi_qmc
+  !> Arguments NPROCX
+  integer, parameter :: NPROCX=1024
+  private
+  public :: NPROCX
+  save
+ end module mpi_qmc
 
  module mpiconf
    !> Arguments: idtask, nproc, wid
@@ -1751,8 +1998,7 @@ end module forcewt
  module mstates2
    !> Arguments: effcum, effcm2
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: effcm2(MSTATES)
    real(dp) :: effcum(MSTATES)
@@ -1765,8 +2011,7 @@ end module forcewt
  module mstates3
    !> Arguments: weights_g, iweight_g
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    integer  :: iweight_g(MSTATES)
    real(dp) :: weights_g(MSTATES)
@@ -1778,8 +2023,7 @@ end module forcewt
 
  module multidet
    !> Arguments: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-   use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC, MDET
 
    integer  :: iactv(2)
    integer  :: irepcol_det(MELEC,MDET,2)
@@ -1797,7 +2041,8 @@ end module forcewt
  module multimat
    !> Arguments: aa, wfmat
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC, MORB, MDET
+   use vmc, only: MEXCIT
 
    real(dp) :: aa(MELEC,MORB,2)
    real(dp) :: wfmat(MEXCIT**2,MDET,2)
@@ -1810,7 +2055,8 @@ end module forcewt
  module multimatn
    !> Arguments: aan, wfmatn
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC, MORB, MDET
+   use vmc, only: MEXCIT
 
    real(dp) :: aan(MELEC,MORB)
    real(dp) :: wfmatn(MEXCIT**2,MDET)
@@ -1820,12 +2066,22 @@ end module forcewt
    save
  end module multimatn
 
+ module numbas_mod
+  !> Arguments: MRWF_PTS, MRWF
+  integer, parameter :: MRWF_PTS=4000
+  integer, parameter :: MRWF=200
+  private 
+  public :: MRWF, MRWF_PTS
+  save 
+ end module numbas_mod 
+
  module numexp
    !> Arguments: ae, ce
+   use numbas_mod, only: MRWF
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'force.h'
-   include 'numbas.h'
+   use vmc, only: MCTYPE
+   use vmc, only: NCOEF
  
    real(dp) :: ae(2,MRWF,MCTYPE,MFORCE)
    real(dp) :: ce(NCOEF,MRWF,MCTYPE,MFORCE)
@@ -1837,7 +2093,6 @@ end module forcewt
 
  module ncusp
    !> Arguments: ncnstr, ncuspc, nfock, nfockc, norbc
-   use precision_kinds, only: dp
 
    integer  :: ncnstr
    integer  :: ncuspc
@@ -1852,10 +2107,10 @@ end module forcewt
 
  module numbas
    !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+   use numbas_mod, only: MRWF, MRWF_PTS
+   use force_mod, only: MWF
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'force.h'
-   include 'numbas.h'
+   use vmc, only: MBASIS, MCTYPE
 
    real(dp) :: arg(MCTYPE)
    real(dp) :: d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
@@ -1874,8 +2129,7 @@ end module forcewt
 
  module numbas1
    !> Arguments: iwlbas, nbastyp
-   use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MBASIS, MCTYPE
 
    integer  :: iwlbas(MBASIS,MCTYPE)
    integer  :: nbastyp(MCTYPE)
@@ -1887,8 +2141,7 @@ end module forcewt
 
  module numbas2
    !> Arguments: ibas0, ibas1
-   use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCENT
 
    integer  :: ibas0(MCENT)
    integer  :: ibas1(MCENT)
@@ -1901,9 +2154,7 @@ end module forcewt
  module orbital_num_lag
    !> Arguments: denom
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include '3dgrid.h'
-   include '3dgrid_lagrange.h'
+   use grid_lagrange_mod, only: LAGSTART, LAGEND
 
    real(dp) :: denom(LAGSTART:LAGEND,3)
    real(dp) :: step_inv(3,3)
@@ -1915,9 +2166,9 @@ end module orbital_num_lag
 
  module orb_mat_001
    !> Arguments: orb_o, orb_oe, orb_ho
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: orb_ho(MXORBOP,MSTATES)
    real(dp) :: orb_o(MXORBOP,MSTATES)
@@ -1930,9 +2181,9 @@ end module orbital_num_lag
 
  module orb_mat_002
    !> Arguments: orb_ho_old, orb_o_old, orb_oe_old
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: orb_ho_old(MXORBOP,MSTATES)
    real(dp) :: orb_o_old(MXORBOP,MSTATES)
@@ -1945,9 +2196,9 @@ end module orbital_num_lag
 
  module orb_mat_003
    !> Arguments: orb_o_sum, orb_o_cum
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: orb_o_cum(MXORBOP,MSTATES)
    real(dp) :: orb_o_sum(MXORBOP,MSTATES)
@@ -1959,9 +2210,9 @@ end module orbital_num_lag
 
  module orb_mat_004
    !> Arguments: orb_oe_sum, orb_oe_cum
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: orb_oe_cum(MXORBOP,MSTATES)
    real(dp) :: orb_oe_sum(MXORBOP,MSTATES)
@@ -1973,9 +2224,9 @@ end module orbital_num_lag
 
  module orb_mat_005
    !> Arguments: orb_ho_cum
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: orb_ho_cum(MXORBOP,MSTATES)
 
@@ -1986,9 +2237,9 @@ end module orbital_num_lag
 
  module orb_mat_006
    !> Arguments: orb_oo_cum
+   use optorb_mod, only: MXMATDIM2
    use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: orb_oo_cum(MXMATDIM2,MSTATES)
 
@@ -1999,9 +2250,9 @@ end module orbital_num_lag
 
  module orb_mat_007
    !> Arguments: orb_oho_cum
+   use optorb_mod, only: MXMATDIM
    use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: orb_oho_cum(MXMATDIM,MSTATES)
 
@@ -2011,10 +2262,8 @@ end module orbital_num_lag
  end module orb_mat_007
 
  module orb_mat_022
+   use optorb_mod, only: MXORBOP
    !> Arguments: ideriv
-   use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'mstates.h'
 
    integer  :: ideriv(2,MXORBOP)
 
@@ -2025,9 +2274,9 @@ end module orbital_num_lag
 
  module orb_mat_024
    !> Arguments: orb_oe_bsum, orb_f_bcum, orb_e_bsum, orb_w_bsum, orb_o_bsum, orb_f_bcm2
+   use optorb_mod, only: MXORBOP
    use precision_kinds, only: dp
-   include 'optorb.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: orb_e_bsum(MSTATES)
    real(dp) :: orb_f_bcm2(MXORBOP,MSTATES)
@@ -2044,7 +2293,7 @@ end module orbital_num_lag
  module orb_mat_030
    !> Arguments: orb_wcum, orb_ecum
    use precision_kinds, only: dp
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: orb_ecum(MSTATES)
    real(dp) :: orb_wcum(MSTATES)
@@ -2055,9 +2304,8 @@ end module orbital_num_lag
  end module orb_mat_030
 
  module orb_mat_033
+   use optorb_mod, only: MXORBOP
    !> Arguments: irepcol_ref, ideriv_ref, ideriv_iab
-   use precision_kinds, only: dp
-   include 'optorb.h'
 
    integer  :: ideriv_iab(MXORBOP)
    integer  :: ideriv_ref(MXORBOP,2)
@@ -2071,7 +2319,7 @@ end module orbital_num_lag
  module optorb
    !> Arguments: dmat_diag, irrep, orb_energy
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MORB
 
    real(dp) :: dmat_diag(MORB)
    integer  :: irrep(MORB)
@@ -2123,8 +2371,7 @@ end module orbital_num_lag
 
  module optorb_mix
    !> Arguments: iwmix_virt, norbopt, norbvirt
-   use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MORB
 
    integer  :: iwmix_virt(MORB,MORB)
    integer  :: norbopt
@@ -2150,8 +2397,8 @@ end module orbital_num_lag
 
  module optwf_corsam
    !> Arguments: add_diag_tmp, energy, energy_err, force, force_err
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'force.h'
 
    real(dp) :: add_diag(MFORCE)
    real(dp) :: add_diag_tmp(MFORCE)
@@ -2180,7 +2427,7 @@ end module orbital_num_lag
 
  module optwf_nparmj
    !> Arguments: nparma, nparmb, nparmc, nparmf
-   include 'vmc.h'
+   use vmc, only: MCTYPE, MCTYP3X
 
    integer  :: nparma(MCTYP3X)
    integer  :: nparmb(3)
@@ -2209,8 +2456,7 @@ end module orbital_num_lag
 
  module optwf_wjas
    !> Arguments: iwjasa, iwjasb, iwjasc, iwjasf
-   use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCTYPE, MCTYP3X
 
    integer  :: iwjasa(83,MCTYP3X)
    integer  :: iwjasb(83,3)
@@ -2245,10 +2491,34 @@ end module orbital_num_lag
    save
  end module pars
 
+ module pcm 
+  integer, parameter :: MCHS=1
+  integer, parameter :: MCHV=1
+  integer, parameter :: MSPHERE=30
+  private 
+  public :: MCHS, MCHV, MSPHERE
+  save 
+ end module pcm
+
+ module pcm_3dgrid
+  !     flags and dimensions for the 3d grid objects
+  use precision_kinds, only: dp
+  integer, parameter :: MGRID_PCM=1
+  integer, parameter :: IUNDEFINED = -1234567890
+  integer, parameter :: MGRID_PCM2=MGRID_PCM*MGRID_PCM
+  integer, parameter :: MGRID_PCM3=MGRID_PCM2*MGRID_PCM
+  real(dp), parameter :: UNDEFINED = -1234567890.d0
+
+  private 
+  public :: MGRID_PCM, MGRID_PCM2, MGRID_PCM3
+  public :: UNDEFINED, IUNDEFINED 
+  save 
+ end module pcm_3dgrid
+ 
  module pcm_ah
    !> Arguments: ahca, bh
+   use pcm, only: MCHS
    use precision_kinds, only: dp
-   include 'pcm.h'
  
    real(dp) :: ahca(MCHS,MCHS)
    real(dp) :: bh(MCHS)
@@ -2260,8 +2530,8 @@ end module orbital_num_lag
 
  module pcm_ameta
    !> Arguments: amdlg, eta
+   use pcm, only: MCHS
    use precision_kinds, only: dp
-   include 'pcm.h'
  
    real(dp) :: amdlg(MCHS)
    real(dp) :: eta(3,MCHS)
@@ -2275,8 +2545,8 @@ end module orbital_num_lag
    !> Arguments: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
    ! qopcm_sum, qopcm_cum, qopcm_cm2, 
    ! enfpcm_sum(MCHS), enfpcm_cum(MCHS), enfpcm_cm2(MCHS)
+   use pcm, only: MCHS
    use precision_kinds, only: dp
-   include 'pcm.h'
  
     real(dp) :: spcmsum
     real(dp) :: spcmcum
@@ -2331,9 +2601,9 @@ end module orbital_num_lag
 
  module pcm_force
    !> Arguments: sch_s
+   use pcm, only: MCHS
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'pcm.h'
-   include 'force.h'
 
    real(dp) :: sch_s(MCHS,MFORCE)
 
@@ -2344,8 +2614,6 @@ end module orbital_num_lag
 
  module pcm_grid3d_contrl
    !> Arguments: ipcm_3dgrid
-   use precision_kinds, only: dp
-   include 'vmc.h'
  
    integer  :: ipcm_3dgrid
  
@@ -2356,8 +2624,8 @@ end module orbital_num_lag
 
  module pcm_grid3d_array
    !> Arguments: pcm_cart_from_int
+   use pcm_3dgrid, only: MGRID_PCM
    use precision_kinds, only: dp
-   include 'pcm_3dgrid.h'
 
    real(dp) :: pcm_cart_from_int(MGRID_PCM,3)
 
@@ -2382,8 +2650,8 @@ end module orbital_num_lag
 
  module pcm_hpsi
    !> Arguments: enfpcm, pepcms, pepcmv, qopcm
+   use pcm, only: MCHS
    use precision_kinds, only: dp
-   include 'pcm.h'
 
    real(dp) :: enfpcm(MCHS)
    real(dp) :: pepcms
@@ -2396,8 +2664,8 @@ end module orbital_num_lag
  end module pcm_hpsi
 
  module pcm_inda
+   use pcm, only: MCHS
    !> Arguments: inda
-   include 'pcm.h'
  
    integer  :: inda(MCHS)
 
@@ -2408,8 +2676,8 @@ end module orbital_num_lag
 
  module m_pcm_num_spl
    !> Arguments: pcm_num_spl
+   use pcm_3dgrid, only: MGRID_PCM
    use precision_kinds, only: dp
-   include 'pcm_3dgrid.h'
  
    real(dp) :: pcm_num_spl(8,MGRID_PCM,MGRID_PCM,MGRID_PCM)
 
@@ -2433,8 +2701,8 @@ end module orbital_num_lag
  module pcm_parms
    !> Arguments: re, nchv, nesph, ze, iscov, eps_solv, xpol, 
    !             retk, ch, xe, nvopcm, nch, re2, ncopcm, surk, nscv, nchs, ye, nchs2, nchs1
+   use pcm, only: MCHV, MSPHERE
    use precision_kinds, only: dp
-   include 'pcm.h'
 
    real(dp) :: ch(MCHV)
    real(dp) :: eps_solv
@@ -2479,8 +2747,8 @@ end module orbital_num_lag
 
  module pcm_xv_new
    !> Arguments: xv_new
+   use pcm, only: MCHV
    use precision_kinds, only: dp
-   include 'pcm.h'
 
    real(dp) :: xv_new(3,MCHV)
 
@@ -2503,8 +2771,8 @@ end module orbital_num_lag
 
  module pcmo
    !> Arguments: enfpcmo, qopcmo, spcmo, vpcmo
+   use pcm, only: MCHS
    use precision_kinds, only: dp
-   include 'pcm.h'
 
    real(dp) :: enfpcmo(MCHS)
    real(dp) :: qopcmo
@@ -2518,9 +2786,11 @@ end module orbital_num_lag
 
  module periodic
    !> Arguments: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt, glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim, ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big, ngnorm_orb, ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec, np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell, vcell_sim, znuc2_sum, znuc_sum
+   use ewald_mod, only: IVOL_RATIO
+   use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
+   use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'ewald.h'
+   use vmc, only: MORB
 
    real(dp) :: cutg
    real(dp) :: cutg_big
@@ -2585,7 +2855,7 @@ end module orbital_num_lag
  module phifun
    !> Arguments: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC, MBASIS
 
    real(dp) :: d2phin(MBASIS,MELEC)
    real(dp) :: d2phin_all(3,3,MBASIS,MELEC)
@@ -2601,6 +2871,14 @@ end module orbital_num_lag
    save
  end module phifun
 
+ module properties
+  !> Arguments: MAXPROP
+  integer, parameter :: MAXPROP=6
+  private
+  public :: MAXPROP
+  save 
+ end module properties
+
  module prp000
    !> Arguments: ipropprt, iprop, nprop
  
@@ -2615,8 +2893,8 @@ end module orbital_num_lag
  
  module prp001
    !> Arguments: vprop
+   use properties, only: MAXPROP
    use precision_kinds, only: dp
-   include 'properties.h'
 
    real(dp) :: vprop(MAXPROP)
 
@@ -2627,8 +2905,8 @@ end module orbital_num_lag
 
  module prp002
    !> Arguments: vprop_old
+   use properties, only: MAXPROP
    use precision_kinds, only: dp
-   include 'properties.h'
    include 'dmc.h'
  
    real(dp) :: vprop_old(MAXPROP,MWALK)
@@ -2641,8 +2919,8 @@ end module orbital_num_lag
 
  module prp003
    !> Arguments: vprop_cm2, vprop_cum, cc_nuc, vprop_sum
+   use properties, only: MAXPROP
    use precision_kinds, only: dp
-   include 'properties.h'
 
     real(dp) :: cc_nuc(3)
     real(dp) :: vprop_cm2(MAXPROP)
@@ -2656,10 +2934,10 @@ end module orbital_num_lag
 
  module pseudo
    !> Arguments: lpot, nloc, vps, vpso
+   use pseudo_mod, only: MPS_L
+   use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'pseudo.h'
-   include 'force.h'
+   use vmc, only: MELEC, MCENT, MCTYPE
 
    integer  :: lpot(MCTYPE)
    integer  :: nloc
@@ -2674,7 +2952,7 @@ end module pseudo
  module pseudo_champ
    !> Arguments: igrid_ps, rmax_coul, rmax_nloc
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCTYPE
 
    integer  :: igrid_ps(MCTYPE)
    real(dp) :: rmax_coul(MCTYPE)
@@ -2687,9 +2965,9 @@ end module pseudo
 
  module pseudo_fahy
    !> Arguments: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
+   use pseudo_mod, only: MPS_L, MPS_GRID
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'pseudo.h'
+   use vmc, only: MCTYPE
 
    real(dp) :: drad(MCTYPE)
    real(dp) :: dradl(MCTYPE)
@@ -2706,9 +2984,9 @@ end module pseudo
 
  module pseudo_tm
    !> Arguments: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
+   use pseudo_mod, only: MPS_L, MPS_GRID
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'pseudo.h'
+   use vmc, only: MCTYPE
 
     real(dp) :: arg(MCTYPE)
     real(dp) :: arg_ps(MCTYPE)
@@ -2727,9 +3005,10 @@ end module pseudo
 
  module pworbital
    !> Arguments: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
+   use ewald_mod, only: IVOL_RATIO
+   use ewald_mod, only: NGVECX
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'ewald.h'
+   use vmc, only: MORB
 
    real(dp) :: c_im(NGVECX,MORB)
    real(dp) :: c_ip(NGVECX,MORB)
@@ -2747,8 +3026,8 @@ end module pseudo
 
  module qua
    !> Arguments: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+   use pseudo_mod, only: MPS_QUAD
    use precision_kinds, only: dp
-   include 'pseudo.h'
 
    integer  :: nquad
    real(dp) :: wq(MPS_QUAD)
@@ -2767,7 +3046,7 @@ end module pseudo
  module rlobxy
    !> Arguments: rlobx, rloby, rloby2
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: NSPLIN
 
     real(dp) :: rlobx(NSPLIN)
     real(dp) :: rloby(NSPLIN)
@@ -2780,8 +3059,6 @@ end module pseudo
 
  module rnyucm
    !> Arguments: ll, lm
-   use precision_kinds, only: dp
-   include 'vmc.h'
 
    integer  :: ll(4)
    integer  :: mm(4)
@@ -2796,7 +3073,7 @@ end module rnyucm
  module sa_check
    !> Arguments: energy_all, energy_err_all
    use precision_kinds, only: dp
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: energy_all(MSTATES)
    real(dp) :: energy_err_all(MSTATES)
@@ -2809,7 +3086,7 @@ end module rnyucm
  module sa_weights
    !> Arguments: iweight, nweight, weights
    use precision_kinds, only: dp
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    integer  :: iweight(MSTATES)
    integer  :: nweight
@@ -2834,7 +3111,7 @@ end module rnyucm
  module scratch
    !> Arguments: denergy_det, dtildem
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC, MORB, MDET
 
    real(dp) :: denergy_det(MDET,2)
    real(dp) :: dtildem(MELEC,MORB,2)
@@ -2847,7 +3124,7 @@ end module rnyucm
  module slatn
    !> Arguments: slmin
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MMAT_DIM
 
    real(dp) :: slmin(MMAT_DIM)
 
@@ -2858,7 +3135,6 @@ end module rnyucm
 
  module spc
    !> Arguments: nsf, num
-   use precision_kinds, only: dp
 
    integer  :: nsf
    integer  :: num(50)
@@ -2908,9 +3184,9 @@ module spc2
 
  module sr_mat_n
    !> Arguments: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
+   use sr_mod, only: MPARM, MOBS, MCONF
    use precision_kinds, only: dp
-   include 'sr.h'
-   include 'mstates.h'
+   use mstates_mod, only: MSTATES
 
    real(dp) :: elocal(MCONF,MSTATES)
    real(dp) :: h_sr(MPARM)
@@ -2945,7 +3221,7 @@ module spc2
  module step
    !> Arguments: ekin, ekin2, rprob, suc, trunfb, try
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: nrad
 
    real(dp) :: ekin(nrad)
    real(dp) :: ekin2(nrad)
@@ -2958,6 +3234,16 @@ module spc2
    public :: ekin, ekin2, rprob, suc, trunfb, try
    save
  end module step
+
+ module svd_mod
+  ! Not used anywhere !
+  !> Arguments:
+  integer, parameter :: MBUF=10000
+  integer, parameter :: MXDIM=3000
+  private 
+  public :: MBUF, MXDIM 
+  save 
+ end module svd_mod 
 
  module tempor
    !> Arguments: dist_nn
@@ -2972,8 +3258,9 @@ module spc2
 
  module tempor_test
    !> Arguments: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
+   use ewald_mod, only: IVOL_RATIO
+   use ewald_mod, only: NGVEC_BIGX
    use precision_kinds, only: dp
-   include 'ewald.h'
 
    real(dp) :: c_imag(NGVEC_BIGX)
    real(dp) :: c_real(NGVEC_BIGX)
@@ -2991,8 +3278,9 @@ module spc2
 
  module test
    !> Arguments: f, vbare_coul, vbare_jas, vbare_psp
+   use ewald_mod, only: NGNORM_BIGX
+   use ewald_mod, only: NGNORM_SIM_BIGX
    use precision_kinds, only: dp
-   include 'ewald.h'
 
    real(dp) :: f
    real(dp) :: vbare_coul(NGNORM_SIM_BIGX)
@@ -3018,7 +3306,8 @@ module spc2
  module vardep
    !> Arguments: cdep, iwdepend, nvdepend
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCTYPE
+   use vmc, only: NEQSX
 
    real(dp) :: cdep(NEQSX,83,MCTYPE)
    integer  :: iwdepend(NEQSX,83,MCTYPE)
@@ -3032,7 +3321,7 @@ module spc2
  module velocity_jastrow
    !> Arguments: vj, vjn
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MELEC
 
    real(dp) :: vj(3,MELEC)
    real(dp) :: vjn(3,MELEC)
@@ -3041,11 +3330,10 @@ module spc2
    public :: vj, vjn 
    save
  end module velocity_jastrow
-
+ 
  module wfsec
+   use force_mod, only: MFORCE
    !> Arguments: iwf, iwftype, nwftype
-   use precision_kinds, only: dp
-   include 'force.h'
 
    integer  :: iwf
    integer  :: iwftype(MFORCE)
@@ -3059,8 +3347,8 @@ module spc2
  module ycompact
    !> Arguments: dymat, ymat
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'mstates.h'
+   use vmc, only: MELEC, MORB
+   use mstates_mod, only: MSTATES
 
    real(dp) :: dymat(MORB,MELEC,2,MSTATES)
    real(dp) :: ymat(MORB,MELEC,2,MSTATES)
@@ -3073,8 +3361,8 @@ module spc2
  module ycompactn
    !> Arguments: ymatn
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'mstates.h'
+   use vmc, only: MELEC, MORB
+   use mstates_mod, only: MSTATES
 
    real(dp) :: ymatn(MORB,MELEC,MSTATES)
 
@@ -3086,8 +3374,8 @@ module spc2
  module zcompact
    !> Arguments: aaz, dzmat, emz, zmat
    use precision_kinds, only: dp
-   include 'vmc.h'
-   include 'mstates.h'
+   use vmc, only: MELEC, MORB
+   use mstates_mod, only: MSTATES
 
    real(dp) :: aaz(MELEC,MELEC,2,MSTATES)
    real(dp) :: dzmat(MORB,MELEC,2,MSTATES)
@@ -3102,7 +3390,7 @@ module spc2
  module zmatrix
    !> Arguments: czcart, czint, czcart_ref, izcmat, izmatrix  
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCENT
 
    real(dp) :: czcart(3,MCENT)
    real(dp) :: czint(3,MCENT)
@@ -3118,7 +3406,7 @@ module spc2
  module zmatrix_grad
    !> Arguments: transform_grd
    use precision_kinds, only: dp
-   include 'vmc.h'
+   use vmc, only: MCENT3
 
    real(dp) :: transform_grd(MCENT3,MCENT3)
 

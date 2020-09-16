@@ -2,7 +2,9 @@
 c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
+      use force_mod, only: MFORCE
       use const, only: nelec
+      use mstates_mod, only: MSTATES
       use csfs, only: nstates
 
       use est2cm, only: ecm2, pecm2, tjfcm2, tpbcm2
@@ -16,10 +18,6 @@ c routine to write out estimators for energy etc.
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'pseudo.h'
 
       dimension enow(MSTATES,MFORCE)
 
@@ -37,11 +35,11 @@ c write out header first time
      &,t108,''accept'',t119,''iter'')')
 
 c write out current values of averages
-      denom=dfloat(nstep*iblk)
+      acc_denom=dfloat(nstep*iblk)
       if(index(mode,'mov1').eq.0) then
-        accept=acc/denom
+        accept=acc/acc_denom
        else
-        accept=acc/(denom*nelec)
+        accept=acc/(acc_denom*nelec)
       endif
 
       do 25 ifr=1,nforce

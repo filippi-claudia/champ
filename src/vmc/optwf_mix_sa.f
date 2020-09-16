@@ -1,23 +1,21 @@
       subroutine optwf_mix
 
+      use sr_mod, only: MPARM, MVEC
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use sa_check, only: energy_all, energy_err_all
       use contrl, only: nblk
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy, alfgeo
 
-      use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
+      use mstates_ctrl, only: iguiding
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'sr.h'
 
       character*20 method_sav
 
@@ -283,9 +281,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
       dimension dparm_new(*)

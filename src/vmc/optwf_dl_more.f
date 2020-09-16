@@ -8,10 +8,6 @@
       character*20 dl_alg
 
       include 'mpif.h'
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'sr.h'
 
       dimension deltap(*),dl_momentum(*),dl_EG_sq(*),dl_EG(*),parameters(*)
 

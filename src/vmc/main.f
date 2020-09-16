@@ -1,6 +1,7 @@
       program main
 c Written by Claudia Filippi
 
+      use mpi_qmc, only: NPROCX
       use mpiconf, only: idtask, nproc, wid
       use contr3, only: mode
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
@@ -11,7 +12,6 @@ c Written by Claudia Filippi
       character*40 filename
 
 c mpif.h is system, mpi_qmc.h is ours
-      include 'mpi_qmc.h'
       include 'mpif.h'
 
       call mpi_init(ierr)
@@ -19,7 +19,7 @@ c mpif.h is system, mpi_qmc.h is ours
       call mpi_comm_rank(MPI_COMM_WORLD,idtask,ierr)
       call mpi_comm_size(MPI_COMM_WORLD,nproc,ierr)
 
-      if(nproc.gt.nprocx) stop 'nproc>nprocx in main'
+      if(nproc.gt.NPROCX) stop 'nproc>NPROCX in main'
 
       wid=(idtask.eq.0)
 

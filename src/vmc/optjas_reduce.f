@@ -1,7 +1,9 @@
       subroutine optjas_reduce
 c Written by Claudia Filippi
 
+      use optjas, only: MPARMJ
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES
       use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
@@ -15,11 +17,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optjas.h'
-      include 'optorb.h'
       include 'mpif.h'
 
 

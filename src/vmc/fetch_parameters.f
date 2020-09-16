@@ -1,8 +1,14 @@
 c-----------------------------------------------------------------------
       subroutine fetch_parameters(p)
+
+      ! this was not in master but I think it's needed
+      ! this is so confusng ... 
+      use optwf_contrl, only: nparm
+      
       implicit real*8(a-h,o-z)
 
       dimension p(*)
+      
 
       n=0
 
@@ -28,18 +34,6 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-      include 'vmc.h'
-      include 'force.h'
-
-
 
 
       dimension p(*)
@@ -71,10 +65,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optorb.h'
 
 
 
@@ -99,9 +89,6 @@ c-----------------------------------------------------------------------
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
 
 

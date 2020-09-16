@@ -1,19 +1,17 @@
       subroutine optwf_sr
+      use sr_mod, only: MPARM
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use mstates_mod, only: MSTATES
       use optwf_corsam, only: energy, energy_err, force
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use contrl, only: nblk
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy, alfgeo
 
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'sr.h'
 
       dimension grad(MPARM*MSTATES)
 
@@ -176,8 +174,6 @@ c solve S*deltap=h_sr (call in optwf)
       use sr_mat_n, only: h_sr
       implicit real*8(a-h,o-z)
 
-      include 'mstates.h'
-      include 'sr.h'
 
 
       dimension deltap(nparm)

@@ -1,5 +1,8 @@
       subroutine deriv_jastrow4(x,v,d2,value)
 c Written by Cyrus Umrigar and Claudia Filippi
+      use vmc, only: MELEC, MCENT
+      use vmc, only: MORDJ, MMAT_DIM2
+      use vmc, only: NEQSX, MTERMS
       use atom, only: iwctype, nctype, ncent
       use const, only: nelec
       use derivjas, only: d2g, g, go, gvalue
@@ -23,15 +26,12 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
       use vardep, only: cdep, iwdepend, nvdepend
 
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'optjas.h'
 
 
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms

@@ -7,6 +7,8 @@ c c) subtracts out local part from all except highest l component.
 c Also eval pot. at 0 and initializes quadrature pts.
 c 
 c Modified by F. Schautz to use fancy file names
+      use pseudo_mod, only: MPS_GRID
+      use vmc, only: NCOEF
       use atom, only: znuc, nctype
       use const, only: ipr
       use pseudo_tm, only: arg, d2pot, nr_ps, r0, rmax, vpseudo
@@ -19,9 +21,6 @@ c Modified by F. Schautz to use fancy file names
 
 
 
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'force.h'
 
       character*2 icorr,nameat
       character*3 irel
@@ -233,6 +232,7 @@ c-----------------------------------------------------------------------
 c compute tm-pseudopotential for electron iel
       subroutine getvps_tm(r_en,iel)
 
+      use vmc, only: MELEC, MCENT
       use atom, only: znuc, iwctype, ncent
       use pseudo_tm, only: rmax
 
@@ -241,9 +241,6 @@ c compute tm-pseudopotential for electron iel
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'force.h'
 
 
 
@@ -278,12 +275,11 @@ c-----------------------------------------------------------------------
 c get spline_fit at r of TM potential for center ic and angular momentum l
 c stored on shifted exponential grid
 
+      use pseudo_mod, only: MPS_GRID
       use pseudo_tm, only: arg, d2pot, r0, vpseudo
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'pseudo.h'
 
 
       dlogag=dlog(arg(ic))

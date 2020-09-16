@@ -2,7 +2,6 @@
 
       character msg*(*)
 
-      include 'mpi_qmc.h'
       include 'mpif.h'
 
       write(6,'(''Fatal error: '',a)') msg

@@ -6,14 +6,11 @@ c Written by Claudia Filippi by modifying jastrow
 
 
 
-      include 'vmc.h'
 
       parameter (zero=0.d0)
 
 
-      include 'pseudo.h'
 
-      include 'force.h'
 
 
       dimension x(3,*),v(3,*)

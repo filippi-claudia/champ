@@ -2,6 +2,9 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
+      use force_mod, only: MFORCE
+      use vmc, only: nrad
+      use vmc, only: delri
       use atom, only: ncent
       use const, only: nelec
       use csfs, only: nstates
@@ -23,16 +26,11 @@ c routine to print out final results
       use contrl, only: nblk, nstep
       use contrl_per, only: iperiodic
 
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: iciprt
 
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'optorb.h'
-      include 'mstates.h'
-      include 'optci.h'
 
       parameter (one=1.d0,half=.5d0)
 

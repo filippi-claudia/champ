@@ -2,14 +2,13 @@
       use olbfgs, only: update_hessian, olbfgs_iteration
       use sr_mat_n, only: h_sr
 
+      ! is noteven in master
+      use mpiconf, only: idtask
+      
       implicit real*8(a-h,o-z)
 
       character*20 dl_alg
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'sr.h'
 
       include 'mpif.h'
 

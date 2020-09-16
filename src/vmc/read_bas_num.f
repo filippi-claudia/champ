@@ -1,4 +1,7 @@
       subroutine read_bas_num(iwf)
+      use numbas_mod, only: MRWF, MRWF_PTS
+      use vmc, only: MBASIS, MCTYPE
+      use vmc, only: NCOEF
       use atom, only: znuc, nctype
 c Written by Claudia Filippi
 c Modified by F. Schautz to use fancy file names
@@ -15,10 +18,6 @@ c Reads in localized orbitals on a radial grid
 
 
 
-      include 'vmc.h'
-      include 'numbas.h'
-      include 'pseudo.h'
-      include 'force.h'
 
       character*256 filename,pooldir,bas_id
       character*20 wforce,atomtyp,atomsymbol

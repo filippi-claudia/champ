@@ -12,14 +12,11 @@
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optjas.h'
-      include 'optorb.h'
 
       dimension wtg_new(*),wtg_old(*)
 
@@ -63,14 +60,11 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optjas.h'
-      include 'optorb.h'
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -98,14 +92,11 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optjas.h'
-      include 'optorb.h'
 
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -127,17 +118,14 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+
       implicit real*8(a-h,o-z)
 
 
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optjas.h'
-      include 'optorb.h'
 
 
 
@@ -151,6 +139,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optx_jas_orb_fin(wcum,ecum)
+      use optorb_mod, only: MXREDUCED
       use csfs, only: nstates
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use optwf_contrl, only: ioptjas, ioptorb
@@ -164,15 +153,12 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+      ! I think this one is not needed ... 
+      ! use gradhess_jas, only: grad_jas
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optjas.h'
-      include 'optci.h'
-      include 'optorb.h'
 
 
 

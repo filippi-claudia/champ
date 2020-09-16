@@ -1,13 +1,11 @@
       subroutine bxmatrix(kref,xmatu,xmatd,b)
 
+      use vmc, only: MELEC, MORB
+      use vmc, only: MMAT_DIM
       use elec, only: ndn, nup
       use dorb_m, only: iworbd
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'pseudo.h'
 
       common /slater/ slmi(MMAT_DIM,2)
      &,fp(3,MMAT_DIM,2)

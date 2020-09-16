@@ -1,13 +1,17 @@
       subroutine optx_orb_ci_reduce
 c Written by Claudia Filippi
 
+      use optorb_mod, only: MXREDUCED
+      use optci, only: MXCITERM
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
 
-      use ci000, only: iciprt, nciprim, nciterm
+      use ci000, only: nciterm
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+      
       implicit real*8(a-h,o-z)
 
 
@@ -15,9 +19,6 @@ c Written by Claudia Filippi
 
 
 
-      include 'vmc.h'
-      include 'optorb.h'
-      include 'optci.h'
       include 'mpif.h'
 
 

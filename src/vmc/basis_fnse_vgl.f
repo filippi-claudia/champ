@@ -1,6 +1,8 @@
       subroutine basis_fnse_vgl(k,rvec_en,r_en)
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt routine
 c routine to calculate the values of the basis functions and their derivatives
+      use numbas_mod, only: MRWF
+      use vmc, only: MELEC, MCENT
       use atom, only: iwctype, ncent
 
       use ghostatom, only: nghostcent
@@ -16,10 +18,6 @@ c routine to calculate the values of the basis functions and their derivatives
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'numbas.h'
-      include 'pseudo.h'
 
       parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0)
       parameter (five=5.d0,six=6.d0,seven=7.d0,eight=8.d0)

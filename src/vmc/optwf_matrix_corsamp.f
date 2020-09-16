@@ -9,16 +9,12 @@ c written by Claudia Filippi
       use wfsec, only: iwftype, nwftype
       use contrl, only: idump, irstar, isite, nblk
       use gradhess_all, only: MPARMALL
+
+      ! I think that's needed
+      use gradhess_all, only: grad
       
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'mstates.h'
-      include 'optjas.h'
-      include 'optci.h'
-      include 'optorb.h'
-      include 'numbas.h'
 
       parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
       parameter(MWORK=50*MPARMALL)
@@ -542,8 +538,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
-      include 'force.h'
 
       parameter(MFUNC=3)
 
@@ -628,6 +622,7 @@ c Solve linear equations
 c-----------------------------------------------------------------------
       subroutine combine_derivatives
 
+      use optorb_mod, only: MXORBOP, MXMATDIM
       use gradhess_ci, only: h_ci, s_ci
       use gradhess_jas, only: h_jas, s_jas
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
@@ -635,20 +630,17 @@ c-----------------------------------------------------------------------
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmj
-      use gradhess_all, only: MPARMALL, grad, h, s
-      use ci000, only: iciprt, nciprim, nciterm
+      use gradhess_all, only: h, s
+      use ci000, only: nciterm
 
       use method_opt, only: method
+
+      use optorb_cblock, only: nreduced
 
       implicit real*8(a-h,o-z)
 
 
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'optjas.h'
-      include 'optci.h'
-      include 'optorb.h'
         
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
