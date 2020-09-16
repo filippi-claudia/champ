@@ -1191,7 +1191,7 @@ end module forcewt
    use optci, only: MXCIREDUCED
    use precision_kinds, only: dp
 
-   parameter(MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED)
+   integer, parameter :: MPARMALL=MPARMJ+MXCIREDUCED+MXREDUCED
    real(dp) :: grad(MPARMALL)
    real(dp) :: h(MPARMALL,MPARMALL)
    real(dp) :: s(MPARMALL,MPARMALL)
