@@ -3,7 +3,7 @@ if (MPI_Fortran_FOUND)
   # Source files
   file(GLOB VMC_SOURCE *.f)
   file(GLOB VMC90_SOURCE optgeo_coords_int.f90 optgeo_hessian.f90 optgeo_convcartzmat.f90 regterg.f90 olbfgs.f90 davidson_wrap.f90)
-  set(DAVIDSON_SOURCE array_utils.f90 numeric_kinds.f90 lapack_wrapper.f90 davidson.f90)
+  set(DAVIDSON_SOURCE array_utils.f90 lapack_wrapper.f90 davidson.f90)
 
   set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-check bounds -g -traceback")
   if (NOT ENABLE_QMMM)
@@ -63,6 +63,8 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante_psit.f
     ${CMAKE_CURRENT_SOURCE_DIR}/readps_tm.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pot.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_kinds.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_vmc.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/mmpol.f

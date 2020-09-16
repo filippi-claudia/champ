@@ -30,7 +30,7 @@
 !> \param[out] iters: Number of iterations until convergence.
 !> \return eigenvalues and ritz_vectors of the matrix `mtx`.
 module davidson
-  use numeric_kinds, only: dp
+  use precision_kinds, only: dp
   use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
        lapack_qr, lapack_solver
   use array_utils, only: concatenate, initialize_subspace, norm, write_matrix, write_vector, & 
@@ -100,7 +100,7 @@ contains
        !> \param[in] input_vec Array to project
        !> \return Projected matrix
 
-       use numeric_kinds, only: dp
+       use precision_kinds, only: dp
        import :: davidson_parameters
        type(davidson_parameters) :: parameters
        real (dp), dimension(:,:), intent(in) :: input_vect
@@ -114,7 +114,7 @@ contains
        !> \param[in] input_vec Array to project
        !> \return Projected matrix
        
-       use numeric_kinds, only: dp
+       use precision_kinds, only: dp
        import :: davidson_parameters
        type(davidson_parameters) :: parameters
        real (dp), dimension(:,:), intent(in) :: input_vect
@@ -479,7 +479,7 @@ contains
        !             hamiltonian
        !> \param[in] input_vec Array to project
        !> \return Projected matrix
-       use numeric_kinds, only: dp
+       use precision_kinds, only: dp
        import                                   :: davidson_parameters
        type( davidson_parameters)               :: parameters
        real( dp), dimension( :, :), intent( in) :: input_vect
@@ -492,7 +492,7 @@ contains
        !             hamiltonian
        !> \param[in] input_vec Array to project
        !> \return Projected matrix
-       use numeric_kinds, only: dp
+       use precision_kinds, only: dp
        import                                   :: davidson_parameters
        type( davidson_parameters)               :: parameters
        real( dp), dimension( :, :), intent( in) :: input_vect
