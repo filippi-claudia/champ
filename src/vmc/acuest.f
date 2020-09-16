@@ -28,6 +28,8 @@ c routine to accumulate estimators for energy etc.
       use qua, only: nquad, wq, xq, yq, zq
       use mstates_ctrl, only: iguiding
 
+      use optorb_cblock, only: ns_current
+      
       implicit real*8(a-h,o-z)
 
       parameter (half=.5d0)

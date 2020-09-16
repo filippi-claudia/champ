@@ -403,6 +403,11 @@ c Lagrange interpolation routines
       use grid3d_param, only: nstep3d, endpt, origin
       use orbital_num_lag, only: denom
 
+      use coefs, only: coef, nbasis, norb
+      use ghostatom, only: nghostcent
+      use contrl, only: irstar
+      use phifun, only: phin, dphin, d2phin
+
       implicit real*8(a-h,o-z)
 
 

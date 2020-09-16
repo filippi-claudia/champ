@@ -203,6 +203,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+
+      ! these were not called in the master
+      ! but they seem to be needed
+      ! use sr_index, only: jelo, jelo2, jelohfj
+
       implicit real*8(a-h,o-z)
 
 
@@ -298,6 +303,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n
       use sr_mat_n, only: sr_o, wtg, obs_tot
+
+      ! these were not called in the master
+      ! but they seem to be needed
+      ! use sr_index, only: jelo, jelo2, jelohfj
+
       implicit real*8(a-h,o-z)
 
 
@@ -374,6 +384,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+
+      ! these were not called in the master
+      ! but they seem to be needed
+      ! use sr_index, only: jelo, jelo2, jelohfj
+
       implicit real*8(a-h,o-z)
 
 
@@ -487,6 +502,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+
+      ! these were not called in the master
+      ! but they seem to be needed
+      ! use sr_index, only: jelo, jelo2, jelohfj
+
       implicit real*8(a-h,o-z)
 
 
@@ -609,6 +629,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use optwf_func, only: ifunc_omega, omega
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+
+      ! these were not called in the master
+      ! but they seem to be needed
+      ! use sr_index, only: jelo, jelo2, jelohfj
+
       implicit real*8(a-h,o-z)
 
 
@@ -733,6 +758,14 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mod, only: MPARM
       use sr_mat_n, only: jefj, jfj, jhfj, s_diag
       use sr_mat_n, only: obs_tot
+
+      ! these were not called in the master
+      ! but they seem to be needed
+      ! use sr_index, only: jelo
+
+      ! thi was not in master but is clearly needed
+      use optwf_contrl, only: ioptorb, ioptjas
+      
       implicit real*8(a-h,o-z)
 
 

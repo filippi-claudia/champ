@@ -73,9 +73,13 @@ c-----------------------------------------------------------------------
       subroutine efficiency_rstrt(iu)
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
+
+      ! nstates below is undefined and 
+      ! it' also the case in the master branch
+      ! one replacement is 
+      ! use csfs, only: nstates
+      ! no idea if that would be correct
       implicit real*8(a-h,o-z)
-
-
 
 
       if(iefficiency.eq.0) return

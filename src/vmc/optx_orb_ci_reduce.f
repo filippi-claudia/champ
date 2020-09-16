@@ -10,6 +10,8 @@ c Written by Claudia Filippi
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+      
       implicit real*8(a-h,o-z)
 
 

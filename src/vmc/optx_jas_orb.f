@@ -12,6 +12,8 @@
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+
       implicit real*8(a-h,o-z)
 
 
@@ -58,6 +60,8 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+
       implicit real*8(a-h,o-z)
 
 
@@ -88,6 +92,8 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+
       implicit real*8(a-h,o-z)
 
 
@@ -111,6 +117,8 @@ c-----------------------------------------------------------------------
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
 
       use method_opt, only: method
+
+      use optorb_cblock, only: nreduced
 
       implicit real*8(a-h,o-z)
 
@@ -145,6 +153,9 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+      ! I think this one is not needed ... 
+      ! use gradhess_jas, only: grad_jas
       implicit real*8(a-h,o-z)
 
 

@@ -501,6 +501,9 @@ c-----------------------------------------------------------------------
       use coefs, only: norb
       use dorb_m, only: iworbd
 
+      ! not sure about that one either ....
+      use wfsec, only: nwftype
+
       implicit real*8(a-h,o-z)
 
 

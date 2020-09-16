@@ -699,8 +699,7 @@ c evaluates the cross-product of v1 and v2 and puts it in v3
       end
 c-----------------------------------------------------------------------
 
-      subroutine shells(cutg,glatt,gdist,igvec,gvec,gnorm,igmult,ngvec_big,
-     & ngnorm_big,ng1d,icell)
+      subroutine shells(cutg,glatt,gdist,igvec,gvec,gnorm,igmult,ngvec_big,ngnorm_big,ng1d,icell)
       use ewald_mod, only: NGVEC_BIGX
       use ewald_mod, only: NGVEC_SIM_BIGX
 c Written by Cyrus Umrigar
@@ -951,8 +950,7 @@ c Write out k-pts in reciprocal lattice units for input to pw program
       end
 c-----------------------------------------------------------------------
 
-      subroutine fourier_transform(r,arg,r0,nr,vps_short,vcell,gnorm,
-     & ngnorm_big,vbare_psp)
+      subroutine fourier_transform(r,arg,r0,nr,vps_short,vcell,gnorm,ngnorm_big,vbare_psp)
 c Written by Cyrus Umrigar and Claudia Filippi
 
 c Note: vps_short overwritten
@@ -995,8 +993,7 @@ c g=0 component
       return
       end
 c-----------------------------------------------------------------------
-      subroutine separate(v,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm
-     &,cutr,vcell,ncoef_per,np,b,y,chisq,ifcon,isrange)
+      subroutine separate(v,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm,cutr,vcell,ncoef_per,np,b,y,chisq,ifcon,isrange)
 c Written by Cyrus Umrigar and Claudia Filippi
 
       use ewald_mod, only: NCOEFX, NPX

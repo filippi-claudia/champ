@@ -9,6 +9,9 @@ c written by Claudia Filippi
       use wfsec, only: iwftype, nwftype
       use contrl, only: idump, irstar, isite, nblk
       use gradhess_all, only: MPARMALL
+
+      ! I think that's needed
+      use gradhess_all, only: grad
       
       implicit real*8(a-h,o-z)
 
@@ -631,6 +634,8 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
 
       use method_opt, only: method
+
+      use optorb_cblock, only: nreduced
 
       implicit real*8(a-h,o-z)
 

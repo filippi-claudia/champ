@@ -305,6 +305,10 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use optorb_cblock, only: norbterm
+
+      ! as not in master ... 
+      use mpiconf, only: idtask
+
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
@@ -420,7 +424,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use mpiconf, only: idtask
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot
-    
+
+      ! again I have no idea ... 
+      use sr_index, only: jelo, jelo2, jelohfj
+
+
+
       implicit real*8(a-h,o-z)
 
 
@@ -496,6 +505,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use mpiconf, only: idtask
       use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs, sr_ho
       use sr_mat_n, only: sr_o, wtg
+
+      ! again I have no idea ... 
+      use sr_index, only: jelo
 
       implicit real*8(a-h,o-z)
 

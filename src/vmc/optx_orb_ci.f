@@ -11,6 +11,8 @@
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+
       implicit real*8(a-h,o-z)
 
 
@@ -36,6 +38,8 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
 
       use method_opt, only: method
+
+      use optorb_cblock, only: nreduced
 
       implicit real*8(a-h,o-z)
 
@@ -66,6 +70,8 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+
       implicit real*8(a-h,o-z)
 
 
@@ -88,6 +94,8 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
 
       use method_opt, only: method
+
+      use optorb_cblock, only: nreduced
 
       implicit real*8(a-h,o-z)
 
@@ -126,6 +134,9 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
+      use optorb_cblock, only: nreduced
+
+      
       implicit real*8(a-h,o-z)
 
 
