@@ -3425,3 +3425,18 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
+
+ module cuspmat4
+   !> Arguments: d, icusp, nterms
+   use vmc, only: NEQSX, MTERMS
+   use precision_kinds, only: dp
+   
+
+    real(dp) :: d(NEQSX,MTERMS)
+    integer  :: icusp(NEQSX)
+    integer  :: nterms
+    private
+
+    public :: d, icusp, nterms
+    save
+ end module cuspmat4

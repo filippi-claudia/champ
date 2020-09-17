@@ -9,7 +9,9 @@ c Written by Cyrus Umrigar
       use atom, only: nctype
       use jaspar3, only: a, c
       use jaspar4, only: nordc
+      use cuspmat4, only: d, icusp, nterms
       implicit real*8(a-h,o-z)
+
 
 
 c The last 2 columns are what we care about in the foll. table
@@ -42,7 +44,6 @@ c e-n cusp) depend only on independent variables.  On the other hand
 c the one from the 2nd order e-n cusp depends only on other dependent
 c variables.
 
-      common /cuspmat4/ d(NEQSX,MTERMS),icusp(NEQSX),nterms
 
       do 100 it=1,nctype
 
