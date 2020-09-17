@@ -45,7 +45,7 @@
   real(dp), parameter :: delri=(nrad-1)/radmax
   
 
-  integer, parameter :: MELEC=32, MORB=500, MBASIS=500, MDET=5000, MCENT=20
+  integer, parameter :: MELEC=50, MORB=550, MBASIS=500, MDET=15000, MCENT=20
   integer, parameter :: MCTYPE=3
   integer, parameter :: MCTYP3X=5,NSPLIN=1001,MORDJ=7
   
@@ -284,8 +284,8 @@
   !> Arguments:
   !     flags and dimensions for generalized CI expectation values
   !     maximal number of terms, max dim of reduced matrices
-  integer, parameter :: MXCITERM=5000
-  integer, parameter :: MXCIREDUCED=1
+  integer, parameter :: MXCITERM=4600
+  integer, parameter :: MXCIREDUCED=2000
   integer, parameter :: MXCIMATDIM=MXCITERM*(MXCIREDUCED+1)/2
 
   private
@@ -1106,9 +1106,9 @@ end module forcewt
  
  module sr_mod
   !> Arguments:
-  integer, parameter :: MPARM=15100
+  integer, parameter :: MPARM=16100
   integer, parameter :: MOBS=10+6*MPARM
-  integer, parameter :: MCONF=10000
+  integer, parameter :: MCONF=80000
   integer, parameter :: MVEC=160
 
   private
@@ -1966,7 +1966,7 @@ end module forcewt
 
  module mpi_qmc
   !> Arguments NPROCX
-  integer, parameter :: NPROCX=1024
+  integer, parameter :: NPROCX=1524
   private
   public :: NPROCX
   save
