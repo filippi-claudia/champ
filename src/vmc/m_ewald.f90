@@ -136,3 +136,19 @@
    public :: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
    save
  end module pworbital
+
+  module test
+   !> Arguments: f, vbare_coul, vbare_jas, vbare_psp
+   use ewald_mod, only: NGNORM_BIGX
+   use ewald_mod, only: NGNORM_SIM_BIGX
+   use precision_kinds, only: dp
+
+   real(dp) :: f
+   real(dp) :: vbare_coul(NGNORM_SIM_BIGX)
+   real(dp) :: vbare_jas(NGNORM_SIM_BIGX)
+   real(dp) :: vbare_psp(NGNORM_BIGX)
+
+   private
+   public :: f, vbare_coul, vbare_jas, vbare_psp
+   save
+ end module test
