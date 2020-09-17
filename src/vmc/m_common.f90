@@ -3433,10 +3433,10 @@ module spc2
    
 
     real(dp) :: d(NEQSX,MTERMS)
-    integer  :: icusp(NEQSX)
+    integer  :: iwc4(NEQSX)
     integer  :: nterms
     private
 
-    public :: d, icusp, nterms
+    public :: d, iwc4, nterms
     save
  end module cuspmat4

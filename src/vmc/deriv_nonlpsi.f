@@ -16,7 +16,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use vardep, only: cdep, iwdepend, nvdepend
 
-      use cuspmat4, only: d, icusp, nterms
+      use cuspmat4, only: d, iwc4, nterms
       implicit real*8(a-h,o-z)
 
 

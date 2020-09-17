@@ -27,7 +27,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use vardep, only: cdep, iwdepend, nvdepend
 
       use force_analy, only: iforce_analy
-      use cuspmat4, only: d, icusp, nterms
+      use cuspmat4, only: d, iwc4, nterms
       implicit real*8(a-h,o-z)
 
 

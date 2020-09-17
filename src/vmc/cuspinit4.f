@@ -7,7 +7,7 @@ c Written by Cyrus Umrigar
       use vmc, only: NEQSX, MTERMS
       use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar4, only: nordc
-      use cuspmat4, only: d, icusp, nterms
+      use cuspmat4, only: d, iwc4, nterms
       implicit real*8(a-h,o-z)
 
 
@@ -80,7 +80,7 @@ c-----------------------------------------------------------------------
 
       use vardep, only: cdep, iwdepend, nvdepend
 
-      use cuspmat4, only: d, icusp, nterms
+      use cuspmat4, only: d, iwc4, nterms
       implicit real*8(a-h,o-z)
 
 
