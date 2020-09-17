@@ -641,6 +641,21 @@ end module contr3
    save
  end module cuspmat
 
+ module cuspmat4
+   !> Arguments: d, icusp, nterms
+   use vmc, only: NEQSX, MTERMS
+   use precision_kinds, only: dp
+   
+
+    real(dp) :: d(NEQSX,MTERMS)
+    integer  :: iwc4(NEQSX)
+    integer  :: nterms
+    private
+
+    public :: d, iwc4, nterms
+    save
+ end module cuspmat4
+ 
  module da_energy_sumcum
    !> Arguments: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
    use precision_kinds, only: dp
@@ -2066,6 +2081,22 @@ end module forcewt
    save
  end module multimatn
 
+ module multislatern
+    !> Arguments: ddorbn, detn, dorbn, orbn
+ 
+    use precision_kinds, only: dp
+    use vmc, only: MORB, MDET 
+ 
+     real(dp) :: ddorbn(MORB)
+     real(dp) :: detn(MDET)
+     real(dp) :: dorbn(3,MORB)
+     real(dp) :: orbn(MORB)
+     private
+ 
+     public ::  ddorbn, detn, dorbn, orbn
+     save
+  end module multislatern
+
  module m_icount
    !> Arguments: icount_ci, icount_orb, icount_prop 
    integer :: icount_ci = 1 
@@ -2478,6 +2509,22 @@ end module orbital_num_lag
    public :: iwjasa, iwjasb, iwjasc, iwjasf
    save
  end module optwf_wjas
+
+ module orbval
+   !> Arguments: ddorb, dorb, nadorb, ndetorb, orb
+   use precision_kinds, only: dp
+   use vmc, only: MELEC, MORB
+ 
+   real(dp) :: ddorb(MELEC,MORB)
+   real(dp) :: dorb(3,MELEC,MORB)
+   integer  :: nadorb
+   integer  :: ndetorb
+   real(dp) :: orb(MELEC,MORB)
+
+   private
+   public :: ddorb, dorb, nadorb, ndetorb, orb
+   save
+ end module orbval
 
  module pars
    !> Arguments: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma, xms
@@ -3425,18 +3472,3 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
-
- module cuspmat4
-   !> Arguments: d, icusp, nterms
-   use vmc, only: NEQSX, MTERMS
-   use precision_kinds, only: dp
-   
-
-    real(dp) :: d(NEQSX,MTERMS)
-    integer  :: iwc4(NEQSX)
-    integer  :: nterms
-    private
-
-    public :: d, iwc4, nterms
-    save
- end module cuspmat4

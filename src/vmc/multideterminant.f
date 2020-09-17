@@ -21,7 +21,9 @@
       use multimat, only: aa, wfmat
 
       use force_analy, only: iforce_analy
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -38,7 +40,6 @@ c dimensioned at least max(nup**2,ndn**2)
      &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detiab(MDET,2)
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension eloc_det(MDET,2)
       dimension vj(3,MELEC),vpsp_det(*)
@@ -245,7 +246,9 @@ c-----------------------------------------------------------------------
       use coefs, only: norb
       use denergy_det_m, only: denergy_det
 
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
+
 
 
       parameter (one=1.d0,half=0.5d0)
@@ -254,7 +257,6 @@ c-----------------------------------------------------------------------
      &,fp(3,MMAT_DIM,2)
      &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension detu(MDET),detd(MDET),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
 

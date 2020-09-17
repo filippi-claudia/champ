@@ -97,7 +97,9 @@ c and Anthony Scemema
       use method_opt, only: method
 
       use optorb_cblock, only: nefp_blocks, isample_cmat, iorbsample
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -109,7 +111,6 @@ c and Anthony Scemema
 c      include 'dmc.h' now emty
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       character*20 fmt
       character*32 keyname
@@ -1449,11 +1450,12 @@ c Check that the required blocks are there in the input
       use optwf_contrl, only: ioptci, ioptorb
       use wfsec, only: nwftype
 
-      implicit real*8(a-h,o-z)      
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      implicit real*8(a-h,o-z)
 
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
 
       call p2gtid('general:nforce',nforce,1,1)
       if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')

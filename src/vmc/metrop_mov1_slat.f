@@ -29,15 +29,15 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use tmpnode, only: distance_node_sum
       use const2, only: deltar, deltat
       use contr3, only: mode
-
       use pseudo, only: nloc
-
       use mmpol_cntrl, only: ich_mmpol
       use mstates_ctrl, only: iguiding
       use pcm_cntrl, only: ichpol
       use method_opt, only: method
+      use multislatern, only: ddorbn, detn, dorbn, orbn
 
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -65,8 +65,6 @@ c    Last 2 are prob. best
 
  
 c TMP
-      common /multislatern/ detn(MDET)
-     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
       dimension xstrech(3,MELEC)
       dimension xaxis(3),yaxis(3),zaxis(3),idist(MELEC)
       dimension ddx_ref(3)

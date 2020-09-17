@@ -14,16 +14,17 @@
       use ycompactn, only: ymatn
       use coefs, only: norb
       use multimatn, only: aan, wfmatn
+      use multislatern, only: ddorbn, detn, dorbn, orbn
 
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
+
+
 
 
       parameter (one=1.d0,half=0.5d0)
 
       common /multislater/ detiab(MDET,2)
-      common /multislatern/ detn(MDET)
-     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension gmat(MELEC,MORB,3),gmatn(MEXCIT**2,3)
       dimension b(MORB,3),ddx_mdet(3)
