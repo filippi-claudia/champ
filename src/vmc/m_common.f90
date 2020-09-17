@@ -63,13 +63,13 @@
    use vmc, only: MELEC, MORB, MCENT
 
    real(dp) :: b_da(3,MELEC,MORB,MCENT)
-   real(dp) :: db(3,MELEC,MORB,MCENT) 
+   real(dp) :: db(3,MELEC,MORB,MCENT)
 
    private
    public :: b_da, db
    save
  end module Bloc_da
-  
+
  module Bloc_dj
    !> Arguments: b_dj
    use optjas, only: MPARMJ
@@ -87,7 +87,7 @@
    !> Arguments: nocuspb, nspin2b
    integer  :: nocuspb
    integer  :: nspin2b
-   
+
    private
    public :: nocuspb, nspin2b
    save
@@ -109,6 +109,7 @@
  end module casula
 
  module chck
+  !> Never called
   !> Arguments: bot
   use precision_kinds, only: dp
 
@@ -120,6 +121,8 @@
  end module chck
 
  module coefs
+   !> need a better name is that the MO ?
+   !> if yes can we put it in basis ?
    !> Arguments: coef, nbasis, norb
    use force_mod, only: MWF
    use precision_kinds, only: dp
