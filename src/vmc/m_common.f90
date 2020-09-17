@@ -2066,6 +2066,22 @@ end module forcewt
    save
  end module multimatn
 
+ module multislatern
+    !> Arguments: ddorbn, detn, dorbn, orbn
+ 
+    use precision_kinds, only: dp
+    use vmc, only: MORB, MDET 
+ 
+     real(dp) :: ddorbn(MORB)
+     real(dp) :: detn(MDET)
+     real(dp) :: dorbn(3,MORB)
+     real(dp) :: orbn(MORB)
+     private
+ 
+     public ::  ddorbn, detn, dorbn, orbn
+     save
+  end module multislatern
+
  module m_icount
    !> Arguments: icount_ci, icount_orb, icount_prop 
    integer :: icount_ci = 1 
@@ -3425,3 +3441,4 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
+

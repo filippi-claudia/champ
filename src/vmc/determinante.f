@@ -10,8 +10,10 @@
       use multidet, only: kref
       use slatn, only: slmin
       use dorb_m, only: iworbd
+      use multislatern, only: ddorbn, detn, dorbn, orbn 
 
       implicit real*8(a-h,o-z)
+
 
 
       common /slater/ slmi(MMAT_DIM,2)
@@ -19,8 +21,6 @@
      &,fpp(MMAT_DIM,2)
      &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detiab(MDET,2)
-      common /multislatern/ detn(MDET)
-     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -80,12 +80,13 @@ c-----------------------------------------------------------------------
       use coefs, only: norb
       use multimat, only: aa, wfmat
       use multimatn, only: aan, wfmatn
-
       use velocity_jastrow, only: vj, vjn
       use mstates_ctrl, only: iguiding
       use mstates3, only: iweight_g, weights_g
+      use multislatern, only: ddorbn, detn, dorbn, orbn 
 
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -95,8 +96,6 @@ c-----------------------------------------------------------------------
      &,fp(3,MMAT_DIM,2)
      &,fpp(MMAT_DIM,2)
       common /multislater/ detiab(MDET,2)
-      common /multislatern/ detn(MDET)
-     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,MORB)

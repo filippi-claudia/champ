@@ -254,15 +254,15 @@ c-------------------------------------------------------------------------------
       use contrl_per, only: iperiodic
 
       use grid3dflag, only: i3dlagorb, i3dsplorb
+      use multislatern, only: ddorbn, detn, dorbn, orbn
 
       implicit real*8(a-h,o-z)
 
 
 
+
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 
-      common /multislatern/ detn(MDET)
-     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
