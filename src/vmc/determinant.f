@@ -13,7 +13,9 @@ c Modified by A. Scemama
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
 
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -21,7 +23,6 @@ c Modified by A. Scemama
       parameter (one=1.d0,half=0.5d0)
 
 
-      common /multislater/detiab(MDET,2)
 
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
@@ -100,6 +101,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
@@ -113,7 +115,7 @@ c-----------------------------------------------------------------------
 
 
 
-      common /multislater/detiab(MDET,2)
+
 
 
       parameter (one=1.d0,half=0.5d0)

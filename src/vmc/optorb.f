@@ -11,11 +11,12 @@
       use orb_mat_033, only: ideriv_ref, irepcol_ref
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
 
-      common /multislater/ detiab(MDET,2)
+
 
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
       dimension orbprim(*),eorbprim(*)

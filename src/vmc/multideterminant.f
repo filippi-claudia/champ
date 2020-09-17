@@ -24,7 +24,9 @@
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
 
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -38,7 +40,6 @@ c as many ups as downs. If this is not true then be careful if
 c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
-      common /multislater/ detiab(MDET,2)
 
       dimension eloc_det(MDET,2)
       dimension vj(3,MELEC),vpsp_det(*)
@@ -454,10 +455,11 @@ c-----------------------------------------------------------------------
       use ycompact, only: ymat
       use multimat, only: wfmat
 
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
-      common /multislater/ detiab(MDET,2)
+
 
       if((iel.ne.nup.and.iel.ne.nelec).or.ndn.eq.0) return
 

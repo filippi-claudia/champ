@@ -25,13 +25,14 @@ c Written by Claudia Filippi
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
 
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
 
 
 
-      common /multislater/ detiab(MDET,2)
+
 
       if(iel.le.nup) then
         iab=1

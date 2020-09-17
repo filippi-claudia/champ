@@ -26,7 +26,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
 
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,7 +36,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       parameter (one=1.d0)
 
 
-      common /multislater/ detiab(MDET,2)
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),rr_en_sav(MCENT),rr_en2_sav(MCENT)

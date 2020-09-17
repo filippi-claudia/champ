@@ -12,11 +12,12 @@ c-----------------------------------------------------------------------
       use wfsec, only: iwf
       use multislatern, only: ddorbn, detn, dorbn, orbn
 
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
 
-      common /multislater/ detiab(MDET,2)
+
 
 
       determ=0

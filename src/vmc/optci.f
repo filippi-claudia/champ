@@ -10,11 +10,12 @@
 
       use method_opt, only: method
 
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
 
-      common /multislater/ detiab(MDET,2)
+
 
       dimension ciprim(MDET),cieprim(MDET)
       dimension eloc_det(MDET,2)

@@ -2081,6 +2081,18 @@ end module forcewt
    save
  end module multimatn
 
+ module multislater
+   !> Arguments: detiab
+   use precision_kinds, only: dp
+   use vmc, only: MDET 
+
+   real(dp) :: detiab(MDET,2)
+
+   private
+   public :: detiab
+   save
+ end module multislater
+
  module multislatern
     !> Arguments: ddorbn, detn, dorbn, orbn
  
@@ -3489,4 +3501,3 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
-
