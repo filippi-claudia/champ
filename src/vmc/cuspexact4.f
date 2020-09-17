@@ -9,7 +9,9 @@ c Written by Cyrus Umrigar
       use atom, only: nctype
       use jaspar3, only: a, c
       use jaspar4, only: nordc
+      use cuspmat4, only: d, iwc4, nterms
       implicit real*8(a-h,o-z)
+
 
 
 c The last 2 columns are what we care about in the foll. table
@@ -42,7 +44,6 @@ c e-n cusp) depend only on independent variables.  On the other hand
 c the one from the 2nd order e-n cusp depends only on other dependent
 c variables.
 
-      common /cuspmat4/ d(NEQSX,MTERMS),icusp(NEQSX),nterms
 
       do 100 it=1,nctype
 
@@ -50,23 +51,23 @@ c Set dep. variables from e-e cusp
         do 20 i=1,nordc-1
           sum=0
           do 10 j=1,nterms
-   10       if(j.ne.icusp(i)) sum=sum+d(i,j)*c(j,it,iadiag)
-   20     c(icusp(i),it,iadiag)=-sum/d(i,icusp(i))
+   10       if(j.ne.iwc4(i)) sum=sum+d(i,j)*c(j,it,iadiag)
+   20     c(iwc4(i),it,iadiag)=-sum/d(i,iwc4(i))
 
 c Set dep. variables from 3rd and higher order e-n cusp
         do 40 i=nordc+1,2*(nordc-1)
           sum=0
           do 30 j=1,nterms
-   30       if(j.ne.icusp(i)) sum=sum+d(i,j)*c(j,it,iadiag)
-   40     c(icusp(i),it,iadiag)=-sum/d(i,icusp(i))
+   30       if(j.ne.iwc4(i)) sum=sum+d(i,j)*c(j,it,iadiag)
+   40     c(iwc4(i),it,iadiag)=-sum/d(i,iwc4(i))
 
 c Set dep. variables from 2nd order e-n cusp
         if(nordc.gt.1) then
           i=nordc
           sum=0
           do 50 j=1,nterms
-   50       if(j.ne.icusp(i)) sum=sum+d(i,j)*c(j,it,iadiag)
-          c(icusp(i),it,iadiag)=-sum/d(i,icusp(i))
+   50       if(j.ne.iwc4(i)) sum=sum+d(i,j)*c(j,it,iadiag)
+          c(iwc4(i),it,iadiag)=-sum/d(i,iwc4(i))
         endif
 
  100  continue
