@@ -1,4 +1,4 @@
-!> \brief File collecting all modules that replace common blocks. 
+!> \brief File collecting all modules that replace common blocks.
 !>
 !> \author P. Lopez-Tarifa & F. Zapata NLeSC(2019)
 
@@ -27,7 +27,6 @@
    public   :: newghostype, nghostcent
    save
  end module ghostatom
-
 
  module b_tmove
    !> Arguments: b_t, iskip
@@ -60,38 +59,12 @@
    !> former Bloc_dj
    real(dp) :: b_dj(MORB,MELEC,MPARMJ)
 
-   private 
+   private
    public :: b, tildem, xmat
    public :: b_da, db
    public :: b_dj
    save
  end module Bloc
-
-!  module Bloc_da
-!    !> Arguments: b_da, db
-!    use precision_kinds, only: dp
-!    use vmc, only: MELEC, MORB, MCENT
-
-!    real(dp) :: b_da(3,MELEC,MORB,MCENT)
-!    real(dp) :: db(3,MELEC,MORB,MCENT)
-
-!    private
-!    public :: b_da, db
-!    save
-!  end module Bloc_da
-
-!  module Bloc_dj
-!    !> Arguments: b_dj
-!    use optjas, only: MPARMJ
-!    use precision_kinds, only: dp
-!    use vmc, only: MELEC, MORB
-
-!    real(dp) :: b_dj(MORB,MELEC,MPARMJ)
-
-!    private
-!    public :: b_dj
-!    save
-!  end module Bloc_dj
 
  module bparm
    !> Arguments: nocuspb, nspin2b
@@ -147,49 +120,6 @@
    save
  end module coefs
 
- module config
-   !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo,
-   !> psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn,
-   !>rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
-   use force_mod, only: MFORCE
-   use precision_kinds, only: dp
-   use vmc, only: MELEC
-   use mstates_mod, only: MSTATES
-
-   real(dp) :: delttn(MELEC)
-   real(dp) :: enew(MFORCE)
-   real(dp) :: eold(MSTATES,MFORCE)
-   integer  :: nearestn(MELEC)
-   integer  :: nearesto(MELEC)
-   real(dp) :: pen
-   real(dp) :: peo(MSTATES)
-   real(dp) :: psi2n(MFORCE)
-   real(dp) :: psi2o(MSTATES,MFORCE)
-   real(dp) :: psido(MSTATES)
-   real(dp) :: psijo
-   real(dp) :: rminn(MELEC)
-   real(dp) :: rminno(MELEC)
-   real(dp) :: rmino(MELEC)
-   real(dp) :: rminon(MELEC)
-   real(dp) :: rvminn(3,MELEC)
-   real(dp) :: rvminno(3,MELEC)
-   real(dp) :: rvmino(3,MELEC)
-   real(dp) :: rvminon(3,MELEC)
-   real(dp) :: tjfn
-   real(dp) :: tjfo(MSTATES)
-   real(dp) :: tjfoo
-   real(dp) :: vnew(3,MELEC)
-   real(dp) :: vold(3,MELEC)
-   real(dp) :: xnew(3,MELEC)
-   real(dp) :: xold(3,MELEC)
-
-   private
-   public   :: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n
-   public   :: psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn
-   public   :: rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
-   save
- end module config
-
  module csfs
    !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
    use force_mod, only: MWF
@@ -221,11 +151,10 @@
    integer  :: iwc3(NEQSX)
    integer  :: neqs
 
-   private 
-   public :: cm, ishe, iwc3, neqs 
+   private
+   public :: cm, ishe, iwc3, neqs
    save
  end module cuspmat
-
 
  module dets
    !> Arguments: cdet, ndet
@@ -327,102 +256,13 @@
    integer  :: ngrad_jas_blocks
    integer  :: njb_current
 
-   private 
-   public :: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current 
+   private
+   public :: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
    save
  end module gradjerrb
 
- module grdnthes
-   !> Arguments: hessian_zmat
-   use precision_kinds, only: dp
-   use vmc, only: MCENT
-
-   real(dp) :: hessian_zmat(3,MCENT)
-
-   private
-   public   ::  hessian_zmat 
-   save
- end module grdnthes
-
- module grdntsmv
-   !> Arguments: igrdaidx, igrdcidx, igrdmv
-   use force_mod, only: MFORCE
-   use vmc, only: MCENT
-
-    integer  :: igrdaidx(MFORCE)
-    integer  :: igrdcidx(MFORCE)
-    integer  :: igrdmv(3,MCENT)
-
-    private 
-    public :: igrdaidx, igrdcidx, igrdmv 
-    save
- end module grdntsmv
-
- module grdntspar
-   !> Arguments: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-   use precision_kinds, only: dp
-
-   real(dp) :: delgrdba
-   real(dp) :: delgrdbl
-   real(dp) :: delgrdda
-   real(dp) :: delgrdxyz
-   integer  :: igrdtype
-   integer  :: ngradnts
-
-   private 
-   public :: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts 
-   save
- end module grdntspar
-
- module header
-   !> Arguments: date, title
-
-   character*20 title
-   character*24 date
-
-   private 
-   public :: date, title 
-   save
- end module header
-
- module inputflags
-   !> Arguments: iznuc,igeometry,ibasis_num,ilcao,iexponents,
-   !             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
-   !             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
-   !             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
-   !             ihessian_zmat
-
-   integer :: iznuc
-   integer :: igeometry
-   integer :: ibasis_num
-   integer :: ilcao
-   integer :: iexponents
-   integer :: ideterminants
-   integer :: ijastrow_parameter
-   integer :: ioptorb_def
-   integer :: ilattice
-   integer :: ici_def
-   integer :: iforces
-   integer :: icsfs
-   integer :: imstates
-   integer :: igradients
-   integer :: icharge_efield
-   integer :: imultideterminants
-   integer :: ioptorb_mixvirt
-   integer :: imodify_zmat
-   integer :: izmatrix_check
-   integer :: ihessian_zmat
-
-   private
-   public :: iznuc,igeometry,ibasis_num,ilcao, iexponents
-   public :: ideterminants,ijastrow_parameter, ioptorb_def,ilattice
-   public :: ici_def,iforces,icsfs,imstates,igradients,icharge_efield
-   public :: imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check
-   public :: ihessian_zmat
-   save
- end module inputflags
-
  module insout
+   !> something to do with grid ...
    !> Arguments: inout, inside
 
    integer  :: inout
@@ -447,19 +287,6 @@
    save
  end module jd_scratch
 
- module kinet
-   !> Arguments: dtdx2n, dtdx2o
-   use precision_kinds, only: dp
-   use vmc, only: MELEC
-
-   real(dp) :: dtdx2n(MELEC)
-   real(dp) :: dtdx2o(MELEC)
-
-   private 
-   public :: dtdx2n, dtdx2o 
-   save
- end module kinet
-
  module linear_norm
    !> Arguments: oav, ci_oav
    use optci, only: MXCITERM
@@ -472,18 +299,6 @@
    public :: oav, ci_oav
    save
  end module linear_norm
-
- module method_opt
-   !> Arguments: method
- 
-   character*20 :: method
-
-   private
-   public :: method
-   save
- end module method_opt
-
-
 
  module multidet
    !> Arguments: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
@@ -511,8 +326,8 @@
    real(dp) :: aa(MELEC,MORB,2)
    real(dp) :: wfmat(MEXCIT**2,MDET,2)
 
-   private 
-   public :: aa, wfmat 
+   private
+   public :: aa, wfmat
    save
  end module multimat
 
@@ -546,30 +361,6 @@
    save
  end module ncusp
 
-
- module pars
-   !> only used in read input
-   !> Arguments: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma, xms
-   use precision_kinds, only: dp
-
-   real(dp) :: Z
-   real(dp) :: a00
-   real(dp) :: a20
-   real(dp) :: a21
-   real(dp) :: c0000
-   real(dp) :: c1110
-   real(dp) :: c2000
-   real(dp) :: eps_fock
-   real(dp) :: xm1
-   real(dp) :: xm12
-   real(dp) :: xm2
-   real(dp) :: xma
-   real(dp) :: xms
-
-   private
-   public :: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma, xms
-   save
- end module pars
 
  module phifun
    !> Arguments: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
@@ -610,6 +401,7 @@
  end module qua
 
  module rlobxy
+   !> only rlobx used in read input
    !> Arguments: rlobx, rloby, rloby2
    use precision_kinds, only: dp
    use vmc, only: NSPLIN
@@ -623,18 +415,6 @@
     save
  end module rlobxy
 
- module rnyucm
-   !> Arguments: ll, lm
-
-   integer  :: ll(4)
-   integer  :: mm(4)
-   data mm / 502,1521,4071,2107/
-   data ll /   0,   0,   0,   1/
-
-   private
-   public :: ll, mm
-   save
-end module rnyucm
 
  module sa_check
    !> Arguments: energy_all, energy_err_all
@@ -699,34 +479,6 @@ end module rnyucm
    save
  end module slatn
 
- module stats
-   !> Arguments: rejmax
-   use precision_kinds, only: dp
-
-   real(dp) :: rejmax
-
-   private
-   public :: rejmax
-   save
- end module stats
-
- module step
-   !> Arguments: ekin, ekin2, rprob, suc, trunfb, try
-   use precision_kinds, only: dp
-   use vmc, only: nrad
-
-   real(dp) :: ekin(nrad)
-   real(dp) :: ekin2(nrad)
-   real(dp) :: rprob(nrad)
-   real(dp) :: suc(nrad)
-   real(dp) :: trunfb(nrad)
-   real(dp) :: try(nrad)
-
-   private
-   public :: ekin, ekin2, rprob, suc, trunfb, try
-   save
- end module step
-
  module svd_mod
   ! Not used anywhere !
   !> Arguments:
@@ -738,17 +490,6 @@ end module rnyucm
  end module svd_mod 
 
  
- module tmpnode
-   !> Arguments: distance_node_sum
-   use precision_kinds, only: dp
-
-   real(dp) :: distance_node_sum
-
-   private
-   public :: distance_node_sum
-   save
- end module tmpnode
-
  module vardep
    !> Arguments: cdep, iwdepend, nvdepend
    use precision_kinds, only: dp
@@ -850,6 +591,7 @@ end module rnyucm
  end module zmatrix
  
  module zmatrix_grad
+   !> never called
    !> Arguments: transform_grd
    use precision_kinds, only: dp
    use vmc, only: MCENT3

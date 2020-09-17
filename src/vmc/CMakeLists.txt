@@ -88,6 +88,9 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_estimators.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_deriv.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_mixderiv.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_input.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_sampling.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_grdnt.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/mmpol.f
