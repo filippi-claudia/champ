@@ -759,16 +759,3 @@ c 185    write(6,'(''s= '',1000d12.5)') (s(i,j),j=1,nparm+1)
 
       return
       end
-c-----------------------------------------------------------------------
-      block data optprt_count
-
-      implicit real*8(a-h,o-z)
-
-      common /icount_ci/ icount_ci
-      common /icount_orb/ icount_orb
-      common /icount_prop/ icount_prop
-      data icount_ci /1/
-      data icount_orb /1/
-      data icount_prop /1/
-
-      end
