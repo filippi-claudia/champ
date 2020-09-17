@@ -22,7 +22,10 @@
 
       use force_analy, only: iforce_analy
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use slater, only: d2dx2, ddx, fp, fpp, slmi
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -35,10 +38,6 @@ c as many ups as downs. If this is not true then be careful if
 c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fp(3,MMAT_DIM,2)
-     &,fpp(MMAT_DIM,2)
-     &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detiab(MDET,2)
 
       dimension eloc_det(MDET,2)
@@ -247,16 +246,15 @@ c-----------------------------------------------------------------------
       use denergy_det_m, only: denergy_det
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use slater, only: d2dx2, ddx, fp, fpp, slmi
+
       implicit real*8(a-h,o-z)
+
 
 
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fp(3,MMAT_DIM,2)
-     &,fpp(MMAT_DIM,2)
-     &,ddx(3,MELEC),d2dx2(MELEC)
 
       dimension detu(MDET),detd(MDET),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
 
@@ -390,13 +388,12 @@ c-----------------------------------------------------------------------
       use Bloc, only: tildem, xmat
       use multimat, only: aa
 
+      use slater, only: d2dx2, ddx, fp, fpp, slmi
+
       implicit real*8(a-h,o-z)
 
 
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fp(3,MMAT_DIM,2)
-     &,fpp(MMAT_DIM,2)
-     &,ddx(3,MELEC),d2dx2(MELEC)
+
 
       dimension ymat(MORB,MELEC,2),dymat(MORB,MELEC,2)
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)

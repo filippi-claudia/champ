@@ -3179,6 +3179,23 @@ end module rnyucm
    save
  end module scratch
 
+ module slater
+   !> Arguments: d2dx2, ddx, fp, fpp, slmi
+ 
+   use precision_kinds, only: dp
+   use vmc, only: MELEC, MMAT_DIM
+ 
+   real(dp) :: d2dx2(MELEC)
+   real(dp) :: ddx(3,MELEC)
+   real(dp) :: fp(3,MMAT_DIM,2)
+   real(dp) :: fpp(MMAT_DIM,2)
+   real(dp) :: slmi(MMAT_DIM,2)
+
+   private
+   public :: d2dx2, ddx, fp, fpp, slmi
+   save
+ end module slater
+
  module slatn
    !> Arguments: slmin
    use precision_kinds, only: dp
@@ -3472,3 +3489,4 @@ module spc2
    public :: transform_grd 
    save
  end module zmatrix_grad
+

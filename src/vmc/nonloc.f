@@ -24,17 +24,16 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use qua, only: nquad, wq, xq, yq, zq
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use slater, only: d2dx2, ddx, fp, fpp, slmi
+
       implicit real*8(a-h,o-z)
+
 
 
 
       parameter (one=1.d0)
 
 
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fp(3,MMAT_DIM,2)
-     &,fpp(MMAT_DIM,2)
-     &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detiab(MDET,2)
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
