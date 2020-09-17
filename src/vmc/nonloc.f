@@ -10,7 +10,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use jaso, only: fso
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
-      use Bloc_dj, only: b_dj
+      use Bloc, only: b_dj
       use coefs, only: norb
       use contr3, only: mode
       use Bloc, only: b
@@ -527,7 +527,7 @@ c-----------------------------------------------------------------------
 
       use vmc, only: MORB, MCENT
       use atom, only: ncent
-      use Bloc_da, only: db
+      use Bloc, only: db
       use coefs, only: norb
       use force_analy, only: iforce_analy
       use pseudo, only: lpot, vps

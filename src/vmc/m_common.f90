@@ -46,42 +46,52 @@
  module Bloc
    !> Arguments: b, tildem, xmat
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB
+   use vmc, only: MELEC, MORB, MCENT
+   use optjas, only: MPARMJ
 
    real(dp) :: b(MORB,MELEC)
    real(dp) :: tildem(MELEC,MORB,2)
-   real(dp) :: xmat(MELEC**2,2) 
+   real(dp) :: xmat(MELEC**2,2)
 
-   private 
-   public :: b, tildem, xmat
-   save
- end module Bloc
-
- module Bloc_da
-   !> Arguments: b_da, db
-   use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MCENT
-
+   !> Former Bloc_da
    real(dp) :: b_da(3,MELEC,MORB,MCENT)
    real(dp) :: db(3,MELEC,MORB,MCENT)
 
-   private
-   public :: b_da, db
-   save
- end module Bloc_da
-
- module Bloc_dj
-   !> Arguments: b_dj
-   use optjas, only: MPARMJ
-   use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB
-
+   !> former Bloc_dj
    real(dp) :: b_dj(MORB,MELEC,MPARMJ)
 
-   private
+   private 
+   public :: b, tildem, xmat
+   public :: b_da, db
    public :: b_dj
    save
- end module Bloc_dj
+ end module Bloc
+
+!  module Bloc_da
+!    !> Arguments: b_da, db
+!    use precision_kinds, only: dp
+!    use vmc, only: MELEC, MORB, MCENT
+
+!    real(dp) :: b_da(3,MELEC,MORB,MCENT)
+!    real(dp) :: db(3,MELEC,MORB,MCENT)
+
+!    private
+!    public :: b_da, db
+!    save
+!  end module Bloc_da
+
+!  module Bloc_dj
+!    !> Arguments: b_dj
+!    use optjas, only: MPARMJ
+!    use precision_kinds, only: dp
+!    use vmc, only: MELEC, MORB
+
+!    real(dp) :: b_dj(MORB,MELEC,MPARMJ)
+
+!    private
+!    public :: b_dj
+!    save
+!  end module Bloc_dj
 
  module bparm
    !> Arguments: nocuspb, nspin2b
@@ -424,6 +434,7 @@
  end module insout
 
  module jd_scratch
+   !> only for (jacobi) davidson in linear method
    !> Arguments: qr, rr
    use sr_mod, only: MPARM
    use precision_kinds, only: dp

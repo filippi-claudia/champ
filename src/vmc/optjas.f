@@ -13,7 +13,7 @@
       use optwf_parms, only: nparmj
       use scratch, only: denergy_det, dtildem
       use Bloc, only: xmat
-      use Bloc_dj, only: b_dj
+      use Bloc, only: b_dj
       use coefs, only: norb
       use deloc_dj_m, only: denergy
       use multimat, only: wfmat

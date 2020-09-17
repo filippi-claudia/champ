@@ -153,8 +153,8 @@ c-----------------------------------------------------------------------
       use derivjas, only: g
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
-      use Bloc_da, only: b_da
-      use Bloc_dj, only: b_dj
+      use Bloc, only: b_da
+      use Bloc, only: b_dj
       use coefs, only: norb
       use Bloc, only: b
       use force_analy, only: iforce_analy

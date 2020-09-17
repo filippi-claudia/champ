@@ -133,7 +133,7 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: ivirt, kref
       use zcompact, only: aaz, dzmat, emz, zmat
-      use Bloc_da, only: b_da
+      use Bloc, only: b_da
       use coefs, only: norb
       use Bloc, only: xmat
       use dorb_m, only: iworbd
