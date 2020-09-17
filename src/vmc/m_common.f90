@@ -198,6 +198,7 @@
  end module csfs
 
  module cuspmat
+   !> Never called !
    !> Arguments: cm, ishe, iwc3, neqs
    use precision_kinds, only: dp
    use vmc, only: NEQSX
@@ -212,132 +213,6 @@
    save
  end module cuspmat
 
- module da_energy_sumcum
-   !> Arguments: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
-   use precision_kinds, only: dp
-   use vmc, only: MCENT
-
-   real(dp) :: da_energy_cm2(3,MCENT)
-   real(dp) :: da_energy_cum(3,MCENT)
-   real(dp) :: da_energy_sum(3,MCENT)
-   real(dp) :: da_psi_cum(3,MCENT)
-   real(dp) :: da_psi_sum(3,MCENT)
-
-   private 
-   public :: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum 
-   save
- end module da_energy_sumcum
-
- module da_jastrow4val
-   !> Arguments: da_d2j, da_j, da_vj
-   use precision_kinds, only: dp
-   use vmc, only: MELEC, MCENT
-
-   real(dp) :: da_d2j(3,MELEC,MCENT)
-   real(dp) :: da_j(3,MELEC,MCENT)
-   real(dp) :: da_vj(3,3,MELEC,MCENT)
-
-   private
-   public   ::  da_d2j, da_j, da_vj
-   save
- end module da_jastrow4val
-
- module da_orbval
-   !> Arguments: da_d2orb, da_dorb, da_orb
-   use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MCENT
-
-   real(dp) :: da_d2orb(3,MELEC,MORB,MCENT)
-   real(dp) :: da_dorb(3,3,MELEC,MORB,MCENT)
-   real(dp) :: da_orb(3,MELEC,MORB,MCENT)
-
-   private
-   public   ::  da_d2orb, da_dorb, da_orb
-   save
- end module da_orbval
-
- module da_pseudo
-   !> Arguments: da_pecent, da_vps, da_nonloc  
-
-   use pseudo_mod, only: MPS_L
-   use precision_kinds, only: dp
-   use vmc, only: MELEC, MCENT
-
-
-   real(dp) :: da_pecent( 3, MCENT), da_vps( 3, MELEC, MCENT, MPS_L)
-   real(dp) :: da_nonloc( 3, MCENT)= 0.0D0 
-
-   private
-   public   :: da_pecent, da_vps, da_nonloc 
-   save
- end module da_pseudo 
- 
- module da_energy_now
-   !> Arguments: da_energy, da_psi
-   use precision_kinds, only: dp
-   use vmc, only: MCENT
- 
-   real(dp) :: da_energy(3,MCENT)
-   real(dp) :: da_psi(3,MCENT)
- 
-   private
-   public   ::  da_energy, da_psi
-   save
- end module da_energy_now
-
- module deloc_dj_m
-   !> Arguments: denergy
-   use optjas, only: MPARMJ
-   use precision_kinds, only: dp
-   use mstates_mod, only: MSTATES
-
-   real(dp) :: denergy(MPARMJ,MSTATES)
-
-   private 
-   public :: denergy 
-   save
- end module deloc_dj_m
-
- module denergy_det_m
-   !> Arguments: denergy_det
-   use precision_kinds, only: dp
-   use vmc, only: MDET
-
-    real(dp) :: denergy_det(MDET,2)
-
-    private 
-    public :: denergy_det 
-    save
- end module denergy_det_m
-
- module denupdn
-   !> Arguments: rprobdn, rprobup
-   use precision_kinds, only: dp
-   use vmc, only: nrad
-
-   real(dp) :: rprobdn(nrad)
-   real(dp) :: rprobup(nrad)
-
-   private
-   public   ::  rprobdn, rprobup 
-   save
- end module denupdn
-
- module derivjas
-   !> Arguments: d2g, g, go, gvalue
-   use optjas, only: MPARMJ
-   use precision_kinds, only: dp
-   use vmc, only: MELEC
-
-   real(dp) :: d2g(MPARMJ)
-   real(dp) :: g(3,MELEC,MPARMJ)
-   real(dp) :: go(MELEC,MELEC,MPARMJ)
-   real(dp) :: gvalue(MPARMJ)
-
-   private
-   public   :: d2g, g, go, gvalue
-   save
- end module derivjas
 
  module dets
    !> Arguments: cdet, ndet
@@ -383,17 +258,6 @@
   save
  end module distances_sav
 
- module dorb_m
-   !> Arguments: iworbd
-   use vmc, only: MELEC, MDET
-
-   integer  :: iworbd(MELEC,MDET)
-
-   private 
-   public :: iworbd 
-   save
- end module dorb_m
-
  module elec
   !> Arguments: ndn, nup
 
@@ -406,6 +270,7 @@
  end module elec
 
  module embed
+  !> Never called
   ! tables for hartree and exchange potentials 
   ! max interpolation order
   integer, parameter :: MXTABI = 6 
@@ -424,94 +289,8 @@
   save 
  end module embed
 
-
- module estcum
-   !> Arguments: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
-   use force_mod, only: MFORCE
-   use precision_kinds, only: dp
-   use mstates_mod, only: MSTATES
-
-   real(dp) :: ecum(MSTATES,MFORCE)
-   real(dp) :: ecum1(MSTATES)
-   integer  :: iblk
-   real(dp) :: pecum(MSTATES)
-   real(dp) :: r2cum
-   real(dp) :: tjfcum(MSTATES)
-   real(dp) :: tpbcum(MSTATES)
-   real(dp) :: avcum(MSTATES*3) 
-
-   private
-   public   ::  ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
-   save
- end module estcum
- 
- module estsig
-   !> Arguments: ecm21s, ecum1s
-   use precision_kinds, only: dp
-   use mstates_mod, only: MSTATES
-
-   real(dp) :: ecm21s(MSTATES)
-   real(dp) :: ecum1s(MSTATES)
-
-   private
-   public   ::  ecm21s, ecum1s
-   save
- end module estsig
-
- module estsum
-  !> Arguments: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-  use force_mod, only: MFORCE
-  use precision_kinds, only: dp
-  use mstates_mod, only: MSTATES
-
-  real(dp) :: acc
-  real(dp) :: esum(MSTATES,MFORCE)
-  real(dp) :: esum1(MSTATES)
-  real(dp) :: pesum(MSTATES)
-  real(dp) :: r2sum
-  real(dp) :: tjfsum(MSTATES)
-  real(dp) :: tpbsum(MSTATES)
-
-  private
-  public   :: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-  save
- end module estsum
-
- module estpsi
-   !> Arguments: apsi, aref, detref
-   use precision_kinds, only: dp
-   use mstates_mod, only: MSTATES
-
-   real(dp) :: apsi(MSTATES)
-   real(dp) :: aref
-   real(dp) :: detref(2)
-
-   private
-   public   ::  apsi, aref, detref 
-   save
- end module estpsi
-
- module est2cm
-   !> Arguments: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
-   use force_mod, only: MFORCE
-   use precision_kinds, only: dp
-   use mstates_mod, only: MSTATES
-
-   real(dp) :: ecm2(MSTATES,MFORCE)
-   real(dp) :: ecm21(MSTATES)
-   real(dp) :: pecm2(MSTATES)
-   real(dp) :: r2cm2
-   real(dp) :: tjfcm2(MSTATES)
-   real(dp) :: tpbcm2(MSTATES)
-   real(dp) :: avcm2(MSTATES*3) 
-
-   private
-   public   :: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2 
-   save
- end module est2cm
-
-
  module gauss_ecp
+   !> only used in read_gauss .... 
    !> Arguments: ecp_coef, ecp_exponent, necp_power, necp_term
    use pseudo_mod, only: MPS_L, MGAUSS
    use precision_kinds, only: dp
@@ -593,33 +372,18 @@
    save
  end module header
 
- module ijasnonlin
-   !> Arguments: d1d2a, d1d2b, d2d2a, d2d2b
-   use precision_kinds, only: dp
-   use vmc, only: MCTYPE
-
-   real(dp) :: d1d2a(MCTYPE)
-   real(dp) :: d1d2b(2)
-   real(dp) :: d2d2a(MCTYPE)
-   real(dp) :: d2d2b(2)
-
-   private 
-   public :: d1d2a, d1d2b, d2d2a, d2d2b 
-   save
- end module ijasnonlin
-
  module inputflags
    !> Arguments: iznuc,igeometry,ibasis_num,ilcao,iexponents,
    !             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
    !             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
    !             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
-   !             ihessian_zmat 
+   !             ihessian_zmat
 
    integer :: iznuc
-   integer :: igeometry 
+   integer :: igeometry
    integer :: ibasis_num
    integer :: ilcao
-   integer :: iexponents                              
+   integer :: iexponents
    integer :: ideterminants
    integer :: ijastrow_parameter
    integer :: ioptorb_def
@@ -705,54 +469,6 @@
    save
  end module method_opt
 
- module mix_jas_ci
-   !> Arguments: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-   use optjas, only: MPARMJ
-   use precision_kinds, only: dp
-   use vmc, only: MDET
-
-   real(dp) :: de_o_ci(MPARMJ,MDET)
-   real(dp) :: dj_de_ci(MPARMJ,MDET)
-   real(dp) :: dj_o_ci(MPARMJ,MDET)
-   real(dp) :: dj_oe_ci(MPARMJ,MDET)
-
-   private 
-   public :: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci 
-   save
- end module mix_jas_ci
-
- module mix_jas_orb
-   !> Arguments: de_o, dj_ho, dj_o, dj_oe
-   use optorb_mod, only: MXREDUCED
-   use optjas, only: MPARMJ
-   use precision_kinds, only: dp
-   use mstates_mod, only: MSTATES
- 
-   real(dp) :: de_o(MPARMJ,MXREDUCED,MSTATES)
-   real(dp) :: dj_ho(MPARMJ,MXREDUCED,MSTATES)
-   real(dp) :: dj_o(MPARMJ,MXREDUCED,MSTATES)
-   real(dp) :: dj_oe(MPARMJ,MXREDUCED,MSTATES)
- 
-   private 
-   public :: de_o, dj_ho, dj_o, dj_oe 
-   save
- end module mix_jas_orb
-
- module mix_orb_ci
-   !> Arguments: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-   use optorb_mod, only: MXREDUCED
-   use optci, only: MXCITERM
-   use precision_kinds, only: dp
-
-   real(dp) :: ci_de_o(MXCITERM,MXREDUCED)
-   real(dp) :: ci_o_ho(MXCITERM,MXREDUCED)
-   real(dp) :: ci_o_o(MXCITERM,MXREDUCED)
-   real(dp) :: ci_o_oe(MXCITERM,MXREDUCED)
-
-   private 
-   public :: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe 
-   save
- end module mix_orb_ci
 
 
  module multidet
@@ -800,9 +516,9 @@
    save
  end module multimatn
 
- 
 
  module ncusp
+   !> Never called !
    !> Arguments: ncnstr, ncuspc, nfock, nfockc, norbc
 
    integer  :: ncnstr
@@ -816,23 +532,9 @@
    save
  end module ncusp
 
- 
-
- module orbital_num_lag
-   !> Arguments: denom
-   use precision_kinds, only: dp
-   use grid_lagrange_mod, only: LAGSTART, LAGEND
-
-   real(dp) :: denom(LAGSTART:LAGEND,3)
-   real(dp) :: step_inv(3,3)
-
-   private
-   public :: denom, step_inv
-   save
-end module orbital_num_lag
-
 
  module pars
+   !> only used in read input
    !> Arguments: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma, xms
    use precision_kinds, only: dp
 
@@ -983,43 +685,6 @@ end module rnyucm
    save
  end module slatn
 
- module spc
-   !> Arguments: nsf, num
-
-   integer  :: nsf
-   integer  :: num(50)
-
-   private
-   public :: nsf, num
-   save
-end module spc
-
-module spc1
-   !> Arguments: csf, qsf, rsf
-   use precision_kinds, only: dp
-
-   real(dp) :: csf(750,4,50)
-   real(dp) :: qsf(50,3)
-   real(dp) :: rsf(50)
-
-   private
-   public :: csf, qsf, rsf
-   save
-end module spc1
-
-module spc2
-   !> Arguments: nxyz, sfxyz, usf
-   use precision_kinds, only: dp
-
-   integer  :: nxyz
-   real(dp) :: sfxyz(5000,4)
-   real(dp) :: usf(5000,3)
-
-   private
-   public :: nxyz, sfxyz, usf
-   save
- end module spc2
-
  module stats
    !> Arguments: rejmax
    use precision_kinds, only: dp
@@ -1058,39 +723,7 @@ module spc2
   save 
  end module svd_mod 
 
- module tempor
-   !> Arguments: dist_nn
-   use precision_kinds, only: dp
-
-   real(dp) :: dist_nn
-
-   private
-   public :: dist_nn
-   save
- end module tempor
-
- module tempor_test
-   !> Arguments: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
-   use ewald_mod, only: IVOL_RATIO
-   use ewald_mod, only: NGVEC_BIGX
-   use precision_kinds, only: dp
-
-   real(dp) :: c_imag(NGVEC_BIGX)
-   real(dp) :: c_real(NGVEC_BIGX)
-   integer  :: igvec_dft(3,NGVEC_BIGX)
-   integer  :: iwgvec(NGVEC_BIGX)
-   integer  :: ngg(IVOL_RATIO)
-   integer  :: ngvec_dft
-   real(dp) :: rkvec_tmp(3)
-   real(dp) :: rkvec_tmp2(3)
-
-   private
-   public :: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
-   save
- end module tempor_test
-
-
-
+ 
  module tmpnode
    !> Arguments: distance_node_sum
    use precision_kinds, only: dp

@@ -152,3 +152,34 @@
    public :: f, vbare_coul, vbare_jas, vbare_psp
    save
  end module test
+
+ module tempor
+   !> Arguments: dist_nn
+   use precision_kinds, only: dp
+
+   real(dp) :: dist_nn
+
+   private
+   public :: dist_nn
+   save
+ end module tempor
+
+ module tempor_test
+   !> Arguments: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
+   use ewald_mod, only: IVOL_RATIO
+   use ewald_mod, only: NGVEC_BIGX
+   use precision_kinds, only: dp
+
+   real(dp) :: c_imag(NGVEC_BIGX)
+   real(dp) :: c_real(NGVEC_BIGX)
+   integer  :: igvec_dft(3,NGVEC_BIGX)
+   integer  :: iwgvec(NGVEC_BIGX)
+   integer  :: ngg(IVOL_RATIO)
+   integer  :: ngvec_dft
+   real(dp) :: rkvec_tmp(3)
+   real(dp) :: rkvec_tmp2(3)
+
+   private
+   public :: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
+   save
+ end module tempor_test

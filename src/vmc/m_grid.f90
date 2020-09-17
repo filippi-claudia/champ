@@ -83,3 +83,16 @@ module grid_mod
    public :: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
    save
  end module grid3dflag
+
+  module orbital_num_lag
+   !> Arguments: denom
+   use precision_kinds, only: dp
+   use grid_lagrange_mod, only: LAGSTART, LAGEND
+
+   real(dp) :: denom(LAGSTART:LAGEND,3)
+   real(dp) :: step_inv(3,3)
+
+   private
+   public :: denom, step_inv
+   save
+end module orbital_num_lag

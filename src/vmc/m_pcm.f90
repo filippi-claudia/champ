@@ -290,3 +290,40 @@ module pcm
    public :: enfpcmo, qopcmo, spcmo, vpcmo
    save
  end module pcmo
+
+  module spc
+   !> Arguments: nsf, num
+
+   integer  :: nsf
+   integer  :: num(50)
+
+   private
+   public :: nsf, num
+   save
+end module spc
+
+module spc1
+   !> Arguments: csf, qsf, rsf
+   use precision_kinds, only: dp
+
+   real(dp) :: csf(750,4,50)
+   real(dp) :: qsf(50,3)
+   real(dp) :: rsf(50)
+
+   private
+   public :: csf, qsf, rsf
+   save
+end module spc1
+
+module spc2
+   !> Arguments: nxyz, sfxyz, usf
+   use precision_kinds, only: dp
+
+   integer  :: nxyz
+   real(dp) :: sfxyz(5000,4)
+   real(dp) :: usf(5000,3)
+
+   private
+   public :: nxyz, sfxyz, usf
+   save
+ end module spc2
