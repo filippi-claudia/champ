@@ -10,11 +10,12 @@
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_ref, irepcol_ref
 
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
+
       common /multislater/ detiab(MDET,2)
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
       dimension orbprim(*),eorbprim(*)
@@ -771,10 +772,11 @@ c-----------------------------------------------------------------------
 
       use optorb_cblock, only: nreduced
 
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
 
 
       data icount_orbdef /1/
@@ -965,10 +967,11 @@ c-----------------------------------------------------------------------
       use vmc, only: MELEC, MORB
 
 c Do not compute virtual orbitals during single-electron move
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
 
       save nadorb_save
 

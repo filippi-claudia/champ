@@ -2495,6 +2495,22 @@ end module orbital_num_lag
    save
  end module optwf_wjas
 
+ module orbval
+   !> Arguments: ddorb, dorb, nadorb, ndetorb, orb
+   use precision_kinds, only: dp
+   use vmc, only: MELEC, MORB
+ 
+   real(dp) :: ddorb(MELEC,MORB)
+   real(dp) :: dorb(3,MELEC,MORB)
+   integer  :: nadorb
+   integer  :: ndetorb
+   real(dp) :: orb(MELEC,MORB)
+
+   private
+   public :: ddorb, dorb, nadorb, ndetorb, orb
+   save
+ end module orbval
+
  module pars
    !> Arguments: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma, xms
    use precision_kinds, only: dp

@@ -85,7 +85,9 @@ c-----------------------------------------------------------------------
       use mstates3, only: iweight_g, weights_g
       use multislatern, only: ddorbn, detn, dorbn, orbn 
 
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -96,7 +98,6 @@ c-----------------------------------------------------------------------
      &,fp(3,MMAT_DIM,2)
      &,fpp(MMAT_DIM,2)
       common /multislater/ detiab(MDET,2)
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,MORB)
       dimension ymat_tmp(MORB,MELEC)
