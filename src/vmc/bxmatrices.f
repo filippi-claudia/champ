@@ -4,13 +4,12 @@
       use vmc, only: MMAT_DIM
       use elec, only: ndn, nup
       use dorb_m, only: iworbd
+      use slater, only: d2dx2, ddx, fp, fpp, slmi
+
       implicit real*8(a-h,o-z)
 
 
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fp(3,MMAT_DIM,2)
-     &,fpp(MMAT_DIM,2)
-     &,ddx(3,MELEC),d2dx2(MELEC)
+
 
       dimension b(MORB,MELEC),btemp(MELEC**2,2),xmatu(MELEC**2),xmatd(MELEC**2),work(MELEC)
 

@@ -10,11 +10,12 @@
 
       use method_opt, only: method
 
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
 
-      common /multislater/ detiab(MDET,2)
+
 
       dimension ciprim(MDET),cieprim(MDET)
       dimension eloc_det(MDET,2)
@@ -476,7 +477,7 @@ c-----------------------------------------------------------------------
       use linear_norm, only: oav
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciterm
-
+      use m_icount, only: icount_ci
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
@@ -484,7 +485,6 @@ c-----------------------------------------------------------------------
 
 c compute averages and print then out
 
-      common /icount_ci/ icount_ci
 
       dimension deav(MXCITERM)
       dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)

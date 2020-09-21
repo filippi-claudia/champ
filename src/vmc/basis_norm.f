@@ -15,14 +15,15 @@ c Set normalization of basis fns.
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
 
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
+
 
 
       parameter (one=1.d0,two=2.d0,three=3.d0)
       parameter (five=5.d0,six=6.d0,seven=7.d0)
       parameter (third=1.d0/3.d0)
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension anorm(*)
 

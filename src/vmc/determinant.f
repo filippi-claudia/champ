@@ -10,19 +10,20 @@ c Modified by A. Scemama
       use multidet, only: kref
       use dorb_m, only: iworbd
 
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use slater, only: d2dx2, ddx, fp, fpp, slmi
+
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
+
+
+
 
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fp(3,MMAT_DIM,2)
-     &,fpp(MMAT_DIM,2)
-     &,ddx(3,MELEC),d2dx2(MELEC)
 
-      common /multislater/detiab(MDET,2)
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -99,6 +100,8 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
@@ -109,10 +112,10 @@ c-----------------------------------------------------------------------
 
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
 
-      common /multislater/detiab(MDET,2)
+
+
 
 
       parameter (one=1.d0,half=0.5d0)
@@ -160,12 +163,13 @@ c-----------------------------------------------------------------------
       use force_analy, only: iforce_analy
       use velocity_jastrow, only: vj
       
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
+
 
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
 c compute kinetic contribution of B+Btilde to compute Eloc
       do i=1,nelec

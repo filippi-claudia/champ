@@ -6,10 +6,11 @@
       use coefs, only: norb
       use dorb_m, only: iworbd
 
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
 
 c orbital indices in determinants of trial wave function
       ndetorb=0

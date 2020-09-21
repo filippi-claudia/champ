@@ -125,13 +125,14 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
 
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
 
 
 
@@ -445,10 +446,11 @@ c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
       use vmc, only: MELEC, MORB
       use coefs, only: coef, nbasis, norb
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
 
       do 20 i=1,norb+nadorb
        do 20 j=1,nbasis

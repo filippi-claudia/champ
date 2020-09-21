@@ -133,6 +133,7 @@ c-----------------------------------------------------------------------
       use const, only: nelec
       use prp000, only: iprop, ipropprt
       use prp003, only: cc_nuc
+      use m_icount, only: icount_prop
 
       implicit real*8(a-h,o-z)
 
@@ -141,7 +142,6 @@ c-----------------------------------------------------------------------
 c compute averages and print then out
       dimension pav(MAXPROP),perr(MAXPROP)
 
-      common /icount_prop/ icount_prop
 
 c ipropprt 0 no printout
 c          1 each iteration full printout

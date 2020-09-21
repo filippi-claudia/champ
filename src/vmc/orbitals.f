@@ -12,10 +12,11 @@ c Modified by A. Scemama
       use force_analy, only: iforce_analy
       use grid3dflag, only: i3dlagorb, i3dsplorb
 
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension bhin(MELEC,MBASIS),dbhin(3*MELEC,MBASIS),d2bhin(MELEC,MBASIS)
@@ -148,13 +149,14 @@ c-------------------------------------------------------------------------------
       use phifun, only: d2phin, dphin
       use phifun, only: phin
       use coefs, only: coef, nbasis, norb
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
+
 
 c compute values of extra ('virtual') orbitals needed for optorb operators
 c assuming that basis function values in phin are up to date
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension bhin(MELEC,MBASIS),dbhin(3,MELEC,MBASIS),d2bhin(MELEC,MBASIS)
 
@@ -210,10 +212,11 @@ c-------------------------------------------------------------------------------
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: ibasis
       
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
 
       dimension tphin(3*MELEC,MBASIS),t2phin_all(3*3*MELEC,MBASIS),t3phin(3*MELEC,MBASIS)
 
@@ -254,15 +257,15 @@ c-------------------------------------------------------------------------------
       use contrl_per, only: iperiodic
 
       use grid3dflag, only: i3dlagorb, i3dsplorb
+      use multislatern, only: ddorbn, detn, dorbn, orbn
 
       implicit real*8(a-h,o-z)
 
 
 
+
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 
-      common /multislatern/ detn(MDET)
-     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 

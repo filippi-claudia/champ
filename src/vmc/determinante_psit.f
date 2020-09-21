@@ -10,12 +10,14 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use elec, only: nup
       use wfsec, only: iwf
+      use multislatern, only: ddorbn, detn, dorbn, orbn
+
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
-      common /multislater/ detiab(MDET,2)
-      common /multislatern/ detn(MDET)
-     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
+
+
 
 
       determ=0

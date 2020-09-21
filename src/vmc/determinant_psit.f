@@ -9,10 +9,11 @@
       use dets, only: cdet, ndet
       use wfsec, only: iwf
 
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
-      common /multislater/ detiab(MDET,2)
+
 
       determ=0
       do 110 k=1,ndet

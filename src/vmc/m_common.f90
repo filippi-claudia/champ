@@ -156,6 +156,21 @@
    save
  end module cuspmat
 
+ module cuspmat4
+   !> Arguments: d, icusp, nterms
+   use vmc, only: NEQSX, MTERMS
+   use precision_kinds, only: dp
+   
+
+    real(dp) :: d(NEQSX,MTERMS)
+    integer  :: iwc4(NEQSX)
+    integer  :: nterms
+    private
+
+    public :: d, iwc4, nterms
+    save
+ end module cuspmat4
+
  module dets
    !> Arguments: cdet, ndet
    use force_mod, only: MWF
@@ -345,6 +360,17 @@
    save
  end module multimatn
 
+ module multislater
+   !> Arguments: detiab
+   use precision_kinds, only: dp
+   use vmc, only: MDET 
+
+   real(dp) :: detiab(MDET,2)
+
+   private
+   public :: detiab
+   save
+ end module multislater
 
  module ncusp
    !> Never called !
@@ -439,6 +465,23 @@
    public :: denergy_det, dtildem
    save
  end module scratch
+
+ module slater
+   !> Arguments: d2dx2, ddx, fp, fpp, slmi
+ 
+   use precision_kinds, only: dp
+   use vmc, only: MELEC, MMAT_DIM
+ 
+   real(dp) :: d2dx2(MELEC)
+   real(dp) :: ddx(3,MELEC)
+   real(dp) :: fp(3,MMAT_DIM,2)
+   real(dp) :: fpp(MMAT_DIM,2)
+   real(dp) :: slmi(MMAT_DIM,2)
+
+   private
+   public :: d2dx2, ddx, fp, fpp, slmi
+   save
+ end module slater
 
  module slatn
    !> Arguments: slmin

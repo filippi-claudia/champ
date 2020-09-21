@@ -43,17 +43,18 @@ c-----------------------------------------------------------------------
 
       use coefs, only: norb
       use dorb_m, only: iworbd
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use slater, only: d2dx2, ddx, fp, fpp, slmi
+
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
 
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fp(3,MMAT_DIM,2)
-     &,fpp(MMAT_DIM,2)
-     &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detiab(MDET,2)
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
+
+
 
       dimension b_a(MORB,MELEC),b_kref(MELEC*MELEC),tildem_a(MELEC,MORB)
       dimension da_psi_ref(3,MCENT)
@@ -143,16 +144,17 @@ c-----------------------------------------------------------------------
       use da_pseudo, only: da_pecent, da_vps
 
       use velocity_jastrow, only: vj
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use slater, only: d2dx2, ddx, fp, fpp, slmi
+
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fp(3,MMAT_DIM,2)
-     &,fpp(MMAT_DIM,2)
-     &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detiab(MDET,2)
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
+
+
 
       dimension da_energy_ref(3,MCENT)
 

@@ -23,18 +23,19 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use b_tmove, only: b_t, iskip
       use qua, only: nquad, wq, xq, yq, zq
 
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use slater, only: d2dx2, ddx, fp, fpp, slmi
+
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
+
+
+
 
 
       parameter (one=1.d0)
 
 
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fp(3,MMAT_DIM,2)
-     &,fpp(MMAT_DIM,2)
-     &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detiab(MDET,2)
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),rr_en_sav(MCENT),rr_en2_sav(MCENT)
@@ -296,10 +297,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use contrl_per, only: iperiodic
       use grid3dflag, only: i3dlagorb, i3dsplorb
 
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
 
 
       dimension x(3),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)

@@ -16,13 +16,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use vardep, only: cdep, iwdepend, nvdepend
 
+      use cuspmat4, only: d, iwc4, nterms
       implicit real*8(a-h,o-z)
 
 
 
 
+
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
-      common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
       dimension rshifti(3),rshiftj(3),gn(*)
       dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ)

@@ -20,17 +20,19 @@ c Written by Claudia Filippi
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
       use multimatn, only: aan, wfmatn
+      use multislatern, only: ddorbn, detn, dorbn, orbn
+
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use slater, only: d2dx2, ddx, fp, fpp, slmi
+
+      use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
 
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fp(3,MMAT_DIM,2)
-     &,fpp(MMAT_DIM,2)
-     &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detiab(MDET,2)
-      common /multislatern/ detn(MDET)
-     &,orbn(MORB),dorbn(3,MORB),ddorbn(MORB)
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
+
+
+
+
 
       if(iel.le.nup) then
         iab=1

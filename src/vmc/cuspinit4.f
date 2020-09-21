@@ -7,10 +7,11 @@ c Written by Cyrus Umrigar
       use vmc, only: NEQSX, MTERMS
       use vmc, only: MCENT3, NCOEF, MEXCIT
       use jaspar4, only: nordc
+      use cuspmat4, only: d, iwc4, nterms
       implicit real*8(a-h,o-z)
 
 
-      common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
+
 
       if(nordc.eq.0) return
 
@@ -79,11 +80,12 @@ c-----------------------------------------------------------------------
 
       use vardep, only: cdep, iwdepend, nvdepend
 
+      use cuspmat4, only: d, iwc4, nterms
       implicit real*8(a-h,o-z)
 
 
 
-      common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
+
 
 
       neqs=2*(nordc-1)
