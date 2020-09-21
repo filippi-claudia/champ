@@ -372,6 +372,33 @@
    save
  end module multislater
 
+  module multislatern
+    !> Arguments: ddorbn, detn, dorbn, orbn
+ 
+    use precision_kinds, only: dp
+    use vmc, only: MORB, MDET 
+ 
+     real(dp) :: ddorbn(MORB)
+     real(dp) :: detn(MDET)
+     real(dp) :: dorbn(3,MORB)
+     real(dp) :: orbn(MORB)
+     private
+ 
+     public ::  ddorbn, detn, dorbn, orbn
+     save
+  end module multislatern
+
+  module m_icount
+   !> Arguments: icount_ci, icount_orb, icount_prop 
+   integer :: icount_ci = 1 
+   integer :: icount_orb = 1
+   integer :: icount_prop = 1 
+ 
+   private   
+   public :: icount_ci, icount_orb, icount_prop 
+   save 
+ end module m_icount 
+
  module ncusp
    !> Never called !
    !> Arguments: ncnstr, ncuspc, nfock, nfockc, norbc
@@ -386,6 +413,22 @@
    public :: ncnstr, ncuspc, nfock, nfockc, norbc
    save
  end module ncusp
+
+ module orbval
+   !> Arguments: ddorb, dorb, nadorb, ndetorb, orb
+   use precision_kinds, only: dp
+   use vmc, only: MELEC, MORB
+ 
+   real(dp) :: ddorb(MELEC,MORB)
+   real(dp) :: dorb(3,MELEC,MORB)
+   integer  :: nadorb
+   integer  :: ndetorb
+   real(dp) :: orb(MELEC,MORB)
+
+   private
+   public :: ddorb, dorb, nadorb, ndetorb, orb
+   save
+ end module orbval
 
 
  module phifun
