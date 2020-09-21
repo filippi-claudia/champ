@@ -1,6 +1,6 @@
       subroutine pot_local(pe)
-      use vmc, only: MELEC, MCENT
-      use vmc, only: MMAT_DIM2
+      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MMAT_DIM2
       use atom, only: znuc, pecent, iwctype, ncent
       use ghostatom, only: nghostcent
       use const, only: nelec, ipr

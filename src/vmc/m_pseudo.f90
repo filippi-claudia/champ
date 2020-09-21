@@ -16,7 +16,7 @@ module pseudo
    use pseudo_mod, only: MPS_L
    use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MCENT, MCTYPE
+   use vmc_mod, only: MELEC, MCENT, MCTYPE
 
    integer  :: lpot(MCTYPE)
    integer  :: nloc
@@ -31,7 +31,7 @@ end module pseudo
  module pseudo_champ
    !> Arguments: igrid_ps, rmax_coul, rmax_nloc
    use precision_kinds, only: dp
-   use vmc, only: MCTYPE
+   use vmc_mod, only: MCTYPE
 
    integer  :: igrid_ps(MCTYPE)
    real(dp) :: rmax_coul(MCTYPE)
@@ -46,7 +46,7 @@ end module pseudo
    !> Arguments: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
    use pseudo_mod, only: MPS_L, MPS_GRID
    use precision_kinds, only: dp
-   use vmc, only: MCTYPE
+   use vmc_mod, only: MCTYPE
 
    real(dp) :: drad(MCTYPE)
    real(dp) :: dradl(MCTYPE)
@@ -65,7 +65,7 @@ end module pseudo
    !> Arguments: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
    use pseudo_mod, only: MPS_L, MPS_GRID
    use precision_kinds, only: dp
-   use vmc, only: MCTYPE
+   use vmc_mod, only: MCTYPE
 
     real(dp) :: arg(MCTYPE)
     real(dp) :: arg_ps(MCTYPE)

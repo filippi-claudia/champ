@@ -3,7 +3,7 @@
    !> Arguments: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz, n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz, n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
    use force_mod, only: MWF
    use precision_kinds, only: dp
-   use vmc, only: MBASIS, MCTYPE
+   use vmc_mod, only: MBASIS, MCTYPE
 
    !  ncent  = number of centers
    !  zex    = screening constants for each basis function
@@ -78,8 +78,8 @@
    use numbas_mod, only: MRWF
    use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   use vmc, only: MCTYPE
-   use vmc, only: NCOEF
+   use vmc_mod, only: MCTYPE
+   use vmc_mod, only: NCOEF
  
    real(dp) :: ae(2,MRWF,MCTYPE,MFORCE)
    real(dp) :: ce(NCOEF,MRWF,MCTYPE,MFORCE)
@@ -94,7 +94,7 @@
    use numbas_mod, only: MRWF, MRWF_PTS
    use force_mod, only: MWF
    use precision_kinds, only: dp
-   use vmc, only: MBASIS, MCTYPE
+   use vmc_mod, only: MBASIS, MCTYPE
 
    real(dp) :: arg(MCTYPE)
    real(dp) :: d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
@@ -113,7 +113,7 @@
 
  module numbas1
    !> Arguments: iwlbas, nbastyp
-   use vmc, only: MBASIS, MCTYPE
+   use vmc_mod, only: MBASIS, MCTYPE
 
    integer  :: iwlbas(MBASIS,MCTYPE)
    integer  :: nbastyp(MCTYPE)
@@ -125,7 +125,7 @@
 
  module numbas2
    !> Arguments: ibas0, ibas1
-   use vmc, only: MCENT
+   use vmc_mod, only: MCENT
 
    integer  :: ibas0(MCENT)
    integer  :: ibas1(MCENT)

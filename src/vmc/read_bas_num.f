@@ -1,7 +1,7 @@
       subroutine read_bas_num(iwf)
       use numbas_mod, only: MRWF, MRWF_PTS
-      use vmc, only: MBASIS, MCTYPE
-      use vmc, only: NCOEF
+      use vmc_mod, only: MBASIS, MCTYPE
+      use vmc_mod, only: NCOEF
       use atom, only: znuc, nctype
 c Written by Claudia Filippi
 c Modified by F. Schautz to use fancy file names

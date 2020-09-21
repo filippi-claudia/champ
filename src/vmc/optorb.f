@@ -1,6 +1,6 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
-      use vmc, only: MELEC, MORB, MDET
+      use vmc_mod, only: MELEC, MORB, MDET
       use elec, only: ndn, nup
       use multidet, only: ivirt, kref
       use optwf_contrl, only: ioptorb
@@ -755,7 +755,7 @@ c replaced column
 c-----------------------------------------------------------------------
       subroutine optorb_define
       use optorb_mod, only: MXORBOP, MXREDUCED
-      use vmc, only: MELEC, MORB, MDET
+      use vmc_mod, only: MELEC, MORB, MDET
       use const, only: nelec
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -965,7 +965,7 @@ c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
       end
 c-----------------------------------------------------------------------
       subroutine check_orbitals
-      use vmc, only: MELEC, MORB
+      use vmc_mod, only: MELEC, MORB
 
 c Do not compute virtual orbitals during single-electron move
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb

@@ -1,7 +1,7 @@
  module da_energy_sumcum
    !> Arguments: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
    use precision_kinds, only: dp
-   use vmc, only: MCENT
+   use vmc_mod, only: MCENT
 
    real(dp) :: da_energy_cm2(3,MCENT)
    real(dp) :: da_energy_cum(3,MCENT)
@@ -17,7 +17,7 @@
  module da_jastrow4val
    !> Arguments: da_d2j, da_j, da_vj
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MCENT
+   use vmc_mod, only: MELEC, MCENT
 
    real(dp) :: da_d2j(3,MELEC,MCENT)
    real(dp) :: da_j(3,MELEC,MCENT)
@@ -31,7 +31,7 @@
  module da_orbval
    !> Arguments: da_d2orb, da_dorb, da_orb
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MCENT
+   use vmc_mod, only: MELEC, MORB, MCENT
 
    real(dp) :: da_d2orb(3,MELEC,MORB,MCENT)
    real(dp) :: da_dorb(3,3,MELEC,MORB,MCENT)
@@ -47,7 +47,7 @@
 
    use pseudo_mod, only: MPS_L
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MCENT
+   use vmc_mod, only: MELEC, MCENT
 
 
    real(dp) :: da_pecent( 3, MCENT), da_vps( 3, MELEC, MCENT, MPS_L)
@@ -61,7 +61,7 @@
  module da_energy_now
    !> Arguments: da_energy, da_psi
    use precision_kinds, only: dp
-   use vmc, only: MCENT
+   use vmc_mod, only: MCENT
  
    real(dp) :: da_energy(3,MCENT)
    real(dp) :: da_psi(3,MCENT)
@@ -87,7 +87,7 @@
  module denergy_det_m
    !> Arguments: denergy_det
    use precision_kinds, only: dp
-   use vmc, only: MDET
+   use vmc_mod, only: MDET
 
     real(dp) :: denergy_det(MDET,2)
 
@@ -99,7 +99,7 @@
  module denupdn
    !> Arguments: rprobdn, rprobup
    use precision_kinds, only: dp
-   use vmc, only: nrad
+   use vmc_mod, only: nrad
 
    real(dp) :: rprobdn(nrad)
    real(dp) :: rprobup(nrad)
@@ -113,7 +113,7 @@
    !> Arguments: d2g, g, go, gvalue
    use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   use vmc, only: MELEC
+   use vmc_mod, only: MELEC
 
    real(dp) :: d2g(MPARMJ)
    real(dp) :: g(3,MELEC,MPARMJ)
@@ -127,7 +127,7 @@
 
   module dorb_m
    !> Arguments: iworbd
-   use vmc, only: MELEC, MDET
+   use vmc_mod, only: MELEC, MDET
 
    integer  :: iworbd(MELEC,MDET)
 
@@ -139,7 +139,7 @@
   module ijasnonlin
    !> Arguments: d1d2a, d1d2b, d2d2a, d2d2b
    use precision_kinds, only: dp
-   use vmc, only: MCTYPE
+   use vmc_mod, only: MCTYPE
 
    real(dp) :: d1d2a(MCTYPE)
    real(dp) :: d1d2b(2)

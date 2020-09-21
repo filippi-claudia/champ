@@ -3,7 +3,7 @@
    !> Arguments: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
    use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   use vmc, only: MDET
+   use vmc_mod, only: MDET
 
    real(dp) :: de_o_ci(MPARMJ,MDET)
    real(dp) :: dj_de_ci(MPARMJ,MDET)

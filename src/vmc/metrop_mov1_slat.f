@@ -8,9 +8,9 @@ c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
-      use vmc, only: MELEC, MORB, MDET
-      use vmc, only: nrad
-      use vmc, only: delri
+      use vmc_mod, only: MELEC, MORB, MDET
+      use vmc_mod, only: nrad
+      use vmc_mod, only: delri
       use atom, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
 

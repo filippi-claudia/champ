@@ -32,7 +32,7 @@ c and Anthony Scemema
       use optci, only: MXCITERM
       use mmpol_mod, only: mmpolfile_sites, mmpolfile_chmm
       use force_mod, only: MFORCE, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use jaspar, only: nspin1, nspin2, is
       use ghostatom, only: newghostype, nghostcent
@@ -875,7 +875,7 @@ c-----------------------------------------------------------------------
 C$INPUT znuc inp
 CKEYDOC nuclear charge for each atom type and ghost type
 
-      use vmc, only: MCTYPE
+      use vmc_mod, only: MCTYPE
       use atom, only: znuc, nctype
       use ghostatom, only: newghostype
       use inputflags, only: iznuc
@@ -903,7 +903,7 @@ CKEYDOC nbasis: number of basis functiobns
 CKEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
 CKEYDOC filename: file containing orbitals coefficients
 
-      use vmc, only: MORB, MBASIS
+      use vmc_mod, only: MORB, MBASIS
       use coefs, only: coef, nbasis, norb
       use inputflags, only: ilcao
 
@@ -945,7 +945,7 @@ c-----------------------------------------------------------------------
 C$INPUT geometry inp
 CKEYDOC position and type for each atom and ghost atom
 
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
       use atom, only: cent, iwctype, ncent
       use ghostatom, only: nghostcent
       use inputflags, only: igeometry
@@ -989,7 +989,7 @@ c-----------------------------------------------------------------------
 C$INPUT determinants inp i i=1
 CKEYDOC CI coefficients and occupation of determinants in wf
 
-      use vmc, only: MELEC, MDET
+      use vmc_mod, only: MELEC, MDET
       use dets, only: cdet, ndet
       use dorb_m, only: iworbd
       use inputflags, only: ideterminants
@@ -1122,7 +1122,7 @@ CKEYDOC Basis function types and pointers to radial parts tables
 C$INPUT qmc_bf_info inp i
 CKEYDOC alternative name for keyword basis because of GAMBLE input
       use numbas_mod, only: MRWF
-      use vmc, only: MCTYPE
+      use vmc_mod, only: MCTYPE
       use numbas, only: iwrwf, numr
       use numbas1, only: iwlbas, nbastyp
       use basis, only: n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
@@ -1264,7 +1264,7 @@ C$INPUT forces_displace inp
 CKEYDOC Displacement parameters and wave function types
 
       use force_mod, only: MFORCE
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
       use forcepar, only: nforce
       use forcestr, only: delc
       use wfsec, only: iwftype
@@ -1298,7 +1298,7 @@ c-----------------------------------------------------------------------
       subroutine read_csf(ncsf_read,nstates_read,fn)
 C$INPUT csf i i=1 a=<input>
 
-      use vmc, only: MDET
+      use vmc_mod, only: MDET
       use csfs, only: ccsf, ncsf, nstates
       use mstates_mod, only: MSTATES
       use inputflags, only: icsfs
@@ -1333,7 +1333,7 @@ c-----------------------------------------------------------------------
       subroutine read_csfmap(fn)
 C$INPUT csfmap a=<input>
 CKEYDOC Read mapping between csf and determinants.
-      use vmc, only: MDET
+      use vmc_mod, only: MDET
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MDETCSFX
 
@@ -1428,7 +1428,7 @@ c-----------------------------------------------------------------------
 c Check that the required blocks are there in the input
 
       use force_mod, only: MFORCE, MWF
-      use vmc, only: MELEC, MORB
+      use vmc_mod, only: MELEC, MORB
       use numbas, only: numr
       use optorb_mix, only: norbopt, norbvirt
       use efield, only: iefield
@@ -1661,7 +1661,7 @@ c----------------------------------------------------------------------
       subroutine inputforces
 c Set all force displacements to zero
       use force_mod, only: MWF
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
       use forcepar, only: nforce
       use wfsec, only: iwftype, nwftype
 
@@ -1895,7 +1895,7 @@ c----------------------------------------------------------------------
       subroutine read_dmatrix(no,ns,fn)
 C$INPUT dmatrix i i a=<input> 
 CKEYDOC Read diagonal density matrix information.
-      use vmc, only: MORB
+      use vmc_mod, only: MORB
       use sa_weights, only: iweight, nweight, weights
       use mstates_mod, only: MSTATES
       use coefs, only: norb
@@ -2018,7 +2018,7 @@ CKEYDOC atoms energy gradients are to be calculated for.
 
 c     Written by Omar Valsson
 
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
       use forcepar, only: nforce
       use forcestr, only: delc
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
@@ -2084,7 +2084,7 @@ CKEYDOC atoms energy gradients are to be calculated for.
 
 c      Written by Omar Valsson.
 
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
       use forcepar, only: nforce
       use forcestr, only: delc
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
@@ -2153,7 +2153,7 @@ C$INPUT modify_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
 CKEYDOC atoms energy gradients are to be calculated for.
 
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
       use grdntsmv, only: igrdmv
       use inputflags, only: imodify_zmat
 
@@ -2186,7 +2186,7 @@ C$INPUT hessian_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
 CKEYDOC atoms energy gradients are to be calculated for.
 
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
       use grdnthes, only: hessian_zmat
       use inputflags, only: ihessian_zmat
       use atom, only: ncent
@@ -2222,7 +2222,7 @@ CKEYDOC coordinates.
 
 c      Written by Omar Valsson
 
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
       use atom, only: cent, ncent
       use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
       use inputflags, only: izmatrix_check
@@ -2291,7 +2291,7 @@ C$INPUT efield i i a=<input>
       end
 c-----------------------------------------------------------------------
       subroutine set_displace_zero(nforce_tmp)
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
       use forcestr, only: delc
       use pcm_force, only: sch_s
       use pcm_cntrl, only: ipcm
@@ -2326,7 +2326,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine modify_zmat_define
 
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
       use grdntsmv, only: igrdmv
       use atom, only: ncent
       implicit real*8(a-h,o-z)
@@ -2344,7 +2344,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine hessian_zmat_define
 
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
       use grdnthes, only: hessian_zmat
       use atom, only: ncent
       

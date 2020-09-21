@@ -126,7 +126,7 @@ c-----------------------------------------------------------------------
 c compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(rvec_en,r_en,iel)
 
-      use vmc, only: MELEC, MCENT
+      use vmc_mod, only: MELEC, MCENT
       use atom, only: znuc, iwctype, ncent
 
       use pseudo, only: lpot, vps

@@ -5,7 +5,7 @@
    !> rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
    use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   use vmc, only: MELEC
+   use vmc_mod, only: MELEC
    use mstates_mod, only: MSTATES
 
    real(dp) :: delttn(MELEC)
@@ -73,7 +73,7 @@ end module rnyucm
    !> I guess has to do with the sampling
    !> Arguments: ekin, ekin2, rprob, suc, trunfb, try
    use precision_kinds, only: dp
-   use vmc, only: nrad
+   use vmc_mod, only: nrad
 
    real(dp) :: ekin(nrad)
    real(dp) :: ekin2(nrad)
@@ -104,7 +104,7 @@ end module rnyucm
    !> only used in metropolis
    !> Arguments: dtdx2n, dtdx2o
    use precision_kinds, only: dp
-   use vmc, only: MELEC
+   use vmc_mod, only: MELEC
 
    real(dp) :: dtdx2n(MELEC)
    real(dp) :: dtdx2o(MELEC)

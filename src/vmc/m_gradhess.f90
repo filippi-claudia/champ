@@ -43,7 +43,7 @@ module gradhess_all
    !> Arguments: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
    use optjas, only: MPARMJ
    use precision_kinds, only: dp
-   use vmc, only: MCTYPE
+   use vmc_mod, only: MCTYPE
    use mstates_mod, only: MSTATES
 
    real(dp) :: d1d2a_old(MCTYPE)

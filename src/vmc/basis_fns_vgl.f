@@ -4,7 +4,7 @@ c routine to calculate the values of the basis functions and their derivatives
 c vgl -> value, gradient, laplacian
 
       use numbas_mod, only: MRWF
-      use vmc, only: MELEC, MCENT
+      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent
       use ghostatom, only: nghostcent
       use const, only: pi, nelec

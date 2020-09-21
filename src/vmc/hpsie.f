@@ -1,8 +1,8 @@
       subroutine psie(iel,coord,psid,psij,ipass,iflag)
 c Written by Claudia Filippi by modifying hpsi
 
-      use vmc, only: MELEC, MORB, MDET, MCENT
-      use vmc, only: MMAT_DIM2
+      use vmc_mod, only: MELEC, MORB, MDET, MCENT
+      use vmc_mod, only: MMAT_DIM2
       use csfs, only: nstates
       use estpsi, only: apsi, aref
       use multidet, only: kref

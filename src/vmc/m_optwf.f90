@@ -43,7 +43,7 @@
 
  module optwf_nparmj
    !> Arguments: nparma, nparmb, nparmc, nparmf
-   use vmc, only: MCTYPE, MCTYP3X
+   use vmc_mod, only: MCTYPE, MCTYP3X
 
    integer  :: nparma(MCTYP3X)
    integer  :: nparmb(3)
@@ -72,7 +72,7 @@
 
  module optwf_wjas
    !> Arguments: iwjasa, iwjasb, iwjasc, iwjasf
-   use vmc, only: MCTYPE, MCTYP3X
+   use vmc_mod, only: MCTYPE, MCTYP3X
 
    integer  :: iwjasa(83,MCTYP3X)
    integer  :: iwjasb(83,3)

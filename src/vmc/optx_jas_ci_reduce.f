@@ -2,7 +2,7 @@
 c Written by Claudia Filippi
 
       use optjas, only: MPARMJ
-      use vmc, only: MDET
+      use vmc_mod, only: MDET
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
 
       use optwf_contrl, only: ioptci, ioptjas

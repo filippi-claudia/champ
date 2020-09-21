@@ -12,7 +12,7 @@ c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
       use pcm, only: MCHS, MCHV
       use force_mod, only: MFORCE, MFORCE_WT_PRD
-      use vmc, only: MELEC, MCENT
+      use vmc_mod, only: MELEC, MCENT
       use atom, only: znuc, cent, pecent, iwctype, ncent
       use const, only: nelec
       use force_dmc, only: itausec, nwprod

@@ -24,7 +24,7 @@ module grid_mod
  module grid_spline_mod
   !> Arguments
   use precision_kinds, only: sp
-  use vmc, only: MELEC
+  use vmc_mod, only: MELEC
   use grid_mod, only: MXNSTEP
 
   integer, parameter :: MORB_OCC = MELEC/2+3
@@ -41,7 +41,7 @@ module grid_mod
   !> argument
   use precision_kinds, only: sp
   use grid_mod, only: MXNSTEP
-  use vmc, only: MELEC
+  use vmc_mod, only: MELEC
   ! Number of Lagrange interpolation points/axis
   integer, parameter :: LAGMAX=4
   integer, parameter :: LAGSTART = -LAGMAX/2, LAGEND=LAGSTART+LAGMAX-1

@@ -39,7 +39,7 @@
    !> Arguments: delc
    use force_mod, only: MFORCE
    use precision_kinds, only: dp
-   use vmc, only: MCENT
+   use vmc_mod, only: MCENT
  
    real(dp) :: delc(3,MCENT,MFORCE)
  
@@ -76,7 +76,7 @@ module force_dmc
  module force_fin
    !> Arguments: da_energy_ave, da_energy_err
    use precision_kinds, only: dp
-   use vmc, only: MCENT
+   use vmc_mod, only: MCENT
 
    real(dp) :: da_energy_ave(3,MCENT)
    real(dp) :: da_energy_err(3)
@@ -90,7 +90,7 @@ module force_dmc
    !> Arguments: force_o
    use sr_mod, only: MCONF
    use precision_kinds, only: dp
-   use vmc, only: MCENT
+   use vmc_mod, only: MCENT
 
    real(dp) :: force_o(6*MCENT,MCONF)
 

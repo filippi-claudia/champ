@@ -1,7 +1,7 @@
       subroutine deriv_jastrow(x,v,d2,div_vj,value)
 c Written by Claudia Filippi
 
-      use vmc, only: MELEC
+      use vmc_mod, only: MELEC
       use const, only: nelec
 
       implicit real*8(a-h,o-z)

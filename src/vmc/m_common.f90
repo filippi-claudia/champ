@@ -5,7 +5,7 @@
  module atom
    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
    use precision_kinds, only: dp
-   use vmc, only: MCENT, MCTYPE
+   use vmc_mod, only: MCENT, MCTYPE
 
    real(dp) :: cent( 3, MCENT)
    real(dp) :: znuc( MCTYPE)
@@ -32,7 +32,7 @@
    !> Arguments: b_t, iskip
    use pseudo_mod, only: MPS_QUAD
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MCENT
+   use vmc_mod, only: MELEC, MORB, MCENT
 
    real(dp) :: b_t(MORB,MPS_QUAD,MCENT,MELEC)
    integer  :: iskip(MELEC,MCENT)
@@ -45,7 +45,7 @@
  module Bloc
    !> Arguments: b, tildem, xmat
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MCENT
+   use vmc_mod, only: MELEC, MORB, MCENT
    use optjas, only: MPARMJ
 
    real(dp) :: b(MORB,MELEC)
@@ -80,7 +80,7 @@
    !> Arguments: i_vpsp, icasula, t_vpsp
    use pseudo_mod, only: MPS_QUAD
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MCENT
+   use vmc_mod, only: MELEC, MCENT
 
    integer  :: i_vpsp
    integer  :: icasula
@@ -109,7 +109,7 @@
    !> Arguments: coef, nbasis, norb
    use force_mod, only: MWF
    use precision_kinds, only: dp
-   use vmc, only: MORB, MBASIS
+   use vmc_mod, only: MORB, MBASIS
 
    real(dp) :: coef(MBASIS,MORB,MWF)
    integer  :: nbasis
@@ -124,7 +124,7 @@
    !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
    use force_mod, only: MWF
    use precision_kinds, only: dp
-   use vmc, only: MDET
+   use vmc_mod, only: MDET
    use mstates_mod, only: MSTATES, MDETCSFX
 
    real(dp) :: ccsf(MDET,MSTATES,MWF)
@@ -144,7 +144,7 @@
    !> Never called !
    !> Arguments: cm, ishe, iwc3, neqs
    use precision_kinds, only: dp
-   use vmc, only: NEQSX
+   use vmc_mod, only: NEQSX
 
    real(dp) :: cm(NEQSX,NEQSX)
    integer  :: ishe
@@ -158,7 +158,7 @@
 
  module cuspmat4
    !> Arguments: d, icusp, nterms
-   use vmc, only: NEQSX, MTERMS
+   use vmc_mod, only: NEQSX, MTERMS
    use precision_kinds, only: dp
    
 
@@ -175,7 +175,7 @@
    !> Arguments: cdet, ndet
    use force_mod, only: MWF
    use precision_kinds, only: dp
-   use vmc, only: MDET
+   use vmc_mod, only: MDET
    use mstates_mod, only: MSTATES
 
    real(dp) :: cdet(MDET,MSTATES,MWF)
@@ -189,7 +189,7 @@
  module dets_equiv
   !> Arguments: cdet_equiv, dcdet_equiv
    use precision_kinds, only: dp
-   use vmc, only: MDET
+   use vmc_mod, only: MDET
 
    real(dp) :: cdet_equiv(MDET)
    real(dp) :: dcdet_equiv(MDET)
@@ -202,7 +202,7 @@
  module distances_sav
   !> Arguments: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
   use precision_kinds, only: dp
-  use vmc, only: MELEC, MCENT
+  use vmc_mod, only: MELEC, MCENT
 
   real(dp) :: r_ee_sav(MELEC)
   real(dp) :: r_en_sav(MCENT)
@@ -251,7 +251,7 @@
    !> Arguments: ecp_coef, ecp_exponent, necp_power, necp_term
    use pseudo_mod, only: MPS_L, MGAUSS
    use precision_kinds, only: dp
-   use vmc, only: MCTYPE
+   use vmc_mod, only: MCTYPE
  
    real(dp) :: ecp_coef(MGAUSS,MPS_L,MCTYPE)
    real(dp) :: ecp_exponent(MGAUSS,MPS_L,MCTYPE)
@@ -317,7 +317,7 @@
 
  module multidet
    !> Arguments: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-   use vmc, only: MELEC, MDET
+   use vmc_mod, only: MELEC, MDET
 
    integer  :: iactv(2)
    integer  :: irepcol_det(MELEC,MDET,2)
@@ -335,8 +335,8 @@
  module multimat
    !> Arguments: aa, wfmat
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MDET
-   use vmc, only: MEXCIT
+   use vmc_mod, only: MELEC, MORB, MDET
+   use vmc_mod, only: MEXCIT
 
    real(dp) :: aa(MELEC,MORB,2)
    real(dp) :: wfmat(MEXCIT**2,MDET,2)
@@ -349,8 +349,8 @@
  module multimatn
    !> Arguments: aan, wfmatn
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MDET
-   use vmc, only: MEXCIT
+   use vmc_mod, only: MELEC, MORB, MDET
+   use vmc_mod, only: MEXCIT
 
    real(dp) :: aan(MELEC,MORB)
    real(dp) :: wfmatn(MEXCIT**2,MDET)
@@ -363,7 +363,7 @@
  module multislater
    !> Arguments: detiab
    use precision_kinds, only: dp
-   use vmc, only: MDET 
+   use vmc_mod, only: MDET 
 
    real(dp) :: detiab(MDET,2)
 
@@ -376,7 +376,7 @@
     !> Arguments: ddorbn, detn, dorbn, orbn
  
     use precision_kinds, only: dp
-    use vmc, only: MORB, MDET 
+    use vmc_mod, only: MORB, MDET 
  
      real(dp) :: ddorbn(MORB)
      real(dp) :: detn(MDET)
@@ -417,7 +417,7 @@
  module orbval
    !> Arguments: ddorb, dorb, nadorb, ndetorb, orb
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB
+   use vmc_mod, only: MELEC, MORB
  
    real(dp) :: ddorb(MELEC,MORB)
    real(dp) :: dorb(3,MELEC,MORB)
@@ -434,7 +434,7 @@
  module phifun
    !> Arguments: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MBASIS
+   use vmc_mod, only: MELEC, MBASIS
 
    real(dp) :: d2phin(MBASIS,MELEC)
    real(dp) :: d2phin_all(3,3,MBASIS,MELEC)
@@ -473,7 +473,7 @@
    !> only rlobx used in read input
    !> Arguments: rlobx, rloby, rloby2
    use precision_kinds, only: dp
-   use vmc, only: NSPLIN
+   use vmc_mod, only: NSPLIN
 
     real(dp) :: rlobx(NSPLIN)
     real(dp) :: rloby(NSPLIN)
@@ -499,7 +499,7 @@
  module scratch
    !> Arguments: denergy_det, dtildem
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB, MDET
+   use vmc_mod, only: MELEC, MORB, MDET
 
    real(dp) :: denergy_det(MDET,2)
    real(dp) :: dtildem(MELEC,MORB,2)
@@ -513,7 +513,7 @@
    !> Arguments: d2dx2, ddx, fp, fpp, slmi
  
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MMAT_DIM
+   use vmc_mod, only: MELEC, MMAT_DIM
  
    real(dp) :: d2dx2(MELEC)
    real(dp) :: ddx(3,MELEC)
@@ -529,7 +529,7 @@
  module slatn
    !> Arguments: slmin
    use precision_kinds, only: dp
-   use vmc, only: MMAT_DIM
+   use vmc_mod, only: MMAT_DIM
 
    real(dp) :: slmin(MMAT_DIM)
 
@@ -552,8 +552,8 @@
  module vardep
    !> Arguments: cdep, iwdepend, nvdepend
    use precision_kinds, only: dp
-   use vmc, only: MCTYPE
-   use vmc, only: NEQSX
+   use vmc_mod, only: MCTYPE
+   use vmc_mod, only: NEQSX
 
    real(dp) :: cdep(NEQSX,83,MCTYPE)
    integer  :: iwdepend(NEQSX,83,MCTYPE)
@@ -567,7 +567,7 @@
  module velocity_jastrow
    !> Arguments: vj, vjn
    use precision_kinds, only: dp
-   use vmc, only: MELEC
+   use vmc_mod, only: MELEC
 
    real(dp) :: vj(3,MELEC)
    real(dp) :: vjn(3,MELEC)
@@ -593,7 +593,7 @@
  module ycompact
    !> Arguments: dymat, ymat
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB
+   use vmc_mod, only: MELEC, MORB
    use mstates_mod, only: MSTATES
 
    real(dp) :: dymat(MORB,MELEC,2,MSTATES)
@@ -607,7 +607,7 @@
  module ycompactn
    !> Arguments: ymatn
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB
+   use vmc_mod, only: MELEC, MORB
    use mstates_mod, only: MSTATES
 
    real(dp) :: ymatn(MORB,MELEC,MSTATES)
@@ -620,7 +620,7 @@
  module zcompact
    !> Arguments: aaz, dzmat, emz, zmat
    use precision_kinds, only: dp
-   use vmc, only: MELEC, MORB
+   use vmc_mod, only: MELEC, MORB
    use mstates_mod, only: MSTATES
 
    real(dp) :: aaz(MELEC,MELEC,2,MSTATES)
@@ -636,7 +636,7 @@
  module zmatrix
    !> Arguments: czcart, czint, czcart_ref, izcmat, izmatrix  
    use precision_kinds, only: dp
-   use vmc, only: MCENT
+   use vmc_mod, only: MCENT
 
    real(dp) :: czcart(3,MCENT)
    real(dp) :: czint(3,MCENT)
@@ -653,7 +653,7 @@
    !> never called
    !> Arguments: transform_grd
    use precision_kinds, only: dp
-   use vmc, only: MCENT3
+   use vmc_mod, only: MCENT3
 
    real(dp) :: transform_grd(MCENT3,MCENT3)
 

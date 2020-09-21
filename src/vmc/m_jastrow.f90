@@ -1,7 +1,7 @@
 module jasn
    !> Arguments: d2ijn, d2n, fijn, fjn, fsn, fsumn
    use precision_kinds, only: dp
-   use vmc, only: MELEC
+   use vmc_mod, only: MELEC
 
    real(dp) :: d2ijn(MELEC,MELEC)
    real(dp) :: d2n
@@ -18,7 +18,7 @@ module jasn
  module jaso
    !> Arguments: d2ijo, d2o, fijo, fjo, fso, fsumo
    use precision_kinds, only: dp
-   use vmc, only: MELEC
+   use vmc_mod, only: MELEC
 
     real(dp) :: d2ijo(MELEC,MELEC)
     real(dp) :: d2o
@@ -77,8 +77,8 @@ module jasn
    !> Arguments: a, b, c, fck, nord, scalek
    use force_mod, only: MWF
    use precision_kinds, only: dp
-   use vmc, only: MCTYPE
-   use vmc, only: MORDJ1
+   use vmc_mod, only: MCTYPE
+   use vmc_mod, only: MORDJ1
 
    real(dp) :: a(MORDJ1,MWF)
    real(dp) :: b(MORDJ1,2,MWF)
@@ -96,8 +96,8 @@ module jasn
    !> Arguments: a4, norda, nordb, nordc
    use force_mod, only: MWF
    use precision_kinds, only: dp
-   use vmc, only: MCTYPE
-   use vmc, only: MORDJ1
+   use vmc_mod, only: MCTYPE
+   use vmc_mod, only: MORDJ1
 
    real(dp) :: a4(MORDJ1,MCTYPE,MWF)
    integer  :: norda
@@ -112,7 +112,7 @@ module jasn
  module jaspar6
    !> Arguments: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
    use precision_kinds, only: dp
-   use vmc, only: MCTYPE
+   use vmc_mod, only: MCTYPE
 
    real(dp) :: asymp_jasa(MCTYPE)
    real(dp) :: asymp_jasb(2)
@@ -130,7 +130,7 @@ module jasn
 
  module jaspointer
    !> Arguments: npoint, npointa
-   use vmc, only: MCTYP3X
+   use vmc_mod, only: MCTYP3X
 
    integer  :: npoint(MCTYP3X)
    integer  :: npointa(3*MCTYP3X)

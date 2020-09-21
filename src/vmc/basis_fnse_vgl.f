@@ -2,7 +2,7 @@
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt routine
 c routine to calculate the values of the basis functions and their derivatives
       use numbas_mod, only: MRWF
-      use vmc, only: MELEC, MCENT
+      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent
 
       use ghostatom, only: nghostcent

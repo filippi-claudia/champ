@@ -1,6 +1,6 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
-      use vmc, only: MDET
+      use vmc_mod, only: MDET
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
       use optwf_contrl, only: ioptci
       use ci000, only: nciprim

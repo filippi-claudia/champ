@@ -1,7 +1,7 @@
  module grdnthes
    !> Arguments: hessian_zmat
    use precision_kinds, only: dp
-   use vmc, only: MCENT
+   use vmc_mod, only: MCENT
 
    real(dp) :: hessian_zmat(3,MCENT)
 
@@ -13,7 +13,7 @@
  module grdntsmv
    !> Arguments: igrdaidx, igrdcidx, igrdmv
    use force_mod, only: MFORCE
-   use vmc, only: MCENT
+   use vmc_mod, only: MCENT
 
     integer  :: igrdaidx(MFORCE)
     integer  :: igrdcidx(MFORCE)

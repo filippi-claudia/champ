@@ -166,7 +166,7 @@ module orb_mat_001
  module optorb
    !> Arguments: dmat_diag, irrep, orb_energy
    use precision_kinds, only: dp
-   use vmc, only: MORB
+   use vmc_mod, only: MORB
 
    real(dp) :: dmat_diag(MORB)
    integer  :: irrep(MORB)
@@ -218,7 +218,7 @@ module orb_mat_001
 
  module optorb_mix
    !> Arguments: iwmix_virt, norbopt, norbvirt
-   use vmc, only: MORB
+   use vmc_mod, only: MORB
 
    integer  :: iwmix_virt(MORB,MORB)
    integer  :: norbopt

@@ -1,7 +1,7 @@
       subroutine jastrow(x,v,d2,value,ifr)
 c Written by Cyrus Umrigar
 
-      use vmc, only: MELEC
+      use vmc_mod, only: MELEC
       use const, only: nelec
       use optwf_contrl, only: ioptjas
       implicit real*8(a-h,o-z)

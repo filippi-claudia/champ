@@ -54,7 +54,7 @@
    use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
    use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
    use precision_kinds, only: dp
-   use vmc, only: MORB
+   use vmc_mod, only: MORB
 
    real(dp) :: cutg
    real(dp) :: cutg_big
@@ -121,7 +121,7 @@
    use ewald_mod, only: IVOL_RATIO
    use ewald_mod, only: NGVECX
    use precision_kinds, only: dp
-   use vmc, only: MORB
+   use vmc_mod, only: MORB
 
    real(dp) :: c_im(NGVECX,MORB)
    real(dp) :: c_ip(NGVECX,MORB)

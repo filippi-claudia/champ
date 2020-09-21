@@ -4,7 +4,7 @@ c Written by Cyrus Umrigar
       use pseudo_mod, only: MPS_L, MPS_GRID
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
-      use vmc, only: MCTYPE
+      use vmc_mod, only: MCTYPE
       use atom, only: znuc, pecent, iwctype, nctype, ncent
       use const, only: pi, ipr
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
@@ -1638,7 +1638,7 @@ c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_
 c-----------------------------------------------------------------------
 
       function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
-      use vmc, only: MELEC
+      use vmc_mod, only: MELEC
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
@@ -1665,7 +1665,7 @@ c Written by Cyrus Umrigar
 c-----------------------------------------------------------------------
 
       function vlrange_ee_old2(nelec,ngnorm,igmult,cos_g,sin_g,y)
-      use vmc, only: MELEC
+      use vmc_mod, only: MELEC
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
@@ -1830,8 +1830,8 @@ c-----------------------------------------------------------------------
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
-      use vmc, only: MELEC, MCENT
-      use vmc, only: MMAT_DIM2
+      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MMAT_DIM2
       use atom, only: znuc, cent, iwctype, ncent
 
       use const, only: nelec, ipr
@@ -1908,8 +1908,8 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
-      use vmc, only: MELEC, MCENT
-      use vmc, only: MMAT_DIM2
+      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MMAT_DIM2
       use const, only: nelec, ipr
       use ewald, only: b_coul_sim, y_coul_sim
 
@@ -1962,7 +1962,7 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
       use ewald_mod, only: NG1DX
-      use vmc, only: MELEC
+      use vmc_mod, only: MELEC
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
@@ -2009,7 +2009,7 @@ c-----------------------------------------------------------------------
       subroutine cossin_psi(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift,iflag)
       use ewald_mod, only: NG1DX
-      use vmc, only: MELEC
+      use vmc_mod, only: MELEC
 c Written by Cyrus Umrigar
 c iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positions.
@@ -2086,7 +2086,7 @@ c     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng
       subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
       use ewald_mod, only: NG1DX
-      use vmc, only: MELEC
+      use vmc_mod, only: MELEC
 c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c Needed for orbitals and their Laplacian.
@@ -2179,7 +2179,7 @@ c-----------------------------------------------------------------------
 c     subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
-      use vmc, only: MELEC
+      use vmc_mod, only: MELEC
 c Written by Cyrus Umrigar
 c Needed for orbitals and their Laplacian.
 c For the k-vectors do it straightforwardly since there are few of them
@@ -2222,7 +2222,7 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_n(znuc,iwctype,glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use vmc, only: MCENT
+      use vmc_mod, only: MCENT
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for nuclei
 
@@ -2271,7 +2271,7 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NGNORMX, NG1DX
-      use vmc, only: MCENT, MCTYPE
+      use vmc_mod, only: MCENT, MCTYPE
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 
@@ -2324,7 +2324,7 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use vmc, only: MELEC
+      use vmc_mod, only: MELEC
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons
 
