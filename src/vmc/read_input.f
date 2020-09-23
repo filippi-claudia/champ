@@ -24,6 +24,11 @@ c Parse input (standard input)
       call allocate_m_grdnt
       call allocate_m_grid
       call allocate_m_jastrow
+      call allocate_m_mixderiv
+      call allocate_m_mmpol
+      call allocate_m_mstates
+      call allocate_m_optci
+      call allocate_m_optorb
 
 c Transfer from lists to fortran variables, print out, check,
 c and read in everything which is still in the old format
