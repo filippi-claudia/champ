@@ -17,7 +17,11 @@ c Parse input (standard input)
       call allocate_m_control
       call allocate_m_deriv
       call allocate_m_efield
-      
+      call allocate_m_estimators
+      call allocate_m_ewald
+      call allocate_m_force
+      call allocate_m_gradhess
+
 c Transfer from lists to fortran variables, print out, check,
 c and read in everything which is still in the old format
       call process_input
