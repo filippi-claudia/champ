@@ -12,6 +12,8 @@ c Initialize input parser
 c Parse input (standard input)
       call p2go(5,0)
 
+      call allocate_m_common
+
 c Transfer from lists to fortran variables, print out, check,
 c and read in everything which is still in the old format
       call process_input
