@@ -21,6 +21,9 @@ c Parse input (standard input)
       call allocate_m_ewald
       call allocate_m_force
       call allocate_m_gradhess
+      call allocate_m_grdnt
+      call allocate_m_grid
+      call allocate_m_jastrow
 
 c Transfer from lists to fortran variables, print out, check,
 c and read in everything which is still in the old format
