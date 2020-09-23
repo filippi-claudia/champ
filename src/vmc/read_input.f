@@ -29,6 +29,13 @@ c Parse input (standard input)
       call allocate_m_mstates
       call allocate_m_optci
       call allocate_m_optorb
+      call allocate_m_optwf
+      call allocate_m_pcm
+      call allocate_m_prop
+      call allocate_m_pseudo
+      call allocate_m_sampling
+      call allocate_m_sr
+      call allocate_m_state_avrg
 
 c Transfer from lists to fortran variables, print out, check,
 c and read in everything which is still in the old format
