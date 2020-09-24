@@ -4,14 +4,6 @@ c Written by Friedemann Schautz
       use contr3, only: mode
       implicit real*8(a-h,o-z)
 
-c Initialize flags
-      call flaginit
-c Initialize input parser
-      call p2init
-
-c Parse input (standard input)
-      call p2go(5,0)
-
       call allocate_m_common
       call allocate_m_basis
       call allocate_m_control
@@ -36,6 +28,15 @@ c Parse input (standard input)
       call allocate_m_sampling
       call allocate_m_sr
       call allocate_m_state_avrg
+
+
+c Initialize flags
+      call flaginit
+c Initialize input parser
+      call p2init
+
+c Parse input (standard input)
+      call p2go(5,0)
 
 c Transfer from lists to fortran variables, print out, check,
 c and read in everything which is still in the old format
