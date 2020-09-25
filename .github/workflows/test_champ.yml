@@ -27,7 +27,7 @@ jobs:
 
     - name: Run_H2
       run: |
-           cd tests/CI_tests/h2/qmc_1det/
+           cd tests/CI_test/h2/qmc_1det/
            ~/champ/bin/vmc.mov1 < vmc.inp > vmc.out
            ~/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out
            cd ~/champ
