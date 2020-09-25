@@ -17,13 +17,21 @@ jobs:
            sudo apt install gfortran libmkl-full-dev openmpi-bin gawk openmpi-bin libblas-dev liblapack-dev # valgrind
            gawk --version
 
-    - name: Building_code
+    - name: Building_code_for_h2
       run: |
-           cp ./tests/CI_test/include/* ./src/include 
+           cp src/vmc/m_common.f90 ./m_common_save
+           cp tests/CI_test/h2/m_common.f90 src/vmc/
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_PREFIX_PATH=/usr/include/mkl -DENABLE_TEST=ON
            cmake --build build -- -j2
 #           cd build/tests/CI_test && ctest --verbose
 
+    - name: Run_H2
+      run: |
+           cd tests/CI_tests/h2/qmc_1det/
+           ~/champ/bin/vmc.mov1 < vmc.inp > vmc.out
+           ~/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out
+           cd ~/champ
+           cp m_common_save ./src/vmc/
 
 # To be tested:
 #      cd build/tests/CI_test && mpirun -s all -np 2 ../../bin/vmc.mov1  < sr_n.inp
