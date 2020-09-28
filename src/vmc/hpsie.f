@@ -10,7 +10,7 @@ c Written by Claudia Filippi by modifying hpsi
       use contr2, only: ianalyt_lap
       use velocity_jastrow, only: vjn
       use multislatern, only: ddorbn, detn, dorbn, orbn
-      use distance_mod, only: rshift
+      use distance_mod, only: rshift, r_en
       implicit real*8(a-h,o-z)
 
 
@@ -20,7 +20,7 @@ c Calculates wave function
       ! common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       ! common /distance/ rshift(3,MELEC,MCENT), rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       ! common /distance/ rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      common /distance/ rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      common /distance/ rvec_en(3,MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension coord(3,*),psid(*)
 
