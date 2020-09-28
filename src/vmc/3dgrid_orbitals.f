@@ -27,8 +27,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       implicit real*8(a-h,o-z)
 
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
-     &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       real*4  bc(MXNSTEP,MXNSTEP,3:8,MELEC/2+1), wk(80*MXNSTEP3)
 
@@ -411,8 +410,7 @@ c Lagrange interpolation routines
       implicit real*8(a-h,o-z)
 
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
-     &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       character*(32) filename
       integer a,b,c
