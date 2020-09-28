@@ -1,0 +1,36 @@
+&general title 'H2'
+&general pool ../pool/
+&general basis sto_cvb1
+
+load $(general:pool)/h2.geo
+load $(general:pool)/global.inp
+load $(general:pool)/sto_cvb1.bfinfo
+
+load jastrow.0
+load rhf.sto_cvb1.lcao
+load rhf.det
+
+&optwf ioptwf 1 ioptci 0 ioptjas 1 ioptorb 0
+&optwf method sr_n multiple_adiag 0
+&optwf ncore 0 nextorb 280 no_active 1
+&optwf nblk_max 200 nopt_iter 20
+&optwf sr_tau 0.05 sr_eps 0.001 sr_adiag 0.01
+&optwf isample_cmat 0 energy_tol 0.0
+
+jasderiv
+4 5 0 0 0 0 0 0  nparma,nparmb,nparmc,nparmf
+  3 4 5 6 (iwjasa(iparm),iparm=1,nparma)
+2 3 4 5 6 (iwjasb(iparm),iparm=1,nparmb)
+3 5 7 8 9         11 13 14 15 16     17 18 20 21 23 (c(iparmj),iparmj=1,nparmc)
+end
+
+# load rhf_pVDZ.sym
+
+&blocking_vmc nstep 50 nblk 200 nblkeq 1 nconf_new 0
+&blocking_dmc nstep 250 nblk 50 nblkeq 1 nconf 100 nconf_new 0
+
+&dmc tau 0.05 etrial -10.0
+&dmc icasula -1
+
+# &startend isite 0
+# &properties sample 1
