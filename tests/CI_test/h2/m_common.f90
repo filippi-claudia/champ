@@ -44,8 +44,8 @@
      integer, parameter :: nrad = 3001
      real(dp), parameter :: delri = (nrad - 1)/radmax
 
-     integer, parameter :: MELEC = 2, MORB = 15, MBASIS = 15, MDET = 1, MCENT = 2
-     integer, parameter :: MCTYPE = 1
+     integer, parameter :: MELEC = 32, MORB = 15, MBASIS = 15, MDET = 1, MCENT = 2
+     integer, parameter :: MCTYPE = 3
      integer, parameter :: MCTYP3X = 5, NSPLIN = 1001, MORDJ = 7
 
      integer, parameter :: MMAT_DIM = (MELEC*MELEC)/4, MMAT_DIM2 = (MELEC*(MELEC - 1))/2
@@ -282,8 +282,8 @@
      !> Arguments:
      !     flags and dimensions for generalized CI expectation values
      !     maximal number of terms, max dim of reduced matrices
-     integer, parameter :: MXCITERM = 4600
-     integer, parameter :: MXCIREDUCED = 2000
+     integer, parameter :: MXCITERM = 5000
+     integer, parameter :: MXCIREDUCED = 1
      integer, parameter :: MXCIMATDIM = MXCITERM*(MXCIREDUCED + 1)/2
 
      private
@@ -1115,9 +1115,10 @@
 
  module sr_mod
      !> Arguments:
-     integer, parameter :: MPARM = 16100
+     !  integer, parameter :: MPARM = 16100
+     integer, parameter :: MPARM = 15100
      integer, parameter :: MOBS = 10 + 6*MPARM
-     integer, parameter :: MCONF = 80000
+     integer, parameter :: MCONF = 10000
      integer, parameter :: MVEC = 160
 
      private
