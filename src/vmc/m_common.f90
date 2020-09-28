@@ -202,13 +202,16 @@
      use precision_kinds, only: dp
      use vmc_mod, only: MELEC, MCENT, MMAT_DIM2
 
-     !  real(dp) :: rvec_ee(3, MMAT_DIM2)
-     !  real(dp) :: r_ee(MMAT_DIM2)
-     real(dp) :: rvec_en(3, MELEC, MCENT)
-     real(dp) :: r_en(MELEC, MCENT)
+     real(dp) :: rshift(3, MELEC, MCENT)
+     real(dp) :: rvec_ee(3, MMAT_DIM2)
+     real(dp) :: r_ee(MMAT_DIM2)
+     !  real(dp) :: rvec_en(3, MELEC, MCENT)
+     !  real(dp) :: r_en(MELEC, MCENT)
 
      private
-     public :: rvec_en, r_en
+     public :: rshift
+     public :: rvec_ee, r_ee
+     !  public :: rvec_en, r_en
      save
  end module distance_mod
 
