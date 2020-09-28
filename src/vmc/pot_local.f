@@ -5,7 +5,7 @@
       use ghostatom, only: nghostcent
       use const, only: nelec, ipr
       use contrl_per, only: iperiodic
-      use distance_mod, only: rshift, rvec_ee, r_ee
+      use distance_mod, only: rshift
       use pseudo, only: nloc
 
       implicit real*8(a-h,o-z)
@@ -14,8 +14,8 @@
 
       ! common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       ! common /distance/ rshift(3,MELEC,MCENT), rvec_ee(3,MMAT_DIM2), r_ee(MMAT_DIM2)
-      common /distance/ rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-
+      ! common /distance/ rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      common /distance/ rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT), rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 c  pe from nucleus-nucleus repulsion
       pe=pecent
       pe_ee=0.d0
