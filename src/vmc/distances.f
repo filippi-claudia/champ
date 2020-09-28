@@ -8,14 +8,14 @@ c calculate interparticle distances
       use const, only: nelec
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use contrl_per, only: iperiodic
-
+      use distance, only: rvec_en, r_en
 
       implicit real*8(a-h,o-z)
 
 
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-
+      ! common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      common /distance/ rshift(3,MELEC,MCENT), rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       dimension x(3,*)
 
       if(iel.eq.0) then
@@ -105,6 +105,7 @@ c restore interparticle distances (called if move rejected)
       use atom, only: ncent
       use ghostatom, only: nghostcent
       use const, only: nelec
+      use distance, only: rvec_en, r_en
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       implicit real*8(a-h,o-z)
 
@@ -112,7 +113,8 @@ c restore interparticle distances (called if move rejected)
 
 
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      !common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      common /distance/ rshift(3,MELEC,MCENT), rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
 c Calculate e-N inter-particle distances
       do 25 ic=1,ncent+nghostcent

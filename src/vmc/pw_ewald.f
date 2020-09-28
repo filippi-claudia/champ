@@ -1844,7 +1844,7 @@ c Written by Cyrus Umrigar
       use periodic, only: np
       use periodic, only: znuc_sum
       use pseudo, only: lpot, nloc
-
+      use distance, only: rvec_en, r_en
       implicit real*8(a-h,o-z)
 
 
@@ -1853,7 +1853,8 @@ c Written by Cyrus Umrigar
 
 
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      ! common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      common /distance/ rshift(3,MELEC,MCENT), rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension x(3,*)
 
@@ -1918,6 +1919,7 @@ c Written by Cyrus Umrigar
       use periodic, only: ncoef_per, ng1d_sim
       use periodic, only: ngnorm_sim, ngvec_sim
       use periodic, only: np
+      use distance, only: rvec_en, r_en
       implicit real*8(a-h,o-z)
 
 
@@ -1925,7 +1927,8 @@ c Written by Cyrus Umrigar
 
 
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      ! common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      common /distance/ rshift(3,MELEC,MCENT), rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension x(3,*)
 

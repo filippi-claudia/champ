@@ -26,7 +26,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use mmpol_cntrl, only: immpol
 
       use efield, only: iefield
-
+      use distance, only: rvec_en, r_en
       use pcm_cntrl, only: ipcm
       use slater, only: d2dx2, ddx, fp, fpp, slmi
 
@@ -40,7 +40,8 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
 c Calculates energy
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      ! common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      common /distance/ rshift(3,MELEC,MCENT), rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
 
       dimension coord(3,*),psid(*),energy(*)
