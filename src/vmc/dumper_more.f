@@ -2,8 +2,8 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE
-      use vmc, only: nrad
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE
+      use vmc_mod, only: nrad
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
       use mstates_mod, only: MSTATES
       use ghostatom, only: newghostype, nghostcent

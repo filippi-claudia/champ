@@ -2,7 +2,7 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use vmc, only: MELEC, MORB, MBASIS, MCENT
+      use vmc_mod, only: MELEC, MORB, MBASIS, MCENT
       use const, only: nelec, ipr
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
@@ -143,7 +143,7 @@ c           do 26 m=1,nbasis
 c------------------------------------------------------------------------------------
       subroutine virtual_orbitals
 
-      use vmc, only: MELEC, MORB, MBASIS
+      use vmc_mod, only: MELEC, MORB, MBASIS
       use const, only: nelec
       use optwf_contrl, only: ioptci, ioptorb
       use phifun, only: d2phin, dphin
@@ -200,7 +200,7 @@ c25   continue
       end
 c------------------------------------------------------------------------------------
       subroutine da_orbitals
-      use vmc, only: MELEC, MORB, MBASIS
+      use vmc_mod, only: MELEC, MORB, MBASIS
       use atom, only: ncent
 
       use const, only: nelec
@@ -249,7 +249,7 @@ c-------------------------------------------------------------------------------
 c------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
-      use vmc, only: MELEC, MORB, MDET, MCENT
+      use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf

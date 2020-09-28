@@ -4,7 +4,7 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
 
       use mpi_qmc, only: NPROCX
-      use vmc, only: nrad
+      use vmc_mod, only: nrad
       use const, only: nelec
       use config, only: xold
       use csfs, only: nstates

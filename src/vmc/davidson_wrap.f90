@@ -10,7 +10,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
   ! ... S is an symmetric matrix, v is a real vector
   ! ... (real wavefunctions with only half plane waves stored)
   ! 
-  use numeric_kinds, only: dp
+  use precision_kinds, only: dp
   use davidson, only: generalized_eigensolver
   use davidson, only: davidson_parameters
   use array_utils, only: eye, write_matrix, write_vector
@@ -55,7 +55,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
       !> \param[in] input_vec Array to project
       !> \return Projected matrix
 
-      use numeric_kinds, only: dp
+      use precision_kinds, only: dp
       import :: davidson_parameters
       type(davidson_parameters) :: parameters
       real (dp), dimension(:,:), intent(in) :: input_vect
@@ -69,7 +69,7 @@ SUBROUTINE davidson_wrap( nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, 
       !> \param[in] input_vec Array to project
       !> \return Projected matrix
        
-      use numeric_kinds, only: dp
+      use precision_kinds, only: dp
       import :: davidson_parameters
       type(davidson_parameters) :: parameters
       real (dp), dimension(:,:), intent(in) :: input_vect
@@ -105,7 +105,7 @@ function fun_mtx_gemv( parameters, input_vect) result( output_vect)
   !> \param[in] input_vec Array to project
   !> \return Projected matrix
 
-  use numeric_kinds, only: dp
+  use precision_kinds, only: dp
   use davidson, only: davidson_parameters
 
   type( davidson_parameters) :: parameters
@@ -132,7 +132,7 @@ function fun_stx_gemv(parameters, input_vect) result(output_vect)
   !> \param[in] input_vec Array to project
   !> \return Projected matrix
   
-  use numeric_kinds, only: dp
+  use precision_kinds, only: dp
   use davidson, only: davidson_parameters
 
   type(davidson_parameters) :: parameters

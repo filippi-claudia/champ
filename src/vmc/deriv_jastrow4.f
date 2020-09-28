@@ -1,8 +1,8 @@
       subroutine deriv_jastrow4(x,v,d2,value)
 c Written by Cyrus Umrigar and Claudia Filippi
-      use vmc, only: MELEC, MCENT
-      use vmc, only: MORDJ, MMAT_DIM2
-      use vmc, only: NEQSX, MTERMS
+      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MORDJ, MMAT_DIM2
+      use vmc_mod, only: NEQSX, MTERMS
       use atom, only: iwctype, nctype, ncent
       use const, only: nelec
       use derivjas, only: d2g, g, go, gvalue

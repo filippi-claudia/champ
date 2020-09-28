@@ -1,6 +1,6 @@
 module lapack_wrapper
 
-  use numeric_kinds, only: dp
+  use precision_kinds, only: dp
   implicit none
 
   !> \private

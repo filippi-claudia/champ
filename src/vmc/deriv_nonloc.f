@@ -1,7 +1,7 @@
       subroutine deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,value,gn,vjn,da_ratio_jn)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-      use vmc, only: MELEC, MCENT
+      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, nctype, ncent
 
       use jaspar, only: nspin2, sspinn, is

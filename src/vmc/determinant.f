@@ -2,8 +2,8 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use vmc, only: MELEC, MORB, MDET, MCENT
-      use vmc, only: MMAT_DIM
+      use vmc_mod, only: MELEC, MORB, MDET, MCENT
+      use vmc_mod, only: MMAT_DIM
       use const, only: ipr
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -93,7 +93,7 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
-      use vmc, only: MELEC, MORB, MDET
+      use vmc_mod, only: MELEC, MORB, MDET
       use const, only: ipr
       use estpsi, only: detref
       use multidet, only: kref
@@ -148,7 +148,7 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
-      use vmc, only: MELEC, MORB
+      use vmc_mod, only: MELEC, MORB
       use atom, only: ncent
       use const, only: hb, nelec
       use da_jastrow4val, only: da_vj
@@ -156,8 +156,8 @@ c-----------------------------------------------------------------------
       use derivjas, only: g
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
-      use Bloc_da, only: b_da
-      use Bloc_dj, only: b_dj
+      use Bloc, only: b_da
+      use Bloc, only: b_dj
       use coefs, only: norb
       use Bloc, only: b
       use force_analy, only: iforce_analy

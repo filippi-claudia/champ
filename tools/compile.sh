@@ -6,8 +6,10 @@ module load cmake/3.7.2 lapack/mkl blas/mkl intel/2018b mpi/impi/18.0.4
 cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 cmake --build build  --target all -- -j4 # vmc.mov1 -- -j4
 
-cd ./tests/psb3_cas66 ; \
-cp ../../tools/test_champ.sh ./ ; \
+CHAMP=$HOME/champ
+
+cd $CHAMP/tests/psb3_cas66 ; \
+cp $CHAMP/tools/test_champ.sh ./ ; \
 
 ########### Test 1
 echo "" ; \
@@ -39,17 +41,12 @@ echo "Running test 4:" ; \
 cd $CHAMP/tests/butadiene-3wfs/TZ-1M-128 ; \
 cp $CHAMP/tools/test_champ.sh ./ ; \
 sbatch test_champ.cmd vmc_optall.inp ; sleep 180 ; \
->>>>>>> origin/refac-problematic
 grep "total E =" vmc_optall.out | cut -f 1-11 -d  " " ; \
 echo "That should be:" ; \
 echo "totalE=-26.1345117" ; \
 echo "totalE=-26.1560896" ; \
 echo "totalE=-26.1885011" ; \
-<<<<<<< HEAD
-echo "totalE=-26.2094842"
-=======
 echo "totalE=-26.2094842" 
->>>>>>> origin/refac-problematic
 echo "" ; \
 
 ########### Test 5

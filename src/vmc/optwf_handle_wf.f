@@ -120,7 +120,7 @@ c tmp
       end
 c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
-      use vmc, only: MELEC, MORB, MBASIS
+      use vmc_mod, only: MELEC, MORB, MBASIS
       use numbas, only: numr
 
       use optwf_contrl, only: ioptorb
@@ -277,8 +277,8 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow
 
       use force_mod, only: MWF
-      use vmc, only: MCTYPE
-      use vmc, only: MORDJ1
+      use vmc_mod, only: MCTYPE
+      use vmc_mod, only: MORDJ1
       use atom, only: nctype
 
       use jaspar3, only: a, b, c
@@ -332,7 +332,7 @@ c Restore parameters corresponding to run generating hessian
 c-----------------------------------------------------------------------
       subroutine save_lcao
       use force_mod, only: MWF
-      use vmc, only: MORB, MBASIS
+      use vmc_mod, only: MORB, MBASIS
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
 
@@ -358,7 +358,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci
-      use vmc, only: MDET
+      use vmc_mod, only: MDET
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
 
@@ -444,7 +444,7 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
-      use vmc, only: MELEC, MORB
+      use vmc_mod, only: MELEC, MORB
       use coefs, only: coef, nbasis, norb
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
@@ -497,8 +497,8 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
       use force_mod, only: MWF
-      use vmc, only: MCTYPE
-      use vmc, only: MORDJ1
+      use vmc_mod, only: MCTYPE
+      use vmc_mod, only: MORDJ1
       use atom, only: nctype
 
       use jaspar3, only: a, b, c
@@ -551,7 +551,7 @@ c Restore parameters corresponding to run generating hessian
 c-----------------------------------------------------------------------
       subroutine save_lcao_best
       use force_mod, only: MWF
-      use vmc, only: MORB, MBASIS
+      use vmc_mod, only: MORB, MBASIS
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
@@ -582,7 +582,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci_best
-      use vmc, only: MDET
+      use vmc_mod, only: MDET
       use csfs, only: ccsf, ncsf, nstates
       use mstates_mod, only: MSTATES
 
@@ -681,7 +681,7 @@ c Check parameters a2 and b2 > -scalek
       end
 c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
-      use vmc, only: MORB, MBASIS
+      use vmc_mod, only: MORB, MBASIS
       use optwf_contrl, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
       use coefs, only: coef, nbasis, norb

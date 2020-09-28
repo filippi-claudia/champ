@@ -1,7 +1,7 @@
       subroutine readps
 c Written by Claudia Filippi
       use pseudo_mod, only: MPS_GRID
-      use vmc, only: nrad
+      use vmc_mod, only: nrad
       use atom, only: znuc, iwctype, nctype
 
       use pseudo_fahy, only: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
@@ -86,7 +86,7 @@ c     call gesqua (nquad,xq,yq,zq,wq)
 c-----------------------------------------------------------------------
       subroutine getvps(rad,iel)
 c Written by Claudia Filippi
-      use vmc, only: MELEC, MCENT
+      use vmc_mod, only: MELEC, MCENT
       use atom, only: znuc, iwctype, ncent
 
       use pseudo_fahy, only: drad, dradl, npotl, potl, ptnlc, rcmax

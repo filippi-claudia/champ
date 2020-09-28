@@ -1,11 +1,11 @@
       subroutine cuspexact4(iprin,iadiag)
 c Written by Cyrus Umrigar
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc_mod, only: radmax, delri
+      use vmc_mod, only: NEQSX, MTERMS
+      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
       use jaspar3, only: a, c
       use jaspar4, only: nordc

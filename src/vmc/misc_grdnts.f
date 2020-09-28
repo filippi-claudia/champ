@@ -10,11 +10,11 @@ c   Subroutine which at the start up prints out information about the
 c   energy gradients (cartesian).
       subroutine inpwrt_grdnts_cart()
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc_mod, only: radmax, delri
+      use vmc_mod, only: NEQSX, MTERMS
+      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use grdntsmv, only: igrdaidx, igrdcidx
 
       use grdntspar, only: delgrdxyz, ngradnts
@@ -48,11 +48,11 @@ c   Subroutine which at the start up prints out information about the
 c   energy gradients (z matrix/internal).
       subroutine inpwrt_grdnts_zmat()
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc_mod, only: radmax, delri
+      use vmc_mod, only: NEQSX, MTERMS
+      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use grdntsmv, only: igrdaidx, igrdcidx
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
@@ -93,11 +93,11 @@ c   for cartesian coordinates of atoms from energy differences
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_cart(forces_ave,forces_err)
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc_mod, only: radmax, delri
+      use vmc_mod, only: NEQSX, MTERMS
+      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
@@ -159,11 +159,11 @@ c   for Z matrix coordinates of atoms from energy differences
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_zmat(forces_ave,forces_err)
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc_mod, only: radmax, delri
+      use vmc_mod, only: NEQSX, MTERMS
+      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
@@ -314,11 +314,11 @@ c   Subroutine which calculates the displacement for energy gradients
 c   using Z matrix (internal) coordinates
       subroutine grdzmat_displ(k_in,ic_in,ia_in,delfactor)
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc_mod, only: radmax, delri
+      use vmc_mod, only: NEQSX, MTERMS
+      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
       use forcestr, only: delc
 
@@ -363,11 +363,11 @@ c   Subroutine which prints out at the start of a run
 c   information regarding the Z matrix.
       subroutine inpwrt_zmatrix()
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc_mod, only: radmax, delri
+      use vmc_mod, only: NEQSX, MTERMS
+      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use zmatrix, only: czcart, czint, izcmat
       implicit real*8(a-h,o-z)
@@ -402,11 +402,11 @@ c   part of the Hessian for Z matrix coordinates of atoms
 c   from energy differences  calculated using correlated smapling.
       subroutine finwrt_diaghess_zmat(forces_ave,forces_err)
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc_mod, only: radmax, delri
+      use vmc_mod, only: NEQSX, MTERMS
+      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
@@ -555,11 +555,11 @@ c   from energy differences  calculated using correlated smapling.
 c -----------------------------------------------------------------------
       subroutine transform_grad_zmat(force_cart)
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc, only: radmax, delri
-      use vmc, only: NEQSX, MTERMS
-      use vmc, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc_mod, only: radmax, delri
+      use vmc_mod, only: NEQSX, MTERMS
+      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: cent, ncent
 
       use grdntsmv, only: igrdmv

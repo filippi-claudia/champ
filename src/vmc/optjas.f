@@ -1,8 +1,8 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
       use optjas, only: MPARMJ
-      use vmc, only: MELEC, MORB, MDET
-      use vmc, only: MMAT_DIM
+      use vmc_mod, only: MELEC, MORB, MDET
+      use vmc_mod, only: MMAT_DIM
       use const, only: hb, nelec, ipr
       use csfs, only: nstates
       use derivjas, only: d2g, g
@@ -13,7 +13,7 @@
       use optwf_parms, only: nparmj
       use scratch, only: denergy_det, dtildem
       use Bloc, only: xmat
-      use Bloc_dj, only: b_dj
+      use Bloc, only: b_dj
       use coefs, only: norb
       use deloc_dj_m, only: denergy
       use multimat, only: wfmat

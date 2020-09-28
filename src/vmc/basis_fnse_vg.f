@@ -4,7 +4,7 @@ c routine to calculate basis functions and derivatives for electron k
 c vg -> value,gradient
 
       use numbas_mod, only: MRWF
-      use vmc, only: MELEC, MCENT
+      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent
       use ghostatom, only: nghostcent
       use numbas, only: iwrwf, nrbas, numr

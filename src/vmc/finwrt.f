@@ -3,8 +3,8 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
       use force_mod, only: MFORCE
-      use vmc, only: nrad
-      use vmc, only: delri
+      use vmc_mod, only: nrad
+      use vmc_mod, only: delri
       use atom, only: ncent
       use const, only: nelec
       use csfs, only: nstates

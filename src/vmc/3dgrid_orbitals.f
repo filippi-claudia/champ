@@ -8,8 +8,8 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use grid_spline_mod, only: orb_num_spl
       use grid_mod, only: MXNSTEP, MXNSTEP3
       use grid_mod, only: cart_from_int
-      use vmc, only: MELEC, MCENT
-      use vmc, only: MMAT_DIM2
+      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, ncent
 
       use ghostatom, only: newghostype, nghostcent
@@ -396,8 +396,8 @@ c Lagrange interpolation routines
       use grid_lagrange_mod, only: LAGSTART, LAGEND, MORB_OCC
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: grid3d, cart_from_int
-      use vmc, only: MELEC, MORB, MCENT
-      use vmc, only: MMAT_DIM2
+      use vmc_mod, only: MELEC, MORB, MCENT
+      use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, ncent
       use wfsec, only: iwf
       use grid3d_param, only: nstep3d, endpt, origin
@@ -598,7 +598,7 @@ c
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use vmc, only: MELEC, MORB
+      use vmc_mod, only: MELEC, MORB
       use insout, only: inout, inside
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
@@ -679,7 +679,7 @@ c
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use vmc, only: MELEC, MORB
+      use vmc_mod, only: MELEC, MORB
       use insout, only: inout, inside
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
@@ -761,7 +761,7 @@ c
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use vmc, only: MORB
+      use vmc_mod, only: MORB
       use insout, only: inout, inside
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
@@ -842,7 +842,7 @@ c
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use vmc, only: MORB
+      use vmc_mod, only: MORB
       use insout, only: inout, inside
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
