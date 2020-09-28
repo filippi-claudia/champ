@@ -25,7 +25,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use contr2, only: isc
 
       use vardep, only: cdep, iwdepend, nvdepend
-      use distance, only: rvec_en, r_en
+      use distance_mod, only: rvec_en, r_en
       use force_analy, only: iforce_analy
       use cuspmat4, only: d, iwc4, nterms
       implicit real*8(a-h,o-z)

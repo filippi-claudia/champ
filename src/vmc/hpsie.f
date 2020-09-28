@@ -10,7 +10,7 @@ c Written by Claudia Filippi by modifying hpsi
       use contr2, only: ianalyt_lap
       use velocity_jastrow, only: vjn
       use multislatern, only: ddorbn, detn, dorbn, orbn
-      use distance, only: rvec_en, r_en
+      use distance_mod, only: rvec_en, r_en
       implicit real*8(a-h,o-z)
 
 

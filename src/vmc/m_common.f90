@@ -198,7 +198,7 @@
      save
  end module dets_equiv
 
- module distance
+ module distance_mod
      use precision_kinds, only: dp
      use vmc_mod, only: MELEC, MCENT, MMAT_DIM2
 
@@ -210,7 +210,7 @@
      private
      public :: rvec_en, r_en
      save
- end module distance
+ end module distance_mod
 
  module distances_sav
      !> Arguments: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav

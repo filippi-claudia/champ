@@ -24,7 +24,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use grid3d_param, only: endpt, nstep3d, origin
 
-      use distance, only: rvec_en, r_en
+      use distance_mod, only: rvec_en, r_en
       implicit real*8(a-h,o-z)
 
 
@@ -407,7 +407,7 @@ c Lagrange interpolation routines
       use ghostatom, only: nghostcent
       use contrl, only: irstar
       use phifun, only: phin, dphin, d2phin
-      use distance, only: rvec_en, r_en
+      use distance_mod, only: rvec_en, r_en
 
       implicit real*8(a-h,o-z)
 

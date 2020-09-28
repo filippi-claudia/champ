@@ -21,7 +21,7 @@ c numerical Laplacian for periodic systems.
       use wfsec, only: iwf
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
-      use distance, only: rvec_en, r_en
+      use distance_mod, only: rvec_en, r_en
       implicit real*8(a-h,o-z)
 
 

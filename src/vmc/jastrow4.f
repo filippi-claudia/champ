@@ -23,7 +23,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use contr2, only: ijas
       use contr2, only: isc
       use force_analy, only: iforce_analy
-      use distance, only: rvec_en, r_en
+      use distance_mod, only: rvec_en, r_en
       
       implicit real*8(a-h,o-z)
 

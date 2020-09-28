@@ -26,7 +26,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use mmpol_cntrl, only: immpol
 
       use efield, only: iefield
-      use distance, only: rvec_en, r_en
+      use distance_mod, only: rvec_en, r_en
       use pcm_cntrl, only: ipcm
       use slater, only: d2dx2, ddx, fp, fpp, slmi
 

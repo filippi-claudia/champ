@@ -1844,7 +1844,7 @@ c Written by Cyrus Umrigar
       use periodic, only: np
       use periodic, only: znuc_sum
       use pseudo, only: lpot, nloc
-      use distance, only: rvec_en, r_en
+      use distance_mod, only: rvec_en, r_en
       implicit real*8(a-h,o-z)
 
 
@@ -1919,7 +1919,7 @@ c Written by Cyrus Umrigar
       use periodic, only: ncoef_per, ng1d_sim
       use periodic, only: ngnorm_sim, ngvec_sim
       use periodic, only: np
-      use distance, only: rvec_en, r_en
+      use distance_mod, only: rvec_en, r_en
       implicit real*8(a-h,o-z)
 
 
