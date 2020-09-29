@@ -348,7 +348,7 @@ c Written by Claudia Filippi
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
       use gradhessj, only: dj, dj_e
-      use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
+      use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks, nbj_current
       implicit real*8(a-h,o-z)
 
 
@@ -360,7 +360,7 @@ c Written by Claudia Filippi
 
       if(ioptjas.eq.0.or.ngrad_jas_blocks.eq.0) return
 
-      nb_current=nb_current+1
+      nbj_current=nbj_current+1
 
       do 200 istate=1,nstates
 
@@ -377,7 +377,7 @@ c Written by Claudia Filippi
          dj_e_save(i,istate)=dj_e(i,istate)
   30     dj_save(i,istate)=dj(i,istate)
       
-      if(nb_current.eq.ngrad_jas_blocks)then
+      if(nbj_current.eq.ngrad_jas_blocks)then
         eb=e_bsum(istate)/dble(ngrad_jas_blocks)
         e_bsum(istate)=0
         do 40 i=1,nparmj
@@ -390,8 +390,8 @@ c Written by Claudia Filippi
 
   200 continue
 
-      if(nb_current.eq.ngrad_jas_blocks) then
-        nb_current=0
+      if(nbj_current.eq.ngrad_jas_blocks) then
+        nbj_current=0
         ngrad_jas_bcum=ngrad_jas_bcum+1
       endif
 
@@ -448,7 +448,7 @@ c Written by Claudia Filippi
       use optwf_parms, only: nparmj
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
       use gradhessj, only: e2
-      use gradjerrb, only: ngrad_jas_bcum
+      use gradjerrb, only: ngrad_jas_bcum, nbj_current
       implicit real*8(a-h,o-z)
 
 
@@ -484,7 +484,7 @@ c Written by Claudia Filippi
 
   30  continue
 
-      nb_current=0
+      nbj_current=0
       ngrad_jas_bcum=0
 
       return
