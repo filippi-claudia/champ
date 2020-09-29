@@ -40,7 +40,7 @@ c routine to accumulate estimators for energy etc.
       ! common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       ! common /distance/ rshift(3,MELEC,MCENT), rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       ! common /distance/ rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      common /distance/  rvec_ee(3, MMAT_DIM2), r_ee(MMAT_DIM2)
+      common /distance/  r_ee(MMAT_DIM2), rvec_ee(3, MMAT_DIM2)
 
       dimension xstrech(3,MELEC),enow(MSTATES,MFORCE)
 
