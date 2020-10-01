@@ -413,7 +413,7 @@ c............................................................
       return
       end
 
-      subroutine qpcm_update_vol(iupdate)
+      subroutine qpcm_update_vol()
 c............................................................
 c      update of volume charges and penupol
 c............................................................
@@ -429,9 +429,6 @@ c............................................................
       use pcm_pot, only: penupol, penupv
       use pcm_fdc, only: qvol
       implicit real*8(a-h,o-z)
-
-
-
 
       iupdate=0
       if(ipcm.eq.0.or.ipcm.eq.3) return

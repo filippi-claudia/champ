@@ -17,7 +17,6 @@ c----------------------------------------------------------------------
       use contrl, only: irstar
       use grid3d_param, only: origin
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
-
       use pcm_grid3d_array, only: pcm_cart_from_int
 
 
@@ -304,6 +303,11 @@ c     Work:
 
 c-----------------------------------------------------------------------
       subroutine pcm_3dgrid_dump(iu)
+            
+      use pcm_cntrl, only: ipcm
+      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_grid3d_array, only: pcm_cart_from_int
+
       implicit real*8(a-h,o-z)
 
       if (ipcm.eq.0.or.ipcm_grid.eq.0) return

@@ -21,30 +21,16 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-
-
-
-
-
-
-
-
-
       include 'mpif.h'
 
       parameter (MOBS=MSTATES*(8+5*MFORCE)+10)
-
-
-
-
-
-
-
-
+      
       character*20 filename
 
       dimension obs(MOBS)
       dimension collect(MOBS),enow(MSTATES,MFORCE)
+
+      integer :: iupdate = 0
 
       iblk=iblk+nproc
 
@@ -181,9 +167,9 @@ c optorb reduced at the end of the run: set printout to 0
       return
 
       entry acues1_reduce
-
-      call qpcm_update_vol(iupdate)
-      if(iupdate.eq.1) then
+      
+      call qpcm_update_vol()
+      if(0.eq.1) then
         call pcm_reduce_chvol
         call pcm_compute_penupv
       endif

@@ -226,10 +226,11 @@ module pcm_grid3d_param
 contains
     subroutine allocate_pcm_grid3d_param()
         use precision_kinds, only: dp
-        if (.not. allocated(ipcm_nstep3d)) allocate (ipcm_nstep3d(3))
-        if (.not. allocated(pcm_endpt)) allocate (pcm_endpt(3))
-        if (.not. allocated(pcm_origin)) allocate (pcm_origin(3))
-        if (.not. allocated(pcm_step3d)) allocate (pcm_step3d(3))
+        integer, parameter :: size = 3
+        if (.not. allocated(ipcm_nstep3d)) allocate (ipcm_nstep3d(size))
+        if (.not. allocated(pcm_endpt)) allocate (pcm_endpt(size))
+        if (.not. allocated(pcm_origin)) allocate (pcm_origin(size))
+        if (.not. allocated(pcm_step3d)) allocate (pcm_step3d(size))
     end subroutine allocate_pcm_grid3d_param
 
     subroutine deallocate_pcm_grid3d_param()
