@@ -45,6 +45,14 @@ jobs:
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out
            $HOME/work/champ/champ/tools/compare_output_file.py vmc_lin.out output_ref/vmc_lin_ref.out
 
+           # run and compare simple sampling MPI
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out
+           $HOME/work/champ/champ/tools/compare_output_file.py vmc.out output_ref/vmc_ref.out
+
+           # run and compare simple sampling MPI
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out
+           $HOME/work/champ/champ/tools/compare_output_file.py vmc_lin.out output_ref/vmc_lin_ref.out
+
            # restore the module files
            cd $HOME/work/champ/champ
            cp m_vmc_save ./src/vmc/m_vmc.f90
@@ -75,6 +83,10 @@ jobs:
 
            # run and compare a sr calculation
            $HOME/work/champ/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
+           $HOME/work/champ/champ/tools/compare_output_file.py sr_n.out output_ref/sr_n_ref.out
+
+           # run and compare a sr calculation MPI
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
            $HOME/work/champ/champ/tools/compare_output_file.py sr_n.out output_ref/sr_n_ref.out
 
            #  restore the module files
