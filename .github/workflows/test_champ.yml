@@ -30,9 +30,9 @@ jobs:
     - name: Run_h2
       run: |
            cd tests/CI_test/h2/qmc_1det/
-           $HOME/work/champ/bin/vmc.mov1 < vmc.inp > vmc.out
-           $HOME/work/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out
-           cd $HOME/work/champ
+           $HOME/bin/vmc.mov1 < vmc.inp > vmc.out
+           $HOME/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out
+           cd $HOME
            cp m_vmc_save ./src/vmc/m_vmc.f90
            cp m_optci_save ./src/vmc/m_optci.f90
            cp m_sr_save ./src/vmc/m_sr.f90
@@ -50,10 +50,10 @@ jobs:
     - name: Run_psb3
       run: |
            cd tests/CI_test/psb3/
-           $HOME/work/champ/bin/vmc.mov1 < free.inp > free.out
-           $HOME/work/champ//bin/vmc.mov1 < regterg.inp > regterg.out
-           $HOME/work/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
-           cd $HOME/work/champ
+           $HOME/bin/vmc.mov1 < free.inp > free.out
+           $HOME/bin/vmc.mov1 < regterg.inp > regterg.out
+           $HOME/bin/vmc.mov1 < sr_n.inp > sr_n.out
+           cd $HOME
            cp m_vmc_save ./src/vmc/m_vmc.f90
            cp m_optci_save ./src/vmc/m_optci.f90
            cp m_sr_save ./src/vmc/m_sr.f90
