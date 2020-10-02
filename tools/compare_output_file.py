@@ -22,7 +22,10 @@ def compare_file(data1, data2):
         if 'END' in l1:
             continue
         if l1 != l2:
-            return False
+            print('+', l1)
+            print('-', l2)
+            print('')
+            # return False
     return True
 
 
