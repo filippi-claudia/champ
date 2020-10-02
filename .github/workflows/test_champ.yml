@@ -51,7 +51,7 @@ jobs:
            cp m_optci_save ./src/vmc/m_optci.f90
            cp m_sr_save ./src/vmc/m_sr.f90
 
-    takes too long on GH servers
+    
     - name: Building_code_for_psb3
       run: |
 
