@@ -28,6 +28,10 @@ CTestTestfile.cmake
 # build directory
 build
 
+# output files
+*.out
+slurm*
+
 # emacs
 *~
 # local scripts
