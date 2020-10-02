@@ -51,6 +51,7 @@ jobs:
            cp m_optci_save ./src/vmc/m_optci.f90
            cp m_sr_save ./src/vmc/m_sr.f90
 
+    takes too long on GH servers
     - name: Building_code_for_psb3
       run: |
 
@@ -63,8 +64,9 @@ jobs:
            cp tests/CI_test/psb3/module/*.f90 src/vmc
 
            # compile
+           rm -rf bin build
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_PREFIX_PATH=/usr/include/mkl -DENABLE_TEST=ON
-           cmake --build build -- -j2
+           cmake --build build --clean-first -- -j2
 
     - name: Run_psb3
       run: |
