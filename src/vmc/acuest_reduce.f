@@ -30,6 +30,7 @@ c Written by Claudia Filippi
       dimension obs(MOBS)
       dimension collect(MOBS),enow(MSTATES,MFORCE)
 
+      ! ipudate was not declared anywhere
       integer :: iupdate = 0
 
       iblk=iblk+nproc
@@ -169,7 +170,7 @@ c optorb reduced at the end of the run: set printout to 0
       entry acues1_reduce
       
       call qpcm_update_vol()
-      if(0.eq.1) then
+      if(iupdate.eq.1) then
         call pcm_reduce_chvol
         call pcm_compute_penupv
       endif
