@@ -7,7 +7,6 @@ c    C.J. Umrigar, in "Quantum Monte Carlo Methods in Physics and Chemistry",
 c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
-      use precision_kinds, only: dp
       use vmc_mod, only: MELEC, MORB, MDET
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
@@ -63,8 +62,7 @@ c TMP
       dimension xstrech(3,MELEC)
       dimension xaxis(3),yaxis(3),zaxis(3),idist(MELEC)
       dimension ddx_ref(3)
-      dimension psidn(MSTATES) !,wtg(MSTATES)
-      real(dp), dimension(MSTATES) :: wtg
+      dimension psidn(MSTATES) ,wtg(MSTATES)
       
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
@@ -82,7 +80,7 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
       deltri=one/deltar
 
       call check_orbitals
-      ! write(6, *) nelec
+      
       do 300 i=1,nelec
 
         if(i.le.nup) then
