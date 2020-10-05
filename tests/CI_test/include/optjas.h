@@ -1,1 +1,0 @@
-      parameter(MPARMJ=100)

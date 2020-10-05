@@ -7,7 +7,6 @@ c    C.J. Umrigar, in "Quantum Monte Carlo Methods in Physics and Chemistry",
 c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
-
       use vmc_mod, only: MELEC, MORB, MDET
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
@@ -39,11 +38,6 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       implicit real*8(a-h,o-z)
 
 
-
-
-
-
-
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,half=0.5d0)
       parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
       parameter (eps=1.d-10)
@@ -68,8 +62,8 @@ c TMP
       dimension xstrech(3,MELEC)
       dimension xaxis(3),yaxis(3),zaxis(3),idist(MELEC)
       dimension ddx_ref(3)
-      dimension psidn(MSTATES),wtg(MSTATES)
-
+      dimension psidn(MSTATES) ,wtg(MSTATES)
+      
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
 c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
@@ -84,7 +78,7 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
       deltri=one/deltar
 
       call check_orbitals
-
+      
       do 300 i=1,nelec
 
         if(i.le.nup) then
@@ -121,6 +115,7 @@ c Calculate magnitude of the velocity in the radial direction
         voldr=zero
         do 10 ic=1,3
    10     voldr=voldr+vold(ic,i)*rvmino(ic,i)
+        
         voldr=voldr/rmino(i)
 
 c Place x-axis along direction of angular change and
