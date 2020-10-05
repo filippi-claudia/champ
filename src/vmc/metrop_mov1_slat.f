@@ -70,8 +70,6 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
 
       thetamx(r,z)=deltat+(two-deltat)/(one+(z*r)**2)
 
-      wtg = 0.0_dp
-
       mode='vmc_mov1    '
 
       call p2gtid('vmc:node_cutoff',node_cutoff,0,1)
