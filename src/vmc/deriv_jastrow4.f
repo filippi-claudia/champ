@@ -25,20 +25,13 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use contr2, only: isc
 
       use vardep, only: cdep, iwdepend, nvdepend
-
+      use distance_mod, only: rshift, r_en, rvec_en
       use force_analy, only: iforce_analy
       use cuspmat4, only: d, iwc4, nterms
       implicit real*8(a-h,o-z)
 
 
-
-
-
-
-
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
-     &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-
+      common /distance/  rvec_ee(3, MMAT_DIM2), r_ee(MMAT_DIM2)
 
       parameter (zero=0.d0,one=1.d0,two=2.d0)
       parameter (half=.5d0,eps=1.d-12)
