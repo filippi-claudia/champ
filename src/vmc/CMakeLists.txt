@@ -6,7 +6,8 @@ if (MPI_Fortran_FOUND)
                          m_vmc.f90  m_mstates.f90  m_sr.f90  m_force.f90  m_grid.f90  m_pcm.f90  m_optci.f90  m_ewald.f90  m_jastrow.f90
                          m_mmpol.f90  m_optorb.f90  m_prop.f90  m_pseudo.f90  m_control.f90  m_constant.f90  m_efield.f90  m_optjas.f90
                          m_gradhess.f90  m_mpi.f90  m_optwf.f90  m_basis.f90  m_estimators.f90  m_deriv.f90  m_mixderiv.f90  m_input.f90
-                         m_sampling.f90  m_grdnt.f90  m_state_avrg.f90  m_common.f90 main.f90 optwf.f90)
+                         m_sampling.f90  m_grdnt.f90  m_state_avrg.f90  m_common.f90 main.f90 
+                         optwf.f90 optwf_dl.f90 optwf_dl_more.f90)
   set(DAVIDSON_SOURCE array_utils.f90 lapack_wrapper.f90 davidson.f90)
 
   set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-check bounds -g -traceback")
