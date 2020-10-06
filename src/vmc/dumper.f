@@ -3,7 +3,7 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
 
-      use mpi_qmc, only: NPROCX
+      use mpiconf, only: NPROCX
       use vmc_mod, only: nrad
       use const, only: nelec
       use config, only: xold
@@ -26,14 +26,7 @@ c job where it left off
       implicit real*8(a-h,o-z)
 
 
-
-
-
-
       include 'mpif.h'
-
-
-
 
       dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
       dimension irn_tmp(4,0:NPROCX)
