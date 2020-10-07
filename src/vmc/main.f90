@@ -18,6 +18,7 @@ program main
     use mpiconf, only: mpiconf_init
     use contr3, only: init_control_mode
     use contrl_file, only: init_files, close_files
+    use optwf_mod, only: optwf
 
     implicit None
     integer :: ierr
