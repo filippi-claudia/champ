@@ -61,9 +61,7 @@ contains
 
         call init_arrays()
 
-        ! Initialize vectors to zero
-
-        call save_nparms
+        call save_nparms()
 
         call fetch_parameters(parameters)
 
@@ -124,7 +122,7 @@ contains
     end subroutine optwf_dl
 
     subroutine init_arrays()
-
+        !> Allocate and initialize to 0 all arrays
         use optwf_contrl, only: nparm
 
         !> allocate
@@ -143,6 +141,7 @@ contains
     end subroutine init_arrays
 
     subroutine deallocate_arrays()
+        !> Deallocate arrays
         deallocate (deltap)
         deallocate (dl_momentum)
         deallocate (dl_EG_sq)
@@ -151,7 +150,7 @@ contains
     end subroutine deallocate_arrays
 
     subroutine read_input()
-
+        !> Read the inputs
         use contrl, only: nblk
 
         call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
@@ -176,15 +175,14 @@ contains
     end subroutine read_input
 
     subroutine optimization_step(iter, nparm)
-
+        !> do 1 optimization step
         use mpi
         use precision_kinds, only: dp
         use mpiconf, only: idtask
 
-        integer :: ierr
-
         ! in/out variable
         integer, intent(in) :: iter, nparm
+        integer :: ierr
 
         ! we only need h_sr = - grad_parm E
         call sr_hs(nparm, sr_adiag)
@@ -199,7 +197,7 @@ contains
     end subroutine optimization_step
 
     subroutine one_iter(iter, nparm)
-
+        !> Individual routine to optimize the parameters
         use precision_kinds, only: dp
         use sr_mat_n, only: h_sr
         implicit real*8(a - h, o - z)
