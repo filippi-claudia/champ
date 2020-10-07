@@ -13,6 +13,7 @@
 module optwf_dl_mod
 
     use precision_kinds, only: dp
+    implicit None
 
     integer :: nopt_iter, nblk_max
     real(dp) ::  energy_tol
@@ -38,13 +39,17 @@ contains
 
         use precision_kinds, only: dp
         use sr_mod, only: MPARM
-        use optwf_contrl, only: ioptci, ioptjas, ioptorb
+        use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
         use optwf_corsam, only: energy, energy_err, force
         use contrl, only: nblk
         use method_opt, only: method
         use optwf_contrl, only: idl_flag
 
-        implicit real*8(a - h, o - z)
+        implicit None
+
+        integer :: iter, iflag
+        real(dp) :: dparm_norm
+        real(dp) :: denergy, energy_sav, denergy_err, energy_err_sav
 
         if (method .ne. 'sr_n' .or. idl_flag .eq. 0) return
 
@@ -55,8 +60,6 @@ contains
         if (nparm .gt. MPARM) call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
         call init_arrays()
-
-        inc_nblk = 0
 
         ! Initialize vectors to zero
 
@@ -104,6 +107,7 @@ contains
 
         write (6, '(/,''Check last iteration'')')
 
+        ! Why ??!!
         ioptjas = 0
         ioptorb = 0
         ioptci = 0
@@ -148,6 +152,8 @@ contains
 
     subroutine read_input()
 
+        use contrl, only: nblk
+
         call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
         call p2gtid('optwf:nblk_max', nblk_max, nblk, 1)
         call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
@@ -175,7 +181,7 @@ contains
         use precision_kinds, only: dp
         use mpiconf, only: idtask
 
-        implicit real*8(a - h, o - z)
+        integer :: ierr
 
         ! in/out variable
         integer, intent(in) :: iter, nparm
@@ -187,7 +193,7 @@ contains
             call one_iter(iter, nparm)
         endif
 
-        call MPI_BCAST(deltap, nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
+        call MPI_BCAST(deltap, nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ierr)
 
         return
     end subroutine optimization_step
@@ -201,6 +207,7 @@ contains
         integer, intent(in) :: iter
         integer, intent(in) :: nparm
 
+        integer :: i
         real(dp) ::  dl_EG_corr, dl_EG_sq_corr, dl_momentum_prev, parm_old, dl_EG_old
         real(dp) ::  damp
 
