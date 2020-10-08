@@ -24,13 +24,13 @@ module optwf_sr_mod
     integer :: micro_iter_sr
     integer :: izvzb
 
-    real(dp) :: sr_adiag_sav, iforce_analy_sav
-    integer :: ioptjas_sav, ioptorb_sav, ioptci_sav
+    real(dp) :: sr_adiag_sav
+    integer :: ioptjas_sav, ioptorb_sav, ioptci_sav, iforce_analy_sav
 
     real(dp), dimension(:), allocatable :: deltap
 
     private
-    public :: optwf_sr, sr
+    public :: optwf_sr, sr, sr_hs
     save
 
 contains
@@ -201,7 +201,7 @@ contains
         call p2gtid('optwf:micro_iter_sr', micro_iter_sr, 1, 1)
 
         call p2gtid('optgeo:izvzb', izvzb, 0, 1)
-
+        call p2gtid('optwf:sr_rescale', i_sr_rescale, 0, 1)
         write (6, '(/,''SR adiag: '',f10.5)') sr_adiag
         write (6, '(''SR tau:   '',f10.5)') sr_tau
         write (6, '(''SR eps:   '',f10.5)') sr_eps
@@ -267,6 +267,207 @@ contains
             nbkl = 1.2*nblk
             nblk = min(nblk, nblk_max)
             write (6, '(''nblk reset to'',i8,9d12.4)') nblk
+        endif
+
+        return
+    end
+
+    subroutine sr_hs(nparm, sr_adiag)
+        ! <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
+
+        use mpi
+        use sr_mod, only: MOBS
+        use csfs, only: nstates
+        use mstates_mod, only: MSTATES
+        use mpiconf, only: idtask
+        use optwf_func, only: ifunc_omega, omega
+        use sa_weights, only: weights
+        use sr_index, only: jelo, jelo2, jelohfj
+        use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
+        use sr_mat_n, only: sr_o, wtg, obs_tot
+        use optorb_cblock, only: norbterm
+
+        use method_opt, only: method
+
+        implicit real*8(a - h, o - z)
+
+        real(dp), DIMENSION(:), allocatable :: obs_wtg
+        real(dp), DIMENSION(:), allocatable :: obs_wtg_tot
+
+        allocate (obs_wtg(MSTATES))
+        allocate (obs_wtg_tot(MSTATES))
+
+        nstates_eff = nstates
+        if (method .eq. 'lin_d') nstates_eff = 1
+
+        jwtg = 1
+        jelo = 2
+        n_obs = 2
+        jfj = n_obs + 1
+        n_obs = n_obs + nparm
+        jefj = n_obs + 1
+        n_obs = n_obs + nparm
+        jfifj = n_obs + 1
+        n_obs = n_obs + nparm
+
+        jhfj = n_obs + 1
+        n_obs = n_obs + nparm
+        jfhfj = n_obs + 1
+        n_obs = n_obs + nparm
+
+        ! for omega functional
+        jelo2 = n_obs + 1
+        n_obs = n_obs + 1
+        jelohfj = n_obs + 1
+        n_obs = n_obs + nparm
+
+        if (n_obs .gt. MOBS) call fatal_error('SR_HS LIN: n_obs > MOBS)')
+
+        do k = 1, nparm
+            h_sr(k) = 0.d0
+            s_ii_inv(k) = 0.d0
+        enddo
+
+        nparm_jasci = max(nparm - norbterm, 0)
+
+        do istate = 1, nstates
+            obs(jwtg, istate) = 0.d0
+            do iconf = 1, nconf_n
+                obs(jwtg, istate) = obs(jwtg, istate) + wtg(iconf, istate)
+            enddo
+            obs_wtg(istate) = obs(jwtg, istate)
+        enddo
+
+        call MPI_REDUCE(obs_wtg, obs_wtg_tot, nstates, MPI_REAL8, MPI_SUM, 0, MPI_COMM_WORLD, ier)
+        do istate = 1, nstates
+            obs_tot(jwtg, istate) = obs_wtg_tot(istate)
+        enddo
+
+        do istate = 1, nstates_eff
+            do i = 2, n_obs
+                obs(i, istate) = 0.d0
+            enddo
+
+            ish = (istate - 1)*norbterm
+            do iconf = 1, nconf_n
+                obs(jelo, istate) = obs(jelo, istate) + elocal(iconf, istate)*wtg(iconf, istate)
+                do i = 1, nparm_jasci
+                    obs(jfj + i - 1, istate) = obs(jfj + i - 1, istate) + sr_o(i, iconf)*wtg(iconf, istate)
+                    obs(jefj + i - 1, istate) = obs(jefj + i - 1, istate) + elocal(iconf, istate)*sr_o(i, iconf)*wtg(iconf, istate)
+                    obs(jfifj + i - 1, istate) = obs(jfifj + i - 1, istate) + sr_o(i, iconf)*sr_o(i, iconf)*wtg(iconf, istate)
+                enddo
+                do i = nparm_jasci + 1, nparm
+                    obs(jfj + i - 1, istate) = obs(jfj + i - 1, istate) + sr_o(ish + i, iconf)*wtg(iconf, istate)
+               obs(jefj + i - 1, istate) = obs(jefj + i - 1, istate) + elocal(iconf, istate)*sr_o(ish + i, iconf)*wtg(iconf, istate)
+              obs(jfifj + i - 1, istate) = obs(jfifj + i - 1, istate) + sr_o(ish + i, iconf)*sr_o(ish + i, iconf)*wtg(iconf, istate)
+                enddo
+            enddo
+
+            call MPI_REDUCE(obs(1, istate), obs_tot(1, istate), n_obs, MPI_REAL8, MPI_SUM, 0, MPI_COMM_WORLD, ier)
+        enddo
+
+        if (idtask .eq. 0) then
+            do istate = 1, nstates_eff
+                wts = weights(istate)
+                if (method .eq. 'lin_d') wts = 1.d0
+
+                do i = 2, n_obs
+                    obs_tot(i, istate) = obs_tot(i, istate)/obs_tot(1, istate)
+                enddo
+
+                do k = 1, nparm
+                    aux = obs_tot(jfifj + k - 1, istate) - obs_tot(jfj + k - 1, istate)*obs_tot(jfj + k - 1, istate)
+                    s_diag(k, istate) = aux*sr_adiag
+                    s_ii_inv(k) = s_ii_inv(k) + wts*(aux + s_diag(k, istate))
+                    h_sr(k) = h_sr(k) - 2*wts*(obs_tot(jefj + k - 1, istate) - obs_tot(jfj + k - 1, istate)*obs_tot(jelo, istate))
+                enddo
+            enddo
+
+            smax = 0.d0
+            do k = 1, nparm
+                if (s_ii_inv(k) .gt. smax) smax = s_ii_inv(k)
+            enddo
+            write (6, '(''max S diagonal element '',t41,d8.2)') smax
+
+            kk = 0
+            do k = 1, nparm
+                if (s_ii_inv(k)/smax .gt. eps_eigval) then
+                    kk = kk + 1
+                    s_ii_inv(k) = 1.d0/s_ii_inv(k)
+                else
+                    s_ii_inv(k) = 0.d0
+                endif
+            enddo
+            write (6, '(''nparm, non-zero S diag'',t41,2i5)') nparm, kk
+
+        endif
+
+        if (method .eq. 'sr_n' .and. i_sr_rescale .eq. 0 .and. izvzb .eq. 0 .and. ifunc_omega .eq. 0) return
+
+        if (method .ne. 'sr_n') then
+            s_diag(1, 1) = sr_adiag !!!
+
+            do k = 1, nparm
+                h_sr(k) = -0.5d0*h_sr(k)
+            enddo
+        elseif (ifunc_omega .ne. 0) then
+            s_diag(1, 1) = sr_adiag !!!
+        endif
+
+        if (n_obs .gt. MOBS) call fatal_error('SR_HS LIN: n_obs > MOBS)')
+
+        do i = jhfj, n_obs
+            obs(i, 1) = 0.d0
+        enddo
+        do iconf = 1, nconf_n
+            obs(jelo2, 1) = obs(jelo2, 1) + elocal(iconf, 1)*elocal(iconf, 1)*wtg(iconf, 1)
+            do i = 1, nparm
+                obs(jhfj + i - 1, 1) = obs(jhfj + i - 1, 1) + sr_ho(i, iconf)*wtg(iconf, 1)
+                obs(jfhfj + i - 1, 1) = obs(jfhfj + i - 1, 1) + sr_o(i, iconf)*sr_ho(i, iconf)*wtg(iconf, 1)
+                obs(jelohfj + i - 1, 1) = obs(jelohfj + i - 1, 1) + elocal(iconf, 1)*sr_ho(i, iconf)*wtg(iconf, 1)
+            enddo
+        enddo
+
+        nreduce = n_obs - jhfj + 1
+        call MPI_REDUCE(obs(jhfj, 1), obs_tot(jhfj, 1), nreduce, MPI_REAL8, MPI_SUM, 0, MPI_COMM_WORLD, j)
+
+        if (idtask .eq. 0) then
+            do i = jhfj, n_obs
+                obs_tot(i, 1) = obs_tot(i, 1)/obs_tot(1, 1)
+            enddo
+
+            if (ifunc_omega .eq. 1) then
+                ! variance
+                var = obs_tot(jelo2, 1) - obs_tot(jelo, 1)**2
+                do k = 1, nparm
+                h_sr(k) = -2*(obs_tot(jelohfj + k - 1, 1) - (obs_tot(jhfj + k - 1, 1) - obs_tot(jefj + k - 1, 1))*obs_tot(jelo, 1) &
+                                  - obs_tot(jfj + k - 1, 1)*obs_tot(jelo2, 1) &
+                                  - 2*obs_tot(jelo, 1)*(obs_tot(jefj + k - 1, 1) - obs_tot(jfj + k - 1, 1)*obs_tot(jelo, 1)))
+                enddo
+            elseif (ifunc_omega .eq. 2) then
+! variance with fixed average energy (omega)
+                var = omega*omega + obs_tot(jelo2, 1) - 2*omega*obs_tot(jelo, 1)
+                dum1 = -2
+                do k = 1, nparm
+                    h_sr(k) = dum1*(omega*omega*obs_tot(jfj + k - 1, 1) + obs_tot(jelohfj + k - 1, 1) &
+                                    - omega*(obs_tot(jhfj + k - 1, 1) + obs_tot(jefj + k - 1, 1)) &
+                                    - var*obs_tot(jfj + k - 1, 1))
+                    ! adding a term which intergrates to zero
+                    !    &     -(obs_tot(jelo,1)-omega)*(obs_tot(jhfj+k-1,1)-obs_tot(jefj+k-1,1)))
+                enddo
+
+            elseif (ifunc_omega .eq. 3 .and. method .eq. 'sr_n') then
+                !  Neuscamman's functional
+                den = omega*omega + obs_tot(jelo2, 1) - 2*omega*obs_tot(jelo, 1)
+                dum1 = -2/den
+                dum2 = (omega - obs_tot(jelo, 1))/den
+                do k = 1, nparm
+                    h_sr(k) = dum1*(omega*obs_tot(jfj + k - 1, 1) - obs_tot(jefj + k - 1, 1) &
+                                    - dum2*(omega*omega*obs_tot(jfj + k - 1, 1) + obs_tot(jelohfj + k - 1, 1) &
+                                            - omega*(obs_tot(jhfj + k - 1, 1) + obs_tot(jefj + k - 1, 1))))
+                enddo
+            endif
+
         endif
 
         return

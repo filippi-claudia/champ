@@ -179,6 +179,7 @@ contains
         use mpi
         use precision_kinds, only: dp
         use mpiconf, only: idtask
+        use optwf_sr_mod, only: sr_hs
 
         ! in/out variable
         integer, intent(in) :: iter, nparm
