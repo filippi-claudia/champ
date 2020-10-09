@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os = [ubuntu-20.04, ubuntu-18.04, ubuntu 16.04]
+        os = [ubuntu-20.04, ubuntu-18.04, ubuntu-16.04]
     steps:
     - uses: actions/checkout@v1
 
@@ -19,6 +19,7 @@ jobs:
       run: |
            sudo apt install gfortran libmkl-full-dev openmpi-bin gawk openmpi-bin libblas-dev liblapack-dev # valgrind
            gawk --version
+           mpirun --version
 
     - name: Building_code_for_h2
       run: |
