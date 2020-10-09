@@ -68,36 +68,36 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MBASIS, MCTYPE
         ! if (.not. allocated(zex)) allocate (zex(MBASIS, MWF))
-        if (.not. allocated(n1s)) allocate (n1s(MCTYPE))
-        if (.not. allocated(n2s)) allocate (n2s(MCTYPE))
-        if (.not. allocated(n2p)) allocate (n2p(3, MCTYPE))
-        if (.not. allocated(n3s)) allocate (n3s(MCTYPE))
-        if (.not. allocated(n3p)) allocate (n3p(3, MCTYPE))
-        if (.not. allocated(n3dzr)) allocate (n3dzr(MCTYPE))
-        if (.not. allocated(n3dx2)) allocate (n3dx2(MCTYPE))
-        if (.not. allocated(n3dxy)) allocate (n3dxy(MCTYPE))
-        if (.not. allocated(n3dxz)) allocate (n3dxz(MCTYPE))
-        if (.not. allocated(n3dyz)) allocate (n3dyz(MCTYPE))
-        if (.not. allocated(n4s)) allocate (n4s(MCTYPE))
-        if (.not. allocated(n4p)) allocate (n4p(3, MCTYPE))
-        if (.not. allocated(n4fxxx)) allocate (n4fxxx(MCTYPE))
-        if (.not. allocated(n4fyyy)) allocate (n4fyyy(MCTYPE))
-        if (.not. allocated(n4fzzz)) allocate (n4fzzz(MCTYPE))
-        if (.not. allocated(n4fxxy)) allocate (n4fxxy(MCTYPE))
-        if (.not. allocated(n4fxxz)) allocate (n4fxxz(MCTYPE))
-        if (.not. allocated(n4fyyx)) allocate (n4fyyx(MCTYPE))
-        if (.not. allocated(n4fyyz)) allocate (n4fyyz(MCTYPE))
-        if (.not. allocated(n4fzzx)) allocate (n4fzzx(MCTYPE))
-        if (.not. allocated(n4fzzy)) allocate (n4fzzy(MCTYPE))
-        if (.not. allocated(n4fxyz)) allocate (n4fxyz(MCTYPE))
-        if (.not. allocated(nsa)) allocate (nsa(MCTYPE))
-        if (.not. allocated(npa)) allocate (npa(3, MCTYPE))
-        if (.not. allocated(ndzra)) allocate (ndzra(MCTYPE))
-        if (.not. allocated(ndz2a)) allocate (ndz2a(MCTYPE))
-        if (.not. allocated(ndxya)) allocate (ndxya(MCTYPE))
-        if (.not. allocated(ndxza)) allocate (ndxza(MCTYPE))
-        if (.not. allocated(ndx2a)) allocate (ndx2a(MCTYPE))
-        if (.not. allocated(ndyza)) allocate (ndyza(MCTYPE))
+        ! if (.not. allocated(n1s)) allocate (n1s(MCTYPE))
+        ! if (.not. allocated(n2s)) allocate (n2s(MCTYPE))
+        ! if (.not. allocated(n2p)) allocate (n2p(3, MCTYPE))
+        ! if (.not. allocated(n3s)) allocate (n3s(MCTYPE))
+        ! if (.not. allocated(n3p)) allocate (n3p(3, MCTYPE))
+        ! if (.not. allocated(n3dzr)) allocate (n3dzr(MCTYPE))
+        ! if (.not. allocated(n3dx2)) allocate (n3dx2(MCTYPE))
+        ! if (.not. allocated(n3dxy)) allocate (n3dxy(MCTYPE))
+        ! if (.not. allocated(n3dxz)) allocate (n3dxz(MCTYPE))
+        ! if (.not. allocated(n3dyz)) allocate (n3dyz(MCTYPE))
+        ! if (.not. allocated(n4s)) allocate (n4s(MCTYPE))
+        ! if (.not. allocated(n4p)) allocate (n4p(3, MCTYPE))
+        ! if (.not. allocated(n4fxxx)) allocate (n4fxxx(MCTYPE))
+        ! if (.not. allocated(n4fyyy)) allocate (n4fyyy(MCTYPE))
+        ! if (.not. allocated(n4fzzz)) allocate (n4fzzz(MCTYPE))
+        ! if (.not. allocated(n4fxxy)) allocate (n4fxxy(MCTYPE))
+        ! if (.not. allocated(n4fxxz)) allocate (n4fxxz(MCTYPE))
+        ! if (.not. allocated(n4fyyx)) allocate (n4fyyx(MCTYPE))
+        ! if (.not. allocated(n4fyyz)) allocate (n4fyyz(MCTYPE))
+        ! if (.not. allocated(n4fzzx)) allocate (n4fzzx(MCTYPE))
+        ! if (.not. allocated(n4fzzy)) allocate (n4fzzy(MCTYPE))
+        ! if (.not. allocated(n4fxyz)) allocate (n4fxyz(MCTYPE))
+        ! if (.not. allocated(nsa)) allocate (nsa(MCTYPE))
+        ! if (.not. allocated(npa)) allocate (npa(3, MCTYPE))
+        ! if (.not. allocated(ndzra)) allocate (ndzra(MCTYPE))
+        ! if (.not. allocated(ndz2a)) allocate (ndz2a(MCTYPE))
+        ! if (.not. allocated(ndxya)) allocate (ndxya(MCTYPE))
+        ! if (.not. allocated(ndxza)) allocate (ndxza(MCTYPE))
+        ! if (.not. allocated(ndx2a)) allocate (ndx2a(MCTYPE))
+        ! if (.not. allocated(ndyza)) allocate (ndyza(MCTYPE))
     end subroutine allocate_basis
 
     subroutine deallocate_basis()
@@ -243,7 +243,7 @@ contains
     subroutine allocate_numbas1()
         use vmc_mod, only: MBASIS, MCTYPE
         if (.not. allocated(iwlbas)) allocate (iwlbas(MBASIS, MCTYPE))
-        if (.not. allocated(nbastyp)) allocate (nbastyp(MCTYPE))
+        ! if (.not. allocated(nbastyp)) allocate (nbastyp(MCTYPE))
     end subroutine allocate_numbas1
 
     subroutine deallocate_numbas1()
@@ -279,13 +279,13 @@ contains
 end module numbas2
 
 subroutine allocate_m_basis()
-    use basis, only: allocate_basis
+    ! use basis, only: allocate_basis
     use numexp, only: allocate_numexp
     use numbas, only: allocate_numbas
     use numbas1, only: allocate_numbas1
     use numbas2, only: allocate_numbas2
 
-    call allocate_basis()
+    ! call allocate_basis()
     call allocate_numexp()
     call allocate_numbas()
     call allocate_numbas1()
