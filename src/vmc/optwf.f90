@@ -1,5 +1,5 @@
 module optwf_mod
-
+    implicit None
     public :: optwf
     PRIVATE
     save

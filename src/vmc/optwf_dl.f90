@@ -15,20 +15,23 @@ module optwf_dl_mod
     use precision_kinds, only: dp
     implicit None
 
-    integer :: nopt_iter, nblk_max
-    real(dp) ::  energy_tol
-    real(dp) :: dparm_norm_min
-    real(dp) :: sr_tau, sr_adiag, sr_eps
-    real(dp) :: dl_mom
-    integer  :: idl_flag
-    character(20) :: dl_alg
+    type OptWFDLData
+        integer :: nopt_iter, nblk_max
+        real(dp) ::  energy_tol
+        real(dp) :: dparm_norm_min
+        real(dp) :: sr_tau, sr_adiag, sr_eps
+        real(dp) :: dl_mom
+        integer  :: idl_flag
+        character(20) :: dl_alg
 
-    real(dp), dimension(:), allocatable :: deltap
-    real(dp), dimension(:), allocatable :: dl_momentum
-    real(dp), dimension(:), allocatable :: dl_EG_sq
-    real(dp), dimension(:), allocatable :: dl_EG
-    real(dp), dimension(:), allocatable :: parameters
+        real(dp), dimension(:), allocatable :: deltap
+        real(dp), dimension(:), allocatable :: dl_momentum
+        real(dp), dimension(:), allocatable :: dl_EG_sq
+        real(dp), dimension(:), allocatable :: dl_EG
+        real(dp), dimension(:), allocatable :: parameters
+    end type OptWFDLData
 
+    type(OptWFDLData)           :: opt_data
     private
     public :: optwf_dl
     save
@@ -43,7 +46,6 @@ contains
         use optwf_corsam, only: energy, energy_err, force
         use contrl, only: nblk
         use method_opt, only: method
-        use optwf_contrl, only: idl_flag
 
         implicit None
 
@@ -51,7 +53,9 @@ contains
         real(dp) :: dparm_norm
         real(dp) :: denergy, energy_sav, denergy_err, energy_err_sav
 
-        if (method .ne. 'sr_n' .or. idl_flag .eq. 0) return
+        call read_input(opt_data)
+
+        if (method .ne. 'sr_n' .or. opt_data%idl_flag .eq. 0) return
 
         write (6, '(''Started dl optimization'')')
 
@@ -59,34 +63,34 @@ contains
 
         if (nparm .gt. MPARM) call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
-        call init_arrays()
+        call init_arrays(opt_data)
 
         call save_nparms()
 
-        call fetch_parameters(parameters)
+        call fetch_parameters(opt_data%parameters)
 
         ! do iteration
-        do iter = 1, nopt_iter
-            write (6, '(/,''DL Optimization iteration'',i5,'' of'',i5)') iter, nopt_iter
+        do iter = 1, opt_data%nopt_iter
+            write (6, '(/,''DL Optimization iteration'',i5,'' of'',i5)') iter, opt_data%nopt_iter
 
             call qmc
 
             write (6, '(/,''Completed sampling'')')
 
-            call optimization_step(iter, nparm)
+            call optimization_step(iter, nparm, opt_data)
 
             ! historically, we input -deltap in compute_parameters,
             ! so we multiply actual deltap by -1
-            call dscal(nparm, -1.d0, deltap, 1)
+            call dscal(nparm, -1.d0, opt_data%deltap, 1)
 
-            call test_solution_parm(nparm, deltap, dparm_norm, dparm_norm_min, sr_adiag, iflag)
+            call test_solution_parm(nparm, opt_data%deltap, dparm_norm, opt_data%dparm_norm_min, opt_data%sr_adiag, iflag)
             write (6, '(''Norm of parm variation '',g12.5)') dparm_norm
             if (iflag .ne. 0) then
                 write (6, '(''Warning: dparm_norm>1'')')
                 stop
             endif
 
-            call compute_parameters(deltap, iflag, 1)
+            call compute_parameters(opt_data%deltap, iflag, 1)
             call write_wf(1, iter)
             call save_wf
 
@@ -94,7 +98,7 @@ contains
                 denergy = energy(1) - energy_sav
                 denergy_err = sqrt(energy_err(1)**2 + energy_err_sav**2)
                 nblk = nblk*1.2
-                nblk = min(nblk, nblk_max)
+                nblk = min(nblk, opt_data%nblk_max)
             endif
             write (6, '(''nblk = '',i6)') nblk
 
@@ -116,65 +120,69 @@ contains
 
         call write_wf(1, -1)
 
-        call deallocate_arrays()
+        call deallocate_arrays(opt_data)
 
         return
     end subroutine optwf_dl
 
-    subroutine init_arrays()
+    subroutine init_arrays(options)
         !> Allocate and initialize to 0 all arrays
         use optwf_contrl, only: nparm
+        type(OptWFDLData), INTENT(INOUT) :: options
 
         !> allocate
-        allocate (deltap(nparm))
-        allocate (dl_momentum(nparm))  !< 'momentum' variables
-        allocate (dl_EG_sq(nparm))     !< moving average of past squared gradients
-        allocate (dl_EG(nparm))        !< moving average of past gradients
-        allocate (parameters(nparm))   !< vector of wave function parameters
+        allocate (options%deltap(nparm))
+        allocate (options%dl_momentum(nparm))  !< 'momentum' variables
+        allocate (options%dl_EG_sq(nparm))     !< moving average of past squared gradients
+        allocate (options%dl_EG(nparm))        !< moving average of past gradients
+        allocate (options%parameters(nparm))   !< vector of wave function parameters
 
         !> init
-        dl_momentum(:) = 0.d0
-        dl_EG_sq(:) = 0.d0
-        dl_EG(:) = 0.d0
-        parameters(:) = 0.d0
+        options%dl_momentum(:) = 0.d0
+        options%dl_EG_sq(:) = 0.d0
+        options%dl_EG(:) = 0.d0
+        options%parameters(:) = 0.d0
 
     end subroutine init_arrays
 
-    subroutine deallocate_arrays()
+    subroutine deallocate_arrays(options)
         !> Deallocate arrays
-        deallocate (deltap)
-        deallocate (dl_momentum)
-        deallocate (dl_EG_sq)
-        deallocate (dl_EG)
-        deallocate (parameters)
+        type(OptWFDLData), INTENT(INOUT) :: options
+
+        deallocate (options%deltap)
+        deallocate (options%dl_momentum)
+        deallocate (options%dl_EG_sq)
+        deallocate (options%dl_EG)
+        deallocate (options%parameters)
     end subroutine deallocate_arrays
 
-    subroutine read_input()
+    subroutine read_input(options)
         !> Read the inputs
         use contrl, only: nblk
+        type(OptWFDLData), INTENT(INOUT) :: options
 
-        call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
-        call p2gtid('optwf:nblk_max', nblk_max, nblk, 1)
-        call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
+        call p2gtid('optwf:nopt_iter', options%nopt_iter, 6, 1)
+        call p2gtid('optwf:nblk_max', options%nblk_max, nblk, 1)
+        call p2gtfd('optwf:energy_tol', options%energy_tol, 1.d-3, 1)
 
-        call p2gtfd('optwf:dparm_norm_min', dparm_norm_min, 1.0d0, 1)
-        write (6, '(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
+        call p2gtfd('optwf:dparm_norm_min', options%dparm_norm_min, 1.0d0, 1)
+        write (6, '(''Starting dparm_norm_min'',g12.4)') options%dparm_norm_min
 
-        call p2gtfd('optwf:sr_tau', sr_tau, 0.02, 1)
-        call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
-        call p2gtfd('optwf:sr_eps', sr_eps, 0.001, 1)
-        call p2gtfd('optwf:dl_mom', dl_mom, 0.0, 1)
-        call p2gtid('optwf:idl_flag', idl_flag, 0, 1)
-        call p2gtad('optwf:dl_alg', dl_alg, 'nag', 1)
+        call p2gtfd('optwf:sr_tau', options%sr_tau, 0.02, 1)
+        call p2gtfd('optwf:sr_adiag', options%sr_adiag, 0.01, 1)
+        call p2gtfd('optwf:sr_eps', options%sr_eps, 0.001, 1)
+        call p2gtfd('optwf:dl_mom', options%dl_mom, 0.0, 1)
+        call p2gtid('optwf:idl_flag', options%idl_flag, 0, 1)
+        call p2gtad('optwf:dl_alg', options%dl_alg, 'nag', 1)
 
-        write (6, '(/,''SR adiag: '',f10.5)') sr_adiag
-        write (6, '(''SR tau:   '',f10.5)') sr_tau
-        write (6, '(''SR eps:   '',f10.5)') sr_eps
-        write (6, '(''DL flag:   '',I10)') idl_flag
+        write (6, '(/,''SR adiag: '',f10.5)') options%sr_adiag
+        write (6, '(''SR tau:   '',f10.5)') options%sr_tau
+        write (6, '(''SR eps:   '',f10.5)') options%sr_eps
+        write (6, '(''DL flag:   '',I10)') options%idl_flag
 
     end subroutine read_input
 
-    subroutine optimization_step(iter, nparm)
+    subroutine optimization_step(iter, nparm, opt)
         !> do 1 optimization step
         use mpi
         use precision_kinds, only: dp
@@ -183,21 +191,22 @@ contains
 
         ! in/out variable
         integer, intent(in) :: iter, nparm
+        type(OptWFDLData), intent(inout) :: opt
         integer :: ierr
 
         ! we only need h_sr = - grad_parm E
-        call sr_hs(nparm, sr_adiag)
+        call sr_hs(nparm, opt%sr_adiag)
 
         if (idtask .eq. 0) then
-            call one_iter(iter, nparm)
+            call one_iter(iter, nparm, opt)
         endif
 
-        call MPI_BCAST(deltap, nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ierr)
+        call MPI_BCAST(opt%deltap, nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ierr)
 
         return
     end subroutine optimization_step
 
-    subroutine one_iter(iter, nparm)
+    subroutine one_iter(iter, nparm, opt)
         !> Individual routine to optimize the parameters
         use precision_kinds, only: dp
         use sr_mat_n, only: h_sr
@@ -205,6 +214,7 @@ contains
 
         integer, intent(in) :: iter
         integer, intent(in) :: nparm
+        type(OptWFDLData), intent(inout) :: opt
 
         integer :: i
         real(dp) ::  dl_EG_corr, dl_EG_sq_corr, dl_momentum_prev, parm_old, dl_EG_old
@@ -212,59 +222,59 @@ contains
 
         ! Damping parameter for Nesterov gradient descent
         damp = 10.d0
-        if (dl_alg .eq. 'mom') then
+        if (opt%dl_alg .eq. 'mom') then
             do i = 1, nparm
-                dl_momentum(i) = dl_mom*dl_momentum(i) + sr_tau*h_sr(i)
-                deltap(i) = dl_momentum(i)
-                parameters(i) = parameters(i) + deltap(i)
+                opt%dl_momentum(i) = opt%dl_mom*opt%dl_momentum(i) + opt%sr_tau*h_sr(i)
+                opt%deltap(i) = opt%dl_momentum(i)
+                opt%parameters(i) = opt%parameters(i) + opt%deltap(i)
             enddo
-        elseif (dl_alg .eq. 'nag') then
+        elseif (opt%dl_alg .eq. 'nag') then
             do i = 1, nparm
-                dl_momentum_prev = dl_momentum(i)
-                dl_momentum(i) = dl_mom*dl_momentum(i) - sr_tau*h_sr(i)
-                deltap(i) = -(dl_mom*dl_momentum_prev + (1 + dl_mom)*dl_momentum(i))
-                parameters(i) = parameters(i) + deltap(i)
+                dl_momentum_prev = opt%dl_momentum(i)
+                opt%dl_momentum(i) = opt%dl_mom*opt%dl_momentum(i) - opt%sr_tau*h_sr(i)
+                opt%deltap(i) = -(opt%dl_mom*dl_momentum_prev + (1 + opt%dl_mom)*opt%dl_momentum(i))
+                opt%parameters(i) = opt%parameters(i) + opt%deltap(i)
             enddo
-        elseif (dl_alg .eq. 'rmsprop') then
+        elseif (opt%dl_alg .eq. 'rmsprop') then
             ! Actually an altered version of rmsprop that uses nesterov momentum as well
             ! magic numbers: gamma = 0.9
             do i = 1, nparm
-                dl_EG_sq(i) = 0.9*dl_EG_sq(i) + 0.1*(-h_sr(i))**2
-                parameters(i) = parameters(i) + deltap(i)
-                parm_old = parameters(i)
-                dl_momentum_prev = dl_momentum(i)
-                dl_momentum(i) = parameters(i) + sr_tau*h_sr(i)/sqrt(dl_EG_sq(i) + 10.d0**(-8.d0))
+                opt%dl_EG_sq(i) = 0.9*opt%dl_EG_sq(i) + 0.1*(-h_sr(i))**2
+                opt%parameters(i) = opt%parameters(i) + opt%deltap(i)
+                parm_old = opt%parameters(i)
+                dl_momentum_prev = opt%dl_momentum(i)
+                opt%dl_momentum(i) = opt%parameters(i) + opt%sr_tau*h_sr(i)/sqrt(opt%dl_EG_sq(i) + 10.d0**(-8.d0))
 
                 ! To avoid declaring more arrays, use dl_EG for \lambda, dl_EG_sq = gamma
                 ! Better solution needed (custom types for each iterator a la Fortran 2003 or C++ classes?)
-                dl_EG_old = dl_EG(i)
-                dl_EG(i) = 0.5 + 0.5*sqrt(1 + 4*dl_EG(i)**2)
-                dl_EG_sq(i) = (1 - dl_EG_old)/dl_EG(i)
-                dl_EG_sq_corr = dl_EG_sq(i)*exp(-(iter - 1)/damp)
-                parameters(i) = (1 - v_corr)*dl_momentum(i) + v_corr*dl_momentum_prev
-                deltap(i) = parameters(i) - parm_old
+                dl_EG_old = opt%dl_EG(i)
+                opt%dl_EG(i) = 0.5 + 0.5*sqrt(1 + 4*opt%dl_EG(i)**2)
+                opt%dl_EG_sq(i) = (1 - dl_EG_old)/opt%dl_EG(i)
+                dl_EG_sq_corr = opt%dl_EG_sq(i)*exp(-(iter - 1)/damp)
+                opt%parameters(i) = (1 - v_corr)*opt%dl_momentum(i) + v_corr*dl_momentum_prev
+                opt%deltap(i) = opt%parameters(i) - parm_old
             enddo
-        elseif (dl_alg .eq. 'adam') then
+        elseif (opt%dl_alg .eq. 'adam') then
             ! Magic numbers: beta1 = 0.9, beta2 = 0.999
             do i = 1, nparm
-                dl_EG(i) = 0.9*dl_EG(i) + 0.1*(-h_sr(i))
-                dl_EG_sq(i) = 0.999*dl_EG_sq(i) + 0.001*(-h_sr(i))**2
-                dl_EG_corr = dl_EG(i)/(1 - 0.9**iter)
-                dl_EG_sq_corr = dl_EG_sq(i)/(1 - 0.999**iter)
-                deltap(i) = -sr_tau*dl_EG_corr/(sqrt(dl_EG_sq_corr) + 10.d0**(-8.d0))
-                parameters(i) = parameters(i) + deltap(i)
+                opt%dl_EG(i) = 0.9*opt%dl_EG(i) + 0.1*(-h_sr(i))
+                opt%dl_EG_sq(i) = 0.999*opt%dl_EG_sq(i) + 0.001*(-h_sr(i))**2
+                dl_EG_corr = opt%dl_EG(i)/(1 - 0.9**iter)
+                dl_EG_sq_corr = opt%dl_EG_sq(i)/(1 - 0.999**iter)
+                opt%deltap(i) = -opt%sr_tau*dl_EG_corr/(sqrt(dl_EG_sq_corr) + 10.d0**(-8.d0))
+                opt%parameters(i) = opt%parameters(i) + opt%deltap(i)
             enddo
-        elseif (dl_alg .eq. 'cnag') then
+        elseif (opt%dl_alg .eq. 'cnag') then
             do i = 1, nparm
-                parm_old = parameters(i)
-                dl_momentum_prev = dl_momentum(i)
-                dl_momentum(i) = parameters(i) + sr_tau*h_sr(i)
+                parm_old = opt%parameters(i)
+                dl_momentum_prev = opt%dl_momentum(i)
+                opt%dl_momentum(i) = opt%parameters(i) + opt%sr_tau*h_sr(i)
                 ! To avoid declaring more arrays, use dl_EG for \lambda, dl_EG_sq = gamma
-                dl_EG_old = dl_EG(i)
-                dl_EG(i) = 0.5 + 0.5*sqrt(1 + 4*dl_EG(i)**2)
-                dl_EG_sq(i) = (1 - dl_EG_old)/dl_EG(i)
-                parameters(i) = (1 - dl_EG_sq(i))*dl_momentum(i) + dl_EG_sq(i)*dl_momentum_prev
-                deltap(i) = parameters(i) - parm_old
+                dl_EG_old = opt%dl_EG(i)
+                opt%dl_EG(i) = 0.5 + 0.5*sqrt(1 + 4*opt%dl_EG(i)**2)
+                opt%dl_EG_sq(i) = (1 - dl_EG_old)/opt%dl_EG(i)
+                opt%parameters(i) = (1 - opt%dl_EG_sq(i))*opt%dl_momentum(i) + opt%dl_EG_sq(i)*dl_momentum_prev
+                opt%deltap(i) = opt%parameters(i) - parm_old
             enddo
         endif
 
