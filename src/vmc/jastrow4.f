@@ -23,14 +23,14 @@ c Jastrow 6   must be used with one of isc=6,7
       use contr2, only: ijas
       use contr2, only: isc
       use force_analy, only: iforce_analy
-      
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
       
       parameter (half=.5d0,eps=1.d-12)
 
       dimension x(3,*),v(3,*),div_vj(*)
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      
       dimension uu(-2:MORDJ),ss(-2:MORDJ),tt(-2:MORDJ),rri(-2:MORDJ)
      &,rrj(-2:MORDJ)
 

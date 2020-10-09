@@ -353,6 +353,45 @@ contains
 
 end module dets_equiv
 
+module distance_mod
+    use precision_kinds, only: dp
+    use vmc_mod, only: MELEC, MCENT, MMAT_DIM2
+
+    real(dp), dimension(:, :, :), allocatable :: rshift !(3, MELEC, MCENT)
+    real(dp), dimension(:, :), allocatable :: r_en !(MELEC, MCENT)
+    real(dp), dimension(:, :, :), allocatable :: rvec_en !(3, MELEC, MCENT)
+    real(dp), dimension(:), allocatable :: r_ee !(MMAT_DIM2)
+    real(dp), dimension(:, :), allocatable :: rvec_ee !(3, MMAT_DIM2)
+
+    private
+    public :: rshift
+    public :: r_en
+    public :: rvec_en
+    public :: r_ee
+    public :: rvec_ee
+    public :: allocate_distance_mod, deallocate_distance_mod
+    save
+contains
+    subroutine allocate_distance_mod()
+        use precision_kinds, only: dp
+        use vmc_mod, only: MELEC, MCENT, MMAT_DIM2
+        if (.not. allocated(r_en)) allocate (r_en(MELEC, MCENT))
+        if (.not. allocated(rvec_en)) allocate (rvec_en(3, MELEC, MCENT))
+        if (.not. allocated(r_ee)) allocate (r_ee(MMAT_DIM2))
+        if (.not. allocated(rvec_ee)) allocate (rvec_ee(3, MMAT_DIM2))
+        if (.not. allocated(rshift)) allocate (rshift(3, MELEC, MCENT))
+    end subroutine allocate_distance_mod
+
+    subroutine deallocate_distance_mod()
+        if (allocated(rvec_en)) deallocate (rvec_en)
+        if (allocated(r_en)) deallocate (r_en)
+        if (allocated(rvec_en)) deallocate (rvec_ee)
+        if (allocated(r_en)) deallocate (r_ee)
+        if (allocated(rshift)) deallocate (rshift)
+    end subroutine deallocate_distance_mod
+
+end module distance_mod
+
 module distances_sav
     !> Arguments: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
     use precision_kinds, only: dp
@@ -1219,6 +1258,7 @@ subroutine allocate_m_common()
     use cuspmat4, only: allocate_cuspmat4
     use dets, only: allocate_dets
     use dets_equiv, only: allocate_dets_equiv
+    use distance_mod, only: allocate_distance_mod
     use distances_sav, only: allocate_distances_sav
     use gauss_ecp, only: allocate_gauss_ecp
     use jd_scratch, only: allocate_jd_scratch
@@ -1254,6 +1294,7 @@ subroutine allocate_m_common()
     call allocate_cuspmat4()
     call allocate_dets()
     call allocate_dets_equiv()
+    call allocate_distance_mod()
     call allocate_distances_sav()
     call allocate_gauss_ecp()
     call allocate_jd_scratch()
