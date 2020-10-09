@@ -507,3 +507,209 @@ subroutine read_forces(iu)
     call p2chkend(iu, 'forces')
 
 end subroutine read_forces
+
+subroutine read_csf(ncsf_read, nstates_read, fn)
+    ! csf i i=1 a=<input>
+
+    use vmc_mod, only: MDET
+    use csfs, only: ccsf, ncsf, nstates
+    use mstates_mod, only: MSTATES
+    use inputflags, only: icsfs
+    use wfsec, only: nwftype
+    implicit real*8(a - h, o - z)
+
+    character fn*(*)
+    call p2gtid('general:nwftype', nwftype, 1, 1)
+    call ptfile(iu, fn, 'old')
+
+    ncsf = ncsf_read
+    if (ncsf .gt. MDET) call fatal_error('CSF: too many csf')
+
+    nstates = nstates_read
+    if (nstates .gt. MSTATES) call fatal_error('CSF: too many states')
+
+    allocate (ccsf(ndet, nstates, nwftype))
+
+    do i = 1, nstates
+        read (iu, *) (ccsf(j, i, 1), j=1, ncsf)
+    enddo
+
+    icsfs = 1
+
+    if (fn .eq. '<input>') then
+        call p2chkend(iu, 'csf')
+    endif
+
+end subroutine read_csf
+
+subroutine read_csfmap(fn)
+    ! csfmap a=<input>
+    !KEYDOC Read mapping between csf and determinants.
+    use vmc_mod, only: MDET
+    use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+    use mstates_mod, only: MDETCSFX
+    use dets, only: cdet, ndet
+    use wfsec, only: nwftype
+
+    implicit real*8(a - h, o - z)
+
+    character fn*(*)
+
+    call ptfile(iu, fn, 'old')
+    call p2gtid('general:nwftype', nwftype, 1, 1)
+
+    read (iu, *) ncsf_check, ndet_check, nmap_check
+    write (6, '(''csfmap'',3i4)') ncsf_check, ndet_check, nmap_check
+    if (ndet_check .ne. ndet) call fatal_error('CSFMAP: wrong number of determinants')
+    if (ncsf_check .ne. ncsf) call fatal_error('CSFMAP: wrong number of csf')
+    if (nmap_check .gt. float(MDET)*MDET) call fatal_error('CSFMAP: too many determinants in map list')
+
+    nptr = 1
+    do i = 1, ncsf
+        read (iu, *) nterm
+        iadet(i) = nptr
+        ibdet(i) = nptr + nterm - 1
+        do j = 1, nterm
+            read (iu, *) id, c
+            icxdet(nptr) = id
+            cxdet(nptr) = c
+            nptr = nptr + 1
+            if (nptr .gt. MDET*MDETCSFX) call fatal_error('CSFMAP: problem with nmap')
+        enddo
+    enddo
+    if (nmap_check .ne. nptr - 1) call fatal_error('CSFMAP: problem with nmap')
+    nmap = nptr
+
+    if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
+
+    write (6, '(''Warning: det coef overwritten with csf'')')
+    do k = 1, nstates
+        do j = 1, ndet
+            cdet(j, k, 1) = 0
+        enddo
+        do icsf = 1, ncsf
+            do j = iadet(icsf), ibdet(icsf)
+                jx = icxdet(j)
+                cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
+            enddo
+        enddo
+    enddo
+
+    if (fn .eq. '<input>') then
+        call p2chkend(iu, 'csfmap')
+    endif
+
+    return
+end subroutine read_csfmap
+
+subroutine read_jasderiv(iu)
+!    jasderiv inp
+    use optjas, only: MPARMJ
+    use atom, only: nctype
+    use jaspar, only: nspin1, is
+    use jaspar4, only: norda, nordb, nordc
+    use jaspointer, only: npoint, npointa
+    use numbas, only: numr
+
+    use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
+    use optwf_parms, only: nparmj
+    use optwf_wjas, only: iwjasa, iwjasb, iwjasc
+    use bparm, only: nspin2b
+    use contr2, only: ijas
+    use contr2, only: isc
+    implicit real*8(a - h, o - z)
+
+    na1 = 1
+    na2 = nctype
+
+    if (.not. allocated(nparma)) allocate (nparma(MCTYP3X))
+    if (.not. allocated(nparmb)) allocate (nparmb(3))
+    if (.not. allocated(nparmc)) allocate (nparmc(nctype))
+    if (.not. allocated(nparmf)) allocate (nparmf(nctype))
+
+    read (iu, *) (nparma(ia), ia=na1, na2), &
+        (nparmb(isp), isp=nspin1, nspin2b), &
+        (nparmc(it), it=1, nctype), &
+        (nparmf(it), it=1, nctype)
+
+    if (ijas .ge. 4 .and. ijas .le. 6) then
+        do it = 1, nctype
+            if (numr .eq. 0) then
+                ! All-electron with analytic slater basis
+                if ((nparma(it) .gt. 0 .and. norda .eq. 0) .or. (nparma(it) .gt. norda + 1)) then
+                    write (6, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
+                    stop 'nparma too large for norda'
+                endif
+            else
+                ! Pseudopotential with numerical basis: cannot vary a(1) or a(2)
+                if (norda .eq. 1) stop 'makes no sense to have norda=1 for numr>0'
+                if ((norda .eq. 0 .and. nparma(it) .gt. 0) .or. (norda .gt. 0 .and. nparma(it) .gt. norda - 1)) then
+                    write (6, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
+                    stop 'nparma too large for norda'
+                endif
+            endif
+
+            if (isc .le. 7 .and. &
+                ((nordc .le. 2 .and. nparmc(it) .gt. 0) &
+                 .or. (nordc .eq. 3 .and. nparmc(it) .gt. 2) &
+                 .or. (nordc .eq. 4 .and. nparmc(it) .gt. 7) &
+                 .or. (nordc .eq. 5 .and. nparmc(it) .gt. 15) &
+                 .or. (nordc .eq. 6 .and. nparmc(it) .gt. 27) &
+                 .or. (nordc .eq. 7 .and. nparmc(it) .gt. 43))) then
+                write (6, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
+                stop 'nparmc too large for nordc in J_een with cusp conds'
+            endif
+
+            if (isc .gt. 7 .and. &
+                ((nordc .le. 1 .and. nparmc(it) .gt. 0) &
+                 .or. (nordc .eq. 2 .and. nparmc(it) .gt. 2) &
+                 .or. (nordc .eq. 3 .and. nparmc(it) .gt. 6) &
+                 .or. (nordc .eq. 4 .and. nparmc(it) .gt. 13) &
+                 .or. (nordc .eq. 5 .and. nparmc(it) .gt. 23) &
+                 .or. (nordc .eq. 6 .and. nparmc(it) .gt. 37) &
+                 .or. (nordc .eq. 7 .and. nparmc(it) .gt. 55))) then
+                write (6, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
+                stop 'nparmc too large for nordc without cusp conds'
+            endif
+
+        enddo
+
+        ! For the b coefs. we assume that b(1) is fixed by the cusp-cond.
+        do isp = 1, nspin1, nspin2b
+            if (nparmb(isp) .gt. nordb) then
+                write (6, '(''isp,nordb,nparmb(isp)'',3i5)') isp, nordb, nparmb(isp)
+                stop 'nparmb too large for nordb'
+            endif
+        enddo
+    endif
+
+    ! compute nparmj
+    nparmj = 0
+    npointa(1) = 0
+    do ia = na1, na2
+        if (ia .gt. 1) npointa(ia) = npointa(ia - 1) + nparma(ia - 1)
+        nparmj = nparmj + nparma(ia)
+    enddo
+    do isp = nspin1, nspin2b
+        nparmj = nparmj + nparmb(isp)
+    enddo
+    npoint(1) = nparmj
+    do it = 1, nctype
+        if (it .gt. 1) npoint(it) = npoint(it - 1) + nparmc(it - 1)
+        nparmj = nparmj + nparmc(it) + nparmf(it)
+    enddo
+
+    if (nparmj .gt. MPARMJ) call fatal_error('JASDERIV: MPARMJ too small')
+
+    do it = 1, nctype
+        read (iu, *) (iwjasa(iparm, it), iparm=1, nparma(it))
+    enddo
+    do isp = nspin1, nspin2b
+        read (iu, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+    enddo
+    do it = 1, nctype
+        read (iu, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
+    enddo
+
+    call p2chkend(iu, 'jasderiv')
+end subroutine read_jasderiv

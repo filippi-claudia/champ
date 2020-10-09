@@ -296,4 +296,96 @@ subroutine inputforces
         call fatal_error('FORCES: need to specify iwftype')
     endif
 
-end
+end subroutine inputforces
+
+subroutine inputdet(nwftype)
+    ! Set the cdet to be equal
+    use dets, only: cdet, ndet
+    use csfs, only: nstates
+
+    implicit real*8(a - h, o - z)
+
+    allocate (cdet(ndet, nstates, nwftype))
+
+    do iwft = 2, nwftype
+        do k = 1, ndet
+            cdet(k, 1, iwft) = cdet(k, 1, 1)
+        enddo
+    enddo
+
+end subroutine inputdet
+
+subroutine inputlcao(nwftype)
+    ! Set the lcao to be equal
+    use coefs, only: coef, nbasis, norb
+    implicit real*8(a - h, o - z)
+
+    allocate (coef(nbasis, norb, nwftype))
+
+    do iwft = 2, nwftype
+        do i = 1, norb
+            do j = 1, nbasis
+                coef(j, i, iwft) = coef(j, i, 1)
+            enddo
+        enddo
+    enddo
+
+end subroutine inputlcao
+
+subroutine inputjastrow(nwftype)
+    ! Set the jastrow to be equal
+
+    use jaspar, only: nspin1, nspin2
+    use jaspar3, only: a, b, c, scalek
+    use jaspar4, only: a4, norda, nordb, nordc
+    use bparm, only: nspin2b
+    use contr2, only: ifock, ijas
+    use contr2, only: isc
+
+    use atom, only: ncent, nctype
+
+    implicit real*8(a - h, o - z)
+
+    call p2gti('jastrow:ijas', ijas, 1)
+    call p2gti('jastrow:isc', isc, 1)
+    call p2gtid('jastrow:nspin1', nspin1, 1, 1)
+    call p2gtid('jastrow:nspin2', nspin2, 1, 1)
+    call p2gtid('jastrow:ifock', ifock, 0, 1)
+
+    call p2gti('atoms:natom', ncent, 1)
+    call p2gti('atoms:nctype', nctype, 1)
+
+    allocate (scalek(nwftype))
+
+    if (ijas .ge. 4 .and. ijas .le. 6) then
+        mparmja = 2 + max(0, norda - 1)
+        mparmjb = 2 + max(0, nordb - 1)
+        mparmjc = nterms4(nordc)
+
+        allocate (a4(mparmja, nctype, nwftype))
+        allocate (b(mparmjb, 2, nwftype))
+        allocate (c(mparmjc, nctype, nwftype))
+
+        do iwft = 2, nwftype
+            scalek(iwft) = scalek(1)
+            do it = 1, nctype
+                do iparm = 1, mparmja
+                    a4(iparm, it, iwft) = a4(iparm, it, 1)
+                enddo
+            enddo
+
+            do isp = nspin1, nspin2b
+                do iparm = 1, mparmjb
+                    b(iparm, isp, iwft) = b(iparm, isp, 1)
+                enddo
+            enddo
+
+            do it = 1, nctype
+                do iparm = 1, mparmjc
+                    c(iparm, it, iwft) = c(iparm, it, 1)
+                enddo
+            enddo
+        enddo
+    endif
+
+end subroutine inputjastrow
