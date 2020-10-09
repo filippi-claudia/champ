@@ -21,7 +21,7 @@ jobs:
     - name: Install_compilers_and_libraries
       run: |
            sudo apt-get update
-           sudo apt install gfortran libmkl-full-dev openmpi-bin gawk openmpi-bin libblas-dev liblapack-dev # valgrind
+           sudo apt install gfortran openmpi-bin gawk openmpi-bin libblas-dev liblapack-dev # valgrind
            gawk --version
            mpirun --version
 
