@@ -925,48 +925,9 @@ c-----------------------------------------------------------------------
 
 
 c----------------------------------------------------------------------
-      subroutine read_lattice(iu)
-C$INPUT lattice inp
-CKEYDOC Lattice vectors of primitive and simulation cell
-      implicit real*8(a-h,o-z)
-      call do_read_lattice(iu)
-      end
+
 c-----------------------------------------------------------------------
-      subroutine read_forces(iu)
-C$INPUT forces_displace inp
-CKEYDOC Displacement parameters and wave function types
 
-      use force_mod, only: MFORCE
-      use vmc_mod, only: MCENT
-      use forcepar, only: nforce
-      use forcestr, only: delc
-      use wfsec, only: iwftype
-      use inputflags, only: iforces
-
-      use atom, only: ncent
-
-      implicit real*8(a-h,o-z)
-
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
-
-      call p2gtid('general:nforce',nforce,1,1)
-      if(nforce.gt.MFORCE) call fatal_error('FORCES: nforce > MFORCE')
-
-      do 60 i=1,nforce
-        do 60 ic=1,ncent
-          call incpos(iu,itmp,1)
-   60     read(iu,*)  (delc(k,ic,i),k=1,3)
-      call incpos(iu,itmp,1)
-      read(iu,*) (iwftype(i),i=1,nforce)
-      if(iwftype(1).ne.1) call fatal_error('INPUT: iwftype(1) ne 1')
-
-      iforces=1
-      call p2chkend(iu, 'forces')
-
-      return
-      end
 c-----------------------------------------------------------------------
       subroutine read_csf(ncsf_read,nstates_read,fn)
 C$INPUT csf i i=1 a=<input>
@@ -1160,7 +1121,7 @@ c Check that the required blocks are there in the input
         write(6,'(''INPUT: block csf missing: nstates set to 1'')')
         call inputcsf
       endif
-      if(nforce.gt.1.and.iforces.eq.0.and.igradients.eq.0) then
+      if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
         write(6,'(''INPUT: block forces_displace or gradients_* missing: geometries set equal to primary'')')
         call inputforces
       endif
@@ -1170,7 +1131,7 @@ c Check that the required blocks are there in the input
         if(ihessian_zmat.eq.0) call hessian_zmat_define
       endif
       if(imultideterminants.eq.0) then
-        write(6,'(''INPUT:MULTIDETERMINANT MISSING'')')
+        write(6,'(''INPUT: multideterminant bloc MISSING'')')
         call multideterminants_define(0,0)
       endif
       if(ioptorb.ne.0) then
@@ -1286,42 +1247,7 @@ c Set the jastrow to be equal
 
       end
 c----------------------------------------------------------------------
-      subroutine inputforces
-c Set all force displacements to zero
-      use force_mod, only: MWF
-      use vmc_mod, only: MCENT
-      use forcepar, only: nforce
-      use wfsec, only: iwftype, nwftype
 
-      use atom, only: ncent
-
-      implicit real*8(a-h,o-z)
-
-
-
-
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
-
-      call p2gtid('general:nforce',nforce,1,1)
-
-      call set_displace_zero(nforce)
-
-      call p2gtid('general:nwftype',nwftype,1,1)
-      if(nwftype.gt.MWF) call fatal_error('FORCES: nwftype gt MWF')
-      
-      if(nwftype.eq.1) then
-        do 70 i=1,nforce
-   70     iwftype(i)=1
-       elseif(nwftype.eq.nforce) then
-        do 80 i=1,nforce
-   80     iwftype(i)=i
-       else
-        call fatal_error('FORCES: need to specify iwftype')
-      endif
-   
-      end
 c-----------------------------------------------------------------------
       subroutine read_jasderiv(iu)
 C$INPUT jasderiv inp

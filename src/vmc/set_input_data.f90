@@ -258,3 +258,42 @@ subroutine multideterminants_define(iflag, icheck)
 
     return
 end subroutine multideterminants_define
+
+subroutine inputforces
+! Set all force displacements to zero
+    use force_mod, only: MWF
+    use vmc_mod, only: MCENT
+    use forcepar, only: nforce
+    use forcestr, only: delc
+    use wfsec, only: iwftype, nwftype
+
+    use atom, only: ncent
+
+    implicit real*8(a - h, o - z)
+
+    call p2gti('atoms:natom', ncent, 1)
+    if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
+
+    call p2gtid('general:nforce', nforce, 1, 1)
+
+    allocate (delc(3, ncent, nforce))
+    allocate (iwftype(nforce))
+
+    call set_displace_zero(nforce)
+
+    call p2gtid('general:nwftype', nwftype, 1, 1)
+    if (nwftype .gt. MWF) call fatal_error('FORCES: nwftype gt MWF')
+
+    if (nwftype .eq. 1) then
+        do i = 1, nforce
+            iwftype(i) = 1
+        enddo
+    elseif (nwftype .eq. nforce) then
+        do i = 1, nforce
+            iwftype(i) = i
+        enddo
+    else
+        call fatal_error('FORCES: need to specify iwftype')
+    endif
+
+end

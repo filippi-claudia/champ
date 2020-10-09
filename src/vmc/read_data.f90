@@ -459,4 +459,51 @@ subroutine read_bas_num_info(iu, numeric)
     endif
     ibasis_num = 1
     call p2chkend(iu, 'basis')
-end
+end subroutine read_bas_num_info
+
+subroutine read_lattice(iu)
+    ! lattice inp
+    !KEYDOC Lattice vectors of primitive and simulation cell
+    implicit real*8(a - h, o - z)
+    call do_read_lattice(iu)
+end subroutine read_lattice
+
+subroutine read_forces(iu)
+    ! forces_displace inp
+    !KEYDOC Displacement parameters and wave function types
+
+    use force_mod, only: MFORCE
+    use vmc_mod, only: MCENT
+    use forcepar, only: nforce
+    use forcestr, only: delc
+    use wfsec, only: iwftype
+    use inputflags, only: iforces
+
+    use atom, only: ncent
+
+    implicit real*8(a - h, o - z)
+
+    call p2gti('atoms:natom', ncent, 1)
+    if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
+
+    call p2gtid('general:nforce', nforce, 1, 1)
+    if (nforce .gt. MFORCE) call fatal_error('FORCES: nforce > MFORCE')
+
+    allocate (delc(3, MCENT, MFORCE))
+    allocate (iwftype(nforce))
+
+    do i = 1, nforce
+        do ic = 1, ncent
+            call incpos(iu, itmp, 1)
+            read (iu, *) (delc(k, ic, i), k=1, 3)
+        enddo
+    enddo
+
+    call incpos(iu, itmp, 1)
+    read (iu, *) (iwftype(i), i=1, nforce)
+    if (iwftype(1) .ne. 1) call fatal_error('INPUT: iwftype(1) ne 1')
+
+    iforces = 1
+    call p2chkend(iu, 'forces')
+
+end subroutine read_forces

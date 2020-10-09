@@ -1087,10 +1087,10 @@ module wfsec
     public :: allocate_wfsec, deallocate_wfsec
     save
 contains
-    subroutine allocate_wfsec()
-        use force_mod, only: MFORCE
-        if (.not. allocated(iwftype)) allocate (iwftype(MFORCE))
-    end subroutine allocate_wfsec
+    ! subroutine allocate_wfsec()
+    !     use force_mod, only: MFORCE
+    !     if (.not. allocated(iwftype)) allocate (iwftype(MFORCE))
+    ! end subroutine allocate_wfsec
 
     subroutine deallocate_wfsec()
         if (allocated(iwftype)) deallocate (iwftype)
@@ -1252,11 +1252,11 @@ subroutine allocate_m_common()
     use b_tmove, only: allocate_b_tmove
     use Bloc, only: allocate_Bloc
     use casula, only: allocate_casula
-    use coefs, only: allocate_coefs
+    ! use coefs, only: allocate_coefs
     use csfs, only: allocate_csfs
     use cuspmat, only: allocate_cuspmat
     use cuspmat4, only: allocate_cuspmat4
-    use dets, only: allocate_dets
+    ! use dets, only: allocate_dets
     use dets_equiv, only: allocate_dets_equiv
     use distance_mod, only: allocate_distance_mod
     use distances_sav, only: allocate_distances_sav
@@ -1277,7 +1277,7 @@ subroutine allocate_m_common()
     use slatn, only: allocate_slatn
     use vardep, only: allocate_vardep
     use velocity_jastrow, only: allocate_velocity_jastrow
-    use wfsec, only: allocate_wfsec
+    ! use wfsec, only: allocate_wfsec
     use ycompact, only: allocate_ycompact
     use ycompactn, only: allocate_ycompactn
     use zcompact, only: allocate_zcompact
@@ -1313,7 +1313,7 @@ subroutine allocate_m_common()
     call allocate_slatn()
     call allocate_vardep()
     call allocate_velocity_jastrow()
-    call allocate_wfsec()
+    ! call allocate_wfsec()
     call allocate_ycompact()
     call allocate_ycompactn()
     call allocate_zcompact()
