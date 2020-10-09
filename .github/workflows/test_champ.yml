@@ -5,14 +5,8 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ${{ matrix.os }} 
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-20.04
-          - ubuntu-18.04
-          - ubuntu-16.04
+    runs-on: ubuntu-18.04
+
     steps:
     - uses: actions/checkout@v1
 
@@ -20,8 +14,7 @@ jobs:
 
     - name: Install_compilers_and_libraries
       run: |
-           sudo apt-get update
-           sudo apt install gfortran openmpi-bin gawk openmpi-bin libblas-dev liblapack-dev # valgrind
+           sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev # valgrind libmkl-full-dev
            gawk --version
            mpirun --version
 
@@ -40,22 +33,27 @@ jobs:
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_PREFIX_PATH=/usr/include/mkl -DENABLE_TEST=ON
            cmake --build build -- -j2
 
-    - name: Run_h2
-      run: |
-
-           cd tests/CI_test/h2/qmc_1det/
-
-           # run and compare simple sampling
-           $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp 
-
-           # run and compare simple sampling MPI
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp 
-          # $HOME/work/champ/champ/tools/compare_output_file.py vmc.out output_ref/vmc_ref.out
-
-           # run and compare simple sampling MPI
-           # mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out
-           # $HOME/work/champ/champ/tools/compare_output_file.py vmc_lin.out output_ref/vmc_lin_ref.out
-
+#    - name: Run_h2
+#      run: |
+#
+#           cd tests/CI_test/h2/qmc_1det/
+#
+#           # run and compare simple sampling
+#           $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out
+#           $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0070217
+#
+#           # run and compare simple sampling
+#           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out
+#           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0584288
+#
+#           # run and compare simple sampling MPI
+#           # mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out
+#           # $HOME/work/champ/champ/tools/compare_output_file.py vmc.out output_ref/vmc_ref.out
+#
+#           # run and compare simple sampling MPI
+#           # mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out
+#           # $HOME/work/champ/champ/tools/compare_output_file.py vmc_lin.out output_ref/vmc_lin_ref.out
+#
 #           # restore the module files
 #           cd $HOME/work/champ/champ
 #           cp m_vmc_save ./src/vmc/m_vmc.f90
@@ -96,4 +94,5 @@ jobs:
 #           cp m_vmc_save ./src/vmc/m_vmc.f90
 #           cp m_optci_save ./src/vmc/m_optci.f90
 #           cp m_sr_save ./src/vmc/m_sr.f90
-
+#
+#
