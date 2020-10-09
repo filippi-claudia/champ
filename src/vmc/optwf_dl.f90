@@ -210,32 +210,33 @@ contains
         !> Individual routine to optimize the parameters
         use precision_kinds, only: dp
         use sr_mat_n, only: h_sr
-        implicit real*8(a - h, o - z)
 
         integer, intent(in) :: iter
         integer, intent(in) :: nparm
         type(OptWFDLData), intent(inout) :: opt
 
         integer :: i
-        real(dp) ::  dl_EG_corr, dl_EG_sq_corr, dl_momentum_prev, parm_old, dl_EG_old
-        real(dp) ::  damp
+        real(dp) :: dl_EG_corr, dl_EG_sq_corr, dl_momentum_prev, parm_old, dl_EG_old
+        real(dp) :: v_corr
+        real(dp) :: damp
 
         ! Damping parameter for Nesterov gradient descent
         damp = 10.d0
-        if (opt%dl_alg .eq. 'mom') then
+        select case (opt%dl_alg)
+        case ('mom')
             do i = 1, nparm
                 opt%dl_momentum(i) = opt%dl_mom*opt%dl_momentum(i) + opt%sr_tau*h_sr(i)
                 opt%deltap(i) = opt%dl_momentum(i)
                 opt%parameters(i) = opt%parameters(i) + opt%deltap(i)
             enddo
-        elseif (opt%dl_alg .eq. 'nag') then
+        case ('nag')
             do i = 1, nparm
                 dl_momentum_prev = opt%dl_momentum(i)
                 opt%dl_momentum(i) = opt%dl_mom*opt%dl_momentum(i) - opt%sr_tau*h_sr(i)
                 opt%deltap(i) = -(opt%dl_mom*dl_momentum_prev + (1 + opt%dl_mom)*opt%dl_momentum(i))
                 opt%parameters(i) = opt%parameters(i) + opt%deltap(i)
             enddo
-        elseif (opt%dl_alg .eq. 'rmsprop') then
+        case ('rmsprop')
             ! Actually an altered version of rmsprop that uses nesterov momentum as well
             ! magic numbers: gamma = 0.9
             do i = 1, nparm
@@ -254,7 +255,7 @@ contains
                 opt%parameters(i) = (1 - v_corr)*opt%dl_momentum(i) + v_corr*dl_momentum_prev
                 opt%deltap(i) = opt%parameters(i) - parm_old
             enddo
-        elseif (opt%dl_alg .eq. 'adam') then
+        case ('adam')
             ! Magic numbers: beta1 = 0.9, beta2 = 0.999
             do i = 1, nparm
                 opt%dl_EG(i) = 0.9*opt%dl_EG(i) + 0.1*(-h_sr(i))
@@ -264,7 +265,7 @@ contains
                 opt%deltap(i) = -opt%sr_tau*dl_EG_corr/(sqrt(dl_EG_sq_corr) + 10.d0**(-8.d0))
                 opt%parameters(i) = opt%parameters(i) + opt%deltap(i)
             enddo
-        elseif (opt%dl_alg .eq. 'cnag') then
+        case ('cnag')
             do i = 1, nparm
                 parm_old = opt%parameters(i)
                 dl_momentum_prev = opt%dl_momentum(i)
@@ -276,7 +277,7 @@ contains
                 opt%parameters(i) = (1 - opt%dl_EG_sq(i))*opt%dl_momentum(i) + opt%dl_EG_sq(i)*dl_momentum_prev
                 opt%deltap(i) = opt%parameters(i) - parm_old
             enddo
-        endif
+        end select
 
         return
     end subroutine one_iter
