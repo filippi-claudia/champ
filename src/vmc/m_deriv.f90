@@ -280,10 +280,10 @@ module dorb_m
     public :: allocate_dorb_m, deallocate_dorb_m
     save
 contains
-    subroutine allocate_dorb_m()
-        use vmc_mod, only: MELEC, MDET
-        if (.not. allocated(iworbd)) allocate (iworbd(MELEC, MDET))
-    end subroutine allocate_dorb_m
+    ! subroutine allocate_dorb_m()
+    !     use vmc_mod, only: MELEC, MDET
+    !     if (.not. allocated(iworbd)) allocate (iworbd(MELEC, MDET))
+    ! end subroutine allocate_dorb_m
 
     subroutine deallocate_dorb_m()
         if (allocated(iworbd)) deallocate (iworbd)
@@ -346,6 +346,6 @@ subroutine allocate_m_deriv()
     call allocate_denergy_det_m()
     call allocate_denupdn()
     call allocate_derivjas()
-    call allocate_dorb_m()
+    ! call allocate_dorb_m()
     call allocate_ijasnonlin()
 end subroutine allocate_m_deriv

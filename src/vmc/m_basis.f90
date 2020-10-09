@@ -67,7 +67,7 @@ contains
         use force_mod, only: MWF
         use precision_kinds, only: dp
         use vmc_mod, only: MBASIS, MCTYPE
-        if (.not. allocated(zex)) allocate (zex(MBASIS, MWF))
+        ! if (.not. allocated(zex)) allocate (zex(MBASIS, MWF))
         if (.not. allocated(n1s)) allocate (n1s(MCTYPE))
         if (.not. allocated(n2s)) allocate (n2s(MCTYPE))
         if (.not. allocated(n2p)) allocate (n2p(3, MCTYPE))

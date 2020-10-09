@@ -17,8 +17,8 @@ contains
     subroutine allocate_atom()
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT, MCTYPE
-        if (.not. allocated(cent)) allocate (cent(3, MCENT))
-        if (.not. allocated(znuc)) allocate (znuc(MCTYPE))
+        ! if (.not. allocated(cent)) allocate (cent(3, MCENT))
+        ! if (.not. allocated(znuc)) allocate (znuc(MCTYPE))
         if (.not. allocated(iwctype)) allocate (iwctype(MCENT))
     end subroutine allocate_atom
 
@@ -184,12 +184,12 @@ module coefs
     public :: allocate_coefs, deallocate_coefs
     save
 contains
-    subroutine allocate_coefs()
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MORB, MBASIS
-        if (.not. allocated(coef)) allocate (coef(MBASIS, MORB, MWF))
-    end subroutine allocate_coefs
+    ! subroutine allocate_coefs()
+    !     use force_mod, only: MWF
+    !     use precision_kinds, only: dp
+    !     use vmc_mod, only: MORB, MBASIS
+    !     if (.not. allocated(coef)) allocate (coef(MBASIS, MORB, MWF))
+    ! end subroutine allocate_coefs
 
     subroutine deallocate_coefs()
         if (allocated(coef)) deallocate (coef)
@@ -312,13 +312,13 @@ module dets
     public :: allocate_dets, deallocate_dets
     save
 contains
-    subroutine allocate_dets()
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MDET
-        use mstates_mod, only: MSTATES
-        if (.not. allocated(cdet)) allocate (cdet(MDET, MSTATES, MWF))
-    end subroutine allocate_dets
+    ! subroutine allocate_dets()
+    !     use force_mod, only: MWF
+    !     use precision_kinds, only: dp
+    !     use vmc_mod, only: MDET
+    !     use mstates_mod, only: MSTATES
+    !     if (.not. allocated(cdet)) allocate (cdet(MDET, MSTATES, MWF))
+    ! end subroutine allocate_dets
 
     subroutine deallocate_dets()
         if (allocated(cdet)) deallocate (cdet)
@@ -595,11 +595,11 @@ contains
     subroutine allocate_multidet()
         use vmc_mod, only: MELEC, MDET
         if (.not. allocated(iactv)) allocate (iactv(2))
-        if (.not. allocated(irepcol_det)) allocate (irepcol_det(MELEC, MDET, 2))
-        if (.not. allocated(ireporb_det)) allocate (ireporb_det(MELEC, MDET, 2))
+        ! if (.not. allocated(irepcol_det)) allocate (irepcol_det(MELEC, MDET, 2))
+        ! if (.not. allocated(ireporb_det)) allocate (ireporb_det(MELEC, MDET, 2))
         if (.not. allocated(ivirt)) allocate (ivirt(2))
-        if (.not. allocated(iwundet)) allocate (iwundet(MDET, 2))
-        if (.not. allocated(numrep_det)) allocate (numrep_det(MDET, 2))
+        ! if (.not. allocated(iwundet)) allocate (iwundet(MDET, 2))
+        ! if (.not. allocated(numrep_det)) allocate (numrep_det(MDET, 2))
     end subroutine allocate_multidet
 
     subroutine deallocate_multidet()
@@ -1288,11 +1288,11 @@ subroutine allocate_m_common()
     call allocate_b_tmove()
     call allocate_Bloc()
     call allocate_casula()
-    call allocate_coefs()
+    ! call allocate_coefs()
     call allocate_csfs()
     call allocate_cuspmat()
     call allocate_cuspmat4()
-    call allocate_dets()
+    ! call allocate_dets()
     call allocate_dets_equiv()
     call allocate_distance_mod()
     call allocate_distances_sav()
