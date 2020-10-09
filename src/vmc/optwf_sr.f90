@@ -445,7 +445,7 @@ contains
                                   - 2*obs_tot(jelo, 1)*(obs_tot(jefj + k - 1, 1) - obs_tot(jfj + k - 1, 1)*obs_tot(jelo, 1)))
                 enddo
             elseif (ifunc_omega .eq. 2) then
-! variance with fixed average energy (omega)
+                ! variance with fixed average energy (omega)
                 var = omega*omega + obs_tot(jelo2, 1) - 2*omega*obs_tot(jelo, 1)
                 dum1 = -2
                 do k = 1, nparm
@@ -472,5 +472,199 @@ contains
 
         return
     end
+
+    subroutine sr_rescale_deltap(nparm, deltap)
+
+        use mpi
+        use mpiconf, only: idtask
+        use sr_mat_n, only: jefj, jfj, jhfj
+        use sr_mat_n, only: obs_tot
+        use sr_index, only: jelo, jelo2, jelohfj !< are they needed ?
+
+        implicit real*8(a - h, o - z)
+
+        integer, intent(in)                     :: nparm
+        real(dp), dimension(:), intent(inout)   :: deltap
+
+        if (i_sr_rescale .eq. 0) return
+
+        jwtg = 1
+        jelo = 2
+        n_obs = 2
+        jfj = n_obs + 1
+        n_obs = n_obs + nparm
+        jefj = n_obs + 1
+        n_obs = n_obs + nparm
+        jfifj = n_obs + 1
+        n_obs = n_obs + nparm
+
+        jhfj = n_obs + 1
+        n_obs = n_obs + nparm
+        jfhfj = n_obs + 1
+        n_obs = n_obs + nparm
+
+        jelo2 = n_obs + 1
+        n_obs = n_obs + 1
+        jelohfj = n_obs + 1
+        n_obs = n_obs + nparm
+
+        if (idtask .eq. 0) then
+        do i = 1, nparm
+            write (6, *) 'CIAO', obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1), obs_tot(jelo, 1), &
+                obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1)
+            deltap(i) = deltap(i)/(obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1))
+        enddo
+        endif
+
+        call MPI_BCAST(deltap, nparm, MPI_REAL8, 0, MPI_COMM_WORLD, j)
+
+        return
+    end subroutine sr_rescale_deltap
+
+    subroutine forces_zvzb(nparm)
+
+        use mpi
+        use precision_kinds, only: dp
+        use sr_mod, only: MPARM
+        use atom, only: ncent
+
+        use force_fin, only: da_energy_ave
+        use force_mat_n, only: force_o
+        use mpiconf, only: idtask
+        use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs, sr_ho
+        use sr_mat_n, only: sr_o, wtg
+        use sr_index, only: jelo
+
+        implicit real*8(a - h, o - z)
+
+        integer, parameter :: MTEST = 1500
+        real(dp), dimension(:, :), allocatable :: cloc
+        real(dp), dimension(:, :), allocatable :: c
+        real(dp), dimension(:), allocatable :: oloc
+        real(dp), dimension(:), allocatable :: o
+        real(dp), dimension(:), allocatable :: p
+        real(dp), dimension(:), allocatable :: tmp
+        real(dp), dimension(:), allocatable :: work
+        integer, dimension(:), allocatable :: ipvt
+
+        allocate (cloc(MTEST, MTEST))
+        allocate (c(MTEST, MTEST))
+        allocate (oloc(MPARM))
+        allocate (o(MPARM))
+        allocate (p(MPARM))
+        allocate (tmp(MPARM))
+        allocate (work(MTEST))
+        allocate (ipvt(MTEST))
+
+        if (nparm .gt. MTEST) stop 'MPARM>MTEST'
+
+        jwtg = 1
+        jelo = 2
+        n_obs = 2
+        jfj = n_obs + 1
+        n_obs = n_obs + nparm
+        jefj = n_obs + 1
+        n_obs = n_obs + nparm
+        jfifj = n_obs + 1
+        n_obs = n_obs + nparm
+
+        jhfj = n_obs + 1
+        n_obs = n_obs + nparm
+        jfhfj = n_obs + 1
+        n_obs = n_obs + nparm
+
+        do i = 1, nparm
+            do j = i, nparm
+                cloc(i, j) = 0.d0
+            enddo
+        enddo
+
+        do l = 1, nconf_n
+            do i = 1, nparm
+                tmp(i) = (sr_ho(i, l) - elocal(l, 1)*sr_o(i, l))*sqrt(wtg(l, 1))
+            enddo
+
+            do k = 1, nparm
+                do j = k, nparm
+                    cloc(k, j) = cloc(k, j) + tmp(k)*tmp(j)
+                enddo
+            enddo
+        enddo
+
+        call MPI_REDUCE(cloc, c, MTEST*nparm, MPI_REAL8, MPI_SUM, 0, MPI_COMM_WORLD, i)
+
+        if (idtask .eq. 0) then
+
+            wtoti = 1.d0/obs(1, 1)
+            do i = 1, nparm
+                dum = (obs(jhfj + i - 1, 1) - obs(jefj + i - 1, 1))
+                c(i, i) = c(i, i)*wtoti - dum*dum
+                do j = i + 1, nparm
+                    c(i, j) = c(i, j)*wtoti - dum*(obs(jhfj + j - 1, 1) - obs(jefj + j - 1, 1))
+                    c(j, i) = c(i, j)
+                enddo
+            enddo
+
+            call dgetrf(nparm, nparm, c, MTEST, ipvt, info)
+            if (info .gt. 0) then
+                write (6, '(''MATINV: u(k,k)=0 with k= '',i5)') info
+                call fatal_error('MATINV: info ne 0 in dgetrf')
+            endif
+            call dgetri(nparm, c, MTEST, ipvt, work, MTEST, info)
+
+            do iparm = 1, nparm
+                tmp(iparm) = obs(jhfj + iparm - 1, 1) - obs(jefj + iparm - 1, 1)
+            enddo
+
+        endif
+
+        energy_tot = obs(2, 1)
+
+        call MPI_BCAST(energy_tot, 1, MPI_REAL8, 0, MPI_COMM_WORLD, j)
+
+        ia = 0
+        ish = 3*ncent
+        do icent = 1, ncent
+            write (6, '(''FORCE before'',i4,3e15.7)') icent, (da_energy_ave(k, icent), k=1, 3)
+            do k = 1, 3
+                ia = ia + 1
+
+                do i = 1, nparm
+                    oloc(i) = 0.d0
+                    do l = 1, nconf_n
+                        oloc(i) = oloc(i) + (sr_ho(i, l) - elocal(l, 1)*sr_o(i, l)) &
+                                  *(force_o(ia + ish, l) - 2*energy_tot*force_o(ia, l))*wtg(l, 1)
+                    enddo
+                enddo
+
+                call MPI_REDUCE(oloc, o, nparm, MPI_REAL8, MPI_SUM, 0, MPI_COMM_WORLD, i)
+
+                if (idtask .eq. 0) then
+
+                    do i = 1, nparm
+                        o(i) = o(i)*wtoti - (obs(jhfj + i - 1, 1) - obs(jefj + i - 1, 1))*da_energy_ave(k, icent)
+                    enddo
+
+                    do iparm = 1, nparm
+                        p(iparm) = 0.d0
+                        do jparm = 1, nparm
+                            p(iparm) = p(iparm) + c(iparm, jparm)*o(jparm)
+                        enddo
+                        p(iparm) = -0.5*p(iparm)
+                    enddo
+
+                    force_tmp = da_energy_ave(k, icent)
+                    do iparm = 1, nparm
+                        force_tmp = force_tmp + p(iparm)*tmp(iparm)
+                    enddo
+                    da_energy_ave(k, icent) = force_tmp
+
+                endif
+            enddo
+            write (6, '(''FORCE after '',i4,3e15.7)') icent, (da_energy_ave(k, icent), k=1, 3)
+        enddo
+
+        return
+    end subroutine forces_zvzb
 
 end module optwf_sr_mod

@@ -53,15 +53,13 @@ contains
         real(dp) :: dparm_norm
         real(dp) :: denergy, energy_sav, denergy_err, energy_err_sav
 
-        call read_input(opt_data)
-
-        if (method .ne. 'sr_n' .or. opt_data%idl_flag .eq. 0) return
-
         write (6, '(''Started dl optimization'')')
+
+        call read_input(opt_data)
 
         call set_nparms_tot
 
-        if (nparm .gt. MPARM) call fatal_error('SR_OPTWF: nparmtot gt MPARM')
+        call sanity_check(nparm, MPARM, method, opt_data%idl_flag)
 
         call init_arrays(opt_data)
 
@@ -73,7 +71,7 @@ contains
         do iter = 1, opt_data%nopt_iter
             write (6, '(/,''DL Optimization iteration'',i5,'' of'',i5)') iter, opt_data%nopt_iter
 
-            call qmc
+            call vmc()
 
             write (6, '(/,''Completed sampling'')')
 
@@ -83,8 +81,10 @@ contains
             ! so we multiply actual deltap by -1
             call dscal(nparm, -1.d0, opt_data%deltap, 1)
 
-            call test_solution_parm(nparm, opt_data%deltap, dparm_norm, opt_data%dparm_norm_min, opt_data%sr_adiag, iflag)
+            call test_solution_parm(nparm, opt_data%deltap, dparm_norm, &
+                                    opt_data%dparm_norm_min, opt_data%sr_adiag, iflag)
             write (6, '(''Norm of parm variation '',g12.5)') dparm_norm
+
             if (iflag .ne. 0) then
                 write (6, '(''Warning: dparm_norm>1'')')
                 stop
@@ -124,6 +124,18 @@ contains
 
         return
     end subroutine optwf_dl
+
+    subroutine sanity_check(nparm, MPARM, method, idl_flag)
+
+        integer, intent(in) :: nparm
+        integer, intent(in) :: MPARM
+        integer, intent(in) :: idl_flag
+        CHARACTER(20), intent(in) :: method
+
+        if (method .ne. 'sr_n' .or. idl_flag .eq. 0) return
+        if (nparm .gt. MPARM) call fatal_error('SR_OPTWF: nparmtot gt MPARM')
+
+    end subroutine sanity_check
 
     subroutine init_arrays(options)
         !> Allocate and initialize to 0 all arrays
