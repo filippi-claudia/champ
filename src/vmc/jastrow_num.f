@@ -21,7 +21,7 @@ c numerical Laplacian for periodic systems.
       use wfsec, only: iwf
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
-      use distance_mod, only: rshift, r_en, rvec_en
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
 
@@ -47,7 +47,7 @@ c and the potential
 
 
 
-      common /distance/  rvec_ee(3, MMAT_DIM2), r_ee(MMAT_DIM2)
+      
 
       dimension x(3,*),v(3,*)
       dimension rp(3,MELEC,MCENT),rm(3,MELEC,MCENT)

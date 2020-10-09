@@ -28,7 +28,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
       use force_analy, only: iforce_analy
       use cuspmat4, only: d, iwc4, nterms
-      use distance_mod, only: rshift, r_en, rvec_en
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
 
@@ -37,7 +37,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
 
 
-      common /distance/  rvec_ee(3, MMAT_DIM2), r_ee(MMAT_DIM2)
+      
 
 
       parameter (zero=0.d0,one=1.d0,two=2.d0)

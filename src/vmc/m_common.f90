@@ -360,27 +360,33 @@ module distance_mod
     real(dp), dimension(:, :, :), allocatable :: rshift !(3, MELEC, MCENT)
     real(dp), dimension(:, :), allocatable :: r_en !(MELEC, MCENT)
     real(dp), dimension(:, :, :), allocatable :: rvec_en !(3, MELEC, MCENT)
-    !  real(dp) :: r_ee(MMAT_DIM2)
-    !  real(dp) :: rvec_ee(3, MMAT_DIM2)
+    real(dp), dimension(:), allocatable :: r_ee !(MMAT_DIM2)
+    real(dp), dimension(:, :), allocatable :: rvec_ee !(3, MMAT_DIM2)
 
     private
     public :: rshift
     public :: r_en
     public :: rvec_en
+    public :: r_ee
+    public :: rvec_ee
     public :: allocate_distance_mod, deallocate_distance_mod
     save
 contains
     subroutine allocate_distance_mod()
         use precision_kinds, only: dp
-        use vmc_mod, only: MELEC, MCENT
+        use vmc_mod, only: MELEC, MCENT, MMAT_DIM2
         if (.not. allocated(r_en)) allocate (r_en(MELEC, MCENT))
         if (.not. allocated(rvec_en)) allocate (rvec_en(3, MELEC, MCENT))
+        if (.not. allocated(r_ee)) allocate (r_ee(MMAT_DIM2))
+        if (.not. allocated(rvec_ee)) allocate (rvec_ee(3, MMAT_DIM2))
         if (.not. allocated(rshift)) allocate (rshift(3, MELEC, MCENT))
     end subroutine allocate_distance_mod
 
     subroutine deallocate_distance_mod()
         if (allocated(rvec_en)) deallocate (rvec_en)
         if (allocated(r_en)) deallocate (r_en)
+        if (allocated(rvec_en)) deallocate (rvec_ee)
+        if (allocated(r_en)) deallocate (r_ee)
         if (allocated(rshift)) deallocate (rshift)
     end subroutine deallocate_distance_mod
 
