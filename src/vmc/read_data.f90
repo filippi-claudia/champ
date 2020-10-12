@@ -779,3 +779,171 @@ subroutine read_optorb_mixvirt(moopt, movirt, fn)
         call p2chkend(iu, 'optorb_mixvirt')
     endif
 end subroutine read_optorb_mixvirt
+
+subroutine read_energies(mo, fn)
+    ! energies i a=<input>
+    ! eigenvalues i a=<input>
+    !KEYDOC Read orbital energies
+    use coefs, only: norb
+    use optorb, only: orb_energy
+    implicit real*8(a - h, o - z)
+
+    character fn*(*)
+
+    call ptfile(iu, fn, 'old')
+    if (norb .ne. 0 .and. norb .ne. mo) then
+        write (6, '(2i5)') norb, mo
+        call fatal_error('READEIG: wrong number of orbitals')
+    endif
+
+    allocate (orb_energy(norb))
+
+    read (iu, *) (orb_energy(io), io=1, norb)
+
+    if (fn .eq. '<input>') then
+        call p2chkend(iu, 'energies')
+    endif
+end subroutine read_energies
+
+subroutine read_dmatrix(no, ns, fn)
+    ! dmatrix i i a=<input>
+    ! KEYDOC Read diagonal density matrix information.
+    use precision_kinds, only: dp
+    use vmc_mod, only: MORB
+    use csfs, only: nstates
+    use sa_weights, only: iweight, nweight, weights
+    use mstates_mod, only: MSTATES
+    use coefs, only: norb
+    use optorb, only: dmat_diag
+    implicit real*8(a - h, o - z)
+
+    character fn*(*)
+    real(dp), DIMENSION(:), ALLOCATABLE :: dmat
+    integer, DIMENSION(:), ALLOCATABLE :: iwdmat
+
+    allocate (dmat(norb))
+    allocate (iwdmat(nstates))
+
+    call p2gtid('general:ipr', ipr, -1, 1)
+    call ptfile(iu, fn, 'old')
+
+    ndetorb = no
+    if (ndetorb .gt. norb) call fatal('READ_DMATRIX: wrong number of orbitals')
+
+    allocate (weights(nstates))
+    allocate (iweight(nstates))
+
+    call get_weights('weights:', weights, iweight, nweight)
+    if (ns .ne. nweight) call fatal('READ_DMATRIX: wrong number of dmatrices')
+
+    read (iu, *) (iwdmat(i), i=1, nweight)
+    do iw = 1, nweight
+        if (iwdmat(iw) .ne. iweight(iw)) call fatal('READ_DMATRIX: iwdmat')
+    enddo
+
+    allocate (dmat_diag(norb))
+
+    do i = 1, norb
+        dmat_diag(i) = 0.d0
+    enddo
+
+    do iw = 1, nweight
+        read (iu, *) (dmat(j), j=1, ndetorb)
+        do j = 1, ndetorb
+            dmat_diag(j) = dmat_diag(j) + weights(iw)*dmat(j)
+        enddo
+    enddo
+    do i = 1, ndetorb
+        if (dabs(dmat_diag(i) - 1.d0) .lt. 1.d-6) dmat_diag(i) = 1.d0
+    enddo
+
+    if (ipr .gt. 2) then
+        write (6, '(''diagonal elements of the density matrix'')')
+        write (6, '(100f10.6)') (dmat_diag(i), i=1, ndetorb)
+    endif
+
+    if (fn .eq. '<input>') then
+        call p2chkend(iu, 'dmatrix')
+    endif
+
+    DEALLOCATE (dmat)
+    deallocate (iwdmat)
+
+    return
+end subroutine read_dmatrix
+
+subroutine get_weights(field, weights, iweight, nweight)
+
+    use precision_kinds, only: dp
+    use csfs, only: nstates
+    use mstates_mod, only: MSTATES
+
+    implicit real*8(a - h, o - z)
+
+    ! weights for state averaging
+    character(12), intent(in) :: field
+    real(dp), dimension(nstates), intent(inout) :: weights
+    integer, dimension(nstates), intent(inout) :: iweight
+    integer, intent(inout) :: nweight
+
+    ! dimension weights(MSTATES), iweight(MSTATES)
+    ! character field*(32)
+    character vname*(32)
+
+    wsum = 0.d0
+    nweight = 0
+
+    write (6, *) field, field(1:index(field, ' '))
+    do i = 1, nstates
+        wdef = 0.d0
+        call append_number(field(1:index(field, ' ') - 1), i, vname, nv, 0)
+        call p2gtfd(vname(1:nv), w, wdef, 0)
+        !VARDOC Input of weights for individual states.
+        w = dabs(w)
+        if (w .gt. 1d-6) then
+            nweight = nweight + 1
+            iweight(nweight) = i
+            weights(nweight) = w
+            wsum = wsum + w
+        endif
+    enddo
+
+    do i = 1, nweight
+        weights(i) = weights(i)/wsum
+    enddo
+
+    if (nweight .eq. 0) then
+        nweight = 1
+        iweight(1) = 1
+        weights(1) = 1.d0
+    endif
+
+    ! TEMPORARY
+    if (nweight .ne. nstates) call fatal_error('GET_WEIGHTS: problems with nweight')
+
+end subroutine get_weights
+
+subroutine read_cavity_spheres(iu, nspheres)
+    ! cavity_spheres inp i
+    !KEYDOC Read centers of cavity spheres and radii
+    use pcm_parms, only: nesph, re, re2
+    use pcm_parms, only: xe, ye, ze
+    implicit real*8(a - h, o - z)
+
+    nesph = nspheres
+
+    allocate (re(nesph))
+    allocate (re2(nesph))
+    allocate (xe(nesph))
+    allocate (ye(nesph))
+    allocate (ze(nesph))
+
+    do i = 1, nesph
+        call incpos(iu, itmp, 1)
+        read (iu, *) xe(i), ye(i), ze(i), re(i)
+        re2(i) = re(i)**2.0d0
+    enddo
+    call p2chkend(iu, 'cavity_spheres')
+
+    return
+end subroutine read_cavity_spheres

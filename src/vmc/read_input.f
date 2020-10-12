@@ -1156,149 +1156,149 @@ c-----------------------------------------------------------------------
 !       endif
 !       end
 c-----------------------------------------------------------------------
-      subroutine read_energies(mo,fn)
-C$INPUT energies i a=<input>
-C$INPUT eigenvalues i a=<input>
-CKEYDOC Read orbital energies 
-      use coefs, only: norb
-      use optorb, only: orb_energy
-      implicit real*8(a-h,o-z)
+!       subroutine read_energies(mo,fn)
+! C$INPUT energies i a=<input>
+! C$INPUT eigenvalues i a=<input>
+! CKEYDOC Read orbital energies 
+!       use coefs, only: norb
+!       use optorb, only: orb_energy
+!       implicit real*8(a-h,o-z)
 
 
 
 
-      character fn*(*)
+!       character fn*(*)
 
-      call ptfile(iu,fn,'old')
-      if(norb.ne.0.and.norb.ne.mo) then
-        write(6,'(2i5)') norb,mo
-        call fatal_error('READEIG: wrong number of orbitals') 
-      endif
-      read(iu,*) (orb_energy(io),io=1,norb)
+!       call ptfile(iu,fn,'old')
+!       if(norb.ne.0.and.norb.ne.mo) then
+!         write(6,'(2i5)') norb,mo
+!         call fatal_error('READEIG: wrong number of orbitals') 
+!       endif
+!       read(iu,*) (orb_energy(io),io=1,norb)
 
-      if(fn.eq.'<input>') then
-       call p2chkend(iu, 'energies')
-      endif
-      end
+!       if(fn.eq.'<input>') then
+!        call p2chkend(iu, 'energies')
+!       endif
+!       end
 c----------------------------------------------------------------------
-      subroutine read_dmatrix(no,ns,fn)
-C$INPUT dmatrix i i a=<input> 
-CKEYDOC Read diagonal density matrix information.
-      use vmc_mod, only: MORB
-      use sa_weights, only: iweight, nweight, weights
-      use mstates_mod, only: MSTATES
-      use coefs, only: norb
-      use optorb, only: dmat_diag
-      implicit real*8(a-h,o-z)
+!       subroutine read_dmatrix(no,ns,fn)
+! C$INPUT dmatrix i i a=<input> 
+! CKEYDOC Read diagonal density matrix information.
+!       use vmc_mod, only: MORB
+!       use sa_weights, only: iweight, nweight, weights
+!       use mstates_mod, only: MSTATES
+!       use coefs, only: norb
+!       use optorb, only: dmat_diag
+!       implicit real*8(a-h,o-z)
 
 
 
 
 
-      character fn*(*)
+!       character fn*(*)
 
-      dimension dmat(MORB),iwdmat(MSTATES)
+!       dimension dmat(MORB),iwdmat(MSTATES)
 
-      call p2gtid('general:ipr',ipr,-1,1)
-      call ptfile(iu,fn,'old')
+!       call p2gtid('general:ipr',ipr,-1,1)
+!       call ptfile(iu,fn,'old')
 
-      ndetorb=no
-      if(ndetorb.gt.norb) call fatal('READ_DMATRIX: wrong number of orbitals')
+!       ndetorb=no
+!       if(ndetorb.gt.norb) call fatal('READ_DMATRIX: wrong number of orbitals')
 
-      call get_weights('weights:',weights,iweight,nweight)
-      if(ns.ne.nweight) call fatal('READ_DMATRIX: wrong number of dmatrices')
+!       call get_weights('weights:',weights,iweight,nweight)
+!       if(ns.ne.nweight) call fatal('READ_DMATRIX: wrong number of dmatrices')
 
-      read(iu,*) (iwdmat(i),i=1,nweight)
-      do 10 iw=1,nweight
-  10    if(iwdmat(iw).ne.iweight(iw)) call fatal('READ_DMATRIX: iwdmat')
+!       read(iu,*) (iwdmat(i),i=1,nweight)
+!       do 10 iw=1,nweight
+!   10    if(iwdmat(iw).ne.iweight(iw)) call fatal('READ_DMATRIX: iwdmat')
 
-      do 20 i=1,norb
-  20    dmat_diag(i)=0.d0
+!       do 20 i=1,norb
+!   20    dmat_diag(i)=0.d0
 
-      do 25 iw=1,nweight
-        read(iu,*) (dmat(j),j=1,ndetorb)
-        do 25 j=1,ndetorb
-  25      dmat_diag(j)=dmat_diag(j)+weights(iw)*dmat(j)
-       do 30 i=1,ndetorb 
-  30     if(dabs(dmat_diag(i)-1.d0).lt.1.d-6) dmat_diag(i)=1.d0
+!       do 25 iw=1,nweight
+!         read(iu,*) (dmat(j),j=1,ndetorb)
+!         do 25 j=1,ndetorb
+!   25      dmat_diag(j)=dmat_diag(j)+weights(iw)*dmat(j)
+!        do 30 i=1,ndetorb 
+!   30     if(dabs(dmat_diag(i)-1.d0).lt.1.d-6) dmat_diag(i)=1.d0
 
-      if(ipr.gt.2) then 
-       write(6,'(''diagonal elements of the density matrix'')')
-       write(6,'(100f10.6)') (dmat_diag(i),i=1,ndetorb)
-      endif
+!       if(ipr.gt.2) then 
+!        write(6,'(''diagonal elements of the density matrix'')')
+!        write(6,'(100f10.6)') (dmat_diag(i),i=1,ndetorb)
+!       endif
 
-      if(fn.eq.'<input>') then
-       call p2chkend(iu, 'dmatrix')
-      endif
+!       if(fn.eq.'<input>') then
+!        call p2chkend(iu, 'dmatrix')
+!       endif
 
-      return
-      end
-c----------------------------------------------------------------------
-      subroutine get_weights(field,weights,iweight,nweight)
-      use csfs, only: nstates
-      use mstates_mod, only: MSTATES
+!       return
+!       end
+! c----------------------------------------------------------------------
+!       subroutine get_weights(field,weights,iweight,nweight)
+!       use csfs, only: nstates
+!       use mstates_mod, only: MSTATES
 
-      implicit real*8(a-h,o-z)
+!       implicit real*8(a-h,o-z)
 
-c weights for state averaging
-
-
-      dimension weights(MSTATES),iweight(MSTATES)
-
-      character vname*(32)
-      character field*(32)
-      wsum=0.d0
-      nweight=0
-
-      write(6,*) field,field(1:index(field,' '))
-      do 10 i=1,nstates
-        wdef=0.d0
-        call append_number(field(1:index(field,' ')-1),i,vname,nv,0)
-        call p2gtfd(vname(1:nv),w,wdef,0)
-CVARDOC Input of weights for individual states.
-        w=dabs(w)
-        if(w.gt.1d-6) then
-          nweight=nweight+1
-          iweight(nweight)=i
-          weights(nweight)=w
-          wsum=wsum+w
-        endif
-   10 continue
-
-      do 20 i=1,nweight
-   20  weights(i)=weights(i)/wsum
-
-      if(nweight.eq.0) then
-        nweight=1
-        iweight(1)=1
-        weights(1)=1.d0
-      endif
-
-c TEMPORARY
-      if(nweight.ne.nstates) 
-     & call fatal_error('GET_WEIGHTS: problems with nweight')
-
-      end
-c----------------------------------------------------------------------
-      subroutine read_cavity_spheres(iu,nspheres)
-C$INPUT cavity_spheres inp i 
-CKEYDOC Read centers of cavity spheres and radii
-      use pcm_parms, only: nesph, re, re2
-      use pcm_parms, only: xe, ye, ze
-      implicit real*8(a-h,o-z)
+! c weights for state averaging
 
 
+!       dimension weights(MSTATES),iweight(MSTATES)
 
-      nesph=nspheres 
-      do i=1,nesph
-        call incpos(iu,itmp,1)
-        read(iu,*) xe(i),ye(i),ze(i),re(i)
-        re2(i)=re(i)**2.0d0
-      enddo
-      call p2chkend(iu, 'cavity_spheres')
+!       character vname*(32)
+!       character field*(32)
+!       wsum=0.d0
+!       nweight=0
 
-      return
-      end
+!       write(6,*) field,field(1:index(field,' '))
+!       do 10 i=1,nstates
+!         wdef=0.d0
+!         call append_number(field(1:index(field,' ')-1),i,vname,nv,0)
+!         call p2gtfd(vname(1:nv),w,wdef,0)
+! CVARDOC Input of weights for individual states.
+!         w=dabs(w)
+!         if(w.gt.1d-6) then
+!           nweight=nweight+1
+!           iweight(nweight)=i
+!           weights(nweight)=w
+!           wsum=wsum+w
+!         endif
+!    10 continue
+
+!       do 20 i=1,nweight
+!    20  weights(i)=weights(i)/wsum
+
+!       if(nweight.eq.0) then
+!         nweight=1
+!         iweight(1)=1
+!         weights(1)=1.d0
+!       endif
+
+! c TEMPORARY
+!       if(nweight.ne.nstates) 
+!      & call fatal_error('GET_WEIGHTS: problems with nweight')
+
+!       end
+! c----------------------------------------------------------------------
+!       subroutine read_cavity_spheres(iu,nspheres)
+! C$INPUT cavity_spheres inp i 
+! CKEYDOC Read centers of cavity spheres and radii
+!       use pcm_parms, only: nesph, re, re2
+!       use pcm_parms, only: xe, ye, ze
+!       implicit real*8(a-h,o-z)
+
+
+
+!       nesph=nspheres 
+!       do i=1,nesph
+!         call incpos(iu,itmp,1)
+!         read(iu,*) xe(i),ye(i),ze(i),re(i)
+!         re2(i)=re(i)**2.0d0
+!       enddo
+!       call p2chkend(iu, 'cavity_spheres')
+
+!       return
+!       end
 c----------------------------------------------------------------------
       subroutine read_gradnts_cart(iu)
 C$INPUT gradients_cartesian inp

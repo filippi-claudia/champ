@@ -348,7 +348,7 @@ contains
         use vmc_mod, only: MORB
         if (.not. allocated(dmat_diag)) allocate (dmat_diag(MORB))
         ! if (.not. allocated(irrep)) allocate (irrep(MORB))
-        if (.not. allocated(orb_energy)) allocate (orb_energy(MORB))
+        ! if (.not. allocated(orb_energy)) allocate (orb_energy(MORB))
     end subroutine allocate_optorb
 
     subroutine deallocate_optorb()
