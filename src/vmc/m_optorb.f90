@@ -413,7 +413,7 @@ module optorb_mix
 contains
     subroutine allocate_optorb_mix()
         use vmc_mod, only: MORB
-        if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(MORB, MORB))
+        ! if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(MORB, MORB))
     end subroutine allocate_optorb_mix
 
     subroutine deallocate_optorb_mix()

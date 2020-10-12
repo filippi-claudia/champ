@@ -1124,37 +1124,37 @@ c-----------------------------------------------------------------------
 !       endif
 !       end
 c-----------------------------------------------------------------------
-      subroutine read_optorb_mixvirt(moopt,movirt,fn)
-C$INPUT optorb_mixvirt i i a=<input>
-CKEYDOC Read which virtual orbitals are mixed with the occupied ones
+!       subroutine read_optorb_mixvirt(moopt,movirt,fn)
+! C$INPUT optorb_mixvirt i i a=<input>
+! CKEYDOC Read which virtual orbitals are mixed with the occupied ones
 
-      use optorb_mix, only: iwmix_virt, norbopt, norbvirt
-      use coefs, only: norb
-      use inputflags, only: ioptorb_mixvirt
+!       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
+!       use coefs, only: norb
+!       use inputflags, only: ioptorb_mixvirt
 
-      implicit real*8(a-h,o-z)
+!       implicit real*8(a-h,o-z)
 
 
-      character fn*(*)
-      character atmp*80
+!       character fn*(*)
+!       character atmp*80
 
-      norbopt=moopt
-      norbvirt=movirt
-      call ptfile(iu,fn,'old')
-      if(norb.ne.0.and.norbopt.gt.norb) then
-       write(6,'(3i5)') norb,moopt,movirt
-       call fatal_error('READMIXVIRT: wrong number of orbitals')
-      endif
+!       norbopt=moopt
+!       norbvirt=movirt
+!       call ptfile(iu,fn,'old')
+!       if(norb.ne.0.and.norbopt.gt.norb) then
+!        write(6,'(3i5)') norb,moopt,movirt
+!        call fatal_error('READMIXVIRT: wrong number of orbitals')
+!       endif
 
-      do 50 io=1,norbopt
-  50    read(iu,*) (iwmix_virt(io,jo),jo=1,norbvirt)
+!       do 50 io=1,norbopt
+!   50    read(iu,*) (iwmix_virt(io,jo),jo=1,norbvirt)
 
-      ioptorb_mixvirt=1
+!       ioptorb_mixvirt=1
 
-      if(fn.eq.'<input>') then
-       call p2chkend(iu, 'optorb_mixvirt')
-      endif
-      end
+!       if(fn.eq.'<input>') then
+!        call p2chkend(iu, 'optorb_mixvirt')
+!       endif
+!       end
 c-----------------------------------------------------------------------
       subroutine read_energies(mo,fn)
 C$INPUT energies i a=<input>

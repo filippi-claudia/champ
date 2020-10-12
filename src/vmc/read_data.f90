@@ -746,3 +746,36 @@ subroutine read_sym(nsym, mo, fn)
         call p2chkend(iu, 'sym_labels')
     endif
 end subroutine read_sym
+
+subroutine read_optorb_mixvirt(moopt, movirt, fn)
+    ! optorb_mixvirt i i a=<input>
+    !KEYDOC Read which virtual orbitals are mixed with the occupied ones
+
+    use optorb_mix, only: iwmix_virt, norbopt, norbvirt
+    use coefs, only: norb
+    use inputflags, only: ioptorb_mixvirt
+
+    implicit real*8(a - h, o - z)
+    character fn*(*)
+    character atmp*80
+
+    norbopt = moopt
+    norbvirt = movirt
+    call ptfile(iu, fn, 'old')
+    if (norb .ne. 0 .and. norbopt .gt. norb) then
+        write (6, '(3i5)') norb, moopt, movirt
+        call fatal_error('READMIXVIRT: wrong number of orbitals')
+    endif
+
+    allocate (iwmix_virt(norbopt, norbvirt))
+
+    do io = 1, norbopt
+        read (iu, *) (iwmix_virt(io, jo), jo=1, norbvirt)
+    enddo
+
+    ioptorb_mixvirt = 1
+
+    if (fn .eq. '<input>') then
+        call p2chkend(iu, 'optorb_mixvirt')
+    endif
+end subroutine read_optorb_mixvirt
