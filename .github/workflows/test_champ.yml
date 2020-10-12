@@ -55,14 +55,14 @@ jobs:
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out 
            echo "total E vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0119453 
-           #$HOME/work/champ/champ/tools/compare_output_file.py vmc.out output_ref/vmc_ref.out
+           #$HOME/work/champ/champ/tools/compare_output_file.py vmc.out output_ref/vmc_2_threads.out
 
            # run and compare simple sampling MPI
            echo "Running vmc_lin.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            echo "total E vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0586750 
-           #$HOME/work/champ/champ/tools/compare_output_file.py vmc_lin.out output_ref/vmc_lin_ref.out
+           #$HOME/work/champ/champ/tools/compare_output_file.py vmc_lin.out output_ref/vmc_lin_2_threads.out
            #
            # restore the module files
            cd $HOME/work/champ/champ
@@ -102,7 +102,20 @@ jobs:
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
            echo "total E vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py sr_n.out "total E" -42.6476514 
-           #$HOME/work/champ/champ/tools/compare_output_file.py sr_n.out output_ref/sr_n_ref.out
+           #$HOME/work/champ/champ/tools/compare_output_file.py sr_n.out output_ref/sr_n_2_threads.out
+           
+           # run and compare a regterg calculation
+           echo "Running sr_n.inp in serial:"
+           $HOME/work/champ/champ/bin/vmc.mov1 < regterg.inp > regterg.out 
+           echo "total E vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py regterg.out "total E" -41.4910248 
+
+           # run and compare a regterg calculation MPI
+           echo "Running sr_n.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < regterg.inp > regterg.out 
+           echo "total E vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py regterg.out "total E" -41.3989435 
+           #$HOME/work/champ/champ/tools/compare_output_file.py regterg.out output_ref/regterg_2_threads.out
 
            #  restore the module files
            cd $HOME/work/champ/champ
