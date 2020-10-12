@@ -66,9 +66,8 @@ jobs:
            cp m_optci_save ./src/vmc/m_optci.f90
            cp m_sr_save ./src/vmc/m_sr.f90
 
-
-           - name: Building_code_for_psb3
-             run: |
+    - name: Building_code_for_psb3
+       run: |
 
            # save the module files
            cp src/vmc/m_vmc.f90 ./m_vmc_save
