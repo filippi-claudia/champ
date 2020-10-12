@@ -947,3 +947,149 @@ subroutine read_cavity_spheres(iu, nspheres)
 
     return
 end subroutine read_cavity_spheres
+
+subroutine read_gradnts_cart(iu)
+    ! gradients_cartesian inp
+    !KEYDOC Read for which x,y,z cartesian coordiantes of
+    !KEYDOC atoms energy gradients are to be calculated for.
+
+    !     Written by Omar Valsson
+
+    use vmc_mod, only: MCENT
+    use forcepar, only: nforce
+    use forcestr, only: delc
+    use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+    use grdntspar, only: delgrdxyz, igrdtype, ngradnts
+    use wfsec, only: iwftype
+    use inputflags, only: igradients
+
+    use atom, only: ncent
+
+    implicit real*8(a - h, o - z)
+
+    call p2gti('atoms:natom', ncent, 1)
+    if (ncent .gt. MCENT) call fatal_error('GRADIENTS_CARTESIAN: ncent > MCENT')
+
+    call p2gtfd('gradients:delgrdxyz', delgrdxyz, 0.001d0, 1)
+
+    call p2gtid('gradients:igrdtype', igrdtype, 1, 1)
+    if (igrdtype .ne. 1) call fatal_error('GRADIENTS_CARTESIAN: igrdtype /= 1')
+
+    call p2gtid('general:nforce', nforce, 1, 1)
+    call p2gtid('gradients:ngradnts', ngradnts, 0, 1)
+    if ((2*ngradnts + 1) .ne. nforce) call fatal_error('GRADIENTS_CARTESIAN: (2*ngradnts+1)  /=  nforce')
+
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
+    if (.not. allocated(igrdaidx)) allocate (igrdaidx(nforce))
+    if (.not. allocated(igrdcidx)) allocate (igrdcidx(nforce))
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
+
+    do i = 1, nforce
+        iwftype(i) = 1
+        do ic = 1, ncent
+            do k = 1, 3
+                igrdmv(k, ic) = 0
+                delc(k, ic, i) = 0.0d0
+            enddo
+        enddo
+    enddo
+
+    ia = 2
+    do ic = 1, ncent
+        call incpos(iu, itmp, 1)
+        read (iu, *) (igrdmv(k, ic), k=1, 3)
+        do k = 1, 3
+            if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) then
+                call fatal_error('GRADIENTS_CARTESIAN: igrdmv \= 0,1')
+            endif
+            if (igrdmv(k, ic) .eq. 1) then
+                igrdaidx(ia/2) = ic
+                igrdcidx(ia/2) = k
+                delc(k, ic, ia) = delgrdxyz
+                delc(k, ic, ia + 1) = -delgrdxyz
+                ia = ia + 2
+            endif
+        enddo
+    enddo
+
+    igradients = 1
+
+    call p2chkend(iu, 'gradients_cartesian')
+
+    return
+end subroutine read_gradnts_cart
+
+subroutine read_gradnts_zmat(iu)
+    ! gradients_zmatrix inp
+    !KEYDOC Read for which Z matrix (internal) coordiantes of
+    !KEYDOC atoms energy gradients are to be calculated for.
+
+!      Written by Omar Valsson.
+
+    use vmc_mod, only: MCENT
+    use forcepar, only: nforce
+    use forcestr, only: delc
+    use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+    use grdntspar, only: delgrdba, delgrdbl, delgrdda, igrdtype, ngradnts
+    use zmatrix, only: izmatrix
+    use wfsec, only: iwftype
+    use inputflags, only: igradients
+
+    use atom, only: ncent
+
+    implicit real*8(a - h, o - z)
+
+    call p2gti('atoms:natom', ncent, 1)
+    if (ncent .gt. MCENT) call fatal_error('GRADIENTS_ZMATRIX: ncent > MCENT')
+
+    call p2gtfd('gradients:delgrdbl', delgrdbl, 0.001d0, 1)
+    call p2gtfd('gradients:delgrdba', delgrdba, 0.01d0, 1)
+    call p2gtfd('gradients:delgrdda', delgrdda, 0.01d0, 1)
+
+    call p2gtid('gradients:igrdtype', igrdtype, 2, 1)
+    if (igrdtype .ne. 2) call fatal_error('GRADIENTS_ZMATRIX: igrdtype /= 2')
+
+    if (izmatrix .ne. 1) call fatal_error('GRADIENTS_ZMATRIX: No Z matrix connection matrix')
+
+    call p2gtid('general:nforce', nforce, 1, 1)
+    call p2gtid('gradients:ngradnts', ngradnts, 0, 1)
+    if ((2*ngradnts + 1) .ne. nforce) call fatal_error('GRADIENTS_ZMATRIX: (2*ngradnts+1)  /=  nforce')
+
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
+    if (.not. allocated(igrdaidx)) allocate (igrdaidx(nforce))
+    if (.not. allocated(igrdcidx)) allocate (igrdcidx(nforce))
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
+
+    do i = 1, nforce
+        iwftype(i) = 1
+        do ic = 1, ncent
+            do k = 1, 3
+                igrdmv(k, ic) = 0
+                delc(k, ic, i) = 0.0d0
+            enddo
+        enddo
+    enddo
+
+    ia = 2
+
+    do ic = 1, ncent
+        call incpos(iu, itmp, 1)
+        read (iu, *) (igrdmv(k, ic), k=1, 3)
+        do k = 1, 3
+            if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) call fatal_error('GRADIENTS_ZMATRIX: igrdmv \= 0,1')
+            if (igrdmv(k, ic) .eq. 1) then
+                igrdaidx(ia/2) = ic
+                igrdcidx(ia/2) = k
+                call grdzmat_displ(k, ic, ia, +1.0d0)
+                call grdzmat_displ(k, ic, ia + 1, -1.0d0)
+                ia = ia + 2
+            endif
+        enddo
+    enddo
+
+    igradients = 1
+
+    call p2chkend(iu, 'gradients_zmatrix')
+
+    return
+end subroutine read_gradnts_zmat
