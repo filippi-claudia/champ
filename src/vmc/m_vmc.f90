@@ -51,9 +51,12 @@ module vmc_mod
     public :: MCENT3, NCOEF, MEXCIT
 
     save
+
 contains
+
     subroutine compute_vmc_size()
         nmat_dim = nelec*nelec/4
         nmat_dim2 = nelec*(nelec - 1)/2
     end subroutine compute_vmc_size
+
 end module vmc_mod

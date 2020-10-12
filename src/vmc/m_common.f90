@@ -3,10 +3,10 @@ module atom
     use precision_kinds, only: dp
     use vmc_mod, only: MCENT, MCTYPE
 
-    real(dp), dimension(:, :), allocatable :: cent !( 3, MCENT)
-    real(dp), dimension(:), allocatable :: znuc !( MCTYPE)
+    real(dp), dimension(:, :), allocatable :: cent
+    real(dp), dimension(:), allocatable :: znuc
     real(dp) :: pecent
-    integer, dimension(:), allocatable :: iwctype !( MCENT)
+    integer, dimension(:), allocatable :: iwctype
     integer :: nctype, ncent
 
     private
@@ -17,9 +17,9 @@ contains
     subroutine allocate_atom()
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT, MCTYPE
-        ! if (.not. allocated(cent)) allocate (cent(3, MCENT))
-        ! if (.not. allocated(znuc)) allocate (znuc(MCTYPE))
-        if (.not. allocated(iwctype)) allocate (iwctype(MCENT))
+        if (.not. allocated(cent)) allocate (cent(3, ncent))
+        if (.not. allocated(znuc)) allocate (znuc(nctype))
+        if (.not. allocated(iwctype)) allocate (iwctype(nctype))
     end subroutine allocate_atom
 
     subroutine deallocate_atom()

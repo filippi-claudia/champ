@@ -26,7 +26,7 @@ c*******************************************************************************
       dimension idx1(MXF)
       dimension idx2(MXF)
 ctest>  
-      ip2deb = 2
+      
       if(ip2deb.gt.0) then
        write (6,*) 'nesting level ',lnest
        write (6,*) 'parser dimensions'

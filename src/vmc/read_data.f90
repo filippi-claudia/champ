@@ -341,9 +341,13 @@ subroutine read_bas_num_info(iu, numeric)
     allocate (ndx2a(nctot))
     allocate (ndyza(nctot))
 
+    !> ISSUE
+    !> nbasis not yet defined here
+    !> we must change the order and
+    !> read lcao first
     write (6, *) 'NBASIS', nbasis
-    allocate (iwlbas(MBASIS, nctot))
-    allocate (iwrwf(MBASIS, nctot))
+    allocate (iwlbas(nbasis, nctot))
+    allocate (iwrwf(nbasis, nctot))
 
     numr = numeric
     do i = 1, nctype + newghostype
