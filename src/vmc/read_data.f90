@@ -88,6 +88,7 @@ subroutine read_geometry(iu)
     if (ncent + nghostcent .gt. MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
 
     allocate (cent(3, ncent + nghostcent))
+    allocate (iwctype(ncent + nghostcent))
 
     do i = 1, ncent + nghostcent
         call incpos(iu, itmp, 1)
@@ -280,22 +281,23 @@ subroutine read_jastrow_parameter(iu, iwft)
 
     ijastrow_parameter = ijastrow_parameter + 1
     call p2chkend(iu, 'jastrow_parameter')
-    write (6, *) 'done jastrow'
+
 end subroutine read_jastrow_parameter
 
 subroutine read_bas_num_info(iu, numeric)
-    !INPUT basis inp i
-    !KEYDOC Basis function types and pointers to radial parts tables
-    !INPUT qmc_bf_info inp i
-    !KEYDOC alternative name for keyword basis because of GAMBLE inputword basis because of GAMBLE input
+!INPUT basis inp i
+!KEYDOC Basis function types and pointers to radial parts tables
+!INPUT qmc_bf_info inp i
+!KEYDOC alternative name for keyword basis because of GAMBLE inputword basis because of GAMBLE input
     use numbas_mod, only: MRWF
-    use vmc_mod, only: MCTYPE
+    use vmc_mod, only: MCTYPE, MBASIS
     use numbas, only: iwrwf, numr
     use numbas1, only: iwlbas, nbastyp
     use basis, only: n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
     use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
     use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a, ndz2a
     use inputflags, only: ibasis_num
+    use coefs, only: nbasis
 
     use atom, only: nctype
     use ghostatom, only: newghostype
@@ -338,6 +340,10 @@ subroutine read_bas_num_info(iu, numeric)
     allocate (ndxza(nctot))
     allocate (ndx2a(nctot))
     allocate (ndyza(nctot))
+
+    write (6, *) 'NBASIS', nbasis
+    allocate (iwlbas(MBASIS, nctot))
+    allocate (iwrwf(MBASIS, nctot))
 
     numr = numeric
     do i = 1, nctype + newghostype
@@ -617,7 +623,7 @@ subroutine read_jasderiv(iu)
 
     use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
     use optwf_parms, only: nparmj
-    use optwf_wjas, only: iwjasa, iwjasb, iwjasc
+    use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
     use bparm, only: nspin2b
     use contr2, only: ijas
     use contr2, only: isc
@@ -630,6 +636,14 @@ subroutine read_jasderiv(iu)
     if (.not. allocated(nparmb)) allocate (nparmb(3))
     if (.not. allocated(nparmc)) allocate (nparmc(nctype))
     if (.not. allocated(nparmf)) allocate (nparmf(nctype))
+
+    if (.not. allocated(iwjasa)) allocate (iwjasa(83, MCTYP3X))
+    if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3))
+    if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype))
+    if (.not. allocated(iwjasf)) allocate (iwjasf(15, nctype))
+
+    if (.not. allocated(npoint)) allocate (npoint(MCTYP3X))
+    if (.not. allocated(npointa)) allocate (npointa(3*MCTYP3X))
 
     read (iu, *) (nparma(ia), ia=na1, na2), &
         (nparmb(isp), isp=nspin1, nspin2b), &

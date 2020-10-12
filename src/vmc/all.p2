@@ -7,6 +7,8 @@ exponents read_exponents inp i=1
 determinants read_determinants inp i i=1 
 multideterminants read_multideterminants inp i 
 jastrow_parameter read_jastrow_parameter inp i=1 
+basis read_bas_num_info inp i 
+qmc_bf_info read_bas_num_info inp i 
 lattice read_lattice inp 
 forces_displace read_forces inp 
 csf read_csf i i=1 a=<input> 
