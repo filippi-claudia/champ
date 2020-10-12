@@ -713,3 +713,36 @@ subroutine read_jasderiv(iu)
 
     call p2chkend(iu, 'jasderiv')
 end subroutine read_jasderiv
+
+subroutine read_sym(nsym, mo, fn)
+    ! sym_labels i i a=<input>
+    ! KEYDOC Read symmetry information
+    use coefs, only: norb
+    use optorb, only: irrep
+    implicit real*8(a - h, o - z)
+
+    character fn*(*)
+    character atmp*80
+
+    call ptfile(iu, fn, 'old')
+    nirrep = nsym
+    if (norb .ne. 0 .and. norb .ne. mo) then
+        write (6, '(2i5)') norb, mo
+        call fatal_error('READSYM: wrong number of orbitals')
+    else
+        norb = mo
+    endif
+
+    ! Ignore irrep text labels
+    read (iu, '(a80)') atmp
+
+    ! allocate
+    allocate (irrep(norb))
+
+    ! read data
+    read (iu, *) (irrep(io), io=1, norb)
+
+    if (fn .eq. '<input>') then
+        call p2chkend(iu, 'sym_labels')
+    endif
+end subroutine read_sym

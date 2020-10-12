@@ -1094,35 +1094,35 @@ c----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
-      subroutine read_sym(nsym,mo,fn)
-C$INPUT sym_labels i i a=<input>
-CKEYDOC Read symmetry information
-      use coefs, only: norb
-      use optorb, only: irrep
-      implicit real*8(a-h,o-z)
+!       subroutine read_sym(nsym,mo,fn)
+! C$INPUT sym_labels i i a=<input>
+! CKEYDOC Read symmetry information
+!       use coefs, only: norb
+!       use optorb, only: irrep
+!       implicit real*8(a-h,o-z)
 
 
 
 
-      character fn*(*)
-      character atmp*80
+!       character fn*(*)
+!       character atmp*80
 
-      call ptfile(iu,fn,'old')
-      nirrep=nsym
-      if(norb.ne.0.and.norb.ne.mo) then
-       write(6,'(2i5)') norb,mo
-       call fatal_error('READSYM: wrong number of orbitals') 
-      else
-       norb=mo
-      endif
-c Ignore irrep text labels
-      read(iu,'(a80)') atmp
-      read(iu,*) (irrep(io),io=1,norb)
+!       call ptfile(iu,fn,'old')
+!       nirrep=nsym
+!       if(norb.ne.0.and.norb.ne.mo) then
+!        write(6,'(2i5)') norb,mo
+!        call fatal_error('READSYM: wrong number of orbitals') 
+!       else
+!        norb=mo
+!       endif
+! c Ignore irrep text labels
+!       read(iu,'(a80)') atmp
+!       read(iu,*) (irrep(io),io=1,norb)
 
-      if(fn.eq.'<input>') then
-       call p2chkend(iu, 'sym_labels')
-      endif
-      end
+!       if(fn.eq.'<input>') then
+!        call p2chkend(iu, 'sym_labels')
+!       endif
+!       end
 c-----------------------------------------------------------------------
       subroutine read_optorb_mixvirt(moopt,movirt,fn)
 C$INPUT optorb_mixvirt i i a=<input>
