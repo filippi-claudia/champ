@@ -121,13 +121,13 @@ jobs:
            echo "Running free.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out 
            echo "first eigenvalue vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py "eigenvalue            1" free.out -45.898315302789705 
+           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -45.898315302789705 
 
            # run and compare a Davidson calculation MPI
            echo "Running free.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out 
            echo "first eigenvalue vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py "eigenvalue            1" free.out -50.713234670513742 
+           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -50.713234670513742 
            #$HOME/work/champ/champ/tools/compare_output_file.py regterg.out output_ref/regterg_2_threads.out
            
            #  restore the module files
