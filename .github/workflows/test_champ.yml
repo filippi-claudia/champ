@@ -39,61 +39,67 @@ jobs:
            cd tests/CI_test/h2/qmc_1det/
 
            # run and compare simple sampling
+           echo "Compare vmc.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out 
            $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0083658 
 
            # run and compare simple sampling
+           echo "Compare vmc_lin.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0604737
 
            # run and compare simple sampling MPI
-           export OMPI_MCA_btl=^openib
+           echo "Compare vmc.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out 
-           $HOME/work/champ/champ/tools/compare_output_file.py vmc.out output_ref/vmc_ref.out
+           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0119453 
+           #$HOME/work/champ/champ/tools/compare_output_file.py vmc.out output_ref/vmc_ref.out
            #
            # run and compare simple sampling MPI
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp 
-#           $HOME/work/champ/champ/tools/compare_output_file.py vmc_lin.out output_ref/vmc_lin_ref.out
+           echo "Compare vmc_lin.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp  
+           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0586750 
+           #$HOME/work/champ/champ/tools/compare_output_file.py vmc_lin.out output_ref/vmc_lin_ref.out
            #
-           #           # restore the module files
-           #           cd $HOME/work/champ/champ
-           #           cp m_vmc_save ./src/vmc/m_vmc.f90
-           #           cp m_optci_save ./src/vmc/m_optci.f90
-           #           cp m_sr_save ./src/vmc/m_sr.f90
-           #
-           #
-           #    - name: Building_code_for_psb3
-           #      run: |
-           #
-           #           # save the module files
-           #           cp src/vmc/m_vmc.f90 ./m_vmc_save
-           #           cp src/vmc/m_sr.f90 ./m_sr_save
-           #           cp src/vmc/m_optci.f90 ./m_optci_save
-           #
-           #           # copy module files to src
-           #           cp tests/CI_test/psb3/module/*.f90 src/vmc
-           #
-           #           # compile
-           #           rm -rf bin build
-           #           cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DENABLE_TEST=ON
-           #           cmake --build build --clean-first -- -j2
-           #
-           #    - name: Run_psb3
-           #      run: |
-           #
-           #           cd tests/CI_test/psb3/
-           #
-           #           # run and compare a sr calculation
-           #           $HOME/work/champ/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
-           #           $HOME/work/champ/champ/tools/compare_value.py sr_n.out "total E" -42.7144606 
-           #
-           #           # run and compare a sr calculation MPI
-           #           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
-           #           $HOME/work/champ/champ/tools/compare_output_file.py sr_n.out output_ref/sr_n_ref.out
-           #
-           #           #  restore the module files
-           #           cd $HOME/work/champ/champ
-           #           cp m_vmc_save ./src/vmc/m_vmc.f90
-           #           cp m_optci_save ./src/vmc/m_optci.f90
-           #           cp m_sr_save ./src/vmc/m_sr.f90
-           #
+           # restore the module files
+           cd $HOME/work/champ/champ
+           cp m_vmc_save ./src/vmc/m_vmc.f90
+           cp m_optci_save ./src/vmc/m_optci.f90
+           cp m_sr_save ./src/vmc/m_sr.f90
+
+
+           - name: Building_code_for_psb3
+             run: |
+
+           # save the module files
+           cp src/vmc/m_vmc.f90 ./m_vmc_save
+           cp src/vmc/m_sr.f90 ./m_sr_save
+           cp src/vmc/m_optci.f90 ./m_optci_save
+
+           # copy module files to src
+           cp tests/CI_test/psb3/module/*.f90 src/vmc
+
+           # compile
+           rm -rf bin build
+           cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DENABLE_TEST=ON
+           cmake --build build --clean-first -- -j2
+
+    - name: Run_psb3
+      run: |
+
+           cd tests/CI_test/psb3/
+
+           # run and compare a sr calculation
+           $HOME/work/champ/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
+           $HOME/work/champ/champ/tools/compare_value.py sr_n.out "total E" -42.7144606 
+
+           # run and compare a sr calculation MPI
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
+           $HOME/work/champ/champ/tools/compare_value.py sr_n.out "total E" -42.6476514 
+           #$HOME/work/champ/champ/tools/compare_output_file.py sr_n.out output_ref/sr_n_ref.out
+
+           #  restore the module files
+           cd $HOME/work/champ/champ
+           cp m_vmc_save ./src/vmc/m_vmc.f90
+           cp m_optci_save ./src/vmc/m_optci.f90
+           cp m_sr_save ./src/vmc/m_sr.f90
+
