@@ -1,5 +1,9 @@
+!> DO NOT MODIFY THE COMMENT JUST BELOW THE
+!> SUBROUTINE DEFINITION
+!> THEY COMTROL THE MINI PARSER NON SENSE
+
 subroutine read_znuc(iu)
-!znuc inp
+!INPUT znuc inp
 !KEYDOC nuclear charge for each atom type and ghost type
 
     use vmc_mod, only: MCTYPE
@@ -22,13 +26,13 @@ subroutine read_znuc(iu)
 end
 
 subroutine read_lcao(norb_tmp, nbasis_tmp, iwft, filename)
-    ! lcao i i i=1 a=<input>
-    !KEYDOC Orbital coefficients wrt complete basis.
-    !KEYDOC Usage:  {        t lcao  norb,nbasis,filename,norbv}
-    !KEYDOC norb: number of orbitals for trial wave function
-    !KEYDOC nbasis: number of basis functiobns
-    !KEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
-    !KEYDOC filename: file containing orbitals coefficients
+!INPUT lcao i i i=1 a=<input>
+!KEYDOC Orbital coefficients wrt complete basis.
+!KEYDOC Usage:  {        t lcao  norb,nbasis,filename,norbv}
+!KEYDOC norb: number of orbitals for trial wave function
+!KEYDOC nbasis: number of basis functiobns
+!KEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
+!KEYDOC filename: file containing orbitals coefficients
 
     use vmc_mod, only: MORB, MBASIS
     use coefs, only: coef, nbasis, norb
@@ -69,8 +73,8 @@ subroutine read_lcao(norb_tmp, nbasis_tmp, iwft, filename)
 end subroutine read_lcao
 
 subroutine read_geometry(iu)
-    ! geometry inp
-    !KEYDOC position and type for each atom and ghost atom
+!INPUT geometry inp
+!KEYDOC position and type for each atom and ghost atom
 
     use vmc_mod, only: MCENT
     use atom, only: cent, iwctype, ncent
@@ -94,8 +98,8 @@ subroutine read_geometry(iu)
 end subroutine read_geometry
 
 subroutine read_exponents(iu, iwft)
-    ! exponents inp i=1
-    !KEYDOC Basis function exponents (only if no numerical basis)
+!INPUT exponents inp i=1
+!KEYDOC Basis function exponents (only if no numerical basis)
 
     use coefs, only: nbasis
     use basis, only: zex
@@ -116,7 +120,7 @@ subroutine read_exponents(iu, iwft)
 end
 
 subroutine read_determinants(iu, nd, iwft)
-! determinants inp i i=1
+!INPUT determinants inp i i=1
 !KEYDOC CI coefficients and occupation of determinants in wf
 
     use vmc_mod, only: MELEC, MDET
@@ -160,7 +164,7 @@ subroutine read_determinants(iu, nd, iwft)
 end
 
 subroutine read_multideterminants(iu, nd)
-! multideterminants inp i
+!INPUT multideterminants inp i
 !KEYDOC CI coefficients and occupation of determinants in wf
     use dets, only: ndet
     use const, only: nelec
@@ -194,7 +198,7 @@ subroutine read_multideterminants(iu, nd)
 end subroutine read_multideterminants
 
 subroutine read_jastrow_parameter(iu, iwft)
-! jastrow_parameter inp i=1
+!INPUT jastrow_parameter inp i=1
 !KEYDOC Parameters of Jastrow factor (depends on value of ijas!)
 
     use jaspar, only: nspin1, nspin2
@@ -280,10 +284,10 @@ subroutine read_jastrow_parameter(iu, iwft)
 end subroutine read_jastrow_parameter
 
 subroutine read_bas_num_info(iu, numeric)
-    ! basis inp i
+    !INPUT basis inp i
     !KEYDOC Basis function types and pointers to radial parts tables
-    ! qmc_bf_info inp i
-    !KEYDOC alternative name for keyword basis because of GAMBLE input
+    !INPUT qmc_bf_info inp i
+    !KEYDOC alternative name for keyword basis because of GAMBLE inputword basis because of GAMBLE input
     use numbas_mod, only: MRWF
     use vmc_mod, only: MCTYPE
     use numbas, only: iwrwf, numr
@@ -462,15 +466,15 @@ subroutine read_bas_num_info(iu, numeric)
 end subroutine read_bas_num_info
 
 subroutine read_lattice(iu)
-    ! lattice inp
-    !KEYDOC Lattice vectors of primitive and simulation cell
+!INPUT lattice inp
+!KEYDOC Lattice vectors of primitive and simulation cell
     implicit real*8(a - h, o - z)
     call do_read_lattice(iu)
 end subroutine read_lattice
 
 subroutine read_forces(iu)
-    ! forces_displace inp
-    !KEYDOC Displacement parameters and wave function types
+!INPUT forces_displace inp
+!KEYDOC Displacement parameters and wave function types
 
     use force_mod, only: MFORCE
     use vmc_mod, only: MCENT
@@ -509,7 +513,7 @@ subroutine read_forces(iu)
 end subroutine read_forces
 
 subroutine read_csf(ncsf_read, nstates_read, fn)
-    ! csf i i=1 a=<input>
+!INPUT csf i i=1 a=<input>
 
     use vmc_mod, only: MDET
     use csfs, only: ccsf, ncsf, nstates
@@ -543,8 +547,8 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
 end subroutine read_csf
 
 subroutine read_csfmap(fn)
-    ! csfmap a=<input>
-    !KEYDOC Read mapping between csf and determinants.
+!INPUT csfmap a=<input>
+!KEYDOC Read mapping between csf and determinants.
     use vmc_mod, only: MDET
     use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use mstates_mod, only: MDETCSFX
@@ -603,7 +607,7 @@ subroutine read_csfmap(fn)
 end subroutine read_csfmap
 
 subroutine read_jasderiv(iu)
-!    jasderiv inp
+!INPUT jasderiv inp
     use optjas, only: MPARMJ
     use atom, only: nctype
     use jaspar, only: nspin1, is
@@ -715,8 +719,8 @@ subroutine read_jasderiv(iu)
 end subroutine read_jasderiv
 
 subroutine read_sym(nsym, mo, fn)
-    ! sym_labels i i a=<input>
-    ! KEYDOC Read symmetry information
+!INPUT sym_labels i i a=<input>
+!KEYDOC Read symmetry information
     use coefs, only: norb
     use optorb, only: irrep
     implicit real*8(a - h, o - z)
@@ -748,8 +752,8 @@ subroutine read_sym(nsym, mo, fn)
 end subroutine read_sym
 
 subroutine read_optorb_mixvirt(moopt, movirt, fn)
-    ! optorb_mixvirt i i a=<input>
-    !KEYDOC Read which virtual orbitals are mixed with the occupied ones
+!INPUT optorb_mixvirt i i a=<input>
+!KEYDOC Read which virtual orbitals are mixed with the occupied ones
 
     use optorb_mix, only: iwmix_virt, norbopt, norbvirt
     use coefs, only: norb
@@ -781,9 +785,9 @@ subroutine read_optorb_mixvirt(moopt, movirt, fn)
 end subroutine read_optorb_mixvirt
 
 subroutine read_energies(mo, fn)
-    ! energies i a=<input>
-    ! eigenvalues i a=<input>
-    !KEYDOC Read orbital energies
+!INPUT energies i a=<input>
+!INPUT eigenvalues i a=<input>
+!KEYDOC Read orbital energies
     use coefs, only: norb
     use optorb, only: orb_energy
     implicit real*8(a - h, o - z)
@@ -806,8 +810,8 @@ subroutine read_energies(mo, fn)
 end subroutine read_energies
 
 subroutine read_dmatrix(no, ns, fn)
-    ! dmatrix i i a=<input>
-    ! KEYDOC Read diagonal density matrix information.
+!INPUT dmatrix i i a=<input>
+!KEYDOC Read diagonal density matrix information.
     use precision_kinds, only: dp
     use vmc_mod, only: MORB
     use csfs, only: nstates
@@ -924,8 +928,8 @@ subroutine get_weights(field, weights, iweight, nweight)
 end subroutine get_weights
 
 subroutine read_cavity_spheres(iu, nspheres)
-    ! cavity_spheres inp i
-    !KEYDOC Read centers of cavity spheres and radii
+!INPUT cavity_spheres inp i
+!KEYDOC Read centers of cavity spheres and radii
     use pcm_parms, only: nesph, re, re2
     use pcm_parms, only: xe, ye, ze
     implicit real*8(a - h, o - z)
@@ -949,9 +953,9 @@ subroutine read_cavity_spheres(iu, nspheres)
 end subroutine read_cavity_spheres
 
 subroutine read_gradnts_cart(iu)
-    ! gradients_cartesian inp
-    !KEYDOC Read for which x,y,z cartesian coordiantes of
-    !KEYDOC atoms energy gradients are to be calculated for.
+!INPUT gradients_cartesian inp
+!KEYDOC Read for which x,y,z cartesian coordiantes of
+!KEYDOC atoms energy gradients are to be calculated for.
 
     !     Written by Omar Valsson
 
@@ -1020,9 +1024,9 @@ subroutine read_gradnts_cart(iu)
 end subroutine read_gradnts_cart
 
 subroutine read_gradnts_zmat(iu)
-    ! gradients_zmatrix inp
-    !KEYDOC Read for which Z matrix (internal) coordiantes of
-    !KEYDOC atoms energy gradients are to be calculated for.
+!INPUT gradients_zmatrix inp
+!KEYDOC Read for which Z matrix (internal) coordiantes of
+!KEYDOC atoms energy gradients are to be calculated for.
 
 !      Written by Omar Valsson.
 
@@ -1095,9 +1099,9 @@ subroutine read_gradnts_zmat(iu)
 end subroutine read_gradnts_zmat
 
 subroutine read_modify_zmat(iu)
-    !INPUT modify_zmatrix inp
-    !KEYDOC Read for which Z matrix (internal) coordiantes of
-    !KEYDOC atoms energy gradients are to be calculated for.
+!INPUT modify_zmatrix inp
+!KEYDOC Read for which Z matrix (internal) coordiantes of
+!KEYDOC atoms energy gradients are to be calculated for.
 
     use vmc_mod, only: MCENT
     use grdntsmv, only: igrdmv
@@ -1129,9 +1133,9 @@ subroutine read_modify_zmat(iu)
 end subroutine read_modify_zmat
 
 subroutine read_hessian_zmat(iu)
-    ! hessian_zmatrix inp
-    !KEYDOC Read for which Z matrix (internal) coordiantes of
-    !KEYDOC atoms energy gradients are to be calculated for.
+!INPUT hessian_zmatrix inp
+!KEYDOC Read for which Z matrix (internal) coordiantes of
+!KEYDOC atoms energy gradients are to be calculated for.
 
     use vmc_mod, only: MCENT
     use grdnthes, only: hessian_zmat
@@ -1162,10 +1166,10 @@ subroutine read_hessian_zmat(iu)
 end subroutine read_hessian_zmat
 
 subroutine read_zmat_conn(iu)
-    ! C zmatrix_connectionmatrix inp
-    ! CKEYDOC Read the atom connection matrix for the Z matrix.
-    ! CKEYDOC It is need when calculating forces in Z matrix
-    ! CKEYDOC coordinates.
+!INPUT zmatrix_connectionmatrix inp
+!CKEYDOC Read the atom connection matrix for the Z matrix.
+!CKEYDOC It is need when calculating forces in Z matrix
+!CKEYDOC coordinates.
 
 !      Written by Omar Valsson
 
@@ -1216,7 +1220,7 @@ subroutine read_zmat_conn(iu)
 end subroutine read_zmat_conn
 
 subroutine read_efield(ncharges_tmp, iscreen_tmp, filename)
-    !C efield i i a=<input>
+!INPUT efield i i a=<input>
 
     use efield_mod, only: MCHARGES
     use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge

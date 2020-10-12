@@ -427,3 +427,46 @@ subroutine set_displace_zero(nforce_tmp)
 
     return
 end subroutine set_displace_zero
+
+subroutine modify_zmat_define
+
+    use vmc_mod, only: MCENT
+    use grdntsmv, only: igrdmv
+    use atom, only: ncent
+    implicit real*8(a - h, o - z)
+
+    call p2gti('atoms:natom', ncent, 1)
+    if (ncent .gt. MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
+
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
+
+    do ic = 1, ncent
+        do k = 1, 3
+            igrdmv(k, ic) = 1
+        enddo
+    enddo
+
+    return
+end subroutine modify_zmat_define
+
+subroutine hessian_zmat_define
+
+    use vmc_mod, only: MCENT
+    use grdnthes, only: hessian_zmat
+    use atom, only: ncent
+
+    implicit real*8(a - h, o - z)
+
+    call p2gti('atoms:natom', ncent, 1)
+    if (ncent .gt. MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
+
+    if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))
+
+    do ic = 1, ncent
+        do k = 1, 3
+            hessian_zmat(k, ic) = 1.d0
+        enddo
+    enddo
+
+    return
+end subroutine hessian_zmat_define

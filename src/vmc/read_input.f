@@ -4,48 +4,53 @@ c Written by Friedemann Schautz
       use contr3, only: mode
       implicit real*8(a-h,o-z)
 
-      call allocate_m_common
-      call allocate_m_basis
-      call allocate_m_control
-      call allocate_m_deriv
-      call allocate_m_efield
-      call allocate_m_estimators
-      call allocate_m_ewald
-      call allocate_m_force
-      call allocate_m_gradhess
-      call allocate_m_grdnt
-      call allocate_m_grid
-      call allocate_m_jastrow
-      call allocate_m_mixderiv
-      call allocate_m_mmpol
-      call allocate_m_mstates
-      call allocate_m_optci
-      call allocate_m_optorb
-      call allocate_m_optwf
-      call allocate_m_pcm
-      call allocate_m_prop
-      call allocate_m_pseudo
-      call allocate_m_sampling
-      call allocate_m_sr
-      call allocate_m_state_avrg
-
-
+      
 c Initialize flags
       call flaginit
 c Initialize input parser
+      
       call p2init
-
+      
 c Parse input (standard input)
       call p2go(5,0)
-
+      call allocate_all_arrays()
+      
 c Transfer from lists to fortran variables, print out, check,
 c and read in everything which is still in the old format
+
       call process_input
 
       if(index(mode,'mc').ne.0 ) call p2vin('input.log',1)
 
       return
       end
+
+      subroutine allocate_all_arrays()
+            call allocate_m_common
+            call allocate_m_basis
+            call allocate_m_control
+            call allocate_m_deriv
+            call allocate_m_efield
+            call allocate_m_estimators
+            call allocate_m_ewald
+            call allocate_m_force
+            call allocate_m_gradhess
+            call allocate_m_grdnt
+            call allocate_m_grid
+            call allocate_m_jastrow
+            call allocate_m_mixderiv
+            call allocate_m_mmpol
+            call allocate_m_mstates
+            call allocate_m_optci
+            call allocate_m_optorb
+            call allocate_m_optwf
+            call allocate_m_pcm
+            call allocate_m_prop
+            call allocate_m_pseudo
+            call allocate_m_sampling
+            call allocate_m_sr
+            call allocate_m_state_avrg
+      end subroutine allocate_all_arrays
 
       subroutine read_system_size()
             !> read the size of the system so that we can allocate the min size
@@ -914,23 +919,6 @@ c get parameters for the grid of the orbitals
 
       return
       end
-
-c-----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
-
-
-c----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
- 
-c-----------------------------------------------------------------------
  
 c-----------------------------------------------------------------------
       subroutine flaginit
@@ -1077,74 +1065,5 @@ c Check that the required blocks are there in the input
       endif
 
       write(6,'(''========================================'')')
-      return
-      end
-c-----------------------------------------------------------------------
-
-c----------------------------------------------------------------------
-
-c----------------------------------------------------------------------
-
-c----------------------------------------------------------------------
-
-c----------------------------------------------------------------------
-
-c----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
-
-c----------------------------------------------------------------------
-  
-c-----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
-
-
-c-----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
-
-c-----------------------------------------------------------------------
-      subroutine modify_zmat_define
-
-      use vmc_mod, only: MCENT
-      use grdntsmv, only: igrdmv
-      use atom, only: ncent
-      implicit real*8(a-h,o-z)
-
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
-
-      do 10 ic=1,ncent
-        do 10 k=1,3
- 10       igrdmv(k,ic)=1
-
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine hessian_zmat_define
-
-      use vmc_mod, only: MCENT
-      use grdnthes, only: hessian_zmat
-      use atom, only: ncent
-      
-
-      implicit real*8(a-h,o-z)
-
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
-
-      do 10 ic=1,ncent
-        do 10 k=1,3
- 10       hessian_zmat(k,ic)=1.d0
-
       return
       end

@@ -225,7 +225,7 @@ if (MPI_Fortran_FOUND)
     WORKING_DIRECTORY
       ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND
-      ${INPUT_DIR}/inpt.awk -v p2file=commands.p2 -v logf=${INPUT_DIR}/commands.log ${CMAKE_CURRENT_SOURCE_DIR}/read_input.f
+      ${INPUT_DIR}/inpt.awk -v p2file=commands.p2 -v logf=${INPUT_DIR}/commands.log ${CMAKE_CURRENT_SOURCE_DIR}/read_data.f90
     COMMAND
       cat commands.p2 ${INPUT_DIR}/end.p2 ${INPUT_DIR}/auto.p2 > all.p2
     COMMAND
