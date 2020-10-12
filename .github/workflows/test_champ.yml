@@ -37,6 +37,7 @@ jobs:
       run: |
 
            cd tests/CI_test/h2/qmc_1det/
+           export OMPI_MCA_btl=^openib
 
            # run and compare simple sampling
            echo "Running vmc.inp in serial:"
