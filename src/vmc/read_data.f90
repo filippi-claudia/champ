@@ -489,8 +489,8 @@ subroutine read_forces(iu)
     call p2gtid('general:nforce', nforce, 1, 1)
     if (nforce .gt. MFORCE) call fatal_error('FORCES: nforce > MFORCE')
 
-    allocate (delc(3, MCENT, MFORCE))
-    allocate (iwftype(nforce))
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
+    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
 
     do i = 1, nforce
         do ic = 1, ncent
@@ -1093,3 +1093,162 @@ subroutine read_gradnts_zmat(iu)
 
     return
 end subroutine read_gradnts_zmat
+
+subroutine read_modify_zmat(iu)
+    !INPUT modify_zmatrix inp
+    !KEYDOC Read for which Z matrix (internal) coordiantes of
+    !KEYDOC atoms energy gradients are to be calculated for.
+
+    use vmc_mod, only: MCENT
+    use grdntsmv, only: igrdmv
+    use inputflags, only: imodify_zmat
+
+    use atom, only: ncent
+
+    implicit real*8(a - h, o - z)
+
+    call p2gti('atoms:natom', ncent, 1)
+    if (ncent .gt. MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
+
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
+
+    do ic = 1, ncent
+        call incpos(iu, itmp, 1)
+        read (iu, *) (igrdmv(k, ic), k=1, 3)
+        do k = 1, 3
+            if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) then
+                call fatal_error('MODIFY_ZMATRIX: igrdmv \= 0,1')
+            endif
+        enddo
+    enddo
+
+    imodify_zmat = 1
+    call p2chkend(iu, 'modify_zmatrix')
+
+    return
+end subroutine read_modify_zmat
+
+subroutine read_hessian_zmat(iu)
+    ! hessian_zmatrix inp
+    !KEYDOC Read for which Z matrix (internal) coordiantes of
+    !KEYDOC atoms energy gradients are to be calculated for.
+
+    use vmc_mod, only: MCENT
+    use grdnthes, only: hessian_zmat
+    use inputflags, only: ihessian_zmat
+    use atom, only: ncent
+
+    implicit real*8(a - h, o - z)
+
+    call p2gti('atoms:natom', ncent, 1)
+    if (ncent .gt. MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
+
+    if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))
+
+    do ic = 1, ncent
+        call incpos(iu, itmp, 1)
+        read (iu, *) (hessian_zmat(k, ic), k=1, 3)
+        do k = 1, 3
+            if (hessian_zmat(k, ic) .le. 0) then
+                call fatal_error('HESSIAN_ZMATRIX: hess <=  0')
+            endif
+        enddo
+    enddo
+
+    ihessian_zmat = 1
+    call p2chkend(iu, 'hessian_zmatrix')
+
+    return
+end subroutine read_hessian_zmat
+
+subroutine read_zmat_conn(iu)
+    ! C zmatrix_connectionmatrix inp
+    ! CKEYDOC Read the atom connection matrix for the Z matrix.
+    ! CKEYDOC It is need when calculating forces in Z matrix
+    ! CKEYDOC coordinates.
+
+!      Written by Omar Valsson
+
+    use vmc_mod, only: MCENT
+    use atom, only: cent, ncent
+    use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+    use inputflags, only: izmatrix_check
+
+    implicit real*8(a - h, o - z)
+
+    call p2gti('atoms:natom', ncent, 1)
+
+    if (.not. allocated(czcart)) allocate (czcart(3, ncent))
+    if (.not. allocated(czint)) allocate (czint(3, ncent))
+    if (.not. allocated(czcart_ref)) allocate (czcart_ref(3, 3))
+    if (.not. allocated(izcmat)) allocate (izcmat(3, ncent))
+
+    do ic = 1, 3
+        do k = 1, 3
+            czcart_ref(k, ic) = cent(k, ic)
+        enddo
+    enddo
+
+    do ic = 1, ncent
+        do k = 1, 3
+            izcmat(k, ic) = 0
+            czint(k, ic) = 0.0d0
+            czcart(k, ic) = cent(k, ic)
+        enddo
+    enddo
+
+    do ic = 1, ncent
+        call incpos(iu, itmp, 1)
+        read (iu, *) (izcmat(k, ic), k=1, 3)
+        do k = 1, 3
+            if (izcmat(k, ic) .ge. ic) call fatal_error('ZMATRIX: Error in connection matrix')
+        enddo
+    enddo
+    call cart2zmat(MCENT, czcart, izcmat, czint)
+    call zmat2cart_rc(MCENT, izcmat, czint, czcart, czcart_ref)
+
+    izmatrix = 1
+    izmatrix_check = 1
+
+    call p2chkend(iu, 'zmatrix_connectionmatrix')
+
+    return
+end subroutine read_zmat_conn
+
+subroutine read_efield(ncharges_tmp, iscreen_tmp, filename)
+    !C efield i i a=<input>
+
+    use efield_mod, only: MCHARGES
+    use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
+    use efield, only: iscreen, ncharges
+    use inputflags, only: icharge_efield
+
+    implicit real*8(a - h, o - z)
+
+    character filename*(*)
+
+    call file(iu, filename, 'old', 1, 0)
+    ncharges = ncharges_tmp
+    iscreen = iscreen_tmp
+    write (6, *) 'reading in', ncharges, ' charges!'
+
+    if (ncharges .gt. MCHARGES) call fatal_error('EFIELD: ncharges > MCHARGES')
+
+    if (.not. allocated(ascreen)) allocate (ascreen(ncharges))
+    if (.not. allocated(bscreen)) allocate (bscreen(ncharges))
+    if (.not. allocated(qcharge)) allocate (qcharge(ncharges))
+    if (.not. allocated(xcharge)) allocate (xcharge(ncharges))
+    if (.not. allocated(ycharge)) allocate (ycharge(ncharges))
+    if (.not. allocated(zcharge)) allocate (zcharge(ncharges))
+
+    do i = 1, ncharges
+        call incpos(iu, itmp, 1)
+        read (iu, *) xcharge(i), ycharge(i), zcharge(i), qcharge(i), ascreen(i), bscreen(i)
+    enddo
+    icharge_efield = icharge_efield + 1
+    write (6, *) 'icharge_efield=', icharge_efield
+
+    if (filename .eq. '<input>') then
+        call p2chkend(iu, 'efield')
+    endif
+end subroutine read_efield

@@ -389,3 +389,41 @@ subroutine inputjastrow(nwftype)
     endif
 
 end subroutine inputjastrow
+
+subroutine set_displace_zero(nforce_tmp)
+    use vmc_mod, only: MCENT
+    use pcm, only: MCHS
+    use forcestr, only: delc
+    use pcm_force, only: sch_s
+    use pcm_cntrl, only: ipcm
+    use pcm_parms, only: ch, nchs
+
+    use atom, only: ncent
+
+    implicit real*8(a - h, o - z)
+
+    call p2gti('atoms:natom', ncent, 1)
+    if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
+
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce_tmp))
+
+    do i = 1, nforce_tmp
+        do ic = 1, ncent
+            do k = 1, 3
+                delc(k, ic, i) = 0.d0
+            enddo
+        enddo
+    enddo
+
+    if (.not. allocated(sch_s)) allocate (sch_s(MCHS, nforce_tmp))
+
+    if (ipcm .eq. 3) then
+        do i = 1, nforce_tmp
+            do j = 1, nchs
+                sch_s(j, i) = ch(j)
+            enddo
+        enddo
+    endif
+
+    return
+end subroutine set_displace_zero
