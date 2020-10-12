@@ -44,18 +44,18 @@ jobs:
            $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0083658 
 
            # run and compare simple sampling
-           echo "Compare vmc_lin.inp in serial:"
+           echo "Compare total E of vmc_lin.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0604737
 
            # run and compare simple sampling MPI
-           echo "Compare vmc.inp in parallel:"
+           echo "Compare total E of vmc.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out 
-           $HOME/work/champ/champ/tools/compare_value.py vmc.inp "total E" -1.0119453 
+           $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0119453 
            #$HOME/work/champ/champ/tools/compare_output_file.py vmc.out output_ref/vmc_ref.out
            #
            # run and compare simple sampling MPI
-           echo "Compare vmc_lin.inp in parallel:"
+           echo "Compare total E of vmc_lin.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp  
            $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0586750 
            #$HOME/work/champ/champ/tools/compare_output_file.py vmc_lin.out output_ref/vmc_lin_ref.out
@@ -89,10 +89,12 @@ jobs:
            cd tests/CI_test/psb3/
 
            # run and compare a sr calculation
+           echo "Compare total E of sr_n.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
            $HOME/work/champ/champ/tools/compare_value.py sr_n.out "total E" -42.7144606 
 
            # run and compare a sr calculation MPI
+           echo "Compare total E of sr_n.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
            $HOME/work/champ/champ/tools/compare_value.py sr_n.out "total E" -42.6476514 
            #$HOME/work/champ/champ/tools/compare_output_file.py sr_n.out output_ref/sr_n_ref.out
