@@ -51,7 +51,7 @@ jobs:
            # run and compare simple sampling MPI
            echo "Compare vmc.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0119453 
+           $HOME/work/champ/champ/tools/compare_value.py vmc.inp "total E" -1.0119453 
            #$HOME/work/champ/champ/tools/compare_output_file.py vmc.out output_ref/vmc_ref.out
            #
            # run and compare simple sampling MPI
