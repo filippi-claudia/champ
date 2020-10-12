@@ -184,7 +184,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.04450  -1.04450(  807)   0.00000(    0)  -0.52796(37332)   0.00000(    0)                            0.71500       100
-END       OF equilb CP, REAL TIME IS       0.01      0.01     0     0
+END       OF equilb CP, REAL TIME IS       0.00      0.00     0     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -0.95376  -0.95376( 2824)   0.00000(    0)  -0.49685(35133)   0.00000(    0)                            0.80000       100
   -0.97962  -0.96669( 1660)   0.00000(    0)  -0.48917(24465)   0.00000(    0)                            0.82750       200
@@ -386,7 +386,7 @@ END       OF equilb CP, REAL TIME IS       0.01      0.01     0     0
   -0.92154  -1.01169(  480)   0.00000(    0)  -0.50392( 2552)   0.00000(    0)                            0.76586     19800
   -1.11413  -1.01221(  479)   0.00000(    0)  -0.50410( 2546)   0.00000(    0)                            0.76555     19900
   -0.95936  -1.01195(  478)   0.00000(    0)  -0.50418( 2540)   0.00000(    0)                            0.76562     20000
-END       OF all    CP, REAL TIME IS       0.84      0.83     0     0
+END       OF all    CP, REAL TIME IS       0.63      0.63     0     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -420,7 +420,7 @@ DAV: eigv    -1.06176    -0.35660
 DAV: roots are converged
  eigenvalue            1  :   -1.0617558230861053     
  eigenvalue            2  :  -0.35660463634423079     
-END       OF david  CP, REAL TIME IS       1.02      0.18     1     0
+END       OF david  CP, REAL TIME IS       0.75      0.11     0     0
 LIN_D: state, vec, energy   1   1    -1.06176     0.21077
 LIN_D: state, vec, energy   1   2    -0.35660     8.92891
 LIN_D: max overlap ivec   1
@@ -435,7 +435,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.08690  -1.08690(  137)   0.00000(    0)  -0.54249(38359)   0.00000(    0)                            0.74000       100
-END       OF equilb CP, REAL TIME IS       1.04      0.00     1     0
+END       OF equilb CP, REAL TIME IS       0.75      0.00     0     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.03700  -1.03700( 1224)   0.00000(    0)  -0.52715(37275)   0.00000(    0)                            0.74000       100
   -1.04298  -1.03999(  854)   0.00000(    0)  -0.52840(26420)   0.00000(    0)                            0.73750       200
@@ -637,7 +637,7 @@ END       OF equilb CP, REAL TIME IS       1.04      0.00     1     0
   -1.03839  -1.05545(  212)   0.00000(    0)  -0.52769( 2657)   0.00000(    0)                            0.76500     19800
   -1.08990  -1.05562(  212)   0.00000(    0)  -0.52782( 2651)   0.00000(    0)                            0.76515     19900
   -1.03274  -1.05550(  211)   0.00000(    0)  -0.52769( 2643)   0.00000(    0)                            0.76505     20000
-END       OF all    CP, REAL TIME IS       1.76      0.73     1     0
+END       OF all    CP, REAL TIME IS       1.35      0.59     1     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -666,7 +666,7 @@ DAV: eigv    -1.05564    -0.40126
 DAV: roots are converged
  eigenvalue            1  :   -1.0556431503710111     
  eigenvalue            2  :  -0.40125880958498444     
-END       OF david  CP, REAL TIME IS       1.82      0.06     1     0
+END       OF david  CP, REAL TIME IS       1.38      0.04     1     0
 LIN_D: state, vec, energy   1   1    -1.05564     0.00677
 LIN_D: state, vec, energy   1   2    -0.40126   314.15221
 LIN_D: max overlap ivec   1
@@ -681,7 +681,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.04515  -1.04515( 2378)   0.00000(    0)  -0.53939(38141)   0.00000(    0)                            0.79000       100
-END       OF equilb CP, REAL TIME IS       1.83      0.00     1     0
+END       OF equilb CP, REAL TIME IS       1.39      0.00     1     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.03771  -1.03771( 2599)   0.00000(    0)  -0.50048(35389)   0.00000(    0)                            0.77500       100
   -1.05043  -1.04407( 1394)   0.00000(    0)  -0.51562(25803)   0.00000(    0)                            0.76750       200
@@ -883,7 +883,7 @@ END       OF equilb CP, REAL TIME IS       1.83      0.00     1     0
   -1.06418  -1.05958(  216)   0.00000(    0)  -0.53040( 2668)   0.00000(    0)                            0.76374     19800
   -1.03144  -1.05944(  216)   0.00000(    0)  -0.53033( 2661)   0.00000(    0)                            0.76387     19900
   -1.10640  -1.05968(  215)   0.00000(    0)  -0.53051( 2656)   0.00000(    0)                            0.76370     20000
-END       OF all    CP, REAL TIME IS       2.57      0.74     2     0
+END       OF all    CP, REAL TIME IS       1.98      0.59     2     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -912,7 +912,7 @@ DAV: eigv    -1.05972    -0.40720
 DAV: roots are converged
  eigenvalue            1  :   -1.0597221079918631     
  eigenvalue            2  :  -0.40719678591419695     
-END       OF david  CP, REAL TIME IS       2.63      0.06     2     0
+END       OF david  CP, REAL TIME IS       2.03      0.04     2     0
 LIN_D: state, vec, energy   1   1    -1.05972     0.00326
 LIN_D: state, vec, energy   1   2    -0.40720   335.45926
 LIN_D: max overlap ivec   1
@@ -927,7 +927,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.02621  -1.02621( 1633)   0.00000(    0)  -0.52465(37098)   0.00000(    0)                            0.73000       100
-END       OF equilb CP, REAL TIME IS       2.64      0.00     2     0
+END       OF equilb CP, REAL TIME IS       2.03      0.00     2     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.08028  -1.08028( 1917)   0.00000(    0)  -0.55369(39152)   0.00000(    0)                            0.76500       100
   -1.05593  -1.06811( 1623)   0.00000(    0)  -0.54903(27454)   0.00000(    0)                            0.78750       200
@@ -1129,7 +1129,7 @@ END       OF equilb CP, REAL TIME IS       2.64      0.00     2     0
   -1.06420  -1.06145(  233)   0.00000(    0)  -0.53118( 2673)   0.00000(    0)                            0.76720     19800
   -0.95607  -1.06092(  239)   0.00000(    0)  -0.53059( 2664)   0.00000(    0)                            0.76731     19900
   -1.03909  -1.06081(  238)   0.00000(    0)  -0.53063( 2658)   0.00000(    0)                            0.76753     20000
-END       OF all    CP, REAL TIME IS       3.37      0.73     3     0
+END       OF all    CP, REAL TIME IS       2.62      0.59     2     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -1158,7 +1158,7 @@ DAV: eigv    -1.06084    -0.40938
 DAV: roots are converged
  eigenvalue            1  :   -1.0608385922502699     
  eigenvalue            2  :  -0.40937517704667004     
-END       OF david  CP, REAL TIME IS       3.43      0.07     3     0
+END       OF david  CP, REAL TIME IS       2.66      0.04     2     0
 LIN_D: state, vec, energy   1   1    -1.06084     0.00237
 LIN_D: state, vec, energy   1   2    -0.40938   882.36194
 LIN_D: max overlap ivec   1
@@ -1173,7 +1173,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.08997  -1.08997( 3537)   0.00000(    0)  -0.51997(36768)   0.00000(    0)                            0.77500       100
-END       OF equilb CP, REAL TIME IS       3.44      0.00     3     0
+END       OF equilb CP, REAL TIME IS       2.67      0.00     3     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.06774  -1.06774(   13)   0.00000(    0)  -0.53378(37744)   0.00000(    0)                            0.76500       100
   -1.06670  -1.06722(  466)   0.00000(    0)  -0.53686(26844)   0.00000(    0)                            0.74750       200
@@ -1375,7 +1375,7 @@ END       OF equilb CP, REAL TIME IS       3.44      0.00     3     0
   -1.06191  -1.06280(  198)   0.00000(    0)  -0.53171( 2675)   0.00000(    0)                            0.76785     19800
   -1.07180  -1.06285(  197)   0.00000(    0)  -0.53171( 2668)   0.00000(    0)                            0.76769     19900
   -1.07653  -1.06292(  196)   0.00000(    0)  -0.53183( 2662)   0.00000(    0)                            0.76770     20000
-END       OF all    CP, REAL TIME IS       4.17      0.73     4     0
+END       OF all    CP, REAL TIME IS       3.26      0.59     3     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -1404,7 +1404,7 @@ DAV: eigv    -1.06293    -0.40542
 DAV: roots are converged
  eigenvalue            1  :   -1.0629330721680970     
  eigenvalue            2  :  -0.40541749323585080     
-END       OF david  CP, REAL TIME IS       4.23      0.06     4     0
+END       OF david  CP, REAL TIME IS       3.30      0.04     3     0
 LIN_D: state, vec, energy   1   1    -1.06293     0.00227
 LIN_D: state, vec, energy   1   2    -0.40542   543.92547
 LIN_D: max overlap ivec   1
@@ -1419,7 +1419,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.06475  -1.06475( 1816)   0.00000(    0)  -0.54521(38552)   0.00000(    0)                            0.73000       100
-END       OF equilb CP, REAL TIME IS       4.24      0.01     4     0
+END       OF equilb CP, REAL TIME IS       3.30      0.00     3     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.06132  -1.06132(  299)   0.00000(    0)  -0.53277(37673)   0.00000(    0)                            0.75500       100
   -1.06980  -1.06556(  336)   0.00000(    0)  -0.53535(26768)   0.00000(    0)                            0.75750       200
@@ -1621,7 +1621,7 @@ END       OF equilb CP, REAL TIME IS       4.24      0.01     4     0
   -1.05912  -1.05869(  216)   0.00000(    0)  -0.53138( 2675)   0.00000(    0)                            0.76568     19800
   -1.04492  -1.05862(  215)   0.00000(    0)  -0.53137( 2668)   0.00000(    0)                            0.76573     19900
   -1.06942  -1.05867(  214)   0.00000(    0)  -0.53131( 2661)   0.00000(    0)                            0.76600     20000
-END       OF all    CP, REAL TIME IS       4.97      0.72     5     0
+END       OF all    CP, REAL TIME IS       3.90      0.60     4     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -1650,7 +1650,7 @@ DAV: eigv    -1.05869    -0.39378
 DAV: roots are converged
  eigenvalue            1  :   -1.0586867251456189     
  eigenvalue            2  :  -0.39377530482068707     
-END       OF david  CP, REAL TIME IS       5.02      0.06     5     0
+END       OF david  CP, REAL TIME IS       3.94      0.04     4     0
 LIN_D: state, vec, energy   1   1    -1.05869     0.00135
 LIN_D: state, vec, energy   1   2    -0.39378  2378.65972
 LIN_D: max overlap ivec   1
@@ -1665,7 +1665,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.04911  -1.04911( 2264)   0.00000(    0)  -0.50855(35960)   0.00000(    0)                            0.74000       100
-END       OF equilb CP, REAL TIME IS       5.03      0.00     5     0
+END       OF equilb CP, REAL TIME IS       3.94      0.00     4     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.08266  -1.08266( 2859)   0.00000(    0)  -0.52112(36848)   0.00000(    0)                            0.76500       100
   -1.03648  -1.05957( 1842)   0.00000(    0)  -0.51877(25939)   0.00000(    0)                            0.74750       200
@@ -1867,7 +1867,7 @@ END       OF equilb CP, REAL TIME IS       5.03      0.00     5     0
   -1.05665  -1.06284(  201)   0.00000(    0)  -0.53050( 2670)   0.00000(    0)                            0.76581     19800
   -1.05279  -1.06279(  200)   0.00000(    0)  -0.53045( 2663)   0.00000(    0)                            0.76580     19900
   -1.10837  -1.06301(  200)   0.00000(    0)  -0.53053( 2656)   0.00000(    0)                            0.76587     20000
-END       OF all    CP, REAL TIME IS       5.78      0.75     5     0
+END       OF all    CP, REAL TIME IS       4.53      0.59     5     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -1896,7 +1896,7 @@ DAV: eigv    -1.06302    -0.40501
 DAV: roots are converged
  eigenvalue            1  :   -1.0630215939747170     
  eigenvalue            2  :  -0.40501298530787005     
-END       OF david  CP, REAL TIME IS       5.84      0.06     5     0
+END       OF david  CP, REAL TIME IS       4.57      0.04     5     0
 LIN_D: state, vec, energy   1   1    -1.06302     0.00125
 LIN_D: state, vec, energy   1   2    -0.40501   890.42188
 LIN_D: max overlap ivec   1
@@ -1911,7 +1911,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.06634  -1.06634( 2161)   0.00000(    0)  -0.54845(38781)   0.00000(    0)                            0.77000       100
-END       OF equilb CP, REAL TIME IS       5.85      0.00     5     0
+END       OF equilb CP, REAL TIME IS       4.58      0.00     5     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.06636  -1.06636( 1527)   0.00000(    0)  -0.52239(36938)   0.00000(    0)                            0.78000       100
   -1.07166  -1.06901(  835)   0.00000(    0)  -0.52691(26347)   0.00000(    0)                            0.76250       200
@@ -2113,7 +2113,7 @@ END       OF equilb CP, REAL TIME IS       5.85      0.00     5     0
   -1.06127  -1.05944(  201)   0.00000(    0)  -0.53106( 2673)   0.00000(    0)                            0.76477     19800
   -1.09363  -1.05961(  200)   0.00000(    0)  -0.53111( 2666)   0.00000(    0)                            0.76487     19900
   -1.02352  -1.05943(  200)   0.00000(    0)  -0.53101( 2659)   0.00000(    0)                            0.76485     20000
-END       OF all    CP, REAL TIME IS       6.57      0.73     6     0
+END       OF all    CP, REAL TIME IS       5.16      0.59     5     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -2142,7 +2142,7 @@ DAV: eigv    -1.05944    -0.40121
 DAV: roots are converged
  eigenvalue            1  :   -1.0594357189336669     
  eigenvalue            2  :  -0.40121271628812594     
-END       OF david  CP, REAL TIME IS       6.62      0.05     6     0
+END       OF david  CP, REAL TIME IS       5.21      0.04     5     0
 LIN_D: state, vec, energy   1   1    -1.05944     0.00099
 LIN_D: state, vec, energy   1   2    -0.40121  1177.22377
 LIN_D: max overlap ivec   1
@@ -2157,7 +2157,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.08999  -1.08999(  841)   0.00000(    0)  -0.55094(38958)   0.00000(    0)                            0.83000       100
-END       OF equilb CP, REAL TIME IS       6.63      0.00     6     0
+END       OF equilb CP, REAL TIME IS       5.21      0.00     5     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.01098  -1.01098( 1726)   0.00000(    0)  -0.51769(36606)   0.00000(    0)                            0.76500       100
   -1.08053  -1.04576( 1941)   0.00000(    0)  -0.52922(26473)   0.00000(    0)                            0.77750       200
@@ -2359,7 +2359,7 @@ END       OF equilb CP, REAL TIME IS       6.63      0.00     6     0
   -1.06317  -1.06141(  195)   0.00000(    0)  -0.53154( 2675)   0.00000(    0)                            0.76780     19800
   -1.06810  -1.06145(  194)   0.00000(    0)  -0.53161( 2668)   0.00000(    0)                            0.76764     19900
   -1.08876  -1.06158(  193)   0.00000(    0)  -0.53175( 2662)   0.00000(    0)                            0.76782     20000
-END       OF all    CP, REAL TIME IS       7.25      0.62     7     0
+END       OF all    CP, REAL TIME IS       5.80      0.59     6     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -2388,7 +2388,7 @@ DAV: eigv    -1.06159    -0.41574
 DAV: roots are converged
  eigenvalue            1  :   -1.0615942169614689     
  eigenvalue            2  :  -0.41573765470888902     
-END       OF david  CP, REAL TIME IS       7.30      0.05     7     0
+END       OF david  CP, REAL TIME IS       5.84      0.04     6     0
 LIN_D: state, vec, energy   1   1    -1.06159     0.00340
 LIN_D: state, vec, energy   1   2    -0.41574   314.23955
 LIN_D: max overlap ivec   1
@@ -2403,7 +2403,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.04086  -1.04086( 2458)   0.00000(    0)  -0.50305(35571)   0.00000(    0)                            0.79500       100
-END       OF equilb CP, REAL TIME IS       7.30      0.00     7     0
+END       OF equilb CP, REAL TIME IS       5.85      0.00     6     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.05490  -1.05490(  824)   0.00000(    0)  -0.53328(37708)   0.00000(    0)                            0.73500       100
   -1.09024  -1.07257( 1292)   0.00000(    0)  -0.53320(26660)   0.00000(    0)                            0.73250       200
@@ -2605,7 +2605,7 @@ END       OF equilb CP, REAL TIME IS       7.30      0.00     7     0
   -1.04557  -1.05796(  253)   0.00000(    0)  -0.52747( 2657)   0.00000(    0)                            0.76712     19800
   -1.03701  -1.05785(  252)   0.00000(    0)  -0.52729( 2650)   0.00000(    0)                            0.76693     19900
   -1.08475  -1.05799(  251)   0.00000(    0)  -0.52737( 2643)   0.00000(    0)                            0.76682     20000
-END       OF all    CP, REAL TIME IS       7.93      0.63     8     0
+END       OF all    CP, REAL TIME IS       6.43      0.58     7     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -2634,7 +2634,7 @@ DAV: eigv    -1.05800    -0.40933
 DAV: roots are converged
  eigenvalue            1  :   -1.0579980351301055     
  eigenvalue            2  :  -0.40933210998250635     
-END       OF david  CP, REAL TIME IS       7.98      0.05     8     0
+END       OF david  CP, REAL TIME IS       6.47      0.04     7     0
 LIN_D: state, vec, energy   1   1    -1.05800     0.00160
 LIN_D: state, vec, energy   1   2    -0.40933  1010.03227
 LIN_D: max overlap ivec   1
@@ -2649,7 +2649,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.05960  -1.05960(  819)   0.00000(    0)  -0.53559(37872)   0.00000(    0)                            0.74000       100
-END       OF equilb CP, REAL TIME IS       7.99      0.00     8     0
+END       OF equilb CP, REAL TIME IS       6.48      0.00     7     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.04407  -1.04407( 2791)   0.00000(    0)  -0.50230(35518)   0.00000(    0)                            0.75000       100
   -1.07850  -1.06129( 1786)   0.00000(    0)  -0.52578(26341)   0.00000(    0)                            0.76500       200
@@ -2851,7 +2851,7 @@ END       OF equilb CP, REAL TIME IS       7.99      0.00     8     0
   -1.05540  -1.05714(  351)   0.00000(    0)  -0.52662( 2664)   0.00000(    0)                            0.76169     19800
   -1.07294  -1.05722(  349)   0.00000(    0)  -0.52670( 2658)   0.00000(    0)                            0.76176     19900
   -1.04035  -1.05714(  347)   0.00000(    0)  -0.52666( 2651)   0.00000(    0)                            0.76195     20000
-END       OF all    CP, REAL TIME IS       8.62      0.63     9     0
+END       OF all    CP, REAL TIME IS       7.06      0.58     7     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -2880,7 +2880,7 @@ DAV: eigv    -1.05721    -0.40335
 DAV: roots are converged
  eigenvalue            1  :   -1.0572106621140502     
  eigenvalue            2  :  -0.40334556915452413     
-END       OF david  CP, REAL TIME IS       8.66      0.05     9     0
+END       OF david  CP, REAL TIME IS       7.10      0.04     8     0
 LIN_D: state, vec, energy   1   1    -1.05721     0.00893
 LIN_D: state, vec, energy   1   2    -0.40335   118.19476
 LIN_D: max overlap ivec   1
@@ -2895,7 +2895,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.08338  -1.08338(  500)   0.00000(    0)  -0.54523(38553)   0.00000(    0)                            0.73000       100
-END       OF equilb CP, REAL TIME IS       8.67      0.00     9     0
+END       OF equilb CP, REAL TIME IS       7.10      0.00     8     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.05932  -1.05932( 3672)   0.00000(    0)  -0.55563(39289)   0.00000(    0)                            0.81500       100
   -1.08315  -1.07123( 2016)   0.00000(    0)  -0.55271(27636)   0.00000(    0)                            0.78750       200
@@ -3097,7 +3097,7 @@ END       OF equilb CP, REAL TIME IS       8.67      0.00     9     0
   -1.09514  -1.05802(  239)   0.00000(    0)  -0.52944( 2664)   0.00000(    0)                            0.76417     19800
   -1.10191  -1.05824(  238)   0.00000(    0)  -0.52958( 2658)   0.00000(    0)                            0.76447     19900
   -1.06112  -1.05826(  237)   0.00000(    0)  -0.52958( 2651)   0.00000(    0)                            0.76425     20000
-END       OF all    CP, REAL TIME IS       9.29      0.62     9     0
+END       OF all    CP, REAL TIME IS       7.69      0.59     8     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -3126,7 +3126,7 @@ DAV: eigv    -1.05829    -0.40039
 DAV: roots are converged
  eigenvalue            1  :   -1.0582888543585112     
  eigenvalue            2  :  -0.40039092331522819     
-END       OF david  CP, REAL TIME IS       9.35      0.05    10     0
+END       OF david  CP, REAL TIME IS       7.73      0.04     8     0
 LIN_D: state, vec, energy   1   1    -1.05829     0.00601
 LIN_D: state, vec, energy   1   2    -0.40039   186.64153
 LIN_D: max overlap ivec   1
@@ -3141,7 +3141,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.07393  -1.07393( 1051)   0.00000(    0)  -0.54439(38494)   0.00000(    0)                            0.81500       100
-END       OF equilb CP, REAL TIME IS       9.35      0.00    10     0
+END       OF equilb CP, REAL TIME IS       7.74      0.00     8     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.08649  -1.08649(  284)   0.00000(    0)  -0.54123(38271)   0.00000(    0)                            0.74500       100
   -1.08219  -1.08434(  639)   0.00000(    0)  -0.54550(27277)   0.00000(    0)                            0.73750       200
@@ -3343,7 +3343,7 @@ END       OF equilb CP, REAL TIME IS       9.35      0.00    10     0
   -1.09070  -1.06054(  190)   0.00000(    0)  -0.52968( 2665)   0.00000(    0)                            0.76919     19800
   -1.03077  -1.06039(  189)   0.00000(    0)  -0.52958( 2658)   0.00000(    0)                            0.76892     19900
   -1.03907  -1.06029(  188)   0.00000(    0)  -0.52953( 2651)   0.00000(    0)                            0.76885     20000
-END       OF all    CP, REAL TIME IS       9.98      0.63    10     0
+END       OF all    CP, REAL TIME IS       8.33      0.59     9     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -3372,7 +3372,7 @@ DAV: eigv    -1.06030    -0.40767
 DAV: roots are converged
  eigenvalue            1  :   -1.0603035971774772     
  eigenvalue            2  :  -0.40767187172556851     
-END       OF david  CP, REAL TIME IS      10.03      0.05    10     0
+END       OF david  CP, REAL TIME IS       8.37      0.04     9     0
 LIN_D: state, vec, energy   1   1    -1.06030     0.00486
 LIN_D: state, vec, energy   1   2    -0.40767   210.82686
 LIN_D: max overlap ivec   1
@@ -3387,7 +3387,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.03439  -1.03439( 1786)   0.00000(    0)  -0.50456(35678)   0.00000(    0)                            0.73500       100
-END       OF equilb CP, REAL TIME IS      10.04      0.00    10     0
+END       OF equilb CP, REAL TIME IS       8.38      0.00     9     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.08006  -1.08006( 1782)   0.00000(    0)  -0.52743(37295)   0.00000(    0)                            0.83500       100
   -1.06601  -1.07304( 1239)   0.00000(    0)  -0.52466(26234)   0.00000(    0)                            0.80250       200
@@ -3589,7 +3589,7 @@ END       OF equilb CP, REAL TIME IS      10.04      0.00    10     0
   -1.06145  -1.05767(  209)   0.00000(    0)  -0.52901( 2663)   0.00000(    0)                            0.76768     19800
   -1.07602  -1.05776(  208)   0.00000(    0)  -0.52907( 2656)   0.00000(    0)                            0.76796     19900
   -1.07513  -1.05785(  208)   0.00000(    0)  -0.52905( 2649)   0.00000(    0)                            0.76825     20000
-END       OF all    CP, REAL TIME IS      10.66      0.62    11     0
+END       OF all    CP, REAL TIME IS       8.96      0.58    10     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -3618,7 +3618,7 @@ DAV: eigv    -1.05785    -0.40890
 DAV: roots are converged
  eigenvalue            1  :   -1.0578520444796196     
  eigenvalue            2  :  -0.40890316759264161     
-END       OF david  CP, REAL TIME IS      10.71      0.05    11     0
+END       OF david  CP, REAL TIME IS       9.00      0.04    10     0
 LIN_D: state, vec, energy   1   1    -1.05785     0.00322
 LIN_D: state, vec, energy   1   2    -0.40890   313.17012
 LIN_D: max overlap ivec   1
@@ -3633,7 +3633,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.04614  -1.04614(  592)   0.00000(    0)  -0.51888(36690)   0.00000(    0)                            0.75500       100
-END       OF equilb CP, REAL TIME IS      10.72      0.00    11     0
+END       OF equilb CP, REAL TIME IS       9.00      0.00    10     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -0.99819  -0.99819( 3886)   0.00000(    0)  -0.47162(33348)   0.00000(    0)                            0.84500       100
   -1.05816  -1.02818( 2522)   0.00000(    0)  -0.49623(24873)   0.00000(    0)                            0.82000       200
@@ -3835,7 +3835,7 @@ END       OF equilb CP, REAL TIME IS      10.72      0.00    11     0
   -1.03811  -1.05941(  216)   0.00000(    0)  -0.52852( 2660)   0.00000(    0)                            0.76763     19800
   -1.04202  -1.05932(  215)   0.00000(    0)  -0.52838( 2653)   0.00000(    0)                            0.76729     19900
   -1.09392  -1.05950(  215)   0.00000(    0)  -0.52842( 2646)   0.00000(    0)                            0.76718     20000
-END       OF all    CP, REAL TIME IS      11.34      0.62    12     0
+END       OF all    CP, REAL TIME IS       9.59      0.59    10     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -3864,7 +3864,7 @@ DAV: eigv    -1.05952    -0.40633
 DAV: roots are converged
  eigenvalue            1  :   -1.0595168084749489     
  eigenvalue            2  :  -0.40632847655790111     
-END       OF david  CP, REAL TIME IS      11.39      0.05    12     0
+END       OF david  CP, REAL TIME IS       9.63      0.04    10     0
 LIN_D: state, vec, energy   1   1    -1.05952     0.00391
 LIN_D: state, vec, energy   1   2    -0.40633   343.52584
 LIN_D: max overlap ivec   1
@@ -3879,7 +3879,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.07974  -1.07974(  333)   0.00000(    0)  -0.53751(38008)   0.00000(    0)                            0.74500       100
-END       OF equilb CP, REAL TIME IS      11.40      0.00    12     0
+END       OF equilb CP, REAL TIME IS       9.64      0.00    10     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.03203  -1.03203(  209)   0.00000(    0)  -0.51454(36384)   0.00000(    0)                            0.82000       100
   -1.03424  -1.03314( 1185)   0.00000(    0)  -0.52417(26217)   0.00000(    0)                            0.79250       200
@@ -4081,7 +4081,7 @@ END       OF equilb CP, REAL TIME IS      11.40      0.00    12     0
   -1.09091  -1.05453(  217)   0.00000(    0)  -0.52607( 2648)   0.00000(    0)                            0.76823     19800
   -1.05365  -1.05452(  216)   0.00000(    0)  -0.52600( 2641)   0.00000(    0)                            0.76837     19900
   -0.99182  -1.05421(  218)   0.00000(    0)  -0.52607( 2634)   0.00000(    0)                            0.76845     20000
-END       OF all    CP, REAL TIME IS      12.03      0.63    13     0
+END       OF all    CP, REAL TIME IS      10.22      0.58    11     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -4110,7 +4110,7 @@ DAV: eigv    -1.05422    -0.40836
 DAV: roots are converged
  eigenvalue            1  :   -1.0542162041244587     
  eigenvalue            2  :  -0.40836388458705819     
-END       OF david  CP, REAL TIME IS      12.08      0.05    13     0
+END       OF david  CP, REAL TIME IS      10.26      0.04    11     0
 LIN_D: state, vec, energy   1   1    -1.05422     0.00240
 LIN_D: state, vec, energy   1   2    -0.40836   605.47009
 LIN_D: max overlap ivec   1
@@ -4125,7 +4125,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.07717  -1.07717( 2756)   0.00000(    0)  -0.51910(36706)   0.00000(    0)                            0.80500       100
-END       OF equilb CP, REAL TIME IS      12.09      0.00    13     0
+END       OF equilb CP, REAL TIME IS      10.27      0.00    11     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.08139  -1.08139( 4099)   0.00000(    0)  -0.51171(36183)   0.00000(    0)                            0.82000       100
   -1.08768  -1.08454( 2161)   0.00000(    0)  -0.52307(26166)   0.00000(    0)                            0.79250       200
@@ -4327,7 +4327,7 @@ END       OF equilb CP, REAL TIME IS      12.09      0.00    13     0
   -1.07873  -1.06004(  214)   0.00000(    0)  -0.52950( 2665)   0.00000(    0)                            0.76841     19800
   -0.98619  -1.05967(  216)   0.00000(    0)  -0.52920( 2657)   0.00000(    0)                            0.76814     19900
   -1.07259  -1.05974(  215)   0.00000(    0)  -0.52921( 2650)   0.00000(    0)                            0.76810     20000
-END       OF all    CP, REAL TIME IS      12.76      0.68    14     0
+END       OF all    CP, REAL TIME IS      10.87      0.60    12     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -4356,7 +4356,7 @@ DAV: eigv    -1.05975    -0.40507
 DAV: roots are converged
  eigenvalue            1  :   -1.0597467983335456     
  eigenvalue            2  :  -0.40506887383333628     
-END       OF david  CP, REAL TIME IS      12.81      0.05    14     0
+END       OF david  CP, REAL TIME IS      10.91      0.04    12     0
 LIN_D: state, vec, energy   1   1    -1.05975     0.00380
 LIN_D: state, vec, energy   1   2    -0.40507   264.92402
 LIN_D: max overlap ivec   1
@@ -4371,7 +4371,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.06369  -1.06369( 2151)   0.00000(    0)  -0.54706(38683)   0.00000(    0)                            0.78000       100
-END       OF equilb CP, REAL TIME IS      12.82      0.00    14     0
+END       OF equilb CP, REAL TIME IS      10.91      0.00    12     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.04532  -1.04532( 1514)   0.00000(    0)  -0.53337(37715)   0.00000(    0)                            0.70000       100
   -1.05964  -1.05248(  837)   0.00000(    0)  -0.53162(26581)   0.00000(    0)                            0.74750       200
@@ -4573,7 +4573,7 @@ END       OF equilb CP, REAL TIME IS      12.82      0.00    14     0
   -1.04497  -1.05445(  202)   0.00000(    0)  -0.52839( 2659)   0.00000(    0)                            0.76505     19800
   -1.05326  -1.05445(  201)   0.00000(    0)  -0.52834( 2652)   0.00000(    0)                            0.76535     19900
   -1.07785  -1.05457(  200)   0.00000(    0)  -0.52846( 2646)   0.00000(    0)                            0.76558     20000
-END       OF all    CP, REAL TIME IS      13.45      0.63    14     0
+END       OF all    CP, REAL TIME IS      11.50      0.59    13     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -4602,7 +4602,7 @@ DAV: eigv    -1.05459    -0.40756
 DAV: roots are converged
  eigenvalue            1  :   -1.0545906498658666     
  eigenvalue            2  :  -0.40756274503652234     
-END       OF david  CP, REAL TIME IS      13.50      0.05    15     0
+END       OF david  CP, REAL TIME IS      11.54      0.04    13     0
 LIN_D: state, vec, energy   1   1    -1.05459     0.00596
 LIN_D: state, vec, energy   1   2    -0.40756   172.81496
 LIN_D: max overlap ivec   1
@@ -4617,7 +4617,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.08657  -1.08657(  873)   0.00000(    0)  -0.53711(37979)   0.00000(    0)                            0.73000       100
-END       OF equilb CP, REAL TIME IS      13.50      0.00    15     0
+END       OF equilb CP, REAL TIME IS      11.55      0.00    13     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.06560  -1.06560(  358)   0.00000(    0)  -0.53533(37853)   0.00000(    0)                            0.80500       100
   -1.06447  -1.06503(  183)   0.00000(    0)  -0.53360(26680)   0.00000(    0)                            0.80250       200
@@ -4819,7 +4819,7 @@ END       OF equilb CP, REAL TIME IS      13.50      0.00    15     0
   -1.04529  -1.05883(  246)   0.00000(    0)  -0.52945( 2664)   0.00000(    0)                            0.77025     19800
   -1.05078  -1.05879(  245)   0.00000(    0)  -0.52939( 2657)   0.00000(    0)                            0.77030     19900
   -1.08457  -1.05892(  244)   0.00000(    0)  -0.52955( 2651)   0.00000(    0)                            0.77045     20000
-END       OF all    CP, REAL TIME IS      14.12      0.62    15     0
+END       OF all    CP, REAL TIME IS      12.16      0.62    13     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -4848,7 +4848,7 @@ DAV: eigv    -1.05897    -0.41031
 DAV: roots are converged
  eigenvalue            1  :   -1.0589742948272747     
  eigenvalue            2  :  -0.41031459630121403     
-END       OF david  CP, REAL TIME IS      14.17      0.05    15     0
+END       OF david  CP, REAL TIME IS      12.21      0.05    13     0
 LIN_D: state, vec, energy   1   1    -1.05897     0.00725
 LIN_D: state, vec, energy   1   2    -0.41031   166.13090
 LIN_D: max overlap ivec   1
@@ -4863,7 +4863,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.06756  -1.06756(  305)   0.00000(    0)  -0.53594(37896)   0.00000(    0)                            0.82500       100
-END       OF equilb CP, REAL TIME IS      14.17      0.00    15     0
+END       OF equilb CP, REAL TIME IS      12.22      0.00    13     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.04068  -1.04068( 1919)   0.00000(    0)  -0.53391(37753)   0.00000(    0)                            0.75000       100
   -1.05192  -1.04630( 1002)   0.00000(    0)  -0.53040(26521)   0.00000(    0)                            0.78250       200
@@ -5065,7 +5065,7 @@ END       OF equilb CP, REAL TIME IS      14.17      0.00    15     0
   -1.04137  -1.05753(  231)   0.00000(    0)  -0.52641( 2652)   0.00000(    0)                            0.76237     19800
   -1.02580  -1.05737(  230)   0.00000(    0)  -0.52643( 2645)   0.00000(    0)                            0.76249     19900
   -1.09869  -1.05757(  230)   0.00000(    0)  -0.52662( 2639)   0.00000(    0)                            0.76243     20000
-END       OF all    CP, REAL TIME IS      14.80      0.63    16     0
+END       OF all    CP, REAL TIME IS      12.86      0.65    14     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -5094,7 +5094,7 @@ DAV: eigv    -1.05758    -0.41968
 DAV: roots are converged
  eigenvalue            1  :   -1.0575815670551134     
  eigenvalue            2  :  -0.41967979395032035     
-END       OF david  CP, REAL TIME IS      14.85      0.05    16     0
+END       OF david  CP, REAL TIME IS      12.90      0.04    14     0
 LIN_D: state, vec, energy   1   1    -1.05758     0.00240
 LIN_D: state, vec, energy   1   2    -0.41968   583.00526
 LIN_D: max overlap ivec   1
@@ -5112,7 +5112,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.09061  -1.09061( 1087)   0.00000(    0)  -0.55299(39102)   0.00000(    0)                            0.73000       100
-END       OF equilb CP, REAL TIME IS      14.86      0.00    16     0
+END       OF equilb CP, REAL TIME IS      12.91      0.00    14     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.06446  -1.06446( 1837)   0.00000(    0)  -0.51924(36716)   0.00000(    0)                            0.76500       100
   -1.08549  -1.07497( 1134)   0.00000(    0)  -0.52811(26413)   0.00000(    0)                            0.78500       200
@@ -5314,7 +5314,7 @@ END       OF equilb CP, REAL TIME IS      14.86      0.00    16     0
   -1.10413  -1.05892(  183)   0.00000(    0)  -0.52863( 2659)   0.00000(    0)                            0.77139     19800
   -0.99306  -1.05858(  185)   0.00000(    0)  -0.52866( 2653)   0.00000(    0)                            0.77148     19900
   -1.07670  -1.05868(  184)   0.00000(    0)  -0.52873( 2646)   0.00000(    0)                            0.77175     20000
-END       OF all    CP, REAL TIME IS      15.46      0.60    17     0
+END       OF all    CP, REAL TIME IS      13.53      0.62    15     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
