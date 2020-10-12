@@ -1,3 +1,16 @@
+--------------------------------------------------------------------------
+[[5646,1],0]: A high-performance Open MPI point-to-point messaging module
+was unable to find any relevant network interfaces:
+
+Module: OpenFabrics (openib)
+  Host: fv-az54
+
+Another transport will be used instead, although this may result in
+lower performance.
+
+NOTE: You can disable this warning by setting the MCA parameter
+btl_base_warn_component_unused to 0.
+--------------------------------------------------------------------------
 executing [../pool//h2.geo] ... 
 ***
 executing [../pool//global.inp] ... 
@@ -173,7 +186,7 @@ number of electrons placed =    2
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -1.04450  -1.04450(  807)   0.00000(    0)  -0.52796(37332)   0.00000(    0)                            0.71500       100
-END       OF equilb CP, REAL TIME IS       0.00      0.00     0     0
+END       OF equilb CP, REAL TIME IS       0.01      0.01     0     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
   -0.95376  -0.95376( 2824)   0.00000(    0)  -0.49685(35133)   0.00000(    0)                            0.80000       100
   -0.97962  -0.96669( 1660)   0.00000(    0)  -0.48917(24465)   0.00000(    0)                            0.82750       200
@@ -375,7 +388,7 @@ END       OF equilb CP, REAL TIME IS       0.00      0.00     0     0
   -0.92154  -1.01169(  480)   0.00000(    0)  -0.50392( 2552)   0.00000(    0)                            0.76586     19800
   -1.11413  -1.01221(  479)   0.00000(    0)  -0.50410( 2546)   0.00000(    0)                            0.76555     19900
   -0.95936  -1.01195(  478)   0.00000(    0)  -0.50418( 2540)   0.00000(    0)                            0.76562     20000
-END       OF all    CP, REAL TIME IS       0.65      0.64     0     0
+END       OF all    CP, REAL TIME IS       1.15      1.14     1     1
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -388,3 +401,6 @@ average psid, det_ref  0.15952D-01 0.15952D-01
 log detref -0.99985D+00-0.99850D+00
 distance from the nodes    0.00000
  successful dump to unit 10
+[fv-az54:06435] 1 more process has sent help message help-mpi-btl-base.txt / btl:no-nics
+[fv-az54:06435] Set MCA parameter "orte_base_help_aggregate" to 0 to see all help / error messages
+Cleaning up orphan processes
