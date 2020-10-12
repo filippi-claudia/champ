@@ -105,18 +105,31 @@ jobs:
            #$HOME/work/champ/champ/tools/compare_output_file.py sr_n.out output_ref/sr_n_2_threads.out
            
            # run and compare a regterg calculation
-           echo "Running sr_n.inp in serial:"
+           echo "Running regterg.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < regterg.inp > regterg.out 
            echo "total E vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py regterg.out "total E" -41.4910248 
 
            # run and compare a regterg calculation MPI
-           echo "Running sr_n.inp in parallel:"
+           echo "Running regterg.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < regterg.inp > regterg.out 
            echo "total E vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py regterg.out "total E" -41.3989435 
            #$HOME/work/champ/champ/tools/compare_output_file.py regterg.out output_ref/regterg_2_threads.out
 
+           # run and compare a Davidson calculation
+           echo "Running free.inp in serial:"
+           $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out 
+           echo "first eigenvalue vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py "eigenvalue            1" free.out -45.898315302789705 
+
+           # run and compare a Davidson calculation MPI
+           echo "Running free.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out 
+           echo "first eigenvalue vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py "eigenvalue            1" free.out -50.713234670513742 
+           #$HOME/work/champ/champ/tools/compare_output_file.py regterg.out output_ref/regterg_2_threads.out
+           
            #  restore the module files
            cd $HOME/work/champ/champ
            cp m_vmc_save ./src/vmc/m_vmc.f90
