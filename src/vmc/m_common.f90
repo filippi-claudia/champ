@@ -1286,5 +1286,3 @@ subroutine allocate_m_common()
     call allocate_zmatrix()
     call allocate_zmatrix_grad()
 end subroutine allocate_m_common
-
-

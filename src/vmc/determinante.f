@@ -260,6 +260,7 @@ c iel has different spin than the electron moved
 c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
+      use precision_kinds, only: dp
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -272,8 +273,8 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
-      dimension slmi(MMAT_DIM),dorb(3,MORB)
+      dimension slmi(MMAT_DIM)
+      dimension dorb(3,MORB)
       dimension ddx_ref(3)
 
       ddx_ref(1)=0

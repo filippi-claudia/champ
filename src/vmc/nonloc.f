@@ -369,8 +369,8 @@ c         write(6,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,1,iel)
 c-----------------------------------------------------------------------
       subroutine nonlocd(iel,orb,detu,detd,slmui,slmdi,ratio)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
-
-      use vmc_mod, only: MMAT_DIM
+      
+      use precision_kinds, only: dp
       use elec, only: ndn, nup
       use multidet, only: kref
 

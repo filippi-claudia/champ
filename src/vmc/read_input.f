@@ -1,6 +1,6 @@
       subroutine read_input
 c Written by Friedemann Schautz
-
+      
       use contr3, only: mode
       implicit real*8(a-h,o-z)
 
@@ -13,6 +13,7 @@ c Initialize input parser
       
 c Parse input (standard input)
       call p2go(5,0)
+      call compute_mat_size()
       call allocate_all_arrays()
       
 c Transfer from lists to fortran variables, print out, check,
@@ -24,6 +25,15 @@ c and read in everything which is still in the old format
 
       return
       end
+      
+      subroutine compute_mat_size()
+        use vmc_mod, only: MMAT_DIM, MMAT_DIM2
+        use const, only: nelec
+
+        MMAT_DIM = nelec*nelec/4
+        MMAT_DIM2 = nelec*(nelec-1)/2
+
+      end subroutine
 
       subroutine allocate_all_arrays()
             call allocate_m_common

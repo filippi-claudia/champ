@@ -28,11 +28,12 @@ module vmc_mod
     integer, parameter :: nrad = 3001
     real(dp), parameter :: delri = (nrad - 1)/radmax
 
-    integer, parameter :: MELEC = 55, MORB = 148, MBASIS = 148, MDET = 400, MCENT = 20
+    integer, parameter :: MELEC = 32, MORB = 148, MBASIS = 148, MDET = 400, MCENT = 20
     integer, parameter :: MCTYPE = 3
     integer, parameter :: MCTYP3X = 5, NSPLIN = 1001, MORDJ = 7
 
-    integer, parameter :: MMAT_DIM = (MELEC*MELEC)/4, MMAT_DIM2 = (MELEC*(MELEC - 1))/2
+    ! integer, parameter :: MMAT_DIM = (MELEC*MELEC)/4, MMAT_DIM2 = (MELEC*(MELEC - 1))/2
+    integer :: MMAT_DIM, MMAT_DIM2
     integer, parameter :: MORDJ1 = MORDJ + 1
 
     integer, parameter :: NEQSX = 6*MORDJ, MTERMS = 55
@@ -41,10 +42,13 @@ module vmc_mod
     integer, parameter :: NCOEF = 5
     integer, parameter :: MEXCIT = 10
 
+    ! integer :: nmat_dim, nmat_dim2
+
     private
     public :: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
     public :: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
     public :: radmax, delri
+    public :: nmat_dim, nmat_dim2
 
     public :: NEQSX, MTERMS
 
@@ -54,11 +58,4 @@ module vmc_mod
 
 contains
 
-    subroutine compute_vmc_size()
-        nmat_dim = nelec*nelec/4
-        nmat_dim2 = nelec*(nelec - 1)/2
-    end subroutine compute_vmc_size
-
 end module vmc_mod
-
-

@@ -115,6 +115,7 @@ c compute wave function
 c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
+      use precision_kinds, only: dp
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -129,14 +130,14 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
       parameter (one=1.d0,half=0.5d0)
 
-      dimension slmi(MMAT_DIM)
       dimension aa(MELEC,MORB),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
       dimension b(MORB,3),dorb(3,MORB)
       dimension gmat(MELEC,MORB,3)
       dimension velocity(3)
+
+      dimension slmi(MMAT_DIM)
 
       do k=1,3
         velocity(k)=0.d0
@@ -191,7 +192,6 @@ c     if(iab.eq.2) write(6,*) 'gmat ',(((gmat(irep,jrep,kk),irep=iactv(iab),nel)
       enddo
 
 c     if(iab.eq.2) write(6,*) 'ymat ',((ymat(jrep,irep),irep=iactv(iab),nel),jrep=ivirt(iab),norb)
-
       return
       end
 c-----------------------------------------------------------------------
