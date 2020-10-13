@@ -18,7 +18,7 @@ contains
     subroutine allocate_atom()
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT, MCTYPE
-        if (.not. allocated(cent)) allocate (cent(3, MCENT))
+        if (.not. allocated(cent)) allocate (cent(3, ncent_tot))
         if (.not. allocated(znuc)) allocate (znuc(MCTYPE))
         if (.not. allocated(iwctype)) allocate (iwctype(MCTYPE))
     end subroutine allocate_atom
@@ -57,11 +57,12 @@ module b_tmove
     save
 contains
     subroutine allocate_b_tmove()
+        use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
-        if (.not. allocated(b_t)) allocate (b_t(MORB, MPS_QUAD, MCENT, MELEC))
-        if (.not. allocated(iskip)) allocate (iskip(MELEC, MCENT))
+        if (.not. allocated(b_t)) allocate (b_t(MORB, MPS_QUAD, ncent_tot, MELEC))
+        if (.not. allocated(iskip)) allocate (iskip(MELEC, ncent_tot))
     end subroutine allocate_b_tmove
 
     subroutine deallocate_b_tmove()
@@ -96,14 +97,15 @@ module Bloc
     save
 contains
     subroutine allocate_Bloc()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
         use optjas, only: MPARMJ
         if (.not. allocated(b)) allocate (b(MORB, MELEC))
         if (.not. allocated(tildem)) allocate (tildem(MELEC, MORB, 2))
         if (.not. allocated(xmat)) allocate (xmat(MELEC**2, 2))
-        if (.not. allocated(b_da)) allocate (b_da(3, MELEC, MORB, MCENT))
-        if (.not. allocated(db)) allocate (db(3, MELEC, MORB, MCENT))
+        if (.not. allocated(b_da)) allocate (b_da(3, MELEC, MORB, ncent_tot))
+        if (.not. allocated(db)) allocate (db(3, MELEC, MORB, ncent_tot))
         if (.not. allocated(b_dj)) allocate (b_dj(MORB, MELEC, MPARMJ))
     end subroutine allocate_Bloc
 
@@ -144,10 +146,11 @@ module casula
     save
 contains
     subroutine allocate_casula()
+        use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
-        if (.not. allocated(t_vpsp)) allocate (t_vpsp(MCENT, MPS_QUAD, MELEC))
+        if (.not. allocated(t_vpsp)) allocate (t_vpsp(ncent_tot, MPS_QUAD, MELEC))
     end subroutine allocate_casula
 
     subroutine deallocate_casula()
@@ -374,13 +377,14 @@ module distance_mod
     save
 contains
     subroutine allocate_distance_mod()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT, MMAT_DIM2
-        if (.not. allocated(r_en)) allocate (r_en(MELEC, MCENT))
-        if (.not. allocated(rvec_en)) allocate (rvec_en(3, MELEC, MCENT))
+        if (.not. allocated(r_en)) allocate (r_en(MELEC, ncent_tot))
+        if (.not. allocated(rvec_en)) allocate (rvec_en(3, MELEC, ncent_tot))
         if (.not. allocated(r_ee)) allocate (r_ee(MMAT_DIM2))
         if (.not. allocated(rvec_ee)) allocate (rvec_ee(3, MMAT_DIM2))
-        if (.not. allocated(rshift)) allocate (rshift(3, MELEC, MCENT))
+        if (.not. allocated(rshift)) allocate (rshift(3, MELEC, ncent_tot))
     end subroutine allocate_distance_mod
 
     subroutine deallocate_distance_mod()
@@ -410,13 +414,14 @@ module distances_sav
     save
 contains
     subroutine allocate_distances_sav()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
         if (.not. allocated(r_ee_sav)) allocate (r_ee_sav(MELEC))
-        if (.not. allocated(r_en_sav)) allocate (r_en_sav(MCENT))
-        if (.not. allocated(rshift_sav)) allocate (rshift_sav(3, MCENT))
+        if (.not. allocated(r_en_sav)) allocate (r_en_sav(ncent_tot))
+        if (.not. allocated(rshift_sav)) allocate (rshift_sav(3, ncent_tot))
         if (.not. allocated(rvec_ee_sav)) allocate (rvec_ee_sav(3, MELEC))
-        if (.not. allocated(rvec_en_sav)) allocate (rvec_en_sav(3, MCENT))
+        if (.not. allocated(rvec_en_sav)) allocate (rvec_en_sav(3, ncent_tot))
     end subroutine allocate_distances_sav
 
     subroutine deallocate_distances_sav()
@@ -1206,12 +1211,13 @@ module zmatrix
     save
 contains
     subroutine allocate_zmatrix()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
-        if (.not. allocated(czcart)) allocate (czcart(3, MCENT))
-        if (.not. allocated(czint)) allocate (czint(3, MCENT))
+        if (.not. allocated(czcart)) allocate (czcart(3, ncent_tot))
+        if (.not. allocated(czint)) allocate (czint(3, ncent_tot))
         if (.not. allocated(czcart_ref)) allocate (czcart_ref(3, 3))
-        if (.not. allocated(izcmat)) allocate (izcmat(3, MCENT))
+        if (.not. allocated(izcmat)) allocate (izcmat(3, ncent_tot))
     end subroutine allocate_zmatrix
 
     subroutine deallocate_zmatrix()
@@ -1237,9 +1243,10 @@ module zmatrix_grad
     save
 contains
     subroutine allocate_zmatrix_grad()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT3
-        if (.not. allocated(transform_grd)) allocate (transform_grd(MCENT3, MCENT3))
+        if (.not. allocated(transform_grd)) allocate (transform_grd(ncent_tot3, ncent_tot3))
     end subroutine allocate_zmatrix_grad
 
     subroutine deallocate_zmatrix_grad()
@@ -1321,3 +1328,5 @@ subroutine allocate_m_common()
     call allocate_zmatrix()
     call allocate_zmatrix_grad()
 end subroutine allocate_m_common
+
+
