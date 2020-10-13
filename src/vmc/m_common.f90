@@ -180,12 +180,13 @@ module csfs
     save
 contains
     subroutine allocate_csfs()
+        use wfsec, only: nwftype
         use dets, only: ndet
         use force_mod, only: MWF
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
         use mstates_mod, only: MSTATES, MDETCSFX
-        if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, MWF))
+        if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, nwftype))
         if (.not. allocated(cxdet)) allocate (cxdet(ndet*ndetCSFX))
         if (.not. allocated(iadet)) allocate (iadet(ndet))
         if (.not. allocated(ibdet)) allocate (ibdet(ndet))

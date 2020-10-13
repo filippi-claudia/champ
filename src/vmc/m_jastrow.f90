@@ -97,10 +97,11 @@ module jaspar1
     save
 contains
     subroutine allocate_jaspar1()
+        use wfsec, only: nwftype
         use force_mod, only: MWF
         use precision_kinds, only: dp
-        if (.not. allocated(cjas1)) allocate (cjas1(MWF))
-        if (.not. allocated(cjas2)) allocate (cjas2(MWF))
+        if (.not. allocated(cjas1)) allocate (cjas1(nwftype))
+        if (.not. allocated(cjas2)) allocate (cjas2(nwftype))
     end subroutine allocate_jaspar1
 
     subroutine deallocate_jaspar1()
@@ -124,10 +125,11 @@ module jaspar2
     save
 contains
     subroutine allocate_jaspar2()
+        use wfsec, only: nwftype
         use force_mod, only: MWF
         use precision_kinds, only: dp
-        if (.not. allocated(a1)) allocate (a1(83, 3, MWF))
-        if (.not. allocated(a2)) allocate (a2(83, 3, MWF))
+        if (.not. allocated(a1)) allocate (a1(83, 3, nwftype))
+        if (.not. allocated(a2)) allocate (a2(83, 3, nwftype))
     end subroutine allocate_jaspar2
 
     subroutine deallocate_jaspar2()
@@ -157,15 +159,16 @@ module jaspar3
     save
 contains
     subroutine allocate_jaspar3()
+        use wfsec, only: nwftype
         use atom, only: nctype_tot
         use force_mod, only: MWF
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
         use vmc_mod, only: MORDJ1
-        if (.not. allocated(a)) allocate (a(MORDJ1, MWF))
+        if (.not. allocated(a)) allocate (a(MORDJ1, nwftype))
         ! if (.not. allocated(b)) allocate (b(MORDJ1, 2, MWF))
         ! if (.not. allocated(c)) allocate (c(83, MCTYPE, MWF))
-        if (.not. allocated(fck)) allocate (fck(15, nctype_tot, MWF))
+        if (.not. allocated(fck)) allocate (fck(15, nctype_tot, nwftype))
         ! if (.not. allocated(scalek)) allocate (scalek(MWF))
     end subroutine allocate_jaspar3
 

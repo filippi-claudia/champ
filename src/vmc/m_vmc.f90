@@ -48,7 +48,6 @@ module vmc_mod
     public :: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
     public :: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
     public :: radmax, delri
-    public :: nmat_dim, nmat_dim2
 
     public :: NEQSX, MTERMS
 
