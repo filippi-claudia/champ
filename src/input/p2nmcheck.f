@@ -5,41 +5,41 @@ C this file is auto generated, do not edit
       character lists(21)*(12)
       character vars(153)*(16)
       dimension iaptr(21),ieptr(21)
-      data lists/'electrons','atoms','startend','general','jastrow',
-     $ 'periodic','blocking_dmc','optgeo','vmc','forces',
-     $ 'blocking_vmc','gradients','dmc','qmmm','optwf','pseudo',
-     $ '3dgrid','properties','mstates','strech','ci'/
-      data vars/'nelec','nup','nctype','natom','addghostype',
-     $ 'nghostcent','idump','irstar','isite','icharged_atom','title',
-     $ 'unit','mass','iperiodic','ibasis','nforce','nwftype','seed',
-     $ 'ipr','pool','basis','pseudopot','i3dsplorb','i3dlagorb',
-     $ 'scalecoef','ianalyt_lap','ijas','isc','nspin1','nspin2',
-     $ 'ifock','norb','npoly','np','cutg','cutg_sim','cutg_big',
-     $ 'cutg_sim_big','nstep','nblk','nblkeq','nconf_new','nconf',
-     $ 'iforce_analy','iuse_zmat','alfgeo','izvzb','iroot_geo',
-     $ 'imetro','deltar','deltat','delta','fbias','node_cutoff',
-     $ 'enode_cutoff','istrech','alfstr','nwprod','itausec','nstep',
-     $ 'nblk','nblkeq','nconf_new','nconf','ngradnts','igrdtype',
-     $ 'delgrdxyz','delgrdbl','delgrdba','delgrdda','idmc','tau',
+      data lists/'startend','gradients','optwf','periodic',
+     $ 'blocking_dmc','vmc','pseudo','forces','electrons','qmmm',
+     $ 'atoms','general','dmc','strech','optgeo','ci','blocking_vmc',
+     $ '3dgrid','jastrow','properties','mstates'/
+      data vars/'idump','irstar','isite','icharged_atom','ngradnts',
+     $ 'igrdtype','delgrdxyz','delgrdbl','delgrdba','delgrdda',
+     $ 'ioptwf','idl_flag','ilbfgs_flag','ilbfgs_m','method',
+     $ 'nopt_iter','ioptjas','ioptorb','ioptci','multiple_adiag',
+     $ 'add_diag','ngrad_jas_blocks','nblk_max','nblk_ci','dl_alg',
+     $ 'iorbprt','isample_cmat','istddev','limit_cmat','e_shift',
+     $ 'save_blocks','force_blocks','iorbsample','iuse_trafo',
+     $ 'iuse_orbeigv','ncore','nextorb','no_active','approx',
+     $ 'approx_mix','energy_tol','sr_tau','sr_eps','sr_adiag',
+     $ 'micro_iter_sr','dl_mom','lin_eps','lin_adiag','lin_nvec',
+     $ 'lin_nvecx','lin_jdav','func_omega','omega','n_omegaf',
+     $ 'n_omegat','sr_rescale','norb','npoly','np','cutg','cutg_sim',
+     $ 'cutg_big','cutg_sim_big','nstep','nblk','nblkeq','nconf_new',
+     $ 'nconf','imetro','deltar','deltat','delta','fbias',
+     $ 'node_cutoff','enode_cutoff','nloc','nquad','istrech','alfstr',
+     $ 'nwprod','itausec','nelec','nup','iqmmm','nctype','natom',
+     $ 'addghostype','nghostcent','title','unit','mass','iperiodic',
+     $ 'ibasis','nforce','nwftype','seed','ipr','pool','basis',
+     $ 'pseudopot','i3dsplorb','i3dlagorb','scalecoef','idmc','tau',
      $ 'etrial','nfprod','ipq','itau_eff','iacc_rej','icross',
      $ 'icuspg','idiv_v','icut_br','icut_e','icasula','node_cutoff',
      $ 'enode_cutoff','ibranch_elec','icircular','idrifdifgfunc',
-     $ 'mode_dmc','iqmmm','ioptwf','idl_flag','ilbfgs_flag',
-     $ 'ilbfgs_m','method','nopt_iter','ioptjas','ioptorb','ioptci',
-     $ 'multiple_adiag','add_diag','ngrad_jas_blocks','nblk_max',
-     $ 'nblk_ci','dl_alg','iorbprt','isample_cmat','istddev',
-     $ 'limit_cmat','e_shift','save_blocks','force_blocks',
-     $ 'iorbsample','iuse_trafo','iuse_orbeigv','ncore','nextorb',
-     $ 'no_active','approx','approx_mix','energy_tol','sr_tau',
-     $ 'sr_eps','sr_adiag','micro_iter_sr','dl_mom','lin_eps',
-     $ 'lin_adiag','lin_nvec','lin_nvecx','lin_jdav','func_omega',
-     $ 'omega','n_omegaf','n_omegat','sr_rescale','nloc','nquad',
-     $ 'stepx','stepy','stepz','x0','y0','z0','xn','yn','zn','sample',
-     $ 'print','iguiding','iefficiency','alfstr','iciprt'/
-      data iaptr/1,3,7,11,26,32,39,44,49,56,60,65,71,90,91,137,139,
-     $ 148,150,152,153/
-      data ieptr/2,6,10,25,31,38,43,48,55,59,64,70,89,90,136,138,147,
-     $ 149,151,152,153/
+     $ 'mode_dmc','alfstr','iforce_analy','iuse_zmat','alfgeo',
+     $ 'izvzb','iroot_geo','iciprt','nstep','nblk','nblkeq',
+     $ 'nconf_new','nconf','stepx','stepy','stepz','x0','y0','z0',
+     $ 'xn','yn','zn','ianalyt_lap','ijas','isc','nspin1','nspin2',
+     $ 'ifock','sample','print','iguiding','iefficiency'/
+      data iaptr/1,5,11,57,64,69,76,78,82,84,85,89,104,123,124,129,
+     $ 130,135,144,150,152/
+      data ieptr/4,10,56,63,68,75,77,81,83,84,88,103,122,123,128,129,
+     $ 134,143,149,151,153/
       nlist=21
       ierr=0
       do i=1,nlist

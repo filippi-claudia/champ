@@ -15,13 +15,14 @@ module da_energy_sumcum
     save
 contains
     subroutine allocate_da_energy_sumcum()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
-        if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, MCENT))
-        if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, MCENT))
-        if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, MCENT))
-        if (.not. allocated(da_psi_cum)) allocate (da_psi_cum(3, MCENT))
-        if (.not. allocated(da_psi_sum)) allocate (da_psi_sum(3, MCENT))
+        if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, ncent_tot))
+        if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, ncent_tot))
+        if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, ncent_tot))
+        if (.not. allocated(da_psi_cum)) allocate (da_psi_cum(3, ncent_tot))
+        if (.not. allocated(da_psi_sum)) allocate (da_psi_sum(3, ncent_tot))
     end subroutine allocate_da_energy_sumcum
 
     subroutine deallocate_da_energy_sumcum()
@@ -49,11 +50,12 @@ module da_jastrow4val
     save
 contains
     subroutine allocate_da_jastrow4val()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
-        if (.not. allocated(da_d2j)) allocate (da_d2j(3, MELEC, MCENT))
-        if (.not. allocated(da_j)) allocate (da_j(3, MELEC, MCENT))
-        if (.not. allocated(da_vj)) allocate (da_vj(3, 3, MELEC, MCENT))
+        if (.not. allocated(da_d2j)) allocate (da_d2j(3, MELEC, ncent_tot))
+        if (.not. allocated(da_j)) allocate (da_j(3, MELEC, ncent_tot))
+        if (.not. allocated(da_vj)) allocate (da_vj(3, 3, MELEC, ncent_tot))
     end subroutine allocate_da_jastrow4val
 
     subroutine deallocate_da_jastrow4val()
@@ -79,11 +81,12 @@ module da_orbval
     save
 contains
     subroutine allocate_da_orbval()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
-        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, MELEC, MORB, MCENT))
-        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, MELEC, MORB, MCENT))
-        if (.not. allocated(da_orb)) allocate (da_orb(3, MELEC, MORB, MCENT))
+        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, MELEC, MORB, ncent_tot))
+        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, MELEC, MORB, ncent_tot))
+        if (.not. allocated(da_orb)) allocate (da_orb(3, MELEC, MORB, ncent_tot))
     end subroutine allocate_da_orbval
 
     subroutine deallocate_da_orbval()
@@ -111,12 +114,13 @@ module da_pseudo
     save
 contains
     subroutine allocate_da_pseudo()
+        use atom, only: ncent_tot
         use pseudo_mod, only: MPS_L
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
-        if (.not. allocated(da_pecent)) allocate (da_pecent(3, MCENT))
-        if (.not. allocated(da_vps)) allocate (da_vps(3, MELEC, MCENT, MPS_L))
-        if (.not. allocated(da_nonloc)) allocate (da_nonloc(3, MCENT))
+        if (.not. allocated(da_pecent)) allocate (da_pecent(3, ncent_tot))
+        if (.not. allocated(da_vps)) allocate (da_vps(3, MELEC, ncent_tot, MPS_L))
+        if (.not. allocated(da_nonloc)) allocate (da_nonloc(3, ncent_tot))
 
         da_nonloc = 0.0D0
 
@@ -144,10 +148,11 @@ module da_energy_now
     save
 contains
     subroutine allocate_da_energy_now()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
-        if (.not. allocated(da_energy)) allocate (da_energy(3, MCENT))
-        if (.not. allocated(da_psi)) allocate (da_psi(3, MCENT))
+        if (.not. allocated(da_energy)) allocate (da_energy(3, ncent_tot))
+        if (.not. allocated(da_psi)) allocate (da_psi(3, ncent_tot))
     end subroutine allocate_da_energy_now
 
     subroutine deallocate_da_energy_now()
@@ -349,3 +354,5 @@ subroutine allocate_m_deriv()
     ! call allocate_dorb_m()
     call allocate_ijasnonlin()
 end subroutine allocate_m_deriv
+
+

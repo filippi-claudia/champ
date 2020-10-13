@@ -347,3 +347,5 @@ subroutine allocate_m_gradhess()
     call allocate_gradhess_mix_orb_ci()
     call allocate_gradjerr()
 end subroutine allocate_m_gradhess
+
+

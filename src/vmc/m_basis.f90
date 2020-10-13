@@ -266,9 +266,10 @@ module numbas2
     save
 contains
     subroutine allocate_numbas2()
+        use atom, only: ncent_tot
         use vmc_mod, only: MCENT
-        if (.not. allocated(ibas0)) allocate (ibas0(MCENT))
-        if (.not. allocated(ibas1)) allocate (ibas1(MCENT))
+        if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
+        if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
     end subroutine allocate_numbas2
 
     subroutine deallocate_numbas2()
@@ -291,3 +292,5 @@ subroutine allocate_m_basis()
     call allocate_numbas1()
     call allocate_numbas2()
 end subroutine allocate_m_basis
+
+

@@ -1,47 +1,3 @@
-module atom
-    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
-    use precision_kinds, only: dp
-    use vmc_mod, only: MCENT, MCTYPE
-
-    real(dp), dimension(:, :), allocatable :: cent
-    real(dp), dimension(:), allocatable :: znuc
-    real(dp) :: pecent
-    integer, dimension(:), allocatable :: iwctype
-    integer :: nctype, ncent
-    integer :: nctype_tot, ncent_tot
-
-    private
-    public   :: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
-    public :: allocate_atom, deallocate_atom
-    save
-contains
-    subroutine allocate_atom()
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCENT, MCTYPE
-        if (.not. allocated(cent)) allocate (cent(3, ncent_tot))
-        if (.not. allocated(znuc)) allocate (znuc(MCTYPE))
-        if (.not. allocated(iwctype)) allocate (iwctype(MCTYPE))
-    end subroutine allocate_atom
-
-    subroutine deallocate_atom()
-        if (allocated(iwctype)) deallocate (iwctype)
-        if (allocated(znuc)) deallocate (znuc)
-        if (allocated(cent)) deallocate (cent)
-    end subroutine deallocate_atom
-
-end module atom
-
-module ghostatom
-    !> Arguments: newghostype, nghostcent
-
-    integer :: newghostype
-    integer :: nghostcent
-
-    private
-    public   :: newghostype, nghostcent
-    save
-end module ghostatom
-
 module b_tmove
     !> Arguments: b_t, iskip
     use pseudo_mod, only: MPS_QUAD
@@ -57,6 +13,7 @@ module b_tmove
     save
 contains
     subroutine allocate_b_tmove()
+        use atom, only: ncent_tot
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
         use precision_kinds, only: dp
@@ -97,6 +54,7 @@ module Bloc
     save
 contains
     subroutine allocate_Bloc()
+        use atom, only: ncent_tot
         use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
@@ -146,6 +104,7 @@ module casula
     save
 contains
     subroutine allocate_casula()
+        use atom, only: ncent_tot
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
         use precision_kinds, only: dp
@@ -378,6 +337,7 @@ module distance_mod
 contains
     subroutine allocate_distance_mod()
         use atom, only: ncent_tot
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT, MMAT_DIM2
         if (.not. allocated(r_en)) allocate (r_en(MELEC, ncent_tot))
@@ -414,6 +374,7 @@ module distances_sav
     save
 contains
     subroutine allocate_distances_sav()
+        use atom, only: ncent_tot
         use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
@@ -1212,6 +1173,7 @@ module zmatrix
 contains
     subroutine allocate_zmatrix()
         use atom, only: ncent_tot
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
         if (.not. allocated(czcart)) allocate (czcart(3, ncent_tot))
@@ -1243,6 +1205,7 @@ module zmatrix_grad
     save
 contains
     subroutine allocate_zmatrix_grad()
+        use atom, only: ncent_tot
         use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT3
@@ -1328,5 +1291,3 @@ subroutine allocate_m_common()
     call allocate_zmatrix()
     call allocate_zmatrix_grad()
 end subroutine allocate_m_common
-
-

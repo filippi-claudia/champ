@@ -286,3 +286,5 @@ subroutine allocate_m_jastrow()
     call allocate_jaspar6()
     call allocate_jaspointer()
 end subroutine allocate_m_jastrow
+
+

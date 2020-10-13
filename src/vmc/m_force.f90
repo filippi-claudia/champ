@@ -130,9 +130,10 @@ module force_fin
     save
 contains
     subroutine allocate_force_fin()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
-        if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, MCENT))
+        if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot))
         if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))
     end subroutine allocate_force_fin
 
@@ -157,10 +158,11 @@ module force_mat_n
     save
 contains
     subroutine allocate_force_mat_n()
+        use atom, only: ncent_tot
         use sr_mod, only: MCONF
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
-        if (.not. allocated(force_o)) allocate (force_o(6*MCENT, MCONF))
+        if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, MCONF))
     end subroutine allocate_force_mat_n
 
     subroutine deallocate_force_mat_n()
@@ -210,3 +212,5 @@ subroutine allocate_m_force()
     call allocate_force_mat_n()
     call allocate_forcepar()
 end subroutine allocate_m_force
+
+

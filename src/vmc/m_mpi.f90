@@ -1,4 +1,3 @@
-
  module mpi_qmc
   !> Arguments NPROCX
   integer, parameter :: NPROCX=1024
@@ -17,3 +16,4 @@
     public :: idtask, nproc, wid 
     save
  end module mpiconf
+

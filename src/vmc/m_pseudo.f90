@@ -29,13 +29,14 @@ module pseudo_mod
      save
  contains
      subroutine allocate_pseudo()
+        use atom, only: ncent_tot
          use pseudo_mod, only: MPS_L
          use force_mod, only: MFORCE
          use precision_kinds, only: dp
          use vmc_mod, only: MELEC, MCENT, MCTYPE
          if (.not. allocated(lpot)) allocate (lpot(MCTYPE))
-         if (.not. allocated(vps)) allocate (vps(MELEC, MCENT, MPS_L))
-         if (.not. allocated(vpso)) allocate (vpso(MELEC, MCENT, MPS_L, MFORCE))
+         if (.not. allocated(vps)) allocate (vps(MELEC, ncent_tot, MPS_L))
+         if (.not. allocated(vpso)) allocate (vpso(MELEC, ncent_tot, MPS_L, MFORCE))
      end subroutine allocate_pseudo
 
      subroutine deallocate_pseudo()
@@ -181,3 +182,5 @@ module pseudo_mod
      call allocate_pseudo_fahy()
      call allocate_pseudo_tm()
  end subroutine allocate_m_pseudo
+
+
