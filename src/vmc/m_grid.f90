@@ -52,6 +52,7 @@ module grid_spline_mod
 
 contains
     subroutine allocate_grid_spline_mod()
+        use const, only: nelec
         use coefs, only: norb
         use precision_kinds, only: sp
         use vmc_mod, only: MELEC
@@ -86,6 +87,7 @@ module grid_lagrange_mod
     save
 contains
     subroutine allocate_grid_lagrange_mod()
+        use const, only: nelec
         use coefs, only: norb
         use precision_kinds, only: sp
         use grid_mod, only: MXNSTEP

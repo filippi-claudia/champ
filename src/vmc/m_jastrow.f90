@@ -16,12 +16,13 @@ module jasn
     save
 contains
     subroutine allocate_jasn()
+        use const, only: nelec
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
-        if (.not. allocated(d2ijn)) allocate (d2ijn(MELEC, MELEC))
-        if (.not. allocated(fijn)) allocate (fijn(3, MELEC, MELEC))
-        if (.not. allocated(fjn)) allocate (fjn(3, MELEC))
-        if (.not. allocated(fsn)) allocate (fsn(MELEC, MELEC))
+        if (.not. allocated(d2ijn)) allocate (d2ijn(nelec, nelec))
+        if (.not. allocated(fijn)) allocate (fijn(3, nelec, nelec))
+        if (.not. allocated(fjn)) allocate (fjn(3, nelec))
+        if (.not. allocated(fsn)) allocate (fsn(nelec, nelec))
     end subroutine allocate_jasn
 
     subroutine deallocate_jasn()
@@ -51,12 +52,13 @@ module jaso
     save
 contains
     subroutine allocate_jaso()
+        use const, only: nelec
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
-        if (.not. allocated(d2ijo)) allocate (d2ijo(MELEC, MELEC))
-        if (.not. allocated(fijo)) allocate (fijo(3, MELEC, MELEC))
-        if (.not. allocated(fjo)) allocate (fjo(3, MELEC))
-        if (.not. allocated(fso)) allocate (fso(MELEC, MELEC))
+        if (.not. allocated(d2ijo)) allocate (d2ijo(nelec, nelec))
+        if (.not. allocated(fijo)) allocate (fijo(3, nelec, nelec))
+        if (.not. allocated(fjo)) allocate (fjo(3, nelec))
+        if (.not. allocated(fso)) allocate (fso(nelec, nelec))
     end subroutine allocate_jaso
 
     subroutine deallocate_jaso()

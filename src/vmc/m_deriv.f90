@@ -50,12 +50,13 @@ module da_jastrow4val
     save
 contains
     subroutine allocate_da_jastrow4val()
+        use const, only: nelec
         use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
-        if (.not. allocated(da_d2j)) allocate (da_d2j(3, MELEC, ncent_tot))
-        if (.not. allocated(da_j)) allocate (da_j(3, MELEC, ncent_tot))
-        if (.not. allocated(da_vj)) allocate (da_vj(3, 3, MELEC, ncent_tot))
+        if (.not. allocated(da_d2j)) allocate (da_d2j(3, nelec, ncent_tot))
+        if (.not. allocated(da_j)) allocate (da_j(3, nelec, ncent_tot))
+        if (.not. allocated(da_vj)) allocate (da_vj(3, 3, nelec, ncent_tot))
     end subroutine allocate_da_jastrow4val
 
     subroutine deallocate_da_jastrow4val()
@@ -81,13 +82,14 @@ module da_orbval
     save
 contains
     subroutine allocate_da_orbval()
+        use const, only: nelec
         use coefs, only: norb
         use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
-        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, MELEC, norb, ncent_tot))
-        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, MELEC, norb, ncent_tot))
-        if (.not. allocated(da_orb)) allocate (da_orb(3, MELEC, norb, ncent_tot))
+        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, norb, ncent_tot))
+        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, norb, ncent_tot))
+        if (.not. allocated(da_orb)) allocate (da_orb(3, nelec, norb, ncent_tot))
     end subroutine allocate_da_orbval
 
     subroutine deallocate_da_orbval()
@@ -115,12 +117,13 @@ module da_pseudo
     save
 contains
     subroutine allocate_da_pseudo()
+        use const, only: nelec
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_L
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
         if (.not. allocated(da_pecent)) allocate (da_pecent(3, ncent_tot))
-        if (.not. allocated(da_vps)) allocate (da_vps(3, MELEC, ncent_tot, MPS_L))
+        if (.not. allocated(da_vps)) allocate (da_vps(3, nelec, ncent_tot, MPS_L))
         if (.not. allocated(da_nonloc)) allocate (da_nonloc(3, ncent_tot))
 
         da_nonloc = 0.0D0
@@ -259,12 +262,13 @@ module derivjas
     save
 contains
     subroutine allocate_derivjas()
+        use const, only: nelec
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
         if (.not. allocated(d2g)) allocate (d2g(MPARMJ))
-        if (.not. allocated(g)) allocate (g(3, MELEC, MPARMJ))
-        if (.not. allocated(go)) allocate (go(MELEC, MELEC, MPARMJ))
+        if (.not. allocated(g)) allocate (g(3, nelec, MPARMJ))
+        if (.not. allocated(go)) allocate (go(nelec, nelec, MPARMJ))
         if (.not. allocated(gvalue)) allocate (gvalue(MPARMJ))
     end subroutine allocate_derivjas
 

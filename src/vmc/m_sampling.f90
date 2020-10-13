@@ -43,33 +43,34 @@ module config
     save
 contains
     subroutine allocate_config()
+        use const, only: nelec
         use csfs, only: nstates
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
         use mstates_mod, only: MSTATES
-        if (.not. allocated(delttn)) allocate (delttn(MELEC))
+        if (.not. allocated(delttn)) allocate (delttn(nelec))
         if (.not. allocated(enew)) allocate (enew(MFORCE))
         if (.not. allocated(eold)) allocate (eold(nstates, MFORCE))
-        if (.not. allocated(nearestn)) allocate (nearestn(MELEC))
-        if (.not. allocated(nearesto)) allocate (nearesto(MELEC))
+        if (.not. allocated(nearestn)) allocate (nearestn(nelec))
+        if (.not. allocated(nearesto)) allocate (nearesto(nelec))
         if (.not. allocated(peo)) allocate (peo(nstates))
         if (.not. allocated(psi2n)) allocate (psi2n(MFORCE))
         if (.not. allocated(psi2o)) allocate (psi2o(nstates, MFORCE))
         if (.not. allocated(psido)) allocate (psido(nstates))
-        if (.not. allocated(rminn)) allocate (rminn(MELEC))
-        if (.not. allocated(rminno)) allocate (rminno(MELEC))
-        if (.not. allocated(rmino)) allocate (rmino(MELEC))
-        if (.not. allocated(rminon)) allocate (rminon(MELEC))
-        if (.not. allocated(rvminn)) allocate (rvminn(3, MELEC))
-        if (.not. allocated(rvminno)) allocate (rvminno(3, MELEC))
-        if (.not. allocated(rvmino)) allocate (rvmino(3, MELEC))
-        if (.not. allocated(rvminon)) allocate (rvminon(3, MELEC))
+        if (.not. allocated(rminn)) allocate (rminn(nelec))
+        if (.not. allocated(rminno)) allocate (rminno(nelec))
+        if (.not. allocated(rmino)) allocate (rmino(nelec))
+        if (.not. allocated(rminon)) allocate (rminon(nelec))
+        if (.not. allocated(rvminn)) allocate (rvminn(3, nelec))
+        if (.not. allocated(rvminno)) allocate (rvminno(3, nelec))
+        if (.not. allocated(rvmino)) allocate (rvmino(3, nelec))
+        if (.not. allocated(rvminon)) allocate (rvminon(3, nelec))
         if (.not. allocated(tjfo)) allocate (tjfo(nstates))
-        if (.not. allocated(vnew)) allocate (vnew(3, MELEC))
-        if (.not. allocated(vold)) allocate (vold(3, MELEC))
-        if (.not. allocated(xnew)) allocate (xnew(3, MELEC))
-        if (.not. allocated(xold)) allocate (xold(3, MELEC))
+        if (.not. allocated(vnew)) allocate (vnew(3, nelec))
+        if (.not. allocated(vold)) allocate (vold(3, nelec))
+        if (.not. allocated(xnew)) allocate (xnew(3, nelec))
+        if (.not. allocated(xold)) allocate (xold(3, nelec))
     end subroutine allocate_config
 
     subroutine deallocate_config()
@@ -195,10 +196,11 @@ module kinet
     save
 contains
     subroutine allocate_kinet()
+        use const, only: nelec
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
-        if (.not. allocated(dtdx2n)) allocate (dtdx2n(MELEC))
-        if (.not. allocated(dtdx2o)) allocate (dtdx2o(MELEC))
+        if (.not. allocated(dtdx2n)) allocate (dtdx2n(nelec))
+        if (.not. allocated(dtdx2o)) allocate (dtdx2o(nelec))
     end subroutine allocate_kinet
 
     subroutine deallocate_kinet()
