@@ -7,7 +7,7 @@ subroutine read_znuc(iu)
 !KEYDOC nuclear charge for each atom type and ghost type
 
     use vmc_mod, only: MCTYPE
-    use atom, only: znuc, nctype
+    use atom, only: znuc, nctype, nctype_tot
     use ghostatom, only: newghostype
     use inputflags, only: iznuc
 
@@ -16,11 +16,12 @@ subroutine read_znuc(iu)
     call p2gti('atoms:nctype', nctype, 1)
     call p2gtid('atoms:addghostype', newghostype, 0, 1)
     if (nctype + newghostype .gt. MCTYPE) call fatal_error('INPUT: nctype+newghostype > MCTYPE')
+    nctype_tot = nctype + newghostype
 
-    allocate (znuc(nctype + newghostype))
+    allocate (znuc(nctype_tot))
 
     call incpos(iu, itmp, 1)
-    read (iu, *) (znuc(i), i=1, nctype + newghostype)
+    read (iu, *) (znuc(i), i=1, nctype_tot)
     iznuc = 1
     call p2chkend(iu, 'znuc')
 end
@@ -77,7 +78,7 @@ subroutine read_geometry(iu)
 !KEYDOC position and type for each atom and ghost atom
 
     use vmc_mod, only: MCENT
-    use atom, only: cent, iwctype, ncent
+    use atom, only: cent, iwctype, ncent, ncent_tot
     use ghostatom, only: nghostcent
     use inputflags, only: igeometry
 
@@ -85,12 +86,13 @@ subroutine read_geometry(iu)
 
     call p2gti('atoms:natom', ncent, 1)
     call p2gtid('atoms:nghostcent', nghostcent, 0, 1)
-    if (ncent + nghostcent .gt. MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
+    ncent_tot = ncent + nghostcent
+    if (ncent_tot .gt. MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
 
-    allocate (cent(3, ncent + nghostcent))
-    allocate (iwctype(ncent + nghostcent))
+    allocate (cent(3, ncent_tot))
+    allocate (iwctype(ncent_tot))
 
-    do i = 1, ncent + nghostcent
+    do i = 1, ncent_tot
         call incpos(iu, itmp, 1)
         read (iu, *) (cent(k, i), k=1, 3), iwctype(i)
     enddo
