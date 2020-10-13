@@ -15,13 +15,14 @@ module mix_jas_ci
      save
  contains
      subroutine allocate_mix_jas_ci()
+        use dets, only: ndet
          use optjas, only: MPARMJ
          use precision_kinds, only: dp
          use vmc_mod, only: MDET
-         if (.not. allocated(de_o_ci)) allocate (de_o_ci(MPARMJ, MDET))
-         if (.not. allocated(dj_de_ci)) allocate (dj_de_ci(MPARMJ, MDET))
-         if (.not. allocated(dj_o_ci)) allocate (dj_o_ci(MPARMJ, MDET))
-         if (.not. allocated(dj_oe_ci)) allocate (dj_oe_ci(MPARMJ, MDET))
+         if (.not. allocated(de_o_ci)) allocate (de_o_ci(MPARMJ, ndet))
+         if (.not. allocated(dj_de_ci)) allocate (dj_de_ci(MPARMJ, ndet))
+         if (.not. allocated(dj_o_ci)) allocate (dj_o_ci(MPARMJ, ndet))
+         if (.not. allocated(dj_oe_ci)) allocate (dj_oe_ci(MPARMJ, ndet))
      end subroutine allocate_mix_jas_ci
 
      subroutine deallocate_mix_jas_ci()

@@ -180,15 +180,16 @@ module csfs
     save
 contains
     subroutine allocate_csfs()
+        use dets, only: ndet
         use force_mod, only: MWF
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
         use mstates_mod, only: MSTATES, MDETCSFX
-        if (.not. allocated(ccsf)) allocate (ccsf(MDET, MSTATES, MWF))
-        if (.not. allocated(cxdet)) allocate (cxdet(MDET*MDETCSFX))
-        if (.not. allocated(iadet)) allocate (iadet(MDET))
-        if (.not. allocated(ibdet)) allocate (ibdet(MDET))
-        if (.not. allocated(icxdet)) allocate (icxdet(MDET*MDETCSFX))
+        if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, MWF))
+        if (.not. allocated(cxdet)) allocate (cxdet(ndet*ndetCSFX))
+        if (.not. allocated(iadet)) allocate (iadet(ndet))
+        if (.not. allocated(ibdet)) allocate (ibdet(ndet))
+        if (.not. allocated(icxdet)) allocate (icxdet(ndet*ndetCSFX))
     end subroutine allocate_csfs
 
     subroutine deallocate_csfs()
@@ -302,10 +303,11 @@ module dets_equiv
     save
 contains
     subroutine allocate_dets_equiv()
+        use dets, only: ndet
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
-        if (.not. allocated(cdet_equiv)) allocate (cdet_equiv(MDET))
-        if (.not. allocated(dcdet_equiv)) allocate (dcdet_equiv(MDET))
+        if (.not. allocated(cdet_equiv)) allocate (cdet_equiv(ndet))
+        if (.not. allocated(dcdet_equiv)) allocate (dcdet_equiv(ndet))
     end subroutine allocate_dets_equiv
 
     subroutine deallocate_dets_equiv()
@@ -558,6 +560,7 @@ module multidet
     save
 contains
     subroutine allocate_multidet()
+        use dets, only: ndet
         use vmc_mod, only: MELEC, MDET
         if (.not. allocated(iactv)) allocate (iactv(2))
         ! if (.not. allocated(irepcol_det)) allocate (irepcol_det(MELEC, MDET, 2))
@@ -593,12 +596,13 @@ module multimat
     save
 contains
     subroutine allocate_multimat()
+        use dets, only: ndet
         use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
         use vmc_mod, only: MEXCIT
         if (.not. allocated(aa)) allocate (aa(MELEC, norb, 2))
-        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, MDET, 2))
+        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, ndet, 2))
     end subroutine allocate_multimat
 
     subroutine deallocate_multimat()
@@ -623,12 +627,13 @@ module multimatn
     save
 contains
     subroutine allocate_multimatn()
+        use dets, only: ndet
         use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
         use vmc_mod, only: MEXCIT
         if (.not. allocated(aan)) allocate (aan(MELEC, norb))
-        if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, MDET))
+        if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, ndet))
     end subroutine allocate_multimatn
 
     subroutine deallocate_multimatn()
@@ -651,9 +656,10 @@ module multislater
     save
 contains
     subroutine allocate_multislater()
+        use dets, only: ndet
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
-        if (.not. allocated(detiab)) allocate (detiab(MDET, 2))
+        if (.not. allocated(detiab)) allocate (detiab(ndet, 2))
     end subroutine allocate_multislater
 
     subroutine deallocate_multislater()
@@ -679,11 +685,12 @@ module multislatern
     save
 contains
     subroutine allocate_multislatern()
+        use dets, only: ndet
         use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MORB, MDET
         if (.not. allocated(ddorbn)) allocate (ddorbn(norb))
-        if (.not. allocated(detn)) allocate (detn(MDET))
+        if (.not. allocated(detn)) allocate (detn(ndet))
         if (.not. allocated(dorbn)) allocate (dorbn(3, norb))
         if (.not. allocated(orbn)) allocate (orbn(norb))
     end subroutine allocate_multislatern
@@ -901,10 +908,11 @@ module scratch
     save
 contains
     subroutine allocate_scratch()
+        use dets, only: ndet
         use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
-        if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2))
+        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
         if (.not. allocated(dtildem)) allocate (dtildem(MELEC, norb, 2))
     end subroutine allocate_scratch
 
