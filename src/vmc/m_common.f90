@@ -14,7 +14,6 @@ module b_tmove
 contains
     subroutine allocate_b_tmove()
         use atom, only: ncent_tot
-        use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
@@ -54,7 +53,6 @@ module Bloc
     save
 contains
     subroutine allocate_Bloc()
-        use atom, only: ncent_tot
         use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
@@ -104,7 +102,6 @@ module casula
     save
 contains
     subroutine allocate_casula()
-        use atom, only: ncent_tot
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
         use precision_kinds, only: dp
@@ -337,7 +334,6 @@ module distance_mod
 contains
     subroutine allocate_distance_mod()
         use atom, only: ncent_tot
-        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT, MMAT_DIM2
         if (.not. allocated(r_en)) allocate (r_en(MELEC, ncent_tot))
@@ -374,7 +370,6 @@ module distances_sav
     save
 contains
     subroutine allocate_distances_sav()
-        use atom, only: ncent_tot
         use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
@@ -1173,7 +1168,6 @@ module zmatrix
 contains
     subroutine allocate_zmatrix()
         use atom, only: ncent_tot
-        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
         if (.not. allocated(czcart)) allocate (czcart(3, ncent_tot))
@@ -1205,7 +1199,6 @@ module zmatrix_grad
     save
 contains
     subroutine allocate_zmatrix_grad()
-        use atom, only: ncent_tot
         use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT3
