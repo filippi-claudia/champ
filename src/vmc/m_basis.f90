@@ -64,6 +64,7 @@ module basis
     save
 contains
     subroutine allocate_basis()
+        use coefs, only: nbasis
         use atom, only: nctype_tot
         use force_mod, only: MWF
         use precision_kinds, only: dp
@@ -203,6 +204,7 @@ module numbas
     save
 contains
     subroutine allocate_numbas()
+        use coefs, only: nbasis
         use atom, only: nctype_tot
         use numbas_mod, only: MRWF, MRWF_PTS
         use force_mod, only: MWF
@@ -211,7 +213,7 @@ contains
         if (.not. allocated(arg)) allocate (arg(nctype_tot))
         if (.not. allocated(d2rwf)) allocate (d2rwf(MRWF_PTS, MRWF, nctype_tot, MWF))
         if (.not. allocated(igrid)) allocate (igrid(nctype_tot))
-        if (.not. allocated(iwrwf)) allocate (iwrwf(MBASIS, nctype_tot))
+        if (.not. allocated(iwrwf)) allocate (iwrwf(nbasis, nctype_tot))
         if (.not. allocated(nr)) allocate (nr(nctype_tot))
         if (.not. allocated(nrbas)) allocate (nrbas(nctype_tot))
         if (.not. allocated(r0)) allocate (r0(nctype_tot))
@@ -244,9 +246,10 @@ module numbas1
     save
 contains
     subroutine allocate_numbas1()
+        use coefs, only: nbasis
         use atom, only: nctype_tot
         use vmc_mod, only: MBASIS, MCTYPE
-        if (.not. allocated(iwlbas)) allocate (iwlbas(MBASIS, nctype_tot))
+        if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot))
         ! if (.not. allocated(nbastyp)) allocate (nbastyp(MCTYPE))
     end subroutine allocate_numbas1
 

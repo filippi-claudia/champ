@@ -776,16 +776,17 @@ module phifun
     save
 contains
     subroutine allocate_phifun()
+        use coefs, only: nbasis
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MBASIS
-        if (.not. allocated(d2phin)) allocate (d2phin(MBASIS, MELEC))
-        if (.not. allocated(d2phin_all)) allocate (d2phin_all(3, 3, MBASIS, MELEC))
-        if (.not. allocated(d3phin)) allocate (d3phin(3, MBASIS, MELEC))
-        if (.not. allocated(dphin)) allocate (dphin(3, MBASIS, MELEC))
-        if (.not. allocated(n0_ibasis)) allocate (n0_ibasis(MBASIS, MELEC))
-        if (.not. allocated(n0_ic)) allocate (n0_ic(MBASIS, MELEC))
+        if (.not. allocated(d2phin)) allocate (d2phin(nbasis, MELEC))
+        if (.not. allocated(d2phin_all)) allocate (d2phin_all(3, 3, nbasis, MELEC))
+        if (.not. allocated(d3phin)) allocate (d3phin(3, nbasis, MELEC))
+        if (.not. allocated(dphin)) allocate (dphin(3, nbasis, MELEC))
+        if (.not. allocated(n0_ibasis)) allocate (n0_ibasis(nbasis, MELEC))
+        if (.not. allocated(n0_ic)) allocate (n0_ic(nbasis, MELEC))
         if (.not. allocated(n0_nbasis)) allocate (n0_nbasis(MELEC))
-        if (.not. allocated(phin)) allocate (phin(MBASIS, MELEC))
+        if (.not. allocated(phin)) allocate (phin(nbasis, MELEC))
     end subroutine allocate_phifun
 
     subroutine deallocate_phifun()
