@@ -146,6 +146,7 @@ module ewald_mod
      save
  contains
      subroutine allocate_periodic()
+        use coefs, only: norb
          use ewald_mod, only: IVOL_RATIO
          use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
          use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
@@ -162,7 +163,7 @@ module ewald_mod
          if (.not. allocated(igmult_sim)) allocate (igmult_sim(NGNORM_SIM_BIGX))
          if (.not. allocated(igvec)) allocate (igvec(3, NGVEC_BIGX))
          if (.not. allocated(igvec_sim)) allocate (igvec_sim(3, NGVEC_SIM_BIGX))
-         if (.not. allocated(ireal_imag)) allocate (ireal_imag(MORB))
+         if (.not. allocated(ireal_imag)) allocate (ireal_imag(norb))
          if (.not. allocated(k_inv)) allocate (k_inv(IVOL_RATIO))
          if (.not. allocated(kvec)) allocate (kvec(3, IVOL_RATIO))
          if (.not. allocated(nband)) allocate (nband(IVOL_RATIO))
@@ -228,17 +229,18 @@ module ewald_mod
      save
  contains
      subroutine allocate_pworbital()
+        use coefs, only: norb
          use ewald_mod, only: IVOL_RATIO
          use ewald_mod, only: NGVECX
          use precision_kinds, only: dp
          use vmc_mod, only: MORB
-         if (.not. allocated(c_im)) allocate (c_im(NGVECX, MORB))
-         if (.not. allocated(c_ip)) allocate (c_ip(NGVECX, MORB))
-         if (.not. allocated(c_rm)) allocate (c_rm(NGVECX, MORB))
-         if (.not. allocated(c_rp)) allocate (c_rp(NGVECX, MORB))
-         if (.not. allocated(isortg)) allocate (isortg(NGVECX, MORB))
+         if (.not. allocated(c_im)) allocate (c_im(NGVECX, norb))
+         if (.not. allocated(c_ip)) allocate (c_ip(NGVECX, norb))
+         if (.not. allocated(c_rm)) allocate (c_rm(NGVECX, norb))
+         if (.not. allocated(c_rp)) allocate (c_rp(NGVECX, norb))
+         if (.not. allocated(isortg)) allocate (isortg(NGVECX, norb))
          if (.not. allocated(isortk)) allocate (isortk(IVOL_RATIO))
-         if (.not. allocated(ngorb)) allocate (ngorb(MORB))
+         if (.not. allocated(ngorb)) allocate (ngorb(norb))
      end subroutine allocate_pworbital
 
      subroutine deallocate_pworbital()

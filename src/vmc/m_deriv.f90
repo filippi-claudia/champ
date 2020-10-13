@@ -81,12 +81,13 @@ module da_orbval
     save
 contains
     subroutine allocate_da_orbval()
+        use coefs, only: norb
         use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
-        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, MELEC, MORB, ncent_tot))
-        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, MELEC, MORB, ncent_tot))
-        if (.not. allocated(da_orb)) allocate (da_orb(3, MELEC, MORB, ncent_tot))
+        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, MELEC, norb, ncent_tot))
+        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, MELEC, norb, ncent_tot))
+        if (.not. allocated(da_orb)) allocate (da_orb(3, MELEC, norb, ncent_tot))
     end subroutine allocate_da_orbval
 
     subroutine deallocate_da_orbval()

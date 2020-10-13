@@ -344,9 +344,10 @@ module optorb
     save
 contains
     subroutine allocate_optorb()
+        use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MORB
-        if (.not. allocated(dmat_diag)) allocate (dmat_diag(MORB))
+        if (.not. allocated(dmat_diag)) allocate (dmat_diag(norb))
         ! if (.not. allocated(irrep)) allocate (irrep(MORB))
         ! if (.not. allocated(orb_energy)) allocate (orb_energy(MORB))
     end subroutine allocate_optorb
@@ -412,6 +413,7 @@ module optorb_mix
     save
 contains
     subroutine allocate_optorb_mix()
+        use coefs, only: norb
         use vmc_mod, only: MORB
         ! if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(MORB, MORB))
     end subroutine allocate_optorb_mix

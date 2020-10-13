@@ -52,10 +52,11 @@ module grid_spline_mod
 
 contains
     subroutine allocate_grid_spline_mod()
+        use coefs, only: norb
         use precision_kinds, only: sp
         use vmc_mod, only: MELEC
         use grid_mod, only: MXNSTEP
-        if (.not. allocated(orb_num_spl)) allocate (orb_num_spl(8, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC))
+        if (.not. allocated(orb_num_spl)) allocate (orb_num_spl(8, MXNSTEP, MXNSTEP, MXNSTEP, norb_OCC))
     end subroutine allocate_grid_spline_mod
 
     subroutine deallocate_grid_spline_mod()
@@ -85,10 +86,11 @@ module grid_lagrange_mod
     save
 contains
     subroutine allocate_grid_lagrange_mod()
+        use coefs, only: norb
         use precision_kinds, only: sp
         use grid_mod, only: MXNSTEP
         use vmc_mod, only: MELEC
-        if (.not. allocated(orb_num_lag)) allocate (orb_num_lag(5, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC))
+        if (.not. allocated(orb_num_lag)) allocate (orb_num_lag(5, MXNSTEP, MXNSTEP, MXNSTEP, norb_OCC))
     end subroutine allocate_grid_lagrange_mod
 
     subroutine deallocate_grid_lagrange_mod()
