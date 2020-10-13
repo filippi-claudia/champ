@@ -112,13 +112,14 @@ module gradhessjo
     save
 contains
     subroutine allocate_gradhessjo()
+        use atom, only: nctype_tot
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
         use mstates_mod, only: MSTATES
-        if (.not. allocated(d1d2a_old)) allocate (d1d2a_old(MCTYPE))
+        if (.not. allocated(d1d2a_old)) allocate (d1d2a_old(nctype_tot))
         if (.not. allocated(d1d2b_old)) allocate (d1d2b_old(2))
-        if (.not. allocated(d2d2a_old)) allocate (d2d2a_old(MCTYPE))
+        if (.not. allocated(d2d2a_old)) allocate (d2d2a_old(nctype_tot))
         if (.not. allocated(d2d2b_old)) allocate (d2d2b_old(2))
         if (.not. allocated(denergy_old)) allocate (denergy_old(MPARMJ, MSTATES))
         if (.not. allocated(gvalue_old)) allocate (gvalue_old(MPARMJ))

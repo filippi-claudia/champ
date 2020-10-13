@@ -29,12 +29,13 @@ module pseudo
     save
 contains
     subroutine allocate_pseudo()
+        use atom, only: nctype_tot
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_L
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT, MCTYPE
-        if (.not. allocated(lpot)) allocate (lpot(MCTYPE))
+        if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
         if (.not. allocated(vps)) allocate (vps(MELEC, ncent_tot, MPS_L))
         if (.not. allocated(vpso)) allocate (vpso(MELEC, ncent_tot, MPS_L, MFORCE))
     end subroutine allocate_pseudo
@@ -62,11 +63,12 @@ module pseudo_champ
     save
 contains
     subroutine allocate_pseudo_champ()
+        use atom, only: nctype_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
-        if (.not. allocated(igrid_ps)) allocate (igrid_ps(MCTYPE))
-        if (.not. allocated(rmax_coul)) allocate (rmax_coul(MCTYPE))
-        if (.not. allocated(rmax_nloc)) allocate (rmax_nloc(MCTYPE))
+        if (.not. allocated(igrid_ps)) allocate (igrid_ps(nctype_tot))
+        if (.not. allocated(rmax_coul)) allocate (rmax_coul(nctype_tot))
+        if (.not. allocated(rmax_nloc)) allocate (rmax_nloc(nctype_tot))
     end subroutine allocate_pseudo_champ
 
     subroutine deallocate_pseudo_champ()
@@ -97,16 +99,17 @@ module pseudo_fahy
     save
 contains
     subroutine allocate_pseudo_fahy()
+        use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MPS_GRID
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
-        if (.not. allocated(drad)) allocate (drad(MCTYPE))
-        if (.not. allocated(dradl)) allocate (dradl(MCTYPE))
-        if (.not. allocated(nlrad)) allocate (nlrad(MCTYPE))
-        if (.not. allocated(npotl)) allocate (npotl(MCTYPE))
-        if (.not. allocated(potl)) allocate (potl(MPS_GRID, MCTYPE))
-        if (.not. allocated(ptnlc)) allocate (ptnlc(MPS_GRID, MCTYPE, MPS_L))
-        if (.not. allocated(rcmax)) allocate (rcmax(MCTYPE))
+        if (.not. allocated(drad)) allocate (drad(nctype_tot))
+        if (.not. allocated(dradl)) allocate (dradl(nctype_tot))
+        if (.not. allocated(nlrad)) allocate (nlrad(nctype_tot))
+        if (.not. allocated(npotl)) allocate (npotl(nctype_tot))
+        if (.not. allocated(potl)) allocate (potl(MPS_GRID, nctype_tot))
+        if (.not. allocated(ptnlc)) allocate (ptnlc(MPS_GRID, nctype_tot, MPS_L))
+        if (.not. allocated(rcmax)) allocate (rcmax(nctype_tot))
     end subroutine allocate_pseudo_fahy
 
     subroutine deallocate_pseudo_fahy()
@@ -143,18 +146,19 @@ module pseudo_tm
     save
 contains
     subroutine allocate_pseudo_tm()
+        use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MPS_GRID
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
-        if (.not. allocated(arg)) allocate (arg(MCTYPE))
-        if (.not. allocated(arg_ps)) allocate (arg_ps(MCTYPE))
-        if (.not. allocated(d2pot)) allocate (d2pot(MPS_GRID, MCTYPE, MPS_L))
-        if (.not. allocated(nr_ps)) allocate (nr_ps(MCTYPE))
-        if (.not. allocated(r0)) allocate (r0(MCTYPE))
-        if (.not. allocated(r0_ps)) allocate (r0_ps(MCTYPE))
-        if (.not. allocated(rmax)) allocate (rmax(MCTYPE))
-        if (.not. allocated(rmax_ps)) allocate (rmax_ps(MCTYPE))
-        if (.not. allocated(vpseudo)) allocate (vpseudo(MPS_GRID, MCTYPE, MPS_L))
+        if (.not. allocated(arg)) allocate (arg(nctype_tot))
+        if (.not. allocated(arg_ps)) allocate (arg_ps(nctype_tot))
+        if (.not. allocated(d2pot)) allocate (d2pot(MPS_GRID, nctype_tot, MPS_L))
+        if (.not. allocated(nr_ps)) allocate (nr_ps(nctype_tot))
+        if (.not. allocated(r0)) allocate (r0(nctype_tot))
+        if (.not. allocated(r0_ps)) allocate (r0_ps(nctype_tot))
+        if (.not. allocated(rmax)) allocate (rmax(nctype_tot))
+        if (.not. allocated(rmax_ps)) allocate (rmax_ps(nctype_tot))
+        if (.not. allocated(vpseudo)) allocate (vpseudo(MPS_GRID, nctype_tot, MPS_L))
     end subroutine allocate_pseudo_tm
 
     subroutine deallocate_pseudo_tm()
@@ -182,3 +186,5 @@ subroutine allocate_m_pseudo()
     call allocate_pseudo_fahy()
     call allocate_pseudo_tm()
 end subroutine allocate_m_pseudo
+
+

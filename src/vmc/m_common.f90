@@ -439,13 +439,14 @@ module gauss_ecp
     save
 contains
     subroutine allocate_gauss_ecp()
+        use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MGAUSS
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
-        if (.not. allocated(ecp_coef)) allocate (ecp_coef(MGAUSS, MPS_L, MCTYPE))
-        if (.not. allocated(ecp_exponent)) allocate (ecp_exponent(MGAUSS, MPS_L, MCTYPE))
-        if (.not. allocated(necp_power)) allocate (necp_power(MGAUSS, MPS_L, MCTYPE))
-        if (.not. allocated(necp_term)) allocate (necp_term(MPS_L, MCTYPE))
+        if (.not. allocated(ecp_coef)) allocate (ecp_coef(MGAUSS, MPS_L, nctype_tot))
+        if (.not. allocated(ecp_exponent)) allocate (ecp_exponent(MGAUSS, MPS_L, nctype_tot))
+        if (.not. allocated(necp_power)) allocate (necp_power(MGAUSS, MPS_L, nctype_tot))
+        if (.not. allocated(necp_term)) allocate (necp_term(MPS_L, nctype_tot))
     end subroutine allocate_gauss_ecp
 
     subroutine deallocate_gauss_ecp()
@@ -993,12 +994,13 @@ module vardep
     save
 contains
     subroutine allocate_vardep()
+        use atom, only: nctype_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
         use vmc_mod, only: NEQSX
-        if (.not. allocated(cdep)) allocate (cdep(NEQSX, 83, MCTYPE))
-        if (.not. allocated(iwdepend)) allocate (iwdepend(NEQSX, 83, MCTYPE))
-        if (.not. allocated(nvdepend)) allocate (nvdepend(NEQSX, MCTYPE))
+        if (.not. allocated(cdep)) allocate (cdep(NEQSX, 83, nctype_tot))
+        if (.not. allocated(iwdepend)) allocate (iwdepend(NEQSX, 83, nctype_tot))
+        if (.not. allocated(nvdepend)) allocate (nvdepend(NEQSX, nctype_tot))
     end subroutine allocate_vardep
 
     subroutine deallocate_vardep()
@@ -1284,3 +1286,5 @@ subroutine allocate_m_common()
     call allocate_zmatrix()
     call allocate_zmatrix_grad()
 end subroutine allocate_m_common
+
+

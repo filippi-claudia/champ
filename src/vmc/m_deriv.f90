@@ -312,11 +312,12 @@ module ijasnonlin
     save
 contains
     subroutine allocate_ijasnonlin()
+        use atom, only: nctype_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
-        if (.not. allocated(d1d2a)) allocate (d1d2a(MCTYPE))
+        if (.not. allocated(d1d2a)) allocate (d1d2a(nctype_tot))
         if (.not. allocated(d1d2b)) allocate (d1d2b(2))
-        if (.not. allocated(d2d2a)) allocate (d2d2a(MCTYPE))
+        if (.not. allocated(d2d2a)) allocate (d2d2a(nctype_tot))
         if (.not. allocated(d2d2b)) allocate (d2d2b(2))
     end subroutine allocate_ijasnonlin
 

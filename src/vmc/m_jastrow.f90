@@ -157,6 +157,7 @@ module jaspar3
     save
 contains
     subroutine allocate_jaspar3()
+        use atom, only: nctype_tot
         use force_mod, only: MWF
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
@@ -164,7 +165,7 @@ contains
         if (.not. allocated(a)) allocate (a(MORDJ1, MWF))
         ! if (.not. allocated(b)) allocate (b(MORDJ1, 2, MWF))
         ! if (.not. allocated(c)) allocate (c(83, MCTYPE, MWF))
-        if (.not. allocated(fck)) allocate (fck(15, MCTYPE, MWF))
+        if (.not. allocated(fck)) allocate (fck(15, nctype_tot, MWF))
         ! if (.not. allocated(scalek)) allocate (scalek(MWF))
     end subroutine allocate_jaspar3
 
@@ -229,9 +230,10 @@ module jaspar6
     save
 contains
     subroutine allocate_jaspar6()
+        use atom, only: nctype_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
-        if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(MCTYPE))
+        if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(nctype_tot))
         if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2))
     end subroutine allocate_jaspar6
 

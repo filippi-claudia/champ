@@ -19,8 +19,8 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT, MCTYPE
         if (.not. allocated(cent)) allocate (cent(3, ncent_tot))
-        if (.not. allocated(znuc)) allocate (znuc(MCTYPE))
-        if (.not. allocated(iwctype)) allocate (iwctype(MCTYPE))
+        if (.not. allocated(znuc)) allocate (znuc(nctype_tot))
+        if (.not. allocated(iwctype)) allocate (iwctype(nctype_tot))
     end subroutine allocate_atom
 
     subroutine deallocate_atom()
@@ -41,3 +41,5 @@ module ghostatom
     public   :: newghostype, nghostcent
     save
 end module ghostatom
+
+
