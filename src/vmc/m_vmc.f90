@@ -28,7 +28,7 @@ module vmc_mod
     integer, parameter :: nrad = 3001
     real(dp), parameter :: delri = (nrad - 1)/radmax
 
-    integer, parameter :: MELEC = 32, MORB = 148, MBASIS = 148, MDET = 400, MCENT = 20
+    integer, parameter :: MELEC = 2, MORB = 148, MBASIS = 148, MDET = 400, MCENT = 20
     integer, parameter :: MCTYPE = 3
     integer, parameter :: MCTYP3X = 5, NSPLIN = 1001, MORDJ = 7
 
@@ -58,5 +58,3 @@ module vmc_mod
 contains
 
 end module vmc_mod
-
-
