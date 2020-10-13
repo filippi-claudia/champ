@@ -138,7 +138,6 @@ c now do averaging steps
         l=l+1
         if (nloc.gt.0) call rotqua
         call metrop6(l,1)
-
 c write out configuration for optimization/dmc/gfmc here
         if (mod(l,ngfmc).eq.0 .or. ngfmc.eq.1) then
           if(3*nelec.lt.100) then

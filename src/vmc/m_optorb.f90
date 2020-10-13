@@ -27,12 +27,13 @@ module orb_mat_001
     save
 contains
     subroutine allocate_orb_mat_001()
+        use csfs, only: nstates
         use optorb_mod, only: MXORBOP
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_ho)) allocate (orb_ho(MXORBOP, MSTATES))
-        if (.not. allocated(orb_o)) allocate (orb_o(MXORBOP, MSTATES))
-        if (.not. allocated(orb_oe)) allocate (orb_oe(MXORBOP, MSTATES))
+        if (.not. allocated(orb_ho)) allocate (orb_ho(MXORBOP, nstates))
+        if (.not. allocated(orb_o)) allocate (orb_o(MXORBOP, nstates))
+        if (.not. allocated(orb_oe)) allocate (orb_oe(MXORBOP, nstates))
     end subroutine allocate_orb_mat_001
 
     subroutine deallocate_orb_mat_001()
@@ -59,12 +60,13 @@ module orb_mat_002
     save
 contains
     subroutine allocate_orb_mat_002()
+        use csfs, only: nstates
         use optorb_mod, only: MXORBOP
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_ho_old)) allocate (orb_ho_old(MXORBOP, MSTATES))
-        if (.not. allocated(orb_o_old)) allocate (orb_o_old(MXORBOP, MSTATES))
-        if (.not. allocated(orb_oe_old)) allocate (orb_oe_old(MXORBOP, MSTATES))
+        if (.not. allocated(orb_ho_old)) allocate (orb_ho_old(MXORBOP, nstates))
+        if (.not. allocated(orb_o_old)) allocate (orb_o_old(MXORBOP, nstates))
+        if (.not. allocated(orb_oe_old)) allocate (orb_oe_old(MXORBOP, nstates))
     end subroutine allocate_orb_mat_002
 
     subroutine deallocate_orb_mat_002()
@@ -90,11 +92,12 @@ module orb_mat_003
     save
 contains
     subroutine allocate_orb_mat_003()
+        use csfs, only: nstates
         use optorb_mod, only: MXORBOP
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_o_cum)) allocate (orb_o_cum(MXORBOP, MSTATES))
-        if (.not. allocated(orb_o_sum)) allocate (orb_o_sum(MXORBOP, MSTATES))
+        if (.not. allocated(orb_o_cum)) allocate (orb_o_cum(MXORBOP, nstates))
+        if (.not. allocated(orb_o_sum)) allocate (orb_o_sum(MXORBOP, nstates))
     end subroutine allocate_orb_mat_003
 
     subroutine deallocate_orb_mat_003()
@@ -119,11 +122,12 @@ module orb_mat_004
     save
 contains
     subroutine allocate_orb_mat_004()
+        use csfs, only: nstates
         use optorb_mod, only: MXORBOP
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_oe_cum)) allocate (orb_oe_cum(MXORBOP, MSTATES))
-        if (.not. allocated(orb_oe_sum)) allocate (orb_oe_sum(MXORBOP, MSTATES))
+        if (.not. allocated(orb_oe_cum)) allocate (orb_oe_cum(MXORBOP, nstates))
+        if (.not. allocated(orb_oe_sum)) allocate (orb_oe_sum(MXORBOP, nstates))
     end subroutine allocate_orb_mat_004
 
     subroutine deallocate_orb_mat_004()
@@ -147,10 +151,11 @@ module orb_mat_005
     save
 contains
     subroutine allocate_orb_mat_005()
+        use csfs, only: nstates
         use optorb_mod, only: MXORBOP
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_ho_cum)) allocate (orb_ho_cum(MXORBOP, MSTATES))
+        if (.not. allocated(orb_ho_cum)) allocate (orb_ho_cum(MXORBOP, nstates))
     end subroutine allocate_orb_mat_005
 
     subroutine deallocate_orb_mat_005()
@@ -173,10 +178,11 @@ module orb_mat_006
     save
 contains
     subroutine allocate_orb_mat_006()
+        use csfs, only: nstates
         use optorb_mod, only: MXMATDIM2
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_oo_cum)) allocate (orb_oo_cum(MXMATDIM2, MSTATES))
+        if (.not. allocated(orb_oo_cum)) allocate (orb_oo_cum(MXMATDIM2, nstates))
     end subroutine allocate_orb_mat_006
 
     subroutine deallocate_orb_mat_006()
@@ -199,10 +205,11 @@ module orb_mat_007
     save
 contains
     subroutine allocate_orb_mat_007()
+        use csfs, only: nstates
         use optorb_mod, only: MXMATDIM
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_oho_cum)) allocate (orb_oho_cum(MXMATDIM, MSTATES))
+        if (.not. allocated(orb_oho_cum)) allocate (orb_oho_cum(MXMATDIM, nstates))
     end subroutine allocate_orb_mat_007
 
     subroutine deallocate_orb_mat_007()
@@ -252,15 +259,16 @@ module orb_mat_024
     save
 contains
     subroutine allocate_orb_mat_024()
+        use csfs, only: nstates
         use optorb_mod, only: MXORBOP
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_e_bsum)) allocate (orb_e_bsum(MSTATES))
-        if (.not. allocated(orb_f_bcm2)) allocate (orb_f_bcm2(MXORBOP, MSTATES))
-        if (.not. allocated(orb_f_bcum)) allocate (orb_f_bcum(MXORBOP, MSTATES))
-        if (.not. allocated(orb_o_bsum)) allocate (orb_o_bsum(MXORBOP, MSTATES))
-        if (.not. allocated(orb_oe_bsum)) allocate (orb_oe_bsum(MXORBOP, MSTATES))
-        if (.not. allocated(orb_w_bsum)) allocate (orb_w_bsum(MSTATES))
+        if (.not. allocated(orb_e_bsum)) allocate (orb_e_bsum(nstates))
+        if (.not. allocated(orb_f_bcm2)) allocate (orb_f_bcm2(MXORBOP, nstates))
+        if (.not. allocated(orb_f_bcum)) allocate (orb_f_bcum(MXORBOP, nstates))
+        if (.not. allocated(orb_o_bsum)) allocate (orb_o_bsum(MXORBOP, nstates))
+        if (.not. allocated(orb_oe_bsum)) allocate (orb_oe_bsum(MXORBOP, nstates))
+        if (.not. allocated(orb_w_bsum)) allocate (orb_w_bsum(nstates))
     end subroutine allocate_orb_mat_024
 
     subroutine deallocate_orb_mat_024()
@@ -288,10 +296,11 @@ module orb_mat_030
     save
 contains
     subroutine allocate_orb_mat_030()
+        use csfs, only: nstates
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_ecum)) allocate (orb_ecum(MSTATES))
-        if (.not. allocated(orb_wcum)) allocate (orb_wcum(MSTATES))
+        if (.not. allocated(orb_ecum)) allocate (orb_ecum(nstates))
+        if (.not. allocated(orb_wcum)) allocate (orb_wcum(nstates))
     end subroutine allocate_orb_mat_030
 
     subroutine deallocate_orb_mat_030()

@@ -37,11 +37,6 @@ c routine to accumulate estimators for energy etc.
 
       parameter (half=.5d0)
 
-
-      
-
-
-
       dimension xstrech(3,MELEC),enow(MSTATES,MFORCE)
 
 c xsum = sum of values of x from metrop
@@ -50,7 +45,6 @@ c xcum = accumulated sums of xnow
 c xcm2 = accumulated sums of xnow**2
 
       dimension wtg(MSTATES)
-
 
 c collect cumulative averages
 

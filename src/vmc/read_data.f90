@@ -132,6 +132,7 @@ subroutine read_determinants(iu, nd, iwft)
     use inputflags, only: ideterminants
     use wfsec, only: nwftype
     use csfs, only: nstates
+    use mstates_mod, only: MSTATES
 
     ! not sure if needed but it's called
     use const, only: nelec
@@ -140,6 +141,7 @@ subroutine read_determinants(iu, nd, iwft)
     call p2gtid('general:nwftype', nwftype, 1, 1)
 
     ndet = nd
+    nstates = MSTATES
 
     if (ndet .gt. MDET) then
         write (6, *) "ndet=", ndet
@@ -542,6 +544,7 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
     if (ncsf .gt. MDET) call fatal_error('CSF: too many csf')
 
     nstates = nstates_read
+    nstates = MSTATES
     if (nstates .gt. MSTATES) call fatal_error('CSF: too many states')
 
     allocate (ccsf(ndet, nstates, nwftype))

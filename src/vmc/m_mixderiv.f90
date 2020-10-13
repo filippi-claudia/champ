@@ -52,14 +52,15 @@ module mix_jas_ci
      save
  contains
      subroutine allocate_mix_jas_orb()
+        use csfs, only: nstates
          use optorb_mod, only: MXREDUCED
          use optjas, only: MPARMJ
          use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
-         if (.not. allocated(de_o)) allocate (de_o(MPARMJ, MXREDUCED, MSTATES))
-         if (.not. allocated(dj_ho)) allocate (dj_ho(MPARMJ, MXREDUCED, MSTATES))
-         if (.not. allocated(dj_o)) allocate (dj_o(MPARMJ, MXREDUCED, MSTATES))
-         if (.not. allocated(dj_oe)) allocate (dj_oe(MPARMJ, MXREDUCED, MSTATES))
+         if (.not. allocated(de_o)) allocate (de_o(MPARMJ, MXREDUCED, nstates))
+         if (.not. allocated(dj_ho)) allocate (dj_ho(MPARMJ, MXREDUCED, nstates))
+         if (.not. allocated(dj_o)) allocate (dj_o(MPARMJ, MXREDUCED, nstates))
+         if (.not. allocated(dj_oe)) allocate (dj_oe(MPARMJ, MXREDUCED, nstates))
      end subroutine allocate_mix_jas_orb
 
      subroutine deallocate_mix_jas_orb()

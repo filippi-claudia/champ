@@ -19,15 +19,16 @@ module estcum
      save
  contains
      subroutine allocate_estcum()
+        use csfs, only: nstates
          use force_mod, only: MFORCE
          use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
-         if (.not. allocated(ecum)) allocate (ecum(MSTATES, MFORCE))
-         if (.not. allocated(ecum1)) allocate (ecum1(MSTATES))
-         if (.not. allocated(pecum)) allocate (pecum(MSTATES))
-         if (.not. allocated(tjfcum)) allocate (tjfcum(MSTATES))
-         if (.not. allocated(tpbcum)) allocate (tpbcum(MSTATES))
-         if (.not. allocated(avcum)) allocate (avcum(MSTATES*3))
+         if (.not. allocated(ecum)) allocate (ecum(nstates, MFORCE))
+         if (.not. allocated(ecum1)) allocate (ecum1(nstates))
+         if (.not. allocated(pecum)) allocate (pecum(nstates))
+         if (.not. allocated(tjfcum)) allocate (tjfcum(nstates))
+         if (.not. allocated(tpbcum)) allocate (tpbcum(nstates))
+         if (.not. allocated(avcum)) allocate (avcum(nstates*3))
      end subroutine allocate_estcum
 
      subroutine deallocate_estcum()
@@ -55,10 +56,11 @@ module estcum
      save
  contains
      subroutine allocate_estsig()
+        use csfs, only: nstates
          use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
-         if (.not. allocated(ecm21s)) allocate (ecm21s(MSTATES))
-         if (.not. allocated(ecum1s)) allocate (ecum1s(MSTATES))
+         if (.not. allocated(ecm21s)) allocate (ecm21s(nstates))
+         if (.not. allocated(ecum1s)) allocate (ecum1s(nstates))
      end subroutine allocate_estsig
 
      subroutine deallocate_estsig()
@@ -88,14 +90,15 @@ module estcum
      save
  contains
      subroutine allocate_estsum()
+        use csfs, only: nstates
          use force_mod, only: MFORCE
          use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
-         if (.not. allocated(esum)) allocate (esum(MSTATES, MFORCE))
-         if (.not. allocated(esum1)) allocate (esum1(MSTATES))
-         if (.not. allocated(pesum)) allocate (pesum(MSTATES))
-         if (.not. allocated(tjfsum)) allocate (tjfsum(MSTATES))
-         if (.not. allocated(tpbsum)) allocate (tpbsum(MSTATES))
+         if (.not. allocated(esum)) allocate (esum(nstates, MFORCE))
+         if (.not. allocated(esum1)) allocate (esum1(nstates))
+         if (.not. allocated(pesum)) allocate (pesum(nstates))
+         if (.not. allocated(tjfsum)) allocate (tjfsum(nstates))
+         if (.not. allocated(tpbsum)) allocate (tpbsum(nstates))
      end subroutine allocate_estsum
 
      subroutine deallocate_estsum()
@@ -123,9 +126,10 @@ module estcum
      save
  contains
      subroutine allocate_estpsi()
+        use csfs, only: nstates
          use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
-         if (.not. allocated(apsi)) allocate (apsi(MSTATES))
+         if (.not. allocated(apsi)) allocate (apsi(nstates))
          if (.not. allocated(detref)) allocate (detref(2))
      end subroutine allocate_estpsi
 
@@ -156,15 +160,16 @@ module estcum
      save
  contains
      subroutine allocate_est2cm()
+        use csfs, only: nstates
          use force_mod, only: MFORCE
          use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
-         if (.not. allocated(ecm2)) allocate (ecm2(MSTATES, MFORCE))
-         if (.not. allocated(ecm21)) allocate (ecm21(MSTATES))
-         if (.not. allocated(pecm2)) allocate (pecm2(MSTATES))
-         if (.not. allocated(tjfcm2)) allocate (tjfcm2(MSTATES))
-         if (.not. allocated(tpbcm2)) allocate (tpbcm2(MSTATES))
-         if (.not. allocated(avcm2)) allocate (avcm2(MSTATES*3))
+         if (.not. allocated(ecm2)) allocate (ecm2(nstates, MFORCE))
+         if (.not. allocated(ecm21)) allocate (ecm21(nstates))
+         if (.not. allocated(pecm2)) allocate (pecm2(nstates))
+         if (.not. allocated(tjfcm2)) allocate (tjfcm2(nstates))
+         if (.not. allocated(tpbcm2)) allocate (tpbcm2(nstates))
+         if (.not. allocated(avcm2)) allocate (avcm2(nstates*3))
      end subroutine allocate_est2cm
 
      subroutine deallocate_est2cm()

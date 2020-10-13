@@ -2,7 +2,7 @@
 
 for file in $(ls -d m_*.f90); do
 	#echo $file;
-	~/refac/refac/change_size_array.py $file MWF wfsec nwftype -ow
+	~/refac/refac/change_size_array.py $file MSTATES csfs nstates -ow
 	# ~/refac/refac/clean_use.py $file -ow
 	# cd ../../build
 	# make

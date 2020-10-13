@@ -48,18 +48,19 @@ module sr_mat_n
     save
 contains
     subroutine allocate_sr_mat_n()
+        use csfs, only: nstates
         use sr_mod, only: MPARM, MOBS, MCONF
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(elocal)) allocate (elocal(MCONF, MSTATES))
+        if (.not. allocated(elocal)) allocate (elocal(MCONF, nstates))
         if (.not. allocated(h_sr)) allocate (h_sr(MPARM))
-        if (.not. allocated(obs)) allocate (obs(MOBS, MSTATES))
-        if (.not. allocated(s_diag)) allocate (s_diag(MPARM, MSTATES))
+        if (.not. allocated(obs)) allocate (obs(MOBS, nstates))
+        if (.not. allocated(s_diag)) allocate (s_diag(MPARM, nstates))
         if (.not. allocated(s_ii_inv)) allocate (s_ii_inv(MPARM))
         if (.not. allocated(sr_ho)) allocate (sr_ho(MPARM, MCONF))
         if (.not. allocated(sr_o)) allocate (sr_o(MPARM, MCONF))
-        if (.not. allocated(wtg)) allocate (wtg(MCONF, MSTATES))
-        if (.not. allocated(obs_tot)) allocate (obs_tot(MOBS, MSTATES))
+        if (.not. allocated(wtg)) allocate (wtg(MCONF, nstates))
+        if (.not. allocated(obs_tot)) allocate (obs_tot(MOBS, nstates))
     end subroutine allocate_sr_mat_n
 
     subroutine deallocate_sr_mat_n()

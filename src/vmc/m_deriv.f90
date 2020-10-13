@@ -177,10 +177,11 @@ module deloc_dj_m
     save
 contains
     subroutine allocate_deloc_dj_m()
+        use csfs, only: nstates
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(denergy)) allocate (denergy(MPARMJ, MSTATES))
+        if (.not. allocated(denergy)) allocate (denergy(MPARMJ, nstates))
     end subroutine allocate_deloc_dj_m
 
     subroutine deallocate_deloc_dj_m()

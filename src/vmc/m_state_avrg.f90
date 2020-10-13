@@ -12,10 +12,11 @@ module sa_check
     save
 contains
     subroutine allocate_sa_check()
+        use csfs, only: nstates
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(energy_all)) allocate (energy_all(MSTATES))
-        if (.not. allocated(energy_err_all)) allocate (energy_err_all(MSTATES))
+        if (.not. allocated(energy_all)) allocate (energy_all(nstates))
+        if (.not. allocated(energy_err_all)) allocate (energy_err_all(nstates))
     end subroutine allocate_sa_check
 
     subroutine deallocate_sa_check()
@@ -40,10 +41,11 @@ module sa_weights
     save
 contains
     subroutine allocate_sa_weights()
+        use csfs, only: nstates
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(iweight)) allocate (iweight(MSTATES))
-        if (.not. allocated(weights)) allocate (weights(MSTATES))
+        if (.not. allocated(iweight)) allocate (iweight(nstates))
+        if (.not. allocated(weights)) allocate (weights(nstates))
     end subroutine allocate_sa_weights
 
     subroutine deallocate_sa_weights()

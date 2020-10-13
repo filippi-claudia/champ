@@ -129,80 +129,6 @@ module chck
     save
 end module chck
 
-module coefs
-    !> need a better name is that the MO ?
-    !> if yes can we put it in basis ?
-    !> Arguments: coef, nbasis, norb
-    use force_mod, only: MWF
-    use precision_kinds, only: dp
-    use vmc_mod, only: MORB, MBASIS
-
-    real(dp), dimension(:, :, :), allocatable :: coef !(MBASIS,MORB,MWF)
-    integer :: nbasis
-    integer :: norb
-
-    private
-    public :: coef, nbasis, norb
-    public :: allocate_coefs, deallocate_coefs
-    save
-contains
-    ! subroutine allocate_coefs()
-    !     use force_mod, only: MWF
-    !     use precision_kinds, only: dp
-    !     use vmc_mod, only: MORB, MBASIS
-    !     if (.not. allocated(coef)) allocate (coef(MBASIS, MORB, MWF))
-    ! end subroutine allocate_coefs
-
-    subroutine deallocate_coefs()
-        if (allocated(coef)) deallocate (coef)
-    end subroutine deallocate_coefs
-
-end module coefs
-
-module csfs
-    !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    use force_mod, only: MWF
-    use precision_kinds, only: dp
-    use vmc_mod, only: MDET
-    use mstates_mod, only: MSTATES, MDETCSFX
-
-    real(dp), dimension(:, :, :), allocatable :: ccsf !(MDET,MSTATES,MWF)
-    real(dp), dimension(:), allocatable :: cxdet !(MDET*MDETCSFX)
-    integer, dimension(:), allocatable :: iadet !(MDET)
-    integer, dimension(:), allocatable :: ibdet !(MDET)
-    integer, dimension(:), allocatable :: icxdet !(MDET*MDETCSFX)
-    integer :: ncsf
-    integer :: nstates
-
-    private
-    public   :: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    public :: allocate_csfs, deallocate_csfs
-    save
-contains
-    subroutine allocate_csfs()
-        use wfsec, only: nwftype
-        use dets, only: ndet
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MDET
-        use mstates_mod, only: MSTATES, MDETCSFX
-        if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, nwftype))
-        if (.not. allocated(cxdet)) allocate (cxdet(ndet*ndetCSFX))
-        if (.not. allocated(iadet)) allocate (iadet(ndet))
-        if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-        if (.not. allocated(icxdet)) allocate (icxdet(ndet*ndetCSFX))
-    end subroutine allocate_csfs
-
-    subroutine deallocate_csfs()
-        if (allocated(icxdet)) deallocate (icxdet)
-        if (allocated(ibdet)) deallocate (ibdet)
-        if (allocated(iadet)) deallocate (iadet)
-        if (allocated(cxdet)) deallocate (cxdet)
-        if (allocated(ccsf)) deallocate (ccsf)
-    end subroutine deallocate_csfs
-
-end module csfs
-
 module cuspmat
     !> Never called !
     !> Arguments: cm, ishe, iwc3, neqs
@@ -260,63 +186,6 @@ contains
     end subroutine deallocate_cuspmat4
 
 end module cuspmat4
-
-module dets
-    !> Arguments: cdet, ndet
-    use force_mod, only: MWF
-    use precision_kinds, only: dp
-    use vmc_mod, only: MDET
-    use mstates_mod, only: MSTATES
-
-    real(dp), dimension(:, :, :), allocatable :: cdet !(MDET,MSTATES,MWF)
-    integer :: ndet
-
-    private
-    public   :: cdet, ndet
-    public :: allocate_dets, deallocate_dets
-    save
-contains
-    ! subroutine allocate_dets()
-    !     use force_mod, only: MWF
-    !     use precision_kinds, only: dp
-    !     use vmc_mod, only: MDET
-    !     use mstates_mod, only: MSTATES
-    !     if (.not. allocated(cdet)) allocate (cdet(MDET, MSTATES, MWF))
-    ! end subroutine allocate_dets
-
-    subroutine deallocate_dets()
-        if (allocated(cdet)) deallocate (cdet)
-    end subroutine deallocate_dets
-
-end module dets
-
-module dets_equiv
-    !> Arguments: cdet_equiv, dcdet_equiv
-    use precision_kinds, only: dp
-    use vmc_mod, only: MDET
-
-    real(dp), dimension(:), allocatable :: cdet_equiv !(MDET)
-    real(dp), dimension(:), allocatable :: dcdet_equiv !(MDET)
-
-    private
-    public   ::  cdet_equiv, dcdet_equiv
-    public :: allocate_dets_equiv, deallocate_dets_equiv
-    save
-contains
-    subroutine allocate_dets_equiv()
-        use dets, only: ndet
-        use precision_kinds, only: dp
-        use vmc_mod, only: MDET
-        if (.not. allocated(cdet_equiv)) allocate (cdet_equiv(ndet))
-        if (.not. allocated(dcdet_equiv)) allocate (dcdet_equiv(ndet))
-    end subroutine allocate_dets_equiv
-
-    subroutine deallocate_dets_equiv()
-        if (allocated(dcdet_equiv)) deallocate (dcdet_equiv)
-        if (allocated(cdet_equiv)) deallocate (cdet_equiv)
-    end subroutine deallocate_dets_equiv
-
-end module dets_equiv
 
 module distance_mod
     use precision_kinds, only: dp
@@ -998,8 +867,6 @@ end module svd_mod
 module vardep
     !> Arguments: cdep, iwdepend, nvdepend
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
-    use vmc_mod, only: NEQSX
 
     real(dp), dimension(:, :, :), allocatable :: cdep !(NEQSX,83,MCTYPE)
     integer, dimension(:, :, :), allocatable :: iwdepend !(NEQSX,83,MCTYPE)
@@ -1013,7 +880,6 @@ contains
     subroutine allocate_vardep()
         use atom, only: nctype_tot
         use precision_kinds, only: dp
-        use vmc_mod, only: MCTYPE
         use vmc_mod, only: NEQSX
         if (.not. allocated(cdep)) allocate (cdep(NEQSX, 83, nctype_tot))
         if (.not. allocated(iwdepend)) allocate (iwdepend(NEQSX, 83, nctype_tot))
@@ -1055,30 +921,6 @@ contains
 
 end module velocity_jastrow
 
-module wfsec
-    use force_mod, only: MFORCE
-    !> Arguments: iwf, iwftype, nwftype
-
-    integer :: iwf
-    integer, dimension(:), allocatable :: iwftype !(MFORCE)
-    integer :: nwftype
-
-    private
-    public :: iwf, iwftype, nwftype
-    public :: allocate_wfsec, deallocate_wfsec
-    save
-contains
-    ! subroutine allocate_wfsec()
-    !     use force_mod, only: MFORCE
-    !     if (.not. allocated(iwftype)) allocate (iwftype(MFORCE))
-    ! end subroutine allocate_wfsec
-
-    subroutine deallocate_wfsec()
-        if (allocated(iwftype)) deallocate (iwftype)
-    end subroutine deallocate_wfsec
-
-end module wfsec
-
 module ycompact
     !> Arguments: dymat, ymat
     use precision_kinds, only: dp
@@ -1094,12 +936,13 @@ module ycompact
     save
 contains
     subroutine allocate_ycompact()
+        use csfs, only: nstates
         use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
-        if (.not. allocated(dymat)) allocate (dymat(norb, MELEC, 2, MSTATES))
-        if (.not. allocated(ymat)) allocate (ymat(norb, MELEC, 2, MSTATES))
+        if (.not. allocated(dymat)) allocate (dymat(norb, MELEC, 2, nstates))
+        if (.not. allocated(ymat)) allocate (ymat(norb, MELEC, 2, nstates))
     end subroutine allocate_ycompact
 
     subroutine deallocate_ycompact()
@@ -1123,11 +966,12 @@ module ycompactn
     save
 contains
     subroutine allocate_ycompactn()
+        use csfs, only: nstates
         use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
-        if (.not. allocated(ymatn)) allocate (ymatn(norb, MELEC, MSTATES))
+        if (.not. allocated(ymatn)) allocate (ymatn(norb, MELEC, nstates))
     end subroutine allocate_ycompactn
 
     subroutine deallocate_ycompactn()
@@ -1153,14 +997,15 @@ module zcompact
     save
 contains
     subroutine allocate_zcompact()
+        use csfs, only: nstates
         use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
-        if (.not. allocated(aaz)) allocate (aaz(MELEC, MELEC, 2, MSTATES))
-        if (.not. allocated(dzmat)) allocate (dzmat(norb, MELEC, 2, MSTATES))
-        if (.not. allocated(emz)) allocate (emz(MELEC, MELEC, 2, MSTATES))
-        if (.not. allocated(zmat)) allocate (zmat(norb, MELEC, 2, MSTATES))
+        if (.not. allocated(aaz)) allocate (aaz(MELEC, MELEC, 2, nstates))
+        if (.not. allocated(dzmat)) allocate (dzmat(norb, MELEC, 2, nstates))
+        if (.not. allocated(emz)) allocate (emz(MELEC, MELEC, 2, nstates))
+        if (.not. allocated(zmat)) allocate (zmat(norb, MELEC, 2, nstates))
     end subroutine allocate_zcompact
 
     subroutine deallocate_zcompact()
@@ -1306,5 +1151,3 @@ subroutine allocate_m_common()
     call allocate_zmatrix()
     call allocate_zmatrix_grad()
 end subroutine allocate_m_common
-
-
