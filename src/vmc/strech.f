@@ -10,10 +10,11 @@ c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
 
 c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
+      use precision_kinds, only: dp
       use pcm, only: MCHS, MCHV
       use force_mod, only: MFORCE, MFORCE_WT_PRD
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: znuc, cent, pecent, iwctype, ncent
+      use atom, only: znuc, cent, pecent, iwctype, ncent, ncent_tot
       use const, only: nelec
       use force_dmc, only: itausec, nwprod
       use forcepar, only: deltot, istrech, nforce
@@ -38,13 +39,19 @@ c rigidly with that nucleus
 
       parameter (zero=0.d0,one=1.d0)
 
+      real(dp), ALLOCATABLE, save :: centsav(:,:)
+      real(dp), ALLOCATABLE, save :: pecentn(:)
+      real(dp), ALLOCATABLE, save :: xpolsav(:,:)
 
-      dimension x(3,MELEC),xstrech(3,MELEC),centsav(3,MCENT),pecentn(MFORCE)
-      dimension wt(MCENT),dvol(3,3),dwt(3,MCENT),dwtsm(3)
-      dimension cent_str(3,MCENT)
-      dimension xpolsav(3,MCHV),q_strech(MCHS),efsol(MCHS),wt_pcm(MCENT)
+      dimension x(3,MELEC),xstrech(3,MELEC)
+      dimension wt(ncent_tot),dvol(3,3),dwt(3,ncent_tot),dwtsm(3)
+      dimension cent_str(3,ncent_tot)
+      dimension q_strech(MCHS),efsol(MCHS),wt_pcm(ncent_tot)
+      save alfstr
 
-      save centsav,alfstr,pecentn,xpolsav
+      if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
+      if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
+      if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV))
 
       call p2gtid('optwf:ioptwf',ioptwf,0,1)
 

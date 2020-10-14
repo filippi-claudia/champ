@@ -1,12 +1,13 @@
       subroutine mc_configs_start
       
+      use mpi
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc_mod, only: radmax, delri
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use atom, only: znuc, iwctype, ncent
+      use atom, only: znuc, iwctype, ncent, ncent_tot
 
       use const, only: nelec
       use config, only: xnew, xold
@@ -15,18 +16,10 @@
       implicit real*8(a-h,o-z)
 
 
-
-
-
-      include 'mpif.h'
-
-
-
-
       character*20 filename
 
       dimension irn(4)
-      dimension nsite(MCENT)
+      dimension nsite(ncent_tot)
       dimension istatus(MPI_STATUS_SIZE)
 
       dimension irn_temp(4)

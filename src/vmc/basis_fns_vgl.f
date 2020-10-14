@@ -5,7 +5,7 @@ c vgl -> value, gradient, laplacian
 
       use numbas_mod, only: MRWF
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: iwctype, ncent
+      use atom, only: iwctype, ncent, ncent_tot
       use ghostatom, only: nghostcent
       use const, only: pi, nelec
       use numbas, only: iwrwf, nrbas, numr
@@ -29,7 +29,7 @@ c vgl -> value, gradient, laplacian
 
 
 
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension x(3,*),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
       dimension dy(3),ddy(3,3),dlapy(3)
 
       dimension wfv(4,MELEC,MRWF)

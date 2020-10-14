@@ -11,7 +11,7 @@ c numerical Laplacian for periodic systems.
       use vmc_mod, only: radmax, delri
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use atom, only: cent, iwctype, ncent
+      use atom, only: cent, iwctype, ncent, ncent_tot
       use jaspar, only: nspin2, sspin, sspinn, is
       use const, only: nelec
       use elec, only: nup
@@ -50,8 +50,8 @@ c and the potential
       
 
       dimension x(3,*),v(3,*)
-      dimension rp(3,MELEC,MCENT),rm(3,MELEC,MCENT)
-     &,rp2(3,MELEC,MCENT),rm2(3,MELEC,MCENT)
+      dimension rp(3,MELEC,ncent_tot),rm(3,MELEC,ncent_tot)
+     &,rp2(3,MELEC,ncent_tot),rm2(3,MELEC,ncent_tot)
      &,rrp(3,MMAT_DIM2),rrm(3,MMAT_DIM2),rrp2(3,MMAT_DIM2),rrm2(3,MMAT_DIM2)
 
       do 10 i=1,nelec

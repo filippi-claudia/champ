@@ -2,7 +2,7 @@
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: iwctype, nctype, ncent
+      use atom, only: iwctype, nctype, ncent, ncent_tot
 
       use jaspar, only: nspin2, sspinn, is
       use const, only: nelec
@@ -24,9 +24,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       parameter (half=.5d0)
 
-      dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,*)
-      dimension r_en(MELEC,MCENT),rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT)
-     &,gn(*),fsn(MELEC,MELEC),dx(3),dd1(MELEC,MCENT),vjn(3),da_ratio_jn(3,MCENT)
+      dimension x(3,*),rshift(3,MELEC,ncent_tot),rvec_en(3,MELEC,*)
+      dimension r_en(MELEC,ncent_tot),rr_en(MELEC,ncent_tot),rr_en2(MELEC,ncent_tot)
+     &,gn(*),fsn(MELEC,MELEC),dx(3),dd1(MELEC,ncent_tot),vjn(3),da_ratio_jn(3,ncent_tot)
 
       fsumn=0
 

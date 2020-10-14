@@ -87,7 +87,7 @@ c-----------------------------------------------------------------------
       subroutine getvps(rad,iel)
 c Written by Claudia Filippi
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: znuc, iwctype, ncent
+      use atom, only: znuc, iwctype, ncent, ncent_tot
 
       use pseudo_fahy, only: drad, dradl, npotl, potl, ptnlc, rcmax
 
@@ -99,7 +99,7 @@ c Written by Claudia Filippi
 
 
 
-      dimension rad(MELEC,MCENT)
+      dimension rad(MELEC,ncent_tot)
 
       do 10 ic=1,ncent
         ict=iwctype(ic)

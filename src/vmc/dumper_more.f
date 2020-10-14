@@ -4,7 +4,7 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE
       use vmc_mod, only: nrad
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent,ncent_tot
       use mstates_mod, only: MSTATES
       use ghostatom, only: newghostype, nghostcent
       use const, only: hb, delta, nelec
@@ -46,7 +46,7 @@ c job where it left off
 
       parameter(half=0.5d0,small=1.d-6)
 
-      dimension coefx(nbasis,norb),zexx(nbasis),centx(3,MCENT)
+      dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent_tot)
      &,znucx(MCTYPE),n1sx(MCTYPE),n2sx(MCTYPE),n2px(3,MCTYPE)
      &,n3sx(MCTYPE),n3px(3,MCTYPE),n3dzrx(MCTYPE),n3dx2x(MCTYPE)
      &,n3dxyx(MCTYPE),n3dxzx(MCTYPE),n3dyzx(MCTYPE),n4sx(MCTYPE)

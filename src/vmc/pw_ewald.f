@@ -2224,6 +2224,7 @@ c-----------------------------------------------------------------------
       subroutine cossin_n(znuc,iwctype,glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
       use vmc_mod, only: MCENT
+      use atom, only: ncent_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for nuclei
 
@@ -2231,7 +2232,7 @@ c Calculate cos_sum and sin_sum for nuclei
 
 
       dimension znuc(*),iwctype(*),glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
-      dimension cos_gr(-NG1DX:NG1DX,3,MCENT),sin_gr(-NG1DX:NG1DX,3,MCENT)
+      dimension cos_gr(-NG1DX:NG1DX,3,ncent_tot),sin_gr(-NG1DX:NG1DX,3,ncent_tot)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr
@@ -2273,6 +2274,7 @@ c-----------------------------------------------------------------------
       subroutine cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NGNORMX, NG1DX
       use vmc_mod, only: MCENT, MCTYPE
+      use atom, only: ncent_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 
@@ -2281,7 +2283,7 @@ c Calculate cos_sum and sin_sum for pseudopotentials
 
       dimension y_psp(NGNORMX,MCTYPE),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
      &,ng1d(3),cos_sum(*),sin_sum(*)
-      dimension cos_gr(-NG1DX:NG1DX,3,MCENT),sin_gr(-NG1DX:NG1DX,3,MCENT)
+      dimension cos_gr(-NG1DX:NG1DX,3,ncent_tot),sin_gr(-NG1DX:NG1DX,3,ncent_tot)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr

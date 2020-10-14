@@ -11,14 +11,14 @@ c Modified by A. Scemama
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use grid3dflag, only: i3dlagorb, i3dsplorb
-
+      use atom, only: ncent_tot
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
 
 
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension x(3,*),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
       dimension bhin(MELEC,nbasis),dbhin(3*MELEC,nbasis),d2bhin(MELEC,nbasis)
 
       ier=1
@@ -255,19 +255,14 @@ c-------------------------------------------------------------------------------
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic
-
+      use atom, only: ncent_tot
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use multislatern, only: ddorbn, detn, dorbn, orbn
 
       implicit real*8(a-h,o-z)
 
 
-
-
-c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
-
-
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension x(3,*),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
 
 
       if(iperiodic.eq.0) then

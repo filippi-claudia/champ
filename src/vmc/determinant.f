@@ -14,6 +14,7 @@ c Modified by A. Scemama
       use slater, only: d2dx2, ddx, fp, fpp, slmi
 
       use multislater, only: detiab
+      use atom, only: ncent_tot
       implicit real*8(a-h,o-z)
 
 
@@ -25,7 +26,7 @@ c Modified by A. Scemama
 
 
 
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension x(3,*),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
 
 c compute orbitals
       call orbitals(x,rvec_en,r_en)

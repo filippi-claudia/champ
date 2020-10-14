@@ -4,7 +4,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use optjas, only: MPARMJ
       use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use vmc_mod, only: MMAT_DIM
-      use atom, only: iwctype, ncent
+      use atom, only: iwctype, ncent, ncent_tot
       use const, only: nelec, ipr
       use elec, only: nup
       use jaso, only: fso
@@ -37,15 +37,15 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
 
 
-      dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),rr_en_sav(MCENT),rr_en2_sav(MCENT)
-     &,xsav(3),rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT)
+      dimension x(3,*),rshift(3,MELEC,ncent_tot),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
+      dimension rr_en(MELEC,ncent_tot),rr_en2(MELEC,ncent_tot),rr_en_sav(ncent_tot),rr_en2_sav(ncent_tot)
+     &,xsav(3),rshift_sav(3,ncent_tot),rvec_en_sav(3,ncent_tot),r_en_sav(ncent_tot)
 
-      dimension vpsp_det(*),dvpsp_dj(*),t_vpsp(MCENT,MPS_QUAD,*)
+      dimension vpsp_det(*),dvpsp_dj(*),t_vpsp(ncent_tot,MPS_QUAD,*)
       dimension dpsij_ratio(MPARMJ)
 
-      dimension orbn(norb),dorbn(3,norb),da_orbn(3,MCENT,norb),term_radial_da_vps(3)
-      dimension vjn(3),da_ratio_jn(3,MCENT),dd1(MELEC,MCENT),dd1_sav(MCENT)
+      dimension orbn(norb),dorbn(3,norb),da_orbn(3,ncent_tot,norb),term_radial_da_vps(3)
+      dimension vjn(3),da_ratio_jn(3,ncent_tot),dd1(MELEC,ncent_tot),dd1_sav(ncent_tot)
 
       do 11 ic=1,ncent
 cJF this is the culprit
@@ -233,7 +233,7 @@ c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: cent, ncent
+      use atom, only: cent, ncent, ncent_tot
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use qua, only: xq, yq, zq
@@ -243,8 +243,9 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0)
 
 
-      dimension x(3),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),dd1(MELEC,MCENT)
+      dimension x(3),rshift(3,MELEC,ncent_tot),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
+      dimension rr_en(MELEC,ncent_tot),rr_en2(MELEC,ncent_tot)
+      dimension dd1(MELEC,ncent_tot)
 
       if(iperiodic.eq.0) then
         x(1)=r_en(i,ic)*xq(iq)+cent(1,ic)
@@ -288,7 +289,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use vmc_mod, only: MELEC, MORB, MCENT
-      use atom, only: iwctype, ncent
+      use atom, only: iwctype, ncent, ncent_tot
 
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
@@ -304,8 +305,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
 
 
-      dimension x(3),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      dimension orbn(*),dorbn(3,*),da_orbn(3,MCENT,*),dtmp(3)
+      dimension x(3),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
+      dimension orbn(*),dorbn(3,*),da_orbn(3,ncent_tot,*),dtmp(3)
 
       if(iperiodic.eq.0) then
 
@@ -407,7 +408,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: iwctype, ncent
+      use atom, only: iwctype, ncent, ncent_tot
 
       use jaspar, only: sspinn, is
       use const, only: nelec
@@ -426,9 +427,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
 
       dimension fso(MELEC,*)
-      dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,*)
-      dimension r_en(MELEC,MCENT),rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT)
-     &,fsn(MELEC,MELEC),dx(3),dd1(MELEC,MCENT),vjn(3),da_ratio_jn(3,MCENT)
+      dimension x(3,*),rshift(3,MELEC,ncent_tot),rvec_en(3,MELEC,*)
+      dimension r_en(MELEC,ncent_tot),rr_en(MELEC,ncent_tot),rr_en2(MELEC,ncent_tot)
+     &,fsn(MELEC,MELEC),dx(3),dd1(MELEC,ncent_tot),vjn(3),da_ratio_jn(3,ncent_tot)
 
       fsumn=0
 
@@ -523,7 +524,7 @@ c-----------------------------------------------------------------------
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
       use vmc_mod, only: MORB, MCENT
-      use atom, only: ncent
+      use atom, only: ncent, ncent_tot
       use Bloc, only: db
       use coefs, only: norb
       use force_analy, only: iforce_analy
@@ -536,9 +537,9 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0)
 
 
-      dimension rvec_en_sav(3,MCENT),r_en_sav(MCENT)
+      dimension rvec_en_sav(3,ncent_tot),r_en_sav(ncent_tot)
       dimension orbn(norb),dorbn(3,norb),vjn(3)
-      dimension da_orbn(3,MCENT,norb),da_ratio_jn(3,MCENT)
+      dimension da_orbn(3,ncent_tot,norb),da_ratio_jn(3,ncent_tot)
       dimension term_radial_da_vps(3)
 
       if(iforce_analy.eq.0) return

@@ -233,7 +233,7 @@ c compute tm-pseudopotential for electron iel
       subroutine getvps_tm(r_en,iel)
 
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: znuc, iwctype, ncent
+      use atom, only: znuc, iwctype, ncent, ncent_tot
       use pseudo_tm, only: rmax
 
       use pseudo, only: lpot, vps
@@ -244,7 +244,7 @@ c compute tm-pseudopotential for electron iel
 
 
 
-      dimension r_en(MELEC,MCENT)
+      dimension r_en(MELEC,ncent_tot)
 
       do 10 ic=1,ncent
         ict=iwctype(ic)

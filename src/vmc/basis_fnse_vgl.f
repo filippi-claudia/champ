@@ -3,7 +3,7 @@ c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt rout
 c routine to calculate the values of the basis functions and their derivatives
       use numbas_mod, only: MRWF
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: iwctype, ncent
+      use atom, only: iwctype, ncent, ncent_tot
 
       use ghostatom, only: nghostcent
       use const, only: pi
@@ -32,7 +32,7 @@ c nda < 0   (zr,x2y2...)*exp(-a*r^2)
 
 
 
-      dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
 
       dimension wfv(4,MELEC,MRWF),xc(3)
 
