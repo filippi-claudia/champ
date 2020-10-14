@@ -52,6 +52,7 @@ subroutine read_lcao(norb_tmp, nbasis_tmp, iwft, filename)
 
     call file(iu, filename, 'old', 1, 0)
     nbasis = nbasis_tmp
+
     norb = norb_tmp
     nototal = norb
     if (nbasis .gt. MBASIS) call fatal_error('LCAO: nbasis > MBASIS')
@@ -166,7 +167,7 @@ subroutine read_determinants(iu, nd, iwft)
     ideterminants = ideterminants + 1
     call p2chkend(iu, 'determinants')
     write (6, *) 'done det'
-end
+end subroutine read_determinants
 
 subroutine read_multideterminants(iu, nd)
 !INPUT multideterminants inp i
@@ -349,7 +350,9 @@ subroutine read_bas_num_info(iu, numeric)
     !> nbasis not yet defined here
     !> we must change the order and
     !> read lcao first
-    write (6, *) 'NBASIS', nbasis
+    if (nbasis .eq. 0) then
+        call fatal_error('Please Load LCAO before basis info in the input file')
+    endif
     allocate (iwlbas(nbasis, nctot))
     allocate (iwrwf(nbasis, nctot))
 

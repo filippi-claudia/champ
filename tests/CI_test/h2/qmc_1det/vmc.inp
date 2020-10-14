@@ -5,10 +5,11 @@
 
 load $(general:pool)/h2.geo
 load $(general:pool)/global.inp
+load rhf.sto_cvb1.lcao
 load $(general:pool)/sto_cvb1.bfinfo
 
 load jastrow.0
-load rhf.sto_cvb1.lcao
+# load rhf.sto_cvb1.lcao
 load rhf.det
 
 &optwf ioptwf 0 ioptci 0 ioptjas 1 ioptorb 0

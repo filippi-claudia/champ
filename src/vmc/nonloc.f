@@ -378,11 +378,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       implicit real*8(a-h,o-z)
 
 
-
-
-
-
-
       dimension x(3)
       dimension detu(*),detd(*),slmui(MMAT_DIM),slmdi(MMAT_DIM)
       dimension orb(*),dorb(3)
