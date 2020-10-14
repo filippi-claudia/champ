@@ -10,7 +10,7 @@ c Reads in localized orbitals on a radial grid
       use ghostatom, only: newghostype
       use const, only: ipr
       use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
-
+      use coefs, only: nbasis
       use numexp, only: ae, ce
       use pseudo, only: nloc
 
@@ -25,7 +25,7 @@ c Reads in localized orbitals on a radial grid
 
 
       dimension x(MRWF_PTS),work(MRWF_PTS),y(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
-     &,l(MBASIS),icusp(MCTYPE)
+     &,l(nbasis),icusp(MCTYPE)
 
 c nrbas = number of numerical orbitals for each center
 

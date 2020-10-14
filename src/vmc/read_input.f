@@ -177,7 +177,7 @@ c      include 'dmc.h' now emty
       character*10 eunit
       character*16 cseed
       character*20 dl_alg
-      dimension irn(4),cent_tmp(3),anorm(MBASIS)
+      dimension irn(4),cent_tmp(3),anorm(nbasis)
 
 c Inputs:
 c  title      title

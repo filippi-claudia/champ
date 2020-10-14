@@ -138,7 +138,7 @@ c-----------------------------------------------------------------------
 
       character*40 filename,filetype
 
-      dimension anorm(MBASIS)
+      dimension anorm(nbasis)
 
       if(ioptorb.eq.0) return
 
@@ -339,8 +339,8 @@ c-----------------------------------------------------------------------
 
 
       real(dp), allocatable, save :: coef_save(:,:,:)
-      if (.not. allocated(coef_save)) allocate(coef_save(MBASIS, norb, MWF))
-      ! dimension coef_save(MBASIS,norb,MWF)
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb, MWF))
+      ! dimension coef_save(nbasis,norb,MWF)
       ! save coef_save
 
       do 10 i=1,norb
@@ -562,8 +562,8 @@ c-----------------------------------------------------------------------
 
 
       real(dp), allocatable, save :: coef_best(:,:,:)
-      if (.not. allocated(coef_best)) allocate(coef_best(MBASIS, norb, MWF))
-      ! dimension coef_best(MBASIS,norb,MWF)
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb, MWF))
+      ! dimension coef_best(nbasis,norb,MWF)
       ! save coef_best
 
       do 10 i=1,norb
@@ -695,7 +695,7 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension acoef(MBASIS,norb),dparm(*)
+      dimension acoef(nbasis,norb),dparm(*)
 
       if(ioptorb.eq.0) return
 
