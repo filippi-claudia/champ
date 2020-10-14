@@ -8,7 +8,7 @@ c Written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
-
+      use dets, only: ndet
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
@@ -21,7 +21,7 @@ c Written by Claudia Filippi
 
 
 
-      dimension collect(MPARMJ,MDET)
+      dimension collect(MPARMJ,ndet)
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 

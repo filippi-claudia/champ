@@ -7,6 +7,7 @@
       use ci001_blk, only: ci_o, ci_oe
       use ci003_blk, only: ci_e
       use ci004_blk, only: ci_de
+      use dets, only: ndet
 
       use method_opt, only: method
 
@@ -17,8 +18,8 @@
 
 
 
-      dimension ciprim(MDET),cieprim(MDET)
-      dimension eloc_det(MDET,2)
+      dimension ciprim(ndet),cieprim(ndet)
+      dimension eloc_det(ndet,2)
       
       if(ioptci.eq.0) return 
       

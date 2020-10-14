@@ -359,6 +359,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci
+      use precision_kinds, only: dp
       use vmc_mod, only: MDET
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
@@ -368,11 +369,14 @@ c-----------------------------------------------------------------------
 
 
 
+      real(dp), ALLOCATABLE, save :: cdet_save(:,:)
+      real(dp), ALLOCATABLE, save :: ccsf_save(:,:)
 
+      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
 
-
-      dimension cdet_save(MDET,MSTATES),ccsf_save(MDET,MSTATES)
-      save cdet_save,ccsf_save
+      ! dimension cdet_save(ndet,MSTATES),ccsf_save(ndet,MSTATES)
+      ! save cdet_save,ccsf_save
 
       do 10 j=1,nstates
         do 10 i=1,ndet
@@ -584,6 +588,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci_best
+      use precision_kinds, only: dp
       use vmc_mod, only: MDET
       use csfs, only: ccsf, ncsf, nstates
       use mstates_mod, only: MSTATES
@@ -593,12 +598,14 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
+      real(dp), ALLOCATABLE, save :: cdet_best(:,:)
+      real(dp), ALLOCATABLE, save :: ccsf_best(:,:)
 
+      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
 
-
-
-      dimension cdet_best(MDET,MSTATES),ccsf_best(MDET,MSTATES)
-      save cdet_best,ccsf_best
+      ! dimension cdet_best(ndet,MSTATES),ccsf_best(ndet,MSTATES)
+      ! save cdet_best,ccsf_best
 
       do 10 j=1,nstates
         do 10 i=1,ndet

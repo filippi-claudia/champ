@@ -52,7 +52,7 @@ c job where it left off
      &,n3dxyx(MCTYPE),n3dxzx(MCTYPE),n3dyzx(MCTYPE),n4sx(MCTYPE)
      &,n4px(3,MCTYPE),nsax(MCTYPE),npax(3,MCTYPE),ndzrax(MCTYPE)
      &,ndx2ax(MCTYPE),ndxyax(MCTYPE),ndxzax(MCTYPE),ndyzax(MCTYPE)
-     &,cdetx(MDET)
+     &,cdetx(ndet)
       dimension xstrech(3,MELEC)
       dimension d2(MSTATES)
 
