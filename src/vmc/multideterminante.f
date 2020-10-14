@@ -27,9 +27,9 @@
       parameter (one=1.d0,half=0.5d0)
 
 
-      dimension gmat(MELEC,MORB,3),gmatn(MEXCIT**2,3)
-      dimension b(MORB,3),ddx_mdet(3)
-      dimension orb_sav(MORB)
+      dimension gmat(MELEC,norb,3),gmatn(MEXCIT**2,3)
+      dimension b(norb,3),ddx_mdet(3)
+      dimension orb_sav(norb)
 
       if(ndet.eq.1) return
 
@@ -132,9 +132,9 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0,half=0.5d0)
 
-      dimension aa(MELEC,MORB),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
-      dimension b(MORB,3),dorb(3,MORB)
-      dimension gmat(MELEC,MORB,3)
+      dimension aa(MELEC,norb),wfmat(MEXCIT**2,MDET),ymat(norb,MELEC)
+      dimension b(norb,3),dorb(3,norb)
+      dimension gmat(MELEC,norb,3)
       dimension velocity(3)
 
       dimension slmi(MMAT_DIM)

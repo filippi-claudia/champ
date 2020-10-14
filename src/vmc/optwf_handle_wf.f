@@ -331,16 +331,17 @@ c Restore parameters corresponding to run generating hessian
 
 c-----------------------------------------------------------------------
       subroutine save_lcao
+      use precision_kinds, only: dp
       use force_mod, only: MWF
       use vmc_mod, only: MORB, MBASIS
       use coefs, only: coef, nbasis, norb
       implicit real*8(a-h,o-z)
 
 
-
-      dimension coef_save(MBASIS,MORB,MWF)
-
-      save coef_save
+      real(dp), allocatable, save :: coef_save(:,:,:)
+      if (.not. allocated(coef_save)) allocate(coef_save(MBASIS, norb, MWF))
+      ! dimension coef_save(MBASIS,norb,MWF)
+      ! save coef_save
 
       do 10 i=1,norb
        do 10 j=1,nbasis
@@ -550,6 +551,7 @@ c Restore parameters corresponding to run generating hessian
       end
 c-----------------------------------------------------------------------
       subroutine save_lcao_best
+      use precision_kinds, only: dp
       use force_mod, only: MWF
       use vmc_mod, only: MORB, MBASIS
       use optwf_contrl, only: ioptorb
@@ -559,10 +561,10 @@ c-----------------------------------------------------------------------
 
 
 
-
-      dimension coef_best(MBASIS,MORB,MWF)
-
-      save coef_best
+      real(dp), allocatable, save :: coef_best(:,:,:)
+      if (.not. allocated(coef_best)) allocate(coef_best(MBASIS, norb, MWF))
+      ! dimension coef_best(MBASIS,norb,MWF)
+      ! save coef_best
 
       do 10 i=1,norb
        do 10 j=1,nbasis
@@ -693,7 +695,7 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension acoef(MBASIS,MORB),dparm(*)
+      dimension acoef(MBASIS,norb),dparm(*)
 
       if(ioptorb.eq.0) return
 

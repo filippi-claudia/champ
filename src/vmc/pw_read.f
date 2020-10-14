@@ -197,7 +197,7 @@ c Warning: Temporary
 c Warning: why do I print out zeros if I dimension to MORB rather than IVOL_RATIO?
 c It should be MORB
       dimension r(3)
-      dimension orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)
+      dimension orb(MELEC,norb),dorb(3,MELEC,norb),ddorb(MELEC,norb)
 c     dimension orb(MELEC,IVOL_RATIO),dorb(3,MELEC,IVOL_RATIO),ddorb(MELEC,IVOL_RATIO)
 
 c Warning: For the moment we assume that orbitals_pw_tm contains only the bands we want to keep.

@@ -257,7 +257,7 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
 
 
-      dimension detu(MDET),detd(MDET),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
+      dimension detu(MDET),detd(MDET),wfmat(MEXCIT**2,MDET),ymat(norb,MELEC)
 
       detrefi=1.d0/(detu(kref)*detd(kref))
 
@@ -327,7 +327,7 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      dimension dymat(MORB,MELEC),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
+      dimension dymat(norb,MELEC),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
 
       do 10 i=1,nelec
         do 10 j=1,norb
@@ -396,8 +396,8 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension ymat(MORB,MELEC,2),dymat(MORB,MELEC,2)
-      dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
+      dimension ymat(norb,MELEC,2),dymat(norb,MELEC,2)
+      dimension zmat(norb,MELEC,2),dzmat(norb,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
 
       do 100 iab=1,2
         if(iab.eq.2.and.ndn.eq.0) goto 100

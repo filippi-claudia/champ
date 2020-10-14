@@ -2,6 +2,7 @@
 
       use vmc_mod, only: MELEC, MORB, MDET
       use elec, only: ndn, nup
+      use coefs, only: norb
       use multidet, only: ivirt, kref
       use optwf_contrl, only: ioptorb
       use Bloc, only: b, tildem
@@ -18,7 +19,7 @@
 
 
 
-      dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
+      dimension zmat(norb,MELEC,2),dzmat(norb,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
       dimension orbprim(*),eorbprim(*)
 
       if(ioptorb.eq.0) return
@@ -782,7 +783,7 @@ c-----------------------------------------------------------------------
 
       data icount_orbdef /1/
 
-      dimension iodet(2,MDET),iopos(2,MDET),iflag(2,MORB)
+      dimension iodet(2,MDET),iopos(2,MDET),iflag(2,norb)
 
       dimension ne(2),m(2)
 

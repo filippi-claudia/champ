@@ -44,7 +44,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       dimension vpsp_det(*),dvpsp_dj(*),t_vpsp(MCENT,MPS_QUAD,*)
       dimension dpsij_ratio(MPARMJ)
 
-      dimension orbn(MORB),dorbn(3,MORB),da_orbn(3,MCENT,MORB),term_radial_da_vps(3)
+      dimension orbn(norb),dorbn(3,norb),da_orbn(3,MCENT,norb),term_radial_da_vps(3)
       dimension vjn(3),da_ratio_jn(3,MCENT),dd1(MELEC,MCENT),dd1_sav(MCENT)
 
       do 11 ic=1,ncent
@@ -537,8 +537,8 @@ c-----------------------------------------------------------------------
 
 
       dimension rvec_en_sav(3,MCENT),r_en_sav(MCENT)
-      dimension orbn(MORB),dorbn(3,MORB),vjn(3)
-      dimension da_orbn(3,MCENT,MORB),da_ratio_jn(3,MCENT)
+      dimension orbn(norb),dorbn(3,norb),vjn(3)
+      dimension da_orbn(3,MCENT,norb),da_ratio_jn(3,MCENT)
       dimension term_radial_da_vps(3)
 
       if(iforce_analy.eq.0) return

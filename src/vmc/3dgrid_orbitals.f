@@ -51,8 +51,8 @@ c     yz_max = 2+3+3 = 8
       iok=1
 
 c     Check the sizes
-      if (norb.gt.MORB_OCC) 
-     >  call fatal_error ('MORB_OCC too small. Recompile.')
+c      if (norb.gt.MORB_OCC) 
+c     >  call fatal_error ('MORB_OCC too small. Recompile.')
 
 c     We have no info on the derivatives, so use "not a knot" in the creation
 c     of the fit
@@ -416,12 +416,12 @@ c Lagrange interpolation routines
       integer a,b,c
       dimension r(3)
 
-      dimension f(MORB)
+      dimension f(norb)
       iwf=1
 
 c     Check the sizes
-      if (norb.gt.MORB_OCC) 
-     >  call fatal_error ('MORB_OCC too small. Recompile.')
+c      if (norb.gt.MORB_OCC) 
+c     >  call fatal_error ('MORB_OCC too small. Recompile.')
 
 
 c     Evaluate the memory needed for the calculation
@@ -606,7 +606,7 @@ c
 
 
 
-      dimension r(3),dr(3),orb(MELEC,MORB),ix(3)
+      dimension r(3),dr(3),orb(MELEC,norb),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 
@@ -686,7 +686,7 @@ c
       implicit real*8(a-h,o-z)
 
 
-      dimension r(3),dr(3),orb(3,MELEC,MORB),ix(3)
+      dimension r(3),dr(3),orb(3,MELEC,norb),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 
@@ -769,7 +769,7 @@ c
 
 
 
-      dimension r(3),dr(3),orb(MORB),ix(3)
+      dimension r(3),dr(3),orb(norb),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 
@@ -849,7 +849,7 @@ c
       implicit real*8(a-h,o-z)
 
 
-      dimension r(3),dr(3),orb(3,MORB),ix(3)
+      dimension r(3),dr(3),orb(3,norb),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 

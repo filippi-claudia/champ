@@ -164,11 +164,11 @@ c assuming that basis function values in phin are up to date
 
 c primary geometry only:
       iwf=1
-      if(norb+nadorb.gt.MORB) then
-        write(6,'(''VIRTUAL_ORB: Too many orbitals, norb + nadorb='',
-     &  i4,'' > MORB='',i4)') norb+nadorb,MORB
-        call fatal_error('Aborted')
-      endif
+c      if(norb+nadorb.gt.MORB) then
+c        write(6,'(''VIRTUAL_ORB: Too many orbitals, norb + nadorb='',
+c     &  i4,'' > MORB='',i4)') norb+nadorb,MORB
+c        call fatal_error('Aborted')
+c      endif
 
       do i=1,nelec
         call dcopy(nbasis,phin(1,i),1,bhin(i,1),MELEC)

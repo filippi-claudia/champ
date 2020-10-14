@@ -64,7 +64,8 @@
       end
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
-
+      
+      use precision_kinds, only:dp
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -100,10 +101,14 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,MORB)
-      dimension ymat_tmp(MORB,MELEC)
+      dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,norb)
+      ! real(dp), allocatable, save :: ymat(:,:)
+      ! if (.not. allocated(ymat)) then 
+      !   allocate(ymat_tmp(norb,MELEC))
+      ! endif
 
-      save ymat_tmp
+      dimension ymat_tmp(norb,MELEC)
+      ! save ymat_tmp
 
       if(iel.le.nup) then
         iab=1
@@ -270,11 +275,12 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
+      use coefs, only: norb
 
       implicit real*8(a-h,o-z)
 
       dimension slmi(MMAT_DIM)
-      dimension dorb(3,MORB)
+      dimension dorb(3,norb)
       dimension ddx_ref(3)
 
       ddx_ref(1)=0
