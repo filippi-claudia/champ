@@ -275,11 +275,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_jastrow
-
+      use precision_kinds, only: dp
       use force_mod, only: MWF
       use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
-      use atom, only: nctype
+      use atom, only: nctype, nctype_tot
 
       use jaspar3, only: a, b, c
 
@@ -288,14 +288,19 @@ c-----------------------------------------------------------------------
 
 
 
+      real(dp), allocatable, save :: a4_save(:,:,:)
+      real(dp), allocatable, save :: b_save(:,:,:)
+      real(dp), allocatable, save :: c_save(:,:,:)
 
+      ! dimension a4_save(MORDJ1,nctype_tot,MWF),b_save(MORDJ1,2,MWF),
+      ! dimension c_save(83,nctype_tot,MWF)
+      ! save a4_save,b_save,c_save
 
-
-      dimension a4_save(MORDJ1,MCTYPE,MWF),b_save(MORDJ1,2,MWF),
-     &c_save(83,MCTYPE,MWF)
-
-      save a4_save,b_save,c_save
       save mparmja,mparmjb,mparmjc
+
+      if(.not.allocated(a4_save)) allocate(a4_save(MORDJ1,nctype_tot,MWF))
+      if(.not.allocated(b_save)) allocate(b_save(MORDJ1,2,MWF))
+      if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,MWF))
 
 c Save parameters corresponding to run generating hessian
 
@@ -501,10 +506,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
+      use precision_kinds, only: dp
       use force_mod, only: MWF
       use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
-      use atom, only: nctype
+      use atom, only: nctype, nctype_tot
 
       use jaspar3, only: a, b, c
 
@@ -513,14 +519,20 @@ c-----------------------------------------------------------------------
 
 
 
+      
+      real(dp), allocatable, save :: a4_best(:,:,:)
+      real(dp), allocatable, save :: b_best(:,:,:)
+      real(dp), allocatable, save :: c_best(:,:,:)
 
+      ! dimension a4_best(MORDJ1,nctype_tot,MWF),b_best(MORDJ1,2,MWF),
+      ! dimension c_best(83,nctype_tot,MWF)
+      ! save a4_best,b_best,c_best
 
-
-      dimension a4_best(MORDJ1,MCTYPE,MWF),b_best(MORDJ1,2,MWF),
-     &c_best(83,MCTYPE,MWF)
-
-      save a4_best,b_best,c_best
       save mparmja,mparmjb,mparmjc
+
+      if(.not.allocated(a4_best)) allocate(a4_best(MORDJ1,nctype_tot,MWF))
+      if(.not.allocated(b_best)) allocate(b_best(MORDJ1,2,MWF))
+      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,MWF))
 
 c Save parameters corresponding to run generating hessian
 

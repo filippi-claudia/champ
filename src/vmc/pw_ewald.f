@@ -5,7 +5,7 @@ c Written by Cyrus Umrigar
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
       use vmc_mod, only: MCTYPE
-      use atom, only: znuc, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, pecent, iwctype, nctype, ncent, nctype_tot
       use const, only: pi, ipr
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
       use ewald_basis, only: vps_basis_fourier
@@ -30,11 +30,6 @@ c Written by Cyrus Umrigar
 
 
       parameter (eps=1.d-12)
-
-c     common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
-c    &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
-c    &,nlrad(MCTYPE)
-c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
 
 
       dimension r(MPS_GRID),vps_short(MPS_GRID),work(MPS_GRID)
@@ -2274,14 +2269,14 @@ c-----------------------------------------------------------------------
       subroutine cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NGNORMX, NG1DX
       use vmc_mod, only: MCENT, MCTYPE
-      use atom, only: ncent_tot
+      use atom, only: ncent_tot, nctype_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 
       implicit real*8(a-h,o-z)
 
 
-      dimension y_psp(NGNORMX,MCTYPE),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
+      dimension y_psp(NGNORMX,nctype_tot),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
      &,ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,ncent_tot),sin_gr(-NG1DX:NG1DX,3,ncent_tot)
 

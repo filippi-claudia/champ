@@ -93,7 +93,7 @@ c and Anthony Scemema
       use mmpol_mod, only: mmpolfile_sites, mmpolfile_chmm
       use force_mod, only: MFORCE, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use jaspar, only: nspin1, nspin2, is
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
@@ -686,7 +686,7 @@ CVARDOC flag: properties will be printed
        nprop=MAXPROP
        write(6,'(''Properties will be sampled'')')
        write(6,'(''Properties printout flag = '',t30,i10)') ipropprt
-       call prop_cc_nuc(znuc,cent,iwctype,MCTYPE,ncent_tot,ncent,cc_nuc)
+       call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
       endif
       
 c Pseudopotential section
@@ -724,7 +724,7 @@ CVARDOC number of ghost atom types
       call p2gtid('atoms:nghostcent',nghostcent,0,1)
 CVARDOC number of ghost centers
       if(max(3,nctype).gt.MCTYP3X) call fatal_error('INPUT: max(3,nctype) > MCTYP3X')
-      if(nctype+newghostype.gt.MCTYPE) call fatal_error('INPUT: nctype+newghostype > MCTYPE')
+      ! if(nctype+newghostype.gt.MCTYPE) call fatal_error('INPUT: nctype+newghostype > MCTYPE')
       ! if(ncent+nghostcent.gt.MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
 
       write(6,'(/,''nctype,ncent ='',t30,2i5)') nctype,ncent

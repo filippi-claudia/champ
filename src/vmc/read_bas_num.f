@@ -2,7 +2,7 @@
       use numbas_mod, only: MRWF, MRWF_PTS
       use vmc_mod, only: MBASIS, MCTYPE
       use vmc_mod, only: NCOEF
-      use atom, only: znuc, nctype
+      use atom, only: znuc, nctype, nctype_tot
 c Written by Claudia Filippi
 c Modified by F. Schautz to use fancy file names
 c Reads in localized orbitals on a radial grid
@@ -25,7 +25,7 @@ c Reads in localized orbitals on a radial grid
 
 
       dimension x(MRWF_PTS),work(MRWF_PTS),y(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
-     &,l(nbasis),icusp(MCTYPE)
+     &,l(nbasis),icusp(nctype_tot)
 
 c nrbas = number of numerical orbitals for each center
 
