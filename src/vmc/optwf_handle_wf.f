@@ -280,7 +280,7 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
       use atom, only: nctype, nctype_tot
-
+      use wfsec, only: nwftype
       use jaspar3, only: a, b, c
 
       use jaspar4, only: a4, norda, nordb, nordc
@@ -298,9 +298,9 @@ c-----------------------------------------------------------------------
 
       save mparmja,mparmjb,mparmjc
 
-      if(.not.allocated(a4_save)) allocate(a4_save(MORDJ1,nctype_tot,MWF))
-      if(.not.allocated(b_save)) allocate(b_save(MORDJ1,2,MWF))
-      if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,MWF))
+      if(.not.allocated(a4_save)) allocate(a4_save(MORDJ1,nctype_tot,nwftype))
+      if(.not.allocated(b_save)) allocate(b_save(MORDJ1,2,nwftype))
+      if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
 
 c Save parameters corresponding to run generating hessian
 
@@ -340,11 +340,12 @@ c-----------------------------------------------------------------------
       use force_mod, only: MWF
       use vmc_mod, only: MORB, MBASIS
       use coefs, only: coef, nbasis, norb
+      use wfsec, only: nwftype
       implicit real*8(a-h,o-z)
 
 
       real(dp), allocatable, save :: coef_save(:,:,:)
-      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb, MWF))
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb, nwftype))
       ! dimension coef_save(nbasis,norb,MWF)
       ! save coef_save
 
@@ -511,7 +512,7 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
       use atom, only: nctype, nctype_tot
-
+      use wfsec, only : nwftype
       use jaspar3, only: a, b, c
 
       use jaspar4, only: a4, norda, nordb, nordc
@@ -530,9 +531,9 @@ c-----------------------------------------------------------------------
 
       save mparmja,mparmjb,mparmjc
 
-      if(.not.allocated(a4_best)) allocate(a4_best(MORDJ1,nctype_tot,MWF))
-      if(.not.allocated(b_best)) allocate(b_best(MORDJ1,2,MWF))
-      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,MWF))
+      if(.not.allocated(a4_best)) allocate(a4_best(MORDJ1,nctype_tot,nwftype))
+      if(.not.allocated(b_best)) allocate(b_best(MORDJ1,2,nwftype))
+      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype))
 
 c Save parameters corresponding to run generating hessian
 
@@ -572,13 +573,14 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: MORB, MBASIS
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb
+      use wfsec, only: nwftype
       implicit real*8(a-h,o-z)
 
 
 
 
       real(dp), allocatable, save :: coef_best(:,:,:)
-      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb, MWF))
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb, nwftype))
       ! dimension coef_best(nbasis,norb,MWF)
       ! save coef_best
 
