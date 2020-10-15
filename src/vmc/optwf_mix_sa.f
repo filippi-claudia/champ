@@ -20,9 +20,9 @@
       character*20 method_sav
 
 
-      dimension deltap(MPARM*nstates),deltap_more(MPARM*nstates,5)
+      dimension deltap(nparm*nstates),deltap_more(nparm*nstates,5)
       dimension energy_old(nstates), energy_err_old(nstates), i_deltap(nstates), energy_davidson(6,nstates) 
-      dimension index_min_energy(5), deltap_new(MPARM)
+      dimension index_min_energy(5), deltap_new(nparm)
       save method_sav
 
       if(method.ne.'mix_n') return
@@ -31,7 +31,7 @@
 
       call set_nparms_tot
 
-      if(nparm.gt.MPARM)call fatal_error('SR_OPTWF: nparmtot gt MPARM')
+      ! if(nparm.gt.MPARM)call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
       call p2gtid('optwf:nopt_iter',nopt_iter,6,1)
       call p2gtid('optwf:nblk_max',nblk_max,nblk,1)

@@ -305,7 +305,7 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use optorb_cblock, only: norbterm
-
+      use optwf_contrl, only: nparm
       ! as not in master ... 
       use mpiconf, only: idtask
 
@@ -316,8 +316,8 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
 
 
-      dimension z(*),r(*),aux(0:MCONF),aux1(0:MCONF),rloc(MPARM),r_s(MPARM),oz_jasci(MCONF)
-      dimension tmp(MPARM),tmp2(MPARM)
+      dimension z(*),r(*),aux(0:MCONF),aux1(0:MCONF),rloc(nparm),r_s(nparm),oz_jasci(MCONF)
+      dimension tmp(nparm),tmp2(nparm)
 
       call MPI_BCAST(z,n,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
@@ -343,11 +343,11 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
         enddo
 
         do i=1,nparm_jasci
-          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
         enddo
         do i=nparm_jasci+1,n
           i0=i+(istate-1)*norbterm
-          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i0,1),MPARM)
+          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i0,1),nparm)
         enddo
         call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
         
@@ -371,8 +371,8 @@ c ifunc_omega.gt.0
         aux(iconf)=(hoz-omega_hes*oz)*wtg(iconf,1)
       enddo
       do i=1,n
-        rloc(i)=ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
-        rloc(i)=rloc(i)-omega_hes*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+        rloc(i)=ddot(nconf_n,aux(1),1,sr_ho(i,1),nparm)
+        rloc(i)=rloc(i)-omega_hes*ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
       enddo
       call MPI_REDUCE(rloc,r,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
@@ -515,10 +515,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       include 'mpif.h'
 
       parameter (MTEST=1500)
-      dimension cloc(MTEST,MTEST),c(MTEST,MTEST),oloc(MPARM),o(MPARM),p(MPARM),tmp(MPARM)
+      dimension cloc(MTEST,MTEST),c(MTEST,MTEST),oloc(nparm),o(nparm),p(nparm),tmp(nparm)
       dimension ipvt(MTEST),work(MTEST)
 
-      if(nparm.gt.MTEST) stop 'MPARM>MTEST'
+      if(nparm.gt.MTEST) stop 'nparm>MTEST'
 
       jwtg=1
       jelo=2

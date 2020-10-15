@@ -37,7 +37,7 @@ module vmc_mod
     integer, parameter :: MORDJ1 = MORDJ + 1
 
     integer, parameter :: NEQSX = 6*MORDJ, MTERMS = 55
-    integer, parameter :: MCENT3 = 3*MCENT
+    integer :: MCENT3
 
     integer, parameter :: NCOEF = 5
     integer, parameter :: MEXCIT = 10
@@ -58,5 +58,3 @@ module vmc_mod
 contains
 
 end module vmc_mod
-
-

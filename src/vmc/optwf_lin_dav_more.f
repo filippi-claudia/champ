@@ -15,8 +15,8 @@
     
       implicit real*8(a-h,o-z)
 
-      dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,nstates),index_overlap(MVEC),anorm(MVEC)
-      dimension deltap(*),deltap_more(MPARM*nstates,5)
+      dimension e(MVEC),evc(nparm,MVEC),itype(MVEC),overlap_psi(MVEC,nstates),index_overlap(MVEC),anorm(MVEC)
+      dimension deltap(*),deltap_more(nparm*nstates,5)
 
       call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
 
@@ -40,7 +40,7 @@
 
        write(6,*) "USING OLD REGTERG"
 
-        call regterg( nparm_p1, MPARM, nvec, nvecx, evc, ethr,
+        call regterg( nparm_p1, nparm, nvec, nvecx, evc, ethr,
      &                e, itype, notcnv, idav_iter, ipr, idtask )
 
         write(6,'(''LIN_D: no. iterations'',i4)') idav_iter
@@ -48,7 +48,7 @@
 
        elseif(lin_jdav.eq.1) then
        write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
-        call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
+        call davidson_wrap( nparm_p1, nparm, nvec, nvecx, MVEC, evc, 
      &       ethr, e, itype, notcnv, idav_iter, ipr)
        else
          call fatal_error('LIND: lin_jdav < 2')
@@ -207,7 +207,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       implicit real*8(a-h,o-z)
 
-      dimension psi(MPARM,*),hpsi(MPARM,*),aux(MCONF),hpsiloc(MPARM,MVEC)
+      dimension psi(nparm,*),hpsi(nparm,*),aux(MCONF),hpsiloc(nparm,MVEC)
 
 
       i0=1
@@ -237,14 +237,14 @@ c loop vec
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+       hpsiloc(i+i0,ivec)=0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
       enddo
 
       do iconf=1,nconf_n
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)+0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
+       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)+0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),nparm)
       enddo
 
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -302,7 +302,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit real*8(a-h,o-z)
 
 
-      dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF)
+      dimension psi(nparm,*),spsi(nparm,*),spsiloc(nparm,MVEC),aux(MCONF)
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -328,7 +328,7 @@ c loop vec
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+       spsiloc(i+i0,ivec)=ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
       enddo
 
       call MPI_REDUCE(spsiloc(1+i0,ivec),spsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -377,7 +377,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       implicit real*8(a-h,o-z)
 
-      dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux(MCONF)
+      dimension psi(nparm,*),hpsi(nparm,*),hpsiloc(nparm,MVEC),aux(MCONF)
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -409,7 +409,7 @@ c loop vec
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=-0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+       hpsiloc(i+i0,ivec)=-0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
       enddo
 
 c     do i=1,nparm+1
@@ -420,8 +420,8 @@ c     enddo
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)-0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
-     &                                      +omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)-0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),nparm)
+     &                                      +omega*ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
       enddo
 
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -488,7 +488,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
 
-      dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF),h_sr_sym(MPARM)
+      dimension psi(nparm,*),spsi(nparm,*),spsiloc(nparm,MVEC),aux(MCONF),h_sr_sym(nparm)
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -531,16 +531,16 @@ c loop vec
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=omega*omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
-     &                         -omega*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
+       spsiloc(i+i0,ivec)=omega*omega*ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
+     &                         -omega*ddot(nconf_n,aux(1),1,sr_ho(i,1),nparm)
       enddo
 
       do iconf=1,nconf_n
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=spsiloc(i+i0,ivec)-omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
-     &                                            +ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
+       spsiloc(i+i0,ivec)=spsiloc(i+i0,ivec)-omega*ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
+     &                                            +ddot(nconf_n,aux(1),1,sr_ho(i,1),nparm)
       enddo
 
       call MPI_REDUCE(spsiloc(1+i0,ivec),spsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -608,8 +608,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
 
-      dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux0(MCONF),aux1(MCONF),aux2(MCONF)
-      dimension grad_ene(MPARM)
+      dimension psi(nparm,*),hpsi(nparm,*),hpsiloc(nparm,MVEC),aux0(MCONF),aux1(MCONF),aux2(MCONF)
+      dimension grad_ene(nparm)
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -670,9 +670,9 @@ c loop vec
         aux2(iconf)=oz*wtg(iconf,1)
       enddo
       do i=1,nparm
-        hpsiloc(i+i0,ivec)=ddot(nconf_n,aux0(1),1,sr_ho(i,1),MPARM)
-     &                    +ddot(nconf_n,aux2(1),1,sr_o(i,1),MPARM)*var
-     &                    +ddot(nconf_n,aux1(1),1,sr_o(i,1),MPARM)
+        hpsiloc(i+i0,ivec)=ddot(nconf_n,aux0(1),1,sr_ho(i,1),nparm)
+     &                    +ddot(nconf_n,aux2(1),1,sr_o(i,1),nparm)*var
+     &                    +ddot(nconf_n,aux1(1),1,sr_o(i,1),nparm)
       enddo
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
@@ -721,6 +721,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mod, only: MPARM
       use sr_mat_n, only: jefj, jfj, jhfj, s_diag
       use sr_mat_n, only: obs_tot
+      use optwf_contrl, only: nparm
 
       ! these were not called in the master
       ! but they seem to be needed
@@ -732,8 +733,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit real*8(a-h,o-z)
 
 
-      dimension psi(MPARM,*),ew(*)
-      dimension s(MPARM),h(MPARM)
+      dimension psi(nparm,*),ew(*)
+      dimension s(nparm),h(nparm)
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -793,6 +794,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use mpi
       use sr_mod, only: MPARM, MVEC
       use csfs, only: nstates
+      
       use mstates_mod, only: MSTATES
 
       use mpiconf, only: idtask, nproc
@@ -802,7 +804,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit real*8(a-h,o-z)
 
 
-      dimension psi(MPARM,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,nstates),anorm_loc(MVEC)
+      dimension psi(nparm,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,nstates),anorm_loc(MVEC)
 
       i0=1
       if(ioptjas+ioptorb.eq.0) i0=0

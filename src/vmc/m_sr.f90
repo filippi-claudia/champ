@@ -1,7 +1,7 @@
 module sr_mod
     !> Arguments:
     integer, parameter :: MPARM = 15100
-    integer, parameter :: MOBS = 10 + 6*MPARM
+    integer :: MOBS
     integer, parameter :: MCONF = 10000
     integer, parameter :: MVEC = 160
 
@@ -49,16 +49,17 @@ module sr_mat_n
 contains
     subroutine allocate_sr_mat_n()
         use csfs, only: nstates
+        use optwf_contrl, only: nparm
         use sr_mod, only: MPARM, MOBS, MCONF
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(elocal)) allocate (elocal(MCONF, nstates))
-        if (.not. allocated(h_sr)) allocate (h_sr(MPARM))
+        if (.not. allocated(h_sr)) allocate (h_sr(nparm))
         if (.not. allocated(obs)) allocate (obs(MOBS, nstates))
-        if (.not. allocated(s_diag)) allocate (s_diag(MPARM, nstates))
-        if (.not. allocated(s_ii_inv)) allocate (s_ii_inv(MPARM))
-        if (.not. allocated(sr_ho)) allocate (sr_ho(MPARM, MCONF))
-        if (.not. allocated(sr_o)) allocate (sr_o(MPARM, MCONF))
+        if (.not. allocated(s_diag)) allocate (s_diag(nparm, nstates))
+        if (.not. allocated(s_ii_inv)) allocate (s_ii_inv(nparm))
+        if (.not. allocated(sr_ho)) allocate (sr_ho(nparm, MCONF))
+        if (.not. allocated(sr_o)) allocate (sr_o(nparm, MCONF))
         if (.not. allocated(wtg)) allocate (wtg(MCONF, nstates))
         if (.not. allocated(obs_tot)) allocate (obs_tot(MOBS, nstates))
     end subroutine allocate_sr_mat_n
@@ -82,5 +83,3 @@ subroutine allocate_m_sr()
 
     call allocate_sr_mat_n()
 end subroutine allocate_m_sr
-
-

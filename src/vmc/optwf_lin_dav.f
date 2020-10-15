@@ -24,13 +24,12 @@
 
       character*20 method_sav
 
-      dimension grad(MPARM*nstates), grad_more(MPARM*nstates,5)
+      dimension grad(nparm*nstates), grad_more(nparm*nstates,5)
 
       if(method.ne.'lin_d')return
 
-      call set_nparms_tot
-
-      if(nparm.gt.MPARM)call fatal_error('OPTWF_LIN_D: nparmtot gt MPARM')
+      ! call set_nparms_tot
+      ! if(nparm.gt.MPARM)call fatal_error('OPTWF_LIN_D: nparmtot gt MPARM')
 
       call p2gtid('optwf:nopt_iter',nopt_iter,6,1)
       call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
@@ -187,12 +186,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_lin_d(ndim,nvec,psi,hpsi )
       use sr_mod, only: MPARM, MOBS, MCONF, MVEC
       use optwf_func, only: ifunc_omega
+      use optwf_contrl, only: nparm
       implicit real*8(a-h,o-z)
 
 
 
 
-      dimension psi(MPARM,*),hpsi(MPARM,*)
+      dimension psi(nparm,*),hpsi(nparm,*)
 
       if(ifunc_omega.eq.0) then
         call h_psi_energymin(ndim,nvec,psi,hpsi )
@@ -209,12 +209,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine s_psi_lin_d(ndim,nvec,psi,spsi )
       use sr_mod, only: MPARM, MOBS, MCONF, MVEC
       use optwf_func, only: ifunc_omega
+      use optwf_contrl, only: nparm
       implicit real*8(a-h,o-z)
 
 
  
 
-      dimension psi(MPARM,*),spsi(MPARM,*)
+      dimension psi(nparm,*),spsi(nparm,*)
 
       if(ifunc_omega.le.2) then
         call s_psi_energymin(ndim,nvec,psi,spsi )
@@ -248,47 +249,47 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       return
       end
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine jdqz_driver( n, kmax, jmin, jmax, evc, eps,     
-     &                        e, e0, itype, notcnv, idav_iter , ipr )
-      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
-      implicit real*8(a-h,o-z)
+! ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+!       subroutine jdqz_driver( n, kmax, jmin, jmax, evc, eps,     
+!      &                        e, e0, itype, notcnv, idav_iter , ipr )
+!       use sr_mod, only: MPARM, MOBS, MCONF, MVEC
+!       implicit real*8(a-h,o-z)
 
-      integer method
-c     parameter(lwork=10+6*MVEC+5*MVEC+3*MVEC)
-      parameter(lwork=MPARM*100)
-      dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC)
-      complex*16 alpha(MVEC),beta(MVEC),eivec(MPARM*MVEC),zwork(lwork),tmp(MPARM)
-      complex*16 target,residu
-      logical wanted
+!       integer method
+! c     parameter(lwork=10+6*MVEC+5*MVEC+3*MVEC)
+!       parameter(lwork=MPARM*100)
+!       dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC)
+!       complex*16 alpha(MVEC),beta(MVEC),eivec(MPARM*MVEC),zwork(lwork),tmp(MPARM)
+!       complex*16 target,residu
+!       logical wanted
 
-      wanted=.true.
-      target=cmplx(e0,0.d0)
+!       wanted=.true.
+!       target=cmplx(e0,0.d0)
 
-      method=1
-      mxmv=100
-      maxstep=100
-      alock=eps
-      iorder=0
-      itestspace=3
+!       method=1
+!       mxmv=100
+!       maxstep=100
+!       alock=eps
+!       iorder=0
+!       itestspace=3
 
-      call JDQZ(alpha,beta,eivec,wanted,n,target,eps
-     &         ,kmax,jmax,jmin,method,jmax,0,mxmv,maxstep,alock,iorder
-     &         ,itestspace,zwork,lwork)
+!       call JDQZ(alpha,beta,eivec,wanted,n,target,eps
+!      &         ,kmax,jmax,jmin,method,jmax,0,mxmv,maxstep,alock,iorder
+!      &         ,itestspace,zwork,lwork)
 
-      write(6,'(''converged roots : '',i4)') kmax
-      do j=1,kmax
-        ish=n*(j-1)
-        write(6,'(''norm : '',e11.4)') dznrm2( n, eivec(1+ish), 1 )
-        call amul(n,eivec(1+ish),residu)
-        call zscal(n,beta(j),residu,1)
-        call bmul(n,eivec(1+ish),tmp)
-        call zaxpy(n,-alpha(j),tmp,1,residu,1)
-        write(6,'(''lambda('',i2,''): ('',1p,e11.4,'','',e11.4,'' )'')') j,alpha(j)/beta(j)
-        write(6,'(a30,d13.6)') '||beta Ax - alpha Bx||:', dznrm2( n, residu, 1 )
-      enddo
+!       write(6,'(''converged roots : '',i4)') kmax
+!       do j=1,kmax
+!         ish=n*(j-1)
+!         write(6,'(''norm : '',e11.4)') dznrm2( n, eivec(1+ish), 1 )
+!         call amul(n,eivec(1+ish),residu)
+!         call zscal(n,beta(j),residu,1)
+!         call bmul(n,eivec(1+ish),tmp)
+!         call zaxpy(n,-alpha(j),tmp,1,residu,1)
+!         write(6,'(''lambda('',i2,''): ('',1p,e11.4,'','',e11.4,'' )'')') j,alpha(j)/beta(j)
+!         write(6,'(a30,d13.6)') '||beta Ax - alpha Bx||:', dznrm2( n, residu, 1 )
+!       enddo
 
-      return
-      end
+!       return
+!       end
 
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+! ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

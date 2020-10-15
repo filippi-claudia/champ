@@ -14,13 +14,13 @@
 
 
 
-      dimension grad(MPARM*nstates)
+      dimension grad(nparm*nstates)
 
       if(method.ne.'sr_n') return
 
       call set_nparms_tot
 
-      if(nparm.gt.MPARM)call fatal_error('SR_OPTWF: nparmtot gt MPARM')
+      ! if(nparm.gt.MPARM)call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
       call p2gtid('optwf:nopt_iter',nopt_iter,6,1)
       call p2gtid('optwf:nblk_max',nblk_max,nblk,1)

@@ -14,15 +14,15 @@
       character*20 dl_alg
 
 
-      dimension deltap(MPARM)
+      dimension deltap(nparm)
 c deep learning 'momentum' variables
-      dimension dl_momentum(MPARM)
+      dimension dl_momentum(nparm)
 c moving average of past squared gradients
-      dimension dl_EG_sq(MPARM)
+      dimension dl_EG_sq(nparm)
 c moving average of past gradients 
-      dimension dl_EG(MPARM)
+      dimension dl_EG(nparm)
 c vector of wave function parameters
-      dimension parameters(MPARM)
+      dimension parameters(nparm)
 
       call p2gtid('optwf:idl_flag',idl_flag,0,1)
 
@@ -30,9 +30,8 @@ c vector of wave function parameters
 
       write(6,'(''Started dl optimization'')')
 
-      call set_nparms_tot
-
-      if(nparm.gt.MPARM)call fatal_error('SR_OPTWF: nparmtot gt MPARM')
+      ! call set_nparms_tot
+      ! if(nparm.gt.MPARM)call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
       call p2gtid('optwf:nopt_iter',nopt_iter,6,1)
       call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
