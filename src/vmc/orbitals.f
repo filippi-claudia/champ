@@ -261,9 +261,9 @@ c-------------------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
+      
       dimension x(3,*),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
-
+      
 
       if(iperiodic.eq.0) then
 
@@ -287,15 +287,16 @@ c Lagrange interpolation
          else
           ier=1
         endif 
-
+        
         if(ier.eq.1) then
 c get basis functions for electron iel
+        
           if(iflag.eq.0) then
             call basis_fnse_vg(iel,rvec_en,r_en)
            else
             call basis_fnse_vgl(iel,rvec_en,r_en)
           endif
-
+        
           do 25 iorb=1,norb
             orbn(iorb)=0
             dorbn(1,iorb)=0
@@ -311,9 +312,11 @@ c           do 25 m=1,nbasis
              dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(3,m,iel)
              if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
    25     continue
+          
         endif
        else
         call orbitals_pw_grade(iel,x(1,iel),orb,dorb,ddorb)
+        
       endif
 
       return

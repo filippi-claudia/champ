@@ -117,15 +117,14 @@ c skip equilibrium steps if restart run
 c imetro = 6 spherical-polar with slater T
       if (nblkeq.ge.1.and.irstar.ne.1) then
         l=0
-        do 420 i=1,nblkeq
-          do 410 j=1,nstep
-            l=l+1
+        do i=1,nblkeq
+          do j=1,nstep
+            l=l+1            
             if (nloc.gt.0) call rotqua
             call metrop6(l,0)
-            
-  410     continue
-  420   call acuest
-        
+          enddo
+         call acuest
+        enddo
 
 c       Equilibration steps done. Zero out estimators again.
         call my_second(2,'equilb')
@@ -138,6 +137,7 @@ c now do averaging steps
       do 440 i=1,nblk
         do 430 j=1,nstep
         l=l+1
+      !   write(6, *) i, nblk, j, nstep
         if (nloc.gt.0) call rotqua
         call metrop6(l,1)
 c write out configuration for optimization/dmc/gfmc here

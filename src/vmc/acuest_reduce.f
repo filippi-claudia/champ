@@ -34,7 +34,7 @@ c Written by Claudia Filippi
       real(dp), dimension(:), allocatable  :: collect
       
 
-      MOBS = MSTATES*(8+5*MFORCE)+10
+      MOBS = nstates*(8+5*MFORCE)+10
       allocate(local_obs(MOBS))
       allocate(collect(MOBS))
       

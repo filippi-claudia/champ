@@ -17,35 +17,41 @@ c Written by Claudia Filippi by modifying hpsi
 
 c Calculates wave function
 
+      ! dimension coord(3,*),psid(*)
+      dimension coord(3,nelec),psid(nstates)
       
-
-      dimension coord(3,*),psid(*)
-
       iwf=iwftype(1)
 
+      
       call distances(iel,coord)
 
+      
       if(ianalyt_lap.eq.1) then
         call jastrowe(iel,coord,vjn,d2j,psij,iflag)
        else
         call fatal_error('HPSIE: numerical one-electron move not implemented')
       endif
 
-c compute all determinants 
+c compute all determinants
+      
       call determinante(iel,x,rvec_en,r_en,iflag)
 
+      
       if(detn(kref).eq.0.d0) then
         do 1 istate=1,nstates
    1      psid(istate)=0.d0
         return
       endif
 
+      
       call multideterminante(iel)
 
 c combine determinantal quantities to obtain trial wave function
+      
       do 10 istate=1,nstates
    10   call determinante_psit(iel,psid(istate),istate)
 
+      
       if(ipass.gt.2) then
 
         check_apsi_min=1.d+99
@@ -59,6 +65,6 @@ c combine determinantal quantities to obtain trial wave function
         check_dref=abs(detn(kref))/aref_now
 
       endif
-
+      
       return
       end

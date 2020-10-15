@@ -25,9 +25,9 @@
 
 
       dimension x(3,*),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
-
+      
       call orbitalse(iel,x,rvec_en,r_en,iflag)
-
+      
       if(iel.le.nup) then
         iab=1
         nel=nup

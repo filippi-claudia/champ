@@ -331,8 +331,10 @@ c rratio^2 is needed for the density of the angular moves
 
 c calculate psi at new configuration
       iel=i
+  
       call psie(iel,xnew,psidn,psijn,ipass,0)
       if(iguiding.eq.0) then
+
         psig=psidn(1)
        else
         call determinant_psig(psidn,psig)
