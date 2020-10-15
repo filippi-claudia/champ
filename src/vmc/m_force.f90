@@ -8,6 +8,32 @@ module force_mod
     save
 end module force_mod
 
+module forcepar
+    !> Arguments: deltot, istrech, nforce
+    use force_mod, only: MFORCE
+    use precision_kinds, only: dp
+
+    real(dp), dimension(:), allocatable :: deltot !(MFORCE)
+    integer :: istrech
+    integer :: nforce
+
+    private
+    public   ::  deltot, istrech, nforce
+    public :: allocate_forcepar, deallocate_forcepar
+    save
+contains
+    subroutine allocate_forcepar()
+        use force_mod, only: MFORCE
+        use precision_kinds, only: dp
+        if (.not. allocated(deltot)) allocate (deltot(MFORCE))
+    end subroutine allocate_forcepar
+
+    subroutine deallocate_forcepar()
+        if (allocated(deltot)) deallocate (deltot)
+    end subroutine deallocate_forcepar
+
+end module forcepar
+
 module force_analy
     !> Arguments: iforce_analy, iuse_zmat, alfgeo
     use precision_kinds, only: dp
@@ -173,32 +199,6 @@ contains
 
 end module force_mat_n
 
-module forcepar
-    !> Arguments: deltot, istrech, nforce
-    use force_mod, only: MFORCE
-    use precision_kinds, only: dp
-
-    real(dp), dimension(:), allocatable :: deltot !(MFORCE)
-    integer :: istrech
-    integer :: nforce
-
-    private
-    public   ::  deltot, istrech, nforce
-    public :: allocate_forcepar, deallocate_forcepar
-    save
-contains
-    subroutine allocate_forcepar()
-        use force_mod, only: MFORCE
-        use precision_kinds, only: dp
-        if (.not. allocated(deltot)) allocate (deltot(MFORCE))
-    end subroutine allocate_forcepar
-
-    subroutine deallocate_forcepar()
-        if (allocated(deltot)) deallocate (deltot)
-    end subroutine deallocate_forcepar
-
-end module forcepar
-
 subroutine allocate_m_force()
     use forcest, only: allocate_forcest
     ! use forcestr, only: allocate_forcestr
@@ -214,5 +214,3 @@ subroutine allocate_m_force()
     call allocate_force_mat_n()
     call allocate_forcepar()
 end subroutine allocate_m_force
-
-
