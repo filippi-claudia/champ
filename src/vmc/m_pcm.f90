@@ -164,11 +164,10 @@ module pcm_force
     save
 contains
     subroutine allocate_pcm_force()
-        use forcepar, only: nforce
         use pcm, only: MCHS
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
-        if (.not. allocated(sch_s)) allocate (sch_s(MCHS, nforce))
+        if (.not. allocated(sch_s)) allocate (sch_s(MCHS, MFORCE))
     end subroutine allocate_pcm_force
 
     subroutine deallocate_pcm_force()

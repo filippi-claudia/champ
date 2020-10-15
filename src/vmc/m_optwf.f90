@@ -13,6 +13,7 @@ end module optwf_contrl
 
 module optwf_corsam
     !> Arguments: add_diag_tmp, energy, energy_err, force, force_err
+    use force_mod, only: MFORCE
     use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: add_diag !(MFORCE)
@@ -28,15 +29,14 @@ module optwf_corsam
     save
 contains
     subroutine allocate_optwf_corsam()
-        use forcepar, only: nforce
-
+        use force_mod, only: MFORCE
         use precision_kinds, only: dp
-        if (.not. allocated(add_diag)) allocate (add_diag(nforce))
-        if (.not. allocated(add_diag_tmp)) allocate (add_diag_tmp(nforce))
-        if (.not. allocated(energy)) allocate (energy(nforce))
-        if (.not. allocated(energy_err)) allocate (energy_err(nforce))
-        if (.not. allocated(force)) allocate (force(nforce))
-        if (.not. allocated(force_err)) allocate (force_err(nforce))
+        if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
+        if (.not. allocated(add_diag_tmp)) allocate (add_diag_tmp(MFORCE))
+        if (.not. allocated(energy)) allocate (energy(MFORCE))
+        if (.not. allocated(energy_err)) allocate (energy_err(MFORCE))
+        if (.not. allocated(force)) allocate (force(MFORCE))
+        if (.not. allocated(force_err)) allocate (force_err(MFORCE))
     end subroutine allocate_optwf_corsam
 
     subroutine deallocate_optwf_corsam()
@@ -150,3 +150,5 @@ subroutine allocate_m_optwf()
     ! call allocate_optwf_nparmj()
     call allocate_optwf_wjas()
 end subroutine allocate_m_optwf
+
+

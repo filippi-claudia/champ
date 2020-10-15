@@ -146,5 +146,3 @@ subroutine allocate_m_mstates()
     call allocate_mstates2()
     call allocate_mstates3()
 end subroutine allocate_m_mstates
-
-

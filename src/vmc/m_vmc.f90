@@ -58,5 +58,3 @@ module vmc_mod
 contains
 
 end module vmc_mod
-
-

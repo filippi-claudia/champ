@@ -38,7 +38,7 @@ c and read in everything which is still in the old format
         MMAT_DIM2 = nelec*(nelec-1)/2
         MCENT3 = 3*ncent_tot
         MOBS = 10 + 6*nparm
-
+        
       end subroutine
 
       subroutine allocate_all_arrays()
@@ -767,9 +767,7 @@ c Determinantal section
         call write_orb_loc
         if(numr.gt.0) then
           do 10 iwft=1,nwftype
-            write(6,*) 'read bas num'
    10       call read_bas_num(iwft)
-            write(6,*) 'read bas num done'
         ibas0(1)=1
         ibas1(1)=nbastyp(iwctype(1))
         do 15 ic=2,ncent

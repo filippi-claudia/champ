@@ -19,12 +19,11 @@ module estcum
      save
  contains
      subroutine allocate_estcum()
-        use forcepar, only: nforce
         use csfs, only: nstates
          use force_mod, only: MFORCE
          use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
-         if (.not. allocated(ecum)) allocate (ecum(nstates, nforce))
+         if (.not. allocated(ecum)) allocate (ecum(nstates, MFORCE))
          if (.not. allocated(ecum1)) allocate (ecum1(nstates))
          if (.not. allocated(pecum)) allocate (pecum(nstates))
          if (.not. allocated(tjfcum)) allocate (tjfcum(nstates))
@@ -91,12 +90,11 @@ module estcum
      save
  contains
      subroutine allocate_estsum()
-        use forcepar, only: nforce
         use csfs, only: nstates
          use force_mod, only: MFORCE
          use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
-         if (.not. allocated(esum)) allocate (esum(nstates, nforce))
+         if (.not. allocated(esum)) allocate (esum(nstates, MFORCE))
          if (.not. allocated(esum1)) allocate (esum1(nstates))
          if (.not. allocated(pesum)) allocate (pesum(nstates))
          if (.not. allocated(tjfsum)) allocate (tjfsum(nstates))
@@ -162,12 +160,11 @@ module estcum
      save
  contains
      subroutine allocate_est2cm()
-        use forcepar, only: nforce
         use csfs, only: nstates
          use force_mod, only: MFORCE
          use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
-         if (.not. allocated(ecm2)) allocate (ecm2(nstates, nforce))
+         if (.not. allocated(ecm2)) allocate (ecm2(nstates, MFORCE))
          if (.not. allocated(ecm21)) allocate (ecm21(nstates))
          if (.not. allocated(pecm2)) allocate (pecm2(nstates))
          if (.not. allocated(tjfcm2)) allocate (tjfcm2(nstates))
