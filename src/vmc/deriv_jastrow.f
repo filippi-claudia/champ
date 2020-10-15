@@ -7,7 +7,7 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
       parameter (zero=0.d0)
-      dimension x(3,*),v(3,*),div_vj(MELEC)
+      dimension x(3,*),v(3,*),div_vj(nelec)
 
       do 10 i=1,nelec
         v(1,i)=zero

@@ -39,9 +39,10 @@ module grid_spline_mod
     !> Arguments
     use precision_kinds, only: sp
     use vmc_mod, only: MELEC
+    use const, only: nelec
     use grid_mod, only: MXNSTEP
 
-    integer, parameter :: MORB_OCC = MELEC/2 + 3
+    integer :: MORB_OCC
     real(sp), dimension(:, :, :, :, :), allocatable :: orb_num_spl !(8, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC)
 
     private
@@ -53,11 +54,8 @@ module grid_spline_mod
 contains
     subroutine allocate_grid_spline_mod()
         use const, only: nelec
-        use coefs, only: norb
-        use precision_kinds, only: sp
-        use vmc_mod, only: MELEC
-        use grid_mod, only: MXNSTEP
-        if (.not. allocated(orb_num_spl)) allocate (orb_num_spl(8, MXNSTEP, MXNSTEP, MXNSTEP, norb_OCC))
+        MORB_OCC = nelec/2 + 3
+        if (.not. allocated(orb_num_spl)) allocate (orb_num_spl(8, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC))
     end subroutine allocate_grid_spline_mod
 
     subroutine deallocate_grid_spline_mod()
@@ -71,10 +69,11 @@ module grid_lagrange_mod
     use precision_kinds, only: sp
     use grid_mod, only: MXNSTEP
     use vmc_mod, only: MELEC
+    use const, only: nelec
     ! Number of Lagrange interpolation points/axis
     integer, parameter :: LAGMAX = 4
     integer, parameter :: LAGSTART = -LAGMAX/2, LAGEND = LAGSTART + LAGMAX - 1
-    integer, parameter ::  MORB_OCC = MELEC/2
+    integer ::  MORB_OCC
 
     !  Spline fits of the orbitals
     ! and boundary conditions (for the creation of the fit)
@@ -88,11 +87,9 @@ module grid_lagrange_mod
 contains
     subroutine allocate_grid_lagrange_mod()
         use const, only: nelec
-        use coefs, only: norb
-        use precision_kinds, only: sp
         use grid_mod, only: MXNSTEP
-        use vmc_mod, only: MELEC
-        if (.not. allocated(orb_num_lag)) allocate (orb_num_lag(5, MXNSTEP, MXNSTEP, MXNSTEP, norb_OCC))
+        MORB_OCC = nelec/2
+        if (.not. allocated(orb_num_lag)) allocate (orb_num_lag(5, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC))
     end subroutine allocate_grid_lagrange_mod
 
     subroutine deallocate_grid_lagrange_mod()
@@ -185,5 +182,3 @@ subroutine allocate_m_grid()
     call allocate_grid3d_param()
     call allocate_orbital_num_lag()
 end subroutine allocate_m_grid
-
-

@@ -29,12 +29,12 @@ c vgl -> value, gradient, laplacian
 
 
 
-      dimension x(3,*),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
+      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       dimension dy(3),ddy(3,3),dlapy(3)
 
-      dimension wfv(4,MELEC,MRWF)
-      dimension xc(3,MELEC),r(MELEC),ri(MELEC),ri2(MELEC)
-      dimension ri3(MELEC),r2(MELEC)
+      dimension wfv(4,nelec,MRWF)
+      dimension xc(3,nelec),r(nelec),ri(nelec),ri2(nelec)
+      dimension ri3(nelec),r2(nelec)
       data rt3,rt3b2/1.732050808d0,0.866025404d0/
 c cs=1/sqrt(4*pi), cp=sqrt(3/(4*pi)), cd1=sqrt(5/(4*pi)), cd2=sqrt(15/(4*pi))
       data cs,cp,cd1,cd2/0.28209479d0,0.48860251d0,

@@ -34,6 +34,8 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use pcm_cntrl, only: ichpol
       use method_opt, only: method
       use multislatern, only: ddorbn, detn, dorbn, orbn
+      use const, only: nelec
+      
 
       implicit real*8(a-h,o-z)
 
@@ -59,8 +61,8 @@ c    Last 2 are prob. best
 
  
 c TMP
-      dimension xstrech(3,MELEC)
-      dimension xaxis(3),yaxis(3),zaxis(3),idist(MELEC)
+      dimension xstrech(3,nelec)
+      dimension xaxis(3),yaxis(3),zaxis(3),idist(nelec)
       dimension ddx_ref(3)
       dimension psidn(nstates) ,wtg(nstates)
       

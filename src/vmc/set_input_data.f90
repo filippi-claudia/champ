@@ -73,10 +73,10 @@ subroutine multideterminants_define(iflag, icheck)
     save kref_old
 
     call p2gti('electrons:nelec', nelec, 1)
-    if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
+    ! if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
 
     call p2gti('electrons:nup', nup, 1)
-    if (nup .gt. MELEC/2) call fatal_error('INPUT: nup exceeds MELEC/2')
+    if (nup .gt. nelec/2) call fatal_error('INPUT: nup exceeds nelec/2')
     ndn = nelec - nup
 
     call p2gtid('general:nwftype', nwftype, 1, 1)
@@ -96,9 +96,6 @@ subroutine multideterminants_define(iflag, icheck)
         write (6, *) 'kref change', iflag, kref_old, kref
     endif
     kref_old = kref
-
-    write (6, *) 'nelec', nelec
-    write (6, *) 'ndet', ndet
 
     allocate (iwundet(ndet, 2))
     allocate (numrep_det(ndet, 2))

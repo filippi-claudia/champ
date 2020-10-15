@@ -43,7 +43,7 @@ c rigidly with that nucleus
       real(dp), ALLOCATABLE, save :: pecentn(:)
       real(dp), ALLOCATABLE, save :: xpolsav(:,:)
 
-      dimension x(3,MELEC),xstrech(3,MELEC)
+      dimension x(3,nelec),xstrech(3,nelec)
       dimension wt(ncent_tot),dvol(3,3),dwt(3,ncent_tot),dwtsm(3)
       dimension cent_str(3,ncent_tot)
       dimension q_strech(MCHS),efsol(MCHS),wt_pcm(ncent_tot)

@@ -14,7 +14,7 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       implicit real*8(a-h,o-z)
 
 
-      dimension x(3,*),rshift(3,MELEC,ncent_tot),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
+      dimension x(3,*),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
      &,vpsp_det(*),dvpsp_dj(*),t_vpsp(ncent_tot,MPS_QUAD,*)
 
       if(i_vpsp.gt.0)then

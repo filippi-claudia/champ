@@ -11,6 +11,7 @@
       use slatn, only: slmin
       use dorb_m, only: iworbd
       use multislatern, only: ddorbn, detn, dorbn, orbn 
+      use const, only: nelec
 
       use slater, only: d2dx2, ddx, fp, fpp, slmi
 
@@ -24,7 +25,7 @@
 
 
 
-      dimension x(3,*),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
+      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       
       call orbitalse(iel,x,rvec_en,r_en,iflag)
       
@@ -90,7 +91,7 @@ c-----------------------------------------------------------------------
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-
+      use const, only: nelec
       use multislater, only: detiab
 
       implicit real*8(a-h,o-z)
@@ -110,7 +111,7 @@ c-----------------------------------------------------------------------
       !   allocate(ymat_tmp(norb,MELEC))
       ! endif
 
-      dimension ymat_tmp(norb,MELEC)
+      dimension ymat_tmp(norb,nelec)
       ! save ymat_tmp
 
       if(iel.le.nup) then

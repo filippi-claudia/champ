@@ -13,13 +13,14 @@
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use multislater, only: detiab
+      use const, only: nelec
       implicit real*8(a-h,o-z)
 
 
 
 
 
-      dimension zmat(norb,MELEC,2),dzmat(norb,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
+      dimension zmat(norb,nelec,2),dzmat(norb,nelec,2),emz(nelec,nelec,2),aaz(nelec,nelec,2)
       dimension orbprim(*),eorbprim(*)
 
       if(ioptorb.eq.0) return

@@ -235,7 +235,7 @@ c compute tm-pseudopotential for electron iel
       use vmc_mod, only: MELEC, MCENT
       use atom, only: znuc, iwctype, ncent, ncent_tot
       use pseudo_tm, only: rmax
-
+      use const, only: nelec
       use pseudo, only: lpot, vps
 
       implicit real*8(a-h,o-z)
@@ -244,7 +244,7 @@ c compute tm-pseudopotential for electron iel
 
 
 
-      dimension r_en(MELEC,ncent_tot)
+      dimension r_en(nelec,ncent_tot)
 
       do 10 ic=1,ncent
         ict=iwctype(ic)

@@ -50,8 +50,8 @@ c and the potential
       
 
       dimension x(3,*),v(3,*)
-      dimension rp(3,MELEC,ncent_tot),rm(3,MELEC,ncent_tot)
-     &,rp2(3,MELEC,ncent_tot),rm2(3,MELEC,ncent_tot)
+      dimension rp(3,nelec,ncent_tot),rm(3,nelec,ncent_tot)
+     &,rp2(3,nelec,ncent_tot),rm2(3,nelec,ncent_tot)
      &,rrp(3,MMAT_DIM2),rrm(3,MMAT_DIM2),rrp2(3,MMAT_DIM2),rrm2(3,MMAT_DIM2)
 
       do 10 i=1,nelec

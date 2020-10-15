@@ -28,7 +28,7 @@ c routine to accumulate estimators for energy etc.
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq
       use mstates_ctrl, only: iguiding
-
+      
       use optorb_cblock, only: ns_current
       
       use multislater, only: detiab
@@ -38,7 +38,7 @@ c routine to accumulate estimators for energy etc.
 
       parameter (half=.5d0)
 
-      dimension xstrech(3,MELEC)
+      dimension xstrech(3,nelec)
       real(dp), dimension(:,:), allocatable :: enow 
 
 c xsum = sum of values of x from metrop

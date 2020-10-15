@@ -151,7 +151,7 @@ subroutine read_determinants(iu, nd, iwft)
     endif
 
     call p2gti('electrons:nelec', nelec, 1)
-    if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
+    ! if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
     call incpos(iu, itmp, 1)
 
     allocate (cdet(ndet, nstates, nwftype))

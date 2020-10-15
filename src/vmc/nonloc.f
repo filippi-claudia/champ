@@ -25,8 +25,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-
+      
       use multislater, only: detiab
+
       implicit real*8(a-h,o-z)
 
 
@@ -37,15 +38,15 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
 
 
-      dimension x(3,*),rshift(3,MELEC,ncent_tot),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
-      dimension rr_en(MELEC,ncent_tot),rr_en2(MELEC,ncent_tot),rr_en_sav(ncent_tot),rr_en2_sav(ncent_tot)
+      dimension x(3,*),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
+      dimension rr_en(nelec,ncent_tot),rr_en2(nelec,ncent_tot),rr_en_sav(ncent_tot),rr_en2_sav(ncent_tot)
      &,xsav(3),rshift_sav(3,ncent_tot),rvec_en_sav(3,ncent_tot),r_en_sav(ncent_tot)
 
       dimension vpsp_det(*),dvpsp_dj(*),t_vpsp(ncent_tot,MPS_QUAD,*)
       dimension dpsij_ratio(MPARMJ)
 
       dimension orbn(norb),dorbn(3,norb),da_orbn(3,ncent_tot,norb),term_radial_da_vps(3)
-      dimension vjn(3),da_ratio_jn(3,ncent_tot),dd1(MELEC,ncent_tot),dd1_sav(ncent_tot)
+      dimension vjn(3),da_ratio_jn(3,ncent_tot),dd1(nelec,ncent_tot),dd1_sav(ncent_tot)
 
       do 11 ic=1,ncent
 cJF this is the culprit
@@ -237,15 +238,16 @@ c-----------------------------------------------------------------------
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use qua, only: xq, yq, zq
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
       parameter (one=1.d0)
 
 
-      dimension x(3),rshift(3,MELEC,ncent_tot),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
-      dimension rr_en(MELEC,ncent_tot),rr_en2(MELEC,ncent_tot)
-      dimension dd1(MELEC,ncent_tot)
+      dimension x(3),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
+      dimension rr_en(nelec,ncent_tot),rr_en2(nelec,ncent_tot)
+      dimension dd1(nelec,ncent_tot)
 
       if(iperiodic.eq.0) then
         x(1)=r_en(i,ic)*xq(iq)+cent(1,ic)
@@ -290,14 +292,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use vmc_mod, only: MELEC, MORB, MCENT
       use atom, only: iwctype, ncent, ncent_tot
-
+      use const, only: nelec
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic
       use grid3dflag, only: i3dlagorb, i3dsplorb
-
+      use const, only: nelec
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
@@ -305,7 +307,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
 
 
-      dimension x(3),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
+      dimension x(3),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       dimension orbn(*),dorbn(3,*),da_orbn(3,ncent_tot,*),dtmp(3)
 
       if(iperiodic.eq.0) then
@@ -417,7 +419,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm, only: nocuspb, nspin2b
       use contr2, only: isc
       use contrl_per, only: iperiodic
-
+      use const, only: nelec
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
@@ -426,10 +428,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       parameter (half=.5d0)
 
 
-      dimension fso(MELEC,*)
-      dimension x(3,*),rshift(3,MELEC,ncent_tot),rvec_en(3,MELEC,*)
-      dimension r_en(MELEC,ncent_tot),rr_en(MELEC,ncent_tot),rr_en2(MELEC,ncent_tot)
-     &,fsn(MELEC,MELEC),dx(3),dd1(MELEC,ncent_tot),vjn(3),da_ratio_jn(3,ncent_tot)
+      dimension fso(nelec,*)
+      dimension x(3,*),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,*)
+      dimension r_en(nelec,ncent_tot),rr_en(nelec,ncent_tot),rr_en2(nelec,ncent_tot)
+     &,fsn(nelec,nelec),dx(3),dd1(nelec,ncent_tot),vjn(3),da_ratio_jn(3,ncent_tot)
 
       fsumn=0
 

@@ -11,6 +11,7 @@ c routine to calculate basis functions for electron k
       use phifun, only: phin
       use wfsec, only: iwf
       use force_analy, only: iforce_analy
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
@@ -18,7 +19,7 @@ c routine to calculate basis functions for electron k
       parameter (one=1.d0,three=3.d0,half=0.5d0)
 
       dimension wfv(4,MRWF)
-      dimension xc(3),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
+      dimension xc(3),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       dimension dy(3),ddy(3,3),dlapy(3)
 
       data rt3,rt3b2/1.732050808d0,0.866025404d0/

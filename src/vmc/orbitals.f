@@ -13,13 +13,14 @@ c Modified by A. Scemama
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use atom, only: ncent_tot
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      
       implicit real*8(a-h,o-z)
 
 
 
 
-      dimension x(3,*),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
-      dimension bhin(MELEC,nbasis),dbhin(3*MELEC,nbasis),d2bhin(MELEC,nbasis)
+      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
+      dimension bhin(nelec,nbasis),dbhin(3*nelec,nbasis),d2bhin(nelec,nbasis)
 
       ier=1
       if(iperiodic.eq.0) then
@@ -102,9 +103,9 @@ c          enddo
 c          d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
 c         enddo
 c        enddo
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   MELEC,  coef(1,1,iwf),nbasis,0.d0,orb,   MELEC)
-c        call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*MELEC,  coef(1,1,iwf),nbasis,0.d0,dorb,3*MELEC)
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, MELEC,  coef(1,1,iwf),nbasis,0.d0,ddorb, MELEC)
+c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
+c        call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
+c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
          do 26 iorb=1,norb+nadorb
            do 26 i=1,nelec
             orb(i,iorb)=0
@@ -158,7 +159,7 @@ c assuming that basis function values in phin are up to date
 
 
 
-      dimension bhin(MELEC,nbasis),dbhin(3,MELEC,nbasis),d2bhin(MELEC,nbasis)
+      dimension bhin(nelec,nbasis),dbhin(3,nelec,nbasis),d2bhin(nelec,nbasis)
 
       if (nadorb.eq.0.or.(ioptorb.eq.0.and.ioptci.eq.0)) return
 
@@ -171,15 +172,15 @@ c        call fatal_error('Aborted')
 c      endif
 
       do i=1,nelec
-        call dcopy(nbasis,phin(1,i),1,bhin(i,1),MELEC)
-        call dcopy(nbasis,dphin(1,1,i),3,dbhin(1,i,1),3*MELEC)
-        call dcopy(nbasis,dphin(2,1,i),3,dbhin(2,i,1),3*MELEC)
-        call dcopy(nbasis,dphin(3,1,i),3,dbhin(3,i,1),3*MELEC)
-        call dcopy(nbasis,d2phin(1,i),1,d2bhin(i,1),MELEC)
+        call dcopy(nbasis,phin(1,i),1,bhin(i,1),nelec)
+        call dcopy(nbasis,dphin(1,1,i),3,dbhin(1,i,1),3*nelec)
+        call dcopy(nbasis,dphin(2,1,i),3,dbhin(2,i,1),3*nelec)
+        call dcopy(nbasis,dphin(3,1,i),3,dbhin(3,i,1),3*nelec)
+        call dcopy(nbasis,d2phin(1,i),1,d2bhin(i,1),nelec)
       enddo
-      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,  bhin,  MELEC,coef(1,norb+1,iwf),nbasis,0.d0,  orb(  1,norb+1),  MELEC)
-      call dgemm('n','n',3*nelec,nadorb,nbasis,1.d0, dbhin,3*MELEC,coef(1,norb+1,iwf),nbasis,0.d0, dorb(1,1,norb+1),3*MELEC)
-      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,d2bhin,  MELEC,coef(1,norb+1,iwf),nbasis,0.d0,ddorb(  1,norb+1),  MELEC)
+      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,  bhin,  nelec,coef(1,norb+1,iwf),nbasis,0.d0,  orb(  1,norb+1),  nelec)
+      call dgemm('n','n',3*nelec,nadorb,nbasis,1.d0, dbhin,3*nelec,coef(1,norb+1,iwf),nbasis,0.d0, dorb(1,1,norb+1),3*nelec)
+      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,d2bhin,  nelec,coef(1,norb+1,iwf),nbasis,0.d0,ddorb(  1,norb+1),  nelec)
 
 c     do 25 iorb=norb+1,norb+nadorb
 c       do 25 i=1,nelec
@@ -218,7 +219,7 @@ c-------------------------------------------------------------------------------
 
 
 
-      dimension tphin(3*MELEC,nbasis),t2phin_all(3*3*MELEC,nbasis),t3phin(3*MELEC,nbasis)
+      dimension tphin(3*nelec,nbasis),t2phin_all(3*3*nelec,nbasis),t3phin(3*nelec,nbasis)
 
       do ibasis=1,nbasis
        i=0
@@ -236,7 +237,7 @@ c-------------------------------------------------------------------------------
        enddo
       enddo
       n=3*nelec
-      m=3*MELEC
+      m=3*nelec
       do 50 ic=1,ncent
         k=ibas1(ic)-ibas0(ic)+1
         j=ibas0(ic)
@@ -258,11 +259,12 @@ c-------------------------------------------------------------------------------
       use atom, only: ncent_tot
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use multislatern, only: ddorbn, detn, dorbn, orbn
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
       
-      dimension x(3,*),rvec_en(3,MELEC,ncent_tot),r_en(MELEC,ncent_tot)
+      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       
 
       if(iperiodic.eq.0) then

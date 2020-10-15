@@ -42,9 +42,9 @@ c dimensioned at least max(nup**2,ndn**2)
 
 
       dimension eloc_det(ndet,2)
-      dimension vj(3,MELEC),vpsp_det(*)
+      dimension vj(3,nelec),vpsp_det(*)
 
-      dimension btemp(MELEC**2,2)
+      dimension btemp(nelec**2,2)
 
       nel=nup
       ish=0
@@ -257,7 +257,7 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
 
 
-      dimension detu(ndet),detd(ndet),wfmat(MEXCIT**2,ndet),ymat(norb,MELEC)
+      dimension detu(ndet),detd(ndet),wfmat(MEXCIT**2,ndet),ymat(norb,nelec)
 
       detrefi=1.d0/(detu(kref)*detd(kref))
 
@@ -327,7 +327,7 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-      dimension dymat(norb,MELEC),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
+      dimension dymat(norb,nelec),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
 
       do 10 i=1,nelec
         do 10 j=1,norb
@@ -396,8 +396,8 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension ymat(norb,MELEC,2),dymat(norb,MELEC,2)
-      dimension zmat(norb,MELEC,2),dzmat(norb,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
+      dimension ymat(norb,nelec,2),dymat(norb,nelec,2)
+      dimension zmat(norb,nelec,2),dzmat(norb,nelec,2),emz(nelec,nelec,2),aaz(nelec,nelec,2)
 
       do 100 iab=1,2
         if(iab.eq.2.and.ndn.eq.0) goto 100

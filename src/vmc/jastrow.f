@@ -11,7 +11,7 @@ c Written by Cyrus Umrigar
 
 
 
-      dimension x(3,*),v(3,*),div_vj(MELEC)
+      dimension x(3,*),v(3,*),div_vj(nelec)
 
       do 10 i=1,nelec
         div_vj(i)=0

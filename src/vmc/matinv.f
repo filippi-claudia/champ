@@ -4,6 +4,7 @@
       use vmc_mod, only: radmax, delri
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use const, only: nelec
       implicit real*8 (a-h,o-z)
 
 c routine to calculate inverse and determinant of matrix a
@@ -12,7 +13,7 @@ c the matrix a is replaced by its inverse.
 
       parameter (eps=10.d0**(-40))
       dimension a(nsub,nsub)
-      dimension ipvt(MELEC),work(MELEC),work2(9),det(2)
+      dimension ipvt(nelec),work(nelec),work2(9),det(2)
 
       if(nsub.eq.1) then
         determinant=a(1,1)
@@ -79,7 +80,7 @@ c        ...exit
 
         determinant = det(1)*10.0**det(2)
 
-        call dgetri(nsub,a,nsub,ipvt,work,MELEC,info)
+        call dgetri(nsub,a,nsub,ipvt,work,nelec,info)
 
       endif
 

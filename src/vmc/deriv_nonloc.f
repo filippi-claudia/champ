@@ -24,9 +24,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       parameter (half=.5d0)
 
-      dimension x(3,*),rshift(3,MELEC,ncent_tot),rvec_en(3,MELEC,*)
-      dimension r_en(MELEC,ncent_tot),rr_en(MELEC,ncent_tot),rr_en2(MELEC,ncent_tot)
-     &,gn(*),fsn(MELEC,MELEC),dx(3),dd1(MELEC,ncent_tot),vjn(3),da_ratio_jn(3,ncent_tot)
+      dimension x(3,*),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,*)
+      dimension r_en(nelec,ncent_tot),rr_en(nelec,ncent_tot),rr_en2(nelec,ncent_tot)
+     &,gn(*),fsn(nelec,nelec),dx(3),dd1(nelec,ncent_tot),vjn(3),da_ratio_jn(3,ncent_tot)
 
       fsumn=0
 

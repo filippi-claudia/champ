@@ -11,7 +11,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use vmc_mod, only: MELEC, MCENT
       use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, ncent
-
+      use const, only: nelec
       use ghostatom, only: newghostype, nghostcent
       use ghostatom, only: newghostype, nghostcent
       use phifun, only: d2phin, dphin
@@ -29,7 +29,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       
 
-      real*4  bc(MXNSTEP,MXNSTEP,3:8,MELEC/2+1), wk(80*MXNSTEP3)
+      real*4  bc(MXNSTEP,MXNSTEP,3:8,nelec/2+1), wk(80*MXNSTEP3)
 
 c     Note:
 c     The boundary condition array ranges from 3 to 8. This way, if we code
@@ -401,7 +401,7 @@ c Lagrange interpolation routines
       use wfsec, only: iwf
       use grid3d_param, only: nstep3d, endpt, origin
       use orbital_num_lag, only: denom
-
+      use const, only: nelec
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: nghostcent
       use contrl, only: irstar
@@ -601,12 +601,13 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
 
 
-      dimension r(3),dr(3),orb(MELEC,norb),ix(3)
+      dimension r(3),dr(3),orb(nelec,norb),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 
@@ -682,11 +683,12 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
 
-      dimension r(3),dr(3),orb(3,MELEC,norb),ix(3)
+      dimension r(3),dr(3),orb(3,nelec,norb),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 

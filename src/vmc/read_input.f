@@ -318,10 +318,10 @@ c General section
 c Electron section
       call p2gti('electrons:nelec',nelec,1)
       write(6,'(''number of electrons ='',t30,i10)') nelec
-      if(nelec.gt.MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
+      ! if(nelec.gt.MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
 
       call p2gti('electrons:nup',nup,1)
-      if(nup.gt.MELEC/2) call fatal_error('INPUT: nup exceeds MELEC/2')
+      if(nup.gt.nelec/2) call fatal_error('INPUT: nup exceeds nelec/2')
       ndn=nelec-nup
       write(6,'(''number of up,dn electrons ='',t30,2i5)') nup,ndn
 

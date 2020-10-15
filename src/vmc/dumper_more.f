@@ -53,7 +53,7 @@ c job where it left off
      &,n4px(3,nctype_tot),nsax(nctype_tot),npax(3,nctype_tot),ndzrax(nctype_tot)
      &,ndx2ax(nctype_tot),ndxyax(nctype_tot),ndxzax(nctype_tot),ndyzax(nctype_tot)
      &,cdetx(ndet)
-      dimension xstrech(3,MELEC)
+      dimension xstrech(3,nelec)
       dimension d2(nstates)
 
       write(10) delta,deltar,deltat

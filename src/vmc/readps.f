@@ -88,7 +88,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
       use vmc_mod, only: MELEC, MCENT
       use atom, only: znuc, iwctype, ncent, ncent_tot
-
+      use const, only: nelec
       use pseudo_fahy, only: drad, dradl, npotl, potl, ptnlc, rcmax
 
       use pseudo, only: lpot, vps
@@ -99,7 +99,7 @@ c Written by Claudia Filippi
 
 
 
-      dimension rad(MELEC,ncent_tot)
+      dimension rad(nelec,ncent_tot)
 
       do 10 ic=1,ncent
         ict=iwctype(ic)

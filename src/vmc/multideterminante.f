@@ -15,7 +15,7 @@
       use coefs, only: norb
       use multimatn, only: aan, wfmatn
       use multislatern, only: ddorbn, detn, dorbn, orbn
-
+      use const, only: nelec
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use multislater, only: detiab
       implicit real*8(a-h,o-z)
@@ -27,7 +27,7 @@
       parameter (one=1.d0,half=0.5d0)
 
 
-      dimension gmat(MELEC,norb,3),gmatn(MEXCIT**2,3)
+      dimension gmat(nelec,norb,3),gmatn(MEXCIT**2,3)
       dimension b(norb,3),ddx_mdet(3)
       dimension orb_sav(norb)
 
@@ -127,14 +127,15 @@ c-----------------------------------------------------------------------
       use multidet, only: iactv, ivirt, kref
       use coefs, only: norb
       use dorb_m, only: iworbd
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
       parameter (one=1.d0,half=0.5d0)
 
-      dimension aa(MELEC,norb),wfmat(MEXCIT**2,ndet),ymat(norb,MELEC)
+      dimension aa(nelec,norb),wfmat(MEXCIT**2,ndet),ymat(norb,nelec)
       dimension b(norb,3),dorb(3,norb)
-      dimension gmat(MELEC,norb,3)
+      dimension gmat(nelec,norb,3)
       dimension velocity(3)
 
       dimension slmi(MMAT_DIM)
