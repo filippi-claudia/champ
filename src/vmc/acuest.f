@@ -47,7 +47,7 @@ c xcum = accumulated sums of xnow
 c xcm2 = accumulated sums of xnow**2
 
       dimension wtg(nstates)
-      allocate(enow(nstates, MFORCE))
+      allocate(enow(nstates, nforce))
 
 
 c collect cumulative averages

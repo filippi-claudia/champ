@@ -19,7 +19,7 @@ c routine to write out estimators for energy etc.
       implicit real*8(a-h,o-z)
 
 
-      dimension enow(nstates,MFORCE)
+      dimension enow(nstates,nforce)
 
 c statement function for error calculation
       err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)

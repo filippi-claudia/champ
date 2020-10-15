@@ -34,7 +34,7 @@ c routine to print out final results
 
       parameter (one=1.d0,half=.5d0)
 
-      dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
+      dimension ffin_grdnts(nforce),ferr_grdnts(nforce)
 
       err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
       err1(x,x2,j)=dsqrt(dabs(x2/wcum(j,1)-(x/wcum(j,1))**2)/passes)

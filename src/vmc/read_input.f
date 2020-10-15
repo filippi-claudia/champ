@@ -309,7 +309,7 @@ c General section
 
       call p2gtid('general:nforce',nforce,1,1)
       write(6,'(/,''number of geometries ='',t30,i10)') nforce
-      if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
+      ! if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
       call p2gtid('general:nwftype',nwftype,1,1)
       write(6,'(/,''number of wave functions='',t30,i10)') nwftype
       if(nwftype.gt.nforce) call fatal_error('INPUT: nwftype gt nforce')
@@ -998,7 +998,7 @@ c Check that the required blocks are there in the input
 
 
       call p2gtid('general:nforce',nforce,1,1)
-      if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
+      ! if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
       call p2gtid('general:nwftype',nwftype,1,1)
       !if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype gt MWF')
       call p2gtid('general:iperiodic',iperiodic,0,1)

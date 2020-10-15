@@ -109,8 +109,8 @@ c   calculated using correlated smapling.
 
 
 
-      dimension forces_ave(MFORCE),forces_err(MFORCE)
-      dimension grdnts_ave(MFORCE),grdnts_err(MFORCE)     
+      dimension forces_ave(nforce),forces_err(nforce)
+      dimension grdnts_ave(nforce),grdnts_err(nforce)     
 
       do 5 if=1,nforce-2,2
         grdnts_ave((if+1)/2)=((-forces_ave(if)+forces_ave(if+1))/delgrdxyz)*0.5d0
@@ -174,8 +174,8 @@ c   calculated using correlated smapling.
       implicit real*8(a-h,o-z)
 
 
-      dimension forces_ave(MFORCE),forces_err(MFORCE)
-      dimension grdnts_ave(MFORCE),grdnts_err(MFORCE)     
+      dimension forces_ave(nforce),forces_err(nforce)
+      dimension grdnts_ave(nforce),grdnts_err(nforce)     
 
 
 
@@ -420,8 +420,8 @@ c   from energy differences  calculated using correlated smapling.
 
 
 
-      dimension forces_ave(MFORCE),forces_err(MFORCE)
-      dimension diaghess_ave(MFORCE),diaghess_err(MFORCE)     
+      dimension forces_ave(nforce),forces_err(nforce)
+      dimension diaghess_ave(nforce),diaghess_err(nforce)     
 
 
 

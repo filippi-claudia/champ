@@ -50,7 +50,7 @@ c rigidly with that nucleus
       save alfstr
 
       if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
-      if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
+      if(.not.allocated(pecentn)) allocate(pecentn(nforce))
       if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV))
 
       call p2gtid('optwf:ioptwf',ioptwf,0,1)
