@@ -3,6 +3,7 @@
       use sr_mod, only: MPARM
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use mstates_mod, only: MSTATES
+      use csfs, only: nstates
       use sr_index, only: jelo, jelo2, jelohfj
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot
@@ -11,7 +12,7 @@
 
       include 'mpif.h'
 
-      dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
+      dimension obs_wtg(nstates),obs_wtg_tot(nstates)
       dimension hii(MPARM),sii(MPARM)
 
       write(6,*) 'nparm_p1,nparm',nparm_p1,nparm

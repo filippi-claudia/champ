@@ -378,10 +378,10 @@ c-----------------------------------------------------------------------
       real(dp), ALLOCATABLE, save :: cdet_save(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_save(:,:)
 
-      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
-      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
+      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,nstates))
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,nstates))
 
-      ! dimension cdet_save(ndet,MSTATES),ccsf_save(ndet,MSTATES)
+      ! dimension cdet_save(ndet,nstates),ccsf_save(ndet,nstates)
       ! save cdet_save,ccsf_save
 
       do 10 j=1,nstates
@@ -615,10 +615,10 @@ c-----------------------------------------------------------------------
       real(dp), ALLOCATABLE, save :: cdet_best(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_best(:,:)
 
-      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
-      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
+      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,nstates))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,nstates))
 
-      ! dimension cdet_best(ndet,MSTATES),ccsf_best(ndet,MSTATES)
+      ! dimension cdet_best(ndet,nstates),ccsf_best(ndet,nstates)
       ! save cdet_best,ccsf_best
 
       do 10 j=1,nstates

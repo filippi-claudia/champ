@@ -1,5 +1,6 @@
       subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
 
+      use mpi
       use sr_mod, only: MPARM, MVEC
       use const, only: ipr
       use mstates_mod, only: MSTATES
@@ -14,13 +15,8 @@
     
       implicit real*8(a-h,o-z)
 
-      include 'mpif.h'
-
-
-
-
-      dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,MSTATES),index_overlap(MVEC),anorm(MVEC)
-      dimension deltap(*),deltap_more(MPARM*MSTATES,5)
+      dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,nstates),index_overlap(MVEC),anorm(MVEC)
+      dimension deltap(*),deltap_more(MPARM*nstates,5)
 
       call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
 
@@ -198,6 +194,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
+      use mpi
       use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -209,13 +206,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       ! use sr_index, only: jelo, jelo2, jelohfj
 
       implicit real*8(a-h,o-z)
-
-
-
-
-      include 'mpif.h'
-
-
 
       dimension psi(MPARM,*),hpsi(MPARM,*),aux(MCONF),hpsiloc(MPARM,MVEC)
 
@@ -298,6 +288,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
+      use mpi
       use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -309,12 +300,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       ! use sr_index, only: jelo, jelo2, jelohfj
 
       implicit real*8(a-h,o-z)
-
-
-
-
-      include 'mpif.h'
-
 
 
       dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF)
@@ -378,6 +363,7 @@ c     STOP
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
+      use mpi
       use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -390,16 +376,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       ! use sr_index, only: jelo, jelo2, jelohfj
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
-      include 'mpif.h'
- 
-
-
-
 
       dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux(MCONF)
 
@@ -496,6 +472,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
+      use mpi
       use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -508,14 +485,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       ! use sr_index, only: jelo, jelo2, jelohfj
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
-      include 'mpif.h'
-
-
 
 
 
@@ -623,6 +592,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
+      use mpi
       use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -636,13 +606,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       implicit real*8(a-h,o-z)
 
-
-
-
-
-      include 'mpif.h'
-
- 
 
 
       dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux0(MCONF),aux1(MCONF),aux2(MCONF)
@@ -754,7 +717,7 @@ c end loop vec
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine g_psi_lin_d( ndim, nvec, nb1, psi, ew )
-
+      use mpi
       use sr_mod, only: MPARM
       use sr_mat_n, only: jefj, jfj, jhfj, s_diag
       use sr_mat_n, only: obs_tot
@@ -767,9 +730,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use optwf_contrl, only: ioptorb, ioptjas
       
       implicit real*8(a-h,o-z)
-
-
-      include 'mpif.h'
 
 
       dimension psi(MPARM,*),ew(*)
@@ -830,6 +790,7 @@ c         if(i.ne.ivec+nb1-1) psi(i,ivec)=psi(i,ivec)/(h(i)+s_diag(1,1)-ew(ivec)
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
+      use mpi
       use sr_mod, only: MPARM, MVEC
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
@@ -841,13 +802,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit real*8(a-h,o-z)
 
 
-
-
-
-      include 'mpif.h'
-
-
-      dimension psi(MPARM,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,MSTATES),anorm_loc(MVEC)
+      dimension psi(MPARM,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,nstates),anorm_loc(MVEC)
 
       i0=1
       if(ioptjas+ioptorb.eq.0) i0=0

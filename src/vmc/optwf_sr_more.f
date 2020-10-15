@@ -25,7 +25,7 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
 
 
-      dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
+      dimension obs_wtg(nstates),obs_wtg_tot(nstates)
 
       call p2gtid('optgeo:izvzb',izvzb,0,1)
       call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)

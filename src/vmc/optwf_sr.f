@@ -2,6 +2,7 @@
       use sr_mod, only: MPARM
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use mstates_mod, only: MSTATES
+      use csfs, only: nstates
       use optwf_corsam, only: energy, energy_err, force
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use contrl, only: nblk
@@ -13,7 +14,7 @@
 
 
 
-      dimension grad(MPARM*MSTATES)
+      dimension grad(MPARM*nstates)
 
       if(method.ne.'sr_n') return
 

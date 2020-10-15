@@ -122,8 +122,10 @@ c imetro = 6 spherical-polar with slater T
             l=l+1
             if (nloc.gt.0) call rotqua
             call metrop6(l,0)
+            
   410     continue
   420   call acuest
+        
 
 c       Equilibration steps done. Zero out estimators again.
         call my_second(2,'equilb')

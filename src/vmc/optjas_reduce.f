@@ -1,6 +1,6 @@
       subroutine optjas_reduce
 c Written by Claudia Filippi
-
+      use mpi
       use optjas, only: MPARMJ
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
@@ -15,12 +15,7 @@ c Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-
-
-      include 'mpif.h'
-
-
-      dimension collect(MPARMJ,MSTATES),collect2(MPARMJ,MPARMJ,MSTATES)
+      dimension collect(MPARMJ,nstates),collect2(MPARMJ,MPARMJ,nstates)
 
       if(ioptjas.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 

@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
+      use precision_kinds, only: dp 
       use force_mod, only: MFORCE
       use vmc_mod, only: MELEC, MDET, MCENT
       use vmc_mod, only: nrad, MMAT_DIM2
@@ -37,14 +38,17 @@ c routine to accumulate estimators for energy etc.
 
       parameter (half=.5d0)
 
-      dimension xstrech(3,MELEC),enow(MSTATES,MFORCE)
+      dimension xstrech(3,MELEC)
+      real(dp), dimension(:,:), allocatable :: enow 
 
 c xsum = sum of values of x from metrop
 c xnow = average of values of x from metrop
 c xcum = accumulated sums of xnow
 c xcm2 = accumulated sums of xnow**2
 
-      dimension wtg(MSTATES)
+      dimension wtg(nstates)
+      allocate(enow(nstates, MFORCE))
+
 
 c collect cumulative averages
 
@@ -104,9 +108,10 @@ c zero out xsum variables for metrop
       call pcm_init(1)
       call mmpol_init(1)
       call force_analy_init(1)
+      
 
       call acuest_reduce(enow)
-
+      deallocate(enow)
       return
 c-----------------------------------------------------------------------
       entry acues1(wtg)
