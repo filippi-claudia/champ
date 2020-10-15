@@ -38,11 +38,12 @@ module grdnthes
      save
  contains
      subroutine allocate_grdntsmv()
+        use forcepar, only: nforce
         use atom, only: ncent_tot
          use force_mod, only: MFORCE
          use vmc_mod, only: MCENT
-         if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
-         if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
+         if (.not. allocated(igrdaidx)) allocate (igrdaidx(nforce))
+         if (.not. allocated(igrdcidx)) allocate (igrdcidx(nforce))
          if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent_tot))
      end subroutine allocate_grdntsmv
 

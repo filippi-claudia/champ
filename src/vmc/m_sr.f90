@@ -24,9 +24,7 @@ end module sr_index
 
 module sr_mat_n
     !> Arguments: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
-    use sr_mod, only: MPARM, MOBS, MCONF
     use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
 
     real(dp), dimension(:, :), allocatable :: elocal !(MCONF,MSTATES)
     real(dp), dimension(:), allocatable :: h_sr !(MPARM)
@@ -50,9 +48,8 @@ contains
     subroutine allocate_sr_mat_n()
         use csfs, only: nstates
         use optwf_contrl, only: nparm
-        use sr_mod, only: MPARM, MOBS, MCONF
+        use sr_mod, only: MOBS, MCONF
         use precision_kinds, only: dp
-        use mstates_mod, only: MSTATES
         if (.not. allocated(elocal)) allocate (elocal(MCONF, nstates))
         if (.not. allocated(h_sr)) allocate (h_sr(nparm))
         if (.not. allocated(obs)) allocate (obs(MOBS, nstates))

@@ -79,9 +79,10 @@ c new convention
      &             '.basis.'//
      &             atomsymbol(1:index(atomsymbol,' ')-1)
         endif
-
+        
         open(21,file=filename(1:index(filename,' ')-1),status='old')
 
+        
         read(21,*) nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
         write(45,'(''Reading basis grid file = ['',a,'']'')') filename(1:index(filename,' ')-1)
         write(45,'(''center type '',i4,'' nrbas,igrid,nr,arg,r0 ='',2i4,i5,2f10.5)') 
@@ -102,7 +103,7 @@ c new convention
         if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)
 
         do 100 irb=1,nrbas(ic)
-
+        write(6,*) 'test', ic, nrbas(ic)
         if(nloc.eq.0.and.l(irb).eq.0.and.icusp(ic).eq.1) then
 
 c small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4

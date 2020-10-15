@@ -43,6 +43,7 @@ module config
     save
 contains
     subroutine allocate_config()
+        use forcepar, only: nforce
         use const, only: nelec
         use csfs, only: nstates
         use force_mod, only: MFORCE
@@ -50,13 +51,13 @@ contains
         use vmc_mod, only: MELEC
         use mstates_mod, only: MSTATES
         if (.not. allocated(delttn)) allocate (delttn(nelec))
-        if (.not. allocated(enew)) allocate (enew(MFORCE))
-        if (.not. allocated(eold)) allocate (eold(nstates, MFORCE))
+        if (.not. allocated(enew)) allocate (enew(nforce))
+        if (.not. allocated(eold)) allocate (eold(nstates, nforce))
         if (.not. allocated(nearestn)) allocate (nearestn(nelec))
         if (.not. allocated(nearesto)) allocate (nearesto(nelec))
         if (.not. allocated(peo)) allocate (peo(nstates))
-        if (.not. allocated(psi2n)) allocate (psi2n(MFORCE))
-        if (.not. allocated(psi2o)) allocate (psi2o(nstates, MFORCE))
+        if (.not. allocated(psi2n)) allocate (psi2n(nforce))
+        if (.not. allocated(psi2o)) allocate (psi2o(nstates, nforce))
         if (.not. allocated(psido)) allocate (psido(nstates))
         if (.not. allocated(rminn)) allocate (rminn(nelec))
         if (.not. allocated(rminno)) allocate (rminno(nelec))
