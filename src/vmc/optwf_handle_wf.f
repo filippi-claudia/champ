@@ -998,7 +998,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l),1)
 
       ijasci=nparmj+ntmp
-      ! if(ijasci+nstates*norbterm+nstates.gt.MPARM) call fatal_error('SR_STORE: iparm gt MPARM')
+      if(ijasci+nstates*norbterm+nstates.gt.MPARM) call fatal_error('SR_STORE: iparm gt MPARM')
 
       do istate=1,nstates
         ii=ijasci+(istate-1)*norbterm
