@@ -23,12 +23,11 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use phifun, only: d2phin, dphin, phin
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use grid3d_param, only: endpt, nstep3d, origin
-
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
-     &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      
 
       real*4  bc(MXNSTEP,MXNSTEP,3:8,MELEC/2+1), wk(80*MXNSTEP3)
 
@@ -407,12 +406,11 @@ c Lagrange interpolation routines
       use ghostatom, only: nghostcent
       use contrl, only: irstar
       use phifun, only: phin, dphin, d2phin
-
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT)
-     &,r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      
 
       character*(32) filename
       integer a,b,c

@@ -26,7 +26,7 @@
 
       dimension grad(MPARM*MSTATES), grad_more(MPARM*MSTATES,5)
 
-      if(method.ne.'lin_d')return
+      if(method .ne.'lin_d')return
 
       call set_nparms_tot
 

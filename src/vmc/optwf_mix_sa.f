@@ -12,6 +12,8 @@
       use mstates_ctrl, only: iguiding
       use method_opt, only: method
 
+      use optwf_sr_mod, only: sr
+
       implicit real*8(a-h,o-z)
 
 

@@ -80,7 +80,7 @@
       subroutine pcm_reduce_chvol
 
       use pcm, only: MCHV
-      use mpi_qmc, only: NPROCX
+      use mpiconf, only: NPROCX
       use mpiconf, only: nproc
       use pcm_xv_new, only: xv_new
       use pcm_cntrl, only: ipcm
