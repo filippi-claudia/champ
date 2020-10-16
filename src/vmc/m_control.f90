@@ -6,12 +6,13 @@ module contrl
     integer :: isite
     integer :: nconf
     integer :: nblk
+    integer :: nblk_max
     integer :: nblkeq
     integer :: nconf_new
     integer :: nstep
 
     private
-    public :: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+    public :: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep, nblk_max
     save
 end module contrl
 
@@ -95,5 +96,3 @@ subroutine allocate_m_control()
     use contrldmc, only: allocate_contrldmc
     call allocate_contrldmc()
 end subroutine allocate_m_control
-
-

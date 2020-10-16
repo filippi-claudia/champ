@@ -13,33 +13,90 @@ c Initialize input parser
       
 c Parse input (standard input)
       call p2go(5,0)
+
+c Compute the size of some matrices we need
+      call preprocess_input()
       call compute_mat_size()
+
+c Allocate memory of all arrays      
       call allocate_all_arrays()
-      
+
 c Transfer from lists to fortran variables, print out, check,
 c and read in everything which is still in the old format
-
       call process_input
 
       if(index(mode,'mc').ne.0 ) call p2vin('input.log',1)
 
       return
-      end
-      
+      end subroutine read_input
+
+      subroutine preprocess_input()
+        !> read some parts of the input that 
+        !> are needed for the dynamic allocation
+        use elec, only: ndn, nup
+        use const, only: nelec
+        use ghostatom, only: newghostype, nghostcent
+        use atom, only: nctype, ncent
+        use contrl, only: nstep, nblk, nblk_max
+        use contr3, only: mode
+        use wfsec, only: nwftype
+
+        implicit none
+
+        !> electrons
+        call p2gti('electrons:nelec',nelec,1)
+        call p2gti('electrons:nup',nup,1)
+        ndn=nelec-nup
+  
+        !> atoms
+        call p2gti('atoms:nctype',nctype,1)
+        call p2gti('atoms:natom',ncent,1)
+        call p2gtid('atoms:addghostype',newghostype,0,1)
+        call p2gtid('atoms:nghostcent',nghostcent,0,1)
+
+        !> wftype
+        call p2gtid('general:nwftype',nwftype,1,1)
+
+        !> sampling
+        if(index(mode,'vmc').eq.0) call p2gtad('dmc:mode_dmc',mode,'dmc_one_mpi1',1)
+        if(index(mode,'mc').ne.0 ) then
+
+          if(index(mode,'vmc').ne.0) then
+            call p2gti('blocking_vmc:nstep',nstep,1)
+            call p2gti('blocking_vmc:nblk',nblk,1)
+            call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
+          endif
+          if(index(mode,'dmc').ne.0) then
+            call p2gti('blocking_dmc:nstep',nstep,1)
+            call p2gti('blocking_dmc:nblk',nblk,1)
+            call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
+          endif
+        endif
+      end subroutine preprocess_input
+
       subroutine compute_mat_size()
+        !> compute various size that are derived from the input
         use vmc_mod, only: MMAT_DIM, MMAT_DIM2, MCTYP3X, MCENT3
         use const, only: nelec
         use atom, only: nctype_tot, ncent_tot
+        use sr_mod, only: MPARM, MOBS, MCONF
+        use contrl, only: nstep, nblk_max
+
+        implicit none 
 
         MMAT_DIM = nelec*nelec/4
         MMAT_DIM2 = nelec*(nelec-1)/2
 
         MCTYP3X = max(3, nctype_tot)
         MCENT3 = 3*ncent_tot
-        
+        MOBS = 10 + 6*MPARM
+        MCONF = nstep * nblk_max
+
+        write(6,*) 'MCONF', MCONF
       end subroutine
 
       subroutine allocate_all_arrays()
+            !> massive dynamic allocation
             call allocate_m_common
             call allocate_m_basis
             call allocate_m_control
@@ -66,25 +123,6 @@ c and read in everything which is still in the old format
             call allocate_m_state_avrg
       end subroutine allocate_all_arrays
 
-      subroutine read_system_size()
-            !> read the size of the system so that we can allocate the min size
-            use elec, only: ndn, nup
-            use const, only: nelec
-            use ghostatom, only: newghostype, nghostcent
-            use atom, only: nctype, ncent
-
-            call p2gti('electrons:nelec',nelec,1)
-            call p2gti('electrons:nup',nup,1)
-            ndn=nelec-nup
-      
-            call p2gti('atoms:nctype',nctype,1)
-            call p2gti('atoms:natom',ncent,1)
-            call p2gtid('atoms:addghostype',newghostype,0,1)
-            call p2gtid('atoms:nghostcent',nghostcent,0,1)
-
-            call p2gtid('general:nwftype',nwftype,1,1) !<MWF
-
-      end subroutine read_system_size
 c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
@@ -132,7 +170,8 @@ c and Anthony Scemema
       use contr3, only: mode
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
       use contrldmc, only: itau_eff, nfprod, rttau, tau
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, isite, nconf, nblk
+      use contrl, only: nblkeq, nconf_new, nstep, nblk_max
       use dorb_m, only: iworbd
       use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
@@ -489,8 +528,8 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
 
         if(method.eq.'linear'.and.MXREDUCED.ne.MXORBOP) 
      &    call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')
-        if((method.eq.'sr_n'.or.method.eq.'lin_d').and.nstep*nblk_max.gt.MCONF)
-     &    call fatal_error('READ_INPUT: nstep*nblk_max.gt.MCONF')
+    !     if((method.eq.'sr_n'.or.method.eq.'lin_d').and.nstep*nblk_max.gt.MCONF)
+    !  &    call fatal_error('READ_INPUT: nstep*nblk_max.gt.MCONF')
         endif
 
         if(ioptjas.eq.1.or.ioptorb.eq.1.or.ioptci.eq.1) 
