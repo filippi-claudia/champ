@@ -15,7 +15,8 @@
     
       implicit real*8(a-h,o-z)
 
-      dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,nstates),index_overlap(MVEC),anorm(MVEC)
+      dimension e(nvecx),evc(MPARM,nvecx),itype(nvecx),overlap_psi(nvecx,nstates)
+      dimension index_overlap(nvecx),anorm(nvecx)
       dimension deltap(*),deltap_more(MPARM*nstates,5)
 
       call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
@@ -48,7 +49,7 @@
 
        elseif(lin_jdav.eq.1) then
        write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
-        call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
+        call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, nvecx, evc, 
      &       ethr, e, itype, notcnv, idav_iter, ipr)
        else
          call fatal_error('LIND: lin_jdav < 2')
@@ -195,7 +196,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
       use mpi
-      use sr_mod, only: MPARM, MCONF, MVEC
+      use sr_mod, only: MPARM, MCONF, MVEC, nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
@@ -207,7 +208,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       implicit real*8(a-h,o-z)
 
-      dimension psi(MPARM,*),hpsi(MPARM,*),aux(MCONF),hpsiloc(MPARM,MVEC)
+      dimension psi(MPARM,*),hpsi(MPARM,*),aux(MCONF),hpsiloc(MPARM,nvecx)
 
 
       i0=1
@@ -289,7 +290,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
       use mpi
-      use sr_mod, only: MPARM, MCONF, MVEC
+      use sr_mod, only: MPARM, MCONF, MVEC, nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n
@@ -302,7 +303,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit real*8(a-h,o-z)
 
 
-      dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF)
+      dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,nvecx),aux(MCONF)
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -364,7 +365,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
       use mpi
-      use sr_mod, only: MPARM, MCONF, MVEC
+      use sr_mod, only: MPARM, MCONF, MVEC, nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
@@ -377,7 +378,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       implicit real*8(a-h,o-z)
 
-      dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux(MCONF)
+      dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,nvecx),aux(MCONF)
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -473,7 +474,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
       use mpi
-      use sr_mod, only: MPARM, MCONF, MVEC
+      use sr_mod, only: MPARM, MCONF, MVEC, nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
@@ -488,7 +489,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
 
-      dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF),h_sr_sym(MPARM)
+      dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,nvecx),aux(MCONF),h_sr_sym(MPARM)
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -593,7 +594,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
       use mpi
-      use sr_mod, only: MPARM, MCONF, MVEC
+      use sr_mod, only: MPARM, MCONF, MVEC, nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega
@@ -608,7 +609,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
 
-      dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux0(MCONF),aux1(MCONF),aux2(MCONF)
+      dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,nvecx),aux0(MCONF),aux1(MCONF),aux2(MCONF)
       dimension grad_ene(MPARM)
 
       i0=1
@@ -791,7 +792,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
       use mpi
-      use sr_mod, only: MPARM, MVEC
+      use sr_mod, only: MPARM, MVEC, nvecx
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
 
@@ -802,7 +803,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit real*8(a-h,o-z)
 
 
-      dimension psi(MPARM,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,nstates),anorm_loc(MVEC)
+      dimension psi(MPARM,*),overlap_psi(nvecx,*),anorm(*),overlap_psiloc(nvecx,nstates),anorm_loc(nvecx)
 
       i0=1
       if(ioptjas+ioptorb.eq.0) i0=0
@@ -831,7 +832,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         enddo
       enddo
 
-      call MPI_REDUCE(overlap_psiloc,overlap_psi,MVEC*nstates,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
+      call MPI_REDUCE(overlap_psiloc,overlap_psi,nvecx*nstates,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
       call MPI_REDUCE(anorm_loc,anorm,nvec,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
 
       if(idtask.eq.0) then

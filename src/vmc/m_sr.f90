@@ -4,9 +4,10 @@ module sr_mod
     integer :: MOBS
     integer :: MCONF
     integer, parameter :: MVEC = 160
+    integer :: nvecx
 
     private
-    public :: MPARM, MOBS, MCONF, MVEC
+    public :: MPARM, MOBS, MCONF, MVEC, nvecx
     save
 end module sr_mod
 

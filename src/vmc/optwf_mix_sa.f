@@ -1,6 +1,6 @@
       subroutine optwf_mix
 
-      use sr_mod, only: MPARM, MVEC
+      use sr_mod, only: MPARM, MVEC, nvecx
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
@@ -53,7 +53,7 @@
       call p2gtfd('optwf:lin_adiag',alin_adiag,0.01,1)
       call p2gtfd('optwf:lin_eps',alin_eps,0.001,1)
 
-      if(nvecx.gt.MVEC) call fatal_error('SR_OPTWF: nvecx > MVEC')
+      ! if(nvecx.gt.MVEC) call fatal_error('SR_OPTWF: nvecx > MVEC')
       write(6,'(/,''LIN_D adiag: '',f10.5)') alin_adiag
       write(6,'(''LIN_D ethr:  '',f10.5)') alin_eps
       write(6,'(''LIN_D nvec:  '',i4)') nvec
