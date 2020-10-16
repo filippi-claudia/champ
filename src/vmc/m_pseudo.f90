@@ -29,7 +29,6 @@ module pseudo
     save
 contains
     subroutine allocate_pseudo()
-        use forcepar, only: nforce
         use const, only: nelec
         use atom, only: nctype_tot
         use atom, only: ncent_tot
@@ -39,7 +38,7 @@ contains
         use vmc_mod, only: MELEC, MCENT, MCTYPE
         if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
         if (.not. allocated(vps)) allocate (vps(nelec, ncent_tot, MPS_L))
-        if (.not. allocated(vpso)) allocate (vpso(nelec, ncent_tot, MPS_L, nforce))
+        if (.not. allocated(vpso)) allocate (vpso(nelec, ncent_tot, MPS_L, MFORCE))
     end subroutine allocate_pseudo
 
     subroutine deallocate_pseudo()

@@ -25,7 +25,7 @@ contains
     subroutine allocate_forcepar()
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
-        if (.not. allocated(deltot)) allocate (deltot(nforce))
+        if (.not. allocated(deltot)) allocate (deltot(MFORCE))
     end subroutine allocate_forcepar
 
     subroutine deallocate_forcepar()
@@ -62,13 +62,12 @@ module forcest
     save
 contains
     subroutine allocate_forcest()
-        use forcepar, only: nforce
         use csfs, only: nstates
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(fcm2)) allocate (fcm2(nstates, nforce))
-        if (.not. allocated(fcum)) allocate (fcum(nstates, nforce))
+        if (.not. allocated(fcm2)) allocate (fcm2(nstates, MFORCE))
+        if (.not. allocated(fcum)) allocate (fcum(nstates, MFORCE))
     end subroutine allocate_forcest
 
     subroutine deallocate_forcest()
@@ -119,13 +118,12 @@ module forcewt
     save
 contains
     subroutine allocate_forcewt()
-        use forcepar, only: nforce
         use csfs, only: nstates
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(wcum)) allocate (wcum(nstates, nforce))
-        if (.not. allocated(wsum)) allocate (wsum(nstates, nforce))
+        if (.not. allocated(wcum)) allocate (wcum(nstates, MFORCE))
+        if (.not. allocated(wsum)) allocate (wsum(nstates, MFORCE))
     end subroutine allocate_forcewt
 
     subroutine deallocate_forcewt()
@@ -216,5 +214,3 @@ subroutine allocate_m_force()
     call allocate_force_mat_n()
     call allocate_forcepar()
 end subroutine allocate_m_force
-
-

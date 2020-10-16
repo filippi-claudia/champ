@@ -29,15 +29,14 @@ module optwf_corsam
     save
 contains
     subroutine allocate_optwf_corsam()
-        use forcepar, only: nforce
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
-        if (.not. allocated(add_diag)) allocate (add_diag(nforce))
-        if (.not. allocated(add_diag_tmp)) allocate (add_diag_tmp(nforce))
-        if (.not. allocated(energy)) allocate (energy(nforce))
-        if (.not. allocated(energy_err)) allocate (energy_err(nforce))
-        if (.not. allocated(force)) allocate (force(nforce))
-        if (.not. allocated(force_err)) allocate (force_err(nforce))
+        if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
+        if (.not. allocated(add_diag_tmp)) allocate (add_diag_tmp(MFORCE))
+        if (.not. allocated(energy)) allocate (energy(MFORCE))
+        if (.not. allocated(energy_err)) allocate (energy_err(MFORCE))
+        if (.not. allocated(force)) allocate (force(MFORCE))
+        if (.not. allocated(force_err)) allocate (force_err(MFORCE))
     end subroutine allocate_optwf_corsam
 
     subroutine deallocate_optwf_corsam()
