@@ -27,12 +27,16 @@ c and read in everything which is still in the old format
       end
       
       subroutine compute_mat_size()
-        use vmc_mod, only: MMAT_DIM, MMAT_DIM2
+        use vmc_mod, only: MMAT_DIM, MMAT_DIM2, MCTYP3X, MCENT3
         use const, only: nelec
+        use atom, only: nctype_tot, ncent_tot
 
         MMAT_DIM = nelec*nelec/4
         MMAT_DIM2 = nelec*(nelec-1)/2
 
+        MCTYP3X = max(3, nctype_tot)
+        MCENT3 = 3*ncent_tot
+        
       end subroutine
 
       subroutine allocate_all_arrays()

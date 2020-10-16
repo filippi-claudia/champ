@@ -639,10 +639,13 @@ subroutine read_jasderiv(iu)
     use bparm, only: nspin2b
     use contr2, only: ijas
     use contr2, only: isc
+    use vmc_mod, only: MCTYP3X
+    use atom, only: nctype_tot
     implicit real*8(a - h, o - z)
 
     na1 = 1
     na2 = nctype
+    MCTYP3X = max(3, nctype_tot)
 
     if (.not. allocated(nparma)) allocate (nparma(MCTYP3X))
     if (.not. allocated(nparmb)) allocate (nparmb(3))
