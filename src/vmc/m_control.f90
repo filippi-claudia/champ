@@ -80,9 +80,10 @@ module contrldmc
     save
 contains
     subroutine allocate_contrldmc()
+        use forcepar, only: nforce
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
-        if (.not. allocated(taueff)) allocate (taueff(MFORCE))
+        if (.not. allocated(taueff)) allocate (taueff(nforce))
     end subroutine allocate_contrldmc
 
     subroutine deallocate_contrldmc()

@@ -165,14 +165,15 @@ module numexp
     save
 contains
     subroutine allocate_numexp()
+        use forcepar, only: nforce
         use atom, only: nctype_tot
         use numbas_mod, only: MRWF
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
         use vmc_mod, only: NCOEF
-        if (.not. allocated(ae)) allocate (ae(2, MRWF, nctype_tot, MFORCE))
-        if (.not. allocated(ce)) allocate (ce(NCOEF, MRWF, nctype_tot, MFORCE))
+        if (.not. allocated(ae)) allocate (ae(2, MRWF, nctype_tot, nforce))
+        if (.not. allocated(ce)) allocate (ce(NCOEF, MRWF, nctype_tot, nforce))
     end subroutine allocate_numexp
 
     subroutine deallocate_numexp()
