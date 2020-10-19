@@ -1,7 +1,8 @@
       subroutine olbfgs_more(iter, nparm, deltap, parameters)
       use olbfgs, only: update_hessian, olbfgs_iteration
       use sr_mat_n, only: h_sr
-
+      use optwf_sr_mod, only: sr_hs
+      
       ! is noteven in master
       use mpiconf, only: idtask
       

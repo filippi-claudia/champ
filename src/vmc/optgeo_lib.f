@@ -89,6 +89,25 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         return
       end
 
+      subroutine compute_position_bcast
+
+      use atom, only: ncent
+      use force_fin, only: da_energy_ave
+      use force_analy, only: iforce_analy
+
+      implicit real*8(a-h,o-z)
+
+      include 'mpif.h'
+
+
+      if(iforce_analy.eq.0)return
+
+      call MPI_BCAST(da_energy_ave,3*ncent,MPI_REAL8,0,MPI_COMM_WORLD,i)
+
+      return
+      end
+
+
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine force_store(l)

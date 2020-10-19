@@ -901,10 +901,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-
-
-        
-
 c Note: we do not vary the first (i0) CI coefficient unless a run where we only optimize the CI coefs
 
       if(method.eq.'sr_n') then
