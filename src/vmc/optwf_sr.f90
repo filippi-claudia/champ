@@ -13,6 +13,8 @@
 module optwf_sr_mod
 
     use precision_kinds, only: dp
+    use optwf_contrl, only: ioptci, ioptjas, ioptorb
+    use force_analy, only: iforce_analy
 
     integer :: nopt_iter, nblk_max
     real(dp) ::  energy_tol
@@ -44,7 +46,8 @@ contains
         use optwf_corsam, only: energy, energy_err, force
         use optwf_func, only: ifunc_omega, omega, omega_hes
         use contrl, only: nblk
-        use force_analy, only: iforce_analy, alfgeo
+        use force_analy, only: alfgeo
+        use optwf_contrl, only: nparm
 
         use method_opt, only: method
 
