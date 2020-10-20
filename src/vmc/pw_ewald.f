@@ -1844,11 +1844,16 @@ c Written by Cyrus Umrigar
       use periodic, only: np
       use periodic, only: znuc_sum
       use pseudo, only: lpot, nloc
-      use distance_mod, only: rshift, r_en, rvec_en
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
 
-      common /distance/  rvec_ee(3, MMAT_DIM2), r_ee(MMAT_DIM2)
+
+
+
+
+      
+
       dimension x(3,*)
 
 c short-range sum
@@ -1912,10 +1917,9 @@ c Written by Cyrus Umrigar
       use periodic, only: ncoef_per, ng1d_sim
       use periodic, only: ngnorm_sim, ngvec_sim
       use periodic, only: np
-      use distance_mod, only: rshift, r_en, rvec_en
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
-      common /distance/  rvec_ee(3, MMAT_DIM2), r_ee(MMAT_DIM2)
 
       dimension x(3,*)
 

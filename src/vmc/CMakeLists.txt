@@ -2,7 +2,12 @@ if (MPI_Fortran_FOUND)
 
   # Source files
   file(GLOB VMC_SOURCE *.f)
-  file(GLOB VMC90_SOURCE optgeo_coords_int.f90 optgeo_hessian.f90 optgeo_convcartzmat.f90 regterg.f90 olbfgs.f90 davidson_wrap.f90)
+  file(GLOB VMC90_SOURCE optgeo_coords_int.f90 optgeo_hessian.f90 optgeo_convcartzmat.f90 regterg.f90 olbfgs.f90 davidson_wrap.f90 m_kinds.f90
+                         m_vmc.f90  m_mstates.f90  m_sr.f90  m_force.f90  m_grid.f90  m_pcm.f90  m_optci.f90  m_ewald.f90  m_jastrow.f90
+                         m_mmpol.f90  m_optorb.f90  m_prop.f90  m_pseudo.f90  m_control.f90  m_constant.f90  m_efield.f90  m_optjas.f90
+                         m_gradhess.f90  m_mpi.f90  m_optwf.f90  m_basis.f90  m_estimators.f90  m_deriv.f90  m_mixderiv.f90  m_input.f90
+                         m_sampling.f90  m_grdnt.f90  m_state_avrg.f90  m_common.f90 main.f90 
+                         optwf.f90 optwf_dl.f90 optwf_dl_more.f90 optwf_sr.f90)
   set(DAVIDSON_SOURCE array_utils.f90 lapack_wrapper.f90 davidson.f90)
 
   set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-check bounds -g -traceback")
@@ -28,6 +33,36 @@ if (MPI_Fortran_FOUND)
   # --------------------------------------------
   
   set(SHARED_SOURCE
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_kinds.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_vmc.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_mstates.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_sr.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_force.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_grid.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_pcm.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_optci.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_ewald.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_jastrow.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_mmpol.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_optorb.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_prop.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_pseudo.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_control.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_constant.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_efield.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_optjas.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_gradhess.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_mpi.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_optwf.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_basis.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_estimators.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_deriv.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_mixderiv.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_input.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_sampling.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_grdnt.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_state_avrg.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pcm_3dgrid.f
     ${CMAKE_CURRENT_SOURCE_DIR}/strech.f
@@ -63,36 +98,6 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante_psit.f
     ${CMAKE_CURRENT_SOURCE_DIR}/readps_tm.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pot.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_kinds.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_vmc.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_mstates.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_sr.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_force.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_grid.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_pcm.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_optci.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_ewald.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_jastrow.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_mmpol.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_optorb.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_prop.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_pseudo.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_control.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_constant.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_efield.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_optjas.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_gradhess.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_mpi.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_optwf.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_basis.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_estimators.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_deriv.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_mixderiv.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_input.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_sampling.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_grdnt.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_state_avrg.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/mmpol.f
     ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f

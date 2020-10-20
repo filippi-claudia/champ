@@ -8,12 +8,10 @@ c calculate interparticle distances
       use const, only: nelec
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use contrl_per, only: iperiodic
-      use distance_mod, only: rshift, r_en, rvec_en
-
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      
       implicit real*8(a-h,o-z)
 
-
-      common /distance/  rvec_ee(3, MMAT_DIM2), r_ee(MMAT_DIM2)
       dimension x(3,*)
 
       if(iel.eq.0) then
@@ -105,12 +103,9 @@ c restore interparticle distances (called if move rejected)
       use const, only: nelec
       use distance_mod, only: rshift, r_en, rvec_en
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
-
-
-
-      common /distance/  rvec_ee(3, MMAT_DIM2), r_ee(MMAT_DIM2)
 c Calculate e-N inter-particle distances
       do 25 ic=1,ncent+nghostcent
         r_en(iel,ic)=r_en_sav(ic)

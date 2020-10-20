@@ -1,0 +1,1702 @@
+executing [./pool//geometry.0] ... 
+***
+executing [./pool//global.inp] ... 
+***
+executing [./pool//BFD-Q.bfinfo] ... 
+***
+executing [jastrow_good_b3lyp.0] ... 
+***
+executing [cas44.lcao] ... 
+***
+executing [cas44.det.1] ... 
+csfmap  12  20  24
+Warning: det coef overwritten with csf
+***
+executing [cas44.sym] ... 
+***
+***
+========================================
+INPUT: block exponents missing: all exponents set to 1
+ norb  =         426
+ iactv =          10          10
+ ivirt =          12          12
+           1           6  distinct out of           20
+           2           6  distinct out of           20
+INPUT: definition of orbital variations missing
+Determinantal orbitals in orbital optimization:   13
+External orbitals in orbital optimization:  280
+Total orbitals in orbital optimization:  293
+=========== orbital pair list ==========
+ new variation:    1   pair    1   14          spin    3
+ new variation:    2   pair    1   17          spin    3
+ new variation:    3   pair    1   18          spin    3
+ new variation:    4   pair    1   20          spin    3
+ new variation:    5   pair    1   26          spin    3
+ new variation:    6   pair    1   27          spin    3
+ new variation:    7   pair    1   29          spin    3
+ new variation:    8   pair    1   31          spin    3
+ new variation:    9   pair    1   34          spin    3
+ new variation:   10   pair    1   38          spin    3
+ new variation:   11   pair    1   41          spin    3
+ new variation:   12   pair    1   42          spin    3
+ new variation:   13   pair    1   47          spin    3
+ new variation:   14   pair    1   48          spin    3
+ new variation:   15   pair    1   50          spin    3
+ new variation:   16   pair    1   54          spin    3
+ new variation:   17   pair    1   57          spin    3
+ new variation:   18   pair    1   59          spin    3
+ new variation:   19   pair    1   62          spin    3
+ new variation:   20   pair    1   66          spin    3
+ new variation:   21   pair    1   70          spin    3
+ new variation:   22   pair    1   73          spin    3
+ new variation:   23   pair    1   75          spin    3
+ new variation:   24   pair    1   76          spin    3
+ new variation:   25   pair    1   79          spin    3
+ new variation:   26   pair    1   83          spin    3
+ new variation:   27   pair    1   84          spin    3
+ new variation:   28   pair    1   88          spin    3
+ new variation:   29   pair    1   92          spin    3
+ new variation:   30   pair    1   94          spin    3
+ new variation:   31   pair    1   98          spin    3
+ new variation:   32   pair    1  100          spin    3
+ new variation:   33   pair    1  104          spin    3
+ new variation:   34   pair    1  109          spin    3
+ new variation:   35   pair    1  111          spin    3
+ new variation:   36   pair    1  114          spin    3
+ new variation:   37   pair    1  120          spin    3
+ new variation:   38   pair    1  121          spin    3
+ new variation:   39   pair    1  125          spin    3
+ new variation:   40   pair    1  128          spin    3
+ new variation:   41   pair    1  133          spin    3
+ new variation:   42   pair    1  134          spin    3
+ new variation:   43   pair    1  137          spin    3
+ new variation:   44   pair    1  139          spin    3
+ new variation:   45   pair    1  145          spin    3
+ new variation:   46   pair    1  146          spin    3
+ new variation:   47   pair    1  148          spin    3
+ new variation:   48   pair    1  150          spin    3
+ new variation:   49   pair    1  152          spin    3
+ new variation:   50   pair    1  159          spin    3
+ new variation:   51   pair    1  161          spin    3
+ new variation:   52   pair    1  164          spin    3
+ new variation:   53   pair    1  166          spin    3
+ new variation:   54   pair    1  169          spin    3
+ new variation:   55   pair    1  172          spin    3
+ new variation:   56   pair    1  174          spin    3
+ new variation:   57   pair    1  176          spin    3
+ new variation:   58   pair    1  182          spin    3
+ new variation:   59   pair    1  183          spin    3
+ new variation:   60   pair    1  187          spin    3
+ new variation:   61   pair    1  192          spin    3
+ new variation:   62   pair    1  196          spin    3
+ new variation:   63   pair    1  199          spin    3
+ new variation:   64   pair    1  202          spin    3
+ new variation:   65   pair    1  204          spin    3
+ new variation:   66   pair    1  209          spin    3
+ new variation:   67   pair    1  213          spin    3
+ new variation:   68   pair    1  216          spin    3
+ new variation:   69   pair    1  219          spin    3
+ new variation:   70   pair    1  221          spin    3
+ new variation:   71   pair    1  224          spin    3
+ new variation:   72   pair    1  226          spin    3
+ new variation:   73   pair    1  228          spin    3
+ new variation:   74   pair    1  231          spin    3
+ new variation:   75   pair    1  233          spin    3
+ new variation:   76   pair    1  234          spin    3
+ new variation:   77   pair    1  236          spin    3
+ new variation:   78   pair    1  238          spin    3
+ new variation:   79   pair    1  241          spin    3
+ new variation:   80   pair    1  243          spin    3
+ new variation:   81   pair    1  247          spin    3
+ new variation:   82   pair    1  248          spin    3
+ new variation:   83   pair    1  255          spin    3
+ new variation:   84   pair    1  263          spin    3
+ new variation:   85   pair    1  264          spin    3
+ new variation:   86   pair    1  268          spin    3
+ new variation:   87   pair    1  270          spin    3
+ new variation:   88   pair    1  275          spin    3
+ new variation:   89   pair    1  276          spin    3
+ new variation:   90   pair    1  278          spin    3
+ new variation:   91   pair    1  279          spin    3
+ new variation:   92   pair    1  283          spin    3
+ new variation:   93   pair    1  289          spin    3
+ new variation:   94   pair    1  291          spin    3
+ new variation:   95   pair    2   15          spin    3
+ new variation:   96   pair    2   16          spin    3
+ new variation:   97   pair    2   19          spin    3
+ new variation:   98   pair    2   21          spin    3
+ new variation:   99   pair    2   22          spin    3
+ new variation:  100   pair    2   23          spin    3
+ new variation:  101   pair    2   30          spin    3
+ new variation:  102   pair    2   33          spin    3
+ new variation:  103   pair    2   36          spin    3
+ new variation:  104   pair    2   39          spin    3
+ new variation:  105   pair    2   40          spin    3
+ new variation:  106   pair    2   43          spin    3
+ new variation:  107   pair    2   44          spin    3
+ new variation:  108   pair    2   46          spin    3
+ new variation:  109   pair    2   49          spin    3
+ new variation:  110   pair    2   52          spin    3
+ new variation:  111   pair    2   53          spin    3
+ new variation:  112   pair    2   60          spin    3
+ new variation:  113   pair    2   63          spin    3
+ new variation:  114   pair    2   64          spin    3
+ new variation:  115   pair    2   65          spin    3
+ new variation:  116   pair    2   67          spin    3
+ new variation:  117   pair    2   69          spin    3
+ new variation:  118   pair    2   74          spin    3
+ new variation:  119   pair    2   78          spin    3
+ new variation:  120   pair    2   82          spin    3
+ new variation:  121   pair    2   85          spin    3
+ new variation:  122   pair    2   89          spin    3
+ new variation:  123   pair    2   91          spin    3
+ new variation:  124   pair    2   93          spin    3
+ new variation:  125   pair    2   95          spin    3
+ new variation:  126   pair    2   97          spin    3
+ new variation:  127   pair    2   99          spin    3
+ new variation:  128   pair    2  103          spin    3
+ new variation:  129   pair    2  107          spin    3
+ new variation:  130   pair    2  113          spin    3
+ new variation:  131   pair    2  118          spin    3
+ new variation:  132   pair    2  122          spin    3
+ new variation:  133   pair    2  123          spin    3
+ new variation:  134   pair    2  124          spin    3
+ new variation:  135   pair    2  127          spin    3
+ new variation:  136   pair    2  129          spin    3
+ new variation:  137   pair    2  135          spin    3
+ new variation:  138   pair    2  136          spin    3
+ new variation:  139   pair    2  142          spin    3
+ new variation:  140   pair    2  143          spin    3
+ new variation:  141   pair    2  149          spin    3
+ new variation:  142   pair    2  151          spin    3
+ new variation:  143   pair    2  154          spin    3
+ new variation:  144   pair    2  158          spin    3
+ new variation:  145   pair    2  160          spin    3
+ new variation:  146   pair    2  162          spin    3
+ new variation:  147   pair    2  163          spin    3
+ new variation:  148   pair    2  167          spin    3
+ new variation:  149   pair    2  168          spin    3
+ new variation:  150   pair    2  171          spin    3
+ new variation:  151   pair    2  173          spin    3
+ new variation:  152   pair    2  175          spin    3
+ new variation:  153   pair    2  181          spin    3
+ new variation:  154   pair    2  186          spin    3
+ new variation:  155   pair    2  189          spin    3
+ new variation:  156   pair    2  193          spin    3
+ new variation:  157   pair    2  195          spin    3
+ new variation:  158   pair    2  198          spin    3
+ new variation:  159   pair    2  206          spin    3
+ new variation:  160   pair    2  210          spin    3
+ new variation:  161   pair    2  212          spin    3
+ new variation:  162   pair    2  215          spin    3
+ new variation:  163   pair    2  217          spin    3
+ new variation:  164   pair    2  218          spin    3
+ new variation:  165   pair    2  222          spin    3
+ new variation:  166   pair    2  223          spin    3
+ new variation:  167   pair    2  225          spin    3
+ new variation:  168   pair    2  227          spin    3
+ new variation:  169   pair    2  232          spin    3
+ new variation:  170   pair    2  235          spin    3
+ new variation:  171   pair    2  237          spin    3
+ new variation:  172   pair    2  239          spin    3
+ new variation:  173   pair    2  240          spin    3
+ new variation:  174   pair    2  242          spin    3
+ new variation:  175   pair    2  244          spin    3
+ new variation:  176   pair    2  246          spin    3
+ new variation:  177   pair    2  249          spin    3
+ new variation:  178   pair    2  252          spin    3
+ new variation:  179   pair    2  260          spin    3
+ new variation:  180   pair    2  267          spin    3
+ new variation:  181   pair    2  272          spin    3
+ new variation:  182   pair    2  273          spin    3
+ new variation:  183   pair    2  277          spin    3
+ new variation:  184   pair    2  280          spin    3
+ new variation:  185   pair    2  282          spin    3
+ new variation:  186   pair    2  285          spin    3
+ new variation:  187   pair    2  287          spin    3
+ new variation:  188   pair    2  292          spin    3
+ new variation:  189   pair    3   14          spin    3
+ new variation:  190   pair    3   17          spin    3
+ new variation:  191   pair    3   18          spin    3
+ new variation:  192   pair    3   20          spin    3
+ new variation:  193   pair    3   26          spin    3
+ new variation:  194   pair    3   27          spin    3
+ new variation:  195   pair    3   29          spin    3
+ new variation:  196   pair    3   31          spin    3
+ new variation:  197   pair    3   34          spin    3
+ new variation:  198   pair    3   38          spin    3
+ new variation:  199   pair    3   41          spin    3
+ new variation:  200   pair    3   42          spin    3
+ new variation:  201   pair    3   47          spin    3
+ new variation:  202   pair    3   48          spin    3
+ new variation:  203   pair    3   50          spin    3
+ new variation:  204   pair    3   54          spin    3
+ new variation:  205   pair    3   57          spin    3
+ new variation:  206   pair    3   59          spin    3
+ new variation:  207   pair    3   62          spin    3
+ new variation:  208   pair    3   66          spin    3
+ new variation:  209   pair    3   70          spin    3
+ new variation:  210   pair    3   73          spin    3
+ new variation:  211   pair    3   75          spin    3
+ new variation:  212   pair    3   76          spin    3
+ new variation:  213   pair    3   79          spin    3
+ new variation:  214   pair    3   83          spin    3
+ new variation:  215   pair    3   84          spin    3
+ new variation:  216   pair    3   88          spin    3
+ new variation:  217   pair    3   92          spin    3
+ new variation:  218   pair    3   94          spin    3
+ new variation:  219   pair    3   98          spin    3
+ new variation:  220   pair    3  100          spin    3
+ new variation:  221   pair    3  104          spin    3
+ new variation:  222   pair    3  109          spin    3
+ new variation:  223   pair    3  111          spin    3
+ new variation:  224   pair    3  114          spin    3
+ new variation:  225   pair    3  120          spin    3
+ new variation:  226   pair    3  121          spin    3
+ new variation:  227   pair    3  125          spin    3
+ new variation:  228   pair    3  128          spin    3
+ new variation:  229   pair    3  133          spin    3
+ new variation:  230   pair    3  134          spin    3
+ new variation:  231   pair    3  137          spin    3
+ new variation:  232   pair    3  139          spin    3
+ new variation:  233   pair    3  145          spin    3
+ new variation:  234   pair    3  146          spin    3
+ new variation:  235   pair    3  148          spin    3
+ new variation:  236   pair    3  150          spin    3
+ new variation:  237   pair    3  152          spin    3
+ new variation:  238   pair    3  159          spin    3
+ new variation:  239   pair    3  161          spin    3
+ new variation:  240   pair    3  164          spin    3
+ new variation:  241   pair    3  166          spin    3
+ new variation:  242   pair    3  169          spin    3
+ new variation:  243   pair    3  172          spin    3
+ new variation:  244   pair    3  174          spin    3
+ new variation:  245   pair    3  176          spin    3
+ new variation:  246   pair    3  182          spin    3
+ new variation:  247   pair    3  183          spin    3
+ new variation:  248   pair    3  187          spin    3
+ new variation:  249   pair    3  192          spin    3
+ new variation:  250   pair    3  196          spin    3
+ new variation:  251   pair    3  199          spin    3
+ new variation:  252   pair    3  202          spin    3
+ new variation:  253   pair    3  204          spin    3
+ new variation:  254   pair    3  209          spin    3
+ new variation:  255   pair    3  213          spin    3
+ new variation:  256   pair    3  216          spin    3
+ new variation:  257   pair    3  219          spin    3
+ new variation:  258   pair    3  221          spin    3
+ new variation:  259   pair    3  224          spin    3
+ new variation:  260   pair    3  226          spin    3
+ new variation:  261   pair    3  228          spin    3
+ new variation:  262   pair    3  231          spin    3
+ new variation:  263   pair    3  233          spin    3
+ new variation:  264   pair    3  234          spin    3
+ new variation:  265   pair    3  236          spin    3
+ new variation:  266   pair    3  238          spin    3
+ new variation:  267   pair    3  241          spin    3
+ new variation:  268   pair    3  243          spin    3
+ new variation:  269   pair    3  247          spin    3
+ new variation:  270   pair    3  248          spin    3
+ new variation:  271   pair    3  255          spin    3
+ new variation:  272   pair    3  263          spin    3
+ new variation:  273   pair    3  264          spin    3
+ new variation:  274   pair    3  268          spin    3
+ new variation:  275   pair    3  270          spin    3
+ new variation:  276   pair    3  275          spin    3
+ new variation:  277   pair    3  276          spin    3
+ new variation:  278   pair    3  278          spin    3
+ new variation:  279   pair    3  279          spin    3
+ new variation:  280   pair    3  283          spin    3
+ new variation:  281   pair    3  289          spin    3
+ new variation:  282   pair    3  291          spin    3
+ new variation:  283   pair    4   15          spin    3
+ new variation:  284   pair    4   16          spin    3
+ new variation:  285   pair    4   19          spin    3
+ new variation:  286   pair    4   21          spin    3
+ new variation:  287   pair    4   22          spin    3
+ new variation:  288   pair    4   23          spin    3
+ new variation:  289   pair    4   30          spin    3
+ new variation:  290   pair    4   33          spin    3
+ new variation:  291   pair    4   36          spin    3
+ new variation:  292   pair    4   39          spin    3
+ new variation:  293   pair    4   40          spin    3
+ new variation:  294   pair    4   43          spin    3
+ new variation:  295   pair    4   44          spin    3
+ new variation:  296   pair    4   46          spin    3
+ new variation:  297   pair    4   49          spin    3
+ new variation:  298   pair    4   52          spin    3
+ new variation:  299   pair    4   53          spin    3
+ new variation:  300   pair    4   60          spin    3
+ new variation:  301   pair    4   63          spin    3
+ new variation:  302   pair    4   64          spin    3
+ new variation:  303   pair    4   65          spin    3
+ new variation:  304   pair    4   67          spin    3
+ new variation:  305   pair    4   69          spin    3
+ new variation:  306   pair    4   74          spin    3
+ new variation:  307   pair    4   78          spin    3
+ new variation:  308   pair    4   82          spin    3
+ new variation:  309   pair    4   85          spin    3
+ new variation:  310   pair    4   89          spin    3
+ new variation:  311   pair    4   91          spin    3
+ new variation:  312   pair    4   93          spin    3
+ new variation:  313   pair    4   95          spin    3
+ new variation:  314   pair    4   97          spin    3
+ new variation:  315   pair    4   99          spin    3
+ new variation:  316   pair    4  103          spin    3
+ new variation:  317   pair    4  107          spin    3
+ new variation:  318   pair    4  113          spin    3
+ new variation:  319   pair    4  118          spin    3
+ new variation:  320   pair    4  122          spin    3
+ new variation:  321   pair    4  123          spin    3
+ new variation:  322   pair    4  124          spin    3
+ new variation:  323   pair    4  127          spin    3
+ new variation:  324   pair    4  129          spin    3
+ new variation:  325   pair    4  135          spin    3
+ new variation:  326   pair    4  136          spin    3
+ new variation:  327   pair    4  142          spin    3
+ new variation:  328   pair    4  143          spin    3
+ new variation:  329   pair    4  149          spin    3
+ new variation:  330   pair    4  151          spin    3
+ new variation:  331   pair    4  154          spin    3
+ new variation:  332   pair    4  158          spin    3
+ new variation:  333   pair    4  160          spin    3
+ new variation:  334   pair    4  162          spin    3
+ new variation:  335   pair    4  163          spin    3
+ new variation:  336   pair    4  167          spin    3
+ new variation:  337   pair    4  168          spin    3
+ new variation:  338   pair    4  171          spin    3
+ new variation:  339   pair    4  173          spin    3
+ new variation:  340   pair    4  175          spin    3
+ new variation:  341   pair    4  181          spin    3
+ new variation:  342   pair    4  186          spin    3
+ new variation:  343   pair    4  189          spin    3
+ new variation:  344   pair    4  193          spin    3
+ new variation:  345   pair    4  195          spin    3
+ new variation:  346   pair    4  198          spin    3
+ new variation:  347   pair    4  206          spin    3
+ new variation:  348   pair    4  210          spin    3
+ new variation:  349   pair    4  212          spin    3
+ new variation:  350   pair    4  215          spin    3
+ new variation:  351   pair    4  217          spin    3
+ new variation:  352   pair    4  218          spin    3
+ new variation:  353   pair    4  222          spin    3
+ new variation:  354   pair    4  223          spin    3
+ new variation:  355   pair    4  225          spin    3
+ new variation:  356   pair    4  227          spin    3
+ new variation:  357   pair    4  232          spin    3
+ new variation:  358   pair    4  235          spin    3
+ new variation:  359   pair    4  237          spin    3
+ new variation:  360   pair    4  239          spin    3
+ new variation:  361   pair    4  240          spin    3
+ new variation:  362   pair    4  242          spin    3
+ new variation:  363   pair    4  244          spin    3
+ new variation:  364   pair    4  246          spin    3
+ new variation:  365   pair    4  249          spin    3
+ new variation:  366   pair    4  252          spin    3
+ new variation:  367   pair    4  260          spin    3
+ new variation:  368   pair    4  267          spin    3
+ new variation:  369   pair    4  272          spin    3
+ new variation:  370   pair    4  273          spin    3
+ new variation:  371   pair    4  277          spin    3
+ new variation:  372   pair    4  280          spin    3
+ new variation:  373   pair    4  282          spin    3
+ new variation:  374   pair    4  285          spin    3
+ new variation:  375   pair    4  287          spin    3
+ new variation:  376   pair    4  292          spin    3
+ new variation:  377   pair    5   15          spin    3
+ new variation:  378   pair    5   16          spin    3
+ new variation:  379   pair    5   19          spin    3
+ new variation:  380   pair    5   21          spin    3
+ new variation:  381   pair    5   22          spin    3
+ new variation:  382   pair    5   23          spin    3
+ new variation:  383   pair    5   30          spin    3
+ new variation:  384   pair    5   33          spin    3
+ new variation:  385   pair    5   36          spin    3
+ new variation:  386   pair    5   39          spin    3
+ new variation:  387   pair    5   40          spin    3
+ new variation:  388   pair    5   43          spin    3
+ new variation:  389   pair    5   44          spin    3
+ new variation:  390   pair    5   46          spin    3
+ new variation:  391   pair    5   49          spin    3
+ new variation:  392   pair    5   52          spin    3
+ new variation:  393   pair    5   53          spin    3
+ new variation:  394   pair    5   60          spin    3
+ new variation:  395   pair    5   63          spin    3
+ new variation:  396   pair    5   64          spin    3
+ new variation:  397   pair    5   65          spin    3
+ new variation:  398   pair    5   67          spin    3
+ new variation:  399   pair    5   69          spin    3
+ new variation:  400   pair    5   74          spin    3
+ new variation:  401   pair    5   78          spin    3
+ new variation:  402   pair    5   82          spin    3
+ new variation:  403   pair    5   85          spin    3
+ new variation:  404   pair    5   89          spin    3
+ new variation:  405   pair    5   91          spin    3
+ new variation:  406   pair    5   93          spin    3
+ new variation:  407   pair    5   95          spin    3
+ new variation:  408   pair    5   97          spin    3
+ new variation:  409   pair    5   99          spin    3
+ new variation:  410   pair    5  103          spin    3
+ new variation:  411   pair    5  107          spin    3
+ new variation:  412   pair    5  113          spin    3
+ new variation:  413   pair    5  118          spin    3
+ new variation:  414   pair    5  122          spin    3
+ new variation:  415   pair    5  123          spin    3
+ new variation:  416   pair    5  124          spin    3
+ new variation:  417   pair    5  127          spin    3
+ new variation:  418   pair    5  129          spin    3
+ new variation:  419   pair    5  135          spin    3
+ new variation:  420   pair    5  136          spin    3
+ new variation:  421   pair    5  142          spin    3
+ new variation:  422   pair    5  143          spin    3
+ new variation:  423   pair    5  149          spin    3
+ new variation:  424   pair    5  151          spin    3
+ new variation:  425   pair    5  154          spin    3
+ new variation:  426   pair    5  158          spin    3
+ new variation:  427   pair    5  160          spin    3
+ new variation:  428   pair    5  162          spin    3
+ new variation:  429   pair    5  163          spin    3
+ new variation:  430   pair    5  167          spin    3
+ new variation:  431   pair    5  168          spin    3
+ new variation:  432   pair    5  171          spin    3
+ new variation:  433   pair    5  173          spin    3
+ new variation:  434   pair    5  175          spin    3
+ new variation:  435   pair    5  181          spin    3
+ new variation:  436   pair    5  186          spin    3
+ new variation:  437   pair    5  189          spin    3
+ new variation:  438   pair    5  193          spin    3
+ new variation:  439   pair    5  195          spin    3
+ new variation:  440   pair    5  198          spin    3
+ new variation:  441   pair    5  206          spin    3
+ new variation:  442   pair    5  210          spin    3
+ new variation:  443   pair    5  212          spin    3
+ new variation:  444   pair    5  215          spin    3
+ new variation:  445   pair    5  217          spin    3
+ new variation:  446   pair    5  218          spin    3
+ new variation:  447   pair    5  222          spin    3
+ new variation:  448   pair    5  223          spin    3
+ new variation:  449   pair    5  225          spin    3
+ new variation:  450   pair    5  227          spin    3
+ new variation:  451   pair    5  232          spin    3
+ new variation:  452   pair    5  235          spin    3
+ new variation:  453   pair    5  237          spin    3
+ new variation:  454   pair    5  239          spin    3
+ new variation:  455   pair    5  240          spin    3
+ new variation:  456   pair    5  242          spin    3
+ new variation:  457   pair    5  244          spin    3
+ new variation:  458   pair    5  246          spin    3
+ new variation:  459   pair    5  249          spin    3
+ new variation:  460   pair    5  252          spin    3
+ new variation:  461   pair    5  260          spin    3
+ new variation:  462   pair    5  267          spin    3
+ new variation:  463   pair    5  272          spin    3
+ new variation:  464   pair    5  273          spin    3
+ new variation:  465   pair    5  277          spin    3
+ new variation:  466   pair    5  280          spin    3
+ new variation:  467   pair    5  282          spin    3
+ new variation:  468   pair    5  285          spin    3
+ new variation:  469   pair    5  287          spin    3
+ new variation:  470   pair    5  292          spin    3
+ new variation:  471   pair    6   14          spin    3
+ new variation:  472   pair    6   17          spin    3
+ new variation:  473   pair    6   18          spin    3
+ new variation:  474   pair    6   20          spin    3
+ new variation:  475   pair    6   26          spin    3
+ new variation:  476   pair    6   27          spin    3
+ new variation:  477   pair    6   29          spin    3
+ new variation:  478   pair    6   31          spin    3
+ new variation:  479   pair    6   34          spin    3
+ new variation:  480   pair    6   38          spin    3
+ new variation:  481   pair    6   41          spin    3
+ new variation:  482   pair    6   42          spin    3
+ new variation:  483   pair    6   47          spin    3
+ new variation:  484   pair    6   48          spin    3
+ new variation:  485   pair    6   50          spin    3
+ new variation:  486   pair    6   54          spin    3
+ new variation:  487   pair    6   57          spin    3
+ new variation:  488   pair    6   59          spin    3
+ new variation:  489   pair    6   62          spin    3
+ new variation:  490   pair    6   66          spin    3
+ new variation:  491   pair    6   70          spin    3
+ new variation:  492   pair    6   73          spin    3
+ new variation:  493   pair    6   75          spin    3
+ new variation:  494   pair    6   76          spin    3
+ new variation:  495   pair    6   79          spin    3
+ new variation:  496   pair    6   83          spin    3
+ new variation:  497   pair    6   84          spin    3
+ new variation:  498   pair    6   88          spin    3
+ new variation:  499   pair    6   92          spin    3
+ new variation:  500   pair    6   94          spin    3
+ new variation:  501   pair    6   98          spin    3
+ new variation:  502   pair    6  100          spin    3
+ new variation:  503   pair    6  104          spin    3
+ new variation:  504   pair    6  109          spin    3
+ new variation:  505   pair    6  111          spin    3
+ new variation:  506   pair    6  114          spin    3
+ new variation:  507   pair    6  120          spin    3
+ new variation:  508   pair    6  121          spin    3
+ new variation:  509   pair    6  125          spin    3
+ new variation:  510   pair    6  128          spin    3
+ new variation:  511   pair    6  133          spin    3
+ new variation:  512   pair    6  134          spin    3
+ new variation:  513   pair    6  137          spin    3
+ new variation:  514   pair    6  139          spin    3
+ new variation:  515   pair    6  145          spin    3
+ new variation:  516   pair    6  146          spin    3
+ new variation:  517   pair    6  148          spin    3
+ new variation:  518   pair    6  150          spin    3
+ new variation:  519   pair    6  152          spin    3
+ new variation:  520   pair    6  159          spin    3
+ new variation:  521   pair    6  161          spin    3
+ new variation:  522   pair    6  164          spin    3
+ new variation:  523   pair    6  166          spin    3
+ new variation:  524   pair    6  169          spin    3
+ new variation:  525   pair    6  172          spin    3
+ new variation:  526   pair    6  174          spin    3
+ new variation:  527   pair    6  176          spin    3
+ new variation:  528   pair    6  182          spin    3
+ new variation:  529   pair    6  183          spin    3
+ new variation:  530   pair    6  187          spin    3
+ new variation:  531   pair    6  192          spin    3
+ new variation:  532   pair    6  196          spin    3
+ new variation:  533   pair    6  199          spin    3
+ new variation:  534   pair    6  202          spin    3
+ new variation:  535   pair    6  204          spin    3
+ new variation:  536   pair    6  209          spin    3
+ new variation:  537   pair    6  213          spin    3
+ new variation:  538   pair    6  216          spin    3
+ new variation:  539   pair    6  219          spin    3
+ new variation:  540   pair    6  221          spin    3
+ new variation:  541   pair    6  224          spin    3
+ new variation:  542   pair    6  226          spin    3
+ new variation:  543   pair    6  228          spin    3
+ new variation:  544   pair    6  231          spin    3
+ new variation:  545   pair    6  233          spin    3
+ new variation:  546   pair    6  234          spin    3
+ new variation:  547   pair    6  236          spin    3
+ new variation:  548   pair    6  238          spin    3
+ new variation:  549   pair    6  241          spin    3
+ new variation:  550   pair    6  243          spin    3
+ new variation:  551   pair    6  247          spin    3
+ new variation:  552   pair    6  248          spin    3
+ new variation:  553   pair    6  255          spin    3
+ new variation:  554   pair    6  263          spin    3
+ new variation:  555   pair    6  264          spin    3
+ new variation:  556   pair    6  268          spin    3
+ new variation:  557   pair    6  270          spin    3
+ new variation:  558   pair    6  275          spin    3
+ new variation:  559   pair    6  276          spin    3
+ new variation:  560   pair    6  278          spin    3
+ new variation:  561   pair    6  279          spin    3
+ new variation:  562   pair    6  283          spin    3
+ new variation:  563   pair    6  289          spin    3
+ new variation:  564   pair    6  291          spin    3
+ new variation:  565   pair    7   14          spin    3
+ new variation:  566   pair    7   17          spin    3
+ new variation:  567   pair    7   18          spin    3
+ new variation:  568   pair    7   20          spin    3
+ new variation:  569   pair    7   26          spin    3
+ new variation:  570   pair    7   27          spin    3
+ new variation:  571   pair    7   29          spin    3
+ new variation:  572   pair    7   31          spin    3
+ new variation:  573   pair    7   34          spin    3
+ new variation:  574   pair    7   38          spin    3
+ new variation:  575   pair    7   41          spin    3
+ new variation:  576   pair    7   42          spin    3
+ new variation:  577   pair    7   47          spin    3
+ new variation:  578   pair    7   48          spin    3
+ new variation:  579   pair    7   50          spin    3
+ new variation:  580   pair    7   54          spin    3
+ new variation:  581   pair    7   57          spin    3
+ new variation:  582   pair    7   59          spin    3
+ new variation:  583   pair    7   62          spin    3
+ new variation:  584   pair    7   66          spin    3
+ new variation:  585   pair    7   70          spin    3
+ new variation:  586   pair    7   73          spin    3
+ new variation:  587   pair    7   75          spin    3
+ new variation:  588   pair    7   76          spin    3
+ new variation:  589   pair    7   79          spin    3
+ new variation:  590   pair    7   83          spin    3
+ new variation:  591   pair    7   84          spin    3
+ new variation:  592   pair    7   88          spin    3
+ new variation:  593   pair    7   92          spin    3
+ new variation:  594   pair    7   94          spin    3
+ new variation:  595   pair    7   98          spin    3
+ new variation:  596   pair    7  100          spin    3
+ new variation:  597   pair    7  104          spin    3
+ new variation:  598   pair    7  109          spin    3
+ new variation:  599   pair    7  111          spin    3
+ new variation:  600   pair    7  114          spin    3
+ new variation:  601   pair    7  120          spin    3
+ new variation:  602   pair    7  121          spin    3
+ new variation:  603   pair    7  125          spin    3
+ new variation:  604   pair    7  128          spin    3
+ new variation:  605   pair    7  133          spin    3
+ new variation:  606   pair    7  134          spin    3
+ new variation:  607   pair    7  137          spin    3
+ new variation:  608   pair    7  139          spin    3
+ new variation:  609   pair    7  145          spin    3
+ new variation:  610   pair    7  146          spin    3
+ new variation:  611   pair    7  148          spin    3
+ new variation:  612   pair    7  150          spin    3
+ new variation:  613   pair    7  152          spin    3
+ new variation:  614   pair    7  159          spin    3
+ new variation:  615   pair    7  161          spin    3
+ new variation:  616   pair    7  164          spin    3
+ new variation:  617   pair    7  166          spin    3
+ new variation:  618   pair    7  169          spin    3
+ new variation:  619   pair    7  172          spin    3
+ new variation:  620   pair    7  174          spin    3
+ new variation:  621   pair    7  176          spin    3
+ new variation:  622   pair    7  182          spin    3
+ new variation:  623   pair    7  183          spin    3
+ new variation:  624   pair    7  187          spin    3
+ new variation:  625   pair    7  192          spin    3
+ new variation:  626   pair    7  196          spin    3
+ new variation:  627   pair    7  199          spin    3
+ new variation:  628   pair    7  202          spin    3
+ new variation:  629   pair    7  204          spin    3
+ new variation:  630   pair    7  209          spin    3
+ new variation:  631   pair    7  213          spin    3
+ new variation:  632   pair    7  216          spin    3
+ new variation:  633   pair    7  219          spin    3
+ new variation:  634   pair    7  221          spin    3
+ new variation:  635   pair    7  224          spin    3
+ new variation:  636   pair    7  226          spin    3
+ new variation:  637   pair    7  228          spin    3
+ new variation:  638   pair    7  231          spin    3
+ new variation:  639   pair    7  233          spin    3
+ new variation:  640   pair    7  234          spin    3
+ new variation:  641   pair    7  236          spin    3
+ new variation:  642   pair    7  238          spin    3
+ new variation:  643   pair    7  241          spin    3
+ new variation:  644   pair    7  243          spin    3
+ new variation:  645   pair    7  247          spin    3
+ new variation:  646   pair    7  248          spin    3
+ new variation:  647   pair    7  255          spin    3
+ new variation:  648   pair    7  263          spin    3
+ new variation:  649   pair    7  264          spin    3
+ new variation:  650   pair    7  268          spin    3
+ new variation:  651   pair    7  270          spin    3
+ new variation:  652   pair    7  275          spin    3
+ new variation:  653   pair    7  276          spin    3
+ new variation:  654   pair    7  278          spin    3
+ new variation:  655   pair    7  279          spin    3
+ new variation:  656   pair    7  283          spin    3
+ new variation:  657   pair    7  289          spin    3
+ new variation:  658   pair    7  291          spin    3
+ new variation:  659   pair    8   15          spin    3
+ new variation:  660   pair    8   16          spin    3
+ new variation:  661   pair    8   19          spin    3
+ new variation:  662   pair    8   21          spin    3
+ new variation:  663   pair    8   22          spin    3
+ new variation:  664   pair    8   23          spin    3
+ new variation:  665   pair    8   30          spin    3
+ new variation:  666   pair    8   33          spin    3
+ new variation:  667   pair    8   36          spin    3
+ new variation:  668   pair    8   39          spin    3
+ new variation:  669   pair    8   40          spin    3
+ new variation:  670   pair    8   43          spin    3
+ new variation:  671   pair    8   44          spin    3
+ new variation:  672   pair    8   46          spin    3
+ new variation:  673   pair    8   49          spin    3
+ new variation:  674   pair    8   52          spin    3
+ new variation:  675   pair    8   53          spin    3
+ new variation:  676   pair    8   60          spin    3
+ new variation:  677   pair    8   63          spin    3
+ new variation:  678   pair    8   64          spin    3
+ new variation:  679   pair    8   65          spin    3
+ new variation:  680   pair    8   67          spin    3
+ new variation:  681   pair    8   69          spin    3
+ new variation:  682   pair    8   74          spin    3
+ new variation:  683   pair    8   78          spin    3
+ new variation:  684   pair    8   82          spin    3
+ new variation:  685   pair    8   85          spin    3
+ new variation:  686   pair    8   89          spin    3
+ new variation:  687   pair    8   91          spin    3
+ new variation:  688   pair    8   93          spin    3
+ new variation:  689   pair    8   95          spin    3
+ new variation:  690   pair    8   97          spin    3
+ new variation:  691   pair    8   99          spin    3
+ new variation:  692   pair    8  103          spin    3
+ new variation:  693   pair    8  107          spin    3
+ new variation:  694   pair    8  113          spin    3
+ new variation:  695   pair    8  118          spin    3
+ new variation:  696   pair    8  122          spin    3
+ new variation:  697   pair    8  123          spin    3
+ new variation:  698   pair    8  124          spin    3
+ new variation:  699   pair    8  127          spin    3
+ new variation:  700   pair    8  129          spin    3
+ new variation:  701   pair    8  135          spin    3
+ new variation:  702   pair    8  136          spin    3
+ new variation:  703   pair    8  142          spin    3
+ new variation:  704   pair    8  143          spin    3
+ new variation:  705   pair    8  149          spin    3
+ new variation:  706   pair    8  151          spin    3
+ new variation:  707   pair    8  154          spin    3
+ new variation:  708   pair    8  158          spin    3
+ new variation:  709   pair    8  160          spin    3
+ new variation:  710   pair    8  162          spin    3
+ new variation:  711   pair    8  163          spin    3
+ new variation:  712   pair    8  167          spin    3
+ new variation:  713   pair    8  168          spin    3
+ new variation:  714   pair    8  171          spin    3
+ new variation:  715   pair    8  173          spin    3
+ new variation:  716   pair    8  175          spin    3
+ new variation:  717   pair    8  181          spin    3
+ new variation:  718   pair    8  186          spin    3
+ new variation:  719   pair    8  189          spin    3
+ new variation:  720   pair    8  193          spin    3
+ new variation:  721   pair    8  195          spin    3
+ new variation:  722   pair    8  198          spin    3
+ new variation:  723   pair    8  206          spin    3
+ new variation:  724   pair    8  210          spin    3
+ new variation:  725   pair    8  212          spin    3
+ new variation:  726   pair    8  215          spin    3
+ new variation:  727   pair    8  217          spin    3
+ new variation:  728   pair    8  218          spin    3
+ new variation:  729   pair    8  222          spin    3
+ new variation:  730   pair    8  223          spin    3
+ new variation:  731   pair    8  225          spin    3
+ new variation:  732   pair    8  227          spin    3
+ new variation:  733   pair    8  232          spin    3
+ new variation:  734   pair    8  235          spin    3
+ new variation:  735   pair    8  237          spin    3
+ new variation:  736   pair    8  239          spin    3
+ new variation:  737   pair    8  240          spin    3
+ new variation:  738   pair    8  242          spin    3
+ new variation:  739   pair    8  244          spin    3
+ new variation:  740   pair    8  246          spin    3
+ new variation:  741   pair    8  249          spin    3
+ new variation:  742   pair    8  252          spin    3
+ new variation:  743   pair    8  260          spin    3
+ new variation:  744   pair    8  267          spin    3
+ new variation:  745   pair    8  272          spin    3
+ new variation:  746   pair    8  273          spin    3
+ new variation:  747   pair    8  277          spin    3
+ new variation:  748   pair    8  280          spin    3
+ new variation:  749   pair    8  282          spin    3
+ new variation:  750   pair    8  285          spin    3
+ new variation:  751   pair    8  287          spin    3
+ new variation:  752   pair    8  292          spin    3
+ new variation:  753   pair    9   14          spin    3
+ new variation:  754   pair    9   17          spin    3
+ new variation:  755   pair    9   18          spin    3
+ new variation:  756   pair    9   20          spin    3
+ new variation:  757   pair    9   26          spin    3
+ new variation:  758   pair    9   27          spin    3
+ new variation:  759   pair    9   29          spin    3
+ new variation:  760   pair    9   31          spin    3
+ new variation:  761   pair    9   34          spin    3
+ new variation:  762   pair    9   38          spin    3
+ new variation:  763   pair    9   41          spin    3
+ new variation:  764   pair    9   42          spin    3
+ new variation:  765   pair    9   47          spin    3
+ new variation:  766   pair    9   48          spin    3
+ new variation:  767   pair    9   50          spin    3
+ new variation:  768   pair    9   54          spin    3
+ new variation:  769   pair    9   57          spin    3
+ new variation:  770   pair    9   59          spin    3
+ new variation:  771   pair    9   62          spin    3
+ new variation:  772   pair    9   66          spin    3
+ new variation:  773   pair    9   70          spin    3
+ new variation:  774   pair    9   73          spin    3
+ new variation:  775   pair    9   75          spin    3
+ new variation:  776   pair    9   76          spin    3
+ new variation:  777   pair    9   79          spin    3
+ new variation:  778   pair    9   83          spin    3
+ new variation:  779   pair    9   84          spin    3
+ new variation:  780   pair    9   88          spin    3
+ new variation:  781   pair    9   92          spin    3
+ new variation:  782   pair    9   94          spin    3
+ new variation:  783   pair    9   98          spin    3
+ new variation:  784   pair    9  100          spin    3
+ new variation:  785   pair    9  104          spin    3
+ new variation:  786   pair    9  109          spin    3
+ new variation:  787   pair    9  111          spin    3
+ new variation:  788   pair    9  114          spin    3
+ new variation:  789   pair    9  120          spin    3
+ new variation:  790   pair    9  121          spin    3
+ new variation:  791   pair    9  125          spin    3
+ new variation:  792   pair    9  128          spin    3
+ new variation:  793   pair    9  133          spin    3
+ new variation:  794   pair    9  134          spin    3
+ new variation:  795   pair    9  137          spin    3
+ new variation:  796   pair    9  139          spin    3
+ new variation:  797   pair    9  145          spin    3
+ new variation:  798   pair    9  146          spin    3
+ new variation:  799   pair    9  148          spin    3
+ new variation:  800   pair    9  150          spin    3
+ new variation:  801   pair    9  152          spin    3
+ new variation:  802   pair    9  159          spin    3
+ new variation:  803   pair    9  161          spin    3
+ new variation:  804   pair    9  164          spin    3
+ new variation:  805   pair    9  166          spin    3
+ new variation:  806   pair    9  169          spin    3
+ new variation:  807   pair    9  172          spin    3
+ new variation:  808   pair    9  174          spin    3
+ new variation:  809   pair    9  176          spin    3
+ new variation:  810   pair    9  182          spin    3
+ new variation:  811   pair    9  183          spin    3
+ new variation:  812   pair    9  187          spin    3
+ new variation:  813   pair    9  192          spin    3
+ new variation:  814   pair    9  196          spin    3
+ new variation:  815   pair    9  199          spin    3
+ new variation:  816   pair    9  202          spin    3
+ new variation:  817   pair    9  204          spin    3
+ new variation:  818   pair    9  209          spin    3
+ new variation:  819   pair    9  213          spin    3
+ new variation:  820   pair    9  216          spin    3
+ new variation:  821   pair    9  219          spin    3
+ new variation:  822   pair    9  221          spin    3
+ new variation:  823   pair    9  224          spin    3
+ new variation:  824   pair    9  226          spin    3
+ new variation:  825   pair    9  228          spin    3
+ new variation:  826   pair    9  231          spin    3
+ new variation:  827   pair    9  233          spin    3
+ new variation:  828   pair    9  234          spin    3
+ new variation:  829   pair    9  236          spin    3
+ new variation:  830   pair    9  238          spin    3
+ new variation:  831   pair    9  241          spin    3
+ new variation:  832   pair    9  243          spin    3
+ new variation:  833   pair    9  247          spin    3
+ new variation:  834   pair    9  248          spin    3
+ new variation:  835   pair    9  255          spin    3
+ new variation:  836   pair    9  263          spin    3
+ new variation:  837   pair    9  264          spin    3
+ new variation:  838   pair    9  268          spin    3
+ new variation:  839   pair    9  270          spin    3
+ new variation:  840   pair    9  275          spin    3
+ new variation:  841   pair    9  276          spin    3
+ new variation:  842   pair    9  278          spin    3
+ new variation:  843   pair    9  279          spin    3
+ new variation:  844   pair    9  283          spin    3
+ new variation:  845   pair    9  289          spin    3
+ new variation:  846   pair    9  291          spin    3
+ new variation:  847   pair   10   24          spin    3
+ new variation:  848   pair   10   32          spin    3
+ new variation:  849   pair   10   35          spin    3
+ new variation:  850   pair   10   45          spin    3
+ new variation:  851   pair   10   56          spin    3
+ new variation:  852   pair   10   61          spin    3
+ new variation:  853   pair   10   71          spin    3
+ new variation:  854   pair   10   72          spin    3
+ new variation:  855   pair   10   80          spin    3
+ new variation:  856   pair   10   86          spin    3
+ new variation:  857   pair   10   96          spin    3
+ new variation:  858   pair   10  102          spin    3
+ new variation:  859   pair   10  105          spin    3
+ new variation:  860   pair   10  110          spin    3
+ new variation:  861   pair   10  112          spin    3
+ new variation:  862   pair   10  116          spin    3
+ new variation:  863   pair   10  119          spin    3
+ new variation:  864   pair   10  130          spin    3
+ new variation:  865   pair   10  131          spin    3
+ new variation:  866   pair   10  140          spin    3
+ new variation:  867   pair   10  144          spin    3
+ new variation:  868   pair   10  153          spin    3
+ new variation:  869   pair   10  156          spin    3
+ new variation:  870   pair   10  165          spin    3
+ new variation:  871   pair   10  177          spin    3
+ new variation:  872   pair   10  180          spin    3
+ new variation:  873   pair   10  184          spin    3
+ new variation:  874   pair   10  188          spin    3
+ new variation:  875   pair   10  190          spin    3
+ new variation:  876   pair   10  194          spin    3
+ new variation:  877   pair   10  201          spin    3
+ new variation:  878   pair   10  205          spin    3
+ new variation:  879   pair   10  207          spin    3
+ new variation:  880   pair   10  214          spin    3
+ new variation:  881   pair   10  229          spin    3
+ new variation:  882   pair   10  245          spin    3
+ new variation:  883   pair   10  250          spin    3
+ new variation:  884   pair   10  256          spin    3
+ new variation:  885   pair   10  257          spin    3
+ new variation:  886   pair   10  259          spin    3
+ new variation:  887   pair   10  261          spin    3
+ new variation:  888   pair   10  266          spin    3
+ new variation:  889   pair   10  271          spin    3
+ new variation:  890   pair   10  274          spin    3
+ new variation:  891   pair   10  284          spin    3
+ new variation:  892   pair   10  290          spin    3
+ new variation:  893   pair   11   25          spin    3
+ new variation:  894   pair   11   28          spin    3
+ new variation:  895   pair   11   37          spin    3
+ new variation:  896   pair   11   51          spin    3
+ new variation:  897   pair   11   55          spin    3
+ new variation:  898   pair   11   58          spin    3
+ new variation:  899   pair   11   68          spin    3
+ new variation:  900   pair   11   77          spin    3
+ new variation:  901   pair   11   81          spin    3
+ new variation:  902   pair   11   87          spin    3
+ new variation:  903   pair   11   90          spin    3
+ new variation:  904   pair   11  101          spin    3
+ new variation:  905   pair   11  106          spin    3
+ new variation:  906   pair   11  108          spin    3
+ new variation:  907   pair   11  115          spin    3
+ new variation:  908   pair   11  117          spin    3
+ new variation:  909   pair   11  126          spin    3
+ new variation:  910   pair   11  132          spin    3
+ new variation:  911   pair   11  138          spin    3
+ new variation:  912   pair   11  141          spin    3
+ new variation:  913   pair   11  147          spin    3
+ new variation:  914   pair   11  155          spin    3
+ new variation:  915   pair   11  157          spin    3
+ new variation:  916   pair   11  170          spin    3
+ new variation:  917   pair   11  178          spin    3
+ new variation:  918   pair   11  179          spin    3
+ new variation:  919   pair   11  185          spin    3
+ new variation:  920   pair   11  191          spin    3
+ new variation:  921   pair   11  197          spin    3
+ new variation:  922   pair   11  200          spin    3
+ new variation:  923   pair   11  203          spin    3
+ new variation:  924   pair   11  208          spin    3
+ new variation:  925   pair   11  211          spin    3
+ new variation:  926   pair   11  220          spin    3
+ new variation:  927   pair   11  230          spin    3
+ new variation:  928   pair   11  251          spin    3
+ new variation:  929   pair   11  253          spin    3
+ new variation:  930   pair   11  254          spin    3
+ new variation:  931   pair   11  258          spin    3
+ new variation:  932   pair   11  262          spin    3
+ new variation:  933   pair   11  265          spin    3
+ new variation:  934   pair   11  269          spin    3
+ new variation:  935   pair   11  281          spin    3
+ new variation:  936   pair   11  286          spin    3
+ new variation:  937   pair   11  288          spin    3
+ new variation:  938   pair   11  293          spin    3
+ new variation:  939   pair   12   24          spin    3
+ new variation:  940   pair   12   32          spin    3
+ new variation:  941   pair   12   35          spin    3
+ new variation:  942   pair   12   45          spin    3
+ new variation:  943   pair   12   56          spin    3
+ new variation:  944   pair   12   61          spin    3
+ new variation:  945   pair   12   71          spin    3
+ new variation:  946   pair   12   72          spin    3
+ new variation:  947   pair   12   80          spin    3
+ new variation:  948   pair   12   86          spin    3
+ new variation:  949   pair   12   96          spin    3
+ new variation:  950   pair   12  102          spin    3
+ new variation:  951   pair   12  105          spin    3
+ new variation:  952   pair   12  110          spin    3
+ new variation:  953   pair   12  112          spin    3
+ new variation:  954   pair   12  116          spin    3
+ new variation:  955   pair   12  119          spin    3
+ new variation:  956   pair   12  130          spin    3
+ new variation:  957   pair   12  131          spin    3
+ new variation:  958   pair   12  140          spin    3
+ new variation:  959   pair   12  144          spin    3
+ new variation:  960   pair   12  153          spin    3
+ new variation:  961   pair   12  156          spin    3
+ new variation:  962   pair   12  165          spin    3
+ new variation:  963   pair   12  177          spin    3
+ new variation:  964   pair   12  180          spin    3
+ new variation:  965   pair   12  184          spin    3
+ new variation:  966   pair   12  188          spin    3
+ new variation:  967   pair   12  190          spin    3
+ new variation:  968   pair   12  194          spin    3
+ new variation:  969   pair   12  201          spin    3
+ new variation:  970   pair   12  205          spin    3
+ new variation:  971   pair   12  207          spin    3
+ new variation:  972   pair   12  214          spin    3
+ new variation:  973   pair   12  229          spin    3
+ new variation:  974   pair   12  245          spin    3
+ new variation:  975   pair   12  250          spin    3
+ new variation:  976   pair   12  256          spin    3
+ new variation:  977   pair   12  257          spin    3
+ new variation:  978   pair   12  259          spin    3
+ new variation:  979   pair   12  261          spin    3
+ new variation:  980   pair   12  266          spin    3
+ new variation:  981   pair   12  271          spin    3
+ new variation:  982   pair   12  274          spin    3
+ new variation:  983   pair   12  284          spin    3
+ new variation:  984   pair   12  290          spin    3
+ new variation:  985   pair   13   25          spin    3
+ new variation:  986   pair   13   28          spin    3
+ new variation:  987   pair   13   37          spin    3
+ new variation:  988   pair   13   51          spin    3
+ new variation:  989   pair   13   55          spin    3
+ new variation:  990   pair   13   58          spin    3
+ new variation:  991   pair   13   68          spin    3
+ new variation:  992   pair   13   77          spin    3
+ new variation:  993   pair   13   81          spin    3
+ new variation:  994   pair   13   87          spin    3
+ new variation:  995   pair   13   90          spin    3
+ new variation:  996   pair   13  101          spin    3
+ new variation:  997   pair   13  106          spin    3
+ new variation:  998   pair   13  108          spin    3
+ new variation:  999   pair   13  115          spin    3
+ new variation: 1000   pair   13  117          spin    3
+ new variation: 1001   pair   13  126          spin    3
+ new variation: 1002   pair   13  132          spin    3
+ new variation: 1003   pair   13  138          spin    3
+ new variation: 1004   pair   13  141          spin    3
+ new variation: 1005   pair   13  147          spin    3
+ new variation: 1006   pair   13  155          spin    3
+ new variation: 1007   pair   13  157          spin    3
+ new variation: 1008   pair   13  170          spin    3
+ new variation: 1009   pair   13  178          spin    3
+ new variation: 1010   pair   13  179          spin    3
+ new variation: 1011   pair   13  185          spin    3
+ new variation: 1012   pair   13  191          spin    3
+ new variation: 1013   pair   13  197          spin    3
+ new variation: 1014   pair   13  200          spin    3
+ new variation: 1015   pair   13  203          spin    3
+ new variation: 1016   pair   13  208          spin    3
+ new variation: 1017   pair   13  211          spin    3
+ new variation: 1018   pair   13  220          spin    3
+ new variation: 1019   pair   13  230          spin    3
+ new variation: 1020   pair   13  251          spin    3
+ new variation: 1021   pair   13  253          spin    3
+ new variation: 1022   pair   13  254          spin    3
+ new variation: 1023   pair   13  258          spin    3
+ new variation: 1024   pair   13  262          spin    3
+ new variation: 1025   pair   13  265          spin    3
+ new variation: 1026   pair   13  269          spin    3
+ new variation: 1027   pair   13  281          spin    3
+ new variation: 1028   pair   13  286          spin    3
+ new variation: 1029   pair   13  288          spin    3
+ new variation: 1030   pair   13  293          spin    3
+number of orbital variations:     1030
+INPUT: definition of OPTCI operators missing
+========================================
+ weights:                        weights: 
+Variational MC one-electron move mpi                    butadiene           
+
+random number seeds          1837465927472523
+all energies are in          Hartrees  
+hbar**2/(2.*m) =                0.50000
+
+number of geometries =                1
+
+number of wave functions=             1
+number of electrons =                22
+number of up,dn electrons =     11   11
+version of Metropolis =               6
+radial step multiplier =        5.00000
+cos(theta) step size =          1.00000
+force bias =                    1.00000
+no. of steps/block =                 20
+no. of blocks after eq.=             50
+no. of blocks before eq. =            1
+no. configurations saved =            0
+
+Geometry optimization with analytic gradients
+starting alfgeo =    0.5000
+Perform wave function optimization in vmc/dmc
+Computing/writing quantities for optimization with method sr_n      
+Jastrow derivatives are sampled
+Number of Jastrow derivatives   13
+Orbital derivatives are sampled
+ORB-PT blocks in force averag         1
+CI is sampled
+CI printout flag =                    0
+CI number of coefficients            12
+
+pseudopotential calculation,          4
+nquad=                                6
+
+nctype,ncent =                   2   10
+iwctype =                      1  1  1  1  2  2  2  2  2  2
+
+center positions
+center   1 ( -1.15793 -0.73365  0.00000)
+center   2 (  1.15793  0.73365  0.00000)
+center   3 ( -3.46642  0.29819  0.00000)
+center   4 (  3.46642 -0.29819  0.00000)
+center   5 ( -3.70663  2.32642  0.00000)
+center   6 (  3.70663 -2.32642  0.00000)
+center   7 ( -0.96319 -2.77218  0.00000)
+center   8 (  0.96319  2.77218  0.00000)
+center   9 ( -5.14695 -0.85555  0.00000)
+center  10 (  5.14695  0.85555  0.00000)
+
+
+
+Orbitals on localized basis
+total no. of basis =                426
+numerical basis used
+
+center type   1   2
+
+1s           -7   -6
+2s            0    0
+2px          -4   -3
+2py          -4   -3
+2pz          -4   -3
+3s            0    0
+3px           0    0
+3py           0    0
+3pz           0    0
+3dzr         -3   -2
+3dx2         -3   -2
+3dxy         -3   -2
+3dxz         -3   -2
+3dyz         -3   -2
+4s            0    0
+4px           0    0
+4py           0    0
+4pz           0    0
+4fxxx        -2   -1
+4fyyy        -2   -1
+4fzzz        -2   -1
+4fxxy        -2   -1
+4fxxz        -2   -1
+4fyyx        -2   -1
+4fyyz        -2   -1
+4fzzx        -2   -1
+4fzzy        -2   -1
+4fxyz        -2   -1
+sa            0    0
+pxa           0    0
+pya           0    0
+pza           0    0
+dzra          0    0
+dx2a          0    0
+dxya          0    0
+dxza          0    0
+dyza          0    0
+
+charge        4.   1.
+
+
+no. of orbitals =                    13
+
+no. of determinants =                20
+
+determinant coefficients
+ -0.956112  0.178325 -0.102789 -0.102789  0.083888 -0.079723 -0.079723  0.076625  0.068235 -0.037417 -0.023066 -0.023066  0.006720  0.006720  0.006619  0.006619 -0.000643 -0.000643 -0.000515 -0.000515
+
+orbitals in determinants
+  1  2  3  4  5  6  7  8  9 10 11     1  2  3  4  5  6  7  8  9 10 11
+  1  2  3  4  5  6  7  8  9 10 12     1  2  3  4  5  6  7  8  9 10 12
+  1  2  3  4  5  6  7  8  9 10 13     1  2  3  4  5  6  7  8  9 12 11
+  1  2  3  4  5  6  7  8  9 12 11     1  2  3  4  5  6  7  8  9 10 13
+  1  2  3  4  5  6  7  8  9 12 11     1  2  3  4  5  6  7  8  9 12 11
+  1  2  3  4  5  6  7  8  9 13 11     1  2  3  4  5  6  7  8  9 10 12
+  1  2  3  4  5  6  7  8  9 10 12     1  2  3  4  5  6  7  8  9 13 11
+  1  2  3  4  5  6  7  8  9 13 11     1  2  3  4  5  6  7  8  9 13 11
+  1  2  3  4  5  6  7  8  9 10 13     1  2  3  4  5  6  7  8  9 10 13
+  1  2  3  4  5  6  7  8  9 12 13     1  2  3  4  5  6  7  8  9 12 13
+  1  2  3  4  5  6  7  8  9 12 13     1  2  3  4  5  6  7  8  9 10 11
+  1  2  3  4  5  6  7  8  9 10 11     1  2  3  4  5  6  7  8  9 12 13
+  1  2  3  4  5  6  7  8  9 10 13     1  2  3  4  5  6  7  8  9 12 13
+  1  2  3  4  5  6  7  8  9 12 13     1  2  3  4  5  6  7  8  9 10 13
+  1  2  3  4  5  6  7  8  9 12 11     1  2  3  4  5  6  7  8  9 12 13
+  1  2  3  4  5  6  7  8  9 12 13     1  2  3  4  5  6  7  8  9 12 11
+  1  2  3  4  5  6  7  8  9 12 11     1  2  3  4  5  6  7  8  9 10 11
+  1  2  3  4  5  6  7  8  9 10 11     1  2  3  4  5  6  7  8  9 12 11
+  1  2  3  4  5  6  7  8  9 10 11     1  2  3  4  5  6  7  8  9 10 13
+  1  2  3  4  5  6  7  8  9 10 13     1  2  3  4  5  6  7  8  9 10 11
+ianalyt_lap=  1
+ijas,isc,nspin1,nspin2=   4   2   1   1
+new transferable standard form 4
+dist scaled r=(1-exp(-scalek*r))/scalek
+norda,nordb,nordc=    5    5    0
+scalek,a21=   0.60000   0.00000
+mparmja,mparmjb,mparmjc=    6    6    0
+a=   0.000000  0.000000  0.059464 -0.685758  0.422505 -0.108450
+a=   0.000000  0.000000 -0.130823 -0.066203  0.186878 -0.085035
+b=   0.500000  0.380658  0.166542 -0.054301  0.003993  0.004296
+c=
+c=
+
+
+
+number of parms: total, Jastrow, CI, orbitals=  1054   13   12 1030
+Starting dparm_norm_min   1.000    
+
+SR adiag:    0.01000
+SR tau:      0.05000
+SR eps:      0.00100
+Saved max number of parameters, nparmj,norb,nciterm,nciterm-1:    13 1030   12   11
+
+Optimization iteration    1 of    2
+number of electrons placed =   22
+
+initial configuration from sites
+    enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
+ -26.17711 -26.17711(    0)   0.00000(    0) -26.17711(    0)   0.00000(    0)                            0.55227        20
+END       OF equilb CP, REAL TIME IS       0.41      0.41     0     0
+    enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
+ -26.26337 -26.26337(    0)   0.00000(    0) -26.26337(    0)   0.00000(    0)                            0.54773        20
+ -26.19258 -26.22797( 2503)   0.00000(    0) -26.22797( 2503)   0.00000(    0)                            0.55682        40
+ -26.09810 -26.18468( 3909)   0.00000(    0) -26.18468( 3909)   0.00000(    0)                            0.53939        60
+ -26.17969 -26.18344( 2934)   0.00000(    0) -26.18344( 2934)   0.00000(    0)                            0.54602        80
+ -26.04592 -26.15593( 3400)   0.00000(    0) -26.15593( 3400)   0.00000(    0)                            0.54864       100
+ -25.97728 -26.12616( 3926)   0.00000(    0) -26.12616( 3926)   0.00000(    0)                            0.53485       120
+ -26.39782 -26.16497( 4923)   0.00000(    0) -26.16497( 4923)   0.00000(    0)                            0.54318       140
+ -25.97521 -26.14125( 4845)   0.00000(    0) -26.14125( 4845)   0.00000(    0)                            0.54261       160
+ -26.27337 -26.15593( 4524)   0.00000(    0) -26.15593( 4524)   0.00000(    0)                            0.54747       180
+ -25.95308 -26.13564( 4503)   0.00000(    0) -26.13564( 4503)   0.00000(    0)                            0.54364       200
+ -26.46115 -26.16523( 4972)   0.00000(    0) -26.16523( 4972)   0.00000(    0)                            0.54628       220
+ -26.19963 -26.16810( 4566)   0.00000(    0) -26.16810( 4566)   0.00000(    0)                            0.54659       240
+ -26.25840 -26.17505( 4267)   0.00000(    0) -26.17505( 4267)   0.00000(    0)                            0.55140       260
+ -26.04446 -26.16572( 4063)   0.00000(    0) -26.16572( 4063)   0.00000(    0)                            0.54870       280
+ -25.90395 -26.14827( 4150)   0.00000(    0) -26.14827( 4150)   0.00000(    0)                            0.55167       300
+ -26.65571 -26.17998( 4957)   0.00000(    0) -26.17998( 4957)   0.00000(    0)                            0.55156       320
+ -26.21378 -26.18197( 4669)   0.00000(    0) -26.18197( 4669)   0.00000(    0)                            0.55201       340
+ -26.20652 -26.18333( 4412)   0.00000(    0) -26.18333( 4412)   0.00000(    0)                            0.54949       360
+ -26.04057 -26.17582( 4243)   0.00000(    0) -26.17582( 4243)   0.00000(    0)                            0.54964       380
+ -26.19482 -26.17677( 4032)   0.00000(    0) -26.17677( 4032)   0.00000(    0)                            0.54852       400
+ -25.97767 -26.16729( 3950)   0.00000(    0) -26.16729( 3950)   0.00000(    0)                            0.54805       420
+ -26.41679 -26.17863( 3930)   0.00000(    0) -26.17863( 3930)   0.00000(    0)                            0.54845       440
+ -26.42536 -26.18936( 3902)   0.00000(    0) -26.18936( 3902)   0.00000(    0)                            0.54704       460
+ -26.13455 -26.18707( 3747)   0.00000(    0) -26.18707( 3747)   0.00000(    0)                            0.54555       480
+ -26.59924 -26.20356( 3943)   0.00000(    0) -26.20356( 3943)   0.00000(    0)                            0.54664       500
+ -26.07739 -26.19871( 3821)   0.00000(    0) -26.19871( 3821)   0.00000(    0)                            0.54537       520
+ -26.26548 -26.20118( 3687)   0.00000(    0) -26.20118( 3687)   0.00000(    0)                            0.54512       540
+ -26.27372 -26.20377( 3565)   0.00000(    0) -26.20377( 3565)   0.00000(    0)                            0.54521       560
+ -26.17758 -26.20287( 3443)   0.00000(    0) -26.20287( 3443)   0.00000(    0)                            0.54506       580
+ -26.19516 -26.20261( 3328)   0.00000(    0) -26.20261( 3328)   0.00000(    0)                            0.54508       600
+ -26.47580 -26.21142( 3336)   0.00000(    0) -26.21142( 3336)   0.00000(    0)                            0.54545       620
+ -26.27197 -26.21332( 3237)   0.00000(    0) -26.21332( 3237)   0.00000(    0)                            0.54574       640
+ -26.29568 -26.21581( 3148)   0.00000(    0) -26.21581( 3148)   0.00000(    0)                            0.54483       660
+ -26.51935 -26.22474( 3180)   0.00000(    0) -26.22474( 3180)   0.00000(    0)                            0.54425       680
+ -25.92122 -26.21607( 3205)   0.00000(    0) -26.21607( 3205)   0.00000(    0)                            0.54357       700
+ -25.98503 -26.20965( 3180)   0.00000(    0) -26.20965( 3180)   0.00000(    0)                            0.54324       720
+ -26.36355 -26.21381( 3121)   0.00000(    0) -26.21381( 3121)   0.00000(    0)                            0.54423       740
+ -26.18945 -26.21317( 3039)   0.00000(    0) -26.21317( 3039)   0.00000(    0)                            0.54384       760
+ -26.22222 -26.21340( 2961)   0.00000(    0) -26.21340( 2961)   0.00000(    0)                            0.54423       780
+ -26.15226 -26.21187( 2891)   0.00000(    0) -26.21187( 2891)   0.00000(    0)                            0.54449       800
+ -26.38927 -26.21620( 2853)   0.00000(    0) -26.21620( 2853)   0.00000(    0)                            0.54346       820
+ -26.14275 -26.21445( 2790)   0.00000(    0) -26.21445( 2790)   0.00000(    0)                            0.54345       840
+ -25.82821 -26.20547( 2866)   0.00000(    0) -26.20547( 2866)   0.00000(    0)                            0.54318       860
+ -25.92953 -26.19920( 2869)   0.00000(    0) -26.19920( 2869)   0.00000(    0)                            0.54298       880
+ -26.46179 -26.20503( 2864)   0.00000(    0) -26.20503( 2864)   0.00000(    0)                            0.54263       900
+ -26.32082 -26.20755( 2813)   0.00000(    0) -26.20755( 2813)   0.00000(    0)                            0.54333       920
+ -26.00703 -26.20328( 2785)   0.00000(    0) -26.20328( 2785)   0.00000(    0)                            0.54381       940
+ -26.40048 -26.20739( 2757)   0.00000(    0) -26.20739( 2757)   0.00000(    0)                            0.54318       960
+ -26.30232 -26.20933( 2708)   0.00000(    0) -26.20933( 2708)   0.00000(    0)                            0.54258       980
+ -26.35665 -26.21227( 2670)   0.00000(    0) -26.21227( 2670)   0.00000(    0)                            0.54286      1000
+END       OF all    CP, REAL TIME IS      21.94     21.53    22    21
+vmc_mov1      butadiene           
+results after        1000. passes,  nstep, nblk =    20    50
+physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
+total E =        -26.2122744 +-  0.0266958  0.84419  0.65416  0.65416    1.67
+potential E =      0.0000000 +-  0.0000000  0.00000
+jf kinetic E =     0.0000000 +-  0.0000000  0.00000
+pb kinetic E =   -26.2122744 +-  0.0266958  0.84419
+acceptance =       0.5428636
+average psid, det_ref  0.43830D-15 0.37186D-15
+log detref -0.84405D+01-0.83714D+01
+distance from the nodes    0.00000
+ successful dump to unit 10
+
+Completed sampling
+max S diagonal element                  0.53D+04
+nparm, non-zero S diag                   1054 1054
+ delta0 =    5.4156617295928902     
+ delta_new    3.8107682070057156     
+ delta_new    3.0158179191459409     
+ delta_new    6.1041185327099683     
+ delta_new    1.8904949338466470     
+ delta_new   0.72032746914019508     
+ delta_new   0.48075787791144808     
+ delta_new   0.54104429027081091     
+ delta_new   0.44134975444700097     
+ delta_new   0.32193792170344071     
+ delta_new   0.25031810429022400     
+ delta_new   0.15394724682575758     
+ delta_new   0.15845283937552770     
+ delta_new    8.8214824918752113E-002
+ delta_new   0.12505221384422957     
+ delta_new   0.23842722836482727     
+ delta_new    8.2139363598579582E-002
+ delta_new   0.13407019537443923     
+ delta_new   0.10094064619054191     
+ delta_new    4.7025499937756489E-002
+ delta_new    4.9692443035904803E-002
+ delta_new    4.2083598914206349E-002
+ delta_new    3.4864875808939717E-002
+ delta_new    2.2046414181164167E-002
+ delta_new    2.6965765824800505E-002
+ delta_new    2.2946212114710353E-002
+ delta_new   0.15768945297544046     
+ delta_new    2.0168336614816783E-002
+ delta_new    4.3107591944419738E-002
+ delta_new    9.2742121756847942E-002
+ delta_new    1.8489527994419577E-002
+ delta_new    1.2685938665356247E-002
+ delta_new    1.1832524387674176E-002
+ delta_new    1.1807790406788652E-002
+ delta_new    2.7156924892701783E-002
+ delta_new    7.4300320983415038E-003
+ delta_new    8.6474406256139835E-003
+ delta_new    2.6174012945437586E-002
+ delta_new    9.0817073088104647E-003
+ delta_new    1.3989724903249802E-002
+ delta_new    5.0724651223449310E-003
+ delta_new    4.7392363082224900E-002
+ delta_new    6.3264510983851163E-003
+ delta_new    5.6617685513203498E-003
+ delta_new    8.9113380137198130E-003
+ delta_new    3.4229708233413816E-003
+ delta_new    2.8186052242012466E-003
+ delta_new    3.0465784479000004E-003
+ delta_new    6.9053231632762602E-003
+ delta_new    3.2418284855238555E-003
+ delta_new    8.2542772903455540E-003
+ delta_new    1.8523889695022046E-003
+ delta_new    3.1603613110130725E-003
+ delta_new    4.6321559244522576E-003
+ delta_new    1.6099634137102408E-003
+ delta_new    1.0403814798371006E-003
+ delta_new    1.0781032677394762E-003
+ delta_new    1.6445475024878646E-003
+ delta_new    1.3813766505359581E-003
+ delta_new    1.8374442406925854E-003
+ delta_new    1.0044510670787212E-002
+ delta_new    6.4408414168395229E-004
+ delta_new    6.9986607973027105E-004
+ delta_new    9.6304216785118705E-004
+ delta_new    4.1223216064870528E-004
+ delta_new    2.0452146175486477E-003
+ delta_new    5.1416377747310173E-004
+ delta_new    6.6864098725538266E-004
+ delta_new    6.8553758630046700E-004
+ delta_new    7.8096720162495440E-004
+ delta_new    7.5901998522714205E-004
+ delta_new    3.4036239639005894E-004
+ delta_new    1.9379633738149063E-003
+ delta_new    2.3854477938314389E-004
+ delta_new    2.0202274683762410E-004
+ delta_new    4.3259720875568494E-004
+ delta_new    2.1270999905057726E-004
+ delta_new    1.2940461727752465E-004
+ delta_new    7.8206699320455711E-004
+ delta_new    1.3010326891602572E-004
+ delta_new    1.8524281604578191E-004
+ delta_new    1.4083274081024875E-004
+ delta_new    5.4029216374756742E-004
+ delta_new    7.0896272387648780E-005
+ delta_new    1.4133865966531328E-004
+ delta_new    6.7284143490298407E-005
+ delta_new    1.0045631944348036E-004
+ delta_new    6.8437010371132361E-005
+ delta_new    7.3699788516074009E-005
+ delta_new    3.8731911786770772E-005
+ delta_new    4.7222884058507840E-005
+ delta_new    6.0999457568542677E-005
+ delta_new    3.4350375108524552E-005
+ delta_new    1.7367559849525640E-004
+ delta_new    4.2285621905654327E-005
+ delta_new    4.3759680148630327E-005
+ delta_new    2.3116029746192926E-005
+ delta_new    1.7191209461892911E-005
+ delta_new    2.2302528098847009E-005
+ delta_new    1.6929963793545325E-005
+ delta_new    2.2920463680066623E-005
+ delta_new    1.0878153784861984E-005
+ delta_new    4.7168645944151154E-005
+ delta_new    1.0773144914605984E-004
+ delta_new    1.2378831273869208E-005
+ delta_new    4.2136280608512153E-005
+ delta_new    3.5741776344022891E-005
+ delta_new    1.0864602288904236E-005
+ delta_new    1.3774240755315036E-005
+ delta_new    1.2210731661346247E-005
+ delta_new    8.4372427640620934E-006
+ delta_new    7.3499294839896335E-006
+ delta_new    4.5965502966257061E-006
+ CG iter          112
+ CG iter          112
+dparm_norm,adiag = 0.59187E-02 0.10000E-01
+Norm of parm variation  0.59187D-02
+ CENT   -1.2990384763272464      -0.75976808489140779       -7.7765351045454165E-002
+ CENT   0.96957480306169963       0.75308792574800643       -1.1080067542732649E-002
+ CENT   -3.3241968236982413       0.24667755640067124        6.8807491284055347E-002
+ CENT    3.1901626130927889      -0.26120760877517396      -0.12643105425540455     
+ CENT   -3.7073440439435430        2.2985241236146972        7.5477365790897789E-003
+ CENT    3.7082490170841012       -2.2590229551908738        1.6837244146612846E-003
+ CENT  -0.96477442500426902       -2.7082036873334028        2.0361285201582858E-002
+ CENT   0.97005400650331985        2.6970630748679807        7.2741608262791432E-003
+ CENT   -5.1166852323206182      -0.84128734239080361       -2.0224512305047369E-002
+ CENT    5.1059373658854090       0.86004718483039821       -1.3783340336909191E-002
+nblk =     50
+alfgeo =     0.5000
+
+Optimization iteration    2 of    2
+number of electrons placed =   22
+
+initial configuration from sites
+    enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
+ -25.97029 -25.97029(    0)   0.00000(    0) -25.97029(    0)   0.00000(    0)                            0.55682        20
+END       OF equilb CP, REAL TIME IS      22.91      0.43    23     0
+    enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
+ -25.34058 -25.34058(    0)   0.00000(    0) -25.34058(    0)   0.00000(    0)                            0.53182        20
+ -26.12202 -25.73130(27628)   0.00000(    0) -25.73130(27628)   0.00000(    0)                            0.54318        40
+ -26.03939 -25.83400(20238)   0.00000(    0) -25.83400(20238)   0.00000(    0)                            0.54242        60
+ -25.64375 -25.78644(15727)   0.00000(    0) -25.78644(15727)   0.00000(    0)                            0.54489        80
+ -25.77913 -25.78498(12582)   0.00000(    0) -25.78498(12582)   0.00000(    0)                            0.54636       100
+ -25.84727 -25.79536(10528)   0.00000(    0) -25.79536(10528)   0.00000(    0)                            0.55227       120
+ -26.73472 -25.92955(15355)   0.00000(    0) -25.92955(15355)   0.00000(    0)                            0.55162       140
+ -26.61822 -26.01564(15664)   0.00000(    0) -26.01564(15664)   0.00000(    0)                            0.55000       160
+ -25.88746 -26.00139(13988)   0.00000(    0) -26.00139(13988)   0.00000(    0)                            0.54444       180
+ -26.10925 -26.01218(12631)   0.00000(    0) -26.01218(12631)   0.00000(    0)                            0.54500       200
+ -26.19613 -26.02890(11593)   0.00000(    0) -26.02890(11593)   0.00000(    0)                            0.54256       220
+ -26.32825 -26.05385(10892)   0.00000(    0) -26.05385(10892)   0.00000(    0)                            0.54375       240
+ -26.06569 -26.05476(10054)   0.00000(    0) -26.05476(10054)   0.00000(    0)                            0.54143       260
+ -26.06133 -26.05523( 9336)   0.00000(    0) -26.05523( 9336)   0.00000(    0)                            0.53864       280
+ -25.71372 -26.03246( 8987)   0.00000(    0) -26.03246( 8987)   0.00000(    0)                            0.53894       300
+ -25.72287 -26.01311( 8631)   0.00000(    0) -26.01311( 8631)   0.00000(    0)                            0.53778       320
+ -26.14931 -26.02112( 8161)   0.00000(    0) -26.02112( 8161)   0.00000(    0)                            0.53824       340
+ -26.41780 -26.04316( 7999)   0.00000(    0) -26.04316( 7999)   0.00000(    0)                            0.53939       360
+ -26.52374 -26.06845( 7968)   0.00000(    0) -26.06845( 7968)   0.00000(    0)                            0.54079       380
+ -25.97866 -26.06396( 7582)   0.00000(    0) -26.06396( 7582)   0.00000(    0)                            0.54080       400
+ -26.17147 -26.06908( 7239)   0.00000(    0) -26.06908( 7239)   0.00000(    0)                            0.54351       420
+ -26.85374 -26.10475( 7739)   0.00000(    0) -26.10475( 7739)   0.00000(    0)                            0.54225       440
+ -26.07158 -26.10331( 7403)   0.00000(    0) -26.10331( 7403)   0.00000(    0)                            0.54150       460
+ -26.37075 -26.11445( 7178)   0.00000(    0) -26.11445( 7178)   0.00000(    0)                            0.54271       480
+ -26.25319 -26.12000( 6913)   0.00000(    0) -26.12000( 6913)   0.00000(    0)                            0.54255       500
+ -26.48822 -26.13416( 6790)   0.00000(    0) -26.13416( 6790)   0.00000(    0)                            0.54248       520
+ -26.07180 -26.13185( 6543)   0.00000(    0) -26.13185( 6543)   0.00000(    0)                            0.54369       540
+ -26.17871 -26.13353( 6311)   0.00000(    0) -26.13353( 6311)   0.00000(    0)                            0.54196       560
+ -26.46585 -26.14499( 6197)   0.00000(    0) -26.14499( 6197)   0.00000(    0)                            0.54255       580
+ -25.88179 -26.13621( 6052)   0.00000(    0) -26.13621( 6052)   0.00000(    0)                            0.54295       600
+ -26.08518 -26.13457( 5859)   0.00000(    0) -26.13457( 5859)   0.00000(    0)                            0.54421       620
+ -26.44823 -26.14437( 5757)   0.00000(    0) -26.14437( 5757)   0.00000(    0)                            0.54403       640
+ -25.65166 -26.12944( 5773)   0.00000(    0) -26.12944( 5773)   0.00000(    0)                            0.54311       660
+ -25.76452 -26.11870( 5702)   0.00000(    0) -26.11870( 5702)   0.00000(    0)                            0.54332       680
+ -25.80480 -26.10974( 5609)   0.00000(    0) -26.10974( 5609)   0.00000(    0)                            0.54195       700
+ -25.75045 -26.09976( 5542)   0.00000(    0) -26.09976( 5542)   0.00000(    0)                            0.53895       720
+ -26.06830 -26.09891( 5393)   0.00000(    0) -26.09891( 5393)   0.00000(    0)                            0.53888       740
+ -26.14466 -26.10011( 5252)   0.00000(    0) -26.10011( 5252)   0.00000(    0)                            0.53882       760
+ -26.07659 -26.09951( 5118)   0.00000(    0) -26.09951( 5118)   0.00000(    0)                            0.53805       780
+ -25.69654 -26.08943( 5088)   0.00000(    0) -26.08943( 5088)   0.00000(    0)                            0.53756       800
+ -25.58870 -26.07722( 5108)   0.00000(    0) -26.07722( 5108)   0.00000(    0)                            0.53841       820
+ -26.10595 -26.07790( 4987)   0.00000(    0) -26.07790( 4987)   0.00000(    0)                            0.53929       840
+ -26.22146 -26.08124( 4882)   0.00000(    0) -26.08124( 4882)   0.00000(    0)                            0.53901       860
+ -26.10266 -26.08173( 4772)   0.00000(    0) -26.08173( 4772)   0.00000(    0)                            0.53957       880
+ -26.43361 -26.08955( 4729)   0.00000(    0) -26.08955( 4729)   0.00000(    0)                            0.54005       900
+ -25.72014 -26.08152( 4694)   0.00000(    0) -26.08152( 4694)   0.00000(    0)                            0.53928       920
+ -24.34503 -26.04457( 5871)   0.00000(    0) -26.04457( 5871)   0.00000(    0)                            0.53859       940
+ -26.09396 -26.04560( 5749)   0.00000(    0) -26.04560( 5749)   0.00000(    0)                            0.53977       960
+ -25.85268 -26.04166( 5646)   0.00000(    0) -26.04166( 5646)   0.00000(    0)                            0.54049       980
+ -25.82847 -26.03740( 5549)   0.00000(    0) -26.03740( 5549)   0.00000(    0)                            0.54009      1000
+END       OF all    CP, REAL TIME IS      44.88     21.96    45    22
+vmc_mov1      butadiene           
+results after        1000. passes,  nstep, nblk =    20    50
+physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
+total E =        -26.0373992 +-  0.0554872  1.75466  1.08665  1.08665    2.61
+potential E =      0.0000000 +-  0.0000000  0.00000
+jf kinetic E =     0.0000000 +-  0.0000000  0.00000
+pb kinetic E =   -26.0373992 +-  0.0554872  1.75466
+acceptance =       0.5400909
+average psid, det_ref  0.55928D-15 0.52523D-15
+log detref -0.84501D+01-0.83406D+01
+distance from the nodes    0.00000
+ successful dump to unit 10
+
+Completed sampling
+max S diagonal element                  0.54D+04
+nparm, non-zero S diag                   1054 1054
+ delta0 =    36.683570900335944     
+ delta_new    10.633559550510626     
+ delta_new    5.5536667272944111     
+ delta_new    3.0711634000740426     
+ delta_new    2.3930207967268675     
+ delta_new    2.0177143686365437     
+ delta_new    1.2950440856937222     
+ delta_new   0.88565896952165535     
+ delta_new   0.79636510358710300     
+ delta_new   0.71460786447677949     
+ delta_new   0.48593596616276591     
+ delta_new   0.40505231014106463     
+ delta_new   0.27842022618495393     
+ delta_new   0.26512319061937278     
+ delta_new   0.23817101119367670     
+ delta_new   0.23126747188730301     
+ delta_new   0.22648007267070006     
+ delta_new   0.19453445309742143     
+ delta_new   0.15341328371662916     
+ delta_new   0.15555258230682531     
+ delta_new   0.11562312923752871     
+ delta_new    8.6700717367642177E-002
+ delta_new    8.7544523289105516E-002
+ delta_new    9.4210955758146656E-002
+ delta_new    6.9775508529502608E-002
+ delta_new    8.2671467169419047E-002
+ delta_new    5.1192440578294501E-002
+ delta_new    9.8318731690056421E-002
+ delta_new    5.8802335429517696E-002
+ delta_new    4.0817126778241140E-002
+ delta_new    3.3733808121054351E-002
+ delta_new    2.9330910762233226E-002
+ delta_new    2.7957856643881920E-002
+ delta_new    2.3231064731908339E-002
+ delta_new    2.9556702703200904E-002
+ delta_new    3.5155993503928833E-002
+ delta_new    2.0067594568499703E-002
+ delta_new    2.2435076619031078E-002
+ delta_new    1.4643764207375688E-002
+ delta_new    2.1879331277860133E-002
+ delta_new    3.0035324365041537E-002
+ delta_new    1.1710162924282376E-002
+ delta_new    1.2637407503445408E-002
+ delta_new    8.6031986555078453E-003
+ delta_new    1.0265403632218837E-002
+ delta_new    1.6337036365117182E-002
+ delta_new    6.5240712830416043E-003
+ delta_new    8.9878734392572854E-003
+ delta_new    1.4449977943065993E-002
+ delta_new    5.5756726140838622E-003
+ delta_new    4.7142157531103179E-003
+ delta_new    5.3696823912385413E-003
+ delta_new    8.0686235206851292E-003
+ delta_new    4.0854327850266634E-003
+ delta_new    3.1348725100503608E-003
+ delta_new    3.9179856965586022E-003
+ delta_new    4.4592796914764326E-003
+ delta_new    2.2914127419555617E-003
+ delta_new    3.9720431541064045E-003
+ delta_new    3.9743337435512007E-003
+ delta_new    4.5797766212766107E-003
+ delta_new    1.8576295226757854E-003
+ delta_new    1.8179562166816216E-003
+ delta_new    2.6550410547698765E-003
+ delta_new    1.4912514028297551E-003
+ delta_new    1.7363587554919827E-003
+ delta_new    2.3229410271637363E-003
+ delta_new    3.0020825233824776E-003
+ delta_new    1.1105604936821147E-003
+ delta_new    1.8208630226130866E-003
+ delta_new    9.0079863697477822E-004
+ delta_new    2.1402878064259744E-003
+ delta_new    8.3439332766053218E-004
+ delta_new    6.6751987116461927E-004
+ delta_new    1.0510624413314249E-003
+ delta_new    6.2212200056037891E-004
+ delta_new    4.3066118991231189E-004
+ delta_new    4.7583157132544867E-004
+ delta_new    1.4205967784078565E-003
+ delta_new    3.9484308722797883E-004
+ delta_new    3.5637134626810855E-004
+ delta_new    4.3555152462688892E-004
+ delta_new    2.5160075957801154E-004
+ delta_new    4.1784852639897916E-004
+ delta_new    3.4556975131406304E-004
+ delta_new    2.4643225143094316E-004
+ delta_new    3.7725315229296288E-004
+ delta_new    1.5403199712800029E-004
+ delta_new    3.2477628566821021E-004
+ delta_new    2.1507546415723994E-004
+ delta_new    1.7001731025967519E-004
+ delta_new    1.0315149522187465E-004
+ delta_new    1.8951651400237821E-004
+ delta_new    8.6988371223602139E-005
+ delta_new    1.6025668263535165E-004
+ delta_new    1.2910116783835393E-004
+ delta_new    1.3182563031500098E-004
+ delta_new    6.0323136633283197E-005
+ delta_new    1.8197545773351487E-004
+ delta_new    5.7586906935064579E-005
+ delta_new    7.9325530129648828E-005
+ delta_new    7.4516483631670711E-005
+ delta_new    1.0565628053742209E-004
+ delta_new    4.6300179555385690E-005
+ delta_new    1.2081518024982426E-004
+ delta_new    8.3918691495754542E-005
+ delta_new    3.7022816594969479E-005
+ delta_new    2.2256843467562771E-005
+ CG iter          107
+ CG iter          107
+dparm_norm,adiag = 0.72590E-02 0.10000E-01
+Norm of parm variation  0.72590D-02
+ CENT   -1.3402766659842873      -0.65580515081031310        6.3139835124250240E-002
+ CENT   0.93921761759357236       0.68788335082901353       -7.3342368476501635E-002
+ CENT   -3.6453084032053216       0.33305313800213671      -0.12680428160778445     
+ CENT    3.2028341416097663      -0.24618667239152284        2.8015558346766167E-002
+ CENT   -3.6581257235242712        2.2543184558750431       -1.4628159055041726E-002
+ CENT    3.6041483361390494       -2.1040149325079049       -4.3032252104548509E-002
+ CENT  -0.94356665578424714       -2.7106292857013949       -4.3015600964134842E-003
+ CENT   0.89329412541372011        2.7067628143943123        5.3884180829424791E-003
+ CENT   -4.8827847944131966      -0.78212370907836293        5.6733676883099292E-002
+ CENT    5.0046553322896319       0.84028996085019703       -5.6256936471560208E-002
+nblk =     60
+alfgeo =     0.5000
+
+Check last iteration
+Max number of parameters set to nparmj,norb,nciterm,nciterm-1:     0    0    0    0
+
+number of parms: total, Jastrow, CI, orbitals=     0    0    0    0
+number of electrons placed =   22
+
+initial configuration from sites
+    enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
+ -25.62268 -25.62268(    0)   0.00000(    0) -25.62268(    0)   0.00000(    0)                            0.57273        20
+END       OF equilb CP, REAL TIME IS      45.72      0.33    45     0
+    enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
+ -25.98198 -25.98198(    0)   0.00000(    0) -25.98198(    0)   0.00000(    0)                            0.52727        20
+ -25.91118 -25.94658( 2503)   0.00000(    0) -25.94658( 2503)   0.00000(    0)                            0.54545        40
+ -25.78871 -25.89396( 4610)   0.00000(    0) -25.89396( 4610)   0.00000(    0)                            0.54924        60
+ -25.76770 -25.86239( 4407)   0.00000(    0) -25.86239( 4407)   0.00000(    0)                            0.54432        80
+ -25.46436 -25.78279( 7945)   0.00000(    0) -25.78279( 7945)   0.00000(    0)                            0.53727       100
+ -26.42665 -25.89010(11824)   0.00000(    0) -25.89010(11824)   0.00000(    0)                            0.53788       120
+ -26.25370 -25.94204(11218)   0.00000(    0) -25.94204(11218)   0.00000(    0)                            0.53896       140
+ -25.20936 -25.85046(13028)   0.00000(    0) -25.85046(13028)   0.00000(    0)                            0.53580       160
+ -26.41963 -25.91370(13026)   0.00000(    0) -25.91370(13026)   0.00000(    0)                            0.54066       180
+ -26.36785 -25.95911(12490)   0.00000(    0) -25.95911(12490)   0.00000(    0)                            0.54250       200
+ -25.85502 -25.94965(11390)   0.00000(    0) -25.94965(11390)   0.00000(    0)                            0.54298       220
+ -26.14008 -25.96552(10551)   0.00000(    0) -25.96552(10551)   0.00000(    0)                            0.53977       240
+ -26.02424 -25.97004( 9749)   0.00000(    0) -25.97004( 9749)   0.00000(    0)                            0.54143       260
+ -26.10221 -25.97948( 9098)   0.00000(    0) -25.97948( 9098)   0.00000(    0)                            0.53977       280
+ -25.57839 -25.95274( 8876)   0.00000(    0) -25.95274( 8876)   0.00000(    0)                            0.54000       300
+ -25.96805 -25.95369( 8322)   0.00000(    0) -25.95369( 8322)   0.00000(    0)                            0.53949       320
+ -26.29837 -25.97397( 8075)   0.00000(    0) -25.97397( 8075)   0.00000(    0)                            0.53877       340
+ -25.87869 -25.96868( 7644)   0.00000(    0) -25.96868( 7644)   0.00000(    0)                            0.53965       360
+ -26.27194 -25.98464( 7406)   0.00000(    0) -25.98464( 7406)   0.00000(    0)                            0.54246       380
+ -26.13147 -25.99198( 7072)   0.00000(    0) -25.99198( 7072)   0.00000(    0)                            0.54250       400
+ -25.70459 -25.97829( 6867)   0.00000(    0) -25.97829( 6867)   0.00000(    0)                            0.54210       420
+ -26.09474 -25.98359( 6575)   0.00000(    0) -25.98359( 6575)   0.00000(    0)                            0.54008       440
+ -25.83466 -25.97711( 6321)   0.00000(    0) -25.97711( 6321)   0.00000(    0)                            0.53953       460
+ -25.78390 -25.96906( 6109)   0.00000(    0) -25.96906( 6109)   0.00000(    0)                            0.53902       480
+ -25.94711 -25.96818( 5865)   0.00000(    0) -25.96818( 5865)   0.00000(    0)                            0.53973       500
+ -26.02818 -25.97049( 5644)   0.00000(    0) -25.97049( 5644)   0.00000(    0)                            0.54021       520
+ -26.00031 -25.97160( 5436)   0.00000(    0) -25.97160( 5436)   0.00000(    0)                            0.53906       540
+ -25.88665 -25.96856( 5250)   0.00000(    0) -25.96856( 5250)   0.00000(    0)                            0.53977       560
+ -26.14202 -25.97454( 5103)   0.00000(    0) -25.97454( 5103)   0.00000(    0)                            0.53989       580
+ -26.32799 -25.98632( 5067)   0.00000(    0) -25.98632( 5067)   0.00000(    0)                            0.53864       600
+ -26.29417 -25.99625( 5000)   0.00000(    0) -25.99625( 5000)   0.00000(    0)                            0.53790       620
+ -26.02094 -25.99703( 4844)   0.00000(    0) -25.99703( 4844)   0.00000(    0)                            0.53743       640
+ -26.31020 -26.00652( 4790)   0.00000(    0) -26.00652( 4790)   0.00000(    0)                            0.53795       660
+ -26.53543 -26.02207( 4895)   0.00000(    0) -26.02207( 4895)   0.00000(    0)                            0.53937       680
+ -26.38748 -26.03251( 4865)   0.00000(    0) -26.03251( 4865)   0.00000(    0)                            0.53955       700
+ -26.47263 -26.04474( 4881)   0.00000(    0) -26.04474( 4881)   0.00000(    0)                            0.53819       720
+ -26.05048 -26.04489( 4749)   0.00000(    0) -26.04489( 4749)   0.00000(    0)                            0.53851       740
+ -26.33760 -26.05260( 4686)   0.00000(    0) -26.05260( 4686)   0.00000(    0)                            0.53840       760
+ -26.25385 -26.05776( 4595)   0.00000(    0) -26.05776( 4595)   0.00000(    0)                            0.53805       780
+ -26.13343 -26.05965( 4484)   0.00000(    0) -26.05965( 4484)   0.00000(    0)                            0.53807       800
+ -26.00012 -26.05820( 4377)   0.00000(    0) -26.05820( 4377)   0.00000(    0)                            0.53780       820
+ -25.89194 -26.05424( 4290)   0.00000(    0) -26.05424( 4290)   0.00000(    0)                            0.53690       840
+ -25.20730 -26.03454( 4620)   0.00000(    0) -26.03454( 4620)   0.00000(    0)                            0.53721       860
+ -25.97160 -26.03311( 4518)   0.00000(    0) -26.03311( 4518)   0.00000(    0)                            0.53735       880
+ -25.68682 -26.02542( 4482)   0.00000(    0) -26.02542( 4482)   0.00000(    0)                            0.53854       900
+ -25.79779 -26.02047( 4412)   0.00000(    0) -26.02047( 4412)   0.00000(    0)                            0.53883       920
+ -25.77296 -26.01520( 4350)   0.00000(    0) -26.01520( 4350)   0.00000(    0)                            0.53897       940
+ -26.20168 -26.01909( 4276)   0.00000(    0) -26.01909( 4276)   0.00000(    0)                            0.53958       960
+ -25.59883 -26.01051( 4274)   0.00000(    0) -26.01051( 4274)   0.00000(    0)                            0.53980       980
+ -26.29236 -26.01615( 4226)   0.00000(    0) -26.01615( 4226)   0.00000(    0)                            0.54018      1000
+ -26.15536 -26.01888( 4152)   0.00000(    0) -26.01888( 4152)   0.00000(    0)                            0.53873      1020
+ -25.96063 -26.01776( 4073)   0.00000(    0) -26.01776( 4073)   0.00000(    0)                            0.53833      1040
+ -26.25638 -26.02226( 4021)   0.00000(    0) -26.02226( 4021)   0.00000(    0)                            0.53756      1060
+ -26.78981 -26.03647( 4190)   0.00000(    0) -26.03647( 4190)   0.00000(    0)                            0.53641      1080
+ -26.04095 -26.03655( 4114)   0.00000(    0) -26.03655( 4114)   0.00000(    0)                            0.53624      1100
+ -26.25985 -26.04054( 4060)   0.00000(    0) -26.04054( 4060)   0.00000(    0)                            0.53746      1120
+ -25.55394 -26.03200( 4078)   0.00000(    0) -26.03200( 4078)   0.00000(    0)                            0.53820      1140
+ -25.32305 -26.01978( 4187)   0.00000(    0) -26.01978( 4187)   0.00000(    0)                            0.53758      1160
+ -26.42997 -26.02673( 4173)   0.00000(    0) -26.02673( 4173)   0.00000(    0)                            0.53794      1180
+ -26.46366 -26.03402( 4166)   0.00000(    0) -26.03402( 4166)   0.00000(    0)                            0.53754      1200
+END       OF all    CP, REAL TIME IS      68.34     22.62    68    22
+vmc_mov1      butadiene           
+results after        1200. passes,  nstep, nblk =    20    60
+physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
+total E =        -26.0340157 +-  0.0416641  1.44329  1.01021  1.01021    2.04
+potential E =      0.0000000 +-  0.0000000  0.00000
+jf kinetic E =     0.0000000 +-  0.0000000  0.00000
+pb kinetic E =   -26.0340157 +-  0.0416641  1.44329
+acceptance =       0.5375379
+average psid, det_ref  0.86285D-15 0.76918D-15
+log detref -0.81914D+01-0.83137D+01
+distance from the nodes    0.00000
+ successful dump to unit 10

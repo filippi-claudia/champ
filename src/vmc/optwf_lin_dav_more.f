@@ -11,7 +11,8 @@
       use optwf_parms, only: nparmd, nparmj
       use sr_mat_n, only: jfj
       use sr_mat_n, only: obs_tot
-    
+      use optwf_sr_mod, only: sr_hs
+      
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'

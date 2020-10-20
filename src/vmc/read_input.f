@@ -4,6 +4,32 @@ c Written by Friedemann Schautz
       use contr3, only: mode
       implicit real*8(a-h,o-z)
 
+      call allocate_m_common
+      call allocate_m_basis
+      call allocate_m_control
+      call allocate_m_deriv
+      call allocate_m_efield
+      call allocate_m_estimators
+      call allocate_m_ewald
+      call allocate_m_force
+      call allocate_m_gradhess
+      call allocate_m_grdnt
+      call allocate_m_grid
+      call allocate_m_jastrow
+      call allocate_m_mixderiv
+      call allocate_m_mmpol
+      call allocate_m_mstates
+      call allocate_m_optci
+      call allocate_m_optorb
+      call allocate_m_optwf
+      call allocate_m_pcm
+      call allocate_m_prop
+      call allocate_m_pseudo
+      call allocate_m_sampling
+      call allocate_m_sr
+      call allocate_m_state_avrg
+
+
 c Initialize flags
       call flaginit
 c Initialize input parser
@@ -52,7 +78,8 @@ c and Anthony Scemema
       use numbas, only: numr
       use numbas1, only: nbastyp
       use numbas2, only: ibas0, ibas1
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, ioptwf
+      use optwf_contrl, only: idl_flag,ilbfgs_flag
       use optwf_parms, only: nparmj
       use pars, only: Z, a20, a21
       use rlobxy, only: rlobx
@@ -335,7 +362,7 @@ c DMC parameters
 
         if(idmc.ne.2) call fatal_error('INPUT: only idmc=2 supported')
         call p2gtid('pseudo:nloc',nloc,0,1)
-        if(nloc.eq.0) call fatal_error('INPUT: no all-electron calculations supported')
+        if(nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
 
        else
         icasula=0
@@ -398,6 +425,11 @@ c Analytical forces flags (vmc only)
 
 c Optimization flags (vmc/dmc only)
       if(index(mode,'vmc').ne.0.or.index(mode,'dmc').ne.0) then
+
+        call p2gtid('optwf:ioptwf', ioptwf, 0, 1)
+        call p2gtad('optwf:method', method, 'linear', 1)
+        call p2gtid('optwf:idl_flag', idl_flag, 0, 1)
+        call p2gtid('optwf:ilbfgs_flag', ilbfgs_flag, 0, 1)
 
         call p2gtid('optwf:ioptjas',ioptjas,0,1)
 CVARDOC flag: Jastrow derivatives will be sampled

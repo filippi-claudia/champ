@@ -1,1 +1,0 @@
-file(GLOB_RECURSE CHAMP_HEADERS *.h)

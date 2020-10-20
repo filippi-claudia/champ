@@ -1,9 +1,0 @@
-&jastrow ianalyt_lap 1 ijas 4 isc 2 nspin1 1 nspin2 1 ifock 0
-
-jastrow_parameter   1
-  5  5  0           norda,nordb,nordc
-   0.60000000   0.00000000     scalek,a21
-   0.00000000   0.00000000   0.28976812  -0.08915371  -0.05921250  -0.00241973 (a(iparmj),iparmj=1,nparma)
-   0.50000000   0.01121696   0.04794955  -0.01500358   0.01009764   0.03485161 (b(iparmj),iparmj=1,nparmb)
- (c(iparmj),iparmj=1,nparmc)
-end

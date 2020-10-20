@@ -31,13 +31,12 @@ c routine to accumulate estimators for energy etc.
       use optorb_cblock, only: ns_current
       use distance_mod, only: rshift, r_en, rvec_en
       use multislater, only: detiab
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
 
       parameter (half=.5d0)
 
-
-      common /distance/  rvec_ee(3, MMAT_DIM2), r_ee(MMAT_DIM2)
 
       dimension xstrech(3,MELEC),enow(MSTATES,MFORCE)
 
