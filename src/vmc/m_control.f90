@@ -107,14 +107,17 @@ module contrl_file
 
     private
     public :: log_filename, proc_filename
-    public :: init_files, close_files
+    public :: close_files
+    public :: init_procfile, init_logfile
     save
 contains
 
-    subroutine init_files()
-        call init_logfile()
-        call init_procfile()
-    end subroutine init_files
+! Open all log/output files at once does not work because init_procfile
+! needs to know the value of ipr flag from read_input.f.
+!    subroutine init_files()
+!        call init_logfile()
+!        call init_procfile()
+!    end subroutine init_files
 
     subroutine close_files()
         close (5)
