@@ -521,6 +521,8 @@ c-----------------------------------------------------------------------
       include 'force.h'
       include 'mstates.h'
 
+      parameter (MEXCIT=10)
+
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /elec/ nup,ndn
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
@@ -587,6 +589,7 @@ c     call p2gtid('optwf:ioptci',ioptci,0,1)
             enddo
             if(in.eq.0) then
               numrep_det(k,iab)=numrep_det(k,iab)+1
+              if(numrep_det(k,iab).gt.MEXCIT) call fatal_error('MULTIDET_DEF: numrep exceeds MEXCIT')
               irepcol_det(numrep_det(k,iab),k,iab)=iref
             endif
           enddo
