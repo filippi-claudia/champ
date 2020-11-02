@@ -92,9 +92,7 @@ c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(.not.wid) return
-
       call dumper_more
-
       return
 
 c-----------------------------------------------------------------------

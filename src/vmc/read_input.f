@@ -394,10 +394,13 @@ c Make sure that the printout is not huge
         endif
 
        endif
-      write(6,*)
 
 c Analytical forces flags (vmc only)
       if(index(mode,'vmc').ne.0) then
+        call p2gtid('mdyn:imdyn', imdyn,0,1)
+        if(imdyn.gt.0) then
+          write(6,'(''Performing molecular dynamics steps for atoms '')')
+        endif
         call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
         call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
         if(iforce_analy.gt.0) then
@@ -958,8 +961,9 @@ CKEYDOC position and type for each atom and ghost atom
 
       call p2gti('atoms:natom',ncent,1)
       call p2gtid('atoms:nghostcent',nghostcent,0,1)
-      if(ncent+nghostcent.gt.MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
-
+      if(ncent+nghostcent.gt.MCENT) then
+           call fatal_error('INPUT: ncent+nghostcent > MCENT')
+      endif
       do 20 i=1,ncent+nghostcent
         call incpos(iu,itmp,1)
   20    read(iu,*) (cent(k,i),k=1,3),iwctype(i)
@@ -968,6 +972,26 @@ CKEYDOC position and type for each atom and ghost atom
       call p2chkend(iu, 'geometry')
       end
 
+c-----------------------------------------------------------------------
+      subroutine read_masses(iu)
+C$INPUT masses inp
+      implicit real*8(a-h,o-z)
+       
+      include 'vmc.h'
+      include 'force.h'
+      include 'inputflags.h'
+      character*5 asymb
+c masstype(MCTYPE)
+      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,
+     &              iwctype(MCENT),nctype,ncent
+       common /mass_type/ ntype(MCTYPE)  !atom label number
+       common/mass_symb/ asymb(MCTYPE) 
+
+      call incpos(iu,itmp,1)
+      read(iu,*) (asymb(it), ntype(it), it=1,nctype)
+      call p2chkend(iu, 'masses')
+      return
+      end
 c-----------------------------------------------------------------------
 
       subroutine read_exponents(iu,iwft)

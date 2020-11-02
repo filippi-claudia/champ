@@ -23,7 +23,6 @@ c mpif.h is system, mpi_qmc.h is ours
       call mpi_comm_size(MPI_COMM_WORLD,nproc,ierr)
 
       if(nproc.gt.nprocx) stop 'nproc>nprocx in main'
-
       wid=(idtask.eq.0)
 
 c Mode gets reset in metrop_mov1... but loses mpi info
@@ -56,12 +55,18 @@ c     if(idtask.ne.1) then
         open(unit=88,form='formatted',file=filename)
       endif
 
+
       call p2gtid('optwf:ioptwf',ioptwf,0,1)
       call p2gtad('optwf:method',method,'linear',1)
       call p2gtid('optwf:idl_flag',idl_flag,0,1)
       call p2gtid('optwf:ilbfgs_flag',ilbfgs_flag,0,1)
 
-      if(ioptwf.gt.0) then
+      call p2gtid('mdyn:imdyn',imdyn,0,1)
+      if(imdyn.eq.1) then
+        call md
+      elseif(imdyn.eq.2)then
+        call langev
+      elseif(ioptwf.gt.0) then
         if(idl_flag.gt.0) then
           call optwf_dl
         elseif(ilbfgs_flag.gt.0) then
@@ -84,5 +89,4 @@ c     if(idtask.ne.1) then
       close(45)
 
       call mpi_finalize(ierr)
-
       end

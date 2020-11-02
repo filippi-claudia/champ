@@ -832,7 +832,9 @@ c Calculate rms change in parameters
       write(6,'(''dparm_norm,adiag ='',3g12.5)') 
      &dparm_norm,add_diag
 
+      write(6,*) "IN TEST SOLUTION DPARM_NORM", dparm_norm,dparm_norm_min
       if(dparm_norm.gt.dparm_norm_min) iflag=1
+      write(6,*) "IN TEST SOLUTION IFLAG", iflag
       
       return
       end

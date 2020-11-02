@@ -30,7 +30,7 @@
 
       call compute_da_psi(psid,da_psi_ref)
       call compute_da_energy(psid,denergy)
-
+ 
       do 800 ic=1,ncent
         do 800 k=1,3
           da_psi(k,ic)=da_psi(k,ic)+da_psi_ref(k,ic)
@@ -353,9 +353,10 @@ c-----------------------------------------------------------------------
 
       common /force_analy/ iforce_analy
 
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
+      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3,MCENT)
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
+
 
       if(iforce_analy.eq.0) return
 
@@ -365,13 +366,14 @@ c-----------------------------------------------------------------------
       do 20 ic=1,ncent
         do 10 k=1,3
           da_energy_ave(k,ic)=(da_energy_cum(k,ic)-2*eave*da_psi_cum(k,ic))/wcum
-   10     da_energy_err(k)=err(da_energy_ave(k,ic),da_energy_cm2(k,ic))
-   20   write(80,'(i5,1p6e14.5)') ic,(da_energy_ave(k,ic),k=1,3),(da_energy_err(k),k=1,3)
+   10     da_energy_err(k,ic)=err(da_energy_ave(k,ic),da_energy_cm2(k,ic))
+   20   write(80,'(i5,1p6e14.5)') ic,(da_energy_ave(k,ic),k=1,3),(da_energy_err(k,ic),k=1,3)
 
        ! TODO JF this is included in the treatment of internal
        ! coordinates, remove this when finished
        !call transform_grad_zmat(da_energy_ave)
 
+!      write(6,*) "computed da_energy", da_energy_ave
       return
       end
 c-----------------------------------------------------------------------

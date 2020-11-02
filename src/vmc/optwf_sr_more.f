@@ -70,12 +70,12 @@ c for omega functional
         enddo
         obs_wtg(istate)=obs(jwtg,istate)
       enddo
-
       call MPI_REDUCE(obs_wtg,obs_wtg_tot,nstates,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
       do istate=1,nstates
         obs_tot(jwtg,istate)=obs_wtg_tot(istate)
       enddo
-
+       
+      write(6,*) "NSTATES", nstates_eff
       do istate=1,nstates_eff
         do i=2,n_obs
          obs(i,istate)=0.d0
@@ -480,7 +480,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
 
       common /force_analy/ iforce_analy
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
+      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3,MCENT)
 
       if(iforce_analy.eq.0)return
 
@@ -503,7 +503,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
 
-      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
+      common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3,MCENT)
 
       common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
      &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf

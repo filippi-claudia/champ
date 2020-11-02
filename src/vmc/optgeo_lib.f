@@ -46,7 +46,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent,iwctype(MCENT),nctype,ncent
         
         common /force_analy/ iforce_analy,iuse_zmat,alfgeo
-        common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3)
+        common /force_fin/ da_energy_ave(3,MCENT),da_energy_err(3,MCENT)
         common /zmatrix/ czcart(3,MCENT),czint(3,MCENT),
      &                   czcart_ref(3,3),izcmat(3,MCENT),
      &                   izmatrix

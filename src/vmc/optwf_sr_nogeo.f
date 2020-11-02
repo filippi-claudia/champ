@@ -1,4 +1,4 @@
-      subroutine optwf_sr
+      subroutine optwf_sr_nogeo
 
       implicit real*8 (a-h,o-z)
       include 'vmc.h'
@@ -27,6 +27,8 @@
       if(nparm.gt.MPARM)call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
       call p2gtid('optwf:nopt_iter',nopt_iter,6,1)
+      if(nopt_iter==0) return
+
       call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
       call p2gtfd('optwf:energy_tol',energy_tol,1.d-3,1)
 
@@ -51,8 +53,6 @@
        write(6,'(''SR n_omegat: '',i4)') n_omegat
       endif
 
-      call p2gtid('optwf:micro_iter_sr',micro_iter_sr,1,1)
-
       call p2gtid('optgeo:izvzb',izvzb,0,1)
 
       write(6,'(/,''SR adiag: '',f10.5)') sr_adiag
@@ -63,7 +63,6 @@
       
       sr_adiag_sav=sr_adiag
 
-      iforce_analy_sav=iforce_analy
 
       ioptjas_sav=ioptjas
       ioptorb_sav=ioptorb
@@ -77,27 +76,6 @@ c do iteration
         write(6,'(/,''Optimization iteration'',i5,'' of'',i5)')iter,nopt_iter
 
         iforce_analy=0
-
-        if(ifunc_omega.gt.0) then
-          omega_hes=energy_sav
-          if(iter.gt.n_omegaf) then
-            alpha_omega=dfloat(n_omegaf+n_omegat-iter)/n_omegat
-            omega=alpha_omega*omega0+(1.d0-alpha_omega)*(energy_sav-sigma_sav)
-            if(ifunc_omega.eq.1.or.ifunc_omega.eq.2) omega=alpha_omega*omega0+(1.d0-alpha_omega)*energy_sav
-          endif
-          if(iter.gt.n_omegaf+n_omegat) then
-            omega=energy_sav-sigma_sav
-            if(ifunc_omega.eq.1.or.ifunc_omega.eq.2) omega=energy_sav
-          endif
-          write(6,'(''SR omega: '',f10.5)') omega
-        endif
-
-c do micro_iteration
-        do miter=1,micro_iter_sr
-
-          if(micro_iter_sr.gt.1) write(6,'(/,''Micro iteration'',i5,'' of'',i5)')miter,micro_iter_sr
-
-          if(miter.eq.micro_iter_sr) iforce_analy=iforce_analy_sav
 
           call qmc
 
@@ -122,21 +100,10 @@ c do micro_iteration
             sr_adiag=sr_adiag_sav
           endif
  
-          call compute_parameters(grad,iflag,1)
           call write_wf(1,iter)
 
           call save_wf
 
-          if(iforce_analy.gt.0) then
-
-            if(izvzb.gt.0) call forces_zvzb(nparm)
-
-            call compute_positions
-            call write_geometry(iter)
-          endif
-        enddo
-c enddo micro_iteration
- 
         if(iter.ge.2) then
           denergy=energy(1)-energy_sav
           denergy_err=sqrt(energy_err(1)**2+energy_err_sav**2)
@@ -156,78 +123,6 @@ c enddo iteration
 
       write(6,'(/,''Check last iteration'')')
 
-      ioptjas=0
-      ioptorb=0
-      ioptci=0
-      iforce_analy=0
-
-      call set_nparms
-
-      call qmc
-
-      call write_wf(1,-1)
-      call write_geometry(-1)
-
       return
       end
-
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-      subroutine sr(nparm,deltap,sr_adiag,sr_eps,i)
-c solve S*deltap=h_sr (call in optwf)
-
-      implicit real*8(a-h,o-z)
-      include 'mstates.h'
-      include 'sr.h'
-
-      common /sr_mat_n/ sr_o(MPARM,MCONF),sr_ho(MPARM,MCONF),obs(MOBS,MSTATES),s_diag(MPARM,MSTATES)
-     &,s_ii_inv(MPARM),h_sr(MPARM),wtg(MCONF,MSTATES),elocal(MCONF,MSTATES),jfj,jefj,jhfj,nconf
-
-      dimension deltap(nparm)
-
-      call sr_hs(nparm,sr_adiag)
-
-      imax=nparm          ! max n. iterations conjugate gradients
-      imod=50             ! inv. freq. of calc. r=b-Ax vs. r=r-\alpha q (see pcg)
-      do i=1,nparm   
-       deltap(i)=0.d0     ! initial guess of solution
-      enddo
-      call pcg(nparm,h_sr,deltap,i,imax,imod,sr_eps)
-      write(6,*) 'CG iter ',i
-
-      call sr_rescale_deltap(nparm,deltap)
-
-      return              ! deltap
-      end
-
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-      subroutine check_length_run_sr(iter,increase_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
-
-      implicit real*8(a-h,o-z)
-
-c Increase nblk if near convergence to value needed to get desired statistical error
-      increase_nblk=increase_nblk+1
-
-c Increase if subsequent energies are within errorbar
-      if(dabs(denergy).lt.3*denergy_err.and.energy_tol.gt.0.d0) then
-        nblk_new=nblk*max(1.d0,(energy_err_sav/energy_tol)**2)
-        nblk_new=min(nblk_new,nblk_max)
-        if(nblk_new.gt.nblk) then
-          increase_nblk=0
-          nblk=nblk_new
-          write(6,'(''nblk reset to'',i8,9d12.4)') nblk,dabs(denergy),energy_tol
-        endif
-      endif
-c Always increase nblk by a factor of 2 every other iteration
-      if(increase_nblk.eq.2.and.nblk.lt.nblk_max) then
-        increase_nblk=0
-        nbkl=1.2*nblk
-        nblk=min(nblk,nblk_max)
-        write(6,'(''nblk reset to'',i8,9d12.4)') nblk
-      endif
-
-      return
-      end
-
 

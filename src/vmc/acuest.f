@@ -155,8 +155,15 @@ c sigma evaluation
 c-----------------------------------------------------------------------
       entry zerest
 
-      call p2gtid('vmc:node_cutoff',node_cutoff,0,1)
-      call p2gtfd('vmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
+
+      if (nstates==1) then
+          call p2gtid('vmc:node_cutoff',node_cutoff,0,1)
+          call p2gtfd('vmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
+c          WRITE(6,*) "USING NODE CUTOFF:", node_cutoff
+      else
+c          write(6,*) "NSTATES > 1 --> NOT USING NODE CUTOFF"
+          node_cutoff = 0
+      endif
 
 c entry point to zero out all averages etc.
 c the initial values of energy psi etc. is also calculated here

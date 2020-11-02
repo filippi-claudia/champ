@@ -20,7 +20,7 @@
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      dimension grad(MPARM*MSTATES), grad_more(MPARM*MSTATES,5)
+      dimension grad(MPARM*MSTATES),grad_more(MPARM*MSTATES,5),index_more(5,MSTATES)
 
       if(method.ne.'lin_d')return
 
@@ -39,7 +39,7 @@
       call p2gtid('optwf:lin_nvecx',nvecx,MVEC,1)
       call p2gtfd('optwf:lin_adiag',alin_adiag,0.01,1)
       call p2gtfd('optwf:lin_eps',alin_eps,0.001,1)
-
+     
       call p2gtid('optwf:func_omega',ifunc_omega,0,1)
       if(ifunc_omega.gt.0) then
        call p2gtfd('optwf:omega',omega0,0.d0,1)
@@ -111,7 +111,7 @@ c        efin_old = efin define efin_old as the energy before
 
    6      continue
 
-          call lin_d(nparm,nvec,nvecx,grad,grad_more,alin_adiag,alin_eps)
+          call lin_d(nparm,nvec,nvecx,grad,grad_more,index_more,alin_adiag,alin_eps)
           if(nstates.eq.1) call dscal(nparm,-1.d0,grad,1)
 
           if(method.eq.'lin_d'.and.ioptorb+ioptjas.gt.0) then

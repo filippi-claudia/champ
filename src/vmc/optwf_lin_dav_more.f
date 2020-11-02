@@ -1,4 +1,4 @@
-      subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
+      subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,index_more,adiag,ethr)
 
       implicit real*8(a-h,o-z)
 
@@ -21,12 +21,11 @@
       common /mpiconf/ idtask,nproc
 
       dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,MSTATES),index_overlap(MVEC),anorm(MVEC)
-      dimension deltap(*),deltap_more(MPARM*MSTATES,5)
+      dimension deltap(*),deltap_more(MPARM*MSTATES,5),index_more(5,MSTATES)
 
       call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
 
       write(6,*) 'LIN_D NPARM',nparm
-
       call sr_hs(nparm,adiag)
 
       i0=1
@@ -41,23 +40,33 @@
         itype(ivec)=1
  20     evc(ivec,ivec)=1.d0
 
+      ! regterg
       if(lin_jdav.eq.0) then
-
        write(6,*) "USING OLD REGTERG"
+       write(6,*) "ethr", ethr
 
         call regterg( nparm_p1, MPARM, nvec, nvecx, evc, ethr,
      &                e, itype, notcnv, idav_iter, ipr, idtask )
 
-        write(6,'(''LIN_D: no. iterations'',i4)') idav_iter
-        write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
-
+       ! Davidson DPR
        elseif(lin_jdav.eq.1) then
-       write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
+        write(6,*) "USING DPR DAVIDSON"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
-     &       ethr, e, itype, notcnv, idav_iter, ipr)
+     &       ethr, e, itype, notcnv, idav_iter, ipr, "DPR")
+
+       ! Davidson JOCC
+       elseif(lin_jdav.eq.2) then
+        write(6,*) "USING GJD DAVIDSON"
+         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, MVEC, evc, 
+     &       ethr, e, itype, notcnv, idav_iter, ipr, "GJD")
+
        else
          call fatal_error('LIND: lin_jdav < 2')
+         
       endif
+
+      write(6,'(''LIN_D: no. iterations'',i4)') idav_iter
+      write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
 
       call my_second(2,'david ')
       call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)
@@ -94,7 +103,7 @@ c idtask.eq.0
           enddo
 
          else                   
-c else means if i optimize jastrow and or orbitals
+c elseif I do not optimize jastrow and or orbitals
 
           do istate=1,nstates
             call sort(nvec,overlap_psi(1,istate),index_overlap)
@@ -105,9 +114,10 @@ c else means if i optimize jastrow and or orbitals
               deltap(i+nparm*(istate-1))=evc(i,i_overlap_max)/anorm(i_overlap_max)
             enddo
 
-c save 5 additional vectors with large overlap
+c Save 5 additional vectors with large overlap
             do ivec=1,5
               idx_ivec=index_overlap(nvec-ivec)
+              index_more(ivec,istate)=idx_ivec
               do i=1,nparm
                 deltap_more(i+nparm*(istate-1),ivec)=evc(i,idx_ivec)/anorm(idx_ivec)
               enddo
@@ -129,8 +139,8 @@ c     enddo
         do ivec=1,5
           call MPI_BCAST(deltap_more(1,ivec),nparm*nstates,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         enddo
+        call MPI_BCAST(index_more,5*nstates,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       endif
-
 
       return              ! deltap
       end
