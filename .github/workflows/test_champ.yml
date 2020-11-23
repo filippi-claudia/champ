@@ -139,22 +139,6 @@ jobs:
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out 
            echo " first eigenvalue vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -50.713234670513742 
-           #$HOME/work/champ/champ/tools/compare_output_file.py free.out output_ref/free_2_threads.out
-           echo ""
-           
-           # run and compare a optimize all (ci, jas, orb) calculation
-           echo "- Running vmc_optall.inp in serial:"
-           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_optall.inp > vmc_optall.out  
-           echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -22.4869109
-           echo ""
-
-           # run and compare a optimize all (ci, jas, orb) calculation MPI
-           echo "- Running vmc_optall.inp in parallel:"
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_optall.inp > vmc_optall.out 
-           echo " first eigenvalue vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -21.6147339 
-           #$HOME/work/champ/champ/tools/compare_output_file.py vmc_optall.out output_ref/vmc_optall_2_threads.out
            echo ""
 
     - name: Run_butadiene_sr
@@ -174,6 +158,20 @@ jobs:
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_sr.inp > vmc_sr.out
            echo " total E vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py vmc_sr.out "total E" -26.0354987 
+           echo ""
+
+           # run and compare a optimize all (ci, jas, orb) calculation
+           echo "- Running vmc_optall.inp in serial:"
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_optall.inp > vmc_optall.out  
+           echo " total E vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -22.4869109
+           echo ""
+
+           # run and compare a optimize all (ci, jas, orb) calculation MPI
+           echo "- Running vmc_optall.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_optall.inp > vmc_optall.out 
+           echo " first eigenvalue vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -21.6147339 
            echo ""
            
     - name: Run_psb2_mix_n
