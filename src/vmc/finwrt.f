@@ -90,18 +90,23 @@ c quantities also computed in acuest_write
       r2err=err(r2cum,r2cm2,1,1)
 
       energy(1)=energy(1)+weights(istate)*efin
+
+c     save the enegies (of all the states) of the last run for the check in lin_d and error
+      energy_all(istate)=efin
+      energy_err_all(istate)=eerr
+
 c TMP
 c     energy_err(1)=energy_err(1)+(weights(istate)*eerr)**2
       energy_err(1)=energy_err(1)+weights(istate)*eerr
 
 c eerr1*rtpass differs from sigma in that eerr1 contains p*new+q*old,
-c so eerr1 is a bit smaller than eerr1s. sigma is a property of the wave 
-c function only, whereas eerr1*rtpass depends on how quickly one evolves 
-c the system.  
-c In the calculation of T_corr, if one uses T_corr=(eerr/eerr1)^2, then 
-c T_corr=1 when nstep=1, whereas if one uses T_corr=(eerr/eerr1s)^2, then 
-c T_corr will be a bit < 1 when nstep=1. However, it makes sense to use 
-c the latter definition because p*new+q*old does reduce T_corr and that 
+c so eerr1 is a bit smaller than eerr1s. sigma is a property of the wave
+c function only, whereas eerr1*rtpass depends on how quickly one evolves
+c the system.
+c In the calculation of T_corr, if one uses T_corr=(eerr/eerr1)^2, then
+c T_corr=1 when nstep=1, whereas if one uses T_corr=(eerr/eerr1s)^2, then
+c T_corr will be a bit < 1 when nstep=1. However, it makes sense to use
+c the latter definition because p*new+q*old does reduce T_corr and that
 c is precisely what is being reflected when we get T_corr < 1.
       tcsq=eerr/eerr1s
       sigma=eerr1s*rtpass

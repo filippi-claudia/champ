@@ -38,8 +38,15 @@
       parameter(NCOEF=5)
 ! from read_bas_num.f and splfit.f.
 
+<<<<<<< HEAD
 ! Also added:
       parameter (MEXCIT=10)
 ! from determinante.f, detsav.f, force_analytic.f, hpsie.f,
 !      multideterminant.f, multideterminante.f, optjas.f, optorb.f
+=======
+      parameter(MELEC=50,MORB=550,MBASIS=550,MDET=15000,MCENT=20,MCTYPE=3,
+     &MCTYP3X=5,NSPLIN=1001,MORDJ=7,radmax=10.d0,nrad=3001,
+     &MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2,
+     &MORDJ1=MORDJ+1,delri=(nrad-1)/radmax)
+>>>>>>> development
 

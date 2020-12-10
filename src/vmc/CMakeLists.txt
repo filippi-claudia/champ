@@ -120,6 +120,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/spline.f
     ${CMAKE_CURRENT_SOURCE_DIR}/spline2.f
     ${CMAKE_CURRENT_SOURCE_DIR}/read_bas_num.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/store_diag_hs.f
     ${CMAKE_CURRENT_SOURCE_DIR}/rannyu.f
     ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid_orbitals.f
     ${CMAKE_CURRENT_SOURCE_DIR}/readps_champ.f

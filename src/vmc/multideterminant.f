@@ -507,7 +507,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
       dimension iswapped(MELEC),itotphase(MDET)
 
       save kref_old
