@@ -1,0 +1,18 @@
+&general title 'butadiene'
+&general pool ./pool
+&general pseudopot BFD
+&general basis BFD-T-normf0
+
+load $(general:pool)/geometry.0
+load $(general:pool)/global.inp
+load $(general:pool)/BFD-T.bfinfo
+
+load ./TZ_1M_500.det
+load ./TZ_1M_15k.orb
+load ./jastrow_good_b3lyp.0
+
+&blocking_vmc nstep 20 nblk 200 nblkeq 1 nconf_new 100
+&blocking_dmc nstep 60 nblk 10 nblkeq 1 nconf 20 nconf_new 0
+
+&dmc tau 0.05 etrial -26.30
+&dmc icasula -1

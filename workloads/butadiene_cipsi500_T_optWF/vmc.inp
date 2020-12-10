@@ -1,0 +1,36 @@
+&general title 'butadiene'
+&general pool ./pool
+&general pseudopot BFD
+&general basis BFD-T-normf0
+
+load $(general:pool)/geometry.0
+load $(general:pool)/global.inp
+load $(general:pool)/BFD-T.bfinfo
+
+load ./TZ_1M_500.det
+load ./TZ_1M_15k.orb
+load ./jastrow_good_b3lyp.0
+
+&optwf ioptwf 1 ioptci 1 ioptjas 1 ioptorb 1
+&optwf method sr_n multiple_adiag 0
+&optwf ncore 0 nextorb 280 no_active 0
+&optwf nblk_max 200 nopt_iter 2
+&optwf sr_tau 0.025 sr_eps 0.001 sr_adiag 0.01
+&optwf isample_cmat 0 energy_tol 0.0
+
+load cas1010.sym
+
+jasderiv
+4 4 5 0 0 0 0  nparma,nparmb,nparmc,nparmf
+  3 4 5 6 (iwjasa(iparm),iparm=1,nparma)
+  3 4 5 6 (iwjasa(iparm),iparm=1,nparma)
+2 3 4 5 6 (iwjasb(iparm),iparm=1,nparmb)
+3 5 7 8 9         11 13 14 15 16     17 18 20 21 23 (c(iparmj),iparmj=1,nparmc)
+3 5 7 8 9         11 13 14 15 16     17 18 20 21 23 (c(iparmj),iparmj=1,nparmc)
+end
+
+&blocking_vmc nstep 20 nblk 200 nblkeq 1 nconf_new 0
+&blocking_dmc nstep 250 nblk 50 nblkeq 1 nconf 100 nconf_new 0
+
+&dmc tau 0.05 etrial -10.0
+&dmc icasula -1
