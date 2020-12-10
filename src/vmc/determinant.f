@@ -9,6 +9,7 @@ c Modified by A. Scemama
       use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
+      use contr3, only: mode
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
