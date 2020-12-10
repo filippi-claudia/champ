@@ -25,7 +25,7 @@ c written by Claudia Filippi
 
       common /sa_check/ energy_all(MSTATES), energy_err_all(MSTATES)
 
-      dimension istatus(MPI_STATUS_SIZE)
+c     dimension istatus(MPI_STATUS_SIZE)
 
       passes=dfloat(iblk*nstep)
       write(6,'(''average psid, det_ref '',2d12.5)') (apsi(istate)*nproc/passes,istate=1,nstates),aref*nproc/passes
@@ -64,13 +64,13 @@ c       call mpi_recv(energy_err_all,nstates,mpi_double_precision,0
 c    &  ,7,MPI_COMM_WORLD,istatus,ierr)
 c     endif
 
-      call mpi_bcast(energy,3,mpi_double_precision,0,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_bcast(energy_err,3,mpi_double_precision,0,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_bcast(force,3,mpi_double_precision,0,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_bcast(force_err,3,mpi_double_precision,0,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_bcast(sigma,1,mpi_double_precision,0,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_bcast(energy_all,nstates,mpi_double_precision,0,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_bcast(energy_err_all,nstates,mpi_double_precision,0,MPI_COMM_WORLD,istatus,ierr)
+      call mpi_bcast(energy,3,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(energy_err,3,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(force,3,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(force_err,3,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(sigma,1,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(energy_all,nstates,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(energy_err_all,nstates,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       return
       end

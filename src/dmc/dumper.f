@@ -78,6 +78,7 @@ c job where it left off
 
       if(mode.eq.'dmc_one_mpi2') then
         call dumper_gpop
+      call mpi_barrier(MPI_COMM_WORLD,ierr)
         return
       endif
 
