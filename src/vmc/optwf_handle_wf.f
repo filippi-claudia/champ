@@ -584,6 +584,7 @@ c-----------------------------------------------------------------------
       subroutine save_ci_best
       use vmc_mod, only: MDET
       use csfs, only: ccsf, ncsf, nstates
+      use csfs, only: cxdet, iadet, ibdet, icxdet
       use mstates_mod, only: MSTATES
 
       use dets, only: cdet, ndet
