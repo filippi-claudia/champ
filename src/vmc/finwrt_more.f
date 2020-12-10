@@ -14,6 +14,8 @@ c written by Claudia Filippi
       use mpiconf, only: nproc, wid
       use optwf_corsam, only: energy, energy_err, force, force_err
       use contrl, only: nstep
+      use sa_check, only: energy_all, energy_err_all
+
       implicit real*8(a-h,o-z)
 
 
@@ -23,7 +25,7 @@ c written by Claudia Filippi
 
 
 
-      common /sa_check/ energy_all(MSTATES), energy_err_all(MSTATES)
+      ! common /sa_check/ energy_all(MSTATES), energy_err_all(MSTATES)
 
 c     dimension istatus(MPI_STATUS_SIZE)
 
@@ -74,3 +76,4 @@ c     endif
 
       return
       end
+

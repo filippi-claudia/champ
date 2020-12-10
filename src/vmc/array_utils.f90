@@ -20,7 +20,7 @@ contains
         !> \param n: number of colums
         !> \param alpha: optional diagonal value
         !>
-        eturn matrix of size n x m
+        !> return matrix of size n x m
         integer, intent(in) :: n, m
         real(dp), dimension(m, n) :: eye
         real(dp), intent(in), optional :: alpha
@@ -80,7 +80,7 @@ contains
         !> \param arr: first array
         !> \param brr: second array
         !>
-        eturn arr concatenate brr(overwrites arr)
+        !> return arr concatenate brr(overwrites arr)
 
         real(dp), dimension(:, :), intent(inout), allocatable :: arr
         real(dp), dimension(:, :), intent(in) :: brr
@@ -157,9 +157,9 @@ contains
     end function diagonal
 
     function initialize_subspace(diag, dim_sub, dim_base) result(precond)
-        !> rief generates a diagonal preconditioner for .
+        !> Brief generates a diagonal preconditioner for .
         !>
-        eturn diagonal matrix
+        !> return diagonal matrix
 
         ! input variable
         real(dp), dimension(:), intent(inout) :: diag
@@ -184,8 +184,8 @@ contains
     end function initialize_subspace
 
     subroutine modified_gram_schmidt(mat, nstart)
-        !> rief use modifed gram-schmidt orthogonalization on mat
-        !> rief nstart is the index of the first vector to orthogonalize
+        !> Brief use modifed gram-schmidt orthogonalization on mat
+        !> Brief nstart is the index of the first vector to orthogonalize
 
         ! input
         real(dp), dimension(:, :), intent(inout) :: mat
@@ -222,7 +222,7 @@ contains
         !> \param keys Vector of index
         !> \param i Index to search for
         !>
-        eturn index of i inside keys
+        !> return index of i inside keys
 
         integer, dimension(:), intent(in) :: keys
         integer, intent(in) :: i

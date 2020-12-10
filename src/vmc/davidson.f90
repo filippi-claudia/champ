@@ -28,10 +28,9 @@
 !> \param[in] tolerance Norm**2 error of the eigenvalues.
 !> \param[in] method: Method to compute the correction vectors.
 !> \param[out] iters: Number of iterations until convergence.
-!>
-eturn eigenvalues and ritz_vectors of the matrix.
+!> return eigenvalues and ritz_vectors of the matrix.
 module davidson
-    use numeric_kinds, only: dp
+    use precision_kinds, only: dp
     use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
                               lapack_qr, lapack_solver
     use array_utils, only: concatenate, initialize_subspace, norm, write_matrix, write_vector, &
@@ -78,7 +77,7 @@ contains
         !> \param[in] method: Method to compute the correction vectors
         !> \param[out] iters: Number of iterations until convergence
         !>
-        eturn eigenvalues and ritz_vectors of the matrix
+        !> return eigenvalues and ritz_vectors of the matrix
 
         implicit none
 
@@ -101,7 +100,7 @@ contains
                 !> \param[in] dimension of the arrays to compute the action of the hamiltonian
                 !> \param[in] input_vec Array to project
                 !>
-                eturn Projected matrix
+                !> return Projected matrix
 
                 use precision_kinds, only: dp
                 import :: davidson_parameters
@@ -116,7 +115,7 @@ contains
                 !> \param[in] dimension of the arrays to compute the action of the hamiltonian
                 !> \param[in] input_vec Array to project
                 !>
-                eturn Projected matrix
+                !> return Projected matrix
 
                 use precision_kinds, only: dp
                 import :: davidson_parameters
@@ -506,8 +505,7 @@ contains
         !> \param[in] V: Basis of the iteration subspace
         !> \param[in] eigenvalues: of the reduce problem
         !> \param[in] eigenvectors: of the reduce problem
-        !>
-        eturn correction matrix
+        !> return correction matrix
         !
         use array_utils, only: eye
         !
@@ -548,8 +546,7 @@ contains
         !> \param[in] parameter: davidson_parameters type.
         !> \param[in] eigenvectors.
         !> \param[in] eigenvalues.
-        !>
-        eturn correction matrix
+        !> return correction matrix
 
         use array_utils, only: eye
 
@@ -608,8 +605,7 @@ contains
                 !> \param[in] dimension of the arrays to compute the action of the
                 !             hamiltonian
                 !> \param[in] input_vec Array to project
-                !>
-                eturn Projected matrix
+                !> return Projected matrix
                 use precision_kinds, only: dp
                 import                                   :: davidson_parameters
                 type(davidson_parameters)               :: parameters
@@ -622,8 +618,7 @@ contains
                 !> \param[in] dimension of the arrays to compute the action of the
                 !             hamiltonian
                 !> \param[in] input_vec Array to project
-                !>
-                eturn Projected matrix
+                !> return Projected matrix
                 use precision_kinds, only: dp
                 import                                   :: davidson_parameters
                 type(davidson_parameters)               :: parameters
