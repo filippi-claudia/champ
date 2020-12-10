@@ -25,7 +25,7 @@ c routine to print out final results
       use contr3, only: mode
       use contrl, only: nblk, nstep
       use contrl_per, only: iperiodic
-
+      use sa_check, only: energy_all, energy_err_all
       use ci000, only: iciprt
 
       implicit real*8(a-h,o-z)
