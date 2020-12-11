@@ -61,7 +61,7 @@
      &       ethr, e, itype, notcnv, idav_iter, ipr, "GJD")
 
        else
-         call fatal_error('LIND: lin_jdav < 2')
+         call fatal_error('LIND: lin_jdav must be 0, 1 or 2')
          
       endif
 
@@ -69,6 +69,12 @@
       write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
 
       call my_second(2,'david ')
+      do i = 1, nparm
+        do j = 1, nvec
+          write(6, '(''evc'', 2f12.5)') evc(i,j)
+        end do
+      enddo
+
       call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)
 c idtask.eq.0
       if(idtask.eq.0)  then
@@ -102,7 +108,7 @@ c idtask.eq.0
             deltap(i)=deltap(i)/bot
           enddo
 
-         else                   
+         else
 c elseif I do not optimize jastrow and or orbitals
 
           do istate=1,nstates

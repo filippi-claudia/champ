@@ -236,9 +236,9 @@ contains
             write (6, '(''DAV: Update size        : '', I10)') size_update
             write (6, '(''DAV: Max basis size     : '', I10)') nvecx
             if (use_gs_ortho) then
-                write (6, '(''Modified Gram-Schmidt orthogonalization with projection update'')')
+                write (6, '(''DAV: Modified Gram-Schmidt orthogonalization with projection update'')')
             else
-                write (6, '(''QR orthogonalization with full projection'')')
+                write (6, '(''DAV: QR orthogonalization with full projection'')')
             end if
         endif
 
@@ -567,10 +567,10 @@ contains
         do k = 1, parameters%basis_size
 
             F = fun_F_matrix(ritz_vectors, parameters, k, eigenvalues(k))
-            call write_matrix("F.txt", F)
+            ! call write_matrix("F.txt", F)
             brr(:, 1) = -residues(:, k)
             call lapack_solver(F, brr)
-            call write_matrix("brr.txt", brr)
+            ! call write_matrix("brr.txt", brr)
             correction(:, k) = brr(:, 1)
 
         end do
