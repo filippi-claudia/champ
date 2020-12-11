@@ -86,7 +86,8 @@ contains
         ! input/output variable
         integer, intent(in) :: nparm, nparm_max, nvecx, lowest, nproc, idtask
         real(dp), dimension(lowest), intent(out) :: eigenvalues
-        real(dp), dimension(:, :), allocatable, intent(out) :: eigenvectors
+        ! real(dp), dimension(:, :), allocatable, intent(out) :: eigenvectors
+        real(dp), dimension(nparm, lowest), intent(out) :: eigenvectors
         integer, intent(in) :: max_iters
         real(dp), intent(in) :: tolerance
         character(len=*), intent(in) :: method
@@ -214,13 +215,13 @@ contains
 
         ! Calculation of HV and SV
         ! Only the master has the correct matrix
-        ! nut only the master needs it
+        ! but only the master needs it
         mtxV = fun_mtx_gemv(parameters, V)
         stxV = fun_stx_gemv(parameters, V)
 
         ! allocate eigenvalues/vectors
         ! allocate(eigenvalues(parameters%lowest))
-        allocate (eigenvectors(parameters%nparm, parameters%lowest))
+        ! allocate (eigenvectors(parameters%nparm, parameters%lowest))
 
         if (idtask == 0) then
 

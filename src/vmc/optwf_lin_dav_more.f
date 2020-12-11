@@ -69,9 +69,11 @@
       write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
 
       call my_second(2,'david ')
-      do i = 1, nparm
-        do j = 1, nvec
-          write(6, '(''evc'', 2f12.5)') evc(i,j)
+
+
+      do i = 1, nvec
+        do j = 1, nparm
+          write(6, '(''evc'', 2f12.5)') evc(j,i)
         end do
       enddo
 

@@ -80,6 +80,8 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
 
     end interface
 
+    allocate (ritz_vectors(nparm, nvec))
+
     call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
     call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
     write (6, '(''DAV: idtask      : '', I10)') idtask
@@ -98,6 +100,7 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
 
     eigenvectors(1:nparm, 1:nvec) = ritz_vectors
 
+    deallocate (ritz_vectors)
 END SUBROUTINE davidson_wrap
 
 function fun_mtx_gemv(parameters, input_vect) result(output_vect)
