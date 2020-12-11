@@ -155,8 +155,9 @@ contains
         logical :: update_proj
         integer :: n_converged ! Number of converged eigenvalue/eigenvector pairs
         integer :: sizeV ! size of V for broadcasting
-        logical, parameter :: use_gs_ortho = .true.! which orthogonalization method to use gs/qr
+        logical, parameter :: use_gs_ortho = .false.! which orthogonalization method to use gs/qr
         integer :: not_cnv
+        integer :: ii, jj
 
         ! Iteration subpsace dimension
         init_subspace_size = lowest*2
@@ -222,6 +223,7 @@ contains
         ! allocate eigenvalues/vectors
         ! allocate(eigenvalues(parameters%lowest))
         ! allocate (eigenvectors(parameters%nparm, parameters%lowest))
+        eigenvectors = 0.
 
         if (idtask == 0) then
 
@@ -257,8 +259,10 @@ contains
                 ! needed if we want to vectorix the residue calculation
                 call check_deallocate_matrix(lambda)
                 call check_deallocate_matrix(tmp_res_array)
-                ! allocate( lambda(size_update, size_update ))
-                ! allocate( tmp_res_array(parameters%nparm, size_update ))
+
+                ! reallocate NOT NEEDED ?
+                ! allocate (lambda(size_update, size_update))
+                ! allocate (tmp_res_array(parameters%nparm, size_update))
 
                 ! reallocate eigenpairs of the small system
                 call check_deallocate_vector(eigenvalues_sub)
@@ -349,7 +353,7 @@ contains
 
                 end if
 
-      !! ENDIF IDTASK
+            !! ENDIF IDTASK
             end if
 
             ! Check for convergence
@@ -416,6 +420,13 @@ contains
 
             ! store eigenpairs
             eigenvalues = eigenvalues_sub(:parameters%lowest)
+
+            ! do i = 1, parameters%lowest
+            !     do j = 1, parameters%nparm
+            !         write (6, '(''evc'', 2f12.5)') ritz_vectors(j, i)
+            !     end do
+            ! enddo
+
             eigenvectors = ritz_vectors(:, :parameters%lowest)
             iters = i
 
