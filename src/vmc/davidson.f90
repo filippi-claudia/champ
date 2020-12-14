@@ -201,6 +201,13 @@ contains
         ! of the diagonal of the matrix.
         diag_mtx_cpy = diag_mtx
         V = initialize_subspace(diag_mtx_cpy, init_subspace_size, nparm) ! Initial orthonormal basis
+        write (6, *) 'V size', size(V, 1), size(V, 2)
+        do ii = 1, size(V, 1)
+            do jj = 1, size(V, 2)
+                write (6, *) 'V', ii, jj, V(ii, jj)
+            enddo
+        enddo
+
         deallocate (diag_mtx_cpy)
 
         if (idtask == 0) write (6, '(''DAV: Setup subspace problem'')')
@@ -301,6 +308,13 @@ contains
                     stx_proj = lapack_matmul('T', 'N', V, stxV)
 
                 end if
+
+                write (6, *) 'mtx_proj size', size(mtx_proj, 1), size(mtx_proj, 2)
+                do ii = 1, parameters%basis_size
+                    do jj = 1, parameters%basis_size
+                        write (6, *) 'mtx_proj', ii, jj, mtx_proj(ii, jj)
+                    enddo
+                enddo
 
                 ! Solve the small eigenvalue problem
                 call lapack_generalized_eigensolver(mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
