@@ -184,6 +184,9 @@ contains
         allocate (diag_stx(parameters%nparm))
 
         if (idtask == 0) call store_diag_hs(parameters%nparm, diag_mtx, diag_stx)
+        do i = 1, parameters%nparm
+            write (6, *) 'diag ', i, diag_mtx(i)
+        enddo
 
         ! why ?
         ! wouldn't it be faster to have all the procs computing that
