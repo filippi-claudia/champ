@@ -155,7 +155,7 @@ contains
         logical :: update_proj
         integer :: n_converged ! Number of converged eigenvalue/eigenvector pairs
         integer :: sizeV ! size of V for broadcasting
-        logical, parameter :: use_gs_ortho = .true.! which orthogonalization method to use gs/qr
+        logical, parameter :: use_gs_ortho = .true. ! which orthogonalization method to use gs/qr
         integer :: not_cnv
         integer :: ii, jj
 
