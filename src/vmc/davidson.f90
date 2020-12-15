@@ -155,7 +155,7 @@ contains
         logical :: update_proj
         integer :: n_converged ! Number of converged eigenvalue/eigenvector pairs
         integer :: sizeV ! size of V for broadcasting
-        logical, parameter :: use_gs_ortho = .false.! which orthogonalization method to use gs/qr
+        logical, parameter :: use_gs_ortho = .true.! which orthogonalization method to use gs/qr
         integer :: not_cnv
         integer :: ii, jj
 
@@ -184,9 +184,6 @@ contains
         allocate (diag_stx(parameters%nparm))
 
         if (idtask == 0) call store_diag_hs(parameters%nparm, diag_mtx, diag_stx)
-        do i = 1, parameters%nparm
-            write (6, *) 'diag ', i, diag_mtx(i)
-        enddo
 
         ! why ?
         ! wouldn't it be faster to have all the procs computing that
@@ -201,14 +198,6 @@ contains
         ! of the diagonal of the matrix.
         diag_mtx_cpy = diag_mtx
         V = initialize_subspace(diag_mtx_cpy(1:init_subspace_size), init_subspace_size, nparm) ! Initial orthonormal basis
-
-        write (6, *) 'V size', size(V, 1), size(V, 2)
-        do ii = 1, size(V, 1)
-            do jj = 1, size(V, 2)
-                write (6, *) 'V', ii, jj, V(ii, jj)
-            enddo
-        enddo
-
         deallocate (diag_mtx_cpy)
 
         if (idtask == 0) write (6, '(''DAV: Setup subspace problem'')')
@@ -309,13 +298,6 @@ contains
                     stx_proj = lapack_matmul('T', 'N', V, stxV)
 
                 end if
-
-                write (6, *) 'mtx_proj size', size(mtx_proj, 1), size(mtx_proj, 2)
-                do ii = 1, parameters%basis_size
-                    do jj = 1, parameters%basis_size
-                        write (6, *) 'mtx_proj', ii, jj, mtx_proj(ii, jj)
-                    enddo
-                enddo
 
                 ! Solve the small eigenvalue problem
                 call lapack_generalized_eigensolver(mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
