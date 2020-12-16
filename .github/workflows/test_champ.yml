@@ -43,7 +43,7 @@ jobs:
            echo "- Running vmc.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out 
            echo "  total E vs reference:" 
-           # $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0083658 
+           $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0083658 
            echo ""
 
            # run and compare simple sampling MPI
@@ -64,7 +64,7 @@ jobs:
            echo "- Running vmc_lin.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            echo "  total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0604737
+           # $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0604737
            echo ""
 
            # run and compare davidson optimization MPI
