@@ -50,23 +50,28 @@ jobs:
            echo "- Running vmc.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out 
            echo "  total E vs reference:" 
-           # $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0119453 
-           #$HOME/work/champ/champ/tools/compare_output_file.py vmc.out output_ref/vmc_2_threads.out
+           # $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0119453            
            echo ""
 
-           # run and compare simple sampling
+           # run and compare eigenvalues given by Davidson
+           echo "- Running vmc_davidson_check.inp in serial:"
+           echo "- Remember to regenerate H.dat and S.dat if the code changes"
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_davidson_check.inp > vmc_davidson_check.out 
+           echo "  CHAMP Eigenalues vs Scipy:" 
+           compare_eigenvalues.py
+
+           # run and compare davidson optimization
            echo "- Running vmc_lin.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            echo "  total E vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0604737
            echo ""
 
-           # run and compare simple sampling MPI
+           # run and compare davidson optimization MPI
            echo "- Running vmc_lin.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            echo "  total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0586750 
-           #$HOME/work/champ/champ/tools/compare_output_file.py vmc_lin.out output_ref/vmc_lin_2_threads.out
+           # $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0586750 
            echo ""
            
            # restore the module files

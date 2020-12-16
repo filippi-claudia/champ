@@ -71,12 +71,6 @@
       call my_second(2,'david ')
 
 
-      do i = 1, nvec
-        do j = 1, nparm
-          write(6, '(''evc'', 2f12.5)') evc(j,i)
-        end do
-      enddo
-
       call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)
 c idtask.eq.0
       if(idtask.eq.0)  then

@@ -86,7 +86,6 @@ contains
         ! input/output variable
         integer, intent(in) :: nparm, nparm_max, nvecx, lowest, nproc, idtask
         real(dp), dimension(lowest), intent(out) :: eigenvalues
-        ! real(dp), dimension(:, :), allocatable, intent(out) :: eigenvectors
         real(dp), dimension(nparm, lowest), intent(out) :: eigenvectors
         integer, intent(in) :: max_iters
         real(dp), intent(in) :: tolerance
@@ -156,6 +155,7 @@ contains
         integer :: n_converged ! Number of converged eigenvalue/eigenvector pairs
         integer :: sizeV ! size of V for broadcasting
         logical, parameter :: use_gs_ortho = .true. ! which orthogonalization method to use gs/qr
+        logical, parameter :: bool_export_matrices = .false. ! turn true if you want to export matrices
         integer :: not_cnv
         integer :: ii, jj
 
@@ -172,6 +172,11 @@ contains
 
         ! Dimension of the matrix
         parameters = davidson_parameters(nparm, nparm_max, lowest, nvecx, init_subspace_size)
+
+        ! export the matrices
+        if (bool_export_matrices) then
+            call export_matrices(parameters)
+        endif
 
         ! Initial number of converged eigenvalue/eigenvector pairs
         n_converged = 0
@@ -202,28 +207,16 @@ contains
 
         if (idtask == 0) write (6, '(''DAV: Setup subspace problem'')')
 
-        ! Warning we reset the diag
-        ! if (idtask==0) then
-        !   do i=1, parameters%nparm
-        !           diag_mtx(i) = 1.0
-        !           diag_stx(i) = 0.0
-        !   end do
-        ! end if
-
         ! allocate mtxV and stxV
         allocate (mtxV(parameters%nparm, parameters%basis_size))
         allocate (stxV(parameters%nparm, parameters%basis_size))
 
         ! Calculation of HV and SV
-        ! Only the master has the correct matrix
+        ! after the call only
+        ! the master has the correct matrix
         ! but only the master needs it
         mtxV = fun_mtx_gemv(parameters, V)
         stxV = fun_stx_gemv(parameters, V)
-
-        ! allocate eigenvalues/vectors
-        ! allocate(eigenvalues(parameters%lowest))
-        ! allocate (eigenvectors(parameters%nparm, parameters%lowest))
-        eigenvectors = 0.
 
         if (idtask == 0) then
 
@@ -259,10 +252,6 @@ contains
                 ! needed if we want to vectorix the residue calculation
                 call check_deallocate_matrix(lambda)
                 call check_deallocate_matrix(tmp_res_array)
-
-                ! reallocate NOT NEEDED ?
-                ! allocate (lambda(size_update, size_update))
-                ! allocate (tmp_res_array(parameters%nparm, size_update))
 
                 ! reallocate eigenpairs of the small system
                 call check_deallocate_vector(eigenvalues_sub)
@@ -420,13 +409,6 @@ contains
 
             ! store eigenpairs
             eigenvalues = eigenvalues_sub(:parameters%lowest)
-
-            ! do i = 1, parameters%lowest
-            !     do j = 1, parameters%nparm
-            !         write (6, '(''evc'', 2f12.5)') ritz_vectors(j, i)
-            !     end do
-            ! enddo
-
             eigenvectors = ritz_vectors(:, :parameters%lowest)
             iters = i
 
@@ -661,5 +643,67 @@ contains
                    lapack_matmul('N', 'N', ubut, ys)
 
     end function fun_F_matrix
+
+    subroutine export_matrices(parameters)
+        !> export the H and S matrix to file for comparison with numpy
+        !> \param[in] parameters: structure containing the davidson parameters
+
+        use array_utils, only: write_matrix, eye
+        type(davidson_parameters)               :: parameters
+        real(dp), dimension(:, :), allocatable :: I
+        real(dp), dimension(:, :), allocatable :: mtx
+        real(dp), dimension(:, :), allocatable :: stx
+
+        ! Function to compute the target matrix on the fly
+        interface
+
+            function fun_mtx_gemv(parameters, input_vect) result(output_vect)
+                !> rief Function to compute the action of the hamiltonian on the fly
+                !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+                !> \param[in] input_vec Array to project
+                !>
+                !> return Projected matrix
+
+                use precision_kinds, only: dp
+                import :: davidson_parameters
+                type(davidson_parameters) :: parameters
+                real(dp), dimension(:, :), intent(in) :: input_vect
+                real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
+
+            end function fun_mtx_gemv
+
+            function fun_stx_gemv(parameters, input_vect) result(output_vect)
+                !> rief Fucntion to compute the optional stx matrix on the fly
+                !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+                !> \param[in] input_vec Array to project
+                !>
+                !> return Projected matrix
+
+                use precision_kinds, only: dp
+                import :: davidson_parameters
+                type(davidson_parameters) :: parameters
+                real(dp), dimension(:, :), intent(in) :: input_vect
+                real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
+
+            end function fun_stx_gemv
+
+        end interface
+
+        allocate (mtx(parameters%nparm, parameters%nparm))
+        allocate (stx(parameters%nparm, parameters%nparm))
+
+        I = eye(parameters%nparm, parameters%nparm)
+
+        mtx = fun_mtx_gemv(parameters, I)
+        stx = fun_stx_gemv(parameters, I)
+
+        call write_matrix("H.dat", mtx)
+        call write_matrix("S.dat", stx)
+
+        deallocate (mtx)
+        deallocate (stx)
+        deallocate (I)
+
+    end subroutine export_matrices
 
 end module davidson

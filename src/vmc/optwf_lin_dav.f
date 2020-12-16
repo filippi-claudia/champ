@@ -44,6 +44,7 @@
       call p2gtfd('optwf:lin_adiag',alin_adiag,0.01,1)
       call p2gtfd('optwf:lin_eps',alin_eps,0.001,1)
 
+
       call p2gtid('optwf:func_omega',ifunc_omega,0,1)
       if(ifunc_omega.gt.0) then
        call p2gtfd('optwf:omega',omega0,0.d0,1)
