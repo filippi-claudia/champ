@@ -17,6 +17,8 @@ jobs:
            sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev # valgrind libmkl-full-dev
            gawk --version
            mpirun --version
+           conda install -c conda-forge numpy
+           conda install -c conda-forge scipy
 
     - name: Building_code_for_h2
       run: |
@@ -55,7 +57,9 @@ jobs:
 
            # run and compare eigenvalues given by Davidson
            echo "- Running vmc_davidson_check.inp in serial:"
-           echo "- Remember to regenerate H.dat and S.dat if the code changes"
+           echo "- Warning Remember to regenerate H.dat and S.dat if the code changes"
+           echo "- Warning this can be done by setting bool_export_matrices to .true."
+           echo "- Warning in davidson.f90."
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_davidson_check.inp > vmc_davidson_check.out 
            echo "  CHAMP Eigenalues vs Scipy:" 
            python compare_eigenvalues.py
