@@ -68,11 +68,16 @@ jobs:
            echo "  total E vs reference:" 
            # $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0586750 
            echo ""  
+           
+           cd $HOME/work/champ/champ
 
     - name: Run Davidson_test
       env:
         CONDA_PREFIX: /usr/share/miniconda
       run: |
+        
+           cd tests/CI_test/h2/qmc_1det/
+           
            # run and compare eigenvalues given by Davidson
            echo "- Running vmc_davidson_check.inp in serial:"
            echo "- Warning Remember to regenerate H.dat and S.dat if the code changes"
