@@ -60,14 +60,14 @@ jobs:
            echo "- Running vmc_lin.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            echo "  total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.055214
+           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0537100
            echo ""
 
            # run and compare davidson optimization MPI
            echo "- Running vmc_lin.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            echo "  total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0622381 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0555534 
            echo ""  
            
            cd $HOME/work/champ/champ
@@ -157,7 +157,7 @@ jobs:
            echo "- Running free.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out 
            echo " first eigenvalue vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -50.713234670513742 
+           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -50.815236723338842 
            echo ""
 
     - name: Run_butadiene_sr
@@ -202,14 +202,14 @@ jobs:
            echo "- Running vmc_mix_SA.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
            echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9728608 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.7665740 
            echo ""
 
            # run and compare a geometry optimization calculation MPI
            echo "- Running vmc_mix_SA.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
            echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.8454481 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9287659 
            echo ""
 
            #  restore the module files
