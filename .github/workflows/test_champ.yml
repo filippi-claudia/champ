@@ -52,17 +52,8 @@ jobs:
            echo "- Running vmc.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out 
            echo "  total E vs reference:" 
-           # $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0119453            
+           $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0119453            
            echo ""
-
-           # run and compare eigenvalues given by Davidson
-           echo "- Running vmc_davidson_check.inp in serial:"
-           echo "- Warning Remember to regenerate H.dat and S.dat if the code changes"
-           echo "- Warning this can be done by setting bool_export_matrices to .true."
-           echo "- Warning in davidson.f90."
-           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_davidson_check.inp > vmc_davidson_check.out 
-           echo "  CHAMP Eigenalues vs Scipy:" 
-           python compare_eigenvalues.py
 
            # run and compare davidson optimization
            echo "- Running vmc_lin.inp in serial:"
@@ -76,14 +67,27 @@ jobs:
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            echo "  total E vs reference:" 
            # $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0586750 
-           echo ""
-           
+           echo ""  
+
+    - name: Run Davidson_test
+      env:
+        CONDA_PREFIX: /usr/share/miniconda
+      run: |
+           # run and compare eigenvalues given by Davidson
+           echo "- Running vmc_davidson_check.inp in serial:"
+           echo "- Warning Remember to regenerate H.dat and S.dat if the code changes"
+           echo "- Warning this can be done by setting bool_export_matrices to .true."
+           echo "- Warning in davidson.f90."
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_davidson_check.inp > vmc_davidson_check.out 
+           echo "  CHAMP Eigenalues vs Scipy:" 
+           python compare_eigenvalues.py
+     
            # restore the module files
            cd $HOME/work/champ/champ
            cp m_vmc_save ./src/vmc/m_vmc.f90
            cp m_optci_save ./src/vmc/m_optci.f90
-           cp m_sr_save ./src/vmc/m_sr.f90
-
+           cp m_sr_save ./src/vmc/m_sr.f90     
+     
     - name: Building_code_for_psb3_butadiene_and_psb2
       run: |
 
