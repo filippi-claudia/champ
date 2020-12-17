@@ -60,14 +60,14 @@ jobs:
            echo "- Running vmc_lin.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            echo "  total E vs reference:" 
-           # $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0604737
+           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.055214
            echo ""
 
            # run and compare davidson optimization MPI
            echo "- Running vmc_lin.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            echo "  total E vs reference:" 
-           # $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0586750 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0622381 
            echo ""  
            
            cd $HOME/work/champ/champ
@@ -150,7 +150,7 @@ jobs:
            echo "- Running free.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out 
            echo " first eigenvalue vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -45.898315302789705 
+           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -44.148262860328295 
            echo ""
 
            # run and compare a Davidson calculation MPI
