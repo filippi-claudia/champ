@@ -58,7 +58,7 @@ jobs:
            echo "- Remember to regenerate H.dat and S.dat if the code changes"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_davidson_check.inp > vmc_davidson_check.out 
            echo "  CHAMP Eigenalues vs Scipy:" 
-           compare_eigenvalues.py
+           ./compare_eigenvalues.py
 
            # run and compare davidson optimization
            echo "- Running vmc_lin.inp in serial:"
