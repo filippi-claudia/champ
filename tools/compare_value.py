@@ -20,9 +20,7 @@ def compare_values(data, keyword, ref_values, kw_col=0, val_col=None):
         l = l.split()
         if l[kw_col:kw_col+len(keyword)] == keyword:
             print(float(l[val_col]), float(ref_values))
-            print('COMPARE_VALUE OUTPUT ', l[val_col])
-            return True
-            #return float(l[val_col]) == float(ref_values)
+            return float(l[val_col]) == float(ref_values)
     print('Warning : keyword not found')
     return False
 
