@@ -123,6 +123,7 @@ c and Anthony Scemema
       use optorb_cblock, only: nefp_blocks, isample_cmat, iorbsample
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use inputflags, only: node_cutoff, eps_node_cutoff
 
       implicit real*8(a-h,o-z)
 
@@ -291,6 +292,8 @@ c VMC parameters
 
         call p2gtid('vmc:imetro',imetro,6,1)
         write(6,'(''version of Metropolis ='',t30,i10)') imetro
+        call p2gtid('vmc:node_cutoff',node_cutoff,0,1)
+        call p2gtfd('vmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
 
         if(imetro.eq.1) then
           call p2gtf('vmc:delta',delta,1)

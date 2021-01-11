@@ -27,11 +27,12 @@ c routine to accumulate estimators for energy etc.
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq
       use mstates_ctrl, only: iguiding
-
       use optorb_cblock, only: ns_current
       use distance_mod, only: rshift, r_en, rvec_en
       use multislater, only: detiab
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use inputflags, only: node_cutoff, eps_node_cutoff
+
       implicit real*8(a-h,o-z)
 
 
@@ -139,9 +140,6 @@ c sigma evaluation
       return
 c-----------------------------------------------------------------------
       entry zerest
-
-      call p2gtid('vmc:node_cutoff',node_cutoff,0,1)
-      call p2gtfd('vmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
 
 c entry point to zero out all averages etc.
 c the initial values of energy psi etc. is also calculated here
