@@ -123,7 +123,7 @@ c and Anthony Scemema
       use optorb_cblock, only: nefp_blocks, isample_cmat, iorbsample
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use inputflags, only: node_cutoff, eps_node_cutoff
+      use inputflags, only: node_cutoff, eps_node_cutoff, iqmmm
 
       implicit real*8(a-h,o-z)
 
