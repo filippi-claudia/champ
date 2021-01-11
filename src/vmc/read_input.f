@@ -115,22 +115,16 @@ c and Anthony Scemema
       use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
       use pcm_parms, only: eps_solv, iscov
       use pcm_parms, only: ncopcm, nscv, nvopcm
-
       use prp000, only: iprop, ipropprt, nprop
       use pcm_fdc, only: qfree, rcolv
       use pcm_grid3d_contrl, only: ipcm_3dgrid
       use prp003, only: cc_nuc
-
       use method_opt, only: method
-
       use optorb_cblock, only: nefp_blocks, isample_cmat, iorbsample
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
@@ -886,6 +880,25 @@ c get parameters for the grid of the orbitals
      & i3dgrid=1
 
       if(i3dgrid.ge.1) then 
+
+c Read the grid information: 
+        call p2gtid('3dgrid:nstepx',nstep3d(1),IUNDEFINED,1)
+        call p2gtid('3dgrid:nstepy',nstep3d(2),IUNDEFINED,1)
+        call p2gtid('3dgrid:nstepz',nstep3d(3),IUNDEFINED,1)
+
+        call p2gtfd('3dgrid:stepx',step3d(1),UNDEFINED,1)
+        call p2gtfd('3dgrid:stepy',step3d(2),UNDEFINED,1)
+        call p2gtfd('3dgrid:stepz',step3d(3),UNDEFINED,1)
+ 
+        call p2gtfd('3dgrid:x0',origin(1),UNDEFINED,1)
+        call p2gtfd('3dgrid:y0',origin(2),UNDEFINED,1)
+        call p2gtfd('3dgrid:z0',origin(3),UNDEFINED,1)
+ 
+        call p2gtfd('3dgrid:xn',endpt(1),UNDEFINED,1)
+        call p2gtfd('3dgrid:yn',endpt(2),UNDEFINED,1)
+        call p2gtfd('3dgrid:zn',endpt(3),UNDEFINED,1)
+
+C Grid setup:
         call setup_grid
 
         if(i3dlagorb.ge.1) then
