@@ -1487,10 +1487,7 @@ c Check that the required blocks are there in the input
       use inputflags, only: ici_def, iforces, icsfs, igradients, icharge_efield
       use inputflags, only: imultideterminants, ioptorb_mixvirt, imodify_zmat, izmatrix_check
       use inputflags, only: ihessian_zmat
-
       use mstates_ctrl, only: iguiding
-
-
       ! might not be needed
       use mstates_mod, only: MSTATES
       use atom, only: znuc 
@@ -1499,14 +1496,15 @@ c Check that the required blocks are there in the input
       use forcepar, only: nforce
       use optwf_contrl, only: ioptci, ioptorb
       use wfsec, only: nwftype
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use elec, only: ndn, nup
+      use const, only: nelec 
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
+      call p2gti('electrons:nelec',nelec,1)
+      call p2gti('electrons:nup',nup,1)
+      call p2gtid('general:nwftype',nwftype,1,1)
       call p2gtid('general:nforce',nforce,1,1)
       if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
       call p2gtid('general:nwftype',nwftype,1,1)

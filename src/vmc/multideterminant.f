@@ -511,14 +511,11 @@ c-----------------------------------------------------------------------
 
       save kref_old
 
-      call p2gti('electrons:nelec',nelec,1)
       if(nelec.gt.MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
 
-      call p2gti('electrons:nup',nup,1)
       if(nup.gt.MELEC/2) call fatal_error('INPUT: nup exceeds MELEC/2')
       ndn=nelec-nup
 
-      call p2gtid('general:nwftype',nwftype,1,1)
       if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype exceeds MWF')
 
 c TMP
