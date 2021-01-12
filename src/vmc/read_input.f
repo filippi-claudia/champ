@@ -96,6 +96,7 @@ c and Anthony Scemema
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
       use contrldmc, only: itau_eff, nfprod, rttau, tau
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: icharged_atom 
       use dorb_m, only: iworbd
       use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
@@ -387,6 +388,7 @@ c Parameters for blocking/start/dump
         call p2gtid('startend:idump',idump,1,1)
         call p2gtid('startend:irstar',irstar,0,1)
         call p2gtid('startend:isite',isite,1,1)
+        if (isite.eq.1) call p2gtid('startend:icharged_atom',icharged_atom,0,1) 
 
 c Make sure that the printout is not huge
         if(nstep*(nblk+2*nblkeq).gt.104000) ipr=-1
