@@ -1494,7 +1494,7 @@ c Check that the required blocks are there in the input
       use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy, iuse_zmat
       use forcepar, only: nforce
-      use optwf_contrl, only: ioptci, ioptorb
+      use optwf_contrl, only: ioptci, ioptorb, ibeta, ratio_j
       use wfsec, only: nwftype
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use elec, only: ndn, nup
@@ -1513,6 +1513,8 @@ c Check that the required blocks are there in the input
       call p2gtid('general:ibasis',ibasis,1,1)
       call p2gtid('optwf:ioptorb',ioptorb,0,1)
       call p2gtid('optwf:ioptci',ioptci,0,1)
+      call p2gtid('optwf:ibeta',ibeta,-1,1)
+      call p2gtfd('optwf:ratio',ratio,ratio_j,1)
       call p2gtid('mstates:iguiding',iguiding,0,1)
       call p2gtid('efield:iefield',iefield,0,1)
       call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
