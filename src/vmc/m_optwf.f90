@@ -1,5 +1,6 @@
 module optwf_contrl
-    !> Arguments: ioptci, ioptjas, ioptorb, nparm, ibeta, ratio_j
+    !> Arguments: ioptci, ioptjas, ioptorb, nparm, ibeta, ratio_j, 
+    !>            iapprox, ncore, iuse_orbeigv, no_active
 
     integer :: ioptwf
     integer :: ioptci
@@ -10,12 +11,17 @@ module optwf_contrl
     integer :: nparm
     integer :: ibeta
     integer :: ratio_j
+    integer :: iapprox
+    integer :: ncore 
+    integer :: iuse_orbeigv 
+    integer :: no_active 
 
     private
     public :: ioptwf
     public :: idl_flag, ilbfgs_flag
     public :: ioptci, ioptjas, ioptorb, nparm
     public :: ibeta, ratio_j
+    public :: iapprox, ncore, iuse_orbeigv, no_active
     save
 
 end module optwf_contrl

@@ -80,6 +80,8 @@ c and Anthony Scemema
       use numbas2, only: ibas0, ibas1
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, ioptwf
       use optwf_contrl, only: idl_flag,ilbfgs_flag
+      use optwf_contrl, only: ibeta, ratio_j, iapprox, ncore
+      use optwf_contrl, only: iuse_orbeigv
       use optwf_parms, only: nparmj
       use pars, only: Z, a20, a21
       use rlobxy, only: rlobx
@@ -424,11 +426,16 @@ c Analytical forces flags (vmc only)
 
 c Optimization flags (vmc/dmc only)
       if(index(mode,'vmc').ne.0.or.index(mode,'dmc').ne.0) then
-
         call p2gtid('optwf:ioptwf', ioptwf, 0, 1)
         call p2gtad('optwf:method', method, 'linear', 1)
         call p2gtid('optwf:idl_flag', idl_flag, 0, 1)
         call p2gtid('optwf:ilbfgs_flag', ilbfgs_flag, 0, 1)
+
+        call p2gtid('optwf:ibeta',ibeta,-1,1)
+        call p2gtfd('optwf:ratio',ratio,ratio_j,1)
+        call p2gtid('optwf:approx',iapprox,0,1)
+        call p2gtid('optwf:ncore',ncore,0,1)
+        call p2gtid('optwf:iuse_orbeigv',iuse_orbeigv,0,1)
 
         call p2gtid('optwf:ioptjas',ioptjas,0,1)
 CVARDOC flag: Jastrow derivatives will be sampled
@@ -1494,11 +1501,13 @@ c Check that the required blocks are there in the input
       use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy, iuse_zmat
       use forcepar, only: nforce
-      use optwf_contrl, only: ioptci, ioptorb, ibeta, ratio_j
+      use optwf_contrl, only: ioptci, ioptorb
+      use optwf_contrl, only: no_active
       use wfsec, only: nwftype
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use elec, only: ndn, nup
       use const, only: nelec 
+      use coefs, only: norb, next_max 
 
       implicit real*8(a-h,o-z)
 
@@ -1511,14 +1520,17 @@ c Check that the required blocks are there in the input
       if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype gt MWF')
       call p2gtid('general:iperiodic',iperiodic,0,1)
       call p2gtid('general:ibasis',ibasis,1,1)
+
       call p2gtid('optwf:ioptorb',ioptorb,0,1)
       call p2gtid('optwf:ioptci',ioptci,0,1)
-      call p2gtid('optwf:ibeta',ibeta,-1,1)
-      call p2gtfd('optwf:ratio',ratio,ratio_j,1)
+      call p2gtid('optwf:no_active',no_active,0,1)
+
       call p2gtid('mstates:iguiding',iguiding,0,1)
       call p2gtid('efield:iefield',iefield,0,1)
       call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
       call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
+      next_max=norb-ndetorb
+      call p2gtid('optwf:nextorb',nadorb,next_max,1)
 
       if(iznuc.eq.0) call fatal_error('INPUT: block znuc missing')
       if(igeometry.eq.0) call fatal_error('INPUT: block geometry missing')
