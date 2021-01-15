@@ -14,7 +14,7 @@ module header
    !             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
    !             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
    !             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
-   !             ihessian_zmat, node_cutoff, eps_node_cutoff, iqmmm
+   !             ihessian_zmat, node_cutoff, eps_node_cutoff, scalecoef, iqmmm
    use precision_kinds, only: dp
 
    integer :: iznuc
@@ -39,6 +39,7 @@ module header
    integer :: ihessian_zmat
    integer :: node_cutoff 
    real(dp) :: eps_node_cutoff
+   real(dp) :: scalecoef
    integer :: iqmmm
 
    private
@@ -47,7 +48,7 @@ module header
    public :: ici_def,iforces,icsfs,imstates,igradients,icharge_efield
    public :: imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check
    public :: ihessian_zmat
-   public :: node_cutoff, eps_node_cutoff 
+   public :: node_cutoff, eps_node_cutoff, scalecoef
    public :: iqmmm
    save
  end module inputflags

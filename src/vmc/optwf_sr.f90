@@ -32,7 +32,7 @@ module optwf_sr_mod
     real(dp), dimension(:), allocatable :: deltap
 
     private
-    public :: optwf_sr, sr, sr_hs
+    public :: optwf_sr, sr, sr_hs, izvzb, i_sr_rescale
     save
 
 contains

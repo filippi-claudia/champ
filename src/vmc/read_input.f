@@ -126,7 +126,7 @@ c and Anthony Scemema
       use optorb_cblock, only: nefp_blocks, isample_cmat, iorbsample
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
-      use inputflags, only: node_cutoff, eps_node_cutoff, iqmmm
+      use inputflags, only: node_cutoff, eps_node_cutoff, iqmmm, scalecoef
 
       implicit real*8(a-h,o-z)
 
@@ -415,6 +415,7 @@ c Analytical forces flags (vmc only)
       if(index(mode,'vmc').ne.0) then
         call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
         call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
+        call p2gtid('optgeo:izvzb',izvzb,0,1)
         if(iforce_analy.gt.0) then
           if(nordc.gt.0) call fatal_error('READ_INPUT: Nuclear analytic forces not implemented for 3-body J')
           call p2gtfd('optgeo:alfgeo',alfgeo,1.d0,0)
@@ -430,6 +431,7 @@ c Optimization flags (vmc/dmc only)
         call p2gtad('optwf:method', method, 'linear', 1)
         call p2gtid('optwf:idl_flag', idl_flag, 0, 1)
         call p2gtid('optwf:ilbfgs_flag', ilbfgs_flag, 0, 1)
+        call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
 
         call p2gtid('optwf:ibeta',ibeta,-1,1)
         call p2gtfd('optwf:ratio',ratio,ratio_j,1)
@@ -1685,7 +1687,7 @@ c Set the jastrow to be equal
       use jaspar4, only: a4, norda, nordb, nordc
       use bparm, only: nspin2b
       use contr2, only: ifock, ijas
-      use contr2, only: isc
+      use contr2, only: isc, ianalyt_lap
 
       use atom, only: ncent, nctype
 
@@ -1697,6 +1699,7 @@ c Set the jastrow to be equal
       call p2gtid('jastrow:nspin1',nspin1,1,1)
       call p2gtid('jastrow:nspin2',nspin2,1,1)
       call p2gtid('jastrow:ifock',ifock,0,1)
+      call p2gtid('jastrow:ianalyt_lap',ianalyt_lap,1,1)
 
       call p2gti('atoms:natom',ncent,1)
       call p2gti('atoms:nctype',nctype,1)
