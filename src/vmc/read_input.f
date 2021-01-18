@@ -128,7 +128,7 @@ c and Anthony Scemema
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       use inputflags, only: node_cutoff, eps_node_cutoff, iqmmm, scalecoef
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
-      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav
+      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
       use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat
 
       implicit real*8(a-h,o-z)
@@ -486,6 +486,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
           call p2gtfd('optwf:lin_adiag', alin_adiag, 0.01, 1)
           call p2gtfd('optwf:lin_eps', alin_eps, 0.001, 1)
           call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
+          call p2gtid('optwf:multiple_adiag',multiple_adiag,0,1)
         end if
 !! sr_n and mix_n shared flags: 
 !        if ((method.eq.'sr_n').or.(method.eq.'mix_n')) then
