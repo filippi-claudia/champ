@@ -51,7 +51,7 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
-      use sr_mod, only: MCONF
+      use sr_mod, only: MCONF, MVEC
       use pseudo_mod, only: MPS_QUAD
       use properties, only: MAXPROP
       use optorb_mod, only: MXORBOP, MXREDUCED
@@ -98,7 +98,7 @@ c and Anthony Scemema
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
       use contrldmc, only: itau_eff, nfprod, rttau, tau
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use contrl, only: icharged_atom 
+      use contrl, only: icharged_atom, nblk_max
       use dorb_m, only: iworbd
       use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
@@ -127,15 +127,15 @@ c and Anthony Scemema
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       use inputflags, only: node_cutoff, eps_node_cutoff, iqmmm, scalecoef
+      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
+      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
+      use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat
 
       implicit real*8(a-h,o-z)
-
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
 c      include 'dmc.h' now emty
-
-
 
       character*20 fmt
       character*32 keyname
@@ -462,6 +462,44 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
         call p2gtad('optwf:method',method,'linear',1)
         call p2gtad('optwf:dl_alg',dl_alg,'nag',1)
         call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
+        
+! lin_d, sr_n and mix_n shared flags: 
+        if((method.eq.'lin_d').or.(method.eq.'sr_n').or.(method.eq.'mix_n')) then
+           call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
+           call p2gtfd('optwf:dparm_norm_min', dparm_norm_min, 1.0d0, 1)
+           call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
+           call p2gtid('optwf:micro_iter_sr', micro_iter_sr, 1, 1)
+        end if
+! lin_d and sr_n shared flags: 
+        if((method.eq.'lin_d').or.(method.eq.'sr_n')) then
+           call p2gtid('optwf:func_omega', ifunc_omega, 0, 1)
+           if(ifunc_omega.gt.0) then
+             call p2gtfd('optwf:omega', omega0, 0.d0, 1)
+             call p2gtid('optwf:n_omegaf', n_omegaf, nopt_iter, 1)
+             call p2gtid('optwf:n_omegat', n_omegat, 0, 1)
+           end if
+        end if
+! lin_d and mix_n shared flags: 
+        if ((method.eq.'lin_d').or.(method.eq.'mix_n')) then
+          call p2gtid('optwf:lin_nvec', nvec, 5, 1)
+          call p2gtid('optwf:lin_nvecx', nvecx, MVEC, 1)
+          call p2gtfd('optwf:lin_adiag', alin_adiag, 0.01, 1)
+          call p2gtfd('optwf:lin_eps', alin_eps, 0.001, 1)
+        end if
+!! sr_n and mix_n shared flags: 
+!        if ((method.eq.'sr_n').or.(method.eq.'mix_n')) then
+!          call p2gtfd('optwf:sr_tau', sr_tau, 0.02, 1)
+!          call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
+!          call p2gtfd('optwf:sr_eps', sr_eps, 0.001, 1)
+!        end if
+!! mix_n flags:
+!        if (method.eq.'mix_n') then
+!           if(iforce_analy.gt.0) call p2gtid('optgeo:iroot_geo',iroot_geo,0,0)
+!           call p2gtid('optwf:nblk_ci',nblk_ci,nblk,1)
+!        end if
+        
+
+
 
         if(method.eq.'linear'.and.MXREDUCED.ne.MXORBOP) 
      &    call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')

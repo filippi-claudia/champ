@@ -1,6 +1,9 @@
 module optwf_contrl
-    !> Arguments: ioptci, ioptjas, ioptorb, nparm, ibeta, ratio_j, 
+    !> Arguments: ioptci, ioptjas, ioptorb, nparm, nopt_iter, micro_iter_sr, energy_tol,
+    !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, ibeta, ratio_j, 
     !>            iapprox, ncore, iuse_orbeigv, no_active
+
+    use precision_kinds, only: dp
 
     integer :: ioptwf
     integer :: ioptci
@@ -9,6 +12,14 @@ module optwf_contrl
     integer :: idl_flag
     integer :: ilbfgs_flag
     integer :: nparm
+    integer :: nopt_iter
+    integer :: micro_iter_sr
+    real(dp) :: energy_tol
+    real(dp) :: dparm_norm_min 
+    integer :: nvec
+    integer :: nvecx
+    real(dp) :: alin_adiag
+    real(dp) :: alin_eps
     integer :: ibeta
     integer :: ratio_j
     integer :: iapprox
@@ -20,6 +31,8 @@ module optwf_contrl
     public :: ioptwf
     public :: idl_flag, ilbfgs_flag
     public :: ioptci, ioptjas, ioptorb, nparm
+    public :: nopt_iter, micro_iter_sr, energy_tol, dparm_norm_min
+    public :: nvec, nvecx, alin_adiag, alin_eps
     public :: ibeta, ratio_j
     public :: iapprox, ncore, iuse_orbeigv, no_active
     save
@@ -66,15 +79,18 @@ contains
 end module optwf_corsam
 
 module optwf_func
-    !> Arguments: ifunc_omega, omega, omega_hes
+    !> Arguments: ifunc_omega, omega, omega0, omega_hes, n_omegaf, n_omegat
     use precision_kinds, only: dp
 
     integer :: ifunc_omega
     real(dp) :: omega
+    real(dp) :: omega0
     real(dp) :: omega_hes
+    integer :: n_omegaf
+    integer :: n_omegat
 
     private
-    public :: ifunc_omega, omega, omega_hes
+    public :: ifunc_omega, omega, omega0, omega_hes, n_omegaf, n_omegat
     save
 end module optwf_func
 

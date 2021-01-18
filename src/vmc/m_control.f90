@@ -1,5 +1,5 @@
 module contrl
-    !> Arguments: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep,
+    !> Arguments: idump, irstar, isite, nconf, nblk, nblk_max, nblkeq, nconf_new, nstep,
     !> icharged_atom
 
     integer :: idump
@@ -8,6 +8,7 @@ module contrl
     integer :: nconf
     integer :: nblk
     integer :: nblkeq
+    integer :: nblk_max
     integer :: nconf_new
     integer :: nstep
     integer :: icharged_atom 
@@ -15,6 +16,7 @@ module contrl
     private
     public :: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
     public :: icharged_atom
+    public :: nblk_max
     save
 end module contrl
 
