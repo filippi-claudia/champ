@@ -1,6 +1,6 @@
 module optwf_contrl
     !> Arguments: ioptci, ioptjas, ioptorb, nparm, nopt_iter, micro_iter_sr, energy_tol,
-    !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, ibeta, ratio_j, 
+    !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j, 
     !>            iapprox, ncore, iuse_orbeigv, no_active
 
     use precision_kinds, only: dp
@@ -20,6 +20,7 @@ module optwf_contrl
     integer :: nvecx
     real(dp) :: alin_adiag
     real(dp) :: alin_eps
+    integer :: lin_jdav
     integer :: ibeta
     integer :: ratio_j
     integer :: iapprox
@@ -32,7 +33,7 @@ module optwf_contrl
     public :: idl_flag, ilbfgs_flag
     public :: ioptci, ioptjas, ioptorb, nparm
     public :: nopt_iter, micro_iter_sr, energy_tol, dparm_norm_min
-    public :: nvec, nvecx, alin_adiag, alin_eps
+    public :: nvec, nvecx, alin_adiag, alin_eps, lin_jdav
     public :: ibeta, ratio_j
     public :: iapprox, ncore, iuse_orbeigv, no_active
     save
