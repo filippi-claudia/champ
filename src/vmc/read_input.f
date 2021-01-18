@@ -129,7 +129,10 @@ c and Anthony Scemema
       use inputflags, only: node_cutoff, eps_node_cutoff, iqmmm, scalecoef
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
+      use optwf_contrl, only: ilastvmc 
       use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat
+      use optwf_corsam, only: add_diag
+      use optwf_contrl, only: iroot_geo
 
       implicit real*8(a-h,o-z)
 
@@ -462,11 +465,12 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
         call p2gtad('optwf:method',method,'linear',1)
         call p2gtad('optwf:dl_alg',dl_alg,'nag',1)
         call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
-        
-! lin_d, sr_n and mix_n shared flags: 
-        if((method.eq.'lin_d').or.(method.eq.'sr_n').or.(method.eq.'mix_n')) then
+! lin_d, sr_n, mix_n and linear shared flags: 
+        if((method.eq.'lin_d').or.(method.eq.'sr_n').or.(method.eq.'mix_n')
+     #       .or.(method.eq.'linear')) then
            call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
            call p2gtfd('optwf:dparm_norm_min', dparm_norm_min, 1.0d0, 1)
+           call p2gtfd('optwf:add_diag',add_diag(1),1.d-6,1)
            call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
            call p2gtid('optwf:micro_iter_sr', micro_iter_sr, 1, 1)
         end if
@@ -480,7 +484,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
            end if
         end if
 ! lin_d and mix_n shared flags: 
-        if ((method.eq.'lin_d').or.(method.eq.'mix_n')) then
+        if ((method.eq.'lin_d').or.(method.eq.'mix_n').or.(method.eq.'linear')) then
           call p2gtid('optwf:lin_nvec', nvec, 5, 1)
           call p2gtid('optwf:lin_nvecx', nvecx, MVEC, 1)
           call p2gtfd('optwf:lin_adiag', alin_adiag, 0.01, 1)
@@ -494,15 +498,14 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
 !          call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
 !          call p2gtfd('optwf:sr_eps', sr_eps, 0.001, 1)
 !        end if
-!! mix_n flags:
-!        if (method.eq.'mix_n') then
-!           if(iforce_analy.gt.0) call p2gtid('optgeo:iroot_geo',iroot_geo,0,0)
-!           call p2gtid('optwf:nblk_ci',nblk_ci,nblk,1)
-!        end if
+!! mix_n and linear flags:
+        if ((method.eq.'linear')) then
+!        if ((method.eq.'mix_n').or.(method.eq.'linear')) then
+           if(iforce_analy.gt.0) call p2gtid('optgeo:iroot_geo',iroot_geo,0,0)
+           call p2gtid('optwf:nblk_ci',nblk_ci,nblk,1)
+           call p2gtid('optwf:ilastvmc',ilastvmc,1,1)
+        end if
         
-
-
-
         if(method.eq.'linear'.and.MXREDUCED.ne.MXORBOP) 
      &    call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')
         if((method.eq.'sr_n'.or.method.eq.'lin_d').and.nstep*nblk_max.gt.MCONF)

@@ -1,7 +1,8 @@
 module optwf_contrl
     !> Arguments: ioptci, ioptjas, ioptorb, nparm, nopt_iter, micro_iter_sr, energy_tol,
     !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j, 
-    !>            iapprox, ncore, iuse_orbeigv, no_active, multiple_adiag
+    !>            iapprox, ncore, iuse_orbeigv, no_active, multiple_adiag, iroot_geo,
+    !>            ilastvmc
 
     use precision_kinds, only: dp
 
@@ -28,6 +29,8 @@ module optwf_contrl
     integer :: iuse_orbeigv 
     integer :: no_active 
     integer :: multiple_adiag
+    integer  :: iroot_geo
+    integer :: ilastvmc
 
     private
     public :: ioptwf
@@ -38,12 +41,14 @@ module optwf_contrl
     public :: ibeta, ratio_j
     public :: iapprox, ncore, iuse_orbeigv, no_active
     public :: multiple_adiag
+    public :: iroot_geo
+    public :: ilastvmc
     save
 
 end module optwf_contrl
 
 module optwf_corsam
-    !> Arguments: add_diag_tmp, energy, energy_err, force, force_err
+    !> Arguments: add_diag, add_diag_tmp, energy, energy_err, force, force_err
     use force_mod, only: MFORCE
     use precision_kinds, only: dp
 
