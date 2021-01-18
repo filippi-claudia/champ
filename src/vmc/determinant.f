@@ -9,6 +9,7 @@ c Modified by A. Scemama
       use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
+      use contr3, only: mode
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
@@ -43,7 +44,7 @@ c compute orbitals
         nel=ndn
       endif
 
-      detiab(kref,iab)=one
+      detiab(kref,iab)=1.d0
 
       jk=-nel
       do j=1,nel
@@ -82,10 +83,15 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
 
       if(ipr.ge.4) write(6,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
 
+c for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
+      if(index(mode,'dmc').eq.0) then
+
       icheck=icheck+1
-      if(icheck.le.10.and.ndet.gt.1) then
+      if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.10) then
         call check_detref(ipass,icheck,newref)
         if(newref.gt.0) goto 10
+      endif
+
       endif
 
       return
@@ -117,8 +123,6 @@ c-----------------------------------------------------------------------
 
 
 
-
-      parameter (one=1.d0,half=0.5d0)
 
       iflag=0
       if(ipass.le.2) return

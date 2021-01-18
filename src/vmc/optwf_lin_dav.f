@@ -24,7 +24,7 @@
 
       character*20 method_sav
 
-      dimension grad(MPARM*MSTATES), grad_more(MPARM*MSTATES,5)
+      dimension grad(MPARM*MSTATES),grad_more(MPARM*MSTATES,5),index_more(5,MSTATES)
 
       if(method .ne.'lin_d')return
 
@@ -43,6 +43,7 @@
       call p2gtid('optwf:lin_nvecx',nvecx,MVEC,1)
       call p2gtfd('optwf:lin_adiag',alin_adiag,0.01,1)
       call p2gtfd('optwf:lin_eps',alin_eps,0.001,1)
+
 
       call p2gtid('optwf:func_omega',ifunc_omega,0,1)
       if(ifunc_omega.gt.0) then
@@ -115,7 +116,7 @@ c        efin_old = efin define efin_old as the energy before
 
    6      continue
 
-          call lin_d(nparm,nvec,nvecx,grad,grad_more,alin_adiag,alin_eps)
+          call lin_d(nparm,nvec,nvecx,grad,grad_more,index_more,alin_adiag,alin_eps)
           if(nstates.eq.1) call dscal(nparm,-1.d0,grad,1)
 
           if(method.eq.'lin_d'.and.ioptorb+ioptjas.gt.0) then
@@ -248,47 +249,4 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       return
       end
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine jdqz_driver( n, kmax, jmin, jmax, evc, eps,     
-     &                        e, e0, itype, notcnv, idav_iter , ipr )
-      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
-      implicit real*8(a-h,o-z)
-
-      integer method
-c     parameter(lwork=10+6*MVEC+5*MVEC+3*MVEC)
-      parameter(lwork=MPARM*100)
-      dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC)
-      complex*16 alpha(MVEC),beta(MVEC),eivec(MPARM*MVEC),zwork(lwork),tmp(MPARM)
-      complex*16 target,residu
-      logical wanted
-
-      wanted=.true.
-      target=cmplx(e0,0.d0)
-
-      method=1
-      mxmv=100
-      maxstep=100
-      alock=eps
-      iorder=0
-      itestspace=3
-
-      call JDQZ(alpha,beta,eivec,wanted,n,target,eps
-     &         ,kmax,jmax,jmin,method,jmax,0,mxmv,maxstep,alock,iorder
-     &         ,itestspace,zwork,lwork)
-
-      write(6,'(''converged roots : '',i4)') kmax
-      do j=1,kmax
-        ish=n*(j-1)
-        write(6,'(''norm : '',e11.4)') dznrm2( n, eivec(1+ish), 1 )
-        call amul(n,eivec(1+ish),residu)
-        call zscal(n,beta(j),residu,1)
-        call bmul(n,eivec(1+ish),tmp)
-        call zaxpy(n,-alpha(j),tmp,1,residu,1)
-        write(6,'(''lambda('',i2,''): ('',1p,e11.4,'','',e11.4,'' )'')') j,alpha(j)/beta(j)
-        write(6,'(a30,d13.6)') '||beta Ax - alpha Bx||:', dznrm2( n, residu, 1 )
-      enddo
-
-      return
-      end
-
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

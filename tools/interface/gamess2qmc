@@ -396,7 +396,7 @@ sub read_from_gamess{
 	  next READ_LOOP;
       }
       if(  /^\s*ATOMIC BASIS SET\s*$/ ){
-	  eat_lines(5);  
+	  eat_lines(4);  
 	  read_basis();
 	  next READ_LOOP;
       }
@@ -540,6 +540,12 @@ sub read_zcore{
     } 
 }
 sub read_basis{
+    $slater=0;
+    $_ = <>;  chomp;
+    if( $_ =~ /SLATER/ ){
+      print(" Slater ") if(! $quiet);
+      $slater=1;
+    } 
     $current_func=0;
      printf(" basis ") if(! $quiet);
     %seen=();
@@ -572,12 +578,19 @@ sub read_basis{
 	      $current_func=$w[0];
 	      push @{$functions{$symbol}},$current_func;
 	  }
-	  $ftype[$current_func]=$w[1];
-	  push @{$exponents[$current_func]}, $w[3];
-	  push @{$coeff[$current_func]}, $w[4];
-	  if($w[1] eq "L"){
-	      push @{$coeff_L[$current_func]}, $w[5];
-	  }
+          if( $slater==0){
+	    $ftype[$current_func]=$w[1];
+     	    push @{$exponents[$current_func]}, $w[3];
+	    push @{$coeff[$current_func]}, $w[4];
+	    if($w[1] eq "L"){
+	        push @{$coeff_L[$current_func]}, $w[5];
+	    }
+          } elsif($#w==5){
+            @nt = split("",$w[1]);
+            $fpnum[$current_func]=$nt[0];
+            $ftype[$current_func]=$nt[1];
+            $fzexp[$current_func]=$w[3];
+          }
       }
   }
 }
@@ -1449,12 +1462,16 @@ sub basis_grid{
 	@lbas=();
 	foreach my $j (@{$functions{$i}}){
 	    print "BASIS GRID atom type $i function $j type  $ftype[$j]\n" if($verbose);
-	    if($ftype[$j] eq 'L'){
-		add_function('S',\@{$exponents[$j]},\@{$coeff[$j]},\@bgrid);
-		add_function('P',\@{$exponents[$j]},\@{$coeff_L[$j]},\@bgrid);
-	    } else {
-		add_function($ftype[$j],\@{$exponents[$j]},\@{$coeff[$j]},\@bgrid);
-	    }
+            if($slater == 0){
+	      if($ftype[$j] eq 'L'){
+		  add_function('S',\@{$exponents[$j]},\@{$coeff[$j]},\@bgrid);
+		  add_function('P',\@{$exponents[$j]},\@{$coeff_L[$j]},\@bgrid);
+      	      } else {
+	  	  add_function($ftype[$j],\@{$exponents[$j]},\@{$coeff[$j]},\@bgrid);
+	      }
+            } else {
+	  	  slater_function($fpnum[$j],$ftype[$j],$fzexp[$j],\@bgrid);
+            }
 	}
 	$prim_radial{$i}=$radial_ptr;
 	$radial_ptr+=$#{$bgrid[0]};
@@ -1518,6 +1535,33 @@ sub add_function{
     }
 }
 
+sub slater_function{
+# put a new function on the grid 
+    ($num,$type,$ex,$grid)=@_;
+    print "add function $type $#$grid \n" if($verbose);
+    print "$ex,$type,$num,\n";
+    $num;
+    push @lbas, $l;
+    for(my $k=0; $k<=$#$grid; $k++){
+	$r=${$$grid[$k]}[0];
+	$r2=$r**2;
+        $r3=$r**3;
+	$value= znorm($ex,$num) * exp(-1.0 * $ex * $r);
+        if( $num == 2){
+	    $value *= $r;
+	} elsif( $num == 3){
+	    $value *= $r2;
+        } elsif( $num == 4){
+            $value *= $r3;
+	}
+        if( abs($value) > 1.0E-15 ){
+         push @{$$grid[$k]},$value;
+        } else {
+	 push @{$$grid[$k]},0.0;
+        }
+    }
+}
+
 sub gnorm{
 # compute norm prefactor
     ($alp,$l)=@_;
@@ -1530,6 +1574,21 @@ sub gnorm{
 	$nrm=(2.0*$alp)**$d7b4*$sq16b15*$pi4i;
     } elsif($l == 3){
         $nrm=(2.0*$alp)**$d9b4*$sq32b105*$pi4i;
+    }
+}
+
+sub znorm{
+# compute norm prefactor
+    ($alp,$num)=@_;
+    $nrm=1.0;
+    if($num == 1){
+	$nrm=(2.0*$alp)*sqrt($ex);
+    } elsif($num == 2){
+	$nrm=(2.0*$alp)**2*sqrt($ex/12.0);
+    } elsif($num == 3){
+	$nrm=(2.0*$alp)**3*sqrt($ex/360.0);
+    } elsif($num == 4){
+        $nrm=(2.0*$alp)**4*sqrt($exi/20160.0);
     }
 }
 

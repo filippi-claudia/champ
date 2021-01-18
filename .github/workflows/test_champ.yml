@@ -9,6 +9,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - uses: s-weigand/setup-conda@v1
 
     - run: conda --version
 
@@ -17,6 +18,8 @@ jobs:
            sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev # valgrind libmkl-full-dev
            gawk --version
            mpirun --version
+           conda install -c conda-forge numpy
+           conda install -c conda-forge scipy
 
     - name: Building_code_for_h2
       run: |
@@ -50,31 +53,47 @@ jobs:
            echo "- Running vmc.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out 
            echo "  total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0119453 
-           #$HOME/work/champ/champ/tools/compare_output_file.py vmc.out output_ref/vmc_2_threads.out
+           $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0119453            
            echo ""
 
-           # run and compare simple sampling
+           # run and compare davidson optimization
            echo "- Running vmc_lin.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            echo "  total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0604737
+           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0537100
            echo ""
 
-           # run and compare simple sampling MPI
+           # run and compare davidson optimization MPI
            echo "- Running vmc_lin.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
            echo "  total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0586750 
-           #$HOME/work/champ/champ/tools/compare_output_file.py vmc_lin.out output_ref/vmc_lin_2_threads.out
-           echo ""
+           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0555534 
+           echo ""  
            
+           cd $HOME/work/champ/champ
+
+    - name: Run Davidson_test
+      env:
+        CONDA_PREFIX: /usr/share/miniconda
+      run: |
+        
+           cd tests/CI_test/h2/qmc_1det/
+           
+           # run and compare eigenvalues given by Davidson
+           echo "- Running vmc_davidson_check.inp in serial:"
+           echo "- Warning Remember to regenerate H.dat and S.dat if the code changes"
+           echo "- Warning this can be done by setting bool_export_matrices to .true."
+           echo "- Warning in davidson.f90."
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_davidson_check.inp > vmc_davidson_check.out 
+           echo "  CHAMP Eigenalues vs Scipy:" 
+           python compare_eigenvalues.py
+     
            # restore the module files
            cd $HOME/work/champ/champ
            cp m_vmc_save ./src/vmc/m_vmc.f90
            cp m_optci_save ./src/vmc/m_optci.f90
-           cp m_sr_save ./src/vmc/m_sr.f90
-
+           cp m_sr_save ./src/vmc/m_sr.f90     
+     
     - name: Building_code_for_psb3_butadiene_and_psb2
       run: |
 
@@ -131,14 +150,14 @@ jobs:
            echo "- Running free.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out 
            echo " first eigenvalue vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -45.898315302789705 
+           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -44.148262860328295 
            echo ""
 
            # run and compare a Davidson calculation MPI
            echo "- Running free.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out 
            echo " first eigenvalue vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -50.713234670513742 
+           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -50.815236723338842 
            echo ""
 
     - name: Run_butadiene_sr
@@ -183,14 +202,14 @@ jobs:
            echo "- Running vmc_mix_SA.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
            echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9728608 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.7665740 
            echo ""
 
            # run and compare a geometry optimization calculation MPI
            echo "- Running vmc_mix_SA.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
            echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.8454481 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9287659 
            echo ""
 
            #  restore the module files
