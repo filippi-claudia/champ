@@ -2,7 +2,7 @@ module optwf_contrl
     !> Arguments: ioptci, ioptjas, ioptorb, nparm, nopt_iter, micro_iter_sr, energy_tol,
     !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j, 
     !>            iapprox, ncore, iuse_orbeigv, no_active, multiple_adiag, iroot_geo,
-    !>            ilastvmc
+    !>            ilastvmc, sr_tau, sr_adig, sr_adiag, sr_eps 
 
     use precision_kinds, only: dp
 
@@ -31,6 +31,9 @@ module optwf_contrl
     integer :: multiple_adiag
     integer  :: iroot_geo
     integer :: ilastvmc
+    real(dp) :: sr_tau
+    real(dp) :: sr_adiag
+    real(dp) :: sr_eps
 
     private
     public :: ioptwf
@@ -43,6 +46,7 @@ module optwf_contrl
     public :: multiple_adiag
     public :: iroot_geo
     public :: ilastvmc
+    public :: sr_tau, sr_adiag, sr_eps
     save
 
 end module optwf_contrl

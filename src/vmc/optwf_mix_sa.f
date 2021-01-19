@@ -3,24 +3,23 @@
       use sr_mod, only: MPARM, MVEC
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use sa_check, only: energy_all, energy_err_all
-      use contrl, only: nblk
+      use contrl, only: nblk, nblk_max, nblk_ci
       use force_analy, only: iforce_analy, alfgeo
-
       use mstates_ctrl, only: iguiding
       use method_opt, only: method
-
       use optwf_sr_mod, only: sr
+      use force_analy, only: iforce_analy
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_contrl, only: iroot_geo
+      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
+      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
 
       implicit real*8(a-h,o-z)
 
-
-
-
       character*20 method_sav
-
 
       dimension deltap(MPARM*MSTATES),deltap_more(MPARM*MSTATES,5),index_more(5,MSTATES)
       dimension energy_old(MSTATES), energy_err_old(MSTATES), i_deltap(MSTATES)
@@ -34,37 +33,19 @@
 
       if(nparm.gt.MPARM)call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
-      call p2gtid('optwf:nopt_iter',nopt_iter,6,1)
-      call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
-      call p2gtfd('optwf:energy_tol',energy_tol,1.d-3,1)
-
-      call p2gtfd('optwf:dparm_norm_min',dparm_norm_min,1.0d0,1)
       write(6,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
-
-      call p2gtfd('optwf:sr_tau',sr_tau,0.02,1)
-      call p2gtfd('optwf:sr_adiag',sr_adiag,0.01,1)
-      call p2gtfd('optwf:sr_eps',sr_eps,0.001,1)
-
       write(6,'(/,''SR adiag: '',f10.5)') sr_adiag
       write(6,'(''SR tau:   '',f10.5)') sr_tau
       write(6,'(''SR eps:   '',f10.5)') sr_eps
 
-      call p2gtid('optwf:lin_nvec',nvec,5,1)
-      call p2gtid('optwf:lin_nvecx',nvecx,MVEC,1)
-      call p2gtfd('optwf:lin_adiag',alin_adiag,0.01,1)
-      call p2gtfd('optwf:lin_eps',alin_eps,0.001,1)
-
       if(nvecx.gt.MVEC) call fatal_error('SR_OPTWF: nvecx > MVEC')
+
       write(6,'(/,''LIN_D adiag: '',f10.5)') alin_adiag
       write(6,'(''LIN_D ethr:  '',f10.5)') alin_eps
       write(6,'(''LIN_D nvec:  '',i4)') nvec
       write(6,'(''LIN_D nvecx: '',i4)') nvecx
 
       if(nstates.gt.1.and.nvec.lt.nstates) call fatal_error('SR_OPTWF: nvec < nstates')
-
-      call p2gtid('optwf:micro_iter_sr',micro_iter_sr,1,1)
-
-      if(iforce_analy.gt.0) call p2gtid('optgeo:iroot_geo',iroot_geo,0,0)
 
       inc_nblk=0
 
@@ -78,10 +59,9 @@
       ioptjas_sav=ioptjas
       ioptorb_sav=ioptorb
       ioptci_sav=ioptci
+
       call save_nparms
-
       call write_geometry(0)
-
       call save_wf
       call save_ci_best
 
@@ -90,7 +70,6 @@ c do iteration
         write(6,'(/,''Optimization iteration'',i5,'' of'',i5)')iter,nopt_iter
 
         iforce_analy=0
-
 
 c do micro_iteration
         do miter=1,micro_iter_sr
@@ -106,7 +85,7 @@ c do micro_iteration
             method='lin_d'
             ioptci=ioptci_sav
 
-            call p2gtid('optwf:nblk_ci',nblk_ci,nblk,0)
+!            call p2gtid('optwf:nblk_ci',nblk_ci,nblk,0)
             nblk=nblk_ci
             write(6,'(''NBLOCK changed from '',i7, '' to '',i7)') nblk_sav,nblk
 

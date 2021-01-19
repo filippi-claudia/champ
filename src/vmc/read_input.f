@@ -98,7 +98,7 @@ c and Anthony Scemema
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
       use contrldmc, only: itau_eff, nfprod, rttau, tau
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use contrl, only: icharged_atom, nblk_max
+      use contrl, only: icharged_atom, nblk_max, nblk_ci
       use dorb_m, only: iworbd
       use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
@@ -129,10 +129,10 @@ c and Anthony Scemema
       use inputflags, only: node_cutoff, eps_node_cutoff, iqmmm, scalecoef
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
-      use optwf_contrl, only: ilastvmc 
+      use optwf_contrl, only: ilastvmc, iroot_geo
+      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
       use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat
       use optwf_corsam, only: add_diag
-      use optwf_contrl, only: iroot_geo
 
       implicit real*8(a-h,o-z)
 
@@ -492,15 +492,15 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
           call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
           call p2gtid('optwf:multiple_adiag',multiple_adiag,0,1)
         end if
-!! sr_n and mix_n shared flags: 
+! sr_n and mix_n shared flags: 
 !        if ((method.eq.'sr_n').or.(method.eq.'mix_n')) then
-!          call p2gtfd('optwf:sr_tau', sr_tau, 0.02, 1)
-!          call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
-!          call p2gtfd('optwf:sr_eps', sr_eps, 0.001, 1)
-!        end if
+        if (method.eq.'mix_n') then
+          call p2gtfd('optwf:sr_tau', sr_tau, 0.02, 1)
+          call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
+          call p2gtfd('optwf:sr_eps', sr_eps, 0.001, 1)
+        end if
 !! mix_n and linear flags:
-        if ((method.eq.'linear')) then
-!        if ((method.eq.'mix_n').or.(method.eq.'linear')) then
+        if ((method.eq.'mix_n').or.(method.eq.'linear')) then
            if(iforce_analy.gt.0) call p2gtid('optgeo:iroot_geo',iroot_geo,0,0)
            call p2gtid('optwf:nblk_ci',nblk_ci,nblk,1)
            call p2gtid('optwf:ilastvmc',ilastvmc,1,1)
