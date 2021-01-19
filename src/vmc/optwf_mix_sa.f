@@ -85,7 +85,6 @@ c do micro_iteration
             method='lin_d'
             ioptci=ioptci_sav
 
-!            call p2gtid('optwf:nblk_ci',nblk_ci,nblk,0)
             nblk=nblk_ci
             write(6,'(''NBLOCK changed from '',i7, '' to '',i7)') nblk_sav,nblk
 
