@@ -83,6 +83,7 @@ c and Anthony Scemema
       use optwf_contrl, only: ibeta, ratio_j, iapprox, ncore
       use optwf_contrl, only: iuse_orbeigv
       use optwf_parms, only: nparmj
+      use optwf_sr_mod, only: i_sr_rescale, izvzb
       use pars, only: Z, a20, a21
       use rlobxy, only: rlobx
       use sa_weights, only: iweight, nweight, weights
@@ -465,6 +466,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
         call p2gtad('optwf:method',method,'linear',1)
         call p2gtad('optwf:dl_alg',dl_alg,'nag',1)
         call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
+
 ! lin_d, sr_n, mix_n and linear shared flags: 
         if((method.eq.'lin_d').or.(method.eq.'sr_n').or.(method.eq.'mix_n')
      #       .or.(method.eq.'linear')) then
@@ -474,6 +476,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
            call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
            call p2gtid('optwf:micro_iter_sr', micro_iter_sr, 1, 1)
         end if
+
 ! lin_d and sr_n shared flags: 
         if((method.eq.'lin_d').or.(method.eq.'sr_n')) then
            call p2gtid('optwf:func_omega', ifunc_omega, 0, 1)
@@ -483,6 +486,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
              call p2gtid('optwf:n_omegat', n_omegat, 0, 1)
            end if
         end if
+
 ! lin_d and mix_n shared flags: 
         if ((method.eq.'lin_d').or.(method.eq.'mix_n').or.(method.eq.'linear')) then
           call p2gtid('optwf:lin_nvec', nvec, 5, 1)
@@ -492,9 +496,9 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
           call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
           call p2gtid('optwf:multiple_adiag',multiple_adiag,0,1)
         end if
+
 ! sr_n and mix_n shared flags: 
-!        if ((method.eq.'sr_n').or.(method.eq.'mix_n')) then
-        if (method.eq.'mix_n') then
+        if ((method.eq.'sr_n').or.(method.eq.'mix_n')) then
           call p2gtfd('optwf:sr_tau', sr_tau, 0.02, 1)
           call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
           call p2gtfd('optwf:sr_eps', sr_eps, 0.001, 1)

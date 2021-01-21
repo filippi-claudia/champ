@@ -15,21 +15,18 @@ module optwf_sr_mod
     use precision_kinds, only: dp
     use optwf_contrl, only: ioptci, ioptjas, ioptorb
     use force_analy, only: iforce_analy
+    use contrl, only: nblk_max
+    use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
+    use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
 
-    integer :: nopt_iter, nblk_max
-    real(dp) ::  energy_tol
-    real(dp) :: dparm_norm_min
-    real(dp) :: sr_tau, sr_adiag, sr_eps
     real(dp) :: omega0
-    integer :: i_sr_rescale, i_func_omega
     integer :: n_omegaf, n_omegat
-    integer :: micro_iter_sr
-    integer :: izvzb
-
+    integer ::  i_func_omega
     real(dp) :: sr_adiag_sav
-    integer :: ioptjas_sav, ioptorb_sav, ioptci_sav, iforce_analy_sav
 
+    integer :: ioptjas_sav, ioptorb_sav, ioptci_sav, iforce_analy_sav
     real(dp), dimension(:), allocatable :: deltap
+    integer :: i_sr_rescale, izvzb
 
     private
     public :: optwf_sr, sr, sr_hs, izvzb, i_sr_rescale
@@ -44,11 +41,10 @@ contains
         use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
         use mstates_mod, only: MSTATES
         use optwf_corsam, only: energy, energy_err, force
-        use optwf_func, only: ifunc_omega, omega, omega_hes
+        use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
         use contrl, only: nblk
         use force_analy, only: alfgeo
         use optwf_contrl, only: nparm
-
         use method_opt, only: method
 
         implicit real*8(a - h, o - z)
@@ -61,7 +57,21 @@ contains
 
         if (nparm .gt. MPARM) call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
-        call read_input()
+        write (6, '(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
+
+        if (ifunc_omega .gt. 0) then
+            if (n_omegaf + n_omegat .gt. nopt_iter) call fatal_error('SR_OPTWF: n_omegaf+n_omegat > nopt_iter')
+            omega = omega0
+            write (6, '(/,''SR ifunc_omega: '',i3)') ifunc_omega
+            write (6, '(''SR omega: '',f10.5)') omega
+            write (6, '(''SR n_omegaf: '',i4)') n_omegaf
+            write (6, '(''SR n_omegat: '',i4)') n_omegat
+        endif
+
+        write (6, '(/,''SR adiag: '',f10.5)') sr_adiag
+        write (6, '(''SR tau:   '',f10.5)') sr_tau
+        write (6, '(''SR eps:   '',f10.5)') sr_eps
+    
 
         call save_params()
 
@@ -170,47 +180,6 @@ contains
         return
     end
 
-    subroutine read_input()
-
-        use contrl, only: nblk
-        use optwf_func, only: ifunc_omega, omega
-        implicit None
-
-        call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
-        call p2gtid('optwf:nblk_max', nblk_max, nblk, 1)
-        call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
-
-        call p2gtfd('optwf:dparm_norm_min', dparm_norm_min, 1.0d0, 1)
-        write (6, '(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
-
-        call p2gtfd('optwf:sr_tau', sr_tau, 0.02, 1)
-        call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
-        call p2gtfd('optwf:sr_eps', sr_eps, 0.001, 1)
-        call p2gtid('optwf:sr_rescale', i_sr_rescale, 0, 1)
-
-        call p2gtid('optwf:func_omega', ifunc_omega, 0, 1)
-        if (ifunc_omega .gt. 0) then
-            call p2gtfd('optwf:omega', omega0, 0.d0, 1)
-            call p2gtid('optwf:n_omegaf', n_omegaf, nopt_iter, 1)
-            call p2gtid('optwf:n_omegat', n_omegat, 0, 1)
-            if (n_omegaf + n_omegat .gt. nopt_iter) call fatal_error('SR_OPTWF: n_omegaf+n_omegat > nopt_iter')
-            omega = omega0
-            write (6, '(/,''SR ifunc_omega: '',i3)') ifunc_omega
-            write (6, '(''SR omega: '',f10.5)') omega
-            write (6, '(''SR n_omegaf: '',i4)') n_omegaf
-            write (6, '(''SR n_omegat: '',i4)') n_omegat
-        endif
-
-        call p2gtid('optwf:micro_iter_sr', micro_iter_sr, 1, 1)
-
-        call p2gtid('optgeo:izvzb', izvzb, 0, 1)
-        call p2gtid('optwf:sr_rescale', i_sr_rescale, 0, 1)
-        write (6, '(/,''SR adiag: '',f10.5)') sr_adiag
-        write (6, '(''SR tau:   '',f10.5)') sr_tau
-        write (6, '(''SR eps:   '',f10.5)') sr_eps
-
-    end subroutine read_input
-
     subroutine save_params()
         sr_adiag_sav = sr_adiag
         iforce_analy_sav = iforce_analy
@@ -241,7 +210,6 @@ contains
         write (6, *) 'CG iter ', i
 
         call sr_rescale_deltap(nparm, deltap)
-
         return
 
     end subroutine sr
