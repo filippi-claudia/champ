@@ -698,7 +698,6 @@ CVARDOC number of ghost centers
       if(max(3,nctype).gt.MCTYP3X) call fatal_error('INPUT: max(3,nctype) > MCTYP3X')
       if(nctype+newghostype.gt.MCTYPE) call fatal_error('INPUT: nctype+newghostype > MCTYPE')
       if(ncent+nghostcent.gt.MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
-
       write(6,'(/,''nctype,ncent ='',t30,2i5)') nctype,ncent
       if(newghostype+nghostcent.gt.0)
      & write(6,'(''newghostype,nghostcent ='',t30,2i5)') newghostype,nghostcent

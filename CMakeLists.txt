@@ -77,14 +77,20 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
     list(APPEND Fortran_FLAGS "-m64")
   endif()  
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
-  
+
+  ## Ravindra Debug :: Following flags set for maximum debugging  
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  list(APPEND Fortran_FLAGS "-O2" "-mcmodel=large" "-shared-intel"
+  list(APPEND Fortran_FLAGS "-g" "-mcmodel=large" "-shared-intel" "-traceback" "-gen-interfaces"
     "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
-  #if (MKL_FOUND)
-  #    list(APPEND Fortran_FLAGS "-i8")
-  #endif()  
+
+  #elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+  #list(APPEND Fortran_FLAGS "-O2" "-mcmodel=large" "-shared-intel" 
+  #  "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
+  #set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
+  ##if (MKL_FOUND)
+  ##    list(APPEND Fortran_FLAGS "-i8")
+  ##endif()  
   
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
