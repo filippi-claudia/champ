@@ -170,16 +170,17 @@ module force_mod
  end module force_mat_n
 
  module forcepar
-     !> Arguments: deltot, istrech, nforce
+     !> Arguments: deltot, istrech, nforce, alfstr
      use force_mod, only: MFORCE
      use precision_kinds, only: dp
 
      real(dp), dimension(:), allocatable :: deltot !(MFORCE)
      integer :: istrech
      integer :: nforce
+     real(dp) :: alfstr
 
      private
-     public   ::  deltot, istrech, nforce
+     public   ::  deltot, istrech, nforce, alfstr
      public :: allocate_forcepar, deallocate_forcepar
      save
  contains

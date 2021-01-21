@@ -1776,14 +1776,13 @@ c Set all force displacements to zero
       use vmc_mod, only: MCENT
       use forcepar, only: nforce
       use wfsec, only: iwftype, nwftype
-
+      use forcepar, only: istrech, alfstr
       use atom, only: ncent
 
       implicit real*8(a-h,o-z)
 
-
-
-
+      call p2gtid('forces:istrech',istrech,0,1)
+      call p2gtfd('forces:alfstr',alfstr,4.d0,1)
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
