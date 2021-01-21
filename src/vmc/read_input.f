@@ -103,6 +103,7 @@ c and Anthony Scemema
       use dorb_m, only: iworbd
       use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_dmc, only: itausec, nwprod
       use pseudo, only: nloc
       use optorb_cblock, only: idump_blockav
       use gradjerrb, only: ngrad_jas_blocks
@@ -351,6 +352,8 @@ c DMC parameters
         rttau=dsqrt(tau)
 
         call p2gtf('dmc:etrial',etrial,1)
+        call p2gtid('forces:nwprod',nwprod,200,1)
+        call p2gtid('forces:itausec',itausec,1,1)
 
         write(6,'(''version of DMC ='',t30,i10)') idmc
         write(6,'(''nfprod,tau'',t30,i10,f10.5)') nfprod,tau

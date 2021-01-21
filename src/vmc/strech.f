@@ -146,11 +146,6 @@ c end loop over electrons
 c Set up n-n potential energy (and PCM related quantities) at displaced positions 
       entry setup_force
 
-!      call p2gtid('optwf:ioptwf',ioptwf,0,1)
-!      call p2gtid('forces:istrech',istrech,0,1)
-!      call p2gtfd('forces:alfstr',alfstr,4.d0,1)
-      write(6,*) "Pablo passes here at setup_force"
-
       write(6,'(''istrech,alfstr ='',i4,2f10.5)') istrech,alfstr
 
       do 60 i=1,nforce
@@ -161,8 +156,6 @@ c Set up n-n potential energy (and PCM related quantities) at displaced position
       write(6,'(''iwftypes'',20i2)') (iwftype(i),i=1,nforce)
 
       if(index(mode,'dmc').ne.0) then
-        call p2gtid('forces:nwprod',nwprod,200,1)
-        call p2gtid('forces:itausec',itausec,1,1)
         if(nwprod.gt.MFORCE_WT_PRD) call fatal_error('STRETCH: nwprod gt MFORCE_WT_PRD')
         write(6,'(''nwprod,itausec='',2i4)') nwprod,itausec
       endif
