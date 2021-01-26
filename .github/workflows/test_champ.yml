@@ -28,6 +28,7 @@ jobs:
            cp src/vmc/m_vmc.f90 ./m_vmc_save
            cp src/vmc/m_sr.f90 ./m_sr_save
            cp src/vmc/m_optci.f90 ./m_optci_save
+           cp src/vmc/m_optorb.f90 ./m_optorb_save
 
            # copy module file
            cp tests/CI_test/h2/module/*.f90 src/vmc
@@ -111,6 +112,7 @@ jobs:
            cp m_vmc_save ./src/vmc/m_vmc.f90
            cp m_optci_save ./src/vmc/m_optci.f90
            cp m_sr_save ./src/vmc/m_sr.f90     
+           cp m_optorb_save src/vmc/m_optorb.f90
      
     - name: Building_code_for_psb3_butadiene_and_psb2
       run: |
