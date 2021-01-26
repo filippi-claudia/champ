@@ -375,7 +375,7 @@ END       OF equilb CP, REAL TIME IS       0.00      0.00     0     0
   -0.92154  -1.01169(  480)   0.00000(    0)  -0.50392( 2552)   0.00000(    0)                            0.76586     19800
   -1.11413  -1.01221(  479)   0.00000(    0)  -0.50410( 2546)   0.00000(    0)                            0.76555     19900
   -0.95936  -1.01195(  478)   0.00000(    0)  -0.50418( 2540)   0.00000(    0)                            0.76562     20000
-END       OF all    CP, REAL TIME IS       0.62      0.62     0     0
+END       OF all    CP, REAL TIME IS       0.23      0.23     0     0
 vmc_mov1      H2                  
 results after       20000. passes,  nstep, nblk =    50   400
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
