@@ -112,6 +112,7 @@ c and Anthony Scemema
       use mmpol_parms, only: chmm
       use mmpol_fdc, only: a_cutoff, rcolm
       use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+      use grid_mod, only: UNDEFINED, IUNDEFINED
       use efield, only: iefield, ncharges
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       use mstates3, only: iweight_g, weights_g
@@ -123,6 +124,8 @@ c and Anthony Scemema
       use prp000, only: iprop, ipropprt, nprop
       use pcm_fdc, only: qfree, rcolv
       use pcm_grid3d_contrl, only: ipcm_3dgrid
+      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d, pcm_origin, pcm_endpt
+      use pcm_3dgrid, only: PCM_SHIFT
       use prp003, only: cc_nuc
       use method_opt, only: method
       use optorb_cblock, only: nefp_blocks, isample_cmat, iorbsample
@@ -669,7 +672,25 @@ c  ipcm=3 runs qmc with fixed polarization charges
 
         call pcm_extpot_read(fcol,npmax)
 
+        !  We use the UNDEFINED, IUNDEFINED from grid_mod (that are the same as pcm_3dgrid)
         call p2gtid('pcm:ipcm_3dgrid',ipcm_3dgrid,0,1)
+        call p2gtid('pcm:nx_pcm',ipcm_nstep3d(1),IUNDEFINED,1)
+        call p2gtid('pcm:ny_pcm',ipcm_nstep3d(2),IUNDEFINED,1)
+        call p2gtid('pcm:nz_pcm',ipcm_nstep3d(3),IUNDEFINED,1)
+ 
+        call p2gtfd('pcm:dx_pcm',pcm_step3d(1),UNDEFINED,1)
+        call p2gtfd('pcm:dy_pcm',pcm_step3d(2),UNDEFINED,1)
+        call p2gtfd('pcm:dz_pcm',pcm_step3d(3),UNDEFINED,1)
+  
+        call p2gtfd('pcm:x0_pcm',pcm_origin(1),UNDEFINED,1)
+        call p2gtfd('pcm:y0_pcm',pcm_origin(2),UNDEFINED,1)
+        call p2gtfd('pcm:z0_pcm',pcm_origin(3),UNDEFINED,1)
+  
+        call p2gtfd('pcm:xn_pcm',pcm_endpt(1),UNDEFINED,1)
+        call p2gtfd('pcm:yn_pcm',pcm_endpt(2),UNDEFINED,1)
+        call p2gtfd('pcm:zn_pcm',pcm_endpt(3),UNDEFINED,1)
+
+        call p2gtfd('pcm:shift',PCM_SHIFT,4.d0,1)
         if(ipcm_3dgrid.gt.0) then
          if(ipcm.ne.3) call fatal('READ_INPUT:ipcm_3dgrid gt 0 & ipcm ne 3')
          call pcm_setup_grid

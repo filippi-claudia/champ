@@ -15,10 +15,11 @@ module pcm_3dgrid
     integer, parameter :: MGRID_PCM2 = MGRID_PCM*MGRID_PCM
     integer, parameter :: MGRID_PCM3 = MGRID_PCM2*MGRID_PCM
     real(dp), parameter :: UNDEFINED = -1234567890.d0
+    real(dp) :: PCM_SHIFT 
 
     private
     public :: MGRID_PCM, MGRID_PCM2, MGRID_PCM3
-    public :: UNDEFINED, IUNDEFINED
+    public :: UNDEFINED, IUNDEFINED, PCM_SHIFT
     save
 end module pcm_3dgrid
 

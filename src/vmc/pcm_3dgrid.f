@@ -12,41 +12,14 @@ c----------------------------------------------------------------------
       subroutine pcm_setup_grid
 
       use pcm_3dgrid, only: MGRID_PCM
-      use pcm_3dgrid, only: UNDEFINED, IUNDEFINED
+      use pcm_3dgrid, only: UNDEFINED, IUNDEFINED, PCM_SHIFT
       use atom, only: cent, ncent
       use contrl, only: irstar
       use grid3d_param, only: origin
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
 
-
       implicit real*8(a-h,o-z)
-
-
-
-
-
-CACTIVATE
-c     if (irstar.ne.1) then
-c Read the variables from the input
-
-       call p2gtid('pcm:nx_pcm',ipcm_nstep3d(1),IUNDEFINED,1)
-       call p2gtid('pcm:ny_pcm',ipcm_nstep3d(2),IUNDEFINED,1)
-       call p2gtid('pcm:nz_pcm',ipcm_nstep3d(3),IUNDEFINED,1)
-
-       call p2gtfd('pcm:dx_pcm',pcm_step3d(1),UNDEFINED,1)
-       call p2gtfd('pcm:dy_pcm',pcm_step3d(2),UNDEFINED,1)
-       call p2gtfd('pcm:dz_pcm',pcm_step3d(3),UNDEFINED,1)
- 
-       call p2gtfd('pcm:x0_pcm',pcm_origin(1),UNDEFINED,1)
-       call p2gtfd('pcm:y0_pcm',pcm_origin(2),UNDEFINED,1)
-       call p2gtfd('pcm:z0_pcm',pcm_origin(3),UNDEFINED,1)
- 
-       call p2gtfd('pcm:xn_pcm',pcm_endpt(1),UNDEFINED,1)
-       call p2gtfd('pcm:yn_pcm',pcm_endpt(2),UNDEFINED,1)
-       call p2gtfd('pcm:zn_pcm',pcm_endpt(3),UNDEFINED,1)
-
-       call p2gtfd('pcm:shift',PCM_SHIFT,4.d0,1)
 
 c Test if the input is consistent
        input_ok=1
