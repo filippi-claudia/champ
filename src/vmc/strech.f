@@ -43,7 +43,6 @@ c rigidly with that nucleus
 
       save centsav,pecentn,xpolsav
 
-!      call p2gtid('optwf:ioptwf',ioptwf,0,1)
 
 c set center and n-n potential for secondary geometries
       pecent=pecentn(ifr)

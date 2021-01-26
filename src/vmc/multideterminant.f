@@ -19,16 +19,12 @@
       use denergy_det_m, only: denergy_det
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
-
       use force_analy, only: iforce_analy
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-
       use multislater, only: detiab
+
       implicit real*8(a-h,o-z)
-
-
-
 
 
 
@@ -517,9 +513,6 @@ c-----------------------------------------------------------------------
       ndn=nelec-nup
 
       if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype exceeds MWF')
-
-c TMP
-c     call p2gtid('optwf:ioptci',ioptci,0,1)
 
       if(iflag.eq.0) then
         kref=1
