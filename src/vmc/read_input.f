@@ -252,9 +252,11 @@ c General section
       call p2gtad('general:pool',pooldir,'.',1)
       call p2gtad('general:pseudopot',pp_id,'none',1)
       call p2gtad('general:basis',bas_id,'none',1)
+
       call stripquotes(title)
       call stripquotes(pooldir)
       call stripquotes(bas_id)
+      call stripquotes(pp_id)
 
       if(mode.eq.'vmc')
      & write(6,'(''Variational MC'',a40)') title
@@ -747,37 +749,8 @@ CVARDOC flag: properties will be printed
        call prop_cc_nuc(znuc,cent,iwctype,MCTYPE,MCENT,ncent,cc_nuc)
       endif
       
-c Pseudopotential/basis reading section:
+c Pseudopotential section:
       call p2gtid('pseudo:nloc',nloc,0,1)
-      allocate(filenames_bas_num(nctype+newghostype))
-      do ic=1,nctype+newghostype
-        if(ic.lt.10) then
-          write(atomtyp,'(i1)') ic
-         elseif(ic.lt.100) then
-          write(atomtyp,'(i2)') ic
-         elseif(iwf.lt.1000) then
-          write(wforce,'(i3)') iwf
-        endif
-c Set numerical orbitals:
-        if(bas_id.eq.'none') then
-c old file name convention 
-        filename=pooldir(1:index(pooldir,' ')-1)//'/'//
-     &             'basis.'//atomtyp(1:index(atomtyp,' ')-1)
-          if(iwf.ge.2) then
-              filename=filename(1:index(filename,' ')-1)//'.'//wforce
-          endif
-        else
-c new convention
-          call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
-     &               ,atomsymbol,'X',1)
-          filename=pooldir(1:index(pooldir,' ')-1)//
-     &             '/'//
-     &             bas_id(1:index(bas_id,' ')-1)//
-     &             '.basis.'//
-     &             atomsymbol(1:index(atomsymbol,' ')-1)
-        endif
-        filenames_bas_num(ic)=filename
-      enddo
 
 
 CVARDOC flag: type of pseudopotential (0: all electron)
@@ -791,6 +764,7 @@ CVARDOC number of quadrature points
           write(6,'(''nquad='',t30,i10)') nquad
           if(nquad.gt.MPS_QUAD) call fatal_error('INPUT: nquad > MPS_QUAD')
           if(nloc.eq.4)then
+            call set_ps_gauss_filenames()
             call readps_gauss
            elseif(nloc.eq.5) then
             call readps_champ
@@ -848,6 +822,7 @@ c Determinantal section
 
       if(ibasis.eq.1) then
         call write_orb_loc
+        call set_bas_num_filenames()
         if(numr.gt.0) then
           do 10 iwft=1,nwftype
    10       call read_bas_num(iwft)
@@ -2169,9 +2144,8 @@ C$INPUT cavity_spheres inp i
 CKEYDOC Read centers of cavity spheres and radii
       use pcm_parms, only: nesph, re, re2
       use pcm_parms, only: xe, ye, ze
+
       implicit real*8(a-h,o-z)
-
-
 
       nesph=nspheres 
       do i=1,nesph
@@ -2198,16 +2172,12 @@ c     Written by Omar Valsson
       use grdntspar, only: delgrdxyz, igrdtype, ngradnts
       use wfsec, only: iwftype
       use inputflags, only: igradients
-
       use atom, only: ncent
 
       implicit real*8(a-h,o-z)
 
-
-
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('GRADIENTS_CARTESIAN: ncent > MCENT')
-
 
       call p2gtfd('gradients:delgrdxyz',delgrdxyz,0.001d0,1)
 
@@ -2329,12 +2299,9 @@ CKEYDOC atoms energy gradients are to be calculated for.
       use vmc_mod, only: MCENT
       use grdntsmv, only: igrdmv
       use inputflags, only: imodify_zmat
-
       use atom, only: ncent
 
       implicit real*8(a-h,o-z)
-
-
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
@@ -2353,7 +2320,6 @@ CKEYDOC atoms energy gradients are to be calculated for.
       return
       end
 c-----------------------------------------------------------------------
-
       subroutine read_hessian_zmat(iu)
 C$INPUT hessian_zmatrix inp
 CKEYDOC Read for which Z matrix (internal) coordiantes of 
@@ -2365,9 +2331,6 @@ CKEYDOC atoms energy gradients are to be calculated for.
       use atom, only: ncent
 
       implicit real*8(a-h,o-z)
-
-
-
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
@@ -2401,8 +2364,6 @@ c      Written by Omar Valsson
       use inputflags, only: izmatrix_check
 
       implicit real*8(a-h,o-z)
-
-
       
       do 10 ic=1,3
         do 10 k=1,3
@@ -2469,16 +2430,9 @@ c-----------------------------------------------------------------------
       use pcm_force, only: sch_s
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, nchs
-
       use atom, only: ncent
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       call p2gti('atoms:natom',ncent,1)
       if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
@@ -2534,3 +2488,79 @@ c-----------------------------------------------------------------------
 
       return
       end
+
+c-----------------------------------------------------------------------
+      subroutine set_ps_gauss_filenames()
+c ### Set name files of gaussian pseudopotentials.
+
+      use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
+      use general, only: filenames_ps_gauss
+      use atom, only: nctype
+
+      implicit real*8(a-h,o-z)
+
+c Allocation of the array storing the filenames of gaussian basis: 
+      allocate(filenames_ps_gauss(nctype))
+      do ic=1,nctype
+        if(ic.lt.10) then
+          write(atomtyp,'(i1)') ic
+        elseif(ic.lt.100) then
+          write(atomtyp,'(i2)') ic
+        endif
+        if(pp_id.eq.'none') then
+            call fatal_error('READ_INPUT: ECP name missing')
+           else
+            call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
+     &         ,atomsymbol,'X',1)
+             filename=pooldir(1:index(pooldir,' ')-1)//
+     &         '/'//
+     &         pp_id(1:index(pp_id,' ')-1)//
+     &         '.gauss_ecp.dat.'//
+     &         atomsymbol(1:index(atomsymbol,' ')-1)
+         endif 
+         filenames_ps_gauss(ic)=filename
+        enddo
+        end subroutine
+
+c-----------------------------------------------------------------------
+      subroutine set_bas_num_filenames()
+c ### Set numerical num. orbital filenames.
+
+      use atom, only: nctype
+      use general, only: pooldir, pp_id, bas_id, atomtyp, filename, atomsymbol
+      use general, only: filenames_bas_num, wforce 
+      use ghostatom, only: newghostype
+
+      implicit real*8(a-h,o-z)
+
+c Allocation of the array storing the filenames of numerical basis: 
+      allocate(filenames_bas_num(nctype+newghostype))
+  
+      do ic=1,nctype+newghostype
+        if(ic.lt.10) then
+          write(atomtyp,'(i1)') ic
+         elseif(ic.lt.100) then
+          write(atomtyp,'(i2)') ic
+         elseif(iwf.lt.1000) then
+           write(wforce,'(i3)') iwf
+         endif
+        if(bas_id.eq.'none') then
+c old file name convention 
+          filename=pooldir(1:index(pooldir,' ')-1)//'/'//
+     &             'basis.'//atomtyp(1:index(atomtyp,' ')-1)
+          if(iwf.ge.2) then
+            filename=filename(1:index(filename,' ')-1)//'.'//wforce
+          endif
+        else
+c new convention
+          call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
+     &              ,atomsymbol,'X',1)
+          filename=pooldir(1:index(pooldir,' ')-1)//
+     &           '/'//
+     &           bas_id(1:index(bas_id,' ')-1)//
+     &           '.basis.'//
+     &           atomsymbol(1:index(atomsymbol,' ')-1)
+        endif
+        filenames_bas_num(ic)=filename
+      enddo
+      end subroutine

@@ -55,19 +55,20 @@ module header
 
  module general
     !> Arguments: pooldir, pp_id, bas_id, filename, filenames_bas_num,
-    !>            atomtyp, atomsymbol, wforce
+    !>            filenames_ps_gauss, atomtyp, atomsymbol, wforce
     character*256 :: pooldir
     character*256 :: pp_id
     character*256 :: bas_id 
     character*256 :: filename 
     character*256, allocatable, dimension(:) :: filenames_bas_num
+    character*256, allocatable, dimension(:) :: filenames_ps_gauss
     character*20  :: atomtyp 
     character*20  :: atomsymbol
     character*20  :: wforce 
 
     private
     public :: pooldir, pp_id, bas_id, atomtyp, filename, atomsymbol
-    public :: filenames_bas_num, wforce
+    public :: filenames_ps_gauss, filenames_bas_num, wforce
     save
  end module general
 

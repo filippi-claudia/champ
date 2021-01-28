@@ -17,46 +17,19 @@ c
       use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
       use pseudo, only: lpot
       use qua, only: nquad, wq, xq0, yq0, zq0
-      use general, only: pooldir, pp_id
+      use general, only: pooldir, pp_id, filename, filenames_ps_gauss
 
       implicit real*8(a-h,o-z)
 
-      character*20 atomtyp,atomsymbol
       character*80 label
-      character*256 filename
-!      character*256 filename,pooldir,pp_id
 
-c pool directory for pseudopotentials
-!      call p2gtad('general:pool',pooldir,'.',1)
-      call stripquotes(pooldir)
-!      call p2gtad('general:pseudopot',pp_id,'none',1)
-      call stripquotes(pp_id)
 CVARDOC String to identify pseudopotential. If set, fancy names for 
 CVARDOC the pseudopotential files will be used.  
 
       do 300 ic=1,nctype
+        if (nctype.gt.100) call fatal_error('READPS_GAUSS: nctype>100')
 
-        if(ic.lt.10) then
-          write(atomtyp,'(i1)') ic
-         elseif(ic.lt.100) then
-          write(atomtyp,'(i2)') ic
-         else
-          call fatal_error('READPS_GAUSS: nctype>100')
-        endif
-
-
-        if(pp_id.eq.'none') then
-          call fatal_error('READPS_GAUSS: ECP name missing')
-         else
-          call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
-     &         ,atomsymbol,'X',1)
-          filename=pooldir(1:index(pooldir,' ')-1)//
-     &         '/'//
-     &         pp_id(1:index(pp_id,' ')-1)//
-     &         '.gauss_ecp.dat.'//
-     &         atomsymbol(1:index(atomsymbol,' ')-1)
-       endif
-
+        filename = filenames_ps_gauss(ic)
         open(1,file=filename(1:index(filename,' ')),status='old')
  
         write(45,'(''Reading pseudopotential file '',a)')
