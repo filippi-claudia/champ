@@ -12,10 +12,9 @@ c Reads in localized orbitals on a radial grid
       use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
       use numexp, only: ae, ce
       use pseudo, only: nloc
-      use general, only: pooldir, bas_id, filename, filenames, wforce
+      use general, only: pooldir, bas_id, filename, filenames_bas_num, wforce
 
       implicit real*8(a-h,o-z)
-
 
       dimension x(MRWF_PTS),work(MRWF_PTS),y(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
      &,l(MBASIS),icusp(MCTYPE)
@@ -27,7 +26,7 @@ c         3 shifted exponential r(i+1)=r0*(arg**(i-1)-1)
 
       do 100 ic=1,nctype+newghostype
         if (ic .gt. 999) call fatal_error('READ_BAS_NUM: atomtyp > 999')
-        filename=filenames(ic)
+        filename=filenames_bas_num(ic)
         open(21,file=filename(1:index(filename,' ')-1),status='old')
 
         read(21,*) nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)

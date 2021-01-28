@@ -65,7 +65,7 @@ c and Anthony Scemema
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use jaspar1, only: cjas1, cjas2
       use general, only: pooldir, pp_id, bas_id, atomtyp, filename, atomsymbol
-      use general, only: filenames, wforce 
+      use general, only: filenames_bas_num, wforce 
       use csfs, only: cxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
@@ -747,9 +747,9 @@ CVARDOC flag: properties will be printed
        call prop_cc_nuc(znuc,cent,iwctype,MCTYPE,MCENT,ncent,cc_nuc)
       endif
       
-c Pseudopotential section
+c Pseudopotential/basis reading section:
       call p2gtid('pseudo:nloc',nloc,0,1)
-      allocate(filenames(nctype+newghostype))
+      allocate(filenames_bas_num(nctype+newghostype))
       do ic=1,nctype+newghostype
         if(ic.lt.10) then
           write(atomtyp,'(i1)') ic
@@ -758,6 +758,7 @@ c Pseudopotential section
          elseif(iwf.lt.1000) then
           write(wforce,'(i3)') iwf
         endif
+c Set numerical orbitals:
         if(bas_id.eq.'none') then
 c old file name convention 
         filename=pooldir(1:index(pooldir,' ')-1)//'/'//
@@ -775,8 +776,10 @@ c new convention
      &             '.basis.'//
      &             atomsymbol(1:index(atomsymbol,' ')-1)
         endif
-        filenames(ic)=filename
+        filenames_bas_num(ic)=filename
       enddo
+
+
 CVARDOC flag: type of pseudopotential (0: all electron)
       if(nloc.gt.0) then
         write(6,'(/,''pseudopotential calculation, nloc ='',t30,i10)') nloc
