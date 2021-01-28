@@ -64,6 +64,8 @@ c and Anthony Scemema
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use jaspar1, only: cjas1, cjas2
+      use general, only: pooldir, pp_id, bas_id, atomtyp, filename, atomsymbol
+      use general, only: filenames, wforce 
       use csfs, only: cxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
@@ -247,7 +249,12 @@ c Get weights for multiple states calculations
 
 c General section
       call p2gtad('general:title',title,' ',1)
+      call p2gtad('general:pool',pooldir,'.',1)
+      call p2gtad('general:pseudopot',pp_id,'none',1)
+      call p2gtad('general:basis',bas_id,'none',1)
       call stripquotes(title)
+      call stripquotes(pooldir)
+      call stripquotes(bas_id)
 
       if(mode.eq.'vmc')
      & write(6,'(''Variational MC'',a40)') title
@@ -742,6 +749,34 @@ CVARDOC flag: properties will be printed
       
 c Pseudopotential section
       call p2gtid('pseudo:nloc',nloc,0,1)
+      allocate(filenames(nctype+newghostype))
+      do ic=1,nctype+newghostype
+        if(ic.lt.10) then
+          write(atomtyp,'(i1)') ic
+         elseif(ic.lt.100) then
+          write(atomtyp,'(i2)') ic
+         elseif(iwf.lt.1000) then
+          write(wforce,'(i3)') iwf
+        endif
+        if(bas_id.eq.'none') then
+c old file name convention 
+        filename=pooldir(1:index(pooldir,' ')-1)//'/'//
+     &             'basis.'//atomtyp(1:index(atomtyp,' ')-1)
+          if(iwf.ge.2) then
+              filename=filename(1:index(filename,' ')-1)//'.'//wforce
+          endif
+        else
+c new convention
+          call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
+     &               ,atomsymbol,'X',1)
+          filename=pooldir(1:index(pooldir,' ')-1)//
+     &             '/'//
+     &             bas_id(1:index(bas_id,' ')-1)//
+     &             '.basis.'//
+     &             atomsymbol(1:index(atomsymbol,' ')-1)
+        endif
+        filenames(ic)=filename
+      enddo
 CVARDOC flag: type of pseudopotential (0: all electron)
       if(nloc.gt.0) then
         write(6,'(/,''pseudopotential calculation, nloc ='',t30,i10)') nloc

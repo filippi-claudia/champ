@@ -15,25 +15,21 @@ c
       use pseudo_mod, only: MPS_L, MGAUSS
       use atom, only: nctype
       use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
-
       use pseudo, only: lpot
-
       use qua, only: nquad, wq, xq0, yq0, zq0
+      use general, only: pooldir, pp_id
 
       implicit real*8(a-h,o-z)
 
-
-
-
       character*20 atomtyp,atomsymbol
       character*80 label
-      character*256 filename,pooldir,pp_id
-
+      character*256 filename
+!      character*256 filename,pooldir,pp_id
 
 c pool directory for pseudopotentials
-      call p2gtad('general:pool',pooldir,'.',1)
+!      call p2gtad('general:pool',pooldir,'.',1)
       call stripquotes(pooldir)
-      call p2gtad('general:pseudopot',pp_id,'none',1)
+!      call p2gtad('general:pseudopot',pp_id,'none',1)
       call stripquotes(pp_id)
 CVARDOC String to identify pseudopotential. If set, fancy names for 
 CVARDOC the pseudopotential files will be used.  

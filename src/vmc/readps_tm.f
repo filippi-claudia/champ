@@ -12,32 +12,27 @@ c Modified by F. Schautz to use fancy file names
       use atom, only: znuc, nctype
       use const, only: ipr
       use pseudo_tm, only: arg, d2pot, nr_ps, r0, rmax, vpseudo
-
       use pseudo, only: lpot, nloc, vps
-
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use general, only: pooldir, pp_id
 
       implicit real*8(a-h,o-z)
-
-
-
 
       character*2 icorr,nameat
       character*3 irel
       character*4 nicore
       character*10 ititle(7),iray(6)
       character*20 atomtyp,atomsymbol
-      character*256 filename,pooldir,pp_id
-
-
+      character*256 filename
+!      character*256 filename,pooldir,pp_id
 
       dimension r(MPS_GRID),y(NCOEF),ce(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
       dimension work(MPS_GRID)
 
 c pool directory for pseudopotentials
-      call p2gtad('general:pool',pooldir,'.',1)
+!      call p2gtad('general:pool',pooldir,'.',1)
       call stripquotes(pooldir)
-      call p2gtad('general:pseudopot',pp_id,'none',1)
+!      call p2gtad('general:pseudopot',pp_id,'none',1)
       call stripquotes(pp_id)
 CVARDOC String to identify pseudopotential. If set, fancy names for 
 CVARDOC the pseudopotential files will be used.  

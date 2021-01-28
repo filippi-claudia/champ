@@ -23,34 +23,24 @@ c The prefered grid is 3.
       use const, only: ipr
       use pseudo_champ, only: igrid_ps, rmax_coul, rmax_nloc
       use pseudo_tm, only: arg_ps, d2pot, nr_ps, r0_ps, vpseudo
-
       use pseudo, only: lpot
-
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-
       use grid3d_param, only: origin
+      use general, only: pooldir, pp_id
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
       character*20 atomtyp,atomsymbol
-      character*256 filename,pooldir,pp_id
+      character*256 filename
+!      character*256 filename,pooldir,pp_id
       character*80 title
-
-
-
-
 
       dimension r(MPS_GRID),work(MPS_GRID),lpot_max(MPS_L)
 
 c pool directory for pseudopotentials
-      call p2gtad('general:pool',pooldir,'.',1)
+!      call p2gtad('general:pool',pooldir,'.',1)
       call stripquotes(pooldir)
-      call p2gtad('general:pseudopot',pp_id,'none',1)
+ !     call p2gtad('general:pseudopot',pp_id,'none',1)
       call stripquotes(pp_id)
 CVARDOC String to identify pseudopotential. If set, fancy names for 
 CVARDOC the pseudopotential files will be used.  
