@@ -53,7 +53,24 @@ module header
    save
  end module inputflags
 
-  module method_opt
+ module general
+    !> Arguments: pooldir, pp_id, bas_id, filename, filenames, atomtyp, atomsymbol, wforce
+    character*256 :: pooldir
+    character*256 :: pp_id
+    character*256 :: bas_id 
+    character*256 :: filename 
+    character*256, allocatable, dimension(:) :: filenames 
+    character*20  :: atomtyp 
+    character*20  :: atomsymbol
+    character*20  :: wforce 
+
+    private
+    public :: pooldir, pp_id, bas_id, atomtyp, filename, atomsymbol
+    public :: filenames, wforce
+    save
+ end module general
+
+ module method_opt
    !> should be in the input somehow no ?
    !> Arguments: method
  
