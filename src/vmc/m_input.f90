@@ -62,13 +62,15 @@ module header
     character*256 :: filename 
     character*256, allocatable, dimension(:) :: filenames_bas_num
     character*256, allocatable, dimension(:) :: filenames_ps_gauss
+    character*256, allocatable, dimension(:) :: filenames_ps_champ
     character*20  :: atomtyp 
     character*20  :: atomsymbol
     character*20  :: wforce 
 
     private
-    public :: pooldir, pp_id, bas_id, atomtyp, filename, atomsymbol
-    public :: filenames_ps_gauss, filenames_bas_num, wforce
+    public :: pooldir, pp_id, bas_id, atomtyp, filename
+    public :: filenames_bas_num, filenames_ps_gauss
+    public :: filenames_ps_champ, atomsymbol, wforce
     save
  end module general
 

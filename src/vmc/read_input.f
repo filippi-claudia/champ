@@ -767,6 +767,7 @@ CVARDOC number of quadrature points
             call set_ps_gauss_filenames()
             call readps_gauss
            elseif(nloc.eq.5) then
+            call set_ps_champ_filenames()
             call readps_champ
            else
             call readps_tm
@@ -2522,6 +2523,44 @@ c Allocation of the array storing the filenames of gaussian basis:
         enddo
         end subroutine
 
+c-----------------------------------------------------------------------
+      subroutine set_ps_champ_filenames()
+c ### Set name files of CHAMP-formatted pseudopotentials.
+
+      use atom, only: nctype
+      use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
+      use general, only: filenames_ps_champ 
+
+      implicit real*8(a-h,o-z)
+
+c Allocation of the array storing the filenames of gaussian basis: 
+      allocate(filenames_ps_champ(nctype))
+      
+      do ict=1, nctype
+
+        if(ict.lt.10) then
+          write(atomtyp,'(i1)') ict
+         elseif(ict.lt.100) then
+          write(atomtyp,'(i2)') ict
+        endif
+
+        if(pp_id.eq.'none') then
+c old naming convention
+          filename=pooldir(1:index(pooldir,' ')-1)//'/'//
+     &               'pseudopot_champ'//atomtyp(1:index(atomtyp,' ')-1)
+         else
+c new naming convention
+          call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
+     &         ,atomsymbol,'X',1)
+          filename=pooldir(1:index(pooldir,' ')-1)//
+     &             '/'//
+     &             pp_id(1:index(pp_id,' ')-1)//
+     &             '.pseudopot_champ.'//
+     &             atomsymbol(1:index(atomsymbol,' ')-1)
+        endif      
+        filenames_ps_champ(ict)=filename
+      enddo
+      end subroutine
 c-----------------------------------------------------------------------
       subroutine set_bas_num_filenames()
 c ### Set numerical num. orbital filenames.

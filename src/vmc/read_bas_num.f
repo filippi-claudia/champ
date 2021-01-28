@@ -12,7 +12,7 @@ c Reads in localized orbitals on a radial grid
       use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
       use numexp, only: ae, ce
       use pseudo, only: nloc
-      use general, only: pooldir, bas_id, filename, filenames_bas_num, wforce
+      use general, only: filename, filenames_bas_num, wforce
 
       implicit real*8(a-h,o-z)
 

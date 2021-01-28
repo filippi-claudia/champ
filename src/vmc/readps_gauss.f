@@ -17,7 +17,7 @@ c
       use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
       use pseudo, only: lpot
       use qua, only: nquad, wq, xq0, yq0, zq0
-      use general, only: pooldir, pp_id, filename, filenames_ps_gauss
+      use general, only: filename, filenames_ps_gauss
 
       implicit real*8(a-h,o-z)
 
