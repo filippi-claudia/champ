@@ -2562,6 +2562,49 @@ c new naming convention
       enddo
       end subroutine
 c-----------------------------------------------------------------------
+      subroutine set_ps_tm_filenames()
+c ### Set name files of Troullier-Martins pseudopotentials.
+
+      use atom, only: nctype
+      use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
+      use general, only: filenames_ps_tm
+      use pseudo, only: nloc
+
+      implicit real*8(a-h,o-z)
+
+      do ic=1,nctype
+        if(pp_id.eq.'none') then
+c old naming convention
+          if(nloc.eq.2) then
+            filename=pooldir(1:index(pooldir,' ')-1)//'/'//
+     &           'pseudo.dat.'//atomtyp(1:index(atomtyp,' ')-1)
+           elseif(nloc.eq.3) then
+            filename=pooldir(1:index(pooldir,' ')-1)//'/'//
+     &           'pseudopot'//atomtyp(1:index(atomtyp,' ')-1)
+          endif
+        else
+c new naming convention
+          call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
+     &     ,atomsymbol,'X',1)
+          if(nloc.eq.2) then
+            filename=pooldir(1:index(pooldir,' ')-1)//
+     &           '/'//
+     &           pp_id(1:index(pp_id,' ')-1)//
+     &           '.pseudo.dat.'//
+     &           atomsymbol(1:index(atomsymbol,' ')-1)
+           elseif(nloc.eq.3) then
+            filename=pooldir(1:index(pooldir,' ')-1)//
+     &           '/'//
+     &           pp_id(1:index(pp_id,' ')-1)//
+     &           '.pseudopot.'//
+     &           atomsymbol(1:index(atomsymbol,' ')-1)
+          endif
+        endif
+        filenames_ps_tm(ic)=filename
+      enddo
+      end subroutine
+
+c-----------------------------------------------------------------------
       subroutine set_bas_num_filenames()
 c ### Set numerical num. orbital filenames.
 

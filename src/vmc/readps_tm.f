@@ -15,6 +15,7 @@ c Modified by F. Schautz to use fancy file names
       use pseudo, only: lpot, nloc, vps
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
       use general, only: pooldir, pp_id
+      use general, only: filename, filenames_ps_tm
 
       implicit real*8(a-h,o-z)
 
@@ -22,60 +23,15 @@ c Modified by F. Schautz to use fancy file names
       character*3 irel
       character*4 nicore
       character*10 ititle(7),iray(6)
-      character*20 atomtyp,atomsymbol
-      character*256 filename
-!      character*256 filename,pooldir,pp_id
 
       dimension r(MPS_GRID),y(NCOEF),ce(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
       dimension work(MPS_GRID)
 
-c pool directory for pseudopotentials
-!      call p2gtad('general:pool',pooldir,'.',1)
-      call stripquotes(pooldir)
-!      call p2gtad('general:pseudopot',pp_id,'none',1)
-      call stripquotes(pp_id)
-CVARDOC String to identify pseudopotential. If set, fancy names for 
-CVARDOC the pseudopotential files will be used.  
-
       do 200 ic=1,nctype
 
-      if(ic.lt.10) then
-        write(atomtyp,'(i1)') ic
-       elseif(ic.lt.100) then
-        write(atomtyp,'(i2)') ic
-       else
-        call fatal_error('READPS_TM: nctype>100')
-      endif
+      if(ic.gt.100) call fatal_error('READPS_TM: nctype>100')
 
-
-      if(pp_id.eq.'none') then
-c old naming convention
-        if(nloc.eq.2) then
-          filename=pooldir(1:index(pooldir,' ')-1)//'/'//
-     &             'pseudo.dat.'//atomtyp(1:index(atomtyp,' ')-1)
-         elseif(nloc.eq.3) then
-          filename=pooldir(1:index(pooldir,' ')-1)//'/'//
-     &             'pseudopot'//atomtyp(1:index(atomtyp,' ')-1)
-        endif
-       else
-c new naming convention
-        call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
-     &       ,atomsymbol,'X',1)
-        if(nloc.eq.2) then
-          filename=pooldir(1:index(pooldir,' ')-1)//
-     &             '/'//
-     &             pp_id(1:index(pp_id,' ')-1)//
-     &             '.pseudo.dat.'//
-     &             atomsymbol(1:index(atomsymbol,' ')-1)
-         elseif(nloc.eq.3) then
-          filename=pooldir(1:index(pooldir,' ')-1)//
-     &             '/'//
-     &             pp_id(1:index(pp_id,' ')-1)//
-     &             '.pseudopot.'//
-     &             atomsymbol(1:index(atomsymbol,' ')-1)
-        endif
-      endif
-
+      filename = filenames_ps_tm(ic)
       if(nloc.eq.2) then
         open(1,file=filename(1:index(filename,' ')),status='old',form='unformatted')
        elseif(nloc.eq.3) then
