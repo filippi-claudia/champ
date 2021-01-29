@@ -64,7 +64,7 @@ c and Anthony Scemema
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use jaspar1, only: cjas1, cjas2
-      use general, only: pooldir, pp_id, bas_id, atomtyp, filename, atomsymbol
+      use general, only: pooldir, pp_id, bas_id
       use general, only: filenames_bas_num, wforce 
       use csfs, only: cxdet, ncsf, nstates
       use dets, only: cdet, ndet
