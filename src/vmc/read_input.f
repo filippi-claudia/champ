@@ -81,7 +81,7 @@ c and Anthony Scemema
       use numbas1, only: nbastyp
       use numbas2, only: ibas0, ibas1
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, ioptwf
-      use optwf_contrl, only: idl_flag,ilbfgs_flag
+      use optwf_contrl, only: idl_flag, ilbfgs_flag, ilbfgs_m
       use optwf_contrl, only: ibeta, ratio_j, iapprox, ncore
       use optwf_contrl, only: iuse_orbeigv
       use optwf_parms, only: nparmj
@@ -450,6 +450,7 @@ c Optimization flags (vmc/dmc only)
         call p2gtad('optwf:method', method, 'linear', 1)
         call p2gtid('optwf:idl_flag', idl_flag, 0, 1)
         call p2gtid('optwf:ilbfgs_flag', ilbfgs_flag, 0, 1)
+        call p2gtid('optwf:ilbfgs_m',ilbfgs_m,5,1)
         call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
 
         call p2gtid('optwf:ibeta',ibeta,-1,1)

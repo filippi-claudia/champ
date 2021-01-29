@@ -3,20 +3,19 @@
       use olbfgs, only: initialize_olbfgs
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
-      use contrl, only: nblk
-
+      use contrl, only: nblk, nblk_max
+      use optwf_contrl, only: idl_flag, ilbfgs_flag
+      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
 
-
       character*20 dl_alg
-
 
 c vector of wave function parameters
       dimension deltap(MPARM), parameters(MPARM)
 
-      call p2gtid('optwf:ilbfgs_flag',ilbfgs_flag,0,1)
 
       if(method.ne.'sr_n'.or.ilbfgs_flag.eq.0)return
 
@@ -26,18 +25,7 @@ c vector of wave function parameters
 
       if(nparm.gt.MPARM)call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
-      call p2gtid('optwf:nopt_iter',nopt_iter,6,1)
-      call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
-      call p2gtfd('optwf:energy_tol',energy_tol,1.d-3,1)
-
-      call p2gtfd('optwf:dparm_norm_min',dparm_norm_min,1.0d0,1)
       write(6,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
-
-      call p2gtfd('optwf:sr_tau',sr_tau,0.02,1)
-      call p2gtfd('optwf:sr_adiag',sr_adiag,0.01,1)
-      call p2gtfd('optwf:sr_eps',sr_eps,0.001,1)
-      call p2gtid('optwf:idl_flag',idl_flag,0,1)
-      call p2gtid('optwf:ilbfgs_flag',ilbfgs_flag,0,1)
 
       write(6,'(/,''SR adiag: '',f10.5)') sr_adiag
       write(6,'(''SR tau:   '',f10.5)') sr_tau
@@ -56,7 +44,6 @@ c Initialize DL vectors to zero
       call fetch_parameters(parameters)
       
       ! initialize olbfgs
-      call p2gtid('optwf:ilbfgs_m',ilbfgs_m,5,1)
       call initialize_olbfgs(nparm, ilbfgs_m)
 
 c do iteration

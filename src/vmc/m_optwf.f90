@@ -1,5 +1,6 @@
 module optwf_contrl
-    !> Arguments: ioptci, ioptjas, ioptorb, nparm, nopt_iter, micro_iter_sr, energy_tol,
+    !> Arguments: ioptci, ioptjas, ioptorb, idl_flag, ilbfgs_flag, ilbfgs_m, nparm,
+    !>            nopt_iter, micro_iter_sr, energy_tol,
     !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j, 
     !>            iapprox, ncore, iuse_orbeigv, no_active, multiple_adiag, iroot_geo,
     !>            ilastvmc, sr_tau, sr_adig, sr_adiag, sr_eps 
@@ -12,6 +13,7 @@ module optwf_contrl
     integer :: ioptorb
     integer :: idl_flag
     integer :: ilbfgs_flag
+    integer :: ilbfgs_m
     integer :: nparm
     integer :: nopt_iter
     integer :: micro_iter_sr
@@ -37,7 +39,7 @@ module optwf_contrl
 
     private
     public :: ioptwf
-    public :: idl_flag, ilbfgs_flag
+    public :: idl_flag, ilbfgs_flag, ilbfgs_m
     public :: ioptci, ioptjas, ioptorb, nparm
     public :: nopt_iter, micro_iter_sr, energy_tol, dparm_norm_min
     public :: nvec, nvecx, alin_adiag, alin_eps, lin_jdav
