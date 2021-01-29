@@ -5,6 +5,7 @@
       
       ! is noteven in master
       use mpiconf, only: idtask
+      use optwf_contrl, only: sr_tau , sr_adiag
       
       implicit real*8(a-h,o-z)
 
@@ -28,9 +29,6 @@
 
 c we only need h_sr = - grad_parm E
       call sr_hs(nparm,sr_adiag)
-
-      call p2gtfd('optwf:sr_adiag',sr_adiag,0.01,1)
-      call p2gtfd('optwf:sr_tau',sr_tau,0.02,1)
 
       if(idtask.eq.0) then 
 c update stored Hessian approximation
