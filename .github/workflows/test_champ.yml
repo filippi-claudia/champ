@@ -25,12 +25,12 @@ jobs:
       run: |
 
            # save the module file
-           cp src/vmc/m_vmc.f90 ./m_vmc_save
-           cp src/vmc/m_sr.f90 ./m_sr_save
-           cp src/vmc/m_optci.f90 ./m_optci_save
+           # cp src/vmc/m_vmc.f90 ./m_vmc_save
+           # cp src/vmc/m_sr.f90 ./m_sr_save
+           # cp src/vmc/m_optci.f90 ./m_optci_save
 
            # copy module file
-           cp tests/CI_test/h2/module/*.f90 src/vmc
+           # cp tests/CI_test/h2/module/*.f90 src/vmc
 
            # compile
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DENABLE_TEST=ON
@@ -98,12 +98,12 @@ jobs:
       run: |
 
            # save the module files
-           cp src/vmc/m_vmc.f90 ./m_vmc_save
-           cp src/vmc/m_sr.f90 ./m_sr_save
-           cp src/vmc/m_optci.f90 ./m_optci_save
+           # cp src/vmc/m_vmc.f90 ./m_vmc_save
+           # cp src/vmc/m_sr.f90 ./m_sr_save
+           # cp src/vmc/m_optci.f90 ./m_optci_save
 
            # copy module files to src
-           cp tests/CI_test/psb3/module/*.f90 src/vmc
+           # cp tests/CI_test/psb3/module/*.f90 src/vmc
 
            # compile
            rm -rf bin build
