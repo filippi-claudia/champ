@@ -771,6 +771,7 @@ CVARDOC number of quadrature points
             call set_ps_champ_filenames()
             call readps_champ
            else
+            call set_ps_tm_filenames()
             call readps_tm
           endif
         endif
@@ -1051,7 +1052,6 @@ CKEYDOC filename: file containing orbitals coefficients
       use vmc_mod, only: MORB, MBASIS
       use coefs, only: coef, nbasis, norb
       use inputflags, only: ilcao
-
       use pcm_fdc, only: fs
 
       ! was not in master but is needed
@@ -1059,10 +1059,7 @@ CKEYDOC filename: file containing orbitals coefficients
 
       implicit real*8(a-h,o-z)
 
-
-
 c fs NOTE: additional variable norbv for efp orbitals removed 
-
 
       character filename*(*)
 
@@ -1111,7 +1108,6 @@ CKEYDOC position and type for each atom and ghost atom
       end
 
 c-----------------------------------------------------------------------
-
       subroutine read_exponents(iu,iwft)
 C$INPUT exponents inp i=1
 CKEYDOC Basis function exponents (only if no numerical basis)
@@ -1847,33 +1843,21 @@ c Set all force displacements to zero
 c-----------------------------------------------------------------------
       subroutine read_jasderiv(iu)
 C$INPUT jasderiv inp
+
       use optjas, only: MPARMJ
       use atom, only: nctype
       use jaspar, only: nspin1, is
       use jaspar4, only: norda, nordb, nordc
       use jaspointer, only: npoint, npointa
       use numbas, only: numr
-
       use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
       use optwf_parms, only: nparmj
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use bparm, only: nspin2b
       use contr2, only: ijas
       use contr2, only: isc
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
       na1=1
       na2=nctype
@@ -1958,12 +1942,11 @@ c-----------------------------------------------------------------------
       subroutine read_sym(nsym,mo,fn)
 C$INPUT sym_labels i i a=<input>
 CKEYDOC Read symmetry information
+
       use coefs, only: norb
       use optorb, only: irrep
+
       implicit real*8(a-h,o-z)
-
-
-
 
       character fn*(*)
       character atmp*80
@@ -1995,7 +1978,6 @@ CKEYDOC Read which virtual orbitals are mixed with the occupied ones
 
       implicit real*8(a-h,o-z)
 
-
       character fn*(*)
       character atmp*80
 
@@ -2021,11 +2003,11 @@ c-----------------------------------------------------------------------
 C$INPUT energies i a=<input>
 C$INPUT eigenvalues i a=<input>
 CKEYDOC Read orbital energies 
+
       use coefs, only: norb
       use optorb, only: orb_energy
+
       implicit real*8(a-h,o-z)
-
-
 
 
       character fn*(*)
@@ -2045,16 +2027,14 @@ c----------------------------------------------------------------------
       subroutine read_dmatrix(no,ns,fn)
 C$INPUT dmatrix i i a=<input> 
 CKEYDOC Read diagonal density matrix information.
+
       use vmc_mod, only: MORB
       use sa_weights, only: iweight, nweight, weights
       use mstates_mod, only: MSTATES
       use coefs, only: norb
       use optorb, only: dmat_diag
+
       implicit real*8(a-h,o-z)
-
-
-
-
 
       character fn*(*)
 
