@@ -37,7 +37,7 @@ contains
         use optwf_corsam, only: energy, energy_err, force
         use optwf_contrl, only: dparm_norm_min, nopt_iter
         use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
-        use contrl, only: nblk
+        use contrl, only: nblk, nblk_max
         use method_opt, only: method
 
         implicit None
