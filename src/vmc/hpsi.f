@@ -26,22 +26,14 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use mmpol_cntrl, only: immpol
 
       use efield, only: iefield
-
+      use distance_mod, only: rshift, r_en, rvec_en
       use pcm_cntrl, only: ipcm
       use slater, only: d2dx2, ddx, fp, fpp, slmi
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
 c Calculates energy
-
-      
-
 
       dimension coord(3,*),psid(*),energy(*)
       dimension denergy(nstates),eloc_det(ndet,2),vpsp_det(2),dvpsp_dj(MPARMJ)

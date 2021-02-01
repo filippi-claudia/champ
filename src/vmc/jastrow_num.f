@@ -45,10 +45,6 @@ c subroutine to calculate jastrow factor,its derivatives
 c and the potential
 
 
-
-
-      
-
       dimension x(3,*),v(3,*)
       dimension rp(3,nelec,ncent_tot),rm(3,nelec,ncent_tot)
      &,rp2(3,nelec,ncent_tot),rm2(3,nelec,ncent_tot)

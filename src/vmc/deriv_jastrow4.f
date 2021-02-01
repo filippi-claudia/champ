@@ -25,20 +25,11 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use contr2, only: isc
 
       use vardep, only: cdep, iwdepend, nvdepend
-
+      use distance_mod, only: rshift, r_en, rvec_en
       use force_analy, only: iforce_analy
       use cuspmat4, only: d, iwc4, nterms
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-      
-
 
       parameter (zero=0.d0,one=1.d0,two=2.d0)
       parameter (half=.5d0,eps=1.d-12)

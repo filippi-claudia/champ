@@ -1850,7 +1850,6 @@ c Written by Cyrus Umrigar
 
 
 
-
       
 
       dimension x(3,*)
@@ -1919,12 +1918,6 @@ c Written by Cyrus Umrigar
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-      
 
       dimension x(3,*)
 

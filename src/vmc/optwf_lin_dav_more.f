@@ -1,4 +1,4 @@
-      subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,adiag,ethr)
+      subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,index_more,adiag,ethr)
 
       use mpi
       use sr_mod, only: MPARM, MVEC
@@ -12,12 +12,17 @@
       use optwf_parms, only: nparmd, nparmj
       use sr_mat_n, only: jfj
       use sr_mat_n, only: obs_tot
-    
+      use optwf_sr_mod, only: sr_hs
+      
       implicit real*8(a-h,o-z)
 
-      dimension e(nvecx),evc(MPARM,nvecx),itype(nvecx),overlap_psi(nvecx,nstates)
-      dimension index_overlap(nvecx),anorm(nvecx)
-      dimension deltap(*),deltap_more(MPARM*nstates,5)
+      include 'mpif.h'
+
+
+
+
+      dimension e(nvecx), evc(MPARM,nvecx), itype(nvecx), overlap_psi(nvecx,nstates),index_overlap(nvecx),anorm(nvecx)
+      dimension deltap(*),deltap_more(MPARM*nstates,5),index_more(5,nstates)
 
       call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
 
@@ -37,25 +42,36 @@
         itype(ivec)=1
  20     evc(ivec,ivec)=1.d0
 
+      ! regterg
       if(lin_jdav.eq.0) then
-
        write(6,*) "USING OLD REGTERG"
 
         call regterg( nparm_p1, MPARM, nvec, nvecx, evc, ethr,
      &                e, itype, notcnv, idav_iter, ipr, idtask )
 
-        write(6,'(''LIN_D: no. iterations'',i4)') idav_iter
-        write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
-
+       ! Davidson DPR
        elseif(lin_jdav.eq.1) then
-       write(6,*) "USING DAVIDSON WRAP: FREE VERSION"
+        write(6,*) "USING DPR DAVIDSON"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, nvecx, evc, 
-     &       ethr, e, itype, notcnv, idav_iter, ipr)
+     &       ethr, e, itype, notcnv, idav_iter, ipr, "DPR")
+
+       ! Davidson JOCC
+       elseif(lin_jdav.eq.2) then
+        write(6,*) "USING GJD DAVIDSON"
+         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, nvecx, evc, 
+     &       ethr, e, itype, notcnv, idav_iter, ipr, "GJD")
+
        else
-         call fatal_error('LIND: lin_jdav < 2')
+         call fatal_error('LIND: lin_jdav must be 0, 1 or 2')
+         
       endif
 
+      write(6,'(''LIN_D: no. iterations'',i4)') idav_iter
+      write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
+
       call my_second(2,'david ')
+
+
       call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)
 c idtask.eq.0
       if(idtask.eq.0)  then
@@ -89,8 +105,8 @@ c idtask.eq.0
             deltap(i)=deltap(i)/bot
           enddo
 
-         else                   
-c else means if i optimize jastrow and or orbitals
+         else
+c elseif I do not optimize jastrow and or orbitals
 
           do istate=1,nstates
             call sort(nvec,overlap_psi(1,istate),index_overlap)
@@ -101,9 +117,10 @@ c else means if i optimize jastrow and or orbitals
               deltap(i+nparm*(istate-1))=evc(i,i_overlap_max)/anorm(i_overlap_max)
             enddo
 
-c save 5 additional vectors with large overlap
+c Save 5 additional vectors with large overlap
             do ivec=1,5
               idx_ivec=index_overlap(nvec-ivec)
+              index_more(ivec,istate)=idx_ivec
               do i=1,nparm
                 deltap_more(i+nparm*(istate-1),ivec)=evc(i,idx_ivec)/anorm(idx_ivec)
               enddo
@@ -125,8 +142,8 @@ c     enddo
         do ivec=1,5
           call MPI_BCAST(deltap_more(1,ivec),nparm*nstates,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         enddo
+        call MPI_BCAST(index_more,5*nstates,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       endif
-
 
       return              ! deltap
       end

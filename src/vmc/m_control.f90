@@ -42,7 +42,15 @@ module contr3
 
     private
     public :: mode
+    public :: init_control_mode
     save
+contains
+    subroutine init_control_mode(str_mode)
+        implicit None
+        character(12), intent(IN) :: str_mode
+        mode = str_mode
+    end subroutine init_control_mode
+
 end module contr3
 
 module contrl_per
@@ -91,6 +99,67 @@ contains
     end subroutine deallocate_contrldmc
 
 end module contrldmc
+
+module contrl_file
+
+    implicit None
+    character(20) :: log_filename
+    character(20) :: proc_filename
+
+    private
+    public :: log_filename, proc_filename
+    public :: close_files
+    public :: init_procfile, init_logfile
+    save
+contains
+
+! Open all log/output files at once does not work because init_procfile
+! needs to know the value of ipr flag from read_input.f.
+!    subroutine init_files()
+!        call init_logfile()
+!        call init_procfile()
+!    end subroutine init_files
+
+    subroutine close_files()
+        close (5)
+        close (6)
+        close (45)
+    end subroutine close_files
+
+    subroutine init_logfile()
+        use mpiconf, only: wid
+
+        !> Open the standard output and the log file only on the master
+        if (wid) then
+            log_filename = 'output.log'
+        else
+            log_filename = '/dev/null'
+            close (6)
+            open (6, file='/dev/null')
+        endif
+        open (45, file=log_filename, status='unknown')
+    end subroutine init_logfile
+
+    subroutine init_procfile()
+        use mpiconf, only: idtask
+        use const, only: ipr
+
+        if (ipr .gt. 1) then
+            if (idtask .lt. 10) then
+                write (proc_filename, '(i1)') idtask
+            elseif (idtask .lt. 100) then
+                write (proc_filename, '(i2)') idtask
+            elseif (idtask .lt. 1000) then
+                write (proc_filename, '(i3)') idtask
+            else
+                write (proc_filename, '(i4)') idtask
+            endif
+            proc_filename = 'check.'//proc_filename(1:index(proc_filename, ' ') - 1)
+            open (unit=88, form='formatted', file=proc_filename)
+        endif
+    end subroutine init_procfile
+
+end module contrl_file
 
 subroutine allocate_m_control()
     use contrldmc, only: allocate_contrldmc

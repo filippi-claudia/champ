@@ -12,10 +12,6 @@ c calculate interparticle distances
       
       implicit real*8(a-h,o-z)
 
-
-
-      
-
       dimension x(3,*)
 
       if(iel.eq.0) then
@@ -105,15 +101,10 @@ c restore interparticle distances (called if move rejected)
       use atom, only: ncent
       use ghostatom, only: nghostcent
       use const, only: nelec
+      use distance_mod, only: rshift, r_en, rvec_en
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
-
-
-
-
-
-      
 
 c Calculate e-N inter-particle distances
       do 25 ic=1,ncent+nghostcent

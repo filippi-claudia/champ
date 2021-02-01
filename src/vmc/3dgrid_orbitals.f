@@ -27,7 +27,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       implicit real*8(a-h,o-z)
 
 
-      
+
 
       real*4  bc(MXNSTEP,MXNSTEP,3:8,nelec/2+1), wk(80*MXNSTEP3)
 
@@ -410,7 +410,7 @@ c Lagrange interpolation routines
       implicit real*8(a-h,o-z)
 
 
-      
+
 
       character*(32) filename
       integer a,b,c

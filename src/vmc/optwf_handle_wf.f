@@ -592,7 +592,7 @@ c-----------------------------------------------------------------------
 
       entry restore_lcao_best
 
-      if(ioptorb.eq.0) return
+c     if(ioptorb.eq.0) return
 
       do 20 i=1,norb
        do 20 j=1,nbasis
@@ -605,6 +605,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use vmc_mod, only: MDET
       use csfs, only: ccsf, ncsf, nstates
+      use csfs, only: cxdet, iadet, ibdet, icxdet
       use mstates_mod, only: MSTATES
 
       use dets, only: cdet, ndet
@@ -633,7 +634,7 @@ c-----------------------------------------------------------------------
 
       entry restore_ci_best
 
-      if(ioptci.eq.0) return
+c     if(ioptci.eq.0) return
 
       do 30 j=1,nstates
         do 30 i=1,ndet
@@ -642,6 +643,21 @@ c-----------------------------------------------------------------------
       do 40 j=1,nstates
        do 40 icsf=1,ncsf
    40   ccsf(icsf,j,1)=ccsf_best(icsf,j)
+          
+c if kref (iwdetorb, cxdet) has changed
+      if(ncsf.gt.0) then
+        do 50 j=1,nstates
+          do 45 k=1,ndet
+   45       cdet(k,j,1)=0
+          do 50 icsf=1,ncsf
+            do 50 k=iadet(icsf),ibdet(icsf)
+              kx=icxdet(k)
+              cdet(kx,j,1)=cdet(kx,j,1)+ccsf(icsf,j,1)*cxdet(k)
+   50  continue
+
+c reset kref=1
+      call multideterminants_define(0,0)
+      endif
 
       return
       end
@@ -923,10 +939,6 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
-
-
-        
 
 c Note: we do not vary the first (i0) CI coefficient unless a run where we only optimize the CI coefs
 

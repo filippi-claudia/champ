@@ -1,14 +1,20 @@
 module optwf_contrl
     !> Arguments: ioptci, ioptjas, ioptorb, nparm
 
+    integer :: ioptwf
     integer :: ioptci
     integer :: ioptjas
     integer :: ioptorb
+    integer :: idl_flag
+    integer :: ilbfgs_flag
     integer :: nparm
 
     private
+    public :: ioptwf
+    public :: idl_flag, ilbfgs_flag
     public :: ioptci, ioptjas, ioptorb, nparm
     save
+
 end module optwf_contrl
 
 module optwf_corsam
@@ -77,13 +83,13 @@ module optwf_nparmj
     public :: allocate_optwf_nparmj, deallocate_optwf_nparmj
     save
 contains
-    !  subroutine allocate_optwf_nparmj()
-    !      use vmc_mod, only: MCTYPE, MCTYP3X
-    !      if (.not. allocated(nparma)) allocate (nparma(MCTYP3X))
-    !      if (.not. allocated(nparmb)) allocate (nparmb(3))
-    !      if (.not. allocated(nparmc)) allocate (nparmc(MCTYPE))
-    !      if (.not. allocated(nparmf)) allocate (nparmf(MCTYPE))
-    !  end subroutine allocate_optwf_nparmj
+    subroutine allocate_optwf_nparmj()
+        use vmc_mod, only: MCTYPE, MCTYP3X
+        if (.not. allocated(nparma)) allocate (nparma(MCTYP3X))
+        if (.not. allocated(nparmb)) allocate (nparmb(3))
+        if (.not. allocated(nparmc)) allocate (nparmc(MCTYPE))
+        if (.not. allocated(nparmf)) allocate (nparmf(MCTYPE))
+    end subroutine allocate_optwf_nparmj
 
     subroutine deallocate_optwf_nparmj()
         if (allocated(nparmf)) deallocate (nparmf)
@@ -124,12 +130,20 @@ module optwf_wjas
     save
 contains
     subroutine allocate_optwf_wjas()
+<<<<<<< HEAD
         use atom, only: nctype_tot
         use vmc_mod, only: MCTYPE, MCTYP3X
         if (.not. allocated(iwjasa)) allocate (iwjasa(83, MCTYP3X))
         if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3))
         if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype_tot))
         if (.not. allocated(iwjasf)) allocate (iwjasf(15, nctype_tot))
+=======
+        use vmc_mod, only: MCTYPE, MCTYP3X
+        if (.not. allocated(iwjasa)) allocate (iwjasa(83, MCTYP3X))
+        if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3))
+        if (.not. allocated(iwjasc)) allocate (iwjasc(83, MCTYPE))
+        if (.not. allocated(iwjasf)) allocate (iwjasf(15, MCTYPE))
+>>>>>>> refac-problematic
     end subroutine allocate_optwf_wjas
 
     subroutine deallocate_optwf_wjas()
@@ -143,6 +157,7 @@ end module optwf_wjas
 
 subroutine allocate_m_optwf()
     use optwf_corsam, only: allocate_optwf_corsam
+<<<<<<< HEAD
     ! use optwf_nparmj, only: allocate_optwf_nparmj
     use optwf_wjas, only: allocate_optwf_wjas
 
@@ -152,3 +167,12 @@ subroutine allocate_m_optwf()
 end subroutine allocate_m_optwf
 
 
+=======
+    use optwf_nparmj, only: allocate_optwf_nparmj
+    use optwf_wjas, only: allocate_optwf_wjas
+
+    call allocate_optwf_corsam()
+    call allocate_optwf_nparmj()
+    call allocate_optwf_wjas()
+end subroutine allocate_m_optwf
+>>>>>>> refac-problematic

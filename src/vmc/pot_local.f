@@ -10,10 +10,6 @@
 
       implicit real*8(a-h,o-z)
 
-
-
-      
-
 c  pe from nucleus-nucleus repulsion
       pe=pecent
       pe_ee=0.d0

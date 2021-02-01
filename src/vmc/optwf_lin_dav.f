@@ -24,9 +24,9 @@
 
       character*20 method_sav
 
-      dimension grad(MPARM*nstates), grad_more(MPARM*nstates,5)
+      dimension grad(MPARM*nstates),grad_more(MPARM*nstates,5),index_more(5,nstates)
 
-      if(method.ne.'lin_d')return
+      if(method .ne.'lin_d')return
 
       call set_nparms_tot
 
@@ -43,6 +43,7 @@
       call p2gtid('optwf:lin_nvecx',nvecx,MVEC,1)
       call p2gtfd('optwf:lin_adiag',alin_adiag,0.01,1)
       call p2gtfd('optwf:lin_eps',alin_eps,0.001,1)
+
 
       call p2gtid('optwf:func_omega',ifunc_omega,0,1)
       if(ifunc_omega.gt.0) then
@@ -115,7 +116,7 @@ c        efin_old = efin define efin_old as the energy before
 
    6      continue
 
-          call lin_d(nparm,nvec,nvecx,grad,grad_more,alin_adiag,alin_eps)
+          call lin_d(nparm,nvec,nvecx,grad,grad_more,index_more,alin_adiag,alin_eps)
           if(nstates.eq.1) call dscal(nparm,-1.d0,grad,1)
 
           if(method.eq.'lin_d'.and.ioptorb+ioptjas.gt.0) then
@@ -249,6 +250,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       return
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+<<<<<<< HEAD
 !       subroutine jdqz_driver( n, kmax, jmin, jmax, evc, eps,     
 !      &                        e, e0, itype, notcnv, idav_iter , ipr )
 !       use sr_mod, only: MPARM, MOBS, MCONF, MVEC
@@ -292,3 +294,5 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !       end
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+=======
+>>>>>>> refac-problematic

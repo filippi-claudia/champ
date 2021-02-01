@@ -30,7 +30,7 @@ c routine to accumulate estimators for energy etc.
       use mstates_ctrl, only: iguiding
       
       use optorb_cblock, only: ns_current
-      
+      use distance_mod, only: rshift, r_en, rvec_en
       use multislater, only: detiab
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
