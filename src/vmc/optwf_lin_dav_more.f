@@ -13,10 +13,10 @@
       use sr_mat_n, only: jfj
       use sr_mat_n, only: obs_tot
       use optwf_sr_mod, only: sr_hs
-      
+      use mpiconf
       implicit real*8(a-h,o-z)
 
-      include 'mpif.h'
+      ! include 'mpif.h'
 
 
 
