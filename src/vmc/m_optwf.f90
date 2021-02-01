@@ -36,6 +36,8 @@ module optwf_contrl
     real(dp) :: sr_tau
     real(dp) :: sr_adiag
     real(dp) :: sr_eps
+    character(20) :: dl_alg
+    real(dp) :: dl_mom
 
     private
     public :: ioptwf
@@ -49,6 +51,7 @@ module optwf_contrl
     public :: iroot_geo
     public :: ilastvmc
     public :: sr_tau, sr_adiag, sr_eps
+    public :: dl_alg, dl_mom
     save
 
 end module optwf_contrl

@@ -81,7 +81,7 @@ c and Anthony Scemema
       use numbas1, only: nbastyp
       use numbas2, only: ibas0, ibas1
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, ioptwf
-      use optwf_contrl, only: idl_flag, ilbfgs_flag, ilbfgs_m
+      use optwf_contrl, only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
       use optwf_contrl, only: ibeta, ratio_j, iapprox, ncore
       use optwf_contrl, only: iuse_orbeigv
       use optwf_parms, only: nparmj
@@ -151,7 +151,6 @@ c      include 'dmc.h' now emty
       character*32 keyname
       character*10 eunit
       character*16 cseed
-      character*20 dl_alg
       dimension irn(4),cent_tmp(3),anorm(MBASIS)
 
 c Inputs:
@@ -480,7 +479,6 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
         if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
 
         call p2gtad('optwf:method',method,'linear',1)
-        call p2gtad('optwf:dl_alg',dl_alg,'nag',1)
         call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
 
 ! lin_d, sr_n, mix_n and linear shared flags: 
@@ -519,13 +517,26 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
           call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
           call p2gtfd('optwf:sr_eps', sr_eps, 0.001, 1)
         end if
-!! mix_n and linear flags:
+! mix_n and linear flags:
         if ((method.eq.'mix_n').or.(method.eq.'linear')) then
            if(iforce_analy.gt.0) call p2gtid('optgeo:iroot_geo',iroot_geo,0,0)
            call p2gtid('optwf:nblk_ci',nblk_ci,nblk,1)
            call p2gtid('optwf:ilastvmc',ilastvmc,1,1)
         end if
-        
+! dl flags:
+        if (idl_flag .gt. 0) then 
+            call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
+            call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
+            call p2gtfd('optwf:dparm_norm_min', dparm_norm_min, 1.0d0, 1)
+
+            call p2gtfd('optwf:sr_tau', sr_tau, 0.02, 1)
+            call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
+            call p2gtfd('optwf:sr_eps', sr_eps, 0.001, 1)
+
+            call p2gtfd('optwf:dl_mom', dl_mom, 0.0, 1)
+            call p2gtad('optwf:dl_alg', dl_alg, 'nag', 1)
+        end if
+
         if(method.eq.'linear'.and.MXREDUCED.ne.MXORBOP) 
      &    call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')
         if((method.eq.'sr_n'.or.method.eq.'lin_d').and.nstep*nblk_max.gt.MCONF)
