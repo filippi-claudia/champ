@@ -37,7 +37,6 @@ contains
         use optwf_corsam, only: energy, energy_err, force
         use optwf_contrl, only: dparm_norm_min, nopt_iter
         use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
-!        use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
         use contrl, only: nblk
         use method_opt, only: method
 
@@ -149,7 +148,7 @@ contains
 
     end subroutine init_arrays
 
-    subroutine deallocate_arrays(options)
+    subroutine deallocate_arrays()
         !> Deallocate arrays
 
         deallocate (deltap)
