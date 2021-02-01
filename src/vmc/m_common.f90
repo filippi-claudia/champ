@@ -178,10 +178,12 @@ module coefs
     real(dp), dimension(:, :, :), allocatable :: coef !(MBASIS,MORB,MWF)
     integer :: nbasis
     integer :: norb
+    integer :: next_max 
 
     private
     public :: coef, nbasis, norb
     public :: allocate_coefs, deallocate_coefs
+    public :: next_max
     save
 contains
     subroutine allocate_coefs()

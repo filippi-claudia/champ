@@ -23,28 +23,6 @@ c----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
-CACTIVATE
-c     if (irstar.ne.1) then
-
-c      Read the variables from the input
-
-       call p2gtid('3dgrid:nstepx',nstep3d(1),IUNDEFINED,1)
-       call p2gtid('3dgrid:nstepy',nstep3d(2),IUNDEFINED,1)
-       call p2gtid('3dgrid:nstepz',nstep3d(3),IUNDEFINED,1)
-
-       call p2gtfd('3dgrid:stepx',step3d(1),UNDEFINED,1)
-       call p2gtfd('3dgrid:stepy',step3d(2),UNDEFINED,1)
-       call p2gtfd('3dgrid:stepz',step3d(3),UNDEFINED,1)
- 
-       call p2gtfd('3dgrid:x0',origin(1),UNDEFINED,1)
-       call p2gtfd('3dgrid:y0',origin(2),UNDEFINED,1)
-       call p2gtfd('3dgrid:z0',origin(3),UNDEFINED,1)
- 
-       call p2gtfd('3dgrid:xn',endpt(1),UNDEFINED,1)
-       call p2gtfd('3dgrid:yn',endpt(2),UNDEFINED,1)
-       call p2gtfd('3dgrid:zn',endpt(3),UNDEFINED,1)
-
 c     Test if the input is consistent
 
        input_ok=1

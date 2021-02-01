@@ -9,14 +9,10 @@
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
 
       implicit real*8(a-h,o-z)
-
-
 
       dimension wtg_new(*),wtg_old(*)
 
@@ -57,9 +53,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
 
       implicit real*8(a-h,o-z)
@@ -85,19 +79,13 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_orb_dump(iu)
 
       use csfs, only: nstates
-
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
 
       implicit real*8(a-h,o-z)
-
-
-
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -111,24 +99,13 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_orb_rstrt(iu)
 
       use csfs, only: nstates
-
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -139,10 +116,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optx_jas_orb_fin(wcum,ecum)
+
       use optorb_mod, only: MXREDUCED
       use csfs, only: nstates
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
-      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_contrl, only: ioptjas, ioptorb, iuse_orbeigv, iapprox
       use optwf_parms, only: nparmj
       use sa_weights, only: weights
       use gradhessj, only: de, dj, dj_e
@@ -150,28 +128,16 @@ c-----------------------------------------------------------------------
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
       ! I think this one is not needed ... 
       ! use gradhess_jas, only: grad_jas
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       dimension wcum(*),ecum(*),grad_orb(MXREDUCED)
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
-
-      call p2gtid('optwf:iuse_orbeigv',iuse_orbeigv,0,1)
-      call p2gtid('optwf:approx_mix',iapprox,0,1)
 
       do 1 i=1,nparmj
         do 1 j=1,nreduced

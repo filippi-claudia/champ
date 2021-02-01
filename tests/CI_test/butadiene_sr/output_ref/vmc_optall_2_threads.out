@@ -24,8 +24,8 @@ INPUT: block exponents missing: all exponents set to 1
            2          46  distinct out of          128
 INPUT: definition of orbital variations missing
 Determinantal orbitals in orbital optimization:   47
-External orbitals in orbital optimization:  179
-Total orbitals in orbital optimization:  226
+External orbitals in orbital optimization:  226
+Total orbitals in orbital optimization:  273
 =========== orbital pair list ==========
  new variation:    1   pair    1    5          spin    3
  new variation:    2   pair    1    7          spin    3
@@ -1753,7 +1753,7 @@ number of electrons placed =   22
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -26.63365 -26.63365(28805)   0.00000(    0) -13.11314(*****)   0.00000(    0)                            0.52841        40
-END       OF equilb CP, REAL TIME IS       0.20      0.20     0     0
+END       OF equilb CP, REAL TIME IS       0.26      0.26     0     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -26.45821 -26.45821( 2560)   0.00000(    0) -13.21100(*****)   0.00000(    0)                            0.51818        40
  -26.05645 -26.25733(10449)   0.00000(    0) -13.10136(*****)   0.00000(    0)                            0.52159        80
@@ -1855,7 +1855,7 @@ END       OF equilb CP, REAL TIME IS       0.20      0.20     0     0
  -26.05985 -26.11375( 1848)   0.00000(    0) -13.06660(93343)   0.00000(    0)                            0.54398      3920
  -26.21186 -26.11474( 1834)   0.00000(    0) -13.06628(92868)   0.00000(    0)                            0.54395      3960
  -26.13153 -26.11491( 1815)   0.00000(    0) -13.06635(92403)   0.00000(    0)                            0.54411      4000
-END       OF all    CP, REAL TIME IS      19.74     19.54    20    20
+END       OF all    CP, REAL TIME IS      27.97     27.70    28    27
 vmc_mov1      butadiene           
 results after        4000. passes,  nstep, nblk =    20   200
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -1982,7 +1982,7 @@ number of electrons placed =   22
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -18.49288 -18.49288(96442)   0.00000(    0)  -8.56449(*****)   0.00000(    0)                            0.49205        40
-END       OF equilb CP, REAL TIME IS      25.06      0.19    25     0
+END       OF equilb CP, REAL TIME IS      33.96      0.27    34     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -21.69131 -21.69131(*****)   0.00000(    0) -10.07951(*****)   0.00000(    0)                            0.50114        40
  -21.84161 -21.76646(71124)   0.00000(    0) -10.17538(*****)   0.00000(    0)                            0.50398        80
@@ -2084,7 +2084,7 @@ END       OF equilb CP, REAL TIME IS      25.06      0.19    25     0
  -20.50680 -20.75425(11558)   0.00000(    0) -10.46527(75298)   0.00000(    0)                            0.49455      3920
  -20.17015 -20.74835(11488)   0.00000(    0) -10.46812(74931)   0.00000(    0)                            0.49458      3960
  -19.76919 -20.73856(11415)   0.00000(    0) -10.45733(74483)   0.00000(    0)                            0.49450      4000
-END       OF all    CP, REAL TIME IS      44.13     19.07    45    19
+END       OF all    CP, REAL TIME IS      58.98     25.02    59    25
 vmc_mov1      butadiene           
 results after        4000. passes,  nstep, nblk =    20   200
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -2311,7 +2311,7 @@ number of electrons placed =   22
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -20.47697 -20.47697(35957)   0.00000(    0) -10.49274(*****)   0.00000(    0)                            0.49659        40
-END       OF equilb CP, REAL TIME IS      53.35      0.19    54     0
+END       OF equilb CP, REAL TIME IS      69.22      0.27    69     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -19.29681 -19.29681(*****)   0.00000(    0)  -8.87379(*****)   0.00000(    0)                            0.49545        40
  -20.72869 -20.01275(*****)   0.00000(    0)  -9.02888(*****)   0.00000(    0)                            0.48636        80
@@ -2433,7 +2433,7 @@ END       OF equilb CP, REAL TIME IS      53.35      0.19    54     0
  -20.95466 -21.01627(10678)   0.00000(    0) -10.55782(69234)   0.00000(    0)                            0.49397      4720
  -20.53993 -21.01227(10598)   0.00000(    0) -10.55291(68908)   0.00000(    0)                            0.49397      4760
  -22.49084 -21.02459(10582)   0.00000(    0) -10.55242(68613)   0.00000(    0)                            0.49407      4800
-END       OF all    CP, REAL TIME IS      75.83     22.48    77    22
+END       OF all    CP, REAL TIME IS      99.11     29.89    99    29
 vmc_mov1      butadiene           
 results after        4800. passes,  nstep, nblk =    20   240
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -2633,7 +2633,7 @@ number of electrons placed =   22
 initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -21.04979 -21.04979(36649)   0.00000(    0) -10.26575(*****)   0.00000(    0)                            0.51023        40
-END       OF equilb CP, REAL TIME IS      86.24      0.17    87     0
+END       OF equilb CP, REAL TIME IS     110.06      0.22   110     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -20.92333 -20.92333(42458)   0.00000(    0) -10.16144(*****)   0.00000(    0)                            0.52841        40
  -20.62405 -20.77369(23366)   0.00000(    0) -10.28108(*****)   0.00000(    0)                            0.49773        80
@@ -2779,7 +2779,7 @@ END       OF equilb CP, REAL TIME IS      86.24      0.17    87     0
  -22.76685 -21.61077( 8320)   0.00000(    0) -10.75416(64079)   0.00000(    0)                            0.50021      5680
  -21.55874 -21.61041( 8262)   0.00000(    0) -10.75444(63854)   0.00000(    0)                            0.50018      5720
  -22.23358 -21.61473( 8213)   0.00000(    0) -10.75545(63636)   0.00000(    0)                            0.50031      5760
-END       OF all    CP, REAL TIME IS     110.95     24.71   112    25
+END       OF all    CP, REAL TIME IS     145.14     35.09   145    35
 vmc_mov1      butadiene           
 results after        5760. passes,  nstep, nblk =    20   288
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor

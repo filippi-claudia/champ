@@ -152,6 +152,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optci_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optjas_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f
     ${CMAKE_CURRENT_SOURCE_DIR}/error.f
     ${INPUT_DIR}/p2_defaults.f

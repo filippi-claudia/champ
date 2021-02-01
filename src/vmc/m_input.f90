@@ -14,7 +14,8 @@ module header
    !             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
    !             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
    !             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
-   !             ihessian_zmat
+   !             ihessian_zmat, node_cutoff, eps_node_cutoff, scalecoef, iqmmm
+   use precision_kinds, only: dp
 
    integer :: iznuc
    integer :: igeometry
@@ -36,6 +37,10 @@ module header
    integer :: imodify_zmat
    integer :: izmatrix_check
    integer :: ihessian_zmat
+   integer :: node_cutoff 
+   real(dp) :: eps_node_cutoff
+   real(dp) :: scalecoef
+   integer :: iqmmm
 
    private
    public :: iznuc,igeometry,ibasis_num,ilcao, iexponents
@@ -43,10 +48,35 @@ module header
    public :: ici_def,iforces,icsfs,imstates,igradients,icharge_efield
    public :: imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check
    public :: ihessian_zmat
+   public :: node_cutoff, eps_node_cutoff, scalecoef
+   public :: iqmmm
    save
  end module inputflags
 
-  module method_opt
+ module general
+    !> Arguments: pooldir, pp_id, bas_id, filename, filenames_bas_num,
+    !>            filenames_ps_gauss, filenames_ps_tm, atomtyp,
+    !>            atomsymbol, wforce
+    character*256 :: pooldir
+    character*256 :: pp_id
+    character*256 :: bas_id 
+    character*256 :: filename 
+    character*256, allocatable, dimension(:) :: filenames_bas_num
+    character*256, allocatable, dimension(:) :: filenames_ps_gauss
+    character*256, allocatable, dimension(:) :: filenames_ps_champ
+    character*256, allocatable, dimension(:) :: filenames_ps_tm
+    character*20  :: atomtyp 
+    character*20  :: atomsymbol
+    character*20  :: wforce 
+
+    private
+    public :: pooldir, pp_id, bas_id, atomtyp, filename
+    public :: filenames_bas_num, filenames_ps_gauss
+    public :: filenames_ps_champ, filenames_ps_tm, atomsymbol, wforce
+    save
+ end module general
+
+ module method_opt
    !> should be in the input somehow no ?
    !> Arguments: method
  

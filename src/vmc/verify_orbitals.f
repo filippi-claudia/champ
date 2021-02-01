@@ -1,16 +1,14 @@
       subroutine verify_orbitals
+
       use vmc_mod, only: MELEC, MORB
       use const, only: nelec
       use dets, only: ndet
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
       use dorb_m, only: iworbd
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+
       implicit real*8(a-h,o-z)
-
-
-
 
 c orbital indices in determinants of trial wave function
       ndetorb=0
@@ -27,8 +25,6 @@ c orbital indices in determinants of trial wave function
        enddo
       enddo
  10   format('Det ',i4,' column ',i4,' orb index ',i4,' norb ',i4)
-
-      call p2gtid('optwf:ioptorb',ioptorb,0,1)
 
       if(ioptorb.eq.0) then
         norb=ndetorb

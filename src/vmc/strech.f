@@ -10,8 +10,10 @@ c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
 
 c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
+
       use pcm, only: MCHS, MCHV
       use force_mod, only: MFORCE, MFORCE_WT_PRD
+      use forcepar, only: istrech, alfstr
       use vmc_mod, only: MELEC, MCENT
       use atom, only: znuc, cent, pecent, iwctype, ncent
       use const, only: nelec
@@ -25,28 +27,22 @@ c rigidly with that nucleus
       use pcm_parms, only: ch, nch, nchs
       use pcm_parms, only: nesph
       use pcm_parms, only: xpol
-
       use pcm_ameta, only: eta
       use pcm_pot, only: penups, penupv
       use pcm_inda, only: inda
+      use optwf_contrl, only: ioptwf
 
       implicit real*8(a-h,o-z)
 
-
-
-
-
       parameter (zero=0.d0,one=1.d0)
-
 
       dimension x(3,MELEC),xstrech(3,MELEC),centsav(3,MCENT),pecentn(MFORCE)
       dimension wt(MCENT),dvol(3,3),dwt(3,MCENT),dwtsm(3)
       dimension cent_str(3,MCENT)
       dimension xpolsav(3,MCHV),q_strech(MCHS),efsol(MCHS),wt_pcm(MCENT)
 
-      save centsav,alfstr,pecentn,xpolsav
+      save centsav,pecentn,xpolsav
 
-      call p2gtid('optwf:ioptwf',ioptwf,0,1)
 
 c set center and n-n potential for secondary geometries
       pecent=pecentn(ifr)
@@ -149,11 +145,6 @@ c end loop over electrons
 c Set up n-n potential energy (and PCM related quantities) at displaced positions 
       entry setup_force
 
-      call p2gtid('optwf:ioptwf',ioptwf,0,1)
-
-      call p2gtid('forces:istrech',istrech,0,1)
-      call p2gtfd('forces:alfstr',alfstr,4.d0,1)
-
       write(6,'(''istrech,alfstr ='',i4,2f10.5)') istrech,alfstr
 
       do 60 i=1,nforce
@@ -164,8 +155,6 @@ c Set up n-n potential energy (and PCM related quantities) at displaced position
       write(6,'(''iwftypes'',20i2)') (iwftype(i),i=1,nforce)
 
       if(index(mode,'dmc').ne.0) then
-        call p2gtid('forces:nwprod',nwprod,200,1)
-        call p2gtid('forces:itausec',itausec,1,1)
         if(nwprod.gt.MFORCE_WT_PRD) call fatal_error('STRETCH: nwprod gt MFORCE_WT_PRD')
         write(6,'(''nwprod,itausec='',2i4)') nwprod,itausec
       endif

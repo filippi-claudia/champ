@@ -48,25 +48,17 @@ c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
 
       use atom, only: nctype
-
       use jaspar, only: nspin1, nspin2
       use jaspar3, only: a, b, c, scalek
-
       use jaspar4, only: a4, norda, nordb, nordc
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
-
-      ! was not declared in master but is only used
-      ! to read variable ... 
-      use contr2, only: ianalyt_lap, ijas, ifock
+      use contr2, only: ianalyt_lap, ijas, ifock, isc
 
       implicit real*8(a-h,o-z)
 
-
       character*50 fmt
       character*40 filename,filetype
-
-
 
       if(ioptjas.eq.0) return
 
@@ -74,12 +66,6 @@ c-----------------------------------------------------------------------
 
       open(2,file=filename,status='unknown')
 
-      call p2gtid('jastrow:ianalyt_lap',ianalyt_lap,1,1)
-      call p2gti('jastrow:ijas',ijas,1)
-      call p2gti('jastrow:isc',isc,1)
-      call p2gtid('jastrow:nspin1',nspin1,1,1)
-      call p2gtid('jastrow:nspin2',nspin2,1,1)
-      call p2gtid('jastrow:ifock',ifock,0,1)
       write(2,'(''&jastrow ianalyt_lap'',i2,'' ijas'',i2,'' isc'',i2,
      &'' nspin1'',i2,'' nspin2'',i2,'' ifock'',i2)') ianalyt_lap,ijas,isc,nspin1,nspin2,ifock
       write(2,*)
@@ -120,21 +106,15 @@ c tmp
       end
 c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
+
       use vmc_mod, only: MELEC, MORB, MBASIS
       use numbas, only: numr
-
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use inputflags, only: scalecoef
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
 
       character*40 filename,filetype
 
@@ -146,7 +126,6 @@ c-----------------------------------------------------------------------
       open(2,file=filename,status='unknown')
       write(2,'(''lcao '',3i4)') norb+nadorb,nbasis,iwf_fit
 
-      call p2gtfd('general:scalecoef',scalecoef,1.0d0,1)
       if(numr.gt.0) then
         do 20 i=1,norb+nadorb
    20     write(2,'(1000e20.8)') (coef(j,i,1)/scalecoef,j=1,nbasis)
@@ -163,30 +142,24 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine write_ci(iwf_fit,filetype)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use multidet, only: kref
-
       use optwf_contrl, only: ioptci
       use dorb_m, only: iworbd
+      use elec, only: nup
+      use const, only: nelec
+
       implicit real*8(a-h,o-z)
 
-
-
       character*40 filename,filetype
-
-
-
-
 
       if(ioptci.eq.0) return
 
       filename='det'//filetype(1:index(filetype,' ')-1)
       open(2,file=filename,status='unknown')
 
-      call p2gti('electrons:nelec',nelec,1)
-      call p2gti('electrons:nup',nup,1)
       write(2,'(''&electrons nelec '',i4,'' nup '',i4)') nelec,nup
       write(2,'(''# kref'',i4)') kref
       do 1 istate=1,nstates
@@ -960,8 +933,8 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use ci000, only: nciterm
       use ci001_blk, only: ci_o
       use ci003_blk, only: ci_e
-
       use method_opt, only: method
+      use optwf_sr_mod, only: izvzb, i_sr_rescale
 
       implicit real*8(a-h,o-z)
 
@@ -969,8 +942,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)
 
-      call p2gtid('optgeo:izvzb',izvzb,0,1)
-      call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
 
       if(iforce_analy.gt.0.and.izvzb.eq.1) call force_store(l)
 
