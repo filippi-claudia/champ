@@ -89,10 +89,10 @@ jobs:
            python compare_eigenvalues.py
      
            # restore the module files
-           cd $HOME/work/champ/champ
-           cp m_vmc_save ./src/vmc/m_vmc.f90
-           cp m_optci_save ./src/vmc/m_optci.f90
-           cp m_sr_save ./src/vmc/m_sr.f90     
+           # cd $HOME/work/champ/champ
+           # cp m_vmc_save ./src/vmc/m_vmc.f90
+           # cp m_optci_save ./src/vmc/m_optci.f90
+           # cp m_sr_save ./src/vmc/m_sr.f90     
      
     - name: Building_code_for_psb3_butadiene_and_psb2
       run: |
@@ -214,7 +214,7 @@ jobs:
 
            #  restore the module files
            
-           cd $HOME/work/champ/champ
-           cp m_vmc_save ./src/vmc/m_vmc.f90
-           cp m_optci_save ./src/vmc/m_optci.f90
-           cp m_sr_save ./src/vmc/m_sr.f90
+           # cd $HOME/work/champ/champ
+           # cp m_vmc_save ./src/vmc/m_vmc.f90
+           # cp m_optci_save ./src/vmc/m_optci.f90
+           # cp m_sr_save ./src/vmc/m_sr.f90
