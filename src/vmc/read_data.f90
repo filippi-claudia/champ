@@ -1158,7 +1158,7 @@ subroutine read_modify_zmat(iu)
     implicit real*8(a - h, o - z)
 
     call p2gti('atoms:natom', ncent, 1)
-    if (ncent .gt. MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
+    ! if (ncent .gt. MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
 
     if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
 
@@ -1191,7 +1191,7 @@ subroutine read_hessian_zmat(iu)
     implicit real*8(a - h, o - z)
 
     call p2gti('atoms:natom', ncent, 1)
-    if (ncent .gt. MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
+    ! if (ncent .gt. MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
 
     if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))
 

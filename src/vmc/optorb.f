@@ -840,6 +840,7 @@ c Omit doubly occupied in all input determinants
    3    continue
    5  continue
 c Omit empty orbitals
+
       do 6 i=1,ndetorb
        iflag(2,i)=0
        do 6 k=1,ndet
@@ -858,6 +859,8 @@ c Omit empty orbitals
        write(6,'(''OPTORB_DEFINE: noptvirt,nadorb'',2i6)') norbvirt,nadorb
        call fatal_error('OPTORB_DEFINE: Mixvirt block, inconsistent')
       endif
+
+
 
 c Orbital variation io -> io+a*jo
 c io: occupied orbitals in twf
@@ -963,6 +966,7 @@ c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
 
       icount_orbdef=icount_orbdef+1
 
+      write(6,'(''Done with  optorb_define'')')
       return
       end
 c-----------------------------------------------------------------------

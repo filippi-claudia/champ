@@ -28,7 +28,8 @@ c Written by Claudia Filippi
       integer iupdate
       character*20 filename
 
-      dimension enow(nstates,MFORCE)
+      ! dimension enow(nstates,MFORCE)
+      real, dimension(nstates, MFORCE), INTENT(INOUT) :: enow
 
       real(dp), dimension(:), allocatable  :: local_obs
       real(dp), dimension(:), allocatable  :: collect
@@ -37,7 +38,6 @@ c Written by Claudia Filippi
       MOBS = nstates*(8+5*MFORCE)+10
       allocate(local_obs(MOBS))
       allocate(collect(MOBS))
-      
       ! allocate(enow(nstates, MFORCE))
 
       ! ipudate was not declared anywhere

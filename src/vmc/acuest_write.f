@@ -1,4 +1,4 @@
-      subroutine acuest_write(enow,nproc)
+      subroutine acuest_write(enow, nproc)
 c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
@@ -18,8 +18,8 @@ c routine to write out estimators for energy etc.
 
       implicit real*8(a-h,o-z)
 
-
-      dimension enow(nstates,MFORCE)
+      real, dimension(nstates, MFORCE), INTENT(INOUT) :: enow
+      ! dimension enow(nstates,MFORCE)
 
 c statement function for error calculation
       err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
@@ -33,6 +33,9 @@ c write out header first time
      &,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr''
      &,t66,''tjfave'',t72,''(tjferr'',t83,''fave'',t97,''(ferr)''
      &,t108,''accept'',t119,''iter'')')
+
+     
+      
 
 c write out current values of averages
       acc_denom=dfloat(nstep*iblk)
@@ -50,6 +53,7 @@ c write out current values of averages
          else
           eerr=err(ecum(istate,ifr),ecm2(istate,ifr),istate,ifr)
         endif
+        
         ieerr=nint(100000*eerr)
         if(ifr.eq.1) then
           if(iblk.eq.1) then
@@ -64,14 +68,28 @@ c write out current values of averages
           peave=pecum(istate)/wcum(istate,ifr)
           tpbave=tpbcum(istate)/wcum(istate,ifr)
           tjfave=tjfcum(istate)/wcum(istate,ifr)
-
+          
           ipeerr=nint(100000* peerr)
           itpber=nint(100000*tpberr)
           itjfer=nint(100000*tjferr)
 
           if(istate.eq.1) then
-            write(6,'(f10.5,4(f10.5,''('',i5,'')''),25x,f10.5,i10)')
-     &      enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,accept,iblk*nstep
+
+    !       This causes problem somehow in the butadien_sr vmc_sr.inp
+    !         write(6,'(f10.5,4(f10.5,''('',i5,'')''),25x,f10.5,i10)')
+    !  &      enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,accept,iblk*nstep
+            write(6, '(f10.5)') enow(1,1)
+            write(6,'(f10.5)') eave
+            write(6,'(i5)') ieerr
+            write(6,'(f10.5)') peave
+            write(6,'(i5)') ipeerr
+            write(6,'(f10.5)') tpbave
+            write(6,'(i5)') itpber
+            write(6,'(f10.5)') tjfave
+            write(6,'(i5)') itjfer
+            write(6,'(f10.5)') accept
+            write(6,'(i10)') iblk*nstep
+            
 
             call prop_prt(wcum(1,ifr),iblk,6)
             call optci_prt(wcum(1,ifr),iblk,6)
@@ -84,7 +102,7 @@ c different meaning of last argument: 0 acuest, 1 finwrt
      &      enow(istate,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer
           endif
 
-
+         
          else
           fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))/deltot(ifr)
           ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)/abs(deltot(ifr))

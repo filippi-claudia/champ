@@ -424,7 +424,7 @@ contains
     subroutine allocate_optorb_mix()
         use coefs, only: norb
         use vmc_mod, only: MORB
-        ! if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(MORB, MORB))
+        if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norb, norb))
     end subroutine allocate_optorb_mix
 
     subroutine deallocate_optorb_mix()
@@ -462,5 +462,3 @@ subroutine allocate_m_optorb()
     call allocate_optorb()
     call allocate_optorb_mix()
 end subroutine allocate_m_optorb
-
-
