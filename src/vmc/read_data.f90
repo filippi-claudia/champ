@@ -144,11 +144,11 @@ subroutine read_determinants(iu, nd, iwft)
     ndet = nd
     nstates = MSTATES
 
-    if (ndet .gt. MDET) then
-        write (6, *) "ndet=", ndet
-        write (6, *) "MDET=", MDET
-        ! call fatal_error('DET: ndet > MDET')
-    endif
+    ! if (ndet .gt. MDET) then
+    ! write (6, *) "ndet=", ndet
+    ! write (6, *) "MDET=", MDET
+    ! call fatal_error('DET: ndet > MDET')
+    ! endif
 
     call p2gti('electrons:nelec', nelec, 1)
     ! if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
@@ -537,6 +537,7 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
     use mstates_mod, only: MSTATES
     use inputflags, only: icsfs
     use wfsec, only: nwftype
+    use dets, only: ndet
     implicit real*8(a - h, o - z)
 
     character fn*(*)
@@ -544,13 +545,18 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
     call ptfile(iu, fn, 'old')
 
     ncsf = ncsf_read
-    write (6, '('' ncsf : '' I10)') ncsf
+    ! write (6, *) fn
+    ! write (6, '('' ncsf : '' I10)') ncsf
+    ! write (6, '('' MDET : '' I10)') MDET
+    ! write (6, '('' ndet : '' I10)') ndet
+    ! write (6, '('' MSTATES : '' I10)') MSTATES
     if (ncsf .gt. ndet) call fatal_error('CSF: too many csf')
 
     nstates = nstates_read
-    nstates = MSTATES
-    if (nstates .gt. MSTATES) call fatal_error('CSF: too many states')
+    write (6, '('' nstates read : '' I10)') nstates_read
 
+    ! if (nstates .gt. MSTATES) call fatal_error('CSF: too many states')
+    ! allocate (ccsf(ncsf, nstates, nwftype))
     allocate (ccsf(ndet, nstates, nwftype))
 
     do i = 1, nstates
@@ -562,6 +568,8 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
     if (fn .eq. '<input>') then
         call p2chkend(iu, 'csf')
     endif
+
+    ! nstates = MSTATES
 
 end subroutine read_csf
 
@@ -585,7 +593,12 @@ subroutine read_csfmap(fn)
     write (6, '(''csfmap'',3i4)') ncsf_check, ndet_check, nmap_check
     if (ndet_check .ne. ndet) call fatal_error('CSFMAP: wrong number of determinants')
     if (ncsf_check .ne. ncsf) call fatal_error('CSFMAP: wrong number of csf')
-    if (nmap_check .gt. float(MDET)*MDET) call fatal_error('CSFMAP: too many determinants in map list')
+    if (nmap_check .gt. float(ndet)*ndet) call fatal_error('CSFMAP: too many determinants in map list')
+
+    if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))
+    if (.not. allocated(iadet)) allocate (iadet(ndet))
+    if (.not. allocated(ibdet)) allocate (ibdet(ndet))
+    if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))
 
     nptr = 1
     do i = 1, ncsf
@@ -597,9 +610,10 @@ subroutine read_csfmap(fn)
             icxdet(nptr) = id
             cxdet(nptr) = c
             nptr = nptr + 1
-            if (nptr .gt. MDET*MDETCSFX) call fatal_error('CSFMAP: problem with nmap')
+            if (nptr .gt. ndet*MDETCSFX) call fatal_error('CSFMAP: problem with nmap')
         enddo
     enddo
+
     if (nmap_check .ne. nptr - 1) call fatal_error('CSFMAP: problem with nmap')
     nmap = nptr
 
@@ -621,7 +635,7 @@ subroutine read_csfmap(fn)
     if (fn .eq. '<input>') then
         call p2chkend(iu, 'csfmap')
     endif
-
+    write (6, '(''Done'')')
     return
 end subroutine read_csfmap
 
