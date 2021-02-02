@@ -55,8 +55,8 @@ subroutine read_lcao(norb_tmp, nbasis_tmp, iwft, filename)
 
     norb = norb_tmp
     nototal = norb
-    if (nbasis .gt. MBASIS) call fatal_error('LCAO: nbasis > MBASIS')
-    if (nototal .gt. MORB) call fatal_error('LCAO: number of orbitals > MORB')
+    ! if (nbasis .gt. MBASIS) call fatal_error('LCAO: nbasis > MBASIS')
+    ! if (nototal .gt. MORB) call fatal_error('LCAO: number of orbitals > MORB')
     call p2gtid('general:nwftype', nwftype, 1, 1)
 
     if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
@@ -88,7 +88,7 @@ subroutine read_geometry(iu)
     call p2gti('atoms:natom', ncent, 1)
     call p2gtid('atoms:nghostcent', nghostcent, 0, 1)
     ncent_tot = ncent + nghostcent
-    if (ncent_tot .gt. MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
+    ! if (ncent_tot .gt. MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
 
     allocate (cent(3, ncent_tot))
     allocate (iwctype(ncent_tot))
@@ -147,7 +147,7 @@ subroutine read_determinants(iu, nd, iwft)
     if (ndet .gt. MDET) then
         write (6, *) "ndet=", ndet
         write (6, *) "MDET=", MDET
-        call fatal_error('DET: ndet > MDET')
+        ! call fatal_error('DET: ndet > MDET')
     endif
 
     call p2gti('electrons:nelec', nelec, 1)
@@ -544,7 +544,8 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
     call ptfile(iu, fn, 'old')
 
     ncsf = ncsf_read
-    if (ncsf .gt. MDET) call fatal_error('CSF: too many csf')
+    write (6, '('' ncsf : '' I10)') ncsf
+    if (ncsf .gt. ndet) call fatal_error('CSF: too many csf')
 
     nstates = nstates_read
     nstates = MSTATES
