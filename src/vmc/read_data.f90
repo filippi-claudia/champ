@@ -505,7 +505,7 @@ subroutine read_forces(iu)
     implicit real*8(a - h, o - z)
 
     call p2gti('atoms:natom', ncent, 1)
-    if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
+    ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
 
     call p2gtid('general:nforce', nforce, 1, 1)
     if (nforce .gt. MFORCE) call fatal_error('FORCES: nforce > MFORCE')
@@ -569,7 +569,7 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
         call p2chkend(iu, 'csf')
     endif
 
-    ! nstates = MSTATES
+    nstates = MSTATES
 
 end subroutine read_csf
 
@@ -967,6 +967,8 @@ subroutine get_weights(field, weights, iweight, nweight)
     endif
 
     ! TEMPORARY
+    write (6, '('' nweight : '' I10)') nweight
+    write (6, '('' nstates : '' I10)') nstates
     if (nweight .ne. nstates) call fatal_error('GET_WEIGHTS: problems with nweight')
 
 end subroutine get_weights

@@ -1,6 +1,6 @@
 module mstates_mod
     !> Arguments: MSTATES, MDETCSFX
-    integer, parameter :: MSTATES = 2
+    integer, parameter :: MSTATES = 1
     integer, parameter :: MDETCSFX = 20
 
     private

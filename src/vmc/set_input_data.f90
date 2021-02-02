@@ -97,10 +97,10 @@ subroutine multideterminants_define(iflag, icheck)
     endif
     kref_old = kref
 
-    allocate (iwundet(ndet, 2))
-    allocate (numrep_det(ndet, 2))
-    allocate (irepcol_det(nelec, ndet, 2))
-    allocate (ireporb_det(nelec, ndet, 2))
+    if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
+    if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
+    if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
+    if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2))
 
     do iab = 1, 2
         numrep_det(kref, iab) = 0
@@ -269,7 +269,7 @@ subroutine inputforces
     implicit real*8(a - h, o - z)
 
     call p2gti('atoms:natom', ncent, 1)
-    if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
+    ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
 
     call p2gtid('general:nforce', nforce, 1, 1)
 
@@ -400,7 +400,7 @@ subroutine set_displace_zero(nforce_tmp)
     implicit real*8(a - h, o - z)
 
     call p2gti('atoms:natom', ncent, 1)
-    if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
+    ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, nforce_tmp))
 
