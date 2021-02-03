@@ -45,7 +45,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       dimension vpsp_det(*),dvpsp_dj(*),t_vpsp(ncent_tot,MPS_QUAD,*)
       dimension dpsij_ratio(MPARMJ)
 
-      dimension orbn(norb),dorbn(3,norb),da_orbn(3,ncent_tot,norb),term_radial_da_vps(3)
+      dimension orbn(norb+nadorb),dorbn(3,norb),da_orbn(3,ncent_tot,norb),term_radial_da_vps(3)
       dimension vjn(3),da_ratio_jn(3,ncent_tot),dd1(nelec,ncent_tot),dd1_sav(ncent_tot)
 
       do 11 ic=1,ncent
@@ -311,7 +311,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       dimension x(3),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       dimension orbn(*),dorbn(3,*),da_orbn(3,ncent_tot,*),dtmp(3)
-      write(6, *) nadorb
+      
       if(iperiodic.eq.0) then
 
 c get the value from the 3d-interpolated orbitals

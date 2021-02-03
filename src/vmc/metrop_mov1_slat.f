@@ -601,7 +601,6 @@ c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido(1),psijo,eold(1,1),ipass,1)
       do 355 istate=1,nstates
-         write(*,*) istates
   355    psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
 
       if(iguiding.eq.0) then

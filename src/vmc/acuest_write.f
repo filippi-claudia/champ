@@ -18,8 +18,7 @@ c routine to write out estimators for energy etc.
 
       implicit real*8(a-h,o-z)
 
-      real, dimension(nstates, MFORCE), INTENT(INOUT) :: enow
-      ! dimension enow(nstates,MFORCE)
+      dimension enow(nstates,MFORCE)
 
 c statement function for error calculation
       err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
@@ -75,21 +74,8 @@ c write out current values of averages
 
           if(istate.eq.1) then
 
-    !       This causes problem somehow in the butadien_sr vmc_sr.inp
-    !         write(6,'(f10.5,4(f10.5,''('',i5,'')''),25x,f10.5,i10)')
-    !  &      enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,accept,iblk*nstep
-            write(6, '(f10.5)') enow(1,1)
-            write(6,'(f10.5)') eave
-            write(6,'(i5)') ieerr
-            write(6,'(f10.5)') peave
-            write(6,'(i5)') ipeerr
-            write(6,'(f10.5)') tpbave
-            write(6,'(i5)') itpber
-            write(6,'(f10.5)') tjfave
-            write(6,'(i5)') itjfer
-            write(6,'(f10.5)') accept
-            write(6,'(i10)') iblk*nstep
-            
+            write(6,'(f10.5,4(f10.5,''('',i5,'')''),25x,f10.5,i10)')
+     &      enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,accept,iblk*nstep
 
             call prop_prt(wcum(1,ifr),iblk,6)
             call optci_prt(wcum(1,ifr),iblk,6)
