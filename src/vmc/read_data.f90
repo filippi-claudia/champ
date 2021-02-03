@@ -38,7 +38,7 @@ subroutine read_lcao(norb_tmp, nbasis_tmp, iwft, filename)
     use vmc_mod, only: MORB, MBASIS
     use coefs, only: coef, nbasis, norb
     use inputflags, only: ilcao
-
+    use orbval, only: nadorb
     use pcm_fdc, only: fs
 
     ! was not in master but is needed
