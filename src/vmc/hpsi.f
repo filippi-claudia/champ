@@ -26,7 +26,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use mmpol_cntrl, only: immpol
 
       use efield, only: iefield
-      use distance_mod, only: rshift, r_en, rvec_en
       use pcm_cntrl, only: ipcm
       use slater, only: d2dx2, ddx, fp, fpp, slmi
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
@@ -50,7 +49,7 @@ c distances needed for Jastrow, determinants, and potential energy
 
 c local potential contributions
       call pot_local(pe_local)
-
+      
 c external potential on a grid (e.g. MM from CPMD)
       call p2gtid('qmmm:iqmmm',iqmmm,0,1)
       if(iqmmm.eq.1) then
@@ -99,8 +98,10 @@ c compute reference determinant, its derivatives, and kinetic contribution to B_
 
       call compute_bmatrices_kin
 
+
 c compute pseudo-potential contribution
 c nonloc_pot must be called after determinant because slater matrices are needed
+
       if(nloc.gt.0) 
      &  call nonloc_pot(coord,rshift,rvec_en,r_en,pe_local,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
 
@@ -109,8 +110,9 @@ c nonloc_pot must be called after determinant because slater matrices are needed
         write(6,'(''pe_ref after nonloc_pot'',9f12.5)') (vpsp_det(ii),ii=1,2)
       endif
 
+      
       call multideterminant_hpsi(vj,vpsp_det,eloc_det)
-
+      
       e_other=pe_local-hb*d2j
       do 10 i=1,nelec
    10   e_other=e_other-hb*(vj(1,i)**2+vj(2,i)**2+vj(3,i)**2)
@@ -119,7 +121,7 @@ c nonloc_pot must be called after determinant because slater matrices are needed
 
 c combine determinantal quantities to obtain trial wave function
         call determinant_psit(psid(istate),istate)
-
+        
 c compute energy using Ymat
         denergy(istate)=0
         do 20 iab=1,2
@@ -147,7 +149,7 @@ c  25         write(6,'(''vj'',2e18.11)') vj(k,i)
         endif
 
    30 continue
-
+      
       if(ifr.eq.1) then
         if(iforce_analy.eq.1) call compute_force(psid(1),denergy(1))
 

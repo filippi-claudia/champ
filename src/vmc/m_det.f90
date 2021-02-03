@@ -48,5 +48,3 @@ contains
     end subroutine deallocate_dets_equiv
 
 end module dets_equiv
-
-

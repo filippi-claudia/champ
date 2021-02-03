@@ -35,16 +35,16 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
           call getvps_champ(r_en,i)
         endif
    20 continue
-
+      
 c local component (highest angular momentum)
       if(iperiodic.eq.0) then
         do 30 ic=1,ncent
           do 30 i=i1,i2
    30       pe=pe+vps(i,ic,lpot(iwctype(ic)))
       endif
-
+      
 c non-local component (division by the Jastrow already in nonloc)
       call nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
-
+      
       return
       end

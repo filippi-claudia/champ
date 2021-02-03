@@ -585,6 +585,7 @@ c Note when one electron moves the velocity on all electrons change.
       call update_ymat(i)
 
   300 continue
+      
 
 c loop over secondary configurations
       do 350 ifr=2,nforce
@@ -593,11 +594,14 @@ c loop over secondary configurations
         do 350 istate=1,nstates
   350     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
 
+      
       call check_orbitals_reset
+      
 c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido(1),psijo,eold(1,1),ipass,1)
       do 355 istate=1,nstates
+         write(*,*) istates
   355    psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
 
       if(iguiding.eq.0) then
@@ -609,6 +613,7 @@ c primary configuration
       if(ipr.gt.1) then
         write(6,'(''psid,psig ='',2d12.4)') psido(1),psidg
       endif
+      
 
       rnorm_nodes=1.d0
       if(node_cutoff.gt.0) then
@@ -643,8 +648,8 @@ c normal component efield on cavity surface to compute a new set of polarization
       if(ichpol.eq.1) call qpcm_efield(nelec,xold)
 c efield dovuto agli elettroni sui siti dei dipoli
       if(ich_mmpol.eq.1) call mmpol_efield(nelec,xold)
-
-c use 'new' not 'old' value
+      
+c use 'new' not 'old' value  
       call pcm_sum(wtg,0.d0)
       call mmpol_sum(wtg,0.d0)
       call prop_sum(wtg,0.d0)
@@ -684,6 +689,6 @@ c rewrite psi2o for next metropolis step if you are sampling guiding
       if(node_cutoff.gt.0) then
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)
       endif
-
+      
       return
       end

@@ -62,7 +62,7 @@ c           call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
    3        if(ioptjas.gt.0) call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
         endif
    11 continue
-
+      
       vpsp_det(1)=0
       vpsp_det(2)=0
         do 12 iparm=1,nparmj
@@ -76,8 +76,10 @@ c           call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
         i2=nelec
       endif
 
+      
+      
       do 100 i=i1,i2
-
+      
         iab=1
         if(i.gt.nup) iab=2
 
@@ -166,7 +168,7 @@ c transition probabilities for Casula's moves in DMC
                
 c end loop quadrature points
    60       continue
-
+            
             do 68 k=1,3
    68         x(k,i)=xsav(k)
             do 70 jc=1,ncent
@@ -188,10 +190,10 @@ c endif iskip
           endif
 c end loop nelec, ncent
   100 continue
-
+        
       if(ipr.ge.4) write(6,'(''vpsp_det,det,r_en(1)='',100d12.4)')
      &,(vpsp_det(iab),detiab(1,iab),iab=1,2),r_en(1,1)
-
+      
       return
       end
 c-----------------------------------------------------------------------
@@ -309,7 +311,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       dimension x(3),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       dimension orbn(*),dorbn(3,*),da_orbn(3,ncent_tot,*),dtmp(3)
-
+      write(6, *) nadorb
       if(iperiodic.eq.0) then
 
 c get the value from the 3d-interpolated orbitals

@@ -80,6 +80,7 @@ c check sites flag if one gets initial configuration from sites routine
         call sites(xold,nelec,nsite)
         open(unit=9,file='mc_configs_start')
         rewind 9
+        
         write(6,'(/,''initial configuration from sites'')')
    40   continue
 
@@ -109,7 +110,7 @@ c then set up so no configurations are written.
         rewind 7
       endif
       call pcm_qvol(nproc)
-
+      
       return
 
 c-----------------------------------------------------------------------

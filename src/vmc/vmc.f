@@ -88,6 +88,7 @@ c force parameters
 
 c initialize the walker configuration
       call mc_configs_start
+      
       if (nconf_new.eq.0) then
         ngfmc=2*nstep*nblk
        else
@@ -123,6 +124,7 @@ c imetro = 6 spherical-polar with slater T
             if (nloc.gt.0) call rotqua
             call metrop6(l,0)
           enddo
+          
          call acuest
         enddo
 
@@ -151,6 +153,7 @@ c write out configuration for optimization/dmc/gfmc here
      &    int(sign(1.d0,psido(1))),log(dabs(psido(1)))+psijo,eold(1,1)
         endif
   430   continue
+      
   440 call acuest
 
       call my_second(2,'all   ')
