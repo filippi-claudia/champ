@@ -5,10 +5,10 @@
 
 load casci44-dz.geometry
 load $(general:pool)/global.inp
+load casci44-dz.lcao
 load $(general:pool)/bfd-dz.bfinfo
 
 load jastrow_initial
-load casci44-dz.lcao
 load casci44-dz.det.1
 load casci44-dz.sym
 

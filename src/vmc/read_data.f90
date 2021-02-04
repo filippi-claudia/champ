@@ -142,7 +142,11 @@ subroutine read_determinants(iu, nd, iwft)
     call p2gtid('general:nwftype', nwftype, 1, 1)
 
     ndet = nd
-    nstates = MSTATES
+    write (6, *) 'nstates', nstates
+    ! if (nstates .eq. 0) call fatal_error('nstates undefined')
+    ! if (nstates .eq. 0) nstates = 1
+
+    ! nstates = MSTATES
 
     ! if (ndet .gt. MDET) then
     ! write (6, *) "ndet=", ndet
@@ -166,7 +170,7 @@ subroutine read_determinants(iu, nd, iwft)
 
     ideterminants = ideterminants + 1
     call p2chkend(iu, 'determinants')
-    write (6, *) 'done det'
+
 end subroutine read_determinants
 
 subroutine read_multideterminants(iu, nd)
@@ -180,9 +184,6 @@ subroutine read_multideterminants(iu, nd)
     implicit real*8(a - h, o - z)
 
     if (nd .ne. ndet - 1) call fatal_error('INPUT: problem in multidet')
-
-    write (6, *) 'nelec', nelec
-    write (6, *) 'ndet', ndet
 
     allocate (iwundet(ndet, 2))
     allocate (numrep_det(ndet, 2))
@@ -569,7 +570,7 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
         call p2chkend(iu, 'csf')
     endif
 
-    nstates = MSTATES
+    ! nstates = MSTATES
 
 end subroutine read_csf
 

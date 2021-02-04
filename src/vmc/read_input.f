@@ -92,7 +92,6 @@ c and read in everything which is still in the old format
         MOBS = 10 + 6*MPARM
         MCONF = nstep * nblk_max
 
-        write(6,*) 'MCONF', MCONF
       end subroutine
 
       subroutine allocate_all_arrays()

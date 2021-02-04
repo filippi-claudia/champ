@@ -15,7 +15,7 @@ c routine to write out estimators for energy etc.
       use forcewt, only: wcum
       use contr3, only: mode
       use contrl, only: nstep
-
+      use precision_kinds, only: i2b
       implicit real*8(a-h,o-z)
 
       dimension enow(nstates,MFORCE)
@@ -56,9 +56,9 @@ c write out current values of averages
         ieerr=nint(100000*eerr)
         if(ifr.eq.1) then
           if(iblk.eq.1) then
-            peerr=0
-            tpberr=0
-            tjferr=0
+            peerr=0.
+            tpberr=0.
+            tjferr=0.
            else
             peerr=err(pecum(istate),pecm2(istate),istate,ifr)
             tpberr=err(tpbcum(istate),tpbcm2(istate),istate,ifr)
@@ -68,9 +68,12 @@ c write out current values of averages
           tpbave=tpbcum(istate)/wcum(istate,ifr)
           tjfave=tjfcum(istate)/wcum(istate,ifr)
           
-          ipeerr=nint(100000* peerr)
-          itpber=nint(100000*tpberr)
-          itjfer=nint(100000*tjferr)
+          ! The definition peer tpberr tjferr contains uninitialized variables
+          ! for example pecum
+          ! That sometimes lead to issues .... 
+          ipeerr=nint(100000*peerr, i2b)
+          itpber=nint(100000*tpberr, i2b)
+          itjfer=nint(100000*tjferr, i2b)
 
           if(istate.eq.1) then
 
