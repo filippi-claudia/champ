@@ -126,6 +126,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use array_utils, only: resize_tensor
       implicit real*8(a-h,o-z)
 
 
@@ -139,6 +140,8 @@ c-----------------------------------------------------------------------
       character*40 filename,filetype
 
       dimension anorm(nbasis)
+
+      call resize_tensor(coef, norb+nadorb, 2)
 
       if(ioptorb.eq.0) return
 

@@ -201,6 +201,7 @@ c and Anthony Scemema
 
       use optorb_cblock, only: nefp_blocks, isample_cmat, iorbsample
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use array_utils, only: resize_tensor
       implicit real*8(a-h,o-z)
 
 
@@ -937,6 +938,7 @@ c get normalization for basis functions
       endif
 c check if the orbitals coefficients are to be multiplied by a constant parameter
       call p2gtfd('general:scalecoef',scalecoef,1.0d0,1)
+      call resize_tensor(coef, norb+nadorb, 2)
       if(scalecoef.ne.1.0d0) then
         do 340 iwft=1,nwftype
           do 340 iorb=1,norb+nadorb

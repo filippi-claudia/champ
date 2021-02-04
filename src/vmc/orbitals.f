@@ -13,7 +13,7 @@ c Modified by A. Scemama
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use atom, only: ncent_tot
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      
+      use array_utils, only: resize_matrix, resize_tensor
       implicit real*8(a-h,o-z)
 
 
@@ -21,6 +21,10 @@ c Modified by A. Scemama
 
       dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       dimension bhin(nelec,nbasis),dbhin(3*nelec,nbasis),d2bhin(nelec,nbasis)
+
+      call resize_matrix(orb, norb+nadorb, 2)
+      call resize_matrix(ddorb, norb+nadorb, 2)
+      call resize_tensor(dorb, norb+nadorb, 3)
 
       ier=1
       if(iperiodic.eq.0) then

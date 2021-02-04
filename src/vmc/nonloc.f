@@ -25,7 +25,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-      
+      use array_utils, only: resize_matrix
       use multislater, only: detiab
 
       implicit real*8(a-h,o-z)
@@ -47,6 +47,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       dimension orbn(norb+nadorb),dorbn(3,norb),da_orbn(3,ncent_tot,norb),term_radial_da_vps(3)
       dimension vjn(3),da_ratio_jn(3,ncent_tot),dd1(nelec,ncent_tot),dd1_sav(ncent_tot)
+
+      call resize_matrix(b, norb+nadorb, 1)
 
       do 11 ic=1,ncent
 cJF this is the culprit
@@ -303,6 +305,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use const, only: nelec
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use array_utils, only: resize_tensor
       implicit real*8(a-h,o-z)
 
 
@@ -312,6 +315,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       dimension x(3),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       dimension orbn(*),dorbn(3,*),da_orbn(3,ncent_tot,*),dtmp(3)
       
+
+      call resize_tensor(coef, norb+nadorb, 2)
+
       if(iperiodic.eq.0) then
 
 c get the value from the 3d-interpolated orbitals

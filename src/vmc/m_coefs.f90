@@ -24,4 +24,25 @@ contains
         if (allocated(coef)) deallocate (coef)
     end subroutine deallocate_coefs
 
+    ! subroutine resize_norb_coefs(new_size)
+    !     !> Resize the second dimension of coef
+    !     !> \param new_size: new size
+
+    !     integer, INTENT(IN) :: new_size
+    !     integer :: dim1, dim2, dim3
+    !     real(dp), dimension(:, :, :), allocatable :: tmp_array
+
+    !     dim2 = size(coef, 2)
+
+    !     if (dim2 .lt. new_size) then
+    !         dim1 = size(coef, 1)
+    !         dim3 = size(coef, 3)
+    !         allocate (tmp_array(dim1, new_size, dim3))
+    !         tmp_array(:, :dim2, :) = coef
+    !         deallocate (coef)
+    !         call move_alloc(tmp_array, coef)
+    !     endif
+
+    ! endsubroutine
+
 end module coefs

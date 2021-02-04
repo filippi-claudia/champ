@@ -168,14 +168,18 @@ c-----------------------------------------------------------------------
       use Bloc, only: b
       use force_analy, only: iforce_analy
       use velocity_jastrow, only: vj
-      
+      use array_utils, only: resize_matrix, resize_tensor
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
 
       parameter (one=1.d0,half=0.5d0)
-
+      
+      ! resize ddor and dorb if necessary
+      call resize_matrix(ddorb, norb+nadorb, 2)
+      call resize_matrix(b, norb+nadorb, 1)
+      call resize_tensor(dorb, norb+nadorb, 3)
 
 c compute kinetic contribution of B+Btilde to compute Eloc
       do i=1,nelec
