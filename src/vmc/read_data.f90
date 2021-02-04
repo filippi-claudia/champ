@@ -923,7 +923,7 @@ subroutine get_weights(field, weights, iweight, nweight)
     implicit real*8(a - h, o - z)
 
     ! weights for state averaging
-    character(12), intent(in) :: field
+    character(len=*), intent(in) :: field
     real(dp), dimension(MSTATES), intent(inout) :: weights
     integer, dimension(MSTATES), intent(inout) :: iweight
     integer, intent(inout) :: nweight
@@ -937,7 +937,6 @@ subroutine get_weights(field, weights, iweight, nweight)
 
     write (6, *) field, field(1:index(field, ' '))
     do i = 1, nstates
-        write (6, *) 'istate', i
         wdef = 0.d0
         call append_number(field(1:index(field, ' ') - 1), i, vname, nv, 0)
         call p2gtfd(vname(1:nv), w, wdef, 0)
@@ -962,8 +961,6 @@ subroutine get_weights(field, weights, iweight, nweight)
     endif
 
     ! TEMPORARY
-    write (6, '('' nweight : '' I10)') nweight
-    write (6, '('' nstates : '' I10)') nstates
     if (nweight .ne. nstates) call fatal_error('GET_WEIGHTS: problems with nweight')
 
 end subroutine get_weights
