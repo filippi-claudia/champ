@@ -955,8 +955,8 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
-        if (.not. allocated(dymat)) allocate (dymat(norb, nelec, 2, nstates))
-        if (.not. allocated(ymat)) allocate (ymat(norb, nelec, 2, nstates))
+        if (.not. allocated(dymat)) allocate (dymat(norb, nelec, 2, MSTATES))
+        if (.not. allocated(ymat)) allocate (ymat(norb, nelec, 2, MSTATES))
     end subroutine allocate_ycompact
 
     subroutine deallocate_ycompact()
@@ -986,7 +986,7 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
-        if (.not. allocated(ymatn)) allocate (ymatn(norb, nelec, nstates))
+        if (.not. allocated(ymatn)) allocate (ymatn(norb, nelec, MSTATES))
     end subroutine allocate_ycompactn
 
     subroutine deallocate_ycompactn()
@@ -1018,10 +1018,10 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
-        if (.not. allocated(aaz)) allocate (aaz(nelec, nelec, 2, nstates))
-        if (.not. allocated(dzmat)) allocate (dzmat(norb, nelec, 2, nstates))
-        if (.not. allocated(emz)) allocate (emz(nelec, nelec, 2, nstates))
-        if (.not. allocated(zmat)) allocate (zmat(norb, nelec, 2, nstates))
+        if (.not. allocated(aaz)) allocate (aaz(nelec, nelec, 2, MSTATES))
+        if (.not. allocated(dzmat)) allocate (dzmat(norb, nelec, 2, MSTATES))
+        if (.not. allocated(emz)) allocate (emz(nelec, nelec, 2, MSTATES))
+        if (.not. allocated(zmat)) allocate (zmat(norb, nelec, 2, MSTATES))
     end subroutine allocate_zcompact
 
     subroutine deallocate_zcompact()

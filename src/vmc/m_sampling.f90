@@ -51,13 +51,13 @@ contains
         use mstates_mod, only: MSTATES
         if (.not. allocated(delttn)) allocate (delttn(nelec))
         if (.not. allocated(enew)) allocate (enew(MFORCE))
-        if (.not. allocated(eold)) allocate (eold(nstates, MFORCE))
+        if (.not. allocated(eold)) allocate (eold(MSTATES, MFORCE))
         if (.not. allocated(nearestn)) allocate (nearestn(nelec))
         if (.not. allocated(nearesto)) allocate (nearesto(nelec))
-        if (.not. allocated(peo)) allocate (peo(nstates))
+        if (.not. allocated(peo)) allocate (peo(MSTATES))
         if (.not. allocated(psi2n)) allocate (psi2n(MFORCE))
-        if (.not. allocated(psi2o)) allocate (psi2o(nstates, MFORCE))
-        if (.not. allocated(psido)) allocate (psido(nstates))
+        if (.not. allocated(psi2o)) allocate (psi2o(MSTATES, MFORCE))
+        if (.not. allocated(psido)) allocate (psido(MSTATES))
         if (.not. allocated(rminn)) allocate (rminn(nelec))
         if (.not. allocated(rminno)) allocate (rminno(nelec))
         if (.not. allocated(rmino)) allocate (rmino(nelec))
@@ -66,7 +66,7 @@ contains
         if (.not. allocated(rvminno)) allocate (rvminno(3, nelec))
         if (.not. allocated(rvmino)) allocate (rvmino(3, nelec))
         if (.not. allocated(rvminon)) allocate (rvminon(3, nelec))
-        if (.not. allocated(tjfo)) allocate (tjfo(nstates))
+        if (.not. allocated(tjfo)) allocate (tjfo(MSTATES))
         if (.not. allocated(vnew)) allocate (vnew(3, nelec))
         if (.not. allocated(vold)) allocate (vold(3, nelec))
         if (.not. allocated(xnew)) allocate (xnew(3, nelec))
@@ -219,5 +219,3 @@ subroutine allocate_m_sampling()
     call allocate_step()
     call allocate_kinet()
 end subroutine allocate_m_sampling
-
-

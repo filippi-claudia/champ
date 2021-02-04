@@ -46,8 +46,8 @@ c xnow = average of values of x from metrop
 c xcum = accumulated sums of xnow
 c xcm2 = accumulated sums of xnow**2
 
-      dimension wtg(nstates)
-      allocate(enow(nstates, MFORCE))
+      dimension wtg(MSTATES)
+      allocate(enow(MSTATES, MFORCE))
 
 
 c collect cumulative averages

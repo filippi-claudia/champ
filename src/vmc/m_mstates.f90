@@ -65,8 +65,9 @@ contains
         use dets, only: ndet
         use precision_kinds, only: dp
         use mstates_mod, only: MDETCSFX
+        use mstates_mod, only: MSTATES
 
-        if (.not. allocated(ccsf)) allocate (ccsf(ndet, nstates, nwftype))
+        if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, nwftype))
         if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))
         if (.not. allocated(iadet)) allocate (iadet(ndet))
         if (.not. allocated(ibdet)) allocate (ibdet(ndet))
@@ -100,8 +101,8 @@ contains
         use csfs, only: nstates
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(effcm2)) allocate (effcm2(nstates))
-        if (.not. allocated(effcum)) allocate (effcum(nstates))
+        if (.not. allocated(effcm2)) allocate (effcm2(MSTATES))
+        if (.not. allocated(effcum)) allocate (effcum(MSTATES))
     end subroutine allocate_mstates2
 
     subroutine deallocate_mstates2()
@@ -128,8 +129,8 @@ contains
         use csfs, only: nstates
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(iweight_g)) allocate (iweight_g(nstates))
-        if (.not. allocated(weights_g)) allocate (weights_g(nstates))
+        if (.not. allocated(iweight_g)) allocate (iweight_g(MSTATES))
+        if (.not. allocated(weights_g)) allocate (weights_g(MSTATES))
     end subroutine allocate_mstates3
 
     subroutine deallocate_mstates3()

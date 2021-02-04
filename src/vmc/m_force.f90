@@ -66,8 +66,8 @@ contains
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(fcm2)) allocate (fcm2(nstates, MFORCE))
-        if (.not. allocated(fcum)) allocate (fcum(nstates, MFORCE))
+        if (.not. allocated(fcm2)) allocate (fcm2(MSTATES, MFORCE))
+        if (.not. allocated(fcum)) allocate (fcum(MSTATES, MFORCE))
     end subroutine allocate_forcest
 
     subroutine deallocate_forcest()
@@ -122,8 +122,8 @@ contains
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(wcum)) allocate (wcum(nstates, MFORCE))
-        if (.not. allocated(wsum)) allocate (wsum(nstates, MFORCE))
+        if (.not. allocated(wcum)) allocate (wcum(MSTATES, MFORCE))
+        if (.not. allocated(wsum)) allocate (wsum(MSTATES, MFORCE))
     end subroutine allocate_forcewt
 
     subroutine deallocate_forcewt()

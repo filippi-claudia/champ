@@ -184,7 +184,7 @@ contains
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(denergy)) allocate (denergy(MPARMJ, nstates))
+        if (.not. allocated(denergy)) allocate (denergy(MPARMJ, MSTATES))
     end subroutine allocate_deloc_dj_m
 
     subroutine deallocate_deloc_dj_m()

@@ -15,8 +15,8 @@ contains
         use csfs, only: nstates
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(energy_all)) allocate (energy_all(nstates))
-        if (.not. allocated(energy_err_all)) allocate (energy_err_all(nstates))
+        if (.not. allocated(energy_all)) allocate (energy_all(MSTATES))
+        if (.not. allocated(energy_err_all)) allocate (energy_err_all(MSTATES))
     end subroutine allocate_sa_check
 
     subroutine deallocate_sa_check()
@@ -44,8 +44,8 @@ contains
         use csfs, only: nstates
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(iweight)) allocate (iweight(nstates))
-        if (.not. allocated(weights)) allocate (weights(nstates))
+        if (.not. allocated(iweight)) allocate (iweight(MSTATES))
+        if (.not. allocated(weights)) allocate (weights(MSTATES))
     end subroutine allocate_sa_weights
 
     subroutine deallocate_sa_weights()
@@ -62,5 +62,3 @@ subroutine allocate_m_state_avrg()
     call allocate_sa_check()
     call allocate_sa_weights()
 end subroutine allocate_m_state_avrg
-
-

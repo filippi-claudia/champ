@@ -142,7 +142,7 @@ subroutine read_determinants(iu, nd, iwft)
     call p2gtid('general:nwftype', nwftype, 1, 1)
 
     ndet = nd
-    write (6, *) 'nstates', nstates
+    ! write (6, *) 'nstates', nstates
     ! if (nstates .eq. 0) call fatal_error('nstates undefined')
     ! if (nstates .eq. 0) nstates = 1
 
@@ -158,7 +158,7 @@ subroutine read_determinants(iu, nd, iwft)
     ! if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
     call incpos(iu, itmp, 1)
 
-    allocate (cdet(ndet, nstates, nwftype))
+    allocate (cdet(ndet, MSTATES, nwftype))
 
     read (iu, *) (cdet(i, 1, iwft), i=1, ndet)
 
@@ -558,7 +558,7 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
 
     ! if (nstates .gt. MSTATES) call fatal_error('CSF: too many states')
     ! allocate (ccsf(ncsf, nstates, nwftype))
-    allocate (ccsf(ndet, nstates, nwftype))
+    allocate (ccsf(ndet, MSTATES, nwftype))
 
     do i = 1, nstates
         read (iu, *) (ccsf(j, i, 1), j=1, ncsf)
@@ -618,7 +618,7 @@ subroutine read_csfmap(fn)
     if (nmap_check .ne. nptr - 1) call fatal_error('CSFMAP: problem with nmap')
     nmap = nptr
 
-    if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
+    if (.not. allocated(cdet)) allocate (cdet(ndet, MSTATES, nwftype))
 
     write (6, '(''Warning: det coef overwritten with csf'')')
     do k = 1, nstates
@@ -871,7 +871,7 @@ subroutine read_dmatrix(no, ns, fn)
     integer, DIMENSION(:), ALLOCATABLE :: iwdmat
 
     allocate (dmat(norb))
-    allocate (iwdmat(nstates))
+    allocate (iwdmat(MSTATES))
 
     call p2gtid('general:ipr', ipr, -1, 1)
     call ptfile(iu, fn, 'old')
@@ -879,8 +879,8 @@ subroutine read_dmatrix(no, ns, fn)
     ndetorb = no
     if (ndetorb .gt. norb) call fatal('READ_DMATRIX: wrong number of orbitals')
 
-    allocate (weights(nstates))
-    allocate (iweight(nstates))
+    allocate (weights(MSTATES))
+    allocate (iweight(MSTATES))
 
     call get_weights('weights:', weights, iweight, nweight)
     if (ns .ne. nweight) call fatal('READ_DMATRIX: wrong number of dmatrices')
@@ -931,8 +931,8 @@ subroutine get_weights(field, weights, iweight, nweight)
 
     ! weights for state averaging
     character(12), intent(in) :: field
-    real(dp), dimension(nstates), intent(inout) :: weights
-    integer, dimension(nstates), intent(inout) :: iweight
+    real(dp), dimension(MSTATES), intent(inout) :: weights
+    integer, dimension(MSTATES), intent(inout) :: iweight
     integer, intent(inout) :: nweight
 
     ! dimension weights(MSTATES), iweight(MSTATES)

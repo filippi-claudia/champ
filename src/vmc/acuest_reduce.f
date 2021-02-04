@@ -6,7 +6,6 @@ c Written by Claudia Filippi
       use force_mod, only: MFORCE
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
-      use csfs, only: nstates
 
       use est2cm, only: ecm2, avcm2
       use estcum, only: ecum, iblk, avcum
@@ -28,17 +27,17 @@ c Written by Claudia Filippi
       integer iupdate
       character*20 filename
 
-      ! dimension enow(nstates,MFORCE)
-      real, dimension(nstates, MFORCE), INTENT(INOUT) :: enow
+      dimension enow(MSTATES,MFORCE)
+      !real, dimension(MSTATES, MFORCE), INTENT(INOUT) :: enow
 
       real(dp), dimension(:), allocatable  :: local_obs
       real(dp), dimension(:), allocatable  :: collect
       
 
-      MOBS = nstates*(8+5*MFORCE)+10
+      MOBS = MSTATES*(8+5*MFORCE)+10
       allocate(local_obs(MOBS))
       allocate(collect(MOBS))
-      ! allocate(enow(nstates, MFORCE))
+      
 
       ! ipudate was not declared anywhere
       iupdate = 0

@@ -299,10 +299,11 @@ subroutine inputdet(nwftype)
     ! Set the cdet to be equal
     use dets, only: cdet, ndet
     use csfs, only: nstates
+    use mstates_mod, only: MSTATES
 
     implicit real*8(a - h, o - z)
 
-    allocate (cdet(ndet, nstates, nwftype))
+    allocate (cdet(ndet, MSTATES, nwftype))
 
     do iwft = 2, nwftype
         do k = 1, ndet

@@ -62,18 +62,18 @@ contains
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(d2j)) allocate (d2j(MPARMJ, MPARMJ, nstates))
-        if (.not. allocated(d2j_e)) allocate (d2j_e(MPARMJ, MPARMJ, nstates))
-        if (.not. allocated(de)) allocate (de(MPARMJ, nstates))
-        if (.not. allocated(de_de)) allocate (de_de(MPARMJ, MPARMJ, nstates))
-        if (.not. allocated(de_e)) allocate (de_e(MPARMJ, nstates))
-        if (.not. allocated(dj)) allocate (dj(MPARMJ, nstates))
-        if (.not. allocated(dj_de)) allocate (dj_de(MPARMJ, MPARMJ, nstates))
-        if (.not. allocated(dj_dj)) allocate (dj_dj(MPARMJ, MPARMJ, nstates))
-        if (.not. allocated(dj_dj_e)) allocate (dj_dj_e(MPARMJ, MPARMJ, nstates))
-        if (.not. allocated(dj_e)) allocate (dj_e(MPARMJ, nstates))
-        if (.not. allocated(dj_e2)) allocate (dj_e2(MPARMJ, nstates))
-        if (.not. allocated(e2)) allocate (e2(MPARMJ, nstates))
+        if (.not. allocated(d2j)) allocate (d2j(MPARMJ, MPARMJ, MSTATES))
+        if (.not. allocated(d2j_e)) allocate (d2j_e(MPARMJ, MPARMJ, MSTATES))
+        if (.not. allocated(de)) allocate (de(MPARMJ, MSTATES))
+        if (.not. allocated(de_de)) allocate (de_de(MPARMJ, MPARMJ, MSTATES))
+        if (.not. allocated(de_e)) allocate (de_e(MPARMJ, MSTATES))
+        if (.not. allocated(dj)) allocate (dj(MPARMJ, MSTATES))
+        if (.not. allocated(dj_de)) allocate (dj_de(MPARMJ, MPARMJ, MSTATES))
+        if (.not. allocated(dj_dj)) allocate (dj_dj(MPARMJ, MPARMJ, MSTATES))
+        if (.not. allocated(dj_dj_e)) allocate (dj_dj_e(MPARMJ, MPARMJ, MSTATES))
+        if (.not. allocated(dj_e)) allocate (dj_e(MPARMJ, MSTATES))
+        if (.not. allocated(dj_e2)) allocate (dj_e2(MPARMJ, MSTATES))
+        if (.not. allocated(e2)) allocate (e2(MPARMJ, MSTATES))
     end subroutine allocate_gradhessj
 
     subroutine deallocate_gradhessj()
@@ -123,7 +123,7 @@ contains
         if (.not. allocated(d1d2b_old)) allocate (d1d2b_old(2))
         if (.not. allocated(d2d2a_old)) allocate (d2d2a_old(nctype_tot))
         if (.not. allocated(d2d2b_old)) allocate (d2d2b_old(2))
-        if (.not. allocated(denergy_old)) allocate (denergy_old(MPARMJ, nstates))
+        if (.not. allocated(denergy_old)) allocate (denergy_old(MPARMJ, MSTATES))
         if (.not. allocated(gvalue_old)) allocate (gvalue_old(MPARMJ))
     end subroutine allocate_gradhessjo
 
@@ -309,13 +309,13 @@ contains
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
-        if (.not. allocated(dj_bsum)) allocate (dj_bsum(MPARMJ, nstates))
-        if (.not. allocated(dj_e_bsum)) allocate (dj_e_bsum(MPARMJ, nstates))
-        if (.not. allocated(dj_e_save)) allocate (dj_e_save(MPARMJ, nstates))
-        if (.not. allocated(dj_save)) allocate (dj_save(MPARMJ, nstates))
-        if (.not. allocated(e_bsum)) allocate (e_bsum(nstates))
-        if (.not. allocated(grad_jas_bcm2)) allocate (grad_jas_bcm2(MPARMJ, nstates))
-        if (.not. allocated(grad_jas_bcum)) allocate (grad_jas_bcum(MPARMJ, nstates))
+        if (.not. allocated(dj_bsum)) allocate (dj_bsum(MPARMJ, MSTATES))
+        if (.not. allocated(dj_e_bsum)) allocate (dj_e_bsum(MPARMJ, MSTATES))
+        if (.not. allocated(dj_e_save)) allocate (dj_e_save(MPARMJ, MSTATES))
+        if (.not. allocated(dj_save)) allocate (dj_save(MPARMJ, MSTATES))
+        if (.not. allocated(e_bsum)) allocate (e_bsum(MSTATES))
+        if (.not. allocated(grad_jas_bcm2)) allocate (grad_jas_bcm2(MPARMJ, MSTATES))
+        if (.not. allocated(grad_jas_bcum)) allocate (grad_jas_bcum(MPARMJ, MSTATES))
     end subroutine allocate_gradjerr
 
     subroutine deallocate_gradjerr()
@@ -351,5 +351,3 @@ subroutine allocate_m_gradhess()
     call allocate_gradhess_mix_orb_ci()
     call allocate_gradjerr()
 end subroutine allocate_m_gradhess
-
-

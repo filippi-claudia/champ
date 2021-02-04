@@ -23,19 +23,13 @@ c MPI version written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-
-
-
       include 'mpif.h'
-
-
-
-
 
       dimension rprobt(nrad),tryt(nrad),suct(nrad)
       dimension collect(nstates)
       dimension istatus(MPI_STATUS_SIZE)
 
+      
       call mpi_reduce(ecum1,collect,nstates,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
       do 10 istate=1,nstates

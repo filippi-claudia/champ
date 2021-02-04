@@ -12,7 +12,8 @@
 
       include 'mpif.h'
 
-      dimension obs_wtg(nstates),obs_wtg_tot(nstates)
+      ! NR : not used 
+      ! dimension obs_wtg(nstates),obs_wtg_tot(nstates)
       dimension hii(MPARM),sii(MPARM)
 
       write(6,*) 'nparm_p1,nparm',nparm_p1,nparm
