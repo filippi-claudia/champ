@@ -40,6 +40,7 @@ contains
 
         if (.not. allocated(cdet_equiv)) allocate (cdet_equiv(ndet))
         if (.not. allocated(dcdet_equiv)) allocate (dcdet_equiv(ndet))
+
     end subroutine allocate_dets_equiv
 
     subroutine deallocate_dets_equiv()
