@@ -546,11 +546,6 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
     call ptfile(iu, fn, 'old')
 
     ncsf = ncsf_read
-    ! write (6, *) fn
-    ! write (6, '('' ncsf : '' I10)') ncsf
-    ! write (6, '('' MDET : '' I10)') MDET
-    ! write (6, '('' ndet : '' I10)') ndet
-    ! write (6, '('' MSTATES : '' I10)') MSTATES
     if (ncsf .gt. ndet) call fatal_error('CSF: too many csf')
 
     nstates = nstates_read
@@ -558,7 +553,7 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
 
     ! if (nstates .gt. MSTATES) call fatal_error('CSF: too many states')
     ! allocate (ccsf(ncsf, nstates, nwftype))
-    allocate (ccsf(ndet, MSTATES, nwftype))
+    if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, nwftype))
 
     do i = 1, nstates
         read (iu, *) (ccsf(j, i, 1), j=1, ncsf)
@@ -569,8 +564,6 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
     if (fn .eq. '<input>') then
         call p2chkend(iu, 'csf')
     endif
-
-    ! nstates = MSTATES
 
 end subroutine read_csf
 
@@ -944,6 +937,7 @@ subroutine get_weights(field, weights, iweight, nweight)
 
     write (6, *) field, field(1:index(field, ' '))
     do i = 1, nstates
+        write (6, *) 'istate', i
         wdef = 0.d0
         call append_number(field(1:index(field, ' ') - 1), i, vname, nv, 0)
         call p2gtfd(vname(1:nv), w, wdef, 0)
