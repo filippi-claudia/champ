@@ -7,7 +7,7 @@ module sr_mod
     integer :: nvecx
 
     private
-    public :: MPARM, MOBS, MCONF, MVEC
+    public :: MPARM, MOBS, MCONF, MVEC, nvecx
     save
 end module sr_mod
 
