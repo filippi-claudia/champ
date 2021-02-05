@@ -10,7 +10,7 @@ if (MPI_Fortran_FOUND)
                          optwf.f90 optwf_dl.f90 optwf_dl_more.f90 optwf_sr.f90)
   set(DAVIDSON_SOURCE array_utils.f90 lapack_wrapper.f90 davidson.f90)
 
-  set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-check bounds -traceback")
+  set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-g -check bounds -traceback")
   if (NOT ENABLE_QMMM)
     message(STATUS "QMMM is NOT enabled!")
   endif()
@@ -32,7 +32,7 @@ if (MPI_Fortran_FOUND)
   # creates object library shared for all binaries
   # --------------------------------------------
   
-  # set(Fortran_FLAGS "-g")
+  set(Fortran_FLAGS "-g")
 
   set(SHARED_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/m_kinds.f90
