@@ -13,7 +13,7 @@ c Modified by A. Scemama
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use atom, only: ncent_tot
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use array_utils, only: resize_matrix, resize_tensor
+      use array_resize_utils, only: resize_matrix, resize_tensor
       implicit real*8(a-h,o-z)
 
 

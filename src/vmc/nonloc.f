@@ -25,7 +25,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-      use array_utils, only: resize_matrix
+      use array_resize_utils, only: resize_matrix
       use multislater, only: detiab
 
       implicit real*8(a-h,o-z)
@@ -305,7 +305,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use const, only: nelec
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use array_utils, only: resize_tensor
+      use array_resize_utils, only: resize_tensor
       implicit real*8(a-h,o-z)
 
 

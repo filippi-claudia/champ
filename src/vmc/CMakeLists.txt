@@ -68,6 +68,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_grdnt.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_state_avrg.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/array_resize_utils.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/read_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/set_input_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f

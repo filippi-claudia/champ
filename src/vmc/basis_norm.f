@@ -14,7 +14,7 @@ c Set normalization of basis fns.
       use coefs, only: coef, nbasis, norb
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
-      use array_utils, only: resize_tensor
+      use array_resize_utils, only: resize_tensor
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       
       implicit real*8(a-h,o-z)

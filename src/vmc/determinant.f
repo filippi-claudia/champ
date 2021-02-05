@@ -168,7 +168,7 @@ c-----------------------------------------------------------------------
       use Bloc, only: b
       use force_analy, only: iforce_analy
       use velocity_jastrow, only: vj
-      use array_utils, only: resize_matrix, resize_tensor
+      use array_resize_utils, only: resize_matrix, resize_tensor
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 

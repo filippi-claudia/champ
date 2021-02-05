@@ -201,7 +201,7 @@ c and Anthony Scemema
 
       use optorb_cblock, only: nefp_blocks, isample_cmat, iorbsample
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use array_utils, only: resize_tensor
+      use array_resize_utils, only: resize_tensor
       implicit real*8(a-h,o-z)
 
 
