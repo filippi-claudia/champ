@@ -23,7 +23,7 @@
       use force_analy, only: iforce_analy
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-      use array_resize_utils, only: resize_matrix
+      use array_resize_utils, only: resize_matrix, resize_tensor
       use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
@@ -48,6 +48,8 @@ c dimensioned at least max(nup**2,ndn**2)
 
       call resize_matrix(b, norb+nadorb, 1)
       call resize_matrix(orb, norb+nadorb, 2)
+      call resize_tensor(tildem, norb+nadorb, 2)
+      call resize_tensor(aa, norb+nadorb, 2)
 
       nel=nup
       ish=0
