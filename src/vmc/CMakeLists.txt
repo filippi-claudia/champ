@@ -32,7 +32,7 @@ if (MPI_Fortran_FOUND)
   # creates object library shared for all binaries
   # --------------------------------------------
   
-  set(Fortran_FLAGS "-g")
+  # set(Fortran_FLAGS "-g")
 
   set(SHARED_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/m_kinds.f90
