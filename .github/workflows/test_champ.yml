@@ -25,12 +25,12 @@ jobs:
       run: |
 
            # save the module file
-           # cp src/vmc/m_vmc.f90 ./m_vmc_save
-           # cp src/vmc/m_sr.f90 ./m_sr_save
-           # cp src/vmc/m_optci.f90 ./m_optci_save
+           cp src/vmc/m_vmc.f90 ./m_vmc_save
+           cp src/vmc/m_sr.f90 ./m_sr_save
+           cp src/vmc/m_optci.f90 ./m_optci_save
 
            # copy module file
-           # cp tests/CI_test/h2/module/*.f90 src/vmc
+           cp tests/CI_test/h2/module/*.f90 src/vmc
 
            # compile
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DENABLE_TEST=ON
@@ -76,9 +76,8 @@ jobs:
       env:
         CONDA_PREFIX: /usr/share/miniconda
       run: |
-        
            cd tests/CI_test/h2/qmc_1det/
-           
+
            # run and compare eigenvalues given by Davidson
            echo "- Running vmc_davidson_check.inp in serial:"
            echo "- Warning Remember to regenerate H.dat and S.dat if the code changes"
@@ -88,22 +87,16 @@ jobs:
            echo "  CHAMP Eigenalues vs Scipy:" 
            python compare_eigenvalues.py
      
-           # restore the module files
-           # cd $HOME/work/champ/champ
-           # cp m_vmc_save ./src/vmc/m_vmc.f90
-           # cp m_optci_save ./src/vmc/m_optci.f90
-           # cp m_sr_save ./src/vmc/m_sr.f90     
-     
     - name: Building_code_for_psb3_butadiene_and_psb2
       run: |
 
            # save the module files
-           # cp src/vmc/m_vmc.f90 ./m_vmc_save
-           # cp src/vmc/m_sr.f90 ./m_sr_save
-           # cp src/vmc/m_optci.f90 ./m_optci_save
+           cp src/vmc/m_vmc.f90 ./m_vmc_save
+           cp src/vmc/m_sr.f90 ./m_sr_save
+           cp src/vmc/m_optci.f90 ./m_optci_save
 
            # copy module files to src
-           # cp tests/CI_test/psb3/module/*.f90 src/vmc
+           cp tests/CI_test/psb3/module/*.f90 src/vmc
 
            # compile
            rm -rf bin build
@@ -212,9 +205,8 @@ jobs:
            $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9287659 
            echo ""
 
-           #  restore the module files
-           
-           # cd $HOME/work/champ/champ
-           # cp m_vmc_save ./src/vmc/m_vmc.f90
-           # cp m_optci_save ./src/vmc/m_optci.f90
-           # cp m_sr_save ./src/vmc/m_sr.f90
+           #  restore the module files           
+           cd $HOME/work/champ/champ
+           cp m_vmc_save ./src/vmc/m_vmc.f90
+           cp m_optci_save ./src/vmc/m_optci.f90
+           cp m_sr_save ./src/vmc/m_sr.f90

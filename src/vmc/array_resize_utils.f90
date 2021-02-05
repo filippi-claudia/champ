@@ -11,10 +11,9 @@ module array_resize_utils
 contains
 
     subroutine resize_array(arr, new_size)
-        !> Resize the second dimension of coef
-        !> \param mat : matrix to resize
+        !> Resize a 1D array
+        !> \param arr : matrix to resize
         !> \param new_size : new dimension
-        !> \index_dim : index of the dim to resize
 
         real(dp), dimension(:), allocatable, INTENT(INOUT) :: arr
         integer, INTENT(IN) :: new_size
@@ -36,7 +35,7 @@ contains
     end subroutine resize_array
 
     subroutine resize_matrix(mat, new_size, index_dim)
-        !> Resize the second dimension of coef
+        !> Resize a matrix
         !> \param mat : matrix to resize
         !> \param new_size : new dimension
         !> \index_dim : index of the dim to resize
@@ -73,7 +72,7 @@ contains
     endsubroutine resize_matrix
 
     subroutine resize_tensor(mat, new_size, index_dim)
-        !> Resize the second dimension of coef
+        !> Resize a 3D tensor matrix
         !> \param mat : matrix to resize
         !> \param new_size : new dimension
         !> \index_dim : index of the dim to resize
