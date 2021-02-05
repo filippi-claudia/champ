@@ -43,13 +43,13 @@ c 1st and 2nd derivs also calculated if ider=1.
 c use small radius polynomial
 
         wfv(1)=ce(1,irb,ic,iwf)
-        do 10 ii=2,ncoef
+        do 10 ii=2,NCOEF
   10      wfv(1)=wfv(1)+ce(ii,irb,ic,iwf)*r**(ii-1)
         if(ider.eq.1) then
           wfv(2)=0.d0
           wfv(3)=0.d0
           wfv(4)=0.d0
-          do 20 ii=2,ncoef
+          do 20 ii=2,NCOEF
             wfv(2)=wfv(2)+(ii-1)*ce(ii,irb,ic,iwf)*r**(ii-2)
             wfv(3)=wfv(3)+(ii-1)*(ii-2)*ce(ii,irb,ic,iwf)*r**(ii-3)
   20        wfv(4)=wfv(4)+(ii-1)*(ii-2)*(ii-3)*ce(ii,irb,ic,iwf)*r**(ii-4)
