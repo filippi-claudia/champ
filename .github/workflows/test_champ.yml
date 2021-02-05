@@ -34,7 +34,7 @@ jobs:
 
            # compile
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DENABLE_TEST=ON
-           cmake --build build -- -j2 --target vmc.mov1
+           cmake --build build --target vmc.mov1 -- -j2 
 
     - name: Run_h2
       run: |
@@ -101,7 +101,7 @@ jobs:
            # compile
            rm -rf bin build
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DENABLE_TEST=ON
-           cmake --build build --clean-first -- -j2 --target vmc.mov1
+           cmake --build build --target vmc.mov1 --clean-first -- -j2 
 
     - name: Run_psb3
       run: |
