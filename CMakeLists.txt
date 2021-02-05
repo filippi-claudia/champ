@@ -70,7 +70,7 @@ endif(ENABLE_MPI)
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-g" "-O2" "-mcmodel=large")
+  list(APPEND Fortran_FLAGS "-O2" "-mcmodel=large")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
   if (MKL_FOUND)
     #list(APPEND Fortran_FLAGS "-fdefault-integer-8")
