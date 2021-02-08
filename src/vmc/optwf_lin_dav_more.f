@@ -112,14 +112,14 @@ c elseif I do not optimize jastrow and or orbitals
             call sort(nvec,overlap_psi(1,istate),index_overlap)
             i_overlap_max=index_overlap(nvec)
             write(6,'(''LIN_D: state, max overlap ivec'',2i4)') istate,i_overlap_max
-
+            
             do i=1,nparm
               deltap(i+nparm*(istate-1))=evc(i,i_overlap_max)/anorm(i_overlap_max)
             enddo
-
+            
 c Save 5 additional vectors with large overlap
             do ivec=1,5
-              idx_ivec=index_overlap(nvec-ivec)
+              idx_ivec=index_overlap(nvec-ivec+1)
               index_more(ivec,istate)=idx_ivec
               do i=1,nparm
                 deltap_more(i+nparm*(istate-1),ivec)=evc(i,idx_ivec)/anorm(idx_ivec)
@@ -135,16 +135,18 @@ c endif idtask.eq.0
 c     do istate=1,nstates
 c       call MPI_BCAST(deltap(1+nparm*(istate-1)),nparm,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 c     enddo
-
+      
       call MPI_BCAST(deltap,nparm*nstates,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
       if(i0.eq.0) then
         do ivec=1,5
+      
           call MPI_BCAST(deltap_more(1,ivec),nparm*nstates,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         enddo
+      
         call MPI_BCAST(index_more,5*nstates,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       endif
-
+      write(6, *) 'Done with lin_d'
       return              ! deltap
       end
 
