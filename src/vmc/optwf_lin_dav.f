@@ -40,6 +40,8 @@
       write(6,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
 
       call p2gtid('optwf:lin_nvec',nvec,5,1)
+      if(nvec.lt.t) call fatal_error('OPTWF_LIN_D: nvec must be at least 5')
+      
       call p2gtid('optwf:lin_nvecx',nvecx,MVEC,1)
       call p2gtfd('optwf:lin_adiag',alin_adiag,0.01,1)
       call p2gtfd('optwf:lin_eps',alin_eps,0.001,1)
