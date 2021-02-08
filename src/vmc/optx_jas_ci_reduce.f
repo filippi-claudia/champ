@@ -21,7 +21,7 @@ c Written by Claudia Filippi
 
 
 
-      dimension collect(MPARMJ,ndet)
+      dimension collect(MPARMJ,MDET)
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 

@@ -66,12 +66,13 @@ contains
         use precision_kinds, only: dp
         use mstates_mod, only: MDETCSFX
         use mstates_mod, only: MSTATES
+        use vmc_mod, only: MDET
 
-        if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, nwftype))
-        if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))
-        if (.not. allocated(iadet)) allocate (iadet(ndet))
-        if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-        if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))
+        if (.not. allocated(ccsf)) allocate (ccsf(MDET, MSTATES, nwftype))
+        if (.not. allocated(cxdet)) allocate (cxdet(MDET*MDETCSFX))
+        if (.not. allocated(iadet)) allocate (iadet(MDET))
+        if (.not. allocated(ibdet)) allocate (ibdet(MDET))
+        if (.not. allocated(icxdet)) allocate (icxdet(MDET*MDETCSFX))
     end subroutine allocate_csfs
 
     subroutine deallocate_csfs()

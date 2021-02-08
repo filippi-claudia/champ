@@ -68,7 +68,7 @@ subroutine multideterminants_define(iflag, icheck)
 
     implicit real*8(a - h, o - z)
 
-    dimension iswapped(nelec), itotphase(ndet)
+    dimension iswapped(nelec), itotphase(MDET)
 
     save kref_old
 
@@ -97,10 +97,10 @@ subroutine multideterminants_define(iflag, icheck)
     endif
     kref_old = kref
 
-    if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
-    if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
-    if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
-    if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2))
+    if (.not. allocated(iwundet)) allocate (iwundet(MDET, 2))
+    if (.not. allocated(numrep_det)) allocate (numrep_det(MDET, 2))
+    if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, MDET, 2))
+    if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, MDET, 2))
 
     do iab = 1, 2
         numrep_det(kref, iab) = 0
@@ -303,7 +303,7 @@ subroutine inputdet(nwftype)
 
     implicit real*8(a - h, o - z)
 
-    allocate (cdet(ndet, MSTATES, nwftype))
+    allocate (cdet(MDET, MSTATES, nwftype))
 
     do iwft = 2, nwftype
         do k = 1, ndet

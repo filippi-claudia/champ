@@ -479,7 +479,7 @@ contains
         use vmc_mod, only: MELEC, MORB, MDET
         use vmc_mod, only: MEXCIT
         if (.not. allocated(aa)) allocate (aa(nelec, norb, 2))
-        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, ndet, 2))
+        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, MDET, 2))
     end subroutine allocate_multimat
 
     subroutine deallocate_multimat()
@@ -511,7 +511,7 @@ contains
         use vmc_mod, only: MELEC, MORB, MDET
         use vmc_mod, only: MEXCIT
         if (.not. allocated(aan)) allocate (aan(nelec, norb))
-        if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, ndet))
+        if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, MDET))
     end subroutine allocate_multimatn
 
     subroutine deallocate_multimatn()
@@ -537,7 +537,7 @@ contains
         use dets, only: ndet
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
-        if (.not. allocated(detiab)) allocate (detiab(ndet, 2))
+        if (.not. allocated(detiab)) allocate (detiab(MDET, 2))
     end subroutine allocate_multislater
 
     subroutine deallocate_multislater()
@@ -568,7 +568,7 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MORB, MDET
         if (.not. allocated(ddorbn)) allocate (ddorbn(norb))
-        if (.not. allocated(detn)) allocate (detn(ndet))
+        if (.not. allocated(detn)) allocate (detn(MDET))
         if (.not. allocated(dorbn)) allocate (dorbn(3, norb))
         if (.not. allocated(orbn)) allocate (orbn(norb))
     end subroutine allocate_multislatern
@@ -793,7 +793,7 @@ contains
         use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
-        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
+        if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2))
         if (.not. allocated(dtildem)) allocate (dtildem(nelec, norb, 2))
     end subroutine allocate_scratch
 

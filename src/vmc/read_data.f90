@@ -158,11 +158,11 @@ subroutine read_determinants(iu, nd, iwft)
     ! if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
     call incpos(iu, itmp, 1)
 
-    allocate (cdet(ndet, MSTATES, nwftype))
+    allocate (cdet(MDET, MSTATES, nwftype))
 
-    read (iu, *) (cdet(i, 1, iwft), i=1, ndet)
+    read (iu, *) (cdet(i, 1, iwft), i=1, MDET)
 
-    allocate (iworbd(nelec, ndet))
+    allocate (iworbd(nelec, MDET))
     do i = 1, ndet
         call incpos(iu, itmp, 1)
         read (iu, *) (iworbd(j, i), j=1, nelec)
@@ -185,10 +185,10 @@ subroutine read_multideterminants(iu, nd)
 
     if (nd .ne. ndet - 1) call fatal_error('INPUT: problem in multidet')
 
-    allocate (iwundet(ndet, 2))
-    allocate (numrep_det(ndet, 2))
-    allocate (irepcol_det(nelec, ndet, 2))
-    allocate (ireporb_det(nelec, ndet, 2))
+    allocate (iwundet(MDET, 2))
+    allocate (numrep_det(MDET, 2))
+    allocate (irepcol_det(nelec, MDET, 2))
+    allocate (ireporb_det(nelec, MDET, 2))
 
     call incpos(iu, itmp, 1)
     do k = 2, nd + 1
@@ -553,7 +553,7 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
 
     ! if (nstates .gt. MSTATES) call fatal_error('CSF: too many states')
     ! allocate (ccsf(ncsf, nstates, nwftype))
-    if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, nwftype))
+    if (.not. allocated(ccsf)) allocate (ccsf(MDET, MSTATES, nwftype))
 
     do i = 1, nstates
         read (iu, *) (ccsf(j, i, 1), j=1, ncsf)
@@ -589,10 +589,10 @@ subroutine read_csfmap(fn)
     if (ncsf_check .ne. ncsf) call fatal_error('CSFMAP: wrong number of csf')
     if (nmap_check .gt. float(ndet)*ndet) call fatal_error('CSFMAP: too many determinants in map list')
 
-    if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))
-    if (.not. allocated(iadet)) allocate (iadet(ndet))
-    if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-    if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))
+    if (.not. allocated(cxdet)) allocate (cxdet(MDET*MDETCSFX))
+    if (.not. allocated(iadet)) allocate (iadet(MDET))
+    if (.not. allocated(ibdet)) allocate (ibdet(MDET))
+    if (.not. allocated(icxdet)) allocate (icxdet(MDET*MDETCSFX))
 
     nptr = 1
     do i = 1, ncsf
@@ -611,7 +611,7 @@ subroutine read_csfmap(fn)
     if (nmap_check .ne. nptr - 1) call fatal_error('CSFMAP: problem with nmap')
     nmap = nptr
 
-    if (.not. allocated(cdet)) allocate (cdet(ndet, MSTATES, nwftype))
+    if (.not. allocated(cdet)) allocate (cdet(MDET, MSTATES, nwftype))
 
     write (6, '(''Warning: det coef overwritten with csf'')')
     do k = 1, nstates

@@ -35,7 +35,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 c Calculates energy
 
       dimension coord(3,*),psid(*),energy(*)
-      dimension denergy(nstates),eloc_det(ndet,2),vpsp_det(2),dvpsp_dj(MPARMJ)
+      dimension denergy(nstates),eloc_det(MDET,2),vpsp_det(2),dvpsp_dj(MPARMJ)
 
       iwf=iwftype(ifr)
 

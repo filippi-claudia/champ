@@ -784,7 +784,7 @@ c-----------------------------------------------------------------------
 
       data icount_orbdef /1/
 
-      dimension iodet(2,ndet),iopos(2,ndet),iflag(2,norb)
+      dimension iodet(2,MDET),iopos(2,MDET),iflag(2,norb)
 
       dimension ne(2),m(2)
 

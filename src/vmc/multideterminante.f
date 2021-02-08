@@ -133,7 +133,7 @@ c-----------------------------------------------------------------------
 
       parameter (one=1.d0,half=0.5d0)
 
-      dimension aa(nelec,norb),wfmat(MEXCIT**2,ndet),ymat(norb,nelec)
+      dimension aa(nelec,norb),wfmat(MEXCIT**2,MDET),ymat(norb,nelec)
       dimension b(norb,3),dorb(3,norb)
       dimension gmat(nelec,norb,3)
       dimension velocity(3)

@@ -209,7 +209,7 @@ contains
         use dets, only: ndet
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
-        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
+        if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2))
     end subroutine allocate_denergy_det_m
 
     subroutine deallocate_denergy_det_m()
@@ -298,7 +298,7 @@ contains
 
     subroutine allocate_dorb_m()
         use vmc_mod, only: MELEC, MDET
-        if (.not. allocated(iworbd)) allocate (iworbd(nelec, ndet))
+        if (.not. allocated(iworbd)) allocate (iworbd(nelec, MDET))
     end subroutine allocate_dorb_m
 
     subroutine deallocate_dorb_m()

@@ -18,8 +18,8 @@
 
 
 
-      dimension ciprim(ndet),cieprim(ndet)
-      dimension eloc_det(ndet,2)
+      dimension ciprim(MDET),cieprim(MDET)
+      dimension eloc_det(MDET,2)
       
       if(ioptci.eq.0) return 
       
