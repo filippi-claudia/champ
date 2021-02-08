@@ -193,15 +193,15 @@ jobs:
 
            # run and compare a geometry optimization calculation
            echo "- Running vmc_mix_SA.inp in serial:"
-           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp #> vmc_mix_SA.out 
-           #  echo " total E vs reference:" 
-           #  $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.7665740 --no_assert
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
+            echo " total E vs reference:" 
+            $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.7665740 --no_assert
            echo ""
 
            # run and compare a geometry optimization calculation MPI
            echo "- Running vmc_mix_SA.inp in parallel:"
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out --no_assert
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
            echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9287659 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9287659 --no_assert
            echo ""
 
