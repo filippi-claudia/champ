@@ -22,10 +22,10 @@
       character*20 method_sav
 
 
-      dimension deltap(MPARM*nstates),deltap_more(MPARM*nstates,5)
-      dimension energy_old(nstates), energy_err_old(nstates), i_deltap(nstates), energy_davidson(6,nstates) 
+      dimension deltap(MPARM*MSTATES),deltap_more(MPARM*MSTATES,5)
+      dimension energy_old(MSTATES), energy_err_old(MSTATES), i_deltap(MSTATES), energy_davidson(6,MSTATES) 
       dimension index_min_energy(5), deltap_new(MPARM)
-      dimension index_more(5,nstates)
+      dimension index_more(5,MSTATES)
       
       save method_sav
 

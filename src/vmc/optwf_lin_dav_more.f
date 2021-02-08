@@ -21,8 +21,8 @@
 
 
 
-      dimension e(nvecx), evc(MPARM,nvecx), itype(nvecx), overlap_psi(nvecx,nstates),index_overlap(nvecx),anorm(nvecx)
-      dimension deltap(*),deltap_more(MPARM*nstates,5),index_more(5,nstates)
+      dimension e(nvecx), evc(MPARM,nvecx), itype(nvecx), overlap_psi(nvecx,MSTATES),index_overlap(nvecx),anorm(nvecx)
+      dimension deltap(*),deltap_more(MPARM*MSTATES,5),index_more(5,MSTATES)
 
       call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
 
@@ -820,7 +820,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit real*8(a-h,o-z)
 
 
-      dimension psi(MPARM,*),overlap_psi(nvecx,*),anorm(*),overlap_psiloc(nvecx,nstates),anorm_loc(nvecx)
+      dimension psi(MPARM,*),overlap_psi(nvecx,*),anorm(*),overlap_psiloc(nvecx,MSTATES),anorm_loc(nvecx)
 
       i0=1
       if(ioptjas+ioptorb.eq.0) i0=0

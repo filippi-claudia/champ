@@ -16,7 +16,7 @@ c Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-      dimension collect(MPARMJ,nstates),collect2(MPARMJ,MPARMJ,nstates)
+      dimension collect(MPARMJ,MSTATES),collect2(MPARMJ,MPARMJ,MSTATES)
 
       if(ioptjas.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 

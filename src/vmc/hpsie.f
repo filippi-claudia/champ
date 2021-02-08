@@ -4,6 +4,7 @@ c Written by Claudia Filippi by modifying hpsi
       use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use vmc_mod, only: MMAT_DIM2
       use csfs, only: nstates
+      use mstates_mod, only: MSTATES
       use estpsi, only: apsi, aref
       use multidet, only: kref
       use wfsec, only: iwf, iwftype
@@ -18,7 +19,7 @@ c Written by Claudia Filippi by modifying hpsi
 c Calculates wave function
 
       ! dimension coord(3,*),psid(*)
-      dimension coord(3,nelec),psid(nstates)
+      dimension coord(3,nelec),psid(MSTATES)
       
       iwf=iwftype(1)
 

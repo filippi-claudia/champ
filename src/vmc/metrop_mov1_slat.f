@@ -64,7 +64,7 @@ c TMP
       dimension xstrech(3,nelec)
       dimension xaxis(3),yaxis(3),zaxis(3),idist(nelec)
       dimension ddx_ref(3)
-      dimension psidn(nstates) ,wtg(nstates)
+      dimension psidn(MSTATES) ,wtg(MSTATES)
       
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)

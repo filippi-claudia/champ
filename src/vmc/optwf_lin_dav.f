@@ -24,7 +24,7 @@
 
       character*20 method_sav
 
-      dimension grad(MPARM*nstates),grad_more(MPARM*nstates,5),index_more(5,nstates)
+      dimension grad(MPARM*MSTATES),grad_more(MPARM*MSTATES,5),index_more(5,MSTATES)
 
       if(method .ne.'lin_d')return
 

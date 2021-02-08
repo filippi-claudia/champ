@@ -26,7 +26,7 @@ c MPI version written by Claudia Filippi
       include 'mpif.h'
 
       dimension rprobt(nrad),tryt(nrad),suct(nrad)
-      dimension collect(nstates)
+      dimension collect(MSTATES)
       dimension istatus(MPI_STATUS_SIZE)
 
       

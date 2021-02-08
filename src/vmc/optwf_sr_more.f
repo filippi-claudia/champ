@@ -12,7 +12,7 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use optorb_cblock, only: norbterm
-
+      use mstates_mod, only: MSTATES
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
@@ -24,7 +24,7 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
 
 
-      dimension obs_wtg(nstates),obs_wtg_tot(nstates)
+      dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
 
       call p2gtid('optgeo:izvzb',izvzb,0,1)
       call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
