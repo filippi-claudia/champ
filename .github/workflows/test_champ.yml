@@ -194,8 +194,8 @@ jobs:
            # run and compare a geometry optimization calculation
            echo "- Running vmc_mix_SA.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp #> vmc_mix_SA.out 
-          #  echo " total E vs reference:" 
-          #  $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.7665740 --no_assert
+           #  echo " total E vs reference:" 
+           #  $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.7665740 --no_assert
            echo ""
 
            # run and compare a geometry optimization calculation MPI
