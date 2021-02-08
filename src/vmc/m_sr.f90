@@ -49,7 +49,6 @@ module sr_mat_n
     save
 contains
     subroutine allocate_sr_mat_n()
-        use csfs, only: nstates
         use sr_mod, only: MPARM, MOBS, MCONF
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES

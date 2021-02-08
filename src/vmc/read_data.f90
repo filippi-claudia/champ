@@ -148,22 +148,23 @@ subroutine read_determinants(iu, nd, iwft)
 
     ! nstates = MSTATES
 
-    ! if (ndet .gt. MDET) then
-    ! write (6, *) "ndet=", ndet
-    ! write (6, *) "MDET=", MDET
-    ! call fatal_error('DET: ndet > MDET')
-    ! endif
+    if (ndet .gt. MDET) then
+        write (6, *) "ndet=", ndet
+        write (6, *) "MDET=", MDET
+        call fatal_error('DET: ndet > MDET')
+    endif
 
     call p2gti('electrons:nelec', nelec, 1)
-    ! if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
+    if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
     call incpos(iu, itmp, 1)
 
     allocate (cdet(MDET, MSTATES, nwftype))
 
-    read (iu, *) (cdet(i, 1, iwft), i=1, MDET)
+    read (iu, *) (cdet(i, 1, iwft), i=1, ndet)
 
     allocate (iworbd(nelec, MDET))
     do i = 1, ndet
+        write (6, *) i
         call incpos(iu, itmp, 1)
         read (iu, *) (iworbd(j, i), j=1, nelec)
     enddo
