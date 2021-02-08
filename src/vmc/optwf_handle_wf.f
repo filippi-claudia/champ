@@ -134,7 +134,7 @@ c-----------------------------------------------------------------------
 
       dimension anorm(nbasis)
 
-      call resize_tensor(coef, norb+nadorb, 2)
+      ! call resize_tensor(coef, norb+nadorb, 2)
 
       if(ioptorb.eq.0) return
 
@@ -341,7 +341,7 @@ c-----------------------------------------------------------------------
 
 
       real(dp), allocatable, save :: coef_save(:,:,:)
-      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb, nwftype))
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, MORB, nwftype))
       ! dimension coef_save(nbasis,norb,MWF)
       ! save coef_save
 
@@ -576,7 +576,7 @@ c-----------------------------------------------------------------------
 
 
       real(dp), allocatable, save :: coef_best(:,:,:)
-      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb, nwftype))
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, MORB, nwftype))
       ! dimension coef_best(nbasis,norb,MWF)
       ! save coef_best
 
@@ -728,7 +728,7 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension acoef(nbasis,norb),dparm(*)
+      dimension acoef(nbasis,MORB),dparm(*)
 
       if(ioptorb.eq.0) return
 

@@ -61,7 +61,7 @@ subroutine read_lcao(norb_tmp, nbasis_tmp, iwft, filename)
 
     if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
 
-    allocate (coef(nbasis, norb, nwftype))
+    allocate (coef(nbasis, MORB, nwftype))
 
     do i = 1, nototal
         call incpos(iu, itmp, 1)
@@ -762,6 +762,7 @@ subroutine read_sym(nsym, mo, fn)
 !KEYDOC Read symmetry information
     use coefs, only: norb
     use optorb, only: irrep
+    use vmc_mod, only: MORB
     implicit real*8(a - h, o - z)
 
     character fn*(*)
@@ -780,7 +781,7 @@ subroutine read_sym(nsym, mo, fn)
     read (iu, '(a80)') atmp
 
     ! allocate
-    allocate (irrep(norb))
+    allocate (irrep(MORB))
 
     ! read data
     read (iu, *) (irrep(io), io=1, norb)
@@ -828,6 +829,7 @@ subroutine read_energies(mo, fn)
 !INPUT eigenvalues i a=<input>
 !KEYDOC Read orbital energies
     use coefs, only: norb
+    use vmc_mod, only: MORB
     use optorb, only: orb_energy
     implicit real*8(a - h, o - z)
 
@@ -839,7 +841,7 @@ subroutine read_energies(mo, fn)
         call fatal_error('READEIG: wrong number of orbitals')
     endif
 
-    allocate (orb_energy(norb))
+    allocate (orb_energy(MORB))
 
     read (iu, *) (orb_energy(io), io=1, norb)
 
@@ -864,7 +866,7 @@ subroutine read_dmatrix(no, ns, fn)
     real(dp), DIMENSION(:), ALLOCATABLE :: dmat
     integer, DIMENSION(:), ALLOCATABLE :: iwdmat
 
-    allocate (dmat(norb))
+    allocate (dmat(MORB))
     allocate (iwdmat(MSTATES))
 
     call p2gtid('general:ipr', ipr, -1, 1)
@@ -884,7 +886,7 @@ subroutine read_dmatrix(no, ns, fn)
         if (iwdmat(iw) .ne. iweight(iw)) call fatal('READ_DMATRIX: iwdmat')
     enddo
 
-    allocate (dmat_diag(norb))
+    allocate (dmat_diag(MORB))
 
     do i = 1, norb
         dmat_diag(i) = 0.d0

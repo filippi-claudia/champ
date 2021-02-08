@@ -105,13 +105,13 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,norb)
+      dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,MORB)
       ! real(dp), allocatable, save :: ymat(:,:)
       ! if (.not. allocated(ymat)) then 
       !   allocate(ymat_tmp(norb,MELEC))
       ! endif
 
-      dimension ymat_tmp(norb,nelec)
+      dimension ymat_tmp(MORB,nelec)
       ! save ymat_tmp
 
       if(iel.le.nup) then
@@ -284,7 +284,7 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       dimension slmi(MMAT_DIM)
-      dimension dorb(3,norb)
+      dimension dorb(3,MORB)
       dimension ddx_ref(3)
 
       ddx_ref(1)=0

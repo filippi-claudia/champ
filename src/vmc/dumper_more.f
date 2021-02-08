@@ -46,7 +46,7 @@ c job where it left off
 
       parameter(half=0.5d0,small=1.d-6)
 
-      dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent_tot)
+      dimension coefx(nbasis,MORB),zexx(nbasis),centx(3,ncent_tot)
      &,znucx(nctype_tot),n1sx(nctype_tot),n2sx(nctype_tot),n2px(3,nctype_tot)
      &,n3sx(nctype_tot),n3px(3,nctype_tot),n3dzrx(nctype_tot),n3dx2x(nctype_tot)
      &,n3dxyx(nctype_tot),n3dxzx(nctype_tot),n3dyzx(nctype_tot),n4sx(nctype_tot)

@@ -45,10 +45,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       dimension vpsp_det(*),dvpsp_dj(*),t_vpsp(ncent_tot,MPS_QUAD,*)
       dimension dpsij_ratio(MPARMJ)
 
-      dimension orbn(norb+nadorb),dorbn(3,norb),da_orbn(3,ncent_tot,norb),term_radial_da_vps(3)
+      dimension orbn(MORB),dorbn(3,MORB),da_orbn(3,ncent_tot,MORB),term_radial_da_vps(3)
       dimension vjn(3),da_ratio_jn(3,ncent_tot),dd1(nelec,ncent_tot),dd1_sav(ncent_tot)
 
-      call resize_matrix(b, norb+nadorb, 1)
+      ! call resize_matrix(b, norb+nadorb, 1)
 
       do 11 ic=1,ncent
 cJF this is the culprit
@@ -316,7 +316,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       dimension orbn(*),dorbn(3,*),da_orbn(3,ncent_tot,*),dtmp(3)
       
 
-      call resize_tensor(coef, norb+nadorb, 2)
+      ! call resize_tensor(coef, norb+nadorb, 2)
 
       if(iperiodic.eq.0) then
 
@@ -548,8 +548,8 @@ c-----------------------------------------------------------------------
 
 
       dimension rvec_en_sav(3,ncent_tot),r_en_sav(ncent_tot)
-      dimension orbn(norb),dorbn(3,norb),vjn(3)
-      dimension da_orbn(3,ncent_tot,norb),da_ratio_jn(3,ncent_tot)
+      dimension orbn(MORB),dorbn(3,MORB),vjn(3)
+      dimension da_orbn(3,ncent_tot,MORB),da_ratio_jn(3,ncent_tot)
       dimension term_radial_da_vps(3)
 
       if(iforce_analy.eq.0) return

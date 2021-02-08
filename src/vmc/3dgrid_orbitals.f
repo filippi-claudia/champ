@@ -9,19 +9,17 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use grid_mod, only: MXNSTEP, MXNSTEP3
       use grid_mod, only: cart_from_int
       use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MORB
       use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, ncent
       use const, only: nelec
-      use ghostatom, only: newghostype, nghostcent
       use ghostatom, only: newghostype, nghostcent
       use phifun, only: d2phin, dphin
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use coefs, only: coef, nbasis, norb
       use phifun, only: d2phin, dphin, phin
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use grid3d_param, only: endpt, nstep3d, origin
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
@@ -396,6 +394,7 @@ c Lagrange interpolation routines
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: grid3d, cart_from_int
       use vmc_mod, only: MELEC, MORB, MCENT
+      use vmc_mod, only: MORB
       use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, ncent
       use wfsec, only: iwf
@@ -416,7 +415,7 @@ c Lagrange interpolation routines
       integer a,b,c
       dimension r(3)
 
-      dimension f(norb)
+      dimension f(MORB)
       iwf=1
 
 c     Check the sizes
@@ -607,7 +606,7 @@ c
 
 
 
-      dimension r(3),dr(3),orb(nelec,norb),ix(3)
+      dimension r(3),dr(3),orb(nelec,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 
@@ -688,7 +687,7 @@ c
       implicit real*8(a-h,o-z)
 
 
-      dimension r(3),dr(3),orb(3,nelec,norb),ix(3)
+      dimension r(3),dr(3),orb(3,nelec,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 
@@ -771,7 +770,7 @@ c
 
 
 
-      dimension r(3),dr(3),orb(norb),ix(3)
+      dimension r(3),dr(3),orb(MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 
@@ -851,7 +850,7 @@ c
       implicit real*8(a-h,o-z)
 
 
-      dimension r(3),dr(3),orb(3,norb),ix(3)
+      dimension r(3),dr(3),orb(3,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 

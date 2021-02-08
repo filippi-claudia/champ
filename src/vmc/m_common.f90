@@ -19,7 +19,7 @@ contains
         use pseudo_mod, only: MPS_QUAD
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
-        if (.not. allocated(b_t)) allocate (b_t(norb, MPS_QUAD, ncent_tot, nelec))
+        if (.not. allocated(b_t)) allocate (b_t(MORB, MPS_QUAD, ncent_tot, nelec))
         if (.not. allocated(iskip)) allocate (iskip(nelec, ncent_tot))
     end subroutine allocate_b_tmove
 
@@ -61,12 +61,12 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
         use optjas, only: MPARMJ
-        if (.not. allocated(b)) allocate (b(norb, nelec))
-        if (.not. allocated(tildem)) allocate (tildem(nelec, norb, 2))
+        if (.not. allocated(b)) allocate (b(MORB, nelec))
+        if (.not. allocated(tildem)) allocate (tildem(nelec, MORB, 2))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
-        if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb, ncent_tot))
-        if (.not. allocated(db)) allocate (db(3, nelec, norb, ncent_tot))
-        if (.not. allocated(b_dj)) allocate (b_dj(norb, nelec, MPARMJ))
+        if (.not. allocated(b_da)) allocate (b_da(3, nelec, MORB, ncent_tot))
+        if (.not. allocated(db)) allocate (db(3, nelec, MORB, ncent_tot))
+        if (.not. allocated(b_dj)) allocate (b_dj(MORB, nelec, MPARMJ))
     end subroutine allocate_Bloc
 
     subroutine deallocate_Bloc()
@@ -478,7 +478,7 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aa)) allocate (aa(nelec, norb, 2))
+        if (.not. allocated(aa)) allocate (aa(nelec, MORB, 2))
         if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, MDET, 2))
     end subroutine allocate_multimat
 
@@ -510,7 +510,7 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aan)) allocate (aan(nelec, norb))
+        if (.not. allocated(aan)) allocate (aan(nelec, MORB))
         if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, MDET))
     end subroutine allocate_multimatn
 
@@ -567,10 +567,10 @@ contains
         use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MORB, MDET
-        if (.not. allocated(ddorbn)) allocate (ddorbn(norb))
+        if (.not. allocated(ddorbn)) allocate (ddorbn(MORB))
         if (.not. allocated(detn)) allocate (detn(MDET))
-        if (.not. allocated(dorbn)) allocate (dorbn(3, norb))
-        if (.not. allocated(orbn)) allocate (orbn(norb))
+        if (.not. allocated(dorbn)) allocate (dorbn(3, MORB))
+        if (.not. allocated(orbn)) allocate (orbn(MORB))
     end subroutine allocate_multislatern
 
     subroutine deallocate_multislatern()
@@ -629,9 +629,9 @@ contains
         use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
-        if (.not. allocated(ddorb)) allocate (ddorb(nelec, norb))
-        if (.not. allocated(dorb)) allocate (dorb(3, nelec, norb))
-        if (.not. allocated(orb)) allocate (orb(nelec, norb))
+        if (.not. allocated(ddorb)) allocate (ddorb(nelec, MORB))
+        if (.not. allocated(dorb)) allocate (dorb(3, nelec, MORB))
+        if (.not. allocated(orb)) allocate (orb(nelec, MORB))
     end subroutine allocate_orbval
 
     subroutine deallocate_orbval()
@@ -794,7 +794,7 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
         if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2))
-        if (.not. allocated(dtildem)) allocate (dtildem(nelec, norb, 2))
+        if (.not. allocated(dtildem)) allocate (dtildem(nelec, MORB, 2))
     end subroutine allocate_scratch
 
     subroutine deallocate_scratch()
@@ -955,8 +955,8 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
-        if (.not. allocated(dymat)) allocate (dymat(norb, nelec, 2, MSTATES))
-        if (.not. allocated(ymat)) allocate (ymat(norb, nelec, 2, MSTATES))
+        if (.not. allocated(dymat)) allocate (dymat(MORB, nelec, 2, MSTATES))
+        if (.not. allocated(ymat)) allocate (ymat(MORB, nelec, 2, MSTATES))
     end subroutine allocate_ycompact
 
     subroutine deallocate_ycompact()
@@ -986,7 +986,7 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
-        if (.not. allocated(ymatn)) allocate (ymatn(norb, nelec, MSTATES))
+        if (.not. allocated(ymatn)) allocate (ymatn(MORB, nelec, MSTATES))
     end subroutine allocate_ycompactn
 
     subroutine deallocate_ycompactn()
@@ -1019,9 +1019,9 @@ contains
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
         if (.not. allocated(aaz)) allocate (aaz(nelec, nelec, 2, MSTATES))
-        if (.not. allocated(dzmat)) allocate (dzmat(norb, nelec, 2, MSTATES))
+        if (.not. allocated(dzmat)) allocate (dzmat(MORB, nelec, 2, MSTATES))
         if (.not. allocated(emz)) allocate (emz(nelec, nelec, 2, MSTATES))
-        if (.not. allocated(zmat)) allocate (zmat(norb, nelec, 2, MSTATES))
+        if (.not. allocated(zmat)) allocate (zmat(MORB, nelec, 2, MSTATES))
     end subroutine allocate_zcompact
 
     subroutine deallocate_zcompact()

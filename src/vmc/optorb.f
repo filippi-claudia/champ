@@ -20,7 +20,7 @@
 
 
 
-      dimension zmat(norb,nelec,2),dzmat(norb,nelec,2),emz(nelec,nelec,2),aaz(nelec,nelec,2)
+      dimension zmat(MORB,nelec,2),dzmat(MORB,nelec,2),emz(nelec,nelec,2),aaz(nelec,nelec,2)
       dimension orbprim(*),eorbprim(*)
 
       if(ioptorb.eq.0) return
@@ -784,7 +784,7 @@ c-----------------------------------------------------------------------
 
       data icount_orbdef /1/
 
-      dimension iodet(2,MDET),iopos(2,MDET),iflag(2,norb)
+      dimension iodet(2,MDET),iopos(2,MDET),iflag(2,MORB)
 
       dimension ne(2),m(2)
 

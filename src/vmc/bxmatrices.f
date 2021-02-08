@@ -13,7 +13,7 @@
 
 
 
-      dimension b(norb,nelec),btemp(nelec**2,2),xmatu(nelec**2),xmatd(nelec**2),work(nelec)
+      dimension b(MORB,nelec),btemp(nelec**2,2),xmatu(nelec**2),xmatd(nelec**2),work(nelec)
 
       do 110 iab=1,2
         if(iab.eq.1) then

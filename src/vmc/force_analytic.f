@@ -57,7 +57,7 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension b_a(norb,nelec),b_kref(nelec*nelec),tildem_a(nelec,norb)
+      dimension b_a(MORB,nelec),b_kref(nelec*nelec),tildem_a(nelec,MORB)
       dimension da_psi_ref(3,ncent_tot)
 
       do 400 ic=1,ncent
