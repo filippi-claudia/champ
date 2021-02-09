@@ -507,6 +507,7 @@ c Optimization flags (vmc/dmc only)
         call p2gtad('optwf:method', method, 'linear', 1)
         call p2gtid('optwf:idl_flag', idl_flag, 0, 1)
         call p2gtid('optwf:ilbfgs_flag', ilbfgs_flag, 0, 1)
+        call p2gtid('optwf:nextorb',nadorb,next_max,1)
 
         call p2gtid('optwf:ioptjas',ioptjas,0,1)
 CVARDOC flag: Jastrow derivatives will be sampled
