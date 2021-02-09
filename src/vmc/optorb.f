@@ -779,9 +779,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-
-
-
       data icount_orbdef /1/
 
       dimension iodet(2,MDET),iopos(2,MDET),iflag(2,MORB)
@@ -825,6 +822,7 @@ c Number of external orbitals for orbital optimization
        write(6,'(''Total orbitals in orbital optimization: '',i4)') nadorb+ndetorb-ncore
       endif
       norb=ndetorb
+      
 
 c Omit doubly occupied in all input determinants
       do 5 i=1,ndetorb

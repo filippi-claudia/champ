@@ -185,7 +185,7 @@ c Set normalization of basis fns.
 
       ! potentially resize the 2nd dim of
       ! coefs to norb+nadorb
-      call resize_tensor(coef, norb+nadorb, 2)
+    !   call resize_tensor(coef, norb+nadorb, 2)
 
       do 300 iorb=1,norb+nadorb
         do 300 j=1,nbasis

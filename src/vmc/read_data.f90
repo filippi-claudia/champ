@@ -52,9 +52,13 @@ subroutine read_lcao(norb_tmp, nbasis_tmp, iwft, filename)
 
     call file(iu, filename, 'old', 1, 0)
     nbasis = nbasis_tmp
-
     norb = norb_tmp
     nototal = norb
+
+    ! Fix the maximum size of all array relative
+    ! to MOs with the maximum number of MOs
+    MORB = norb
+
     ! if (nbasis .gt. MBASIS) call fatal_error('LCAO: nbasis > MBASIS')
     ! if (nototal .gt. MORB) call fatal_error('LCAO: number of orbitals > MORB')
     call p2gtid('general:nwftype', nwftype, 1, 1)

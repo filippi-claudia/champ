@@ -22,9 +22,9 @@ c Modified by A. Scemama
       dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       dimension bhin(nelec,nbasis),dbhin(3*nelec,nbasis),d2bhin(nelec,nbasis)
 
-      call resize_matrix(orb, norb+nadorb, 2)
-      call resize_matrix(ddorb, norb+nadorb, 2)
-      call resize_tensor(dorb, norb+nadorb, 3)
+      ! call resize_matrix(orb, norb+nadorb, 2)
+      ! call resize_matrix(ddorb, norb+nadorb, 2)
+      ! call resize_tensor(dorb, norb+nadorb, 3)
 
       ier=1
       if(iperiodic.eq.0) then

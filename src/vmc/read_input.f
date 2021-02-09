@@ -507,7 +507,6 @@ c Optimization flags (vmc/dmc only)
         call p2gtad('optwf:method', method, 'linear', 1)
         call p2gtid('optwf:idl_flag', idl_flag, 0, 1)
         call p2gtid('optwf:ilbfgs_flag', ilbfgs_flag, 0, 1)
-        call p2gtid('optwf:nextorb',nadorb,next_max,1)
 
         call p2gtid('optwf:ioptjas',ioptjas,0,1)
 CVARDOC flag: Jastrow derivatives will be sampled
@@ -939,7 +938,7 @@ c get normalization for basis functions
       endif
 c check if the orbitals coefficients are to be multiplied by a constant parameter
       call p2gtfd('general:scalecoef',scalecoef,1.0d0,1)
-      call resize_tensor(coef, norb+nadorb, 2)
+      ! call resize_tensor(coef, norb+nadorb, 2)
       if(scalecoef.ne.1.0d0) then
         do 340 iwft=1,nwftype
           do 340 iorb=1,norb+nadorb

@@ -19,14 +19,7 @@ c Modified by A. Scemama
       use atom, only: ncent_tot
       implicit real*8(a-h,o-z)
 
-
-
-
-
       parameter (one=1.d0,half=0.5d0)
-
-
-
 
       dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
 
@@ -112,19 +105,9 @@ c-----------------------------------------------------------------------
       use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+      ! write(6, *) 'norb', norb
+      ! write(6, *) 'nadorb', nadorb
+      ! call fatal_error('determinant.f')
 
       iflag=0
       if(ipass.le.2) return
@@ -145,6 +128,7 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
         call multideterminants_define(iflag,icheck)
         if (ioptorb.ne.0) then
           norb=norb+nadorb
+          write(6, *) norb
           call optorb_define
         endif
       endif
@@ -177,9 +161,9 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0,half=0.5d0)
       
       ! resize ddor and dorb if necessary
-      call resize_matrix(ddorb, norb+nadorb, 2)
-      call resize_matrix(b, norb+nadorb, 1)
-      call resize_tensor(dorb, norb+nadorb, 3)
+      ! call resize_matrix(ddorb, norb+nadorb, 2)
+      ! call resize_matrix(b, norb+nadorb, 1)
+      ! call resize_tensor(dorb, norb+nadorb, 3)
 
 c compute kinetic contribution of B+Btilde to compute Eloc
       do i=1,nelec
