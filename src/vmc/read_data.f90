@@ -146,6 +146,7 @@ subroutine read_determinants(iu, nd, iwft)
     call p2gtid('general:nwftype', nwftype, 1, 1)
 
     ndet = nd
+    MDET = nd
     ! write (6, *) 'nstates', nstates
     ! if (nstates .eq. 0) call fatal_error('nstates undefined')
     ! if (nstates .eq. 0) nstates = 1
