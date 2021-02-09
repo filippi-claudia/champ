@@ -29,11 +29,14 @@ module vmc_mod
     real(dp), parameter :: delri = (nrad - 1)/radmax
 
     integer, parameter :: MELEC = 32, MBASIS = 500, MCENT = 20
-    integer :: MORB
-    ! integer, parameter :: MORB = 500
-    integer :: MDET
-    ! integer, parameter :: MDET = 1000
     integer, parameter :: MCTYPE = 3
+
+    ! integer, parameter :: MORB = 500
+    ! integer, parameter :: MDET = 1000
+
+    integer :: MORB
+    integer :: MDET
+
     integer :: MCTYP3X
     integer, parameter :: NSPLIN = 1001, MORDJ = 7
 
