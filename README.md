@@ -118,49 +118,49 @@ Compared to the previous Makefiles the dependencies for the include files
 
 #### CMAKE Recipes
 
-Here are a couple of recipes for commonly used computing facilities, which can
-be easily adapted. See Cartesius for a module based setup or CCPGate for a
-standard Intel installation.
-
-* Cartesius
-Load the required modules
+Here are a couple of recipes for commonly used computing facilities, which can be easily adapted.
+* Cartesius:  
+	- Load the required modules
 ```
-module unload mpi
-module load intel/2018b cmake/3.7.2
+module load 2019
+module load CMake iimpi/2018b intel/2018b
 ```
-Setup the build:
+	- Setup the build:
 ```
 cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 ```
-
-* CCPGate
-To build with ifort set the variables for the Intel Compiler and MPI ->
-
-If you use CSH:
+	- And build:
+```
+cmake --build build  --target all -- -j4
+```
+* CCPGate:  
+	- To build with ifort set the variables for the Intel Compiler and MPI:  
+		- If you use CSH:
 ```
 source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.csh -arch intel64 -platform linux
 source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.csh -arch intel64 -platform linux
-```
-If you use BASH:
+```  
+		- If you use BASH:
 ```
 . /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.sh intel64
 . /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.sh intel64
 ```
-and setup the build:
+
+		- Setup the build:
 ```
 cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-```
+```  
+ 	- To build with gfortran:
 
-To build with gfortran set only(!) ->
-If you use CSH:
+		- If you use CSH:
 ```
 source /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh -arch intel64 -platform linux
 ```
-If you use BASH:
+		- If you use BASH:
 ```
 . /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
 ```
-and then use:
+		- Setup the build:
 ```
 cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
 ```
@@ -168,6 +168,26 @@ which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find
 them already if none of the Intel MKL variables are set.) Combining gfortran
 with the Intel MKL is possible but requires special care to work with the
 compiler flag `-mcmodel=large`.
+* Ubuntu desktop:\
+	 - Ubuntu 18.04:
+		- Install the required packages:
+```
+sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev
+```
+		- Set-up the build:
+```
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort
+```
+		- Build:
+		```    
+		cmake --build build -- -j2
+		```
+		- To run in parallel:
+```		
+		mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out
+```
+	- Ubuntu 20.04:  
+		We are still working on having a stable CHAMP built with the latest release of Ubuntu and the OpenMPI v4.X versions. For the time being, we urge the user to use an older version of Ubuntu, as shown above.
 
 #### Documentation
 CHAMP developer documentation can be generated using [Doxygen](http://www.doxygen.nl/) tool. To install the package, we advise to follow the instructions at the Doxygen web page: <http://www.doxygen.nl/download.html>.
