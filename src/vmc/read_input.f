@@ -40,6 +40,8 @@ c and read in everything which is still in the old format
         use contrl, only: nstep, nblk, nblk_max
         use contr3, only: mode
         use wfsec, only: nwftype
+        use forcepar, only: nforce
+        use force_mod, only: MFORCE
 
         implicit none
 
@@ -53,6 +55,10 @@ c and read in everything which is still in the old format
         call p2gti('atoms:natom',ncent,1)
         call p2gtid('atoms:addghostype',newghostype,0,1)
         call p2gtid('atoms:nghostcent',nghostcent,0,1)
+
+        !> force 
+        call p2gtid('general:nforce',nforce,1,1)
+        MFORCE = nforce
 
         !> wftype
         call p2gtid('general:nwftype',nwftype,1,1)
@@ -353,7 +359,7 @@ c General section
 
       call p2gtid('general:nforce',nforce,1,1)
       write(6,'(/,''number of geometries ='',t30,i10)') nforce
-      ! MFORCE = nforce
+      
       ! if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
       call p2gtid('general:nwftype',nwftype,1,1)
       write(6,'(/,''number of wave functions='',t30,i10)') nwftype

@@ -515,7 +515,6 @@ subroutine read_forces(iu)
     ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
 
     call p2gtid('general:nforce', nforce, 1, 1)
-    ! MFORCE = nforce
 
     if (nforce .gt. MFORCE) call fatal_error('FORCES: nforce > MFORCE')
 
