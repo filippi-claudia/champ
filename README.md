@@ -76,6 +76,8 @@ CHAMP relies on various other program packages:
 
 4. MOLCAS_Interface: recently added thanks to Csaba Daday and Monika Dash
 
+------------------------------------------------------------------------
+
 ### Installation Using CMake
 To install **Champ** using [cmake](https://cmake.org/) you need to run the following commands:
 ```
@@ -197,6 +199,8 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	```
 	Ubuntu 20.04:    
 	We are still working on having a stable CHAMP built with the latest release of Ubuntu and the OpenMPI v4.X versions. For the time being, we urge the user to use an older version of Ubuntu, as shown above.
+
+------------------------------------------------------------------------
 
 ### Documentation
 CHAMP developer documentation can be generated using [Doxygen](http://www.doxygen.nl/) tool. To install the package, we advise to follow the instructions at the Doxygen web page: <http://www.doxygen.nl/download.html>.
