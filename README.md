@@ -125,6 +125,24 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	```
 	cmake --build build  --target all -- -j4
 	```
+	- Run: 
+	You need to submit a job to the queue system:
+	```
+	sbatch job.cmd
+	```
+	where `job.cmd` is a SLURM script that looks like this:
+	```
+	#!/bin/bash
+	#SBATCH -p normal                # partition (queue)
+	#SBATCH -n 5                     # number of cores
+	#SBATCH -t 01:00:00              # time (D-HH:MM)
+	#SBATCH -o slurm.%N.%j.out       # STDOUT
+	#SBATCH -e slurm.%N.%j.err       # STDERR
+	#
+	module load 2019
+	module load CMake iimpi/2018b intel/2018b
+	srun path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
+	```
 * CCPGate:  
 	- To build with ifort set the variables for the Intel Compiler and MPI:  
 		- If you use CSH:
@@ -178,7 +196,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```
 		- To run in parallel:
 		```		
-		mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out
+		mpirun --stdin all -n 2 path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
 		```
 	- Ubuntu 20.04:  
 		We are still working on having a stable CHAMP built with the latest release of Ubuntu and the OpenMPI v4.X versions. For the time being, we urge the user to use an older version of Ubuntu, as shown above.
