@@ -111,7 +111,7 @@ Compared to the previous Makefiles the dependencies for the include files
 #### CMAKE Recipes
 
 Here are a couple of recipes for commonly used computing facilities, which can be easily adapted.
-* Cartesius:  
+* **Cartesius**:  
 	Load the required modules:
 	```
 	module load 2019
@@ -142,7 +142,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	module load CMake iimpi/2018b intel/2018b
 	srun path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
 	```	
-* CCPGate:  
+* **CCPGate**:  
 	To build with ifort set the variables for the Intel Compiler and MPI:  
 	- If you use CSH:
 	```
@@ -177,7 +177,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	```
 	mpirun -s all -np "n process" -machinefile "machinefile"
 	```
-* Ubuntu desktop:
+* **Ubuntu desktop**:  
 	Ubuntu 18.04:
 	- Install the required packages:
 	```
