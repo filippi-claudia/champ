@@ -179,7 +179,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		mpirun -s all -np "n process" -machinefile "machinefile"
 		```
 * **Ubuntu desktop**:  
-	- Ubuntu 18.04:
+	- Ubuntu 18.04:  
 		Install the required packages:
 		```
 		sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev
