@@ -353,6 +353,7 @@ c General section
 
       call p2gtid('general:nforce',nforce,1,1)
       write(6,'(/,''number of geometries ='',t30,i10)') nforce
+      ! MFORCE = nforce
       ! if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
       call p2gtid('general:nwftype',nwftype,1,1)
       write(6,'(/,''number of wave functions='',t30,i10)') nwftype

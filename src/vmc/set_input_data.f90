@@ -260,6 +260,7 @@ subroutine inputforces
 ! Set all force displacements to zero
     use force_mod, only: MWF
     use vmc_mod, only: MCENT
+    use force_mod, only: MFORCE
     use forcepar, only: nforce
     use forcestr, only: delc
     use wfsec, only: iwftype, nwftype
@@ -273,8 +274,8 @@ subroutine inputforces
 
     call p2gtid('general:nforce', nforce, 1, 1)
 
-    allocate (delc(3, ncent, nforce))
-    allocate (iwftype(nforce))
+    allocate (delc(3, ncent, MFORCE))
+    allocate (iwftype(MFORCE))
 
     call set_displace_zero(nforce)
 

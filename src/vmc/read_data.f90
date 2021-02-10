@@ -515,10 +515,12 @@ subroutine read_forces(iu)
     ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
 
     call p2gtid('general:nforce', nforce, 1, 1)
+    ! MFORCE = nforce
+
     if (nforce .gt. MFORCE) call fatal_error('FORCES: nforce > MFORCE')
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
-    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
+    if (.not. allocated(delc)) allocate (delc(3, ncent, MFORCE))
+    if (.not. allocated(iwftype)) allocate (iwftype(MFORCE))
 
     do i = 1, nforce
         do ic = 1, ncent
@@ -1007,6 +1009,7 @@ subroutine read_gradnts_cart(iu)
 
     use vmc_mod, only: MCENT
     use forcepar, only: nforce
+    use force_mod, only: MFORCE
     use forcestr, only: delc
     use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
     use grdntspar, only: delgrdxyz, igrdtype, ngradnts
@@ -1029,9 +1032,9 @@ subroutine read_gradnts_cart(iu)
     call p2gtid('gradients:ngradnts', ngradnts, 0, 1)
     if ((2*ngradnts + 1) .ne. nforce) call fatal_error('GRADIENTS_CARTESIAN: (2*ngradnts+1)  /=  nforce')
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
-    if (.not. allocated(igrdaidx)) allocate (igrdaidx(nforce))
-    if (.not. allocated(igrdcidx)) allocate (igrdcidx(nforce))
+    if (.not. allocated(delc)) allocate (delc(3, ncent, MFORCE))
+    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
+    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
     if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
 
     do i = 1, nforce
@@ -1078,6 +1081,7 @@ subroutine read_gradnts_zmat(iu)
 
     use vmc_mod, only: MCENT
     use forcepar, only: nforce
+    use force_mod, only: MFORCE
     use forcestr, only: delc
     use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
     use grdntspar, only: delgrdba, delgrdbl, delgrdda, igrdtype, ngradnts
@@ -1105,9 +1109,9 @@ subroutine read_gradnts_zmat(iu)
     call p2gtid('gradients:ngradnts', ngradnts, 0, 1)
     if ((2*ngradnts + 1) .ne. nforce) call fatal_error('GRADIENTS_ZMATRIX: (2*ngradnts+1)  /=  nforce')
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
-    if (.not. allocated(igrdaidx)) allocate (igrdaidx(nforce))
-    if (.not. allocated(igrdcidx)) allocate (igrdcidx(nforce))
+    if (.not. allocated(delc)) allocate (delc(3, ncent, MFORCE))
+    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
+    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
     if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
 
     do i = 1, nforce
