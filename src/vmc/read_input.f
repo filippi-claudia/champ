@@ -101,11 +101,6 @@ c and read in everything which is still in the old format
 
         implicit none 
 
-        ! MMAT_DIM = nelec*nelec/4
-        ! MMAT_DIM2 = nelec*(nelec-1)/2
-        ! MCTYP3X = max(3, nctype_tot)
-        ! MCENT3 = 3*ncent_tot
-
         ! leads to circular dependecy of put in sr_mod ..
         MOBS = 10 + 6*MPARM
         MCONF = nstep * nblk_max

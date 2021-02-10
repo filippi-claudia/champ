@@ -3,7 +3,8 @@ module sr_mod
     integer, parameter :: MPARM = 15100
     integer :: MOBS
     integer :: MCONF
-    integer, parameter :: MVEC = 160
+    ! integer, parameter :: MVEC = 160 ! never  used anymore
+    integer:: MVEC ! never  used anymore
     integer :: nvecx
 
     private

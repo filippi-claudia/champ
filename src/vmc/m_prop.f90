@@ -112,5 +112,3 @@ subroutine allocate_m_prop()
     call allocate_prp002()
     call allocate_prp003()
 end subroutine allocate_m_prop
-
-
