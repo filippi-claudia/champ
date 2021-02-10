@@ -177,7 +177,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	- To run the code:   
 		```
 		mpirun -s all -np "n process" -machinefile "machinefile"
-	```
+		```
 * **Ubuntu desktop**:  
 	- Ubuntu 18.04:
 		Install the required packages:
