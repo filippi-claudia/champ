@@ -76,14 +76,6 @@ CHAMP relies on various other program packages:
 
 4. MOLCAS_Interface: recently added thanks to Csaba Daday and Monika Dash
 
-### Run on CCPGate
-In the new version (without filename) run with:
-```
-mpirun -s all -np "n process" -machinefile "machinefile"
-
-```
-NOTE OpenMPI: Not tested but most likely will not work at the moment as the stdin cannot be redirected to all tasks.
-
 ### Installation Using CMake
 To install **Champ** using [cmake](https://cmake.org/) you need to run the following commands:
 ```
@@ -163,8 +155,14 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
 		```
 		which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them already if none of the Intel MKL variables are set.) Combining gfortran with the Intel MKL is possible but requires special care to work with the compiler flag `-mcmodel=large`.
+	- Run:  
+		In the new version (without filename) run with:
+		```
+		mpirun -s all -np "n process" -machinefile "machinefile"
+		```
+		
 
-* Ubuntu desktop:\
+* Ubuntu desktop:
 	 - Ubuntu 18.04:
 		- Install the required packages:
 		```
