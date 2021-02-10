@@ -1,20 +1,29 @@
 module gradhess_all
     !> Arguments: MPARMALL, grad, h, s
-    use optorb_mod, only: MXREDUCED
-    use optjas, only: MPARMJ
-    use optci, only: MXCIREDUCED
+    ! use optorb_mod, only: MXREDUCED
+    ! use optjas, only: MPARMJ
+    ! use optci, only: MXCIREDUCED
     use precision_kinds, only: dp
 
-    integer, parameter :: MPARMALL = MPARMJ + MXCIREDUCED + MXREDUCED
+    ! integer, parameter :: MPARMALL = MPARMJ + MXCIREDUCED + MXREDUCED
+    integer :: MPARMALL
     real(dp), dimension(:), allocatable :: grad !(MPARMALL)
     real(dp), dimension(:, :), allocatable :: h !(MPARMALL,MPARMALL)
     real(dp), dimension(:, :), allocatable :: s !(MPARMALL,MPARMALL)
 
     private
     public :: MPARMALL, grad, h, s
-    public :: allocate_gradhess_all, deallocate_gradhess_all
+    public :: allocate_gradhess_all, deallocate_gradhess_all, set_gradhess_all_size
     save
 contains
+
+    subroutine set_gradhess_all_size()
+        use optci, only: MXCIREDUCED
+        use optjas, only: MPARMJ
+        use optorb_mod, only: MXREDUCED
+        MPARMALL = MPARMJ + MXCIREDUCED + MXREDUCED
+    end subroutine set_gradhess_all_size
+
     subroutine allocate_gradhess_all()
         use optorb_mod, only: MXREDUCED
         use optjas, only: MPARMJ

@@ -42,6 +42,7 @@ c and read in everything which is still in the old format
         use wfsec, only: nwftype
         use forcepar, only: nforce
         use force_mod, only: MFORCE
+        use method_opt, only: method
 
         implicit none
 
@@ -78,25 +79,42 @@ c and read in everything which is still in the old format
             call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
           endif
         endif
+
+        !> optimization method
+        call p2gtad('optwf:method', method, 'linear', 1)
+
       end subroutine preprocess_input
 
       subroutine compute_mat_size()
         !> compute various size that are derived from the input
-        use vmc_mod, only: MMAT_DIM, MMAT_DIM2, MCTYP3X, MCENT3
-        use const, only: nelec
-        use atom, only: nctype_tot, ncent_tot
+        ! use vmc_mod, only: MMAT_DIM, MMAT_DIM2, MCTYP3X, MCENT3
+        ! use const, only: nelec
+        ! use atom, only: nctype_tot, ncent_tot
         use sr_mod, only: MPARM, MOBS, MCONF
         use contrl, only: nstep, nblk_max
 
+        use vmc_mod, only: set_vmc_size
+        use optci, only: set_optci_size
+        use optorb_mod, only: set_optorb_size
+        use gradhess_all, only: set_gradhess_all_size
+        ! use sr_mod, only: set_sr_size
+
         implicit none 
 
-        MMAT_DIM = nelec*nelec/4
-        MMAT_DIM2 = nelec*(nelec-1)/2
+        ! MMAT_DIM = nelec*nelec/4
+        ! MMAT_DIM2 = nelec*(nelec-1)/2
+        ! MCTYP3X = max(3, nctype_tot)
+        ! MCENT3 = 3*ncent_tot
 
-        MCTYP3X = max(3, nctype_tot)
-        MCENT3 = 3*ncent_tot
+        ! leads to circular dependecy of put in sr_mod ..
         MOBS = 10 + 6*MPARM
         MCONF = nstep * nblk_max
+
+        call set_vmc_size
+        call set_optci_size
+        call set_optorb_size
+        call set_gradhess_all_size
+        ! call set_sr_size
 
       end subroutine
 

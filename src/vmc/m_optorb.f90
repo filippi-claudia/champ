@@ -1,14 +1,35 @@
 module optorb_mod
     ! flags and dimensions for orbital optimization
     ! maximal number of terms, max dim of reduced matrices
+
+    ! integer, parameter :: MXREDUCED = 1
+    ! integer, parameter :: MXMATDIM = MXREDUCED*(MXREDUCED + 1)
+    ! integer, parameter :: MXMATDIM2 = MXMATDIM/2
+
     integer, parameter :: MXORBOP = 8000
-    integer, parameter :: MXREDUCED = 1
-    integer, parameter :: MXMATDIM = MXREDUCED*(MXREDUCED + 1)
-    integer, parameter :: MXMATDIM2 = MXMATDIM/2
+    integer :: MXREDUCED
+    integer :: MXMATDIM
+    integer :: MXMATDIM2
+
     integer, parameter :: MXREP = 10
     private
     public :: MXORBOP, MXREDUCED, MXMATDIM, MXMATDIM2, MXREP
+    public :: set_optorb_size
     save
+
+contains
+    subroutine set_optorb_size()
+
+        use method_opt, only: method
+        if (method .eq. 'linear') then
+            MXREDUCED = MXORBOP
+        else
+            MXREDUCED = 1
+        end if
+        MXMATDIM = MXREDUCED*(MXREDUCED + 1)
+        MXMATDIM2 = MXMATDIM/2
+
+    end subroutine set_optorb_size
 end module optorb_mod
 
 module orb_mat_001
@@ -18,7 +39,7 @@ module orb_mat_001
     use mstates_mod, only: MSTATES
 
     real(dp), dimension(:, :), allocatable :: orb_ho !(MXORBOP,MSTATES)
-    real(dp), dimension(:, :), allocatable :: orb_o !(MXORBOP,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_o  !(MXORBOP,MSTATES)
     real(dp), dimension(:, :), allocatable :: orb_oe !(MXORBOP,MSTATES)
 
     private

@@ -54,6 +54,17 @@ module vmc_mod
     public :: NEQSX, MTERMS
 
     public :: MCENT3, NCOEF, MEXCIT
+    public :: set_vmc_size
 
     save
+contains
+    subroutine set_vmc_size
+        use const, only: nelec
+
+        MMAT_DIM = nelec*nelec/4
+        MMAT_DIM2 = nelec*(nelec - 1)/2
+        MCTYP3X = max(3, nctype_tot)
+        MCENT3 = 3*ncent_tot
+
+    end subroutine set_vmc_size
 end module vmc_mod

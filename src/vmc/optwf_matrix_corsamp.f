@@ -1,6 +1,6 @@
       subroutine optwf_matrix_corsamp
 c written by Claudia Filippi
-
+      use precision_kinds, only: dp
       use csfs, only: nstates
       use forcepar, only: nforce
       use numbas, only: numr
@@ -16,12 +16,27 @@ c written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
-      parameter(MWORK=50*MPARMALL)
+      ! parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
+      ! parameter(MWORK=50*MPARMALL)
+      ! dimension grad_sav(MPARMALL),h_sav(MPARMALL,MPARMALL),s_sav(MPARMALL2)
+      ! dimension work(MWORK),work2(MPARMALL,MPARMALL)
 
+      integer :: MPARMALL2
+      integer :: MWORK
+      real(dp), DIMENSION(:), allocatable :: grad_sav
+      real(dp), DIMENSION(:,:), allocatable :: h_sav
+      real(dp), DIMENSION(:), allocatable :: s_sav
+      real(dp), DIMENSION(:), allocatable :: work
+      real(dp), DIMENSION(:, :), allocatable :: work2
 
-      dimension grad_sav(MPARMALL),h_sav(MPARMALL,MPARMALL),s_sav(MPARMALL2)
-      dimension work(MWORK),work2(MPARMALL,MPARMALL)
+      MPARMALL2 = MPARMALL*(MPARMALL+1)/2
+      MWORK=50*MPARMALL
+
+      allocate(grad_sav(MPARMALL))
+      allocate(h_sav(MPARMALL,MPARMALL))
+      allocate(s_sav(MPARMALL2))
+      allocate(work(MWORK))
+      allocate(work2(MPARMALL,MPARMALL))
 
       call p2gtid('optwf:ioptjas',ioptjas,0,1)
       call p2gtid('optwf:ioptorb',ioptorb,0,1)
@@ -478,6 +493,12 @@ c end of optimization loop
       ioptci=ioptci_sav
 
       call write_wf_best
+
+      deallocate(grad_sav)
+      deallocate(h_sav)
+      deallocate(s_sav)
+      deallocate(work)
+      deallocate(work2)
 
       return
       end

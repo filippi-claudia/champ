@@ -173,7 +173,7 @@ c-----------------------------------------------------------------------
 
 
       parameter(eps=1.d-12)
-      parameter(MWORK=50*MPARMALL)
+      ! parameter(MWORK=50*MPARMALL)
       parameter(eps_eigval=1.d-14)
       
       dimension h(mparmx,*),s(mparmx,*)
@@ -251,7 +251,7 @@ c-----------------------------------------------------------------------
 
 
       parameter(eps=1.d-12)
-      parameter(MWORK=50*MPARMALL)
+      ! parameter(MWORK=50*MPARMALL)
       
       dimension seig_valinv(*)
       dimension hmod(mparmx,*),s(mparmx,*)

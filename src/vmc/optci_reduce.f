@@ -1,5 +1,6 @@
       subroutine optci_reduce
 
+      use precision_kinds, only: dp
       use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
       use optwf_contrl, only: ioptci
       use mstates_ctrl, only: iefficiency, nstates_psig
@@ -20,9 +21,15 @@
 
 c     parameter(MXTMP=max(MXORBTERM,MXMATDIM))
 c     max does not work with g77
-      parameter(MXTMP=MXCITERM+MXCIMATDIM)
-      dimension collect(MXTMP),collect2(MXCITERM,MXCIREDUCED)
+    !   parameter(MXTMP=MXCITERM+MXCIMATDIM)
+    !   dimension collect(MXTMP),collect2(MXCITERM,MXCIREDUCED)
 
+      integer :: MXTMP
+      real(dp), DIMENSION(:), ALLOCATABLE :: collect
+      real(dp), DIMENSION(:, :), ALLOCATABLE :: collect2
+
+      allocate(collect(MXTMP))
+      allocate(collect2(MXCITERM,MXCIREDUCED))
 
       if (iefficiency.gt.0) then
         call mpi_reduce(effcum,collect,nstates_psig
@@ -115,5 +122,8 @@ c     max does not work with g77
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
+      deallocate(collect)
+      deallocate(collect2)
+      
       return
       end
