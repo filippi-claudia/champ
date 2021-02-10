@@ -201,7 +201,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	- Ubuntu 20.04:  
 		We are still working on having a stable CHAMP built with the latest release of Ubuntu and the OpenMPI v4.X versions. For the time being, we urge the user to use an older version of Ubuntu, as shown above.
 
-#### Documentation
+### Documentation
 CHAMP developer documentation can be generated using [Doxygen](http://www.doxygen.nl/) tool. To install the package, we advise to follow the instructions at the Doxygen web page: <http://www.doxygen.nl/download.html>.
 
 The Doxyfile file provided in CHAMP docs directory contains all the settings needed to generate the documentation. Once Doxygen is installed, at the docs folder of CHAMP simply run:
