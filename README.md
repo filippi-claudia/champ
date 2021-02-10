@@ -145,38 +145,38 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		srun path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
 		```	
 * **CCPGate**:  
-	To build with ifort set the variables for the Intel Compiler and MPI:  
-	- If you use CSH:
-	```
-	source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.csh -arch intel64 -platform linux
-	source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.csh -arch intel64 -platform linux
-	```  
-	- If you use BASH:
-	```
-	. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.sh intel64
-	. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.sh intel64
-	```
-	- Setup the build:
-	```
-	cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-	```  
- 	To build with gfortran:
-	- If you use CSH:
-	```
-	source /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh -arch intel64 -platform linux
-	```
-	- If you use BASH:
-	```
-	. /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
-	```
-	- Setup the build:
-	```
-	cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
-	```
-	which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them already if none of the Intel MKL variables are set.) Combining gfortran with the Intel MKL is possible but requires special care to work with the compiler flag `-mcmodel=large`.  
-	To run the code:   
-	```
-	mpirun -s all -np "n process" -machinefile "machinefile"
+	- To build with ifort set the variables for the Intel Compiler and MPI:  
+		If you use CSH:
+		```
+		source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.csh -arch intel64 -platform linux
+		source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.csh -arch intel64 -platform linux
+		```  
+		If you use BASH:
+		```
+		. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.sh intel64
+		. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.sh intel64
+		```
+		Setup the build:
+		```
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+		```  
+ 	- To build with gfortran:  
+		If you use CSH:
+		```
+		source /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh -arch intel64 -platform linux
+		```
+		If you use BASH:
+		```
+		. /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
+		```
+		Setup the build:
+		```
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
+		```
+		which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them already if none of the Intel MKL variables are set.) Combining gfortran with the Intel MKL is possible but requires special care to work with the compiler flag `-mcmodel=large`.  
+	- To run the code:   
+		```
+		mpirun -s all -np "n process" -machinefile "machinefile"
 	```
 * **Ubuntu desktop**:  
 	- Ubuntu 18.04:
