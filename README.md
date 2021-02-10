@@ -76,13 +76,7 @@ CHAMP relies on various other program packages:
 
 4. MOLCAS_Interface: recently added thanks to Csaba Daday and Monika Dash
 
-### Run on CCPGate
-In the new version (without filename) run with:
-```
-mpirun -s all -np "n process" -machinefile "machinefile"
-
-```
-NOTE OpenMPI: Not tested but most likely will not work at the moment as the stdin cannot be redirected to all tasks.
+------------------------------------------------------------------------
 
 ### Installation Using CMake
 To install **Champ** using [cmake](https://cmake.org/) you need to run the following commands:
@@ -118,58 +112,96 @@ Compared to the previous Makefiles the dependencies for the include files
 
 #### CMAKE Recipes
 
-Here are a couple of recipes for commonly used computing facilities, which can
-be easily adapted. See Cartesius for a module based setup or CCPGate for a
-standard Intel installation.
+Here are a couple of recipes for commonly used computing facilities, which can be easily adapted.
+* **Cartesius**:  
+	- To compile the code, first load the required modules:
+		```
+		module load 2019
+		module load CMake iimpi/2018b intel/2018b
+		```
+		then set-up the build:
+		```
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+		```
+		and finally build:
+		```
+		cmake --build build  --target all -- -j4
+		```
+	- To run the code, you need to submit a job to the queue system:
+		```
+		sbatch job.cmd
+		```
+		where `job.cmd` is a SLURM script that looks like this:
+		```
+		#!/bin/bash
+		#SBATCH -p normal                # partition (queue)
+		#SBATCH -n 5                     # number of cores
+		#SBATCH -t 01:00:00              # time (D-HH:MM)
+		#SBATCH -o slurm.%N.%j.out       # STDOUT
+		#SBATCH -e slurm.%N.%j.err       # STDERR
+		#
+		module load 2019
+		module load CMake iimpi/2018b intel/2018b
+		srun path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
+		```	
+* **CCPGate**:  
+	- To build with ifort set the variables for the Intel Compiler and MPI:  
+		If you use CSH:
+		```
+		source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.csh -arch intel64 -platform linux
+		source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.csh -arch intel64 -platform linux
+		```  
+		If you use BASH:
+		```
+		. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.sh intel64
+		. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.sh intel64
+		```
+		Setup the build:
+		```
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+		```  
+ 	- To build with gfortran:  
+		If you use CSH:
+		```
+		source /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh -arch intel64 -platform linux
+		```
+		If you use BASH:
+		```
+		. /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
+		```
+		Setup the build:
+		```
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
+		```
+		which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them already if none of the Intel MKL variables are set.) Combining gfortran with the Intel MKL is possible but requires special care to work with the compiler flag `-mcmodel=large`.  
+	- To run the code:   
+		```
+		mpirun -s all -np "n process" -machinefile "machinefile"
+		```
+* **Ubuntu desktop**:  
+	- Ubuntu 18.04:  
+		Install the required packages:
+		```
+		sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev
+		```
+		Set-up the build:
+		```
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort
+		```
+		Build:
+		```    
+		cmake --build build -- -j2
+		```
+		To run in parallel:
+		```		
+		mpirun --stdin all -n 2 path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
+		```
+	- Ubuntu 20.04:    
+	We are still working on the CHAMP built on the latest Unbuntu release using a OpenMPI v4.X version. The code compiles but fails to run the test in parallel. For the time being, we urge the user to use an older version of Ubuntu, as shown above.
 
-* Cartesius
-Load the required modules
-```
-module unload mpi
-module load intel/2018b cmake/3.7.2
-```
-Setup the build:
-```
-cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-```
+------------------------------------------------------------------------
 
-* CCPGate
-To build with ifort set the variables for the Intel Compiler and MPI ->
-
-If you use CSH:
-```
-source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.csh -arch intel64 -platform linux
-source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.csh -arch intel64 -platform linux
-```
-If you use BASH:
-```
-. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.sh intel64
-. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.sh intel64
-```
-and setup the build:
-```
-cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-```
-
-To build with gfortran set only(!) ->
-If you use CSH:
-```
-source /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh -arch intel64 -platform linux
-```
-If you use BASH:
-```
-. /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
-```
-and then use:
-```
-cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
-```
-which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find
-them already if none of the Intel MKL variables are set.) Combining gfortran
-with the Intel MKL is possible but requires special care to work with the
-compiler flag `-mcmodel=large`.
-
-#### Documentation
+### Documentation
 CHAMP developer documentation can be generated using [Doxygen](http://www.doxygen.nl/) tool. To install the package, we advise to follow the instructions at the Doxygen web page: <http://www.doxygen.nl/download.html>.
 
 The Doxyfile file provided in CHAMP docs directory contains all the settings needed to generate the documentation. Once Doxygen is installed, at the docs folder of CHAMP simply run:
