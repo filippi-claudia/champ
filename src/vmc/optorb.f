@@ -13,11 +13,7 @@
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use multislater, only: detiab
       use const, only: nelec
-      implicit real*8(a-h,o-z)
-
-
-
-
+      
       implicit real*8(a-h,o-z)
 
       dimension zmat(MORB,nelec,2),dzmat(MORB,nelec,2),emz(nelec,nelec,2),aaz(nelec,nelec,2)

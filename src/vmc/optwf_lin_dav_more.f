@@ -208,7 +208,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
       use mpi
-      use sr_mod, only: MPARM, MCONF, MVEC, nvecx
+      use sr_mod, only: MPARM, MCONF, MVEC
+      use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
@@ -302,7 +303,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
       use mpi
-      use sr_mod, only: MPARM, MCONF, MVEC, nvecx
+      use sr_mod, only: MPARM, MCONF, MVEC
+      use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n
@@ -377,7 +379,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
       use mpi
-      use sr_mod, only: MPARM, MCONF, MVEC, nvecx
+      use sr_mod, only: MPARM, MCONF, MVEC
+      use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
@@ -486,7 +489,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
       use mpi
-      use sr_mod, only: MPARM, MCONF, MVEC, nvecx
+      use sr_mod, only: MPARM, MCONF, MVEC
+      use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
@@ -606,7 +610,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
       use mpi
-      use sr_mod, only: MPARM, MCONF, MVEC, nvecx
+      use sr_mod, only: MPARM, MCONF, MVEC
+      use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega
@@ -804,7 +809,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
       use mpi
-      use sr_mod, only: MPARM, MVEC, nvecx
+      use sr_mod, only: MPARM, MVEC
+      use optwf_contrl, only: nvecx
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
 

@@ -246,7 +246,6 @@ c      include 'dmc.h' now emty
       character*32 keyname
       character*10 eunit
       character*16 cseed
-      character*20 dl_alg
       dimension irn(4),cent_tmp(3),anorm(nbasis)
 
 c Inputs:
@@ -1277,3 +1276,151 @@ c Check that the required blocks are there in the input
       write(6,'(''========================================'')')
       return
       end
+
+c-----------------------------------------------------------------------
+
+      subroutine set_ps_gauss_filenames()
+c ### Set name files of gaussian pseudopotentials.
+      use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
+      use general, only: filenames_ps_gauss
+      use atom, only: nctype
+      implicit real*8(a-h,o-z)
+c Allocation of the array storing the filenames of gaussian basis: 
+      allocate(filenames_ps_gauss(nctype))
+      do ic=1,nctype
+        if(ic.lt.10) then
+          write(atomtyp,'(i1)') ic
+        elseif(ic.lt.100) then
+          write(atomtyp,'(i2)') ic
+        endif
+        if(pp_id.eq.'none') then
+            call fatal_error('READ_INPUT: ECP name missing')
+           else
+            call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
+     &         ,atomsymbol,'X',1)
+             filename=pooldir(1:index(pooldir,' ')-1)//
+     &         '/'//
+     &         pp_id(1:index(pp_id,' ')-1)//
+     &         '.gauss_ecp.dat.'//
+     &         atomsymbol(1:index(atomsymbol,' ')-1)
+         endif 
+         filenames_ps_gauss(ic)=filename
+        enddo
+        end subroutine
+
+c-----------------------------------------------------------------------
+
+      subroutine set_ps_champ_filenames()
+c ### Set name files of CHAMP-formatted pseudopotentials.
+      use atom, only: nctype
+      use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
+      use general, only: filenames_ps_champ 
+      implicit real*8(a-h,o-z)
+c Allocation of the array storing the filenames of gaussian basis: 
+      allocate(filenames_ps_champ(nctype))
+      
+      do ict=1, nctype
+        if(ict.lt.10) then
+          write(atomtyp,'(i1)') ict
+         elseif(ict.lt.100) then
+          write(atomtyp,'(i2)') ict
+        endif
+        if(pp_id.eq.'none') then
+c old naming convention
+          filename=pooldir(1:index(pooldir,' ')-1)//'/'//
+     &               'pseudopot_champ'//atomtyp(1:index(atomtyp,' ')-1)
+         else
+c new naming convention
+          call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
+     &         ,atomsymbol,'X',1)
+          filename=pooldir(1:index(pooldir,' ')-1)//
+     &             '/'//
+     &             pp_id(1:index(pp_id,' ')-1)//
+     &             '.pseudopot_champ.'//
+     &             atomsymbol(1:index(atomsymbol,' ')-1)
+        endif      
+        filenames_ps_champ(ict)=filename
+      enddo
+      end subroutine
+
+c-----------------------------------------------------------------------
+
+      subroutine set_ps_tm_filenames()
+c ### Set name files of Troullier-Martins pseudopotentials.
+      use atom, only: nctype
+      use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
+      use general, only: filenames_ps_tm
+      use pseudo, only: nloc
+      implicit real*8(a-h,o-z)
+      do ic=1,nctype
+        if(pp_id.eq.'none') then
+c old naming convention
+          if(nloc.eq.2) then
+            filename=pooldir(1:index(pooldir,' ')-1)//'/'//
+     &           'pseudo.dat.'//atomtyp(1:index(atomtyp,' ')-1)
+           elseif(nloc.eq.3) then
+            filename=pooldir(1:index(pooldir,' ')-1)//'/'//
+     &           'pseudopot'//atomtyp(1:index(atomtyp,' ')-1)
+          endif
+        else
+c new naming convention
+          call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
+     &     ,atomsymbol,'X',1)
+          if(nloc.eq.2) then
+            filename=pooldir(1:index(pooldir,' ')-1)//
+     &           '/'//
+     &           pp_id(1:index(pp_id,' ')-1)//
+     &           '.pseudo.dat.'//
+     &           atomsymbol(1:index(atomsymbol,' ')-1)
+           elseif(nloc.eq.3) then
+            filename=pooldir(1:index(pooldir,' ')-1)//
+     &           '/'//
+     &           pp_id(1:index(pp_id,' ')-1)//
+     &           '.pseudopot.'//
+     &           atomsymbol(1:index(atomsymbol,' ')-1)
+          endif
+        endif
+        filenames_ps_tm(ic)=filename
+      enddo
+      end subroutine
+
+c-----------------------------------------------------------------------
+
+      subroutine set_bas_num_filenames()
+c ### Set numerical num. orbital filenames.
+      use atom, only: nctype
+      use general, only: pooldir, pp_id, bas_id, atomtyp, filename, atomsymbol
+      use general, only: filenames_bas_num, wforce 
+      use ghostatom, only: newghostype
+      implicit real*8(a-h,o-z)
+c Allocation of the array storing the filenames of numerical basis: 
+      allocate(filenames_bas_num(nctype+newghostype))
+  
+      do ic=1,nctype+newghostype
+        if(ic.lt.10) then
+          write(atomtyp,'(i1)') ic
+         elseif(ic.lt.100) then
+          write(atomtyp,'(i2)') ic
+         elseif(iwf.lt.1000) then
+           write(wforce,'(i3)') iwf
+         endif
+        if(bas_id.eq.'none') then
+c old file name convention 
+          filename=pooldir(1:index(pooldir,' ')-1)//'/'//
+     &             'basis.'//atomtyp(1:index(atomtyp,' ')-1)
+          if(iwf.ge.2) then
+            filename=filename(1:index(filename,' ')-1)//'.'//wforce
+          endif
+        else
+c new convention
+          call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
+     &              ,atomsymbol,'X',1)
+          filename=pooldir(1:index(pooldir,' ')-1)//
+     &           '/'//
+     &           bas_id(1:index(bas_id,' ')-1)//
+     &           '.basis.'//
+     &           atomsymbol(1:index(atomsymbol,' ')-1)
+        endif
+        filenames_bas_num(ic)=filename
+      enddo
+      end subroutine

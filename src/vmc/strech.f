@@ -44,7 +44,6 @@ c rigidly with that nucleus
       dimension wt(ncent_tot),dvol(3,3),dwt(3,ncent_tot),dwtsm(3)
       dimension cent_str(3,ncent_tot)
       dimension q_strech(MCHS),efsol(MCHS),wt_pcm(ncent_tot)
-      save alfstr
 
       if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
       if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))

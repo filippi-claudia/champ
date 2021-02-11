@@ -1,7 +1,7 @@
       subroutine optwf_lin_d
 
 
-      use sr_mod, only: MPARM, MOBS, MCONF, MVEC, nvecx
+      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -43,7 +43,7 @@
       endif
 
       ! if(nvecx.gt.MVEC) call fatal_error('SR_OPTWF: nvecx > MVEC')
-      
+
       write(6,'(/,''LIN_D adiag: '',f10.5)') alin_adiag
       write(6,'(''LIN_D ethr:  '',f10.5)') alin_eps
       write(6,'(''LIN_D nvec:  '',i4)') nvec

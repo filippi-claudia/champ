@@ -9,7 +9,6 @@ module contrl
     integer :: nblk
     integer :: nblk_max
     integer :: nblkeq
-    integer :: nblk_max
     integer :: nconf_new
     integer :: nstep
     integer :: icharged_atom
