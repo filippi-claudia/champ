@@ -8,14 +8,7 @@ module sr_mod
 
     private
     public :: MPARM, MOBS, MCONF, MVEC
-    ! public :: set_sr_size
     save
-! contains
-!     subroutine set_sr_size
-!         use contrl, only: nstep, nblk_max
-!         MOBS = 10 + 6*MPARM
-!         MCONF = nstep*nblk_max
-!     end subroutine set_sr_size
 end module sr_mod
 
 module sr_index

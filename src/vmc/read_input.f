@@ -1208,7 +1208,10 @@ c Check that the required blocks are there in the input
       call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
       call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
       next_max=norb-ndetorb
-      call p2gtid('optwf:nextorb',nadorb,next_max,1)
+      call p2gtid('optwf:nextorb',nadorb, next_max,1)
+      if (nadorb.gt.norb) call fatal_error('nadorb > norb')
+      
+      
 
       if(iznuc.eq.0) call fatal_error('INPUT: block znuc missing')
       if(igeometry.eq.0) call fatal_error('INPUT: block geometry missing')
@@ -1353,6 +1356,8 @@ c ### Set name files of Troullier-Martins pseudopotentials.
       use general, only: filenames_ps_tm
       use pseudo, only: nloc
       implicit real*8(a-h,o-z)
+
+      allocate(filenames_ps_tm(nctype))
       do ic=1,nctype
         if(pp_id.eq.'none') then
 c old naming convention

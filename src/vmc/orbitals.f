@@ -110,6 +110,9 @@ c        enddo
 c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
 c        call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
 c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
+         write(6, *) 'shape', shape(dorb)
+         write(6, *) 'norb', norb
+         write(6, *) 'nadorb', nadorb
          do 26 iorb=1,norb+nadorb
            do 26 i=1,nelec
             orb(i,iorb)=0

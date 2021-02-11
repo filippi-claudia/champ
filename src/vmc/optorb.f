@@ -801,6 +801,7 @@ c Omit doubly occupied in all input determinants
           endif
    3    continue
    5  continue
+      write(6, *) 'Done Omit doubly occupied'
 c Omit empty orbitals
 
       do 6 i=1,ndetorb
@@ -811,7 +812,7 @@ c Omit empty orbitals
       do 8 i=ndetorb+1,ndetorb+nadorb
        iflag(1,i)=1
    8   iflag(2,i)=0
-
+       write(6, *) 'Donehalf empty'
       if(norbopt.eq.0.or.norbvirt.eq.0) then
         do 9 io=1,ndetorb
          do 9 jo=ncore+1,ndetorb+nadorb
@@ -821,7 +822,7 @@ c Omit empty orbitals
        write(6,'(''OPTORB_DEFINE: noptvirt,nadorb'',2i6)') norbvirt,nadorb
        call fatal_error('OPTORB_DEFINE: Mixvirt block, inconsistent')
       endif
-
+      write(6, *) 'Done empty'
 
 
 c Orbital variation io -> io+a*jo
@@ -832,7 +833,7 @@ c omitted if not same symmetry, or io empty, or both doubly occupied
       iterm=0
 
       if(iprt.gt.2) then
-       write(6,'(''=========== orbital pair list =========='')')
+       write(6,*) '(''=========== orbital pair list =========='')'
       endif
 
       do 60 io=ncore+1,ndetorb
@@ -878,7 +879,7 @@ c Include: io is occupied in some determinant and jo not
           if(iprt.gt.3) write(6,'(''no appropriate determinant for '',2i4)') io,jo
           goto 50
         endif
-
+        write(6, *) 'Done pair list'
 c Define new operator (new variation) and its terms
         noporb=noporb+1
         if(noporb.gt.MXORBOP) then
