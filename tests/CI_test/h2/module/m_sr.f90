@@ -3,11 +3,11 @@ module sr_mod
     integer, parameter :: MPARM = 15100
     integer :: MOBS
     integer :: MCONF
-    integer, parameter :: MVEC = 160
-    integer :: nvecx
+    ! integer, parameter :: MVEC = 160 ! never  used anymore
+    integer:: MVEC ! never  used anymore
 
     private
-    public :: MPARM, MOBS, MCONF, MVEC, nvecx
+    public :: MPARM, MOBS, MCONF, MVEC
     save
 end module sr_mod
 

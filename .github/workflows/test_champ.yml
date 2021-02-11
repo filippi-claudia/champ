@@ -106,16 +106,6 @@ jobs:
            echo "  CHAMP Eigenalues vs Scipy:" 
            python compare_eigenvalues.py
      
-<<<<<<< HEAD
-=======
-           # restore the module files
-           cd $HOME/work/champ/champ
-           cp m_vmc_save ./src/vmc/m_vmc.f90
-           cp m_optci_save ./src/vmc/m_optci.f90
-           cp m_sr_save ./src/vmc/m_sr.f90     
-           cp m_optorb_save src/vmc/m_optorb.f90
-     
->>>>>>> refac-problematic
     - name: Building_code_for_psb3_butadiene_and_psb2
       run: |
 
