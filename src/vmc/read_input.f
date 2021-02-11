@@ -1207,9 +1207,14 @@ c Check that the required blocks are there in the input
       call p2gtid('efield:iefield',iefield,0,1)
       call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
       call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
-      next_max=norb-ndetorb
+      ! next_max=norb-ndetorb
       call p2gtid('optwf:nextorb',nadorb, next_max,1)
-      if (nadorb.gt.norb) call fatal_error('nadorb > norb')
+      ! write(6, *) 'norb', norb
+      ! write(6, *) 'nadorb', nadorb
+      ! write(6, *) 'ndet_orb', ndetorb
+      ! write(6, *) 'next_max', next_max
+      ! if(nadorb.gt.next_max) nadorb=next_max
+      ! if (nadorb.gt.norb) call fatal_error('nadorb > norb')
       
       
 

@@ -779,7 +779,14 @@ c orbital indices in determinants of trial wave function
   1   format('Det ',i4,' column ',i4,' orb index ',i4,' norb ',i4)
 
 c Number of external orbitals for orbital optimization
+      next_max=norb-ndetorb
       if(nadorb.gt.next_max) nadorb=next_max
+      ! write(6, *) 'norb', norb
+      ! write(6, *) 'nadorb', nadorb
+      ! write(6, *) 'ndet_orb', ndetorb
+      ! write(6, *) 'next_max', next_max
+      ! call fatal_error('optorb.f')
+      
       if(iprt.gt.0) then
        write(6,'(''Determinantal orbitals in orbital optimization: '',i4)') ndetorb
        write(6,'(''External orbitals in orbital optimization: '',i4)') nadorb
@@ -801,7 +808,7 @@ c Omit doubly occupied in all input determinants
           endif
    3    continue
    5  continue
-      write(6, *) 'Done Omit doubly occupied'
+      
 c Omit empty orbitals
 
       do 6 i=1,ndetorb
@@ -812,7 +819,7 @@ c Omit empty orbitals
       do 8 i=ndetorb+1,ndetorb+nadorb
        iflag(1,i)=1
    8   iflag(2,i)=0
-       write(6, *) 'Donehalf empty'
+       
       if(norbopt.eq.0.or.norbvirt.eq.0) then
         do 9 io=1,ndetorb
          do 9 jo=ncore+1,ndetorb+nadorb
@@ -822,7 +829,7 @@ c Omit empty orbitals
        write(6,'(''OPTORB_DEFINE: noptvirt,nadorb'',2i6)') norbvirt,nadorb
        call fatal_error('OPTORB_DEFINE: Mixvirt block, inconsistent')
       endif
-      write(6, *) 'Done empty'
+      
 
 
 c Orbital variation io -> io+a*jo
@@ -879,7 +886,7 @@ c Include: io is occupied in some determinant and jo not
           if(iprt.gt.3) write(6,'(''no appropriate determinant for '',2i4)') io,jo
           goto 50
         endif
-        write(6, *) 'Done pair list'
+        
 c Define new operator (new variation) and its terms
         noporb=noporb+1
         if(noporb.gt.MXORBOP) then
