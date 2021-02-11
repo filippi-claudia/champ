@@ -2,17 +2,26 @@ if (MPI_Fortran_FOUND)
 
   # Source files
   file(GLOB VMC_SOURCE *.f)
-  file(GLOB VMC90_SOURCE optgeo_coords_int.f90 optgeo_hessian.f90 optgeo_convcartzmat.f90 regterg.f90 olbfgs.f90 davidson_wrap.f90 m_kinds.f90
-                         m_vmc.f90  m_mstates.f90  m_sr.f90  m_force.f90  m_grid.f90  m_pcm.f90  m_optci.f90  m_ewald.f90  m_jastrow.f90
-                         m_mmpol.f90  m_optorb.f90  m_prop.f90  m_pseudo.f90  m_control.f90  m_constant.f90  m_efield.f90  m_optjas.f90
-                         m_gradhess.f90  m_mpi.f90  m_optwf.f90  m_basis.f90  m_estimators.f90  m_deriv.f90  m_mixderiv.f90  m_input.f90
-                         m_sampling.f90  m_grdnt.f90  m_state_avrg.f90  m_common.f90 main.f90 
-                         optwf.f90 optwf_dl.f90 optwf_dl_more.f90 optwf_sr.f90)
-  set(DAVIDSON_SOURCE array_utils.f90 lapack_wrapper.f90 davidson.f90)
+  file(GLOB VMC90_SOURCE *.f90) 
 
   set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-check bounds -g -traceback")
+
+  # --------------------------------------------
+  # Set files according to CMAKE options: 
+  # --------------------------------------------
+
   if (NOT ENABLE_QMMM)
     message(STATUS "QMMM is NOT enabled!")
+    list(REMOVE_ITEM VMC90_SOURCE
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_bspline.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_modules.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_pot.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_density.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_writecube.f90)
+  else()
+    message(STATUS "QMMM is enabled!")
+    list(REMOVE_ITEM VMC_SOURCE
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f)
   endif()
   
   if (NOT ENABLE_PERIODIC)
@@ -23,6 +32,10 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f)
+  else()
+    message(STATUS "PERIODIC is enabled!")
+    list(REMOVE_ITEM VMC_SOURCE
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f)
   endif()
   
   include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
@@ -76,7 +89,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/readps.f
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f    # This file should be refactored and eliminated.
     ${CMAKE_CURRENT_SOURCE_DIR}/efield.f
     ${CMAKE_CURRENT_SOURCE_DIR}/nodes_distance.f
     ${CMAKE_CURRENT_SOURCE_DIR}/hpsie.f
@@ -106,7 +119,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/determinant.f
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante.f
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc_pot.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f    # This file should be refactored and eliminated.
     ${CMAKE_CURRENT_SOURCE_DIR}/basis_fns_vgl.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_num.f
     ${CMAKE_CURRENT_SOURCE_DIR}/bxmatrices.f
@@ -159,6 +172,34 @@ if (MPI_Fortran_FOUND)
     ${INPUT_DIR}/p2etc.f
     ${INPUT_DIR}/p2nmcheck.f)
   
+  # --------------------------------------------
+  # Remove objects to share depending on CMAKE  
+  # options:
+  # --------------------------------------------
+  if (ENABLE_QMMM)
+    list(REMOVE_ITEM SHARED_SOURCE
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f)
+    list(APPEND SHARED_SOURCE 
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_bspline.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_modules.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_pot.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_density.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_writecube.f90)
+  endif()
+
+  if (PERIODIC)
+    list(REMOVE_ITEM SHARED_SOURCE
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f)
+    list(APPEND SHARED_SOURCE 
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f)
+  endif()
+
+  message( "Lowpez" ${SHARED_SOURCE} ) 
+  
   add_library(shared_objects OBJECT ${SHARED_SOURCE})
   
   target_include_directories(shared_objects
@@ -194,7 +235,6 @@ if (MPI_Fortran_FOUND)
     $<TARGET_OBJECTS:shared_objects>
     # source that is not already included in the objects
     ${VMC_SOURCE} 
-    ${DAVIDSON_SOURCE}
     ${VMC90_SOURCE})
   
   #  Add headers

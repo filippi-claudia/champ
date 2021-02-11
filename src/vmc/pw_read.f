@@ -5,7 +5,7 @@ c$$$    &ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngn
 c$$$    &ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec,
 c$$$    &np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
 c$$$    &vcell_sim, znuc2_sum, znuc_sum
-      implicit real*8(a-h,o-z)
+c$$$     implicit real*8(a-h,o-z)
 
 c$$$
 c$$$      include 'vmc.h'
