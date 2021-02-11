@@ -12,16 +12,13 @@
       use const, only: nelec
       use config, only: xnew, xold
       use mpiconf, only: idtask, nproc
-      use contrl, only: irstar, isite, nconf_new
+      use contrl, only: irstar, isite, nconf_new, icharged_atom
+
       implicit real*8(a-h,o-z)
-
-
       character*20 filename
-
       dimension irn(4)
       dimension nsite(ncent_tot)
       dimension istatus(MPI_STATUS_SIZE)
-
       dimension irn_temp(4)
 
 c set the random number seed differently on each processor
@@ -56,7 +53,7 @@ c check sites flag if one gets initial configuration from sites routine
         write(6,'(/,''initial configuration from unit 9'')')
         goto 40
 
-   20   call p2gtid('startend:icharged_atom',icharged_atom,0,1) 
+   20   continue 
 	ntotal_sites=0
         do 25 i=1,ncent
    25     ntotal_sites=ntotal_sites+int(znuc(iwctype(i))+0.5d0)

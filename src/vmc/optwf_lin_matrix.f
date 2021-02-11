@@ -1,19 +1,14 @@
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
       use linear_norm, only: oav
-      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_contrl, only: ioptjas, ioptorb, multiple_adiag
       use optwf_corsam, only: energy, energy_err
       use optwf_parms, only: nparmd, nparmj
       use gradhess_all, only: MPARMALL
-
       use ci000, only: nciterm
-
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
-
-
-
 
       parameter(eps=1.d-12)
 
@@ -148,7 +143,6 @@ c           if(j.ne.1.and.k.ne.1) then
 
       endif
 
-      call p2gtid('optwf:multiple_adiag',multiple_adiag,0,1)
 c Set add_diag
       if(add_diag.gt.0.or.multiple_adiag.eq.1) then
         add_diag=max(add_diag,1.d-6)

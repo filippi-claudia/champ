@@ -30,6 +30,8 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use slater, only: d2dx2, ddx, fp, fpp, slmi
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use multislater, only: detiab
+      use inputflags, only: iqmmm
+
       implicit real*8(a-h,o-z)
 
 c Calculates energy
@@ -51,7 +53,6 @@ c local potential contributions
       call pot_local(pe_local)
       
 c external potential on a grid (e.g. MM from CPMD)
-      call p2gtid('qmmm:iqmmm',iqmmm,0,1)
       if(iqmmm.eq.1) then
         ext_pot=0
         call qmmm_extpot_ene(coord,nelec,ext_pot)

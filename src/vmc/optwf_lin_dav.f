@@ -10,17 +10,16 @@
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
+      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
+      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps 
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
-      use optwf_func, only: ifunc_omega, omega
-      use contrl, only: nblk
+      use optwf_func, only: ifunc_omega, omega, omega0, n_omegaf, n_omegat
+      use contrl, only: nblk, nblk_max
       use force_analy, only: iforce_analy, alfgeo
-
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
-
-
 
       character*20 method_sav
 
@@ -32,26 +31,9 @@
 
       if(nparm.gt.MPARM)call fatal_error('OPTWF_LIN_D: nparmtot gt MPARM')
 
-      call p2gtid('optwf:nopt_iter',nopt_iter,6,1)
-      call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
-      call p2gtfd('optwf:energy_tol',energy_tol,1.d-3,1)
-
-      call p2gtfd('optwf:dparm_norm_min',dparm_norm_min,1.0d0,1)
       write(6,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
 
-      call p2gtid('optwf:lin_nvec',nvec,5,1)
-      if(nvec.lt.t) call fatal_error('OPTWF_LIN_D: nvec must be at least 5')
-      
-      call p2gtid('optwf:lin_nvecx',nvecx,MVEC,1)
-      call p2gtfd('optwf:lin_adiag',alin_adiag,0.01,1)
-      call p2gtfd('optwf:lin_eps',alin_eps,0.001,1)
-
-
-      call p2gtid('optwf:func_omega',ifunc_omega,0,1)
       if(ifunc_omega.gt.0) then
-       call p2gtfd('optwf:omega',omega0,0.d0,1)
-       call p2gtid('optwf:n_omegaf',n_omegaf,nopt_iter,1)
-       call p2gtid('optwf:n_omegat',n_omegat,0,1)
        if(n_omegaf+n_omegat.gt.nopt_iter) call fatal_error('OPTWF_LIN_D: n_omegaf+n_omegat > nopt_iter')
        omega=omega0
        write(6,'(/,''LIN_D ifunc_omega: '',i3)') ifunc_omega
@@ -60,9 +42,8 @@
        write(6,'(''LIN_D n_omegat: '',i4)') n_omegat
       endif
 
-      call p2gtid('optwf:micro_iter_sr',micro_iter_sr,1,1)
-
       ! if(nvecx.gt.MVEC) call fatal_error('SR_OPTWF: nvecx > MVEC')
+      
       write(6,'(/,''LIN_D adiag: '',f10.5)') alin_adiag
       write(6,'(''LIN_D ethr:  '',f10.5)') alin_eps
       write(6,'(''LIN_D nvec:  '',i4)') nvec

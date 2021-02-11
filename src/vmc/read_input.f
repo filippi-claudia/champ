@@ -145,7 +145,7 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
-      use sr_mod, only: MCONF
+      use sr_mod, only: MCONF, MVEC
       use pseudo_mod, only: MPS_QUAD
       use properties, only: MAXPROP
       use optorb_mod, only: MXORBOP, MXREDUCED
@@ -158,6 +158,8 @@ c and Anthony Scemema
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use jaspar1, only: cjas1, cjas2
+      use general, only: pooldir, pp_id, bas_id
+      use general, only: filenames_bas_num, wforce 
       use csfs, only: cxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
@@ -173,8 +175,11 @@ c and Anthony Scemema
       use numbas1, only: nbastyp
       use numbas2, only: ibas0, ibas1
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, ioptwf
-      use optwf_contrl, only: idl_flag,ilbfgs_flag
+      use optwf_contrl, only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
+      use optwf_contrl, only: ibeta, ratio_j, iapprox, ncore
+      use optwf_contrl, only: iuse_orbeigv
       use optwf_parms, only: nparmj
+      use optwf_sr_mod, only: i_sr_rescale, izvzb
       use pars, only: Z, a20, a21
       use rlobxy, only: rlobx
       use sa_weights, only: iweight, nweight, weights
@@ -189,11 +194,12 @@ c and Anthony Scemema
       use contr3, only: mode
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
       use contrldmc, only: itau_eff, nfprod, rttau, tau
-      use contrl, only: idump, irstar, isite, nconf, nblk
-      use contrl, only: nblkeq, nconf_new, nstep, nblk_max
+      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: icharged_atom, nblk_max, nblk_ci
       use dorb_m, only: iworbd
       use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_dmc, only: itausec, nwprod
       use pseudo, only: nloc
       use optorb_cblock, only: idump_blockav
       use gradjerrb, only: ngrad_jas_blocks
@@ -202,6 +208,7 @@ c and Anthony Scemema
       use mmpol_parms, only: chmm
       use mmpol_fdc, only: a_cutoff, rcolm
       use grid3dflag, only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+      use grid_mod, only: UNDEFINED, IUNDEFINED
       use efield, only: iefield, ncharges
       use mstates_ctrl, only: iefficiency, iguiding, nstates_psig
       use mstates3, only: iweight_g, weights_g
@@ -210,30 +217,30 @@ c and Anthony Scemema
       use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
       use pcm_parms, only: eps_solv, iscov
       use pcm_parms, only: ncopcm, nscv, nvopcm
-
       use prp000, only: iprop, ipropprt, nprop
       use pcm_fdc, only: qfree, rcolv
       use pcm_grid3d_contrl, only: ipcm_3dgrid
+      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d, pcm_origin, pcm_endpt
+      use pcm_3dgrid, only: PCM_SHIFT
       use prp003, only: cc_nuc
-
       use method_opt, only: method
-
       use optorb_cblock, only: nefp_blocks, isample_cmat, iorbsample
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use array_resize_utils, only: resize_tensor
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use inputflags, only: node_cutoff, eps_node_cutoff, iqmmm, scalecoef
+      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
+      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
+      use optwf_contrl, only: ilastvmc, iroot_geo
+      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+      use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat
+      use optwf_corsam, only: add_diag
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
 c      include 'dmc.h' now emty
-
-
 
       character*20 fmt
       character*32 keyname
@@ -337,7 +344,14 @@ c Get weights for multiple states calculations
 
 c General section
       call p2gtad('general:title',title,' ',1)
+      call p2gtad('general:pool',pooldir,'.',1)
+      call p2gtad('general:pseudopot',pp_id,'none',1)
+      call p2gtad('general:basis',bas_id,'none',1)
+
       call stripquotes(title)
+      call stripquotes(pooldir)
+      call stripquotes(bas_id)
+      call stripquotes(pp_id)
 
       if(mode.eq.'vmc')
      & write(6,'(''Variational MC'',a40)') title
@@ -394,6 +408,8 @@ c VMC parameters
 
         call p2gtid('vmc:imetro',imetro,6,1)
         write(6,'(''version of Metropolis ='',t30,i10)') imetro
+        call p2gtid('vmc:node_cutoff',node_cutoff,0,1)
+        call p2gtfd('vmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
 
         if(imetro.eq.1) then
           call p2gtf('vmc:delta',delta,1)
@@ -444,6 +460,8 @@ c DMC parameters
         rttau=dsqrt(tau)
 
         call p2gtf('dmc:etrial',etrial,1)
+        call p2gtid('forces:nwprod',nwprod,200,1)
+        call p2gtid('forces:itausec',itausec,1,1)
 
         write(6,'(''version of DMC ='',t30,i10)') idmc
         write(6,'(''nfprod,tau'',t30,i10,f10.5)') nfprod,tau
@@ -487,6 +505,7 @@ c Parameters for blocking/start/dump
         call p2gtid('startend:idump',idump,1,1)
         call p2gtid('startend:irstar',irstar,0,1)
         call p2gtid('startend:isite',isite,1,1)
+        if (isite.eq.1) call p2gtid('startend:icharged_atom',icharged_atom,0,1) 
 
 c Make sure that the printout is not huge
         if(nstep*(nblk+2*nblkeq).gt.104000) ipr=-1
@@ -511,6 +530,7 @@ c Analytical forces flags (vmc only)
       if(index(mode,'vmc').ne.0) then
         call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
         call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
+        call p2gtid('optgeo:izvzb',izvzb,0,1)
         if(iforce_analy.gt.0) then
           if(nordc.gt.0) call fatal_error('READ_INPUT: Nuclear analytic forces not implemented for 3-body J')
           call p2gtfd('optgeo:alfgeo',alfgeo,1.d0,0)
@@ -522,11 +542,18 @@ c Analytical forces flags (vmc only)
 
 c Optimization flags (vmc/dmc only)
       if(index(mode,'vmc').ne.0.or.index(mode,'dmc').ne.0) then
-
         call p2gtid('optwf:ioptwf', ioptwf, 0, 1)
         call p2gtad('optwf:method', method, 'linear', 1)
         call p2gtid('optwf:idl_flag', idl_flag, 0, 1)
         call p2gtid('optwf:ilbfgs_flag', ilbfgs_flag, 0, 1)
+        call p2gtid('optwf:ilbfgs_m',ilbfgs_m,5,1)
+        call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
+
+        call p2gtid('optwf:ibeta',ibeta,-1,1)
+        call p2gtfd('optwf:ratio',ratio,ratio_j,1)
+        call p2gtid('optwf:approx',iapprox,0,1)
+        call p2gtid('optwf:ncore',ncore,0,1)
+        call p2gtid('optwf:iuse_orbeigv',iuse_orbeigv,0,1)
 
         call p2gtid('optwf:ioptjas',ioptjas,0,1)
 CVARDOC flag: Jastrow derivatives will be sampled
@@ -549,8 +576,63 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
         if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
 
         call p2gtad('optwf:method',method,'linear',1)
-        call p2gtad('optwf:dl_alg',dl_alg,'nag',1)
         call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
+
+! lin_d, sr_n, mix_n and linear shared flags: 
+        if((method.eq.'lin_d').or.(method.eq.'sr_n').or.(method.eq.'mix_n')
+     #       .or.(method.eq.'linear')) then
+           call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
+           call p2gtfd('optwf:dparm_norm_min', dparm_norm_min, 1.0d0, 1)
+           call p2gtfd('optwf:add_diag',add_diag(1),1.d-6,1)
+           call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
+           call p2gtid('optwf:micro_iter_sr', micro_iter_sr, 1, 1)
+        end if
+
+! lin_d and sr_n shared flags: 
+        if((method.eq.'lin_d').or.(method.eq.'sr_n')) then
+           call p2gtid('optwf:func_omega', ifunc_omega, 0, 1)
+           if(ifunc_omega.gt.0) then
+             call p2gtfd('optwf:omega', omega0, 0.d0, 1)
+             call p2gtid('optwf:n_omegaf', n_omegaf, nopt_iter, 1)
+             call p2gtid('optwf:n_omegat', n_omegat, 0, 1)
+           end if
+        end if
+
+! lin_d and mix_n shared flags: 
+        if ((method.eq.'lin_d').or.(method.eq.'mix_n').or.(method.eq.'linear')) then
+          call p2gtid('optwf:lin_nvec', nvec, 5, 1)
+          call p2gtid('optwf:lin_nvecx', nvecx, MVEC, 1)
+          call p2gtfd('optwf:lin_adiag', alin_adiag, 0.01, 1)
+          call p2gtfd('optwf:lin_eps', alin_eps, 0.001, 1)
+          call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
+          call p2gtid('optwf:multiple_adiag',multiple_adiag,0,1)
+        end if
+
+! sr_n and mix_n shared flags: 
+        if ((method.eq.'sr_n').or.(method.eq.'mix_n')) then
+          call p2gtfd('optwf:sr_tau', sr_tau, 0.02, 1)
+          call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
+          call p2gtfd('optwf:sr_eps', sr_eps, 0.001, 1)
+        end if
+! mix_n and linear flags:
+        if ((method.eq.'mix_n').or.(method.eq.'linear')) then
+           if(iforce_analy.gt.0) call p2gtid('optgeo:iroot_geo',iroot_geo,0,0)
+           call p2gtid('optwf:nblk_ci',nblk_ci,nblk,1)
+           call p2gtid('optwf:ilastvmc',ilastvmc,1,1)
+        end if
+! dl flags:
+        if (idl_flag .gt. 0) then 
+            call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
+            call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
+            call p2gtfd('optwf:dparm_norm_min', dparm_norm_min, 1.0d0, 1)
+
+            call p2gtfd('optwf:sr_tau', sr_tau, 0.02, 1)
+            call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
+            call p2gtfd('optwf:sr_eps', sr_eps, 0.001, 1)
+
+            call p2gtfd('optwf:dl_mom', dl_mom, 0.0, 1)
+            call p2gtad('optwf:dl_alg', dl_alg, 'nag', 1)
+        end if
 
         if(method.eq.'linear'.and.MXREDUCED.ne.MXORBOP) 
      &    call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')
@@ -708,7 +790,25 @@ c  ipcm=3 runs qmc with fixed polarization charges
 
         call pcm_extpot_read(fcol,npmax)
 
+        !  We use the UNDEFINED, IUNDEFINED from grid_mod (that are the same as pcm_3dgrid)
         call p2gtid('pcm:ipcm_3dgrid',ipcm_3dgrid,0,1)
+        call p2gtid('pcm:nx_pcm',ipcm_nstep3d(1),IUNDEFINED,1)
+        call p2gtid('pcm:ny_pcm',ipcm_nstep3d(2),IUNDEFINED,1)
+        call p2gtid('pcm:nz_pcm',ipcm_nstep3d(3),IUNDEFINED,1)
+ 
+        call p2gtfd('pcm:dx_pcm',pcm_step3d(1),UNDEFINED,1)
+        call p2gtfd('pcm:dy_pcm',pcm_step3d(2),UNDEFINED,1)
+        call p2gtfd('pcm:dz_pcm',pcm_step3d(3),UNDEFINED,1)
+  
+        call p2gtfd('pcm:x0_pcm',pcm_origin(1),UNDEFINED,1)
+        call p2gtfd('pcm:y0_pcm',pcm_origin(2),UNDEFINED,1)
+        call p2gtfd('pcm:z0_pcm',pcm_origin(3),UNDEFINED,1)
+  
+        call p2gtfd('pcm:xn_pcm',pcm_endpt(1),UNDEFINED,1)
+        call p2gtfd('pcm:yn_pcm',pcm_endpt(2),UNDEFINED,1)
+        call p2gtfd('pcm:zn_pcm',pcm_endpt(3),UNDEFINED,1)
+
+        call p2gtfd('pcm:shift',PCM_SHIFT,4.d0,1)
         if(ipcm_3dgrid.gt.0) then
          if(ipcm.ne.3) call fatal('READ_INPUT:ipcm_3dgrid gt 0 & ipcm ne 3')
          call pcm_setup_grid
@@ -758,8 +858,10 @@ CVARDOC flag: properties will be printed
        call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
       endif
       
-c Pseudopotential section
+c Pseudopotential section:
       call p2gtid('pseudo:nloc',nloc,0,1)
+
+
 CVARDOC flag: type of pseudopotential (0: all electron)
       if(nloc.gt.0) then
         write(6,'(/,''pseudopotential calculation, nloc ='',t30,i10)') nloc
@@ -771,10 +873,13 @@ CVARDOC number of quadrature points
           write(6,'(''nquad='',t30,i10)') nquad
           if(nquad.gt.MPS_QUAD) call fatal_error('INPUT: nquad > MPS_QUAD')
           if(nloc.eq.4)then
+            call set_ps_gauss_filenames()
             call readps_gauss
            elseif(nloc.eq.5) then
+            call set_ps_champ_filenames()
             call readps_champ
            else
+            call set_ps_tm_filenames()
             call readps_tm
           endif
         endif
@@ -828,6 +933,7 @@ c Determinantal section
 
       if(ibasis.eq.1) then
         call write_orb_loc
+        call set_bas_num_filenames()
         if(numr.gt.0) then
           do 10 iwft=1,nwftype
    10       call read_bas_num(iwft)
@@ -984,6 +1090,25 @@ c get parameters for the grid of the orbitals
      & i3dgrid=1
 
       if(i3dgrid.ge.1) then 
+
+c Read the grid information: 
+        call p2gtid('3dgrid:nstepx',nstep3d(1),IUNDEFINED,1)
+        call p2gtid('3dgrid:nstepy',nstep3d(2),IUNDEFINED,1)
+        call p2gtid('3dgrid:nstepz',nstep3d(3),IUNDEFINED,1)
+
+        call p2gtfd('3dgrid:stepx',step3d(1),UNDEFINED,1)
+        call p2gtfd('3dgrid:stepy',step3d(2),UNDEFINED,1)
+        call p2gtfd('3dgrid:stepz',step3d(3),UNDEFINED,1)
+ 
+        call p2gtfd('3dgrid:x0',origin(1),UNDEFINED,1)
+        call p2gtfd('3dgrid:y0',origin(2),UNDEFINED,1)
+        call p2gtfd('3dgrid:z0',origin(3),UNDEFINED,1)
+ 
+        call p2gtfd('3dgrid:xn',endpt(1),UNDEFINED,1)
+        call p2gtfd('3dgrid:yn',endpt(2),UNDEFINED,1)
+        call p2gtfd('3dgrid:zn',endpt(3),UNDEFINED,1)
+
+C Grid setup:
         call setup_grid
 
         if(i3dlagorb.ge.1) then
@@ -1047,10 +1172,7 @@ c Check that the required blocks are there in the input
       use inputflags, only: ici_def, iforces, icsfs, igradients, icharge_efield
       use inputflags, only: imultideterminants, ioptorb_mixvirt, imodify_zmat, izmatrix_check
       use inputflags, only: ihessian_zmat
-
       use mstates_ctrl, only: iguiding
-
-
       ! might not be needed
       use mstates_mod, only: MSTATES
       use atom, only: znuc 
@@ -1058,27 +1180,35 @@ c Check that the required blocks are there in the input
       use force_analy, only: iforce_analy, iuse_zmat
       use forcepar, only: nforce
       use optwf_contrl, only: ioptci, ioptorb
+      use optwf_contrl, only: no_active
       use wfsec, only: nwftype
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use elec, only: ndn, nup
+      use const, only: nelec 
+      use coefs, only: norb, next_max 
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
+      call p2gti('electrons:nelec',nelec,1)
+      call p2gti('electrons:nup',nup,1)
+      call p2gtid('general:nwftype',nwftype,1,1)
       call p2gtid('general:nforce',nforce,1,1)
       ! if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
       call p2gtid('general:nwftype',nwftype,1,1)
       !if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype gt MWF')
       call p2gtid('general:iperiodic',iperiodic,0,1)
       call p2gtid('general:ibasis',ibasis,1,1)
+
       call p2gtid('optwf:ioptorb',ioptorb,0,1)
       call p2gtid('optwf:ioptci',ioptci,0,1)
+      call p2gtid('optwf:no_active',no_active,0,1)
+
       call p2gtid('mstates:iguiding',iguiding,0,1)
       call p2gtid('efield:iefield',iefield,0,1)
       call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
       call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
+      next_max=norb-ndetorb
+      call p2gtid('optwf:nextorb',nadorb,next_max,1)
 
       if(iznuc.eq.0) call fatal_error('INPUT: block znuc missing')
       if(igeometry.eq.0) call fatal_error('INPUT: block geometry missing')
