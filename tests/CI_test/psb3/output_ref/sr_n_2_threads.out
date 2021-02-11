@@ -583,7 +583,7 @@ initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -42.78867 -42.80641( 9226)   0.00000(    0) -18.45374(*****)   0.00000(    0)                            0.54531        40
  -42.81294 -42.80998( 6726)   0.00000(    0) -22.02269(*****)   0.00000(    0)
-END       OF equilb CP, REAL TIME IS       0.08      0.08     0     0
+END       OF equilb CP, REAL TIME IS       0.13      0.13     0     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -42.56423 -42.56334( 9794)   0.00000(    0) -21.34894(*****)   0.00000(    0)                            0.55000        40
  -42.37509 -42.37743(26660)   0.00000(    0) -20.86823(*****)   0.00000(    0)
@@ -685,7 +685,7 @@ END       OF equilb CP, REAL TIME IS       0.08      0.08     0     0
  -42.26476 -42.65141( 2936)   0.00000(    0) -21.06366(*****)   0.00000(    0)
  -42.61459 -42.82401( 2808)   0.00000(    0) -21.54104(*****)   0.00000(    0)                            0.53030      2000
  -42.30654 -42.64664( 2918)   0.00000(    0) -21.18015(*****)   0.00000(    0)
-END       OF all    CP, REAL TIME IS       4.46      4.38     4     4
+END       OF all    CP, REAL TIME IS       6.59      6.46     6     6
 vmc_mov1      psb3_cas66          
 results after        2000. passes,  nstep, nblk =    20   100
 
@@ -740,7 +740,7 @@ initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -42.41904 -42.70827(14509)   0.00000(    0)  -3.87848(*****)   0.00000(    0)                            0.55234        40
  -42.33927 -42.26210(13142)   0.00000(    0) -29.14866(*****)   0.00000(    0)
-END       OF equilb CP, REAL TIME IS       4.56      0.09     4     0
+END       OF equilb CP, REAL TIME IS       6.71      0.10     6     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -42.69565 -42.69612( 1428)   0.00000(    0) -20.83183(*****)   0.00000(    0)                            0.52891        40
  -42.60938 -42.60317(16948)   0.00000(    0) -21.73384(*****)   0.00000(    0)
@@ -842,7 +842,7 @@ END       OF equilb CP, REAL TIME IS       4.56      0.09     4     0
  -42.88985 -42.65771( 3338)   0.00000(    0) -23.32139(*****)   0.00000(    0)
  -42.63556 -42.79799( 3502)   0.00000(    0) -19.44407(*****)   0.00000(    0)                            0.53253      2000
  -42.12210 -42.64765( 3432)   0.00000(    0) -23.34631(*****)   0.00000(    0)
-END       OF all    CP, REAL TIME IS       9.06      4.50     9     4
+END       OF all    CP, REAL TIME IS      12.72      6.01    13     6
 vmc_mov1      psb3_cas66          
 results after        2000. passes,  nstep, nblk =    20   100
 

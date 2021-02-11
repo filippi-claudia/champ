@@ -19,6 +19,7 @@ INPUT: block csf missing: nstates set to 1
  ivirt =           2           2
            1           1  distinct out of            1
            2           1  distinct out of            1
+INPUT: definition of OPTCI operators missing
 ========================================
  weights:                        weights: 
 Variational MC one-electron move mpi                    H2                  
@@ -41,11 +42,13 @@ no. of blocks after eq.=            200
 no. of blocks before eq. =            1
 no. configurations saved =            0
 
-Only sample derivatives of wave function for external use
-Computing/writing quantities for optimization with method sr_n      
+Perform wave function optimization in vmc/dmc
+Computing/writing quantities for optimization with method linear    
 Jastrow derivatives are sampled
 Number of Jastrow derivatives    9
-CI number of coefficients             0
+CI is sampled
+CI printout flag =                    0
+CI number of coefficients             1
 
 all-electron calculation 
 
@@ -168,6 +171,21 @@ b=   0.500000  0.500000  0.000000  0.000000  0.000000  0.000000
 c=
 
 
+
+Number of iterations  5
+
+Maximum number of blocks 500
+
+Perform test run with multiple adiag 1
+
+Energy tolerance    0.10D-02
+Starting dparm_norm_min   1.000    
+Saved max number of parameters, nparmj,norb,nciterm,nciterm-1:     9    0    1    0
+
+Optimization iteration 1
+Max number of parameters set to nparmj,norb,nciterm,nciterm-1:     9    0    1    0
+
+number of parms: total, Jastrow, CI, orbitals=     9    9    1    0
 number of electrons placed =    2
 
 initial configuration from sites
@@ -375,7 +393,7 @@ END       OF equilb CP, REAL TIME IS       0.00      0.00     0     0
   -1.01024  -1.00785(  634)   0.00000(    0)  -1.00785(  634)   0.00000(    0)                            0.76167      9900
   -1.07617  -1.00819(  632)   0.00000(    0)  -1.00819(  632)   0.00000(    0)                            0.76141      9950
   -1.04313  -1.00837(  629)   0.00000(    0)  -1.00837(  629)   0.00000(    0)                            0.76125     10000
-END       OF all    CP, REAL TIME IS       0.17      0.17     0     0
+END       OF all    CP, REAL TIME IS       0.18      0.18     0     0
 vmc_mov1      H2                  
 results after       10000. passes,  nstep, nblk =    50   200
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
@@ -384,7 +402,52 @@ potential E =      0.0000000 +-  0.0000000  0.00000
 jf kinetic E =     0.0000000 +-  0.0000000  0.00000
 pb kinetic E =    -1.0083658 +-  0.0062879  0.62879
 acceptance =       0.7612500
+Operators correspond to primitive set
 average psid, det_ref  0.15895D-01 0.15895D-01
 log detref -0.10003D+01-0.99947D+00
 distance from the nodes    0.00000
- successful dump to unit 10
+
+number of parms: total, Jastrow, CI, orbitals=     9    9    1    0
+
+Current energy =   -1.0083658 +-   0.0062879
+
+Current best energy + 2*error =     -0.9958
+
+Setup starting adiag
+
+Determine energy gap in super-CI hamiltonian at step 1
+
+overlap matrix: Maximum eigenvalue, threshold:   9.9579E-01  9.9579E-15
+first positive eigenvalue                   10
+first eigenvalue larger than threshold      10
+eigenvalue   10 =        -0.00000 + i*         0.00000
+eigenvalue    7 =         0.00000 + i*         0.00000
+eigenvalue    9 =         0.00000 + i*         0.00000
+eigenvalue    8 =         0.00000 + i*         0.00000
+eigenvalue    5 =         0.00000 + i*         0.00000
+
+   0 real roots in energy range        -1.10920,       -0.98950
+   0 real roots in energy range        -1.21004,       -0.97064
+   0 real roots in energy range        -1.41171,       -0.93291
+   0 real roots in energy range        -1.81506,       -0.85746
+   0 real roots in energy range        -2.62175,       -0.70654
+   0 real roots in energy range        -4.23514,       -0.40472
+   1 eigenvalue   10 =        -0.00000 + i*         0.00000
+     ortho dir    10 =         1.41123
+   2 eigenvalue    7 =         0.00000 + i*         0.00000
+     ortho dir     7 =             NaN
+   3 eigenvalue    9 =         0.00000 + i*         0.00000
+     ortho dir     9 =             NaN
+   4 eigenvalue    8 =         0.00000 + i*         0.00000
+     ortho dir     8 =             NaN
+   5 eigenvalue    5 =         0.00000 + i*         0.00000
+     ortho dir     5 =             NaN
+  10 real roots in energy range        -7.46191,        0.19892
+--------------------------------------------------------------------------
+MPI_ABORT was invoked on rank 0 in communicator MPI_COMM_WORLD
+with errorcode 0.
+
+NOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.
+You may or may not see output from other processes, depending on
+exactly when Open MPI kills them.
+--------------------------------------------------------------------------

@@ -17,18 +17,11 @@
       use coefs, only: norb
       use deloc_dj_m, only: denergy
       use multimat, only: wfmat
-
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-
       use multislater, only: detiab
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       dimension psid(*),dvpsp_dj(*),energy(*),vj(3,*)
       dimension deloc_dj(MPARMJ)
@@ -155,13 +148,9 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
       use atom, only: nctype
-
       use csfs, only: nstates
-
       use derivjas, only: gvalue
-
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
-
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use jaspointer, only: npointa
       use optwf_contrl, only: ioptjas
@@ -172,25 +161,8 @@ c Written by Claudia Filippi
       use deloc_dj_m, only: denergy
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
       use gradhessj, only: e2
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
       dimension enew(*),eold(*),wtg_new(*),wtg_old(*)
 
@@ -342,19 +314,13 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
       use csfs, only: nstates
-
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
-
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
       use gradhessj, only: dj, dj_e
       use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks, nbj_current
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       dimension dj_e_b(83),dj_b(83)
 
@@ -402,22 +368,16 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
       use atom, only: nctype
-
       use csfs, only: nstates
-
       use derivjas, only: gvalue
-
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
-
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
       use bparm, only: nspin2b
       use deloc_dj_m, only: denergy
+
       implicit real*8(a-h,o-z)
-
-
-
 
       if(ioptjas.eq.0) return
 
@@ -494,20 +454,14 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
       use csfs, only: nstates
-
       use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
-
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
       use gradhessj, only: e2
       use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       if(ioptjas.eq.0) return
 c to do: write out which parameters are being varied -> check for restart
@@ -530,21 +484,14 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi
 
       use csfs, only: nstates
-
       use gradjerr, only: dj_e_save, dj_save, grad_jas_bcm2, grad_jas_bcum
-
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
       use gradhessj, only: e2
-
       use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       if(ioptjas.eq.0) return
 
@@ -569,14 +516,11 @@ c-----------------------------------------------------------------------
       subroutine optjas_fin(wcum,ecum)
 c Written by Claudia Filippi
 
-
       use optjas, only: MPARMJ
       use csfs, only: nstates
-
       use gradhess_jas, only: grad_jas, h_jas, s_jas
       use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
-
-      use optwf_contrl, only: ioptjas
+      use optwf_contrl, only: ioptjas, ibeta, ratio_j
       use optwf_parms, only: nparmj
       use sa_weights, only: weights
       use gradhessj, only: d2j, d2j_e, de, dj, dj_de, dj_dj, dj_dj_e, dj_e
@@ -585,28 +529,12 @@ c Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       dimension hess1(MPARMJ,MPARMJ),hess2(MPARMJ,MPARMJ),hess3(MPARMJ,MPARMJ),grad_now(MPARMJ),gerr(MPARMJ)
       dimension ecum(*),wcum(*)
 
       errn(x,x2,n)=dsqrt(dabs(x2/dble(n)-(x/dble(n))**2)/dble(n))
 
       if(ioptjas.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
-
-      call p2gtid('optwf:ibeta',ibeta,-1,1)
 
       do 10 i=1,nparmj+1
         grad_jas(i)=0
@@ -647,7 +575,6 @@ c Compute ratio for reweighted expression of the hessian
 c Construct hessian 
 c Hessian h = hess1 + hess2 + hess3 (ratio=1, ibeta=1)
 c Reduced fluctuation hessian = ratio*hess1 + hess3 (ratio, ibeta=-1)
-      call p2gtfd('optwf:ratio',ratio,ratio_j,1)
       do 45 i=1,nparmj
         do 45 j=1,i
           h_jas(i,j)=h_jas(i,j)+weights(istate)*(ratio*hess1(i,j)+0.5d0*(1+ibeta)*hess2(i,j)+hess3(i,j))

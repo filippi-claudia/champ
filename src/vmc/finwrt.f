@@ -27,6 +27,7 @@ c routine to print out final results
       use contrl_per, only: iperiodic
       use sa_check, only: energy_all, energy_err_all
       use ci000, only: iciprt
+      use inputflags, only: iqmmm
 
       implicit real*8(a-h,o-z)
 
@@ -172,7 +173,6 @@ c 250   force_err(ifr)=sqrt(force_err(ifr))
         write(6,'(''acceptance ='',t17,2f12.7)') accept
       endif
 
-      call p2gtid('qmmm:iqmmm',iqmmm,0,1)
       if(iqmmm.gt.0) call qmmm_extpot_final(nelec)
 
       iciprt_sav=iciprt

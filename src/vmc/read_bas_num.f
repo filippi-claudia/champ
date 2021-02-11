@@ -7,79 +7,31 @@ c Written by Claudia Filippi
 c Modified by F. Schautz to use fancy file names
 c Reads in localized orbitals on a radial grid
 
+      use numbas_mod, only: MRWF, MRWF_PTS
+      use vmc_mod, only: MBASIS, MCTYPE
+      use vmc_mod, only: NCOEF
+      use atom, only: znuc, nctype
       use ghostatom, only: newghostype
       use const, only: ipr
       use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
       use coefs, only: nbasis
       use numexp, only: ae, ce
       use pseudo, only: nloc
+      use general, only: filename, filenames_bas_num, wforce
 
       implicit real*8(a-h,o-z)
-
-
-
-
-      character*256 filename,pooldir,bas_id
-      character*20 wforce,atomtyp,atomsymbol
-
-
 
       dimension x(MRWF_PTS),work(MRWF_PTS),y(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
      &,l(nbasis),icusp(nctype_tot)
 
 c nrbas = number of numerical orbitals for each center
-
 c igrid = 1 linear r(i+1)=arg+r(i), r(1)=r0
 c         2 exponential r(i+1)=arg*r(i), r(1)=r0
 c         3 shifted exponential r(i+1)=r0*(arg**(i-1)-1)
 
-      if(iwf.lt.10) then
-        write(wforce,'(i1)') iwf
-      elseif(iwf.lt.100) then
-        write(wforce,'(i2)') iwf
-      elseif(iwf.lt.1000) then
-        write(wforce,'(i3)') iwf
-      else
-        call fatal_error('READ_BAS_NUM: wforce > 999')
-      endif
-
-      call p2gtad('general:pool',pooldir,'.',1)
-CVARDOC pool directory for basis files
-      call stripquotes(pooldir)
-      call p2gtad('general:basis',bas_id,'none',1)
-      call stripquotes(bas_id)
-CVARDOC String to identify basis. If set, fancy names for 
-CVARDOC the basis grid files will be used.  
-
       do 100 ic=1,nctype+newghostype
-        if(ic.lt.10) then
-          write(atomtyp,'(i1)') ic
-         elseif(ic.lt.100) then
-          write(atomtyp,'(i2)') ic
-         elseif(iwf.lt.1000) then
-          write(wforce,'(i3)') iwf
-         else
-          call fatal_error('READ_BAS_NUM: atomtyp > 999')
-        endif
-
-        if(bas_id.eq.'none') then
-c old file name convention 
-          filename=pooldir(1:index(pooldir,' ')-1)//'/'//
-     &             'basis.'//atomtyp(1:index(atomtyp,' ')-1)
-          if(iwf.ge.2) then
-            filename=filename(1:index(filename,' ')-1)//'.'//wforce
-          endif
-         else
-c new convention
-          call p2gtad('atom_types:'//atomtyp(1:index(atomtyp,' ')-1)
-     &               ,atomsymbol,'X',1)
-          filename=pooldir(1:index(pooldir,' ')-1)//
-     &             '/'//
-     &             bas_id(1:index(bas_id,' ')-1)//
-     &             '.basis.'//
-     &             atomsymbol(1:index(atomsymbol,' ')-1)
-        endif
-
+        if (ic .gt. 999) call fatal_error('READ_BAS_NUM: atomtyp > 999')
+        filename=filenames_bas_num(ic)
         open(21,file=filename(1:index(filename,' ')-1),status='old')
 
         read(21,*) nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)

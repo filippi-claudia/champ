@@ -28,6 +28,7 @@ jobs:
            cp src/vmc/m_vmc.f90 ./m_vmc_save
            cp src/vmc/m_sr.f90 ./m_sr_save
            cp src/vmc/m_optci.f90 ./m_optci_save
+           cp src/vmc/m_optorb.f90 ./m_optorb_save
 
            # copy module file
            cp tests/CI_test/h2/module/*.f90 src/vmc
@@ -69,6 +70,24 @@ jobs:
            echo "  total E vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0555534 
            echo ""  
+
+           # run and compare default optimization
+           # echo "- Running vmc_corsamp.inp in serial:"
+           # $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out 
+           # echo "  total E vs reference:"
+           # $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current energy" -1.0083658 
+           # echo "  best E vs reference:"
+           # $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current best energy + 2*error" -0.9958 
+           # echo ""
+
+           # run and compare default optimization MPI
+           # echo "- Running vmc_corsamp.inp in parallel:"
+           # mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out 
+           # echo "  total E vs reference:"
+           # $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current energy" -1.0119453 
+           # echo "  best E vs reference:"
+           # $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current best energy + 2*error" -1.0024 
+           # echo ""  
            
            cd $HOME/work/champ/champ
 

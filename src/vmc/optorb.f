@@ -10,15 +10,11 @@
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_ref, irepcol_ref
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use multislater, only: detiab
       use const, only: nelec
+      
       implicit real*8(a-h,o-z)
-
-
-
-
 
       dimension zmat(MORB,nelec,2),dzmat(MORB,nelec,2),emz(nelec,nelec,2),aaz(nelec,nelec,2)
       dimension orbprim(*),eorbprim(*)
@@ -116,9 +112,9 @@ c     enddo
       end
 c-----------------------------------------------------------------------
       subroutine optorb_sum(wtg_new,wtg_old,enew,eold,iflag)
-      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptorb
+      use csfs, only: nstates
+      use optwf_contrl, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
@@ -128,7 +124,6 @@ c-----------------------------------------------------------------------
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_030, only: orb_ecum, orb_wcum
-      
       use optorb_cblock, only: isample_cmat, nreduced
 
       implicit real*8(a-h,o-z)
@@ -143,7 +138,6 @@ c ns_current reset
 c     ns_current=0
 
       idiag_only=0
-      call p2gtid('optwf:approx',iapprox,0,1)
       if(iapprox.gt.0) idiag_only=1
 
       do 200 istate=1,nstates
@@ -290,9 +284,9 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine optorb_init(iflg)
-      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptorb
+      use csfs, only: nstates
+      use optwf_contrl, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
@@ -301,19 +295,13 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
       use orb_mat_030, only: orb_ecum, orb_wcum
-
       use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
 
       implicit real*8(a-h,o-z)
 
-
-
-
-
       if(ioptorb.eq.0) return
 
       idiag_only=0
-      call p2gtid('optwf:approx',iapprox,0,1)
       if(iapprox.gt.0) idiag_only=1
 
       do 100 istate=1,nstates
@@ -449,9 +437,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_dump(iu)
-      use csfs, only: nstates
 
-      use optwf_contrl, only: ioptorb
+      use csfs, only: nstates
+      use optwf_contrl, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm, norbprim
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
@@ -460,18 +448,13 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
-
       use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
 
       implicit real*8(a-h,o-z)
 
-
-
-
       if(ioptorb.eq.0) return
 
       matdim=nreduced*(nreduced+1)/2
-      call p2gtid('optwf:approx',iapprox,0,1)
       if(iapprox.gt.0) matdim=nreduced
 
       write(iu) norbprim,norbterm,nreduced
@@ -491,7 +474,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_rstrt(iu)
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptorb
+      use optwf_contrl, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm, norbprim
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
@@ -500,11 +483,9 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
-
       use optorb_cblock, only: nreduced, nefp_blocks, norb_f_bcum
 
       implicit real*8(a-h,o-z)
-
 
       if(ioptorb.eq.0) return
       read(iu) morbprim,morbterm,mreduced
@@ -522,7 +503,6 @@ c-----------------------------------------------------------------------
 c nreduced has to be set since it will only be known for non-continuation runs
       nreduced=mreduced
       matdim=nreduced*(nreduced+1)/2 
-      call p2gtid('optwf:approx',iapprox,0,1)
       if(iapprox.gt.0) matdim=nreduced
 
       read(iu) nefp_blocks,norb_f_bcum
@@ -539,9 +519,9 @@ c nreduced has to be set since it will only be known for non-continuation runs
       end
 c-----------------------------------------------------------------------
       subroutine optorb_fin(wcum,ecum)
+
       use optorb_mod, only: MXORBOP
       use csfs, only: nstates
-
       use optwf_contrl, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
       use sa_weights, only: weights
@@ -551,26 +531,17 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_030, only: orb_ecum, orb_wcum
       use gradhess_all, only: grad, h, s
-
       use ci000, only: nciterm
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
+      use optwf_contrl, only: iapprox, iuse_orbeigv
 
       implicit real*8(a-h,o-z)
-
-
-
-
 
       dimension oav(MXORBOP),eoav(MXORBOP),fo(MXORBOP),foerr(MXORBOP)
       dimension wcum(*),ecum(*)
 
       if(ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
-
-      call p2gtid('optwf:iuse_orbeigv',iuse_orbeigv,0,1)
-      call p2gtid('optwf:approx',iapprox,0,1)
 
       nparmd=max(nciterm-1,0)
       ish=nparmj+nparmd
@@ -756,28 +727,26 @@ c replaced column
       end
 c-----------------------------------------------------------------------
       subroutine optorb_define
+
       use optorb_mod, only: MXORBOP, MXREDUCED
       use vmc_mod, only: MELEC, MORB, MDET
       use const, only: nelec
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: kref
-
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
-      use coefs, only: norb
+      use coefs, only: norb, next_max
       use dorb_m, only: iworbd
       use optorb, only: irrep
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      implicit real*8(a-h,o-z)
+      use optwf_contrl, only: ncore, no_active
 
+      implicit real*8(a-h,o-z)
 
       data icount_orbdef /1/
 
@@ -789,8 +758,6 @@ c-----------------------------------------------------------------------
 
       iprt=3
 
-      call p2gti('electrons:nelec',nelec,1)
-      call p2gti('electrons:nup',nup,1)
       ndn=nelec-nup
 
       ne(1)=nup
@@ -812,10 +779,14 @@ c orbital indices in determinants of trial wave function
   1   format('Det ',i4,' column ',i4,' orb index ',i4,' norb ',i4)
 
 c Number of external orbitals for orbital optimization
-      call p2gtid('optwf:ncore',ncore,0,1)
       next_max=norb-ndetorb
-      call p2gtid('optwf:nextorb',nadorb,next_max,1)
       if(nadorb.gt.next_max) nadorb=next_max
+      ! write(6, *) 'norb', norb
+      ! write(6, *) 'nadorb', nadorb
+      ! write(6, *) 'ndet_orb', ndetorb
+      ! write(6, *) 'next_max', next_max
+      ! call fatal_error('optorb.f')
+      
       if(iprt.gt.0) then
        write(6,'(''Determinantal orbitals in orbital optimization: '',i4)') ndetorb
        write(6,'(''External orbitals in orbital optimization: '',i4)') nadorb
@@ -837,6 +808,7 @@ c Omit doubly occupied in all input determinants
           endif
    3    continue
    5  continue
+      
 c Omit empty orbitals
 
       do 6 i=1,ndetorb
@@ -847,7 +819,7 @@ c Omit empty orbitals
       do 8 i=ndetorb+1,ndetorb+nadorb
        iflag(1,i)=1
    8   iflag(2,i)=0
-
+       
       if(norbopt.eq.0.or.norbvirt.eq.0) then
         do 9 io=1,ndetorb
          do 9 jo=ncore+1,ndetorb+nadorb
@@ -857,7 +829,7 @@ c Omit empty orbitals
        write(6,'(''OPTORB_DEFINE: noptvirt,nadorb'',2i6)') norbvirt,nadorb
        call fatal_error('OPTORB_DEFINE: Mixvirt block, inconsistent')
       endif
-
+      
 
 
 c Orbital variation io -> io+a*jo
@@ -868,10 +840,9 @@ c omitted if not same symmetry, or io empty, or both doubly occupied
       iterm=0
 
       if(iprt.gt.2) then
-       write(6,'(''=========== orbital pair list =========='')')
+       write(6,*) '(''=========== orbital pair list =========='')'
       endif
 
-      call p2gtid('optwf:no_active',no_active,0,1)
       do 60 io=ncore+1,ndetorb
 c Omit empty orbitals
        if(iflag(2,io).eq.0) goto 60
@@ -915,7 +886,7 @@ c Include: io is occupied in some determinant and jo not
           if(iprt.gt.3) write(6,'(''no appropriate determinant for '',2i4)') io,jo
           goto 50
         endif
-
+        
 c Define new operator (new variation) and its terms
         noporb=noporb+1
         if(noporb.gt.MXORBOP) then
@@ -953,7 +924,6 @@ c Define new operator (new variation) and its terms
       write(6,'(''number of orbital variations: '',2i8)') norbterm
 
 c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
-      if(icount_orbdef.eq.1) call p2gtad('optwf:method',method,'linear',1)
       if(method.eq.'linear') then
 
         if(MXREDUCED.ne.MXORBOP) call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')

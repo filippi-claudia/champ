@@ -1,5 +1,11 @@
 module optwf_contrl
-    !> Arguments: ioptci, ioptjas, ioptorb, nparm
+    !> Arguments: ioptci, ioptjas, ioptorb, idl_flag, ilbfgs_flag, ilbfgs_m, nparm,
+    !>            nopt_iter, micro_iter_sr, energy_tol,
+    !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j, 
+    !>            iapprox, ncore, iuse_orbeigv, no_active, multiple_adiag, iroot_geo,
+    !>            ilastvmc, sr_tau, sr_adig, sr_adiag, sr_eps 
+
+    use precision_kinds, only: dp
 
     integer :: ioptwf
     integer :: ioptci
@@ -7,18 +13,51 @@ module optwf_contrl
     integer :: ioptorb
     integer :: idl_flag
     integer :: ilbfgs_flag
+    integer :: ilbfgs_m
     integer :: nparm
+    integer :: nopt_iter
+    integer :: micro_iter_sr
+    real(dp) :: energy_tol
+    real(dp) :: dparm_norm_min 
+    integer :: nvec
+    integer :: nvecx
+    real(dp) :: alin_adiag
+    real(dp) :: alin_eps
+    integer :: lin_jdav
+    integer :: ibeta
+    integer :: ratio_j
+    integer :: iapprox
+    integer :: ncore 
+    integer :: iuse_orbeigv 
+    integer :: no_active 
+    integer :: multiple_adiag
+    integer  :: iroot_geo
+    integer :: ilastvmc
+    real(dp) :: sr_tau
+    real(dp) :: sr_adiag
+    real(dp) :: sr_eps
+    character(20) :: dl_alg
+    real(dp) :: dl_mom
 
     private
     public :: ioptwf
-    public :: idl_flag, ilbfgs_flag
+    public :: idl_flag, ilbfgs_flag, ilbfgs_m
     public :: ioptci, ioptjas, ioptorb, nparm
+    public :: nopt_iter, micro_iter_sr, energy_tol, dparm_norm_min
+    public :: nvec, nvecx, alin_adiag, alin_eps, lin_jdav
+    public :: ibeta, ratio_j
+    public :: iapprox, ncore, iuse_orbeigv, no_active
+    public :: multiple_adiag
+    public :: iroot_geo
+    public :: ilastvmc
+    public :: sr_tau, sr_adiag, sr_eps
+    public :: dl_alg, dl_mom
     save
 
 end module optwf_contrl
 
 module optwf_corsam
-    !> Arguments: add_diag_tmp, energy, energy_err, force, force_err
+    !> Arguments: add_diag, add_diag_tmp, energy, energy_err, force, force_err
     use force_mod, only: MFORCE
     use precision_kinds, only: dp
 
@@ -57,15 +96,18 @@ contains
 end module optwf_corsam
 
 module optwf_func
-    !> Arguments: ifunc_omega, omega, omega_hes
+    !> Arguments: ifunc_omega, omega, omega0, omega_hes, n_omegaf, n_omegat
     use precision_kinds, only: dp
 
     integer :: ifunc_omega
     real(dp) :: omega
+    real(dp) :: omega0
     real(dp) :: omega_hes
+    integer :: n_omegaf
+    integer :: n_omegat
 
     private
-    public :: ifunc_omega, omega, omega_hes
+    public :: ifunc_omega, omega, omega0, omega_hes, n_omegaf, n_omegat
     save
 end module optwf_func
 

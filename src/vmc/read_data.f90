@@ -147,10 +147,10 @@ subroutine read_determinants(iu, nd, iwft)
 
     ndet = nd
     MDET = nd
+
     ! write (6, *) 'nstates', nstates
     ! if (nstates .eq. 0) call fatal_error('nstates undefined')
     ! if (nstates .eq. 0) nstates = 1
-
     ! nstates = MSTATES
 
     if (ndet .gt. MDET) then
@@ -169,7 +169,6 @@ subroutine read_determinants(iu, nd, iwft)
 
     allocate (iworbd(nelec, MDET))
     do i = 1, ndet
-        write (6, *) i
         call incpos(iu, itmp, 1)
         read (iu, *) (iworbd(j, i), j=1, nelec)
     enddo

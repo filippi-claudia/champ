@@ -7,11 +7,13 @@ c written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
       use wfsec, only: iwftype, nwftype
-      use contrl, only: idump, irstar, isite, nblk
+      use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
       use gradhess_all, only: MPARMALL
-
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nopt_iter, multiple_adiag
+      use optwf_contrl, only: energy_tol, dparm_norm_min, ilastvmc
       ! I think that's needed
       use gradhess_all, only: grad
+      use optwf_corsam, only: add_diag
       
       implicit real*8(a-h,o-z)
 
@@ -38,13 +40,13 @@ c written by Claudia Filippi
       allocate(work(MWORK))
       allocate(work2(MPARMALL,MPARMALL))
 
-      call p2gtid('optwf:ioptjas',ioptjas,0,1)
-      call p2gtid('optwf:ioptorb',ioptorb,0,1)
-      call p2gtid('optwf:ioptci',ioptci,0,1)
+    
+      
 
 c No dump/restart if optimizing wave function
       irstar=0
       idump=0
+      
 c Set up basis functions for test run
       do 1 iwft=2,3
    1    iwftype(iwft)=iwft
@@ -56,29 +58,24 @@ c Set up basis functions for test run
    3      call copy_zex(iwft)
       endif
       call set_displace_zero(3)
+      
 
 c Number of iterations
-      call p2gtid('optwf:nopt_iter',nopt_iter,6,1)
-      write(6,'(/,''Number of iterations'',i2)') nopt_iter
+      write(6,'(/,''Number of iterations'',i3)') nopt_iter
       if(ioptci.eq.1.and.ioptjas.eq.0.and.ioptorb.eq.0) then
         nopt_iter=1
         write(6,'(''Reset number of iterations to 1'')')
       endif
 c Max number of blocks
-      call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
       write(6,'(/,''Maximum number of blocks'',i4)') nblk_max
 c Compute multiple adiag
-      call p2gtid('optwf:multiple_adiag',multiple_adiag,0,1)
       write(6,'(/,''Perform test run with multiple adiag'',i2)') multiple_adiag
 c Tolerance on energy
-      call p2gtfd('optwf:energy_tol',energy_tol,1.d-3,1)
       write(6,'(/,''Energy tolerance'',d12.2)') energy_tol
   
-      call p2gtfd('optwf:add_diag',add_diag(1),1.d-6,1)
       if(ioptjas.eq.0.and.ioptorb.eq.0) add_diag(1)=-1
 
 c Set dparm_norm_min
-      call p2gtfd('optwf:dparm_norm_min',dparm_norm_min,1.0d0,1)
       write(6,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
 
       ioptjas_sav=ioptjas
@@ -100,7 +97,6 @@ c CI step for state average of multiple states (optimal CI for input Jastrow and
         call set_nparms
 
         nblk_sav=nblk
-        call p2gtid('optwf:nblk_ci',nblk_ci,nblk,1)
         nblk=nblk_ci
         call qmc
         nblk=nblk_sav
@@ -399,7 +395,6 @@ c CI step for state average of multiple states
         call set_nparms
 
         nblk_sav=nblk
-        call p2gtid('optwf:nblk_ci',nblk_ci,nblk,1)
         nblk=nblk_ci
         call qmc
         nblk=nblk_sav
@@ -476,7 +471,6 @@ c end of optimization loop
       ioptorb=0
       ioptci=0
 
-      call p2gtid('optwf:ilastvmc',ilastvmc,1,1)
       if(ilastvmc.eq.0) go to 970
 
       call qmc

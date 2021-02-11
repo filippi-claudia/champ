@@ -16,9 +16,10 @@ module forcepar
     real(dp), dimension(:), allocatable :: deltot !(MFORCE)
     integer :: istrech
     integer :: nforce
+    real(dp) :: alfstr
 
     private
-    public   ::  deltot, istrech, nforce
+    public   ::  deltot, istrech, nforce, alfstr
     public :: allocate_forcepar, deallocate_forcepar
     save
 contains

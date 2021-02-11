@@ -35,7 +35,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use method_opt, only: method
       use multislatern, only: ddorbn, detn, dorbn, orbn
       use const, only: nelec
-      
+      use inputflags, only: node_cutoff, eps_node_cutoff
 
       implicit real*8(a-h,o-z)
 
@@ -73,9 +73,6 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
       thetamx(r,z)=deltat+(two-deltat)/(one+(z*r)**2)
 
       mode='vmc_mov1    '
-
-      call p2gtid('vmc:node_cutoff',node_cutoff,0,1)
-      call p2gtfd('vmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
 
       deltri=one/deltar
 

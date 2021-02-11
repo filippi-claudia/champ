@@ -13,7 +13,6 @@ c job where it left off
       use config, only: vold, xnew, xold
       use jaspar1, only: cjas1, cjas2
       use csfs, only: nstates
-
       use denupdn, only: rprobdn, rprobup
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
@@ -34,8 +33,8 @@ c job where it left off
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
       use basis, only: nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
-
       use mstates_ctrl, only: iguiding
+      use inputflags, only: node_cutoff, eps_node_cutoff
 
       ! I'm 50% sure it's needed
       ! it was in master as part of the include optorb.h 

@@ -584,7 +584,7 @@ initial configuration from sites
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -42.78867 -42.80641( 9226)   0.00000(    0) -18.45374(*****)   0.00000(    0)                            0.54531        40
  -42.81294 -42.80998( 6726)   0.00000(    0) -22.02269(*****)   0.00000(    0)
-END       OF equilb CP, REAL TIME IS       0.09      0.09     0     0
+END       OF equilb CP, REAL TIME IS       0.12      0.12     0     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
  -42.56423 -42.56334( 9794)   0.00000(    0) -21.34894(*****)   0.00000(    0)                            0.55000        40
  -42.37509 -42.37743(26660)   0.00000(    0) -20.86823(*****)   0.00000(    0)
@@ -686,7 +686,7 @@ END       OF equilb CP, REAL TIME IS       0.09      0.09     0     0
  -42.26476 -42.65141( 2936)   0.00000(    0) -21.06366(*****)   0.00000(    0)
  -42.61459 -42.82401( 2808)   0.00000(    0) -21.54104(*****)   0.00000(    0)                            0.53030      2000
  -42.30654 -42.64664( 2918)   0.00000(    0) -21.18015(*****)   0.00000(    0)
-END       OF all    CP, REAL TIME IS       4.37      4.28     4     4
+END       OF all    CP, REAL TIME IS       5.92      5.80     6     5
 vmc_mov1      psb3_cas66          
 results after        2000. passes,  nstep, nblk =    20   100
 
@@ -718,191 +718,609 @@ Completed sampling
  LIN_D NPARM         175
 max S diagonal element                  0.13D+01
 nparm, non-zero S diag                    175  175
- USING DAVIDSON WRAP: FREE VERSION
-DAV: Compute diagonals of S and H
+ USING DPR DAVIDSON
+DAV: idtask      :          0
  nparm_p1,nparm         175         175
 DAV: Setup subspace problem
-DAV: Davidson iteration:          1
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
+DAV: Diagonal-Preconditioned-Residue (DPR)
+DAV: tolerance         :  0.100E+00
+DAV: Number eigenvalues :         10
+DAV: Update size        :         20
+DAV: Max basis size     :        100
+DAV: Modified Gram-Schmidt orthogonalization with projection update
+DAV: -----------------------------
+DAV: Iteration:          1
+DAV: Basis size:         20
 DAV: eigv   -42.81239   -42.66570   -42.57743   -42.46625   -42.40431   -42.32808   -42.25356   -42.19698   -42.11200   -42.05548
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:          2
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -43.14548   -43.01174   -42.90611   -42.80213   -42.64062   -42.54313   -42.52209   -42.45948   -42.39614   -42.36314
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:          3
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -44.07112   -43.42425   -43.13150   -43.02928   -43.00119   -42.85158   -42.74994   -42.70961   -42.64856   -42.63025
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:          4
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -46.53166   -45.15687   -44.05893   -43.75679   -43.50803   -43.46562   -43.34629   -43.29058   -43.21830   -43.09593
-DAV: Davidson iteration:          5
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -46.53166   -45.15687   -44.05893   -43.75679   -43.50803   -43.46562   -43.34629   -43.29058   -43.21830   -43.09593
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:          6
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -46.78706   -45.16729   -44.13125   -43.77948   -43.54604   -43.47162   -43.37333   -43.29431   -43.22160   -43.10079
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:          7
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -47.10737   -45.17784   -44.19702   -43.79915   -43.58595   -43.47640   -43.40721   -43.29861   -43.22415   -43.10501
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:          8
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -49.42973   -45.20278   -44.48392   -43.85914   -43.72424   -43.63676   -43.48787   -43.31026   -43.23700   -43.12613
-DAV: Davidson iteration:          9
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -49.42973   -45.20278   -44.48392   -43.85914   -43.72424   -43.63676   -43.48787   -43.31026   -43.23700   -43.12613
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         10
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -49.55424   -45.20499   -44.49478   -43.86276   -43.74170   -43.65649   -43.48870   -43.31130   -43.23751   -43.12798
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         11
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -49.66905   -45.20631   -44.50466   -43.86674   -43.75841   -43.67982   -43.48937   -43.31221   -43.23808   -43.12960
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         12
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.33186   -45.20961   -44.53341   -43.88665   -43.81407   -43.74823   -43.49167   -43.31501   -43.24164   -43.13503
-DAV: Davidson iteration:         13
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.33186   -45.20961   -44.53341   -43.88665   -43.81407   -43.74823   -43.49167   -43.31501   -43.24164   -43.13503
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         14
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.35993   -45.21023   -44.53715   -43.89116   -43.82123   -43.75893   -43.49186   -43.31542   -43.24209   -43.13569
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         15
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.38143   -45.21078   -44.53958   -43.89596   -43.82530   -43.76798   -43.49209   -43.31589   -43.24236   -43.13628
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         16
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.51256   -45.21545   -44.54708   -43.93460   -43.84278   -43.80174   -43.49286   -43.31817   -43.24318   -43.13997
-DAV: Davidson iteration:         17
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.51256   -45.21545   -44.54708   -43.93460   -43.84278   -43.80174   -43.49286   -43.31817   -43.24318   -43.13997
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         18
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.52918   -45.21622   -44.54825   -43.94317   -43.84524   -43.80641   -43.49297   -43.31841   -43.24326   -43.14085
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         19
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.54058   -45.21672   -44.54925   -43.95301   -43.84772   -43.81124   -43.49307   -43.31860   -43.24334   -43.14158
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         20
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.59465   -45.21925   -44.55438   -44.01239   -43.87464   -43.82872   -43.49351   -43.32007   -43.24417   -43.14781
-DAV: Davidson iteration:         21
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.59465   -45.21925   -44.55438   -44.01239   -43.87464   -43.82872   -43.49351   -43.32007   -43.24417   -43.14781
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         22
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.60210   -45.21952   -44.55539   -44.02728   -43.87963   -43.83070   -43.49361   -43.32027   -43.24433   -43.14912
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         23
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.60873   -45.21976   -44.55617   -44.03751   -43.88315   -43.83183   -43.49368   -43.32050   -43.24444   -43.15043
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         24
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.66273   -45.22061   -44.55842   -44.07043   -43.90456   -43.83441   -43.49403   -43.32169   -43.24526   -43.15580
-DAV: Davidson iteration:         25
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.66273   -45.22061   -44.55842   -44.07043   -43.90456   -43.83441   -43.49403   -43.32169   -43.24526   -43.15580
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         26
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.67537   -45.22078   -44.55874   -44.07658   -43.90816   -43.83482   -43.49408   -43.32196   -43.24540   -43.15685
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         27
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.68474   -45.22093   -44.55897   -44.08229   -43.91074   -43.83516   -43.49412   -43.32219   -43.24551   -43.15782
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         28
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.70569   -45.22155   -44.55995   -44.12353   -43.92339   -43.83741   -43.49440   -43.32312   -43.24618   -43.16487
-DAV: Davidson iteration:         29
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.70569   -45.22155   -44.55995   -44.12353   -43.92339   -43.83741   -43.49440   -43.32312   -43.24618   -43.16487
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         30
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.70974   -45.22163   -44.56007   -44.12991   -43.92511   -43.83772   -43.49444   -43.32331   -43.24627   -43.16593
-DAV: Diagonal-Preconditioned-Residue (DPR)
-DAV: Davidson iteration:         31
-DAV: enter lapack_generalized_eigensolver
-DAV: exit lapack_generalized_eigensolver
-DAV: eigv   -50.71323   -45.22172   -44.56014   -44.13543   -43.92664   -43.83796   -43.49448   -43.32349   -43.24637   -43.16710
+DAV: resd     0.29116     0.41696     0.49027     0.40512     0.49539     0.40633     0.42087     0.48677     0.38897     0.42365
+DAV: Root not yet converged     :         10
+DAV: -----------------------------
+DAV: Iteration:          2
+DAV: Basis size:         30
+DAV: eigv   -43.12924   -42.98274   -42.89980   -42.77588   -42.55935   -42.47328   -42.45148   -42.37605   -42.35663   -42.29406
+DAV: resd     0.62643     0.56233     0.32582     0.37281     0.33710     0.36135     0.41487     0.50345     0.31617     0.34366
+DAV: Root not yet converged     :         10
+DAV: -----------------------------
+DAV: Iteration:          3
+DAV: Basis size:         40
+DAV: eigv   -43.40596   -43.30204   -42.99057   -42.89908   -42.75699   -42.66293   -42.61483   -42.56843   -42.48700   -42.44512
+DAV: resd     0.63182     0.74518     0.28428     0.32699     0.40734     0.26042     0.30257     0.27447     0.32309     0.30295
+DAV: Root not yet converged     :         10
+DAV: -----------------------------
+DAV: Iteration:          4
+DAV: Basis size:         50
+DAV: eigv   -44.03734   -43.45743   -43.13761   -43.02651   -42.98459   -42.77814   -42.74992   -42.69373   -42.66943   -42.63681
+DAV: resd     0.86377     0.20857     0.29420     0.38539     0.30136     0.21240     0.21190     0.25319     0.27154     0.22509
+DAV: Root not yet converged     :         10
+DAV: -----------------------------
+DAV: Iteration:          5
+DAV: Basis size:         60
+DAV: eigv   -44.55504   -43.53485   -43.45455   -43.17024   -43.04724   -42.88671   -42.82973   -42.78023   -42.76854   -42.74756
+DAV: resd     0.59734     0.31591     0.47629     0.16157     0.17988     0.22842     0.18014     0.17398     0.15216     0.16019
+DAV: Root not yet converged     :         10
+DAV: -----------------------------
+DAV: Iteration:          6
+DAV: Basis size:         70
+DAV: eigv   -44.80982   -44.27601   -43.55269   -43.21449   -43.10775   -42.99058   -42.90438   -42.83773   -42.82167   -42.78908
+DAV: resd     0.44483     0.71944     0.16050     0.11699     0.15799     0.18623     0.12226     0.12348     0.12284     0.12144
+DAV: Root not yet converged     :         10
+DAV: -----------------------------
+DAV: Iteration:          7
+DAV: Basis size:         80
+DAV: eigv   -45.02961   -44.89740   -43.60028   -43.23673   -43.18013   -43.06003   -42.93769   -42.88761   -42.87787   -42.84467
+DAV: resd     0.50818     0.48090     0.13441     0.09570     0.15392     0.15876     0.08280     0.15984     0.13676     0.13367
+DAV: Root not yet converged     :          8
+DAV: -----------------------------
+DAV: Iteration:          8
+DAV: Basis size:         88
+DAV: eigv   -45.59102   -45.03345   -43.65773   -43.27378   -43.23205   -43.13161   -42.99962   -42.95313   -42.94061   -42.88165
+DAV: resd     0.63920     0.23918     0.16199     0.14954     0.08895     0.16101     0.19964     0.09956     0.07633     0.07602
+DAV: Root not yet converged     :          4
+DAV: --- Restart ---
+DAV: -----------------------------
+DAV: Iteration:          9
+DAV: Basis size:         20
+DAV: eigv   -45.59102   -45.03345   -43.65773   -43.27378   -43.23205   -43.13161   -42.99962   -42.95313   -42.94061   -42.88165
+DAV: resd     0.63920     0.23918     0.16199     0.14954     0.08895     0.16101     0.19964     0.09956     0.07633     0.07602
+DAV: Root not yet converged     :          4
+DAV: -----------------------------
+DAV: Iteration:         10
+DAV: Basis size:         24
+DAV: eigv   -45.85012   -45.06560   -43.67997   -43.28251   -43.23394   -43.16744   -43.02720   -42.95567   -42.94131   -42.88254
+DAV: resd     0.63097     0.20994     0.20229     0.16096     0.08783     0.17529     0.17807     0.09254     0.08253     0.07928
+DAV: Root not yet converged     :          4
+DAV: -----------------------------
+DAV: Iteration:         11
+DAV: Basis size:         28
+DAV: eigv   -46.09028   -45.08349   -43.68634   -43.29192   -43.23513   -43.20365   -43.04724   -42.95652   -42.94271   -42.88349
+DAV: resd     0.74420     0.20763     0.17393     0.18190     0.09589     0.21532     0.17394     0.09313     0.08252     0.07584
+DAV: Root not yet converged     :          4
+DAV: -----------------------------
+DAV: Iteration:         12
+DAV: Basis size:         32
+DAV: eigv   -46.32642   -45.10525   -43.70158   -43.30604   -43.24013   -43.22949   -43.06144   -42.95793   -42.94335   -42.88431
+DAV: resd     0.80987     0.20740     0.14233     0.18292     0.15675     0.15278     0.13828     0.08826     0.08461     0.07236
+DAV: Root not yet converged     :          4
+DAV: -----------------------------
+DAV: Iteration:         13
+DAV: Basis size:         36
+DAV: eigv   -46.60488   -45.11964   -43.71787   -43.32637   -43.25969   -43.23715   -43.07344   -42.95900   -42.94353   -42.88549
+DAV: resd     0.85687     0.19645     0.17071     0.17976     0.19451     0.08667     0.14840     0.08732     0.08676     0.07572
+DAV: Root not yet converged     :          3
+DAV: -----------------------------
+DAV: Iteration:         14
+DAV: Basis size:         39
+DAV: eigv   -46.83929   -45.13150   -43.73283   -43.32860   -43.26960   -43.23728   -43.07816   -42.95984   -42.94367   -42.88584
+DAV: resd     0.69142     0.14715     0.14247     0.17760     0.16114     0.08740     0.11631     0.08314     0.08785     0.06967
+DAV: Root not yet converged     :          3
+DAV: -----------------------------
+DAV: Iteration:         15
+DAV: Basis size:         42
+DAV: eigv   -47.02559   -45.14011   -43.74944   -43.33169   -43.27608   -43.23742   -43.08005   -42.96065   -42.94388   -42.88612
+DAV: resd     0.66791     0.12686     0.12305     0.17548     0.15374     0.08794     0.11040     0.08304     0.08914     0.06965
+DAV: Root not yet converged     :          3
+DAV: -----------------------------
+DAV: Iteration:         16
+DAV: Basis size:         45
+DAV: eigv   -47.19432   -45.14728   -43.76085   -43.33240   -43.28033   -43.23748   -43.08056   -42.96165   -42.94427   -42.88642
+DAV: resd     0.60485     0.10917     0.09314     0.17613     0.14763     0.08714     0.10932     0.08328     0.08938     0.06767
+DAV: Root not yet converged     :          2
+DAV: -----------------------------
+DAV: Iteration:         17
+DAV: Basis size:         47
+DAV: eigv   -47.38802   -45.15289   -43.76115   -43.33485   -43.28070   -43.23767   -43.08089   -42.96302   -42.94450   -42.88644
+DAV: resd     0.66052     0.09442     0.08893     0.18018     0.14467     0.08653     0.10829     0.08529     0.09118     0.06757
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         18
+DAV: Basis size:         48
+DAV: eigv   -47.59896   -45.15292   -43.76115   -43.33490   -43.28073   -43.23767   -43.08098   -42.96302   -42.94484   -42.88645
+DAV: resd     0.69290     0.09397     0.08890     0.18097     0.14397     0.08681     0.10738     0.08517     0.09111     0.06789
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         19
+DAV: Basis size:         49
+DAV: eigv   -47.78497   -45.15293   -43.76116   -43.33497   -43.28073   -43.23774   -43.08100   -42.96303   -42.94508   -42.88645
+DAV: resd     0.75426     0.09463     0.08912     0.18008     0.14395     0.08625     0.10802     0.08491     0.09105     0.06795
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         20
+DAV: Basis size:         50
+DAV: eigv   -48.02600   -45.15295   -43.76122   -43.33512   -43.28115   -43.23802   -43.08100   -42.96327   -42.94511   -42.88663
+DAV: resd     0.71591     0.09417     0.09054     0.17881     0.14247     0.08238     0.10794     0.08566     0.09119     0.06634
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         21
+DAV: Basis size:         51
+DAV: eigv   -48.19624   -45.15297   -43.76164   -43.33521   -43.28136   -43.23803   -43.08101   -42.96376   -42.94511   -42.88681
+DAV: resd     0.73376     0.09340     0.09024     0.17724     0.14406     0.08212     0.10767     0.08043     0.09101     0.06710
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         22
+DAV: Basis size:         52
+DAV: eigv   -48.40882   -45.15310   -43.76258   -43.33642   -43.28295   -43.23844   -43.08172   -42.96379   -42.94512   -42.88752
+DAV: resd     0.70572     0.09177     0.09072     0.17229     0.13638     0.07852     0.10428     0.08069     0.09095     0.06879
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         23
+DAV: Basis size:         53
+DAV: eigv   -48.58646   -45.15310   -43.76347   -43.33642   -43.28303   -43.23847   -43.08181   -42.96380   -42.94513   -42.88856
+DAV: resd     0.65258     0.09182     0.08880     0.17234     0.13636     0.07846     0.10409     0.08046     0.09122     0.07153
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         24
+DAV: Basis size:         54
+DAV: eigv   -48.75349   -45.15313   -43.76416   -43.33642   -43.28304   -43.23848   -43.08181   -42.96383   -42.94522   -42.88991
+DAV: resd     0.60528     0.09128     0.09029     0.17235     0.13640     0.07836     0.10400     0.08107     0.09177     0.07153
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         25
+DAV: Basis size:         55
+DAV: eigv   -48.87199   -45.15313   -43.76483   -43.33645   -43.28326   -43.23849   -43.08194   -42.96385   -42.94522   -42.89046
+DAV: resd     0.56297     0.09139     0.09087     0.17222     0.13674     0.07860     0.10450     0.08134     0.09182     0.07306
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         26
+DAV: Basis size:         56
+DAV: eigv   -48.97548   -45.15339   -43.76533   -43.33713   -43.28329   -43.23874   -43.08280   -42.96422   -42.94546   -42.89102
+DAV: resd     0.49356     0.08867     0.09126     0.17101     0.13637     0.07611     0.10225     0.07921     0.09149     0.07581
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         27
+DAV: Basis size:         57
+DAV: eigv   -49.05650   -45.15341   -43.76603   -43.33714   -43.28350   -43.23875   -43.08292   -42.96429   -42.94558   -42.89132
+DAV: resd     0.44853     0.08883     0.08844     0.17103     0.13619     0.07642     0.10130     0.07977     0.09107     0.07424
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         28
+DAV: Basis size:         58
+DAV: eigv   -49.13725   -45.15348   -43.76628   -43.33756   -43.28452   -43.23892   -43.08294   -42.96478   -42.94600   -42.89135
+DAV: resd     0.42809     0.08977     0.08862     0.16909     0.13131     0.07740     0.10097     0.07711     0.08897     0.07401
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         29
+DAV: Basis size:         59
+DAV: eigv   -49.21784   -45.15368   -43.76653   -43.34029   -43.28512   -43.23957   -43.08360   -42.96483   -42.94606   -42.89170
+DAV: resd     0.40637     0.09167     0.08699     0.16816     0.13085     0.07532     0.09928     0.07736     0.08928     0.07461
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         30
+DAV: Basis size:         60
+DAV: eigv   -49.27801   -45.15406   -43.76655   -43.34110   -43.28519   -43.23976   -43.08375   -42.96492   -42.94618   -42.89208
+DAV: resd     0.36974     0.09103     0.08716     0.16779     0.12970     0.07521     0.09836     0.07677     0.08915     0.07565
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         31
+DAV: Basis size:         61
+DAV: eigv   -49.34312   -45.15479   -43.76671   -43.34266   -43.28549   -43.24018   -43.08376   -42.96497   -42.94622   -42.89263
+DAV: resd     0.40322     0.09352     0.08846     0.16475     0.13116     0.07430     0.09847     0.07638     0.08949     0.07826
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         32
+DAV: Basis size:         62
+DAV: eigv   -49.41981   -45.15553   -43.76753   -43.34327   -43.28671   -43.24062   -43.08407   -42.96499   -42.94635   -42.89342
+DAV: resd     0.44908     0.09683     0.08624     0.15973     0.13346     0.07174     0.09681     0.07712     0.08864     0.08051
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         33
+DAV: Basis size:         63
+DAV: eigv   -49.50362   -45.15703   -43.76814   -43.34332   -43.28885   -43.24067   -43.08407   -42.96559   -42.94635   -42.89431
+DAV: resd     0.51389     0.08922     0.08730     0.15950     0.13950     0.07122     0.09698     0.07419     0.08837     0.08625
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         34
+DAV: Basis size:         64
+DAV: eigv   -49.63104   -45.15772   -43.76903   -43.34334   -43.29602   -43.24076   -43.08474   -42.96561   -42.94649   -42.89465
+DAV: resd     0.53538     0.08502     0.09047     0.15909     0.14380     0.06971     0.09392     0.07404     0.08770     0.09044
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         35
+DAV: Basis size:         65
+DAV: eigv   -49.73428   -45.15781   -43.76997   -43.34679   -43.30079   -43.24078   -43.08485   -42.96562   -42.94654   -42.89539
+DAV: resd     0.49121     0.08506     0.08793     0.15820     0.14732     0.06939     0.09365     0.07409     0.08828     0.09442
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         36
+DAV: Basis size:         66
+DAV: eigv   -49.82915   -45.15842   -43.77071   -43.34912   -43.30693   -43.24080   -43.08503   -42.96567   -42.94656   -42.89540
+DAV: resd     0.51014     0.08622     0.08583     0.14988     0.16400     0.06972     0.09529     0.07404     0.08767     0.09457
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         37
+DAV: Basis size:         67
+DAV: eigv   -49.91362   -45.15857   -43.77071   -43.35056   -43.31637   -43.24082   -43.08562   -42.96567   -42.94658   -42.89540
+DAV: resd     0.47125     0.08854     0.08584     0.15128     0.15206     0.06880     0.09284     0.07409     0.08795     0.09435
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         38
+DAV: Basis size:         68
+DAV: eigv   -49.99922   -45.15966   -43.77094   -43.35396   -43.32069   -43.24098   -43.08564   -42.96570   -42.94669   -42.89570
+DAV: resd     0.47275     0.09159     0.08430     0.15155     0.15553     0.06819     0.09246     0.07465     0.08738     0.09745
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         39
+DAV: Basis size:         69
+DAV: eigv   -50.08176   -45.16102   -43.77096   -43.35857   -43.32404   -43.24098   -43.08565   -42.96587   -42.94681   -42.89629
+DAV: resd     0.44284     0.08840     0.08437     0.14376     0.16086     0.06829     0.09240     0.07389     0.08755     0.09839
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         40
+DAV: Basis size:         70
+DAV: eigv   -50.15480   -45.16198   -43.77101   -43.36065   -43.32595   -43.24131   -43.08570   -42.96588   -42.94697   -42.89638
+DAV: resd     0.43284     0.08782     0.08337     0.15118     0.15909     0.07076     0.09243     0.07386     0.08611     0.09926
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         41
+DAV: Basis size:         71
+DAV: eigv   -50.22376   -45.16273   -43.77115   -43.36763   -43.32735   -43.24225   -43.08571   -42.96588   -42.94699   -42.89669
+DAV: resd     0.43196     0.08796     0.08381     0.15553     0.15983     0.06892     0.09256     0.07386     0.08637     0.10148
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         42
+DAV: Basis size:         72
+DAV: eigv   -50.28549   -45.16363   -43.77123   -43.37535   -43.32753   -43.24261   -43.08578   -42.96608   -42.94700   -42.89692
+DAV: resd     0.34472     0.08094     0.08521     0.15858     0.16079     0.06832     0.09264     0.07315     0.08661     0.10430
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         43
+DAV: Basis size:         73
+DAV: eigv   -50.33547   -45.16372   -43.77267   -43.38598   -43.32884   -43.24317   -43.08578   -42.96608   -42.94706   -42.89858
+DAV: resd     0.35402     0.08090     0.08467     0.16510     0.16037     0.06907     0.09252     0.07302     0.08684     0.11995
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         44
+DAV: Basis size:         74
+DAV: eigv   -50.37887   -45.16372   -43.77308   -43.39211   -43.32893   -43.24368   -43.08608   -42.96623   -42.94711   -42.89913
+DAV: resd     0.29051     0.08080     0.08613     0.15503     0.16134     0.06533     0.09247     0.07285     0.08698     0.11838
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         45
+DAV: Basis size:         75
+DAV: eigv   -50.42484   -45.16376   -43.77350   -43.39366   -43.33328   -43.24370   -43.08719   -42.96642   -42.94713   -42.89918
+DAV: resd     0.34957     0.08109     0.08760     0.15584     0.15483     0.06491     0.09016     0.07437     0.08697     0.12052
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         46
+DAV: Basis size:         76
+DAV: eigv   -50.47647   -45.16378   -43.77429   -43.39518   -43.33334   -43.24381   -43.08719   -42.96648   -42.94793   -42.89947
+DAV: resd     0.35190     0.08156     0.08840     0.15436     0.15401     0.06401     0.09017     0.07488     0.08423     0.11588
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         47
+DAV: Basis size:         77
+DAV: eigv   -50.51489   -45.16395   -43.77513   -43.39681   -43.33411   -43.24381   -43.08719   -42.96661   -42.94809   -42.90311
+DAV: resd     0.27257     0.08171     0.08715     0.15424     0.15219     0.06399     0.09013     0.07536     0.08299     0.14728
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         48
+DAV: Basis size:         78
+DAV: eigv   -50.54530   -45.16413   -43.77554   -43.39967   -43.33435   -43.24396   -43.08724   -42.96662   -42.94884   -42.90322
+DAV: resd     0.24598     0.07982     0.08930     0.15772     0.15388     0.06401     0.09052     0.07521     0.08605     0.14865
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         49
+DAV: Basis size:         79
+DAV: eigv   -50.57665   -45.16416   -43.77594   -43.40204   -43.33638   -43.24409   -43.08838   -42.96664   -42.95264   -42.90374
+DAV: resd     0.26652     0.08049     0.09031     0.16228     0.14865     0.06317     0.09105     0.07528     0.08963     0.15252
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         50
+DAV: Basis size:         80
+DAV: eigv   -50.60431   -45.16459   -43.77634   -43.40529   -43.33654   -43.24412   -43.08862   -42.96680   -42.95325   -42.90390
+DAV: resd     0.23877     0.08226     0.09567     0.17074     0.14612     0.06253     0.09383     0.07416     0.09076     0.15213
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         51
+DAV: Basis size:         81
+DAV: eigv   -50.62318   -45.16495   -43.77891   -43.41283   -43.33824   -43.24417   -43.09140   -42.96688   -42.95434   -42.90443
+DAV: resd     0.18464     0.08153     0.08487     0.15962     0.14143     0.06202     0.09121     0.07472     0.08853     0.15353
+DAV: Root not yet converged     :          1
+DAV: --- Restart ---
+DAV: -----------------------------
+DAV: Iteration:         52
+DAV: Basis size:         20
+DAV: eigv   -50.62318   -45.16495   -43.77891   -43.41283   -43.33824   -43.24417   -43.09140   -42.96688   -42.95434   -42.90443
+DAV: resd     0.18464     0.08153     0.08487     0.15962     0.14143     0.06202     0.09121     0.07472     0.08853     0.15353
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         53
+DAV: Basis size:         21
+DAV: eigv   -50.62983   -45.16530   -43.77892   -43.41283   -43.33825   -43.24418   -43.09187   -42.96697   -42.95434   -42.90450
+DAV: resd     0.13619     0.07771     0.08513     0.15961     0.14199     0.06219     0.09348     0.07476     0.08861     0.15214
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         54
+DAV: Basis size:         22
+DAV: eigv   -50.63689   -45.16539   -43.77908   -43.41285   -43.33925   -43.24418   -43.09322   -42.96716   -42.95434   -42.90472
+DAV: resd     0.17115     0.07770     0.08533     0.15971     0.14346     0.06292     0.09411     0.07794     0.08865     0.15757
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         55
+DAV: Basis size:         23
+DAV: eigv   -50.64152   -45.16546   -43.77911   -43.41287   -43.33963   -43.24423   -43.09381   -42.96740   -42.95436   -42.90501
+DAV: resd     0.23018     0.07783     0.08547     0.16029     0.14674     0.06238     0.10067     0.08133     0.08865     0.16131
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         56
+DAV: Basis size:         24
+DAV: eigv   -50.64542   -45.16550   -43.77914   -43.41298   -43.34025   -43.24425   -43.09438   -42.96772   -42.95437   -42.90548
+DAV: resd     0.25889     0.07810     0.08630     0.16339     0.15192     0.06082     0.10560     0.08567     0.08880     0.16243
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         57
+DAV: Basis size:         25
+DAV: eigv   -50.65012   -45.16552   -43.77919   -43.41325   -43.34110   -43.24425   -43.09503   -42.96829   -42.95439   -42.90629
+DAV: resd     0.20984     0.07659     0.08654     0.16385     0.14889     0.06099     0.09699     0.08266     0.08831     0.16694
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         58
+DAV: Basis size:         26
+DAV: eigv   -50.65602   -45.16552   -43.77942   -43.41363   -43.34196   -43.24425   -43.09543   -42.96882   -42.95440   -42.90730
+DAV: resd     0.17552     0.07675     0.08714     0.15988     0.14582     0.06093     0.09638     0.07812     0.08776     0.17107
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         59
+DAV: Basis size:         27
+DAV: eigv   -50.66229   -45.16559   -43.77978   -43.41370   -43.34254   -43.24425   -43.09596   -42.96888   -42.95442   -42.90797
+DAV: resd     0.18025     0.07465     0.08745     0.15977     0.14560     0.06098     0.09890     0.07839     0.08853     0.17148
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         60
+DAV: Basis size:         28
+DAV: eigv   -50.66943   -45.16560   -43.78012   -43.41371   -43.34291   -43.24428   -43.09697   -42.96895   -42.95491   -42.90916
+DAV: resd     0.17877     0.07369     0.08955     0.15961     0.14387     0.06173     0.09986     0.07964     0.09388     0.17717
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         61
+DAV: Basis size:         29
+DAV: eigv   -50.67576   -45.16562   -43.78046   -43.41373   -43.34291   -43.24442   -43.09729   -42.96903   -42.95590   -42.91082
+DAV: resd     0.20680     0.07368     0.09097     0.15910     0.14388     0.06155     0.10081     0.08083     0.09906     0.18455
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         62
+DAV: Basis size:         30
+DAV: eigv   -50.68131   -45.16566   -43.78080   -43.41379   -43.34292   -43.24452   -43.09747   -42.96911   -42.95683   -42.91246
+DAV: resd     0.17900     0.07483     0.09070     0.15905     0.14381     0.06269     0.09954     0.08175     0.10114     0.18689
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         63
+DAV: Basis size:         31
+DAV: eigv   -50.68882   -45.16574   -43.78112   -43.41472   -43.34297   -43.24468   -43.09747   -42.96911   -42.95757   -42.91345
+DAV: resd     0.16951     0.07448     0.09079     0.16192     0.14360     0.06087     0.09943     0.08177     0.10330     0.18685
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         64
+DAV: Basis size:         32
+DAV: eigv   -50.69507   -45.16578   -43.78136   -43.41558   -43.34298   -43.24473   -43.09747   -42.96912   -42.95868   -42.91528
+DAV: resd     0.16750     0.07490     0.08941     0.15716     0.14331     0.06175     0.09948     0.08157     0.11759     0.19633
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         65
+DAV: Basis size:         33
+DAV: eigv   -50.70106   -45.16590   -43.78149   -43.41605   -43.34300   -43.24480   -43.09748   -42.96914   -42.96254   -42.92189
+DAV: resd     0.14796     0.07402     0.08923     0.15733     0.14367     0.06155     0.09971     0.08348     0.13377     0.19912
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         66
+DAV: Basis size:         34
+DAV: eigv   -50.70534   -45.16593   -43.78163   -43.41609   -43.34323   -43.24483   -43.09754   -42.96992   -42.96801   -42.92942
+DAV: resd     0.13795     0.07434     0.08899     0.15764     0.14551     0.06131     0.10072     0.13995     0.11889     0.19069
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         67
+DAV: Basis size:         35
+DAV: eigv   -50.70916   -45.16601   -43.78173   -43.41633   -43.34360   -43.24485   -43.09763   -42.97676   -42.96868   -42.93498
+DAV: resd     0.13302     0.07349     0.08837     0.15777     0.14496     0.06115     0.10091     0.19646     0.07803     0.17772
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         68
+DAV: Basis size:         36
+DAV: eigv   -50.71334   -45.16607   -43.78173   -43.41780   -43.34401   -43.24485   -43.09764   -42.98253   -42.96880   -42.93737
+DAV: resd     0.13085     0.07310     0.08833     0.15905     0.14553     0.06107     0.10128     0.21868     0.07646     0.16981
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         69
+DAV: Basis size:         37
+DAV: eigv   -50.71750   -45.16609   -43.78176   -43.42003   -43.34403   -43.24487   -43.09765   -42.99148   -42.96886   -42.94003
+DAV: resd     0.13373     0.07341     0.08886     0.15996     0.14589     0.06150     0.10126     0.24918     0.07523     0.16131
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         70
+DAV: Basis size:         38
+DAV: eigv   -50.72227   -45.16611   -43.78191   -43.42259   -43.34415   -43.24488   -43.09792   -43.00309   -42.96896   -42.94201
+DAV: resd     0.13859     0.07258     0.08966     0.16405     0.14545     0.06155     0.10122     0.26312     0.07568     0.14638
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         71
+DAV: Basis size:         39
+DAV: eigv   -50.72650   -45.16611   -43.78226   -43.42543   -43.34435   -43.24488   -43.09883   -43.00545   -42.96899   -42.94237
+DAV: resd     0.15282     0.07238     0.09227     0.17961     0.14684     0.06153     0.10459     0.26545     0.07520     0.14452
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         72
+DAV: Basis size:         40
+DAV: eigv   -50.73101   -45.16612   -43.78292   -43.43460   -43.34455   -43.24488   -43.10036   -43.01127   -42.96899   -42.94326
+DAV: resd     0.14372     0.07217     0.09515     0.18324     0.14496     0.06161     0.10467     0.26925     0.07539     0.13778
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         73
+DAV: Basis size:         41
+DAV: eigv   -50.73521   -45.16612   -43.78367   -43.44322   -43.34461   -43.24490   -43.10221   -43.01340   -42.96900   -42.94377
+DAV: resd     0.14074     0.07220     0.09236     0.17329     0.14564     0.06154     0.10474     0.27204     0.07536     0.13499
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         74
+DAV: Basis size:         42
+DAV: eigv   -50.73843   -45.16612   -43.78423   -43.44622   -43.34488   -43.24490   -43.10370   -43.01413   -42.96900   -42.94397
+DAV: resd     0.12301     0.07220     0.09222     0.16310     0.14498     0.06161     0.10207     0.27538     0.07537     0.13421
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         75
+DAV: Basis size:         43
+DAV: eigv   -50.74152   -45.16612   -43.78467   -43.44762   -43.34507   -43.24493   -43.10526   -43.01692   -42.96901   -42.94444
+DAV: resd     0.12185     0.07225     0.09060     0.16067     0.14279     0.06197     0.10235     0.27218     0.07557     0.13028
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         76
+DAV: Basis size:         44
+DAV: eigv   -50.74517   -45.16615   -43.78510   -43.44873   -43.34508   -43.24495   -43.10623   -43.01741   -42.96904   -42.94460
+DAV: resd     0.13115     0.07240     0.09160     0.16315     0.14285     0.06210     0.10219     0.27126     0.07583     0.12905
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         77
+DAV: Basis size:         45
+DAV: eigv   -50.74840   -45.16620   -43.78562   -43.45036   -43.34508   -43.24497   -43.10677   -43.01768   -42.96912   -42.94462
+DAV: resd     0.16753     0.07399     0.09594     0.16919     0.14280     0.06190     0.10528     0.27198     0.07629     0.12918
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         78
+DAV: Basis size:         46
+DAV: eigv   -50.75349   -45.16631   -43.78671   -43.45292   -43.34508   -43.24497   -43.10760   -43.01939   -42.96922   -42.94462
+DAV: resd     0.13732     0.07240     0.09057     0.16113     0.14282     0.06186     0.10305     0.26982     0.07750     0.12917
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         79
+DAV: Basis size:         47
+DAV: eigv   -50.75787   -45.16635   -43.78730   -43.45336   -43.34509   -43.24497   -43.10817   -43.01961   -42.96945   -42.94472
+DAV: resd     0.11965     0.07248     0.08811     0.16037     0.14298     0.06174     0.10152     0.26997     0.07780     0.12847
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         80
+DAV: Basis size:         48
+DAV: eigv   -50.76263   -45.16647   -43.78750   -43.45371   -43.34520   -43.24498   -43.10861   -43.02016   -42.96961   -42.94475
+DAV: resd     0.13187     0.07198     0.08925     0.16317     0.14425     0.06177     0.09830     0.26823     0.07908     0.12812
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         81
+DAV: Basis size:         49
+DAV: eigv   -50.76830   -45.16655   -43.78782   -43.45733   -43.34642   -43.24505   -43.10869   -43.02106   -42.96969   -42.94512
+DAV: resd     0.14357     0.07301     0.08991     0.16021     0.14642     0.06242     0.09959     0.27076     0.08054     0.13155
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         82
+DAV: Basis size:         50
+DAV: eigv   -50.77362   -45.16666   -43.78842   -43.45805   -43.34741   -43.24526   -43.10931   -43.02621   -42.96969   -42.94762
+DAV: resd     0.13908     0.07242     0.08541     0.15516     0.14573     0.06094     0.10233     0.25772     0.08083     0.13987
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         83
+DAV: Basis size:         51
+DAV: eigv   -50.77918   -45.16679   -43.78870   -43.45827   -43.34892   -43.24542   -43.11056   -43.02668   -42.96970   -42.95152
+DAV: resd     0.12863     0.07364     0.08680     0.15641     0.14321     0.06120     0.10147     0.26150     0.08056     0.19463
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         84
+DAV: Basis size:         52
+DAV: eigv   -50.78445   -45.16718   -43.78901   -43.45827   -43.34902   -43.24551   -43.11187   -43.03336   -42.97008   -42.95447
+DAV: resd     0.11289     0.07169     0.08680     0.15636     0.14438     0.06190     0.10854     0.25653     0.07587     0.20140
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         85
+DAV: Basis size:         53
+DAV: eigv   -50.78809   -45.16729   -43.78941   -43.45828   -43.35012   -43.24561   -43.11345   -43.03391   -42.97009   -42.95475
+DAV: resd     0.11882     0.07270     0.08625     0.15636     0.14278     0.06250     0.11231     0.25659     0.07600     0.20407
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         86
+DAV: Basis size:         54
+DAV: eigv   -50.79156   -45.16740   -43.78963   -43.45837   -43.35051   -43.24570   -43.11544   -43.03393   -42.97009   -42.95708
+DAV: resd     0.11481     0.07177     0.08694     0.15653     0.14213     0.06317     0.11465     0.25743     0.07602     0.22811
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         87
+DAV: Basis size:         55
+DAV: eigv   -50.79562   -45.16755   -43.78994   -43.45855   -43.35054   -43.24603   -43.11781   -43.04239   -42.97022   -42.96305
+DAV: resd     0.11248     0.07298     0.08349     0.15817     0.14173     0.06606     0.12584     0.26157     0.07726     0.24830
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         88
+DAV: Basis size:         56
+DAV: eigv   -50.79897   -45.16775   -43.79005   -43.45872   -43.35062   -43.24630   -43.11868   -43.04345   -42.97030   -42.96331
+DAV: resd     0.11658     0.07215     0.08301     0.16015     0.14179     0.06433     0.12757     0.25840     0.07877     0.24940
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         89
+DAV: Basis size:         57
+DAV: eigv   -50.80293   -45.16787   -43.79005   -43.46165   -43.35062   -43.24630   -43.11892   -43.04498   -42.97045   -42.96333
+DAV: resd     0.11462     0.07264     0.08228     0.16261     0.14193     0.06424     0.12698     0.26107     0.07915     0.24843
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         90
+DAV: Basis size:         58
+DAV: eigv   -50.80678   -45.16803   -43.79057   -43.46529   -43.35092   -43.24631   -43.12017   -43.04577   -42.97393   -42.96916
+DAV: resd     0.11090     0.07161     0.08462     0.16295     0.14367     0.06445     0.13149     0.25753     0.25438     0.17235
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         91
+DAV: Basis size:         59
+DAV: eigv   -50.81113   -45.16824   -43.79143   -43.46979   -43.35122   -43.24632   -43.12174   -43.04588   -42.98098   -42.96931
+DAV: resd     0.11635     0.07322     0.08390     0.17074     0.14388     0.06435     0.13304     0.25668     0.27840     0.14222
+DAV: Root not yet converged     :          1
+DAV: -----------------------------
+DAV: Iteration:         92
+DAV: Basis size:         60
+DAV: eigv   -50.81524   -45.16854   -43.79189   -43.47550   -43.35163   -43.24641   -43.12226   -43.05126   -42.98783   -42.96943
+DAV: resd     0.09760     0.07147     0.08805     0.17232     0.14478     0.06519     0.13104     0.25823     0.28027     0.15455
+DAV: Root not yet converged     :          0
 DAV: roots are converged
- eigenvalue            1  :   -50.713234670513742     
- eigenvalue            2  :   -45.221718982791892     
- eigenvalue            3  :   -44.560135186422002     
- eigenvalue            4  :   -44.135425406682955     
- eigenvalue            5  :   -43.926640531614410     
- eigenvalue            6  :   -43.837958885167858     
- eigenvalue            7  :   -43.494481663782238     
- eigenvalue            8  :   -43.323488104426232     
- eigenvalue            9  :   -43.246372891132935     
- eigenvalue           10  :   -43.167096224740035     
-END       OF david  CP, REAL TIME IS      10.33      5.95    10     6
-LIN_D: state, vec, energy   1   1   -50.71323     0.01329
-LIN_D: state, vec, energy   1   2   -45.22172     0.02434
-LIN_D: state, vec, energy   1   3   -44.56014     0.03134
-LIN_D: state, vec, energy   1   4   -44.13543     0.00520
-LIN_D: state, vec, energy   1   5   -43.92664     0.09304
-LIN_D: state, vec, energy   1   6   -43.83796     0.02943
-LIN_D: state, vec, energy   1   7   -43.49448     0.00562
-LIN_D: state, vec, energy   1   8   -43.32349     0.02211
-LIN_D: state, vec, energy   1   9   -43.24637     0.03392
-LIN_D: state, vec, energy   1  10   -43.16710     0.01194
-LIN_D: state, vec, energy   2   1   -50.71323     0.00789
-LIN_D: state, vec, energy   2   2   -45.22172     0.04335
-LIN_D: state, vec, energy   2   3   -44.56014     0.03027
-LIN_D: state, vec, energy   2   4   -44.13543     0.01818
-LIN_D: state, vec, energy   2   5   -43.92664     0.07200
-LIN_D: state, vec, energy   2   6   -43.83796     0.00965
-LIN_D: state, vec, energy   2   7   -43.49448     0.04387
-LIN_D: state, vec, energy   2   8   -43.32349     0.06185
-LIN_D: state, vec, energy   2   9   -43.24637     0.00676
-LIN_D: state, vec, energy   2  10   -43.16710     0.04295
-LIN_D: state, max overlap ivec   1   5
-LIN_D: state, max overlap ivec   2   5
+DAV: Davidson converged
+DAV: Broadcasting solutions
+DAV: Exiting Davidson
+ eigenvalue            1  :   -50.815236723338842     
+ eigenvalue            2  :   -45.168543875828348     
+ eigenvalue            3  :   -43.791892563785666     
+ eigenvalue            4  :   -43.475500928818583     
+ eigenvalue            5  :   -43.351629336912652     
+ eigenvalue            6  :   -43.246414356183607     
+ eigenvalue            7  :   -43.122262766711415     
+ eigenvalue            8  :   -43.051263884752146     
+ eigenvalue            9  :   -42.987829081706273     
+ eigenvalue           10  :   -42.969425674316277     
+LIN_D: no. iterations  92
+LIN_D: no. not converged roots    0
+END       OF david  CP, REAL TIME IS       9.48      3.56     9     3
+LIN_D: state, vec, energy   1   1   -50.81524     0.01409
+LIN_D: state, vec, energy   1   2   -45.16854     0.02202
+LIN_D: state, vec, energy   1   3   -43.79189     0.04264
+LIN_D: state, vec, energy   1   4   -43.47550     0.15854
+LIN_D: state, vec, energy   1   5   -43.35163     0.10249
+LIN_D: state, vec, energy   1   6   -43.24641     0.01384
+LIN_D: state, vec, energy   1   7   -43.12226     0.16969
+LIN_D: state, vec, energy   1   8   -43.05126     0.03507
+LIN_D: state, vec, energy   1   9   -42.98783     0.05979
+LIN_D: state, vec, energy   1  10   -42.96943     0.59816
+LIN_D: state, vec, energy   2   1   -50.81524     0.00641
+LIN_D: state, vec, energy   2   2   -45.16854     0.04727
+LIN_D: state, vec, energy   2   3   -43.79189     0.03326
+LIN_D: state, vec, energy   2   4   -43.47550     0.08971
+LIN_D: state, vec, energy   2   5   -43.35163     0.10610
+LIN_D: state, vec, energy   2   6   -43.24641     0.08323
+LIN_D: state, vec, energy   2   7   -43.12226     0.10700
+LIN_D: state, vec, energy   2   8   -43.05126     0.08934
+LIN_D: state, vec, energy   2   9   -42.98783     0.09848
+LIN_D: state, vec, energy   2  10   -42.96943     0.09672
+LIN_D: state, max overlap ivec   1  10
+LIN_D: state, max overlap ivec   2   7
 nblk =     50
 alfgeo =     0.0000
 
@@ -913,195 +1331,135 @@ number of parms: total, Jastrow, CI, orbitals=     0    0    0    0
 number of electrons placed =   32
 
 initial configuration from sites
- kref change           1           1           2
- norb  =          19
- iactv =          14          14
- ivirt =          16          16
-           1          20  distinct out of          400
-           2          20  distinct out of          400
- kref change           1           2           3
- norb  =          19
- iactv =          14          14
- ivirt =          16          16
-           1          20  distinct out of          400
-           2          20  distinct out of          400
- kref change           1           3           4
- norb  =          19
- iactv =          14          14
- ivirt =          14          14
-           1          20  distinct out of          400
-           2          20  distinct out of          400
- kref change           1           4           5
- norb  =          19
- iactv =          14          14
- ivirt =          15          15
-           1          20  distinct out of          400
-           2          20  distinct out of          400
- kref change           1           5           6
- norb  =          19
- iactv =          14          14
- ivirt =          16          15
-           1          20  distinct out of          400
-           2          20  distinct out of          400
- kref change           1           6           7
- norb  =          19
- iactv =          14          14
- ivirt =          15          16
-           1          20  distinct out of          400
-           2          20  distinct out of          400
- kref change           1           7           8
- norb  =          19
- iactv =          14          14
- ivirt =          15          15
-           1          20  distinct out of          400
-           2          20  distinct out of          400
- kref change           1           8           9
- norb  =          19
- iactv =          14          14
- ivirt =          16          16
-           1          20  distinct out of          400
-           2          20  distinct out of          400
- kref change           1           9          10
- norb  =          19
- iactv =          14          14
- ivirt =          16          16
-           1          20  distinct out of          400
-           2          20  distinct out of          400
- kref change           1          10          11
- norb  =          19
- iactv =          14          14
- ivirt =          16          16
-           1          20  distinct out of          400
-           2          20  distinct out of          400
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
- -41.16576 -41.16576(47666)   0.00000(    0) -20.91993(*****)   0.00000(    0)                            0.53047        40
- -41.16576 -41.16576(47666)   0.00000(    0) -20.91993(*****)   0.00000(    0)
-END       OF equilb CP, REAL TIME IS      10.42      0.09    10     0
+ -41.37355 -41.24505(45390)   0.00000(    0) -24.35576(*****)   0.00000(    0)                            0.53438        40
+ -41.40365 -41.72224(69681)   0.00000(    0) -13.97490(*****)   0.00000(    0)
+END       OF equilb CP, REAL TIME IS       9.62      0.13     9     0
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave          (ferr)     accept     iter
- -40.65022 -40.65022(34751)   0.00000(    0) -20.07938(*****)   0.00000(    0)                            0.51719        40
- -40.65022 -40.65022(34751)   0.00000(    0) -20.07938(*****)   0.00000(    0)
- -41.08080 -40.86551(20993)   0.00000(    0) -20.34373(*****)   0.00000(    0)                            0.52031        80
- -41.08080 -40.86551(20993)   0.00000(    0) -20.34373(*****)   0.00000(    0)
- -40.47041 -40.73381(16238)   0.00000(    0) -20.32992(*****)   0.00000(    0)                            0.52448       120
- -40.47041 -40.73381(16238)   0.00000(    0) -20.32992(*****)   0.00000(    0)
- -40.72217 -40.73090(12645)   0.00000(    0) -20.36175(*****)   0.00000(    0)                            0.52598       160
- -40.72217 -40.73090(12645)   0.00000(    0) -20.36175(*****)   0.00000(    0)
- -41.05121 -40.79496(12489)   0.00000(    0) -20.43766(*****)   0.00000(    0)                            0.52359       200
- -41.05121 -40.79496(12489)   0.00000(    0) -20.43766(*****)   0.00000(    0)
- -41.11021 -40.84750(11025)   0.00000(    0) -20.46654(*****)   0.00000(    0)                            0.52279       240
- -41.11021 -40.84750(11025)   0.00000(    0) -20.46654(*****)   0.00000(    0)
- -40.87045 -40.85078( 9856)   0.00000(    0) -20.48179(*****)   0.00000(    0)                            0.52254       280
- -40.87045 -40.85078( 9856)   0.00000(    0) -20.48179(*****)   0.00000(    0)
- -41.02276 -40.87228(10192)   0.00000(    0) -20.52257(*****)   0.00000(    0)                            0.52129       320
- -41.02276 -40.87228(10192)   0.00000(    0) -20.52257(*****)   0.00000(    0)
- -40.65588 -40.84823( 9259)   0.00000(    0) -20.50828(*****)   0.00000(    0)                            0.51884       360
- -40.65588 -40.84823( 9259)   0.00000(    0) -20.50828(*****)   0.00000(    0)
- -40.21372 -40.78478( 9646)   0.00000(    0) -20.48471(*****)   0.00000(    0)                            0.51969       400
- -40.21372 -40.78478( 9646)   0.00000(    0) -20.48471(*****)   0.00000(    0)
- -40.79706 -40.78590( 8772)   0.00000(    0) -20.47825(*****)   0.00000(    0)                            0.51811       440
- -40.79706 -40.78590( 8772)   0.00000(    0) -20.47825(*****)   0.00000(    0)
- -40.75168 -40.78305( 8160)   0.00000(    0) -20.46000(*****)   0.00000(    0)                            0.52025       480
- -40.75168 -40.78305( 8160)   0.00000(    0) -20.46000(*****)   0.00000(    0)
- -40.33325 -40.74845( 7983)   0.00000(    0) -20.42887(*****)   0.00000(    0)                            0.52133       520
- -40.33325 -40.74845( 7983)   0.00000(    0) -20.42887(*****)   0.00000(    0)
- -40.19415 -40.70886( 7892)   0.00000(    0) -20.40351(*****)   0.00000(    0)                            0.52115       560
- -40.19415 -40.70886( 7892)   0.00000(    0) -20.40351(*****)   0.00000(    0)
- -40.11635 -40.66936( 7846)   0.00000(    0) -20.37929(*****)   0.00000(    0)                            0.52198       600
- -40.11635 -40.66936( 7846)   0.00000(    0) -20.37929(*****)   0.00000(    0)
- -40.82004 -40.67877( 7393)   0.00000(    0) -20.38384(*****)   0.00000(    0)                            0.52139       640
- -40.82004 -40.67877( 7393)   0.00000(    0) -20.38384(*****)   0.00000(    0)
- -40.57372 -40.67259( 6990)   0.00000(    0) -20.37456(*****)   0.00000(    0)                            0.52045       680
- -40.57372 -40.67259( 6990)   0.00000(    0) -20.37456(*****)   0.00000(    0)
- -41.04698 -40.69339( 6756)   0.00000(    0) -20.38398(*****)   0.00000(    0)                            0.52105       720
- -41.04698 -40.69339( 6756)   0.00000(    0) -20.38398(*****)   0.00000(    0)
- -40.50769 -40.68362( 6436)   0.00000(    0) -20.37648(*****)   0.00000(    0)                            0.52171       760
- -40.50769 -40.68362( 6436)   0.00000(    0) -20.37648(*****)   0.00000(    0)
- -40.56506 -40.67769( 6194)   0.00000(    0) -20.36540(*****)   0.00000(    0)                            0.52176       800
- -40.56506 -40.67769( 6194)   0.00000(    0) -20.36540(*****)   0.00000(    0)
- -40.64806 -40.67628( 5954)   0.00000(    0) -20.35780(*****)   0.00000(    0)                            0.52046       840
- -40.64806 -40.67628( 5954)   0.00000(    0) -20.35780(*****)   0.00000(    0)
- -40.80615 -40.68218( 5993)   0.00000(    0) -20.37300(*****)   0.00000(    0)                            0.52127       880
- -40.80615 -40.68218( 5993)   0.00000(    0) -20.37300(*****)   0.00000(    0)
- -40.35338 -40.66789( 6031)   0.00000(    0) -20.37572(*****)   0.00000(    0)                            0.52198       920
- -40.35338 -40.66789( 6031)   0.00000(    0) -20.37572(*****)   0.00000(    0)
- -40.62591 -40.66614( 5849)   0.00000(    0) -20.37939(*****)   0.00000(    0)                            0.52184       960
- -40.62591 -40.66614( 5849)   0.00000(    0) -20.37939(*****)   0.00000(    0)
- -40.38113 -40.65474( 5682)   0.00000(    0) -20.36927(*****)   0.00000(    0)                            0.52219      1000
- -40.38113 -40.65474( 5682)   0.00000(    0) -20.36927(*****)   0.00000(    0)
- -40.26872 -40.63989( 5576)   0.00000(    0) -20.35724(*****)   0.00000(    0)                            0.52145      1040
- -40.26872 -40.63989( 5576)   0.00000(    0) -20.35724(*****)   0.00000(    0)
- -40.29920 -40.62727( 5443)   0.00000(    0) -20.34834(*****)   0.00000(    0)                            0.52190      1080
- -40.29920 -40.62727( 5443)   0.00000(    0) -20.34834(*****)   0.00000(    0)
- -40.17107 -40.61098( 5419)   0.00000(    0) -20.33378(*****)   0.00000(    0)                            0.52288      1120
- -40.17107 -40.61098( 5419)   0.00000(    0) -20.33378(*****)   0.00000(    0)
- -40.15466 -40.59525( 5381)   0.00000(    0) -20.32053(*****)   0.00000(    0)                            0.52333      1160
- -40.15466 -40.59525( 5381)   0.00000(    0) -20.32053(*****)   0.00000(    0)
- -40.74729 -40.60031( 5228)   0.00000(    0) -20.32501(*****)   0.00000(    0)                            0.52273      1200
- -40.74729 -40.60031( 5228)   0.00000(    0) -20.32501(*****)   0.00000(    0)
- -40.37693 -40.59311( 5088)   0.00000(    0) -20.32211(*****)   0.00000(    0)                            0.52336      1240
- -40.37693 -40.59311( 5088)   0.00000(    0) -20.32211(*****)   0.00000(    0)
- -39.93373 -40.57250( 5190)   0.00000(    0) -20.30561(*****)   0.00000(    0)                            0.52356      1280
- -39.93373 -40.57250( 5190)   0.00000(    0) -20.30561(*****)   0.00000(    0)
- -41.06451 -40.58741( 5147)   0.00000(    0) -20.31034(*****)   0.00000(    0)                            0.52277      1320
- -41.06451 -40.58741( 5147)   0.00000(    0) -20.31034(*****)   0.00000(    0)
- -40.93271 -40.59757( 5065)   0.00000(    0) -20.31803(*****)   0.00000(    0)                            0.52295      1360
- -40.93271 -40.59757( 5065)   0.00000(    0) -20.31803(*****)   0.00000(    0)
- -40.88027 -40.60564( 5238)   0.00000(    0) -20.30945(*****)   0.00000(    0)                            0.52306      1400
- -40.88027 -40.60564( 5238)   0.00000(    0) -20.30945(*****)   0.00000(    0)
- -40.77628 -40.61038( 5256)   0.00000(    0) -20.30274(*****)   0.00000(    0)                            0.52383      1440
- -40.77628 -40.61038( 5256)   0.00000(    0) -20.30274(*****)   0.00000(    0)
- -41.09281 -40.62342( 5436)   0.00000(    0) -20.29798(*****)   0.00000(    0)                            0.52390      1480
- -41.09281 -40.62342( 5436)   0.00000(    0) -20.29798(*****)   0.00000(    0)
- -40.73173 -40.62627( 5301)   0.00000(    0) -20.30126(*****)   0.00000(    0)                            0.52286      1520
- -40.73173 -40.62627( 5301)   0.00000(    0) -20.30126(*****)   0.00000(    0)
- -40.84607 -40.63191( 5187)   0.00000(    0) -20.30632(*****)   0.00000(    0)                            0.52292      1560
- -40.84607 -40.63191( 5187)   0.00000(    0) -20.30632(*****)   0.00000(    0)
- -40.65262 -40.63243( 5220)   0.00000(    0) -20.31594(*****)   0.00000(    0)                            0.52254      1600
- -40.65262 -40.63243( 5220)   0.00000(    0) -20.31594(*****)   0.00000(    0)
- -41.10127 -40.64386( 5170)   0.00000(    0) -20.32446(*****)   0.00000(    0)                            0.52266      1640
- -41.10127 -40.64386( 5170)   0.00000(    0) -20.32446(*****)   0.00000(    0)
- -40.59213 -40.64263( 5060)   0.00000(    0) -20.32631(*****)   0.00000(    0)                            0.52214      1680
- -40.59213 -40.64263( 5060)   0.00000(    0) -20.32631(*****)   0.00000(    0)
- -40.34099 -40.63562( 4968)   0.00000(    0) -20.32339(*****)   0.00000(    0)                            0.52258      1720
- -40.34099 -40.63562( 4968)   0.00000(    0) -20.32339(*****)   0.00000(    0)
- -40.81667 -40.63973( 4895)   0.00000(    0) -20.32922(*****)   0.00000(    0)                            0.52264      1760
- -40.81667 -40.63973( 4895)   0.00000(    0) -20.32922(*****)   0.00000(    0)
- -41.58254 -40.66068( 5015)   0.00000(    0) -20.34173(*****)   0.00000(    0)                            0.52274      1800
- -41.58254 -40.66068( 5015)   0.00000(    0) -20.34173(*****)   0.00000(    0)
- -41.03482 -40.66881( 5020)   0.00000(    0) -20.35190(*****)   0.00000(    0)                            0.52322      1840
- -41.03482 -40.66881( 5020)   0.00000(    0) -20.35190(*****)   0.00000(    0)
- -40.79316 -40.67146( 4933)   0.00000(    0) -20.35573(*****)   0.00000(    0)                            0.52339      1880
- -40.79316 -40.67146( 4933)   0.00000(    0) -20.35573(*****)   0.00000(    0)
- -40.58889 -40.66974( 4854)   0.00000(    0) -20.35118(*****)   0.00000(    0)                            0.52415      1920
- -40.58889 -40.66974( 4854)   0.00000(    0) -20.35118(*****)   0.00000(    0)
- -40.58703 -40.66805( 4867)   0.00000(    0) -20.34271(*****)   0.00000(    0)                            0.52411      1960
- -40.58703 -40.66805( 4867)   0.00000(    0) -20.34271(*****)   0.00000(    0)
- -40.36272 -40.66195( 4789)   0.00000(    0) -20.33980(*****)   0.00000(    0)                            0.52489      2000
- -40.36272 -40.66195( 4789)   0.00000(    0) -20.33980(*****)   0.00000(    0)
-END       OF all    CP, REAL TIME IS      14.68      4.25    14     4
+ -41.60586 -41.41882(32188)   0.00000(    0) -28.36958(*****)   0.00000(    0)                            0.51094        40
+ -41.16297 -41.37458(19248)   0.00000(    0)  -7.88308(*****)   0.00000(    0)
+ -40.48016 -40.84932(43235)   0.00000(    0) -24.61415(*****)   0.00000(    0)                            0.52383        80
+ -40.43135 -41.12958(29432)   0.00000(    0)  -9.76608(*****)   0.00000(    0)
+ -40.35491 -40.65777(31028)   0.00000(    0) -22.59171(*****)   0.00000(    0)                            0.52891       120
+ -40.16683 -41.00177(26857)   0.00000(    0) -11.63964(*****)   0.00000(    0)
+ -40.46358 -40.60828(23385)   0.00000(    0) -21.53806(*****)   0.00000(    0)                            0.52715       160
+ -40.58740 -40.91174(23201)   0.00000(    0) -14.39813(*****)   0.00000(    0)
+ -40.35086 -40.57710(19472)   0.00000(    0) -20.32504(*****)   0.00000(    0)                            0.52375       200
+ -40.83142 -40.80902(19246)   0.00000(    0) -19.45290(*****)   0.00000(    0)
+ -40.61639 -40.58536(15989)   0.00000(    0) -20.20421(*****)   0.00000(    0)                            0.52839       240
+ -40.56314 -40.78930(17346)   0.00000(    0) -19.88544(*****)   0.00000(    0)
+ -40.48197 -40.57048(14499)   0.00000(    0) -20.12203(*****)   0.00000(    0)                            0.52679       280
+ -40.53292 -40.76398(15501)   0.00000(    0) -20.11935(*****)   0.00000(    0)
+ -40.88610 -40.58432(13438)   0.00000(    0) -20.41872(*****)   0.00000(    0)                            0.52695       320
+ -41.82679 -41.06931(18093)   0.00000(    0) -19.55589(*****)   0.00000(    0)
+ -41.44513 -40.60135(12537)   0.00000(    0) -21.34463(*****)   0.00000(    0)                            0.52509       360
+ -41.71441 -41.29946(18797)   0.00000(    0) -17.65902(*****)   0.00000(    0)
+ -41.43046 -40.68422(12771)   0.00000(    0) -21.50890(*****)   0.00000(    0)                            0.52742       400
+ -41.51620 -41.31711(17089)   0.00000(    0) -17.33332(*****)   0.00000(    0)
+ -41.00744 -40.71965(11771)   0.00000(    0) -21.61755(*****)   0.00000(    0)                            0.52940       440
+ -41.62678 -41.34445(16117)   0.00000(    0) -17.00200(*****)   0.00000(    0)
+ -41.40446 -40.77749(11488)   0.00000(    0) -21.47104(*****)   0.00000(    0)                            0.52943       480
+ -41.63440 -41.36665(14898)   0.00000(    0) -17.48668(*****)   0.00000(    0)
+ -40.32283 -40.73063(12112)   0.00000(    0) -21.16650(*****)   0.00000(    0)                            0.53107       520
+ -40.79155 -41.35499(14542)   0.00000(    0) -18.32456(*****)   0.00000(    0)
+ -40.42455 -40.70615(11335)   0.00000(    0) -20.91304(*****)   0.00000(    0)                            0.53432       560
+ -40.22192 -41.28561(14663)   0.00000(    0) -18.88740(*****)   0.00000(    0)
+ -40.79436 -40.71456(10688)   0.00000(    0) -20.79845(*****)   0.00000(    0)                            0.53464       600
+ -40.71998 -41.27082(14184)   0.00000(    0) -19.06654(*****)   0.00000(    0)
+ -40.48477 -40.69786(10430)   0.00000(    0) -20.81225(*****)   0.00000(    0)                            0.53428       640
+ -41.65551 -41.29642(13498)   0.00000(    0) -18.96501(*****)   0.00000(    0)
+ -41.12503 -40.71406(10064)   0.00000(    0) -20.60193(*****)   0.00000(    0)                            0.53438       680
+ -41.39941 -41.29911(12555)   0.00000(    0) -19.65740(*****)   0.00000(    0)
+ -40.43976 -40.69749( 9542)   0.00000(    0) -20.47490(*****)   0.00000(    0)                            0.53559       720
+ -40.98158 -41.28606(12028)   0.00000(    0) -19.96310(*****)   0.00000(    0)
+ -40.19464 -40.66437( 9230)   0.00000(    0) -20.42068(*****)   0.00000(    0)                            0.53507       760
+ -40.26643 -41.27205(11798)   0.00000(    0) -20.03114(*****)   0.00000(    0)
+ -40.42133 -40.64731( 9090)   0.00000(    0) -20.25590(*****)   0.00000(    0)                            0.53547       800
+ -40.99162 -41.27972(11579)   0.00000(    0) -20.57664(*****)   0.00000(    0)
+ -41.68967 -40.66788( 8975)   0.00000(    0) -19.75594(*****)   0.00000(    0)                            0.53415       840
+ -41.54070 -41.34947(11541)   0.00000(    0) -22.08559(*****)   0.00000(    0)
+ -40.78429 -40.67008( 8653)   0.00000(    0) -19.62667(*****)   0.00000(    0)                            0.53406       880
+ -40.88044 -41.33758(11108)   0.00000(    0) -22.48282(*****)   0.00000(    0)
+ -41.27149 -40.68565( 8654)   0.00000(    0) -19.48909(*****)   0.00000(    0)                            0.53342       920
+ -41.21287 -41.34546(10746)   0.00000(    0) -22.89913(*****)   0.00000(    0)
+ -41.52048 -40.70353( 8584)   0.00000(    0) -19.18909(*****)   0.00000(    0)                            0.53330       960
+ -41.38127 -41.37103(10383)   0.00000(    0) -23.71633(*****)   0.00000(    0)
+ -41.30502 -40.73034( 8426)   0.00000(    0) -19.19807(*****)   0.00000(    0)                            0.53197      1000
+ -41.72274 -41.37773(10122)   0.00000(    0) -23.76142(*****)   0.00000(    0)
+ -40.45611 -40.71759( 8111)   0.00000(    0) -19.24024(*****)   0.00000(    0)                            0.53107      1040
+ -40.84991 -41.36933( 9910)   0.00000(    0) -23.72924(*****)   0.00000(    0)
+ -40.09786 -40.68978( 7972)   0.00000(    0) -19.25672(*****)   0.00000(    0)                            0.53009      1080
+ -40.07030 -41.35065( 9878)   0.00000(    0) -23.73088(*****)   0.00000(    0)
+ -41.19264 -40.70802( 7793)   0.00000(    0) -19.18748(*****)   0.00000(    0)                            0.52991      1120
+ -41.37611 -41.35891( 9622)   0.00000(    0) -24.02570(*****)   0.00000(    0)
+ -40.57064 -40.70310( 7522)   0.00000(    0) -19.15676(*****)   0.00000(    0)                            0.52982      1160
+ -41.00017 -41.34998( 9362)   0.00000(    0) -24.14501(*****)   0.00000(    0)
+ -39.97735 -40.67483( 7539)   0.00000(    0) -19.16265(*****)   0.00000(    0)                            0.53013      1200
+ -39.96057 -41.32818( 9435)   0.00000(    0) -24.13704(*****)   0.00000(    0)
+ -40.08489 -40.65358( 7428)   0.00000(    0) -19.18233(*****)   0.00000(    0)                            0.52966      1240
+ -40.04549 -41.30162( 9494)   0.00000(    0) -24.07601(*****)   0.00000(    0)
+ -40.13816 -40.63486( 7286)   0.00000(    0) -19.24193(*****)   0.00000(    0)                            0.52913      1280
+ -40.57909 -41.28946( 9390)   0.00000(    0) -23.94953(*****)   0.00000(    0)
+ -40.05491 -40.61636( 7176)   0.00000(    0) -19.23369(*****)   0.00000(    0)                            0.52881      1320
+ -41.21446 -41.29237( 9314)   0.00000(    0) -23.98392(*****)   0.00000(    0)
+ -40.65309 -40.60709( 7179)   0.00000(    0) -19.03969(*****)   0.00000(    0)                            0.52895      1360
+ -40.97684 -41.31608( 9325)   0.00000(    0) -24.54917(*****)   0.00000(    0)
+ -40.85524 -40.61390( 7002)   0.00000(    0) -19.25750(*****)   0.00000(    0)                            0.52975      1400
+ -40.80440 -41.30360( 9060)   0.00000(    0) -23.84967(*****)   0.00000(    0)
+ -41.19912 -40.62418( 6894)   0.00000(    0) -19.48671(*****)   0.00000(    0)                            0.52910      1440
+ -41.64884 -41.32037( 8815)   0.00000(    0) -23.12087(*****)   0.00000(    0)
+ -40.78826 -40.62976( 6737)   0.00000(    0) -19.48464(*****)   0.00000(    0)                            0.52897      1480
+ -41.33262 -41.31929( 8648)   0.00000(    0) -23.16332(*****)   0.00000(    0)
+ -40.62255 -40.62950( 6542)   0.00000(    0) -19.53347(*****)   0.00000(    0)                            0.52870      1520
+ -40.39554 -41.30867( 8580)   0.00000(    0) -23.06241(*****)   0.00000(    0)
+ -41.31316 -40.64682( 6493)   0.00000(    0) -19.64405(*****)   0.00000(    0)                            0.52885      1560
+ -41.30822 -41.30375( 8386)   0.00000(    0) -22.74729(*****)   0.00000(    0)
+ -42.11900 -40.65695( 6689)   0.00000(    0) -19.85536(*****)   0.00000(    0)                            0.52926      1600
+ -41.51236 -41.32279( 8158)   0.00000(    0) -22.03642(*****)   0.00000(    0)
+ -41.31438 -40.67234( 6647)   0.00000(    0) -19.93903(*****)   0.00000(    0)                            0.52900      1640
+ -41.09837 -41.31869( 7980)   0.00000(    0) -21.79807(*****)   0.00000(    0)
+ -40.57488 -40.66670( 6588)   0.00000(    0) -20.04576(*****)   0.00000(    0)                            0.52926      1680
+ -40.77565 -41.31505( 7859)   0.00000(    0) -21.42902(*****)   0.00000(    0)
+ -40.93471 -40.67217( 6608)   0.00000(    0) -20.07302(*****)   0.00000(    0)                            0.52949      1720
+ -41.12486 -41.31551( 7814)   0.00000(    0) -21.32126(*****)   0.00000(    0)
+ -40.38975 -40.66500( 6477)   0.00000(    0) -20.09155(*****)   0.00000(    0)                            0.52901      1760
+ -40.16979 -41.29732( 7813)   0.00000(    0) -21.24486(*****)   0.00000(    0)
+ -40.31584 -40.65607( 6351)   0.00000(    0) -20.09969(*****)   0.00000(    0)                            0.52941      1800
+ -40.88079 -41.29282( 7713)   0.00000(    0) -21.21697(*****)   0.00000(    0)
+ -40.43733 -40.65023( 6235)   0.00000(    0) -20.11403(*****)   0.00000(    0)                            0.52911      1840
+ -41.09779 -41.29214( 7608)   0.00000(    0) -21.15939(*****)   0.00000(    0)
+ -40.75936 -40.65271( 6108)   0.00000(    0) -20.13398(*****)   0.00000(    0)                            0.52904      1880
+ -40.67906 -41.28695( 7525)   0.00000(    0) -21.09578(*****)   0.00000(    0)
+ -40.79939 -40.65511( 5989)   0.00000(    0) -20.28272(*****)   0.00000(    0)                            0.52847      1920
+ -41.09349 -41.27845( 7365)   0.00000(    0) -20.62441(*****)   0.00000(    0)
+ -40.44868 -40.65256( 5884)   0.00000(    0) -20.39024(*****)   0.00000(    0)                            0.52859      1960
+ -40.84260 -41.26659( 7224)   0.00000(    0) -20.28592(*****)   0.00000(    0)
+ -40.25605 -40.64329( 5854)   0.00000(    0) -20.38348(*****)   0.00000(    0)                            0.52894      2000
+ -40.31155 -41.25670( 7198)   0.00000(    0) -20.31055(*****)   0.00000(    0)
+END       OF all    CP, REAL TIME IS      15.73      6.11    15     6
 vmc_mov1      psb3_cas66          
 results after        2000. passes,  nstep, nblk =    20   100
 
 State    1
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
-total E =        -40.6619457 +-  0.0478932  2.14185  1.21135  1.21135    3.13
+total E =        -40.6432931 +-  0.0585352  2.61777  1.27997  1.27997    4.18
 potential E =      0.0000000 +-  0.0000000  0.00000
 jf kinetic E =     0.0000000 +-  0.0000000  0.00000
-pb kinetic E =   -20.3397965 +-  2.0343171 90.97743
+pb kinetic E =   -20.3834759 +-  2.0289506 90.73743
 
 State    2
 physical variable  average       rms error    rms er*rt(pass)   sigma  Tcor
-total E =        -40.6619457 +-  0.0478932  2.14185  1.21135  1.21135    3.13
+total E =        -41.2567024 +-  0.0719757  3.21885  1.29156  1.29156    6.21
 potential E =      0.0000000 +-  0.0000000  0.00000
 jf kinetic E =     0.0000000 +-  0.0000000  0.00000
-pb kinetic E =   -20.3397965 +-  2.0343171 90.97743
-acceptance =       0.5248906
+pb kinetic E =   -20.3105504 +-  2.0628091 92.25163
+acceptance =       0.5289375
 
 efficiency for multiple states
-efficiency state    1   1.000
-efficiency state    2   1.000
-average psid, det_ref  0.28953D-19 0.28953D-19
-average psid, det_ref  0.10108D-22
-log detref -0.12814D+02-0.12721D+02
+efficiency state    1   0.866
+efficiency state    2   0.394
+average psid, det_ref  0.56047D-20 0.18647D-20
+average psid, det_ref  0.17526D-22
+log detref -0.13114D+02-0.13140D+02
 distance from the nodes    0.00000
  successful dump to unit 10
