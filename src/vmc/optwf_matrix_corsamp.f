@@ -40,9 +40,13 @@ c written by Claudia Filippi
       allocate(work(MWORK))
       allocate(work2(MPARMALL,MPARMALL))
 
+    
+      
+
 c No dump/restart if optimizing wave function
       irstar=0
       idump=0
+      
 c Set up basis functions for test run
       do 1 iwft=2,3
    1    iwftype(iwft)=iwft
@@ -54,6 +58,7 @@ c Set up basis functions for test run
    3      call copy_zex(iwft)
       endif
       call set_displace_zero(3)
+      
 
 c Number of iterations
       write(6,'(/,''Number of iterations'',i3)') nopt_iter

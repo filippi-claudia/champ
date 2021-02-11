@@ -1,5 +1,6 @@
 &general title 'H2'
 &general pool ../pool/
+load rhf.sto_cvb1.lcao
 &general basis sto_cvb1
 &general ipr 4
 
@@ -8,7 +9,6 @@ load $(general:pool)/global.inp
 load $(general:pool)/sto_cvb1.bfinfo
 
 load jastrow.0
-load rhf.sto_cvb1.lcao
 load rhf.det
 
 &optwf ioptwf 1 ioptci 1 ioptjas 1 ioptorb 0

@@ -26,7 +26,7 @@ c and read in everything which is still in the old format
       call process_input
 
       if(index(mode,'mc').ne.0 ) call p2vin('input.log',1)
-
+      
       return
       end subroutine read_input
 
@@ -1010,6 +1010,7 @@ c Jastrow section
         do 303 it=1,nctype
   303     write(6,'(''c='',x,7f10.6,(8f10.6))')
      &                 (c(iparm,it,1),iparm=1,mparmjc)
+        
 c Note: Fock terms yet to be put in ijas=4,5,6
       endif
 
@@ -1078,7 +1079,7 @@ c     call pot_nn(cent,znuc,iwctype,ncent,pecent)
 
 c verify number of orbitals and setup optorb
       call verify_orbitals
-
+      
 c get parameters for the grid of the orbitals
       call p2gtid('general:i3dgrid',i3dgrid,0,1)
       call p2gtid('general:i3dsplorb',i3dsplorb,0,1)
