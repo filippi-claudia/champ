@@ -543,6 +543,9 @@ c and q times old, and keep track of which bin the old was in
       if(suc(itryo).lt.0.) write(6,'(''itryo,suc'',i5,d13.5)')itryo,
      &suc(itryo)
       if(voldp*raver*sintht.gt.one) trunfb(itryo)=trunfb(itryo)+1
+
+      ! write(6, *) 'xnew', xnew(1,i), xnew(2, i), xnew(3,i)
+
       rprob(itryo)=rprob(itryo)+q
       rprob(itryn)=rprob(itryn)+p
       do 210 ic=1,3

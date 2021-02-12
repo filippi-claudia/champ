@@ -293,10 +293,15 @@ c Save parameters corresponding to run generating hessian
         do 70 i=1,mparmjc
    70     c_save(i,ict,1)=c(i,ict,1)
 
+
+
       return
 
       entry restore_jastrow(iadiag)
-
+      if(.not.allocated(a4_save)) allocate(a4_save(MORDJ1,nctype_tot,nwftype))
+      if(.not.allocated(b_save)) allocate(b_save(MORDJ1,2,nwftype))
+      if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
+      
 c Restore parameters corresponding to run generating hessian
       do 80 ict=1,nctype
         do 80 i=1,mparmja
@@ -332,6 +337,7 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_lcao(iadiag)
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, MORB, nwftype))
 
       do 20 i=1,norb
        do 20 j=1,nbasis
@@ -371,6 +377,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci(iadiag)
+      if(.not. allocated(cdet_save)) allocate(cdet_save(MDET,MSTATES))
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(MDET,MSTATES))
 
       do 30 j=1,nstates
         do 30 i=1,ndet
@@ -529,6 +537,9 @@ c Save parameters corresponding to run generating hessian
       return
 
       entry restore_jastrow_best
+      if(.not.allocated(a4_best)) allocate(a4_best(MORDJ1,nctype_tot,nwftype))
+      if(.not.allocated(b_best)) allocate(b_best(MORDJ1,2,nwftype))
+      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype))
 
 c Restore parameters corresponding to run generating hessian
       do 80 ict=1,nctype
@@ -569,7 +580,7 @@ c-----------------------------------------------------------------------
       entry restore_lcao_best
 
 c     if(ioptorb.eq.0) return
-
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, MORB, nwftype))
       do 20 i=1,norb
        do 20 j=1,nbasis
    20   coef(j,i,1)=coef_best(j,i,1)
@@ -609,6 +620,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci_best
+      if(.not. allocated(cdet_best)) allocate(cdet_best(MDET,MSTATES))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(MDET,MSTATES))
 
 c     if(ioptci.eq.0) return
 

@@ -49,9 +49,6 @@ c rigidly with that nucleus
       if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
       if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV))
 
-      write(6, *) 'ncent', ncent
-      write(6, *) 'ncent_tot', ncent_tot
-
 c set center and n-n potential for secondary geometries
       pecent=pecentn(ifr)
       do 1 icent=1,ncent
@@ -93,13 +90,17 @@ c positions of volume charges space warped
 c endif PCM
       endif
 
-      if(istrech_el.eq.0) return
+      if(istrech_el.eq.0) then 
+        return
+      endif
 
       do 8 i=1,nelec
         do 8 k=1,3
     8     xstrech(k,i)=x(k,i)
 
-      if(istrech.eq.0) return
+      if(istrech.eq.0) then 
+        return
+      endif 
 
       do 50 i=1,nelec
 
@@ -152,6 +153,10 @@ c end loop over electrons
 
 c Set up n-n potential energy (and PCM related quantities) at displaced positions 
       entry setup_force
+
+      if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
+      if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
+      if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV))
 
       write(6,'(''istrech,alfstr ='',i4,2f10.5)') istrech,alfstr
 
@@ -320,6 +325,7 @@ c        deltot(ifl)=sign(dsqrt(deltot(ifl)*ncent),rsq-rsq1)
 
 
       write(6,'(''deltot '',10f10.5)') (deltot(ifl),ifl=1,nforce)
+
 
       return
       end
