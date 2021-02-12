@@ -82,6 +82,10 @@ c and read in everything which is still in the old format
 
         !> optimization method
         call p2gtad('optwf:method', method, 'linear', 1)
+        if (method .eq. 'linear') then
+          nwftype = 3
+          MFORCE = 3
+        endif
 
       end subroutine preprocess_input
 

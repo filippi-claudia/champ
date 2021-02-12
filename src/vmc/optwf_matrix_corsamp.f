@@ -46,7 +46,8 @@ c written by Claudia Filippi
 c No dump/restart if optimizing wave function
       irstar=0
       idump=0
-      
+      write(6, *) 'nwftype', nwftype
+      write(6, *) 'MFORCE', MFORCE
 c Set up basis functions for test run
       do 1 iwft=2,3
    1    iwftype(iwft)=iwft

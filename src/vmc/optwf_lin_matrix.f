@@ -249,15 +249,19 @@ c-----------------------------------------------------------------------
       
       dimension seig_valinv(*)
       dimension hmod(mparmx,*),s(mparmx,*)
-
+      
       dimension eig_vec(MPARMALL,*),eig_vecl(MPARMALL,1)
       dimension work(*)
 
+      dimension eig(MPARMALL)
+      dimension eigi(MPARMALL)
 c s_fordiag: a copy of S for diagonalization. 
 c hmod: the modified Hamiltonian matrix (in the end, S^-1*U*H*U^T)
 c s: overlap matrix, h: hamiltonian, eigenvec: eigenvectors, 
 
       call cpu_time(t0)
+      write(6, *) 'mparmx', mparmx
+      write(6, *) 'MPARMALL', MPARMALL
 
 c MISSING
 c hmod+adiag/s_diag
