@@ -136,7 +136,7 @@ c  OK now just call mktricubw
 !!ftoken:skip
      >                    wk,inwk,ilinx,iliny,ilinz,ier)
 
-      deallocate(wk)
+      if(allocated(wk)) deallocate(wk)
 !!ftoken:resume
 
 c  that's all

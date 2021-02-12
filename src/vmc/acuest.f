@@ -113,7 +113,8 @@ c zero out xsum variables for metrop
       
 
       call acuest_reduce(enow)
-      deallocate(enow)
+      if(allocated(enow)) deallocate(enow)
+
       return
 c-----------------------------------------------------------------------
       entry acues1(wtg)

@@ -174,8 +174,8 @@ c optorb reduced at the end of the run: set printout to 0
         acc=0
       endif
 
-      deallocate(local_obs)
-      deallocate(collect)
+      if (allocated(local_obs)) deallocate(local_obs)
+      if (allocated(collect)) deallocate(collect)
 
       return
 
