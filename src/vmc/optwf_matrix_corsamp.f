@@ -46,8 +46,7 @@ c written by Claudia Filippi
 c No dump/restart if optimizing wave function
       irstar=0
       idump=0
-      write(6, *) 'nwftype', nwftype
-      write(6, *) 'MFORCE', MFORCE
+
 c Set up basis functions for test run
       do 1 iwft=2,3
    1    iwftype(iwft)=iwft
@@ -107,7 +106,7 @@ c CI step for state average of multiple states (optimal CI for input Jastrow and
         call save_wf
 
         call setup_optimization(nparm,MPARMALL,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
-
+        
         write(6,'(/,''Compute CI parameters'',/)')
         call compute_dparm(nparm,MPARMALL,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy(1),energy_err(1))

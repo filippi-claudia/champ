@@ -49,12 +49,13 @@ c Symmetrize the overlap
         do 4 j=1,i
    4      s(j,i)=s(i,j)
 
-c     do i=1,nparm+is
-c       write(6,*) 'h =',(h(i,j),j=1,nparm+is)
-c     enddo
-c     do i=1,nparm+is
-c       write(6,*) 's =',(s(i,j),j=1,nparm+is)
-c     enddo
+      do i=1,nparm+is
+        write(6,*) 'h =',(h(i,j),j=1,nparm+is)
+      enddo
+      do i=1,nparm+is
+        write(6,*) 's =',(s(i,j),j=1,nparm+is)
+      enddo
+
 
       if(add_diag.gt.0.and.iter.eq.1) then
 
@@ -179,10 +180,13 @@ c-----------------------------------------------------------------------
 c call dsyev to determine lworks
       call dsyev('V','U',n,s,mparmx,seig_vals,work,-1,isdinfo)
       lworks=work(1)
+
 c     write(6,*) 'S diag opt lwork=',lworks
 
 c diagonalize s=S -> S_diag=U^T S U -> in output, s contains the unitary matrix U
       call dsyev('V','U',n,s,mparmx,seig_vals,work,lworks,isdinfo)
+      if (isdinfo.gt.0) call fatal_error('Eigenvalue issues in regularize_geneig')
+
 c     call cpu_time(t)
 c     t_sdiag=t 
 c     write(6,*) 'elapsed time for diagonalization:',t_sdiag-t0
@@ -250,7 +254,9 @@ c-----------------------------------------------------------------------
       dimension seig_valinv(*)
       dimension hmod(mparmx,*),s(mparmx,*)
       
-      dimension eig_vec(MPARMALL,*),eig_vecl(MPARMALL,1)
+      dimension eig_vec(MPARMALL,*)
+      ! dimension eig_vecl(MPARMALL,1)
+      dimension eig_vecl(MPARMALL,MPARMALL)
       dimension work(*)
 
       dimension eig(MPARMALL)
@@ -260,8 +266,7 @@ c hmod: the modified Hamiltonian matrix (in the end, S^-1*U*H*U^T)
 c s: overlap matrix, h: hamiltonian, eigenvec: eigenvectors, 
 
       call cpu_time(t0)
-      write(6, *) 'mparmx', mparmx
-      write(6, *) 'MPARMALL', MPARMALL
+
 
 c MISSING
 c hmod+adiag/s_diag
