@@ -168,9 +168,9 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f
     ${CMAKE_CURRENT_SOURCE_DIR}/error.f
-    ${INPUT_DIR}/p2_defaults.f
-    ${INPUT_DIR}/p2etc.f
-    ${INPUT_DIR}/p2nmcheck.f)
+    ${CMAKE_INPUT_DIR}/p2_defaults.f
+    ${CMAKE_INPUT_DIR}/p2etc.f
+    ${CMAKE_INPUT_DIR}/p2nmcheck.f)
   
   # --------------------------------------------
   # Remove objects to share depending on CMAKE  
@@ -198,8 +198,6 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f)
   endif()
 
-  message( "Lowpez" ${SHARED_SOURCE} ) 
-  
   add_library(shared_objects OBJECT ${SHARED_SOURCE})
   
   target_include_directories(shared_objects
@@ -260,19 +258,19 @@ if (MPI_Fortran_FOUND)
   
   add_custom_command(
     OUTPUT
-      ${INPUT_DIR}/p2nmcheck.f
+      ${CMAKE_INPUT_DIR}/p2nmcheck.f
     OUTPUT
       ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
     WORKING_DIRECTORY
       ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND
-      ${INPUT_DIR}/inpt.awk -v p2file=commands.p2 -v logf=${INPUT_DIR}/commands.log ${CMAKE_CURRENT_SOURCE_DIR}/read_input.f
+      ${CMAKE_INPUT_DIR}/inpt.awk -v p2file=commands.p2 -v logf=${CMAKE_INPUT_DIR}/commands.log ${CMAKE_CURRENT_SOURCE_DIR}/read_input.f
     COMMAND
-      cat commands.p2 ${INPUT_DIR}/end.p2 ${INPUT_DIR}/auto.p2 > all.p2
+      cat commands.p2 ${CMAKE_INPUT_DIR}/end.p2 ${CMAKE_INPUT_DIR}/auto.p2 > all.p2
     COMMAND
-      ${INPUT_DIR}/genp2_defaults.awk -v ofile=${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f all.p2 > genp2.log
+      ${CMAKE_INPUT_DIR}/genp2_defaults.awk -v ofile=${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f all.p2 > genp2.log
     COMMAND
-      ${INPUT_DIR}/mkp2nmcheck.pl namelist.p2 > ${INPUT_DIR}/p2nmcheck.f
+      ${CMAKE_INPUT_DIR}/mkp2nmcheck.pl namelist.p2 > ${CMAKE_INPUT_DIR}/p2nmcheck.f
     VERBATIM
   )
   
@@ -280,11 +278,11 @@ if (MPI_Fortran_FOUND)
     generate-p2
     ${CMAKE_COMMAND} -E echo "Generating p2 files."
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
-    DEPENDS ${INPUT_DIR}/p2nmcheck.f
+    DEPENDS ${CMAKE_INPUT_DIR}/p2nmcheck.f
   )
   
   set_source_files_properties(
-    ${INPUT_DIR}/p2nmcheck.f
+    ${CMAKE_INPUT_DIR}/p2nmcheck.f
     PROPERTIES GENERATED TRUE
   )
   
