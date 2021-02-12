@@ -49,6 +49,8 @@ c rigidly with that nucleus
       if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
       if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV))
 
+      write(6, *) 'ncent', ncent
+      write(6, *) 'ncent_tot', ncent_tot
 
 c set center and n-n potential for secondary geometries
       pecent=pecentn(ifr)

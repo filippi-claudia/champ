@@ -12,7 +12,7 @@ c written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nopt_iter, multiple_adiag
       use optwf_contrl, only: energy_tol, dparm_norm_min, ilastvmc
       ! I think that's needed
-      use gradhess_all, only: grad
+      use gradhess_all, only: grad, h, s
       use optwf_corsam, only: add_diag
       
       implicit real*8(a-h,o-z)
