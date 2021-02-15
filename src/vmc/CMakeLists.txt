@@ -146,6 +146,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4e.f
     ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid.f
     ${CMAKE_CURRENT_SOURCE_DIR}/detsav.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_dmc.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/basis_fnse_v.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_convcartzmat.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_coords_int.f90

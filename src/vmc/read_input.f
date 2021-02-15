@@ -140,6 +140,7 @@ c and Anthony Scemema
       use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
       use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat
       use optwf_corsam, only: add_diag
+      use dmc_mod, only: MWALK
 
       implicit real*8(a-h,o-z)
 
