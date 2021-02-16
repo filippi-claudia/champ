@@ -4,7 +4,9 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
 
+      use forcest, only: fgcm2, fgcum
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'dmc.h'
@@ -42,7 +44,6 @@ c routine to accumulate estimators for energy etc.
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /age/ iage(MWALK),ioldest,ioldestmx
       common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
 
       common /mpiblk/ iblk_proc
 

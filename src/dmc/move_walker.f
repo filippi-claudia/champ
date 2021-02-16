@@ -1,7 +1,9 @@
       subroutine send_walker(irecv)
 c Written by Claudia Filippi
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use forcest, only: fgcm2, fgcum
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'dmc.h'
@@ -17,7 +19,6 @@ c Written by Claudia Filippi
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
       common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod
 
       dimension istatus(MPI_STATUS_SIZE)

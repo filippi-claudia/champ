@@ -3,7 +3,9 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use forcest, only: fgcm2, fgcum
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'dmc.h'
@@ -33,7 +35,6 @@ c routine to accumulate estimators for energy etc.
      &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
       common /age/ iage(MWALK),ioldest,ioldestmx
       common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
 
       character*12 mode
       common /contr3/ mode
