@@ -5,7 +5,9 @@ c routine to print out final results
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
+      use age, only: iage, ioldest, ioldestmx
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -54,7 +56,6 @@ c /config/ included to print out xold and vold for old walkers
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /header/ title,date
-      common /age/ iage(MWALK),ioldest,ioldestmx
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
       common /force_dmc/ itausec,nwprod
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,

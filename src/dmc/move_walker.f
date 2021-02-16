@@ -3,7 +3,9 @@ c Written by Claudia Filippi
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
+      use age, only: iage, ioldest, ioldestmx
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -15,7 +17,6 @@ c Written by Claudia Filippi
       common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
      &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE)
-      common /age/ iage(MWALK),ioldest,ioldestmx
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk

@@ -28,6 +28,7 @@ c Written by Friedemann Schautz
       call allocate_m_sampling
       call allocate_m_sr
       call allocate_m_state_avrg
+      call allocate_m_dmc
 
 
 c Initialize flags

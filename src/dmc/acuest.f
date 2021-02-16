@@ -5,7 +5,9 @@ c routine to accumulate estimators for energy etc.
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
+      use age, only: iage, ioldest, ioldestmx
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -35,7 +37,6 @@ c routine to accumulate estimators for energy etc.
      &tjfcm2(MFORCE),r2cm2,ricm2
       common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
      &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
-      common /age/ iage(MWALK),ioldest,ioldestmx
 
       character*12 mode
       common /contr3/ mode

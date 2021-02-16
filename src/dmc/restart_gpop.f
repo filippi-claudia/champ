@@ -7,7 +7,9 @@
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
+      use age, only: iage, ioldest, ioldestmx
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -64,7 +66,6 @@
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /age/ iage(MWALK),ioldest,ioldestmx
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
       common /force_dmc/ itausec,nwprod

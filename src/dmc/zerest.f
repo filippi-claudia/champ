@@ -6,7 +6,9 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
+      use age, only: iage, ioldest, ioldestmx
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -44,7 +46,6 @@ c routine to accumulate estimators for energy etc.
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /age/ iage(MWALK),ioldest,ioldestmx
 
       common /mpiblk/ iblk_proc
 
