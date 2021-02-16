@@ -7,7 +7,10 @@ c routine to accumulate estimators for energy etc.
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcepar, only: deltot, istrech, nforce
+      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -20,8 +23,6 @@ c routine to accumulate estimators for energy etc.
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /iterat/ ipass,iblk
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)

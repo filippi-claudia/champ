@@ -1,7 +1,10 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'force.h'
@@ -14,8 +17,6 @@
       common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
