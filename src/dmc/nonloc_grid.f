@@ -1,6 +1,8 @@
       subroutine nonloc_grid(iel,iw,x,psid,imove)
 
-      implicit real*8 (a-h,o-z)
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'dmc.h'
@@ -29,7 +31,6 @@
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /contrl_per/ iperiodic,ibasis
 
@@ -144,14 +145,15 @@ c-----------------------------------------------------------------------
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
 
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'dmc.h'
       include 'pseudo.h'
       include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp

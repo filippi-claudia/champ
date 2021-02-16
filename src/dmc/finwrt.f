@@ -2,7 +2,9 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to print out final results
 
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
       include 'dmc.h'
       include 'vmc.h'
       include 'force.h'
@@ -13,7 +15,6 @@ c routine to print out final results
       character*20 title
       character*24 date
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq

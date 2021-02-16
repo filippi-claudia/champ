@@ -1,12 +1,13 @@
       subroutine send_walker(irecv)
 c Written by Claudia Filippi
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
       include 'mpif.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
      &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE)

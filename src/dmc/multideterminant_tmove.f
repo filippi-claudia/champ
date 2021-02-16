@@ -1,6 +1,8 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'pseudo.h'
@@ -8,7 +10,6 @@
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)

@@ -8,14 +8,15 @@ C----------------------------------------------
 
       use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum 
 
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
  
       include 'dmc.h'
       include 'force.h'
       include 'properties.h'
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
       dimension perr(MAXPROP),pav(MAXPROP)

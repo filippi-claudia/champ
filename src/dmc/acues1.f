@@ -2,13 +2,14 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
       parameter (zero=0.d0,one=1.d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e

@@ -1,6 +1,8 @@
       subroutine splitj
 c Written by Cyrus Umrigar
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
@@ -9,7 +11,6 @@ c Written by Cyrus Umrigar
       common /force_dmc/ itausec,nwprod
       parameter (zero=0.d0,two=2.d0,half=.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
      &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE),xdrifted(3,MELEC,MWALK,MFORCE)

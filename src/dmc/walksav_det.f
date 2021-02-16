@@ -1,14 +1,15 @@
       subroutine walksav_det(iw)
 c Written by Claudia Filippi
 
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
       include 'mpif.h'
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
       include 'mstates.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
 

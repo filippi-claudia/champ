@@ -6,7 +6,9 @@ c job where it left off
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
 
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
@@ -17,7 +19,6 @@ c job where it left off
       parameter (zero=0.d0,one=1.d0)
       parameter (small=1.e-6)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e

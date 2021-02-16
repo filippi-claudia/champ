@@ -5,7 +5,9 @@ c routine to accumulate estimators for energy etc.
       use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'dmc.h'
@@ -14,7 +16,6 @@ c routine to accumulate estimators for energy etc.
       include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /iterat/ ipass,iblk
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

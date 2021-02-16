@@ -1,5 +1,7 @@
       subroutine mc_configs
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'dmc.h'
@@ -11,7 +13,6 @@
       character*12 mode
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
      &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),

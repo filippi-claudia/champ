@@ -1,7 +1,9 @@
       subroutine psiedmc(iel,iw,coord,psid,psij,iflag)
 c Written by Claudia Filippi
 
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
@@ -9,7 +11,6 @@ c Written by Claudia Filippi
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
      &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
 

@@ -1,13 +1,14 @@
       subroutine walksav_jas(iw)
 c Written by Claudia Filippi
 
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       implicit real*8(a-h,o-z)
+
       include 'mpif.h'
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
