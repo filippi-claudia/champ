@@ -8,7 +8,10 @@ c routine to print out final results
       use age, only: iage, ioldest, ioldestmx
       use contrl_per, only: ibasis, iperiodic
 
+      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
+     &itau_eff, nfprod, rttau, tau, taueff, tautot
       implicit real*8(a-h,o-z)
+
 
       include 'dmc.h'
       include 'vmc.h'
@@ -21,8 +24,6 @@ c routine to print out final results
       character*24 date
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
       common /iterat/ ipass,iblk

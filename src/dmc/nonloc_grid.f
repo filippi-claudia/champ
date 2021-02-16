@@ -2,7 +2,10 @@
 
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use contrl_per, only: ibasis, iperiodic
+      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
+     &itau_eff, nfprod, rttau, tau, taueff, tautot
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -29,8 +32,6 @@
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 

@@ -47,7 +47,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
       use age, only: iage, ioldest, ioldestmx
+      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
+     &itau_eff, nfprod, rttau, tau, taueff, tautot
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -83,8 +86,6 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),

@@ -10,7 +10,10 @@ c job where it left off
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
       use age, only: iage, ioldest, ioldestmx
+      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
+     &itau_eff, nfprod, rttau, tau, taueff, tautot
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -26,8 +29,6 @@ c job where it left off
       parameter (small=1.e-6)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk
       common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
      &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
