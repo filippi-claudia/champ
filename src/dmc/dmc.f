@@ -8,6 +8,7 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
+      use forcepar, only: deltot, istrech, nforce
 
       implicit real*8(a-h,o-z)
 
@@ -29,7 +30,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Z
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /force_dmc/ itausec,nwprod
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contrl_per/ iperiodic,ibasis

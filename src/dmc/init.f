@@ -6,7 +6,9 @@ c routine to accumulate estimators for energy etc.
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -31,7 +33,6 @@ c routine to accumulate estimators for energy etc.
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /force_dmc/ itausec,nwprod
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
       character*12 mode

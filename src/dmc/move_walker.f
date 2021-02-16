@@ -2,7 +2,9 @@
 c Written by Claudia Filippi
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -18,7 +20,6 @@ c Written by Claudia Filippi
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /force_dmc/ itausec,nwprod
 
       dimension istatus(MPI_STATUS_SIZE)

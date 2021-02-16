@@ -8,7 +8,9 @@ c job where it left off
 
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -66,7 +68,6 @@ c job where it left off
       common /age/ iage(MWALK),ioldest,ioldestmx
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /force_dmc/ itausec,nwprod
 
       logical wid

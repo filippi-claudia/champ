@@ -2,13 +2,14 @@
 c Written by Cyrus Umrigar
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /force_dmc/ itausec,nwprod
       parameter (zero=0.d0,two=2.d0,half=.5d0)
 

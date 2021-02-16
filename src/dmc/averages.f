@@ -1,9 +1,13 @@
       subroutine deriv(wtg,eold,pwt,ajac,psid,psij,idrifdifgfunc,iw,mwalk)
-      parameter(mprop=100)
+      use forcepar, only: deltot, istrech, nforce
+
+      implicit real*8(a-h,o-z)
+
       include 'force.h'
-      implicit real*8 (a-h,o-z)
+
+      parameter(mprop=100)
+
       dimension eold(mwalk,*),pwt(mwalk,*),ajac(mwalk,*),psij(mwalk,*),psid(mwalk,*)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
       common /c_averages_index/jeloc,jderiv(3,MFORCE)
 
@@ -25,10 +29,13 @@
       end
 
       subroutine init_averages_index
+
+      use forcepar, only: deltot, istrech, nforce
+
+      implicit real*8(a-h,o-z)
+
       include 'force.h'
-      implicit real*8 (a-h,o-z)
       parameter(mprop=100)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
       common /c_averages_index/jeloc,jderiv(3,MFORCE)
       nprop=0
@@ -49,7 +56,9 @@ c deriv
       end
 
       subroutine average(ido)
+
       implicit real*8 (a-h,o-z)
+
       parameter(mprop=100)
       common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
       dimension sum_av(mprop),sum_w(mprop)
@@ -79,10 +88,14 @@ c deriv
       end
 
       subroutine average_write
+
+      use forcepar, only: deltot, istrech, nforce
+
+      implicit real*8(a-h,o-z)
+
       include 'force.h'
-      implicit real*8 (a-h,o-z)
+
       parameter(mprop=100)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
       common /c_averages_index/jeloc,jderiv(3,MFORCE)
       egave=cum_av(jderiv(1,1))/cum_w(jderiv(1,1))

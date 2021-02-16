@@ -2,7 +2,9 @@
 c Written by Claudia Filippi
 
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use forcepar, only: deltot, istrech, nforce
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'vmc.h'
@@ -33,7 +35,6 @@ c Written by Claudia Filippi
 
       common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
 
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
