@@ -32,6 +32,17 @@ contains
   end subroutine deallocate_iage
 end module age
 
+module iterat
+  !> Arguments: iblk, ipass
+
+   integer  :: iblk
+   integer  :: ipass
+
+   private
+   public :: iblk, ipass
+   save
+end module iterat
+
 subroutine allocate_m_dmc()
   use age, only: allocate_iage
   use contrldmc, only: allocate_contrldmc 

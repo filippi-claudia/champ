@@ -1,14 +1,15 @@
       subroutine acues1_reduce
 
       use forcepar, only: deltot, istrech, nforce
+      use iterat, only: iblk, ipass
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
       include 'mpif.h'
 
-      common /iterat/ ipass,iblk
       common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,
      &nbrnch,nodecr
       common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,

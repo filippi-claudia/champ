@@ -11,10 +11,9 @@ c routine to print out final results
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
      &itau_eff, nfprod, rttau, tau, taueff, tautot
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use iterat, only: iblk, ipass
 
       implicit real*8(a-h,o-z)
-
-
 
       include 'dmc.h'
       include 'vmc.h'
@@ -27,7 +26,6 @@ c routine to print out final results
       character*24 date
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /iterat/ ipass,iblk
 c /config/ included to print out xold and vold for old walkers
       common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
      &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
