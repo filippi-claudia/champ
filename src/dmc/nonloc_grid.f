@@ -1,7 +1,9 @@
       subroutine nonloc_grid(iel,iw,x,psid,imove)
 
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use contrl_per, only: ibasis, iperiodic
       implicit real*8(a-h,o-z)
+
 
 
       include 'vmc.h'
@@ -32,7 +34,6 @@
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
-      common /contrl_per/ iperiodic,ibasis
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 

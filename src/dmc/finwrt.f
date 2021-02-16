@@ -6,10 +6,9 @@ c routine to print out final results
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
       use age, only: iage, ioldest, ioldestmx
+      use contrl_per, only: ibasis, iperiodic
+
       implicit real*8(a-h,o-z)
-
-
-
 
       include 'dmc.h'
       include 'vmc.h'
@@ -21,7 +20,6 @@ c routine to print out final results
       character*20 title
       character*24 date
 
-      common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e

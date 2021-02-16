@@ -10,7 +10,9 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
 
+      use contrl_per, only: ibasis, iperiodic
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'dmc.h'
@@ -32,7 +34,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
       common /force_dmc/ itausec,nwprod
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk
