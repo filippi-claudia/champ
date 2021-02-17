@@ -9,7 +9,11 @@ c routine to accumulate estimators for energy etc.
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
      &itau_eff, nfprod, rttau, tau, taueff, tautot
       use iterat, only: iblk, ipass
+      use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
+     &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
+     &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -23,11 +27,6 @@ c routine to accumulate estimators for energy etc.
       parameter (zero=0.d0,one=1.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
-     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
-     &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),
-     &ei1sum,ei2sum,ei3sum, pesum(MFORCE),tpbsum(MFORCE),tjfsum(MFORCE),r2sum,
-     &risum,tausum(MFORCE)
       common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
      &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
      &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
@@ -54,7 +53,7 @@ c statistical fluctuations without blocking
       wdsum1=wdsumo
       wgdsum1=wgdsumo
 
-      call mpi_reduce(esum1(1),ecollect,1
+      call mpi_reduce(esum1_dmc(1),ecollect,1
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(wsum1(1),wcollect,1
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -75,7 +74,7 @@ c statistical fluctuations without blocking
       if(.not.wid) goto 23
 
       wsum1(1)=wcollect
-      esum1(1)=ecollect
+      esum1_dmc(1)=ecollect
       efsum1=efcollect
       wfsum1=wfcollect
       do 20 ifr=1,nforce
@@ -84,13 +83,13 @@ c statistical fluctuations without blocking
 
       wcum1=wcum1+wsum1(1)
       wfcum1=wfcum1+wfsum1
-      ecum1=ecum1+esum1(1)
+      ecum1=ecum1+esum1_dmc(1)
       efcum1=efcum1+efsum1
       ei3cum=ei3cum+wfsum1/wdsum1
 
       wcm21=wcm21+wsum1(1)**2
       wfcm21=wfcm21+wfsum1**2
-      ecm21=ecm21+esum1(1)**2/wsum1(1)
+      ecm21=ecm21+esum1_dmc(1)**2/wsum1(1)
       efcm21=efcm21+efsum1**2/wfsum1
       ei3cm2=ei3cm2+(wfsum1/wdsum1)**2
 
@@ -101,11 +100,11 @@ c statistical fluctuations without blocking
    21   egcm21(ifr)=egcm21(ifr)+egsum1(ifr)**2/wgsum1(ifr)
 
 c sum1 block averages
-      wsum=wsum+wsum1(1)
+      wsum_dmc=wsum_dmc+wsum1(1)
       wfsum=wfsum+wfsum1
       wdsum=wdsum+wdsum1
       wgdsum=wgdsum+wgdsum1
-      esum=esum+esum1(1)
+      esum_dmc=esum_dmc+esum1_dmc(1)
       efsum=efsum+efsum1
       eisum=eisum+wfsum1/wdsum1
       do 22 ifr=1,nforce
@@ -147,7 +146,7 @@ c zero out step averages
       do 24 ifr=1,nforce
         wsum1(ifr)=zero
         wgsum1(ifr)=zero
-        esum1(ifr)=zero
+        esum1_dmc(ifr)=zero
    24   egsum1(ifr)=zero
 
       return

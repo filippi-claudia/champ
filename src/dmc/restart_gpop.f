@@ -17,7 +17,11 @@
 
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
 
+      use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
+     &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
+     &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -50,11 +54,6 @@
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
-     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
-     &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),
-     &ei1sum,ei2sum,ei3sum, pesum(MFORCE),tpbsum(MFORCE),tjfsum(MFORCE),r2sum,
-     &risum,tausum(MFORCE)
       common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
      &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
      &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
@@ -264,11 +263,11 @@ c           call t_vpsp_sav(iw)
 
 c zero out xsum variables for metrop
 
-      wsum=zero
+      wsum_dmc=zero
       wfsum=zero
       wdsum=zero
       wgdsum=zero
-      esum=zero
+      esum_dmc=zero
       efsum=zero
       ei1sum=zero
       ei2sum=zero
@@ -278,9 +277,9 @@ c zero out xsum variables for metrop
       do 80 ifr=1,nforce
         egsum(ifr)=zero
         wgsum(ifr)=zero
-        pesum(ifr)=zero
-        tpbsum(ifr)=zero
-        tjfsum(ifr)=zero
+        pesum_dmc(ifr)=zero
+        tpbsum_dmc(ifr)=zero
+        tjfsum_dmc(ifr)=zero
         tausum(ifr)=zero
         do 80 k=1,3
    80     derivsum(k,ifr)=zero

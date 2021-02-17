@@ -9,7 +9,11 @@ c routine to accumulate estimators for energy etc.
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
      &itau_eff, nfprod, rttau, tau, taueff, tautot
       use iterat, only: iblk, ipass
+      use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
+     &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
+     &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -23,11 +27,6 @@ c routine to accumulate estimators for energy etc.
       parameter (zero=0.d0,one=1.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
-     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
-     &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),
-     &ei1sum,ei2sum,ei3sum, pesum(MFORCE),tpbsum(MFORCE),tjfsum(MFORCE),r2sum,
-     &risum,tausum(MFORCE)
       common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
      &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
      &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
@@ -67,11 +66,11 @@ c xerr = current error of x
 
       npass=iblk*nstep
 
-      call mpi_reduce(pesum,pecollect,MFORCE
+      call mpi_reduce(pesum_dmc,pecollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tpbsum,tpbcollect,MFORCE
+      call mpi_reduce(tpbsum_dmc,tpbcollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tjfsum,tjfcollect,MFORCE
+      call mpi_reduce(tjfsum_dmc,tjfcollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(tausum,taucollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -94,9 +93,9 @@ c xerr = current error of x
 
       if(.not.wid) goto 17
 
-      wnow=wsum/nstep
+      wnow=wsum_dmc/nstep
       wfnow=wfsum/nstep
-      enow=esum/wsum
+      enow=esum_dmc/wsum_dmc
       efnow=efsum/wfsum
       ei1now=wfsum/wdsum
       ei2now=wgsum(1)/wgdsum
@@ -115,42 +114,42 @@ c xerr = current error of x
       r2cum=r2cum+r2sum
       ricum=ricum+risum
 
-      wcm2=wcm2+wsum**2
+      wcm2=wcm2+wsum_dmc**2
       wfcm2=wfcm2+wfsum**2
-      ecm2=ecm2+esum*enow
+      ecm2=ecm2+esum_dmc*enow
       efcm2=efcm2+efsum*efnow
 
-      wcum=wcum+wsum
+      wcum=wcum+wsum_dmc
       wfcum=wfcum+wfsum
-      ecum=ecum+esum
+      ecum=ecum+esum_dmc
       efcum=efcum+efsum
 
       do 15 ifr=1,nforce
 
-        pesum(ifr)=pecollect(ifr)
-        tpbsum(ifr)=tpbcollect(ifr)
-        tjfsum(ifr)=tjfcollect(ifr)
+        pesum_dmc(ifr)=pecollect(ifr)
+        tpbsum_dmc(ifr)=tpbcollect(ifr)
+        tjfsum_dmc(ifr)=tjfcollect(ifr)
         tausum(ifr)=taucollect(ifr)
         do 13 k=1,3
   13      derivsum(k,ifr)=derivcollect(k,ifr)
 
         wgnow=wgsum(ifr)/nstep
         egnow=egsum(ifr)/wgsum(ifr)
-        penow=pesum(ifr)/wgsum(ifr)
-        tpbnow=tpbsum(ifr)/wgsum(ifr)
-        tjfnow=tjfsum(ifr)/wgsum(ifr)
+        penow=pesum_dmc(ifr)/wgsum(ifr)
+        tpbnow=tpbsum_dmc(ifr)/wgsum(ifr)
+        tjfnow=tjfsum_dmc(ifr)/wgsum(ifr)
 
         wgcm2(ifr)=wgcm2(ifr)+wgsum(ifr)**2
         egcm2(ifr)=egcm2(ifr)+egsum(ifr)*egnow
-        pecm2(ifr)=pecm2(ifr)+pesum(ifr)*penow
-        tpbcm2(ifr)=tpbcm2(ifr)+tpbsum(ifr)*tpbnow
-        tjfcm2(ifr)=tjfcm2(ifr)+tjfsum(ifr)*tjfnow
+        pecm2(ifr)=pecm2(ifr)+pesum_dmc(ifr)*penow
+        tpbcm2(ifr)=tpbcm2(ifr)+tpbsum_dmc(ifr)*tpbnow
+        tjfcm2(ifr)=tjfcm2(ifr)+tjfsum_dmc(ifr)*tjfnow
 
         wgcum(ifr)=wgcum(ifr)+wgsum(ifr)
         egcum(ifr)=egcum(ifr)+egsum(ifr)
-        pecum(ifr)=pecum(ifr)+pesum(ifr)
-        tpbcum(ifr)=tpbcum(ifr)+tpbsum(ifr)
-        tjfcum(ifr)=tjfcum(ifr)+tjfsum(ifr)
+        pecum(ifr)=pecum(ifr)+pesum_dmc(ifr)
+        tpbcum(ifr)=tpbcum(ifr)+tpbsum_dmc(ifr)
+        tjfcum(ifr)=tjfcum(ifr)+tjfsum_dmc(ifr)
         taucum(ifr)=taucum(ifr)+tausum(ifr)
         do 14 k=1,3
   14      derivcum(k,ifr)=derivcum(k,ifr)+derivsum(k,ifr)
@@ -229,11 +228,11 @@ c     call flush(6)
 
 c zero out xsum variables for metrop
 
-   17 wsum=zero
+   17 wsum_dmc=zero
       wfsum=zero
       wdsum=zero
       wgdsum=zero
-      esum=zero
+      esum_dmc=zero
       efsum=zero
       ei1sum=zero
       ei2sum=zero
@@ -243,9 +242,9 @@ c zero out xsum variables for metrop
       do 18 ifr=1,nforce
         egsum(ifr)=zero
         wgsum(ifr)=zero
-        pesum(ifr)=zero
-        tpbsum(ifr)=zero
-        tjfsum(ifr)=zero
+        pesum_dmc(ifr)=zero
+        tpbsum_dmc(ifr)=zero
+        tjfsum_dmc(ifr)=zero
         tausum(ifr)=zero
         do 18 k=1,10
    18     derivsum(k,ifr)=zero

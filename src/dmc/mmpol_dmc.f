@@ -121,7 +121,7 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
-      subroutine mmpol_cum(wsum)
+      subroutine mmpol_cum(wsum_dmc)
 
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
@@ -133,8 +133,8 @@ c-----------------------------------------------------------------------
 
       if(immpol.eq.0) return
 
-      dmmpolnow=dmmpol_sum/wsum
-      cmmpolnow=cmmpol_sum/wsum
+      dmmpolnow=dmmpol_sum/wsum_dmc
+      cmmpolnow=cmmpol_sum/wsum_dmc
 
       dmmpol_cm2=dmmpol_cm2+dmmpol_sum*dmmpolnow
       cmmpol_cm2=cmmpol_cm2+cmmpol_sum*cmmpolnow
@@ -143,15 +143,15 @@ c-----------------------------------------------------------------------
       cmmpol_cum=cmmpol_cum+cmmpol_sum
 
       do i=1,nchmm
-        eek_now1=eek_sum(1,i)/wsum
+        eek_now1=eek_sum(1,i)/wsum_dmc
         eek1_cm2(i)=eek1_cm2(i)+eek_sum(1,i)*eek_now1
         eek1_cum(i)=eek1_cum(i)+eek_sum(1,i)
 
-        eek_now2=eek_sum(2,i)/wsum
+        eek_now2=eek_sum(2,i)/wsum_dmc
         eek2_cm2(i)=eek2_cm2(i)+eek_sum(2,i)*eek_now2
         eek2_cum(i)=eek2_cum(i)+eek_sum(2,i)
 
-        eek_now3=eek_sum(3,i)/wsum
+        eek_now3=eek_sum(3,i)/wsum_dmc
         eek3_cm2(i)=eek3_cm2(i)+eek_sum(3,i)*eek_now3
         eek3_cum(i)=eek3_cum(i)+eek_sum(3,i)
 

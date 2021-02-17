@@ -69,7 +69,11 @@ module estcum
  end module estsig
 
  module estsum
-     !> Arguments: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+     !> Arguments: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum,
+     !> efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
+     !> pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
+     !> wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
+
      use force_mod, only: MFORCE
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
@@ -81,15 +85,48 @@ module estcum
      real(dp) :: r2sum
      real(dp), dimension(:), allocatable :: tjfsum !(MSTATES)
      real(dp), dimension(:), allocatable :: tpbsum !(MSTATES)
+     !> DMC variables: 
+     real(dp) :: efsum
+     real(dp) :: efsum1
+     real(dp), dimension(:), allocatable :: egsum  !(MFORCE)
+     real(dp), dimension(:), allocatable :: egsum1 !(MFORCE)
+     real(dp) :: ei1sum
+     real(dp) :: ei2sum
+     real(dp) :: ei3sum
+     real(dp), dimension(:), allocatable :: esum1_dmc !(MFORCE)
+     real(dp) :: esum_dmc
+     real(dp), dimension(:), allocatable :: pesum_dmc !(MFORCE)
+     real(dp) :: risum
+     real(dp), dimension(:), allocatable :: tausum !(MFORCE)
+     real(dp), dimension(:), allocatable :: tjfsum_dmc !(MFORCE)
+     real(dp), dimension(:), allocatable :: tpbsum_dmc !(MFORCE)
+     real(dp) :: w_acc_sum
+     real(dp) :: w_acc_sum1
+     real(dp) :: wdsum
+     real(dp) :: wdsum1
+     real(dp) :: wfsum
+     real(dp) :: wfsum1
+     real(dp) :: wg_acc_sum
+     real(dp) :: wg_acc_sum1
+     real(dp) :: wgdsum
+     real(dp), dimension(:), allocatable :: wgsum !(MFORCE)
+     real(dp), dimension(:), allocatable :: wgsum1 !(MFORCE)
+     real(dp), dimension(:), allocatable :: wsum1 !(MFORCE)
+     real(dp) :: wsum_dmc
 
      private
-     public   :: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+     public :: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
      public :: allocate_estsum, deallocate_estsum
+     public :: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc
+     public :: pesum_dmc, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum
+     public :: w_acc_sum1, wdsum, wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1
+     public :: wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
+     public :: allocate_estsum_dmc, deallocate_estsum_dmc
      save
+
  contains
      subroutine allocate_estsum()
          use force_mod, only: MFORCE
-         use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
          if (.not. allocated(esum)) allocate (esum(MSTATES, MFORCE))
          if (.not. allocated(esum1)) allocate (esum1(MSTATES))
@@ -106,6 +143,32 @@ module estcum
          if (allocated(esum)) deallocate (esum)
      end subroutine deallocate_estsum
 
+     subroutine allocate_estsum_dmc()
+         use force_mod, only: MFORCE
+         if (.not. allocated(egsum)) allocate(egsum(MFORCE))
+         if (.not. allocated(egsum1)) allocate(egsum1(MFORCE))
+         if (.not. allocated(esum1_dmc)) allocate(esum1_dmc(MFORCE))
+         if (.not. allocated(pesum_dmc)) allocate(pesum_dmc(MFORCE))
+         if (.not. allocated(tausum)) allocate(tausum(MFORCE))
+         if (.not. allocated(tjfsum_dmc)) allocate(tjfsum_dmc(MFORCE))
+         if (.not. allocated(tpbsum_dmc)) allocate(tpbsum_dmc(MFORCE))
+         if (.not. allocated(wgsum)) allocate(wgsum(MFORCE))
+         if (.not. allocated(wgsum1)) allocate(wgsum1(MFORCE))
+         if (.not. allocated(wsum1)) allocate(wsum1(MFORCE))
+     end subroutine allocate_estsum_dmc
+
+     subroutine deallocate_estsum_dmc()
+         if (allocated(egsum)) deallocate(egsum)
+         if (allocated(egsum1)) deallocate(egsum1)
+         if (allocated(esum1_dmc)) deallocate(esum1_dmc)
+         if (allocated(pesum_dmc)) deallocate(pesum_dmc)
+         if (allocated(tausum)) deallocate(tausum)
+         if (allocated(tjfsum_dmc)) deallocate(tjfsum_dmc)
+         if (allocated(tpbsum_dmc)) deallocate(tpbsum_dmc)
+         if (allocated(wgsum)) deallocate(wgsum)
+         if (allocated(wgsum1)) deallocate(wgsum1)
+         if (allocated(wsum1)) deallocate(wsum1)
+     end subroutine deallocate_estsum_dmc
  end module estsum
 
  module estpsi

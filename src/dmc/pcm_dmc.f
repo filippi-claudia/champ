@@ -125,7 +125,7 @@ c     write(6,*) 'HELLO',qopcm,qopcmo(iw),iw
       return
       end
 c-----------------------------------------------------------------------
-      subroutine pcm_cum(wsum)
+      subroutine pcm_cum(wsum_dmc)
 
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
@@ -138,9 +138,9 @@ c-----------------------------------------------------------------------
 
       if(ipcm.eq.0) return
 
-      spcmnow=spcmsum/wsum
-      vpcmnow=vpcmsum/wsum
-      qopcm_now=qopcm_sum/wsum
+      spcmnow=spcmsum/wsum_dmc
+      vpcmnow=vpcmsum/wsum_dmc
+      qopcm_now=qopcm_sum/wsum_dmc
 
       spcmcm2=spcmcm2+spcmsum*spcmnow
       vpcmcm2=vpcmcm2+vpcmsum*vpcmnow
@@ -152,7 +152,7 @@ c-----------------------------------------------------------------------
 c     write (6,*) 'HELLO-CIAO', qopcm_cum
 
       do i=1,nchs
-      enfpcm_now=enfpcm_sum(i)/wsum
+      enfpcm_now=enfpcm_sum(i)/wsum_dmc
       enfpcm_cm2(i)=enfpcm_cm2(i)+enfpcm_sum(i)*enfpcm_now
       enfpcm_cum(i)=enfpcm_cum(i)+enfpcm_sum(i)
       enddo

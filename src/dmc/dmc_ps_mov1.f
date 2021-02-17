@@ -56,7 +56,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
 
+      use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
+     &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
+     &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -77,11 +81,6 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       common /elec/ nup,ndn
       common /velratio/ fratio(MWALK,MFORCE),xdrifted(3,MELEC,MWALK,MFORCE)
-      common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
-     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
-     &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),
-     &ei1sum,ei2sum,ei3sum, pesum(MFORCE),tpbsum(MFORCE),tjfsum(MFORCE),r2sum,
-     &risum,tausum(MFORCE)
       common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
      &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
      &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
@@ -574,10 +573,10 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
             psi2savo=2*(dlog(dabs(psido_dmc(iw,1)))+psijo_dmc(iw,1))
 
             wsum1(ifr)=wsum1(ifr)+wtnow
-            esum1(ifr)=esum1(ifr)+wtnow*eold(iw,ifr)
-            pesum(ifr)=pesum(ifr)+wtg*peo_dmc(iw,ifr)
-            tpbsum(ifr)=tpbsum(ifr)+wtg*(eold(iw,ifr)-peo_dmc(iw,ifr))
-            tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2o(iw,ifr)
+            esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)
+            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg*peo_dmc(iw,ifr)
+            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg*(eold(iw,ifr)-peo_dmc(iw,ifr))
+            tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg*half*hb*d2o(iw,ifr)
 
             derivsum(1,ifr)=derivsum(1,ifr)+wtg*eold(iw,ifr)
  
@@ -607,10 +606,10 @@ c           write(6,*) 'IN DMC',ajacold(iw,ifr)
             if(idrifdifgfunc.eq.0) ro=ajacold(iw,ifr)*psido_dmc(iw,ifr)**2*exp(2*psijo_dmc(iw,ifr)-psi2savo)
 
             wsum1(ifr)=wsum1(ifr)+wtnow*ro
-            esum1(ifr)=esum1(ifr)+wtnow*eold(iw,ifr)*ro
-            pesum(ifr)=pesum(ifr)+wtg*peo_dmc(iw,ifr)*ro
-            tpbsum(ifr)=tpbsum(ifr)+wtg*(eold(iw,ifr)-peo_dmc(iw,ifr))*ro
-            tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2o(iw,ifr)*ro
+            esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)*ro
+            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg*peo_dmc(iw,ifr)*ro
+            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg*(eold(iw,ifr)-peo_dmc(iw,ifr))*ro
+            tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg*half*hb*d2o(iw,ifr)*ro
 
             wtg=wt(iw)*fprod/rnorm_nodes**2
             wtg_derivsum1=wtg
@@ -697,22 +696,22 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
 
       if(idmc.gt.0.or.iacc_rej.eq.0) then
         wfsum1=wsum1(1)*ffn
-        efsum1=esum1(1)*ffn
+        efsum1=esum1_dmc(1)*ffn
       endif
       do 305 ifr=1,nforce
         if(idmc.gt.0.or.iacc_rej.eq.0) then
           wgsum1(ifr)=wsum1(ifr)*fprod
-          egsum1(ifr)=esum1(ifr)*fprod
+          egsum1(ifr)=esum1_dmc(ifr)*fprod
          else
           wgsum1(ifr)=wsum1(ifr)
-          egsum1(ifr)=esum1(ifr)
+          egsum1(ifr)=esum1_dmc(ifr)
         endif
   305 continue
 
       call splitj
       if(icasula.eq.0) ncount_casula=1
       if(ipr.gt.-2) write(11,'(i8,f9.6,f12.5,f11.6,i5,f11.5)') ipass,ffn,
-     &wsum1(1),esum1(1)/wsum1(1),nwalk
+     &wsum1(1),esum1_dmc(1)/wsum1(1),nwalk
      &,float(nmove_casula)/float(ncount_casula)
 
       return

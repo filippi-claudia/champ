@@ -10,7 +10,11 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use iterat, only: iblk, ipass
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
 
+      use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
+     &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
+     &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -26,11 +30,6 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 
 c routine to accumulate estimators for energy etc.
 
-      common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
-     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
-     &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),
-     &ei1sum,ei2sum,ei3sum, pesum(MFORCE),tpbsum(MFORCE),tjfsum(MFORCE),r2sum,
-     &risum,tausum(MFORCE)
       common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
      &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
      &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
@@ -89,12 +88,12 @@ c zero out estimators
       ricm2=zero
 
       wfsum1=zero
-      wsum=zero
+      wsum_dmc=zero
       wfsum=zero
       wdsum=zero
       wgdsum=zero
       efsum1=zero
-      esum=zero
+      esum_dmc=zero
       efsum=zero
       ei1sum=zero
       ei2sum=zero
@@ -116,7 +115,7 @@ c zero out estimators
         wsum1(ifr)=zero
         wgsum1(ifr)=zero
         wgsum(ifr)=zero
-        esum1(ifr)=zero
+        esum1_dmc(ifr)=zero
         egsum1(ifr)=zero
         egsum(ifr)=zero
         pecum(ifr)=zero
@@ -125,9 +124,9 @@ c zero out estimators
         pecm2(ifr)=zero
         tpbcm2(ifr)=zero
         tjfcm2(ifr)=zero
-        pesum(ifr)=zero
-        tpbsum(ifr)=zero
-        tjfsum(ifr)=zero
+        pesum_dmc(ifr)=zero
+        tpbsum_dmc(ifr)=zero
+        tjfsum_dmc(ifr)=zero
         fgcum(ifr)=zero
         fgcm2(ifr)=zero
         derivcm2(ifr)=zero
