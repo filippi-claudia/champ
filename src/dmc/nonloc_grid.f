@@ -6,7 +6,10 @@
      &itau_eff, nfprod, rttau, tau, taueff, tautot
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
 
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -20,8 +23,6 @@
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
 
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
      &,d2ijo(MELEC,MELEC),d2jo,fsumo,fjo(3,MELEC)
@@ -47,7 +48,7 @@ c here vpsp_det and dvpsp_det are dummy
 
       tauprim=tau
       if(icasula.gt.0)then
-        call distances(iel,xold(1,1,iw,1))
+        call distances(iel,xold_dmc(1,1,iw,1))
 
         ioptjas_sav=ioptjas
         ioptorb_sav=ioptorb
@@ -56,7 +57,7 @@ c here vpsp_det and dvpsp_det are dummy
         ioptorb=0
         ioptci=0
 
-        call nonloc_pot(xold(1,1,iw,1),rshift,rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,iel,1)
+        call nonloc_pot(xold_dmc(1,1,iw,1),rshift,rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,iel,1)
 
         call multideterminant_tmove(psid,iel)
 
@@ -119,7 +120,7 @@ c     enddo
         iq=iq_good
         ic=ic_good
         iel=iel_good
-        if(icasula.lt.0) call distances(iel,xold(1,1,iw,1))
+        if(icasula.lt.0) call distances(iel,xold_dmc(1,1,iw,1))
         ri=one/r_en(iel,ic)
         costh=rvec_en(1,iel,ic)*xq(iq)
      &       +rvec_en(2,iel,ic)*yq(iq)
@@ -135,7 +136,7 @@ c     enddo
           x(2)=r_en(iel,ic)*yq(iq)+cent(2,ic)+rshift(2,iel,ic)
           x(3)=r_en(iel,ic)*zq(iq)+cent(3,ic)+rshift(3,iel,ic)
         endif
-c       write(6,*) 'moved B',iw,iel,(xold(kk,iel,iw,1),kk=1,3)
+c       write(6,*) 'moved B',iw,iel,(xold_dmc(kk,iel,iw,1),kk=1,3)
 c       write(6,*) 'moved A',iw,iel,(x(kk),kk=1,3)
       endif
 

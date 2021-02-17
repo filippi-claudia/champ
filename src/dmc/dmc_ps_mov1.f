@@ -52,7 +52,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
 
       use iterat, only: iblk, ipass
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -70,8 +73,6 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       parameter (adrift=0.5d0)
 
       common /elec/ nup,ndn
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE),xdrifted(3,MELEC,MWALK,MFORCE)
       common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,nbrnch,
      &nodecr
@@ -148,8 +149,8 @@ c Store (well behaved velocity/velocity)
 c Tau secondary in drift is one (first time around)
               tratio=one
 
-              v2old=vold(1,i,iw,ifr)**2+vold(2,i,iw,ifr)**2
-     &        +vold(3,i,iw,ifr)**2
+              v2old=vold_dmc(1,i,iw,ifr)**2+vold_dmc(2,i,iw,ifr)**2
+     &        +vold_dmc(3,i,iw,ifr)**2
               vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/
      &              (adrift*v2old)
               vavvo=vavvt/(tau*tratio)
@@ -157,7 +158,7 @@ c Tau secondary in drift is one (first time around)
               v2sumo=v2sumo+v2old
 
               do 4 k=1,3
-                xdrifted(k,i,iw,ifr)=xold(k,i,iw,ifr)+vold(k,i,iw,ifr)*vavvt
+                xdrifted(k,i,iw,ifr)=xold_dmc(k,i,iw,ifr)+vold_dmc(k,i,iw,ifr)*vavvt
    4          continue
             fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
    5      continue
@@ -171,10 +172,10 @@ c Tau secondary in drift is one (first time around)
       do 300 iw=1,nwalk
 c Loop over primary walker
 
-        call distances(0,xold(1,1,iw,1))
+        call distances(0,xold_dmc(1,1,iw,1))
 c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         if(nforce.gt.1)
-     &  call strech(xold(1,1,iw,1),xold(1,1,iw,1),ajacob,1,0)
+     &  call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,1),ajacob,1,0)
 
         call walkstrdet(iw)
         call walkstrjas(iw)
@@ -190,7 +191,7 @@ c Sample Green function for forward move
         if(icasula.eq.3) then
           do 60 i=1,nelec
             imove=0
-            call nonloc_grid(i,iw,xnew,psido(iw,1),imove)
+            call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove)
             ncount_casula=ncount_casula+1
             if(imove.gt.0) then
               call psiedmc(i,iw,xnew,psidn,psijn,0)
@@ -200,10 +201,10 @@ c Sample Green function for forward move
               iaccept=1
               iage(iw)=0
               do 50 k=1,3
-                xold(k,i,iw,1)=xnew(k)
-  50            vold(k,i,iw,1)=vnew(k,i)
-              psido(iw,1)=psidn
-              psijo(iw,1)=psijn
+                xold_dmc(k,i,iw,1)=xnew(k)
+  50            vold_dmc(k,i,iw,1)=vnew(k,i)
+              psido_dmc(iw,1)=psidn
+              psijo_dmc(iw,1)=psijn
               call jassav(i,0)
               call detsav(i,0)
 
@@ -214,10 +215,10 @@ c Sample Green function for forward move
   60      continue
           if(nforce.gt.1.and.istrech.gt.0) then
             do 61 ifr=1,nforce
-              call strech(xold(1,1,iw,1),xstrech,ajacob,ifr,1)
+              call strech(xold_dmc(1,1,iw,1),xstrech,ajacob,ifr,1)
               do 61 k=1,3
                 do 61 j=1,nelec
-  61              xold(k,j,iw,ifr)=xstrech(k,j)
+  61              xold_dmc(k,j,iw,ifr)=xstrech(k,j)
           endif
         endif
 
@@ -233,27 +234,27 @@ c Sample Green function for forward move
             iflag_dn=2
           endif
 
-          call compute_determinante_grad(i,psido(iw,1),psido(iw,1),vold(1,i,iw,1),1)
+          call compute_determinante_grad(i,psido_dmc(iw,1),psido_dmc(iw,1),vold_dmc(1,i,iw,1),1)
 
 c Use more accurate formula for the drift
-          v2old=vold(1,i,iw,1)**2+vold(2,i,iw,1)**2+vold(3,i,iw,1)**2
+          v2old=vold_dmc(1,i,iw,1)**2+vold_dmc(2,i,iw,1)**2+vold_dmc(3,i,iw,1)**2
 c Tau primary -> tratio=one
           vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/(adrift*v2old)
 
           dr2=zero
           dfus2o=zero
           do 80 k=1,3
-            drift=vavvt*vold(k,i,iw,1)
+            drift=vavvt*vold_dmc(k,i,iw,1)
             dfus=gauss()*rttau
             dx=drift+dfus
             dr2=dr2+dx**2
             dfus2o=dfus2o+dfus**2
-   80       xnew(k)=xold(k,i,iw,1)+dx
+   80       xnew(k)=xold_dmc(k,i,iw,1)+dx
 
           if(ipr.ge.1) then
-            write(6,'(''xold'',2i4,9f8.5)') iw,i,(xold(k,i,iw,1),k=1,3)
-            write(6,'(''vold'',2i4,9f8.5)') iw,i,(vold(k,i,iw,1),k=1,3)
-            write(6,'(''psido'',2i4,9f8.5)') iw,i,psido(iw,1)
+            write(6,'(''xold_dmc'',2i4,9f8.5)') iw,i,(xold_dmc(k,i,iw,1),k=1,3)
+            write(6,'(''vold_dmc'',2i4,9f8.5)') iw,i,(vold_dmc(k,i,iw,1),k=1,3)
+            write(6,'(''psido_dmc'',2i4,9f8.5)') iw,i,psido_dmc(iw,1)
             write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,3)
           endif
 
@@ -270,7 +271,7 @@ c calculate psi and velocity at new configuration
             do 105 jel=nup+1,nelec
   105         if(jel.ne.i) call compute_determinante_grad(jel,psidn,psidn,vnew(1,jel),iflag_dn)
 
-            call nodes_distance(vold(1,1,iw,1),distance_node,1)
+            call nodes_distance(vold_dmc(1,1,iw,1),distance_node,1)
             rnorm_nodes_old=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
 
             call nodes_distance(vnew,distance_node,0)
@@ -279,7 +280,7 @@ c calculate psi and velocity at new configuration
           endif
 
 c Check for node crossings
-          if(psidn*psido(iw,1).le.zero) then
+          if(psidn*psido_dmc(iw,1).le.zero) then
             nodecr=nodecr+1
             if(icross.le.0) then
               p=zero
@@ -296,23 +297,23 @@ c Calculate Green function for the reverse move
           do 150 k=1,3
             drift=vavvt*vnew(k,i)
             xbac(k)=xnew(k)+drift
-            dfus=xbac(k)-xold(k,i,iw,1)
+            dfus=xbac(k)-xold_dmc(k,i,iw,1)
   150       dfus2n=dfus2n+dfus**2
 
           if(ipr.ge.1) then
-            write(6,'(''xold'',9f10.6)')(xold(k,i,iw,1),k=1,3),
+            write(6,'(''xold_dmc'',9f10.6)')(xold_dmc(k,i,iw,1),k=1,3),
      &      (xnew(k),k=1,3), (xbac(k),k=1,3)
             write(6,'(''dfus2o'',9f10.6)')dfus2o,dfus2n,
-     &      psido(iw,1),psidn,psijo(iw,1),psijn
+     &      psido_dmc(iw,1),psidn,psijo_dmc(iw,1),psijn
           endif
 
-          p=(psidn/psido(iw,1))**2*exp(2*(psijn-psijo(iw,1)))*
+          p=(psidn/psido_dmc(iw,1))**2*exp(2*(psijn-psijo_dmc(iw,1)))*
      &    exp((dfus2o-dfus2n)/(two*tau))*distance_node_ratio2
 
           if(ipr.ge.1) write(6,'(''p'',11f10.6)')
-     &    p,(psidn/psido(iw,1))**2*exp(2*(psijn-psijo(iw,1))),
-     &    exp((dfus2o-dfus2n)/(two*tau)),psidn,psido(iw,1),
-     &    psijn,psijo(iw,1),dfus2o,dfus2n
+     &    p,(psidn/psido_dmc(iw,1))**2*exp(2*(psijn-psijo_dmc(iw,1))),
+     &    exp((dfus2o-dfus2n)/(two*tau)),psidn,psido_dmc(iw,1),
+     &    psijn,psijo_dmc(iw,1),dfus2o,dfus2n
 
 c The following is one reasonable way to cure persistent configurations
 c Not needed if itau_eff <=0 and in practice we have never needed it even
@@ -336,9 +337,9 @@ c Calculate density and moments of r for primary walk
           rmino=zero
           rminn=zero
           do 165 k=1,3
-            r2o=r2o+xold(k,i,iw,1)**2
+            r2o=r2o+xold_dmc(k,i,iw,1)**2
             r2n=r2n+xnew(k)**2
-            rmino=rmino+(xold(k,i,iw,1)-cent(k,1))**2
+            rmino=rmino+(xold_dmc(k,i,iw,1)-cent(k,1))**2
   165       rminn=rminn+(xnew(k)-cent(k,1))**2
           rmino=sqrt(rmino)
           rminn=sqrt(rminn)
@@ -360,10 +361,10 @@ c If we are using weights rather than accept/reject
 
             iage(iw)=0
             do 170 k=1,3
-              drifdif=drifdif+(xold(k,i,iw,1)-xnew(k))**2
-  170         xold(k,i,iw,1)=xnew(k)
-            psido(iw,1)=psidn
-            psijo(iw,1)=psijn
+              drifdif=drifdif+(xold_dmc(k,i,iw,1)-xnew(k))**2
+  170         xold_dmc(k,i,iw,1)=xnew(k)
+            psido_dmc(iw,1)=psidn
+            psijo_dmc(iw,1)=psijn
             call jassav(i,0)
             call detsav(i,0)
 
@@ -392,8 +393,8 @@ c Primary configuration
             if(icasula.lt.0) i_vpsp=icasula
             drifdifr=one
             if(nforce.gt.1)
-     &      call strech(xold(1,1,iw,1),xold(1,1,iw,1),ajacob,1,0)
-            call hpsi(xold(1,1,iw,1),psidn,psijn,enew,ipass,1)
+     &      call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,1),ajacob,1,0)
+            call hpsi(xold_dmc(1,1,iw,1),psidn,psijn,enew,ipass,1)
             call walksav_det(iw)
             call walksav_jas(iw)
             if(icasula.lt.0) call multideterminant_tmove(psidn,0)
@@ -402,27 +403,27 @@ c           call t_vpsp_sav(iw)
             i_vpsp=0
             rnorm_nodes=1.d0
             if(node_cutoff.gt.0) then
-              call nodes_distance(vold(1,1,iw,1),distance_node,1)
+              call nodes_distance(vold_dmc(1,1,iw,1),distance_node,1)
               rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
             endif
            else
 c Secondary configuration
             if(istrech.eq.0) then
-              call strech(xold(1,1,iw,ifr),xold(1,1,iw,ifr),ajacob,ifr,0)
+              call strech(xold_dmc(1,1,iw,ifr),xold_dmc(1,1,iw,ifr),ajacob,ifr,0)
               drifdifr=one
 c No streched positions for electrons
               do 210 i=1,nelec
                 do 210 k=1,3
-  210             xold(k,i,iw,ifr)=xold(k,i,iw,1)
+  210             xold_dmc(k,i,iw,ifr)=xold_dmc(k,i,iw,1)
               ajacold(iw,ifr)=one
              else
 c Compute streched electronic positions for all nucleus displacement
-              call strech(xold(1,1,iw,1),xstrech,ajacob,ifr,1)
+              call strech(xold_dmc(1,1,iw,1),xstrech,ajacob,ifr,1)
               drifdifs=zero
               do 220 i=1,nelec
                 do 220 k=1,3
-                  drifdifs=drifdifs+(xstrech(k,i)-xold(k,i,iw,ifr))**2
-  220             xold(k,i,iw,ifr)=xstrech(k,i)
+                  drifdifs=drifdifs+(xstrech(k,i)-xold_dmc(k,i,iw,ifr))**2
+  220             xold_dmc(k,i,iw,ifr)=xstrech(k,i)
               ajacold(iw,ifr)=ajacob
               if(drifdif.eq.0.d0) then
                 drifdifr=one
@@ -431,12 +432,12 @@ c Compute streched electronic positions for all nucleus displacement
               endif
             endif
             if(icasula.lt.0) i_vpsp=icasula
-            call hpsi(xold(1,1,iw,ifr),psidn,psijn,enew,ipass,ifr)
+            call hpsi(xold_dmc(1,1,iw,ifr),psidn,psijn,enew,ipass,ifr)
             i_vpsp=0
           endif
 
           do 230 i=1,nelec
-  230         call compute_determinante_grad(i,psidn,psidn,vold(1,i,iw,ifr),1)
+  230         call compute_determinante_grad(i,psidn,psidn,vold_dmc(1,i,iw,ifr),1)
 
           vav2sumn=zero
           v2sumn=zero
@@ -446,8 +447,8 @@ c Use more accurate formula for the drift and tau secondary in drift
             tratio=one
             if(ifr.gt.1.and.itausec.eq.1) tratio=drifdifr
 
-            v2old=vold(1,i,iw,ifr)**2+vold(2,i,iw,ifr)**2
-     &      +vold(3,i,iw,ifr)**2
+            v2old=vold_dmc(1,i,iw,ifr)**2+vold_dmc(2,i,iw,ifr)**2
+     &      +vold_dmc(3,i,iw,ifr)**2
             vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/
      &          (adrift*v2old)
             vavvn=vavvt/(tau*tratio)
@@ -456,7 +457,7 @@ c Use more accurate formula for the drift and tau secondary in drift
             v2sumn=v2sumn+v2old
 
             do 260 k=1,3
-              xdriftedn(k,i)=xold(k,i,iw,ifr)+vold(k,i,iw,ifr)*vavvt
+              xdriftedn(k,i)=xold_dmc(k,i,iw,ifr)+vold_dmc(k,i,iw,ifr)*vavvt
   260     continue
           fration=dsqrt(vav2sumn/v2sumn)
 
@@ -495,7 +496,7 @@ c Exercise population control if dmc or vmc with weights
             do 265 i=1,nelec
               if(iacc_elec(i).gt.0) then
                 do 264 k=1,3
-  264             dfus=dfus+(xold(k,i,iw,ifr)-xdrifted(k,i,iw,ifr))**2
+  264             dfus=dfus+(xold_dmc(k,i,iw,ifr)-xdrifted(k,i,iw,ifr))**2
               endif
   265       continue
             dfus=0.5d0*dfus/tau
@@ -550,10 +551,10 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
      &    wt(iw),enew-etrial,eold(iw,ifr)-etrial,(xnew(ii),ii=1,3)
 
           eold(iw,ifr)=enew
-          peo(iw,ifr)=pen
+          peo_dmc(iw,ifr)=pen
           d2o(iw,ifr)=d2n
-          psido(iw,ifr)=psidn
-          psijo(iw,ifr)=psijn
+          psido_dmc(iw,ifr)=psidn
+          psijo_dmc(iw,ifr)=psijn
           fratio(iw,ifr)=fration
           do 275 i=1,nelec
             do 275 k=1,3
@@ -569,12 +570,12 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
               ioldestmx=max(ioldestmx,iage(iw))
             endif
 
-            psi2savo=2*(dlog(dabs(psido(iw,1)))+psijo(iw,1))
+            psi2savo=2*(dlog(dabs(psido_dmc(iw,1)))+psijo_dmc(iw,1))
 
             wsum1(ifr)=wsum1(ifr)+wtnow
             esum1(ifr)=esum1(ifr)+wtnow*eold(iw,ifr)
-            pesum(ifr)=pesum(ifr)+wtg*peo(iw,ifr)
-            tpbsum(ifr)=tpbsum(ifr)+wtg*(eold(iw,ifr)-peo(iw,ifr))
+            pesum(ifr)=pesum(ifr)+wtg*peo_dmc(iw,ifr)
+            tpbsum(ifr)=tpbsum(ifr)+wtg*(eold(iw,ifr)-peo_dmc(iw,ifr))
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2o(iw,ifr)
 
             derivsum(1,ifr)=derivsum(1,ifr)+wtg*eold(iw,ifr)
@@ -602,12 +603,12 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
            else
 c           write(6,*) 'IN DMC',ajacold(iw,ifr)
             ro=1.d0
-            if(idrifdifgfunc.eq.0) ro=ajacold(iw,ifr)*psido(iw,ifr)**2*exp(2*psijo(iw,ifr)-psi2savo)
+            if(idrifdifgfunc.eq.0) ro=ajacold(iw,ifr)*psido_dmc(iw,ifr)**2*exp(2*psijo_dmc(iw,ifr)-psi2savo)
 
             wsum1(ifr)=wsum1(ifr)+wtnow*ro
             esum1(ifr)=esum1(ifr)+wtnow*eold(iw,ifr)*ro
-            pesum(ifr)=pesum(ifr)+wtg*peo(iw,ifr)*ro
-            tpbsum(ifr)=tpbsum(ifr)+wtg*(eold(iw,ifr)-peo(iw,ifr))*ro
+            pesum(ifr)=pesum(ifr)+wtg*peo_dmc(iw,ifr)*ro
+            tpbsum(ifr)=tpbsum(ifr)+wtg*(eold(iw,ifr)-peo_dmc(iw,ifr))*ro
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2o(iw,ifr)*ro
 
             wtg=wt(iw)*fprod/rnorm_nodes**2
@@ -626,7 +627,7 @@ c           endif
               derivsum(2,ifr)=derivsum(2,ifr)+wtg*eold(iw,1)*pwt(iw,ifr)
               derivsum(3,ifr)=derivsum(3,ifr)+wtg*pwt(iw,ifr)
             else
-              ro=log(ajacold(iw,ifr))+2*(log(abs(psido(iw,ifr)))+psijo(iw,ifr))
+              ro=log(ajacold(iw,ifr))+2*(log(abs(psido_dmc(iw,ifr)))+psijo_dmc(iw,ifr))
               derivsum(2,ifr)=derivsum(2,ifr)+wtg*eold(iw,1)*(pwt(iw,ifr)+ro)
               derivsum(3,ifr)=derivsum(3,ifr)+wtg*(pwt(iw,ifr)+ro)
             endif
@@ -636,15 +637,15 @@ c           endif
 c       write(6,*) 'IN DMC',ajacold(iw,2)
 
 c       wtg=wt(iw)*fprod/rnorm_nodes**2
-c       write(*,*)'prima ',wtg,eold(iw,2),pwt(iw,2),ajacold(iw,2),psido(iw,2),psijo(iw,2),idrifdifgfunc
-c       call deriv(wtg,eold(iw,1),pwt(iw,1),ajacold(iw,1),psido(iw,1),psijo(iw,1),idrifdifgfunc)
-c       call deriv(wtg,eold,pwt,ajacold,psido,psijo,idrifdifgfunc,iw,mwalk)
+c       write(*,*)'prima ',wtg,eold(iw,2),pwt(iw,2),ajacold(iw,2),psido_dmc(iw,2),psijo_dmc(iw,2),idrifdifgfunc
+c       call deriv(wtg,eold(iw,1),pwt(iw,1),ajacold(iw,1),psido_dmc(iw,1),psijo_dmc(iw,1),idrifdifgfunc)
+c       call deriv(wtg,eold,pwt,ajacold,psido_dmc,psijo_dmc,idrifdifgfunc,iw,mwalk)
 
         if(icasula.eq.-1) then
 
 c Set nuclear coordinates (0 flag = no strech e-coord)
           if(nforce.gt.1)
-     &    call strech(xold(1,1,iw,1),xold(1,1,iw,1),ajacob,1,0)
+     &    call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,1),ajacob,1,0)
 
           call walkstrdet(iw)
           call walkstrjas(iw)
@@ -652,7 +653,7 @@ c         call t_vpsp_get(iw)
           call t_vpsp_get
 
           imove=0
-          call nonloc_grid(iel,iw,xnew,psido(iw,1),imove)
+          call nonloc_grid(iel,iw,xnew,psido_dmc(iw,1),imove)
 
           ncount_casula=ncount_casula+1
           if(imove.gt.0) then
@@ -663,10 +664,10 @@ c           call compute_determinante_grad(iel,psidn,psidn,vnew(1,iel),0)
 
             iage(iw)=0
             do 290 k=1,3
-  290         xold(k,iel,iw,1)=xnew(k)
-c 290         vold(k,iel,iw,1)=vnew(k,iel)
-            psido(iw,1)=psidn
-            psijo(iw,1)=psijn
+  290         xold_dmc(k,iel,iw,1)=xnew(k)
+c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
+            psido_dmc(iw,1)=psidn
+            psijo_dmc(iw,1)=psijn
             call jassav(iel,0)
             call detsav(iel,0)
 
@@ -677,10 +678,10 @@ c 290         vold(k,iel,iw,1)=vnew(k,iel)
             call walksav_jas(iw)
             if(nforce.gt.1.and.istrech.gt.0) then
               do 295 ifr=1,nforce
-                call strech(xold(1,1,iw,1),xstrech,ajacob,ifr,1)
+                call strech(xold_dmc(1,1,iw,1),xstrech,ajacob,ifr,1)
                 do 295 k=1,3
                   do 295 i=1,nelec
-  295                xold(k,i,iw,ifr)=xstrech(k,i)
+  295                xold_dmc(k,i,iw,ifr)=xstrech(k,i)
             endif
 
 

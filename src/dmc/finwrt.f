@@ -7,13 +7,14 @@ c routine to print out final results
       use forcepar, only: deltot, istrech, nforce
       use age, only: iage, ioldest, ioldestmx
       use contrl_per, only: ibasis, iperiodic
-
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
      &itau_eff, nfprod, rttau, tau, taueff, tautot
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
       use iterat, only: iblk, ipass
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
 
       implicit real*8(a-h,o-z)
+
 
       include 'dmc.h'
       include 'vmc.h'
@@ -26,9 +27,7 @@ c routine to print out final results
       character*24 date
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-c /config/ included to print out xold and vold for old walkers
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
+c /config/ included to print out xold_dmc and vold_dmc for old walkers
       common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,
      &nbrnch,nodecr
       common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
@@ -165,8 +164,8 @@ c Collect radial charge density for atoms
         do 10 i=1,nwalk
           if(iage(i).gt.50) then
             write(6,'(i4,i6,f10.4,99f8.4)') i,iage(i),eold(i,1),
-     &      ((xold(k,j,i,1),k=1,3),j=1,nelec)
-            write(6,'(99f8.4)') ((vold(k,j,i,1),k=1,3),j=1,nelec)
+     &      ((xold_dmc(k,j,i,1),k=1,3),j=1,nelec)
+            write(6,'(99f8.4)') ((vold_dmc(k,j,i,1),k=1,3),j=1,nelec)
           endif
    10   continue
 

@@ -42,20 +42,3 @@ module iterat
    public :: iblk, ipass
    save
 end module iterat
-
-subroutine allocate_m_dmc()
-  use age, only: allocate_iage
-  use contrldmc, only: allocate_contrldmc 
-  !> Allocate all the dmc_mod arrays:
-  call allocate_iage()
-  call allocate_contrldmc()
-end subroutine allocate_m_dmc
-
-subroutine deallocate_m_dmc()
-  use age, only: deallocate_iage
-  use contrldmc, only: deallocate_contrldmc 
-  !> Deallocate all the dmc_mod arrays:
-  call deallocate_iage()
-  call deallocate_contrldmc()
-end subroutine deallocate_m_dmc
-

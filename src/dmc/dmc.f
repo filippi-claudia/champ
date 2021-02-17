@@ -16,7 +16,10 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
 
       use iterat, only: iblk, ipass
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -42,8 +45,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
       common /force_dmc/ itausec,nwprod
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
@@ -121,15 +122,15 @@ c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 
 c   /config/
-c        xold   = current position of the electrons
+c        xold_dmc   = current position of the electrons
 c        xnew   = new position after a trial move
-c        vold   = grad(psi)/psi at current position
+c        vold_dmc   = grad(psi)/psi at current position
 c        vnew   = same after trial move
 c        psi2o  = psi**2 at current position
 c        psi2n  = same after trial move
 c        eold   = local energy at current position
 c        enew   = same after trial move
-c        peo    = local potential at current position
+c        peo_dmc    = local potential at current position
 c        pen    = same after trial move
 c        tjfo   = Jackson Feenberg kinetic energy at current position
 c        tjfn   = same after trial move

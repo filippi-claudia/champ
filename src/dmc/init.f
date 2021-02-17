@@ -10,7 +10,10 @@ c routine to accumulate estimators for energy etc.
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
 
       use iterat, only: iblk, ipass
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -29,8 +32,6 @@ c routine to accumulate estimators for energy etc.
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
@@ -65,24 +66,24 @@ c get nuclear potential energy
           do 71 ifr=2,nforce
             do 71 ie=1,nelec
               do 71 k=1,3
-   71           xold(k,ie,iw,ifr)=xold(k,ie,iw,1)
+   71           xold_dmc(k,ie,iw,ifr)=xold_dmc(k,ie,iw,1)
         endif
         do 72 ifr=1,nforce
           if(nforce.gt.1) then
             if(ifr.eq.1.or.istrech.eq.0) then
-              call strech(xold(1,1,iw,1),xold(1,1,iw,ifr),ajacob,ifr,0)
+              call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,ifr),ajacob,ifr,0)
                else
-              call strech(xold(1,1,iw,1),xold(1,1,iw,ifr),ajacob,ifr,1)
+              call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,ifr),ajacob,ifr,1)
             endif
            else
             ajacob=one
           endif
           ajacold(iw,ifr)=ajacob
           if(icasula.lt.0) i_vpsp=icasula
-          call hpsi(xold(1,1,iw,ifr),psido(iw,ifr),psijo(iw,ifr),eold(iw,ifr),0,ifr)
+          call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),eold(iw,ifr),0,ifr)
           i_vpsp=0
           do 73 i=1,nelec
-   73       call compute_determinante_grad(i,psido(iw,ifr),psido(iw,ifr),vold(1,i,iw,ifr),1)
+   73       call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
 
           if(ifr.eq.1) then
             call walksav_det(iw)

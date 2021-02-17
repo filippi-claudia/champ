@@ -4,7 +4,10 @@ c Written by Cyrus Umrigar
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
       use age, only: iage, ioldest, ioldestmx
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -15,8 +18,6 @@ c Written by Cyrus Umrigar
       common /force_dmc/ itausec,nwprod
       parameter (zero=0.d0,two=2.d0,half=.5d0)
 
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE),xdrifted(3,MELEC,MWALK,MFORCE)
       common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,
      &nbrnch,nodecr
@@ -83,9 +84,9 @@ c         call t_vpsp_splitj(iw,iw2)
           do 15 ifr=1,nforce
             ajacold(iw2,ifr)=ajacold(iw,ifr)
             eold(iw2,ifr)=eold(iw,ifr)
-            psido(iw2,ifr)=psido(iw,ifr)
-            psijo(iw2,ifr)=psijo(iw,ifr)
-            peo(iw2,ifr)=peo(iw,ifr)
+            psido_dmc(iw2,ifr)=psido_dmc(iw,ifr)
+            psijo_dmc(iw2,ifr)=psijo_dmc(iw,ifr)
+            peo_dmc(iw2,ifr)=peo_dmc(iw,ifr)
             d2o(iw2,ifr)=d2o(iw,ifr)
             pwt(iw2,ifr)=pwt(iw,ifr)
             fratio(iw2,ifr)=fratio(iw,ifr)
@@ -94,8 +95,8 @@ c         call t_vpsp_splitj(iw,iw2)
             do 15 i=1,nelec
               do 15 k=1,3
                 xdrifted(k,i,iw2,ifr)=xdrifted(k,i,iw,ifr)
-                vold(k,i,iw2,ifr)=vold(k,i,iw,ifr)
-   15           xold(k,i,iw2,ifr)=xold(k,i,iw,ifr)
+                vold_dmc(k,i,iw2,ifr)=vold_dmc(k,i,iw,ifr)
+   15           xold_dmc(k,i,iw2,ifr)=xold_dmc(k,i,iw,ifr)
         endif
    20 continue
 
@@ -114,9 +115,9 @@ c       call t_vpsp_splitj(iw,iw2)
         do 30 ifr=1,nforce
           ajacold(iw2,ifr)=ajacold(iw,ifr)
           eold(iw2,ifr)=eold(iw,ifr)
-          psido(iw2,ifr)=psido(iw,ifr)
-          psijo(iw2,ifr)=psijo(iw,ifr)
-          peo(iw2,ifr)=peo(iw,ifr)
+          psido_dmc(iw2,ifr)=psido_dmc(iw,ifr)
+          psijo_dmc(iw2,ifr)=psijo_dmc(iw,ifr)
+          peo_dmc(iw2,ifr)=peo_dmc(iw,ifr)
           d2o(iw2,ifr)=d2o(iw,ifr)
           pwt(iw2,ifr)=pwt(iw,ifr)
           fratio(iw2,ifr)=fratio(iw,ifr)
@@ -125,8 +126,8 @@ c       call t_vpsp_splitj(iw,iw2)
           do 30 i=1,nelec
             do 30 k=1,3
               xdrifted(k,i,iw2,ifr)=xdrifted(k,i,iw,ifr)
-              vold(k,i,iw2,ifr)=vold(k,i,iw,ifr)
-   30         xold(k,i,iw2,ifr)=xold(k,i,iw,ifr)
+              vold_dmc(k,i,iw2,ifr)=vold_dmc(k,i,iw,ifr)
+   30         xold_dmc(k,i,iw2,ifr)=xold_dmc(k,i,iw,ifr)
       nwalk=nwalk2
 
       wtsm2=zero

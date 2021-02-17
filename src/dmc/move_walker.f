@@ -4,7 +4,10 @@ c Written by Claudia Filippi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
       use age, only: iage, ioldest, ioldestmx
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -14,8 +17,6 @@ c Written by Claudia Filippi
       include 'force.h'
       include 'mpif.h'
 
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
@@ -36,11 +37,11 @@ c Written by Claudia Filippi
      &  ,itag+1,MPI_COMM_WORLD,irequest,ierr)
         call mpi_isend(eold(nwalk,ifr),1,mpi_double_precision,irecv
      &  ,itag+2,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(psido(nwalk,ifr),1,mpi_double_precision,irecv
+        call mpi_isend(psido_dmc(nwalk,ifr),1,mpi_double_precision,irecv
      &  ,itag+3,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(psijo(nwalk,ifr),1,mpi_double_precision,irecv
+        call mpi_isend(psijo_dmc(nwalk,ifr),1,mpi_double_precision,irecv
      &  ,itag+4,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(peo(nwalk,ifr),1,mpi_double_precision,irecv
+        call mpi_isend(peo_dmc(nwalk,ifr),1,mpi_double_precision,irecv
      &  ,itag+5,MPI_COMM_WORLD,irequest,ierr)
         call mpi_isend(d2o(nwalk,ifr),1,mpi_double_precision,irecv
      &  ,itag+6,MPI_COMM_WORLD,irequest,ierr)
@@ -48,9 +49,9 @@ c Written by Claudia Filippi
      &  ,itag+7,MPI_COMM_WORLD,irequest,ierr)
         call mpi_isend(fratio(nwalk,ifr),1,mpi_double_precision,irecv
      &  ,itag+8,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(vold(1,1,nwalk,ifr),3*nelec,mpi_double_precision
+        call mpi_isend(vold_dmc(1,1,nwalk,ifr),3*nelec,mpi_double_precision
      &  ,irecv,itag+9,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(xold(1,1,nwalk,ifr),3*nelec,mpi_double_precision
+        call mpi_isend(xold_dmc(1,1,nwalk,ifr),3*nelec,mpi_double_precision
      &  ,irecv,itag+10,MPI_COMM_WORLD,irequest,ierr)
         itag=itag+10
         do 15 ip=0,nwprod-1
@@ -85,11 +86,11 @@ c     nwalk=nwalk+1
      &  ,itag+1,MPI_COMM_WORLD,istatus,ierr)
         call mpi_recv(eold(nwalk,ifr),1,mpi_double_precision,isend
      &  ,itag+2,MPI_COMM_WORLD,istatus,ierr)
-        call mpi_recv(psido(nwalk,ifr),1,mpi_double_precision,isend
+        call mpi_recv(psido_dmc(nwalk,ifr),1,mpi_double_precision,isend
      &  ,itag+3,MPI_COMM_WORLD,istatus,ierr)
-        call mpi_recv(psijo(nwalk,ifr),1,mpi_double_precision,isend
+        call mpi_recv(psijo_dmc(nwalk,ifr),1,mpi_double_precision,isend
      &  ,itag+4,MPI_COMM_WORLD,istatus,ierr)
-        call mpi_recv(peo(nwalk,ifr),1,mpi_double_precision,isend
+        call mpi_recv(peo_dmc(nwalk,ifr),1,mpi_double_precision,isend
      &  ,itag+5,MPI_COMM_WORLD,istatus,ierr)
         call mpi_recv(d2o(nwalk,ifr),1,mpi_double_precision,isend
      &  ,itag+6,MPI_COMM_WORLD,istatus,ierr)
@@ -97,9 +98,9 @@ c     nwalk=nwalk+1
      &  ,itag+7,MPI_COMM_WORLD,istatus,ierr)
         call mpi_recv(fratio(nwalk,ifr),1,mpi_double_precision,isend
      &  ,itag+8,MPI_COMM_WORLD,istatus,ierr)
-        call mpi_recv(vold(1,1,nwalk,ifr),3*nelec,mpi_double_precision
+        call mpi_recv(vold_dmc(1,1,nwalk,ifr),3*nelec,mpi_double_precision
      &  ,isend,itag+9,MPI_COMM_WORLD,istatus,ierr)
-        call mpi_recv(xold(1,1,nwalk,ifr),3*nelec,mpi_double_precision
+        call mpi_recv(xold_dmc(1,1,nwalk,ifr),3*nelec,mpi_double_precision
      &  ,isend,itag+10,MPI_COMM_WORLD,istatus,ierr)
         itag=itag+10
         do 25 ip=0,nwprod-1

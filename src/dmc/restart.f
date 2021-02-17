@@ -13,7 +13,10 @@
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
 
       use iterat, only: iblk, ipass
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -33,8 +36,6 @@
       parameter (small=1.e-6)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /ghostatom/ newghostype,nghostcent
@@ -104,7 +105,7 @@
       if(nprock.ne.nproc) call fatal_error('STARTR: different num procs')
       do 4 id=0,idtask
         read(10) nwalk
-        read(10) (((xold(ic,i,iw,1),ic=1,3),i=1,nelec),iw=1,nwalk)
+        read(10) (((xold_dmc(ic,i,iw,1),ic=1,3),i=1,nelec),iw=1,nwalk)
         read(10) nfprod,(ff(i),i=0,nfprod),(wt(i),i=1,nwalk),fprod
      &  ,eigv,eest,wdsumo
         read(10) (iage(i),i=1,nwalk),ioldest,ioldestmx
@@ -116,7 +117,7 @@ c    &  i=1,nforce)
      &  read(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
       do 5 id=idtask+1,nproc-1
         read(10) nwalk_id
-        read(10) (xold_id,i=1,3*nelec*nwalk_id)
+        read(10) (xold_dmc_id,i=1,3*nelec*nwalk_id)
         read(10) n1_id,(ff_id,i=0,n1_id),(wt_id,i=1,nwalk_id),fprod_id
      &  ,eigv_id,eest_id,wdsumo_id
         read(10) (iage_id,i=1,nwalk_id),ioldest_id,ioldestmx_id
@@ -251,24 +252,24 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
           do 60 ifr=2,nforce
             do 60 ie=1,nelec
               do 60 k=1,3
-   60           xold(k,ie,iw,ifr)=xold(k,ie,iw,1)
+   60           xold_dmc(k,ie,iw,ifr)=xold_dmc(k,ie,iw,1)
         endif
         do 70 ifr=1,nforce
           if(nforce.gt.1) then
             if(ifr.eq.1.or.istrech.eq.0) then
-              call strech(xold(1,1,iw,1),xold(1,1,iw,ifr),ajacob,ifr,0)
+              call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,ifr),ajacob,ifr,0)
                else
-              call strech(xold(1,1,iw,1),xold(1,1,iw,ifr),ajacob,ifr,1)
+              call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,ifr),ajacob,ifr,1)
             endif
            else
             ajacob=one
           endif
           ajacold(iw,ifr)=ajacob
           if(icasula.lt.0) i_vpsp=icasula
-          call hpsi(xold(1,1,iw,ifr),psido(iw,ifr),psijo(iw,ifr),eold(iw,ifr),0,ifr)
+          call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),eold(iw,ifr),0,ifr)
           i_vpsp=0
           do 65 i=1,nelec
-   65       call compute_determinante_grad(i,psido(iw,ifr),psido(iw,ifr),vold(1,i,iw,ifr),1)
+   65       call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
           if(ifr.eq.1) then
             call walksav_det(iw)
             call walksav_jas(iw)

@@ -15,7 +15,10 @@ c job where it left off
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
 
       use iterat, only: iblk, ipass
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,8 +37,6 @@ c job where it left off
       parameter (small=1.e-6)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /ghostatom/ newghostype,nghostcent
@@ -91,7 +92,7 @@ c job where it left off
         return
       endif
 
-      if(nforce.gt.1) call strech(xold,xold,ajacob,1,0)
+      if(nforce.gt.1) call strech(xold_dmc,xold_dmc,ajacob,1,0)
 
       call savern(irn(1,idtask))
 
@@ -102,7 +103,7 @@ c job where it left off
       if(.not.wid) then
         call mpi_isend(nwalk,1,mpi_integer,0
      &  ,1,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(xold,3*MELEC*nwalk,mpi_double_precision,0
+        call mpi_isend(xold_dmc,3*MELEC*nwalk,mpi_double_precision,0
      &  ,2,MPI_COMM_WORLD,irequest,ierr)
         call mpi_isend(wt,nwalk,mpi_double_precision,0
      &  ,3,MPI_COMM_WORLD,irequest,ierr)
@@ -134,7 +135,7 @@ c job where it left off
         open(unit=10,status='unknown',form='unformatted',file='restart_dmc')
         write(10) nproc
         write(10) nwalk
-        write(10) (((xold(ic,i,iw,1),ic=1,3),i=1,nelec),iw=1,nwalk)
+        write(10) (((xold_dmc(ic,i,iw,1),ic=1,3),i=1,nelec),iw=1,nwalk)
         write(10) nfprod,(ff(i),i=0,nfprod),(wt(i),i=1,nwalk),fprod
      &  ,eigv,eest,wdsumo
         write(10) (iage(i),i=1,nwalk),ioldest,ioldestmx
@@ -147,7 +148,7 @@ c    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
         do 450 id=1,nproc-1
           call mpi_recv(nwalk,1,mpi_integer,id
      &    ,1,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(xold,3*MELEC*nwalk,mpi_double_precision,id
+          call mpi_recv(xold_dmc,3*MELEC*nwalk,mpi_double_precision,id
      &    ,2,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(wt,nwalk,mpi_double_precision,id
      &    ,3,MPI_COMM_WORLD,istatus,ierr)
@@ -176,7 +177,7 @@ c    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
           call mpi_recv(zq,nquad,mpi_double_precision,id
      &    ,15,MPI_COMM_WORLD,istatus,ierr)
           write(10) nwalk
-          write(10) (((xold(ic,i,iw,1),ic=1,3),i=1,nelec),iw=1,nwalk)
+          write(10) (((xold_dmc(ic,i,iw,1),ic=1,3),i=1,nelec),iw=1,nwalk)
           write(10) nfprod,(ff(i),i=0,nfprod),(wt(i),i=1,nwalk),fprod
      &    ,eigv,eest,wdsumo
           write(10) (iage(i),i=1,nwalk),ioldest,ioldestmx
