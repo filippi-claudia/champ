@@ -12,8 +12,10 @@ c routine to print out final results
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
       use iterat, only: iblk, ipass
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
 
       implicit real*8(a-h,o-z)
+
 
 
       include 'dmc.h'
@@ -28,8 +30,6 @@ c routine to print out final results
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 c /config/ included to print out xold_dmc and vold_dmc for old walkers
-      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,
-     &nbrnch,nodecr
       common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
      &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
      &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),

@@ -8,7 +8,10 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use forcepar, only: deltot, istrech, nforce
       use age, only: iage, ioldest, ioldestmx
       use iterat, only: iblk, ipass
+      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -23,8 +26,6 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 
 c routine to accumulate estimators for energy etc.
 
-      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,
-     &nbrnch,nodecr
       common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
      &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
      &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),

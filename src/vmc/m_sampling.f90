@@ -145,14 +145,25 @@ module rnyucm
 end module rnyucm
 
 module stats
-    !> has to do with sampling
-    !> Arguments: rejmax
+    !> Arguments: rejmax, acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc,
+    !> nbrnch, nodecr, trymove
     use precision_kinds, only: dp
 
     real(dp) :: rejmax
+    !> DMC variables
+    real(dp) :: acc
+    real(dp) :: dfus2ac
+    real(dp) :: dfus2un
+    real(dp) :: dr2ac
+    real(dp) :: dr2un
+    integer  :: nacc
+    integer  :: nbrnch
+    integer  :: nodecr
+    real(dp) :: trymove
 
     private
     public :: rejmax
+    public :: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
     save
 end module stats
 

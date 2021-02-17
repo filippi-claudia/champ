@@ -17,7 +17,10 @@ c job where it left off
       use iterat, only: iblk, ipass
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
 
+      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -64,8 +67,6 @@ c job where it left off
      &tjfcm2(MFORCE),r2cm2,ricm2
       common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
      &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
-      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,
-     &nbrnch,nodecr
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
