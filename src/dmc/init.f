@@ -12,7 +12,9 @@ c routine to accumulate estimators for energy etc.
       use iterat, only: iblk, ipass
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
 
+      use force_dmc, only: itausec, nwprod
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -35,7 +37,6 @@ c routine to accumulate estimators for energy etc.
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /force_dmc/ itausec,nwprod
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
       character*12 mode

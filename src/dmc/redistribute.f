@@ -16,7 +16,9 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
+      use force_dmc, only: itausec, nwprod
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -26,7 +28,6 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       include 'mpi_qmc.h'
       include 'mpif.h'
 
-      common /force_dmc/ itausec,nwprod
 
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),

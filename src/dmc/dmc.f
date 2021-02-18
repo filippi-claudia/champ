@@ -18,7 +18,9 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use iterat, only: iblk, ipass
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
 
+      use force_dmc, only: itausec, nwprod
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -43,7 +45,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Z
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
-      common /force_dmc/ itausec,nwprod
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /jaspar1/ cjas1(MWF),cjas2(MWF)

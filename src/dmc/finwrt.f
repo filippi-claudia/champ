@@ -21,7 +21,9 @@ c routine to print out final results
      &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
      &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
      &wgdcum
+      use force_dmc, only: itausec, nwprod
       implicit real*8(a-h,o-z)
+
 
 
       include 'dmc.h'
@@ -49,7 +51,6 @@ c routine to print out final results
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /header/ title,date
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
-      common /force_dmc/ itausec,nwprod
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
 

@@ -6,7 +6,9 @@ c Written by Claudia Filippi
       use forcepar, only: deltot, istrech, nforce
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
 
+      use force_dmc, only: itausec, nwprod
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -14,7 +16,6 @@ c Written by Claudia Filippi
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
-      common /force_dmc/ itausec,nwprod
 
 
       dimension coord(3),x(3,MELEC)

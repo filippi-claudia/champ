@@ -16,7 +16,9 @@ c routine to accumulate estimators for energy etc.
      &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
      &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
      &wgdcum
+      use force_dmc, only: itausec, nwprod
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -40,7 +42,6 @@ c routine to accumulate estimators for energy etc.
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /force_dmc/ itausec,nwprod
 
       logical wid
       common /mpiconf/ idtask,nproc,wid

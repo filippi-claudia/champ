@@ -8,7 +8,9 @@ c Written by Cyrus Umrigar
 
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
 
+      use force_dmc, only: itausec, nwprod
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -18,7 +20,6 @@ c Written by Cyrus Umrigar
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
-      common /force_dmc/ itausec,nwprod
       parameter (zero=0.d0,two=2.d0,half=.5d0)
 
       common /velratio/ fratio(MWALK,MFORCE),xdrifted(3,MELEC,MWALK,MFORCE)

@@ -24,7 +24,9 @@
      &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
      &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
      &wgdcum
+      use force_dmc, only: itausec, nwprod
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -72,7 +74,6 @@
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-      common /force_dmc/ itausec,nwprod
 
       logical wid
       common /mpiconf/ idtask,nproc,wid
