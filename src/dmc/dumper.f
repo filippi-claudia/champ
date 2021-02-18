@@ -27,7 +27,11 @@ c job where it left off
      &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
      &wgdcum
       use force_dmc, only: itausec, nwprod
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -62,10 +66,6 @@ c job where it left off
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
       common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
      &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
@@ -195,7 +195,7 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       if(.not.wid) return
 
       write(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),tjfcum_dmc(i)
-     &,wgcm2(i),egcm2(i),pecm2(i),tpbcm2(i),tjfcm2(i),taucum(i)
+     &,wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),tjfcm_dmc(i),taucum(i)
      &,i=1,nforce)
       write(10) ((irn_tmp(i,j),i=1,4),j=0,nproc-1)
       write(10) hb
@@ -208,9 +208,9 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
      &,ei1cum,ei2cum,ei3cum,r2cum_dmc,ricum
       write(10) ipass,iblk,iblk_proc
       write(10) wcm2,wfcm2,wdcm2,wgdcm2,wcm21/nproc
-     &,wfcm21/nproc,(wgcm21(i)/nproc,i=1,nforce),wdcm21, ecm2,efcm2
-     &,ecm21/nproc,efcm21/nproc,(egcm21(i)/nproc,i=1,nforce)
-     &,ei1cm2,ei2cm2,ei3cm2,r2cm2,ricm2
+     &,wfcm21/nproc,(wgcm21(i)/nproc,i=1,nforce),wdcm21, ecm2_dmc,efcm2
+     &,ecm21_dmc/nproc,efcm21/nproc,(egcm21(i)/nproc,i=1,nforce)
+     &,ei1cm2,ei2cm2,ei3cm2,r2cm2_dmc,ricm2
       write(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
      &,((derivcum(k,i),k=1,3),i=1,nforce),(derivcm2(i),i=1,nforce)
      &,(derivtotave_num_old(i),i=1,nforce)

@@ -17,7 +17,11 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
      &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
      &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
      &wgdcum
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -35,10 +39,6 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 
 c routine to accumulate estimators for energy etc.
 
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
       common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE),derivcm2(MFORCE),
      &derivtotave_num_old(MFORCE)
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
@@ -77,14 +77,14 @@ c zero out estimators
       wfcm2=zero
       wdcm2=zero
       wgdcm2=zero
-      ecm21=zero
+      ecm21_dmc=zero
       efcm21=zero
-      ecm2=zero
+      ecm2_dmc=zero
       efcm2=zero
       ei1cm2=zero
       ei2cm2=zero
       ei3cm2=zero
-      r2cm2=zero
+      r2cm2_dmc=zero
       ricm2=zero
 
       wfsum1=zero
@@ -121,9 +121,9 @@ c zero out estimators
         pecum_dmc(ifr)=zero
         tpbcum_dmc(ifr)=zero
         tjfcum_dmc(ifr)=zero
-        pecm2(ifr)=zero
-        tpbcm2(ifr)=zero
-        tjfcm2(ifr)=zero
+        pecm2_dmc(ifr)=zero
+        tpbcm2_dmc(ifr)=zero
+        tjfcm_dmc(ifr)=zero
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
         tjfsum_dmc(ifr)=zero

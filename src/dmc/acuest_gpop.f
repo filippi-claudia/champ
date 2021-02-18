@@ -17,7 +17,11 @@ c routine to accumulate estimators for energy etc.
      &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
      &wgdcum
       use force_dmc, only: itausec, nwprod
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,10 +38,6 @@ c routine to accumulate estimators for energy etc.
       parameter (zero=0.d0,one=1.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
       common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
@@ -105,7 +105,7 @@ c xerr = current error of x
 
       ei1cm2=ei1cm2+ei1now**2
       ei2cm2=ei2cm2+ei2now**2
-      r2cm2=r2cm2+r2sum*r2now
+      r2cm2_dmc=r2cm2_dmc+r2sum*r2now
       ricm2=ricm2+risum*rinow
 
       wdcum=wdcum+wdsum
@@ -117,7 +117,7 @@ c xerr = current error of x
 
       wcm2=wcm2+wsum_dmc**2
       wfcm2=wfcm2+wfsum**2
-      ecm2=ecm2+esum_dmc*enow
+      ecm2_dmc=ecm2_dmc+esum_dmc*enow
       efcm2=efcm2+efsum*efnow
 
       wcum_dmc=wcum_dmc+wsum_dmc
@@ -142,9 +142,9 @@ c xerr = current error of x
 
         wgcm2(ifr)=wgcm2(ifr)+wgsum(ifr)**2
         egcm2(ifr)=egcm2(ifr)+egsum(ifr)*egnow
-        pecm2(ifr)=pecm2(ifr)+pesum_dmc(ifr)*penow
-        tpbcm2(ifr)=tpbcm2(ifr)+tpbsum_dmc(ifr)*tpbnow
-        tjfcm2(ifr)=tjfcm2(ifr)+tjfsum_dmc(ifr)*tjfnow
+        pecm2_dmc(ifr)=pecm2_dmc(ifr)+pesum_dmc(ifr)*penow
+        tpbcm2_dmc(ifr)=tpbcm2_dmc(ifr)+tpbsum_dmc(ifr)*tpbnow
+        tjfcm_dmc(ifr)=tjfcm_dmc(ifr)+tjfsum_dmc(ifr)*tjfnow
 
         wgcum(ifr)=wgcum(ifr)+wgsum(ifr)
         egcum(ifr)=egcum(ifr)+egsum(ifr)
@@ -162,9 +162,9 @@ c xerr = current error of x
           tjferr=0
          else
           egerr=errg(egcum(ifr),egcm2(ifr),ifr)
-          peerr=errg(pecum_dmc(ifr),pecm2(ifr),ifr)
-          tpberr=errg(tpbcum_dmc(ifr),tpbcm2(ifr),ifr)
-          tjferr=errg(tjfcum_dmc(ifr),tjfcm2(ifr),ifr)
+          peerr=errg(pecum_dmc(ifr),pecm2_dmc(ifr),ifr)
+          tpberr=errg(tpbcum_dmc(ifr),tpbcm2_dmc(ifr),ifr)
+          tjferr=errg(tjfcum_dmc(ifr),tjfcm_dmc(ifr),ifr)
         endif
 
         egave=egcum(ifr)/wgcum(ifr)

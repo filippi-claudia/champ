@@ -8,7 +8,11 @@
      &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
      &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
      &wgdcum
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -18,10 +22,6 @@
       include 'force.h'
       include 'mpif.h'
 
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
 
@@ -38,7 +38,7 @@
 
       call mpi_reduce(ecum1_dmc,e1collect,1,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(ecm21,e21collect,1,mpi_double_precision
+      call mpi_reduce(ecm21_dmc,e21collect,1,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(wcum1,w1collect,1,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -47,7 +47,7 @@
 
       ecum1_dmc=e1collect
       wcum1=w1collect
-      ecm21=e21collect
+      ecm21_dmc=e21collect
       wcm21=w21collect
 
       call mpi_reduce(efcum1,ef1collect,1,mpi_double_precision

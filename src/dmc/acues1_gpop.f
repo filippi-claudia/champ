@@ -17,7 +17,11 @@ c routine to accumulate estimators for energy etc.
      &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
      &wgdcum
       use force_dmc, only: itausec, nwprod
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -34,10 +38,6 @@ c routine to accumulate estimators for energy etc.
       parameter (zero=0.d0,one=1.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
       common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
@@ -90,7 +90,7 @@ c statistical fluctuations without blocking
 
       wcm21=wcm21+wsum1(1)**2
       wfcm21=wfcm21+wfsum1**2
-      ecm21=ecm21+esum1_dmc(1)**2/wsum1(1)
+      ecm21_dmc=ecm21_dmc+esum1_dmc(1)**2/wsum1(1)
       efcm21=efcm21+efsum1**2/wfsum1
       ei3cm2=ei3cm2+(wfsum1/wdsum1)**2
 

@@ -25,7 +25,11 @@
      &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
      &wgdcum
       use force_dmc, only: itausec, nwprod
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -61,10 +65,6 @@
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
       common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
      &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
@@ -112,7 +112,7 @@
         read(10) (iage(i),i=1,nwalk),ioldest,ioldestmx
         read(10) nforce,((fratio(iw,ifr),iw=1,nwalk),ifr=1,nforce)
 c       read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),tjfcum_dmc(i),
-c    &  wgcm2(i),egcm2(i),pecm2(i),tpbcm2(i),tjfcm2(i),taucum(i),
+c    &  wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),tjfcm_dmc(i),taucum(i),
 c    &  i=1,nforce)
     4   if(nloc.gt.0)
      &  read(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
@@ -124,7 +124,7 @@ c    &  i=1,nforce)
         read(10) (iage_id,i=1,nwalk_id),ioldest_id,ioldestmx_id
         read(10) n2_id,((fratio_id,iw=1,nwalk_id),ifr=1,n2_id)
 c       read(10) (wgcum_id,egcum_id,pecum_dmc_id,tpbcum_dmc_id,tjfcum_dmc_id,
-c    &  wgcm2_id,egcm2_id,pecm2_id,tpbcm2_id,tjfcm2_id,taucum_id,
+c    &  wgcm2_id,egcm2_id,pecm2_dmc_id,tpbcm2_dmc_id,tjfcm_dmc_id,taucum_id,
 c    &  i=1,nforce)
     5   if(nloc.gt.0)
      &  read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nquad)
@@ -132,7 +132,7 @@ c     if(nforce.gt.1) read(10) nwprod
 c    &,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),tjfcum_dmc(i),
-     &wgcm2(i),egcm2(i),pecm2(i),tpbcm2(i),tjfcm2(i),taucum(i),
+     &wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),tjfcm_dmc(i),taucum(i),
      &i=1,nforce)
       read(10) ((irn(i,j),i=1,4),j=0,nproc-1)
       call setrn(irn(1,idtask))
@@ -149,9 +149,9 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
      &,ei1cum,ei2cum,ei3cum, r2cum_dmc,ricum
       read(10) ipass,iblk,iblk_proc
       read(10) wcm2,wfcm2,wdcm2,wgdcm2,wcm21
-     &,wfcm21,(wgcm21(i),i=1,nforce),wdcm21, ecm2,efcm2
-     &,ecm21,efcm21,(egcm21(i),i=1,nforce)
-     &,ei1cm2,ei2cm2,ei3cm2,r2cm2,ricm2
+     &,wfcm21,(wgcm21(i),i=1,nforce),wdcm21, ecm2_dmc,efcm2
+     &,ecm21_dmc,efcm21,(egcm21(i),i=1,nforce)
+     &,ei1cm2,ei2cm2,ei3cm2,r2cm2_dmc,ricm2
       read(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
      &,((derivcum(k,i),k=1,3),i=1,nforce),(derivcm2(i),i=1,nforce)
      &,(derivtotave_num_old(i),i=1,nforce)

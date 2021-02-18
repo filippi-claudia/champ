@@ -16,7 +16,11 @@ c routine to accumulate estimators for energy etc.
      &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
      &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
      &wgdcum
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -32,10 +36,6 @@ c routine to accumulate estimators for energy etc.
       parameter (zero=0.d0,one=1.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
       common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
      &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
 
@@ -87,7 +87,7 @@ c xerr = current error of x
 
       ei1cm2=ei1cm2+ei1now**2
       ei2cm2=ei2cm2+ei2now**2
-      r2cm2=r2cm2+r2sum*r2now
+      r2cm2_dmc=r2cm2_dmc+r2sum*r2now
       ricm2=ricm2+risum*rinow
 
       wdcum=wdcum+wdsum
@@ -190,7 +190,7 @@ c xerr = current error of x
 
       wcm2=wcm2+w2collect
       wfcm2=wfcm2+wf2collect
-      ecm2=ecm2+e2collect
+      ecm2_dmc=ecm2_dmc+e2collect
       efcm2=efcm2+ef2collect
 
       wcum_dmc=wcum_dmc+wcollect
@@ -201,9 +201,9 @@ c xerr = current error of x
       do 15 ifr=1,nforce
         wgcm2(ifr)=wgcm2(ifr)+wg2collect(ifr)
         egcm2(ifr)=egcm2(ifr)+eg2collect(ifr)
-        pecm2(ifr)=pecm2(ifr)+pe2collect(ifr)
-        tpbcm2(ifr)=tpbcm2(ifr)+tpb2collect(ifr)
-        tjfcm2(ifr)=tjfcm2(ifr)+tjf2collect(ifr)
+        pecm2_dmc(ifr)=pecm2_dmc(ifr)+pe2collect(ifr)
+        tpbcm2_dmc(ifr)=tpbcm2_dmc(ifr)+tpb2collect(ifr)
+        tjfcm_dmc(ifr)=tjfcm_dmc(ifr)+tjf2collect(ifr)
 
         pecum_dmc(ifr)=pecum_dmc(ifr)+pecollect(ifr)
         tpbcum_dmc(ifr)=tpbcum_dmc(ifr)+tpbcollect(ifr)
@@ -218,9 +218,9 @@ c xerr = current error of x
           tjferr=0
          else
           egerr=errg(egcum(ifr),egcm2(ifr),ifr)
-          peerr=errg(pecum_dmc(ifr),pecm2(ifr),ifr)
-          tpberr=errg(tpbcum_dmc(ifr),tpbcm2(ifr),ifr)
-          tjferr=errg(tjfcum_dmc(ifr),tjfcm2(ifr),ifr)
+          peerr=errg(pecum_dmc(ifr),pecm2_dmc(ifr),ifr)
+          tpberr=errg(tpbcum_dmc(ifr),tpbcm2_dmc(ifr),ifr)
+          tjferr=errg(tjfcum_dmc(ifr),tjfcm_dmc(ifr),ifr)
         endif
 
         egave=egcum(ifr)/wgcum(ifr)

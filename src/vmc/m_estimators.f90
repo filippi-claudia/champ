@@ -257,7 +257,11 @@ module estcum
  end module estpsi
 
  module est2cm
-     !> Arguments: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
+     !> Arguments: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2,
+     !> ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     !> ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     !> wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
+
      use force_mod, only: MFORCE
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
@@ -269,32 +273,82 @@ module estcum
      real(dp), dimension(:), allocatable :: tjfcm2 !(MSTATES)
      real(dp), dimension(:), allocatable :: tpbcm2 !(MSTATES)
      real(dp), dimension(:), allocatable :: avcm2 !(MSTATES*3)
+     !> DMC variables:
+     real(dp) :: ecm21_dmc
+     real(dp) :: ecm2_dmc
+     real(dp) :: efcm2
+     real(dp) :: efcm21
+     real(dp), dimension(:), allocatable :: egcm2  !(MFORCE)
+     real(dp), dimension(:), allocatable :: egcm21 !(MFORCE)
+     real(dp) :: ei1cm2
+     real(dp) :: ei2cm2
+     real(dp) :: ei3cm2
+     real(dp), dimension(:), allocatable :: pecm2_dmc !(MFORCE)
+     real(dp) :: r2cm2_dmc
+     real(dp) :: ricm2
+     real(dp), dimension(:), allocatable :: tjfcm_dmc  !(MFORCE)
+     real(dp), dimension(:), allocatable :: tpbcm2_dmc !(MFORCE)
+     real(dp) :: wcm2
+     real(dp) :: wcm21
+     real(dp) :: wdcm2
+     real(dp) :: wdcm21
+     real(dp) :: wfcm2
+     real(dp) :: wfcm21
+     real(dp), dimension(:), allocatable :: wgcm2 !(MFORCE)
+     real(dp), dimension(:), allocatable :: wgcm21 !(MFORCE)
+     real(dp) :: wgdcm2
 
      private
-     public   :: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
+     public :: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
      public :: allocate_est2cm, deallocate_est2cm
+     public :: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2
+     public :: ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc
+     public :: wcm2, wcm21, wdcm2, wdcm21
+     public :: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
+     public :: allocate_est2cm_dmc, deallocate_est2cm_dmc
      save
+    
  contains
      subroutine allocate_est2cm()
          use force_mod, only: MFORCE
          use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
-         if (.not. allocated(ecm2)) allocate (ecm2(MSTATES, MFORCE))
-         if (.not. allocated(ecm21)) allocate (ecm21(MSTATES))
-         if (.not. allocated(pecm2)) allocate (pecm2(MSTATES))
-         if (.not. allocated(tjfcm2)) allocate (tjfcm2(MSTATES))
-         if (.not. allocated(tpbcm2)) allocate (tpbcm2(MSTATES))
-         if (.not. allocated(avcm2)) allocate (avcm2(MSTATES*3))
+         if (.not. allocated(ecm2))   allocate(ecm2(MSTATES, MFORCE))
+         if (.not. allocated(ecm21))  allocate(ecm21(MSTATES))
+         if (.not. allocated(pecm2))  allocate(pecm2(MSTATES))
+         if (.not. allocated(tjfcm2)) allocate(tjfcm2(MSTATES))
+         if (.not. allocated(tpbcm2)) allocate(tpbcm2(MSTATES))
+         if (.not. allocated(avcm2))  allocate(avcm2(MSTATES*3))
      end subroutine allocate_est2cm
 
      subroutine deallocate_est2cm()
-         if (allocated(avcm2)) deallocate (avcm2)
-         if (allocated(tpbcm2)) deallocate (tpbcm2)
-         if (allocated(tjfcm2)) deallocate (tjfcm2)
-         if (allocated(pecm2)) deallocate (pecm2)
-         if (allocated(ecm21)) deallocate (ecm21)
-         if (allocated(ecm2)) deallocate (ecm2)
+         if (allocated(avcm2))  deallocate(avcm2)
+         if (allocated(tpbcm2)) deallocate(tpbcm2)
+         if (allocated(tjfcm2)) deallocate(tjfcm2)
+         if (allocated(pecm2))  deallocate(pecm2)
+         if (allocated(ecm21))  deallocate(ecm21)
+         if (allocated(ecm2))   deallocate(ecm2)
      end subroutine deallocate_est2cm
+
+     subroutine allocate_est2cm_dmc()
+         if (.not. allocated(egcm2))      allocate(egcm2(MFORCE))
+         if (.not. allocated(egcm21))     allocate(egcm21(MFORCE))
+         if (.not. allocated(pecm2_dmc))  allocate(pecm2_dmc(MFORCE))
+         if (.not. allocated(tjfcm_dmc))  allocate(tjfcm_dmc(MFORCE))
+         if (.not. allocated(tpbcm2_dmc)) allocate(tpbcm2_dmc(MFORCE))
+         if (.not. allocated(wgcm2))      allocate(wgcm2(MFORCE))
+         if (.not. allocated(wgcm21))     allocate(wgcm21(MFORCE))
+     end subroutine allocate_est2cm_dmc
+
+     subroutine deallocate_est2cm_dmc()
+         if (allocated(egcm2))      deallocate(egcm2)
+         if (allocated(egcm21))     deallocate(egcm21)
+         if (allocated(pecm2_dmc))  deallocate(pecm2_dmc)
+         if (allocated(tjfcm_dmc))  deallocate(tjfcm_dmc)
+         if (allocated(tpbcm2_dmc)) deallocate(tpbcm2_dmc)
+         if (allocated(wgcm2))      deallocate(wgcm2)
+         if (allocated(wgcm21))     deallocate(wgcm21)
+     end subroutine deallocate_est2cm_dmc
 
  end module est2cm
 
