@@ -12,10 +12,46 @@ module estcum
      real(dp), dimension(:), allocatable :: tjfcum !(MSTATES)
      real(dp), dimension(:), allocatable :: tpbcum !(MSTATES)
      real(dp), dimension(:), allocatable :: avcum !(MSTATES*3)
+     !> DMC variables:
+     real(dp) :: ecum1_dmc
+     real(dp) :: ecum_dmc
+     real(dp) :: efcum
+     real(dp) :: efcum1
+     real(dp), dimension(:), allocatable :: egcum  !(MFORCE)
+     real(dp), dimension(:), allocatable :: egcum1 !(MFORCE)
+     real(dp) :: ei1cum
+     real(dp) :: ei2cum
+     real(dp) :: ei3cum
+     real(dp), dimension(:), allocatable :: pecum_dmc !(MFORCE)
+     real(dp) :: r2cum_dmc
+     real(dp) :: ricum
+     real(dp), dimension(:), allocatable :: taucum !(MFORCE)
+     real(dp), dimension(:), allocatable :: tjfcum_dmc !(MFORCE)
+     real(dp), dimension(:), allocatable :: tpbcum_dmc !(MFORCE)
+     real(dp) :: w_acc_cum
+     real(dp) :: w_acc_cum1
+     real(dp) :: wcum1
+     real(dp) :: wcum_dmc
+     real(dp) :: wdcum
+     real(dp) :: wdcum1
+     real(dp) :: wfcum
+     real(dp) :: wfcum1
+     real(dp) :: wg_acc_cum
+     real(dp) :: wg_acc_cum1
+     real(dp), dimension(:), allocatable :: wgcum !(MFORCE)
+     real(dp), dimension(:), allocatable :: wgcum1 !(MFORCE)
+     real(dp) :: wgdcum
 
      private
-     public   ::  ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
+     public :: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
      public :: allocate_estcum, deallocate_estcum
+     !> DMC variables:
+     public :: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum
+     public :: ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
+     public :: w_acc_cum, w_acc_cum1, wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1
+     public :: wg_acc_cum, wg_acc_cum1, wgcum, wgcum1
+     public :: wgdcum
+     public :: allocate_estcum_dmc, deallocate_estcum_dmc
      save
  contains
      subroutine allocate_estcum()
@@ -39,6 +75,27 @@ module estcum
          if (allocated(ecum)) deallocate (ecum)
      end subroutine deallocate_estcum
 
+     subroutine allocate_estcum_dmc()
+         if (.not. allocated(egcum)) allocate(egcum(MFORCE))
+         if (.not. allocated(egcum1)) allocate(egcum1(MFORCE))
+         if (.not. allocated(pecum_dmc)) allocate(pecum_dmc(MFORCE))
+         if (.not. allocated(taucum)) allocate(taucum(MFORCE))
+         if (.not. allocated(tjfcum_dmc)) allocate(tjfcum_dmc(MFORCE))
+         if (.not. allocated(tpbcum_dmc)) allocate(tpbcum_dmc(MFORCE))
+         if (.not. allocated(wgcum)) allocate(wgcum(MFORCE))
+         if (.not. allocated(wgcum1)) allocate(wgcum1(MFORCE))
+     end subroutine allocate_estcum_dmc
+
+     subroutine deallocate_estcum_dmc()
+         if (allocated(egcum)) deallocate(egcum)
+         if (allocated(egcum1)) deallocate(egcum1)
+         if (allocated(pecum_dmc)) deallocate(pecum_dmc)
+         if (allocated(taucum)) deallocate(taucum)
+         if (allocated(tjfcum_dmc)) deallocate(tjfcum_dmc)
+         if (allocated(tpbcum_dmc)) deallocate(tpbcum_dmc)
+         if (allocated(wgcum)) deallocate(wgcum)
+         if (allocated(wgcum1)) deallocate(wgcum1)
+     end subroutine deallocate_estcum_dmc
  end module estcum
 
  module estsig

@@ -13,7 +13,12 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
      &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
      &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
+      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
+     &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
+     &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
+     &wgdcum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -30,11 +35,6 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 
 c routine to accumulate estimators for energy etc.
 
-      common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
-     &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
-     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
-     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
-     &ricum,taucum(MFORCE)
       common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
      &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
      &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
@@ -57,18 +57,18 @@ c zero out estimators
 
       wcum1=zero
       wfcum1=zero
-      wcum=zero
+      wcum_dmc=zero
       wfcum=zero
       wdcum=zero
       wgdcum=zero
-      ecum1=zero
+      ecum1_dmc=zero
       efcum1=zero
-      ecum=zero
+      ecum_dmc=zero
       efcum=zero
       ei1cum=zero
       ei2cum=zero
       ei3cum=zero
-      r2cum=zero
+      r2cum_dmc=zero
       ricum=zero
 
       wcm21=zero
@@ -118,9 +118,9 @@ c zero out estimators
         esum1_dmc(ifr)=zero
         egsum1(ifr)=zero
         egsum(ifr)=zero
-        pecum(ifr)=zero
-        tpbcum(ifr)=zero
-        tjfcum(ifr)=zero
+        pecum_dmc(ifr)=zero
+        tpbcum_dmc(ifr)=zero
+        tjfcum_dmc(ifr)=zero
         pecm2(ifr)=zero
         tpbcm2(ifr)=zero
         tjfcm2(ifr)=zero

@@ -22,7 +22,12 @@ c job where it left off
       use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
      &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
      &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
+      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
+     &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
+     &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
+     &wgdcum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -55,11 +60,6 @@ c job where it left off
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
-     &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
-     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
-     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
-     &ricum,taucum(MFORCE)
       common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
      &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
      &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
@@ -193,7 +193,7 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
 
       if(.not.wid) return
 
-      write(10) (wgcum(i),egcum(i),pecum(i),tpbcum(i),tjfcum(i)
+      write(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),tjfcum_dmc(i)
      &,wgcm2(i),egcm2(i),pecm2(i),tpbcm2(i),tjfcm2(i),taucum(i)
      &,i=1,nforce)
       write(10) ((irn_tmp(i,j),i=1,4),j=0,nproc-1)
@@ -201,10 +201,10 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(10) tau,rttau,idmc
       write(10) nelec,nconf,nforce
       write(10) (wtgen(i),i=0,nfprod),wgdsumo
-      write(10) wcum,wfcum,wdcum,wgdcum
+      write(10) wcum_dmc,wfcum,wdcum,wgdcum
      &,wcum1/nproc,wfcum1/nproc,(wgcum1(i)/nproc,i=1,nforce),wdcum1
-     &,ecum,efcum,ecum1/nproc,efcum1/nproc,(egcum1(i)/nproc,i=1,nforce)
-     &,ei1cum,ei2cum,ei3cum,r2cum,ricum
+     &,ecum_dmc,efcum,ecum1_dmc/nproc,efcum1/nproc,(egcum1(i)/nproc,i=1,nforce)
+     &,ei1cum,ei2cum,ei3cum,r2cum_dmc,ricum
       write(10) ipass,iblk,iblk_proc
       write(10) wcm2,wfcm2,wdcm2,wgdcm2,wcm21/nproc
      &,wfcm21/nproc,(wgcm21(i)/nproc,i=1,nforce),wdcm21, ecm2,efcm2

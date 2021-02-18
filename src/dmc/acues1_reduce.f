@@ -4,7 +4,12 @@
       use iterat, only: iblk, ipass
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
 
+      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
+     &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
+     &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
+     &wgdcum
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -13,11 +18,6 @@
       include 'force.h'
       include 'mpif.h'
 
-      common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
-     &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
-     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
-     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
-     &ricum,taucum(MFORCE)
       common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
      &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
      &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
@@ -36,7 +36,7 @@
 
       if(mode.eq.'dmc_one_mpi2') return
 
-      call mpi_reduce(ecum1,e1collect,1,mpi_double_precision
+      call mpi_reduce(ecum1_dmc,e1collect,1,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(ecm21,e21collect,1,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -45,7 +45,7 @@
       call mpi_reduce(wcm21,w21collect,1,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      ecum1=e1collect
+      ecum1_dmc=e1collect
       wcum1=w1collect
       ecm21=e21collect
       wcm21=w21collect

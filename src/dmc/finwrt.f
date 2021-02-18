@@ -17,7 +17,12 @@ c routine to print out final results
      &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
      &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
 
+      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
+     &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
+     &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
+     &wgdcum
       implicit real*8(a-h,o-z)
+
 
       include 'dmc.h'
       include 'vmc.h'
@@ -30,11 +35,6 @@ c routine to print out final results
       character*24 date
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
-     &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
-     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
-     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
-     &ricum,taucum(MFORCE)
       common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
      &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
      &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
@@ -68,7 +68,7 @@ c statement functions for error calculation
 
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errorn(x,x2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn-1),0.d0))
-      errc(x,x2)=error(x,x2,wcum,wcm2)
+      errc(x,x2)=error(x,x2,wcum_dmc,wcm2)
       errf(x,x2)=error(x,x2,wfcum,wfcm2)
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
       errc1(x,x2)=error(x,x2,wcum1,wcm21)
@@ -101,7 +101,7 @@ c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-b
 c     eval_eff=nconf*rn_eff(wcum1,wcm21)
 c     evalf_eff=nconf*rn_eff(wfcum1,wfcm21)
 c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
-      eval_eff=nconf*nstep*rn_eff(wcum,wcm2)
+      eval_eff=nconf*nstep*rn_eff(wcum_dmc,wcm2)
       evalf_eff=nconf*nstep*rn_eff(wfcum,wfcm2)
       evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
       rtpass1=dsqrt(pass_proc-1)
@@ -177,18 +177,18 @@ c    & f10.5)') dr2ac/trymove
       accav=acc/trymove
       accavn=dfloat(nacc)/trymove
 
-      wave=wcum/pass_proc
+      wave=wcum_dmc/pass_proc
       wfave=wfcum/pass_proc
-      eave=ecum/wcum
+      eave=ecum_dmc/wcum_dmc
       efave=efcum/wfcum
 
-      werr=errw(wcum,wcm2)
+      werr=errw(wcum_dmc,wcm2)
       wferr=errw(wfcum,wfcm2)
       werr1=errw1(wcum1,wcm21)
       wferr1=errw1(wfcum1,wfcm21)
-      eerr=errc(ecum,ecm2)
+      eerr=errc(ecum_dmc,ecm2)
       eferr=errf(efcum,efcm2)
-      eerr1=errc1(ecum1,ecm21)
+      eerr1=errc1(ecum1_dmc,ecm21)
       eferr1=errf1(efcum1,efcm21)
 
       if(mode.eq.'dmc_one_mpi1') then
@@ -202,7 +202,7 @@ c    & f10.5)') dr2ac/trymove
         write(6,'(''No. of walkers at end of run='',i5)') nwalk
 
         write(6,'(''nwalk_eff/nwalk         ='',2f6.3)')
-     &   rn_eff(wcum1,wcm21)/pass_proc,rn_eff(wcum,wcm2)/iblk_proc
+     &   rn_eff(wcum1,wcm21)/pass_proc,rn_eff(wcum_dmc,wcm2)/iblk_proc
         write(6,'(''nwalk_eff/nwalk with f  ='',2f6.3)')
      &   rn_eff(wfcum1,wfcm21)/pass_proc,rn_eff(wfcum,wfcm2)/iblk_proc
         write(6,'(''nwalk_eff/nwalk with fs ='',2f6.3)')
@@ -244,13 +244,13 @@ c    & f10.5)') dr2ac/trymove
         energy_err(ifr)=egerr
   30  continue
       do 40 ifr=1,nforce
-        peave=pecum(ifr)/wgcum(ifr)
-        tpbave=tpbcum(ifr)/wgcum(ifr)
-        tjfave=tjfcum(ifr)/wgcum(ifr)
+        peave=pecum_dmc(ifr)/wgcum(ifr)
+        tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
+        tjfave=tjfcum_dmc(ifr)/wgcum(ifr)
 
-        peerr=errg(pecum(ifr),pecm2(ifr),ifr)
-        tpberr=errg(tpbcum(ifr),tpbcm2(ifr),ifr)
-        tjferr=errg(tjfcum(ifr),tjfcm2(ifr),ifr)
+        peerr=errg(pecum_dmc(ifr),pecm2(ifr),ifr)
+        tpberr=errg(tpbcum_dmc(ifr),tpbcm2(ifr),ifr)
+        tjferr=errg(tjfcum_dmc(ifr),tjfcm2(ifr),ifr)
         write(6,'(''potential energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
         write(6,'(''jf kinetic energy ='',t24,f12.7,'' +-''
