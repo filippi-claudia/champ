@@ -30,7 +30,10 @@ c job where it left off
       use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
      &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
+      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -66,7 +69,6 @@ c job where it left off
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)

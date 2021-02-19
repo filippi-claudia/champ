@@ -25,7 +25,10 @@ c routine to print out final results
      &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
 
+      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
+
       implicit real*8(a-h,o-z)
+
 
       include 'dmc.h'
       include 'vmc.h'
@@ -38,8 +41,6 @@ c routine to print out final results
       character*24 date
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
-     &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)

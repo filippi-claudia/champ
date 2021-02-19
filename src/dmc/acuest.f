@@ -19,7 +19,10 @@ c routine to accumulate estimators for energy etc.
       use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
      &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
+      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -36,8 +39,6 @@ c routine to accumulate estimators for energy etc.
       parameter (zero=0.d0,one=1.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
-     &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
 
       character*12 mode
       common /contr3/ mode
