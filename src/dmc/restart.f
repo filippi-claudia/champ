@@ -34,7 +34,9 @@
 
       use denupdn, only: rprobdn, rprobup
       use contr3, only: mode
+      use mpiblk, only: iblk_proc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -83,7 +85,6 @@
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
 
-      common /mpiblk/ iblk_proc
 
       character*13 filename
 

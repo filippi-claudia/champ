@@ -16,3 +16,13 @@ contains
         wid = (idtask .eq. 0)
     end subroutine mpiconf_init
 end module mpiconf
+
+module mpiblk
+    !> Arguments: iblk_proc
+
+    integer  :: iblk_proc
+    private
+
+    public :: iblk_proc
+    save
+end module mpiblk

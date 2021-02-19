@@ -23,7 +23,9 @@ c routine to accumulate estimators for energy etc.
 
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
+      use mpiblk, only: iblk_proc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -45,7 +47,6 @@ c routine to accumulate estimators for energy etc.
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 
-      common /mpiblk/ iblk_proc
 
       dimension egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE),
      &tpbcollect(MFORCE),tjfcollect(MFORCE),eg2collect(MFORCE),wg2collect(MFORCE),

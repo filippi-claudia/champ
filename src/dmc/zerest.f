@@ -25,7 +25,9 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
 
       use denupdn, only: rprobdn, rprobup
+      use mpiblk, only: iblk_proc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -51,7 +53,6 @@ c routine to accumulate estimators for energy etc.
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
-      common /mpiblk/ iblk_proc
 
       iblk=0
       iblk_proc=0

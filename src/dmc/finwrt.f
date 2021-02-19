@@ -32,7 +32,9 @@ c routine to print out final results
       use header, only: date, title
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
 
+      use mpiblk, only: iblk_proc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -49,7 +51,6 @@ c routine to print out final results
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
-      common /mpiblk/ iblk_proc
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
       dimension taucollect(MFORCE),rprobcollect(nrad)

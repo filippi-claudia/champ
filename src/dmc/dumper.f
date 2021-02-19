@@ -37,7 +37,9 @@ c job where it left off
 
       use denupdn, only: rprobdn, rprobup
       use contr3, only: mode
+      use mpiblk, only: iblk_proc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -85,7 +87,6 @@ C      include 'mpi_qmc.h'
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
 
-      common /mpiblk/ iblk_proc
 
       dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
       dimension irn_tmp(4,0:NPROCX)
