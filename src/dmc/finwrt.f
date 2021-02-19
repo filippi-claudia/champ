@@ -28,9 +28,13 @@ c routine to print out final results
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use denupdn, only: rprobdn, rprobup
-
       use contr3, only: mode
+      use header, only: date, title
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+
       implicit real*8(a-h,o-z)
+
+
 
 
       include 'dmc.h'
@@ -40,17 +44,11 @@ c routine to print out final results
 
       parameter (one=1.d0,two=2.d0,half=.5d0)
 
-      character*20 title
-      character*24 date
-
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /header/ title,date
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
       common /mpiblk/ iblk_proc
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
