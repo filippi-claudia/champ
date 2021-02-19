@@ -35,7 +35,9 @@ c job where it left off
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use mpiconf, only: idtask, nproc, wid, NPROCX
 
+      use denupdn, only: rprobdn, rprobup
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -74,7 +76,6 @@ C      include 'mpi_qmc.h'
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /denupdn/ rprobup(nrad),rprobdn(nrad)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
