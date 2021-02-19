@@ -66,7 +66,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use force_dmc, only: itausec, nwprod
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
 
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -90,8 +93,6 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       common /elec/ nup,ndn
       common /velratio/ fratio(MWALK,MFORCE),xdrifted(3,MELEC,MWALK,MFORCE)
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),

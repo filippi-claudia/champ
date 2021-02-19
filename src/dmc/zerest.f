@@ -22,7 +22,10 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
 
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -42,8 +45,6 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 
 c routine to accumulate estimators for energy etc.
 
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),

@@ -32,7 +32,10 @@ c job where it left off
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
 
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -69,8 +72,6 @@ c job where it left off
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
