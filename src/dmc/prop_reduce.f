@@ -1,19 +1,16 @@
       subroutine prop_reduce(wgsum)
 
       use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum
-
+      use mpiconf, only: idtask, nproc, wid, NPROCX
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'dmc.h'
       include 'properties.h'
-      include 'prop_dmc.h'
 
       character*12 mode
       common /contr3/ mode
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension vp2sum(MAXPROP), vpcollect(MAXPROP), vp2collect(MAXPROP)
 
@@ -55,7 +52,9 @@
 
       subroutine prop_send(irecv,itag_s)
 
+      use mpiconf, only: idtask, nproc, wid, NPROCX
       implicit real*8(a-h,o-z)
+
 
       include 'dmc.h'
       include 'force.h'
@@ -66,7 +65,6 @@
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /mpiconf/ idtask,nproc,wid
 
       dimension istatus(MPI_STATUS_SIZE)
 

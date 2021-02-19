@@ -17,7 +17,7 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
       use force_dmc, only: itausec, nwprod
-      implicit real*8(a-h,o-z)
+      use mpiconf, only: idtask, nproc, wid, NPROCX
 
 
 
@@ -25,15 +25,12 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
-      include 'mpi_qmc.h'
       include 'mpif.h'
 
 
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension nwalk_all(0:NPROCX),icommunicate_all(0:NPROCX),
      &iwalk_stack(NPROCX)

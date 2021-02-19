@@ -27,7 +27,9 @@ c routine to print out final results
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
 
+      use mpiconf, only: idtask, nproc, wid, NPROCX
       implicit real*8(a-h,o-z)
+
 
       include 'dmc.h'
       include 'vmc.h'
@@ -53,8 +55,6 @@ c routine to print out final results
       common /contr3/ mode
 
       common /mpiblk/ iblk_proc
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
       dimension taucollect(MFORCE),rprobcollect(nrad)

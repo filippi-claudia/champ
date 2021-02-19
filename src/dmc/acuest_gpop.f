@@ -21,8 +21,10 @@ c routine to accumulate estimators for energy etc.
      &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
+      use mpiconf, only: idtask, nproc, wid, NPROCX
 
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -45,8 +47,6 @@ c routine to accumulate estimators for energy etc.
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE),
      +tpbcollect(MFORCE),tjfcollect(MFORCE),taucollect(MFORCE),

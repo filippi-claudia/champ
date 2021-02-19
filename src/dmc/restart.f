@@ -29,10 +29,11 @@
      &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
-
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use mpiconf, only: idtask, nproc, wid, NPROCX
 
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -55,7 +56,7 @@
       include 'mstates.h'
       include 'pseudo.h'
       include 'mpif.h'
-      include 'mpi_qmc.h'
+!      include 'mpi_qmc.h'
       parameter (zero=0.d0,one=1.d0)
       parameter (small=1.e-6)
 
@@ -82,12 +83,10 @@
       common /contr3/ mode
 
       common /mpiblk/ iblk_proc
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       character*13 filename
 
-      dimension irn(4,0:nprocx),istatus(MPI_STATUS_SIZE)
+      dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
 
       dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT)
      &,znucx(MCENT),n1sx(MCENT),n2sx(MCENT),n2px(3,MCENT)

@@ -1,6 +1,8 @@
       subroutine mmpol_reduce(wgsum)
 
+      use mpiconf, only: idtask, nproc, wid, NPROCX
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'dmc.h'
@@ -8,9 +10,6 @@
 
       character*12 mode
       common /contr3/ mode
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       if(immpol.eq.0) return
 
@@ -62,7 +61,9 @@
 
       subroutine mmpol_send(irecv,itag_s)
 
+      use mpiconf, only: idtask, nproc, wid, NPROCX
       implicit real*8(a-h,o-z)
+
 
       include 'dmc.h'
       include 'force.h'
@@ -75,7 +76,6 @@
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
-      common /mpiconf/ idtask,nproc,wid
 
       dimension istatus(MPI_STATUS_SIZE)
 

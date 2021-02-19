@@ -1,26 +1,21 @@
       program maindmc
 c Written by Claudia Filippi
-      implicit double precision (a-h,o-z)
+      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use mpiconf, only: mpiconf_init 
 
-      include 'mpi_qmc.h'
-      include 'mpif.h'
+      implicit real*8(a-h,o-z)
 
       character*40 filename
 
       character*12 mode
       common /contr3/ mode
 
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
-
       call mpi_init(ierr)
-
       call mpi_comm_rank(MPI_COMM_WORLD,idtask,ierr)
       call mpi_comm_size(MPI_COMM_WORLD,nproc,ierr)
 
-      if(nproc.gt.nprocx) call fatal_error('MAIN: nproc > nprocx')
+      call mpiconf_init()
 
-      wid=(idtask.eq.0)
 
 c Open the standard output and the log file only on the master
       if(wid) then

@@ -33,8 +33,10 @@ c job where it left off
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
 
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use mpiconf, only: idtask, nproc, wid, NPROCX
 
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -55,7 +57,7 @@ c job where it left off
       include 'force.h'
       include 'mstates.h'
       include 'pseudo.h'
-      include 'mpi_qmc.h'
+C      include 'mpi_qmc.h'
       include 'mpif.h'
 
       parameter (zero=0.d0,one=1.d0)
@@ -79,13 +81,10 @@ c job where it left off
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
-
       character*13 filename
 
-      dimension irn(4,0:nprocx),istatus(MPI_STATUS_SIZE)
-      dimension irn_tmp(4,0:nprocx)
+      dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
+      dimension irn_tmp(4,0:NPROCX)
 
       if(nforce.gt.1) call strech(xold_dmc,xold_dmc,ajacob,1,0)
 

@@ -1,6 +1,8 @@
       subroutine pcm_reduce(wgsum)
 
+      use mpiconf, only: idtask, nproc, wid, NPROCX
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       include 'dmc.h'
@@ -8,9 +10,6 @@
 
       character*12 mode
       common /contr3/ mode
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       if(ipcm.eq.0) return
 

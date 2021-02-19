@@ -12,13 +12,9 @@
      &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use mpiconf, only: idtask, nproc, wid, NPROCX
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       include 'vmc.h'
       include 'dmc.h'
@@ -28,9 +24,6 @@
 
       character*12 mode
       common /contr3/ mode
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
      &,wg21collect(MFORCE),taucollect(MFORCE),rprobcollect(nrad)

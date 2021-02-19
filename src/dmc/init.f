@@ -13,7 +13,9 @@ c routine to accumulate estimators for energy etc.
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
 
       use force_dmc, only: itausec, nwprod
+      use mpiconf, only: idtask, nproc, wid, NPROCX
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -41,9 +43,6 @@ c routine to accumulate estimators for energy etc.
 
       character*12 mode
       common /contr3/ mode
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
 c Initialize various quantities at beginning of run
 c the initial values of energy psi etc. are calculated here

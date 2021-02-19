@@ -33,8 +33,10 @@ c job where it left off
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
 
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use mpiconf, only: idtask, nproc, wid, NPROCX
 
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -56,7 +58,7 @@ c job where it left off
       include 'mstates.h'
       include 'pseudo.h'
       include 'mpif.h'
-      include 'mpi_qmc.h'
+C      include 'mpi_qmc.h'
       parameter (zero=0.d0,one=1.d0)
       parameter (small=1.e-6)
 
@@ -83,11 +85,9 @@ c job where it left off
       common /contr3/ mode
 
       common /mpiblk/ iblk_proc
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
-      dimension irn(4,0:nprocx),istatus(MPI_STATUS_SIZE)
-      dimension irn_tmp(4,0:nprocx)
+      dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
+      dimension irn_tmp(4,0:NPROCX)
 
       if(mode.eq.'dmc_one_mpi2') then
         call dumper_gpop

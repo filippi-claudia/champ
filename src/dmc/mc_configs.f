@@ -1,10 +1,9 @@
       subroutine mc_configs
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+      use mpiconf, only: idtask, nproc, wid, NPROCX
 
       implicit real*8(a-h,o-z)
-
-
 
       include 'vmc.h'
       include 'dmc.h'
@@ -21,9 +20,6 @@
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
       common /contr3/ mode
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension irn(4)
       save ngfmc
