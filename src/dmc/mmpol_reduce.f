@@ -1,15 +1,15 @@
       subroutine mmpol_reduce(wgsum)
 
       use mpiconf, only: idtask, nproc, wid, NPROCX
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
       include 'dmc.h'
       include 'mmpol.h'
 
-      character*12 mode
-      common /contr3/ mode
 
       if(immpol.eq.0) return
 

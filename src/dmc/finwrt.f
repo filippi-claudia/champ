@@ -26,11 +26,11 @@ c routine to print out final results
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
-
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use denupdn, only: rprobdn, rprobup
-      implicit real*8(a-h,o-z)
 
+      use contr3, only: mode
+      implicit real*8(a-h,o-z)
 
 
       include 'dmc.h'
@@ -42,7 +42,6 @@ c routine to print out final results
 
       character*20 title
       character*24 date
-      character*12 mode
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
@@ -52,7 +51,6 @@ c routine to print out final results
       common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
       common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
      &                   ngradnts,igrdtype
-      common /contr3/ mode
       common /mpiblk/ iblk_proc
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)

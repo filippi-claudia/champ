@@ -3,7 +3,9 @@
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use mpiconf, only: idtask, nproc, wid, NPROCX
 
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'dmc.h'
@@ -12,14 +14,12 @@
 
       character*25 fmt
       character*20 filename
-      character*12 mode
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
-      common /contr3/ mode
 
       dimension irn(4)
       save ngfmc

@@ -36,7 +36,9 @@ c job where it left off
       use mpiconf, only: idtask, nproc, wid, NPROCX
 
       use denupdn, only: rprobdn, rprobup
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -82,8 +84,6 @@ C      include 'mpi_qmc.h'
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
-      character*12 mode
-      common /contr3/ mode
 
       common /mpiblk/ iblk_proc
 

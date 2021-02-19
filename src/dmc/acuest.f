@@ -22,7 +22,9 @@ c routine to accumulate estimators for energy etc.
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
 
       use mpiconf, only: idtask, nproc, wid, NPROCX
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -42,8 +44,6 @@ c routine to accumulate estimators for energy etc.
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
-      character*12 mode
-      common /contr3/ mode
 
       common /mpiblk/ iblk_proc
 

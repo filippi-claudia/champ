@@ -14,7 +14,9 @@ c routine to accumulate estimators for energy etc.
 
       use force_dmc, only: itausec, nwprod
       use mpiconf, only: idtask, nproc, wid, NPROCX
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -41,8 +43,6 @@ c routine to accumulate estimators for energy etc.
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
-      character*12 mode
-      common /contr3/ mode
 
 c Initialize various quantities at beginning of run
 c the initial values of energy psi etc. are calculated here

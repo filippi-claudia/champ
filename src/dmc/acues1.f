@@ -22,7 +22,9 @@ c routine to accumulate estimators for energy etc.
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
 
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -44,8 +46,6 @@ c routine to accumulate estimators for energy etc.
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
-      character*12 mode
-      common /contr3/ mode
 
       if(mode.eq.'dmc_one_mpi2') then
         call acues1_gpop

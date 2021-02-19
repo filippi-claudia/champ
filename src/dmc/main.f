@@ -2,13 +2,11 @@
 c Written by Claudia Filippi
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use mpiconf, only: mpiconf_init 
+      use contr3, only: mode
 
       implicit real*8(a-h,o-z)
 
       character*40 filename
-
-      character*12 mode
-      common /contr3/ mode
 
       call mpi_init(ierr)
       call mpi_comm_rank(MPI_COMM_WORLD,idtask,ierr)

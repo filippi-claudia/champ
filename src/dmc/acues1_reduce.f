@@ -14,16 +14,15 @@
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use mpiconf, only: idtask, nproc, wid, NPROCX
 
+      use contr3, only: mode
       implicit real*8(a-h,o-z)
+
 
       include 'vmc.h'
       include 'dmc.h'
       include 'force.h'
       include 'mpif.h'
 
-
-      character*12 mode
-      common /contr3/ mode
 
       dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
      &,wg21collect(MFORCE),taucollect(MFORCE),rprobcollect(nrad)
