@@ -1,13 +1,12 @@
       subroutine mmpol_reduce(wgsum)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
+
       implicit real*8(a-h,o-z)
 
-
-
       include 'mpif.h'
-      include 'dmc.h'
       include 'mmpol.h'
 
 
@@ -61,11 +60,12 @@
 
       subroutine mmpol_send(irecv,itag_s)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mpiconf, only: idtask, nproc, wid, NPROCX
+
       implicit real*8(a-h,o-z)
 
 
-      include 'dmc.h'
       include 'force.h'
       include 'mmpol.h'
       include 'mpif.h'

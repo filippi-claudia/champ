@@ -2,6 +2,7 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to print out final results
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
@@ -31,15 +32,10 @@ c routine to print out final results
       use contr3, only: mode
       use header, only: date, title
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-
       use mpiblk, only: iblk_proc
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
-      include 'dmc.h'
       include 'vmc.h'
       include 'force.h'
       include 'mpif.h'

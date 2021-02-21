@@ -44,9 +44,9 @@ end module prp001
 
 module prp002
     !> Arguments: vprop_old
+    use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
     use properties, only: MAXPROP
     use precision_kinds, only: dp
-    include 'dmc.h'
 
     real(dp), dimension(:, :), allocatable :: vprop_old !(MAXPROP,MWALK)
     real(dp), dimension(:), allocatable :: vprop_old2 !(MAXPROP)

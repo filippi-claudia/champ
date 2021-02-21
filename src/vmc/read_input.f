@@ -147,8 +147,6 @@ c and Anthony Scemema
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
-c      include 'dmc.h' now emty
-
       character*20 fmt
       character*32 keyname
       character*10 eunit

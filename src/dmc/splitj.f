@@ -1,24 +1,18 @@
       subroutine splitj
 c Written by Cyrus Umrigar
+
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
       use age, only: iage, ioldest, ioldestmx
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
-
       use force_dmc, only: itausec, nwprod
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
       include 'vmc.h'
-      include 'dmc.h'
       include 'force.h'
       parameter (zero=0.d0,two=2.d0,half=.5d0)
 

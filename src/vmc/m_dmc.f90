@@ -1,10 +1,13 @@
 module dmc_mod
-    !> Arguments: MWALK
+    !> Arguments: MWALK, MFPROD, MFPRD1, MPATH
     !> MWALK: Maximum number of walkers
     integer, parameter :: MWALK = 600
+    integer, parameter :: MFPROD=3201
+    integer, parameter :: MFPRD1=MFPROD-1
+    integer, parameter :: MPATH=999
 
     private
-    public :: MWALK
+    public :: MWALK, MFPROD, MFPRD1, MPATH
     save
 end module  dmc_mod
 

@@ -1,5 +1,6 @@
       subroutine startr_gpop
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
@@ -33,26 +34,10 @@
       use mpiconf, only: idtask, nproc, wid, NPROCX
 
       use denupdn, only: rprobdn, rprobup
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       include 'vmc.h'
-      include 'dmc.h'
       include 'force.h'
       include 'mstates.h'
       include 'pseudo.h'

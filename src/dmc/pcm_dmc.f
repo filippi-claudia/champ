@@ -1,7 +1,9 @@
       subroutine pcm_prt(iblk,wgcum,wgcm2)
+
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+
       implicit real*8(a-h,o-z)
  
-      include 'dmc.h'
       include 'force.h'
       include 'pcm.h'
       data hatokc/627.509541d0/
@@ -55,9 +57,10 @@ c     gpcmkcal=spcmkcal+vpcmkcal
 c-----------------------------------------------------------------------
       subroutine pcm_fin(iblk,wgcum,wgcm2)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+
       implicit real*8(a-h,o-z)
 
-      include 'dmc.h'
       include 'force.h'
       include 'pcm.h'
 
@@ -76,9 +79,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_save(iw)
+
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+
       implicit real*8(a-h,o-z)
  
-      include 'dmc.h'
       include 'pcm.h'
       common /pcm_hpsi/ pcms,pcmv,qopcm,enfpcm(MCHS)
       common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
@@ -99,14 +104,15 @@ c     write(6,*) 'CIAO',qopcm,qopcmo(iw),iw,spcmo(iw),vpcmo(iw)
 c-----------------------------------------------------------------------
       subroutine pcm_sum(p,q,iw)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
 
       implicit real*8(a-h,o-z)
  
-      include 'dmc.h'
       include 'pcm.h'
+
       common /pcm_hpsi/ pcms,pcmv,qopcm,enfpcm(MCHS)
       common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
 
@@ -127,13 +133,13 @@ c     write(6,*) 'HELLO',qopcm,qopcmo(iw),iw
 c-----------------------------------------------------------------------
       subroutine pcm_cum(wsum_dmc)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
 
       implicit real*8(a-h,o-z)
  
-      include 'dmc.h'
       include 'pcm.h'
 
       if(ipcm.eq.0) return
@@ -161,9 +167,11 @@ c     write (6,*) 'HELLO-CIAO', qopcm_cum
       end
 c-----------------------------------------------------------------------
       subroutine pcm_splitj(iw,iw2)
+
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+
       implicit real*8(a-h,o-z)
 
-      include 'dmc.h'
       include 'pcm.h'
       common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
 

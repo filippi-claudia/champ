@@ -2,6 +2,7 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
@@ -21,23 +22,11 @@ c routine to accumulate estimators for energy etc.
      &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
-
       use mpiconf, only: idtask, nproc, wid, NPROCX
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-
-
-
-
-
       include 'vmc.h'
-      include 'dmc.h'
       include 'force.h'
       include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)

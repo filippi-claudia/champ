@@ -1,14 +1,14 @@
       subroutine mc_configs
+
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use mpiconf, only: idtask, nproc, wid, NPROCX
-
       use contr3, only: mode
+
       implicit real*8(a-h,o-z)
 
-
       include 'vmc.h'
-      include 'dmc.h'
       include 'force.h'
       include 'mpif.h'
 

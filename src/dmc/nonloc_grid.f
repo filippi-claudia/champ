@@ -1,5 +1,6 @@
       subroutine nonloc_grid(iel,iw,x,psid,imove)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use contrl_per, only: ibasis, iperiodic
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
@@ -10,13 +11,7 @@
 
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
       include 'vmc.h'
-      include 'dmc.h'
       include 'force.h'
       include 'optjas.h'
       include 'pseudo.h'
@@ -145,6 +140,7 @@ c       write(6,*) 'moved A',iw,iel,(x(kk),kk=1,3)
 c-----------------------------------------------------------------------
       subroutine t_vpsp_sav
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
@@ -157,7 +153,6 @@ c-----------------------------------------------------------------------
 
 
       include 'vmc.h'
-      include 'dmc.h'
       include 'pseudo.h'
       include 'force.h'
 

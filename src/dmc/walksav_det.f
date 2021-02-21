@@ -1,14 +1,14 @@
       subroutine walksav_det(iw)
 c Written by Claudia Filippi
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcepar, only: deltot, istrech, nforce
-      implicit real*8(a-h,o-z)
 
+      implicit real*8(a-h,o-z)
 
       include 'mpif.h'
       include 'vmc.h'
-      include 'dmc.h'
       include 'force.h'
       include 'mstates.h'
 

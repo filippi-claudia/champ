@@ -13,17 +13,14 @@ c nlo                 # of processors that should have nwalk_av_int walkers
 c nhi                 # of processors that should have nwalk_av_int+1 walkers
 c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
       use force_dmc, only: itausec, nwprod
       use mpiconf, only: idtask, nproc, wid, NPROCX
 
-
-
-
       include 'vmc.h'
-      include 'dmc.h'
       include 'force.h'
       include 'mpif.h'
 

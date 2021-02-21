@@ -1,12 +1,13 @@
       subroutine walksav_jas(iw)
 c Written by Claudia Filippi
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
       include 'vmc.h'
-      include 'dmc.h'
       include 'force.h'
 
 

@@ -1,9 +1,9 @@
       subroutine acues1_reduce
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use forcepar, only: deltot, istrech, nforce
       use iterat, only: iblk, ipass
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
-
       use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
      &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
      &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
@@ -13,13 +13,12 @@
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use mpiconf, only: idtask, nproc, wid, NPROCX
-
       use contr3, only: mode
+
       implicit real*8(a-h,o-z)
 
 
       include 'vmc.h'
-      include 'dmc.h'
       include 'force.h'
       include 'mpif.h'
 
