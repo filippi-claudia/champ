@@ -328,8 +328,8 @@ module derivest
    !> DMC derivatives
    !> Arguments: derivcm2, derivcum, derivsum, derivtotave_num_old
 
+   use m_force, only: MFORCE
    use precision_kinds, only: dp
-   include 'vmc.h'
 
     real(dp), dimension(:), allocatable :: derivcm2 !(MFORCE)
     real(dp), dimension(:,:), allocatable :: derivcum !(10,MFORCE)
