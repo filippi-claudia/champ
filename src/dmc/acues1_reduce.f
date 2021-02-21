@@ -1,5 +1,8 @@
       subroutine acues1_reduce
 
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use forcepar, only: deltot, istrech, nforce
       use iterat, only: iblk, ipass
@@ -18,7 +21,6 @@
       implicit real*8(a-h,o-z)
 
 
-      include 'vmc.h'
       include 'force.h'
       include 'mpif.h'
 

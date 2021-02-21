@@ -2,6 +2,9 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
@@ -25,7 +28,6 @@ c routine to accumulate estimators for energy etc.
       use contr3, only: mode
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'force.h'
       parameter (zero=0.d0,one=1.d0)
 

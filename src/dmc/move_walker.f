@@ -1,6 +1,9 @@
       subroutine send_walker(irecv)
 c Written by Claudia Filippi
 
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
@@ -11,12 +14,6 @@ c Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-      include 'vmc.h'
       include 'force.h'
       include 'mpif.h'
 
