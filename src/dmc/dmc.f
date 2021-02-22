@@ -33,7 +33,9 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
 
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use bparm, only: nocuspb, nspin2b
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -59,7 +61,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
       common /dorb/ iworbd(MELEC,MDET)
-      common /bparm/ nspin2b,nocuspb
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
       common /wfsec/ iwftype(MFORCE),iwf,nwftype

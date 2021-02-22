@@ -40,7 +40,10 @@ c routine to print out final results
 
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
@@ -48,7 +51,6 @@ c routine to print out final results
       parameter (one=1.d0,two=2.d0,half=.5d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
       dimension taucollect(MFORCE),rprobcollect(nrad)
