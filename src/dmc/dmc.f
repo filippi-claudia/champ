@@ -25,12 +25,14 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
 
       use force_dmc, only: itausec, nwprod
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM,
+     &NGNORMX, NGVECX, NG1DX, NGNORM_SIMX, NGVEC_SIMX, NGNORM_BIGX,
+     &NGVEC_BIGX, NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
 
       implicit real*8(a-h,o-z)
 
       include 'pseudo.h'
       include 'numbas.h'
-      include 'ewald.h'
 
       parameter (one=1.d0,four=4.d0)
 
