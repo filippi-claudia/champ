@@ -37,10 +37,10 @@
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use denupdn, only: rprobdn, rprobup
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       implicit real*8(a-h,o-z)
 
-      include 'mstates.h'
       include 'pseudo.h'
 C      include 'mpi_qmc.h'
       include 'mpif.h'

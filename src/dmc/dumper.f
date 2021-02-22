@@ -42,10 +42,10 @@ c job where it left off
       use contr3, only: mode
       use mpiblk, only: iblk_proc
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       implicit real*8(a-h,o-z)
 
-      include 'mstates.h'
       include 'pseudo.h'
       include 'mpif.h'
 C      include 'mpi_qmc.h'

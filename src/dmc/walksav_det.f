@@ -8,11 +8,11 @@ c Written by Claudia Filippi
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcepar, only: deltot, istrech, nforce
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'mstates.h'
 
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn

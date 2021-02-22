@@ -6,12 +6,12 @@
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mstates_mod, only: MSTATES, MDETCSFX
 
       implicit real*8(a-h,o-z)
 
 
       include 'pseudo.h'
-      include 'mstates.h'
 
       parameter (one=1.d0,half=0.5d0)
 
