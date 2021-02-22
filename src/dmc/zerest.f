@@ -30,16 +30,16 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
 
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
       implicit real*8(a-h,o-z)
+
 
 
       parameter (zero=0.d0,one=1.d0)
 
 c routine to accumulate estimators for energy etc.
 
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
 
       iblk=0

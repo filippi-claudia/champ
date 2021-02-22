@@ -28,15 +28,15 @@ c routine to accumulate estimators for energy etc.
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
       dimension egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE),
      +tpbcollect(MFORCE),tjfcollect(MFORCE),taucollect(MFORCE),

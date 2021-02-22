@@ -9,6 +9,7 @@ subroutine allocate_dmc()
   use estcum, only: allocate_estcum_dmc
   use est2cm, only: allocate_est2cm_dmc
   use derivest, only: allocate_derivest
+  use branch, only: allocate_branch
   !> Allocate dmc-related arrays:
   call allocate_iage()
   call allocate_contrldmc()
@@ -17,6 +18,7 @@ subroutine allocate_dmc()
   call allocate_estcum_dmc()
   call allocate_est2cm_dmc()
   call allocate_derivest()
+  call allocate_branch()
 end subroutine allocate_dmc
 
 subroutine deallocate_dmc()
@@ -27,6 +29,7 @@ subroutine deallocate_dmc()
   use estcum, only: deallocate_estcum_dmc
   use est2cm, only: deallocate_est2cm_dmc 
   use derivest, only: deallocate_derivest
+  use branch, only: deallocate_branch
   !> Deallocate dmc-related arrays:
   call deallocate_iage()
   call deallocate_contrldmc()
@@ -35,4 +38,5 @@ subroutine deallocate_dmc()
   call deallocate_estcum_dmc()
   call deallocate_est2cm_dmc() 
   call deallocate_derivest()
+  call deallocate_branch()
 end subroutine deallocate_dmc

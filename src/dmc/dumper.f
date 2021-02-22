@@ -47,7 +47,10 @@ c job where it left off
 
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
@@ -65,9 +68,6 @@ C      include 'mpi_qmc.h'
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 

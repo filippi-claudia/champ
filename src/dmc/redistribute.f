@@ -23,13 +23,10 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       use force_dmc, only: itausec, nwprod
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
 
       include 'mpif.h'
-
-
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
       dimension nwalk_all(0:NPROCX),icommunicate_all(0:NPROCX),
      &iwalk_stack(NPROCX)
