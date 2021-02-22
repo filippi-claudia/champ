@@ -31,18 +31,17 @@
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use mpiconf, only: idtask, nproc, wid, NPROCX
-
       use denupdn, only: rprobdn, rprobup
       use contr3, only: mode
       use mpiblk, only: iblk_proc
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'mstates.h'
       include 'pseudo.h'
       include 'mpif.h'
-!      include 'mpi_qmc.h'
+
       parameter (zero=0.d0,one=1.d0)
       parameter (small=1.e-6)
 

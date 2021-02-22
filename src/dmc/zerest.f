@@ -27,10 +27,10 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use denupdn, only: rprobdn, rprobup
       use mpiblk, only: iblk_proc
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'pseudo.h'
 
       parameter (zero=0.d0,one=1.d0)

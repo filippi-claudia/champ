@@ -1,10 +1,10 @@
       subroutine pcm_prt(iblk,wgcum,wgcm2)
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
  
-      include 'force.h'
       include 'pcm.h'
       data hatokc/627.509541d0/
 
@@ -58,10 +58,10 @@ c-----------------------------------------------------------------------
       subroutine pcm_fin(iblk,wgcum,wgcm2)
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'pcm.h'
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)

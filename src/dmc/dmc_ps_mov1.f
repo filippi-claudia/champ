@@ -71,11 +71,12 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use denupdn, only: rprobdn, rprobup
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
       
       include 'pseudo.h'
-      include 'force.h'
+
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (adrift=0.5d0)
 

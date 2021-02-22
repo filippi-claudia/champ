@@ -26,10 +26,10 @@ c routine to accumulate estimators for energy etc.
      &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
       use mpiconf, only: idtask, nproc, wid, NPROCX
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)
 

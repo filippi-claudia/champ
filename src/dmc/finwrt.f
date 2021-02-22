@@ -36,10 +36,10 @@ c routine to print out final results
       use header, only: date, title
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
       use mpiblk, only: iblk_proc
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'mpif.h'
 
       parameter (one=1.d0,two=2.d0,half=.5d0)

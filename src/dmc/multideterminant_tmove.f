@@ -5,11 +5,11 @@
      &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'pseudo.h'
       include 'mstates.h'
 

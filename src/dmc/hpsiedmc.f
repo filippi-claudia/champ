@@ -10,11 +10,9 @@ c Written by Claudia Filippi
       use forcepar, only: deltot, istrech, nforce
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use force_dmc, only: itausec, nwprod
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
-
-      include 'force.h'
-
 
       dimension coord(3),x(3,MELEC)
 

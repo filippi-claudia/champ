@@ -17,10 +17,10 @@ c routine to accumulate estimators for energy etc.
       use force_dmc, only: itausec, nwprod
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'pseudo.h'
       include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)

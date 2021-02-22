@@ -1,9 +1,9 @@
       subroutine deriv(wtg,eold,pwt,ajac,psid,psij,idrifdifgfunc,iw,mwalk)
       use forcepar, only: deltot, istrech, nforce
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       parameter(mprop=100)
 
@@ -31,10 +31,10 @@
       subroutine init_averages_index
 
       use forcepar, only: deltot, istrech, nforce
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       parameter(mprop=100)
       common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
       common /c_averages_index/jeloc,jderiv(3,MFORCE)
@@ -90,10 +90,10 @@ c deriv
       subroutine average_write
 
       use forcepar, only: deltot, istrech, nforce
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
 
       parameter(mprop=100)
       common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop

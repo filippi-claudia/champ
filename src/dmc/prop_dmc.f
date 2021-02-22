@@ -9,11 +9,11 @@ C----------------------------------------------
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum 
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
  
-      include 'force.h'
       include 'properties.h'
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar

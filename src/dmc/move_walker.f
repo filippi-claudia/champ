@@ -11,10 +11,10 @@ c Written by Claudia Filippi
       use age, only: iage, ioldest, ioldestmx
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use force_dmc, only: itausec, nwprod
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'mpif.h'
 
       common /velratio/ fratio(MWALK,MFORCE)

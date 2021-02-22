@@ -62,11 +62,11 @@
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mpiconf, only: idtask, nproc, wid, NPROCX
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'mmpol.h'
       include 'mpif.h'
 

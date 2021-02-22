@@ -22,8 +22,8 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       use forcepar, only: deltot, istrech, nforce
       use force_dmc, only: itausec, nwprod
       use mpiconf, only: idtask, nproc, wid, NPROCX
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
-      include 'force.h'
       include 'mpif.h'
 
 

@@ -6,11 +6,11 @@ c Written by Claudia Filippi
      &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'force.h'
 
 
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),

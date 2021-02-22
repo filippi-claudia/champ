@@ -17,13 +17,12 @@
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
 
-      include 'force.h'
       include 'mpif.h'
-
 
       dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
      &,wg21collect(MFORCE),taucollect(MFORCE),rprobcollect(nrad)

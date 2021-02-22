@@ -7,11 +7,11 @@ c Written by Claudia Filippi
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcepar, only: deltot, istrech, nforce
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'force.h'
       include 'mstates.h'
 
       common /dets/ cdet(MDET,MSTATES,MWF),ndet

@@ -77,10 +77,10 @@
       subroutine pcm_send(irecv,itag_s)
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'mpif.h'
       include 'pcm.h'
 

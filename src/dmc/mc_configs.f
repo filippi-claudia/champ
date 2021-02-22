@@ -8,10 +8,10 @@
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
 
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       include 'mpif.h'
 
       character*25 fmt

@@ -26,9 +26,10 @@ c routine to accumulate estimators for energy etc.
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
 
       use contr3, only: mode
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+
       implicit real*8(a-h,o-z)
 
-      include 'force.h'
       parameter (zero=0.d0,one=1.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
