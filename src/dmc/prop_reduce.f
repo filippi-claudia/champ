@@ -4,11 +4,11 @@
       use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
+      use properties, only: MAXPROP
 
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'properties.h'
 
 
       dimension vp2sum(MAXPROP), vpcollect(MAXPROP), vp2collect(MAXPROP)
@@ -54,12 +54,12 @@
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use properties, only: MAXPROP
 
       implicit real*8(a-h,o-z)
 
 
       include 'mpif.h'
-      include 'properties.h'
 
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),

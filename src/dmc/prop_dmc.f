@@ -10,12 +10,11 @@ C----------------------------------------------
       use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum 
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use properties, only: MAXPROP
 
       implicit real*8(a-h,o-z)
 
  
-      include 'properties.h'
-
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
@@ -87,10 +86,9 @@ c----------------------------------------------------------------------
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use prp002, only: vprop_old
+      use properties, only: MAXPROP
 
       implicit real*8(a-h,o-z)
-
-      include 'properties.h'
 
       if(iprop.eq.0) return
       do i=1,nprop
@@ -103,10 +101,10 @@ c----------------------------------------------------------------------
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use prp002, only: vprop_old
       use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum 
+      use properties, only: MAXPROP
 
       implicit real*8(a-h,o-z)
 
-      include 'properties.h'
       if(iprop.eq.0) return
 
       do i=1,nprop
@@ -118,10 +116,10 @@ c----------------------------------------------------------------------
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use prp002, only: vprop_old
+      use properties, only: MAXPROP
 
       implicit real*8(a-h,o-z)
 
-      include 'properties.h'
       do i=1,nprop
        vprop_old(i,iw2)=vprop_old(i,iw)
       enddo
