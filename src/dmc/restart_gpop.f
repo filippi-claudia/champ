@@ -42,7 +42,6 @@
       implicit real*8(a-h,o-z)
 
       include 'pseudo.h'
-C      include 'mpi_qmc.h'
       include 'mpif.h'
 
       parameter (zero=0.d0,one=1.d0)

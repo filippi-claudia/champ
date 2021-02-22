@@ -14,25 +14,24 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
-
       use contrl_per, only: ibasis, iperiodic
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
      &itau_eff, nfprod, rttau, tau, taueff, tautot
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-
       use iterat, only: iblk, ipass
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-
       use force_dmc, only: itausec, nwprod
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM,
      &NGNORMX, NGVECX, NG1DX, NGNORM_SIMX, NGVEC_SIMX, NGNORM_BIGX,
      &NGVEC_BIGX, NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
+      use numbas_mod, only: MRWF, MRWF_PTS
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
       implicit real*8(a-h,o-z)
 
+
       include 'pseudo.h'
-      include 'numbas.h'
 
       parameter (one=1.d0,four=4.d0)
 
@@ -60,9 +59,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
      &,lpot(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
