@@ -205,9 +205,6 @@ if (MPI_Fortran_FOUND)
   endif()
 
   add_library(shared_modules OBJECT ${SHARED_MODULES})
-  target_include_directories(shared_modules
-    PUBLIC
-    ${CMAKE_SOURCE_DIR}/src/include)
   target_compile_options(shared_modules
     PRIVATE
     ${Fortran_FLAGS}
@@ -216,7 +213,6 @@ if (MPI_Fortran_FOUND)
   add_library(shared_objects OBJECT ${SHARED_OBJECTS})
   target_include_directories(shared_objects
     PUBLIC
-    ${CMAKE_SOURCE_DIR}/src/include
     ${CMAKE_SOURCE_DIR}/src/input)
   
   target_compile_options(shared_objects
@@ -253,11 +249,6 @@ if (MPI_Fortran_FOUND)
     # source that is not already included in the objects
     ${VMC_SOURCE} 
     ${VMC90_SOURCE})
-  
-  #  Add headers
-  target_include_directories(vmc.mov1
-    PUBLIC
-    ${CMAKE_SOURCE_DIR}/src/include)
   
   # compilation
   target_compile_options(vmc.mov1
