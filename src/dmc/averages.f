@@ -1,14 +1,12 @@
       subroutine deriv(wtg,eold,pwt,ajac,psid,psij,idrifdifgfunc,iw,mwalk)
+
       use forcepar, only: deltot, istrech, nforce
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
 
       implicit real*8(a-h,o-z)
 
-
-      parameter(mprop=100)
-
       dimension eold(mwalk,*),pwt(mwalk,*),ajac(mwalk,*),psij(mwalk,*),psid(mwalk,*)
-      common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
       common /c_averages_index/jeloc,jderiv(3,MFORCE)
 
       do ifr=1,nforce
@@ -32,11 +30,10 @@
 
       use forcepar, only: deltot, istrech, nforce
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
 
       implicit real*8(a-h,o-z)
 
-      parameter(mprop=100)
-      common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
       common /c_averages_index/jeloc,jderiv(3,MFORCE)
       nprop=0
 c elocal
@@ -57,10 +54,10 @@ c deriv
 
       subroutine average(ido)
 
+      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
+
       implicit real*8 (a-h,o-z)
 
-      parameter(mprop=100)
-      common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
       dimension sum_av(mprop),sum_w(mprop)
       if(ido.eq.0)then
        do i=1,nprop
@@ -91,12 +88,10 @@ c deriv
 
       use forcepar, only: deltot, istrech, nforce
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
 
       implicit real*8(a-h,o-z)
 
-
-      parameter(mprop=100)
-      common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
       common /c_averages_index/jeloc,jderiv(3,MFORCE)
       egave=cum_av(jderiv(1,1))/cum_w(jderiv(1,1))
       do ifr=2,nforce

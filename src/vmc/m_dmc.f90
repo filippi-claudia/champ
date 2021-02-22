@@ -91,3 +91,37 @@ contains
       if (allocated(wthist)) deallocate(wthist)
    end subroutine deallocate_branch
 end module branch
+
+module c_averages 
+  !> Arguments: mprop, prop, wprop, cum_av, cum_av2, cum_w
+   use precision_kinds, only: dp
+
+   integer, parameter :: mprop = 100
+   real(dp), dimension(:), allocatable :: prop !(mprop)
+   real(dp), dimension(:), allocatable :: wprop !(mprop)
+   real(dp), dimension(:), allocatable :: cum_av !(mprop)
+   real(dp), dimension(:), allocatable :: cum_av2 !(mprop)
+   real(dp), dimension(:), allocatable :: cum_w !(mprop)
+
+   private
+   public :: mprop, prop, wprop, cum_av, cum_av2, cum_w
+   public :: allocate_c_averages, deallocate_c_averages
+   save
+
+contains
+   subroutine allocate_c_averages()
+      if (.not. allocated(prop)) allocate(prop(mprop))
+      if (.not. allocated(wprop)) allocate(wprop(mprop))
+      if (.not. allocated(cum_av)) allocate(cum_av(mprop))
+      if (.not. allocated(cum_av2)) allocate(cum_av2(mprop))
+      if (.not. allocated(cum_w)) allocate(cum_w(mprop))
+   end subroutine allocate_c_averages
+
+   subroutine deallocate_c_averages()
+      if (allocated(prop)) deallocate(prop)
+      if (allocated(wprop)) deallocate(wprop)
+      if (allocated(cum_av)) deallocate(cum_av)
+      if (allocated(cum_av2)) deallocate(cum_av2)
+      if (allocated(cum_w)) deallocate(cum_w)
+   end subroutine deallocate_c_averages
+end module c_averages 
