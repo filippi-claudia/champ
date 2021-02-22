@@ -11,6 +11,7 @@ subroutine allocate_dmc()
   use derivest, only: allocate_derivest
   use branch, only: allocate_branch
   use c_averages, only: allocate_c_averages
+  use c_averages_index, only: allocate_c_averages_index
   !> Allocate dmc-related arrays:
   call allocate_iage()
   call allocate_contrldmc()
@@ -21,6 +22,7 @@ subroutine allocate_dmc()
   call allocate_derivest()
   call allocate_branch()
   call allocate_c_averages()
+  call allocate_c_averages_index()
 end subroutine allocate_dmc
 
 subroutine deallocate_dmc()
@@ -33,6 +35,7 @@ subroutine deallocate_dmc()
   use derivest, only: deallocate_derivest
   use branch, only: deallocate_branch
   use c_averages, only: deallocate_c_averages
+  use c_averages_index, only: deallocate_c_averages_index
   !> Deallocate dmc-related arrays:
   call deallocate_iage()
   call deallocate_contrldmc()
@@ -43,4 +46,5 @@ subroutine deallocate_dmc()
   call deallocate_derivest()
   call deallocate_branch()
   call deallocate_c_averages()
+  call deallocate_c_averages_index()
 end subroutine deallocate_dmc

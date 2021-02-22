@@ -125,3 +125,25 @@ contains
       if (allocated(cum_w)) deallocate(cum_w)
    end subroutine deallocate_c_averages
 end module c_averages 
+
+module c_averages_index 
+   !> Arguments: jeloc, jderiv 
+   use force_mod, only: MFORCE
+
+   integer :: jeloc
+   integer, dimension(:,:), allocatable :: jderiv !(3,MFORCE) 
+
+   private
+   public :: jeloc, jderiv  
+   public :: allocate_c_averages_index, deallocate_c_averages_index 
+   save
+
+contains
+   subroutine allocate_c_averages_index()
+      if (.not. allocated(jderiv)) allocate(jderiv(3, MFORCE))
+   end subroutine allocate_c_averages_index
+
+   subroutine deallocate_c_averages_index()
+      if (allocated(jderiv)) deallocate(jderiv)
+   end subroutine deallocate_c_averages_index
+end module c_averages_index 
