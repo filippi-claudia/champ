@@ -60,7 +60,6 @@
 
       include 'mpif.h'
       include 'properties.h'
-      include 'prop_dmc.h'
 
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),

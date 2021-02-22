@@ -91,7 +91,6 @@ c----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       include 'properties.h'
-      include 'prop_dmc.h'
 
       if(iprop.eq.0) return
       do i=1,nprop
@@ -108,7 +107,6 @@ c----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       include 'properties.h'
-      include 'prop_dmc.h'
       if(iprop.eq.0) return
 
       do i=1,nprop
@@ -124,7 +122,6 @@ c----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       include 'properties.h'
-      include 'prop_dmc.h'
       do i=1,nprop
        vprop_old(i,iw2)=vprop_old(i,iw)
       enddo
