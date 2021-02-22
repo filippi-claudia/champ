@@ -96,7 +96,6 @@ message(STATUS "compiler flags are: " ${Fortran_FLAGS})
 
 ## Subdirectories
 # Include the following subdirectories
-add_subdirectory(src/include)
 add_subdirectory(src/input)
 add_subdirectory(tools/interface)
 add_subdirectory(lib/cyrus)
