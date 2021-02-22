@@ -2,10 +2,10 @@
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
 
       implicit real*8(a-h,o-z)
  
-      include 'mmpol.h'
       data hatokc/627.509541d0/
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
@@ -55,10 +55,9 @@ c-----------------------------------------------------------------------
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
 
       implicit real*8(a-h,o-z)
-
-      include 'mmpol.h'
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
 
@@ -77,10 +76,10 @@ c-----------------------------------------------------------------------
       subroutine mmpol_save(iw)
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
 
       implicit real*8(a-h,o-z)
  
-      include 'mmpol.h'
       common /mmpol_hpsi/QMdp,QMq,eek_pol(3,MCHMM)
       common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
      &         eeko1(MWALK,MCHMM),eeko2(MWALK,MCHMM),eeko3(MWALK,MCHMM)
@@ -104,10 +103,10 @@ c-----------------------------------------------------------------------
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
 
       implicit real*8(a-h,o-z)
  
-      include 'mmpol.h'
       common /mmpol_hpsi/QMdp,QMq,eek_pol(3,MCHMM)
       common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
      &         eeko1(MWALK,MCHMM),eeko2(MWALK,MCHMM),eeko3(MWALK,MCHMM)
@@ -131,11 +130,10 @@ c-----------------------------------------------------------------------
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
 
       implicit real*8(a-h,o-z)
  
-      include 'mmpol.h'
-
       if(immpol.eq.0) return
 
       dmmpolnow=dmmpol_sum/wsum_dmc
@@ -168,10 +166,10 @@ c-----------------------------------------------------------------------
       subroutine mmpol_splitj(iw,iw2)
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
 
       implicit real*8(a-h,o-z)
 
-      include 'mmpol.h'
       common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
      &         eeko1(MWALK,MCHMM),eeko2(MWALK,MCHMM),eeko3(MWALK,MCHMM)
 

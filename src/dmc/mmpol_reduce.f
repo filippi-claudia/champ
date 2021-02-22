@@ -3,11 +3,11 @@
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
 
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'mmpol.h'
 
 
       if(immpol.eq.0) return
@@ -63,11 +63,11 @@
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
 
       implicit real*8(a-h,o-z)
 
 
-      include 'mmpol.h'
       include 'mpif.h'
 
       common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
