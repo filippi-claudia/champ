@@ -3,13 +3,11 @@
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
+      use pcm, only: MCHS, MCHV, MSPHERE
 
       implicit real*8(a-h,o-z)
 
-
-
       include 'mpif.h'
-      include 'pcm.h'
 
 
       if(ipcm.eq.0) return
@@ -78,11 +76,11 @@
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use pcm, only: MCHS, MCHV, MSPHERE
 
       implicit real*8(a-h,o-z)
 
       include 'mpif.h'
-      include 'pcm.h'
 
       common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),

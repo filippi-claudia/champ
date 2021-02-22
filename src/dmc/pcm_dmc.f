@@ -2,10 +2,10 @@
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use pcm, only: MCHS, MCHV, MSPHERE
 
       implicit real*8(a-h,o-z)
  
-      include 'pcm.h'
       data hatokc/627.509541d0/
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
@@ -59,10 +59,9 @@ c-----------------------------------------------------------------------
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use pcm, only: MCHS, MCHV, MSPHERE
 
       implicit real*8(a-h,o-z)
-
-      include 'pcm.h'
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
 
@@ -81,10 +80,10 @@ c-----------------------------------------------------------------------
       subroutine pcm_save(iw)
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use pcm, only: MCHS, MCHV, MSPHERE
 
       implicit real*8(a-h,o-z)
  
-      include 'pcm.h'
       common /pcm_hpsi/ pcms,pcmv,qopcm,enfpcm(MCHS)
       common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
 
@@ -108,10 +107,9 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+      use pcm, only: MCHS, MCHV, MSPHERE
 
       implicit real*8(a-h,o-z)
- 
-      include 'pcm.h'
 
       common /pcm_hpsi/ pcms,pcmv,qopcm,enfpcm(MCHS)
       common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
@@ -137,11 +135,10 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+      use pcm, only: MCHS, MCHV, MSPHERE
 
       implicit real*8(a-h,o-z)
  
-      include 'pcm.h'
-
       if(ipcm.eq.0) return
 
       spcmnow=spcmsum/wsum_dmc
@@ -169,10 +166,10 @@ c-----------------------------------------------------------------------
       subroutine pcm_splitj(iw,iw2)
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use pcm, only: MCHS, MCHV, MSPHERE
 
       implicit real*8(a-h,o-z)
 
-      include 'pcm.h'
       common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
 
 
