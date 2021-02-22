@@ -28,10 +28,10 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use denupdn, only: rprobdn, rprobup
       use mpiblk, only: iblk_proc
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
 
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
 
       parameter (zero=0.d0,one=1.d0)
 

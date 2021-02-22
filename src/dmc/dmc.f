@@ -27,11 +27,13 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
      &NGVEC_BIGX, NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
       use numbas_mod, only: MRWF, MRWF_PTS
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
       implicit real*8(a-h,o-z)
 
 
-      include 'pseudo.h'
 
       parameter (one=1.d0,four=4.d0)
 
@@ -57,8 +59,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       common /bparm/ nspin2b,nocuspb
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),

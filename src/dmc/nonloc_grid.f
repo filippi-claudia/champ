@@ -12,10 +12,13 @@
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use optjas, only: MPARMJ
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
+
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
@@ -27,8 +30,6 @@
       ! common /distance/ rshift(3,MELEC,MCENT), rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
@@ -151,14 +152,12 @@ c-----------------------------------------------------------------------
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
 
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
-
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
       dimension t_vpsp_save(MCENT,MPS_QUAD,MELEC)
 

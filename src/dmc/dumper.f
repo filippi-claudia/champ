@@ -43,10 +43,13 @@ c job where it left off
       use mpiblk, only: iblk_proc
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use mstates_mod, only: MSTATES, MDETCSFX
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
+
       include 'mpif.h'
 C      include 'mpi_qmc.h'
       parameter (zero=0.d0,one=1.d0)
@@ -58,8 +61,6 @@ C      include 'mpi_qmc.h'
       common /ghostatom/ newghostype,nghostcent
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)

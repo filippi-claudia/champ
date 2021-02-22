@@ -18,18 +18,19 @@ c routine to accumulate estimators for energy etc.
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
+
       include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),

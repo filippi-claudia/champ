@@ -7,11 +7,13 @@
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use mstates_mod, only: MSTATES, MDETCSFX
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
       implicit real*8(a-h,o-z)
 
 
-      include 'pseudo.h'
 
       parameter (one=1.d0,half=0.5d0)
 
@@ -21,8 +23,6 @@
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
