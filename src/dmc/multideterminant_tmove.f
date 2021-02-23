@@ -19,7 +19,9 @@
 
       use coefs, only: coef, nbasis, norb
       use wfsec, only: iwf, iwftype, nwftype
+      use ycompact, only: dymat, ymat
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -32,7 +34,6 @@
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /multislater/ detu(MDET),detd(MDET)
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
 
       dimension gmat(MELEC,MORB)

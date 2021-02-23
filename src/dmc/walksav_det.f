@@ -18,7 +18,9 @@ c Written by Claudia Filippi
       use coefs, only: coef, nbasis, norb
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use ycompact, only: dymat, ymat
       implicit real*8(a-h,o-z)
+
 
       include 'mpif.h'
 
@@ -26,7 +28,6 @@ c Written by Claudia Filippi
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /multislater/ detu(MDET),detd(MDET)
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
 
 
