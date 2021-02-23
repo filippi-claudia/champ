@@ -13,33 +13,21 @@
       use casula, only: i_vpsp, icasula, t_vpsp
       use pseudo, only: lpot, nloc, vps, vpso
       use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
+      use dets, only: cdet, ndet
 
       implicit real*8(a-h,o-z)
 
 
-
-
-
-
-
       parameter (one=1.d0,half=0.5d0)
 
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
-
-
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
-
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
-
       common /multislater/ detu(MDET),detd(MDET)
-
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-
       common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
 

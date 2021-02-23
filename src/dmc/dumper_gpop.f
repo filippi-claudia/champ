@@ -47,7 +47,9 @@ c job where it left off
       use jacobsave, only: ajacob, ajacold
       use pseudo, only: lpot, nloc, vps, vpso
 
+      use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -63,7 +65,6 @@ C      include 'mpi_qmc.h'
       common /velratio/ fratio(MWALK,MFORCE)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /ghostatom/ newghostype,nghostcent
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
