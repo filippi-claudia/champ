@@ -13,11 +13,12 @@
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use optjas, only: MPARMJ
       use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
-
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-
       use casula, only: i_vpsp, icasula, t_vpsp
+      use distance_mod, only: r_ee, r_en, rshift, rvec_ee, rvec_en
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -28,7 +29,6 @@
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
      &,d2ijo(MELEC,MELEC),d2jo,fsumo,fjo(3,MELEC)
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
 
 

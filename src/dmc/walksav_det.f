@@ -18,22 +18,15 @@ c Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-
       include 'mpif.h'
 
-
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
       common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
      &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
-
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
-
       common /multislater/ detu(MDET),detd(MDET)
-
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-
       common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
 
