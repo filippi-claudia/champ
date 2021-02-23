@@ -8,14 +8,14 @@
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use mstates_mod, only: MSTATES, MDETCSFX
       use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
-
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-
       use b_tmove, only: b_t, iskip
       use casula, only: i_vpsp, icasula, t_vpsp
       use pseudo, only: lpot, nloc, vps, vpso
+      use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
 
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -36,10 +36,6 @@
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
 
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
-     &,ddx(3,MELEC),d2dx2(MELEC)
       common /multislater/ detu(MDET),detd(MDET)
 
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)

@@ -957,28 +957,49 @@ module slater
     real(dp), dimension(:, :, :), allocatable :: fp !(3,MMAT_DIM,2)
     real(dp), dimension(:, :), allocatable :: fpp !(MMAT_DIM,2)
     real(dp), dimension(:, :), allocatable :: slmi !(MMAT_DIM,2)
+    !> DMC extra variables:
+    real(dp), dimension(:,:), allocatable :: fpd !(3,MMAT_DIM)
+    real(dp), dimension(:), allocatable :: fppd !(MMAT_DIM)
+    real(dp), dimension(:), allocatable :: fppu !(MMAT_DIM)
+    real(dp), dimension(:,:), allocatable :: fpu !(3,MMAT_DIM)
+    real(dp), dimension(:), allocatable :: slmui !(MMAT_DIM)
+    real(dp), dimension(:), allocatable :: slmdi !(MMAT_DIM)
 
     private
     public :: d2dx2, ddx, fp, fpp, slmi
+    public :: fpd, fppd, fppu, fpu, slmui, slmdi
     public :: allocate_slater, deallocate_slater
     save
+
 contains
     subroutine allocate_slater()
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MMAT_DIM
-        if (.not. allocated(d2dx2)) allocate (d2dx2(MELEC))
-        if (.not. allocated(ddx)) allocate (ddx(3, MELEC))
-        if (.not. allocated(fp)) allocate (fp(3, MMAT_DIM, 2))
-        if (.not. allocated(fpp)) allocate (fpp(MMAT_DIM, 2))
-        if (.not. allocated(slmi)) allocate (slmi(MMAT_DIM, 2))
+        if (.not. allocated(d2dx2)) allocate(d2dx2(MELEC))
+        if (.not. allocated(ddx)) allocate(ddx(3, MELEC))
+        if (.not. allocated(fp)) allocate(fp(3, MMAT_DIM, 2))
+        if (.not. allocated(fpp)) allocate(fpp(MMAT_DIM, 2))
+        if (.not. allocated(slmi)) allocate(slmi(MMAT_DIM, 2))
+        if (.not. allocated(fpd))  allocate(fpd(3,MMAT_DIM))
+        if (.not. allocated(fppd)) allocate(fppd(MMAT_DIM))
+        if (.not. allocated(fppu)) allocate(fppu(MMAT_DIM))
+        if (.not. allocated(fpu))  allocate(fpu(3,MMAT_DIM))
+        if (.not. allocated(slmui)) allocate(slmui(MMAT_DIM))
+        if (.not. allocated(slmdi)) allocate(slmdi(MMAT_DIM))
     end subroutine allocate_slater
 
     subroutine deallocate_slater()
-        if (allocated(slmi)) deallocate (slmi)
-        if (allocated(fpp)) deallocate (fpp)
-        if (allocated(fp)) deallocate (fp)
-        if (allocated(ddx)) deallocate (ddx)
-        if (allocated(d2dx2)) deallocate (d2dx2)
+        if (allocated(slmi)) deallocate(slmi)
+        if (allocated(fpp)) deallocate(fpp)
+        if (allocated(fp)) deallocate(fp)
+        if (allocated(ddx)) deallocate(ddx)
+        if (allocated(d2dx2)) deallocate(d2dx2)
+        if (allocated(fpd))  deallocate(fpd)
+        if (allocated(fppd)) deallocate(fppd)
+        if (allocated(fppu)) deallocate(fppu)
+        if (allocated(fpu))  deallocate(fpu)
+        if (allocated(slmui)) deallocate(slmui)
+        if (allocated(slmdi)) deallocate(slmdi)
     end subroutine deallocate_slater
 
 end module slater
