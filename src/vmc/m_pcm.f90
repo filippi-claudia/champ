@@ -252,9 +252,13 @@ module pcm_hpsi
     real(dp) :: pepcms
     real(dp) :: pepcmv
     real(dp) :: qopcm
+    !> DMC variables:
+    real(dp) :: pcms
+    real(dp) :: pcmv
 
     private
     public :: enfpcm, pepcms, pepcmv, qopcm
+    public :: pcms, pcmv
     public :: allocate_pcm_hpsi, deallocate_pcm_hpsi
     save
 contains

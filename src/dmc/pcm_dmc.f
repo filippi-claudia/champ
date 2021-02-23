@@ -81,10 +81,10 @@ c-----------------------------------------------------------------------
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use pcm, only: MCHS, MCHV, MSPHERE
+      use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
 
       implicit real*8(a-h,o-z)
  
-      common /pcm_hpsi/ pcms,pcmv,qopcm,enfpcm(MCHS)
       common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
 
       if(ipcm.eq.0) return
@@ -108,10 +108,10 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
       use pcm, only: MCHS, MCHV, MSPHERE
+      use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
 
       implicit real*8(a-h,o-z)
 
-      common /pcm_hpsi/ pcms,pcmv,qopcm,enfpcm(MCHS)
       common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
 
       if(ipcm.eq.0) return
