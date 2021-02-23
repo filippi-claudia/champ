@@ -80,25 +80,24 @@
 
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
+
       implicit real*8(a-h,o-z)
 
-
       include 'mpif.h'
-
-      common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
 
       dimension istatus(MPI_STATUS_SIZE)
 
       if(ipcm.eq.0) return
 
       itag_s=itag_s+1
-      call mpi_isend(spcmo(nwalk),1,mpi_double_precision,irecv
+      call mpi_isend(spcmo_dmc(nwalk),1,mpi_double_precision,irecv
      &     ,itag_s,MPI_COMM_WORLD,irequest,ierr)
       itag_s=itag_s+1
-      call mpi_isend(vpcmo(nwalk),1,mpi_double_precision,irecv
+      call mpi_isend(vpcmo_dmc(nwalk),1,mpi_double_precision,irecv
      &     ,itag_s,MPI_COMM_WORLD,irequest,ierr)
       itag_s=itag_s+1
-      call mpi_isend(qopcmo(nwalk),1,mpi_double_precision,irecv
+      call mpi_isend(qopcmo_dmc(nwalk),1,mpi_double_precision,irecv
      &     ,itag_s,MPI_COMM_WORLD,irequest,ierr)
 
       return
@@ -108,13 +107,13 @@
       if(ipcm.eq.0) return
 
       itag_r=itag_r+1
-      call mpi_recv(spcmo(nwalk),1,mpi_double_precision,isend
+      call mpi_recv(spcmo_dmc(nwalk),1,mpi_double_precision,isend
      &     ,itag_r,MPI_COMM_WORLD,istatus,ierr)
       itag_r=itag_r+1
-      call mpi_recv(vpcmo(nwalk),1,mpi_double_precision,isend
+      call mpi_recv(vpcmo_dmc(nwalk),1,mpi_double_precision,isend
      &     ,itag_r,MPI_COMM_WORLD,istatus,ierr)
       itag_r=itag_r+1
-      call mpi_recv(qopcmo(nwalk),1,mpi_double_precision,isend
+      call mpi_recv(qopcmo_dmc(nwalk),1,mpi_double_precision,isend
      &     ,itag_r,MPI_COMM_WORLD,istatus,ierr)
 
       return

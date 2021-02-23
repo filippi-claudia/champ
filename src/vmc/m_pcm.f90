@@ -440,7 +440,8 @@ module pcm_unit
 end module pcm_unit
 
 module pcmo
-    !> Arguments: enfpcmo, qopcmo, spcmo, vpcmo
+    !> Arguments: enfpcmo, qopcmo, spcmo, vpcmo,
+    !> spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
     use pcm, only: MCHS
     use precision_kinds, only: dp
 
@@ -448,20 +449,35 @@ module pcmo
     real(dp) :: qopcmo
     real(dp) :: spcmo
     real(dp) :: vpcmo
+    !> DMC arrays:
+    real(dp), dimension(:,:), allocatable :: enfpcmo_dmc !(MWALK, MCHS)
+    real(dp), dimension (:), allocatable :: qopcmo_dmc !(MWALK)
+    real(dp), dimension (:), allocatable :: spcmo_dmc !(MWALK)
+    real(dp), dimension (:), allocatable :: vpcmo_dmc !(MWALK)
+
 
     private
     public :: enfpcmo, qopcmo, spcmo, vpcmo
+    public :: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
     public :: allocate_pcmo, deallocate_pcmo
     save
 contains
     subroutine allocate_pcmo()
         use pcm, only: MCHS
         use precision_kinds, only: dp
-        if (.not. allocated(enfpcmo)) allocate (enfpcmo(MCHS))
+        if (.not. allocated(enfpcmo)) allocate(enfpcmo(MCHS))
+        if (.not. allocated(enfpcmo_dmc)) allocate(enfpcmo_dmc(MWALK, MCHS))
+        if (.not. allocated(qopcmo_dmc)) allocate(qopcmo_dmc(MWALK))
+        if (.not. allocated(spcmo_dmc)) allocate(spcmo_dmc(MWALK))
+        if (.not. allocated(vpcmo_dmc)) allocate(vpcmo_dmc(MWALK))
     end subroutine allocate_pcmo
 
     subroutine deallocate_pcmo()
         if (allocated(enfpcmo)) deallocate (enfpcmo)
+        if (allocated(enfpcmo_dmc)) deallocate(enfpcmo_dmc)
+        if (allocated(qopcmo_dmc)) deallocate(qopcmo_dmc)
+        if (allocated(spcmo_dmc)) deallocate(spcmo_dmc)
+        if (allocated(vpcmo_dmc)) deallocate(vpcmo_dmc)
     end subroutine deallocate_pcmo
 
 end module pcmo

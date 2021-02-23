@@ -82,20 +82,19 @@ c-----------------------------------------------------------------------
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use pcm, only: MCHS, MCHV, MSPHERE
       use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
+      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
 
       implicit real*8(a-h,o-z)
- 
-      common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
 
       if(ipcm.eq.0) return
 
-      spcmo(iw)=pcms
-      vpcmo(iw)=pcmv
-      qopcmo(iw)=qopcm
+      spcmo_dmc(iw)=pcms
+      vpcmo_dmc(iw)=pcmv
+      qopcmo_dmc(iw)=qopcm
 
-c     write(6,*) 'CIAO',qopcm,qopcmo(iw),iw,spcmo(iw),vpcmo(iw)
+c     write(6,*) 'CIAO',qopcm,qopcmo_dmc(iw),iw,spcmo_dmc(iw),vpcmo_dmc(iw)
       do i=1,nchs
-      enfpcmo(iw,i)=enfpcm(i)
+      enfpcmo_dmc(iw,i)=enfpcm(i)
       enddo
 
       return
@@ -109,21 +108,20 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
       use pcm, only: MCHS, MCHV, MSPHERE
       use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
+      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
 
       implicit real*8(a-h,o-z)
 
-      common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
-
       if(ipcm.eq.0) return
 
-      spcmsum=spcmsum+p*pcms+q*spcmo(iw)
-      vpcmsum=vpcmsum+p*pcmv+q*vpcmo(iw)
-      qopcm_sum=qopcm_sum+p*qopcm+q*qopcmo(iw)
+      spcmsum=spcmsum+p*pcms+q*spcmo_dmc(iw)
+      vpcmsum=vpcmsum+p*pcmv+q*vpcmo_dmc(iw)
+      qopcm_sum=qopcm_sum+p*qopcm+q*qopcmo_dmc(iw)
 
-c     write(6,*) 'HELLO',qopcm,qopcmo(iw),iw
+c     write(6,*) 'HELLO',qopcm,qopcmo_dmc(iw),iw
 
       do i=1,nchs
-      enfpcm_sum(i)= enfpcm_sum(i)+p*enfpcm(i)+q*enfpcmo(iw,i)
+      enfpcm_sum(i)= enfpcm_sum(i)+p*enfpcm(i)+q*enfpcmo_dmc(iw,i)
       enddo
 
       return
@@ -167,18 +165,16 @@ c-----------------------------------------------------------------------
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use pcm, only: MCHS, MCHV, MSPHERE
+      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
 
       implicit real*8(a-h,o-z)
 
-      common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
-
-
-      spcmo(iw2)=spcmo(iw)
-      vpcmo(iw2)=vpcmo(iw)
-      qopcmo(iw2)=qopcmo(iw)
+      spcmo_dmc(iw2)=spcmo_dmc(iw)
+      vpcmo_dmc(iw2)=vpcmo_dmc(iw)
+      qopcmo_dmc(iw2)=qopcmo_dmc(iw)
 
       do i=1,nchs
-      enfpcmo(iw2,i)=enfpcmo(iw,i)
+      enfpcmo_dmc(iw2,i)=enfpcmo_dmc(iw,i)
       enddo
 
       return
