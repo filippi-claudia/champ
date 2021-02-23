@@ -43,9 +43,11 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use coefs, only: coef, nbasis, norb
       use wfsec, only: iwf, iwftype, nwftype
       use jaspar, only: is, nspin1, nspin2, sspin, sspinn
-
       use jaspar1, only: cjas1, cjas2
+      use jaspar2, only: a1, a2
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -56,7 +58,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       parameter (one=1.d0,four=4.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
