@@ -16,24 +16,13 @@
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
       use casula, only: i_vpsp, icasula, t_vpsp
       use distance_mod, only: r_ee, r_en, rshift, rvec_ee, rvec_en
+      use wfsec, only: iwf, iwftype, nwftype
 
       implicit real*8(a-h,o-z)
 
 
-
-
-
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-
-
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
      &,d2ijo(MELEC,MELEC),d2jo,fsumo,fjo(3,MELEC)
-
-
-
-
-
-
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
 c here vpsp_det and dvpsp_det are dummy

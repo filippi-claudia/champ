@@ -18,7 +18,9 @@
       use dorb_m, only: iworbd
 
       use coefs, only: coef, nbasis, norb
+      use wfsec, only: iwf, iwftype, nwftype
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -26,7 +28,6 @@
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /multislater/ detu(MDET),detd(MDET)
