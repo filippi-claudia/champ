@@ -17,14 +17,10 @@
       use casula, only: i_vpsp, icasula, t_vpsp
       use distance_mod, only: r_ee, r_en, rshift, rvec_ee, rvec_en
       use wfsec, only: iwf, iwftype, nwftype
-
       use jaso, only: d2ijo, d2jo, fijo, fjo, fso, fsumo
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
 
       implicit real*8(a-h,o-z)
-
-
-
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
 c here vpsp_det and dvpsp_det are dummy
       dimension vpsp_det(2),dvpsp_dj(MPARMJ)
