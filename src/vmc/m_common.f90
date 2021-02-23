@@ -679,20 +679,28 @@ module multislater
     use vmc_mod, only: MDET
 
     real(dp), dimension(:, :), allocatable :: detiab !(MDET,2)
+    !> DMC variables:
+    real(dp), dimension(:), allocatable :: detu !(MDET)
+    real(dp), dimension(:), allocatable :: detd !(MDET)
 
     private
     public :: detiab
+    public :: detu, detd
     public :: allocate_multislater, deallocate_multislater
     save
 contains
     subroutine allocate_multislater()
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
-        if (.not. allocated(detiab)) allocate (detiab(MDET, 2))
+        if (.not. allocated(detiab)) allocate(detiab(MDET, 2))
+        if (.not. allocated(detu)) allocate(detu(MDET))
+        if (.not. allocated(detd)) allocate(detd(MDET))
     end subroutine allocate_multislater
 
     subroutine deallocate_multislater()
         if (allocated(detiab)) deallocate (detiab)
+        if (allocated(detu)) deallocate(detu)
+        if (allocated(detd)) deallocate(detd)
     end subroutine deallocate_multislater
 
 end module multislater

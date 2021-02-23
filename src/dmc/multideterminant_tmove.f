@@ -20,7 +20,9 @@
       use coefs, only: coef, nbasis, norb
       use wfsec, only: iwf, iwftype, nwftype
       use ycompact, only: dymat, ymat
+      use multislater, only: detd, detu
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -32,7 +34,6 @@
 
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
-      common /multislater/ detu(MDET),detd(MDET)
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
 
