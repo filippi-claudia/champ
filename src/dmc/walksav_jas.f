@@ -12,7 +12,9 @@ c Written by Claudia Filippi
      &wthist
       use jaso, only: d2ijo, d2jo, fijo, fjo, fso, fsumo
 
+      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -21,7 +23,6 @@ c Written by Claudia Filippi
 
 
 
-      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
       dimension fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK)
      &,fsumow(MWALK),fjow(3,MELEC,MWALK),d2ow(MWALK),d2ijow(MELEC,MELEC,MWALK)
