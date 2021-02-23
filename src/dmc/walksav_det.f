@@ -15,14 +15,15 @@ c Written by Claudia Filippi
       use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
 
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
       implicit real*8(a-h,o-z)
+
 
 
 
 
       include 'mpif.h'
 
-      common /elec/ nup,ndn
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 

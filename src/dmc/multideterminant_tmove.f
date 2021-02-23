@@ -14,13 +14,14 @@
       use pseudo, only: lpot, nloc, vps, vpso
       use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
       use dets, only: cdet, ndet
+      use elec, only: ndn, nup
 
       implicit real*8(a-h,o-z)
 
 
+
       parameter (one=1.d0,half=0.5d0)
 
-      common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
