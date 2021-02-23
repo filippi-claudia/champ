@@ -40,11 +40,12 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
      &xms
       use rlobxy, only: rlobx, rloby, rloby2
       use rnyucm, only: ll, mm
-
       use coefs, only: coef, nbasis, norb
       use wfsec, only: iwf, iwftype, nwftype
+      use jaspar, only: is, nspin1, nspin2, sspin, sspinn
 
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -58,7 +59,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 
 c common block variables:
 

@@ -50,7 +50,9 @@
       use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: newghostype, nghostcent
+      use jaspar, only: is, nspin1, nspin2, sspin, sspinn
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -69,7 +71,6 @@
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /velratio/ fratio(MWALK,MFORCE)
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 
 
 
