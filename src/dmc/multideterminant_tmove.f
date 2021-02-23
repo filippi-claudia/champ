@@ -23,7 +23,9 @@
       use multislater, only: detd, detu
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use multimat, only: aa, wfmat
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -35,7 +37,6 @@
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
 
       dimension gmat(MELEC,MORB)

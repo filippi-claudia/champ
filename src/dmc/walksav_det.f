@@ -22,14 +22,15 @@ c Written by Claudia Filippi
       use multislater, only: detd, detu
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
+      use multimat, only: aa, wfmat
       implicit real*8(a-h,o-z)
+
 
 
 
 
       include 'mpif.h'
 
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
 
 
