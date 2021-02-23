@@ -9,17 +9,14 @@ c Written by Claudia Filippi
       use forcepar, only: deltot, istrech, nforce
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use mstates_mod, only: MSTATES, MDETCSFX
-
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
       use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+
       implicit real*8(a-h,o-z)
-
-
-
 
 
       include 'mpif.h'
@@ -39,7 +36,6 @@ c Written by Claudia Filippi
 
       common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
 
 
 
