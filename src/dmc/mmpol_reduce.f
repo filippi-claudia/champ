@@ -64,28 +64,24 @@
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
-
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
+
+
       implicit real*8(a-h,o-z)
 
-
-
       include 'mpif.h'
-
-      common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
-     &         eeko1(MWALK,MCHMM),eeko2(MWALK,MCHMM),eeko3(MWALK,MCHMM)
-
 
       dimension istatus(MPI_STATUS_SIZE)
 
       if(immpol.eq.0) return
 
       itag_s=itag_s+1
-      call mpi_isend(dmmpolo(nwalk),1,mpi_double_precision,irecv
+      call mpi_isend(dmmpolo_dmc(nwalk),1,mpi_double_precision,irecv
      &     ,itag_s,MPI_COMM_WORLD,irequest,ierr)
       itag_s=itag_s+1
-      call mpi_isend(cmmpolo(nwalk),1,mpi_double_precision,irecv
+      call mpi_isend(cmmpolo_dmc(nwalk),1,mpi_double_precision,irecv
      &     ,itag_s,MPI_COMM_WORLD,irequest,ierr)
 
       return
@@ -95,10 +91,10 @@
       if(immpol.eq.0) return
 
       itag_r=itag_r+1
-      call mpi_recv(dmmpolo(nwalk),1,mpi_double_precision,isend
+      call mpi_recv(dmmpolo_dmc(nwalk),1,mpi_double_precision,isend
      &     ,itag_r,MPI_COMM_WORLD,istatus,ierr)
       itag_r=itag_r+1
-      call mpi_recv(cmmpolo(nwalk),1,mpi_double_precision,isend
+      call mpi_recv(cmmpolo_dmc(nwalk),1,mpi_double_precision,isend
      &     ,itag_r,MPI_COMM_WORLD,istatus,ierr)
 
       return

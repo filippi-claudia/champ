@@ -77,18 +77,15 @@ c-----------------------------------------------------------------------
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
-
       use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
-      implicit real*8(a-h,o-z)
+      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
 
- 
-      common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
-     &         eeko1(MWALK,MCHMM),eeko2(MWALK,MCHMM),eeko3(MWALK,MCHMM)
+      implicit real*8(a-h,o-z)
 
       if(immpol.eq.0) return
 
-      dmmpolo(iw)=QMdp
-      cmmpolo(iw)=QMq
+      dmmpolo_dmc(iw)=QMdp
+      cmmpolo_dmc(iw)=QMq
 
       do i=1,nchmm
         eeko1(iw,i)=eek_pol(1,i)
@@ -106,13 +103,10 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
       use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
       use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
+      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
 
       implicit real*8(a-h,o-z)
-
  
-      common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
-     &         eeko1(MWALK,MCHMM),eeko2(MWALK,MCHMM),eeko3(MWALK,MCHMM)
-
       if(immpol.eq.0) return
 
       dmmpol_sum=dmmpol_sum+p*QMdp+q*dmmpolo(iw)
@@ -169,15 +163,13 @@ c-----------------------------------------------------------------------
 
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
+      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
+
 
       implicit real*8(a-h,o-z)
 
-      common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
-     &         eeko1(MWALK,MCHMM),eeko2(MWALK,MCHMM),eeko3(MWALK,MCHMM)
-
-
-      dmmpolo(iw2)=dmmpolo(iw)
-      cmmpolo(iw2)=cmmpolo(iw)
+      dmmpolo_dmc(iw2)=dmmpolo_dmc(iw)
+      cmmpolo_dmc(iw2)=cmmpolo_dmc(iw)
 
       do i=1,nchmm
         eeko1(iw2,i)=eeko1(iw,i)
