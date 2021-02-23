@@ -43,6 +43,7 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
 
       use coefs, only: coef, nbasis, norb
       use wfsec, only: iwf, iwftype, nwftype
+
       implicit real*8(a-h,o-z)
 
 
