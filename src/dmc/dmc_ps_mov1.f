@@ -80,7 +80,9 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use jacobsave, only: ajacob, ajacold
       use elec, only: ndn, nup
       use velratio, only: fratio, xdrifted
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -91,7 +93,6 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (adrift=0.5d0)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 
       dimension xstrech(3,MELEC)

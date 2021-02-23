@@ -30,13 +30,14 @@ c routine to accumulate estimators for energy etc.
 
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 
       dimension egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE),

@@ -12,10 +12,11 @@ C----------------------------------------------
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use properties, only: MAXPROP
 
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
+
  
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
       dimension perr(MAXPROP),pav(MAXPROP)

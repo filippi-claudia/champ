@@ -42,7 +42,9 @@ c routine to print out final results
      &wthist
       use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
 
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -50,7 +52,6 @@ c routine to print out final results
 
       parameter (one=1.d0,two=2.d0,half=.5d0)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
       dimension taucollect(MFORCE),rprobcollect(nrad)

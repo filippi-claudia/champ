@@ -53,7 +53,9 @@
       use jaspar, only: is, nspin1, nspin2, sspin, sspinn
       use jaspar1, only: cjas1, cjas2
       use velratio, only: fratio, xdrifted
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -72,7 +74,6 @@
       parameter (zero=0.d0,one=1.d0)
       parameter (small=1.e-6)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 
 

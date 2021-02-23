@@ -4,13 +4,14 @@
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use pcm, only: MCHS, MCHV, MSPHERE
 
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
  
       data hatokc/627.509541d0/
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
@@ -61,11 +62,12 @@ c-----------------------------------------------------------------------
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use pcm, only: MCHS, MCHV, MSPHERE
 
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       if(ipcm.eq.0) return
     

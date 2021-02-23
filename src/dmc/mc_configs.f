@@ -12,7 +12,9 @@
 
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
@@ -20,7 +22,6 @@
       character*25 fmt
       character*20 filename
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
 
       dimension irn(4)
