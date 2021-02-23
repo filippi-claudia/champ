@@ -16,14 +16,12 @@ c Written by Claudia Filippi
       use elec, only: ndn, nup
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use coefs, only: coef, nbasis, norb
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
       implicit real*8(a-h,o-z)
 
-
       include 'mpif.h'
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
       common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
      & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /multislater/ detu(MDET),detd(MDET)
