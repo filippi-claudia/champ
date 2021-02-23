@@ -172,3 +172,31 @@ contains
    end subroutine deallocate_jacobsave
 
 end module jacobsave
+
+module velratio
+   !> Arguments: fratio, xdrifted
+   use precision_kinds, only: dp
+   use dmc_mod, only: MWALK
+   use force_mod, only: MFORCE
+   use vmc_mod, only: MELEC
+
+   real(dp), dimension(:,:), allocatable :: fratio !(MWALK,MFORCE)
+   real(dp), dimension(:,:,:,:), allocatable :: xdrifted !(3,MELEC,MWALK,MFORCE)
+
+   private
+   public :: fratio, xdrifted
+   public :: allocate_velratio, deallocate_velratio 
+   save
+
+contains
+   subroutine allocate_velratio()
+      if (.not. allocated(fratio)) allocate(fratio(MWALK, MFORCE))
+      if (.not. allocated(xdrifted)) allocate(xdrifted(3, MELEC, WALK, MFORCE))
+   end subroutine allocate_velratio
+
+   subroutine deallocate_velratio()
+      if (allocated(fratio)) deallocate(fratio)
+      if (allocated(xdrifted)) deallocate(xdrifted)
+   end subroutine deallocate_velratio
+ end module velratio
+

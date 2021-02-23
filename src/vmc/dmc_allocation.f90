@@ -13,6 +13,7 @@ subroutine allocate_dmc()
   use c_averages, only: allocate_c_averages
   use c_averages_index, only: allocate_c_averages_index
   use jacobsave, only: allocate_jacobsave
+  use velratio, only: allocate_velratio
 
   !> Allocate dmc-related arrays:
 
@@ -27,6 +28,7 @@ subroutine allocate_dmc()
   call allocate_c_averages()
   call allocate_c_averages_index()
   call allocate_jacobsave()
+  call allocate_velratio()
 
 end subroutine allocate_dmc
 
@@ -42,6 +44,7 @@ subroutine deallocate_dmc()
   use c_averages, only: deallocate_c_averages
   use c_averages_index, only: deallocate_c_averages_index
   use jacobsave, only: deallocate_jacobsave
+  use velratio, only: deallocate_velratio
 
   !> Deallocate dmc-related arrays:
 
@@ -56,5 +59,6 @@ subroutine deallocate_dmc()
   call deallocate_c_averages()
   call deallocate_c_averages_index()
   call deallocate_jacobsave()
+  call deallocate_velratio()
 
 end subroutine deallocate_dmc

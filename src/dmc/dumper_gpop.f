@@ -53,7 +53,9 @@ c job where it left off
       use ghostatom, only: newghostype, nghostcent
       use jaspar, only: is, nspin1, nspin2, sspin, sspinn
       use jaspar1, only: cjas1, cjas2
+      use velratio, only: fratio, xdrifted
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -72,7 +74,6 @@ C      include 'mpi_qmc.h'
       parameter (zero=0.d0,one=1.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /velratio/ fratio(MWALK,MFORCE)
 
       character*13 filename
 

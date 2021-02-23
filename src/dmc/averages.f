@@ -8,7 +8,6 @@
       implicit real*8(a-h,o-z)
 
       dimension eold(mwalk,*),pwt(mwalk,*),ajac(mwalk,*),psij(mwalk,*),psid(mwalk,*)
-!      common /c_averages_index/jeloc,jderiv(3,MFORCE)
 
       do ifr=1,nforce
         if(idrifdifgfunc.gt.0) then
@@ -36,7 +35,6 @@
 
       implicit real*8(a-h,o-z)
 
-!      common /c_averages_index/jeloc,jderiv(3,MFORCE)
       nprop=0
 c elocal
       j=nprop+1
@@ -95,7 +93,6 @@ c deriv
 
       implicit real*8(a-h,o-z)
 
-!      common /c_averages_index/jeloc,jderiv(3,MFORCE)
       egave=cum_av(jderiv(1,1))/cum_w(jderiv(1,1))
       do ifr=2,nforce
        derivtotave=-(cum_av(jderiv(1,ifr))-cum_av(jderiv(1,1))

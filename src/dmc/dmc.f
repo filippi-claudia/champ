@@ -45,35 +45,22 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use jaspar, only: is, nspin1, nspin2, sspin, sspinn
       use jaspar1, only: cjas1, cjas2
       use jaspar2, only: a1, a2
-
       use jaspar3, only: a, b, c, fck, nord, scalek
-
       use jaspar4, only: a4, norda, nordb, nordc
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
 
       parameter (one=1.d0,four=4.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
-c common block variables:
-
-c   /const/
+c variables:
 c        nelec  = number of electrons
 c        pi     = 3.14159...
 c        hb     = hbar**2/(2m)
 c        delta  = side of box in which metropolis steps are made
 c        deltai = 1/delta
 c        fbias  = force bias parameter
-c   /contrl/
 c        nstep  = number of metropolis steps/block
 c        nblk   = number of blocks od nstep steps after the
 c                 equilibrium steps
@@ -81,8 +68,6 @@ c        nblkeq = number of equilibrium blocks
 c        nconf  = initial and target number of dmc configurations
 c        idump  =  1 dump out stuff for a restart
 c        irstar =  1 pick up stuff for a restart
-c   /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-c            ,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c        tau    = time-step
 c        nfprod = number of f's used for removing finite popul. bias
 c Control variables are:
@@ -109,7 +94,6 @@ c             >= 1 *   use smooth formulae to limit branching to (1/2,2)
 c                      (bad because it makes energies depend on E_trial)
 c icut_e      <= 0     do not limit energy
 c             >= 1 *   use smooth formulae to limit energy (not implemented)
-
 c *  => bad option, modest deterioration in efficiency or time-step error
 c ** => very bad option, big deterioration in efficiency or time-step error
 c So, idmc=6,66 correspond to the foll. two:
@@ -117,8 +101,6 @@ c 2 1 1 1 0 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-
-c   /config/
 c        xold_dmc   = current position of the electrons
 c        xnew   = new position after a trial move
 c        vold_dmc   = grad(psi)/psi at current position
@@ -132,19 +114,15 @@ c        pen    = same after trial move
 c        tjfo   = Jackson Feenberg kinetic energy at current position
 c        tjfn   = same after trial move
 c        psio   = psi
-c   /coefs/
 c        coef   = read in coefficients of the basis functions
 c                 to get the molecular orbitals used in determinant
 c        nbasis = number of basis functions read in
-c   /dets/
 c        cdet   = coefficients of the determinants
 c        ndet   = number of determinants of molecular orbitals
 c                 used
 c        nup    = number of up spin electrons
 c        ndn    = number of down spin electrons
-c   /jaspar/
 c        Jastrow function is dexp(cjas1*rij/(1+cjas2*rij))
-
 c   Other variables main program
 c        title  = title of run
 c        date   = date of run
