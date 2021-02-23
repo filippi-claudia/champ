@@ -50,10 +50,9 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
 
       parameter (one=1.d0,four=4.d0)
 
-      integer fflag
       real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Z
      &,rlobx, rloby, rloby2
-      common /fflags/ fflag
+
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Z
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
