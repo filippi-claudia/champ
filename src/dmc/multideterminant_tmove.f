@@ -13,7 +13,10 @@
 
       use b_tmove, only: b_t, iskip
       use casula, only: i_vpsp, icasula, t_vpsp
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -25,8 +28,6 @@
       common /elec/ nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 

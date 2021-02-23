@@ -51,7 +51,10 @@ c job where it left off
      &wthist
       use casula, only: i_vpsp, icasula, t_vpsp
       use jacobsave, only: ajacob, ajacold
+      use pseudo, only: lpot, nloc, vps, vpso
+
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -66,8 +69,6 @@ C      include 'mpi_qmc.h'
       common /velratio/ fratio(MWALK,MFORCE)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /ghostatom/ newghostype,nghostcent
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
       common /dets/ cdet(MDET,MSTATES,MWF),ndet
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
