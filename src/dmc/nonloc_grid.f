@@ -16,7 +16,9 @@
 
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
+      use casula, only: i_vpsp, icasula, t_vpsp
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -30,7 +32,6 @@
 
 
 
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
 
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
@@ -153,9 +154,10 @@ c-----------------------------------------------------------------------
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
       use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
 
+      use casula, only: i_vpsp, icasula, t_vpsp
       implicit real*8(a-h,o-z)
 
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
+
 
       dimension t_vpsp_save(MCENT,MPS_QUAD,MELEC)
 

@@ -12,7 +12,9 @@
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
       use b_tmove, only: b_t, iskip
+      use casula, only: i_vpsp, icasula, t_vpsp
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -43,7 +45,6 @@
 
       common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
 
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
 
       dimension gmat(MELEC,MORB)
 

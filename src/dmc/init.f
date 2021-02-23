@@ -19,14 +19,12 @@ c routine to accumulate estimators for energy etc.
       use contr3, only: mode
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
-
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use casula, only: i_vpsp, icasula, t_vpsp
+
       implicit real*8(a-h,o-z)
-
-
 
       include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)
@@ -34,7 +32,6 @@ c routine to accumulate estimators for energy etc.
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,lpot(MCTYPE),nloc
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
 
