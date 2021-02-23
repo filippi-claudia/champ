@@ -18,11 +18,12 @@
       use distance_mod, only: r_ee, r_en, rshift, rvec_ee, rvec_en
       use wfsec, only: iwf, iwftype, nwftype
 
+      use jaso, only: d2ijo, d2jo, fijo, fjo, fso, fsumo
+
       implicit real*8(a-h,o-z)
 
 
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2jo,fsumo,fjo(3,MELEC)
+
       common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
 
 c here vpsp_det and dvpsp_det are dummy

@@ -10,15 +10,16 @@ c Written by Claudia Filippi
 
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use jaso, only: d2ijo, d2jo, fijo, fjo, fso, fsumo
+
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
 
 
 
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
       common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 

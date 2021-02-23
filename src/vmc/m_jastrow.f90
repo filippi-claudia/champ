@@ -44,9 +44,12 @@ module jaso
     real(dp), dimension(:, :), allocatable :: fjo !(3,MELEC)
     real(dp), dimension(:, :), allocatable :: fso !(MELEC,MELEC)
     real(dp) :: fsumo
+    !> DMC
+    real(dp) :: d2jo
 
     private
     public :: d2ijo, d2o, fijo, fjo, fso, fsumo
+    public :: d2jo
     public :: allocate_jaso, deallocate_jaso
     save
 contains
