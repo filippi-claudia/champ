@@ -28,9 +28,7 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use numbas_mod, only: MRWF, MRWF_PTS
       use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
       use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
-
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
       use bparm, only: nocuspb, nspin2b
@@ -38,14 +36,15 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
      &isc, istrch
       use pseudo, only: lpot, nloc, vps, vpso
       use dorb_m, only: iworbd
-
       use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
      &xms
+      use rlobxy, only: rlobx, rloby, rloby2
+
       implicit real*8(a-h,o-z)
+
 
       parameter (one=1.d0,four=4.d0)
 
-      common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
