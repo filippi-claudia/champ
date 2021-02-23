@@ -39,8 +39,10 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
      &xms
       use rlobxy, only: rlobx, rloby, rloby2
+      use rnyucm, only: ll, mm
 
       implicit real*8(a-h,o-z)
+
 
 
       parameter (one=1.d0,four=4.d0)
@@ -53,7 +55,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c common block variables:
