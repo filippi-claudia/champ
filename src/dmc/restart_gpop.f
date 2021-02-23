@@ -53,7 +53,9 @@
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: newghostype, nghostcent
       use jaspar, only: is, nspin1, nspin2, sspin, sspinn
+      use jaspar1, only: cjas1, cjas2
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -72,7 +74,6 @@
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /velratio/ fratio(MWALK,MFORCE)
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
 
 
       character*13 filename
