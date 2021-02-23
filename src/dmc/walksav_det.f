@@ -20,14 +20,15 @@ c Written by Claudia Filippi
 
       use ycompact, only: dymat, ymat
       use multislater, only: detd, detu
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
       implicit real*8(a-h,o-z)
+
 
 
 
       include 'mpif.h'
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
       common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
 
 
