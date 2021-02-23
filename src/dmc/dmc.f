@@ -48,7 +48,9 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
 
       use jaspar3, only: a, b, c, fck, nord, scalek
 
+      use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -61,7 +63,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       parameter (one=1.d0,four=4.d0)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
 
 c common block variables:
 
