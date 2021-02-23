@@ -16,14 +16,15 @@ c Written by Cyrus Umrigar
 
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use jacobsave, only: ajacob, ajacold
       implicit real*8(a-h,o-z)
+
 
 
       parameter (zero=0.d0,two=2.d0,half=.5d0)
 
       common /velratio/ fratio(MWALK,MFORCE),xdrifted(3,MELEC,MWALK,MFORCE)
 
-      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
       dimension iwundr(MWALK)
 

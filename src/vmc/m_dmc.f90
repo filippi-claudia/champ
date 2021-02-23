@@ -147,3 +147,28 @@ contains
       if (allocated(jderiv)) deallocate(jderiv)
    end subroutine deallocate_c_averages_index
 end module c_averages_index 
+
+module jacobsave
+   !> Arguments: ajacob, ajacold
+   use dmc_mod, only: MWALK
+   use force_mod, only: MFORCE
+   use precision_kinds, only: dp
+
+    real(dp) :: ajacob
+    real(dp), dimension(:,:), allocatable :: ajacold
+
+    private
+    public :: ajacob, ajacold
+    public :: allocate_jacobsave, deallocate_jacobsave
+    save
+
+contains
+   subroutine allocate_jacobsave()
+      if (.not. allocated(ajacold)) allocate(ajacold(MWALK, MFORCE))
+   end subroutine allocate_jacobsave
+
+   subroutine deallocate_jacobsave()
+      if (allocated(ajacold)) deallocate(ajacold)
+   end subroutine deallocate_jacobsave
+
+end module jacobsave

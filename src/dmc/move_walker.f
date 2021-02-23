@@ -15,13 +15,14 @@ c Written by Claudia Filippi
 
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use jacobsave, only: ajacob, ajacold
       implicit real*8(a-h,o-z)
+
 
 
       include 'mpif.h'
 
       common /velratio/ fratio(MWALK,MFORCE)
-      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
       dimension istatus(MPI_STATUS_SIZE)
 

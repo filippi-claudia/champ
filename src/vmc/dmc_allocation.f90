@@ -12,7 +12,10 @@ subroutine allocate_dmc()
   use branch, only: allocate_branch
   use c_averages, only: allocate_c_averages
   use c_averages_index, only: allocate_c_averages_index
+  use jacobsave, only: allocate_jacobsave
+
   !> Allocate dmc-related arrays:
+
   call allocate_iage()
   call allocate_contrldmc()
   call allocate_config_dmc()
@@ -23,6 +26,8 @@ subroutine allocate_dmc()
   call allocate_branch()
   call allocate_c_averages()
   call allocate_c_averages_index()
+  call allocate_jacobsave()
+
 end subroutine allocate_dmc
 
 subroutine deallocate_dmc()
@@ -36,7 +41,10 @@ subroutine deallocate_dmc()
   use branch, only: deallocate_branch
   use c_averages, only: deallocate_c_averages
   use c_averages_index, only: deallocate_c_averages_index
+  use jacobsave, only: deallocate_jacobsave
+
   !> Deallocate dmc-related arrays:
+
   call deallocate_iage()
   call deallocate_contrldmc()
   call deallocate_config_dmc()
@@ -47,4 +55,6 @@ subroutine deallocate_dmc()
   call deallocate_branch()
   call deallocate_c_averages()
   call deallocate_c_averages_index()
+  call deallocate_jacobsave()
+
 end subroutine deallocate_dmc

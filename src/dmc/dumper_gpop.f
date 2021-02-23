@@ -44,7 +44,9 @@ c job where it left off
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
       use casula, only: i_vpsp, icasula, t_vpsp
+      use jacobsave, only: ajacob, ajacold
       implicit real*8(a-h,o-z)
+
 
 
 
@@ -64,7 +66,6 @@ C      include 'mpi_qmc.h'
       common /elec/ nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
       character*13 filename
 
