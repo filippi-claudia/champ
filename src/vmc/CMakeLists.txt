@@ -193,8 +193,8 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_writecube.f90)
   endif()
 
-  if (PERIODIC)
-    list(REMOVE_ITEM SHARED_OBJECTS
+  if (ENABLE_PERIODIC)
+    list(REMOVE_ITEM SHARED_SOURCE
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f)
     list(APPEND SHARED_OBJECTS 
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
