@@ -179,10 +179,31 @@ jobs:
            echo " first eigenvalue vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -50.815236723338842 
            echo ""
-
-    - name: Run_butadiene_sr
+           
+    - name: Run_psb2_mix_n
       run: |
-           cd tests/CI_test/butadiene_sr/
+
+           cd tests/CI_test/psb2
+           export OMPI_MCA_btl=^openib # Avoids MCA warnings
+
+           # run and compare a geometry optimization calculation
+           echo "- Running vmc_mix_SA.inp in serial:"
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
+           echo " total E vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.7665740 
+           echo ""
+
+           # run and compare a geometry optimization calculation MPI
+           echo "- Running vmc_mix_SA.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
+           echo " total E vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9287659 
+           echo ""
+
+    - name: Run_butadiene
+      run: |
+
+           cd tests/CI_test/butadiene/
            export OMPI_MCA_btl=^openib # Avoids MCA warnings
 
            # run and compare a geometry optimization calculation
@@ -211,26 +232,28 @@ jobs:
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_optall.inp > vmc_optall.out 
            echo " first eigenvalue vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -21.6147339 
+           echo ""          
+
+           # run and compare a dmc calculation
+           echo "- Running dmc.inp in serial:"
+           $HOME/work/champ/champ/bin/dmc.mov1 < dmc.inp > dmc.inp
+           echo " total E vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -28.1361563
            echo ""
+
+           # run and compare a dmc calculation MPI
+           echo "- Running dmc.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < dmc.inp > dmc.inp 
+           echo " first eigenvalue vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -26.4010232 
+           echo ""          
+
+           #  restore the module files
            
-    - name: Run_psb2_mix_n
-      run: |
-           cd tests/CI_test/psb2
-           export OMPI_MCA_btl=^openib # Avoids MCA warnings
-
-           # run and compare a geometry optimization calculation
-           echo "- Running vmc_mix_SA.inp in serial:"
-           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
-           echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.7665740 
-           echo ""
-
-           # run and compare a geometry optimization calculation MPI
-           echo "- Running vmc_mix_SA.inp in parallel:"
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
-           echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9287659 
-           echo ""
+           cd $HOME/work/champ/champ
+           cp m_vmc_save ./src/vmc/m_vmc.f90
+           cp m_optci_save ./src/vmc/m_optci.f90
+           cp m_sr_save ./src/vmc/m_sr.f90
 
            #  restore the module files
            
