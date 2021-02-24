@@ -194,7 +194,7 @@ module velratio
 contains
    subroutine allocate_velratio()
       if (.not. allocated(fratio)) allocate(fratio(MWALK, MFORCE))
-      if (.not. allocated(xdrifted)) allocate(xdrifted(3, MELEC, WALK, MFORCE))
+      if (.not. allocated(xdrifted)) allocate(xdrifted(3, MELEC, MWALK, MFORCE))
    end subroutine allocate_velratio
 
    subroutine deallocate_velratio()
