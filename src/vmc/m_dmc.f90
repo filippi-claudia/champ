@@ -75,13 +75,16 @@ module branch
 contains
    subroutine allocate_branch()
       if (.not. allocated(eold)) allocate(eold(MWALK,MFORCE))
-      if (.not. allocated(ff)) allocate(ff(MFPRD1))
+      if (.not. allocated(ff)) allocate(ff(0:MFPRD1))
       if (.not. allocated(pwt)) allocate(pwt(MWALK,MFORCE))
       if (.not. allocated(wt)) allocate(wt(MWALK))
-      if (.not. allocated(wtgen)) allocate(wtgen(MFPRD1))
-      if (.not. allocated(wthist)) allocate(wthist(MWALK,MFORCE_WT_PRD,MFORCE))
+      if (.not. allocated(wtgen)) allocate(wtgen(0:MFPRD1))
+      if (.not. allocated(wthist)) allocate(wthist(MWALK,0:MFORCE_WT_PRD,MFORCE))
    end subroutine allocate_branch
 
+!splitj.f:      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
+!splitj.f:     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
+!splitj.f-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
    subroutine deallocate_branch()
       if (allocated(eold)) deallocate(eold)
       if (allocated(ff)) deallocate(ff)
