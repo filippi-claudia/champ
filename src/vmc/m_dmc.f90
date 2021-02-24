@@ -35,17 +35,6 @@ contains
   end subroutine deallocate_iage
 end module age
 
-module iterat
-  !> Arguments: iblk, ipass
-
-   integer  :: iblk
-   integer  :: ipass
-
-   private
-   public :: iblk, ipass
-   save
-end module iterat
-
 module branch
   !> Arguments: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
   !> wthist

@@ -41,6 +41,7 @@ module estcum
      real(dp), dimension(:), allocatable :: wgcum !(MFORCE)
      real(dp), dimension(:), allocatable :: wgcum1 !(MFORCE)
      real(dp) :: wgdcum
+     integer :: ipass
 
      private
      public :: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
@@ -50,7 +51,7 @@ module estcum
      public :: ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
      public :: w_acc_cum, w_acc_cum1, wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1
      public :: wg_acc_cum, wg_acc_cum1, wgcum, wgcum1
-     public :: wgdcum
+     public :: wgdcum, ipass
      public :: allocate_estcum_dmc, deallocate_estcum_dmc
      save
  contains

@@ -18,7 +18,7 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
      &itau_eff, nfprod, rttau, tau, taueff, tautot
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use iterat, only: iblk, ipass
+      use estcum, only: iblk, ipass
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use force_dmc, only: itausec, nwprod
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF

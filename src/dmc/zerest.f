@@ -11,7 +11,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, istrech, nforce
       use age, only: iage, ioldest, ioldestmx
-      use iterat, only: iblk, ipass
+      use estcum, only: iblk, ipass
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
       use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
      &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,

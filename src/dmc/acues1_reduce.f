@@ -5,7 +5,7 @@
      &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use forcepar, only: deltot, istrech, nforce
-      use iterat, only: iblk, ipass
+      use estcum, only: iblk, ipass
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
       use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
      &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,

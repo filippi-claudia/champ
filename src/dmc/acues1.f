@@ -11,7 +11,7 @@ c routine to accumulate estimators for energy etc.
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
      &itau_eff, nfprod, rttau, tau, taueff, tautot
-      use iterat, only: iblk, ipass
+      use estcum, only: iblk, ipass
       use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
      &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
      &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc

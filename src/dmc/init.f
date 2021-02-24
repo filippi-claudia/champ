@@ -12,7 +12,7 @@ c routine to accumulate estimators for energy etc.
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcepar, only: deltot, istrech, nforce
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use iterat, only: iblk, ipass
+      use estcum, only: iblk, ipass
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use force_dmc, only: itausec, nwprod
       use mpiconf, only: idtask, nproc, wid, NPROCX

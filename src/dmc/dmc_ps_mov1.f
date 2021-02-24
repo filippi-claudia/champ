@@ -55,7 +55,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &itau_eff, nfprod, rttau, tau, taueff, tautot
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
 
-      use iterat, only: iblk, ipass
+      use estcum, only: iblk, ipass
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
 
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
