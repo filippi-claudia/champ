@@ -71,7 +71,7 @@ jobs:
            echo ""  
 
            # run and compare default optimization
-           echo "- Running vmc_lin.inp in serial:"
+           echo "- Running vmc_corsamp.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out 
            echo "  total E vs reference:"
            $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current energy" -1.0083658 
@@ -80,7 +80,7 @@ jobs:
            echo ""
 
            # run and compare default optimization MPI
-           echo "- Running vmc_lin.inp in parallel:"
+           echo "- Running vmc_corsamp.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out 
            echo "  total E vs reference:"
            $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current energy" -1.0119453 
