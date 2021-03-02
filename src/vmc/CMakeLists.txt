@@ -82,6 +82,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_state_avrg.f90)
 
   set(SHARED_OBJECTS
+    ${CMAKE_CURRENT_SOURCE_DIR}/vmc_allocation.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/dmc_allocation.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_convcartzmat.f90

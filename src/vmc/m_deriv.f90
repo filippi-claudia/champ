@@ -351,8 +351,8 @@ contains
 
     subroutine deallocate_derivest
         if (allocated(derivcm2)) deallocate(derivcm2)
-        if (allocated(derivcum)) deallocate(derivcm2)
-        if (allocated(derivsum)) deallocate(derivcm2)
+        if (allocated(derivcum)) deallocate(derivcum)
+        if (allocated(derivsum)) deallocate(derivsum)
         if (allocated(derivtotave_num_old)) deallocate(derivtotave_num_old)
     end subroutine deallocate_derivest
  end module derivest
