@@ -347,3 +347,25 @@ subroutine allocate_m_gradhess()
     call allocate_gradhess_mix_orb_ci()
     call allocate_gradjerr()
 end subroutine allocate_m_gradhess
+
+subroutine deallocate_m_gradhess()
+    use gradhess_all, only: deallocate_gradhess_all
+    use gradhessj, only: deallocate_gradhessj
+    use gradhessjo, only: deallocate_gradhessjo
+    use gradhess_ci, only: deallocate_gradhess_ci
+    use gradhess_jas, only: deallocate_gradhess_jas
+    use gradhess_mix_jas_ci, only: deallocate_gradhess_mix_jas_ci
+    use gradhess_mix_jas_orb, only: deallocate_gradhess_mix_jas_orb
+    use gradhess_mix_orb_ci, only: deallocate_gradhess_mix_orb_ci
+    use gradjerr, only: deallocate_gradjerr
+
+    call deallocate_gradhess_all()
+    call deallocate_gradhessj()
+    call deallocate_gradhessjo()
+    call deallocate_gradhess_ci()
+    call deallocate_gradhess_jas()
+    call deallocate_gradhess_mix_jas_ci()
+    call deallocate_gradhess_mix_jas_orb()
+    call deallocate_gradhess_mix_orb_ci()
+    call deallocate_gradjerr()
+end subroutine deallocate_m_gradhess

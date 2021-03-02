@@ -2,7 +2,7 @@ module optci
     !> Arguments:
     !     flags and dimensions for generalized CI expectation values
     !     maximal number of terms, max dim of reduced matrices
-    integer, parameter :: MXCITERM = 5000
+    integer, parameter :: MXCITERM = 5000 
     integer, parameter :: MXCIREDUCED = 1
     integer, parameter :: MXCIMATDIM = MXCITERM*(MXCIREDUCED + 1)/2
 
@@ -296,3 +296,25 @@ subroutine allocate_m_optci()
     call allocate_ci009_blk()
     call allocate_ci010_blk()
 end subroutine allocate_m_optci
+
+subroutine deallocate_m_optci()
+    use ci001_blk, only: deallocate_ci001_blk
+    use ci002_blk, only: deallocate_ci002_blk
+    use ci003_blk, only: deallocate_ci003_blk
+    use ci004_blk, only: deallocate_ci004_blk
+    use ci005_blk, only: deallocate_ci005_blk
+    use ci006_blk, only: deallocate_ci006_blk
+    use ci008_blk, only: deallocate_ci008_blk
+    use ci009_blk, only: deallocate_ci009_blk
+    use ci010_blk, only: deallocate_ci010_blk
+
+    call deallocate_ci001_blk()
+    call deallocate_ci002_blk()
+    call deallocate_ci003_blk()
+    call deallocate_ci004_blk()
+    call deallocate_ci005_blk()
+    call deallocate_ci006_blk()
+    call deallocate_ci008_blk()
+    call deallocate_ci009_blk()
+    call deallocate_ci010_blk()
+end subroutine deallocate_m_optci

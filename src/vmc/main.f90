@@ -48,5 +48,6 @@ program main
 
     call close_files()
     call mpi_finalize(ierr)
+    call deallocate_vmc()
 
 end

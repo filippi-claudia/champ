@@ -26,7 +26,6 @@ jobs:
 
            # save the module file
            cp src/vmc/m_vmc.f90 ./m_vmc_save
-           cp src/vmc/m_sr.f90 ./m_sr_save
            cp src/vmc/m_optci.f90 ./m_optci_save
            cp src/vmc/m_optorb.f90 ./m_optorb_save
 
@@ -111,7 +110,6 @@ jobs:
            cd $HOME/work/champ/champ
            cp m_vmc_save ./src/vmc/m_vmc.f90
            cp m_optci_save ./src/vmc/m_optci.f90
-           cp m_sr_save ./src/vmc/m_sr.f90     
            cp m_optorb_save src/vmc/m_optorb.f90
      
     - name: Building_code_for_psb3_butadiene_and_psb2
@@ -119,7 +117,6 @@ jobs:
 
            # save the module files
            cp src/vmc/m_vmc.f90 ./m_vmc_save
-           cp src/vmc/m_sr.f90 ./m_sr_save
            cp src/vmc/m_optci.f90 ./m_optci_save
 
            # copy module files to src
@@ -253,11 +250,9 @@ jobs:
            cd $HOME/work/champ/champ
            cp m_vmc_save ./src/vmc/m_vmc.f90
            cp m_optci_save ./src/vmc/m_optci.f90
-           cp m_sr_save ./src/vmc/m_sr.f90
 
            #  restore the module files
            
            cd $HOME/work/champ/champ
            cp m_vmc_save ./src/vmc/m_vmc.f90
            cp m_optci_save ./src/vmc/m_optci.f90
-           cp m_sr_save ./src/vmc/m_sr.f90

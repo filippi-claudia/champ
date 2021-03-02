@@ -62,3 +62,9 @@ module efield_mod
 
      call allocate_efield_blk()
  end subroutine allocate_m_efield
+
+ subroutine deallocate_m_efield()
+     use efield_blk, only: deallocate_efield_blk
+
+     call deallocate_efield_blk()
+ end subroutine deallocate_m_efield

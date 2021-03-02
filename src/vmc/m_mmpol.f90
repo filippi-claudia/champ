@@ -345,3 +345,25 @@ subroutine allocate_m_mmpol()
     call allocate_mmpol_field()
     call allocate_mmpol_inds()
 end subroutine allocate_m_mmpol
+
+subroutine deallocate_m_mmpol()
+    use mmpol_dipol, only: deallocate_mmpol_dipol
+    use mmpol_hpsi, only: deallocate_mmpol_hpsi
+    use mmpol_parms, only: deallocate_mmpol_parms
+    use mmpolo, only: deallocate_mmpolo
+    use mmpol_ahpol, only: deallocate_mmpol_ahpol
+    use mmpol_averages, only: deallocate_mmpol_averages
+    use mmpol_fdc, only: deallocate_mmpol_fdc
+    use mmpol_field, only: deallocate_mmpol_field
+    use mmpol_inds, only: deallocate_mmpol_inds
+
+    call deallocate_mmpol_dipol()
+    call deallocate_mmpol_hpsi()
+    call deallocate_mmpol_parms()
+    call deallocate_mmpolo()
+    call deallocate_mmpol_ahpol()
+    call deallocate_mmpol_averages()
+    call deallocate_mmpol_fdc()
+    call deallocate_mmpol_field()
+    call deallocate_mmpol_inds()
+end subroutine deallocate_m_mmpol

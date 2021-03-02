@@ -112,3 +112,13 @@ subroutine allocate_m_prop()
     call allocate_prp002()
     call allocate_prp003()
 end subroutine allocate_m_prop
+
+subroutine deallocate_m_prop()
+    use prp001, only: deallocate_prp001
+    use prp002, only: deallocate_prp002
+    use prp003, only: deallocate_prp003
+
+    call deallocate_prp001()
+    call deallocate_prp002()
+    call deallocate_prp003()
+end subroutine deallocate_m_prop

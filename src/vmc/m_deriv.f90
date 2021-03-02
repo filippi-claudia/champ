@@ -382,3 +382,29 @@ subroutine allocate_m_deriv()
     call allocate_dorb_m()
     call allocate_ijasnonlin()
 end subroutine allocate_m_deriv
+
+subroutine deallocate_m_deriv()
+    use da_energy_sumcum, only: deallocate_da_energy_sumcum
+    use da_jastrow4val, only: deallocate_da_jastrow4val
+    use da_orbval, only: deallocate_da_orbval
+    use da_pseudo, only: deallocate_da_pseudo
+    use da_energy_now, only: deallocate_da_energy_now
+    use deloc_dj_m, only: deallocate_deloc_dj_m
+    use denergy_det_m, only: deallocate_denergy_det_m
+    use denupdn, only: deallocate_denupdn
+    use derivjas, only: deallocate_derivjas
+    use dorb_m, only: deallocate_dorb_m
+    use ijasnonlin, only: deallocate_ijasnonlin
+
+    call deallocate_da_energy_sumcum()
+    call deallocate_da_jastrow4val()
+    call deallocate_da_orbval()
+    call deallocate_da_pseudo()
+    call deallocate_da_energy_now()
+    call deallocate_deloc_dj_m()
+    call deallocate_denergy_det_m()
+    call deallocate_denupdn()
+    call deallocate_derivjas()
+    call deallocate_dorb_m()
+    call deallocate_ijasnonlin()
+end subroutine deallocate_m_deriv

@@ -1351,3 +1351,77 @@ subroutine allocate_m_common()
     call allocate_zmatrix()
     call allocate_zmatrix_grad()
 end subroutine allocate_m_common
+
+subroutine deallocate_m_common()
+    use atom, only: deallocate_atom
+    use b_tmove, only: deallocate_b_tmove
+    use Bloc, only: deallocate_Bloc
+    use casula, only: deallocate_casula
+    use coefs, only: deallocate_coefs
+    use csfs, only: deallocate_csfs
+    use cuspmat, only: deallocate_cuspmat
+    use cuspmat4, only: deallocate_cuspmat4
+    use dets, only: deallocate_dets
+    use dets_equiv, only: deallocate_dets_equiv
+    use distance_mod, only: deallocate_distance_mod
+    use distances_sav, only: deallocate_distances_sav
+    use gauss_ecp, only: deallocate_gauss_ecp
+    use jd_scratch, only: deallocate_jd_scratch
+    use linear_norm, only: deallocate_linear_norm
+    use multidet, only: deallocate_multidet
+    use multimat, only: deallocate_multimat
+    use multimatn, only: deallocate_multimatn
+    use multislater, only: deallocate_multislater
+    use multislatern, only: deallocate_multislatern
+    use orbval, only: deallocate_orbval
+    use phifun, only: deallocate_phifun
+    use qua, only: deallocate_qua
+    use rlobxy, only: deallocate_rlobxy
+    use scratch, only: deallocate_scratch
+    use slater, only: deallocate_slater
+    use slatn, only: deallocate_slatn
+    use vardep, only: deallocate_vardep
+    use velocity_jastrow, only: deallocate_velocity_jastrow
+    use wfsec, only: deallocate_wfsec
+    use ycompact, only: deallocate_ycompact
+    use ycompactn, only: deallocate_ycompactn
+    use zcompact, only: deallocate_zcompact
+    use zmatrix, only: deallocate_zmatrix
+    use zmatrix_grad, only: deallocate_zmatrix_grad
+
+    call deallocate_atom()
+    call deallocate_b_tmove()
+    call deallocate_Bloc()
+    call deallocate_casula()
+    call deallocate_coefs()
+    call deallocate_csfs()
+    call deallocate_cuspmat()
+    call deallocate_cuspmat4()
+    call deallocate_dets()
+    call deallocate_dets_equiv()
+    call deallocate_distance_mod()
+    call deallocate_distances_sav()
+    call deallocate_gauss_ecp()
+    call deallocate_jd_scratch()
+    call deallocate_linear_norm()
+    call deallocate_multidet()
+    call deallocate_multimat()
+    call deallocate_multimatn()
+    call deallocate_multislater()
+    call deallocate_multislatern()
+    call deallocate_orbval()
+    call deallocate_phifun()
+    call deallocate_qua()
+    call deallocate_rlobxy()
+    call deallocate_scratch()
+    call deallocate_slater()
+    call deallocate_slatn()
+    call deallocate_vardep()
+    call deallocate_velocity_jastrow()
+    call deallocate_wfsec()
+    call deallocate_ycompact()
+    call deallocate_ycompactn()
+    call deallocate_zcompact()
+    call deallocate_zmatrix()
+    call deallocate_zmatrix_grad()
+end subroutine deallocate_m_common

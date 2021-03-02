@@ -220,3 +220,19 @@ module force_mod
      call allocate_force_mat_n()
      call allocate_forcepar()
  end subroutine allocate_m_force
+
+ subroutine deallocate_m_force()
+     use forcest, only: deallocate_forcest
+     use forcestr, only: deallocate_forcestr
+     use forcewt, only: deallocate_forcewt
+     use force_fin, only: deallocate_force_fin
+     use force_mat_n, only: deallocate_force_mat_n
+     use forcepar, only: deallocate_forcepar
+
+     call deallocate_forcest()
+     call deallocate_forcestr()
+     call deallocate_forcewt()
+     call deallocate_force_fin()
+     call deallocate_force_mat_n()
+     call deallocate_forcepar()
+ end subroutine deallocate_m_force

@@ -257,3 +257,13 @@ subroutine allocate_m_sampling()
     call allocate_step()
     call allocate_kinet()
 end subroutine allocate_m_sampling
+
+subroutine deallocate_m_sampling()
+    use config, only: deallocate_config
+    use step, only: deallocate_step
+    use kinet, only: deallocate_kinet
+
+    call deallocate_config()
+    call deallocate_step()
+    call deallocate_kinet()
+end subroutine deallocate_m_sampling

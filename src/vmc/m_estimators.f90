@@ -366,3 +366,17 @@ module estcum
      call allocate_estpsi()
      call allocate_est2cm()
  end subroutine allocate_m_estimators
+
+ subroutine deallocate_m_estimators()
+     use estcum, only: deallocate_estcum
+     use estsig, only: deallocate_estsig
+     use estsum, only: deallocate_estsum
+     use estpsi, only: deallocate_estpsi
+     use est2cm, only: deallocate_est2cm
+
+     call deallocate_estcum()
+     call deallocate_estsig()
+     call deallocate_estsum()
+     call deallocate_estpsi()
+     call deallocate_est2cm()
+ end subroutine deallocate_m_estimators
