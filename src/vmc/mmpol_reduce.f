@@ -6,10 +6,9 @@
       use mmpol_parms, only: nchmm
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-      include 'mpif.h'
 
       dimension eek1_collect(MCHMM),eek1cm2_collect(MCHMM)
       dimension eek2_collect(MCHMM),eek2cm2_collect(MCHMM)

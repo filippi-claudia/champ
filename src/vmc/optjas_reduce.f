@@ -9,15 +9,11 @@ c Written by Claudia Filippi
       use optwf_parms, only: nparmj
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
       use gradhessj, only: e2
-
       use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
       use method_opt, only: method
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-
-
-      include 'mpif.h'
 
 
       dimension collect(MPARMJ,MSTATES),collect2(MPARMJ,MPARMJ,MSTATES)

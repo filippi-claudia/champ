@@ -10,13 +10,10 @@
       use ci008_blk, only: ci_oe_cm2, ci_oe_cum
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
-
       use method_opt, only: method
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-
-      include 'mpif.h'
 
 c     parameter(MXTMP=max(MXORBTERM,MXMATDIM))
 c     max does not work with g77

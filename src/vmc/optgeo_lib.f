@@ -94,11 +94,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use atom, only: ncent
       use force_fin, only: da_energy_ave
       use force_analy, only: iforce_analy
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-      include 'mpif.h'
-
 
       if(iforce_analy.eq.0)return
 
