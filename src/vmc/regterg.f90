@@ -18,9 +18,9 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
   ! ... S is an symmetric matrix, evc is a real vector
   ! ... (real wavefunctions with only half plane waves stored)
   !
+  use mpi
   IMPLICIT NONE
   !
-  include 'mpif.h'
   !
   INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, ipr
     ! dimension of the matrix to be diagonalized

@@ -6,10 +6,9 @@
       use sr_index, only: jelo, jelo2, jelohfj
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-      include 'mpif.h'
 
       dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
       dimension hii(MPARM),sii(MPARM)
