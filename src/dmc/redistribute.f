@@ -25,8 +25,9 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use mpi
 
-      include 'mpif.h'
+      implicit real*8(a-h,o-z)
 
       dimension nwalk_all(0:NPROCX),icommunicate_all(0:NPROCX),
      &iwalk_stack(NPROCX)

@@ -29,12 +29,12 @@ c routine to accumulate estimators for energy etc.
       use contr3, only: mode
       use mpiblk, only: iblk_proc
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-
       use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
+      use mpi
+
       implicit real*8(a-h,o-z)
 
 
-      include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)
 
 

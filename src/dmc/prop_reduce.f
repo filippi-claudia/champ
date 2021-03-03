@@ -5,10 +5,9 @@
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
       use properties, only: MAXPROP
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-      include 'mpif.h'
 
 
       dimension vp2sum(MAXPROP), vpcollect(MAXPROP), vp2collect(MAXPROP)
@@ -55,14 +54,11 @@
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use properties, only: MAXPROP
-
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
+      use mpi
+
       implicit real*8(a-h,o-z)
-
-
-
-      include 'mpif.h'
 
 
       dimension istatus(MPI_STATUS_SIZE)

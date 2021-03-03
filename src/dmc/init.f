@@ -24,16 +24,15 @@ c routine to accumulate estimators for energy etc.
      &wthist
       use casula, only: i_vpsp, icasula, t_vpsp
       use jacobsave, only: ajacob, ajacold
-
       use pseudo, only: lpot, nloc, vps, vpso
-
       use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
+      use mpi
+
       implicit real*8(a-h,o-z)
 
 
 
 
-      include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)
 
 
