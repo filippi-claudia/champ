@@ -17,21 +17,13 @@ c Written by Claudia Filippi
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use coefs, only: coef, nbasis, norb
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
       use ycompact, only: dymat, ymat
       use multislater, only: detd, detu
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use multimat, only: aa, wfmat
+      use mpi
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-      include 'mpif.h'
-
-
 
 
 
@@ -46,6 +38,7 @@ c Written by Claudia Filippi
       dimension orbw(MELEC,MORB,MWALK),dorbw(3,MELEC,MORB,MWALK)
 
       dimension istatus(MPI_STATUS_SIZE)
+      dimension irequest_array(MPI_STATUS_SIZE)
 
       save krefw,slmuiw,slmdiw,fpuw,fpdw,fppuw,fppdw,detuw,detdw,ddxw,d2dx2w
 
@@ -260,7 +253,7 @@ c Written by Claudia Filippi
       call mpi_recv(ddxw(1,1,nwalk),3*nelec,mpi_double_precision
      &  ,isend,itag+5,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(krefw(nwalk),1,mpi_integer
-     &  ,isend,itag+6,MPI_COMM_WORLD,irequest,ierr)
+     &  ,isend,itag+6,MPI_COMM_WORLD,irequest_array,ierr)
       itag=itag+6
 
       call mpi_recv(aaw(1,1,nwalk,1),MELEC*norb,mpi_double_precision
