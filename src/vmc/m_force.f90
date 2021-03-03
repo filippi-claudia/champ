@@ -22,16 +22,19 @@ module force_mod
  end module force_analy
 
  module forcest
-     !> Arguments: fcm2, fcum
+     !> Arguments: fcm2, fcum, fgcm2, fgcum
      use force_mod, only: MFORCE
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
 
      real(dp), dimension(:, :), allocatable :: fcm2 !(MSTATES,MFORCE)
      real(dp), dimension(:, :), allocatable :: fcum !(MSTATES,MFORCE)
+     ! DMC arrays:
+     real(dp), dimension(:), allocatable :: fgcm2 !(MFORCE)
+     real(dp), dimension(:), allocatable :: fgcum !(MFORCE)
 
      private
-     public   ::  fcm2, fcum
+     public   ::  fcm2, fcum, fgcm2, fgcum
      public :: allocate_forcest, deallocate_forcest
      save
  contains
@@ -41,11 +44,17 @@ module force_mod
          use mstates_mod, only: MSTATES
          if (.not. allocated(fcm2)) allocate (fcm2(MSTATES, MFORCE))
          if (.not. allocated(fcum)) allocate (fcum(MSTATES, MFORCE))
+         ! DMC arrays:
+         if (.not. allocated(fgcm2)) allocate (fgcm2(MFORCE))
+         if (.not. allocated(fgcum)) allocate (fgcum(MFORCE))
      end subroutine allocate_forcest
 
      subroutine deallocate_forcest()
          if (allocated(fcum)) deallocate (fcum)
          if (allocated(fcm2)) deallocate (fcm2)
+         ! DMC arrays:
+         if (allocated(fcm2)) deallocate (fgcm2)
+         if (allocated(fcum)) deallocate (fgcum)
      end subroutine deallocate_forcest
 
  end module forcest
@@ -211,3 +220,19 @@ module force_mod
      call allocate_force_mat_n()
      call allocate_forcepar()
  end subroutine allocate_m_force
+
+ subroutine deallocate_m_force()
+     use forcest, only: deallocate_forcest
+     use forcestr, only: deallocate_forcestr
+     use forcewt, only: deallocate_forcewt
+     use force_fin, only: deallocate_force_fin
+     use force_mat_n, only: deallocate_force_mat_n
+     use forcepar, only: deallocate_forcepar
+
+     call deallocate_forcest()
+     call deallocate_forcestr()
+     call deallocate_forcewt()
+     call deallocate_force_fin()
+     call deallocate_force_mat_n()
+     call deallocate_forcepar()
+ end subroutine deallocate_m_force

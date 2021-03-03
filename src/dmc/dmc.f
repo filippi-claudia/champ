@@ -3,77 +3,65 @@ c Written by Cyrus Umrigar with major contributions by Claudia Filippi.
 c Uses the diffusion Monte Carlo algorithm described in:
 c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
 c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
+
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use forcest, only: fgcm2, fgcum
+      use forcepar, only: deltot, istrech, nforce
+      use contrl_per, only: ibasis, iperiodic
+      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
+     &itau_eff, nfprod, rttau, tau, taueff, tautot
+      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use estcum, only: iblk, ipass
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+      use force_dmc, only: itausec, nwprod
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM,
+     &NGNORMX, NGVECX, NG1DX, NGNORM_SIMX, NGVEC_SIMX, NGNORM_BIGX,
+     &NGVEC_BIGX, NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
+      use numbas_mod, only: MRWF, MRWF_PTS
+      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
+      use bparm, only: nocuspb, nspin2b
+      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
+     &isc, istrch
+      use pseudo, only: lpot, nloc, vps, vpso
+      use dorb_m, only: iworbd
+      use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
+     &xms
+      use rlobxy, only: rlobx, rloby, rloby2
+      use rnyucm, only: ll, mm
+      use coefs, only: coef, nbasis, norb
+      use wfsec, only: iwf, iwftype, nwftype
+      use jaspar, only: is, nspin1, nspin2, sspin, sspinn
+      use jaspar1, only: cjas1, cjas2
+      use jaspar2, only: a1, a2
+      use jaspar3, only: a, b, c, fck, nord, scalek
+      use jaspar4, only: a4, norda, nordb, nordc
 
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'dmc.h'
-      include 'force.h'
-      include 'pseudo.h'
-      include 'numbas.h'
-      include 'ewald.h'
 
       parameter (one=1.d0,four=4.d0)
 
-      common /contr2/ ijas,icusp,icusp2,isc,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-      integer fflag
-      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Z
-     &,rlobx, rloby, rloby2
 
-      common /fflags/ fflag
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
-      common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
-
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contrl_per/ iperiodic,ibasis
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-      common /iterat/ ipass,iblk
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar2/ a1(83,3,MWF),a2(83,3,MWF)
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(83,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
-      common /dorb/ iworbd(MELEC,MDET)
-      common /bparm/ nspin2b,nocuspb
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-      common /numbas/ arg(MCTYPE),r0(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS,MCTYPE)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-
-c common block variables:
-
-c   /const/
+c variables:
 c        nelec  = number of electrons
 c        pi     = 3.14159...
 c        hb     = hbar**2/(2m)
 c        delta  = side of box in which metropolis steps are made
 c        deltai = 1/delta
 c        fbias  = force bias parameter
-c   /contrl/
 c        nstep  = number of metropolis steps/block
 c        nblk   = number of blocks od nstep steps after the
 c                 equilibrium steps
@@ -81,8 +69,6 @@ c        nblkeq = number of equilibrium blocks
 c        nconf  = initial and target number of dmc configurations
 c        idump  =  1 dump out stuff for a restart
 c        irstar =  1 pick up stuff for a restart
-c   /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-c            ,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c        tau    = time-step
 c        nfprod = number of f's used for removing finite popul. bias
 c Control variables are:
@@ -109,7 +95,6 @@ c             >= 1 *   use smooth formulae to limit branching to (1/2,2)
 c                      (bad because it makes energies depend on E_trial)
 c icut_e      <= 0     do not limit energy
 c             >= 1 *   use smooth formulae to limit energy (not implemented)
-
 c *  => bad option, modest deterioration in efficiency or time-step error
 c ** => very bad option, big deterioration in efficiency or time-step error
 c So, idmc=6,66 correspond to the foll. two:
@@ -117,34 +102,28 @@ c 2 1 1 1 0 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-
-c   /config/
-c        xold   = current position of the electrons
+c        xold_dmc   = current position of the electrons
 c        xnew   = new position after a trial move
-c        vold   = grad(psi)/psi at current position
+c        vold_dmc   = grad(psi)/psi at current position
 c        vnew   = same after trial move
 c        psi2o  = psi**2 at current position
 c        psi2n  = same after trial move
 c        eold   = local energy at current position
 c        enew   = same after trial move
-c        peo    = local potential at current position
+c        peo_dmc    = local potential at current position
 c        pen    = same after trial move
 c        tjfo   = Jackson Feenberg kinetic energy at current position
 c        tjfn   = same after trial move
 c        psio   = psi
-c   /coefs/
 c        coef   = read in coefficients of the basis functions
 c                 to get the molecular orbitals used in determinant
 c        nbasis = number of basis functions read in
-c   /dets/
 c        cdet   = coefficients of the determinants
 c        ndet   = number of determinants of molecular orbitals
 c                 used
 c        nup    = number of up spin electrons
 c        ndn    = number of down spin electrons
-c   /jaspar/
 c        Jastrow function is dexp(cjas1*rij/(1+cjas2*rij))
-
 c   Other variables main program
 c        title  = title of run
 c        date   = date of run

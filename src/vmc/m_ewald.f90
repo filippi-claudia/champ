@@ -357,3 +357,19 @@ module ewald_mod
      call allocate_test()
      call allocate_tempor_test()
  end subroutine allocate_m_ewald
+
+ subroutine deallocate_m_ewald()
+     use ewald, only: deallocate_ewald
+     use ewald_basis, only: deallocate_ewald_basis
+     use periodic, only: deallocate_periodic
+     use pworbital, only: deallocate_pworbital
+     use test, only: deallocate_test
+     use tempor_test, only: deallocate_tempor_test
+
+     call deallocate_ewald()
+     call deallocate_ewald_basis()
+     call deallocate_periodic()
+     call deallocate_pworbital()
+     call deallocate_test()
+     call deallocate_tempor_test()
+ end subroutine deallocate_m_ewald

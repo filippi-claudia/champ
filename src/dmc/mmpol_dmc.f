@@ -1,14 +1,17 @@
       subroutine mmpol_prt(iblk,wgcum,wgcm2)
+
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
+
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
  
-      include 'dmc.h'
-      include 'force.h'
-      include 'mmpol.h'
       data hatokc/627.509541d0/
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
@@ -51,15 +54,16 @@
 c-----------------------------------------------------------------------
       subroutine mmpol_fin(iblk,wgcum,wgcm2)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
+
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
-      include 'dmc.h'
-      include 'force.h'
-      include 'mmpol.h'
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       if(immpol.eq.0) return
     
@@ -72,18 +76,18 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_save(iw)
+
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
+      use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
+      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
+
       implicit real*8(a-h,o-z)
- 
-      include 'dmc.h'
-      include 'mmpol.h'
-      common /mmpol_hpsi/QMdp,QMq,eek_pol(3,MCHMM)
-      common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
-     &         eeko1(MWALK,MCHMM),eeko2(MWALK,MCHMM),eeko3(MWALK,MCHMM)
 
       if(immpol.eq.0) return
 
-      dmmpolo(iw)=QMdp
-      cmmpolo(iw)=QMq
+      dmmpolo_dmc(iw)=QMdp
+      cmmpolo_dmc(iw)=QMq
 
       do i=1,nchmm
         eeko1(iw,i)=eek_pol(1,i)
@@ -96,17 +100,15 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_sum(p,q,iw)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
+      use mmpol_hpsi, only: eek_pol, peQMdp, peQMq
+      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
 
       implicit real*8(a-h,o-z)
  
-      include 'dmc.h'
-      include 'mmpol.h'
-      common /mmpol_hpsi/QMdp,QMq,eek_pol(3,MCHMM)
-      common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
-     &         eeko1(MWALK,MCHMM),eeko2(MWALK,MCHMM),eeko3(MWALK,MCHMM)
-
       if(immpol.eq.0) return
 
       dmmpol_sum=dmmpol_sum+p*QMdp+q*dmmpolo(iw)
@@ -121,20 +123,19 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
-      subroutine mmpol_cum(wsum)
+      subroutine mmpol_cum(wsum_dmc)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
 
       implicit real*8(a-h,o-z)
  
-      include 'dmc.h'
-      include 'mmpol.h'
-
       if(immpol.eq.0) return
 
-      dmmpolnow=dmmpol_sum/wsum
-      cmmpolnow=cmmpol_sum/wsum
+      dmmpolnow=dmmpol_sum/wsum_dmc
+      cmmpolnow=cmmpol_sum/wsum_dmc
 
       dmmpol_cm2=dmmpol_cm2+dmmpol_sum*dmmpolnow
       cmmpol_cm2=cmmpol_cm2+cmmpol_sum*cmmpolnow
@@ -143,15 +144,15 @@ c-----------------------------------------------------------------------
       cmmpol_cum=cmmpol_cum+cmmpol_sum
 
       do i=1,nchmm
-        eek_now1=eek_sum(1,i)/wsum
+        eek_now1=eek_sum(1,i)/wsum_dmc
         eek1_cm2(i)=eek1_cm2(i)+eek_sum(1,i)*eek_now1
         eek1_cum(i)=eek1_cum(i)+eek_sum(1,i)
 
-        eek_now2=eek_sum(2,i)/wsum
+        eek_now2=eek_sum(2,i)/wsum_dmc
         eek2_cm2(i)=eek2_cm2(i)+eek_sum(2,i)*eek_now2
         eek2_cum(i)=eek2_cum(i)+eek_sum(2,i)
 
-        eek_now3=eek_sum(3,i)/wsum
+        eek_now3=eek_sum(3,i)/wsum_dmc
         eek3_cm2(i)=eek3_cm2(i)+eek_sum(3,i)*eek_now3
         eek3_cum(i)=eek3_cum(i)+eek_sum(3,i)
 
@@ -161,16 +162,16 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_splitj(iw,iw2)
+
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
+      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
+
+
       implicit real*8(a-h,o-z)
 
-      include 'dmc.h'
-      include 'mmpol.h'
-      common /mmpolo/ dmmpolo(MWALK),cmmpolo(MWALK),
-     &         eeko1(MWALK,MCHMM),eeko2(MWALK,MCHMM),eeko3(MWALK,MCHMM)
-
-
-      dmmpolo(iw2)=dmmpolo(iw)
-      cmmpolo(iw2)=cmmpolo(iw)
+      dmmpolo_dmc(iw2)=dmmpolo_dmc(iw)
+      cmmpolo_dmc(iw2)=cmmpolo_dmc(iw)
 
       do i=1,nchmm
         eeko1(iw2,i)=eeko1(iw,i)

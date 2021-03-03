@@ -18,6 +18,7 @@ program main
     use mpiconf, only: mpiconf_init
     use contr3, only: init_control_mode
     use contrl_file, only: init_logfile, init_procfile, close_files 
+    use allocation_mod, only: deallocate_vmc
     use optwf_mod, only: optwf
 
     implicit None
@@ -48,5 +49,6 @@ program main
 
     call close_files()
     call mpi_finalize(ierr)
+    call deallocate_vmc()
 
 end

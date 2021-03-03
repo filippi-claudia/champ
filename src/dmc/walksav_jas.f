@@ -1,22 +1,28 @@
       subroutine walksav_jas(iw)
 c Written by Claudia Filippi
 
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
+      use jaso, only: d2ijo, d2jo, fijo, fjo, fso, fsumo
+
+      use velocity_jastrow, only: vj, vjn
       implicit real*8(a-h,o-z)
+
+
+
+
       include 'mpif.h'
-      include 'vmc.h'
-      include 'dmc.h'
-      include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
-      common /velocity_jastrow/vj(3,MELEC),vjn(3,MELEC)
 
       dimension fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK)
      &,fsumow(MWALK),fjow(3,MELEC,MWALK),d2ow(MWALK),d2ijow(MELEC,MELEC,MWALK)

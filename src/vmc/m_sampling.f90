@@ -2,11 +2,14 @@ module config
     !> looks a lot like sampling stuff
     !> Arguments: delttn, enew, eold, nearestn, nearesto, pen, peo,
     !> psi2n, psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn,
-    !> rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
+    !> rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold,
+    !> d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+
     use force_mod, only: MFORCE
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC
     use mstates_mod, only: MSTATES
+    use dmc_mod, only: MWALK
 
     real(dp), dimension(:), allocatable :: delttn !(MELEC)
     real(dp), dimension(:), allocatable :: enew !(MFORCE)
@@ -34,12 +37,22 @@ module config
     real(dp), dimension(:, :), allocatable :: vold !(3, MELEC)
     real(dp), dimension(:, :), allocatable :: xnew !(3, MELEC)
     real(dp), dimension(:, :), allocatable :: xold !(3, MELEC)
+    !> DMC variables: 
+    real(dp), dimension(:,:), allocatable :: d2o        ! (MWALK,MFORCE)
+    real(dp), dimension(:,:), allocatable :: peo_dmc    ! (MWALK,MFORCE)
+    real(dp), dimension(:,:), allocatable :: psido_dmc  ! (MWALK,MFORCE)
+    real(dp), dimension(:,:), allocatable :: psijo_dmc  ! (MWALK,MFORCE)
+    real(dp), dimension(:,:,:,:), allocatable :: vold_dmc ! (3,MELEC,MWALK,MFORCE)
+    real(dp), dimension(:,:,:,:), allocatable :: xold_dmc ! (3,MELEC,MWALK,MFORCE)
 
     private
     public   :: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n
     public   :: psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn
     public   :: rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
-    public :: allocate_config, deallocate_config
+    public   :: allocate_config, deallocate_config
+    !> DMC variables:
+    public   :: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+    public   :: allocate_config_dmc, deallocate_config_dmc
     save
 contains
     subroutine allocate_config()
@@ -96,6 +109,23 @@ contains
         if (allocated(delttn)) deallocate (delttn)
     end subroutine deallocate_config
 
+    subroutine allocate_config_dmc()
+      if (.not. allocated(d2o)) allocate(d2o(MWALK,MFORCE))
+      if (.not. allocated(peo_dmc)) allocate(peo_dmc(MWALK,MFORCE))
+      if (.not. allocated(psido_dmc)) allocate(psido_dmc(MWALK,MFORCE))
+      if (.not. allocated(psijo_dmc)) allocate(psijo_dmc(MWALK,MFORCE))
+      if (.not. allocated(vold_dmc)) allocate(vold_dmc(3,MELEC,MWALK,MFORCE))
+      if (.not. allocated(xold_dmc)) allocate(xold_dmc(3,MELEC,MWALK,MFORCE))
+    end subroutine allocate_config_dmc
+  
+    subroutine deallocate_config_dmc()
+      if (allocated(d2o)) deallocate(d2o)
+      if (allocated(peo_dmc)) deallocate(peo_dmc)
+      if (allocated(psido_dmc)) deallocate(psido_dmc)
+      if (allocated(psijo_dmc)) deallocate(psijo_dmc)
+      if (allocated(vold_dmc)) deallocate(vold_dmc)
+      if (allocated(xold_dmc)) deallocate(xold_dmc)
+    end subroutine deallocate_config_dmc
 end module config
 
 module rnyucm
@@ -115,14 +145,25 @@ module rnyucm
 end module rnyucm
 
 module stats
-    !> has to do with sampling
-    !> Arguments: rejmax
+    !> Arguments: rejmax, acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc,
+    !> nbrnch, nodecr, trymove
     use precision_kinds, only: dp
 
     real(dp) :: rejmax
+    !> DMC variables
+    real(dp) :: acc
+    real(dp) :: dfus2ac
+    real(dp) :: dfus2un
+    real(dp) :: dr2ac
+    real(dp) :: dr2un
+    integer  :: nacc
+    integer  :: nbrnch
+    integer  :: nodecr
+    real(dp) :: trymove
 
     private
     public :: rejmax
+    public :: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
     save
 end module stats
 
@@ -216,3 +257,13 @@ subroutine allocate_m_sampling()
     call allocate_step()
     call allocate_kinet()
 end subroutine allocate_m_sampling
+
+subroutine deallocate_m_sampling()
+    use config, only: deallocate_config
+    use step, only: deallocate_step
+    use kinet, only: deallocate_kinet
+
+    call deallocate_config()
+    call deallocate_step()
+    call deallocate_kinet()
+end subroutine deallocate_m_sampling

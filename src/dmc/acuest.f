@@ -2,44 +2,43 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use forcest, only: fgcm2, fgcum
+      use forcepar, only: deltot, istrech, nforce
+      use age, only: iage, ioldest, ioldestmx
+      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
+     &itau_eff, nfprod, rttau, tau, taueff, tautot
+      use estcum, only: iblk, ipass
+      use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
+     &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
+     &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
+      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
+     &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
+     &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
+     &wgdcum
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
+      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
+
+      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use contr3, only: mode
+      use mpiblk, only: iblk_proc
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'dmc.h'
-      include 'force.h'
+
+
       include 'mpif.h'
       parameter (zero=0.d0,one=1.d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-      common /iterat/ ipass,iblk
-      common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
-     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
-     &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),
-     &ei1sum,ei2sum,ei3sum, pesum(MFORCE),tpbsum(MFORCE),tjfsum(MFORCE),r2sum,
-     &risum,tausum(MFORCE)
-      common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
-     &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
-     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
-     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
-     &ricum,taucum(MFORCE)
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
-      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
-     &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
-      common /age/ iage(MWALK),ioldest,ioldestmx
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
 
-      character*12 mode
-      common /contr3/ mode
 
-      common /mpiblk/ iblk_proc
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE),
      &tpbcollect(MFORCE),tjfcollect(MFORCE),eg2collect(MFORCE),wg2collect(MFORCE),
@@ -71,9 +70,9 @@ c xerr = current error of x
 
       npass=iblk_proc*nstep
 
-      wnow=wsum/nstep
+      wnow=wsum_dmc/nstep
       wfnow=wfsum/nstep
-      enow=esum/wsum
+      enow=esum_dmc/wsum_dmc
       efnow=efsum/wfsum
       ei1now=wfsum/wdsum
       ei2now=wgsum(1)/wgdsum
@@ -82,33 +81,33 @@ c xerr = current error of x
 
       ei1cm2=ei1cm2+ei1now**2
       ei2cm2=ei2cm2+ei2now**2
-      r2cm2=r2cm2+r2sum*r2now
+      r2cm2_dmc=r2cm2_dmc+r2sum*r2now
       ricm2=ricm2+risum*rinow
 
       wdcum=wdcum+wdsum
       wgdcum=wgdcum+wgdsum
       ei1cum=ei1cum+ei1now
       ei2cum=ei2cum+ei2now
-      r2cum=r2cum+r2sum
+      r2cum_dmc=r2cum_dmc+r2sum
       ricum=ricum+risum
 
-      w2sum=wsum**2
+      w2sum=wsum_dmc**2
       wf2sum=wfsum**2
-      e2sum=esum*enow
+      e2sum=esum_dmc*enow
       ef2sum=efsum*efnow
 
       do 10 ifr=1,nforce
         wgnow=wgsum(ifr)/nstep
         egnow=egsum(ifr)/wgsum(ifr)
-        penow=pesum(ifr)/wgsum(ifr)
-        tpbnow=tpbsum(ifr)/wgsum(ifr)
-        tjfnow=tjfsum(ifr)/wgsum(ifr)
+        penow=pesum_dmc(ifr)/wgsum(ifr)
+        tpbnow=tpbsum_dmc(ifr)/wgsum(ifr)
+        tjfnow=tjfsum_dmc(ifr)/wgsum(ifr)
 
         wg2sum(ifr)=wgsum(ifr)**2
         eg2sum(ifr)=egsum(ifr)*egnow
-        pe2sum(ifr)=pesum(ifr)*penow
-        tpb2sum(ifr)=tpbsum(ifr)*tpbnow
-        tjf2sum(ifr)=tjfsum(ifr)*tjfnow
+        pe2sum(ifr)=pesum_dmc(ifr)*penow
+        tpb2sum(ifr)=tpbsum_dmc(ifr)*tpbnow
+        tjf2sum(ifr)=tjfsum_dmc(ifr)*tjfnow
         if(ifr.gt.1) then
           fsum(ifr)=wgsum(1)*(egnow-egsum(1)/wgsum(1))
           f2sum(ifr)=wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
@@ -128,11 +127,11 @@ c xerr = current error of x
         taucum(ifr)=taucum(ifr)+taucollect(ifr)
   12  continue
 
-      call mpi_reduce(pesum,pecollect,MFORCE
+      call mpi_reduce(pesum_dmc,pecollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tpbsum,tpbcollect,MFORCE
+      call mpi_reduce(tpbsum_dmc,tpbcollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tjfsum,tjfcollect,MFORCE
+      call mpi_reduce(tjfsum_dmc,tjfcollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       call mpi_reduce(wg2sum,wg2collect,MFORCE
@@ -154,9 +153,9 @@ c xerr = current error of x
       call mpi_reduce(derivsum,derivcollect,10*MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_reduce(esum,ecollect,1
+      call mpi_reduce(esum_dmc,ecollect,1
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(wsum,wcollect,1
+      call mpi_reduce(wsum_dmc,wcollect,1
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(efsum,efcollect,1
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -185,24 +184,24 @@ c xerr = current error of x
 
       wcm2=wcm2+w2collect
       wfcm2=wfcm2+wf2collect
-      ecm2=ecm2+e2collect
+      ecm2_dmc=ecm2_dmc+e2collect
       efcm2=efcm2+ef2collect
 
-      wcum=wcum+wcollect
+      wcum_dmc=wcum_dmc+wcollect
       wfcum=wfcum+wfcollect
-      ecum=ecum+ecollect
+      ecum_dmc=ecum_dmc+ecollect
       efcum=efcum+efcollect
 
       do 15 ifr=1,nforce
         wgcm2(ifr)=wgcm2(ifr)+wg2collect(ifr)
         egcm2(ifr)=egcm2(ifr)+eg2collect(ifr)
-        pecm2(ifr)=pecm2(ifr)+pe2collect(ifr)
-        tpbcm2(ifr)=tpbcm2(ifr)+tpb2collect(ifr)
-        tjfcm2(ifr)=tjfcm2(ifr)+tjf2collect(ifr)
+        pecm2_dmc(ifr)=pecm2_dmc(ifr)+pe2collect(ifr)
+        tpbcm2_dmc(ifr)=tpbcm2_dmc(ifr)+tpb2collect(ifr)
+        tjfcm_dmc(ifr)=tjfcm_dmc(ifr)+tjf2collect(ifr)
 
-        pecum(ifr)=pecum(ifr)+pecollect(ifr)
-        tpbcum(ifr)=tpbcum(ifr)+tpbcollect(ifr)
-        tjfcum(ifr)=tjfcum(ifr)+tjfcollect(ifr)
+        pecum_dmc(ifr)=pecum_dmc(ifr)+pecollect(ifr)
+        tpbcum_dmc(ifr)=tpbcum_dmc(ifr)+tpbcollect(ifr)
+        tjfcum_dmc(ifr)=tjfcum_dmc(ifr)+tjfcollect(ifr)
         do 13 k=1,3
   13      derivcum(k,ifr)=derivcum(k,ifr)+derivcollect(k,ifr)
 
@@ -213,15 +212,15 @@ c xerr = current error of x
           tjferr=0
          else
           egerr=errg(egcum(ifr),egcm2(ifr),ifr)
-          peerr=errg(pecum(ifr),pecm2(ifr),ifr)
-          tpberr=errg(tpbcum(ifr),tpbcm2(ifr),ifr)
-          tjferr=errg(tjfcum(ifr),tjfcm2(ifr),ifr)
+          peerr=errg(pecum_dmc(ifr),pecm2_dmc(ifr),ifr)
+          tpberr=errg(tpbcum_dmc(ifr),tpbcm2_dmc(ifr),ifr)
+          tjferr=errg(tjfcum_dmc(ifr),tjfcm_dmc(ifr),ifr)
         endif
 
         egave=egcum(ifr)/wgcum(ifr)
-        peave=pecum(ifr)/wgcum(ifr)
-        tpbave=tpbcum(ifr)/wgcum(ifr)
-        tjfave=tjfcum(ifr)/wgcum(ifr)
+        peave=pecum_dmc(ifr)/wgcum(ifr)
+        tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
+        tjfave=tjfcum_dmc(ifr)/wgcum(ifr)
 
         if(ifr.gt.1) then
           fgcum(ifr)=fgcum(ifr)+fcollect(ifr)
@@ -288,11 +287,11 @@ c write out current values of averages etc.
 
 c zero out xsum variables for metrop
 
-   17 wsum=zero
+   17 wsum_dmc=zero
       wfsum=zero
       wdsum=zero
       wgdsum=zero
-      esum=zero
+      esum_dmc=zero
       efsum=zero
       ei1sum=zero
       ei2sum=zero
@@ -302,9 +301,9 @@ c zero out xsum variables for metrop
       do 20 ifr=1,nforce
         egsum(ifr)=zero
         wgsum(ifr)=zero
-        pesum(ifr)=zero
-        tpbsum(ifr)=zero
-        tjfsum(ifr)=zero
+        pesum_dmc(ifr)=zero
+        tpbsum_dmc(ifr)=zero
+        tjfsum_dmc(ifr)=zero
         tausum(ifr)=zero
         do 20 k=1,10
    20     derivsum(k,ifr)=zero

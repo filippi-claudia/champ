@@ -1,33 +1,12 @@
       subroutine read_input
 c Written by Friedemann Schautz
-
+      use allocation_mod, only: allocate_vmc, allocate_dmc 
       use contr3, only: mode
+
       implicit real*8(a-h,o-z)
 
-      call allocate_m_common
-      call allocate_m_basis
-      call allocate_m_control
-      call allocate_m_deriv
-      call allocate_m_efield
-      call allocate_m_estimators
-      call allocate_m_ewald
-      call allocate_m_force
-      call allocate_m_gradhess
-      call allocate_m_grdnt
-      call allocate_m_grid
-      call allocate_m_jastrow
-      call allocate_m_mixderiv
-      call allocate_m_mmpol
-      call allocate_m_mstates
-      call allocate_m_optci
-      call allocate_m_optorb
-      call allocate_m_optwf
-      call allocate_m_pcm
-      call allocate_m_prop
-      call allocate_m_pseudo
-      call allocate_m_sampling
-      call allocate_m_sr
-      call allocate_m_state_avrg
+      call allocate_vmc()
+      call allocate_dmc()
 
 
 c Initialize flags
@@ -140,12 +119,11 @@ c and Anthony Scemema
       use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
       use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat
       use optwf_corsam, only: add_diag
+      use dmc_mod, only: MWALK
 
       implicit real*8(a-h,o-z)
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
-
-c      include 'dmc.h' now emty
 
       character*20 fmt
       character*32 keyname

@@ -1,27 +1,28 @@
       subroutine mc_configs
+
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use contr3, only: mode
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'dmc.h'
-      include 'force.h'
+
+
       include 'mpif.h'
 
       character*25 fmt
       character*20 filename
-      character*12 mode
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
-      common /contr3/ mode
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension irn(4)
       save ngfmc
@@ -60,7 +61,7 @@ c set the random number seed, setrn already called in read_input
         rewind 1
         do 330 id=0,idtask
           do 330 i=1,nconf
-            read(1,fmt=*,end=340) ((xold(ic,j,i,1),ic=1,3),j=1,nelec)
+            read(1,fmt=*,end=340) ((xold_dmc(ic,j,i,1),ic=1,3),j=1,nelec)
   330   continue
         goto 345
   340   call fatal_error('DMC: error reading mc_configs')
@@ -107,8 +108,8 @@ c Write out configuration for optimization/dmc/gfmc here
               write(fmt,'(a1,i3,a21)')'(',3*nelec,'f14.8,i3,d12.4,f12.5)'
             endif
             do 352 iwalk=1,nwalk
-  352         write(7,fmt) ((xold(ii,jj,iwalk,1),ii=1,3),jj=1,nelec),
-     &        int(sign(1.d0,psido(iwalk,1))),log(dabs(psido(iwalk,1)))+psijo(iwalk,1),eold(iwalk,1)
+  352         write(7,fmt) ((xold_dmc(ii,jj,iwalk,1),ii=1,3),jj=1,nelec),
+     &        int(sign(1.d0,psido_dmc(iwalk,1))),log(dabs(psido_dmc(iwalk,1)))+psijo_dmc(iwalk,1),eold(iwalk,1)
           endif
 
       return

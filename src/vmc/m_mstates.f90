@@ -81,3 +81,11 @@ module mstates_mod
      call allocate_mstates2()
      call allocate_mstates3()
  end subroutine allocate_m_mstates
+
+ subroutine deallocate_m_mstates()
+     use mstates2, only: deallocate_mstates2
+     use mstates3, only: deallocate_mstates3
+
+     call deallocate_mstates2()
+     call deallocate_mstates3()
+ end subroutine deallocate_m_mstates

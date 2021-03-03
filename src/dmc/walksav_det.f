@@ -1,42 +1,39 @@
       subroutine walksav_det(iw)
 c Written by Claudia Filippi
 
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use forcepar, only: deltot, istrech, nforce
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mstates_mod, only: MSTATES, MDETCSFX
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
+      use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use coefs, only: coef, nbasis, norb
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+
+      use ycompact, only: dymat, ymat
+      use multislater, only: detd, detu
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use multimat, only: aa, wfmat
       implicit real*8(a-h,o-z)
+
+
+
+
+
       include 'mpif.h'
-      include 'vmc.h'
-      include 'dmc.h'
-      include 'force.h'
-      include 'mstates.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /elec/ nup,ndn
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 
-      common /csfs/ ccsf(MDET,MSTATES,MWF),cxdet(MDET*MDETCSFX)
-     &,icxdet(MDET*MDETCSFX),iadet(MDET),ibdet(MDET),ncsf,nstates
 
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
-
-      common /slater/ slmui(MMAT_DIM),slmdi(MMAT_DIM)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
-     &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detu(MDET),detd(MDET)
-
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
-
-      common /orbval/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),ndetorb,nadorb
-
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
       dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK),slmdiw(MMAT_DIM,MWALK)
      &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)

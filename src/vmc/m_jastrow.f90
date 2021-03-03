@@ -44,9 +44,12 @@ module jaso
     real(dp), dimension(:, :), allocatable :: fjo !(3,MELEC)
     real(dp), dimension(:, :), allocatable :: fso !(MELEC,MELEC)
     real(dp) :: fsumo
+    !> DMC
+    real(dp) :: d2jo
 
     private
     public :: d2ijo, d2o, fijo, fjo, fso, fsumo
+    public :: d2jo
     public :: allocate_jaso, deallocate_jaso
     save
 contains
@@ -286,3 +289,23 @@ subroutine allocate_m_jastrow()
     call allocate_jaspar6()
     call allocate_jaspointer()
 end subroutine allocate_m_jastrow
+
+subroutine deallocate_m_jastrow()
+    use jasn, only: deallocate_jasn
+    use jaso, only: deallocate_jaso
+    use jaspar1, only: deallocate_jaspar1
+    use jaspar2, only: deallocate_jaspar2
+    use jaspar3, only: deallocate_jaspar3
+    use jaspar4, only: deallocate_jaspar4
+    use jaspar6, only: deallocate_jaspar6
+    use jaspointer, only: deallocate_jaspointer
+
+    call deallocate_jasn()
+    call deallocate_jaso()
+    call deallocate_jaspar1()
+    call deallocate_jaspar2()
+    call deallocate_jaspar3()
+    call deallocate_jaspar4()
+    call deallocate_jaspar6()
+    call deallocate_jaspointer()
+end subroutine deallocate_m_jastrow

@@ -6,16 +6,17 @@ C----------------------------------------------
 
       subroutine prop_prt_dmc(iblk,ifinal,wgcum,wgcm2)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum 
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use properties, only: MAXPROP
 
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
- 
-      include 'dmc.h'
-      include 'force.h'
-      include 'properties.h'
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+
+ 
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
       dimension perr(MAXPROP),pav(MAXPROP)
@@ -84,13 +85,11 @@ c....dipole
 c----------------------------------------------------------------------
       subroutine prop_save_dmc(iw)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use prp002, only: vprop_old
+      use properties, only: MAXPROP
 
       implicit real*8(a-h,o-z)
-
-      include 'dmc.h'
-      include 'properties.h'
-      include 'prop_dmc.h'
 
       if(iprop.eq.0) return
       do i=1,nprop
@@ -100,14 +99,13 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       subroutine prop_sum_dmc(p,q,iw)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use prp002, only: vprop_old
       use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum 
+      use properties, only: MAXPROP
 
       implicit real*8(a-h,o-z)
 
-      include 'dmc.h'
-      include 'properties.h'
-      include 'prop_dmc.h'
       if(iprop.eq.0) return
 
       do i=1,nprop
@@ -117,13 +115,12 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       subroutine prop_splitj(iw,iw2)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use prp002, only: vprop_old
+      use properties, only: MAXPROP
 
       implicit real*8(a-h,o-z)
 
-      include 'dmc.h'
-      include 'properties.h'
-      include 'prop_dmc.h'
       do i=1,nprop
        vprop_old(i,iw2)=vprop_old(i,iw)
       enddo

@@ -1,44 +1,43 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mstates_mod, only: MSTATES, MDETCSFX
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use b_tmove, only: b_t, iskip
+      use casula, only: i_vpsp, icasula, t_vpsp
+      use pseudo, only: lpot, nloc, vps, vpso
+      use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use dorb_m, only: iworbd
+
+      use coefs, only: coef, nbasis, norb
+      use wfsec, only: iwf, iwftype, nwftype
+      use ycompact, only: dymat, ymat
+      use multislater, only: detd, detu
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+
+      use multimat, only: aa, wfmat
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include 'pseudo.h'
-      include 'mstates.h'
+
+
+
+
+
+
+
+
+
 
       parameter (one=1.d0,half=0.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /dets/ cdet(MDET,MSTATES,MWF),ndet
-      common /elec/ nup,ndn
-      common /dorb/ iworbd(MELEC,MDET)
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-
-      common /multidet/ kref,numrep_det(MDET,2),irepcol_det(MELEC,MDET,2),ireporb_det(MELEC,MDET,2)
-     & ,iwundet(MDET,2),iactv(2),ivirt(2)
-
-      common /slater/ slmi(MMAT_DIM,2)
-     &,fpu(3,MMAT_DIM),fpd(3,MMAT_DIM)
-     &,fppu(MMAT_DIM),fppd(MMAT_DIM)
-     &,ddx(3,MELEC),d2dx2(MELEC)
-      common /multislater/ detu(MDET),detd(MDET)
-
-      common /multimat/ aa(MELEC,MORB,2),wfmat(MEXCIT**2,MDET,2)
-
-      common /ycompact/ ymat(MORB,MELEC,2,MSTATES),dymat(MORB,MELEC,2,MSTATES)
-
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-      common /b_tmove/ b_t(MORB,MPS_QUAD,MCENT,MELEC),iskip(MELEC,MCENT)
 
       dimension gmat(MELEC,MORB)
 

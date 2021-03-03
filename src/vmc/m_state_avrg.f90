@@ -60,3 +60,11 @@ module sa_check
      call allocate_sa_check()
      call allocate_sa_weights()
  end subroutine allocate_m_state_avrg
+
+ subroutine deallocate_m_state_avrg()
+     use sa_check, only: deallocate_sa_check
+     use sa_weights, only: deallocate_sa_weights
+
+     call deallocate_sa_check()
+     call deallocate_sa_weights()
+ end subroutine deallocate_m_state_avrg
