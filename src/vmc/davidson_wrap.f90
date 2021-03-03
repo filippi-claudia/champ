@@ -14,10 +14,10 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
     use davidson, only: generalized_eigensolver
     use davidson, only: davidson_parameters
     use array_utils, only: eye, write_matrix, write_vector
+    use mpi
 
     IMPLICIT NONE
 
-    include 'mpif.h'
 
     !> \param npram dimension of the matrix to be diagonalized
     !> \param nparmx leading dimension of matrix eigenvectors

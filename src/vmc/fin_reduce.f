@@ -9,7 +9,6 @@ c MPI version written by Claudia Filippi
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
-
       use est2cm, only: ecm21
       use estcum, only: ecum1, iblk
       use estsig, only: ecm21s, ecum1s
@@ -17,19 +16,11 @@ c MPI version written by Claudia Filippi
       use forcewt, only: wcum
       use mpiconf, only: nproc, wid
       use step, only: rprob, suc, try
-
       use contrl, only: nstep
       use method_opt, only: method
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-
-
-
-      include 'mpif.h'
-
-
-
 
 
       dimension rprobt(nrad),tryt(nrad),suct(nrad)

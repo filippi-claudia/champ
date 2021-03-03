@@ -8,24 +8,16 @@ c written by Claudia Filippi
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
-
       use estcum, only: iblk
       use estpsi, only: apsi, aref, detref
       use mpiconf, only: nproc, wid
       use optwf_corsam, only: energy, energy_err, force, force_err
       use contrl, only: nstep
       use sa_check, only: energy_all, energy_err_all
+      use mpi
 
       implicit real*8(a-h,o-z)
 
-
-
-      include 'mpif.h'
-
-
-
-
-      ! common /sa_check/ energy_all(MSTATES), energy_err_all(MSTATES)
 
 c     dimension istatus(MPI_STATUS_SIZE)
 

@@ -13,15 +13,13 @@ c Written by Claudia Filippi
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum
       use mpiconf, only: nproc, wid
+      use mpi
 
       ! this in not even in the master as the line
       ! is commented in optorb.h !
       use optorb_cblock, only: iorbprt, iorbprt_sav
 
       implicit real*8(a-h,o-z)
-
-
-      include 'mpif.h'
 
       parameter (MOBS=MSTATES*(8+5*MFORCE)+10)
       
