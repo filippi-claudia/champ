@@ -11,10 +11,9 @@
       use sr_mat_n, only: jfj
       use sr_mat_n, only: obs_tot
       use optwf_sr_mod, only: sr_hs
+      use mpi
       
       implicit real*8(a-h,o-z)
-
-      include 'mpif.h'
 
       dimension e(MVEC),evc(MPARM,MVEC),itype(MVEC),overlap_psi(MVEC,MSTATES),index_overlap(MVEC),anorm(MVEC)
       dimension deltap(*),deltap_more(MPARM*MSTATES,5),index_more(5,MSTATES)
@@ -145,11 +144,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine amul(n,q,r)
 
       use jd_scratch, only: qr, rr
+      use mpi
+
       implicit real*8(a-h,o-z)
-
-
-      include 'mpif.h'
-
 
       complex*16 q(n),r(n)
       do i=1,n
@@ -171,11 +168,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine bmul(n,q,r)
 
       use jd_scratch, only: qr, rr
+      use mpi
+
       implicit real*8(a-h,o-z)
-
-
-      include 'mpif.h'
-
 
       complex*16 q(n),r(n)
       do i=1,n
@@ -205,24 +200,19 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
+
       use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+      use mpi
 
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
 
       implicit real*8(a-h,o-z)
-
-
-
-
-      include 'mpif.h'
-
-
 
       dimension psi(MPARM,*),hpsi(MPARM,*),aux(MCONF),hpsiloc(MPARM,MVEC)
 
@@ -305,24 +295,19 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
+
       use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n
       use sr_mat_n, only: sr_o, wtg, obs_tot
+      use mpi
 
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
 
       implicit real*8(a-h,o-z)
-
-
-
-
-      include 'mpif.h'
-
-
 
       dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF)
 
@@ -385,28 +370,20 @@ c     STOP
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
+
       use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+      use mpi
 
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
-      include 'mpif.h'
- 
-
-
-
 
       dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux(MCONF)
 
@@ -503,28 +480,20 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
+
       use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+      use mpi
 
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
-      include 'mpif.h'
-
-
-
-
 
       dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,MVEC),aux(MCONF),h_sr_sym(MPARM)
 
@@ -630,27 +599,20 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
+
       use sr_mod, only: MPARM, MCONF, MVEC
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega, omega
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+      use mpi
 
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
-      include 'mpif.h'
-
- 
-
 
       dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,MVEC),aux0(MCONF),aux1(MCONF),aux2(MCONF)
       dimension grad_ene(MPARM)
@@ -772,12 +734,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       ! thi was not in master but is clearly needed
       use optwf_contrl, only: ioptorb, ioptjas
+      use mpi
       
       implicit real*8(a-h,o-z)
-
-
-      include 'mpif.h'
-
 
       dimension psi(MPARM,*),ew(*)
       dimension s(MPARM),h(MPARM)
@@ -837,22 +796,17 @@ c         if(i.ne.ivec+nb1-1) psi(i,ivec)=psi(i,ivec)/(h(i)+s_diag(1,1)-ew(ivec)
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
+
       use sr_mod, only: MPARM, MVEC
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
-
       use mpiconf, only: idtask, nproc
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: nconf_n
       use sr_mat_n, only: sr_o, wtg, obs_tot
+      use mpi
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-      include 'mpif.h'
-
 
       dimension psi(MPARM,*),overlap_psi(MVEC,*),anorm(*),overlap_psiloc(MVEC,MSTATES),anorm_loc(MVEC)
 

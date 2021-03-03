@@ -4,24 +4,13 @@ c Written by Claudia Filippi
       use optorb_mod, only: MXREDUCED
       use optjas, only: MPARMJ
       use csfs, only: nstates
-
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-
       use method_opt, only: method
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-      include 'mpif.h'
-
-
-
 
       dimension collect(MPARMJ,MXREDUCED)
 
