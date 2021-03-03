@@ -3,7 +3,7 @@ module mpiconf
     integer, parameter :: NPROCX = 1524
     integer  :: idtask
     integer  :: nproc
-    logical  :: wid ! true if only one mpi task
+    logical  :: wid
 
     private
     public :: NPROCX
