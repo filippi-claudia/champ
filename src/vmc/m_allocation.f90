@@ -62,9 +62,11 @@ contains
         call deallocate_m_sr
         call deallocate_m_state_avrg
   
-  end subroutine deallocate_vmc!> Subroutines to allocate/deallocate memory of specific DMC-related
+  end subroutine deallocate_vmc
+  !> Subroutines to allocate/deallocate memory of specific DMC-related
   !> variables.
-  !> The allocation will occurr only in via read_input.f
+  !> Allocation will occurr only via read_input.f.
+  !> Deallocation will ocurr before ending of dmc/main.f.
   subroutine allocate_dmc()
     use age, only: allocate_iage
     use contrldmc, only: allocate_contrldmc 
