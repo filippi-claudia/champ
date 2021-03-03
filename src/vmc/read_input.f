@@ -1,9 +1,9 @@
       subroutine read_input
 c Written by Friedemann Schautz
-
+      use allocation_mod, only: allocate_vmc, allocate_dmc 
       use contr3, only: mode
-      implicit real*8(a-h,o-z)
 
+      implicit real*8(a-h,o-z)
 
       call allocate_vmc()
       call allocate_dmc()

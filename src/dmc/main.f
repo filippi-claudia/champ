@@ -2,6 +2,7 @@
 c Written by Claudia Filippi
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use mpiconf, only: mpiconf_init 
+      use allocation_mod, only: deallocate_dmc
       use contr3, only: mode
 
       implicit real*8(a-h,o-z)
