@@ -18,14 +18,14 @@
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mpi
 
       implicit real*8(a-h,o-z)
 
-
-      include 'mpif.h'
-
       dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
      &,wg21collect(MFORCE),taucollect(MFORCE),rprobcollect(nrad)
+
+      dimension istatus(MPI_STATUS_SIZE)
 
       if(mode.eq.'dmc_one_mpi2') return
 

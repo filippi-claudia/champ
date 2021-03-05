@@ -4,10 +4,10 @@
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
       use pcm, only: MCHS, MCHV, MSPHERE
+      use mpi
 
       implicit real*8(a-h,o-z)
 
-      include 'mpif.h'
 
 
       if(ipcm.eq.0) return
@@ -77,14 +77,13 @@
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use pcm, only: MCHS, MCHV, MSPHERE
-
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
       use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
+      use mpi
 
       implicit real*8(a-h,o-z)
 
-      include 'mpif.h'
 
       dimension istatus(MPI_STATUS_SIZE)
 

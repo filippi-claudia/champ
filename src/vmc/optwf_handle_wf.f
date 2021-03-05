@@ -2,10 +2,9 @@ c-----------------------------------------------------------------------
       subroutine write_wf(iwf_fit,iter)
 
       use mpiconf, only: idtask
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-      include 'mpif.h'
 
       character*40 filetype,wf,itn
 

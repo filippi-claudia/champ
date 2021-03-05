@@ -45,7 +45,6 @@
       use casula, only: i_vpsp, icasula, t_vpsp
       use jacobsave, only: ajacob, ajacold
       use pseudo, only: lpot, nloc, vps, vpso
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
@@ -54,22 +53,9 @@
       use jaspar1, only: cjas1, cjas2
       use velratio, only: fratio, xdrifted
       use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
+      use mpi
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      include 'mpif.h'
 
       parameter (zero=0.d0,one=1.d0)
       parameter (small=1.e-6)

@@ -79,9 +79,10 @@ contains
         !>
         !> return eigenvalues and ritz_vectors of the matrix
 
+        use mpi
+
         implicit none
 
-        include 'mpif.h'
 
         ! input/output variable
         integer, intent(in) :: nparm, nparm_max, nvecx, lowest, nproc, idtask
@@ -480,9 +481,9 @@ contains
     subroutine die(msg)
         !> Subroutine that dies the calculation raising an errror message
         !
+        use mpi
         character msg*(*)
         integer ierr
-        include 'mpif.h'
 
         write (6, '(''Fatal error: '',a)') msg
         call mpi_abort(MPI_COMM_WORLD, 0, ierr)

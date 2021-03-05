@@ -4,9 +4,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
       use mpiconf, only: idtask
+      use mpi
+
       implicit real*8(a-h,o-z)
 
-      include 'mpif.h'
       integer m_parm_opt
       parameter(m_parm_opt=59000)
       integer n,imax,imod,i,j
@@ -91,23 +92,16 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
       use sr_mod, only: MPARM, MCONF
       use csfs, only: nstates
-
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: weights
       use sr_index, only: jelo, jelo2, jelohfj
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use optorb_cblock, only: norbterm
-
-      ! as not in master ... 
       use mpiconf, only: idtask
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-      include 'mpif.h'
-
-
-
 
       dimension z(*),r(*),aux(0:MCONF),aux1(0:MCONF),rloc(MPARM),r_s(MPARM),oz_jasci(MCONF)
       dimension tmp(MPARM),tmp2(MPARM)

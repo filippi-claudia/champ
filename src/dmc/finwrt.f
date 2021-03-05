@@ -41,14 +41,11 @@ c routine to print out final results
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
       use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
-
       use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
+      use mpi
+
       implicit real*8(a-h,o-z)
 
-
-
-
-      include 'mpif.h'
 
       parameter (one=1.d0,two=2.d0,half=.5d0)
 

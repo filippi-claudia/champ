@@ -5,23 +5,12 @@ c Written by Claudia Filippi
       use optci, only: MXCITERM
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-
       use ci000, only: nciterm
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
+      use mpi
       
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-      include 'mpif.h'
-
-
 
       dimension collect(MXCITERM,MXREDUCED)
 

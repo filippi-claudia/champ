@@ -61,23 +61,11 @@ c job where it left off
       use jaspar1, only: cjas1, cjas2
       use velratio, only: fratio, xdrifted
       use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
+      use mpi
+
       implicit real*8(a-h,o-z)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-      include 'mpif.h'
-C      include 'mpi_qmc.h'
       parameter (zero=0.d0,one=1.d0)
       parameter (small=1.e-6)
 

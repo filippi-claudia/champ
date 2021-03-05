@@ -11,10 +11,9 @@
       use config, only: xnew, xold
       use mpiconf, only: idtask, nproc
       use contrl, only: irstar, isite, nconf_new, icharged_atom
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-      include 'mpif.h'
 
       character*20 filename
 

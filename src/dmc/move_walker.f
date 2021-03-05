@@ -12,17 +12,13 @@ c Written by Claudia Filippi
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use force_dmc, only: itausec, nwprod
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
       use jacobsave, only: ajacob, ajacold
       use velratio, only: fratio, xdrifted
+      use mpi
+
       implicit real*8(a-h,o-z)
-
-
-
-
-      include 'mpif.h'
 
 
       dimension istatus(MPI_STATUS_SIZE)

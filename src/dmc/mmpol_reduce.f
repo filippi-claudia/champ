@@ -4,10 +4,9 @@
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use contr3, only: mode
       use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-      include 'mpif.h'
 
 
       if(immpol.eq.0) return
@@ -67,11 +66,10 @@
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
      &wthist
       use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
-
+      use mpi
 
       implicit real*8(a-h,o-z)
 
-      include 'mpif.h'
 
       dimension istatus(MPI_STATUS_SIZE)
 
