@@ -16,28 +16,16 @@
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use dorb_m, only: iworbd
-
       use coefs, only: coef, nbasis, norb
       use wfsec, only: iwf, iwftype, nwftype
       use ycompact, only: dymat, ymat
       use multislater, only: detd, detu
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use multimat, only: aa, wfmat
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-
-
-
       parameter (one=1.d0,half=0.5d0)
-
-
 
       dimension gmat(MELEC,MORB)
 

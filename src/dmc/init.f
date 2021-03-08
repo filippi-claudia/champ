@@ -2,40 +2,27 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use forcepar, only: deltot, istrech, nforce
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use estcum, only: iblk, ipass
-      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use force_dmc, only: itausec, nwprod
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use dmc_mod, only: MFPRD1
+      use const, only: etrial, nelec
+      use forcepar, only: istrech, nforce
+      use atom, only: cent, iwctype, ncent, pecent, znuc
+      use estcum, only: ipass
+      use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+      use force_dmc, only: nwprod
+      use mpiconf, only: nproc
       use contr3, only: mode
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
-      use casula, only: i_vpsp, icasula, t_vpsp
+      use qua, only: nquad, wq, xq, yq, zq
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen
+      use branch, only: wthist
+      use casula, only: i_vpsp, icasula
       use jacobsave, only: ajacob, ajacold
-      use pseudo, only: lpot, nloc, vps, vpso
-      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
+      use pseudo, only: nloc
+      use contrl, only: nconf
       use mpi
 
       implicit real*8(a-h,o-z)
 
-
-
-
       parameter (zero=0.d0,one=1.d0)
-
-
 
 c Initialize various quantities at beginning of run
 c the initial values of energy psi etc. are calculated here
