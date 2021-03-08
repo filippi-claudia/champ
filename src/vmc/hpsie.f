@@ -12,6 +12,8 @@ c Written by Claudia Filippi by modifying hpsi
       use velocity_jastrow, only: vjn
       use multislatern, only: ddorbn, detn, dorbn, orbn
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use const, only: nelec
+
       implicit real*8(a-h,o-z)
 
 

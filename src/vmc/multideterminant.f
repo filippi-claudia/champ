@@ -390,13 +390,10 @@ c-----------------------------------------------------------------------
       use coefs, only: norb
       use Bloc, only: tildem, xmat
       use multimat, only: aa
-
       use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
-
-
-
 
       dimension ymat(MORB,nelec,2),dymat(MORB,nelec,2)
       dimension zmat(MORB,nelec,2),dzmat(MORB,nelec,2),emz(nelec,nelec,2),aaz(nelec,nelec,2)

@@ -384,8 +384,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use precision_kinds, only: dp
       use elec, only: ndn, nup
       use multidet, only: kref
-
       use dorb_m, only: iworbd
+      use vmc_mod, only: MMAT_DIM
+
       implicit real*8(a-h,o-z)
 
 
