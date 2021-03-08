@@ -1,14 +1,10 @@
       subroutine pcm_reduce(wgsum)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use mpiconf, only: wid
       use contr3, only: mode
-      use pcm, only: MCHS, MCHV, MSPHERE
       use mpi
 
       implicit real*8(a-h,o-z)
-
-
 
       if(ipcm.eq.0) return
 
@@ -74,12 +70,8 @@
 
       subroutine pcm_send(irecv,itag_s)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use pcm, only: MCHS, MCHV, MSPHERE
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
-      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
+      use branch, only: nwalk
+      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc
       use mpi
 
       implicit real*8(a-h,o-z)

@@ -13,18 +13,9 @@ c nlo                 # of processors that should have nwalk_av_int walkers
 c nhi                 # of processors that should have nwalk_av_int+1 walkers
 c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: deltot, istrech, nforce
-      use force_dmc, only: itausec, nwprod
-      use mpiconf, only: idtask, nproc, wid, NPROCX
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
+      use const, only: ipr
+      use mpiconf, only: idtask, nproc, NPROCX
+      use branch, only: nwalk
       use mpi
 
       implicit real*8(a-h,o-z)

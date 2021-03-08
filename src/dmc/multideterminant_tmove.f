@@ -1,27 +1,19 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use mstates_mod, only: MSTATES, MDETCSFX
-      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use vmc_mod, only: MELEC, MORB
+      use const, only: nelec
+      use atom, only: ncent
+      use qua, only: nquad
       use b_tmove, only: b_t, iskip
-      use casula, only: i_vpsp, icasula, t_vpsp
-      use pseudo, only: lpot, nloc, vps, vpso
-      use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
-      use dets, only: cdet, ndet
+      use casula, only: icasula, t_vpsp
+      use slater, only: slmi
       use elec, only: ndn, nup
       use dorb_m, only: iworbd
-      use coefs, only: coef, nbasis, norb
-      use wfsec, only: iwf, iwftype, nwftype
-      use ycompact, only: dymat, ymat
+      use coefs, only: norb
+      use ycompact, only: ymat
       use multislater, only: detd, detu
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-      use multimat, only: aa, wfmat
+      use multidet, only: iactv, ivirt, kref
+      use multimat, only: aa
 
       implicit real*8(a-h,o-z)
 

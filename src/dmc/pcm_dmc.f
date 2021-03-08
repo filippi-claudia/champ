@@ -1,12 +1,9 @@
       subroutine pcm_prt(iblk,wgcum,wgcm2)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use pcm, only: MCHS, MCHV, MSPHERE
+      use force_mod, only: MFORCE
+      use contrl, only: nconf, nstep
 
-      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
-
  
       data hatokc/627.509541d0/
 
@@ -58,13 +55,9 @@ c     gpcmkcal=spcmkcal+vpcmkcal
 c-----------------------------------------------------------------------
       subroutine pcm_fin(iblk,wgcum,wgcm2)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use pcm, only: MCHS, MCHV, MSPHERE
+      use force_mod, only: MFORCE
 
-      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
-
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
 
@@ -81,8 +74,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_save(iw)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use pcm, only: MCHS, MCHV, MSPHERE
       use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
       use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
 
@@ -104,11 +95,9 @@ c     write(6,*) 'CIAO',qopcm,qopcmo_dmc(iw),iw,spcmo_dmc(iw),vpcmo_dmc(iw)
 c-----------------------------------------------------------------------
       subroutine pcm_sum(p,q,iw)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
-      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
-      use pcm, only: MCHS, MCHV, MSPHERE
+      use pcm_averages, only: spcmsum, vpcmsum
+      use pcm_averages, only: qopcm_sum
+      use pcm_averages, only: enfpcm_sum
       use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
       use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
 
@@ -131,11 +120,9 @@ c     write(6,*) 'HELLO',qopcm,qopcmo_dmc(iw),iw
 c-----------------------------------------------------------------------
       subroutine pcm_cum(wsum_dmc)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
-      use pcm, only: MCHS, MCHV, MSPHERE
 
       implicit real*8(a-h,o-z)
  
@@ -165,8 +152,6 @@ c     write (6,*) 'HELLO-CIAO', qopcm_cum
 c-----------------------------------------------------------------------
       subroutine pcm_splitj(iw,iw2)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use pcm, only: MCHS, MCHV, MSPHERE
       use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
 
       implicit real*8(a-h,o-z)

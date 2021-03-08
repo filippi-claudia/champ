@@ -1,31 +1,26 @@
       subroutine walksav_det(iw)
 c Written by Claudia Filippi
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use forcepar, only: deltot, istrech, nforce
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use mstates_mod, only: MSTATES, MDETCSFX
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
-      use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
-      use dets, only: cdet, ndet
+      use vmc_mod, only: MELEC, MORB, MDET
+      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MEXCIT
+      use dmc_mod, only: MWALK
+      use const, only: nelec
+      use mstates_mod, only: MSTATES
+      use branch, only: nwalk
+      use slater, only: ddx, fpd, fpu, slmui, slmdi
+      use dets, only: ndet
       use elec, only: ndn, nup
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use coefs, only: coef, nbasis, norb
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use ycompact, only: dymat, ymat
+      use orbval, only: dorb, orb
+      use coefs, only: norb
+      use csfs, only: nstates
+      use ycompact, only: ymat
       use multislater, only: detd, detu
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: ivirt, kref, numrep_det
       use multimat, only: aa, wfmat
       use mpi
 
       implicit real*8(a-h,o-z)
-
-
 
       dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK),slmdiw(MMAT_DIM,MWALK)
      &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)

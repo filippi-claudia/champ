@@ -1,17 +1,12 @@
       subroutine walksav_jas(iw)
 c Written by Claudia Filippi
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
-      use jaso, only: d2ijo, d2jo, fijo, fjo, fso, fsumo
-      use velocity_jastrow, only: vj, vjn
+      use vmc_mod, only: MELEC
+      use dmc_mod, only: MWALK
+      use const, only: nelec
+      use branch, only: nwalk
+      use jaso, only: fijo, fjo, fso, fsumo
+      use velocity_jastrow, only: vj
       use mpi
 
       implicit real*8(a-h,o-z)
