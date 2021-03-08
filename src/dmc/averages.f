@@ -1,9 +1,8 @@
       subroutine deriv(wtg,eold,pwt,ajac,psid,psij,idrifdifgfunc,iw,mwalk)
 
-      use forcepar, only: deltot, istrech, nforce
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
-      use c_averages_index, only: jeloc, jderiv
+      use forcepar, only: nforce
+      use c_averages, only: prop, wprop
+      use c_averages_index, only: jderiv
 
       implicit real*8(a-h,o-z)
 
@@ -28,9 +27,7 @@
 
       subroutine init_averages_index
 
-      use forcepar, only: deltot, istrech, nforce
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
+      use forcepar, only: nforce
       use c_averages_index, only: jeloc, jderiv
 
       implicit real*8(a-h,o-z)
@@ -86,10 +83,9 @@ c deriv
 
       subroutine average_write
 
-      use forcepar, only: deltot, istrech, nforce
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
-      use c_averages_index, only: jeloc, jderiv
+      use forcepar, only: nforce
+      use c_averages, only: cum_av, cum_w
+      use c_averages_index, only: jderiv
 
       implicit real*8(a-h,o-z)
 
