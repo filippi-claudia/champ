@@ -32,7 +32,6 @@ c routine to print out final results
       use branch, only: eold, nwalk
       use optwf_corsam, only: energy, energy_err, force, force_err
       use contrl, only: nblk, nblkeq, nconf, nstep
-      use mpi
 
       implicit real*8(a-h,o-z)
 
