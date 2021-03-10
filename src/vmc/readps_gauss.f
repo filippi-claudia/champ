@@ -160,7 +160,11 @@ c-----------------------------------------------------------------------
         p = 1.d0
         dp= 0.d0
        endif
-       e = ecp_coef(i,l,ict)*exp(-ecp_exponent(i,l,ict)*rsq)
+       if (-ecp_exponent(i,l,ict)*rsq.lt.-7.0D2) then
+          e = 0.0d0 
+       else
+          e = ecp_coef(i,l,ict)*exp(-ecp_exponent(i,l,ict)*rsq)
+       endif 
        v = v + p*e
        dv = dv + (dp -2*p*ecp_exponent(i,l,ict)*r)*e
       enddo
