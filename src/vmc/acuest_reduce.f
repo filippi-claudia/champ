@@ -5,8 +5,8 @@ c Written by Claudia Filippi
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
 
-      use est2cm, only: ecm2, avcm2
-      use estcum, only: ecum, iblk, avcum
+      use estcum, only: ecum, pecum, tpbcum, tjfcum, iblk
+      use est2cm, only: ecm2, pecm2, tpbcm2, tjfcm2
       use estpsi, only: apsi, aref, detref
       use estsum, only: acc
       use forcepar, only: nforce
@@ -66,12 +66,24 @@ c Written by Claudia Filippi
           jo=jo+1
    20     obs(jo)=wcum(istate,ifr)
 
-      do 30 i=1,MSTATES*3
+      do 30 i=1,nstates
         jo=jo+1
-        obs(jo)=avcum(i)
+        obs(jo)=pecum(i)
 
         jo=jo+1
-   30   obs(jo)=avcm2(i)
+        obs(jo)=tpbcum(i)
+
+        jo=jo+1
+        obs(jo)=tjfcum(i)
+
+        jo=jo+1
+        obs(jo)=pecm2(i)
+
+        jo=jo+1
+        obs(jo)=tpbcm2(i)
+
+        jo=jo+1
+   30   obs(jo)=tjfcm2(i)
       
       jo=jo+1
       obs(jo)=acc
@@ -119,12 +131,24 @@ c Written by Claudia Filippi
           jo=jo+1
   120     wcum(istate,ifr)=collect(jo)
 
-      do 130 i=1,MSTATES*3
+      do 130 i=1,nstates
         jo=jo+1
-        avcum(i)=collect(jo)
+        pecum(i)=collect(jo)
 
         jo=jo+1
-  130   avcm2(i)=collect(jo)
+        tpbcum(i)=collect(jo)
+
+        jo=jo+1
+        tjfcum(i)=collect(jo)
+
+        jo=jo+1
+        pecm2(i)=collect(jo)
+
+        jo=jo+1
+        tpbcm2(i)=collect(jo)
+
+        jo=jo+1
+  130   tjfcm2(i)=collect(jo)
        
       jo=jo+1
       acollect=collect(jo)
@@ -156,9 +180,13 @@ c optorb reduced at the end of the run: set printout to 0
            fcm2(istate,ifr)=0
   210      wcum(istate,ifr)=0
 
-        do 220 i=1,MSTATES*3
-          avcum(i)=0
-  220     avcm2(i)=0
+        do 220 i=1,nstates
+          pecum(i)=0
+          tpbcum(i)=0
+          tjfcum(i)=0
+          pecm2(i)=0
+          tpbcm2(i)=0
+  220     tjfcm2(i)=0
 
         acc=0
       endif
