@@ -1,6 +1,7 @@
       subroutine prop_reduce(wgsum)
 
-      use prp003, only: vprop_cm2, vprop_sum, vprop_cum
+      use prp000, only: iprop, nprop
+      use prp003, only: vprop_sum, vprop_cum, vprop_cm2
       use mpiconf, only: wid
       use contr3, only: mode
       use properties, only: MAXPROP
@@ -49,7 +50,7 @@
 
       subroutine prop_send(irecv,itag_s)
 
-      use prp002, only: vprop_old
+      use prp000, only: iprop, nprop
       use branch, only: nwalk
       use mpi
 

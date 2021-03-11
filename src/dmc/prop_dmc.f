@@ -6,7 +6,8 @@ C----------------------------------------------
 
       subroutine prop_prt_dmc(iblk,ifinal,wgcum,wgcm2)
 
-      use prp003, only: vprop_cm2, cc_nuc, vprop_cum
+      use prp000, only: ipropprt, iprop, nprop
+      use prp003, only: vprop_cum, vprop_cm2, cc_nuc
       use const, only: nelec
       use force_mod, only: MFORCE
       use properties, only: MAXPROP
@@ -81,7 +82,8 @@ c....dipole
 c----------------------------------------------------------------------
       subroutine prop_save_dmc(iw)
 
-      use prp002, only: vprop_old
+      use prp000, only: iprop, nprop
+      use prp001, only: vprop
 
       implicit real*8(a-h,o-z)
 
@@ -93,7 +95,8 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       subroutine prop_sum_dmc(p,q,iw)
 
-      use prp002, only: vprop_old
+      use prp000, only: iprop, nprop
+      use prp001, only: vprop
       use prp003, only: vprop_sum
 
       implicit real*8(a-h,o-z)
@@ -107,7 +110,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       subroutine prop_splitj(iw,iw2)
 
-      use prp002, only: vprop_old
+      use prp000, only: nprop
 
       implicit real*8(a-h,o-z)
 

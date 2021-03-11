@@ -29,6 +29,7 @@
 
       use forcepar, only: nforce
       use c_averages_index, only: jeloc, jderiv
+      use prp000, only: nprop
 
       implicit real*8(a-h,o-z)
 
@@ -52,6 +53,7 @@ c deriv
       subroutine average(ido)
 
       use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
+      use prp000, only: nprop
 
       implicit real*8 (a-h,o-z)
 
