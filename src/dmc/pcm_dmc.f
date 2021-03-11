@@ -2,6 +2,9 @@
 
       use force_mod, only: MFORCE
       use contrl, only: nconf, nstep
+      use pcm_cntrl, only: ipcm, ipcmprt
+      use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_cum, qopcm_cm2
 
       implicit real*8(a-h,o-z)
  
@@ -56,6 +59,7 @@ c-----------------------------------------------------------------------
       subroutine pcm_fin(iblk,wgcum,wgcm2)
 
       use force_mod, only: MFORCE
+      use pcm_cntrl, only: ipcm, ipcmprt
 
       implicit real*8(a-h,o-z)
 
@@ -76,6 +80,8 @@ c-----------------------------------------------------------------------
 
       use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
       use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
+      use pcm_cntrl, only: ipcm
+      use pcm_parms, only: nchs
 
       implicit real*8(a-h,o-z)
 
@@ -95,11 +101,12 @@ c     write(6,*) 'CIAO',qopcm,qopcmo_dmc(iw),iw,spcmo_dmc(iw),vpcmo_dmc(iw)
 c-----------------------------------------------------------------------
       subroutine pcm_sum(p,q,iw)
 
-      use pcm_averages, only: spcmsum, vpcmsum
-      use pcm_averages, only: qopcm_sum
-      use pcm_averages, only: enfpcm_sum
       use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
       use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
+      use pcm_cntrl, only: ipcm
+      use pcm_parms, only: nchs
+      use pcm_averages, only: spcmsum, vpcmsum
+      use pcm_averages, only: qopcm_sum, enfpcm_sum
 
       implicit real*8(a-h,o-z)
 
@@ -120,9 +127,10 @@ c     write(6,*) 'HELLO',qopcm,qopcmo_dmc(iw),iw
 c-----------------------------------------------------------------------
       subroutine pcm_cum(wsum_dmc)
 
+      use pcm_cntrl, only: ipcm
+      use pcm_parms, only: nchs
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
-      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2, enfpcm_sum, enfpcm_cum, enfpcm_cm2
 
       implicit real*8(a-h,o-z)
  
@@ -153,6 +161,7 @@ c-----------------------------------------------------------------------
       subroutine pcm_splitj(iw,iw2)
 
       use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
+      use pcm_parms, only: nchs
 
       implicit real*8(a-h,o-z)
 

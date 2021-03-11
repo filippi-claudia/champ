@@ -2,6 +2,9 @@
 
       use mpiconf, only: wid
       use contr3, only: mode
+      use pcm_cntrl, only: ipcm
+      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -72,6 +75,7 @@
 
       use branch, only: nwalk
       use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc
+      use pcm_cntrl, only: ipcm
       use mpi
 
       implicit real*8(a-h,o-z)
