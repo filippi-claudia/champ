@@ -3,47 +3,50 @@ c Written by Claudia Filippi
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use mpiconf, only: mpiconf_init 
       use allocation_mod, only: deallocate_dmc
+      use optwf_contrl, only: ioptwf
       use contr3, only: mode
+      use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      character*40 filename
+      integer :: ierr, ibranch_elec
+      character*40 :: filename
 
       call mpi_init(ierr)
-      call mpi_comm_rank(MPI_COMM_WORLD,idtask,ierr)
-      call mpi_comm_size(MPI_COMM_WORLD,nproc,ierr)
+      call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
+      call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
 
       call mpiconf_init()
 
 
 c Open the standard output and the log file only on the master
       if(wid) then
-        open(45,file='output.log',status='unknown')
+        open(45, file='output.log', status='unknown')
       else
         close(6)
-        open(6,file='/dev/null')
-        open(45,file='trash.log')
+        open(6, file='/dev/null')
+        open(45, file='trash.log')
       endif
 
       if(idtask.le.9) then
-        write(filename,'(''problem.'',i1)') idtask
+        write(filename, '(''problem.'',i1)') idtask
        elseif(idtask.le.99) then
-        write(filename,'(''problem.'',i2)') idtask
+        write(filename, '(''problem.'',i2)') idtask
        elseif(idtask.le.999) then
-        write(filename,'(''problem.'',i3)') idtask
+        write(filename, '(''problem.'',i3)') idtask
        else
         call fatal_error('MAIN: idtask ge 1000')
       endif
-      open(18,file=filename,status='unknown')
+      open(18,file=filename, status='unknown')
 
       call read_input
 
-      call p2gtid('optwf:ioptwf',ioptwf,0,1)
+      call p2gtid('optwf:ioptwf', ioptwf, 0, 1)
 
       if(mode.eq.'dmc_one_mpi2') then
         if(ioptwf.gt.0) call fatal_error('MAIN: no DMC optimization with global population')
 
-        call p2gtid('dmc:ibranch_elec',ibranch_elec,0,1)
+        call p2gtid('dmc:ibranch_elec', ibranch_elec, 0, 1)
         if(ibranch_elec.gt.0) call fatal_error('MAIN: no DMC single-branch with global population')
       endif
 

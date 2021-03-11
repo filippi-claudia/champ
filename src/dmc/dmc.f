@@ -4,6 +4,7 @@ c Uses the diffusion Monte Carlo algorithm described in:
 c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
 c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
 
+      use precision_kinds, only: dp
       use const, only: pi
       use forcepar, only: nforce
       use contrldmc, only: idmc
@@ -13,7 +14,10 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use wfsec, only: iwftype, nwftype
       use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
 
-      implicit real*8(a-h,o-z)
+      implicit none 
+
+      integer :: i, j
+      real(dp) :: one, four
 
       parameter (one=1.d0,four=4.d0)
 

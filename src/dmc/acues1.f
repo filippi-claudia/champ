@@ -1,6 +1,8 @@
       subroutine acues1
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
+
+      use precision_kinds, only: dp
       use const, only: etrial, ipr
       use forcepar, only: nforce
       use contrldmc, only: idmc
@@ -18,8 +20,11 @@ c routine to accumulate estimators for energy etc.
       use contr3, only: mode
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
 
-      implicit real*8(a-h,o-z)
+      implicit none 
 
+      integer :: ifr, ipmod, nfpro
+      real(dp) :: zero, one
+      real(dp) :: wgdsum1, eisum
       parameter (zero=0.d0,one=1.d0)
 
       if(mode.eq.'dmc_one_mpi2') then
@@ -68,7 +73,7 @@ c Estimate eigenvalue of G from the energy
         eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
         eigv=dexp((etrial-eest)*(taucum(1)+tausum(1))/
      &                          (wgcum(1)+wgsum(1)))
-        if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv,eest,accavn,
+        if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv,eest,
      &  egcum(1),egsum(1),wgcum(1),wgsum(1),fprod
       endif
 
