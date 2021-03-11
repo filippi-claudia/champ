@@ -19,7 +19,6 @@ c routine to accumulate estimators for energy etc.
       use derivest, only: derivcum, derivsum
       use mpiconf, only: wid
       use force_mod, only: MFORCE
-      use branch, only: wt
       use contrl, only: nstep
       use mpi
 
@@ -27,9 +26,8 @@ c routine to accumulate estimators for energy etc.
 
       parameter (zero=0.d0,one=1.d0)
 
-      dimension egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE),
-     +tpbcollect(MFORCE),tjfcollect(MFORCE),taucollect(MFORCE),
-     +derivcollect(10,MFORCE)
+      dimension pecollect(MFORCE), tpbcollect(MFORCE), tjfcollect(MFORCE),
+     & taucollect(MFORCE), derivcollect(10,MFORCE)
 
 c statement function for error calculation
       rn_eff(w,w2)=w**2/w2

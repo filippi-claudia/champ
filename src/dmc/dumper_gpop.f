@@ -22,7 +22,6 @@ c job where it left off
       use estcum, only: ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
       use estcum, only: wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wgcum, wgcum1
       use estcum, only: wgdcum
-      use force_dmc, only: nwprod
       use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2
       use est2cm, only: ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21
       use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
@@ -31,8 +30,7 @@ c job where it left off
       use mpiconf, only: idtask, nproc, wid, NPROCX
       use denupdn, only: rprobdn, rprobup
       use qua, only: nquad, wq, xq, yq, zq
-      use branch, only: eest, eigv, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen
-      use branch, only: wthist
+      use branch, only: eest, eigv, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
       use jacobsave, only: ajacob
       use pseudo, only: nloc
       use dets, only: cdet, ndet
@@ -47,9 +45,6 @@ c job where it left off
       implicit real*8(a-h,o-z)
 
       parameter (zero=0.d0,one=1.d0)
-
-
-      character*13 filename
 
       dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
       dimension irn_tmp(4,0:NPROCX)

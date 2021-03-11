@@ -24,8 +24,7 @@ c Written by Claudia Filippi
 
       dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK),slmdiw(MMAT_DIM,MWALK)
      &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)
-     &,fppuw(MMAT_DIM,MWALK),fppdw(MMAT_DIM,MWALK)
-     &,ddxw(3,MELEC,MWALK),d2dx2w(MELEC,MWALK)
+     &,ddxw(3,MELEC,MWALK)
      &,detuw(MDET,MWALK),detdw(MDET,MWALK)
 
       dimension aaw(MELEC,MORB,MWALK,2),wfmatw(MEXCIT**2,MDET,MWALK,2),ymatw(MORB,MELEC,MWALK,2,MSTATES)
@@ -35,7 +34,7 @@ c Written by Claudia Filippi
       dimension istatus(MPI_STATUS_SIZE)
       dimension irequest_array(MPI_STATUS_SIZE)
 
-      save krefw,slmuiw,slmdiw,fpuw,fpdw,fppuw,fppdw,detuw,detdw,ddxw,d2dx2w
+      save krefw,slmuiw,slmdiw,fpuw,fpdw,detuw,detdw,ddxw
 
       save aaw,wfmatw,ymatw,orbw,dorbw
 

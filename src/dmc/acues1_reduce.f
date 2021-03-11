@@ -18,7 +18,7 @@
       implicit real*8(a-h,o-z)
 
       dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
-     &,wg21collect(MFORCE),taucollect(MFORCE),rprobcollect(nrad)
+     &,wg21collect(MFORCE),rprobcollect(nrad)
 
       dimension istatus(MPI_STATUS_SIZE)
 

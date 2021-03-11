@@ -4,30 +4,18 @@ c Uses the diffusion Monte Carlo algorithm described in:
 c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
 c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
 
-      use const, only: delta, deltai, fbias, hb, nelec, pi
+      use const, only: pi
       use forcepar, only: nforce
-      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
-      use contrldmc, only: itau_eff, nfprod, tau
+      use contrldmc, only: idmc
       use estcum, only: ipass
-      use config, only: peo_dmc, vold_dmc, xold_dmc
       use force_dmc, only: nwprod
-      use branch, only: eold
-      use contr2, only: ijas
-      use contr2, only: isc
       use pseudo, only: nloc
-      use pars, only: Z
-      use coefs, only: coef, nbasis
       use wfsec, only: iwftype, nwftype
-      use jaspar, only: is
-      use jaspar1, only: cjas1, cjas2
-      use jaspar3, only: a, b, c
-      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nstep
+      use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
 
       implicit real*8(a-h,o-z)
 
-
       parameter (one=1.d0,four=4.d0)
-
 
 c variables:
 c        nelec  = number of electrons

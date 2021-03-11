@@ -12,13 +12,13 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
       dimension fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK)
-     &,fsumow(MWALK),fjow(3,MELEC,MWALK),d2ow(MWALK),d2ijow(MELEC,MELEC,MWALK)
+     &,fsumow(MWALK),fjow(3,MELEC,MWALK)
 
       dimension vjw(3,MELEC,MWALK)
 
       dimension istatus(MPI_STATUS_SIZE)
 
-      save fsow,fijow,fsumow,fjow,d2ow,d2ijow
+      save fsow,fijow,fsumow,fjow
 
       save vjw
 

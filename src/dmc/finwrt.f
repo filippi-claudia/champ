@@ -9,12 +9,11 @@ c routine to print out final results
       use forcepar, only: deltot, nforce
       use age, only: iage, ioldest, ioldestmx
       use contrl_per, only: iperiodic
-      use contrldmc, only: idmc
-      use contrldmc, only: nfprod, tau, taueff
+      use contrldmc, only: idmc, nfprod, tau
       use atom, only: ncent
       use estcum, only: iblk
       use config, only: vold_dmc, xold_dmc
-      use stats, only: acc, dr2ac, nacc, nodecr, trymove
+      use stats, only: acc, nacc, nodecr, trymove
       use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1
       use estcum, only: pecum_dmc, taucum, tjfcum_dmc, tpbcum_dmc
       use estcum, only: wcum1, wcum_dmc, wfcum, wfcum1, wgcum, wgcum1
@@ -31,7 +30,7 @@ c routine to print out final results
       use force_mod, only: MFORCE
       use branch, only: eold, nwalk
       use optwf_corsam, only: energy, energy_err, force, force_err
-      use contrl, only: nblk, nblkeq, nconf, nstep
+      use contrl, only: nblkeq, nconf, nstep
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -41,7 +40,7 @@ c routine to print out final results
 
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
-      dimension taucollect(MFORCE),rprobcollect(nrad)
+      dimension rprobcollect(nrad)
 
 c statement functions for error calculation
       rn_eff(w,w2)=w**2/w2

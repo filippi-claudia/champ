@@ -43,11 +43,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
       use dmc_mod, only: MWALK
-      use const, only: etrial, hb, ipr, nelec, pi
+      use const, only: etrial, hb, ipr, nelec
       use forcepar, only: istrech, nforce
       use age, only: iage, ioldest, ioldestmx
-      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
-      use contrldmc, only: itau_eff, nfprod, rttau, tau
+      use contrldmc, only: iacc_rej, icross, icut_br, icut_e, idmc, ipq, nfprod, rttau, tau
       use atom, only: cent
       use estcum, only: ipass
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
@@ -72,10 +71,9 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       parameter (adrift=0.5d0)
 
       dimension xstrech(3,MELEC)
-      dimension xnew(3),vnew(3,MELEC),xtmp(3,MELEC)
+      dimension xnew(3),vnew(3,MELEC)
       dimension xbac(3),xdriftedn(3,MELEC)
       dimension itryo(MELEC),itryn(MELEC),unacp(MELEC)
-      dimension ddx_ref(3)
       dimension iacc_elec(MELEC)
 
       data ncall /0/

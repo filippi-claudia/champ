@@ -25,9 +25,7 @@ c routine to accumulate estimators for energy etc.
 
       parameter (zero=0.d0,one=1.d0)
 
-      dimension egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE),
-     +tpbcollect(MFORCE),tjfcollect(MFORCE),taucollect(MFORCE),
-     +derivcollect(10,MFORCE)
+      dimension egcollect(MFORCE), wgcollect(MFORCE)
 
 c statistical fluctuations without blocking
       wdsum1=wdsumo
