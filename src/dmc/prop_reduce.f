@@ -49,6 +49,7 @@
 
       subroutine prop_send(irecv,itag_s)
 
+      use prp002, only: vprop_old
       use branch, only: nwalk
       use mpi
 
