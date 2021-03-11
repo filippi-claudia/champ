@@ -2,6 +2,9 @@
 
       use force_mod, only: MFORCE
       use contrl, only: nconf, nstep
+      use mmpol_cntrl, only: immpol, immpolprt
+      use mmpol_averages, only: cmmpol_cum, cmmpol_cm2
+      use mmpol_averages, only: dmmpol_cum, dmmpol_cm2
 
       implicit real*8(a-h,o-z)
  
@@ -51,6 +54,7 @@
 c-----------------------------------------------------------------------
       subroutine mmpol_fin(iblk,wgcum,wgcm2)
 
+      use mmpol_cntrl, only: immpol, immpolprt
       use force_mod, only: MFORCE
 
       implicit real*8(a-h,o-z)
@@ -73,6 +77,8 @@ c-----------------------------------------------------------------------
 
       use mmpol_hpsi, only: eek_pol
       use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm
 
       implicit real*8(a-h,o-z)
 
@@ -92,17 +98,19 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_sum(p,q,iw)
 
-      use mmpol_averages, only: dmmpol_sum, eek_sum
-      use mmpol_averages, only: cmmpol_sum
       use mmpol_hpsi, only: eek_pol
-      use mmpolo, only: eeko1, eeko2, eeko3
+      use mmpolo, only: eeko1, eeko2, eeko3, cmmpolo_dmc, dmmpolo_dmc
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm
+      use mmpol_averages, only: dmmpol_sum
+      use mmpol_averages, only: eek_sum, cmmpol_sum
 
       implicit real*8(a-h,o-z)
  
       if(immpol.eq.0) return
 
-      dmmpol_sum=dmmpol_sum+p*QMdp+q*dmmpolo(iw)
-      cmmpol_sum=cmmpol_sum+p*QMq+q*cmmpolo(iw)
+      dmmpol_sum=dmmpol_sum+p*QMdp+q*dmmpolo_dmc(iw)
+      cmmpol_sum=cmmpol_sum+p*QMq+q*cmmpolo_dmc(iw)
 
       do i=1,nchmm
         eek_sum(1,i)= eek_sum(1,i)+p*eek_pol(1,i)+q*eeko1(iw,i)

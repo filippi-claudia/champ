@@ -2,6 +2,9 @@
 
       use mpiconf, only: wid
       use contr3, only: mode
+      use mmpol_cntrl, only: immpol
+      use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, dmmpol_sum
+      use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -59,10 +62,10 @@
 
       use branch, only: nwalk
       use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc
+      use mmpol_cntrl, only: immpol
       use mpi
 
       implicit real*8(a-h,o-z)
-
 
       dimension istatus(MPI_STATUS_SIZE)
 
