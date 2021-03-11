@@ -84,6 +84,7 @@ c----------------------------------------------------------------------
 
       use prp000, only: iprop, nprop
       use prp001, only: vprop
+      use prp002, only: vprop_old
 
       implicit real*8(a-h,o-z)
 
@@ -97,6 +98,7 @@ c----------------------------------------------------------------------
 
       use prp000, only: iprop, nprop
       use prp001, only: vprop
+      use prp002, only: vprop_old
       use prp003, only: vprop_sum
 
       implicit real*8(a-h,o-z)
@@ -111,6 +113,7 @@ c----------------------------------------------------------------------
       subroutine prop_splitj(iw,iw2)
 
       use prp000, only: nprop
+      use prp002, only: vprop_old
 
       implicit real*8(a-h,o-z)
 
