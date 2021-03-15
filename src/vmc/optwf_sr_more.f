@@ -1,7 +1,5 @@
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
       subroutine pcg(n,b,x,i,imax,imod,eps)
-c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
+c     one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
       use mpiconf, only: idtask
       use mpi
@@ -17,48 +15,49 @@ c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.in
 
       if(n.gt.m_parm_opt) stop 'nparm > m_parm_opt'
 
-      call atimes_n(n,x,r)         ! r=Ax neuscamman
+c     call atimes_n(n,x,r)         ! r=Ax neuscamman
+      call atimes_n_ortho(n,x,r) ! Orthogonalization
       if(idtask.eq.0)then
-       call daxpy(n,-1.d0,b,1,r,1)       ! r=r-b
-       call dscal(n,-1.d0,r,1)           ! r=b-r
-       call asolve(n,r,d)                ! d=M^{-1}r preconditioner
-       delta_new=ddot(n,d,1,r,1)           ! \delta_new=r^T d
-       print*,'delta0 = ',delta_new
+         call daxpy(n,-1.d0,b,1,r,1) ! r=r-b
+         call dscal(n,-1.d0,r,1) ! r=b-r
+         call asolve(n,r,d)     ! d=M^{-1}r preconditioner
+         delta_new=ddot(n,d,1,r,1) ! \delta_new=r^T d
+         print*,'delta0 = ',delta_new
       endif
       call MPI_BCAST(delta_new,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
-      delta_0=delta_new*eps**2            ! convergence thr
+      delta_0=delta_new*eps**2  ! convergence thr
       do i=0,imax-1
-c      write(*,*)i,idtask,'ECCO ',delta_0,delta_new 
-       if(delta_new.lt.delta_0)then
-        if(idtask.eq.0)print*,'CG iter ',i
-c     write(*,*)'ECCO pcg esce ',idtask
-        call MPI_BCAST(x,n,MPI_REAL8,0,MPI_COMM_WORLD,j)
-        return
-       endif
-       call atimes_n(n,d,q)        ! q=Ad neuscamman
-       if(idtask.eq.0)then
-        alpha=delta_new/ddot(n,d,1,q,1)  ! \alpha=\delta_new/(d^T q)
-        call daxpy(n,alpha,d,1,x,1)      ! x=x+\alpha d
-       endif
-       if(mod(i,imod).eq.0)then
-        call atimes_n(n,x,r)       ! r=Ax neuscamman
-        if(idtask.eq.0)then
-         call daxpy(n,-1.d0,b,1,r,1)     ! r=r-b
-         call dscal(n,-1.d0,r,1)         ! r=b-r
-        endif
-       else
-        if(idtask.eq.0)call daxpy(n,-alpha,q,1,r,1)    ! r=r-\alpha q
-       endif
-       if(idtask.eq.0)then
-        call asolve(n,r,s)               ! s=M^{-1}r preconditioner
-        delta_old=delta_new              ! \delta_old=\delta_new
-        delta_new=ddot(n,r,1,s,1)        ! \delta_new=r^T s
-        print*,'delta_new ',delta_new
-        beta=delta_new/delta_old         ! \beta=\delta_new/\delta_old
-        call dscal(n,beta,d,1)           ! d=\beta d
-        call daxpy(n,1.d0,s,1,d,1)       ! d=s+d
-       endif
-       call MPI_BCAST(delta_new,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
+         if(delta_new.lt.delta_0)then
+            if(idtask.eq.0)print*,'CG iter ',i
+            call MPI_BCAST(x,n,MPI_REAL8,0,MPI_COMM_WORLD,j)
+            return
+         endif
+c     call atimes_n(n,d,q)        ! q=Ad neuscamman
+         call atimes_n_ortho(n,d,q) ! Orthogonalization
+         if(idtask.eq.0)then
+            alpha=delta_new/ddot(n,d,1,q,1) ! \alpha=\delta_new/(d^T q)
+            call daxpy(n,alpha,d,1,x,1) ! x=x+\alpha d
+         endif
+         if(mod(i,imod).eq.0)then
+c     call atimes_n(n,x,r)       ! r=Ax neuscamman
+            call atimes_n_ortho(n,x,r) ! Orthogonalization
+            if(idtask.eq.0)then
+               call daxpy(n,-1.d0,b,1,r,1) ! r=r-b
+               call dscal(n,-1.d0,r,1) ! r=b-r
+            endif
+         else
+            if(idtask.eq.0)call daxpy(n,-alpha,q,1,r,1) ! r=r-\alpha q
+         endif
+         if(idtask.eq.0)then
+            call asolve(n,r,s)  ! s=M^{-1}r preconditioner
+            delta_old=delta_new ! \delta_old=\delta_new
+            delta_new=ddot(n,r,1,s,1) ! \delta_new=r^T s
+            print*,'delta_new ',delta_new
+            beta=delta_new/delta_old ! \beta=\delta_new/\delta_old
+            call dscal(n,beta,d,1) ! d=\beta d
+            call daxpy(n,1.d0,s,1,d,1) ! d=s+d
+         endif
+         call MPI_BCAST(delta_new,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
       enddo
 
       if(idtask.eq.0)print*,'CG iter ',i
@@ -69,17 +68,14 @@ c     write(*,*)'ECCO pcg esce ',idtask
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine asolve(n,b,x)
-c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
+c     x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
-      use sr_mat_n, only: s_ii_inv
+      use sr_mat_n, only: s_ii_inv,istat_curr
       implicit real*8(a-h,o-z)
-
-
-
       dimension x(*),b(*)
 
       do i=1,n
-       x(i)=b(i)*s_ii_inv(i)
+         x(i)=b(i)*s_ii_inv(i,istat_curr)
       enddo
 
       return

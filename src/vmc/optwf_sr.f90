@@ -296,7 +296,7 @@ contains
 
         do k = 1, nparm
             h_sr(k) = 0.d0
-            s_ii_inv(k) = 0.d0
+            s_ii_inv(k,1) = 0.d0
         enddo
 
         nparm_jasci = max(nparm - norbterm, 0)
@@ -349,24 +349,24 @@ contains
                 do k = 1, nparm
                     aux = obs_tot(jfifj + k - 1, istate) - obs_tot(jfj + k - 1, istate)*obs_tot(jfj + k - 1, istate)
                     s_diag(k, istate) = aux*sr_adiag
-                    s_ii_inv(k) = s_ii_inv(k) + wts*(aux + s_diag(k, istate))
+                    s_ii_inv(k,1) = s_ii_inv(k,1) + wts*(aux + s_diag(k, istate))
                     h_sr(k) = h_sr(k) - 2*wts*(obs_tot(jefj + k - 1, istate) - obs_tot(jfj + k - 1, istate)*obs_tot(jelo, istate))
                 enddo
             enddo
 
             smax = 0.d0
             do k = 1, nparm
-                if (s_ii_inv(k) .gt. smax) smax = s_ii_inv(k)
+                if (s_ii_inv(k,1) .gt. smax) smax = s_ii_inv(k,1)
             enddo
             write (6, '(''max S diagonal element '',t41,d8.2)') smax
 
             kk = 0
             do k = 1, nparm
-                if (s_ii_inv(k)/smax .gt. eps_eigval) then
+                if (s_ii_inv(k,1)/smax .gt. eps_eigval) then
                     kk = kk + 1
-                    s_ii_inv(k) = 1.d0/s_ii_inv(k)
+                    s_ii_inv(k,1) = 1.d0/s_ii_inv(k,1)
                 else
-                    s_ii_inv(k) = 0.d0
+                    s_ii_inv(k,1) = 0.d0
                 endif
             enddo
             write (6, '(''nparm, non-zero S diag'',t41,2i5)') nparm, kk

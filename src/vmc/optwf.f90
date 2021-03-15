@@ -22,7 +22,8 @@ contains
             elseif (ilbfgs_flag .gt. 0) then
                 call optwf_olbfgs
             elseif (method .eq. 'sr_n') then
-                call optwf_sr
+                !call optwf_sr
+                call optwf_sr_ortho
             elseif (method .eq. 'lin_d') then
                 call optwf_lin_d
             elseif (method .eq. 'mix_n') then
