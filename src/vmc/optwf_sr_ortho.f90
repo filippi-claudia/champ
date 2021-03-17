@@ -11,7 +11,7 @@
 ! URL           : https://github.com/filippi-claudia/champ
 !---------------------------------------------------------------------------
 
-module optwf_sr_mod
+module optwf_sr_ortho_mod
 
   use precision_kinds, only: dp
   use optwf_contrl, only: ioptci, ioptjas, ioptorb
@@ -20,11 +20,10 @@ module optwf_sr_mod
   use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
   use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
 
-  real(dp) :: sr_adiag_sav
-
   integer :: ioptjas_sav, ioptorb_sav, ioptci_sav, iforce_analy_sav
-  real(dp), dimension(:, :), allocatable :: deltap
   integer :: i_sr_rescale, izvzb
+  real(dp), dimension(:, :), allocatable :: deltap
+  real(dp) :: sr_adiag_sav
 
   private
   public :: optwf_sr_ortho, atimes_n_ortho
@@ -36,6 +35,7 @@ contains
 
     use precision_kinds, only: dp
     use sr_mod, only: MPARM
+    use csfs, only: nstates
     use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
     use mstates_mod, only: MSTATES
     use optwf_corsam, only: energy, energy_err, force
@@ -44,6 +44,7 @@ contains
     use force_analy, only: alfgeo
     use optwf_contrl, only: nparm
     use method_opt, only: method
+    use optwf_sr_mod, only: save_params, forces_zvzb
 
     implicit real*8(a-h, o-z)
 
@@ -142,8 +143,10 @@ contains
   end subroutine optwf_sr_ortho
 
   subroutine sr_ortho(nparm,deltap,sr_adiag,sr_eps,i)
+    use csfs, only: nstates
     use sr_mat_n, only: h_sr, istat_curr
     use mpiconf, only: idtask
+    use optwf_sr_mod, only: sr_rescale_deltap
 
     implicit real*8(a-h,o-z)
     integer, intent(in) :: nparm
@@ -165,10 +168,11 @@ contains
        print *, h_sr(1:nparm+1,2)
     end if
 
-    do istat_curr=1,nstates
+    do j=1,nstates
+       istat_curr = j
        write(6,*) 'Orthogonal optimization state ', istat_curr
-       call pcg(nparm,h_sr(1,istat_curr),deltap(1,istat_curr),i,imax,imod,sr_eps)
-       call sr_rescale_deltap(nparm,deltap(1,istat_curr))
+       call pcg(nparm,h_sr(1:nparm,istat_curr),deltap(1:nparm,istat_curr),i,imax,imod,sr_eps)
+       call sr_rescale_deltap(nparm,deltap(1:nparm,istat_curr))
     enddo
 
   end subroutine sr_ortho
@@ -190,8 +194,8 @@ contains
 
     implicit real*8 (a-h,o-z)
 
-    real(dp), dimension(:), allocatable :: aux
-    allocate(aux(nconf_n))
+    integer, intent(in) :: nparm
+    real(dp), dimension(nconf_n) :: aux
 
     jwtg=1
     n_obs=nstates
@@ -211,16 +215,15 @@ contains
 
     if(n_obs.gt.MOBS) call fatal_error('SR_HS LIN: n_obs_ortho BS)')
 
-    do iconf=1,nconf
-       aux(iconf)=0
+    do iconf=1,nconf_n
+       aux(iconf) = 0.0d0
     enddo
 
     do istate=1,nstates
        do i=1,n_obs
-          obs(i,istate) = 0.d0
+          obs(i,istate) = 0.0d0
        enddo
-
-       do iconf=1,nconf
+       do iconf=1,nconf_n
           ratio=sr_o(nparm+1,iconf,1)/sr_o(nparm+1,iconf,istate)
           obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
 
@@ -251,7 +254,7 @@ contains
        call MPI_BCAST(obs_tot(1,istate),nstates,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
        if(istate.gt.1) then
-          do iconf=1,nconf
+          do iconf=1,nconf_n
              aux(iconf)=aux(iconf)+sr_o(nparm+2,iconf,istate-1)&
        		     *obs_tot(jwtg+istate-1,istate)/obs_tot(jwtg,istate-1)
 
@@ -312,13 +315,11 @@ contains
        enddo
     endif
 
-    deallocate(aux)
-
   end subroutine compute_gradient_sr_ortho
 
   subroutine atimes_n_ortho(n,z,r)
     use mpi
-    use sr_mod, only: MOBS
+    use sr_mod, only: MOBS,MCONF,MPARM
     use csfs, only: nstates
     use mstates_mod, only: MSTATES
     use mpiconf, only: idtask
@@ -332,25 +333,17 @@ contains
 
     implicit real*8 (a-h,o-z)
 
-    integer, intent(in) :: n
-    real(dp), dimension(:), intent(in) :: z
-    real(dp), dimension(:), intent(inout) :: r
-
-    real(dp), dimension(:), allocatable :: aux
-    real(dp), dimension(:), allocatable :: rloc
-
-    allocate(aux(MCONF))
-    allocate(rloc(MPARM))
+    dimension z(*),r(*),aux(0:MCONF),rloc(MPARM)
 
     call MPI_BCAST(z,n,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
-    do iconf=1,nconf
+    do iconf=1,nconf_n
        ratio=sr_o(n+1,iconf,1)/sr_o(n+1,iconf,istat_curr)
        aux(iconf)=ddot(n,z,1,sr_o(1,iconf,istat_curr),1)*ratio*ratio*wtg(iconf,istat_curr)
     enddo
 
     do i=1,n
-       rloc(i)=ddot(nconf,aux(1),1,sr_o(i,1,istat_curr),MPARM)
+       rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1,istat_curr),MPARM)
     enddo
 
     call MPI_REDUCE(rloc,r,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
@@ -363,9 +356,6 @@ contains
        enddo
     endif
 
-    deallocate(aux)
-    deallocate(rloc)
-
   end subroutine atimes_n_ortho
 
-end module optwf_sr_mod
+end module optwf_sr_ortho_mod

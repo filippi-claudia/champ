@@ -29,7 +29,7 @@ module optwf_sr_mod
     integer :: i_sr_rescale, izvzb
 
     private
-    public :: optwf_sr, sr, sr_hs, izvzb, i_sr_rescale
+    public :: optwf_sr, sr, sr_hs, izvzb, i_sr_rescale, save_params, forces_zvzb,sr_rescale_deltap
     save
 
 contains
@@ -206,7 +206,7 @@ contains
         do i = 1, nparm
             deltap(i) = 0.d0     ! initial guess of solution
         enddo
-        call pcg(nparm, h_sr, deltap, i, imax, imod, sr_eps)
+        call pcg(nparm, h_sr(:,1), deltap, i, imax, imod, sr_eps)
         write (6, *) 'CG iter ', i
 
         call sr_rescale_deltap(nparm, deltap)
@@ -295,7 +295,7 @@ contains
         if (n_obs .gt. MOBS) call fatal_error('SR_HS LIN: n_obs > MOBS)')
 
         do k = 1, nparm
-            h_sr(k) = 0.d0
+            h_sr(k,1) = 0.d0
             s_ii_inv(k,1) = 0.d0
         enddo
 
@@ -323,14 +323,14 @@ contains
             do iconf = 1, nconf_n
                 obs(jelo, istate) = obs(jelo, istate) + elocal(iconf, istate)*wtg(iconf, istate)
                 do i = 1, nparm_jasci
-                    obs(jfj + i - 1, istate) = obs(jfj + i - 1, istate) + sr_o(i, iconf)*wtg(iconf, istate)
-                    obs(jefj + i - 1, istate) = obs(jefj + i - 1, istate) + elocal(iconf, istate)*sr_o(i, iconf)*wtg(iconf, istate)
-                    obs(jfifj + i - 1, istate) = obs(jfifj + i - 1, istate) + sr_o(i, iconf)*sr_o(i, iconf)*wtg(iconf, istate)
+                    obs(jfj + i - 1, istate) = obs(jfj + i - 1, istate) + sr_o(i,iconf,1)*wtg(iconf, istate)
+                    obs(jefj + i - 1, istate) = obs(jefj + i - 1, istate) + elocal(iconf, istate)*sr_o(i,iconf,1)*wtg(iconf, istate)
+                    obs(jfifj + i - 1, istate) = obs(jfifj + i - 1, istate) + sr_o(i,iconf,1)*sr_o(i,iconf,1)*wtg(iconf, istate)
                 enddo
                 do i = nparm_jasci + 1, nparm
-                    obs(jfj + i - 1, istate) = obs(jfj + i - 1, istate) + sr_o(ish + i, iconf)*wtg(iconf, istate)
-               obs(jefj + i - 1, istate) = obs(jefj + i - 1, istate) + elocal(iconf, istate)*sr_o(ish + i, iconf)*wtg(iconf, istate)
-              obs(jfifj + i - 1, istate) = obs(jfifj + i - 1, istate) + sr_o(ish + i, iconf)*sr_o(ish + i, iconf)*wtg(iconf, istate)
+                    obs(jfj + i - 1, istate) = obs(jfj + i - 1, istate) + sr_o(ish + i,iconf,1)*wtg(iconf, istate)
+               obs(jefj + i - 1, istate) = obs(jefj + i - 1, istate) + elocal(iconf, istate)*sr_o(ish + i,iconf,1)*wtg(iconf, istate)
+              obs(jfifj + i - 1, istate) = obs(jfifj + i - 1, istate) + sr_o(ish + i,iconf,1)*sr_o(ish + i,iconf,1)*wtg(iconf, istate)
                 enddo
             enddo
 
@@ -350,7 +350,7 @@ contains
                     aux = obs_tot(jfifj + k - 1, istate) - obs_tot(jfj + k - 1, istate)*obs_tot(jfj + k - 1, istate)
                     s_diag(k, istate) = aux*sr_adiag
                     s_ii_inv(k,1) = s_ii_inv(k,1) + wts*(aux + s_diag(k, istate))
-                    h_sr(k) = h_sr(k) - 2*wts*(obs_tot(jefj + k - 1, istate) - obs_tot(jfj + k - 1, istate)*obs_tot(jelo, istate))
+                    h_sr(k,1) = h_sr(k,1) - 2*wts*(obs_tot(jefj + k - 1, istate) - obs_tot(jfj + k - 1, istate)*obs_tot(jelo, istate))
                 enddo
             enddo
 
@@ -379,7 +379,7 @@ contains
             s_diag(1, 1) = sr_adiag !!!
 
             do k = 1, nparm
-                h_sr(k) = -0.5d0*h_sr(k)
+                h_sr(k,1) = -0.5d0*h_sr(k,1)
             enddo
         elseif (ifunc_omega .ne. 0) then
             s_diag(1, 1) = sr_adiag !!!
@@ -394,7 +394,7 @@ contains
             obs(jelo2, 1) = obs(jelo2, 1) + elocal(iconf, 1)*elocal(iconf, 1)*wtg(iconf, 1)
             do i = 1, nparm
                 obs(jhfj + i - 1, 1) = obs(jhfj + i - 1, 1) + sr_ho(i, iconf)*wtg(iconf, 1)
-                obs(jfhfj + i - 1, 1) = obs(jfhfj + i - 1, 1) + sr_o(i, iconf)*sr_ho(i, iconf)*wtg(iconf, 1)
+                obs(jfhfj + i - 1, 1) = obs(jfhfj + i - 1, 1) + sr_o(i,iconf,1)*sr_ho(i, iconf)*wtg(iconf, 1)
                 obs(jelohfj + i - 1, 1) = obs(jelohfj + i - 1, 1) + elocal(iconf, 1)*sr_ho(i, iconf)*wtg(iconf, 1)
             enddo
         enddo
@@ -411,7 +411,7 @@ contains
                 ! variance
                 var = obs_tot(jelo2, 1) - obs_tot(jelo, 1)**2
                 do k = 1, nparm
-                h_sr(k) = -2*(obs_tot(jelohfj + k - 1, 1) - (obs_tot(jhfj + k - 1, 1) - obs_tot(jefj + k - 1, 1))*obs_tot(jelo, 1) &
+                h_sr(k,1) = -2*(obs_tot(jelohfj + k - 1, 1) - (obs_tot(jhfj + k - 1, 1) - obs_tot(jefj + k - 1, 1))*obs_tot(jelo, 1) &
                                   - obs_tot(jfj + k - 1, 1)*obs_tot(jelo2, 1) &
                                   - 2*obs_tot(jelo, 1)*(obs_tot(jefj + k - 1, 1) - obs_tot(jfj + k - 1, 1)*obs_tot(jelo, 1)))
                 enddo
@@ -420,7 +420,7 @@ contains
                 var = omega*omega + obs_tot(jelo2, 1) - 2*omega*obs_tot(jelo, 1)
                 dum1 = -2
                 do k = 1, nparm
-                    h_sr(k) = dum1*(omega*omega*obs_tot(jfj + k - 1, 1) + obs_tot(jelohfj + k - 1, 1) &
+                    h_sr(k,1) = dum1*(omega*omega*obs_tot(jfj + k - 1, 1) + obs_tot(jelohfj + k - 1, 1) &
                                     - omega*(obs_tot(jhfj + k - 1, 1) + obs_tot(jefj + k - 1, 1)) &
                                     - var*obs_tot(jfj + k - 1, 1))
                     ! adding a term which intergrates to zero
@@ -433,7 +433,7 @@ contains
                 dum1 = -2/den
                 dum2 = (omega - obs_tot(jelo, 1))/den
                 do k = 1, nparm
-                    h_sr(k) = dum1*(omega*obs_tot(jfj + k - 1, 1) - obs_tot(jefj + k - 1, 1) &
+                    h_sr(k,1) = dum1*(omega*obs_tot(jfj + k - 1, 1) - obs_tot(jefj + k - 1, 1) &
                                     - dum2*(omega*omega*obs_tot(jfj + k - 1, 1) + obs_tot(jelohfj + k - 1, 1) &
                                             - omega*(obs_tot(jhfj + k - 1, 1) + obs_tot(jefj + k - 1, 1))))
                 enddo
@@ -552,7 +552,7 @@ contains
 
         do l = 1, nconf_n
             do i = 1, nparm
-                tmp(i) = (sr_ho(i, l) - elocal(l, 1)*sr_o(i, l))*sqrt(wtg(l, 1))
+                tmp(i) = (sr_ho(i, l) - elocal(l, 1)*sr_o(i,l,1))*sqrt(wtg(l, 1))
             enddo
 
             do k = 1, nparm
@@ -603,7 +603,7 @@ contains
                 do i = 1, nparm
                     oloc(i) = 0.d0
                     do l = 1, nconf_n
-                        oloc(i) = oloc(i) + (sr_ho(i, l) - elocal(l, 1)*sr_o(i, l)) &
+                        oloc(i) = oloc(i) + (sr_ho(i, l) - elocal(l, 1)*sr_o(i,l,1)) &
                                   *(force_o(ia + ish, l) - 2*energy_tot*force_o(ia, l))*wtg(l, 1)
                     enddo
                 enddo

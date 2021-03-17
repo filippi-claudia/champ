@@ -1,8 +1,11 @@
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
       subroutine pcg(n,b,x,i,imax,imod,eps)
-c     one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
+c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
       use mpiconf, only: idtask
       use mpi
+      use optwf_sr_ortho_mod, only: atimes_n_ortho
 
       implicit real*8(a-h,o-z)
 
@@ -15,49 +18,51 @@ c     one-shot preconditioned conjugate gradients; convergence thr is residual.l
 
       if(n.gt.m_parm_opt) stop 'nparm > m_parm_opt'
 
-c     call atimes_n(n,x,r)         ! r=Ax neuscamman
-      call atimes_n_ortho(n,x,r) ! Orthogonalization
+      !call atimes_n(n,x,r)         ! r=Ax neuscamman
+      call atimes_n_ortho(n,x,r)         ! r=Ax neuscamman
       if(idtask.eq.0)then
-         call daxpy(n,-1.d0,b,1,r,1) ! r=r-b
-         call dscal(n,-1.d0,r,1) ! r=b-r
-         call asolve(n,r,d)     ! d=M^{-1}r preconditioner
-         delta_new=ddot(n,d,1,r,1) ! \delta_new=r^T d
-         print*,'delta0 = ',delta_new
+       call daxpy(n,-1.d0,b,1,r,1)       ! r=r-b
+       call dscal(n,-1.d0,r,1)           ! r=b-r
+       call asolve(n,r,d)                ! d=M^{-1}r preconditioner
+       delta_new=ddot(n,d,1,r,1)           ! \delta_new=r^T d
+       print*,'delta0 = ',delta_new
       endif
       call MPI_BCAST(delta_new,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
-      delta_0=delta_new*eps**2  ! convergence thr
+      delta_0=delta_new*eps**2            ! convergence thr
       do i=0,imax-1
-         if(delta_new.lt.delta_0)then
-            if(idtask.eq.0)print*,'CG iter ',i
-            call MPI_BCAST(x,n,MPI_REAL8,0,MPI_COMM_WORLD,j)
-            return
-         endif
-c     call atimes_n(n,d,q)        ! q=Ad neuscamman
-         call atimes_n_ortho(n,d,q) ! Orthogonalization
-         if(idtask.eq.0)then
-            alpha=delta_new/ddot(n,d,1,q,1) ! \alpha=\delta_new/(d^T q)
-            call daxpy(n,alpha,d,1,x,1) ! x=x+\alpha d
-         endif
-         if(mod(i,imod).eq.0)then
-c     call atimes_n(n,x,r)       ! r=Ax neuscamman
-            call atimes_n_ortho(n,x,r) ! Orthogonalization
-            if(idtask.eq.0)then
-               call daxpy(n,-1.d0,b,1,r,1) ! r=r-b
-               call dscal(n,-1.d0,r,1) ! r=b-r
-            endif
-         else
-            if(idtask.eq.0)call daxpy(n,-alpha,q,1,r,1) ! r=r-\alpha q
-         endif
-         if(idtask.eq.0)then
-            call asolve(n,r,s)  ! s=M^{-1}r preconditioner
-            delta_old=delta_new ! \delta_old=\delta_new
-            delta_new=ddot(n,r,1,s,1) ! \delta_new=r^T s
-            print*,'delta_new ',delta_new
-            beta=delta_new/delta_old ! \beta=\delta_new/\delta_old
-            call dscal(n,beta,d,1) ! d=\beta d
-            call daxpy(n,1.d0,s,1,d,1) ! d=s+d
-         endif
-         call MPI_BCAST(delta_new,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
+c      write(*,*)i,idtask,'ECCO ',delta_0,delta_new 
+       if(delta_new.lt.delta_0)then
+        if(idtask.eq.0)print*,'CG iter ',i
+c     write(*,*)'ECCO pcg esce ',idtask
+        call MPI_BCAST(x,n,MPI_REAL8,0,MPI_COMM_WORLD,j)
+        return
+       endif
+       !call atimes_n(n,d,q)        ! q=Ad neuscamman
+       call atimes_n_ortho(n,d,q)        ! q=Ad neuscamman
+       if(idtask.eq.0)then
+        alpha=delta_new/ddot(n,d,1,q,1)  ! \alpha=\delta_new/(d^T q)
+        call daxpy(n,alpha,d,1,x,1)      ! x=x+\alpha d
+       endif
+       if(mod(i,imod).eq.0)then
+        !call atimes_n(n,x,r)       ! r=Ax neuscamman
+        call atimes_n_ortho(n,x,r)       ! r=Ax neuscamman
+        if(idtask.eq.0)then
+         call daxpy(n,-1.d0,b,1,r,1)     ! r=r-b
+         call dscal(n,-1.d0,r,1)         ! r=b-r
+        endif
+       else
+        if(idtask.eq.0)call daxpy(n,-alpha,q,1,r,1)    ! r=r-\alpha q
+       endif
+       if(idtask.eq.0)then
+        call asolve(n,r,s)               ! s=M^{-1}r preconditioner
+        delta_old=delta_new              ! \delta_old=\delta_new
+        delta_new=ddot(n,r,1,s,1)        ! \delta_new=r^T s
+        print*,'delta_new ',delta_new
+        beta=delta_new/delta_old         ! \beta=\delta_new/\delta_old
+        call dscal(n,beta,d,1)           ! d=\beta d
+        call daxpy(n,1.d0,s,1,d,1)       ! d=s+d
+       endif
+       call MPI_BCAST(delta_new,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
       enddo
 
       if(idtask.eq.0)print*,'CG iter ',i
@@ -68,14 +73,15 @@ c     call atimes_n(n,x,r)       ! r=Ax neuscamman
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine asolve(n,b,x)
-c     x(i)=b(i)/s(i,i) (preconditioning with diag(S))
+c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
-      use sr_mat_n, only: s_ii_inv,istat_curr
+      use sr_mat_n, only: s_ii_inv, istat_curr
       implicit real*8(a-h,o-z)
+
       dimension x(*),b(*)
 
       do i=1,n
-         x(i)=b(i)*s_ii_inv(i,istat_curr)
+       x(i)=b(i)*s_ii_inv(i,istat_curr)
       enddo
 
       return
@@ -113,7 +119,7 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       if(ifunc_omega.eq.0) then 
 
       do iconf=1,nconf_n
-        oz_jasci(iconf)=ddot(nparm_jasci,z,1,sr_o(1,iconf),1)
+        oz_jasci(iconf)=ddot(nparm_jasci,z,1,sr_o(1,iconf,1),1)
       enddo
 
       do istate=1,nstates
@@ -121,16 +127,16 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
         i0=nparm_jasci+(istate-1)*norbterm+1
         do iconf=1,nconf_n
-          oz_orb=ddot(norbterm,z(nparm_jasci+1),1,sr_o(i0,iconf),1)
+          oz_orb=ddot(norbterm,z(nparm_jasci+1),1,sr_o(i0,iconf,1),1)
           aux(iconf)=(oz_jasci(iconf)+oz_orb)*wtg(iconf,istate)
         enddo
 
         do i=1,nparm_jasci
-          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1,1),MPARM)
         enddo
         do i=nparm_jasci+1,n
           i0=i+(istate-1)*norbterm
-          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i0,1),MPARM)
+          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i0,1,1),MPARM)
         enddo
         call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
         
@@ -150,12 +156,12 @@ c ifunc_omega.gt.0
 
       do iconf=1,nconf_n
         hoz=ddot(n,z,1,sr_ho(1,iconf),1)
-        oz=ddot(n,z,1,sr_o(1,iconf),1)
+        oz=ddot(n,z,1,sr_o(1,iconf,1),1)
         aux(iconf)=(hoz-omega_hes*oz)*wtg(iconf,1)
       enddo
       do i=1,n
         rloc(i)=ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
-        rloc(i)=rloc(i)-omega_hes*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+        rloc(i)=rloc(i)-omega_hes*ddot(nconf_n,aux(1),1,sr_o(i,1,1),MPARM)
       enddo
       call MPI_REDUCE(rloc,r,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 

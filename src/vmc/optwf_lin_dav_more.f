@@ -244,11 +244,11 @@ c loop vec
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+       hpsiloc(i+i0,ivec)=0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1,1),MPARM)
       enddo
 
       do iconf=1,nconf_n
-       aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
+       aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf,1),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
        hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)+0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
@@ -275,7 +275,7 @@ c loop vec
 
           hpsi(1,ivec)=obs_tot(jelo,1)*psi(1,ivec)+ddot(nparm,h_sr,1,psi(2,ivec),1)
           do i=1,nparm
-           hpsi(i+i0,ivec)=hpsi(i+i0,ivec)+h_sr(i)*psi(1,ivec)+s_diag(1,1)*psi(i+i0,ivec) !!!
+           hpsi(i+i0,ivec)=hpsi(i+i0,ivec)+h_sr(i,1)*psi(1,ivec)+s_diag(1,1)*psi(i+i0,ivec) !!!
           enddo
 
         endif
@@ -332,10 +332,10 @@ c loop vec
       call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
       do iconf=1,nconf_n
-       aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
+       aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf,1),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+       spsiloc(i+i0,ivec)=ddot(nconf_n,aux(1),1,sr_o(i,1,1),MPARM)
       enddo
 
       call MPI_REDUCE(spsiloc(1+i0,ivec),spsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -417,7 +417,7 @@ c loop vec
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=-0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+       hpsiloc(i+i0,ivec)=-0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1,1),MPARM)
       enddo
 
 c     do i=1,nparm+1
@@ -425,11 +425,11 @@ c       write(6,*) 'H1 ',hpsi(i,ivec)
 c     enddo
 
       do iconf=1,nconf_n
-       aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
+       aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf,1),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
        hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)-0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
-     &                                      +omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+     &   +omega*ddot(nconf_n,aux(1),1,sr_o(i,1,1),MPARM)
       enddo
 
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -456,7 +456,7 @@ c     enddo
 
           hpsi(1,ivec)=-(obs_tot(jelo,1)*psi(1,ivec)+ddot(nparm,h_sr,1,psi(2,ivec),1))
           do i=1,nparm
-           hpsi(i+i0,ivec)=hpsi(i+i0,ivec)-h_sr(i)*psi(1,ivec)+s_diag(1,1)*psi(i+i0,ivec) !!!
+           hpsi(i+i0,ivec)=hpsi(i+i0,ivec)-h_sr(i,1)*psi(1,ivec)+s_diag(1,1)*psi(i+i0,ivec) !!!
           enddo
 
           do i=1,nparm
@@ -525,7 +525,7 @@ c for omega functional
 
       if(idtask.eq.0) then
         do i=1,nparm
-          h_sr_sym(i)=0.5d0*(h_sr(i)+obs_tot(jhfj+i-1,1)-obs_tot(jfj+i-1,1)*obs_tot(jelo,1))
+          h_sr_sym(i)=0.5d0*(h_sr(i,1)+obs_tot(jhfj+i-1,1)-obs_tot(jfj+i-1,1)*obs_tot(jelo,1))
         enddo
       endif
 
@@ -535,10 +535,10 @@ c loop vec
       call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
       do iconf=1,nconf_n
-       aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
+       aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf,1),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=omega*omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+       spsiloc(i+i0,ivec)=omega*omega*ddot(nconf_n,aux(1),1,sr_o(i,1,1),MPARM)
      &                         -omega*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
       enddo
 
@@ -546,7 +546,7 @@ c loop vec
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=spsiloc(i+i0,ivec)-omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+       spsiloc(i+i0,ivec)=spsiloc(i+i0,ivec)-omega*ddot(nconf_n,aux(1),1,sr_o(i,1,1),MPARM)
      &                                            +ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
       enddo
 
@@ -670,15 +670,15 @@ c loop vec
 
       do iconf=1,nconf_n
         hoz=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)
-        oz =ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)
+        oz =ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf,1),1)
         aux0(iconf)=(hoz-oz*elocal(iconf,1))*wtg(iconf,1)
         aux1(iconf)=(oz*elocal(iconf,1)**2-hoz*elocal(iconf,1))*wtg(iconf,1)
         aux2(iconf)=oz*wtg(iconf,1)
       enddo
       do i=1,nparm
         hpsiloc(i+i0,ivec)=ddot(nconf_n,aux0(1),1,sr_ho(i,1),MPARM)
-     &                    +ddot(nconf_n,aux2(1),1,sr_o(i,1),MPARM)*var
-     &                    +ddot(nconf_n,aux1(1),1,sr_o(i,1),MPARM)
+     &                    +ddot(nconf_n,aux2(1),1,sr_o(i,1,1),MPARM)*var
+     &                    +ddot(nconf_n,aux1(1),1,sr_o(i,1,1),MPARM)
       enddo
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
@@ -704,9 +704,9 @@ c loop vec
           hpsi(i+i0,ivec)=hpsi(i+i0,ivec)-auxx0*obs_tot(jfj+i-1,1)
         enddo
 
-        hpsi(1,ivec)=(var*psi(1,ivec)-0.5*ddot(nparm,h_sr(1),1,psi(2,ivec),1))
+        hpsi(1,ivec)=(var*psi(1,ivec)-0.5*ddot(nparm,h_sr(1,1),1,psi(2,ivec),1))
         do i=1,nparm
-          hpsi(i+i0,ivec)=hpsi(i+i0,ivec)-0.5*h_sr(i)*psi(1,ivec)+s_diag(1,1)*psi(i+i0,ivec) !!!
+          hpsi(i+i0,ivec)=hpsi(i+i0,ivec)-0.5*h_sr(i,1)*psi(1,ivec)+s_diag(1,1)*psi(i+i0,ivec) !!!
         enddo
 
       endif
@@ -826,12 +826,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           overlap_psiloc(ivec,istate)=0.d0
         enddo
         do iconf=1,nconf_n
-          dum=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)
+          dum=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf,1),1)
           anorm_loc(ivec)=anorm_loc(ivec)+dum*dum*wtg(iconf,1)
           overlap_psiloc(ivec,1)=overlap_psiloc(ivec,1)+dum*wtg(iconf,1)
 
           do istate=2,nstates
-            if(i0.eq.0) ratio=sr_o(nparm+1,iconf)/sr_o(nparm+istate,iconf)
+            if(i0.eq.0)ratio=sr_o(nparm+1,iconf,1)/sr_o(nparm+istate,iconf,1)
             overlap_psiloc(ivec,istate)=overlap_psiloc(ivec,istate)+dum*ratio*wtg(iconf,istate)
           enddo
         enddo

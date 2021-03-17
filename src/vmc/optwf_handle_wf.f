@@ -705,7 +705,7 @@ c Update the orbitals
 c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-
+      use sr_mod, only: MPARM
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmj
@@ -713,54 +713,50 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
-
       dimension dparm(*)
 
       if(ioptci.eq.0) return
 
-c Update the ci coef
-      if((method.eq.'linear'.or.method.eq.'lin_d').and.ioptjas+ioptorb.eq.0) then
-        do 31 k=1,nstates
+      if((method.eq.'linear'.or.method.eq.'lin_d')
+     &     .and.ioptjas+ioptorb.eq.0) then
+         do 31 k=1,nstates
+            if(ncsf.eq.0) then
+               do 10 idet=1,ndet
+                  cdet(idet,k,1)=dparm(idet+ndet*(k-1))
+ 10            continue
+            else
+               do 15 j=1,ndet
+ 15               cdet(j,k,1)=0
 
-          if(ncsf.eq.0) then
-            do 10 idet=1,ndet
-              cdet(idet,k,1)=dparm(idet+ndet*(k-1))
- 10         continue
-           else
-            do 15 j=1,ndet
- 15           cdet(j,k,1)=0
-            do 30 icsf=1,ncsf
-              do 20 j=iadet(icsf),ibdet(icsf)
-                jx=icxdet(j)
-                cdet(jx,k,1)=cdet(jx,k,1)+dparm(icsf+ncsf*(k-1))*cxdet(j)
- 20           continue
-              ccsf(icsf,k,1)=dparm(icsf+ncsf*(k-1))
- 30         continue
-          endif
-
- 31     continue
-       else
-         if(ncsf.eq.0) then
-           do 35 idet=2,ndet
-             cdet(idet,1,iadiag)=cdet(idet,1,iadiag)-dparm(idet-1+nparmj)
- 35        continue
-          else
-           do 50 icsf=2,ncsf
-             do 40 j=iadet(icsf),ibdet(icsf)
-               jx=icxdet(j)
-               cdet(jx,1,iadiag)=cdet(jx,1,iadiag)-dparm(icsf-1+nparmj)*cxdet(j)
- 40          continue
-             ccsf(icsf,1,iadiag)=ccsf(icsf,1,iadiag)-dparm(icsf-1+nparmj)
- 50        continue
-         endif
+               do 30 icsf=1,ncsf
+                  do 20 j=iadet(icsf),ibdet(icsf)
+                     jx=icxdet(j)
+                     cdet(jx,k,1)=cdet(jx,k,1)+dparm(icsf+ncsf*(k-1))*cxdet(j)
+ 20               continue
+                  ccsf(icsf,k,1)=dparm(icsf+ncsf*(k-1))
+ 30            continue
+            endif
+ 31         continue
+      else
+         ! MPARM addition is a brute force check
+         do 51 k=1,nstates
+            if(ncsf.eq.0) then
+               do 35 idet=2,ndet
+                  cdet(idet,k,iadiag)=cdet(idet,k,iadiag)-dparm(MPARM*(k-1)+idet-1+nparmj)
+ 35            continue
+            else
+               do 50 icsf=2,ncsf
+                  do 40 j=iadet(icsf),ibdet(icsf)
+                     jx=icxdet(j)
+                     cdet(jx,k,iadiag)=cdet(jx,k,iadiag)-dparm(MPARM*(k-1)+icsf-1+nparmj)*cxdet(j)
+ 40               continue
+                  ccsf(icsf,k,iadiag)=ccsf(icsf,k,iadiag)-dparm(MPARM*(k-1)+icsf-1+nparmj)
+ 50            continue
+            endif
+ 51      continue
       endif
 
-c     do 90 j=1,nstates
-c90     write(6,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
-
-      return
-      end
+      end subroutine
 c-----------------------------------------------------------------------
       subroutine check_parms_jas(iflag)
 
@@ -772,15 +768,6 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-
-
-
 
       iflag=0
       iflaga=0
@@ -836,10 +823,6 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
 
       implicit real*8(a-h,o-z)
-
-
-
-
 
       save nparmj_sav,norbterm_sav,nciterm_sav,nparmd_sav,nreduced_sav
 
@@ -912,8 +895,10 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
 
       return
       end
+
 c-----------------------------------------------------------------------
-      subroutine optwf_store(l,wt,psid,energy)
+
+      subroutine optwf_store(l,wt,wt_sqrt,psid,energy)
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use sr_mod, only: MPARM, MCONF
@@ -937,55 +922,59 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       implicit real*8(a-h,o-z)
 
+      dimension tmp_ho(MPARMJ),wt(*),wt_sqrt(*),psid(*),energy(*)
 
-
-      dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)
-
+      call p2gtid('optgeo:izvzb',izvzb,0,1)
+      call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
 
       if(iforce_analy.gt.0.and.izvzb.eq.1) call force_store(l)
 
-      if((method.ne.'sr_n'.and.method.ne.'lin_d').or.ioptjas+ioptorb+ioptci.eq.0)return
+      if((method.ne.'sr_n'.and.method.ne.'lin_d')
+     &    .or.ioptjas+ioptorb+ioptci.eq.0) return
 
       i0=1
       if(method.eq.'lin_d'.and.ioptjas+ioptorb.eq.0) i0=0
 
       if(l.gt.MCONF) call fatal_error('SR_STORE: l gt MCONF')
 
-      call dcopy(nparmj,gvalue,1,sr_o(1,l),1)
-
-      ntmp=max(nciterm-i0,0)
-      call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l),1)
-
-      ijasci=nparmj+ntmp
-      if(ijasci+nstates*norbterm+nstates.gt.MPARM) call fatal_error('SR_STORE: iparm gt MPARM')
-
       do istate=1,nstates
-        ii=ijasci+(istate-1)*norbterm
-        call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l),1)
-        elocal(l,istate)=energy(istate)
-        wtg(l,istate)=wt(istate)
+         call dcopy(nparmj,gvalue,1,sr_o(1,l,istate),1)
       enddo
 
-      ii=ijasci+nstates*norbterm
+      ntmp=max(nciterm-i0,0)
       do istate=1,nstates
-        sr_o(ii+istate,l)=psid(istate)
+         call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l,istate),1)
+      enddo
+
+      ijasci=nparmj+ntmp
+      if(ijasci+nstates*norbterm+nstates.gt.MPARM) then
+         call fatal_error('SR_STORE: iparm gt MPARM')
+      end if
+
+      ii=ijasci
+      do istate=1,nstates
+         call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l,istate),1)
+         elocal(l,istate)=energy(istate)
+         wtg(l,istate)=wt(istate)
+      enddo
+
+      ii=ijasci+norbterm
+      do istate=1,nstates
+         sr_o(ii+1,l,istate)=psid(istate)
+         sr_o(ii+2,l,istate)=wt_sqrt(istate)
       enddo
       
       nconf_n=l
 
-      if(method.eq.'sr_n'.and.i_sr_rescale.eq.0.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
+      if(method.eq.'sr_n'.and.i_sr_rescale.eq.0
+     &   .and.izvzb.eq.0.and.ifunc_omega.eq.0) return
 
-c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secular problem
-
-      do 10 j=1,nparmj
-  10    tmp_ho(j)=denergy(j,1)+gvalue(j)*energy(1)
+      do j=1,nparmj
+         tmp_ho(j)=denergy(j,1)+gvalue(j)*energy(1)
+      end do
 
       call dcopy(nparmj,tmp_ho,1,sr_ho(1,l),1)
-
       call dcopy(ntmp,ci_e(1+i0),1,sr_ho(nparmj+1,l),1)
-
       call dcopy(norbterm,orb_ho(1,1),1,sr_ho(nparmj+ntmp+1,l),1)
       
-      return
-      end
-c-----------------------------------------------------------------------
+      end subroutine

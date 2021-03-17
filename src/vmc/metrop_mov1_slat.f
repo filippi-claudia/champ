@@ -63,7 +63,7 @@ c TMP
       dimension xstrech(3,MELEC)
       dimension xaxis(3),yaxis(3),zaxis(3),idist(MELEC)
       dimension ddx_ref(3)
-      dimension psidn(MSTATES) ,wtg(MSTATES)
+      dimension psidn(MSTATES),wtg(MSTATES),wtg_sqrt(MSTATES)
       
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
@@ -620,8 +620,8 @@ c primary configuration
       endif
 
       do 360 istate=1,nstates
-        wtg(istate)=psido(istate)/psidg
-        wtg(istate)=wtg(istate)*wtg(istate)
+        wtg_sqrt(istate)=psido(istate)/psidg
+        wtg(istate)=wtg_sqrt(istate)*wtg_sqrt(istate)
      
 c form expected values of e, pe, etc.
         esum1(istate)=eold(istate,1)
@@ -652,7 +652,7 @@ c use 'new' not 'old' value
       call optx_jas_ci_sum(wtg,0.d0,eold(1,1),eold(1,1))
       call optx_orb_ci_sum(wtg,0.d0)
 
-      if(irun.eq.1) call optwf_store(ipass,wtg,psido,eold(1,1))
+      if(irun.eq.1) call optwf_store(ipass,wtg,wtg_sqrt,psido,eold(1,1))
 
       call efficiency_sample(ipass,psido,psidg)
 

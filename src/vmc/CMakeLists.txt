@@ -84,6 +84,7 @@ if (MPI_Fortran_FOUND)
 
   set(SHARED_OBJECTS
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_ortho.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_convcartzmat.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_coords_int.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
