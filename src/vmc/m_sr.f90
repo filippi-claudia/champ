@@ -83,8 +83,10 @@ subroutine allocate_m_sr()
     call allocate_sr_mat_n()
 end subroutine allocate_m_sr
 
+
 subroutine deallocate_m_sr()
     use sr_mat_n, only: deallocate_sr_mat_n
 
     call deallocate_sr_mat_n()
 end subroutine deallocate_m_sr
+

@@ -207,14 +207,14 @@ module force_mod
 
  subroutine allocate_m_force()
      use forcest, only: allocate_forcest
-     use forcestr, only: allocate_forcestr
+    !  use forcestr, only: allocate_forcestr
      use forcewt, only: allocate_forcewt
      use force_fin, only: allocate_force_fin
      use force_mat_n, only: allocate_force_mat_n
      use forcepar, only: allocate_forcepar
 
      call allocate_forcest()
-     call allocate_forcestr()
+    !  call allocate_forcestr()
      call allocate_forcewt()
      call allocate_force_fin()
      call allocate_force_mat_n()
