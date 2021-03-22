@@ -1124,7 +1124,7 @@ contains
 end module zmatrix_grad
 
 subroutine allocate_m_common()
-    use atom, only: allocate_atom
+
     use b_tmove, only: allocate_b_tmove
     use Bloc, only: allocate_Bloc
     use casula, only: allocate_casula
@@ -1160,7 +1160,7 @@ subroutine allocate_m_common()
     use zmatrix, only: allocate_zmatrix
     use zmatrix_grad, only: allocate_zmatrix_grad
 
-    call allocate_atom()
+    ! call allocate_atom()
     call allocate_b_tmove()
     call allocate_Bloc()
     call allocate_casula()
@@ -1198,7 +1198,7 @@ subroutine allocate_m_common()
 end subroutine allocate_m_common
 
 subroutine deallocate_m_common()
-    use atom, only: deallocate_atom
+    ! use atom, only: deallocate_atom
     use b_tmove, only: deallocate_b_tmove
     use Bloc, only: deallocate_Bloc
     use casula, only: deallocate_casula
@@ -1234,7 +1234,7 @@ subroutine deallocate_m_common()
     use zmatrix, only: deallocate_zmatrix
     use zmatrix_grad, only: deallocate_zmatrix_grad
 
-    call deallocate_atom()
+    ! call deallocate_atom()
     call deallocate_b_tmove()
     call deallocate_Bloc()
     call deallocate_casula()
