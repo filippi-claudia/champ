@@ -160,7 +160,7 @@ c-----------------------------------------------------------------------
         p = 1.d0
         dp= 0.d0
        endif
-       if (-ecp_exponent(i,l,ict)*rsq.lt.-7.0D2) then
+       if (ecp_exponent(i,l,ict)*rsq.gt.7.0D2) then
           e = 0.0d0 
        else
           e = ecp_coef(i,l,ict)*exp(-ecp_exponent(i,l,ict)*rsq)
