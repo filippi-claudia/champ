@@ -24,7 +24,22 @@ c routine to accumulate estimators for energy etc.
       use contrl, only: nstep
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, npass, ifr, ierr, k, ifgerr, iderivgerr
+      integer :: iegerr, ipeerr, itpber, itjfer
+      real*8 :: zero, one, egcollect, wgcollect, pecollect, tjfcollect, eg2collect
+      real*8 :: wg2collect, tpb2collect, tjf2collect, fsum, eg2sum, wg2sum, pe2sum
+      real*8 :: tpb2sum, taucollect, fcollect, f2collect, rn_eff, w
+      real*8 :: w2, error, x, x2, errg, wnow, wfnow
+      real*8 :: enow, efnow, ei1now, ei2now, rinow, r2now
+      real*8 :: w2sum, wf2sum, e2sum, ef2sum, wgnow, egnow, penow
+      real*8 :: tpbnow, tjfnow, tjf2sum, f2sum, tpbcollect, pe2collect
+      real*8 :: derivcollect, ecollect, wcollect, efcollect, wfcollect, e2collect, w2collect
+      real*8 :: ef2collect, wf2collect, egerr, peerr, tpberr, tjferr
+      real*8 :: egave, peave, tpbave, tjfave, fgave, fgerr
+      real*8 :: egave1, derivtotave_num, derivtotave, delta_derivtotave_num, derivgerr
+      real*8 :: fgerr_n
 
       parameter (zero=0.d0,one=1.d0)
 
