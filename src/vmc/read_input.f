@@ -5,9 +5,8 @@ c Written by Friedemann Schautz
       use allocation_mod, only: allocate_vmc, allocate_dmc
       implicit real*8(a-h,o-z)
 
-      call allocate_vmc()
-      call allocate_dmc()
-
+      ! call allocate_vmc()
+      ! call allocate_dmc()
 
 c Initialize flags
       call flaginit
@@ -23,7 +22,9 @@ c Compute the size of some matrices we need
       call compute_mat_size()
 
 c Allocate memory of all arrays
-      call allocate_all_arrays()
+      ! call allocate_all_arrays()
+      call allocate_vmc()
+      call allocate_dmc()
 
 c Transfer from lists to fortran variables, print out, check,
 c and read in everything which is still in the old format
