@@ -2,6 +2,7 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
+      use precision_kinds, only: dp
       use const, only: etrial, ipr
       use forcepar, only: nforce
       use contrldmc, only: idmc
@@ -21,7 +22,11 @@ c routine to accumulate estimators for energy etc.
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ierr, ifr, ipmod, mod, iabs, nfpro
+      real(dp) :: zero, one, egcollect, wgcollect, wgdsum1, ecollect
+      real(dp) :: wcollect, efcollect, wfcollect, taublock, eisum, accavn
 
       parameter (zero=0.d0,one=1.d0)
 

@@ -1,5 +1,6 @@
       subroutine acues1_reduce
 
+      use precision_kinds, only: dp
       use vmc_mod, only: nrad
       use forcepar, only: nforce
       use estcum, only: iblk
@@ -13,9 +14,16 @@
       use mpiconf, only: nproc, wid
       use contr3, only: mode
       use force_mod, only: MFORCE
+      use contrl_per, only: iperiodic
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: istatus, ierr, ifr, i, nodecr_collect, nacc_collect, id, irequest
+      real(dp) :: eg1collect, eg21collect, wg1collect, wg21collect, rprobcollect
+      real(dp) :: e1collect, e21collect, w1collect, w21collect, ef1collect
+      real(dp) :: ef21collect, wf1collect, wf21collect, trymove_collect
+      real(dp) :: acc_collect, efin
 
       dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
      &,wg21collect(MFORCE),rprobcollect(nrad)
