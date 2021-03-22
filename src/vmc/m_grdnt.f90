@@ -78,4 +78,10 @@ module grdnthes
      call allocate_grdntsmv()
  end subroutine allocate_m_grdnt
 
+ subroutine deallocate_m_grdnt()
+     use grdnthes, only: deallocate_grdnthes
+     use grdntsmv, only: deallocate_grdntsmv
 
+     call deallocate_grdnthes()
+     call deallocate_grdntsmv()
+ end subroutine deallocate_m_grdnt

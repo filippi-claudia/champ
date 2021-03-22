@@ -302,4 +302,16 @@ subroutine allocate_m_basis()
     call allocate_numbas2()
 end subroutine allocate_m_basis
 
+subroutine deallocate_m_basis()
+    use basis, only: deallocate_basis
+    use numexp, only: deallocate_numexp
+    use numbas, only: deallocate_numbas
+    use numbas1, only: deallocate_numbas1
+    use numbas2, only: deallocate_numbas2
 
+    call deallocate_basis()
+    call deallocate_numexp()
+    call deallocate_numbas()
+    call deallocate_numbas1()
+    call deallocate_numbas2()
+end subroutine deallocate_m_basis

@@ -1,5 +1,5 @@
       subroutine mc_configs_start
-      
+
       use mpi
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
@@ -13,6 +13,7 @@
       use config, only: xnew, xold
       use mpiconf, only: idtask, nproc
       use contrl, only: irstar, isite, nconf_new, icharged_atom
+      use mpi
 
       implicit real*8(a-h,o-z)
       character*20 filename
@@ -53,7 +54,7 @@ c check sites flag if one gets initial configuration from sites routine
         write(6,'(/,''initial configuration from unit 9'')')
         goto 40
 
-   20   continue 
+   20   continue
 	ntotal_sites=0
         do 25 i=1,ncent
    25     ntotal_sites=ntotal_sites+int(znuc(iwctype(i))+0.5d0)
@@ -77,7 +78,7 @@ c check sites flag if one gets initial configuration from sites routine
         call sites(xold,nelec,nsite)
         open(unit=9,file='mc_configs_start')
         rewind 9
-        
+
         write(6,'(/,''initial configuration from sites'')')
    40   continue
 
@@ -107,7 +108,7 @@ c then set up so no configurations are written.
         rewind 7
       endif
       call pcm_qvol(nproc)
-      
+
       return
 
 c-----------------------------------------------------------------------

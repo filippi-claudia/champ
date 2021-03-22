@@ -182,3 +182,17 @@ subroutine allocate_m_grid()
     call allocate_grid3d_param()
     call allocate_orbital_num_lag()
 end subroutine allocate_m_grid
+
+subroutine deallocate_m_grid()
+    use grid_mod, only: deallocate_grid_mod
+    use grid_spline_mod, only: deallocate_grid_spline_mod
+    use grid_lagrange_mod, only: deallocate_grid_lagrange_mod
+    use grid3d_param, only: deallocate_grid3d_param
+    use orbital_num_lag, only: deallocate_orbital_num_lag
+
+    call deallocate_grid_mod()
+    call deallocate_grid_spline_mod()
+    call deallocate_grid_lagrange_mod()
+    call deallocate_grid3d_param()
+    call deallocate_orbital_num_lag()
+end subroutine deallocate_m_grid

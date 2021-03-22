@@ -1,217 +1,238 @@
 module force_mod
-    integer :: MFORCE
-    integer, parameter :: MFORCE_WT_PRD = 1000
-    integer, parameter :: MWF = 3
+     integer :: MFORCE
+     integer, parameter :: MFORCE_WT_PRD = 1000
+     integer, parameter :: MWF = 3
 
-    private
-    public :: MFORCE, MFORCE_WT_PRD, MWF
-    save
-end module force_mod
+     private
+     public :: MFORCE, MFORCE_WT_PRD, MWF
+     save
+ end module force_mod
 
-module forcepar
-    !> Arguments: deltot, istrech, nforce
-    use force_mod, only: MFORCE
-    use precision_kinds, only: dp
+ module force_analy
+     !> Arguments: iforce_analy, iuse_zmat, alfgeo
+     use precision_kinds, only: dp
 
-    real(dp), dimension(:), allocatable :: deltot !(MFORCE)
-    integer :: istrech
-    integer :: nforce
-    real(dp) :: alfstr
+     integer :: iforce_analy
+     integer :: iuse_zmat
+     real(dp) :: alfgeo
 
-    private
-    public   ::  deltot, istrech, nforce, alfstr
-    public :: allocate_forcepar, deallocate_forcepar
-    save
-contains
-    subroutine allocate_forcepar()
-        use force_mod, only: MFORCE
-        use precision_kinds, only: dp
-        if (.not. allocated(deltot)) allocate (deltot(MFORCE))
-    end subroutine allocate_forcepar
+     private
+     public   :: iforce_analy, iuse_zmat, alfgeo
+     save
+ end module force_analy
 
-    subroutine deallocate_forcepar()
-        if (allocated(deltot)) deallocate (deltot)
-    end subroutine deallocate_forcepar
+ module forcest
+     !> Arguments: fcm2, fcum, fgcm2, fgcum
+     use force_mod, only: MFORCE
+     use precision_kinds, only: dp
+     use mstates_mod, only: MSTATES
 
-end module forcepar
+     real(dp), dimension(:, :), allocatable :: fcm2 !(MSTATES,MFORCE)
+     real(dp), dimension(:, :), allocatable :: fcum !(MSTATES,MFORCE)
+     ! DMC arrays:
+     real(dp), dimension(:), allocatable :: fgcm2 !(MFORCE)
+     real(dp), dimension(:), allocatable :: fgcum !(MFORCE)
 
-module force_analy
-    !> Arguments: iforce_analy, iuse_zmat, alfgeo
-    use precision_kinds, only: dp
+     private
+     public   ::  fcm2, fcum, fgcm2, fgcum
+     public :: allocate_forcest, deallocate_forcest
+     save
+ contains
+     subroutine allocate_forcest()
+         use force_mod, only: MFORCE
+         use precision_kinds, only: dp
+         use mstates_mod, only: MSTATES
+         if (.not. allocated(fcm2)) allocate (fcm2(MSTATES, MFORCE))
+         if (.not. allocated(fcum)) allocate (fcum(MSTATES, MFORCE))
+         ! DMC arrays:
+         if (.not. allocated(fgcm2)) allocate (fgcm2(MFORCE))
+         if (.not. allocated(fgcum)) allocate (fgcum(MFORCE))
+     end subroutine allocate_forcest
 
-    integer :: iforce_analy
-    integer :: iuse_zmat
-    real(dp) :: alfgeo
+     subroutine deallocate_forcest()
+         if (allocated(fcum)) deallocate (fcum)
+         if (allocated(fcm2)) deallocate (fcm2)
+         ! DMC arrays:
+         if (allocated(fcm2)) deallocate (fgcm2)
+         if (allocated(fcum)) deallocate (fgcum)
+     end subroutine deallocate_forcest
 
-    private
-    public   :: iforce_analy, iuse_zmat, alfgeo
-    save
-end module force_analy
+ end module forcest
 
-module forcest
-    !> Arguments: fcm2, fcum
-    use force_mod, only: MFORCE
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+ module forcestr
+     !> Arguments: delc
+     use force_mod, only: MFORCE
+     use precision_kinds, only: dp
+     use vmc_mod, only: MCENT
 
-    real(dp), dimension(:, :), allocatable :: fcm2 !(MSTATES,MFORCE)
-    real(dp), dimension(:, :), allocatable :: fcum !(MSTATES,MFORCE)
+     real(dp), dimension(:, :, :), allocatable :: delc !(3,MCENT,MFORCE)
 
-    private
-    public   ::  fcm2, fcum
-    public :: allocate_forcest, deallocate_forcest
-    save
-contains
-    subroutine allocate_forcest()
-        use csfs, only: nstates
-        use force_mod, only: MFORCE
-        use precision_kinds, only: dp
-        use mstates_mod, only: MSTATES
-        if (.not. allocated(fcm2)) allocate (fcm2(MSTATES, MFORCE))
-        if (.not. allocated(fcum)) allocate (fcum(MSTATES, MFORCE))
-    end subroutine allocate_forcest
+     private
+     public   ::  delc
+     public :: allocate_forcestr, deallocate_forcestr
+     save
+ contains
+     subroutine allocate_forcestr()
+         use force_mod, only: MFORCE
+         use precision_kinds, only: dp
+         use vmc_mod, only: MCENT
+         if (.not. allocated(delc)) allocate (delc(3, MCENT, MFORCE))
+     end subroutine allocate_forcestr
 
-    subroutine deallocate_forcest()
-        if (allocated(fcum)) deallocate (fcum)
-        if (allocated(fcm2)) deallocate (fcm2)
-    end subroutine deallocate_forcest
+     subroutine deallocate_forcestr()
+         if (allocated(delc)) deallocate (delc)
+     end subroutine deallocate_forcestr
 
-end module forcest
+ end module forcestr
 
-module forcestr
-    !> Arguments: delc
-    use force_mod, only: MFORCE
-    use precision_kinds, only: dp
-    use vmc_mod, only: MCENT
+ module forcewt
+     !> Arguments: wcum, wsum
+     use force_mod, only: MFORCE
+     use precision_kinds, only: dp
+     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :, :), allocatable :: delc !(3,MCENT,MFORCE)
+     real(dp), dimension(:, :), allocatable :: wcum !(MSTATES,MFORCE)
+     real(dp), dimension(:, :), allocatable :: wsum !(MSTATES,MFORCE)
 
-    private
-    public   ::  delc
-    public :: allocate_forcestr, deallocate_forcestr
-    save
-contains
-    !  subroutine allocate_forcestr()
-    !      use force_mod, only: MFORCE
-    !      use precision_kinds, only: dp
-    !      use vmc_mod, only: MCENT
-    !      if (.not. allocated(delc)) allocate (delc(3, MCENT, MFORCE))
-    !  end subroutine allocate_forcestr
+     private
+     public   ::  wcum, wsum
+     public :: allocate_forcewt, deallocate_forcewt
+     save
+ contains
+     subroutine allocate_forcewt()
+         use force_mod, only: MFORCE
+         use precision_kinds, only: dp
+         use mstates_mod, only: MSTATES
+         if (.not. allocated(wcum)) allocate (wcum(MSTATES, MFORCE))
+         if (.not. allocated(wsum)) allocate (wsum(MSTATES, MFORCE))
+     end subroutine allocate_forcewt
 
-    subroutine deallocate_forcestr()
-        if (allocated(delc)) deallocate (delc)
-    end subroutine deallocate_forcestr
+     subroutine deallocate_forcewt()
+         if (allocated(wsum)) deallocate (wsum)
+         if (allocated(wcum)) deallocate (wcum)
+     end subroutine deallocate_forcewt
 
-end module forcestr
+ end module forcewt
 
-module forcewt
-    !> Arguments: wcum, wsum
-    use force_mod, only: MFORCE
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+ module force_dmc
+     !> Arguments: itausec, nwprod
 
-    real(dp), dimension(:, :), allocatable :: wcum !(MSTATES,MFORCE)
-    real(dp), dimension(:, :), allocatable :: wsum !(MSTATES,MFORCE)
+     integer :: itausec
+     integer :: nwprod
 
-    private
-    public   ::  wcum, wsum
-    public :: allocate_forcewt, deallocate_forcewt
-    save
-contains
-    subroutine allocate_forcewt()
-        use csfs, only: nstates
-        use force_mod, only: MFORCE
-        use precision_kinds, only: dp
-        use mstates_mod, only: MSTATES
-        if (.not. allocated(wcum)) allocate (wcum(MSTATES, MFORCE))
-        if (.not. allocated(wsum)) allocate (wsum(MSTATES, MFORCE))
-    end subroutine allocate_forcewt
+     private
+     public   ::   itausec, nwprod
+     save
+ end module force_dmc
 
-    subroutine deallocate_forcewt()
-        if (allocated(wsum)) deallocate (wsum)
-        if (allocated(wcum)) deallocate (wcum)
-    end subroutine deallocate_forcewt
+ module force_fin
+     !> Arguments: da_energy_ave, da_energy_err
+     use precision_kinds, only: dp
+     use vmc_mod, only: MCENT
 
-end module forcewt
+     real(dp), dimension(:, :), allocatable :: da_energy_ave !(3,MCENT)
+     real(dp), dimension(:), allocatable :: da_energy_err !(3)
 
-module force_dmc
-    !> Arguments: itausec, nwprod
+     private
+     public   :: da_energy_ave, da_energy_err
+     public :: allocate_force_fin, deallocate_force_fin
+     save
+ contains
+     subroutine allocate_force_fin()
+         use precision_kinds, only: dp
+         use vmc_mod, only: MCENT
+         if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, MCENT))
+         if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))
+     end subroutine allocate_force_fin
 
-    integer :: itausec
-    integer :: nwprod
+     subroutine deallocate_force_fin()
+         if (allocated(da_energy_err)) deallocate (da_energy_err)
+         if (allocated(da_energy_ave)) deallocate (da_energy_ave)
+     end subroutine deallocate_force_fin
 
-    private
-    public   ::   itausec, nwprod
-    save
-end module force_dmc
+ end module force_fin
 
-module force_fin
-    !> Arguments: da_energy_ave, da_energy_err
-    use precision_kinds, only: dp
-    use vmc_mod, only: MCENT
+ module force_mat_n
+     !> Arguments: force_o
+     use sr_mod, only: MCONF
+     use precision_kinds, only: dp
+     use vmc_mod, only: MCENT
 
-    real(dp), dimension(:, :), allocatable :: da_energy_ave !(3,MCENT)
-    real(dp), dimension(:), allocatable :: da_energy_err !(3)
+     real(dp), dimension(:, :), allocatable :: force_o !(6*MCENT,MCONF)
 
-    private
-    public   :: da_energy_ave, da_energy_err
-    public :: allocate_force_fin, deallocate_force_fin
-    save
-contains
-    subroutine allocate_force_fin()
-        use atom, only: ncent_tot
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCENT
-        if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot))
-        if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))
-    end subroutine allocate_force_fin
+     private
+     public   ::  force_o
+     public :: allocate_force_mat_n, deallocate_force_mat_n
+     save
+ contains
+     subroutine allocate_force_mat_n()
+         use sr_mod, only: MCONF
+         use precision_kinds, only: dp
+         use vmc_mod, only: MCENT
+         if (.not. allocated(force_o)) allocate (force_o(6*MCENT, MCONF))
+     end subroutine allocate_force_mat_n
 
-    subroutine deallocate_force_fin()
-        if (allocated(da_energy_err)) deallocate (da_energy_err)
-        if (allocated(da_energy_ave)) deallocate (da_energy_ave)
-    end subroutine deallocate_force_fin
+     subroutine deallocate_force_mat_n()
+         if (allocated(force_o)) deallocate (force_o)
+     end subroutine deallocate_force_mat_n
 
-end module force_fin
+ end module force_mat_n
 
-module force_mat_n
-    !> Arguments: force_o
-    use sr_mod, only: MCONF
-    use precision_kinds, only: dp
-    use vmc_mod, only: MCENT
+ module forcepar
+     !> Arguments: deltot, istrech, nforce, alfstr
+     use force_mod, only: MFORCE
+     use precision_kinds, only: dp
 
-    real(dp), dimension(:, :), allocatable :: force_o !(6*MCENT,MCONF)
+     real(dp), dimension(:), allocatable :: deltot !(MFORCE)
+     integer :: istrech
+     integer :: nforce
+     real(dp) :: alfstr
 
-    private
-    public   ::  force_o
-    public :: allocate_force_mat_n, deallocate_force_mat_n
-    save
-contains
-    subroutine allocate_force_mat_n()
-        use atom, only: ncent_tot
-        use sr_mod, only: MCONF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCENT
-        if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, MCONF))
-    end subroutine allocate_force_mat_n
+     private
+     public   ::  deltot, istrech, nforce, alfstr
+     public :: allocate_forcepar, deallocate_forcepar
+     save
+ contains
+     subroutine allocate_forcepar()
+         use force_mod, only: MFORCE
+         use precision_kinds, only: dp
+         if (.not. allocated(deltot)) allocate (deltot(MFORCE))
+     end subroutine allocate_forcepar
 
-    subroutine deallocate_force_mat_n()
-        if (allocated(force_o)) deallocate (force_o)
-    end subroutine deallocate_force_mat_n
+     subroutine deallocate_forcepar()
+         if (allocated(deltot)) deallocate (deltot)
+     end subroutine deallocate_forcepar
 
-end module force_mat_n
+ end module forcepar
 
-subroutine allocate_m_force()
-    use forcest, only: allocate_forcest
-    ! use forcestr, only: allocate_forcestr
-    use forcewt, only: allocate_forcewt
-    use force_fin, only: allocate_force_fin
-    use force_mat_n, only: allocate_force_mat_n
-    use forcepar, only: allocate_forcepar
+ subroutine allocate_m_force()
+     use forcest, only: allocate_forcest
+     use forcestr, only: allocate_forcestr
+     use forcewt, only: allocate_forcewt
+     use force_fin, only: allocate_force_fin
+     use force_mat_n, only: allocate_force_mat_n
+     use forcepar, only: allocate_forcepar
 
-    call allocate_forcest()
-    ! call allocate_forcestr()
-    call allocate_forcewt()
-    call allocate_force_fin()
-    call allocate_force_mat_n()
-    call allocate_forcepar()
-end subroutine allocate_m_force
+     call allocate_forcest()
+     call allocate_forcestr()
+     call allocate_forcewt()
+     call allocate_force_fin()
+     call allocate_force_mat_n()
+     call allocate_forcepar()
+ end subroutine allocate_m_force
+
+ subroutine deallocate_m_force()
+     use forcest, only: deallocate_forcest
+     use forcestr, only: deallocate_forcestr
+     use forcewt, only: deallocate_forcewt
+     use force_fin, only: deallocate_force_fin
+     use force_mat_n, only: deallocate_force_mat_n
+     use forcepar, only: deallocate_forcepar
+
+     call deallocate_forcest()
+     call deallocate_forcestr()
+     call deallocate_forcewt()
+     call deallocate_force_fin()
+     call deallocate_force_mat_n()
+     call deallocate_forcepar()
+ end subroutine deallocate_m_force

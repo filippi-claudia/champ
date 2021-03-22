@@ -198,3 +198,13 @@ subroutine allocate_m_optwf()
     ! call allocate_optwf_nparmj()
     call allocate_optwf_wjas()
 end subroutine allocate_m_optwf
+
+subroutine deallocate_m_optwf()
+    use optwf_corsam, only: deallocate_optwf_corsam
+    use optwf_nparmj, only: deallocate_optwf_nparmj
+    use optwf_wjas, only: deallocate_optwf_wjas
+
+    call deallocate_optwf_corsam()
+    call deallocate_optwf_nparmj()
+    call deallocate_optwf_wjas()
+end subroutine deallocate_m_optwf

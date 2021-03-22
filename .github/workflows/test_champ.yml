@@ -26,7 +26,6 @@ jobs:
 
            # save the module file
            cp src/vmc/m_vmc.f90 ./m_vmc_save
-           cp src/vmc/m_sr.f90 ./m_sr_save
            cp src/vmc/m_optci.f90 ./m_optci_save
            cp src/vmc/m_optorb.f90 ./m_optorb_save
 
@@ -72,6 +71,7 @@ jobs:
            echo ""  
 
            # run and compare default optimization
+<<<<<<< HEAD
            # echo "- Running vmc_corsamp.inp in serial:"
            # $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out 
            # echo "  total E vs reference:"
@@ -88,6 +88,24 @@ jobs:
            # echo "  best E vs reference:"
            # $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current best energy + 2*error" -1.0024 
            # echo ""  
+=======
+           echo "- Running vmc_corsamp.inp in serial:"
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out 
+           echo "  total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current energy" -1.0083658 
+           echo "  best E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current best energy + 2*error" -0.9958 
+           echo ""
+
+           # run and compare default optimization MPI
+           echo "- Running vmc_corsamp.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out 
+           echo "  total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current energy" -1.0119453 
+           echo "  best E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current best energy + 2*error" -1.0024 
+           echo ""  
+>>>>>>> refac-problematic
            
            cd $HOME/work/champ/champ
 
@@ -106,12 +124,20 @@ jobs:
            echo "  CHAMP Eigenalues vs Scipy:" 
            python compare_eigenvalues.py
      
+<<<<<<< HEAD
+=======
+           # restore the module files
+           cd $HOME/work/champ/champ
+           cp m_vmc_save ./src/vmc/m_vmc.f90
+           cp m_optci_save ./src/vmc/m_optci.f90
+           cp m_optorb_save src/vmc/m_optorb.f90
+     
+>>>>>>> refac-problematic
     - name: Building_code_for_psb3_butadiene_and_psb2
       run: |
 
            # save the module files
            cp src/vmc/m_vmc.f90 ./m_vmc_save
-           cp src/vmc/m_sr.f90 ./m_sr_save
            cp src/vmc/m_optci.f90 ./m_optci_save
 
            # copy module files to src
@@ -169,11 +195,35 @@ jobs:
            echo " first eigenvalue vs reference:" 
            $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -50.815236723338842
            echo ""
-
-    - name: Run_butadiene_sr
+           
+    - name: Run_psb2_mix_n
       run: |
 
+           cd tests/CI_test/psb2
+           export OMPI_MCA_btl=^openib # Avoids MCA warnings
+
+           # run and compare a geometry optimization calculation
+           echo "- Running vmc_mix_SA.inp in serial:"
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
+           echo " total E vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.7665740 
+           echo ""
+
+           # run and compare a geometry optimization calculation MPI
+           echo "- Running vmc_mix_SA.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
+           echo " total E vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9287659 
+           echo ""
+
+    - name: Run_butadiene
+      run: |
+
+<<<<<<< HEAD
            cd tests/CI_test/butadiene_sr/
+=======
+           cd tests/CI_test/butadiene/
+>>>>>>> refac-problematic
            export OMPI_MCA_btl=^openib # Avoids MCA warnings
 
            # run and compare a geometry optimization calculation
@@ -201,6 +251,7 @@ jobs:
            echo "- Running vmc_optall.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_optall.inp > vmc_optall.out 
            echo " first eigenvalue vs reference:" 
+<<<<<<< HEAD
            $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -21.6147339 --no_assert
            echo ""
            
@@ -224,3 +275,33 @@ jobs:
            $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9287659 --no_assert
            echo ""
 
+=======
+           $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -21.6147339 
+           echo ""          
+
+           # run and compare a dmc calculation
+           echo "- Running dmc.inp in serial:"
+           $HOME/work/champ/champ/bin/dmc.mov1 < dmc.inp > dmc.out
+           echo " total E vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -28.1361563
+           echo ""
+
+           # run and compare a dmc calculation MPI
+           echo "- Running dmc.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/dmc.mov1 < dmc.inp > dmc.out
+           echo " first eigenvalue vs reference:" 
+           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -26.4010232 
+           echo ""          
+
+           #  restore the module files
+           
+           cd $HOME/work/champ/champ
+           cp m_vmc_save ./src/vmc/m_vmc.f90
+           cp m_optci_save ./src/vmc/m_optci.f90
+
+           #  restore the module files
+           
+           cd $HOME/work/champ/champ
+           cp m_vmc_save ./src/vmc/m_vmc.f90
+           cp m_optci_save ./src/vmc/m_optci.f90
+>>>>>>> refac-problematic

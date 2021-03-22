@@ -18,15 +18,12 @@ c job where it left off
       use forcewt, only: wcum
       use mpiconf, only: idtask, nproc, wid
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
-
       use pseudo, only: nloc
-
       use qua, only: nquad, wq, xq, yq, zq
+      use mpi
 
       implicit real*8(a-h,o-z)
 
-
-      include 'mpif.h'
 
       dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
       dimension irn_tmp(4,0:NPROCX)

@@ -210,9 +210,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
       use mpiconf, only: idtask
+      use mpi
+
       implicit real*8(a-h,o-z)
 
-      include 'mpif.h'
       integer m_parm_opt
       parameter(m_parm_opt=59000)
       integer n,imax,imod,i,j
@@ -297,23 +298,16 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
       use sr_mod, only: MPARM, MCONF
       use csfs, only: nstates
-
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: weights
       use sr_index, only: jelo, jelo2, jelohfj
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use optorb_cblock, only: norbterm
-
-      ! as not in master ... 
       use mpiconf, only: idtask
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-      include 'mpif.h'
-
-
-
 
       dimension z(*),r(*),aux(0:MCONF),aux1(0:MCONF),rloc(MPARM),r_s(MPARM),oz_jasci(MCONF)
       dimension tmp(MPARM),tmp2(MPARM)
@@ -341,13 +335,24 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
           aux(iconf)=(oz_jasci(iconf)+oz_orb)*wtg(iconf,istate)
         enddo
 
-        do i=1,nparm_jasci
-          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
-        enddo
-        do i=nparm_jasci+1,n
-          i0=i+(istate-1)*norbterm
-          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i0,1),MPARM)
-        enddo
+!       Following three lines commented and replaced by dgemv after profiling
+!        do i=1,nparm_jasci
+!          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+!        enddo
+
+        call dgemv('N', nparm_jasci, nconf_n, 1.0d0, sr_o(1,1), MPARM, aux(1), 1, 0.0d0, rloc(1), 1)
+
+
+!       Following code commented and replaced by dgemv after profiling
+!        do i=nparm_jasci+1,n
+!          i0=i+(istate-1)*norbterm
+!          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i0,1),MPARM)
+!        enddo
+ 
+        i0 = nparm_jasci + 1 +(istate-1)*norbterm
+        i1 = nparm_jasci + 1         
+        call dgemv('N', n - nmparm_jasci, nconf_n, 1.0d0, sr_o(i0,1), MPARM, aux(1), 1, 0.0d0, rloc(i1), 1)
+ 
         call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
         
         if(idtask.eq.0)then

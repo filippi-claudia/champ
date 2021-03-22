@@ -14,12 +14,14 @@ set(CMAKE_VERBOSE_MAKEFILE off)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 
-# Set the output folder where your program will be created
+# Set folder variables:
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_VMC_DIR ${CMAKE_SOURCE_DIR}/src/vmc)
+set(CMAKE_DMC_DIR ${CMAKE_SOURCE_DIR}/src/dmc)
+set(CMAKE_INPUT_DIR ${CMAKE_SOURCE_DIR}/src/input)
+
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-# Input directory
-set(INPUT_DIR ${CMAKE_SOURCE_DIR}/src/input)
 
 ## User options
 # documentation
@@ -94,7 +96,6 @@ message(STATUS "compiler flags are: " ${Fortran_FLAGS})
 
 ## Subdirectories
 # Include the following subdirectories
-add_subdirectory(src/include)
 add_subdirectory(src/input)
 add_subdirectory(tools/interface)
 add_subdirectory(lib/cyrus)

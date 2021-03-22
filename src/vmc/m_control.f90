@@ -171,3 +171,8 @@ subroutine allocate_m_control()
     use contrldmc, only: allocate_contrldmc
     call allocate_contrldmc()
 end subroutine allocate_m_control
+
+subroutine deallocate_m_control()
+    use contrldmc, only: deallocate_contrldmc
+    call deallocate_contrldmc()
+end subroutine deallocate_m_control

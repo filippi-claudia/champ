@@ -1,50 +1,46 @@
       subroutine zerest
 c Written by Cyrus Umrigar, modified by Claudia Filippi
+
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+      use forcest, only: fgcm2, fgcum
+      use forcepar, only: deltot, istrech, nforce
+      use age, only: iage, ioldest, ioldestmx
+      use estcum, only: iblk, ipass
+      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
+      use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
+     &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
+     &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
+      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
+     &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
+     &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
+     &wgdcum
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
+      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use denupdn, only: rprobdn, rprobup
+      use mpiblk, only: iblk_proc
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
 
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'dmc.h'
-      include 'force.h'
-      include 'pseudo.h'
+
 
       parameter (zero=0.d0,one=1.d0)
 
 c routine to accumulate estimators for energy etc.
 
-      common /iterat/ ipass,iblk
-      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,
-     &nbrnch,nodecr
-      common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
-     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
-     &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),
-     &ei1sum,ei2sum,ei3sum, pesum(MFORCE),tpbsum(MFORCE),tjfsum(MFORCE),r2sum,
-     &risum,tausum(MFORCE)
-      common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
-     &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
-     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
-     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
-     &ricum,taucum(MFORCE)
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
-      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE),derivcm2(MFORCE),
-     &derivtotave_num_old(MFORCE)
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
-      common /denupdn/ rprobup(nrad),rprobdn(nrad)
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /age/ iage(MWALK),ioldest,ioldestmx
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
 
-      common /mpiblk/ iblk_proc
 
       iblk=0
       iblk_proc=0
@@ -53,18 +49,18 @@ c zero out estimators
 
       wcum1=zero
       wfcum1=zero
-      wcum=zero
+      wcum_dmc=zero
       wfcum=zero
       wdcum=zero
       wgdcum=zero
-      ecum1=zero
+      ecum1_dmc=zero
       efcum1=zero
-      ecum=zero
+      ecum_dmc=zero
       efcum=zero
       ei1cum=zero
       ei2cum=zero
       ei3cum=zero
-      r2cum=zero
+      r2cum_dmc=zero
       ricum=zero
 
       wcm21=zero
@@ -73,23 +69,23 @@ c zero out estimators
       wfcm2=zero
       wdcm2=zero
       wgdcm2=zero
-      ecm21=zero
+      ecm21_dmc=zero
       efcm21=zero
-      ecm2=zero
+      ecm2_dmc=zero
       efcm2=zero
       ei1cm2=zero
       ei2cm2=zero
       ei3cm2=zero
-      r2cm2=zero
+      r2cm2_dmc=zero
       ricm2=zero
 
       wfsum1=zero
-      wsum=zero
+      wsum_dmc=zero
       wfsum=zero
       wdsum=zero
       wgdsum=zero
       efsum1=zero
-      esum=zero
+      esum_dmc=zero
       efsum=zero
       ei1sum=zero
       ei2sum=zero
@@ -111,18 +107,18 @@ c zero out estimators
         wsum1(ifr)=zero
         wgsum1(ifr)=zero
         wgsum(ifr)=zero
-        esum1(ifr)=zero
+        esum1_dmc(ifr)=zero
         egsum1(ifr)=zero
         egsum(ifr)=zero
-        pecum(ifr)=zero
-        tpbcum(ifr)=zero
-        tjfcum(ifr)=zero
-        pecm2(ifr)=zero
-        tpbcm2(ifr)=zero
-        tjfcm2(ifr)=zero
-        pesum(ifr)=zero
-        tpbsum(ifr)=zero
-        tjfsum(ifr)=zero
+        pecum_dmc(ifr)=zero
+        tpbcum_dmc(ifr)=zero
+        tjfcum_dmc(ifr)=zero
+        pecm2_dmc(ifr)=zero
+        tpbcm2_dmc(ifr)=zero
+        tjfcm_dmc(ifr)=zero
+        pesum_dmc(ifr)=zero
+        tpbsum_dmc(ifr)=zero
+        tjfsum_dmc(ifr)=zero
         fgcum(ifr)=zero
         fgcm2(ifr)=zero
         derivcm2(ifr)=zero
