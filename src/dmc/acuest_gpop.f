@@ -2,6 +2,7 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
+      use precision_kinds, only: dp
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, nforce
       use age, only: ioldest, ioldestmx
@@ -22,7 +23,16 @@ c routine to accumulate estimators for energy etc.
       use contrl, only: nstep
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, npass, ierr, ioldest_collect, ioldestmx_collect, ifr
+      integer :: k, ifgerr, iegerr, ipeerr, itpber, itjfer
+      real(dp) :: zero, one, pecollect, tpbcollect, tjfcollect, taucollect, derivcollect
+      real(dp) :: rn_eff, w, w2, error, x, x2, errg
+      real(dp) :: dum, wnow, wfnow, enow, efnow, ei1now
+      real(dp) :: ei2now, rinow, r2now, wgnow, egnow, penow, tpbnow
+      real(dp) :: tjfnow, egerr, peerr, tpberr, tjferr, egave
+      real(dp) :: peave, tpbave, tjfave, fgave, fgerr, egave1, derivtotave
 
       parameter (zero=0.d0,one=1.d0)
 
