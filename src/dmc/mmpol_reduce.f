@@ -1,9 +1,10 @@
       subroutine mmpol_reduce(wgsum)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use mpiconf, only: wid
       use contr3, only: mode
-      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
+      use mmpol_cntrl, only: immpol
+      use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, dmmpol_sum
+      use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -59,17 +60,12 @@
 
       subroutine mmpol_send(irecv,itag_s)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use mpiconf, only: idtask, nproc, wid, NPROCX
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use mmpol_mod, only: MCHMM, mmpolfile_sites, mmpolfile_chmm
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
-      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
+      use branch, only: nwalk
+      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc
+      use mmpol_cntrl, only: immpol
       use mpi
 
       implicit real*8(a-h,o-z)
-
 
       dimension istatus(MPI_STATUS_SIZE)
 

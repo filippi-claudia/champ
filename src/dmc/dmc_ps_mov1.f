@@ -39,70 +39,41 @@ c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
-
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: deltot, istrech, nforce
+      use vmc_mod, only: MELEC
+      use vmc_mod, only: nrad
+      use vmc_mod, only: delri
+      use dmc_mod, only: MWALK
+      use const, only: etrial, hb, ipr, nelec
+      use forcepar, only: istrech, nforce
       use age, only: iage, ioldest, ioldestmx
-      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
-     &itau_eff, nfprod, rttau, tau, taueff, tautot
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-
-      use estcum, only: iblk, ipass
+      use contrldmc, only: iacc_rej, icross, icut_br, icut_e, idmc, ipq, nfprod, rttau, tau
+      use atom, only: cent
+      use estcum, only: ipass
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-
-      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
-
-      use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
-     &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
-     &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
-      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
-     &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
-     &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
-     &wgdcum
+      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nodecr, trymove
+      use estsum, only: efsum1, egsum1, esum1_dmc
+      use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc
+      use estsum, only: wfsum1, wgsum1, wsum1
       use force_dmc, only: itausec, nwprod
-      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
-      use step, only: ekin, ekin2, rprob, suc, trunfb, try
-      use denupdn, only: rprobdn, rprobup
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
-
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
-      use casula, only: i_vpsp, icasula, t_vpsp
+      use derivest, only: derivsum
+      use step, only: rprob
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt
+      use branch, only: wthist
+      use casula, only: i_vpsp, icasula
       use jacobsave, only: ajacob, ajacold
-      use elec, only: ndn, nup
+      use elec, only: nup
       use velratio, only: fratio, xdrifted
-      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
+      use contrl, only: irstar, nconf
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
-      
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (adrift=0.5d0)
 
-
-
       dimension xstrech(3,MELEC)
-      dimension xnew(3),vnew(3,MELEC),xtmp(3,MELEC)
+      dimension xnew(3),vnew(3,MELEC)
       dimension xbac(3),xdriftedn(3,MELEC)
       dimension itryo(MELEC),itryn(MELEC),unacp(MELEC)
-
-      dimension ddx_ref(3)
-
-
       dimension iacc_elec(MELEC)
 
       data ncall /0/

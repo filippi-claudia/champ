@@ -2,46 +2,35 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to print out final results
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use vmc_mod, only: nrad
+      use vmc_mod, only: delri
+      use const, only: etrial, ipr, nelec
       use forcest, only: fgcm2, fgcum
-      use forcepar, only: deltot, istrech, nforce
+      use forcepar, only: deltot, nforce
       use age, only: iage, ioldest, ioldestmx
-      use contrl_per, only: ibasis, iperiodic
-      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
-     &itau_eff, nfprod, rttau, tau, taueff, tautot
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use estcum, only: iblk, ipass
-      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
-      use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
-     &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
-     &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
-      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
-     &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
-     &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
-     &wgdcum
-      use force_dmc, only: itausec, nwprod
-      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
-     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
-     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
-      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
-      use step, only: ekin, ekin2, rprob, suc, trunfb, try
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use contrl_per, only: iperiodic
+      use contrldmc, only: idmc, nfprod, tau
+      use atom, only: ncent
+      use estcum, only: iblk
+      use config, only: vold_dmc, xold_dmc
+      use stats, only: acc, nacc, nodecr, trymove
+      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1
+      use estcum, only: pecum_dmc, taucum, tjfcum_dmc, tpbcum_dmc
+      use estcum, only: wcum1, wcum_dmc, wfcum, wfcum1, wgcum, wgcum1
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21
+      use est2cm, only: pecm2_dmc, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21
+      use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21
+      use step, only: rprob
+      use mpiconf, only: nproc, wid
       use denupdn, only: rprobdn, rprobup
       use contr3, only: mode
-      use header, only: date, title
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use header, only: title
+      use grdntspar, only: igrdtype, ngradnts
       use mpiblk, only: iblk_proc
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
-      use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
-      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
+      use force_mod, only: MFORCE
+      use branch, only: eold, nwalk
+      use optwf_corsam, only: energy, energy_err, force, force_err
+      use contrl, only: nblkeq, nconf, nstep
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -51,7 +40,7 @@ c routine to print out final results
 
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
-      dimension taucollect(MFORCE),rprobcollect(nrad)
+      dimension rprobcollect(nrad)
 
 c statement functions for error calculation
       rn_eff(w,w2)=w**2/w2

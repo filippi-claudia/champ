@@ -1,24 +1,16 @@
       subroutine nonloc_grid(iel,iw,x,psid,imove)
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use contrl_per, only: ibasis, iperiodic
-      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
-     &itau_eff, nfprod, rttau, tau, taueff, tautot
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use const, only: nelec
+      use contrl_per, only: iperiodic
+      use contrldmc, only: tau
+      use atom, only: cent, ncent
+      use config, only: xold_dmc
       use optjas, only: MPARMJ
-      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-      use casula, only: i_vpsp, icasula, t_vpsp
-      use distance_mod, only: r_ee, r_en, rshift, rvec_ee, rvec_en
-      use wfsec, only: iwf, iwftype, nwftype
-      use jaso, only: d2ijo, d2jo, fijo, fjo, fso, fsumo
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use qua, only: nquad, xq, yq, zq
+      use casula, only: icasula, t_vpsp
+      use distance_mod, only: r_en, rshift, rvec_en
+      use wfsec, only: iwf, iwftype
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
 
       implicit real*8(a-h,o-z)
 
@@ -127,20 +119,13 @@ c       write(6,*) 'moved A',iw,iel,(x(kk),kk=1,3)
 c-----------------------------------------------------------------------
       subroutine t_vpsp_sav
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+      use vmc_mod, only: MELEC, MCENT
+      use const, only: nelec
+      use atom, only: ncent
+      use qua, only: nquad
+      use pseudo_mod, only: MPS_QUAD
 
-      use casula, only: i_vpsp, icasula, t_vpsp
+      use casula, only: t_vpsp
       implicit real*8(a-h,o-z)
 
 

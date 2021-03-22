@@ -1,27 +1,16 @@
       subroutine mc_configs
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use mpiconf, only: idtask, nproc, wid, NPROCX
-      use contr3, only: mode
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
-      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
+      use const, only: ipr, nelec
+      use config, only: psido_dmc, psijo_dmc, xold_dmc
+      use mpiconf, only: idtask, nproc
+      use branch, only: eold, nwalk
+      use contrl, only: irstar, nblk, nblkeq, nconf, nconf_new, nstep
       use mpi
 
       implicit real*8(a-h,o-z)
 
-
       character*25 fmt
       character*20 filename
-
-
 
       dimension irn(4)
       save ngfmc

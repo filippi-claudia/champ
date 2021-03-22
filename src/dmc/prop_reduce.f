@@ -1,8 +1,8 @@
       subroutine prop_reduce(wgsum)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use prp000, only: iprop, nprop
+      use prp003, only: vprop_sum, vprop_cum, vprop_cm2
+      use mpiconf, only: wid
       use contr3, only: mode
       use properties, only: MAXPROP
       use mpi
@@ -50,12 +50,9 @@
 
       subroutine prop_send(irecv,itag_s)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use mpiconf, only: idtask, nproc, wid, NPROCX
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use properties, only: MAXPROP
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
+      use prp000, only: iprop, nprop
+      use prp002, only: vprop_old
+      use branch, only: nwalk
       use mpi
 
       implicit real*8(a-h,o-z)

@@ -4,56 +4,22 @@ c Uses the diffusion Monte Carlo algorithm described in:
 c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
 c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
-     & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
-     & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: deltot, istrech, nforce
-      use contrl_per, only: ibasis, iperiodic
-      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
-     &itau_eff, nfprod, rttau, tau, taueff, tautot
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use estcum, only: iblk, ipass
-      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use force_dmc, only: itausec, nwprod
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use ewald_mod, only: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM,
-     &NGNORMX, NGVECX, NG1DX, NGNORM_SIMX, NGVEC_SIMX, NGNORM_BIGX,
-     &NGVEC_BIGX, NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
-      use numbas_mod, only: MRWF, MRWF_PTS
-      use numbas, only: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
-      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
-      use bparm, only: nocuspb, nspin2b
-      use contr2, only: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt,
-     &isc, istrch
-      use pseudo, only: lpot, nloc, vps, vpso
-      use dorb_m, only: iworbd
-      use pars, only: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma,
-     &xms
-      use rlobxy, only: rlobx, rloby, rloby2
-      use rnyucm, only: ll, mm
-      use coefs, only: coef, nbasis, norb
-      use wfsec, only: iwf, iwftype, nwftype
-      use jaspar, only: is, nspin1, nspin2, sspin, sspinn
-      use jaspar1, only: cjas1, cjas2
-      use jaspar2, only: a1, a2
-      use jaspar3, only: a, b, c, fck, nord, scalek
-      use jaspar4, only: a4, norda, nordb, nordc
+      use precision_kinds, only: dp
+      use const, only: pi
+      use forcepar, only: nforce
+      use contrldmc, only: idmc
+      use estcum, only: ipass
+      use force_dmc, only: nwprod
+      use pseudo, only: nloc
+      use wfsec, only: iwftype, nwftype
+      use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
 
-      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
-      implicit real*8(a-h,o-z)
+      implicit none 
 
+      integer :: i, j
+      real(dp) :: one, four
 
       parameter (one=1.d0,four=4.d0)
-
 
 c variables:
 c        nelec  = number of electrons

@@ -6,17 +6,14 @@ C----------------------------------------------
 
       subroutine prop_prt_dmc(iblk,ifinal,wgcum,wgcm2)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum 
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use prp000, only: ipropprt, iprop, nprop
+      use prp003, only: vprop_cum, vprop_cm2, cc_nuc
+      use const, only: nelec
+      use force_mod, only: MFORCE
       use properties, only: MAXPROP
+      use contrl, only: nconf, nstep
 
-      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
-
-
- 
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
       dimension perr(MAXPROP),pav(MAXPROP)
@@ -85,9 +82,9 @@ c....dipole
 c----------------------------------------------------------------------
       subroutine prop_save_dmc(iw)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use prp000, only: iprop, nprop
+      use prp001, only: vprop
       use prp002, only: vprop_old
-      use properties, only: MAXPROP
 
       implicit real*8(a-h,o-z)
 
@@ -99,10 +96,10 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       subroutine prop_sum_dmc(p,q,iw)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use prp000, only: iprop, nprop
+      use prp001, only: vprop
       use prp002, only: vprop_old
-      use prp003, only: vprop_cm2, cc_nuc, vprop_sum, vprop_cum 
-      use properties, only: MAXPROP
+      use prp003, only: vprop_sum
 
       implicit real*8(a-h,o-z)
 
@@ -115,9 +112,8 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       subroutine prop_splitj(iw,iw2)
 
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use prp000, only: nprop
       use prp002, only: vprop_old
-      use properties, only: MAXPROP
 
       implicit real*8(a-h,o-z)
 
