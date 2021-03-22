@@ -1,10 +1,14 @@
       subroutine deriv(wtg,eold,pwt,ajac,psid,psij,idrifdifgfunc,iw,mwalk)
 
+      use precision_kinds, only: dp
       use forcepar, only: nforce
       use c_averages, only: prop, wprop
       use c_averages_index, only: jderiv
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: mwalk, ifr, idrifdifgfunc, log, iw
+      real(dp) :: eold, pwt, ajac, psij, psid, ro, wtg
 
       dimension eold(mwalk,*),pwt(mwalk,*),ajac(mwalk,*),psij(mwalk,*),psid(mwalk,*)
 
@@ -31,7 +35,9 @@
       use c_averages_index, only: jeloc, jderiv
       use prp000, only: nprop
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: j, ifr, k
 
       nprop=0
 c elocal
@@ -52,10 +58,14 @@ c deriv
 
       subroutine average(ido)
 
+      use precision_kinds, only: dp
       use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
       use prp000, only: nprop
 
-      implicit real*8 (a-h,o-z)
+      implicit none
+
+      integer :: ido, i
+      real(dp) :: sum_av, sum_w
 
       dimension sum_av(mprop),sum_w(mprop)
       if(ido.eq.0)then
@@ -85,11 +95,15 @@ c deriv
 
       subroutine average_write
 
+      use precision_kinds, only: dp
       use forcepar, only: nforce
       use c_averages, only: cum_av, cum_w
       use c_averages_index, only: jderiv
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ifr
+      real(dp) :: egave, derivtotave
 
       egave=cum_av(jderiv(1,1))/cum_w(jderiv(1,1))
       do ifr=2,nforce
