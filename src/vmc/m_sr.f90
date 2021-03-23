@@ -89,4 +89,3 @@ subroutine deallocate_m_sr()
 
     call deallocate_sr_mat_n()
 end subroutine deallocate_m_sr
-

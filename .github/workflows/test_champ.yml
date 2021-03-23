@@ -248,8 +248,3 @@ jobs:
            cp m_vmc_save ./src/vmc/m_vmc.f90
            cp m_optci_save ./src/vmc/m_optci.f90
 
-           #  restore the module files
-
-           cd $HOME/work/champ/champ
-           cp m_vmc_save ./src/vmc/m_vmc.f90
-           cp m_optci_save ./src/vmc/m_optci.f90
