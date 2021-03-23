@@ -1125,6 +1125,7 @@ end module zmatrix_grad
 
 subroutine allocate_m_common()
 
+    use atom, only: allocate_atom
     use b_tmove, only: allocate_b_tmove
     use Bloc, only: allocate_Bloc
     use casula, only: allocate_casula
@@ -1160,7 +1161,7 @@ subroutine allocate_m_common()
     use zmatrix, only: allocate_zmatrix
     use zmatrix_grad, only: allocate_zmatrix_grad
 
-    ! call allocate_atom()
+    call allocate_atom()
     call allocate_b_tmove()
     call allocate_Bloc()
     call allocate_casula()

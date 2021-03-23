@@ -8,6 +8,33 @@ module force_mod
      save
  end module force_mod
 
+ module forcepar
+    !> Arguments: deltot, istrech, nforce, alfstr
+    use force_mod, only: MFORCE
+    use precision_kinds, only: dp
+
+    real(dp), dimension(:), allocatable :: deltot !(MFORCE)
+    integer :: istrech
+    integer :: nforce
+    real(dp) :: alfstr
+
+    private
+    public   ::  deltot, istrech, nforce, alfstr
+    public :: allocate_forcepar, deallocate_forcepar
+    save
+contains
+    subroutine allocate_forcepar()
+        use force_mod, only: MFORCE
+        use precision_kinds, only: dp
+        if (.not. allocated(deltot)) allocate (deltot(MFORCE))
+    end subroutine allocate_forcepar
+
+    subroutine deallocate_forcepar()
+        if (allocated(deltot)) deallocate (deltot)
+    end subroutine deallocate_forcepar
+
+end module forcepar
+
  module force_analy
      !> Arguments: iforce_analy, iuse_zmat, alfgeo
      use precision_kinds, only: dp
@@ -72,12 +99,12 @@ module force_mod
      public :: allocate_forcestr, deallocate_forcestr
      save
  contains
-     subroutine allocate_forcestr()
-         use force_mod, only: MFORCE
-         use precision_kinds, only: dp
-         use vmc_mod, only: MCENT
-         if (.not. allocated(delc)) allocate (delc(3, MCENT, MFORCE))
-     end subroutine allocate_forcestr
+    !  subroutine allocate_forcestr()
+    !      use force_mod, only: MFORCE
+    !      use precision_kinds, only: dp
+    !      use vmc_mod, only: MCENT
+    !      if (.not. allocated(delc)) allocate (delc(3, MCENT, MFORCE))
+    !  end subroutine allocate_forcestr
 
      subroutine deallocate_forcestr()
          if (allocated(delc)) deallocate (delc)
@@ -140,8 +167,8 @@ module force_mod
  contains
      subroutine allocate_force_fin()
          use precision_kinds, only: dp
-         use vmc_mod, only: MCENT
-         if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, MCENT))
+         use atom, only: ncent_tot
+         if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot))
          if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))
      end subroutine allocate_force_fin
 
@@ -168,8 +195,8 @@ module force_mod
      subroutine allocate_force_mat_n()
          use sr_mod, only: MCONF
          use precision_kinds, only: dp
-         use vmc_mod, only: MCENT
-         if (.not. allocated(force_o)) allocate (force_o(6*MCENT, MCONF))
+         use atom, only: ncent_tot
+         if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, MCONF))
      end subroutine allocate_force_mat_n
 
      subroutine deallocate_force_mat_n()
@@ -178,32 +205,7 @@ module force_mod
 
  end module force_mat_n
 
- module forcepar
-     !> Arguments: deltot, istrech, nforce, alfstr
-     use force_mod, only: MFORCE
-     use precision_kinds, only: dp
 
-     real(dp), dimension(:), allocatable :: deltot !(MFORCE)
-     integer :: istrech
-     integer :: nforce
-     real(dp) :: alfstr
-
-     private
-     public   ::  deltot, istrech, nforce, alfstr
-     public :: allocate_forcepar, deallocate_forcepar
-     save
- contains
-     subroutine allocate_forcepar()
-         use force_mod, only: MFORCE
-         use precision_kinds, only: dp
-         if (.not. allocated(deltot)) allocate (deltot(MFORCE))
-     end subroutine allocate_forcepar
-
-     subroutine deallocate_forcepar()
-         if (allocated(deltot)) deallocate (deltot)
-     end subroutine deallocate_forcepar
-
- end module forcepar
 
  subroutine allocate_m_force()
      use forcest, only: allocate_forcest
