@@ -1,16 +1,19 @@
       subroutine read_input
 c Written by Friedemann Schautz
-      
+
       use contr3, only: mode
+      use allocation_mod, only: allocate_vmc, allocate_dmc
       implicit real*8(a-h,o-z)
 
-      
+      ! call allocate_vmc()
+      ! call allocate_dmc()
+
 c Initialize flags
       call flaginit
 c Initialize input parser
-      
+
       call p2init
-      
+
 c Parse input (standard input)
       call p2go(5,0)
 
@@ -18,20 +21,22 @@ c Compute the size of some matrices we need
       call preprocess_input()
       call compute_mat_size()
 
-c Allocate memory of all arrays      
-      call allocate_all_arrays()
+c Allocate memory of all arrays
+      ! call allocate_all_arrays()
+      call allocate_vmc()
+      call allocate_dmc()
 
 c Transfer from lists to fortran variables, print out, check,
 c and read in everything which is still in the old format
       call process_input
 
       if(index(mode,'mc').ne.0 ) call p2vin('input.log',1)
-      
+
       return
       end subroutine read_input
 
       subroutine preprocess_input()
-        !> read some parts of the input that 
+        !> read some parts of the input that
         !> are needed for the dynamic allocation
         use elec, only: ndn, nup
         use const, only: nelec
@@ -50,14 +55,14 @@ c and read in everything which is still in the old format
         call p2gti('electrons:nelec',nelec,1)
         call p2gti('electrons:nup',nup,1)
         ndn=nelec-nup
-  
+
         !> atoms
         call p2gti('atoms:nctype',nctype,1)
         call p2gti('atoms:natom',ncent,1)
         call p2gtid('atoms:addghostype',newghostype,0,1)
         call p2gtid('atoms:nghostcent',nghostcent,0,1)
 
-        !> force 
+        !> force
         call p2gtid('general:nforce',nforce,1,1)
         MFORCE = nforce
 
@@ -103,7 +108,7 @@ c and read in everything which is still in the old format
         use gradhess_all, only: set_gradhess_all_size
         ! use sr_mod, only: set_sr_size
 
-        implicit none 
+        implicit none
 
         ! leads to circular dependecy of put in sr_mod ..
         MOBS = 10 + 6*MPARM
@@ -163,7 +168,7 @@ c and Anthony Scemema
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use jaspar1, only: cjas1, cjas2
       use general, only: pooldir, pp_id, bas_id
-      use general, only: filenames_bas_num, wforce 
+      use general, only: filenames_bas_num, wforce
       use csfs, only: cxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
@@ -236,15 +241,14 @@ c and Anthony Scemema
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
       use optwf_contrl, only: ilastvmc, iroot_geo
-      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
       use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat
       use optwf_corsam, only: add_diag
+      use dmc_mod, only: MWALK
 
       implicit real*8(a-h,o-z)
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
-
-c      include 'dmc.h' now emty
 
       character*20 fmt
       character*32 keyname
@@ -370,7 +374,7 @@ c General section
       call p2gtid('general:iperiodic',iperiodic,0,1)
       call p2gtid('general:ibasis',ibasis,1,1)
 
-      if(index(mode,'vmc').ne.0 .and. iperiodic.gt.0) 
+      if(index(mode,'vmc').ne.0 .and. iperiodic.gt.0)
      & call fatal_error('INPUT: VMC for periodic system -> run dmc/dmc.mov1 with idmc < 0')
 
       if(index(mode,'mc').ne.0 ) then
@@ -389,7 +393,7 @@ c General section
 
       call p2gtid('general:nforce',nforce,1,1)
       write(6,'(/,''number of geometries ='',t30,i10)') nforce
-      
+
       ! if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
       call p2gtid('general:nwftype',nwftype,1,1)
       write(6,'(/,''number of wave functions='',t30,i10)') nwftype
@@ -508,7 +512,7 @@ c Parameters for blocking/start/dump
         call p2gtid('startend:idump',idump,1,1)
         call p2gtid('startend:irstar',irstar,0,1)
         call p2gtid('startend:isite',isite,1,1)
-        if (isite.eq.1) call p2gtid('startend:icharged_atom',icharged_atom,0,1) 
+        if (isite.eq.1) call p2gtid('startend:icharged_atom',icharged_atom,0,1)
 
 c Make sure that the printout is not huge
         if(nstep*(nblk+2*nblkeq).gt.104000) ipr=-1
@@ -581,7 +585,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
         call p2gtad('optwf:method',method,'linear',1)
         call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
 
-! lin_d, sr_n, mix_n and linear shared flags: 
+! lin_d, sr_n, mix_n and linear shared flags:
         if((method.eq.'lin_d').or.(method.eq.'sr_n').or.(method.eq.'mix_n')
      #       .or.(method.eq.'linear')) then
            call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
@@ -591,7 +595,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
            call p2gtid('optwf:micro_iter_sr', micro_iter_sr, 1, 1)
         end if
 
-! lin_d and sr_n shared flags: 
+! lin_d and sr_n shared flags:
         if((method.eq.'lin_d').or.(method.eq.'sr_n')) then
            call p2gtid('optwf:func_omega', ifunc_omega, 0, 1)
            if(ifunc_omega.gt.0) then
@@ -601,7 +605,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
            end if
         end if
 
-! lin_d and mix_n shared flags: 
+! lin_d and mix_n shared flags:
         if ((method.eq.'lin_d').or.(method.eq.'mix_n').or.(method.eq.'linear')) then
           call p2gtid('optwf:lin_nvec', nvec, 5, 1)
           call p2gtid('optwf:lin_nvecx', nvecx, MVEC, 1)
@@ -611,7 +615,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
           call p2gtid('optwf:multiple_adiag',multiple_adiag,0,1)
         end if
 
-! sr_n and mix_n shared flags: 
+! sr_n and mix_n shared flags:
         if ((method.eq.'sr_n').or.(method.eq.'mix_n')) then
           call p2gtfd('optwf:sr_tau', sr_tau, 0.02, 1)
           call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
@@ -624,7 +628,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
            call p2gtid('optwf:ilastvmc',ilastvmc,1,1)
         end if
 ! dl flags:
-        if (idl_flag .gt. 0) then 
+        if (idl_flag .gt. 0) then
             call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
             call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
             call p2gtfd('optwf:dparm_norm_min', dparm_norm_min, 1.0d0, 1)
@@ -637,18 +641,18 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
             call p2gtad('optwf:dl_alg', dl_alg, 'nag', 1)
         end if
 
-        if(method.eq.'linear'.and.MXREDUCED.ne.MXORBOP) 
+        if(method.eq.'linear'.and.MXREDUCED.ne.MXORBOP)
      &    call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')
     !     if((method.eq.'sr_n'.or.method.eq.'lin_d').and.nstep*nblk_max.gt.MCONF)
     !  &    call fatal_error('READ_INPUT: nstep*nblk_max.gt.MCONF')
         endif
 
-        if(ioptjas.eq.1.or.ioptorb.eq.1.or.ioptci.eq.1) 
+        if(ioptjas.eq.1.or.ioptorb.eq.1.or.ioptci.eq.1)
      &  write(6,'(''Computing/writing quantities for optimization with method '',a10)') method
 
 c Jastrow optimization flag (vmc/dmc only)
         if(ioptjas.gt.0) then
-          write(6,'(''Jastrow derivatives are sampled'')') 
+          write(6,'(''Jastrow derivatives are sampled'')')
           write(6,'(''Number of Jastrow derivatives'',i5)') nparmj
           if(ijas.eq.4) then
             call cuspinit4(1)
@@ -732,7 +736,7 @@ CVARDOC flag: Efficiency for sampling states inputed in multiple_cistates
 
 c QMMM classical potential
       call p2gtid('qmmm:iqmmm',iqmmm,0,1)
-      if(iqmmm.gt.0) 
+      if(iqmmm.gt.0)
      & write(6,'(''QMMM external potential'')')
       if(iqmmm.gt.0) call qmmm_extpot_read
 
@@ -746,7 +750,7 @@ c External charges fetched in read_efield
 
 c PCM polarization charges
 c  ipcm=1 computes only the cavity (no qmc calculations)
-c  ipcm=2 runs qmc and creates/updates polarization charges 
+c  ipcm=2 runs qmc and creates/updates polarization charges
 c  ipcm=3 runs qmc with fixed polarization charges
       call p2gtid('pcm:ipcm',ipcm,0,1)
       call p2gtid('pcm:ipcmprt',ipcmprt,0,1)
@@ -776,7 +780,7 @@ c  ipcm=3 runs qmc with fixed polarization charges
         do i=1,ncent
           qfree=qfree+znuc(iwctype(i))
         enddo
-        
+
         write(6,'(''PCM polarization charges '')')
         write(6,'(''pcm ipcm   =  '',t30,i3)') ipcm
         write(6,'(''pcm ichpol =  '',t30,i3)') ichpol
@@ -798,15 +802,15 @@ c  ipcm=3 runs qmc with fixed polarization charges
         call p2gtid('pcm:nx_pcm',ipcm_nstep3d(1),IUNDEFINED,1)
         call p2gtid('pcm:ny_pcm',ipcm_nstep3d(2),IUNDEFINED,1)
         call p2gtid('pcm:nz_pcm',ipcm_nstep3d(3),IUNDEFINED,1)
- 
+
         call p2gtfd('pcm:dx_pcm',pcm_step3d(1),UNDEFINED,1)
         call p2gtfd('pcm:dy_pcm',pcm_step3d(2),UNDEFINED,1)
         call p2gtfd('pcm:dz_pcm',pcm_step3d(3),UNDEFINED,1)
-  
+
         call p2gtfd('pcm:x0_pcm',pcm_origin(1),UNDEFINED,1)
         call p2gtfd('pcm:y0_pcm',pcm_origin(2),UNDEFINED,1)
         call p2gtfd('pcm:z0_pcm',pcm_origin(3),UNDEFINED,1)
-  
+
         call p2gtfd('pcm:xn_pcm',pcm_endpt(1),UNDEFINED,1)
         call p2gtfd('pcm:yn_pcm',pcm_endpt(2),UNDEFINED,1)
         call p2gtfd('pcm:zn_pcm',pcm_endpt(3),UNDEFINED,1)
@@ -860,7 +864,7 @@ CVARDOC flag: properties will be printed
        write(6,'(''Properties printout flag = '',t30,i10)') ipropprt
        call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
       endif
-      
+
 c Pseudopotential section:
       call p2gtid('pseudo:nloc',nloc,0,1)
 
@@ -1014,7 +1018,7 @@ c Jastrow section
         do 303 it=1,nctype
   303     write(6,'(''c='',x,7f10.6,(8f10.6))')
      &                 (c(iparm,it,1),iparm=1,mparmjc)
-        
+
 c Note: Fock terms yet to be put in ijas=4,5,6
       endif
 
@@ -1053,7 +1057,7 @@ c should be dimensioned to MWF
       endif
       call set_scale_dist(1)
 
-c Write out information about calculation of energy gradients 
+c Write out information about calculation of energy gradients
 c and Z matrix
       write(6,*)
       if(ngradnts.gt.0 .and. igrdtype.eq.1) call inpwrt_grdnts_cart()
@@ -1083,7 +1087,7 @@ c     call pot_nn(cent,znuc,iwctype,ncent,pecent)
 
 c verify number of orbitals and setup optorb
       call verify_orbitals
-      
+
 c get parameters for the grid of the orbitals
       call p2gtid('general:i3dgrid',i3dgrid,0,1)
       call p2gtid('general:i3dsplorb',i3dsplorb,0,1)
@@ -1093,9 +1097,9 @@ c get parameters for the grid of the orbitals
       if((i3dsplorb.ge.1).or.(i3dlagorb.ge.1).or.(i3ddensity.ge.1))
      & i3dgrid=1
 
-      if(i3dgrid.ge.1) then 
+      if(i3dgrid.ge.1) then
 
-c Read the grid information: 
+c Read the grid information:
         call p2gtid('3dgrid:nstepx',nstep3d(1),IUNDEFINED,1)
         call p2gtid('3dgrid:nstepy',nstep3d(2),IUNDEFINED,1)
         call p2gtid('3dgrid:nstepz',nstep3d(3),IUNDEFINED,1)
@@ -1103,11 +1107,11 @@ c Read the grid information:
         call p2gtfd('3dgrid:stepx',step3d(1),UNDEFINED,1)
         call p2gtfd('3dgrid:stepy',step3d(2),UNDEFINED,1)
         call p2gtfd('3dgrid:stepz',step3d(3),UNDEFINED,1)
- 
+
         call p2gtfd('3dgrid:x0',origin(1),UNDEFINED,1)
         call p2gtfd('3dgrid:y0',origin(2),UNDEFINED,1)
         call p2gtfd('3dgrid:z0',origin(3),UNDEFINED,1)
- 
+
         call p2gtfd('3dgrid:xn',endpt(1),UNDEFINED,1)
         call p2gtfd('3dgrid:yn',endpt(2),UNDEFINED,1)
         call p2gtfd('3dgrid:zn',endpt(3),UNDEFINED,1)
@@ -1128,7 +1132,7 @@ C Grid setup:
 
       return
       end
- 
+
 c-----------------------------------------------------------------------
       subroutine flaginit
 c Initialize flags used to identify presence/absence of blocks in input
@@ -1179,7 +1183,7 @@ c Check that the required blocks are there in the input
       use mstates_ctrl, only: iguiding
       ! might not be needed
       use mstates_mod, only: MSTATES
-      use atom, only: znuc 
+      use atom, only: znuc
       use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy, iuse_zmat
       use forcepar, only: nforce
@@ -1188,8 +1192,8 @@ c Check that the required blocks are there in the input
       use wfsec, only: nwftype
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use elec, only: ndn, nup
-      use const, only: nelec 
-      use coefs, only: norb, next_max 
+      use const, only: nelec
+      use coefs, only: norb, next_max
 
       implicit real*8(a-h,o-z)
 
@@ -1219,8 +1223,8 @@ c Check that the required blocks are there in the input
       ! write(6, *) 'next_max', next_max
       ! if(nadorb.gt.next_max) nadorb=next_max
       ! if (nadorb.gt.norb) call fatal_error('nadorb > norb')
-      
-      
+
+
 
       if(iznuc.eq.0) call fatal_error('INPUT: block znuc missing')
       if(igeometry.eq.0) call fatal_error('INPUT: block geometry missing')
@@ -1229,9 +1233,9 @@ c Check that the required blocks are there in the input
       if(iperiodic.gt.0.and.ilattice.eq.0) call fatal_error('INPUT: lattice vectors missing')
       if(ijastrow_parameter.eq.0) call fatal_error('INPUT: block jastrow_parameter missing')
       if(iefield.gt.0.and.icharge_efield.eq.0) call fatal_error('INPUT: block efield missing')
-       
+
       write(6,'(''========================================'')')
-      if(iexponents.eq.0) then 
+      if(iexponents.eq.0) then
         write(6,'(''INPUT: block exponents missing: all exponents set to 1'')')
         call inputzex
       endif
@@ -1298,7 +1302,7 @@ c ### Set name files of gaussian pseudopotentials.
       use general, only: filenames_ps_gauss
       use atom, only: nctype
       implicit real*8(a-h,o-z)
-c Allocation of the array storing the filenames of gaussian basis: 
+c Allocation of the array storing the filenames of gaussian basis:
       allocate(filenames_ps_gauss(nctype))
       do ic=1,nctype
         if(ic.lt.10) then
@@ -1316,7 +1320,7 @@ c Allocation of the array storing the filenames of gaussian basis:
      &         pp_id(1:index(pp_id,' ')-1)//
      &         '.gauss_ecp.dat.'//
      &         atomsymbol(1:index(atomsymbol,' ')-1)
-         endif 
+         endif
          filenames_ps_gauss(ic)=filename
         enddo
         end subroutine
@@ -1327,11 +1331,11 @@ c-----------------------------------------------------------------------
 c ### Set name files of CHAMP-formatted pseudopotentials.
       use atom, only: nctype
       use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
-      use general, only: filenames_ps_champ 
+      use general, only: filenames_ps_champ
       implicit real*8(a-h,o-z)
-c Allocation of the array storing the filenames of gaussian basis: 
+c Allocation of the array storing the filenames of gaussian basis:
       allocate(filenames_ps_champ(nctype))
-      
+
       do ict=1, nctype
         if(ict.lt.10) then
           write(atomtyp,'(i1)') ict
@@ -1351,7 +1355,7 @@ c new naming convention
      &             pp_id(1:index(pp_id,' ')-1)//
      &             '.pseudopot_champ.'//
      &             atomsymbol(1:index(atomsymbol,' ')-1)
-        endif      
+        endif
         filenames_ps_champ(ict)=filename
       enddo
       end subroutine
@@ -1405,12 +1409,12 @@ c-----------------------------------------------------------------------
 c ### Set numerical num. orbital filenames.
       use atom, only: nctype
       use general, only: pooldir, pp_id, bas_id, atomtyp, filename, atomsymbol
-      use general, only: filenames_bas_num, wforce 
+      use general, only: filenames_bas_num, wforce
       use ghostatom, only: newghostype
       implicit real*8(a-h,o-z)
-c Allocation of the array storing the filenames of numerical basis: 
+c Allocation of the array storing the filenames of numerical basis:
       allocate(filenames_bas_num(nctype+newghostype))
-  
+
       do ic=1,nctype+newghostype
         if(ic.lt.10) then
           write(atomtyp,'(i1)') ic
@@ -1420,7 +1424,7 @@ c Allocation of the array storing the filenames of numerical basis:
            write(wforce,'(i3)') iwf
          endif
         if(bas_id.eq.'none') then
-c old file name convention 
+c old file name convention
           filename=pooldir(1:index(pooldir,' ')-1)//'/'//
      &             'basis.'//atomtyp(1:index(atomtyp,' ')-1)
           if(iwf.ge.2) then

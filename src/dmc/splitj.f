@@ -1,26 +1,31 @@
       subroutine splitj
 c Written by Cyrus Umrigar
+
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use forcest, only: fgcm2, fgcum
+      use forcepar, only: deltot, istrech, nforce
+      use age, only: iage, ioldest, ioldestmx
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
+      use force_dmc, only: itausec, nwprod
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
+      use jacobsave, only: ajacob, ajacold
+      use velratio, only: fratio, xdrifted
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'dmc.h'
-      include 'force.h'
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
+
+
+
+
       parameter (zero=0.d0,two=2.d0,half=.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
-      common /velratio/ fratio(MWALK,MFORCE),xdrifted(3,MELEC,MWALK,MFORCE)
-      common /age/ iage(MWALK),ioldest,ioldestmx
-      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,
-     &nbrnch,nodecr
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
-      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
       dimension iwundr(MWALK)
 
@@ -79,9 +84,9 @@ c         call t_vpsp_splitj(iw,iw2)
           do 15 ifr=1,nforce
             ajacold(iw2,ifr)=ajacold(iw,ifr)
             eold(iw2,ifr)=eold(iw,ifr)
-            psido(iw2,ifr)=psido(iw,ifr)
-            psijo(iw2,ifr)=psijo(iw,ifr)
-            peo(iw2,ifr)=peo(iw,ifr)
+            psido_dmc(iw2,ifr)=psido_dmc(iw,ifr)
+            psijo_dmc(iw2,ifr)=psijo_dmc(iw,ifr)
+            peo_dmc(iw2,ifr)=peo_dmc(iw,ifr)
             d2o(iw2,ifr)=d2o(iw,ifr)
             pwt(iw2,ifr)=pwt(iw,ifr)
             fratio(iw2,ifr)=fratio(iw,ifr)
@@ -90,8 +95,8 @@ c         call t_vpsp_splitj(iw,iw2)
             do 15 i=1,nelec
               do 15 k=1,3
                 xdrifted(k,i,iw2,ifr)=xdrifted(k,i,iw,ifr)
-                vold(k,i,iw2,ifr)=vold(k,i,iw,ifr)
-   15           xold(k,i,iw2,ifr)=xold(k,i,iw,ifr)
+                vold_dmc(k,i,iw2,ifr)=vold_dmc(k,i,iw,ifr)
+   15           xold_dmc(k,i,iw2,ifr)=xold_dmc(k,i,iw,ifr)
         endif
    20 continue
 
@@ -110,9 +115,9 @@ c       call t_vpsp_splitj(iw,iw2)
         do 30 ifr=1,nforce
           ajacold(iw2,ifr)=ajacold(iw,ifr)
           eold(iw2,ifr)=eold(iw,ifr)
-          psido(iw2,ifr)=psido(iw,ifr)
-          psijo(iw2,ifr)=psijo(iw,ifr)
-          peo(iw2,ifr)=peo(iw,ifr)
+          psido_dmc(iw2,ifr)=psido_dmc(iw,ifr)
+          psijo_dmc(iw2,ifr)=psijo_dmc(iw,ifr)
+          peo_dmc(iw2,ifr)=peo_dmc(iw,ifr)
           d2o(iw2,ifr)=d2o(iw,ifr)
           pwt(iw2,ifr)=pwt(iw,ifr)
           fratio(iw2,ifr)=fratio(iw,ifr)
@@ -121,8 +126,8 @@ c       call t_vpsp_splitj(iw,iw2)
           do 30 i=1,nelec
             do 30 k=1,3
               xdrifted(k,i,iw2,ifr)=xdrifted(k,i,iw,ifr)
-              vold(k,i,iw2,ifr)=vold(k,i,iw,ifr)
-   30         xold(k,i,iw2,ifr)=xold(k,i,iw,ifr)
+              vold_dmc(k,i,iw2,ifr)=vold_dmc(k,i,iw,ifr)
+   30         xold_dmc(k,i,iw2,ifr)=xold_dmc(k,i,iw,ifr)
       nwalk=nwalk2
 
       wtsm2=zero

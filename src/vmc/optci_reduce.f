@@ -11,13 +11,10 @@
       use ci008_blk, only: ci_oe_cm2, ci_oe_cum
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
-      use mpi
       use method_opt, only: method
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-
-    !   include 'mpif.h'
 
 c     parameter(MXTMP=max(MXORBTERM,MXMATDIM))
 c     max does not work with g77
@@ -95,7 +92,7 @@ c     max does not work with g77
 
       do 40 i=1,nciterm
        do 40 j=1,nciterm
-  40    ci_oe_cm2(i,j) = optci_reduce_collect2(i,j) 
+  40    ci_oe_cm2(i,j) = optci_reduce_collect2(i,j)
 
       matdim=nciterm*(nciterm+1)/2
 

@@ -7,10 +7,9 @@
       use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_cum, enfpcm_cm2
+      use mpi
      
       implicit real*8(a-h,o-z)
-
-      include 'mpif.h'
 
       dimension collect(MCHS)
  
@@ -87,12 +86,10 @@
       use pcm_parms, only: ch, nch, nchs
       use pcm_parms, only: nchv, nscv
       use pcm_parms, only: xpol
-
       use pcm_fdc, only: fs, qvol
+      use mpi
+
       implicit real*8(a-h,o-z)
-
-
-      include 'mpif.h'
 
       dimension nchv_proc(0:NPROCX),charge(NPROCX)
       dimension icount(0:NPROCX),idispl(0:NPROCX)

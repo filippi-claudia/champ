@@ -1,14 +1,17 @@
       subroutine pcm_prt(iblk,wgcum,wgcm2)
+
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use pcm, only: MCHS, MCHV, MSPHERE
+
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
+
  
-      include 'dmc.h'
-      include 'force.h'
-      include 'pcm.h'
       data hatokc/627.509541d0/
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
@@ -55,15 +58,16 @@ c     gpcmkcal=spcmkcal+vpcmkcal
 c-----------------------------------------------------------------------
       subroutine pcm_fin(iblk,wgcum,wgcm2)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use pcm, only: MCHS, MCHV, MSPHERE
+
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
       implicit real*8(a-h,o-z)
 
-      include 'dmc.h'
-      include 'force.h'
-      include 'pcm.h'
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
 
       if(ipcm.eq.0) return
     
@@ -76,22 +80,23 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_save(iw)
+
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use pcm, only: MCHS, MCHV, MSPHERE
+      use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
+      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
+
       implicit real*8(a-h,o-z)
- 
-      include 'dmc.h'
-      include 'pcm.h'
-      common /pcm_hpsi/ pcms,pcmv,qopcm,enfpcm(MCHS)
-      common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
 
       if(ipcm.eq.0) return
 
-      spcmo(iw)=pcms
-      vpcmo(iw)=pcmv
-      qopcmo(iw)=qopcm
+      spcmo_dmc(iw)=pcms
+      vpcmo_dmc(iw)=pcmv
+      qopcmo_dmc(iw)=qopcm
 
-c     write(6,*) 'CIAO',qopcm,qopcmo(iw),iw,spcmo(iw),vpcmo(iw)
+c     write(6,*) 'CIAO',qopcm,qopcmo_dmc(iw),iw,spcmo_dmc(iw),vpcmo_dmc(iw)
       do i=1,nchs
-      enfpcmo(iw,i)=enfpcm(i)
+      enfpcmo_dmc(iw,i)=enfpcm(i)
       enddo
 
       return
@@ -99,48 +104,46 @@ c     write(6,*) 'CIAO',qopcm,qopcmo(iw),iw,spcmo(iw),vpcmo(iw)
 c-----------------------------------------------------------------------
       subroutine pcm_sum(p,q,iw)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+      use pcm, only: MCHS, MCHV, MSPHERE
+      use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
+      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
 
       implicit real*8(a-h,o-z)
- 
-      include 'dmc.h'
-      include 'pcm.h'
-      common /pcm_hpsi/ pcms,pcmv,qopcm,enfpcm(MCHS)
-      common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
 
       if(ipcm.eq.0) return
 
-      spcmsum=spcmsum+p*pcms+q*spcmo(iw)
-      vpcmsum=vpcmsum+p*pcmv+q*vpcmo(iw)
-      qopcm_sum=qopcm_sum+p*qopcm+q*qopcmo(iw)
+      spcmsum=spcmsum+p*pcms+q*spcmo_dmc(iw)
+      vpcmsum=vpcmsum+p*pcmv+q*vpcmo_dmc(iw)
+      qopcm_sum=qopcm_sum+p*qopcm+q*qopcmo_dmc(iw)
 
-c     write(6,*) 'HELLO',qopcm,qopcmo(iw),iw
+c     write(6,*) 'HELLO',qopcm,qopcmo_dmc(iw),iw
 
       do i=1,nchs
-      enfpcm_sum(i)= enfpcm_sum(i)+p*enfpcm(i)+q*enfpcmo(iw,i)
+      enfpcm_sum(i)= enfpcm_sum(i)+p*enfpcm(i)+q*enfpcmo_dmc(iw,i)
       enddo
 
       return
       end
 c-----------------------------------------------------------------------
-      subroutine pcm_cum(wsum)
+      subroutine pcm_cum(wsum_dmc)
 
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+      use pcm, only: MCHS, MCHV, MSPHERE
 
       implicit real*8(a-h,o-z)
  
-      include 'dmc.h'
-      include 'pcm.h'
-
       if(ipcm.eq.0) return
 
-      spcmnow=spcmsum/wsum
-      vpcmnow=vpcmsum/wsum
-      qopcm_now=qopcm_sum/wsum
+      spcmnow=spcmsum/wsum_dmc
+      vpcmnow=vpcmsum/wsum_dmc
+      qopcm_now=qopcm_sum/wsum_dmc
 
       spcmcm2=spcmcm2+spcmsum*spcmnow
       vpcmcm2=vpcmcm2+vpcmsum*vpcmnow
@@ -152,7 +155,7 @@ c-----------------------------------------------------------------------
 c     write (6,*) 'HELLO-CIAO', qopcm_cum
 
       do i=1,nchs
-      enfpcm_now=enfpcm_sum(i)/wsum
+      enfpcm_now=enfpcm_sum(i)/wsum_dmc
       enfpcm_cm2(i)=enfpcm_cm2(i)+enfpcm_sum(i)*enfpcm_now
       enfpcm_cum(i)=enfpcm_cum(i)+enfpcm_sum(i)
       enddo
@@ -161,19 +164,19 @@ c     write (6,*) 'HELLO-CIAO', qopcm_cum
       end
 c-----------------------------------------------------------------------
       subroutine pcm_splitj(iw,iw2)
+
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use pcm, only: MCHS, MCHV, MSPHERE
+      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
+
       implicit real*8(a-h,o-z)
 
-      include 'dmc.h'
-      include 'pcm.h'
-      common /pcmo/ spcmo(MWALK),vpcmo(MWALK),qopcmo(MWALK),enfpcmo(MWALK,MCHS)
-
-
-      spcmo(iw2)=spcmo(iw)
-      vpcmo(iw2)=vpcmo(iw)
-      qopcmo(iw2)=qopcmo(iw)
+      spcmo_dmc(iw2)=spcmo_dmc(iw)
+      vpcmo_dmc(iw2)=vpcmo_dmc(iw)
+      qopcmo_dmc(iw2)=qopcmo_dmc(iw)
 
       do i=1,nchs
-      enfpcmo(iw2,i)=enfpcmo(iw,i)
+      enfpcmo_dmc(iw2,i)=enfpcmo_dmc(iw,i)
       enddo
 
       return

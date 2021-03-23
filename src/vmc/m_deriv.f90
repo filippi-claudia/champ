@@ -26,11 +26,11 @@ contains
     end subroutine allocate_da_energy_sumcum
 
     subroutine deallocate_da_energy_sumcum()
-        if (allocated(da_psi_sum)) deallocate (da_psi_sum)
-        if (allocated(da_psi_cum)) deallocate (da_psi_cum)
-        if (allocated(da_energy_sum)) deallocate (da_energy_sum)
-        if (allocated(da_energy_cum)) deallocate (da_energy_cum)
-        if (allocated(da_energy_cm2)) deallocate (da_energy_cm2)
+        if (allocated(da_psi_sum)) deallocate(da_psi_sum)
+        if (allocated(da_psi_cum)) deallocate(da_psi_cum)
+        if (allocated(da_energy_sum)) deallocate(da_energy_sum)
+        if (allocated(da_energy_cum)) deallocate(da_energy_cum)
+        if (allocated(da_energy_cm2)) deallocate(da_energy_cm2)
     end subroutine deallocate_da_energy_sumcum
 
 end module da_energy_sumcum
@@ -60,9 +60,9 @@ contains
     end subroutine allocate_da_jastrow4val
 
     subroutine deallocate_da_jastrow4val()
-        if (allocated(da_vj)) deallocate (da_vj)
-        if (allocated(da_j)) deallocate (da_j)
-        if (allocated(da_d2j)) deallocate (da_d2j)
+        if (allocated(da_vj)) deallocate(da_vj)
+        if (allocated(da_j)) deallocate(da_j)
+        if (allocated(da_d2j)) deallocate(da_d2j)
     end subroutine deallocate_da_jastrow4val
 
 end module da_jastrow4val
@@ -93,9 +93,9 @@ contains
     end subroutine allocate_da_orbval
 
     subroutine deallocate_da_orbval()
-        if (allocated(da_orb)) deallocate (da_orb)
-        if (allocated(da_dorb)) deallocate (da_dorb)
-        if (allocated(da_d2orb)) deallocate (da_d2orb)
+        if (allocated(da_orb)) deallocate(da_orb)
+        if (allocated(da_dorb)) deallocate(da_dorb)
+        if (allocated(da_d2orb)) deallocate(da_d2orb)
     end subroutine deallocate_da_orbval
 
 end module da_orbval
@@ -131,9 +131,9 @@ contains
     end subroutine allocate_da_pseudo
 
     subroutine deallocate_da_pseudo()
-        if (allocated(da_nonloc)) deallocate (da_nonloc)
-        if (allocated(da_vps)) deallocate (da_vps)
-        if (allocated(da_pecent)) deallocate (da_pecent)
+        if (allocated(da_nonloc)) deallocate(da_nonloc)
+        if (allocated(da_vps)) deallocate(da_vps)
+        if (allocated(da_pecent)) deallocate(da_pecent)
     end subroutine deallocate_da_pseudo
 
 end module da_pseudo
@@ -160,8 +160,8 @@ contains
     end subroutine allocate_da_energy_now
 
     subroutine deallocate_da_energy_now()
-        if (allocated(da_psi)) deallocate (da_psi)
-        if (allocated(da_energy)) deallocate (da_energy)
+        if (allocated(da_psi)) deallocate(da_psi)
+        if (allocated(da_energy)) deallocate(da_energy)
     end subroutine deallocate_da_energy_now
 
 end module da_energy_now
@@ -188,7 +188,7 @@ contains
     end subroutine allocate_deloc_dj_m
 
     subroutine deallocate_deloc_dj_m()
-        if (allocated(denergy)) deallocate (denergy)
+        if (allocated(denergy)) deallocate(denergy)
     end subroutine deallocate_deloc_dj_m
 
 end module deloc_dj_m
@@ -213,7 +213,7 @@ contains
     end subroutine allocate_denergy_det_m
 
     subroutine deallocate_denergy_det_m()
-        if (allocated(denergy_det)) deallocate (denergy_det)
+        if (allocated(denergy_det)) deallocate(denergy_det)
     end subroutine deallocate_denergy_det_m
 
 end module denergy_det_m
@@ -239,8 +239,8 @@ contains
     end subroutine allocate_denupdn
 
     subroutine deallocate_denupdn()
-        if (allocated(rprobup)) deallocate (rprobup)
-        if (allocated(rprobdn)) deallocate (rprobdn)
+        if (allocated(rprobup)) deallocate(rprobup)
+        if (allocated(rprobdn)) deallocate(rprobdn)
     end subroutine deallocate_denupdn
 
 end module denupdn
@@ -273,10 +273,10 @@ contains
     end subroutine allocate_derivjas
 
     subroutine deallocate_derivjas()
-        if (allocated(gvalue)) deallocate (gvalue)
-        if (allocated(go)) deallocate (go)
-        if (allocated(g)) deallocate (g)
-        if (allocated(d2g)) deallocate (d2g)
+        if (allocated(gvalue)) deallocate(gvalue)
+        if (allocated(go)) deallocate(go)
+        if (allocated(g)) deallocate(g)
+        if (allocated(d2g)) deallocate(d2g)
     end subroutine deallocate_derivjas
 
 end module derivjas
@@ -297,12 +297,13 @@ module dorb_m
 contains
 
     subroutine allocate_dorb_m()
-        use vmc_mod, only: MELEC, MDET
+        use vmc_mod, only: MDET
+        use const, only: nelec
         if (.not. allocated(iworbd)) allocate (iworbd(nelec, MDET))
     end subroutine allocate_dorb_m
 
     subroutine deallocate_dorb_m()
-        if (allocated(iworbd)) deallocate (iworbd)
+        if (allocated(iworbd)) deallocate(iworbd)
     end subroutine deallocate_dorb_m
 
 end module dorb_m
@@ -333,13 +334,46 @@ contains
     end subroutine allocate_ijasnonlin
 
     subroutine deallocate_ijasnonlin()
-        if (allocated(d2d2b)) deallocate (d2d2b)
-        if (allocated(d2d2a)) deallocate (d2d2a)
-        if (allocated(d1d2b)) deallocate (d1d2b)
-        if (allocated(d1d2a)) deallocate (d1d2a)
+        if (allocated(d2d2b)) deallocate(d2d2b)
+        if (allocated(d2d2a)) deallocate(d2d2a)
+        if (allocated(d1d2b)) deallocate(d1d2b)
+        if (allocated(d1d2a)) deallocate(d1d2a)
     end subroutine deallocate_ijasnonlin
 
 end module ijasnonlin
+
+module derivest
+   !> DMC derivatives
+   !> Arguments: derivcm2, derivcum, derivsum, derivtotave_num_old
+
+   use force_mod, only: MFORCE
+   use precision_kinds, only: dp
+
+    real(dp), dimension(:), allocatable :: derivcm2 !(MFORCE)
+    real(dp), dimension(:,:), allocatable :: derivcum !(10,MFORCE)
+    real(dp), dimension(:,:), allocatable :: derivsum !(10,MFORCE)
+    real(dp), dimension(:), allocatable :: derivtotave_num_old !(MFORCE)
+
+    private
+    public :: derivcm2, derivcum, derivsum, derivtotave_num_old
+    public :: allocate_derivest, deallocate_derivest
+    save
+
+contains
+    subroutine allocate_derivest()
+        if (.not. allocated(derivcm2)) allocate(derivcm2(MFORCE))
+        if (.not. allocated(derivcum)) allocate(derivcum(10,MFORCE))
+        if (.not. allocated(derivsum)) allocate(derivsum(10,MFORCE))
+        if (.not. allocated(derivtotave_num_old)) allocate(derivtotave_num_old(MFORCE))
+    end subroutine allocate_derivest
+
+    subroutine deallocate_derivest
+        if (allocated(derivcm2)) deallocate(derivcm2)
+        if (allocated(derivcum)) deallocate(derivcum)
+        if (allocated(derivsum)) deallocate(derivsum)
+        if (allocated(derivtotave_num_old)) deallocate(derivtotave_num_old)
+    end subroutine deallocate_derivest
+ end module derivest
 
 subroutine allocate_m_deriv()
     use da_energy_sumcum, only: allocate_da_energy_sumcum
@@ -366,3 +400,29 @@ subroutine allocate_m_deriv()
     call allocate_dorb_m()
     call allocate_ijasnonlin()
 end subroutine allocate_m_deriv
+
+subroutine deallocate_m_deriv()
+    use da_energy_sumcum, only: deallocate_da_energy_sumcum
+    use da_jastrow4val, only: deallocate_da_jastrow4val
+    use da_orbval, only: deallocate_da_orbval
+    use da_pseudo, only: deallocate_da_pseudo
+    use da_energy_now, only: deallocate_da_energy_now
+    use deloc_dj_m, only: deallocate_deloc_dj_m
+    use denergy_det_m, only: deallocate_denergy_det_m
+    use denupdn, only: deallocate_denupdn
+    use derivjas, only: deallocate_derivjas
+    use dorb_m, only: deallocate_dorb_m
+    use ijasnonlin, only: deallocate_ijasnonlin
+
+    call deallocate_da_energy_sumcum()
+    call deallocate_da_jastrow4val()
+    call deallocate_da_orbval()
+    call deallocate_da_pseudo()
+    call deallocate_da_energy_now()
+    call deallocate_deloc_dj_m()
+    call deallocate_denergy_det_m()
+    call deallocate_denupdn()
+    call deallocate_derivjas()
+    call deallocate_dorb_m()
+    call deallocate_ijasnonlin()
+end subroutine deallocate_m_deriv

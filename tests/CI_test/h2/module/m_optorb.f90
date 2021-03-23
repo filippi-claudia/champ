@@ -472,3 +472,33 @@ subroutine allocate_m_optorb()
     call allocate_optorb()
     call allocate_optorb_mix()
 end subroutine allocate_m_optorb
+
+subroutine deallocate_m_optorb()
+    use orb_mat_001, only: deallocate_orb_mat_001
+    use orb_mat_002, only: deallocate_orb_mat_002
+    use orb_mat_003, only: deallocate_orb_mat_003
+    use orb_mat_004, only: deallocate_orb_mat_004
+    use orb_mat_005, only: deallocate_orb_mat_005
+    use orb_mat_006, only: deallocate_orb_mat_006
+    use orb_mat_007, only: deallocate_orb_mat_007
+    use orb_mat_022, only: deallocate_orb_mat_022
+    use orb_mat_024, only: deallocate_orb_mat_024
+    use orb_mat_030, only: deallocate_orb_mat_030
+    use orb_mat_033, only: deallocate_orb_mat_033
+    use optorb, only: deallocate_optorb
+    use optorb_mix, only: deallocate_optorb_mix
+
+    call deallocate_orb_mat_001()
+    call deallocate_orb_mat_002()
+    call deallocate_orb_mat_003()
+    call deallocate_orb_mat_004()
+    call deallocate_orb_mat_005()
+    call deallocate_orb_mat_006()
+    call deallocate_orb_mat_007()
+    call deallocate_orb_mat_022()
+    call deallocate_orb_mat_024()
+    call deallocate_orb_mat_030()
+    call deallocate_orb_mat_033()
+    call deallocate_optorb()
+    call deallocate_optorb_mix()
+end subroutine deallocate_m_optorb

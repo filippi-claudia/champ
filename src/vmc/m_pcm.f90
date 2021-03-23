@@ -15,7 +15,7 @@ module pcm_3dgrid
     integer, parameter :: MGRID_PCM2 = MGRID_PCM*MGRID_PCM
     integer, parameter :: MGRID_PCM3 = MGRID_PCM2*MGRID_PCM
     real(dp), parameter :: UNDEFINED = -1234567890.d0
-    real(dp) :: PCM_SHIFT 
+    real(dp) :: PCM_SHIFT
 
     private
     public :: MGRID_PCM, MGRID_PCM2, MGRID_PCM3
@@ -252,9 +252,13 @@ module pcm_hpsi
     real(dp) :: pepcms
     real(dp) :: pepcmv
     real(dp) :: qopcm
+    !> DMC variables:
+    real(dp) :: pcms
+    real(dp) :: pcmv
 
     private
     public :: enfpcm, pepcms, pepcmv, qopcm
+    public :: pcms, pcmv
     public :: allocate_pcm_hpsi, deallocate_pcm_hpsi
     save
 contains
@@ -436,7 +440,8 @@ module pcm_unit
 end module pcm_unit
 
 module pcmo
-    !> Arguments: enfpcmo, qopcmo, spcmo, vpcmo
+    !> Arguments: enfpcmo, qopcmo, spcmo, vpcmo,
+    !> spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
     use pcm, only: MCHS
     use precision_kinds, only: dp
 
@@ -444,20 +449,35 @@ module pcmo
     real(dp) :: qopcmo
     real(dp) :: spcmo
     real(dp) :: vpcmo
+    !> DMC arrays:
+    real(dp), dimension(:,:), allocatable :: enfpcmo_dmc !(MWALK, MCHS)
+    real(dp), dimension (:), allocatable :: qopcmo_dmc !(MWALK)
+    real(dp), dimension (:), allocatable :: spcmo_dmc !(MWALK)
+    real(dp), dimension (:), allocatable :: vpcmo_dmc !(MWALK)
+
 
     private
     public :: enfpcmo, qopcmo, spcmo, vpcmo
+    public :: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
     public :: allocate_pcmo, deallocate_pcmo
     save
 contains
     subroutine allocate_pcmo()
         use pcm, only: MCHS
         use precision_kinds, only: dp
-        if (.not. allocated(enfpcmo)) allocate (enfpcmo(MCHS))
+        if (.not. allocated(enfpcmo)) allocate(enfpcmo(MCHS))
+        if (.not. allocated(enfpcmo_dmc)) allocate(enfpcmo_dmc(MWALK, MCHS))
+        if (.not. allocated(qopcmo_dmc)) allocate(qopcmo_dmc(MWALK))
+        if (.not. allocated(spcmo_dmc)) allocate(spcmo_dmc(MWALK))
+        if (.not. allocated(vpcmo_dmc)) allocate(vpcmo_dmc(MWALK))
     end subroutine allocate_pcmo
 
     subroutine deallocate_pcmo()
         if (allocated(enfpcmo)) deallocate (enfpcmo)
+        if (allocated(enfpcmo_dmc)) deallocate(enfpcmo_dmc)
+        if (allocated(qopcmo_dmc)) deallocate(qopcmo_dmc)
+        if (allocated(spcmo_dmc)) deallocate(spcmo_dmc)
+        if (allocated(vpcmo_dmc)) deallocate(vpcmo_dmc)
     end subroutine deallocate_pcmo
 
 end module pcmo
@@ -571,4 +591,36 @@ subroutine allocate_m_pcm()
     call allocate_spc2()
 end subroutine allocate_m_pcm
 
+subroutine deallocate_m_pcm()
+    use pcm_ah, only: deallocate_pcm_ah
+    use pcm_ameta, only: deallocate_pcm_ameta
+    use pcm_averages, only: deallocate_pcm_averages
+    use pcm_force, only: deallocate_pcm_force
+    use pcm_grid3d_array, only: deallocate_pcm_grid3d_array
+    use pcm_grid3d_param, only: deallocate_pcm_grid3d_param
+    use pcm_hpsi, only: deallocate_pcm_hpsi
+    use pcm_inda, only: deallocate_pcm_inda
+    use m_pcm_num_spl, only: deallocate_m_pcm_num_spl
+    use pcm_parms, only: deallocate_pcm_parms
+    use pcm_xv_new, only: deallocate_pcm_xv_new
+    use pcmo, only: deallocate_pcmo
+    use spc, only: deallocate_spc
+    use spc1, only: deallocate_spc1
+    use spc2, only: deallocate_spc2
 
+    call deallocate_pcm_ah()
+    call deallocate_pcm_ameta()
+    call deallocate_pcm_averages()
+    call deallocate_pcm_force()
+    call deallocate_pcm_grid3d_array()
+    call deallocate_pcm_grid3d_param()
+    call deallocate_pcm_hpsi()
+    call deallocate_pcm_inda()
+    call deallocate_m_pcm_num_spl()
+    call deallocate_pcm_parms()
+    call deallocate_pcm_xv_new()
+    call deallocate_pcmo()
+    call deallocate_spc()
+    call deallocate_spc1()
+    call deallocate_spc2()
+end subroutine deallocate_m_pcm

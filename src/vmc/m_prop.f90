@@ -44,9 +44,9 @@ end module prp001
 
 module prp002
     !> Arguments: vprop_old
+    use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
     use properties, only: MAXPROP
     use precision_kinds, only: dp
-    include 'dmc.h'
 
     real(dp), dimension(:, :), allocatable :: vprop_old !(MAXPROP,MWALK)
     real(dp), dimension(:), allocatable :: vprop_old2 !(MAXPROP)
@@ -112,3 +112,13 @@ subroutine allocate_m_prop()
     call allocate_prp002()
     call allocate_prp003()
 end subroutine allocate_m_prop
+
+subroutine deallocate_m_prop()
+    use prp001, only: deallocate_prp001
+    use prp002, only: deallocate_prp002
+    use prp003, only: deallocate_prp003
+
+    call deallocate_prp001()
+    call deallocate_prp002()
+    call deallocate_prp003()
+end subroutine deallocate_m_prop

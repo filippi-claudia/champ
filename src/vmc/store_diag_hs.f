@@ -7,13 +7,11 @@
       use sr_index, only: jelo, jelo2, jelohfj
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot
+      use mpi
 
       implicit real*8(a-h,o-z)
 
-      include 'mpif.h'
-
-      ! NR : not used 
-      ! dimension obs_wtg(nstates),obs_wtg_tot(nstates)
+      ! dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
       dimension hii(MPARM),sii(MPARM)
 
       write(6,*) 'nparm_p1,nparm',nparm_p1,nparm
@@ -48,6 +46,6 @@
         hii( i+ish)=obs_tot(jfhfj-1+i,1)
         sii( i+ish)=obs_tot(jfifj-1+i,1)
       enddo
-      
+
       return
       end

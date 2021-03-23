@@ -1,50 +1,46 @@
       subroutine acues1_reduce
 
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use forcepar, only: deltot, istrech, nforce
+      use estcum, only: iblk, ipass
+      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
+      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
+     &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
+     &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
+     &wgdcum
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use contr3, only: mode
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mpi
+
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'dmc.h'
-      include 'force.h'
-      include 'mpif.h'
-
-      common /iterat/ ipass,iblk
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,
-     &nbrnch,nodecr
-      common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
-     &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
-     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
-     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
-     &ricum,taucum(MFORCE)
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
-
-      character*12 mode
-      common /contr3/ mode
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
      &,wg21collect(MFORCE),taucollect(MFORCE),rprobcollect(nrad)
 
+      dimension istatus(MPI_STATUS_SIZE)
+
       if(mode.eq.'dmc_one_mpi2') return
 
-      call mpi_reduce(ecum1,e1collect,1,mpi_double_precision
+      call mpi_reduce(ecum1_dmc,e1collect,1,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(ecm21,e21collect,1,mpi_double_precision
+      call mpi_reduce(ecm21_dmc,e21collect,1,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(wcum1,w1collect,1,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(wcm21,w21collect,1,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      ecum1=e1collect
+      ecum1_dmc=e1collect
       wcum1=w1collect
-      ecm21=e21collect
+      ecm21_dmc=e21collect
       wcm21=w21collect
 
       call mpi_reduce(efcum1,ef1collect,1,mpi_double_precision

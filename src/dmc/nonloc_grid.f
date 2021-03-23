@@ -1,39 +1,26 @@
       subroutine nonloc_grid(iel,iw,x,psid,imove)
 
-      implicit real*8 (a-h,o-z)
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use contrl_per, only: ibasis, iperiodic
+      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
+     &itau_eff, nfprod, rttau, tau, taueff, tautot
+      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use optjas, only: MPARMJ
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use casula, only: i_vpsp, icasula, t_vpsp
+      use distance_mod, only: r_ee, r_en, rshift, rvec_ee, rvec_en
+      use wfsec, only: iwf, iwftype, nwftype
+      use jaso, only: d2ijo, d2jo, fijo, fjo, fso, fsumo
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
 
-      include 'vmc.h'
-      include 'dmc.h'
-      include 'force.h'
-      include 'optjas.h'
-      include 'pseudo.h'
-
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
-
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2jo,fsumo,fjo(3,MELEC)
-
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-      ! common /distance/ rshift(3,MELEC,MCENT), rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-
-      common /contrl_per/ iperiodic,ibasis
-
-      common /optwf_contrl/ ioptjas,ioptorb,ioptci,nparm
+      implicit real*8(a-h,o-z)
 
 c here vpsp_det and dvpsp_det are dummy
       dimension vpsp_det(2),dvpsp_dj(MPARMJ)
@@ -43,7 +30,7 @@ c here vpsp_det and dvpsp_det are dummy
 
       tauprim=tau
       if(icasula.gt.0)then
-        call distances(iel,xold(1,1,iw,1))
+        call distances(iel,xold_dmc(1,1,iw,1))
 
         ioptjas_sav=ioptjas
         ioptorb_sav=ioptorb
@@ -52,7 +39,7 @@ c here vpsp_det and dvpsp_det are dummy
         ioptorb=0
         ioptci=0
 
-        call nonloc_pot(xold(1,1,iw,1),rshift,rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,iel,1)
+        call nonloc_pot(xold_dmc(1,1,iw,1),rshift,rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,iel,1)
 
         call multideterminant_tmove(psid,iel)
 
@@ -115,7 +102,7 @@ c     enddo
         iq=iq_good
         ic=ic_good
         iel=iel_good
-        if(icasula.lt.0) call distances(iel,xold(1,1,iw,1))
+        if(icasula.lt.0) call distances(iel,xold_dmc(1,1,iw,1))
         ri=one/r_en(iel,ic)
         costh=rvec_en(1,iel,ic)*xq(iq)
      &       +rvec_en(2,iel,ic)*yq(iq)
@@ -131,7 +118,7 @@ c     enddo
           x(2)=r_en(iel,ic)*yq(iq)+cent(2,ic)+rshift(2,iel,ic)
           x(3)=r_en(iel,ic)*zq(iq)+cent(3,ic)+rshift(3,iel,ic)
         endif
-c       write(6,*) 'moved B',iw,iel,(xold(kk,iel,iw,1),kk=1,3)
+c       write(6,*) 'moved B',iw,iel,(xold_dmc(kk,iel,iw,1),kk=1,3)
 c       write(6,*) 'moved A',iw,iel,(x(kk),kk=1,3)
       endif
 
@@ -140,23 +127,23 @@ c       write(6,*) 'moved A',iw,iel,(x(kk),kk=1,3)
 c-----------------------------------------------------------------------
       subroutine t_vpsp_sav
 
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
 
+      use casula, only: i_vpsp, icasula, t_vpsp
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'dmc.h'
-      include 'pseudo.h'
-      include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
       dimension t_vpsp_save(MCENT,MPS_QUAD,MELEC)
 

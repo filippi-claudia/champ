@@ -2,67 +2,53 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to print out final results
 
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use forcest, only: fgcm2, fgcum
+      use forcepar, only: deltot, istrech, nforce
+      use age, only: iage, ioldest, ioldestmx
+      use contrl_per, only: ibasis, iperiodic
+      use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq,
+     &itau_eff, nfprod, rttau, tau, taueff, tautot
+      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use estcum, only: iblk, ipass
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
+      use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc,
+     &pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
+     &wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
+      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
+     &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
+     &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
+     &wgdcum
+      use force_dmc, only: itausec, nwprod
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
+     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
+     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
+      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use denupdn, only: rprobdn, rprobup
+      use contr3, only: mode
+      use header, only: date, title
+      use grdntspar, only: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
+      use mpiblk, only: iblk_proc
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
+      use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
+      use mpi
+
       implicit real*8(a-h,o-z)
-      include 'dmc.h'
-      include 'vmc.h'
-      include 'force.h'
-      include 'mpif.h'
+
 
       parameter (one=1.d0,two=2.d0,half=.5d0)
 
-      character*20 title
-      character*24 date
-
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /iterat/ ipass,iblk
-c /config/ included to print out xold and vold for old walkers
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
-      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,trymove,nacc,
-     &nbrnch,nodecr
-      common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
-     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
-     &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),
-     &ei1sum,ei2sum,ei3sum, pesum(MFORCE),tpbsum(MFORCE),tjfsum(MFORCE),r2sum,
-     &risum,tausum(MFORCE)
-      common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
-     &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
-     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
-     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
-     &ricum,taucum(MFORCE)
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
-      common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
-     &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
-      common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
-     &ekin(nrad),ekin2(nrad)
-      common /denupdn/ rprobup(nrad),rprobdn(nrad)
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /header/ title,date
-      common /age/ iage(MWALK),ioldest,ioldestmx
-      common /optwf_corsam/ add_diag(MFORCE),energy(MFORCE),energy_err(MFORCE),force(MFORCE),force_err(MFORCE)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
-      common /grdntspar/ delgrdxyz,delgrdbl,delgrdba,delgrdda,
-     &                   ngradnts,igrdtype
-
-      character*12 mode
-      common /contr3/ mode
-
-      common /mpiblk/ iblk_proc
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
       dimension taucollect(MFORCE),rprobcollect(nrad)
@@ -72,7 +58,7 @@ c statement functions for error calculation
 
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errorn(x,x2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn-1),0.d0))
-      errc(x,x2)=error(x,x2,wcum,wcm2)
+      errc(x,x2)=error(x,x2,wcum_dmc,wcm2)
       errf(x,x2)=error(x,x2,wfcum,wfcm2)
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
       errc1(x,x2)=error(x,x2,wcum1,wcm21)
@@ -105,7 +91,7 @@ c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-b
 c     eval_eff=nconf*rn_eff(wcum1,wcm21)
 c     evalf_eff=nconf*rn_eff(wfcum1,wfcm21)
 c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
-      eval_eff=nconf*nstep*rn_eff(wcum,wcm2)
+      eval_eff=nconf*nstep*rn_eff(wcum_dmc,wcm2)
       evalf_eff=nconf*nstep*rn_eff(wfcum,wfcm2)
       evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
       rtpass1=dsqrt(pass_proc-1)
@@ -163,8 +149,8 @@ c Collect radial charge density for atoms
         do 10 i=1,nwalk
           if(iage(i).gt.50) then
             write(6,'(i4,i6,f10.4,99f8.4)') i,iage(i),eold(i,1),
-     &      ((xold(k,j,i,1),k=1,3),j=1,nelec)
-            write(6,'(99f8.4)') ((vold(k,j,i,1),k=1,3),j=1,nelec)
+     &      ((xold_dmc(k,j,i,1),k=1,3),j=1,nelec)
+            write(6,'(99f8.4)') ((vold_dmc(k,j,i,1),k=1,3),j=1,nelec)
           endif
    10   continue
 
@@ -181,18 +167,18 @@ c    & f10.5)') dr2ac/trymove
       accav=acc/trymove
       accavn=dfloat(nacc)/trymove
 
-      wave=wcum/pass_proc
+      wave=wcum_dmc/pass_proc
       wfave=wfcum/pass_proc
-      eave=ecum/wcum
+      eave=ecum_dmc/wcum_dmc
       efave=efcum/wfcum
 
-      werr=errw(wcum,wcm2)
+      werr=errw(wcum_dmc,wcm2)
       wferr=errw(wfcum,wfcm2)
       werr1=errw1(wcum1,wcm21)
       wferr1=errw1(wfcum1,wfcm21)
-      eerr=errc(ecum,ecm2)
+      eerr=errc(ecum_dmc,ecm2_dmc)
       eferr=errf(efcum,efcm2)
-      eerr1=errc1(ecum1,ecm21)
+      eerr1=errc1(ecum1_dmc,ecm21_dmc)
       eferr1=errf1(efcum1,efcm21)
 
       if(mode.eq.'dmc_one_mpi1') then
@@ -206,7 +192,7 @@ c    & f10.5)') dr2ac/trymove
         write(6,'(''No. of walkers at end of run='',i5)') nwalk
 
         write(6,'(''nwalk_eff/nwalk         ='',2f6.3)')
-     &   rn_eff(wcum1,wcm21)/pass_proc,rn_eff(wcum,wcm2)/iblk_proc
+     &   rn_eff(wcum1,wcm21)/pass_proc,rn_eff(wcum_dmc,wcm2)/iblk_proc
         write(6,'(''nwalk_eff/nwalk with f  ='',2f6.3)')
      &   rn_eff(wfcum1,wfcm21)/pass_proc,rn_eff(wfcum,wfcm2)/iblk_proc
         write(6,'(''nwalk_eff/nwalk with fs ='',2f6.3)')
@@ -248,13 +234,13 @@ c    & f10.5)') dr2ac/trymove
         energy_err(ifr)=egerr
   30  continue
       do 40 ifr=1,nforce
-        peave=pecum(ifr)/wgcum(ifr)
-        tpbave=tpbcum(ifr)/wgcum(ifr)
-        tjfave=tjfcum(ifr)/wgcum(ifr)
+        peave=pecum_dmc(ifr)/wgcum(ifr)
+        tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
+        tjfave=tjfcum_dmc(ifr)/wgcum(ifr)
 
-        peerr=errg(pecum(ifr),pecm2(ifr),ifr)
-        tpberr=errg(tpbcum(ifr),tpbcm2(ifr),ifr)
-        tjferr=errg(tjfcum(ifr),tjfcm2(ifr),ifr)
+        peerr=errg(pecum_dmc(ifr),pecm2_dmc(ifr),ifr)
+        tpberr=errg(tpbcum_dmc(ifr),tpbcm2_dmc(ifr),ifr)
+        tjferr=errg(tjfcum_dmc(ifr),tjfcm_dmc(ifr),ifr)
         write(6,'(''potential energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
         write(6,'(''jf kinetic energy ='',t24,f12.7,'' +-''

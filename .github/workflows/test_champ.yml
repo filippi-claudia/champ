@@ -26,7 +26,6 @@ jobs:
 
            # save the module file
            cp src/vmc/m_vmc.f90 ./m_vmc_save
-           cp src/vmc/m_sr.f90 ./m_sr_save
            cp src/vmc/m_optci.f90 ./m_optci_save
            cp src/vmc/m_optorb.f90 ./m_optorb_save
 
@@ -35,7 +34,7 @@ jobs:
 
            # compile
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DENABLE_TEST=ON
-           cmake --build build -- -j2 
+           cmake --build build -- -j2
 
     - name: Run_h2
       run: |
@@ -45,50 +44,50 @@ jobs:
 
            # run and compare simple sampling
            echo "- Running vmc.inp in serial:"
-           $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out 
-           echo "  total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0083658 
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out
+           echo "  total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0083658
            echo ""
 
            # run and compare simple sampling MPI
            echo "- Running vmc.inp in parallel:"
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out 
-           echo "  total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0119453            
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc.inp > vmc.out
+           echo "  total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc.out "total E" -1.0119453
            echo ""
 
            # run and compare davidson optimization
            echo "- Running vmc_lin.inp in serial:"
-           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
-           echo "  total E vs reference:" 
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out
+           echo "  total E vs reference:"
            $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0537100
            echo ""
 
            # run and compare davidson optimization MPI
            echo "- Running vmc_lin.inp in parallel:"
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out 
-           echo "  total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0555534 
-           echo ""  
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_lin.inp > vmc_lin.out
+           echo "  total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc_lin.out "total E" -1.0555534
+           echo ""
 
-           # run and compare default optimization
-           # echo "- Running vmc_corsamp.inp in serial:"
-           # $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out 
-           # echo "  total E vs reference:"
-           # $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current energy" -1.0083658 
-           # echo "  best E vs reference:"
-           # $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current best energy + 2*error" -0.9958 
-           # echo ""
+           #  # run and compare default optimization
+           #  echo "- Running vmc_corsamp.inp in serial:"
+           #  $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out
+           #  echo "  total E vs reference:"
+           #  $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current energy" -1.0083658
+           #  echo "  best E vs reference:"
+           #  $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current best energy + 2*error" -0.9958
+           #  echo ""
 
-           # run and compare default optimization MPI
-           # echo "- Running vmc_corsamp.inp in parallel:"
-           # mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out 
-           # echo "  total E vs reference:"
-           # $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current energy" -1.0119453 
-           # echo "  best E vs reference:"
-           # $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current best energy + 2*error" -1.0024 
-           # echo ""  
-           
+           #  # run and compare default optimization MPI
+           #  echo "- Running vmc_corsamp.inp in parallel:"
+           #  mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_corsamp.inp > vmc_corsamp.out
+           #  echo "  total E vs reference:"
+           #  $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current energy" -1.0119453
+           #  echo "  best E vs reference:"
+           #  $HOME/work/champ/champ/tools/compare_value.py vmc_corsamp.out "Current best energy + 2*error" -1.0024
+           #  echo ""
+
            cd $HOME/work/champ/champ
 
     - name: Run Davidson_test
@@ -102,16 +101,21 @@ jobs:
            echo "- Warning Remember to regenerate H.dat and S.dat if the code changes"
            echo "- Warning this can be done by setting bool_export_matrices to .true."
            echo "- Warning in davidson.f90."
-           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_davidson_check.inp > vmc_davidson_check.out 
-           echo "  CHAMP Eigenalues vs Scipy:" 
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_davidson_check.inp > vmc_davidson_check.out
+           echo "  CHAMP Eigenalues vs Scipy:"
            python compare_eigenvalues.py
-     
+
+           # restore the module files
+           cd $HOME/work/champ/champ
+           cp m_vmc_save ./src/vmc/m_vmc.f90
+           cp m_optci_save ./src/vmc/m_optci.f90
+           cp m_optorb_save src/vmc/m_optorb.f90
+
     - name: Building_code_for_psb3_butadiene_and_psb2
       run: |
 
            # save the module files
            cp src/vmc/m_vmc.f90 ./m_vmc_save
-           cp src/vmc/m_sr.f90 ./m_sr_save
            cp src/vmc/m_optci.f90 ./m_optci_save
 
            # copy module files to src
@@ -120,7 +124,7 @@ jobs:
            # compile
            rm -rf bin build
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DENABLE_TEST=ON
-           cmake --build build --clean-first -- -j2 
+           cmake --build build --clean-first -- -j2
 
     - name: Run_psb3
       run: |
@@ -131,79 +135,45 @@ jobs:
            # run and compare a sr calculation
            echo "- Running sr_n.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
-           echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py sr_n.out "total E" -42.7144606 
+           echo " total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py sr_n.out "total E" -42.7144606
            echo ""
 
            # run and compare a sr calculation MPI
            echo "- Running sr_n.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < sr_n.inp > sr_n.out
-           echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py sr_n.out "total E" -42.6476514 
+           echo " total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py sr_n.out "total E" -42.6476514
            echo ""
-           
+
            # run and compare a regterg calculation
            echo "- Running regterg.inp in serial:"
-           $HOME/work/champ/champ/bin/vmc.mov1 < regterg.inp > regterg.out 
-           echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py regterg.out "total E" -41.4910248 
+           $HOME/work/champ/champ/bin/vmc.mov1 < regterg.inp > regterg.out
+           echo " total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py regterg.out "total E" -41.4910248
            echo ""
 
            # run and compare a regterg calculation MPI
            echo "- Running regterg.inp in parallel:"
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < regterg.inp > regterg.out 
-           echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py regterg.out "total E" -41.3989435 
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < regterg.inp > regterg.out
+           echo " total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py regterg.out "total E" -41.3989435
            echo ""
 
            # run and compare a Davidson calculation
            echo "- Running free.inp in serial:"
-           $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out 
-           echo " first eigenvalue vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -44.148262860328295 
+           $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out
+           echo " first eigenvalue vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -44.148262860328295
            echo ""
 
            # run and compare a Davidson calculation MPI
            echo "- Running free.inp in parallel:"
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out 
-           echo " first eigenvalue vs reference:" 
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < free.inp > free.out
+           echo " first eigenvalue vs reference:"
            $HOME/work/champ/champ/tools/compare_value.py free.out "eigenvalue            1" -50.815236723338842
            echo ""
 
-    - name: Run_butadiene_sr
-      run: |
-
-           cd tests/CI_test/butadiene_sr/
-           export OMPI_MCA_btl=^openib # Avoids MCA warnings
-
-           # run and compare a geometry optimization calculation
-           echo "- Running vmc_sr.inp in serial:"
-           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_sr.inp  > vmc_sr.out
-           echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_sr.out "total E" -26.0340157 --no_assert
-           echo ""
-
-           # run and compare a geometry optimization calculation MPI
-           echo "- Running vmc_sr.inp in parallel:"
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_sr.inp > vmc_sr.out
-           echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_sr.out "total E" -26.0354987 --no_assert
-           echo ""
-
-           # run and compare a optimize all (ci, jas, orb) calculation
-           echo "- Running vmc_optall.inp in serial:"
-           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_optall.inp > vmc_optall.out  
-           echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -22.4869109 --no_assert
-           echo ""
-
-           # run and compare a optimize all (ci, jas, orb) calculation MPI
-           echo "- Running vmc_optall.inp in parallel:"
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_optall.inp > vmc_optall.out 
-           echo " first eigenvalue vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -21.6147339 --no_assert
-           echo ""
-           
     - name: Run_psb2_mix_n
       run: |
 
@@ -212,15 +182,69 @@ jobs:
 
            # run and compare a geometry optimization calculation
            echo "- Running vmc_mix_SA.inp in serial:"
-           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
-            echo " total E vs reference:" 
-            $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.7665740 --no_assert
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out
+           echo " total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.7665740
            echo ""
 
            # run and compare a geometry optimization calculation MPI
            echo "- Running vmc_mix_SA.inp in parallel:"
-           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out 
-           echo " total E vs reference:" 
-           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9287659 --no_assert
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_mix_SA.inp > vmc_mix_SA.out
+           echo " total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc_mix_SA.out "total E" -29.9287659
            echo ""
+
+    - name: Run_butadiene
+      run: |
+
+           cd tests/CI_test/butadiene/
+           export OMPI_MCA_btl=^openib # Avoids MCA warnings
+
+           # run and compare a geometry optimization calculation
+           echo "- Running vmc_sr.inp in serial:"
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_sr.inp  > vmc_sr.out
+           echo " total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc_sr.out "total E" -26.0340157 --no_assert
+           echo ""
+
+           # run and compare a geometry optimization calculation MPI
+           echo "- Running vmc_sr.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_sr.inp > vmc_sr.out
+           echo " total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc_sr.out "total E" -26.0354987 --no_assert
+           echo ""
+
+           # run and compare a optimize all (ci, jas, orb) calculation
+           echo "- Running vmc_optall.inp in serial:"
+           $HOME/work/champ/champ/bin/vmc.mov1 < vmc_optall.inp > vmc_optall.out
+           echo " total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -22.4869109 --no_assert
+           echo ""
+
+           # run and compare a optimize all (ci, jas, orb) calculation MPI
+           echo "- Running vmc_optall.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_optall.inp > vmc_optall.out
+           echo " first eigenvalue vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -21.6147339
+           echo ""
+
+           # run and compare a dmc calculation
+           echo "- Running dmc.inp in serial:"
+           $HOME/work/champ/champ/bin/dmc.mov1 < dmc.inp > dmc.out
+           echo " total E vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -28.1361563
+           echo ""
+
+           # run and compare a dmc calculation MPI
+           echo "- Running dmc.inp in parallel:"
+           mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/dmc.mov1 < dmc.inp > dmc.out
+           echo " first eigenvalue vs reference:"
+           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -26.4010232
+           echo ""
+
+           #  restore the module files
+
+           cd $HOME/work/champ/champ
+           cp m_vmc_save ./src/vmc/m_vmc.f90
+           cp m_optci_save ./src/vmc/m_optci.f90
 

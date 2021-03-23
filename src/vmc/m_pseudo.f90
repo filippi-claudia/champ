@@ -188,4 +188,15 @@ subroutine allocate_m_pseudo()
     call allocate_pseudo_tm()
 end subroutine allocate_m_pseudo
 
+subroutine deallocate_m_pseudo()
+    use pseudo, only: deallocate_pseudo
+    use pseudo_champ, only: deallocate_pseudo_champ
+    use pseudo_fahy, only: deallocate_pseudo_fahy
+    use pseudo_tm, only: deallocate_pseudo_tm
+
+    call deallocate_pseudo()
+    call deallocate_pseudo_champ()
+    call deallocate_pseudo_fahy()
+    call deallocate_pseudo_tm()
+end subroutine deallocate_m_pseudo
 

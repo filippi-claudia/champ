@@ -1,7 +1,7 @@
 module atom
     !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
     use precision_kinds, only: dp
-    use vmc_mod, only: MCENT, MCTYPE
+
 
     real(dp), dimension(:, :), allocatable :: cent
     real(dp), dimension(:), allocatable :: znuc
@@ -17,7 +17,7 @@ module atom
 contains
     subroutine allocate_atom()
         use precision_kinds, only: dp
-        use vmc_mod, only: MCENT, MCTYPE
+
         if (.not. allocated(cent)) allocate (cent(3, ncent_tot))
         if (.not. allocated(znuc)) allocate (znuc(nctype_tot))
         if (.not. allocated(iwctype)) allocate (iwctype(nctype_tot))

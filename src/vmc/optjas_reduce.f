@@ -10,9 +10,9 @@ c Written by Claudia Filippi
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj
       use gradhessj, only: dj_dj_e, dj_e, dj_e2
       use gradhessj, only: e2
-
       use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
       use method_opt, only: method
+      use mpi
 
       implicit real*8(a-h,o-z)
 
@@ -156,7 +156,7 @@ c Note, to do: error is not collected
      &     ,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
         ngrad_jas_bcum=ngrad_jas_collect
-      
+
         call mpi_reduce(grad_jas_bcum,collect,MPARMJ*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
@@ -180,7 +180,7 @@ c Note, to do: error is not collected
       endif
 
 c these averages should be set to zero on the slaves but optjas_reduce
-c is only called at the end of run (differently than prop_reduce) and 
+c is only called at the end of run (differently than prop_reduce) and
 c only the master writes to output and dumper
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)

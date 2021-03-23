@@ -4,13 +4,9 @@
       use mpiconf, only: wid
       use prp000, only: iprop, nprop
       use prp003, only: vprop_cm2, vprop_cum
+      use mpi
 
       implicit real*8(a-h,o-z)
-
-
-
-
-      include 'mpif.h'
 
       dimension vpcollect(MAXPROP),vp2collect(MAXPROP)
 

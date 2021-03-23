@@ -1,11 +1,13 @@
       subroutine deriv(wtg,eold,pwt,ajac,psid,psij,idrifdifgfunc,iw,mwalk)
-      parameter(mprop=100)
-      include 'force.h'
-      implicit real*8 (a-h,o-z)
+
+      use forcepar, only: deltot, istrech, nforce
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
+      use c_averages_index, only: jeloc, jderiv
+
+      implicit real*8(a-h,o-z)
+
       dimension eold(mwalk,*),pwt(mwalk,*),ajac(mwalk,*),psij(mwalk,*),psid(mwalk,*)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
-      common /c_averages_index/jeloc,jderiv(3,MFORCE)
 
       do ifr=1,nforce
         if(idrifdifgfunc.gt.0) then
@@ -25,12 +27,14 @@
       end
 
       subroutine init_averages_index
-      include 'force.h'
-      implicit real*8 (a-h,o-z)
-      parameter(mprop=100)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
-      common /c_averages_index/jeloc,jderiv(3,MFORCE)
+
+      use forcepar, only: deltot, istrech, nforce
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
+      use c_averages_index, only: jeloc, jderiv
+
+      implicit real*8(a-h,o-z)
+
       nprop=0
 c elocal
       j=nprop+1
@@ -49,9 +53,11 @@ c deriv
       end
 
       subroutine average(ido)
+
+      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
+
       implicit real*8 (a-h,o-z)
-      parameter(mprop=100)
-      common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
+
       dimension sum_av(mprop),sum_w(mprop)
       if(ido.eq.0)then
        do i=1,nprop
@@ -79,12 +85,14 @@ c deriv
       end
 
       subroutine average_write
-      include 'force.h'
-      implicit real*8 (a-h,o-z)
-      parameter(mprop=100)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /c_averages/prop(mprop),wprop(mprop),cum_av(mprop),cum_av2(mprop),cum_w(mprop),nprop
-      common /c_averages_index/jeloc,jderiv(3,MFORCE)
+
+      use forcepar, only: deltot, istrech, nforce
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
+      use c_averages_index, only: jeloc, jderiv
+
+      implicit real*8(a-h,o-z)
+
       egave=cum_av(jderiv(1,1))/cum_w(jderiv(1,1))
       do ifr=2,nforce
        derivtotave=-(cum_av(jderiv(1,ifr))-cum_av(jderiv(1,1))

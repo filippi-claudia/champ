@@ -2,42 +2,40 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
+     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz,
      & n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz,
      & n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza, ndx2a
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use forcepar, only: deltot, istrech, nforce
+      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use estcum, only: iblk, ipass
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+      use force_dmc, only: itausec, nwprod
+      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use contr3, only: mode
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use pseudo_mod, only: MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
+     &wthist
+      use casula, only: i_vpsp, icasula, t_vpsp
+      use jacobsave, only: ajacob, ajacold
+      use pseudo, only: lpot, nloc, vps, vpso
+      use contrl, only: idump, irstar, isite, nblk, nblkeq, nconf, nconf_new, nstep
+      use mpi
+
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'dmc.h'
-      include 'force.h'
-      include 'pseudo.h'
-      include 'mpif.h'
+
+
+
       parameter (zero=0.d0,one=1.d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
-      common /iterat/ ipass,iblk
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,lpot(MCTYPE),nloc
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-      common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
-      common /config/ xold(3,MELEC,MWALK,MFORCE),vold(3,MELEC,MWALK,MFORCE),
-     &psido(MWALK,MFORCE),psijo(MWALK,MFORCE),peo(MWALK,MFORCE),d2o(MWALK,MFORCE)
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /force_dmc/ itausec,nwprod
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
-      character*12 mode
-      common /contr3/ mode
-
-      logical wid
-      common /mpiconf/ idtask,nproc,wid
 
 c Initialize various quantities at beginning of run
 c the initial values of energy psi etc. are calculated here
@@ -61,24 +59,24 @@ c get nuclear potential energy
           do 71 ifr=2,nforce
             do 71 ie=1,nelec
               do 71 k=1,3
-   71           xold(k,ie,iw,ifr)=xold(k,ie,iw,1)
+   71           xold_dmc(k,ie,iw,ifr)=xold_dmc(k,ie,iw,1)
         endif
         do 72 ifr=1,nforce
           if(nforce.gt.1) then
             if(ifr.eq.1.or.istrech.eq.0) then
-              call strech(xold(1,1,iw,1),xold(1,1,iw,ifr),ajacob,ifr,0)
+              call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,ifr),ajacob,ifr,0)
                else
-              call strech(xold(1,1,iw,1),xold(1,1,iw,ifr),ajacob,ifr,1)
+              call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,ifr),ajacob,ifr,1)
             endif
            else
             ajacob=one
           endif
           ajacold(iw,ifr)=ajacob
           if(icasula.lt.0) i_vpsp=icasula
-          call hpsi(xold(1,1,iw,ifr),psido(iw,ifr),psijo(iw,ifr),eold(iw,ifr),0,ifr)
+          call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),eold(iw,ifr),0,ifr)
           i_vpsp=0
           do 73 i=1,nelec
-   73       call compute_determinante_grad(i,psido(iw,ifr),psido(iw,ifr),vold(1,i,iw,ifr),1)
+   73       call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
 
           if(ifr.eq.1) then
             call walksav_det(iw)
