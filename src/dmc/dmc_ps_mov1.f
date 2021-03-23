@@ -39,6 +39,8 @@ c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+      use precision_kinds, only: dp
       use vmc_mod, only: MELEC
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
@@ -65,7 +67,25 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use velratio, only: fratio, xdrifted
       use contrl, only: irstar, nconf
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, ii, j, k, iw, ifr
+      integer :: itryo, itryn, iacc_elec, ncall, node_cutoff, icircular, idrifdifgfunc
+      integer :: ipmod, ipmod2, iwmod
+      integer :: imove, ncount_casula, nmove_casula, iaccept, iflag_up
+      integer :: iflag_dn, jel, int, iel
+      real(dp) :: zero, one, two, half, adrift, xstrech, xnew
+      real(dp) :: vnew, xbac, xdriftedn, unacp, eps_node_cutoff, e_cutoff, expon
+      real(dp) :: dwt, ginv, ffn, ffi, vav2sumo, v2sumo
+      real(dp) :: tratio, v2old, vavvt, vavvo, r2sume, risume, drifdif
+      real(dp) :: psidn, psijn, dr2, dfus2o, drift, dfus
+      real(dp) :: gauss, dx, distance_node_ratio2, distance_node, rnorm_nodes_old, rnorm_nodes_num
+      real(dp) :: rnorm_nodes_new, p, v2new, dfus2n, pp, dmin1
+      real(dp) :: r2o, r2n, rmino, rminn, q, rannyu, tauprim
+      real(dp) :: drifdifr, enew, rnorm_nodes, drifdifs, vav2sumn, v2sumn
+      real(dp) :: vavvn, fration, taunow, ewto, ewtn, deo, den
+      real(dp) :: dabs, drifdifgfunc, wtnow, ro, wtg, pen
+      real(dp) :: d2n, psi2savo, wtg_derivsum1
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (adrift=0.5d0)
