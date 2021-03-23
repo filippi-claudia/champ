@@ -33,7 +33,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine write_wf_best
       implicit real*8(a-h,o-z)
-      
+
 
       call restore_jastrow_best
       call restore_lcao_best
@@ -170,7 +170,7 @@ c-----------------------------------------------------------------------
       write(2,'(100f15.8)') (cdet(i,istate,1),i=1,ndet)
       do 1 k=1,ndet
    1   write(2,'(100i4)') (iworbd(i,k),i=1,nelec)
- 
+
       write(2,'(''end'')')
 
       if(ncsf.ne.0) then
@@ -183,7 +183,7 @@ c
         nmap=0
         do 5 i=1,ncsf
    5      nmap=nmap+ibdet(i)-iadet(i)+1
-        write(2,'(''csfmap'')') 
+        write(2,'(''csfmap'')')
         write(2,'(3i10)') ncsf,ndet,nmap
         nptr=0
         do 10 i=1,ncsf
@@ -204,7 +204,7 @@ c
 c-----------------------------------------------------------------------
       subroutine setup_wf
       implicit real*8(a-h,o-z)
-  
+
       do 10 k=2,3
         call copy_jastrow(k)
         call copy_lcao(k)
@@ -220,7 +220,7 @@ c-----------------------------------------------------------------------
 
 
       if(ioptjas.ne.0) call save_jastrow
-      if(ioptorb.ne.0) call save_lcao 
+      if(ioptorb.ne.0) call save_lcao
       if(ioptci.ne.0) call save_ci
 
       return
@@ -300,7 +300,7 @@ c Save parameters corresponding to run generating hessian
       if(.not.allocated(a4_save)) allocate(a4_save(MORDJ1,nctype_tot,nwftype))
       if(.not.allocated(b_save)) allocate(b_save(MORDJ1,2,nwftype))
       if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
-      
+
 c Restore parameters corresponding to run generating hessian
       do 80 ict=1,nctype
         do 80 i=1,mparmja
@@ -406,17 +406,13 @@ c reset kref=1
       end
 c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
- 
+
       use atom, only: nctype
 
       use jaspar3, only: a, b, c, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
-
-
-
-
 
 
       mparmja=2+max(0,norda-1)
@@ -503,7 +499,7 @@ c-----------------------------------------------------------------------
 
 
 
-      
+
       real(dp), allocatable, save :: a4_best(:,:,:)
       real(dp), allocatable, save :: b_best(:,:,:)
       real(dp), allocatable, save :: c_best(:,:,:)
@@ -631,7 +627,7 @@ c     if(ioptci.eq.0) return
       do 40 j=1,nstates
        do 40 icsf=1,ncsf
    40   ccsf(icsf,j,1)=ccsf_best(icsf,j)
-          
+
 c if kref (iwdetorb, cxdet) has changed
       if(ncsf.gt.0) then
         do 50 j=1,nstates
@@ -675,7 +671,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
-      
+
       implicit real*8(a-h,o-z)
 
 
@@ -836,7 +832,7 @@ c-----------------------------------------------------------------------
       do 60 i=1,nparmb(1)
    60   if(iwjasb(i,1).eq.2.and.b(2,1,1).le.scalem) iflagb=1
       if(iflagb.eq.1) write(6,'(''b2 < -scalek'',f10.5)') b(2,1,1)
-      
+
       if(iflaga.eq.1.or.iflagb.eq.1) iflag=1
 
       return
@@ -858,11 +854,11 @@ c Calculate rms change in parameters
   30    dparm_norm=dparm_norm+dparm(i)**2
       dparm_norm=sqrt(dparm_norm/nparm)
 
-      write(6,'(''dparm_norm,adiag ='',3g12.5)') 
+      write(6,'(''dparm_norm,adiag ='',3g12.5)')
      &dparm_norm,add_diag
 
       if(dparm_norm.gt.dparm_norm_min) iflag=1
-      
+
       return
       end
 c-----------------------------------------------------------------------
@@ -871,7 +867,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm, nreduced
-      
+
       use ci000, only: nciterm
 
       implicit real*8(a-h,o-z)
@@ -936,7 +932,7 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
         nparm=nparmj+nparmd+norbterm
 
       elseif(method.eq.'linear'.or.method.eq.'lin_d') then
-        
+
        i0=0
        if(ioptci.ne.0) i0=1
        if(ioptjas.eq.0.and.ioptorb.eq.0) i0=0
@@ -946,7 +942,7 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
 
       endif
 
-      write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)') 
+      write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)')
      & nparm,nparmj,nciterm,norbterm
 
       return
@@ -1009,7 +1005,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       do istate=1,nstates
         sr_o(ii+istate,l)=psid(istate)
       enddo
-      
+
       nconf_n=l
 
       if(method.eq.'sr_n'.and.i_sr_rescale.eq.0.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
@@ -1024,7 +1020,7 @@ c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secu
       call dcopy(ntmp,ci_e(1+i0),1,sr_ho(nparmj+1,l),1)
 
       call dcopy(norbterm,orb_ho(1,1),1,sr_ho(nparmj+ntmp+1,l),1)
-      
+
       return
       end
 c-----------------------------------------------------------------------

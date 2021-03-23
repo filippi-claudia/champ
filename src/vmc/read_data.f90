@@ -212,7 +212,7 @@ end subroutine read_multideterminants
 subroutine read_jastrow_parameter(iu, iwft)
 !INPUT jastrow_parameter inp i=1
 !KEYDOC Parameters of Jastrow factor (depends on value of ijas!)
-
+    use force_mod, only: MWF
     use jaspar, only: nspin1, nspin2
     use elec, only: ndn
     use jaspar3, only: a, b, c, scalek
@@ -256,6 +256,7 @@ subroutine read_jastrow_parameter(iu, iwft)
     endif
 
     allocate (scalek(nwftype))
+    ! allocate (scalek(MWF))
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
         if (ifock .gt. 0) call fatal_error('JASTROW: fock not yet implemented for ijas=4,5,6')

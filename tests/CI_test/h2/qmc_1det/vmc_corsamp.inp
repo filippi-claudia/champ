@@ -4,6 +4,7 @@ load rhf.sto_cvb1.lcao
 &general basis sto_cvb1
 &general ipr 4
 
+
 load $(general:pool)/h2.geo
 load $(general:pool)/global.inp
 load $(general:pool)/sto_cvb1.bfinfo
