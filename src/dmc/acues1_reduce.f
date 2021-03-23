@@ -1,29 +1,32 @@
       subroutine acues1_reduce
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use forcepar, only: deltot, istrech, nforce
-      use estcum, only: iblk, ipass
-      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
-      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum,
-     &ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc, w_acc_cum, w_acc_cum1,
-     &wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wg_acc_cum, wg_acc_cum1, wgcum, wgcum1,
-     &wgdcum
-      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2,
-     &ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
-     &wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
-      use step, only: ekin, ekin2, rprob, suc, trunfb, try
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use precision_kinds, only: dp
+      use vmc_mod, only: nrad
+      use forcepar, only: nforce
+      use estcum, only: iblk
+      use stats, only: acc, nacc, nodecr, trymove
+      use estcum, only: ecum1_dmc, efcum1, egcum, egcum1
+      use estcum, only: wcum1, wfcum1, wgcum, wgcum1
+      use est2cm, only: ecm21_dmc, efcm21, egcm21
+      use est2cm, only: wcm21
+      use est2cm, only: wfcm21, wgcm21
+      use step, only: rprob
+      use mpiconf, only: nproc, wid
       use contr3, only: mode
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE
+      use contrl_per, only: iperiodic
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: istatus, ierr, ifr, i, nodecr_collect, nacc_collect, id, irequest
+      real(dp) :: eg1collect, eg21collect, wg1collect, wg21collect, rprobcollect
+      real(dp) :: e1collect, e21collect, w1collect, w21collect, ef1collect
+      real(dp) :: ef21collect, wf1collect, wf21collect, trymove_collect
+      real(dp) :: acc_collect, efin
 
       dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
-     &,wg21collect(MFORCE),taucollect(MFORCE),rprobcollect(nrad)
+     &,wg21collect(MFORCE),rprobcollect(nrad)
 
       dimension istatus(MPI_STATUS_SIZE)
 

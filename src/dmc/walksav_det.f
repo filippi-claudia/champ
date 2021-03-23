@@ -15,12 +15,12 @@ c Written by Claudia Filippi
       use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use coefs, only: coef, nbasis, norb
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use ycompact, only: dymat, ymat
+      use orbval, only: dorb, orb
+      use coefs, only: norb
+      use csfs, only: nstates
+      use ycompact, only: ymat
       use multislater, only: detd, detu
-      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: ivirt, kref, numrep_det
       use multimat, only: aa, wfmat
       use mpi
 

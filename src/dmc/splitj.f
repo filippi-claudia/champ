@@ -1,31 +1,21 @@
       subroutine splitj
 c Written by Cyrus Umrigar
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: deltot, istrech, nforce
-      use age, only: iage, ioldest, ioldestmx
+      use dmc_mod, only: MWALK
+      use const, only: nelec
+      use forcepar, only: nforce
+      use age, only: iage
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
-      use force_dmc, only: itausec, nwprod
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
-     &wthist
-      use jacobsave, only: ajacob, ajacold
+      use stats, only: nbrnch
+      use force_dmc, only: nwprod
+      use branch, only: eold, nwalk, pwt, wt
+      use branch, only: wthist
+      use jacobsave, only: ajacold
       use velratio, only: fratio, xdrifted
+
       implicit real*8(a-h,o-z)
 
-
-
-
       parameter (zero=0.d0,two=2.d0,half=.5d0)
-
-
 
       dimension iwundr(MWALK)
 
