@@ -69,7 +69,6 @@
 
       dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
       dimension irn_tmp(4,0:NPROCX)
-
       dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT)
      &,znucx(MCENT),n1sx(MCENT),n2sx(MCENT),n2px(3,MCENT)
      &,n3sx(MCENT),n3px(3,MCENT),n3dzrx(MCENT),n3dx2x(MCENT)
@@ -77,6 +76,8 @@
      &,n4px(3,MCENT),nsax(MCENT),npax(3,MCENT),ndzrax(MCENT)
      &,ndx2ax(MCENT),ndxyax(MCENT),ndxzax(MCENT),ndyzax(MCENT)
      &,cdetx(MDET)
+
+      istate=1
 
       write(6,'(1x,''attempting restart from unit 10'')')
       rewind 10
@@ -138,7 +139,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) nbasx
       do 10 j=1,norb
       do 10 i=1,nbasis
-      if (dabs(coefx(i,j)-coef(i,j,1)).gt.small) call fatal_error('STARTR: coef')
+      if (dabs(coefx(i,j)-coef(i,j,istate,1)).gt.small) call fatal_error('STARTR: coef')
    10 continue
       if (nbasx.ne.nbasis) call fatal_error('STARTR: nbasis')
       read(10) (zexx(ib),ib=1,nbasis)

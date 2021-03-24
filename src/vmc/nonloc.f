@@ -22,30 +22,23 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use pseudo, only: lpot, vps
       use b_tmove, only: b_t, iskip
       use qua, only: nquad, wq, xq, yq, zq
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-
       use multislater, only: detiab
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
       parameter (one=1.d0)
-
-
-
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),rr_en_sav(MCENT),rr_en2_sav(MCENT)
      &,xsav(3),rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT)
-
       dimension vpsp_det(*),dvpsp_dj(*),t_vpsp(MCENT,MPS_QUAD,*)
       dimension dpsij_ratio(MPARMJ)
-
       dimension orbn(MORB),dorbn(3,MORB),da_orbn(3,MCENT,MORB),term_radial_da_vps(3)
       dimension vjn(3),da_ratio_jn(3,MCENT),dd1(MELEC,MCENT),dd1_sav(MCENT)
+
+c     RLPB
+      kstate=1
 
       do 11 ic=1,ncent
 cJF this is the culprit
@@ -286,26 +279,23 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
-
       use vmc_mod, only: MELEC, MORB, MCENT
       use atom, only: iwctype, ncent
-
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic
       use grid3dflag, only: i3dlagorb, i3dsplorb
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+
       implicit real*8(a-h,o-z)
-
-
-
-
 
       dimension x(3),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension orbn(*),dorbn(3,*),da_orbn(3,MCENT,*),dtmp(3)
+
+c     RLPB
+      kstate=1
 
       if(iperiodic.eq.0) then
 
@@ -333,7 +323,7 @@ c get basis functions for electron iel
 c           do 25 m=1,nbasis
             do 25 m0=1,n0_nbasis(iel)
               m=n0_ibasis(m0,iel)
-   25         orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
+   25         orbn(iorb)=orbn(iorb)+coef(m,iorb,kstate,iwf)*phin(m,iel)
 
           if(iforce_analy.gt.0) then
 
@@ -346,7 +336,7 @@ c           do 25 m=1,nbasis
                 ic=n0_ic(m0,iel)
                 ii=iwctype(ic)
                 do 50 k=1,3
-   50             da_orbn(k,ic,iorb)=da_orbn(k,ic,iorb)-coef(m,iorb,iwf)*dphin(k,m,iel)
+   50              da_orbn(k,ic,iorb)=da_orbn(k,ic,iorb)-coef(m,iorb,kstate,iwf)*dphin(k,m,iel)
               do 60 k=1,3
    60           dorbn(k,iorb)=0.d0
               do 70 ic=1,ncent

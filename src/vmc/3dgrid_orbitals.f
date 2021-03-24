@@ -26,9 +26,6 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
-
-
-
       real*4  bc(MXNSTEP,MXNSTEP,3:8,MELEC/2+1), wk(80*MXNSTEP3)
 
 c     Note:
@@ -43,10 +40,11 @@ c     xy_max = 1+2+3 = 6
 c     xz_max = 1+3+3 = 7
 c     yz_max = 2+3+3 = 8
 
-
-      dimension r(3), iaxis(4), ixyz(3)
-
+      dimension r(3),iaxis(4),ixyz(3)
       dimension df(3)
+
+      istate=1
+
       iwf=1
       iok=1
 
@@ -223,7 +221,7 @@ c         Calculate the value of the orbital
            orb_num_spl(1,ix,iy,iz,iorb)=0.d0
            do m=1,nbasis
             orb_num_spl(1,ix,iy,iz,iorb)=
-     &        orb_num_spl(1,ix,iy,iz,iorb)+coef(m,iorb,iwf)*phin(m,1)
+     &        orb_num_spl(1,ix,iy,iz,iorb)+coef(m,iorb,istate,iwf)*phin(m,1)
            enddo
 
           enddo
@@ -275,10 +273,10 @@ c DEBUG
 
           call basis_fnse_v(1,rvec_en,r_en)
 
-           value=0.
+           value=0.0d0
            do m=1,nbasis
             value=value+
-     &        coef(m,norb,iwf)*phin(m,1)
+     &        coef(m,norb,istate,iwf)*phin(m,1)
            enddo
 
         ddf=0.
@@ -415,8 +413,10 @@ c Lagrange interpolation routines
       character*(32) filename
       integer a,b,c
       dimension r(3)
-
       dimension f(MORB)
+
+      istate=1
+
       iwf=1
 
 c     Check the sizes
@@ -489,15 +489,15 @@ c         Calculate the grids
            orb_num_lag(5,ix,iy,iz,iorb)=0.d0
            do m=1,nbasis
             orb_num_lag(1,ix,iy,iz,iorb)=
-     >        orb_num_lag(1,ix,iy,iz,iorb)+coef(m,iorb,iwf)*phin(m,1)
+     >        orb_num_lag(1,ix,iy,iz,iorb)+coef(m,iorb,istate,iwf)*phin(m,1)
             orb_num_lag(2,ix,iy,iz,iorb)=
-     >        orb_num_lag(2,ix,iy,iz,iorb)+coef(m,iorb,iwf)*dphin(1,m,1)
+     >        orb_num_lag(2,ix,iy,iz,iorb)+coef(m,iorb,istate,iwf)*dphin(1,m,1)
             orb_num_lag(3,ix,iy,iz,iorb)=
-     >        orb_num_lag(3,ix,iy,iz,iorb)+coef(m,iorb,iwf)*dphin(2,m,1)
+     >        orb_num_lag(3,ix,iy,iz,iorb)+coef(m,iorb,istate,iwf)*dphin(2,m,1)
             orb_num_lag(4,ix,iy,iz,iorb)=
-     >        orb_num_lag(4,ix,iy,iz,iorb)+coef(m,iorb,iwf)*dphin(3,m,1)
+     >        orb_num_lag(4,ix,iy,iz,iorb)+coef(m,iorb,istate,iwf)*dphin(3,m,1)
             orb_num_lag(5,ix,iy,iz,iorb)=
-     >        orb_num_lag(5,ix,iy,iz,iorb)+coef(m,iorb,iwf)*d2phin(m,1)
+     >        orb_num_lag(5,ix,iy,iz,iorb)+coef(m,iorb,istate,iwf)*d2phin(m,1)
            enddo
 
           enddo
@@ -562,7 +562,7 @@ c DEBUG
            value2=0.
            do m=1,nbasis
             value2=value2 + 
-     &        coef(m,j,iwf)*phin(m,1)
+     &        coef(m,j,istate,iwf)*phin(m,1)
            enddo
            value = value + value2
           enddo

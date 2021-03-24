@@ -41,8 +41,6 @@ c job where it left off
       use optorb_cblock, only: ns_current
       implicit real*8(a-h,o-z)
 
-
-
       parameter(half=0.5d0,small=1.d-6)
 
       dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT)
@@ -54,6 +52,9 @@ c job where it left off
      &,cdetx(MDET)
       dimension xstrech(3,MELEC)
       dimension d2(MSTATES)
+
+c     RLPB
+      kstate=1
 
       write(10) delta,deltar,deltat
 
@@ -78,7 +79,7 @@ c job where it left off
       write(10) rejmax
 
       write(10) nbasis,norb
-      write(10) ((coef(ib,i,1),ib=1,nbasis),i=1,norb)
+      write(10) ((coef(ib,i,kstate,1),ib=1,nbasis),i=1,norb)
       write(10) (zex(ib,1),ib=1,nbasis)
       write(10) nctype,ncent,newghostype,nghostcent,(iwctype(i),i=1,ncent+nghostcent)
       write(10) ((cent(k,ic),k=1,3),ic=1,ncent+nghostcent)
@@ -120,6 +121,9 @@ c job where it left off
 
 c-----------------------------------------------------------------------
       entry startr_more
+
+c     RLPB
+      kstate=1
 
       read(10) deltax,deltarx,deltatx
       if (dabs(deltax-delta).gt.small) call fatal_error('STARTR: delta')
@@ -180,7 +184,7 @@ c-----------------------------------------------------------------------
       read(10) (ndyzax(i),i=1,nctype)
       do 10 j=1,norb
         do 10 i=1,nbasis
-   10     if (dabs(coefx(i,j)-coef(i,j,1)).gt.small) call fatal_error('STARTR: coef')
+   10     if (dabs(coefx(i,j)-coef(i,j,kstate,1)).gt.small) call fatal_error('STARTR: coef')
       do 20 i=1,nbasis
         if (dabs(zexx(i)-zex(i,1)).gt.small) call fatal_error('STARTR: zex')
    20 continue

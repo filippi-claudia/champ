@@ -1,6 +1,5 @@
       subroutine detsav(iel,iflag)
 c Written by Claudia Filippi
-
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -8,11 +7,9 @@ c Written by Claudia Filippi
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
-
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: ivirt, kref, numrep_det
-
       use slatn, only: slmin
       use ycompact, only: ymat
       use ycompactn, only: ymatn
@@ -21,18 +18,11 @@ c Written by Claudia Filippi
       use multimat, only: aa, wfmat
       use multimatn, only: aan, wfmatn
       use multislatern, only: ddorbn, detn, dorbn, orbn
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-
       use multislater, only: detiab
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
-
 
       if(iel.le.nup) then
         iab=1
@@ -60,17 +50,20 @@ c Written by Claudia Filippi
    40         wfmat(i,k,iab)=wfmatn(i,k)
    50   continue
 
-        do 60 j=1,nel
-          fp(1,j+ikel,iab)=dorbn(1,iworbd(j+ish,kref))
-          fp(2,j+ikel,iab)=dorbn(2,iworbd(j+ish,kref))
-   60     fp(3,j+ikel,iab)=dorbn(3,iworbd(j+ish,kref))
-        do 70 k=1,ndet
-   70     detiab(k,iab)=detn(k)
+c     RLPB 
+      kstate=1
 
-         do 80 iorb=1,norb
-           orb(iel,iorb)=orbn(iorb)
-           do 80 kk=1,3
-   80        dorb(kk,iel,iorb)=dorbn(kk,iorb)
+      do 60 j=1,nel
+         fp(1,j+ikel,iab)=dorbn(1,iworbd(j+ish,kref),kstate)
+         fp(2,j+ikel,iab)=dorbn(2,iworbd(j+ish,kref),kstate)
+   60    fp(3,j+ikel,iab)=dorbn(3,iworbd(j+ish,kref),kstate)
+      do 70 k=1,ndet
+   70    detiab(k,iab)=detn(k)
+
+      do 80 iorb=1,norb
+         orb(iel,iorb,kstate)=orbn(iorb,kstate)
+         do 80 kk=1,3
+   80       dorb(kk,iel,iorb,kstate)=dorbn(kk,iorb,kstate)
 
       return
       end

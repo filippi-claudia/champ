@@ -76,7 +76,7 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
       deltri=one/deltar
 
       call check_orbitals
-      
+
       do 300 i=1,nelec
 
         if(i.le.nup) then
@@ -94,6 +94,7 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
          else
           call determinant_psig(psido,psig)
         endif
+c       RLPB the variable vold_holder is provisional
         call compute_determinante_grad(i,psig,psido,vold(1,i),1)
 
         fxop=one
@@ -163,8 +164,8 @@ c       voldr=voldr*fbias
         co=(zeta+voldr)/(one-(zeta+voldr)*rmino(i))
 
 c       write(6,'(''rmino(i),voldr,zeta,co='',9f10.5)')
-c    &  rmino(i),voldr,zeta,co,(co-zeta-co*zeta*rmino(i))/
-c    &  (one+co*rmino(i))
+c    &   rmino(i),voldr,zeta,co,(co-zeta-co*zeta*rmino(i))/
+c    &   (one+co*rmino(i))
 
 c Use Slater approx for radial fn
 c Determine the maximum value of radial function for rejection sampling

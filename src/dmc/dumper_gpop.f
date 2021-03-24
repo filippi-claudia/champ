@@ -161,7 +161,9 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(10) dfus2ac,dfus2un,dr2ac,dr2un,acc
      &,trymove,nacc,nbrnch,nodecr
 
-      write(10) ((coef(ib,i,1),ib=1,nbasis),i=1,norb)
+      istate=1
+
+      write(10) ((coef(ib,i,istate,1),ib=1,nbasis),i=1,norb)
       write(10) nbasis
       write(10) (zex(ib,1),ib=1,nbasis)
       write(10) nctype,ncent,newghostype,nghostcent,(iwctype(i),i=1,ncent+nghostcent)

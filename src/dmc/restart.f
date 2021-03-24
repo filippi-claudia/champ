@@ -75,6 +75,8 @@
      &,ndx2ax(MCENT),ndxyax(MCENT),ndxzax(MCENT),ndyzax(MCENT)
      &,cdetx(MDET)
 
+      istate=1
+
       if(mode.eq.'dmc_one_mpi2') then
         call startr_gpop
         return
@@ -151,7 +153,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) nbasx
       do 10 j=1,norb
       do 10 i=1,nbasis
-      if (dabs(coefx(i,j)-coef(i,j,1)).gt.small) call fatal_error('STARTR: coef')
+      if (dabs(coefx(i,j)-coef(i,j,istate,1)).gt.small) call fatal_error('STARTR: coef')
    10 continue
       if (nbasx.ne.nbasis) call fatal_error('STARTR: nbasis')
       read(10) (zexx(ib),ib=1,nbasis)

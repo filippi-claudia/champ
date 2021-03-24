@@ -18,7 +18,7 @@ c 2) a gaussian basis
       parameter (zero=0.d0,one=1.d0)
       parameter(nprime=10)
 
-
+      istate=1
 
 c Check that nbasis in lcao matches specified basis on all centers
       ncheck=0
@@ -162,191 +162,191 @@ C      write (iu, 212) TODO : print out the symmetry
        do ic=1,ncent 
 
         do k=1,abs(n1s(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '1s', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '1s', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
 
         do k=1,abs(n2s(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '2s', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '2s', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n2p(1,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '2px', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '2px', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n2p(2,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '2py', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '2py', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n2p(3,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '2pz', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '2pz', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
 
         do k=1,abs(n3s(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '3s', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '3s', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n3p(1,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '3px', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '3px', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n3p(2,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '3py', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '3py', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n3p(3,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '3pz', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '3pz', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n3dzr(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '3dzr', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '3dzr', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n3dx2(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '3dx2', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '3dx2', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n3dxy(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '3dxy', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '3dxy', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n3dxz(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '3dxz', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '3dxz', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n3dyz(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '3dyz', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '3dyz', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
 
         do k=1,abs(n4s(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4s', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '4s', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n4p(1,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4px', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '4px', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n4p(2,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4py', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '4py', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n4p(3,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4pz', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, '4pz', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(n4fxxx(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4fxxx', (coef(j,l,1), l=i,imax)
+         write (iu, 213) j, iwctype(ic), ic, '4fxxx', (coef(j,l,istate,1), l=i,imax)
          j=j+1
         enddo
 
         do k=1,abs(n4fyyy(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4fyyy', (coef(j,l,1), l=i,imax)
+         write (iu, 213) j, iwctype(ic), ic, '4fyyy', (coef(j,l,istate,1), l=i,imax)
          j=j+1
         enddo
 
         do k=1,abs(n4fzzz(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4fzzz', (coef(j,l,1), l=i,imax)
+         write (iu, 213) j, iwctype(ic), ic, '4fzzz', (coef(j,l,istate,1), l=i,imax)
          j=j+1
         enddo
 
         do k=1,abs(n4fxxy(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4fxxy', (coef(j,l,1), l=i,imax)
+         write (iu, 213) j, iwctype(ic), ic, '4fxxy', (coef(j,l,istate,1), l=i,imax)
          j=j+1
         enddo
 
         do k=1,abs(n4fxxz(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4fxxz', (coef(j,l,1), l=i,imax)
+         write (iu, 213) j, iwctype(ic), ic, '4fxxz', (coef(j,l,istate,1), l=i,imax)
          j=j+1
         enddo
 
         do k=1,abs(n4fyyx(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4fyyx', (coef(j,l,1), l=i,imax)
+         write (iu, 213) j, iwctype(ic), ic, '4fyyx', (coef(j,l,istate,1), l=i,imax)
          j=j+1
         enddo
 
         do k=1,abs(n4fyyz(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4fyyz', (coef(j,l,1), l=i,imax)
+         write (iu, 213) j, iwctype(ic), ic, '4fyyz', (coef(j,l,istate,1), l=i,imax)
          j=j+1
         enddo
 
         do k=1,abs(n4fzzx(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4fzzx', (coef(j,l,1), l=i,imax)
+         write (iu, 213) j, iwctype(ic), ic, '4fzzx', (coef(j,l,istate,1), l=i,imax)
          j=j+1
         enddo
 
         do k=1,abs(n4fzzy(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4fzzy', (coef(j,l,1), l=i,imax)
+         write (iu, 213) j, iwctype(ic), ic, '4fzzy', (coef(j,l,istate,1), l=i,imax)
          j=j+1
         enddo
 
         do k=1,abs(n4fxyz(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, '4fxyz', (coef(j,l,1), l=i,imax)
+         write (iu, 213) j, iwctype(ic), ic, '4fxyz', (coef(j,l,istate,1), l=i,imax)
          j=j+1
         enddo
 
 
         do k=1,abs(nsa(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, 's', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, 's', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(npa(1,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, 'px', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, 'px', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(npa(2,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, 'py', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, 'py', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(npa(3,iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, 'pz', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, 'pz', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(ndzra(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, 'dzr', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, 'dzr', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(ndx2a(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, 'dx2', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, 'dx2', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(ndxya(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, 'dxy', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, 'dxy', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(ndxza(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, 'dxz', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, 'dxz', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 
         do k=1,abs(ndyza(iwctype(ic)))
-         write (iu, 213) j, iwctype(ic), ic, 'dyz', (coef(j,l,1), l=i, imax)
+         write (iu, 213) j, iwctype(ic), ic, 'dyz', (coef(j,l,istate,1), l=i, imax)
          j=j+1
         enddo
 

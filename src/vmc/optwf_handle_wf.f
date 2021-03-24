@@ -103,7 +103,9 @@ c tmp
 
       return
       end
+
 c-----------------------------------------------------------------------
+
       subroutine write_lcao(iwf_fit,filetype)
 
       use vmc_mod, only: MELEC, MORB, MBASIS
@@ -112,12 +114,16 @@ c-----------------------------------------------------------------------
       use coefs, only: coef, nbasis, norb
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use inputflags, only: scalecoef
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
       character*40 filename,filetype
 
       dimension anorm(MBASIS)
+
+c     RLPB
+      kstate=1
 
       if(ioptorb.eq.0) return
 
@@ -126,20 +132,23 @@ c-----------------------------------------------------------------------
       write(2,'(''lcao '',3i4)') norb+nadorb,nbasis,iwf_fit
 
       if(numr.gt.0) then
-        do 20 i=1,norb+nadorb
-   20     write(2,'(1000e20.8)') (coef(j,i,1)/scalecoef,j=1,nbasis)
+         do i=1,norb+nadorb
+            write(2,'(1000e20.8)') (coef(j,i,kstate,1)/scalecoef,j=1,nbasis)
+         enddo
       else
-        call basis_norm(1,anorm,1)
-        do 40 i=1,norb+nadorb
-   40     write(2,'(1000e20.8)') (coef(j,i,1)/(anorm(j)*scalecoef),j=1,nbasis)
+         call basis_norm(1,anorm,1)
+         do i=1,norb+nadorb
+            write(2,'(1000e20.8)') (coef(j,i,kstate,1)/(anorm(j)*scalecoef),j=1,nbasis)
+         enddo
       endif
 
       write(2,'(''end'')')
       close(2)
 
-      return
-      end
+      end subroutine
+
 c-----------------------------------------------------------------------
+
       subroutine write_ci(iwf_fit,filetype)
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
@@ -258,11 +267,6 @@ c-----------------------------------------------------------------------
       use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
       dimension a4_save(MORDJ1,MCTYPE,MWF),b_save(MORDJ1,2,MWF),
      &c_save(83,MCTYPE,MWF)
 
@@ -302,45 +306,54 @@ c Restore parameters corresponding to run generating hessian
       end
 
 c-----------------------------------------------------------------------
+
       subroutine save_lcao
+
       use force_mod, only: MWF
       use vmc_mod, only: MORB, MBASIS
       use coefs, only: coef, nbasis, norb
+      use mstates_mod, only: MSTATES
+      use csfs, only: nstates
+
       implicit real*8(a-h,o-z)
 
-
-
-      dimension coef_save(MBASIS,MORB,MWF)
-
+      dimension coef_save(MBASIS,MORB,MSTATES,MWF)
       save coef_save
 
-      do 10 i=1,norb
-       do 10 j=1,nbasis
-   10   coef_save(j,i,1)=coef(j,i,1)
+      do i=1,norb
+         do j=1,nbasis
+            do istate=1,nstates
+               coef_save(j,i,istate,1)=coef(j,i,istate,1)
+            enddo
+         enddo
+      enddo
 
       return
 
       entry restore_lcao(iadiag)
 
-      do 20 i=1,norb
-       do 20 j=1,nbasis
-   20   coef(j,i,iadiag)=coef_save(j,i,1)
+      do i=1,norb
+         do j=1,nbasis
+            do istate=1,nstates
+               coef(j,i,istate,iadiag)=coef_save(j,i,istate,1)
+            enddo
+         enddo
+      enddo
 
       return
-      end
+
+      end subroutine
+
 c-----------------------------------------------------------------------
+
       subroutine save_ci
+
       use vmc_mod, only: MDET
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
-
       use dets, only: cdet, ndet
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       dimension cdet_save(MDET,MSTATES),ccsf_save(MDET,MSTATES)
       save cdet_save,ccsf_save
@@ -376,26 +389,23 @@ c if kref (iwdetorb, cxdet) has changed
               cdet(kx,j,iadiag)=cdet(kx,j,iadiag)+ccsf(icsf,j,iadiag)*cxdet(k)
    50  continue
 
-c reset kref=1
+c     reset kref=1
       call multideterminants_define(0,0)
       endif
 
       return
+
       end
+
 c-----------------------------------------------------------------------
+
       subroutine copy_jastrow(iadiag)
  
       use atom, only: nctype
 
       use jaspar3, only: a, b, c, scalek
-
       use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       mparmja=2+max(0,norda-1)
       mparmjb=2+max(0,nordb-1)
@@ -415,30 +425,32 @@ c-----------------------------------------------------------------------
       end
 
 c-----------------------------------------------------------------------
+
       subroutine copy_lcao(iadiag)
+
       use vmc_mod, only: MELEC, MORB
       use coefs, only: coef, nbasis, norb
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use csfs, only: nstates
+
       implicit real*8(a-h,o-z)
 
+      do i=1,norb+nadorb
+         do j=1,nbasis
+            do istate=1,nstates
+               coef(j,i,istate,iadiag)=coef(j,i,istate,1)
+            enddo
+         enddo
+      enddo
 
+      end subroutine
 
-
-      do 20 i=1,norb+nadorb
-       do 20 j=1,nbasis
-   20   coef(j,i,iadiag)=coef(j,i,1)
-
-      return
-      end
 c-----------------------------------------------------------------------
       subroutine copy_ci(iadiag)
       use csfs, only: ccsf, ncsf, nstates
 
       use dets, only: cdet, ndet
       implicit real*8(a-h,o-z)
-
-
-
 
       do 30 j=1,nstates
         do 30 i=1,ndet
@@ -520,53 +532,60 @@ c Restore parameters corresponding to run generating hessian
 
       return
       end
+
 c-----------------------------------------------------------------------
+
       subroutine save_lcao_best
+
       use force_mod, only: MWF
       use vmc_mod, only: MORB, MBASIS
+      use mstates_mod, only: MSTATES
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb
+      use csfs, only: nstates
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
-      dimension coef_best(MBASIS,MORB,MWF)
+      dimension coef_best(MBASIS,MORB,MSTATES,MWF)
 
       save coef_best
 
-      do 10 i=1,norb
-       do 10 j=1,nbasis
-   10   coef_best(j,i,1)=coef(j,i,1)
+      do i=1,norb
+         do j=1,nbasis
+            do istate=1,nstates
+               coef_best(j,i,istate,1)=coef(j,i,istate,1)
+            enddo
+         enddo
+      enddo
 
       return
 
       entry restore_lcao_best
 
-c     if(ioptorb.eq.0) return
-
-      do 20 i=1,norb
-       do 20 j=1,nbasis
-   20   coef(j,i,1)=coef_best(j,i,1)
+      do i=1,norb
+         do j=1,nbasis
+            do istate=1,nstates
+               coef(j,i,istate,1)=coef_best(j,i,istate,1)
+            enddo
+         enddo
+      enddo
 
       return
-      end
+
+      end subroutine
+
 c-----------------------------------------------------------------------
+
       subroutine save_ci_best
+
       use vmc_mod, only: MDET
       use csfs, only: ccsf, ncsf, nstates
       use csfs, only: cxdet, iadet, ibdet, icxdet
       use mstates_mod, only: MSTATES
-
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       dimension cdet_best(MDET,MSTATES),ccsf_best(MDET,MSTATES)
       save cdet_best,ccsf_best
@@ -610,8 +629,11 @@ c reset kref=1
 
       return
       end
+
 c-----------------------------------------------------------------------
+
       subroutine compute_parameters(dparm,iflag,iadiag)
+
       implicit real*8(a-h,o-z)
 
       dimension dparm(*)
@@ -625,9 +647,10 @@ c-----------------------------------------------------------------------
 
       call compute_ci(dparm,iadiag)
 
-      return
-      end
+      end subroutine
+
 c-----------------------------------------------------------------------
+
       subroutine compute_jastrow(dparm,iflag,iadiag)
 
       use atom, only: nctype
@@ -638,7 +661,6 @@ c-----------------------------------------------------------------------
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       
       implicit real*8(a-h,o-z)
-
 
       dimension dparm(*)
 
@@ -667,41 +689,57 @@ c Check parameters a2 and b2 > -scalek
 
       return
       end
+
 c-----------------------------------------------------------------------
+
       subroutine compute_lcao(dparm,iadiag)
+
       use vmc_mod, only: MORB, MBASIS
+      use mstates_mod, only: MSTATES
       use optwf_contrl, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
       use coefs, only: coef, nbasis, norb
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
-
-
-
-      dimension acoef(MBASIS,MORB),dparm(*)
+      dimension acoef(MBASIS,MORB,MSTATES),dparm(*)
 
       if(ioptorb.eq.0) return
 
-      do 10 i=1,norb
-       do 10 j=1,nbasis
- 10     acoef(j,i)=coef(j,i,iadiag)
+      do i=1,norb
+         do j=1,nbasis
+            do istate=1,nstates
+               acoef(j,i,istate)=coef(j,i,istate,iadiag)
+            enddo
+         enddo
+      enddo
 
-c Update the orbitals
-      do 30 i=1,norbterm
-       io=ideriv(1,i)
-       jo=ideriv(2,i)
-       do 30 j=1,nbasis
- 30     acoef(j,io)=acoef(j,io)-dparm(i+nparmj+nparmd)*coef(j,jo,iadiag)
+c     Update the orbitals
 
-      do 50 i=1,norb
-       do 50 j=1,nbasis
- 50     coef(j,i,iadiag)=acoef(j,i)
+      do i=1,norbterm
+         io=ideriv(1,i)
+         jo=ideriv(2,i)
+         do j=1,nbasis
+            do istate=1,nstates
+               acoef(j,io,istate)=acoef(j,io,istate)
+     &              -dparm(i+nparmj+nparmd)*coef(j,jo,istate,iadiag)
+            enddo
+         enddo
+      enddo
 
-      return
-      end
+      do i=1,norb
+         do j=1,nbasis
+            do istate=1,nstates
+               coef(j,i,istate,iadiag)=acoef(j,i,istate)
+            enddo
+         enddo
+      enddo
+
+      end subroutine
+
 c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates

@@ -26,6 +26,8 @@
       dimension psid(*),dvpsp_dj(*),energy(*),vj(3,*)
       dimension deloc_dj(MPARMJ)
 
+      istate=1
+
       if(ioptjas.eq.0) return
 
       do 200 iparm=1,nparmj
@@ -67,7 +69,7 @@ C       enddo
                 dum3=0.d0
                 do i=1,nel
                  dum2=dum2+slmi(irep+(i-1)*nel,iab)*b_dj(jrep,i+ish,iparm)
-                 dum3=dum3+xmat(i+(irep-1)*nel,iab)*orb(i+ish,jrep)
+                 dum3=dum3+xmat(i+(irep-1)*nel,iab)*orb(i+ish,jrep,istate)
                 enddo
                 dtildem(irep,jrep,iab)=dum2-dum3
 

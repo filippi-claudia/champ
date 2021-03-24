@@ -30,10 +30,7 @@ c nsa < 0   r^2*exp(-a*r^2)
 c npa < 0   (xyz)*exp(-a*r^2)
 c nda < 0   (zr,x2y2...)*exp(-a*r^2)
 
-
-
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-
       dimension wfv(4,MELEC,MRWF),xc(3)
 
       data rt3,rt3b2/1.732050808d0,0.866025404d0/

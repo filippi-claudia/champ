@@ -13,8 +13,6 @@ c Written by Claudia Filippi by modifying hpsi
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
-
-
 c Calculates wave function
 
       dimension coord(3,*),psid(*)

@@ -174,8 +174,9 @@ module coefs
     use force_mod, only: MWF
     use precision_kinds, only: dp
     use vmc_mod, only: MORB, MBASIS
+    use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :, :), allocatable :: coef !(MBASIS,MORB,MWF)
+    real(dp), dimension(:, :, :, :), allocatable :: coef !(MBASIS,MORB,MWF)
     integer :: nbasis
     integer :: norb
     integer :: next_max 
@@ -190,7 +191,7 @@ contains
         use force_mod, only: MWF
         use precision_kinds, only: dp
         use vmc_mod, only: MORB, MBASIS
-        if (.not. allocated(coef)) allocate (coef(MBASIS, MORB, MWF))
+        if (.not. allocated(coef)) allocate (coef(MBASIS, MORB, MSTATES, MWF))
     end subroutine allocate_coefs
 
     subroutine deallocate_coefs()
@@ -710,11 +711,12 @@ module multislatern
 
     use precision_kinds, only: dp
     use vmc_mod, only: MORB, MDET
+    use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:), allocatable :: ddorbn !(MORB)
+    real(dp), dimension(:, :), allocatable :: ddorbn !(MORB,MSTATES)
     real(dp), dimension(:), allocatable :: detn !(MDET)
-    real(dp), dimension(:, :), allocatable :: dorbn !(3,MORB)
-    real(dp), dimension(:), allocatable :: orbn !(MORB)
+    real(dp), dimension(:, :, :), allocatable :: dorbn !(3,MORB,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orbn !(MORB,MSTATES)
     private
 
     public ::  ddorbn, detn, dorbn, orbn
@@ -724,10 +726,10 @@ contains
     subroutine allocate_multislatern()
         use precision_kinds, only: dp
         use vmc_mod, only: MORB, MDET
-        if (.not. allocated(ddorbn)) allocate (ddorbn(MORB))
+        if (.not. allocated(ddorbn)) allocate (ddorbn(MORB,MSTATES))
         if (.not. allocated(detn)) allocate (detn(MDET))
-        if (.not. allocated(dorbn)) allocate (dorbn(3, MORB))
-        if (.not. allocated(orbn)) allocate (orbn(MORB))
+        if (.not. allocated(dorbn)) allocate (dorbn(3,MORB,MSTATES))
+        if (.not. allocated(orbn)) allocate (orbn(MORB,MSTATES))
     end subroutine allocate_multislatern
 
     subroutine deallocate_multislatern()
@@ -769,12 +771,13 @@ module orbval
     !> Arguments: ddorb, dorb, nadorb, ndetorb, orb
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MORB
+    use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :), allocatable :: ddorb !(MELEC,MORB)
-    real(dp), dimension(:, :, :), allocatable :: dorb !(3,MELEC,MORB)
+    real(dp), dimension(:, :, :), allocatable :: ddorb !(MELEC,MORB)
+    real(dp), dimension(:, :, :, :), allocatable :: dorb !(3,MELEC,MORB)
     integer :: nadorb
     integer :: ndetorb
-    real(dp), dimension(:, :), allocatable :: orb !(MELEC,MORB)
+    real(dp), dimension(:, :, :), allocatable :: orb !(MELEC,MORB)
 
     private
     public :: ddorb, dorb, nadorb, ndetorb, orb
@@ -784,9 +787,9 @@ contains
     subroutine allocate_orbval()
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
-        if (.not. allocated(ddorb)) allocate (ddorb(MELEC, MORB))
-        if (.not. allocated(dorb)) allocate (dorb(3, MELEC, MORB))
-        if (.not. allocated(orb)) allocate (orb(MELEC, MORB))
+        if (.not. allocated(ddorb)) allocate (ddorb(MELEC, MORB, MSTATES))
+        if (.not. allocated(dorb)) allocate (dorb(3, MELEC, MORB, MSTATES))
+        if (.not. allocated(orb)) allocate (orb(MELEC, MORB, MSTATES))
     end subroutine allocate_orbval
 
     subroutine deallocate_orbval()

@@ -8,23 +8,19 @@ c Set normalization of basis fns.
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
-
+      use csfs, only: nstates
       use ghostatom, only: nghostcent
       use const, only: pi
       use coefs, only: coef, nbasis, norb
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+
       implicit real*8(a-h,o-z)
-
-
 
       parameter (one=1.d0,two=2.d0,three=3.d0)
       parameter (five=5.d0,six=6.d0,seven=7.d0)
       parameter (third=1.d0/3.d0)
-
-
       dimension anorm(*)
 
       do 5 j=1,nbasis
@@ -182,9 +178,13 @@ c Set normalization of basis fns.
 
       if(iflag.gt.0) return
 
-      do 300 iorb=1,norb+nadorb
-        do 300 j=1,nbasis
-  300     coef(j,iorb,iwf)=coef(j,iorb,iwf)*anorm(j)
+      do iorb=1,norb+nadorb
+        do j=1,nbasis
+           do istate=1,nstates
+              coef(j,iorb,istate,iwf)=coef(j,iorb,istate,iwf)*anorm(j)
+	   enddo
+	enddo
+      enddo
 
       return
       end

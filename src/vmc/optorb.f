@@ -17,9 +17,9 @@
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
       dimension orbprim(*),eorbprim(*)
 
-      if(ioptorb.eq.0) return
+      istate=1
 
-      
+      if(ioptorb.eq.0) return
 c     ns_current=ns_current+1
 c     if(ns_current.ne.iorbsample) return
 c ns_current reset in optorb_sum
@@ -47,8 +47,8 @@ c ns_current reset in optorb_sum
 
           if(io.ge.ivirt(iab)) then
             do i=1,nel
-              dorb_psi=dorb_psi+zmat(io,i,iab)*orb(i+ish,jo)
-              dorb_energy=dorb_energy+dzmat(io,i,iab)*orb(i+ish,jo)+zmat(io,i,iab)*b(jo,i+ish)
+              dorb_psi=dorb_psi+zmat(io,i,iab)*orb(i+ish,jo,istate)
+              dorb_energy=dorb_energy+dzmat(io,i,iab)*orb(i+ish,jo,istate)+zmat(io,i,iab)*b(jo,i+ish)
             enddo
           endif
           if(ideriv_ref(iterm,iab).gt.0) then
@@ -58,8 +58,8 @@ c ns_current reset in optorb_sum
             dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,iab)
 
             do i=1,nel
-              dorb_psi=dorb_psi-aaz(irep,i,iab)*orb(i+ish,jo)
-              dorb_energy=dorb_energy-emz(irep,i,iab)*orb(i+ish,jo)-aaz(irep,i,iab)*b(jo,i+ish)
+              dorb_psi=dorb_psi-aaz(irep,i,iab)*orb(i+ish,jo,istate)
+              dorb_energy=dorb_energy-emz(irep,i,iab)*orb(i+ish,jo,istate)-aaz(irep,i,iab)*b(jo,i+ish)
             enddo
           endif
 
@@ -67,7 +67,6 @@ c ns_current reset in optorb_sum
 
         orbprim(iterm)=dorb_psi*detratio
         eorbprim(iterm)=dorb_energy*detratio+dorb_energy_ref-denergy*orbprim(iterm)
-
         orbprim(iterm)=orbprim(iterm)+dorb_psi_ref
 
  200  continue
@@ -85,8 +84,6 @@ c-----------------------------------------------------------------------
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       implicit real*8(a-h,o-z)
 
-
-
       dimension psid(*),eloc(*),deloc(*)
 
       if(ioptorb.eq.0) return
@@ -100,11 +97,6 @@ c-----------------------------------------------------------------------
         do 20 i=1,norbterm
             orb_oe(i,istate)=orb_o(i,istate)*eloc(istate)
   20        orb_ho(i,istate)=orb_ho(i,istate)+eloc(istate)*orb_o(i,istate)
-
-c     do iterm=1,norbterm
-c        write(6,*) 'HELLO 1',iterm,orb_o(iterm,1),orb_ho(iterm,1),orb_oe(iterm,1)
-c        write(6,*) 'HELLO 2',iterm,orb_o(iterm,2),orb_ho(iterm,2),orb_oe(iterm,2)
-c     enddo
 
       return
       end

@@ -25,24 +25,20 @@ c Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-
-
       dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK),slmdiw(MMAT_DIM,MWALK)
      &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)
      &,fppuw(MMAT_DIM,MWALK),fppdw(MMAT_DIM,MWALK)
      &,ddxw(3,MELEC,MWALK),d2dx2w(MELEC,MWALK)
      &,detuw(MDET,MWALK),detdw(MDET,MWALK)
-
       dimension aaw(MELEC,MORB,MWALK,2),wfmatw(MEXCIT**2,MDET,MWALK,2),ymatw(MORB,MELEC,MWALK,2,MSTATES)
-
       dimension orbw(MELEC,MORB,MWALK),dorbw(3,MELEC,MORB,MWALK)
-
       dimension istatus(MPI_STATUS_SIZE)
       dimension irequest_array(MPI_STATUS_SIZE)
 
       save krefw,slmuiw,slmdiw,fpuw,fpdw,fppuw,fppdw,detuw,detdw,ddxw,d2dx2w
-
       save aaw,wfmatw,ymatw,orbw,dorbw
+
+      istate=1
 
        do 20 k=1,ndet
          detuw(k,iw)=detu(k)
@@ -82,9 +78,9 @@ c Written by Claudia Filippi
 
        do 63 i=1,nelec
          do 63 iorb=1,norb
-           orbw(i,iorb,iw)=orb(i,iorb)
+           orbw(i,iorb,iw)=orb(i,iorb,istate)
            do 63 kk=1,3
-   63        dorbw(kk,i,iorb,iw)=dorb(kk,i,iorb)
+   63        dorbw(kk,i,iorb,iw)=dorb(kk,i,iorb,istate)
 
       return
 
@@ -128,9 +124,9 @@ c Written by Claudia Filippi
 
        do 103 i=1,nelec
          do 103 iorb=1,norb
-           orb(i,iorb)=orbw(i,iorb,iw)
+           orb(i,iorb,istate)=orbw(i,iorb,iw)
            do 103 kk=1,3
-  103        dorb(kk,i,iorb)=dorbw(kk,i,iorb,iw)
+  103        dorb(kk,i,iorb,istate)=dorbw(kk,i,iorb,iw)
 
       return
 

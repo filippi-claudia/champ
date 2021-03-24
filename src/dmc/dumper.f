@@ -52,7 +52,6 @@ c job where it left off
       use casula, only: i_vpsp, icasula, t_vpsp
       use jacobsave, only: ajacob, ajacold
       use pseudo, only: lpot, nloc, vps, vpso
-
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
@@ -65,15 +64,12 @@ c job where it left off
 
       implicit real*8(a-h,o-z)
 
-
       parameter (zero=0.d0,one=1.d0)
       parameter (small=1.e-6)
-
-
-
-
       dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
       dimension irn_tmp(4,0:NPROCX)
+
+      istate=1
 
       if(mode.eq.'dmc_one_mpi2') then
         call dumper_gpop
@@ -208,7 +204,8 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       call prop_dump(10)
       call pcm_dump(10)
       call mmpol_dump(10)
-      write(10) ((coef(ib,i,1),ib=1,nbasis),i=1,norb)
+
+      write(10) ((coef(ib,i,istate,1),ib=1,nbasis),i=1,norb)
       write(10) nbasis
       write(10) (zex(ib,1),ib=1,nbasis)
       write(10) nctype,ncent,newghostype,nghostcent,(iwctype(i),i=1,ncent+nghostcent)

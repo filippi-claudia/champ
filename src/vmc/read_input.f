@@ -946,12 +946,17 @@ c get normalization for basis functions
 c check if the orbitals coefficients are to be multiplied by a constant parameter
       call p2gtfd('general:scalecoef',scalecoef,1.0d0,1)
       if(scalecoef.ne.1.0d0) then
-        do 340 iwft=1,nwftype
-          do 340 iorb=1,norb+nadorb
-	    do 340 j=1,nbasis
-  340         coef(j,iorb,iwft)=coef(j,iorb,iwft)*scalecoef
-        write(6,'(/,''Orbital coefficients scaled by a constant parameter = '',f7.4)') scalecoef
-	write(6,*)
+         do j=1,nbasis
+            do iorb=1,norb+nadorb
+	       do istate=1,nstates
+                  do iwft=1,nwftype
+                     coef(j,iorb,istate,iwft)=coef(j,iorb,istate,iwft)*scalecoef
+                  enddo
+               enddo
+            enddo
+	 enddo
+         write(6,'(/,''Orbital coefficients scaled by a constant parameter = '',f7.4)') scalecoef
+	 write(6,*)
       endif
 
 c get nuclear potential energy
@@ -1030,46 +1035,61 @@ CKEYDOC nuclear charge for each atom type and ghost type
 
 c-----------------------------------------------------------------------
       subroutine read_lcao(norb_tmp,nbasis_tmp,iwft,filename)
-C$INPUT lcao i i i=1 a=<input> 
-CKEYDOC Orbital coefficients wrt complete basis.
-CKEYDOC Usage:  {\tt lcao  norb,nbasis,filename,norbv}
-CKEYDOC norb: number of orbitals for trial wave function
-CKEYDOC nbasis: number of basis functiobns
-CKEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
-CKEYDOC filename: file containing orbitals coefficients
+C     $INPUT lcao i i i=1 a=<input> 
+C     KEYDOC Orbital coefficients wrt complete basis.
+C     KEYDOC Usage:  {\tt lcao  norb,nbasis,filename,norbv}
+C     KEYDOC norb: number of orbitals for trial wave function
+C     KEYDOC nbasis: number of basis functiobns
+C     KEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
+C     KEYDOC filename: file containing orbitals coefficients
 
       use vmc_mod, only: MORB, MBASIS
+      use force_mod, only: MWF
       use coefs, only: coef, nbasis, norb
       use inputflags, only: ilcao
       use pcm_fdc, only: fs
 
-      ! was not in master but is needed
+c     was not in master but is needed
       use wfsec, only: nwftype 
 
       implicit real*8(a-h,o-z)
 
-c fs NOTE: additional variable norbv for efp orbitals removed 
-
       character filename*(*)
 
       call file(iu,filename,'old',1,0)
+
       nbasis=nbasis_tmp
       norb=norb_tmp
       nototal=norb
+
       if(nbasis.gt.MBASIS) call fatal_error('LCAO: nbasis > MBASIS')
-      if(nototal.gt.MORB) call fatal_error('LCAO: number of orbitals > MORB')
+      if(nototal.gt.MORB) then
+         call fatal_error('LCAO: number of orbitals > MORB')
+      endif
 
       call p2gtid('general:nwftype',nwftype,1,1)
-      if(iwft.gt.nwftype) call fatal_error('LCAO: wave function type > nwftype')
 
-      do 20 i=1,nototal
-        call incpos(iu,itmp,1)
-   20   read(iu,*) (coef(j,i,iwft),j=1,nbasis)
+      if(iwft.gt.nwftype) then
+         call fatal_error('LCAO: wave function type > nwftype')
+      endif
+
+      do i=1,nototal
+         call incpos(iu,itmp,1)
+         read(iu,*) (coef(j,i,1,iwft),j=1,nbasis)
+      enddo
+
+c TO COMPLETE when parser has been changed
+c     write(6,*) 'CHECK NSTATES READ_LCAO',nstates
+c     do istate=2,nstates
+c        coef(1:nbasis,1:nototal,istate,iwft)=coef(1:nbasis,1:nototal,1,iwft)
+c     enddo
+
       ilcao=ilcao+1
       if(filename.eq.'<input>') then
-       call p2chkend(iu, 'lcao')
+         call p2chkend(iu,'lcao')
       endif
-      end
+
+      end subroutine
 
 c-----------------------------------------------------------------------
       subroutine read_geometry(iu)
@@ -1089,8 +1109,8 @@ CKEYDOC position and type for each atom and ghost atom
       if(ncent+nghostcent.gt.MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
 
       do 20 i=1,ncent+nghostcent
-        call incpos(iu,itmp,1)
-  20    read(iu,*) (cent(k,i),k=1,3),iwctype(i)
+         call incpos(iu,itmp,1)
+ 20      read(iu,*) (cent(k,i),k=1,3),iwctype(i)
 
       igeometry=1
       call p2chkend(iu, 'geometry')
@@ -1115,6 +1135,7 @@ CKEYDOC Basis function exponents (only if no numerical basis)
       end
 
 c-----------------------------------------------------------------------
+
       subroutine read_determinants(iu,nd,iwft)
 C$INPUT determinants inp i i=1
 CKEYDOC CI coefficients and occupation of determinants in wf
@@ -1128,7 +1149,6 @@ CKEYDOC CI coefficients and occupation of determinants in wf
       use const, only: nelec
       implicit real*8(a-h,o-z)
 
-
       ndet=nd
       if(ndet.gt.MDET) then
         write (6,*)  "ndet=", ndet
@@ -1138,18 +1158,21 @@ CKEYDOC CI coefficients and occupation of determinants in wf
 
       call p2gti('electrons:nelec',nelec,1)
       if(nelec.gt.MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
+
       call incpos(iu,itmp,1)
       read(iu,*) (cdet(i,1,iwft),i=1,ndet)
-c     if(iwft.eq.1) then
-        do 20 i=1,ndet
-          call incpos(iu,itmp,1)
-   20     read(iu,*) (iworbd(j,i),j=1,nelec)
-c     endif
+      do i=1,ndet
+         call incpos(iu,itmp,1)
+	 read(iu,*) (iworbd(j,i),j=1,nelec)
+      enddo
+
       ideterminants=ideterminants+1
       call p2chkend(iu, 'determinants')
-      end
+
+      end subroutine
 
 c-----------------------------------------------------------------------
+
       subroutine read_multideterminants(iu,nd)
 C$INPUT multideterminants inp i 
 CKEYDOC CI coefficients and occupation of determinants in wf
@@ -1158,7 +1181,6 @@ CKEYDOC CI coefficients and occupation of determinants in wf
       use inputflags, only: imultideterminants
 
       implicit real*8(a-h,o-z)
-
 
       if(nd.ne.ndet-1) call fatal_error('INPUT: problem in multidet')
 
@@ -1174,7 +1196,8 @@ CKEYDOC CI coefficients and occupation of determinants in wf
 
       imultideterminants=imultideterminants+1
       call p2chkend(iu, 'multideterminants')
-      end
+
+      end subroutine
 
 c-----------------------------------------------------------------------
       subroutine read_jastrow_parameter(iu,iwft)
@@ -1568,6 +1591,7 @@ c Check that the required blocks are there in the input
       use inputflags, only: imultideterminants, ioptorb_mixvirt, imodify_zmat, izmatrix_check
       use inputflags, only: ihessian_zmat
       use mstates_ctrl, only: iguiding
+      use csfs, only: nstates
       ! might not be needed
       use mstates_mod, only: MSTATES
       use atom, only: znuc 
@@ -1647,6 +1671,11 @@ c Check that the required blocks are there in the input
       if(ioptci.ne.0.and.ici_def.eq.0) then
         write(6,'(''INPUT: definition of OPTCI operators missing'')')
         call optci_define
+      endif
+
+c TMP - RLPB
+      if(nstates.gt.1) then
+        call inputlcao(nwftype)
       endif
 
       if(nwftype.gt.1) then
@@ -1735,21 +1764,38 @@ c Set the cdet to be equal
 
       end
 c----------------------------------------------------------------------
+
       subroutine inputlcao(nwftype)
-c Set the lcao to be equal
+c     Set the lcao to be equal
       use coefs, only: coef, nbasis, norb
+      use csfs, only: nstates
+
       implicit real*8(a-h,o-z)
 
+c TMP - RLPB
 
+      do istate=2,nstates
+        do i=1,norb
+          do j=1,nbasis
+            coef(j,i,istate,1)=coef(j,i,1,1)
+          enddo
+        enddo
+      enddo
 
+      do iwft=2,nwftype
+        do istate=1,nstates
+          do i=1,norb
+             do j=1,nbasis
+                coef(j,i,istate,iwft)=coef(j,i,istate,1)
+             enddo
+            enddo
+         enddo
+      enddo
 
-       do 10 iwft=2,nwftype
-         do 10 i=1,norb
-           do 10 j=1,nbasis
-   10        coef(j,i,iwft)=coef(j,i,1)
+      end subroutine
 
-      end
 c----------------------------------------------------------------------
+
       subroutine inputjastrow(nwftype)
 c Set the jastrow to be equal
 
