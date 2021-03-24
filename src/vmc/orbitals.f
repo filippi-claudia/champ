@@ -261,14 +261,9 @@ c-------------------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
-
-
 c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
 
-
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-
 
       if(iperiodic.eq.0) then
 
@@ -285,10 +280,10 @@ c spline interplolation
 
 c Lagrange interpolation
          elseif(i3dlagorb.ge.1) then
-          call lagrange_mose(1,x(1,iel),orb,ier)
-          call lagrange_mos_grade(2,x(1,iel),dorb,ier)
-          call lagrange_mos_grade(3,x(1,iel),dorb,ier)
-          call lagrange_mos_grade(4,x(1,iel),dorb,ier)
+          call lagrange_mose(1,x(1,iel),orbn,ier)
+          call lagrange_mos_grade(2,x(1,iel),dorbn,ier)
+          call lagrange_mos_grade(3,x(1,iel),dorbn,ier)
+          call lagrange_mos_grade(4,x(1,iel),dorbn,ier)
          else
           ier=1
         endif 
@@ -318,7 +313,7 @@ c           do 25 m=1,nbasis
    25     continue
         endif
        else
-        call orbitals_pw_grade(iel,x(1,iel),orb,dorb,ddorb)
+        call orbitals_pw_grade(iel,x(1,iel),orbn,dorbn,ddorbn)
       endif
 
       return
