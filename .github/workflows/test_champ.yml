@@ -204,21 +204,21 @@ jobs:
            echo "- Running vmc_sr.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_sr.inp  > vmc_sr.out
            echo " total E vs reference:"
-           $HOME/work/champ/champ/tools/compare_value.py vmc_sr.out "total E" -26.0340157 --no_assert
+           $HOME/work/champ/champ/tools/compare_value.py vmc_sr.out "total E" -26.0340157
            echo ""
 
            # run and compare a geometry optimization calculation MPI
            echo "- Running vmc_sr.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/vmc.mov1 < vmc_sr.inp > vmc_sr.out
            echo " total E vs reference:"
-           $HOME/work/champ/champ/tools/compare_value.py vmc_sr.out "total E" -26.0354987 --no_assert
+           $HOME/work/champ/champ/tools/compare_value.py vmc_sr.out "total E" -26.0354987
            echo ""
 
            # run and compare a optimize all (ci, jas, orb) calculation
            echo "- Running vmc_optall.inp in serial:"
            $HOME/work/champ/champ/bin/vmc.mov1 < vmc_optall.inp > vmc_optall.out
            echo " total E vs reference:"
-           $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -22.4869109 --no_assert
+           $HOME/work/champ/champ/tools/compare_value.py vmc_optall.out "total E" -22.4869109
            echo ""
 
            # run and compare a optimize all (ci, jas, orb) calculation MPI
