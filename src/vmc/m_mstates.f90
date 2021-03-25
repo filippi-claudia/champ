@@ -116,7 +116,6 @@ end module mstates2
 module mstates3
     !> Arguments: weights_g, iweight_g
     use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
 
     integer, dimension(:), allocatable :: iweight_g !(MSTATES)
     real(dp), dimension(:), allocatable :: weights_g !(MSTATES)
@@ -127,7 +126,6 @@ module mstates3
     save
 contains
     subroutine allocate_mstates3()
-        use csfs, only: nstates
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(iweight_g)) allocate (iweight_g(MSTATES))
