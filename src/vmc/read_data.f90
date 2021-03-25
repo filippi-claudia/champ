@@ -579,7 +579,7 @@ subroutine read_csfmap(fn)
 !KEYDOC Read mapping between csf and determinants.
     use vmc_mod, only: MDET
     use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    use mstates_mod, only: MDETCSFX
+    use mstates_mod, only: MDETCSFX, MSTATES
     use dets, only: cdet, ndet
     use wfsec, only: nwftype
 
