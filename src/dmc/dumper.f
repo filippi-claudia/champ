@@ -2,6 +2,7 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
+      use precision_kinds, only: dp
       use vmc_mod, only: MELEC
       use vmc_mod, only: nrad
       use dmc_mod, only: MWALK
@@ -44,7 +45,11 @@ c job where it left off
       use contrl, only: nconf
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: irn, istatus, irn_tmp, ierr, nscounts, irequest, ic
+      integer :: i, j, k, iw, ifr, id, ib
+      real(dp) :: zero, one, small
 
       parameter (zero=0.d0,one=1.d0)
       parameter (small=1.e-6)
