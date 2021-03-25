@@ -1,7 +1,7 @@
       subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,index_more,adiag,ethr)
 
       use mpi
-      use sr_mod, only: MPARM, MVEC
+      use sr_mod, only: MPARM
       use const, only: ipr
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
@@ -203,7 +203,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
-      use sr_mod, only: MPARM, MCONF, MVEC
+      use sr_mod, only: MPARM, MCONF
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -298,7 +298,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
-      use sr_mod, only: MPARM, MCONF, MVEC
+      use sr_mod, only: MPARM, MCONF
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -374,7 +374,7 @@ c     STOP
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
-      use sr_mod, only: MPARM, MCONF, MVEC
+      use sr_mod, only: MPARM, MCONF
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -484,7 +484,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
-      use sr_mod, only: MPARM, MCONF, MVEC
+      use sr_mod, only: MPARM, MCONF
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -605,7 +605,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
-      use sr_mod, only: MPARM, MCONF, MVEC
+      use sr_mod, only: MPARM, MCONF
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -804,7 +804,7 @@ c         if(i.ne.ivec+nb1-1) psi(i,ivec)=psi(i,ivec)/(h(i)+s_diag(1,1)-ew(ivec)
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
-      use sr_mod, only: MPARM, MVEC
+      use sr_mod, only: MPARM
       use optwf_contrl, only: nvecx
       use csfs, only: nstates
       use mstates_mod, only: MSTATES

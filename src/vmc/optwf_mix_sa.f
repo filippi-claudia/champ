@@ -1,6 +1,6 @@
       subroutine optwf_mix
 
-      use sr_mod, only: MPARM, MVEC
+      use sr_mod, only: MPARM
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use optwf_corsam, only: energy, energy_err, force
@@ -14,7 +14,7 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_contrl, only: iroot_geo
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
-      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
 
       implicit real*8(a-h,o-z)
@@ -23,10 +23,10 @@
 
 
       dimension deltap(MPARM*MSTATES),deltap_more(MPARM*MSTATES,5)
-      dimension energy_old(MSTATES), energy_err_old(MSTATES), i_deltap(MSTATES), energy_davidson(6,MSTATES) 
+      dimension energy_old(MSTATES), energy_err_old(MSTATES), i_deltap(MSTATES), energy_davidson(6,MSTATES)
       dimension index_min_energy(5), deltap_new(MPARM)
       dimension index_more(5,MSTATES)
-      
+
       save method_sav
 
       if(method.ne.'mix_n') return
@@ -42,7 +42,6 @@
       write(6,'(''SR tau:   '',f10.5)') sr_tau
       write(6,'(''SR eps:   '',f10.5)') sr_eps
 
-      ! if(nvecx.gt.MVEC) call fatal_error('SR_OPTWF: nvecx > MVEC')
 
       write(6,'(/,''LIN_D adiag: '',f10.5)') alin_adiag
       write(6,'(''LIN_D ethr:  '',f10.5)') alin_eps
@@ -109,18 +108,18 @@ c if the last step was a davidson then save the old energy before recomputing it
 
           iqmc_check=0
 
-   5      call qmc 
+   5      call qmc
           nblk=nblk_sav
           write(6,'(/,''Completed sampling'')')
 
-          if(miter.eq.1 .and. iter.gt.1) then          
+          if(miter.eq.1 .and. iter.gt.1) then
             if(iqmc_check.eq.0) then
               do istate=1,nstates
                 i_deltap(istate)=0
               enddo
             endif
 
-            if(iqmc_check.lt.2) then             
+            if(iqmc_check.lt.2) then
               iqmc_again=0
               do istate=1,nstates
                 diffene=abs(energy_all(istate)-energy_old(istate))
@@ -134,12 +133,12 @@ c if the last step was a davidson then save the old energy before recomputing it
                   call change_ci(deltap_more(istate0,i_deltap(istate)),istate)
                   write(6,*) istate0,i_deltap(istate)
 
-                  write(6,'(''STATE, N OVERLAP, ENERGY OLD, ENERGY NEW,10*ERRDIFF '',2i3,3f12.5)') 
+                  write(6,'(''STATE, N OVERLAP, ENERGY OLD, ENERGY NEW,10*ERRDIFF '',2i3,3f12.5)')
      &            istate,index_more(i_deltap(istate),istate),energy_old(istate),energy_all(istate),10*errdiff
                   iqmc_again=1
                 endif
 
-              enddo   
+              enddo
               if(iqmc_again.gt.0) then
                 iqmc_check=iqmc_check+1
                 write(6,'(''Use new set of CI coefficients'',i4)')
@@ -153,7 +152,7 @@ c if the last step was a davidson then save the old energy before recomputing it
               write(6,'(''Restore CI cofficients to previous iteration'')')
 
               call qmc
-            endif   
+            endif
           endif
 
    6      continue
@@ -181,7 +180,7 @@ c if the last step was a davidson then save the old energy before recomputing it
             sr_adiag=sr_adiag_sav
             alin_adiag=alin_adiag_sav
           endif
- 
+
           call compute_parameters(deltap,iflag,1)
           call write_wf(1,iter)
 
@@ -206,7 +205,7 @@ c enddo micro_iteration
 
           call set_nparms
           call qmc
-          
+
           call compute_positions
           call write_geometry(iter)
 
@@ -219,7 +218,7 @@ c enddo micro_iteration
 
           call restore_wf(1)
         endif
-          
+
         if(iter.ge.2) then
           denergy=energy(1)-energy_sav
           denergy_err=sqrt(energy_err(1)**2+energy_err_sav**2)
