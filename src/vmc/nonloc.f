@@ -25,7 +25,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-      use array_resize_utils, only: resize_matrix
       use multislater, only: detiab
 
       implicit real*8(a-h,o-z)
@@ -64,7 +63,7 @@ c           call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
    3        if(ioptjas.gt.0) call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
         endif
    11 continue
-      
+
       vpsp_det(1)=0
       vpsp_det(2)=0
         do 12 iparm=1,nparmj
@@ -78,10 +77,10 @@ c           call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
         i2=nelec
       endif
 
-      
-      
+
+
       do 100 i=i1,i2
-      
+
         iab=1
         if(i.gt.nup) iab=2
 
@@ -139,7 +138,7 @@ c             enddo
               do 50 l=1,lpot(ict)-1
    50           term_radial=term_radial+yl0(l,costh)*vps(i,ic,l)
               term_radial=term_radial*wq(iq)*exp(psij_ratio)
-        
+
 c vpsp_det  = vnl(D_kref J)/(D_kref J)
               vpsp_det(iab)=vpsp_det(iab)+det_ratio*term_radial
 
@@ -159,18 +158,18 @@ c dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
 
 c transition probabilities for Casula's moves in DMC
               if(index(mode,'dmc').ne.0) then
-                t_vpsp(ic,iq,i)=det_ratio*term_radial 
+                t_vpsp(ic,iq,i)=det_ratio*term_radial
                 do 56 iorb=1,norb
    56             b_t(iorb,iq,ic,i)=orbn(iorb)*term_radial
               endif
 
-              if(iforce_analy.gt.0) 
+              if(iforce_analy.gt.0)
      &        call compute_da_bnl(iel,ic,ict,iq,r_en_sav,rvec_en_sav,costh,
      &                                     term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
-               
+
 c end loop quadrature points
    60       continue
-            
+
             do 68 k=1,3
    68         x(k,i)=xsav(k)
             do 70 jc=1,ncent
@@ -181,7 +180,7 @@ c end loop quadrature points
               do 70 k=1,3
                 rshift(k,i,jc)=rshift_sav(k,jc)
    70           rvec_en(k,i,jc)=rvec_en_sav(k,jc)
-              
+
 c elseif iskip
            elseif(i_vpsp.ne.0)then
             do 80 iq=1,nquad
@@ -192,10 +191,10 @@ c endif iskip
           endif
 c end loop nelec, ncent
   100 continue
-        
+
       if(ipr.ge.4) write(6,'(''vpsp_det,det,r_en(1)='',100d12.4)')
      &,(vpsp_det(iab),detiab(1,iab),iab=1,2),r_en(1,1)
-      
+
       return
       end
 c-----------------------------------------------------------------------
@@ -303,9 +302,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic
       use grid3dflag, only: i3dlagorb, i3dsplorb
-      use const, only: nelec
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use array_resize_utils, only: resize_tensor
       implicit real*8(a-h,o-z)
 
 
@@ -314,7 +311,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       dimension x(3),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       dimension orbn(*),dorbn(3,*),da_orbn(3,ncent_tot,*),dtmp(3)
-      
+
 
       ! call resize_tensor(coef, norb+nadorb, 2)
 
@@ -333,7 +330,7 @@ c get the value from the 3d-interpolated orbitals
           call lagrange_mose(1,x,orbn,ier)
          else
           ier=1
-        endif 
+        endif
 
         if(ier.eq.1) then
 c get basis functions for electron iel
@@ -380,7 +377,7 @@ c         write(6,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,1,iel)
 c-----------------------------------------------------------------------
       subroutine nonlocd(iel,orb,detu,detd,slmui,slmdi,ratio)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
-      
+
       use precision_kinds, only: dp
       use elec, only: ndn, nup
       use multidet, only: kref
@@ -578,7 +575,7 @@ c-----------------------------------------------------------------------
         db(3,iel,iorb,ic)=db(3,iel,iorb,ic)+term_radial_da_vps(3)*orbn(iorb)
      &                   +da_term_radial*(-zq(iq)*r_en_savi+costh*rvec_en_sav(3,ic)*r_en_savi2)*orbn(iorb)
 
-                
+
          db_tmp1=term_radial*(dorbn(1,iorb)+orbn(iorb)*vjn(1))
          db_tmp2=term_radial*(dorbn(2,iorb)+orbn(iorb)*vjn(2))
          db_tmp3=term_radial*(dorbn(3,iorb)+orbn(iorb)*vjn(3))
@@ -595,7 +592,7 @@ c          if(jc.ne.ic) then
    53          db(k,iel,iorb,jc)=db(k,iel,iorb,jc)+term_radial*(da_orbn(k,jc,iorb)+orbn(iorb)*da_ratio_jn(k,jc))
 c          endif
    54 continue
-               
+
 c     write(6,*) 'AFT',iel,ic,iq,db(1,iel,1,ic)-sav_db
       return
       end
