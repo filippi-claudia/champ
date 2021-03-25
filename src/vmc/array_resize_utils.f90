@@ -90,7 +90,7 @@ contains
 
             dim1 = size(mat, 1)
             dim2 = size(mat, 2)
-            dim2 = size(mat, 3)
+            dim3 = size(mat, 3)
 
             if (index_dim .eq. 1) then
                 dim1 = new_size
