@@ -2,12 +2,13 @@ module da_energy_sumcum
     !> Arguments: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
     use precision_kinds, only: dp
     use vmc_mod, only: MCENT
+    use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :), allocatable :: da_energy_cm2 !(3, MCENT)
-    real(dp), dimension(:, :), allocatable :: da_energy_cum !(3, MCENT)
-    real(dp), dimension(:, :), allocatable :: da_energy_sum !(3, MCENT)
-    real(dp), dimension(:, :), allocatable :: da_psi_cum !(3, MCENT)
-    real(dp), dimension(:, :), allocatable :: da_psi_sum !(3, MCENT)
+    real(dp), dimension(:, :, :), allocatable :: da_energy_cm2 !(3, MCENT,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: da_energy_cum !(3, MCENT,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: da_energy_sum !(3, MCENT,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: da_psi_cum !(3, MCENT,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: da_psi_sum !(3, MCENT,MSTATES)
 
     private
     public :: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
@@ -17,11 +18,11 @@ contains
     subroutine allocate_da_energy_sumcum()
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
-        if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, MCENT))
-        if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, MCENT))
-        if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, MCENT))
-        if (.not. allocated(da_psi_cum)) allocate (da_psi_cum(3, MCENT))
-        if (.not. allocated(da_psi_sum)) allocate (da_psi_sum(3, MCENT))
+        if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, MCENT, MSTATES))
+        if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, MCENT, MSTATES))
+        if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, MCENT, MSTATES))
+        if (.not. allocated(da_psi_cum)) allocate (da_psi_cum(3, MCENT, MSTATES))
+        if (.not. allocated(da_psi_sum)) allocate (da_psi_sum(3, MCENT, MSTATES))
     end subroutine allocate_da_energy_sumcum
 
     subroutine deallocate_da_energy_sumcum()
@@ -68,10 +69,11 @@ module da_orbval
     !> Arguments: da_d2orb, da_dorb, da_orb
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MORB, MCENT
+    use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :, :, :), allocatable :: da_d2orb !(3, MELEC, MORB, MCENT)
-    real(dp), dimension(:, :, :, :, :), allocatable :: da_dorb !(3, 3, MELEC, MORB, MCENT)
-    real(dp), dimension(:, :, :, :), allocatable :: da_orb !(3, MELEC, MORB, MCENT)
+    real(dp), dimension(:, :, :, :, :), allocatable :: da_d2orb !(3, MELEC, MORB, MCENT, MSTATES)
+    real(dp), dimension(:, :, :, :, :, :), allocatable :: da_dorb !(3, 3, MELEC, MORB, MCENT, MSTATES)
+    real(dp), dimension(:, :, :, :, :), allocatable :: da_orb !(3, MELEC, MORB, MCENT, MSTATES)
 
     private
     public   ::  da_d2orb, da_dorb, da_orb
@@ -81,9 +83,9 @@ contains
     subroutine allocate_da_orbval()
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
-        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, MELEC, MORB, MCENT))
-        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, MELEC, MORB, MCENT))
-        if (.not. allocated(da_orb)) allocate (da_orb(3, MELEC, MORB, MCENT))
+        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, MELEC, MORB, MCENT, MSTATES))
+        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, MELEC, MORB, MCENT, MSTATES))
+        if (.not. allocated(da_orb)) allocate (da_orb(3, MELEC, MORB, MCENT, MSTATES))
     end subroutine allocate_da_orbval
 
     subroutine deallocate_da_orbval()
@@ -134,9 +136,10 @@ module da_energy_now
     !> Arguments: da_energy, da_psi
     use precision_kinds, only: dp
     use vmc_mod, only: MCENT
+    use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :), allocatable :: da_energy !(3, MCENT)
-    real(dp), dimension(:, :), allocatable :: da_psi !(3, MCENT)
+    real(dp), dimension(:, :, :), allocatable :: da_energy !(3, MCENT, MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: da_psi !(3, MCENT, MSTATES)
 
     private
     public   ::  da_energy, da_psi
@@ -146,8 +149,8 @@ contains
     subroutine allocate_da_energy_now()
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
-        if (.not. allocated(da_energy)) allocate (da_energy(3, MCENT))
-        if (.not. allocated(da_psi)) allocate (da_psi(3, MCENT))
+        if (.not. allocated(da_energy)) allocate (da_energy(3, MCENT, MSTATES))
+        if (.not. allocated(da_psi)) allocate (da_psi(3, MCENT, MSTATES))
     end subroutine allocate_da_energy_now
 
     subroutine deallocate_da_energy_now()
@@ -187,8 +190,9 @@ module denergy_det_m
     !> Arguments: denergy_det
     use precision_kinds, only: dp
     use vmc_mod, only: MDET
+    use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :), allocatable :: denergy_det !(MDET, 2)
+    real(dp), dimension(:, :, :), allocatable :: denergy_det !(MDET, MSTATES, 2)
 
     private
     public :: denergy_det
@@ -198,7 +202,7 @@ contains
     subroutine allocate_denergy_det_m()
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
-        if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2))
+        if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, MSTATES, 2))
     end subroutine allocate_denergy_det_m
 
     subroutine deallocate_denergy_det_m()

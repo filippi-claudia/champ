@@ -11,68 +11,61 @@
       use orb_mat_033, only: ideriv_ref, irepcol_ref
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use multislater, only: detiab
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
       dimension orbprim(*),eorbprim(*)
 
-      istate=1
+
+c     RLPB some quantities still need to get state index!!!!
 
       if(ioptorb.eq.0) return
-c     ns_current=ns_current+1
-c     if(ns_current.ne.iorbsample) return
-c ns_current reset in optorb_sum
 
-      detratio=detiab(kref,1)*detiab(kref,2)/psid
-      do 200 iterm=1,norbterm
-
-        io=ideriv(1,iterm)
-        jo=ideriv(2,iterm)
-
-        dorb_psi_ref=0
-        dorb_energy_ref=0.d0
-
-        dorb_psi=0.d0
-        dorb_energy=0.d0
-        do iab=1,2
-
-          if(iab.eq.1) then
-            ish=0
-            nel=nup
-           else
-            ish=nup
-            nel=ndn
-          endif
-
-          if(io.ge.ivirt(iab)) then
-            do i=1,nel
-              dorb_psi=dorb_psi+zmat(io,i,iab)*orb(i+ish,jo,istate)
-              dorb_energy=dorb_energy+dzmat(io,i,iab)*orb(i+ish,jo,istate)+zmat(io,i,iab)*b(jo,i+ish)
+      do istate=1,nstates
+         detratio=detiab(kref,istate,1)*detiab(kref,istate,2)/psid
+         do iterm=1,norbterm
+            io=ideriv(1,iterm)
+            jo=ideriv(2,iterm)
+            dorb_psi_ref=0.0d0
+            dorb_energy_ref=0.0d0
+            dorb_psi=0.0d0
+            dorb_energy=0.0d0
+            do iab=1,2
+               if(iab.eq.1) then
+                  ish=0
+                  nel=nup
+               else
+                  ish=nup
+                  nel=ndn
+               endif
+               if(io.ge.ivirt(iab)) then
+                  do i=1,nel
+                     dorb_psi=dorb_psi+zmat(io,i,iab)*orb(i+ish,jo,istate)
+                     dorb_energy=dorb_energy+dzmat(io,i,iab)*orb(i+ish,jo,istate)
+     &                    +zmat(io,i,iab)*b(jo,i+ish,istate)
+                  enddo
+               endif
+               if(ideriv_ref(iterm,iab).gt.0) then
+                  irep=irepcol_ref(iterm,iab)
+                  dorb_psi_ref=dorb_psi_ref+aa(irep,jo,istate,iab)
+                  dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,istate,iab)
+                  do i=1,nel
+                     dorb_psi=dorb_psi-aaz(irep,i,iab)*orb(i+ish,jo,istate)
+                     dorb_energy=dorb_energy-emz(irep,i,iab)*orb(i+ish,jo,istate)
+     &                    -aaz(irep,i,iab)*b(jo,i+ish,istate)
+                  enddo
+               endif
             enddo
-          endif
-          if(ideriv_ref(iterm,iab).gt.0) then
-            irep=irepcol_ref(iterm,iab)
+            orbprim(iterm)=dorb_psi*detratio
+            eorbprim(iterm)=dorb_energy*detratio+dorb_energy_ref-denergy*orbprim(iterm)
+            orbprim(iterm)=orbprim(iterm)+dorb_psi_ref
+         enddo
+      enddo
 
-            dorb_psi_ref=dorb_psi_ref+aa(irep,jo,iab)
-            dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,iab)
+      end subroutine
 
-            do i=1,nel
-              dorb_psi=dorb_psi-aaz(irep,i,iab)*orb(i+ish,jo,istate)
-              dorb_energy=dorb_energy-emz(irep,i,iab)*orb(i+ish,jo,istate)-aaz(irep,i,iab)*b(jo,i+ish)
-            enddo
-          endif
-
-        enddo
-
-        orbprim(iterm)=dorb_psi*detratio
-        eorbprim(iterm)=dorb_energy*detratio+dorb_energy_ref-denergy*orbprim(iterm)
-        orbprim(iterm)=orbprim(iterm)+dorb_psi_ref
-
- 200  continue
-          
-      return
-      end
 c-----------------------------------------------------------------------
       subroutine optorb_compute(psid,eloc,deloc)
 

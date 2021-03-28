@@ -1,4 +1,3 @@
-c-----------------------------------------------------------------------
       subroutine determinante_psit(iel,determ,istate)
 
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
@@ -11,26 +10,19 @@ c-----------------------------------------------------------------------
       use elec, only: nup
       use wfsec, only: iwf
       use multislatern, only: ddorbn, detn, dorbn, orbn
-
       use multislater, only: detiab
+
       implicit real*8(a-h,o-z)
 
+      determ=0.0d0
 
-
-
-
-
-      determ=0
-
-      do 110 k=1,ndet
-        if(iel.le.nup) then
-          det=detn(k)*detiab(k,2)
+      do k=1,ndet
+         if(iel.le.nup) then
+            det=detn(k,istate)*detiab(k,istate,2)
          else
-          det=detiab(k,1)*detn(k)
-        endif
+            det=detiab(k,istate,1)*detn(k,istate)
+         endif
+         determ=determ+det*cdet(k,istate,iwf)
+      enddo
 
-        determ=determ+det*cdet(k,istate,iwf)
-  110 continue
-
-      return
-      end
+      end subroutine

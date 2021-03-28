@@ -236,7 +236,7 @@ module estcum
 
      real(dp), dimension(:), allocatable :: apsi !(MSTATES)
      real(dp) :: aref
-     real(dp), dimension(:), allocatable :: detref !(2)
+     real(dp), dimension(:, :), allocatable :: detref !(2,MSTATES)
 
      private
      public   ::  apsi, aref, detref
@@ -247,7 +247,7 @@ module estcum
          use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
          if (.not. allocated(apsi)) allocate (apsi(MSTATES))
-         if (.not. allocated(detref)) allocate (detref(2))
+         if (.not. allocated(detref)) allocate (detref(2,MSTATES))
      end subroutine allocate_estpsi
 
      subroutine deallocate_estpsi()

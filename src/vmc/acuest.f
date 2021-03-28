@@ -35,10 +35,7 @@ c routine to accumulate estimators for energy etc.
 
       implicit real*8(a-h,o-z)
 
-
       parameter (half=.5d0)
-
-
       dimension xstrech(3,MELEC),enow(MSTATES,MFORCE)
 
 c xsum = sum of values of x from metrop
@@ -114,18 +111,17 @@ c zero out xsum variables for metrop
 c-----------------------------------------------------------------------
       entry acues1(wtg)
 c statistical fluctuations without blocking
-      do 30 istate=1,nstates
-        ecum1(istate)=ecum1(istate)+esum1(istate)*wtg(istate)
-        ecm21(istate)=ecm21(istate)+esum1(istate)**2*wtg(istate)
-        esum1(istate)=0
-        
-        apsi(istate)=apsi(istate)+dabs(psido(istate))
-  30  continue
-    
-      aref=aref+dabs(detiab(kref,1)*detiab(kref,2))
+      do istate=1,nstates
+         ecum1(istate)=ecum1(istate)+esum1(istate)*wtg(istate)
+         ecm21(istate)=ecm21(istate)+esum1(istate)**2*wtg(istate)
+         esum1(istate)=0.0d0
+         
+         apsi(istate)=apsi(istate)+dabs(psido(istate))
+         aref=aref+dabs(detiab(kref,istate,1)*detiab(kref,istate,2))
 
-      detref(1)=detref(1)+dlog10(dabs(detiab(kref,1)))
-      detref(2)=detref(2)+dlog10(dabs(detiab(kref,2)))
+         detref(1,istate)=detref(1,istate)+dlog10(dabs(detiab(kref,istate,1)))
+         detref(2,istate)=detref(2,istate)+dlog10(dabs(detiab(kref,istate,2)))
+      enddo
 
       call acues1_reduce
 
@@ -170,10 +166,10 @@ c zero out estimators
         tjfsum(istate)=0
 
         apsi(istate)=0
+        detref(1,istate)=0.0d0
+        detref(2,istate)=0.0d0
   50  continue
 
-      detref(1)=0
-      detref(2)=0
 
       aref=0
 

@@ -38,7 +38,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 c Calculates energy
 
       dimension coord(3,*),psid(*),energy(*)
-      dimension denergy(MSTATES),eloc_det(MDET,2),vpsp_det(2),dvpsp_dj(MPARMJ)
+      dimension denergy(MSTATES),eloc_det(MDET,MSTATES,2),vpsp_det(2),dvpsp_dj(MPARMJ)
 
       iwf=iwftype(ifr)
 
@@ -128,10 +128,10 @@ c compute energy using Ymat
           if(iab.eq.2) nel=ndn
           do 20 jrep=ivirt(iab),norb
             do 20 irep=iactv(iab),nel
-   20         denergy(istate)=denergy(istate)+ymat(jrep,irep,iab,istate)*tildem(irep,jrep,iab)
-        denergy(istate)=denergy(istate)*detiab(kref,1)*detiab(kref,2)/psid(istate)
+   20         denergy(istate)=denergy(istate)+ymat(jrep,irep,iab,istate)*tildem(irep,jrep,istate,iab)
+        denergy(istate)=denergy(istate)*detiab(kref,istate,1)*detiab(kref,istate,2)/psid(istate)
 
-        energy(istate)=denergy(istate)+eloc_det(kref,1)+eloc_det(kref,2)+e_other
+        energy(istate)=denergy(istate)+eloc_det(kref,istate,1)+eloc_det(kref,istate,2)+e_other
 
         if(ipr.ge.2) then
           write(6,'(''state'',i4)') istate

@@ -38,6 +38,7 @@ c Written by Claudia Filippi
       save krefw,slmuiw,slmdiw,fpuw,fpdw,fppuw,fppdw,detuw,detdw,ddxw,d2dx2w
       save aaw,wfmatw,ymatw,orbw,dorbw
 
+c     RLPB 
       istate=1
 
        do 20 k=1,ndet
@@ -56,9 +57,9 @@ c Written by Claudia Filippi
          fpdw(2,j,iw)=fpd(2,j)
    50    fpdw(3,j,iw)=fpd(3,j)
        do 55 i=1,nelec
-         ddxw(1,i,iw)=ddx(1,i)
-         ddxw(2,i,iw)=ddx(2,i)
-   55    ddxw(3,i,iw)=ddx(3,i)
+         ddxw(1,i,iw)=ddx(1,i,istate)
+         ddxw(2,i,iw)=ddx(2,i,istate)
+   55    ddxw(3,i,iw)=ddx(3,i,istate)
 
        do 62 iab=1,2
          nel=nup
@@ -67,12 +68,12 @@ c Written by Claudia Filippi
           do 58 i=1,nel
             do 57 istate=1,nstates
    57         ymatw(j,i,iw,iab,istate)=ymat(j,i,iab,istate)
-   58       aaw(i,j,iw,iab)=aa(i,j,iab)
+   58       aaw(i,j,iw,iab)=aa(i,j,istate,iab)
           do 62 k=1,ndet
             if(k.ne.kref) then
               ndim=numrep_det(k,iab)
               do 60 i=1,ndim*ndim
-   60           wfmatw(i,k,iw,iab)=wfmat(i,k,iab)
+   60           wfmatw(i,k,iw,iab)=wfmat(i,k,istate,iab)
             endif
    62  continue
 
@@ -102,9 +103,9 @@ c Written by Claudia Filippi
         fpd(2,j)=fpdw(2,j,iw)
    90   fpd(3,j)=fpdw(3,j,iw)
       do 95 i=1,nelec
-        ddx(1,i)=ddxw(1,i,iw)
-        ddx(2,i)=ddxw(2,i,iw)
-   95   ddx(3,i)=ddxw(3,i,iw)
+        ddx(1,i,istate)=ddxw(1,i,iw)
+        ddx(2,i,istate)=ddxw(2,i,iw)
+   95   ddx(3,i,istate)=ddxw(3,i,iw)
 
        do 102 iab=1,2
          nel=nup
@@ -113,12 +114,12 @@ c Written by Claudia Filippi
           do 98 i=1,nel
             do 97 istate=1,nstates
    97         ymat(j,i,iab,istate)=ymatw(j,i,iw,iab,istate)
-   98       aa(i,j,iab)=aaw(i,j,iw,iab)
+   98       aa(i,j,istate,iab)=aaw(i,j,iw,iab)
           do 102 k=1,ndet
             if(k.ne.kref) then
               ndim=numrep_det(k,iab)
               do 100 i=1,ndim*ndim
-  100           wfmat(i,k,iab)=wfmatw(i,k,iw,iab)
+  100           wfmat(i,k,istate,iab)=wfmatw(i,k,iw,iab)
             endif
   102  continue
 

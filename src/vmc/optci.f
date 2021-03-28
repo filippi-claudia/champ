@@ -1,69 +1,75 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
-
       use vmc_mod, only: MDET
+      use mstates_mod, only: MSTATES
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
       use optwf_contrl, only: ioptci
       use ci000, only: nciprim
       use ci001_blk, only: ci_o, ci_oe
       use ci003_blk, only: ci_e
       use ci004_blk, only: ci_de
-
       use method_opt, only: method
-
       use multislater, only: detiab
+      use csfs, only: nstates
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
-      dimension ciprim(MDET),cieprim(MDET)
+      dimension ciprim(MDET,MSTATES),cieprim(MDET,MSTATES)
       dimension eloc_det(MDET,2)
       
       if(ioptci.eq.0) return 
       
-      psidi=1.d0/psid
+      psidi=1.0d0/psid
 
-      do 1 k=1,nciprim
-        ciprim(k)=detiab(k,1)*detiab(k,2)*psidi
-        cieprim(k)=(eloc_det(k,1)+eloc_det(k,2)+e_other)*ciprim(k)
-   1  continue
+      do istates=1,nstates
+         do k=1,nciprim
+            ciprim(k,istate)=detiab(k,istate,1)*detiab(k,istate,2)*psidi
+            cieprim(k,istate)=(eloc_det(k,1)+eloc_det(k,2)+e_other)*ciprim(k,istate)
+         enddo
+      enddo
 
-c Update <Oi>,<Ei>,<dEi>,<Oi*Ej> 
-c Correlation matrix <Oi*Oj> is computed in ci_sum
+c     Update <Oi>,<Ei>,<dEi>,<Oi*Ej> 
+c     Correlation matrix <Oi*Oj> is computed in ci_sum
+c     RLPB need to add loop over states
 
       if(ncsf.eq.0) then
-        do 10 i=1,nciprim
-         ci_o(i)=ciprim(i)
-         ci_e(i)=cieprim(i)
-  10     ci_de(i)=cieprim(i)-ciprim(i)*energy
-       else
-        do 30 icsf=1,ncsf
-          ci_o_csf=0
-          ci_e_csf=0
-          do 20 ix=iadet(icsf),ibdet(icsf)
-            idet=icxdet(ix)
-            ci_o_csf=ci_o_csf+ciprim(idet)*cxdet(ix)
-  20        ci_e_csf=ci_e_csf+cieprim(idet)*cxdet(ix)
-        ci_o(icsf)=ci_o_csf
-        ci_e(icsf)=ci_e_csf
-  30    ci_de(icsf)=ci_e_csf-ci_o_csf*energy
-
+         do i=1,nciprim
+            ci_o(i)=ciprim(i,1)
+            ci_e(i)=cieprim(i,1)
+            ci_de(i)=cieprim(i,1)-ciprim(i,1)*energy
+         enddo
+      else
+         do icsf=1,ncsf
+            ci_o_csf=0
+            ci_e_csf=0
+            do ix=iadet(icsf),ibdet(icsf)
+               idet=icxdet(ix)
+               ci_o_csf=ci_o_csf+ciprim(idet,1)*cxdet(ix)
+               ci_e_csf=ci_e_csf+cieprim(idet,1)*cxdet(ix)
+            enddo
+            ci_o(icsf)=ci_o_csf
+            ci_e(icsf)=ci_e_csf
+            ci_de(icsf)=ci_e_csf-ci_o_csf*energy
+         enddo
       endif
 
       if(method.eq.'sr_n'.or.method.eq.'lin_d') return
 
       if(ncsf.eq.0) then
-       do 50 i=1,nciprim
-         do 50 j=1,nciprim
-  50       ci_oe(i,j) = ciprim(i)*cieprim(j)
+         do i=1,nciprim
+            do j=1,nciprim
+               ci_oe(i,j) = ciprim(i,1)*cieprim(j,1)
+            enddo
+         enddo
       else
-        do 60 icsf=1,ncsf
-          do 60 jcsf=1,ncsf
-  60        ci_oe(icsf,jcsf)=ci_o(icsf)*ci_e(jcsf)
+         do icsf=1,ncsf
+            do jcsf=1,ncsf
+               ci_oe(icsf,jcsf)=ci_o(icsf)*ci_e(jcsf)
+            enddo
+         enddo
       endif
 
-      end
+      end subroutine
+
 c-----------------------------------------------------------------------
       subroutine optci_init(iflg)
 

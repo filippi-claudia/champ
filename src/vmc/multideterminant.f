@@ -6,6 +6,7 @@
       use vmc_mod, only: radmax, delri
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use mstates_mod, only: MSTATES
       use const, only: hb, nelec
       use csfs, only: nstates
       use dets, only: ndet
@@ -34,131 +35,127 @@ c     as many ups as downs. If this is not true then be careful if
 c     nelec is close to MELEC. The Slater matrices must be
 c     dimensioned at least max(nup**2,ndn**2)
 
-      dimension eloc_det(MDET,2)
+      dimension eloc_det(MDET,MSTATES,2)
       dimension vj(3,MELEC),vpsp_det(*)
-      dimension btemp(MELEC**2,2)
+      dimension btemp(MELEC**2,MSTATES,2)
+      dimension dum1(MSTATES),dum2(MSTATES),dum3(MSTATES)
 
-c     RLPB
-      kstate=1
-
-      nel=nup
-      ish=0
-      do iab=1,2
-         if(iab.eq.2) then
-            nel=ndn
-            ish=nup
-         endif
-         eloc_det(kref,iab)=vpsp_det(iab)
-         do i=1,nel
-            eloc_det(kref,iab)=eloc_det(kref,iab)
-     &           -hb*(d2dx2(i+ish)+2.d0*(vj(1,i+ish)*ddx(1,i+ish)
-     &           +vj(2,i+ish)*ddx(2,i+ish)+vj(3,i+ish)*ddx(3,i+ish)))
-         enddo
-      enddo
-
-      if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) then
-         call bxmatrix(kref,xmat(1,1),xmat(1,2),b)
-      endif
-      if(ndet.eq.1.and.ioptorb.eq.0) return
-
-      nel=nup
-      iel=0
-      do iab=1,2
-         if(iab.eq.2) then
-            nel=ndn
-            iel=nup
-         endif
-         do jrep=1,norb+nadorb
-            do irep=1,nel
-               dum1=0.d0
-               dum2=0.d0
-               dum3=0.d0
-               do i=1,nel
-                  dum1=dum1+slmi(irep+(i-1)*nel,iab)*orb(i+iel,jrep,kstate)
-                  dum2=dum2+slmi(irep+(i-1)*nel,iab)*b(jrep,i+iel)
-                  dum3=dum3+xmat(i+(irep-1)*nel,iab)*orb(i+iel,jrep,kstate)
-               enddo
-               aa(irep,jrep,iab)=dum1
-               tildem(irep,jrep,iab)=dum2-dum3
+      do istate=1,nstates
+         nel=nup
+         ish=0
+         do iab=1,2
+            if(iab.eq.2) then
+               nel=ndn
+               ish=nup
+            endif
+            eloc_det(kref,istate,iab)=vpsp_det(iab)
+            do i=1,nel
+               eloc_det(kref,istate,iab)=eloc_det(kref,istate,iab)
+     &              -hb*(d2dx2(i+ish,istate)+2.d0*(vj(1,i+ish)*ddx(1,i+ish,istate)
+     &              +vj(2,i+ish)*ddx(2,i+ish,istate)+vj(3,i+ish)*ddx(3,i+ish,istate)))
             enddo
          enddo
-      enddo
 
-      denergy_det(kref,1)=0
-      denergy_det(kref,2)=0
-
-      if(ndet.eq.1) return
-
-      do 200 k=1,ndet
-         if(k.eq.kref) then
-            goto 200
+         if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) then
+            call bxmatrix(kref,xmat(1,istate,1),xmat(1,istate,2),b(1,1,istate))
          endif
+
+         if(ndet.eq.1.and.ioptorb.eq.0) return
+
+         nel=nup
+         iel=0
          do iab=1,2
-            if(iwundet(k,iab).eq.k) then
-               iel=0
-               nel=nup
-               if(iab.eq.2) then
-                  iel=nup
-                  nel=ndn
-               endif
-               ndim=numrep_det(k,iab)
-
-               do irep=1,ndim
-                  iorb=irepcol_det(irep,k,iab)
-                  do jrep=1,ndim
-                     jorb=ireporb_det(jrep,k,iab)
-
-                     wfmat(irep+(jrep-1)*ndim,k,iab)=aa(iorb,jorb,iab)
-                  enddo
-               enddo
-
-               call matinv(wfmat(1,k,iab),ndim,det)
-               detiab(k,iab)=det
-
-               denergy_det(k,iab)=0
-               do irep=1,ndim
-                  iorb=irepcol_det(irep,k,iab)
-                  do jrep=1,ndim
-                     jorb=ireporb_det(jrep,k,iab)
-                     denergy_det(k,iab)=denergy_det(k,iab)
-     &                    +wfmat(jrep+(irep-1)*ndim,k,iab)*tildem(iorb,jorb,iab)
-                  enddo
-               enddo
-            else
-               index_det=iwundet(k,iab)
-               denergy_det(k,iab)=denergy_det(index_det,iab)
-               detiab(k,iab)=detiab(index_det,iab)
+            if(iab.eq.2) then
+               nel=ndn
+               iel=nup
             endif
+            do jrep=1,norb+nadorb
+               do irep=1,nel
+                  dum1(istate)=0.0d0
+                  dum2(istate)=0.0d0
+                  dum3(istate)=0.0d0
+                  do i=1,nel
+                     dum1(istate)=dum1(istate)+slmi(irep+(i-1)*nel,istate,iab)*orb(i+iel,jrep,istate)
+                     dum2(istate)=dum2(istate)+slmi(irep+(i-1)*nel,istate,iab)*b(jrep,i+iel,istate)
+                     dum3(istate)=dum3(istate)+xmat(i+(irep-1)*nel,istate,iab)*orb(i+iel,jrep,istate)
+                  enddo
+                  aa(irep,jrep,istate,iab)=dum1(istate)
+                  tildem(irep,jrep,istate,iab)=dum2(istate)-dum3(istate)
+               enddo
+            enddo
          enddo
 
-         eloc_det(k,1)=denergy_det(k,1)+eloc_det(kref,1)
-         eloc_det(k,2)=denergy_det(k,2)+eloc_det(kref,2)
+         denergy_det(kref,istate,1)=0.0d0
+         denergy_det(kref,istate,2)=0.0d0
 
- 200  continue
+         if(ndet.eq.1) return
 
-      do 400 k=1,ndet
-         if(k.eq.kref) goto 400
-         do 300 iab=1,2
-            if(iwundet(k,iab).ne.kref) then
-               detiab(k,iab)=detiab(k,iab)*detiab(kref,iab)
-            endif
- 300     continue
- 400  continue
+         do k=1,ndet
+            if(k.eq.kref) cycle
+            do iab=1,2
+               if(iwundet(k,iab).eq.k) then
+                  iel=0
+                  nel=nup
+                  if(iab.eq.2) then
+                     iel=nup
+                     nel=ndn
+                  endif
+                  ndim=numrep_det(k,iab)
+
+                  do irep=1,ndim
+                     iorb=irepcol_det(irep,k,iab)
+                     do jrep=1,ndim
+                        jorb=ireporb_det(jrep,k,iab)
+                        wfmat(irep+(jrep-1)*ndim,k,istate,iab)=aa(iorb,jorb,istate,iab)
+                     enddo
+                  enddo
+
+                  call matinv(wfmat(1,k,istate,iab),ndim,det)
+                  detiab(k,istate,iab)=det
+                  denergy_det(k,istate,iab)=0.0d0
+                  do irep=1,ndim
+                     iorb=irepcol_det(irep,k,iab)
+                     do jrep=1,ndim
+                        jorb=ireporb_det(jrep,k,iab)
+                        denergy_det(k,istate,iab)=denergy_det(k,istate,iab)
+     &                       +wfmat(jrep+(irep-1)*ndim,k,istate,iab)*tildem(iorb,jorb,istate,iab)
+                     enddo
+                  enddo
+               else
+                  index_det=iwundet(k,iab)
+                  denergy_det(k,istate,iab)=denergy_det(index_det,istate,iab)
+                  detiab(k,istate,iab)=detiab(index_det,istate,iab)
+               endif
+            enddo
+
+            eloc_det(k,istate,1)=denergy_det(k,istate,1)+eloc_det(kref,istate,1)
+            eloc_det(k,istate,2)=denergy_det(k,istate,2)+eloc_det(kref,istate,2)
+         enddo
+
+         do k=1,ndet
+            if(k.eq.kref) cycle
+            do iab=1,2
+               if(iwundet(k,iab).ne.kref) then
+                  detiab(k,istate,iab)=detiab(k,istate,iab)*detiab(kref,istate,iab)
+               endif
+            enddo
+         enddo
 
 c     compute Ymat for future use
 
-      do 800 istate=1,nstates
-         call compute_ymat(1,detiab(1,1),detiab(1,2),wfmat(1,1,1),ymat(1,1,1,istate),istate)
-         if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_dymat(1,dymat(1,1,1,istate))
+         call compute_ymat(1,detiab(1,istate,1),detiab(1,istate,2),
+     &        wfmat(1,1,istate,1),ymat(1,1,1,istate),istate)
+         if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_dymat(1,dymat(1,1,1,istate),istate)
 
          if(ndn.gt.0) then
-            call compute_ymat(2,detiab(1,1),detiab(1,2),wfmat(1,1,2),ymat(1,1,2,istate),istate)
-            if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_dymat(2,dymat(1,1,2,istate))
+            call compute_ymat(2,detiab(1,istate,1),detiab(1,istate,2),
+     &           wfmat(1,1,istate,2),ymat(1,1,2,istate),istate)
+            if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_dymat(2,dymat(1,1,2,istate),istate)
          endif
 
          if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_zmat(ymat(1,1,1,istate),dymat(1,1,1,istate)
-     &        ,zmat(1,1,1,istate),dzmat(1,1,1,istate),emz(1,1,1,istate),aaz(1,1,1,istate))
- 800  continue
+     &        ,zmat(1,1,1,istate),dzmat(1,1,1,istate),emz(1,1,1,istate),aaz(1,1,1,istate),istate)
+      enddo
 
       end subroutine
 
@@ -185,20 +182,22 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      parameter (one=1.d0,half=0.5d0)
+      parameter (one=1.0d0,half=0.5d0)
       dimension detu(MDET),detd(MDET),wfmat(MEXCIT**2,MDET),ymat(MORB,MELEC)
 
-      detrefi=1.d0/(detu(kref)*detd(kref))
+      detrefi=1.0d0/(detu(kref)*detd(kref))
 
-      do 10 i=1,nelec
-         do 10 j=1,norb
- 10         ymat(j,i)=0.0d0
+      do i=1,nelec
+         do j=1,norb
+            ymat(j,i)=0.0d0
+         enddo
+      enddo
 
-      do 300 k=1,ndet
-         if(k.eq.kref) goto 300
+      do k=1,ndet
+         if(k.eq.kref) cycle
          cdet_equiv(k)=0.0d0
          dcdet_equiv(k)=0.0d0
-         if(iwundet(k,iab).eq.kref) goto 300
+         if(iwundet(k,iab).eq.kref) cycle
          kk=k
          if(iwundet(k,iab).ne.k) kk=iwundet(k,iab)
          if(iab.eq.1) then
@@ -208,27 +207,27 @@ c-----------------------------------------------------------------------
          endif
          cdet_equiv(kk)=cdet_equiv(kk)+cdet(k,istate,iwf)*detall
          dcdet_equiv(kk)=dcdet_equiv(kk)
-     &        +cdet(k,istate,iwf)*detall*(denergy_det(k,1)+denergy_det(k,2))
- 300        continue
+     &        +cdet(k,istate,iwf)*detall*(denergy_det(k,istate,1)+denergy_det(k,istate,2))
+      enddo
 
-         do 400 kk=1,ndet
-            if(kk.eq.kref.or.iwundet(kk,iab).ne.kk) goto 400
-            ndim=numrep_det(kk,iab)
-            do irep=1,ndim
-               iorb=irepcol_det(irep,kk,iab)
-               do jrep=1,ndim
-                  jorb=ireporb_det(jrep,kk,iab)
-                  ymat(jorb,iorb)=ymat(jorb,iorb)
-     &                 +cdet_equiv(kk)*wfmat(jrep+(irep-1)*ndim,kk)
-               enddo
+      do kk=1,ndet
+         if(kk.eq.kref.or.iwundet(kk,iab).ne.kk) cycle
+         ndim=numrep_det(kk,iab)
+         do irep=1,ndim
+            iorb=irepcol_det(irep,kk,iab)
+            do jrep=1,ndim
+               jorb=ireporb_det(jrep,kk,iab)
+               ymat(jorb,iorb)=ymat(jorb,iorb)
+     &              +cdet_equiv(kk)*wfmat(jrep+(irep-1)*ndim,kk)
             enddo
- 400     continue
+         enddo
+      enddo
 
       end subroutine
 
 c-----------------------------------------------------------------------
 
-      subroutine compute_dymat(iab,dymat)
+      subroutine compute_dymat(iab,dymat,istate)
 
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
@@ -242,20 +241,20 @@ c-----------------------------------------------------------------------
       use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det
       use coefs, only: norb
       use Bloc, only: tildem
-
       use multimat, only: wfmat
 
       implicit real*8(a-h,o-z)
 
-
       dimension dymat(MORB,MELEC),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
 
-      do 10 i=1,nelec
-         do 10 j=1,norb
- 10         dymat(j,i)=0
+      do i=1,nelec
+         do j=1,norb
+            dymat(j,i)=0.0d0
+         enddo
+      enddo
 
-      do 400 kk=1,ndet
-         if(kk.eq.kref.or.iwundet(kk,iab).ne.kk) goto 400
+      do kk=1,ndet
+         if(kk.eq.kref.or.iwundet(kk,iab).ne.kk) cycle
          ndim=numrep_det(kk,iab)
          do irep=1,ndim
             iorb=ireporb_det(irep,kk,iab)
@@ -264,7 +263,8 @@ c-----------------------------------------------------------------------
                dmat1(jj)=0.d0
                do lrep=1,ndim
                   lorb=irepcol_det(lrep,kk,iab)
-                  dmat1(jj)=dmat1(jj)+wfmat(jrep+(lrep-1)*ndim,kk,iab)*tildem(lorb,iorb,iab)
+                  dmat1(jj)=dmat1(jj)+wfmat(jrep+(lrep-1)*ndim,kk,istate,iab)
+     &                 *tildem(lorb,iorb,istate,iab)
                enddo
             enddo
          enddo
@@ -274,7 +274,7 @@ c-----------------------------------------------------------------------
                dmat2(jj)=0.d0
                do lrep=1,ndim
                   ll=jrep+(lrep-1)*ndim
-                  dmat2(jj)=dmat2(jj)+dmat1(ll)*wfmat(lrep+(irep-1)*ndim,kk,iab)
+                  dmat2(jj)=dmat2(jj)+dmat1(ll)*wfmat(lrep+(irep-1)*ndim,kk,istate,iab)
                enddo
             enddo
          enddo
@@ -284,16 +284,16 @@ c-----------------------------------------------------------------------
                jorb=ireporb_det(jrep,kk,iab)
                jj=jrep+(irep-1)*ndim
                dymat(jorb,iorb)=dymat(jorb,iorb)
-     &              +wfmat(jj,kk,iab)*dcdet_equiv(kk)-cdet_equiv(kk)*dmat2(jj)
+     &              +wfmat(jj,kk,istate,iab)*dcdet_equiv(kk)-cdet_equiv(kk)*dmat2(jj)
             enddo
          enddo
- 400  continue
+      enddo
 
       end subroutine
 
 c-----------------------------------------------------------------------
 
-      subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
+      subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz,istate)
 
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
@@ -314,8 +314,8 @@ c-----------------------------------------------------------------------
       dimension ymat(MORB,MELEC,2),dymat(MORB,MELEC,2)
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
 
-      do 100 iab=1,2
-         if(iab.eq.2.and.ndn.eq.0) goto 100
+      do iab=1,2
+         if(iab.eq.2.and.ndn.eq.0) cycle
          if(iab.eq.1) then
             ish=0
             nel=nup
@@ -329,10 +329,10 @@ c-----------------------------------------------------------------------
                dzmat(jrep,irep,iab)=0.0d0
                do krep=iactv(iab),nel
                   zmat(jrep,irep,iab)=zmat(jrep,irep,iab)
-     &                 +ymat(jrep,krep,iab)*slmi(krep+(irep-1)*nel,iab)
+     &                 +ymat(jrep,krep,iab)*slmi(krep+(irep-1)*nel,istate,iab)
                   dzmat(jrep,irep,iab)=dzmat(jrep,irep,iab)
-     &                 +dymat(jrep,krep,iab)*slmi(krep+(irep-1)*nel,iab)
-     &                 -ymat(jrep,krep,iab)*xmat(irep+(krep-1)*nel,iab)
+     &                 +dymat(jrep,krep,iab)*slmi(krep+(irep-1)*nel,istate,iab)
+     &                 -ymat(jrep,krep,iab)*xmat(irep+(krep-1)*nel,istate,iab)
                enddo
             enddo
          enddo
@@ -342,13 +342,14 @@ c-----------------------------------------------------------------------
                aaz(jrep,irep,iab)=0.0d0
                do krep=ivirt(iab),norb
                   emz(jrep,irep,iab)=emz(jrep,irep,iab)
-     &                 +tildem(jrep,krep,iab)*zmat(krep,irep,iab)
-     &                 +aa(jrep,krep,iab)*dzmat(krep,irep,iab)
-                  aaz(jrep,irep,iab)=aaz(jrep,irep,iab)+aa(jrep,krep,iab)*zmat(krep,irep,iab)
+     &                 +tildem(jrep,krep,istate,iab)*zmat(krep,irep,iab)
+     &                 +aa(jrep,krep,istate,iab)*dzmat(krep,irep,iab)
+                  aaz(jrep,irep,iab)=aaz(jrep,irep,iab)
+     &                 +aa(jrep,krep,istate,iab)*zmat(krep,irep,iab)
                enddo
             enddo
          enddo
- 100  continue
+      enddo
 
       end subroutine
 
@@ -379,8 +380,10 @@ c-----------------------------------------------------------------------
          iab=1
       endif
 
-      do 100 istate=1,nstates
- 100     call compute_ymat(iab,detiab(1,1),detiab(1,2),wfmat(1,1,iab),ymat(1,1,iab,istate),istate)
+      do istate=1,nstates
+         call compute_ymat(iab,detiab(1,istate,1),detiab(1,istate,2),
+     &        wfmat(1,1,istate,iab),ymat(1,1,iab,istate),istate)
+      enddo
 
       end subroutine
 
@@ -402,7 +405,7 @@ c-----------------------------------------------------------------------
       use coefs, only: norb
       use dorb_m, only: iworbd
 
-      ! not sure about that one either ....
+!     not sure about that one either ....
       use wfsec, only: nwftype
 
       implicit real*8(a-h,o-z)
@@ -460,7 +463,7 @@ c-----------------------------------------------------------------------
                if(in.eq.0) then
                   numrep_det(k,iab)=numrep_det(k,iab)+1
                   if(numrep_det(k,iab).gt.MEXCIT) then
-                  call fatal_error('MULTIDET_DEF: numrep exceeds MEXCIT')
+                     call fatal_error('MULTIDET_DEF: numrep exceeds MEXCIT')
                   endif
                   irepcol_det(numrep_det(k,iab),k,iab)=iref
                endif
@@ -501,11 +504,10 @@ c-----------------------------------------------------------------------
                   enddo
                endif
             enddo
-
             itotphase(k)=itotphase(k)+iphase
          enddo
-         do iwf=1,nwftype
-            do istate=1,nstates
+         do istate=1,nstates
+            do iwf=1,nwftype
                cdet(k,istate,iwf)=cdet(k,istate,iwf)*(-1)**itotphase(k)
             enddo
          enddo
@@ -538,7 +540,9 @@ c-----------------------------------------------------------------------
                if(irepcol_det(irep,k,iab).ne.0
      &              .and.irepcol_det(irep,k,iab).lt.iactv(iab))
      &              iactv(iab)=irepcol_det(irep,k,iab)
-               if(ireporb_det(irep,k,iab).lt.ivirt(iab)) ivirt(iab)=ireporb_det(irep,k,iab)
+               if(ireporb_det(irep,k,iab).lt.ivirt(iab)) then
+                  ivirt(iab)=ireporb_det(irep,k,iab)
+               endif
             enddo
          enddo
  8       continue
@@ -585,11 +589,12 @@ c-----------------------------------------------------------------------
       endif
 
 c     TMP
-      do 20 icsf=1,ncsf
-         do 20 j=iadet(icsf),ibdet(icsf)
+      do icsf=1,ncsf
+         do j=iadet(icsf),ibdet(icsf)
             k=icxdet(j)
             cxdet(j)=cxdet(j)*(-1)**itotphase(k)
- 20   continue
+         enddo
+      enddo
 
       end subroutine
 
@@ -606,13 +611,15 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       idiff=1
-      if(numrep_det(i,iab).ne.numrep_det(j,iab))return
+      if(numrep_det(i,iab).ne.numrep_det(j,iab)) return
+
       do k=1,numrep_det(i,iab)
-        if(irepcol_det(k,j,iab).ne.irepcol_det(k,i,iab))return
-        if(ireporb_det(k,j,iab).ne.ireporb_det(k,i,iab))return
+         if(irepcol_det(k,j,iab).ne.irepcol_det(k,i,iab)) return
+         if(ireporb_det(k,j,iab).ne.ireporb_det(k,i,iab)) return
       enddo
       idiff=0
 
       return
+
       end function
            

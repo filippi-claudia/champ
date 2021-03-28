@@ -215,17 +215,17 @@ c-------------------------------------------------------------------------------
       n=3*nelec
       m=3*MELEC
 
-      istate=1
-
-      do ic=1,ncent
+      do istate=1,nstates
+         do ic=1,ncent
             k=ibas1(ic)-ibas0(ic)+1
             j=ibas0(ic)
             call dgemm('n','n',n,norb,k,-1.d0,tphin(1,j),
-     &           m,coef(j,1,istate,iwf),MBASIS,0.d0,da_orb(1,1,1,ic),m)
+     &           m,coef(j,1,istate,iwf),MBASIS,0.d0,da_orb(1,1,1,ic,istate),m)
             call dgemm('n','n',n,norb,k,-1.d0,t3phin(1,j),
-     &           m,coef(j,1,istate,iwf),MBASIS,0.d0,da_d2orb(1,1,1,ic),m)
+     &           m,coef(j,1,istate,iwf),MBASIS,0.d0,da_d2orb(1,1,1,ic,istate),m)
             call dgemm('n','n',3*n,norb,k,-1.d0,t2phin_all(1,j),
-     &           3*m,coef(j,1,istate,iwf),MBASIS,0.d0,da_dorb(1,1,1,1,ic),3*m)
+     &           3*m,coef(j,1,istate,iwf),MBASIS,0.d0,da_dorb(1,1,1,1,ic,istate),3*m)
+         enddo
       enddo
 
       end subroutine

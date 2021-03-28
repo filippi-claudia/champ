@@ -94,7 +94,6 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
          else
           call determinant_psig(psido,psig)
         endif
-c       RLPB the variable vold_holder is provisional
         call compute_determinante_grad(i,psig,psido,vold(1,i),1)
 
         fxop=one
@@ -643,7 +642,8 @@ c use 'new' not 'old' value
       call pcm_sum(wtg,0.d0)
       call mmpol_sum(wtg,0.d0)
       call prop_sum(wtg,0.d0)
-      call force_analy_sum(wtg,0.d0,eold(1,1),0)
+c RLPB now this has a last argument of states      
+      call force_analy_sum(wtg,0.d0,eold(1,1),0,1)
 
       call optjas_sum(wtg(1),0.d0,eold(1,1),eold(1,1),0)
       call optorb_sum(wtg(1),0.d0,eold(1,1),eold(1,1),0)

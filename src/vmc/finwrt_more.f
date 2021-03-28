@@ -1,6 +1,5 @@
       subroutine finwrt_more
 c written by Claudia Filippi
-
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -14,6 +13,7 @@ c written by Claudia Filippi
       use optwf_corsam, only: energy, energy_err, force, force_err
       use contrl, only: nstep
       use sa_check, only: energy_all, energy_err_all
+      use csfs, only: nstates
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -23,7 +23,11 @@ c     dimension istatus(MPI_STATUS_SIZE)
 
       passes=dfloat(iblk*nstep)
       write(6,'(''average psid, det_ref '',2d12.5)') (apsi(istate)*nproc/passes,istate=1,nstates),aref*nproc/passes
-      write(6,'(''log detref '',2d12.5)') (detref(iab)*nproc/passes,iab=1,2)
+
+      do istate=1,nstates
+         write(6,*) "STATE",istate
+         write(6,'(''log detref '',2d12.5)') (detref(iab,istate)*nproc/passes,iab=1,2)
+      enddo
 
 c     if(wid) then
 c       do 20 id=1,nproc-1

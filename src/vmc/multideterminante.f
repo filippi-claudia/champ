@@ -25,6 +25,7 @@
       dimension gmat(MELEC,MORB,3),gmatn(MEXCIT**2,3)
       dimension b(MORB,3),ddx_mdet(3)
       dimension orb_sav(MORB,MSTATES)
+      dimension dum1(MSTATES)
 
       if(ndet.eq.1) return
 
@@ -37,61 +38,59 @@
          ish=nup
       endif
 
-c     temporarely copy orbn to orb 
-
       do istate=1,nstates
+c     temporarely copy orbn to orb
+
          do iorb=1,norb
             orb_sav(iorb,istate)=orb(iel,iorb,istate)
             orb(iel,iorb,istate)=orbn(iorb,istate)
          enddo
-      enddo
 
-c     RLPB
-      kstate=1
-
-      do jrep=ivirt(iab),norb
-         do irep=1,nel
-            dum1=0.d0
-            do i=1,nel
-               dum1=dum1+slmin(irep+(i-1)*nel)*orb(i+ish,jrep,kstate)
+         do jrep=ivirt(iab),norb
+            do irep=1,nel
+               dum1(istate)=0.d0
+               do i=1,nel
+                  dum1(istate)=dum1(istate)+slmin(irep+(i-1)*nel,istate)*orb(i+ish,jrep,istate)
+               enddo
+               aan(irep,jrep,istate)=dum1(istate)
             enddo
-            aan(irep,jrep)=dum1
          enddo
-      enddo
 
 c     compute wave function 
 
-      do 200 k=1,ndet
-         if(k.ne.kref) then
-            if(iwundet(k,iab).eq.k) then
-               ndim=numrep_det(k,iab)
-               jj=0
-               do jrep=1,ndim
-                  jorb=ireporb_det(jrep,k,iab)
-                  do irep=1,ndim
-                     iorb=irepcol_det(irep,k,iab)
-                     jj=jj+1
-                     wfmatn(jj,k)=aan(iorb,jorb)
+         do k=1,ndet
+            if(k.ne.kref) then
+               if(iwundet(k,iab).eq.k) then
+                  ndim=numrep_det(k,iab)
+                  jj=0
+                  do jrep=1,ndim
+                     jorb=ireporb_det(jrep,k,iab)
+                     do irep=1,ndim
+                        iorb=irepcol_det(irep,k,iab)
+                        jj=jj+1
+                        wfmatn(jj,k,istate)=aan(iorb,jorbistate,istate)
+                     enddo
                   enddo
-               enddo
-               call matinv(wfmatn(1,k),ndim,det)
-               detn(k)=det
-            else
-               index_det=iwundet(k,iab)
-               detn(k)=detn(index_det)
+                  call matinv(wfmatn(1,k,istate),ndim,det)
+                  detn(k,istate)=det
+               else
+                  index_det=iwundet(k,iab)
+                  detn(k,istate)=detn(index_det,istate)
+               endif
             endif
-         endif
- 200  continue
+         enddo
 
-      do 400 k=1,ndet
-         if(k.ne.kref.and.iwundet(k,iab).ne.kref) then
-            detn(k)=detn(k)*detn(kref)
-         endif
- 400  continue
+         do k=1,ndet
+            if(k.ne.kref.and.iwundet(k,iab).ne.kref) then
+               detn(k,istate)=detn(k,istate)*detn(kref,istate)
+            endif
+         enddo
 
-      do istate=1,nstates
-         if(iab.eq.1) call compute_ymat(iab,detn,detiab(1,2),wfmatn,ymatn(1,1,istate),istate)
-         if(iab.eq.2) call compute_ymat(iab,detiab(1,1),detn,wfmatn,ymatn(1,1,istate),istate)
+         if(iab.eq.1) call compute_ymat(iab,detn(1,istate),detiab(1,istate,2),
+     &        wfmatn(1,1,istate),ymatn(1,1,istate),istate)
+         if(iab.eq.2) call compute_ymat(iab,detiab(1,istate,1),detn(1,istate),
+     &        wfmatn(1,1,istate),ymatn(1,1,istate),istate)
+
          do iorb=1,norb
             orb(iel,iorb,istate)=orb_sav(iorb,istate)
          enddo

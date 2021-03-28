@@ -1,8 +1,8 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X,
-     &NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
-     &radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+     &     NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20,
+     &     radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
@@ -16,89 +16,66 @@
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use dorb_m, only: iworbd
-
       use coefs, only: coef, nbasis, norb
       use wfsec, only: iwf, iwftype, nwftype
       use ycompact, only: dymat, ymat
       use multislater, only: detd, detu
       use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-
       use multimat, only: aa, wfmat
+
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-
-
-
       parameter (one=1.d0,half=0.5d0)
-
-
-
       dimension gmat(MELEC,MORB)
 
+c     RLPB
+      kstate=1
+
       if(icasula.gt.0)then
-        i1=iel_move
-        i2=iel_move
-       else
-        i1=1
-        i2=nelec
+         i1=iel_move
+         i2=iel_move
+      else
+         i1=1
+         i2=nelec
       endif
 
       do iel=i1,i2
+         do ic=1,ncent
+            if(iskip(iel,ic).eq.0) then
+               if(iel.le.nup) then
+                  iab=1
+                  nel=nup
+                  ish=0
+               else
+                  iab=2
+                  nel=ndn
+                  ish=nup
+               endif
 
-      do ic=1,ncent
-        
-      if(iskip(iel,ic).eq.0) then
-
-      if(iel.le.nup) then
-        iab=1
-        nel=nup
-        ish=0
-       else
-        iab=2
-        nel=ndn
-        ish=nup
-      endif
-
-      detratio=detu(kref)*detd(kref)/psid
-
-      jel=iel-ish
-
-      do iq=1,nquad
-
-        do jrep=ivirt(iab),norb
-          dum=0
-          do j=1,nel
-            dum=dum+b_t(iworbd(j+ish,kref),iq,ic,iel)*aa(j,jrep,iab)
-          enddo
-          dum=b_t(jrep,iq,ic,iel)-dum
-
-          do irep=iactv(iab),nel
-            gmat(irep,jrep)=dum*slmi(irep+(jel-1)*nel,iab)
-          enddo
-        enddo
-
-c     t_vpsp(ic,iq,iel)=t_vpsp_ref
-
-      dum=0
-      do jrep=ivirt(iab),norb
-        do irep=iactv(iab),nel
-          dum=dum+ymat(jrep,irep,iab,1)*gmat(irep,jrep)
-        enddo
-      enddo
-      t_vpsp(ic,iq,iel)=t_vpsp(ic,iq,iel)+dum*detratio
-
+               detratio=detu(kref)*detd(kref)/psid
+               jel=iel-ish
+               do iq=1,nquad
+                  do jrep=ivirt(iab),norb
+                     dum=0
+                     do j=1,nel
+                        dum=dum+b_t(iworbd(j+ish,kref),iq,ic,iel,kstate)*aa(j,jrep,kstate,iab)
+                     enddo
+                     dum=b_t(jrep,iq,ic,iel,kstate)-dum
+                     do irep=iactv(iab),nel
+                        gmat(irep,jrep)=dum*slmi(irep+(jel-1)*nel,kstate,iab)
+                     enddo
+                  enddo
+c                 t_vpsp(ic,iq,iel)=t_vpsp_ref
+                  dum=0.0d0
+                  do jrep=ivirt(iab),norb
+                     do irep=iactv(iab),nel
+                        dum=dum+ymat(jrep,irep,iab,1)*gmat(irep,jrep)
+                     enddo
+                  enddo
+                  t_vpsp(ic,iq,iel)=t_vpsp(ic,iq,iel)+dum*detratio
+               enddo
+            endif
+         enddo
       enddo
 
-      endif
-
-      enddo
-      enddo
-
-      return
-      end
+      end subroutine

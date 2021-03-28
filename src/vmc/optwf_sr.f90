@@ -596,7 +596,7 @@ contains
         ia = 0
         ish = 3*ncent
         do icent = 1, ncent
-            write (6, '(''FORCE before'',i4,3e15.7)') icent, (da_energy_ave(k, icent), k=1, 3)
+            write (6, '(''FORCE before'',i4,3e15.7)') icent, (da_energy_ave(k, icent,1), k=1, 3)
             do k = 1, 3
                 ia = ia + 1
 
@@ -613,7 +613,7 @@ contains
                 if (idtask .eq. 0) then
 
                     do i = 1, nparm
-                        o(i) = o(i)*wtoti - (obs(jhfj + i - 1, 1) - obs(jefj + i - 1, 1))*da_energy_ave(k, icent)
+                        o(i)=o(i)*wtoti-(obs(jhfj+i-1,1)-obs(jefj+i-1, 1))*da_energy_ave(k,icent,1)
                     enddo
 
                     do iparm = 1, nparm
@@ -624,15 +624,15 @@ contains
                         p(iparm) = -0.5*p(iparm)
                     enddo
 
-                    force_tmp = da_energy_ave(k, icent)
+                    force_tmp = da_energy_ave(k,icent,1)
                     do iparm = 1, nparm
                         force_tmp = force_tmp + p(iparm)*tmp(iparm)
                     enddo
-                    da_energy_ave(k, icent) = force_tmp
+                    da_energy_ave(k,icent,1) = force_tmp
 
                 endif
             enddo
-            write (6, '(''FORCE after '',i4,3e15.7)') icent, (da_energy_ave(k, icent), k=1, 3)
+            write (6, '(''FORCE after '',i4,3e15.7)') icent, (da_energy_ave(k,icent,1), k=1, 3)
         enddo
 
         return

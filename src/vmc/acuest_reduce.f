@@ -1,10 +1,8 @@
       subroutine acuest_reduce(enow)
 c Written by Claudia Filippi
-
       use force_mod, only: MFORCE
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
-
       use estcum, only: ecum, pecum, tpbcum, tjfcum, iblk
       use est2cm, only: ecm2, pecm2, tpbcm2, tjfcm2
       use estpsi, only: apsi, aref, detref
@@ -22,31 +20,31 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
       parameter (MOBS=MSTATES*(8+5*MFORCE)+10)
-      
       character*20 filename
-
       dimension obs(MOBS)
       dimension collect(MOBS),enow(MSTATES,MFORCE)
-
       ! ipudate was not declared anywhere
       integer :: iupdate = 0
 
       iblk=iblk+nproc
 
       jo=0
-      do 10 istate=1,nstates
-        jo=jo+1
-        obs(jo)=enow(istate,1)
+      do istate=1,nstates
+         jo=jo+1
+         obs(jo)=enow(istate,1)
 
-        jo=jo+1
-   10   obs(jo)=apsi(istate)
+         jo=jo+1
+         obs(jo)=apsi(istate)
+      enddo
 
       jo=jo+1
       obs(jo)=aref
 
-      do iab=1,2
-        jo=jo+1
-        obs(jo)=detref(iab)
+      do istate=1,nstates
+         do iab=1,2
+            jo=jo+1
+            obs(jo)=detref(iab,istate)
+         enddo
       enddo
 
       do 20 ifr=1,nforce
@@ -90,7 +88,9 @@ c Written by Claudia Filippi
 
       jo_tot=jo
 
-      if(jo_tot.gt.MOBS)  call fatal_error('ACUEST_REDUCE: increase MOBS')
+      if(jo_tot.gt.MOBS) then
+         call fatal_error('ACUEST_REDUCE: increase MOBS')
+      endif
  
       call mpi_reduce(obs,collect,jo_tot
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -109,9 +109,11 @@ c Written by Claudia Filippi
       jo=jo+1
       aref=collect(jo)/nproc
       
-      do iab=1,2
-        jo=jo+1
-        detref(iab)=collect(jo)/nproc
+      do istate=1,nstates
+         do iab=1,2
+           jo=jo+1
+           detref(iab,istate)=collect(jo)/nproc
+         enddo
       enddo
 
       do 120 ifr=1,nforce

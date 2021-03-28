@@ -3,6 +3,7 @@
       use optjas, only: MPARMJ
       use vmc_mod, only: MELEC, MORB, MDET
       use vmc_mod, only: MMAT_DIM
+      use mstates_mod, only: MSTATES
       use const, only: hb, nelec, ipr
       use csfs, only: nstates
       use derivjas, only: d2g, g
@@ -25,126 +26,101 @@
 
       dimension psid(*),dvpsp_dj(*),energy(*),vj(3,*)
       dimension deloc_dj(MPARMJ)
-
-      istate=1
+      dimension dum2(MSTATES),dum3(MSTATES)
 
       if(ioptjas.eq.0) return
 
-      do 200 iparm=1,nparmj
-
-        deloc_dj(iparm)=dvpsp_dj(iparm)
-        do i=1,nelec
-          deloc_dj(iparm)=deloc_dj(iparm)
-     &     -2.d0*hb*(g(1,i,iparm)*ddx(1,i)+g(2,i,iparm)*ddx(2,i)+g(3,i,iparm)*ddx(3,i))
-        enddo
-
-        deloc_dj_kref=deloc_dj(iparm)
-        do 100 istate=1,nstates
- 100      denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref*detiab(kref,1)*detiab(kref,2)
-
-C       test=0
-C       do j=1,nup
-C         do i=1,nup
-C           test=test+slmi(j+(i-1)*nup,1)*b_dj(j,i,iparm)
-C           test=test+slmi(j+(i-1)*ndn,2)*b_dj(j,i+nup,iparm)
-C         enddo
-C       enddo
-
-        if(ndet.gt.1) then
-
-        call bxmatrix(kref,xmat(1,1),xmat(1,2),b_dj(1,1,iparm))
-
-        do iab=1,2
-          if(iab.eq.1) then
-            ish=0
-            nel=nup
-           else
-            ish=nup
-            nel=ndn
-          endif
-          do jrep=ivirt(iab),norb
-              do irep=1,nel
-  
-                dum2=0.d0
-                dum3=0.d0
-                do i=1,nel
-                 dum2=dum2+slmi(irep+(i-1)*nel,iab)*b_dj(jrep,i+ish,iparm)
-                 dum3=dum3+xmat(i+(irep-1)*nel,iab)*orb(i+ish,jrep,istate)
-                enddo
-                dtildem(irep,jrep,iab)=dum2-dum3
-
-              enddo
-          enddo
-        enddo
-
-        denergy_det(kref,1)=0.d0
-        denergy_det(kref,2)=0.d0
-        do k=1,ndet
-
-          if(k.ne.kref) then
-
-          do iab=1,2
-
-          if(iwundet(k,iab).eq.k) then
-
-            iel=0
-            nel=nup
-            if(iab.eq.2) then
-              iel=nup
-              nel=ndn
-            endif
-            ndim=numrep_det(k,iab)
-
-            denergy_det(k,iab)=0
-            do irep=1,ndim
-              iorb=irepcol_det(irep,k,iab)
-              do jrep=1,ndim
-                jorb=ireporb_det(jrep,k,iab)
-                denergy_det(k,iab)=denergy_det(k,iab)+wfmat(jrep+(irep-1)*ndim,k,iab)*dtildem(iorb,jorb,iab)
-              enddo
+      do istate=1,nstates
+         do iparm=1,nparmj
+            deloc_dj(iparm)=dvpsp_dj(iparm)
+            do i=1,nelec
+               deloc_dj(iparm)=deloc_dj(iparm)
+     &              -2.d0*hb*(g(1,i,iparm)*ddx(1,i,istate)
+     &              +g(2,i,iparm)*ddx(2,i,istate)
+     &              +g(3,i,iparm)*ddx(3,i,istate))
             enddo
+            deloc_dj_kref=deloc_dj(iparm)
+            denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref
+     &           *detiab(kref,istate,1)*detiab(kref,istate,2)
+            if(ndet.gt.1) then
+               call bxmatrix(kref,xmat(1,istate,1),xmat(1,istate,2),b_dj(1,1,iparm,istate))
+               do iab=1,2
+                  if(iab.eq.1) then
+                     ish=0
+                     nel=nup
+                  else
+                     ish=nup
+                     nel=ndn
+                  endif
+                  do jrep=ivirt(iab),norb
+                     do irep=1,nel
+                        dum2(istate)=0.0d0
+                        dum3(istate)=0.0d0
+                        do i=1,nel
+                           dum2(istate)=dum2(istate)+slmi(irep+(i-1)*nel,istate,iab)
+     &                          *b_dj(jrep,i+ish,iparm,istate)
+                           dum3(istate)=dum3(istate)+xmat(i+(irep-1)*nel,istate,iab)
+     &                          *orb(i+ish,jrep,istate)
+                        enddo
+                        dtildem(irep,jrep,istate,iab)=dum2(istate)-dum3(istate)
+                     enddo
+                  enddo
+               enddo
+               denergy_det(kref,istate,1)=0.d0
+               denergy_det(kref,istate,2)=0.d0
+               do k=1,ndet
+                  if(k.ne.kref) then
+                     do iab=1,2
+                        if(iwundet(k,iab).eq.k) then
+                           iel=0
+                           nel=nup
+                           if(iab.eq.2) then
+                              iel=nup
+                              nel=ndn
+                           endif
+                           ndim=numrep_det(k,iab)
+                           denergy_det(k,istate,iab)=0.0d0
+                           do irep=1,ndim
+                              iorb=irepcol_det(irep,k,iab)
+                              do jrep=1,ndim
+                                 jorb=ireporb_det(jrep,k,iab)
+                                 denergy_det(k,istate,iab)=denergy_det(k,istate,iab)+
+     &                                wfmat(jrep+(irep-1)*ndim,k,istate,iab)
+     &                                *dtildem(iorb,jorb,istate,iab)
+                              enddo
+                           enddo
+                        else
+                           index_det=iwundet(k,iab)
+                           denergy_det(k,istate,iab)=denergy_det(index_det,istate,iab)
+                        endif
+                     enddo
+                     deloc_dj_k=denergy_det(k,istate,1)+denergy_det(k,istate,2)+deloc_dj_kref
+                     denergy(iparm,istate)=denergy(iparm,istate)+
+     &                    cdet(k,istate,1)*deloc_dj_k*detiab(k,istate,1)*detiab(k,istate,2)
+                  endif
+c     endif k.ne.kref
+               enddo
+            endif
+c     endif ndet.gt.1
+         enddo
 
-          else
-            index_det=iwundet(k,iab)
-
-            denergy_det(k,iab)=denergy_det(index_det,iab)
-          endif
-          
-          enddo
-
-          deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref
-
-          do istate=1,nstates
-             denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detiab(k,1)*detiab(k,2)
-          enddo
-
-          endif
-c endif k.ne.kref
-
-        enddo
-
-        endif
-c endif ndet.gt.1
-
-c d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
-        term_jas=d2g(iparm)
-        do i=1,nelec
-          term_jas=term_jas+2.d0*(g(1,i,iparm)*vj(1,i)+g(2,i,iparm)*vj(2,i)+g(3,i,iparm)*vj(3,i))
-        enddo
-        term_jas=-hb*term_jas
-
-        do 200 istate=1,nstates
-          denergy(iparm,istate)=term_jas+denergy(iparm,istate)/psid(istate)
- 200  continue
+c     d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
+         term_jas=d2g(iparm)
+         do i=1,nelec
+            term_jas=term_jas+2.d0*(g(1,i,iparm)*vj(1,i)+g(2,i,iparm)*vj(2,i)+g(3,i,iparm)*vj(3,i))
+         enddo
+         term_jas=-hb*term_jas
+         denergy(iparm,istate)=term_jas+denergy(iparm,istate)/psid(istate)
+      enddo
 
       if(ipr.gt.3) then
-        do istate=1,nstates
-          write(6,*) 'derivatives of local energy: ',(denergy(iparm,istate),iparm=1,nparmj)
-        enddo
+         do istate=1,nstates
+            write(6,*) 'derivatives of local energy: ',(denergy(iparm,istate),iparm=1,nparmj)
+         enddo
       endif
 
-      return
-      end
+      end subroutine
+
 c-----------------------------------------------------------------------
       subroutine optjas_sum(wtg_new,wtg_old,enew,eold,iflag)
 c Written by Claudia Filippi

@@ -1,5 +1,5 @@
       subroutine detsav(iel,iflag)
-c Written by Claudia Filippi
+c     Written by Claudia Filippi, modified by RLPB
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -25,45 +25,51 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
       if(iel.le.nup) then
-        iab=1
-        nel=nup
-        ish=0
-       else
-        iab=2
-        nel=ndn
-        ish=nup
+         iab=1
+         nel=nup
+         ish=0
+      else
+         iab=2
+         nel=ndn
+         ish=nup
       endif
 
       ikel=nel*(iel-ish-1)
-      do 15 j=1,nel*nel
-   15   slmi(j,iab)=slmin(j)
-      do 30 j=ivirt(iab),norb
-        do 30 i=1,nel
-          do 20 istate=1,nstates   
-   20       ymat(j,i,iab,istate)=ymatn(j,i,istate)
-   30   aa(i,j,iab)=aan(i,j)
+      do istate=1,nstates   
+         do j=1,nel*nel
+            slmi(j,istate,iab)=slmin(j,istate)
+         enddo
+         do j=ivirt(iab),norb
+            do i=1,nel
+               ymat(j,i,iab,istate)=ymatn(j,i,istate)
+               aa(i,j,iab,istate)=aan(i,j,istate)
+            enddo
+         enddo
 
-        do 50 k=1,ndet
-          if(k.eq.kref) go to 50
-          ndim=numrep_det(k,iab)
-          do 40 i=1,ndim*ndim
-   40         wfmat(i,k,iab)=wfmatn(i,k)
-   50   continue
+         do k=1,ndet
+            if(k.eq.kref) cycle
+            ndim=numrep_det(k,iab)
+            do i=1,ndim*ndim
+               wfmat(i,k,istate,iab)=wfmatn(i,k,istate)
+            enddo
+         enddo
 
-c     RLPB 
-      kstate=1
+         do j=1,nel
+            fp(1,j+ikel,istate,iab)=dorbn(1,iworbd(j+ish,kref),istate)
+            fp(2,j+ikel,istate,iab)=dorbn(2,iworbd(j+ish,kref),istate)
+            fp(3,j+ikel,istate,iab)=dorbn(3,iworbd(j+ish,kref),istate)
+         enddo
 
-      do 60 j=1,nel
-         fp(1,j+ikel,iab)=dorbn(1,iworbd(j+ish,kref),kstate)
-         fp(2,j+ikel,iab)=dorbn(2,iworbd(j+ish,kref),kstate)
-   60    fp(3,j+ikel,iab)=dorbn(3,iworbd(j+ish,kref),kstate)
-      do 70 k=1,ndet
-   70    detiab(k,iab)=detn(k)
+         do k=1,ndet
+            detiab(k,iab,istate)=detn(k,istate)
+         enddo
 
-      do 80 iorb=1,norb
-         orb(iel,iorb,kstate)=orbn(iorb,kstate)
-         do 80 kk=1,3
-   80       dorb(kk,iel,iorb,kstate)=dorbn(kk,iorb,kstate)
+         do iorb=1,norb
+            orb(iel,iorb,istate)=orbn(iorb,istate)
+            do kk=1,3
+               dorb(kk,iel,iorb,istate)=dorbn(kk,iorb,istate)
+            enddo
+         enddo
+      enddo
 
-      return
-      end
+      end subroutine

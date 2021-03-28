@@ -13,13 +13,11 @@
       use multislatern, only: ddorbn, detn, dorbn, orbn 
       use slater, only: d2dx2, ddx, fp, fpp, slmi
       use multislater, only: detiab
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-
-c     here we need to loop over states
-      istate=1
 
       call orbitalse(iel,x,rvec_en,r_en,iflag)
 
@@ -34,32 +32,33 @@ c     here we need to loop over states
       endif
 
       ikel=nel*(iel-ish-1)
+      do istate=1,nstates
+         ratio_kref=0.0d0
+         do j=1,nel
+            ratio_kref=ratio_kref+slmi(j+ikel,istate,iab)*orbn(iworbd(j+ish,kref),istate)
+         enddo
 
-      ratio_kref=0.0d0
-      do j=1,nel
-         ratio_kref=ratio_kref+slmi(j+ikel,iab)*orbn(iworbd(j+ish,kref),istate)
-      enddo
+         detn(kref,istate)=detiab(kref,istate,iab)*ratio_kref
 
-      detn(kref)=detiab(kref,iab)*ratio_kref
+         if(ratio_kref.eq.0.d0) return
 
-      if(ratio_kref.eq.0.d0) return
+         do i=1,nel
+            if(i+ish.ne.iel) then
+               ik=nel*(i-1)
+               sum=0.0d0
+               do j=1,nel
+                  sum=sum+slmi(j+ik,istate,iab)*orbn(iworbd(j+ish,kref),istate)
+               enddo
+               sum=sum/ratio_kref
+               do j=1,nel
+                  slmin(j+ik,istate)=slmi(j+ik,istate,iab)-slmi(j+ikel,istate,iab)*sum
+               enddo
+            endif
+         enddo
 
-      do i=1,nel
-         if(i+ish.ne.iel) then
-            ik=nel*(i-1)
-            sum=0
-            do j=1,nel
-               sum=sum+slmi(j+ik,iab)*orbn(iworbd(j+ish,kref),istate)
-            enddo
-            sum=sum/ratio_kref
-            do j=1,nel
-               slmin(j+ik)=slmi(j+ik,iab)-slmi(j+ikel,iab)*sum
-            enddo
-         endif
-      enddo
-
-      do j=1,nel
-         slmin(j+ikel)=slmi(j+ikel,iab)/ratio_kref
+         do j=1,nel
+            slmin(j+ikel,istate)=slmi(j+ikel,istate,iab)/ratio_kref
+         enddo
       enddo
 
       end subroutine
@@ -95,11 +94,8 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,MORB,MSTATES)
-      dimension ymat_tmp(MORB,MELEC)
+      dimension ymat_tmp(MORB,MELEC,MSTATES)
       save ymat_tmp
-
-c     RLPB states
-      kstate=1
 
       if(iel.le.nup) then
          iab=1
@@ -118,14 +114,14 @@ c     All quantities saved (old) avaliable
                   dorb_tmp(kk,iorb,istate)=dorb(kk,iel,iorb,istate)
                enddo
             enddo
+            call determinante_ref_grad(iel,slmi(1,istate,iab),dorb_tmp(1,1,istate),vref)
          enddo
-         call determinante_ref_grad(iel,slmi(1,iab),dorb_tmp(1,1,kstate),vref)
 
          if(iguiding.eq.0) then
-            detratio=detiab(kref,1)*detiab(kref,2)/psid(1)
             do istate=1,nstates
-               call multideterminante_grad(iel,dorb_tmp(1,1,istate),detratio,slmi(1,iab),
-     &              aa(1,1,iab),wfmat(1,1,iab),ymat(1,1,iab,1),vd)
+               detratio=detiab(kref,istate,1)*detiab(kref,istate,2)/psid(1)
+               call multideterminante_grad(iel,dorb_tmp(1,1,istate),detratio,slmi(1,istate,iab),
+     &              aa(1,1,istate,iab),wfmat(1,1,istate,iab),ymat(1,1,iab,1),vd)
                do kk=1,3
                   vd(kk)=vd(kk)+vref(kk)
                enddo
@@ -136,9 +132,9 @@ c     All quantities saved (old) avaliable
             enddo
             do i=1,nstates
                istate=iweight_g(i)
-               detratio=detiab(kref,1)*detiab(kref,2)/psid(istate)
-               call multideterminante_grad(iel,dorb_tmp(1,1,kstate),detratio,slmi(1,iab),
-     &              aa(1,1,iab),wfmat(1,1,iab),ymat(1,1,iab,istate),vd_s)
+               detratio=detiab(kref,istate,1)*detiab(kref,istate,2)/psid(istate)
+               call multideterminante_grad(iel,dorb_tmp(1,1,istate),detratio,slmi(1,istate,iab),
+     &              aa(1,1,istate,iab),wfmat(1,1,istate,iab),ymat(1,1,iab,istate),vd_s)
                do kk=1,3
                   vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))
                enddo
@@ -147,24 +143,29 @@ c     All quantities saved (old) avaliable
             vd(2)=vd(2)*psi2gi
             vd(3)=vd(3)*psi2gi
          endif
- 
+         
          vd(1)=vj(1,iel)+vd(1)
          vd(2)=vj(2,iel)+vd(2)
          vd(3)=vj(3,iel)+vd(3)
 
 c     Within single-electron move - quantities of electron iel not saved 
       elseif(iflag_move.eq.0) then
-         call determinante_ref_grad(iel,slmin,dorbn(1,1,kstate),vref)
+         do istate=1,nstates
+            call determinante_ref_grad(iel,slmin(1,istate),dorbn(1,1,istate),vref)
+	 enddo
          if(iguiding.eq.0) then
-            if(iab.eq.1) then
-               detratio=detn(kref)*detiab(kref,2)/psid(1)
-            else
-               detratio=detiab(kref,1)*detn(kref)/psid(1)
-            endif
-            call multideterminante_grad(iel,dorbn(1,1,kstate),
-     &           detratio,slmin,aan,wfmatn,ymatn,vd)
-            do kk=1,3
-               vd(kk)=vd(kk)+vref(kk)
+            do istate=1,nstates
+               if(iab.eq.1) then
+                  detratio=detn(kref,istate)*detiab(kref,istate,2)/psid(1)
+               else
+                  detratio=detiab(kref,istate,1)*detn(kref,istate)/psid(1)
+               endif
+               call multideterminante_grad(iel,dorbn(1,1,istate),
+     &              detratio,slmin(1,istate),aan(1,1,istate),
+     &              wfmatn(1,1,istate),ymatn(1,1,istate),vd)
+               do kk=1,3
+                  vd(kk)=vd(kk)+vref(kk)
+               enddo
             enddo
          else
             do kk=1,3
@@ -173,12 +174,12 @@ c     Within single-electron move - quantities of electron iel not saved
             do i=1,nstates
                istate=iweight_g(i)
                if(iab.eq.1) then
-                  detratio=detn(kref)*detiab(kref,2)/psid(istate)
+                  detratio=detn(kref,istate)*detiab(kref,istate,2)/psid(istate)
                else
-                  detratio=detiab(kref,1)*detn(kref)/psid(istate)
+                  detratio=detiab(kref,istate,1)*detn(kref,istate)/psid(istate)
                endif
-               call multideterminante_grad(iel,dorbn(1,1,kstate),detratio,slmin,
-     &                              aan,wfmatn,ymatn(1,1,istate),vd_s)
+               call multideterminante_grad(iel,dorbn(1,1,istate),detratio,slmin(1,istate),
+     &              aan(1,1,istate),wfmatn(1,1,istate),ymatn(1,1,istate),vd_s)
                do kk=1,3
                   vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))
                enddo
@@ -202,26 +203,36 @@ c     Within single-electron move - iel not equal to electron moved - quantities
          enddo
 c     iel has same spin as electron moved
          if(iflag_move.eq.2) then
-            if(iab.eq.1) then
-               detratio=detn(kref)*detiab(kref,2)/psid(1)
-            else
-               detratio=detiab(kref,1)*detn(kref)/psid(1)
-            endif
-            call determinante_ref_grad(iel,slmin,dorb_tmp(1,1,kstate),vref)
-            call multideterminante_grad(iel,dorb_tmp(1,1,kstate),
-     &                                 detratio,slmin,aan,wfmatn,ymatn,vd)
+            do istate=1,nstates
+               if(iab.eq.1) then
+                  detratio=detn(kref,istate)*detiab(kref,istate,2)/psid(1)
+               else
+                  detratio=detiab(kref,istate,1)*detn(kref,istate)/psid(1)
+               endif
+               call determinante_ref_grad(iel,slmin(1,istate),dorb_tmp(1,1,istate),vref)
+               call multideterminante_grad(iel,dorb_tmp(1,1,istate),
+     &              detratio,slmin(1,istate),aan(1,1,istate),wfmatn(1,1,istate),ymatn(1,1,istate),vd)
+            enddo
 c     iel has different spin than the electron moved
          else
-            if(iab.eq.1) then
-               detratio=detiab(kref,1)*detn(kref)/psid(1)
-            else
-               detratio=detn(kref)*detiab(kref,2)/psid(1)
-            endif
-            call determinante_ref_grad(iel,slmi(1,iab),dorb_tmp(1,1,kstate),vref)
-            if(iel.eq.1) call compute_ymat(1,detiab(1,1),detn,wfmat(1,1,1),ymat_tmp,1)
-            if(iel.eq.nup+1) call compute_ymat(2,detn,detiab(1,2),wfmat(1,1,2),ymat_tmp,1)
-            call multideterminante_grad(iel,dorb_tmp(1,1,kstate),detratio,slmi(1,iab),
-     &           aa(1,1,iab),wfmat(1,1,iab),ymat_tmp(1,1),vd)
+            do istate=1,nstates
+               if(iab.eq.1) then
+                  detratio=detiab(kref,istate,1)*detn(kref,istate)/psid(1)
+               else
+                  detratio=detn(kref,istate)*detiab(kref,istate,2)/psid(1)
+               endif
+               call determinante_ref_grad(iel,slmi(1,istate,iab),dorb_tmp(1,1,istate),vref)
+               if(iel.eq.1) then
+                  call compute_ymat(1,detiab(1,istate,1),detn(1,istate),
+     &                 wfmat(1,1,istate,1),ymat_tmp(1,1,istate),1)
+               endif
+               if(iel.eq.nup+1) then
+                  call compute_ymat(2,detn(1,istate),detiab(1,istate,2),
+     &                 wfmat(1,1,istate,2),ymat_tmp(1,1,istate),1)
+               endif
+               call multideterminante_grad(iel,dorb_tmp(1,1,istate),detratio,slmi(1,istate,iab),
+     &              aa(1,1,istate,iab),wfmat(1,1,istate,iab),ymat_tmp(1,1,istate),vd)
+            enddo
          endif
 
          vd(1)=vjn(1,iel)+vd(1)+vref(1)
