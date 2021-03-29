@@ -53,7 +53,7 @@ c     combine determinantal quantities to obtain trial wave function
             apsi_now=apsi(istate)/(ipass-1)
             check_apsi=abs(psid(istate))/apsi_now
             check_apsi_min=min(check_apsi,check_apsi_min)
-            aref_now=aref/(ipass-1)
+            aref_now=aref(istate)/(ipass-1)
             check_dref=abs(detn(kref,istate))/aref_now
          enddo
       endif

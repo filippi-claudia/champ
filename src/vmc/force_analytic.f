@@ -79,7 +79,7 @@ c     compute force for reference determinant
                do i=1,nel
                   do j=1,nel
                      da_psi_ref(k,ic)=da_psi_ref(k,ic)+
-     &                    slmi(i+(j-1)*nel,istate,iab)*b_kref(i+(j-1)*nel)
+     &                    slmi(i+(j-1)*nel,iab,istate)*b_kref(i+(j-1)*nel)
                   enddo
                enddo
                do jrep=ivirt(iab),norb
@@ -95,7 +95,7 @@ c     compute force for reference determinant
                enddo
 c     enddo iab
             enddo
-            da_psi(k,ic,istate)=trace*detiab(kref,istate,1)*detiab(kref,istate,2)/psid
+            da_psi(k,ic,istate)=trace*detiab(kref,1,istate)*detiab(kref,2,istate)/psid
          enddo
       enddo
 
@@ -146,8 +146,8 @@ c     compute force for reference determinant
                   do j=1,nel
                      jorb=iworbd(j+ish,kref)
                      da_energy_ref(k,ic)=da_energy_ref(k,ic)
-     &                    +slmi(j+(i-1)*nel,istate,iab)*b_da(k,i+ish,jorb,ic,istate)
-     &                    -da_orb(k,i+ish,jorb,ic,istate)*xmat(i+(j-1)*nel,istate,iab)
+     &                    +slmi(j+(i-1)*nel,iab,istate)*b_da(k,i+ish,jorb,ic,istate)
+     &                    -da_orb(k,i+ish,jorb,ic,istate)*xmat(i+(j-1)*nel,iab,istate)
                   enddo
                enddo
                do jrep=ivirt(iab),norb
@@ -165,7 +165,7 @@ c     compute force for reference determinant
                enddo
 c     enddo iab
             enddo
-            da_energy(k,ic,istate)=trace*detiab(kref,istate,1)*detiab(kref,istate,2)/psid
+            da_energy(k,ic,istate)=trace*detiab(kref,1,istate)*detiab(kref,2,istate)/psid
          enddo
       enddo
 

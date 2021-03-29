@@ -37,7 +37,7 @@ c     Written by Claudia Filippi, modified by RLPB
       ikel=nel*(iel-ish-1)
       do istate=1,nstates   
          do j=1,nel*nel
-            slmi(j,istate,iab)=slmin(j,istate)
+            slmi(j,iab,istate)=slmin(j,istate)
          enddo
          do j=ivirt(iab),norb
             do i=1,nel
@@ -50,14 +50,14 @@ c     Written by Claudia Filippi, modified by RLPB
             if(k.eq.kref) cycle
             ndim=numrep_det(k,iab)
             do i=1,ndim*ndim
-               wfmat(i,k,istate,iab)=wfmatn(i,k,istate)
+               wfmat(i,k,iab,istate)=wfmatn(i,k,istate)
             enddo
          enddo
 
          do j=1,nel
-            fp(1,j+ikel,istate,iab)=dorbn(1,iworbd(j+ish,kref),istate)
-            fp(2,j+ikel,istate,iab)=dorbn(2,iworbd(j+ish,kref),istate)
-            fp(3,j+ikel,istate,iab)=dorbn(3,iworbd(j+ish,kref),istate)
+            fp(1,j+ikel,iab,istate)=dorbn(1,iworbd(j+ish,kref),istate)
+            fp(2,j+ikel,iab,istate)=dorbn(2,iworbd(j+ish,kref),istate)
+            fp(3,j+ikel,iab,istate)=dorbn(3,iworbd(j+ish,kref),istate)
          enddo
 
          do k=1,ndet

@@ -18,9 +18,9 @@
 
       do k=1,ndet
          if(iel.le.nup) then
-            det=detn(k,istate)*detiab(k,istate,2)
+            det=detn(k,istate)*detiab(k,2,istate)
          else
-            det=detiab(k,istate,1)*detn(k,istate)
+            det=detiab(k,1,istate)*detn(k,istate)
          endif
          determ=determ+det*cdet(k,istate,iwf)
       enddo

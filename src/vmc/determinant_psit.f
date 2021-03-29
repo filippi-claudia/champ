@@ -14,7 +14,7 @@
 
       determ=0.0d0
       do k=1,ndet
-         determ=determ+detiab(k,istate,1)*detiab(k,istate,2)*cdet(k,istate,iwf)
+         determ=determ+detiab(k,1,istate)*detiab(k,2,istate)*cdet(k,istate,iwf)
       enddo
 
       end subroutine

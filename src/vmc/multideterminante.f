@@ -29,18 +29,17 @@
 
       if(ndet.eq.1) return
 
-      iab=1
-      nel=nup
-      ish=0
-      if(iel.gt.nup) then
-         iab=2
-         nel=ndn
-         ish=nup
-      endif
-
       do istate=1,nstates
-c     temporarely copy orbn to orb
+         iab=1
+         nel=nup
+         ish=0
+         if(iel.gt.nup) then
+            iab=2
+            nel=ndn
+            ish=nup
+         endif
 
+c     temporarely copy orbn to orb
          do iorb=1,norb
             orb_sav(iorb,istate)=orb(iel,iorb,istate)
             orb(iel,iorb,istate)=orbn(iorb,istate)
@@ -48,7 +47,7 @@ c     temporarely copy orbn to orb
 
          do jrep=ivirt(iab),norb
             do irep=1,nel
-               dum1(istate)=0.d0
+               dum1(istate)=0.0d0
                do i=1,nel
                   dum1(istate)=dum1(istate)+slmin(irep+(i-1)*nel,istate)*orb(i+ish,jrep,istate)
                enddo
@@ -57,7 +56,6 @@ c     temporarely copy orbn to orb
          enddo
 
 c     compute wave function 
-
          do k=1,ndet
             if(k.ne.kref) then
                if(iwundet(k,iab).eq.k) then
@@ -68,7 +66,7 @@ c     compute wave function
                      do irep=1,ndim
                         iorb=irepcol_det(irep,k,iab)
                         jj=jj+1
-                        wfmatn(jj,k,istate)=aan(iorb,jorbistate,istate)
+                        wfmatn(jj,k,istate)=aan(iorb,jorb,istate)
                      enddo
                   enddo
                   call matinv(wfmatn(1,k,istate),ndim,det)
@@ -86,9 +84,9 @@ c     compute wave function
             endif
          enddo
 
-         if(iab.eq.1) call compute_ymat(iab,detn(1,istate),detiab(1,istate,2),
+         if(iab.eq.1) call compute_ymat(iab,detn(1,istate),detiab(1,2,istate),
      &        wfmatn(1,1,istate),ymatn(1,1,istate),istate)
-         if(iab.eq.2) call compute_ymat(iab,detiab(1,istate,1),detn(1,istate),
+         if(iab.eq.2) call compute_ymat(iab,detiab(1,1,istate),detn(1,istate),
      &        wfmatn(1,1,istate),ymatn(1,1,istate),istate)
 
          do iorb=1,norb
@@ -147,9 +145,9 @@ c     TMP to fix
          enddo
       enddo
 
-      do 50 kk=1,3
+      do kk=1,3
          do jrep=ivirt(iab),norb
-            dum=0
+            dum=0.0d0
             do j=1,nel
                dum=dum+b(iworbd(j+ish,kref),kk)*aa(j,jrep)
             enddo
@@ -158,10 +156,10 @@ c     TMP to fix
                gmat(irep,jrep,kk)=dum*slmi(irep+(jel-1)*nel)
             enddo
          enddo
- 50   continue
+      enddo
 
       do kk=1,3
-         dum=0
+         dum=0.0d0
          do jrep=ivirt(iab),norb
             do irep=iactv(iab),nel
                dum=dum+ymat(jrep,irep)*gmat(irep,jrep,kk)

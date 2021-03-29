@@ -79,8 +79,8 @@ module Bloc
     use mstates_mod, only: MSTATES
 
     real(dp), dimension(:, :, :), allocatable :: b !(MORB,MELEC,MSTATES)
-    real(dp), dimension(:, :, :, :), allocatable :: tildem !(MELEC,MORB,MSTATES,2)
-    real(dp), dimension(:, :, :), allocatable :: xmat !(MELEC**2,MSTATES,2)
+    real(dp), dimension(:, :, :, :), allocatable :: tildem !(MELEC,MORB,2,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: xmat !(MELEC**2,2,MSTATES)
 
     !> Former Bloc_da
     real(dp), dimension(:, :, :, :, :), allocatable :: b_da !(3,MELEC,MORB,MCENT,MSTATES)
@@ -101,8 +101,8 @@ contains
         use vmc_mod, only: MELEC, MORB, MCENT
         use optjas, only: MPARMJ
         if (.not. allocated(b)) allocate (b(MORB, MELEC, MSTATES))
-        if (.not. allocated(tildem)) allocate (tildem(MELEC, MORB, MSTATES, 2))
-        if (.not. allocated(xmat)) allocate (xmat(MELEC**2, MSTATES, 2))
+        if (.not. allocated(tildem)) allocate (tildem(MELEC, MORB, 2, MSTATES))
+        if (.not. allocated(xmat)) allocate (xmat(MELEC**2, 2, MSTATES))
         if (.not. allocated(b_da)) allocate (b_da(3, MELEC, MORB, MCENT, MSTATES))
         if (.not. allocated(db)) allocate (db(3, MELEC, MORB, MCENT, MSTATES))
         if (.not. allocated(b_dj)) allocate (b_dj(MORB, MELEC, MPARMJ, MSTATES))
@@ -625,8 +625,8 @@ module multimat
     use vmc_mod, only: MEXCIT
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :, :, :), allocatable :: aa !(MELEC,MORB,MSTATES,2)
-    real(dp), dimension(:, :, :, :), allocatable :: wfmat !(MEXCIT**2,MDET,MSTATES,2)
+    real(dp), dimension(:, :, :, :), allocatable :: aa !(MELEC,MORB,2,MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: wfmat !(MEXCIT**2,MDET,2,MSTATES)
 
     private
     public :: aa, wfmat
@@ -637,8 +637,8 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aa)) allocate (aa(MELEC, MORB, MSTATES, 2))
-        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, MDET, MSTATES, 2))
+        if (.not. allocated(aa)) allocate (aa(MELEC, MORB, 2, MSTATES))
+        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, MDET, 2, MSTATES))
     end subroutine allocate_multimat
 
     subroutine deallocate_multimat()
@@ -684,7 +684,7 @@ module multislater
     use vmc_mod, only: MDET
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :, :), allocatable :: detiab !(MDET,MSTATES,2)
+    real(dp), dimension(:, :, :), allocatable :: detiab !(MDET,2,MSTATES)
     !> DMC variables:
     real(dp), dimension(:), allocatable :: detu !(MDET)
     real(dp), dimension(:), allocatable :: detd !(MDET)
@@ -698,7 +698,7 @@ contains
     subroutine allocate_multislater()
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
-        if (.not. allocated(detiab)) allocate(detiab(MDET, MSTATES, 2))
+        if (.not. allocated(detiab)) allocate(detiab(MDET, 2, MSTATES))
         if (.not. allocated(detu)) allocate(detu(MDET))
         if (.not. allocated(detd)) allocate(detd(MDET))
     end subroutine allocate_multislater
@@ -941,8 +941,8 @@ module scratch
     use vmc_mod, only: MELEC, MORB, MDET
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :, :), allocatable :: denergy_det !(MDET,MSTATES,2)
-    real(dp), dimension(:, :, :, :), allocatable :: dtildem !(MELEC,MORB,MSTATES,2)
+    real(dp), dimension(:, :, :), allocatable :: denergy_det !(MDET,2,MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: dtildem !(MELEC,MORB,2,MSTATES)
 
     private
     public :: denergy_det, dtildem
@@ -952,8 +952,8 @@ contains
     subroutine allocate_scratch()
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
-        if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, MSTATES, 2))
-        if (.not. allocated(dtildem)) allocate (dtildem(MELEC, MORB, MSTATES, 2))
+        if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2, MSTATES))
+        if (.not. allocated(dtildem)) allocate (dtildem(MELEC, MORB, 2, MSTATES))
     end subroutine allocate_scratch
 
     subroutine deallocate_scratch()
@@ -972,9 +972,9 @@ module slater
 
     real(dp), dimension(:, :), allocatable :: d2dx2 !(MELEC,MSTATES)
     real(dp), dimension(:, :, :), allocatable :: ddx !(3,MELEC,MSTATES)
-    real(dp), dimension(:, :, :, :), allocatable :: fp !(3,MMAT_DIM,MSTATES,2)
-    real(dp), dimension(:, :, :), allocatable :: fpp !(MMAT_DIM,MSTATES,2)
-    real(dp), dimension(:, :, :), allocatable :: slmi !(MMAT_DIM,MSTATES,2)
+    real(dp), dimension(:, :, :, :), allocatable :: fp !(3,MMAT_DIM,2,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: fpp !(MMAT_DIM,2,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: slmi !(MMAT_DIM,2,MSTATES)
     !> DMC extra variables:
     real(dp), dimension(:,:), allocatable :: fpd !(3,MMAT_DIM)
     real(dp), dimension(:), allocatable :: fppd !(MMAT_DIM)
@@ -995,9 +995,9 @@ contains
         use vmc_mod, only: MELEC, MMAT_DIM
         if (.not. allocated(d2dx2)) allocate(d2dx2(MELEC, MSTATES))
         if (.not. allocated(ddx)) allocate(ddx(3, MELEC, MSTATES))
-        if (.not. allocated(fp)) allocate(fp(3, MMAT_DIM, MSTATES, 2))
-        if (.not. allocated(fpp)) allocate(fpp(MMAT_DIM, MSTATES, 2))
-        if (.not. allocated(slmi)) allocate(slmi(MMAT_DIM, MSTATES, 2))
+        if (.not. allocated(fp)) allocate(fp(3, MMAT_DIM, 2, MSTATES))
+        if (.not. allocated(fpp)) allocate(fpp(MMAT_DIM, 2, MSTATES))
+        if (.not. allocated(slmi)) allocate(slmi(MMAT_DIM, 2, MSTATES))
         if (.not. allocated(fpd))  allocate(fpd(3,MMAT_DIM))
         if (.not. allocated(fppd)) allocate(fppd(MMAT_DIM))
         if (.not. allocated(fppu)) allocate(fppu(MMAT_DIM))

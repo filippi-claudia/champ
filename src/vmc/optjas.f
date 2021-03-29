@@ -41,9 +41,9 @@
             enddo
             deloc_dj_kref=deloc_dj(iparm)
             denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref
-     &           *detiab(kref,istate,1)*detiab(kref,istate,2)
+     &           *detiab(kref,1,istate)*detiab(kref,2,istate)
             if(ndet.gt.1) then
-               call bxmatrix(kref,xmat(1,istate,1),xmat(1,istate,2),b_dj(1,1,iparm,istate))
+               call bxmatrix(kref,xmat(1,1,istate),xmat(1,2,istate),b_dj(1,1,iparm,istate),istate)
                do iab=1,2
                   if(iab.eq.1) then
                      ish=0
@@ -57,17 +57,17 @@
                         dum2(istate)=0.0d0
                         dum3(istate)=0.0d0
                         do i=1,nel
-                           dum2(istate)=dum2(istate)+slmi(irep+(i-1)*nel,istate,iab)
+                           dum2(istate)=dum2(istate)+slmi(irep+(i-1)*nel,iab,istate)
      &                          *b_dj(jrep,i+ish,iparm,istate)
-                           dum3(istate)=dum3(istate)+xmat(i+(irep-1)*nel,istate,iab)
+                           dum3(istate)=dum3(istate)+xmat(i+(irep-1)*nel,iab,istate)
      &                          *orb(i+ish,jrep,istate)
                         enddo
-                        dtildem(irep,jrep,istate,iab)=dum2(istate)-dum3(istate)
+                        dtildem(irep,jrep,iab,istate)=dum2(istate)-dum3(istate)
                      enddo
                   enddo
                enddo
-               denergy_det(kref,istate,1)=0.d0
-               denergy_det(kref,istate,2)=0.d0
+               denergy_det(kref,1,istate)=0.0d0
+               denergy_det(kref,2,istate)=0.0d0
                do k=1,ndet
                   if(k.ne.kref) then
                      do iab=1,2
@@ -79,24 +79,24 @@
                               nel=ndn
                            endif
                            ndim=numrep_det(k,iab)
-                           denergy_det(k,istate,iab)=0.0d0
+                           denergy_det(k,iab,istate)=0.0d0
                            do irep=1,ndim
                               iorb=irepcol_det(irep,k,iab)
                               do jrep=1,ndim
                                  jorb=ireporb_det(jrep,k,iab)
-                                 denergy_det(k,istate,iab)=denergy_det(k,istate,iab)+
-     &                                wfmat(jrep+(irep-1)*ndim,k,istate,iab)
-     &                                *dtildem(iorb,jorb,istate,iab)
+                                 denergy_det(k,iab,istate)=denergy_det(k,iab,istate)+
+     &                                wfmat(jrep+(irep-1)*ndim,k,iab,istate)
+     &                                *dtildem(iorb,jorb,iab,istate)
                               enddo
                            enddo
                         else
                            index_det=iwundet(k,iab)
-                           denergy_det(k,istate,iab)=denergy_det(index_det,istate,iab)
+                           denergy_det(k,iab,istate)=denergy_det(index_det,iab,istate)
                         endif
                      enddo
-                     deloc_dj_k=denergy_det(k,istate,1)+denergy_det(k,istate,2)+deloc_dj_kref
+                     deloc_dj_k=denergy_det(k,1,istate)+denergy_det(k,2,istate)+deloc_dj_kref
                      denergy(iparm,istate)=denergy(iparm,istate)+
-     &                    cdet(k,istate,1)*deloc_dj_k*detiab(k,istate,1)*detiab(k,istate,2)
+     &                       cdet(k,istate,1)*deloc_dj_k*detiab(k,1,istate)*detiab(k,2,istate)
                   endif
 c     endif k.ne.kref
                enddo

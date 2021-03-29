@@ -35,7 +35,7 @@ c     as many ups as downs. If this is not true then be careful if
 c     nelec is close to MELEC. The Slater matrices must be
 c     dimensioned at least max(nup**2,ndn**2)
 
-      dimension eloc_det(MDET,MSTATES,2)
+      dimension eloc_det(MDET,2,MSTATES)
       dimension vj(3,MELEC),vpsp_det(*)
       dimension btemp(MELEC**2,MSTATES,2)
       dimension dum1(MSTATES),dum2(MSTATES),dum3(MSTATES)
@@ -48,16 +48,16 @@ c     dimensioned at least max(nup**2,ndn**2)
                nel=ndn
                ish=nup
             endif
-            eloc_det(kref,istate,iab)=vpsp_det(iab)
+            eloc_det(kref,iab,istate)=vpsp_det(iab)
             do i=1,nel
-               eloc_det(kref,istate,iab)=eloc_det(kref,istate,iab)
+               eloc_det(kref,iab,istate)=eloc_det(kref,iab,istate)
      &              -hb*(d2dx2(i+ish,istate)+2.d0*(vj(1,i+ish)*ddx(1,i+ish,istate)
      &              +vj(2,i+ish)*ddx(2,i+ish,istate)+vj(3,i+ish)*ddx(3,i+ish,istate)))
             enddo
          enddo
 
          if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) then
-            call bxmatrix(kref,xmat(1,istate,1),xmat(1,istate,2),b(1,1,istate))
+            call bxmatrix(kref,xmat(1,1,istate),xmat(1,2,istate),b(1,1,istate),istate)
          endif
 
          if(ndet.eq.1.and.ioptorb.eq.0) return
@@ -75,18 +75,18 @@ c     dimensioned at least max(nup**2,ndn**2)
                   dum2(istate)=0.0d0
                   dum3(istate)=0.0d0
                   do i=1,nel
-                     dum1(istate)=dum1(istate)+slmi(irep+(i-1)*nel,istate,iab)*orb(i+iel,jrep,istate)
-                     dum2(istate)=dum2(istate)+slmi(irep+(i-1)*nel,istate,iab)*b(jrep,i+iel,istate)
-                     dum3(istate)=dum3(istate)+xmat(i+(irep-1)*nel,istate,iab)*orb(i+iel,jrep,istate)
+                     dum1(istate)=dum1(istate)+slmi(irep+(i-1)*nel,iab,istate)*orb(i+iel,jrep,istate)
+                     dum2(istate)=dum2(istate)+slmi(irep+(i-1)*nel,iab,istate)*b(jrep,i+iel,istate)
+                     dum3(istate)=dum3(istate)+xmat(i+(irep-1)*nel,iab,istate)*orb(i+iel,jrep,istate)
                   enddo
-                  aa(irep,jrep,istate,iab)=dum1(istate)
-                  tildem(irep,jrep,istate,iab)=dum2(istate)-dum3(istate)
+                  aa(irep,jrep,iab,istate)=dum1(istate)
+                  tildem(irep,jrep,iab,istate)=dum2(istate)-dum3(istate)
                enddo
             enddo
          enddo
 
-         denergy_det(kref,istate,1)=0.0d0
-         denergy_det(kref,istate,2)=0.0d0
+         denergy_det(kref,1,istate)=0.0d0
+         denergy_det(kref,2,istate)=0.0d0
 
          if(ndet.eq.1) return
 
@@ -106,50 +106,50 @@ c     dimensioned at least max(nup**2,ndn**2)
                      iorb=irepcol_det(irep,k,iab)
                      do jrep=1,ndim
                         jorb=ireporb_det(jrep,k,iab)
-                        wfmat(irep+(jrep-1)*ndim,k,istate,iab)=aa(iorb,jorb,istate,iab)
+                        wfmat(irep+(jrep-1)*ndim,k,iab,istate)=aa(iorb,jorb,iab,istate)
                      enddo
                   enddo
 
-                  call matinv(wfmat(1,k,istate,iab),ndim,det)
-                  detiab(k,istate,iab)=det
-                  denergy_det(k,istate,iab)=0.0d0
+                  call matinv(wfmat(1,k,iab,istate),ndim,det)
+                  detiab(k,iab,istate)=det
+                  denergy_det(k,iab,istate)=0.0d0
                   do irep=1,ndim
                      iorb=irepcol_det(irep,k,iab)
                      do jrep=1,ndim
                         jorb=ireporb_det(jrep,k,iab)
-                        denergy_det(k,istate,iab)=denergy_det(k,istate,iab)
-     &                       +wfmat(jrep+(irep-1)*ndim,k,istate,iab)*tildem(iorb,jorb,istate,iab)
+                        denergy_det(k,iab,istate)=denergy_det(k,iab,istate)
+     &                  +wfmat(jrep+(irep-1)*ndim,k,iab,istate)*tildem(iorb,jorb,iab,istate)
                      enddo
                   enddo
                else
                   index_det=iwundet(k,iab)
-                  denergy_det(k,istate,iab)=denergy_det(index_det,istate,iab)
-                  detiab(k,istate,iab)=detiab(index_det,istate,iab)
+                  denergy_det(k,iab,istate)=denergy_det(index_det,iab,istate)
+                  detiab(k,iab,istate)=detiab(index_det,iab,istate)
                endif
             enddo
 
-            eloc_det(k,istate,1)=denergy_det(k,istate,1)+eloc_det(kref,istate,1)
-            eloc_det(k,istate,2)=denergy_det(k,istate,2)+eloc_det(kref,istate,2)
+            eloc_det(k,1,istate)=denergy_det(k,1,istate)+eloc_det(kref,1,istate)
+            eloc_det(k,2,istate)=denergy_det(k,2,istate)+eloc_det(kref,2,istate)
          enddo
 
          do k=1,ndet
             if(k.eq.kref) cycle
             do iab=1,2
                if(iwundet(k,iab).ne.kref) then
-                  detiab(k,istate,iab)=detiab(k,istate,iab)*detiab(kref,istate,iab)
+                  detiab(k,iab,istate)=detiab(k,iab,istate)*detiab(kref,iab,istate)
                endif
             enddo
          enddo
 
 c     compute Ymat for future use
 
-         call compute_ymat(1,detiab(1,istate,1),detiab(1,istate,2),
-     &        wfmat(1,1,istate,1),ymat(1,1,1,istate),istate)
+         call compute_ymat(1,detiab(1,1,istate),detiab(1,2,istate),
+     &        wfmat(1,1,1,istate),ymat(1,1,1,istate),istate)
          if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_dymat(1,dymat(1,1,1,istate),istate)
 
          if(ndn.gt.0) then
-            call compute_ymat(2,detiab(1,istate,1),detiab(1,istate,2),
-     &           wfmat(1,1,istate,2),ymat(1,1,2,istate),istate)
+            call compute_ymat(2,detiab(1,1,istate),detiab(1,2,istate),
+     &           wfmat(1,1,2,istate),ymat(1,1,2,istate),istate)
             if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_dymat(2,dymat(1,1,2,istate),istate)
          endif
 
@@ -207,7 +207,7 @@ c-----------------------------------------------------------------------
          endif
          cdet_equiv(kk)=cdet_equiv(kk)+cdet(k,istate,iwf)*detall
          dcdet_equiv(kk)=dcdet_equiv(kk)
-     &        +cdet(k,istate,iwf)*detall*(denergy_det(k,istate,1)+denergy_det(k,istate,2))
+     &   +cdet(k,istate,iwf)*detall*(denergy_det(k,1,istate)+denergy_det(k,2,istate))
       enddo
 
       do kk=1,ndet
@@ -263,8 +263,8 @@ c-----------------------------------------------------------------------
                dmat1(jj)=0.d0
                do lrep=1,ndim
                   lorb=irepcol_det(lrep,kk,iab)
-                  dmat1(jj)=dmat1(jj)+wfmat(jrep+(lrep-1)*ndim,kk,istate,iab)
-     &                 *tildem(lorb,iorb,istate,iab)
+                  dmat1(jj)=dmat1(jj)+wfmat(jrep+(lrep-1)*ndim,kk,iab,istate)
+     &                 *tildem(lorb,iorb,iab,istate)
                enddo
             enddo
          enddo
@@ -274,7 +274,7 @@ c-----------------------------------------------------------------------
                dmat2(jj)=0.d0
                do lrep=1,ndim
                   ll=jrep+(lrep-1)*ndim
-                  dmat2(jj)=dmat2(jj)+dmat1(ll)*wfmat(lrep+(irep-1)*ndim,kk,istate,iab)
+                  dmat2(jj)=dmat2(jj)+dmat1(ll)*wfmat(lrep+(irep-1)*ndim,kk,iab,istate)
                enddo
             enddo
          enddo
@@ -284,7 +284,7 @@ c-----------------------------------------------------------------------
                jorb=ireporb_det(jrep,kk,iab)
                jj=jrep+(irep-1)*ndim
                dymat(jorb,iorb)=dymat(jorb,iorb)
-     &              +wfmat(jj,kk,istate,iab)*dcdet_equiv(kk)-cdet_equiv(kk)*dmat2(jj)
+     &              +wfmat(jj,kk,iab,istate)*dcdet_equiv(kk)-cdet_equiv(kk)*dmat2(jj)
             enddo
          enddo
       enddo
@@ -329,10 +329,10 @@ c-----------------------------------------------------------------------
                dzmat(jrep,irep,iab)=0.0d0
                do krep=iactv(iab),nel
                   zmat(jrep,irep,iab)=zmat(jrep,irep,iab)
-     &                 +ymat(jrep,krep,iab)*slmi(krep+(irep-1)*nel,istate,iab)
+     &                 +ymat(jrep,krep,iab)*slmi(krep+(irep-1)*nel,iab,istate)
                   dzmat(jrep,irep,iab)=dzmat(jrep,irep,iab)
-     &                 +dymat(jrep,krep,iab)*slmi(krep+(irep-1)*nel,istate,iab)
-     &                 -ymat(jrep,krep,iab)*xmat(irep+(krep-1)*nel,istate,iab)
+     &                 +dymat(jrep,krep,iab)*slmi(krep+(irep-1)*nel,iab,istate)
+     &                 -ymat(jrep,krep,iab)*xmat(irep+(krep-1)*nel,iab,istate)
                enddo
             enddo
          enddo
@@ -342,10 +342,10 @@ c-----------------------------------------------------------------------
                aaz(jrep,irep,iab)=0.0d0
                do krep=ivirt(iab),norb
                   emz(jrep,irep,iab)=emz(jrep,irep,iab)
-     &                 +tildem(jrep,krep,istate,iab)*zmat(krep,irep,iab)
-     &                 +aa(jrep,krep,istate,iab)*dzmat(krep,irep,iab)
+     &                 +tildem(jrep,krep,iab,istate)*zmat(krep,irep,iab)
+     &                 +aa(jrep,krep,iab,istate)*dzmat(krep,irep,iab)
                   aaz(jrep,irep,iab)=aaz(jrep,irep,iab)
-     &                 +aa(jrep,krep,istate,iab)*zmat(krep,irep,iab)
+     &                 +aa(jrep,krep,iab,istate)*zmat(krep,irep,iab)
                enddo
             enddo
          enddo
@@ -381,8 +381,8 @@ c-----------------------------------------------------------------------
       endif
 
       do istate=1,nstates
-         call compute_ymat(iab,detiab(1,istate,1),detiab(1,istate,2),
-     &        wfmat(1,1,istate,iab),ymat(1,1,iab,istate),istate)
+         call compute_ymat(iab,detiab(1,1,istate),detiab(1,2,istate),
+     &        wfmat(1,1,iab,istate),ymat(1,1,iab,istate),istate)
       enddo
 
       end subroutine

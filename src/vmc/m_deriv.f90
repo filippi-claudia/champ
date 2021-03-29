@@ -192,7 +192,7 @@ module denergy_det_m
     use vmc_mod, only: MDET
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :, :), allocatable :: denergy_det !(MDET, MSTATES, 2)
+    real(dp), dimension(:, :, :), allocatable :: denergy_det !(MDET, 2, MSTATES)
 
     private
     public :: denergy_det
@@ -202,7 +202,7 @@ contains
     subroutine allocate_denergy_det_m()
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
-        if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, MSTATES, 2))
+        if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2, MSTATES))
     end subroutine allocate_denergy_det_m
 
     subroutine deallocate_denergy_det_m()

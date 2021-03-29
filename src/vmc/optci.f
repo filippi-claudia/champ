@@ -22,7 +22,7 @@
 
       do istates=1,nstates
          do k=1,nciprim
-            ciprim(k,istate)=detiab(k,istate,1)*detiab(k,istate,2)*psidi
+            ciprim(k,istate)=detiab(k,1,istate)*detiab(k,2,istate)*psidi
             cieprim(k,istate)=(eloc_det(k,1)+eloc_det(k,2)+e_other)*ciprim(k,istate)
          enddo
       enddo

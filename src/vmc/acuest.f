@@ -117,10 +117,10 @@ c statistical fluctuations without blocking
          esum1(istate)=0.0d0
          
          apsi(istate)=apsi(istate)+dabs(psido(istate))
-         aref=aref+dabs(detiab(kref,istate,1)*detiab(kref,istate,2))
+         aref(istate)=aref(istate)+dabs(detiab(kref,1,istate)*detiab(kref,2,istate))
 
-         detref(1,istate)=detref(1,istate)+dlog10(dabs(detiab(kref,istate,1)))
-         detref(2,istate)=detref(2,istate)+dlog10(dabs(detiab(kref,istate,2)))
+         detref(1,istate)=detref(1,istate)+dlog10(dabs(detiab(kref,1,istate)))
+         detref(2,istate)=detref(2,istate)+dlog10(dabs(detiab(kref,2,istate)))
       enddo
 
       call acues1_reduce
@@ -171,7 +171,7 @@ c zero out estimators
   50  continue
 
 
-      aref=0
+      aref=0.0d0
 
       r2cm2=0
       r2cum=0

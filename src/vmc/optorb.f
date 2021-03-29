@@ -24,7 +24,7 @@ c     RLPB some quantities still need to get state index!!!!
       if(ioptorb.eq.0) return
 
       do istate=1,nstates
-         detratio=detiab(kref,istate,1)*detiab(kref,istate,2)/psid
+         detratio=detiab(kref,1,istate)*detiab(kref,2,istate)/psid
          do iterm=1,norbterm
             io=ideriv(1,iterm)
             jo=ideriv(2,iterm)
@@ -49,8 +49,8 @@ c     RLPB some quantities still need to get state index!!!!
                endif
                if(ideriv_ref(iterm,iab).gt.0) then
                   irep=irepcol_ref(iterm,iab)
-                  dorb_psi_ref=dorb_psi_ref+aa(irep,jo,istate,iab)
-                  dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,istate,iab)
+                  dorb_psi_ref=dorb_psi_ref+aa(irep,jo,iab,istate)
+                  dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,iab,istate)
                   do i=1,nel
                      dorb_psi=dorb_psi-aaz(irep,i,iab)*orb(i+ish,jo,istate)
                      dorb_energy=dorb_energy-emz(irep,i,iab)*orb(i+ish,jo,istate)

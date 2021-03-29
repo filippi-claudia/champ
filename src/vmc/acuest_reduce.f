@@ -35,12 +35,10 @@ c Written by Claudia Filippi
 
          jo=jo+1
          obs(jo)=apsi(istate)
-      enddo
 
-      jo=jo+1
-      obs(jo)=aref
+         jo=jo+1
+         obs(jo)=aref(istate)
 
-      do istate=1,nstates
          do iab=1,2
             jo=jo+1
             obs(jo)=detref(iab,istate)
@@ -99,17 +97,16 @@ c Written by Claudia Filippi
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       jo=0
-      do 110 istate=1,nstates
-        jo=jo+1
-        enow(istate,1)=collect(jo)/nproc
-
-        jo=jo+1
-  110   apsi(istate)=collect(jo)/nproc
-      
-      jo=jo+1
-      aref=collect(jo)/nproc
-      
       do istate=1,nstates
+         jo=jo+1
+         enow(istate,1)=collect(jo)/nproc
+
+         jo=jo+1
+         apsi(istate)=collect(jo)/nproc
+      
+         jo=jo+1
+         aref(istate)=collect(jo)/nproc
+      
          do iab=1,2
            jo=jo+1
            detref(iab,istate)=collect(jo)/nproc

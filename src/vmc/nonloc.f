@@ -108,8 +108,8 @@ c     loop quadrature points
                      call orbitals_quad(iel,x,rvec_en,r_en,
      &                    orbn(1,istate),dorbn(1,1,istate),
      &                    da_orbn(1,1,1,istate),iforce_analy,istate)
-                     call nonlocd(iel,orbn(1,istate),detiab(1,istate,1),detiab(1,istate,2),
-     &                    slmi(1,istate,1),slmi(1,istate,2),det_ratio)
+                     call nonlocd(iel,orbn(1,istate),detiab(1,1,istate),detiab(1,2,istate),
+     &                    slmi(1,1,istate),slmi(1,2,istate),det_ratio)
                   enddo
                   if(ioptjas.gt.0) then
                      call deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,
@@ -197,7 +197,7 @@ c     end loop nelec, ncent
          do istate=1,nstates
             write(6,*) "STATE", istate
             write(6,'(''vpsp_det,det,r_en(1)='',100d12.4)')
-     &           ,(vpsp_det(iab),detiab(1,istate,iab),iab=1,2),r_en(1,1)
+     &           ,(vpsp_det(iab),detiab(1,iab,istate),iab=1,2),r_en(1,1)
          enddo
       endif
 

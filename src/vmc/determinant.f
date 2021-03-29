@@ -35,20 +35,20 @@ c     compute orbitals
          endif
 
          do istate=1,nstates
-            detiab(kref,istate,iab)=1.0d0
+            detiab(kref,iab,istate)=1.0d0
             jk=-nel
             do j=1,nel
                jorb=iworbd(j+ish,kref)
                jk=jk+nel
-               call dcopy(nel,orb(1+ish,jorb,istate),1,slmi(1+jk,istate,iab),1)
-               call dcopy(nel,dorb(1,1+ish,jorb,istate),3,fp(1,j,istate,iab),nel*3)
-               call dcopy(nel,dorb(2,1+ish,jorb,istate),3,fp(2,j,istate,iab),nel*3)
-               call dcopy(nel,dorb(3,1+ish,jorb,istate),3,fp(3,j,istate,iab),nel*3)
-               call dcopy(nel,ddorb(1+ish,jorb,istate),1,fpp(j,istate,iab),nel)
+               call dcopy(nel,orb(1+ish,jorb,istate),1,slmi(1+jk,iab,istate),1)
+               call dcopy(nel,dorb(1,1+ish,jorb,istate),3,fp(1,j,iab,istate),nel*3)
+               call dcopy(nel,dorb(2,1+ish,jorb,istate),3,fp(2,j,iab,istate),nel*3)
+               call dcopy(nel,dorb(3,1+ish,jorb,istate),3,fp(3,j,iab,istate),nel*3)
+               call dcopy(nel,ddorb(1+ish,jorb,istate),1,fpp(j,iab,istate),nel)
             enddo
 
 c     calculate the inverse transpose matrix and itsdeterminant
-            if(nel.gt.0) call matinv(slmi(1,istate,iab),nel,detiab(kref,istate,iab))
+            if(nel.gt.0) call matinv(slmi(1,iab,istate),nel,detiab(kref,iab,istate))
 
 c     loop through up spin electrons
 c     take inner product of transpose inverse with derivative
@@ -56,10 +56,10 @@ c     vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
             ik=-nel
             do i=1,nel
                ik=ik+nel
-               ddx(1,i+ish,istate)=ddot(nel,slmi(1+ik,istate,iab),1,fp(1,1+ik,istate,iab),3)
-               ddx(2,i+ish,istate)=ddot(nel,slmi(1+ik,istate,iab),1,fp(2,1+ik,istate,iab),3)
-               ddx(3,i+ish,istate)=ddot(nel,slmi(1+ik,istate,iab),1,fp(3,1+ik,istate,iab),3)
-               d2dx2(i+ish,istate)=ddot(nel,slmi(1+ik,istate,iab),1,fpp( 1+ik,istate,iab),1)
+               ddx(1,i+ish,istate)=ddot(nel,slmi(1+ik,iab,istate),1,fp(1,1+ik,iab,istate),3)
+               ddx(2,i+ish,istate)=ddot(nel,slmi(1+ik,iab,istate),1,fp(2,1+ik,iab,istate),3)
+               ddx(3,i+ish,istate)=ddot(nel,slmi(1+ik,iab,istate),1,fp(3,1+ik,iab,istate),3)
+               d2dx2(i+ish,istate)=ddot(nel,slmi(1+ik,iab,istate),1,fpp( 1+ik,iab,istate),1)
             enddo
 
             if(ipr.ge.4) then
@@ -67,7 +67,7 @@ c     vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
                ik=-nel
                do i=1,nel
                   ik=ik+nel
-                  write(6,*) 'slmi',iab,'M',(slmi(ii+ik,istate,iab),ii=1,nel)
+                  write(6,*) 'slmi',iab,'M',(slmi(ii+ik,iab,istate),ii=1,nel)
                enddo
             endif
          enddo
@@ -77,7 +77,7 @@ c     vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
       if(ipr.ge.4) then
          do istate=1,nstates
             write(6,*) "STATE", istate
-            write(6,'(''detu,detd'',9d12.5)') detiab(kref,istate,1),detiab(kref,istate,2)
+            write(6,'(''detu,detd'',9d12.5)') detiab(kref,1,istate),detiab(kref,2,istate)
          enddo
       endif
 
