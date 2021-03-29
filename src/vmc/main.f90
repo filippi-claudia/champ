@@ -39,6 +39,7 @@ program main
     call init_logfile()
 
     ! read the input
+    call parser()    
     call read_input()
 
     !> Initiaize log check.XXX files. It needs ipr flag value.

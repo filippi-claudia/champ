@@ -57,7 +57,31 @@ else()
   message(STATUS "MKL NOT FOUND! Using default BLAS and LAPACK")
 endif(MKL_FOUND)
 
-  
+
+
+# FDF inclusion begins here :: Ravindra : the quick hack
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+link_libraries(/usr/local/lib/libfdf.a)
+
+# include(${CMAKE_MODULE_PATH}/FindFDF.cmake)
+# # Find FDF
+# find_package(FDF)
+# if (FDF_FOUND)
+#   include_directories(${FDF_INCLUDE_DIRS})
+#   set(FDF_INCLUDE /usr/local/include)
+#   set(FDF_LIB "libfdf.a")  
+#   message(STATUS "Using FDF for parsing!")
+#   message(STATUS "FDF_INCLUDE_DIRS :: " ${FDF_INCLUDE_DIRS})
+#   message(STATUS "FDF_LIBRARIES    :: " ${FDF_LIBRARIES})
+# else()
+#   message(STATUS "Checking FDF LIBS and INCLUDE ")
+#   message(STATUS "FDF_INCLUDE_DIRS :: " ${FDF_INCLUDE_DIRS})
+#   message(STATUS "FDF_LIBRARIES    :: " ${FDF_LIBRARIES})
+# endif(FDF_FOUND)
+# # FDF inclusion ends here
+
+
 #  documentation requirements
 if (BUILD_DOC)
   find_package(DOXYGEN)
@@ -81,7 +105,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
   
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  list(APPEND Fortran_FLAGS "-O2" "-mcmodel=large" "-shared-intel"
+	list(APPEND Fortran_FLAGS "-O2" "-mcmodel=small" "-shared-intel" "-qopt-zmm-usage=high" "-xHOST" "-qopenmp-simd"
     "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
