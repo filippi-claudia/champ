@@ -419,7 +419,6 @@ end module linear_norm
 
 module multidet
     !> Arguments: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-    use vmc_mod, only: MELEC, MDET
 
     integer, dimension(:), allocatable :: iactv !(2)
     integer, dimension(:, :, :), allocatable :: irepcol_det !(MELEC,MDET,2)
@@ -439,11 +438,11 @@ contains
         use dets, only: ndet
         use vmc_mod, only: MELEC, MDET
         if (.not. allocated(iactv)) allocate (iactv(2))
-        ! if (.not. allocated(irepcol_det)) allocate (irepcol_det(MELEC, MDET, 2))
-        ! if (.not. allocated(ireporb_det)) allocate (ireporb_det(MELEC, MDET, 2))
+        if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
+        if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2))
         if (.not. allocated(ivirt)) allocate (ivirt(2))
-        ! if (.not. allocated(iwundet)) allocate (iwundet(MDET, 2))
-        ! if (.not. allocated(numrep_det)) allocate (numrep_det(MDET, 2))
+        if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
+        if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
     end subroutine allocate_multidet
 
     subroutine deallocate_multidet()
@@ -460,8 +459,6 @@ end module multidet
 module multimat
     !> Arguments: aa, wfmat
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC, MORB, MDET
-    use vmc_mod, only: MEXCIT
 
     real(dp), dimension(:, :, :), allocatable :: aa !(MELEC,MORB,2)
     real(dp), dimension(:, :, :), allocatable :: wfmat !(MEXCIT**2,MDET,2)
@@ -492,8 +489,6 @@ end module multimat
 module multimatn
     !> Arguments: aan, wfmatn
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC, MORB, MDET
-    use vmc_mod, only: MEXCIT
 
     real(dp), dimension(:, :), allocatable :: aan !(MELEC,MORB)
     real(dp), dimension(:, :), allocatable :: wfmatn !(MEXCIT**2,MDET)
