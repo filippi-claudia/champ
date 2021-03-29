@@ -4,10 +4,9 @@ module sr_mod
     integer :: MOBS
     integer :: MCONF
     ! integer, parameter :: MVEC = 160 ! never  used anymore
-    integer:: MVEC ! never  used anymore
 
     private
-    public :: MPARM, MOBS, MCONF, MVEC
+    public :: MPARM, MOBS, MCONF
     save
 end module sr_mod
 

@@ -53,13 +53,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         use zmatrix, only: czint, izcmat
         use force_analy, only: iforce_analy, iuse_zmat, alfgeo
         implicit real*8(a-h,o-z)
-      
-        
-          
+
+
+
         if (iforce_analy.eq.0) return
-        
+
         call compute_position_bcast
-        
+
         if(iuse_zmat.eq.1) then
           call coords_init (ncent, cent, izcmat)
           call coords_compute_wilson (cent, izcmat)
@@ -85,7 +85,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
             write(6,*)'CENT ',(cent(k,ic),k=1,3)
           enddo
         endif
-        
+
         return
       end
 
@@ -110,7 +110,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine force_store(l)
 
-      use sr_mod, only: MPARM, MOBS, MCONF, MVEC
+      use sr_mod, only: MPARM, MOBS, MCONF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc_mod, only: radmax, delri

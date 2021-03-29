@@ -11,7 +11,6 @@ add_executable(dmc.mov1
   $<TARGET_OBJECTS:shared_modules>
   $<TARGET_OBJECTS:shared_objects>
   # DMC source code
-  ${UTILS_SOURCE}
   ${DMC_SOURCE})
 
 #  Add headers

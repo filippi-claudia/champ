@@ -25,7 +25,7 @@ c     max does not work with g77
       real(dp), DIMENSION(:), ALLOCATABLE :: optci_reduce_collect
       real(dp), DIMENSION(:, :), ALLOCATABLE :: optci_reduce_collect2
 
-
+      MXTMP=max(MXORBTERM,MXMATDIM)
 
       allocate(optci_reduce_collect(MXTMP))
       allocate(optci_reduce_collect2(MXCITERM,MXCIREDUCED))

@@ -59,7 +59,7 @@ module vmc_mod
 contains
     subroutine set_vmc_size
         use const, only: nelec
-
+        use atom, only: nctype_tot, ncent_tot
         MMAT_DIM = nelec*nelec/4
         MMAT_DIM2 = nelec*(nelec - 1)/2
         MCTYP3X = max(3, nctype_tot)

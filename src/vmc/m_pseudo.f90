@@ -13,10 +13,8 @@ end module pseudo_mod
 
 module pseudo
     !> Arguments: lpot, nloc, vps, vpso
-    use pseudo_mod, only: MPS_L
-    use force_mod, only: MFORCE
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC, MCENT, MCTYPE
+
 
     integer, dimension(:), allocatable :: lpot !(MCTYPE)
     integer :: nloc
@@ -35,7 +33,7 @@ contains
         use pseudo_mod, only: MPS_L
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
-        use vmc_mod, only: MELEC, MCENT, MCTYPE
+
         if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
         if (.not. allocated(vps)) allocate (vps(nelec, ncent_tot, MPS_L))
         if (.not. allocated(vpso)) allocate (vpso(nelec, ncent_tot, MPS_L, MFORCE))
@@ -52,7 +50,7 @@ end module pseudo
 module pseudo_champ
     !> Arguments: igrid_ps, rmax_coul, rmax_nloc
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
+
 
     integer, dimension(:), allocatable :: igrid_ps !(MCTYPE)
     real(dp), dimension(:), allocatable :: rmax_coul !(MCTYPE)
@@ -66,7 +64,7 @@ contains
     subroutine allocate_pseudo_champ()
         use atom, only: nctype_tot
         use precision_kinds, only: dp
-        use vmc_mod, only: MCTYPE
+
         if (.not. allocated(igrid_ps)) allocate (igrid_ps(nctype_tot))
         if (.not. allocated(rmax_coul)) allocate (rmax_coul(nctype_tot))
         if (.not. allocated(rmax_nloc)) allocate (rmax_nloc(nctype_tot))
@@ -82,9 +80,9 @@ end module pseudo_champ
 
 module pseudo_fahy
     !> Arguments: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
-    use pseudo_mod, only: MPS_L, MPS_GRID
+
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
+
 
     real(dp), dimension(:), allocatable :: drad !(MCTYPE)
     real(dp), dimension(:), allocatable :: dradl !(MCTYPE)
@@ -103,7 +101,7 @@ contains
         use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MPS_GRID
         use precision_kinds, only: dp
-        use vmc_mod, only: MCTYPE
+
         if (.not. allocated(drad)) allocate (drad(nctype_tot))
         if (.not. allocated(dradl)) allocate (dradl(nctype_tot))
         if (.not. allocated(nlrad)) allocate (nlrad(nctype_tot))
@@ -127,9 +125,9 @@ end module pseudo_fahy
 
 module pseudo_tm
     !> Arguments: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
-    use pseudo_mod, only: MPS_L, MPS_GRID
+
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
+
 
     real(dp), dimension(:), allocatable :: arg !(MCTYPE)
     real(dp), dimension(:), allocatable :: arg_ps !(MCTYPE)
@@ -150,7 +148,7 @@ contains
         use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MPS_GRID
         use precision_kinds, only: dp
-        use vmc_mod, only: MCTYPE
+
         if (.not. allocated(arg)) allocate (arg(nctype_tot))
         if (.not. allocated(arg_ps)) allocate (arg_ps(nctype_tot))
         if (.not. allocated(d2pot)) allocate (d2pot(MPS_GRID, nctype_tot, MPS_L))

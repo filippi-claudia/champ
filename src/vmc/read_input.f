@@ -154,7 +154,7 @@ c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
-      use sr_mod, only: MCONF, MVEC
+      use sr_mod, only: MCONF
       use pseudo_mod, only: MPS_QUAD
       use properties, only: MAXPROP
       use optorb_mod, only: MXORBOP, MXREDUCED
@@ -608,7 +608,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
 ! lin_d and mix_n shared flags:
         if ((method.eq.'lin_d').or.(method.eq.'mix_n').or.(method.eq.'linear')) then
           call p2gtid('optwf:lin_nvec', nvec, 5, 1)
-          call p2gtid('optwf:lin_nvecx', nvecx, MVEC, 1)
+          call p2gtid('optwf:lin_nvecx', nvecx, 160, 1)
           call p2gtfd('optwf:lin_adiag', alin_adiag, 0.01, 1)
           call p2gtfd('optwf:lin_eps', alin_eps, 0.001, 1)
           call p2gtid('optwf:lin_jdav',lin_jdav,0,1)

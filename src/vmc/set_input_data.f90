@@ -300,7 +300,7 @@ subroutine inputdet(nwftype)
     ! Set the cdet to be equal
     use dets, only: cdet, ndet
     use csfs, only: nstates
-    use vmc_mod, only: MORB
+    use vmc_mod, only: MORB, MDET
     use mstates_mod, only: MSTATES
 
     implicit real*8(a - h, o - z)
@@ -318,6 +318,8 @@ end subroutine inputdet
 subroutine inputlcao(nwftype)
     ! Set the lcao to be equal
     use coefs, only: coef, nbasis, norb
+    use vmc_mod, only: MORB
+
     implicit real*8(a - h, o - z)
 
     allocate (coef(nbasis, MORB, nwftype))
