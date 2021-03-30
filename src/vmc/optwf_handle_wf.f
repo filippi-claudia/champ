@@ -937,8 +937,7 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
 c-----------------------------------------------------------------------
 
       subroutine optwf_store(l,wt,wt_sqrt,psid,energy)
-c store elocal and derivatives of psi for each configuration (call in vmc)
-
+c     store elocal and derivatives of psi for each configuration (call in vmc)
       use sr_mod, only: MPARM, MCONF
       use optjas, only: MPARMJ
       use csfs, only: nstates
@@ -968,7 +967,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       if(iforce_analy.gt.0.and.izvzb.eq.1) call force_store(l)
 
       if((method.ne.'sr_n'.and.method.ne.'lin_d')
-     &    .or.ioptjas+ioptorb+ioptci.eq.0) return
+     &     .or.ioptjas+ioptorb+ioptci.eq.0) return
 
       i0=1
       if(method.eq.'lin_d'.and.ioptjas+ioptorb.eq.0) i0=0
@@ -981,7 +980,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       ntmp=max(nciterm-i0,0)
       do istate=1,nstates
-         call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l,istate),1)
+         call dcopy(ntmp,ci_o(1+i0,istate),1,sr_o(nparmj+1,l,istate),1)
       enddo
 
       ijasci=nparmj+ntmp
@@ -1005,14 +1004,16 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       nconf_n=l
 
       if(method.eq.'sr_n'.and.i_sr_rescale.eq.0
-     &   .and.izvzb.eq.0.and.ifunc_omega.eq.0) return
+     &     .and.izvzb.eq.0.and.ifunc_omega.eq.0) return
 
       do j=1,nparmj
          tmp_ho(j)=denergy(j,1)+gvalue(j)*energy(1)
       end do
 
       call dcopy(nparmj,tmp_ho,1,sr_ho(1,l),1)
-      call dcopy(ntmp,ci_e(1+i0),1,sr_ho(nparmj+1,l),1)
+      do istate=1,nstates
+         call dcopy(ntmp,ci_e(1+i0,istate),1,sr_ho(nparmj+1,l),1)
+      enddo
       call dcopy(norbterm,orb_ho(1,1),1,sr_ho(nparmj+ntmp+1,l),1)
       
       end subroutine

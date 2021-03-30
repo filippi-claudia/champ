@@ -178,7 +178,6 @@ contains
   end subroutine sr_ortho
 
   subroutine compute_gradient_sr_ortho(nparm,sr_adiag)
-
     use mpi
     use sr_mod, only: MOBS
     use csfs, only: nstates
@@ -270,8 +269,8 @@ contains
     enddo
 
     if(idtask.eq.0) then
-       alambda=1.d0
-       aux1=0.d0
+       alambda=1.0d0
+       aux1=0.0d0
        do istate=1,nstates
           do i=2,n_obs
              obs_tot(i,istate)=obs_tot(i,istate)/obs_tot(jwtg,istate)

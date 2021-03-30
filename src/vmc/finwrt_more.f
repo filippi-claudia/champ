@@ -18,13 +18,11 @@ c written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-
 c     dimension istatus(MPI_STATUS_SIZE)
-
-      do istate=1,nstates
       passes=dfloat(iblk*nstep)
-         !write(6,*) "STATE",istate
-         write(6,'(''average psid, det_ref '',2d12.5)')apsi(istate)*nproc/passes,aref(istate)*nproc/passes
+      write(6,'(''average psid, det_ref '',2d12.5)') (apsi(istate)*nproc/passes,istate=1,nstates),aref*nproc/passes
+      do istate=1,nstates
+	 write(6,*) "STATE", istate
          write(6,'(''log detref '',2d12.5)') (detref(iab,istate)*nproc/passes,iab=1,2)
       enddo
 
