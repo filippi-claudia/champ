@@ -2,6 +2,7 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
+      use precision_kinds, only: dp
       use dmc_mod, only: MFPRD1
       use const, only: etrial, nelec
       use forcepar, only: istrech, nforce
@@ -20,7 +21,10 @@ c routine to accumulate estimators for energy etc.
       use contrl, only: nconf
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, ie, ifr, ip, iw, k
+      real(dp) :: one, zero
 
       parameter (zero=0.d0,one=1.d0)
 
