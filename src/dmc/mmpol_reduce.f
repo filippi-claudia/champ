@@ -1,5 +1,6 @@
       subroutine mmpol_reduce(wgsum)
 
+      use precision_kinds, only: dp
       use mpiconf, only: wid
       use contr3, only: mode
       use mmpol_cntrl, only: immpol
@@ -7,7 +8,11 @@
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ierr
+      real(dp) :: cmmpol2_collect, cmmpol2_sum, cmmpol_collect, cmmpol_now, dmmpol2_collect
+      real(dp) :: dmmpol2_sum, dmmpol_collect, dmmpol_now, wgsum
 
 
       if(immpol.eq.0) return
@@ -65,7 +70,11 @@
       use mmpol_cntrl, only: immpol
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ierr, irecv, irequest, isend, istatus
+      integer :: itag_r, itag_s
+
 
       dimension istatus(MPI_STATUS_SIZE)
 
