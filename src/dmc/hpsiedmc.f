@@ -1,11 +1,15 @@
       subroutine psiedmc(iel,iw,coord,psid,psij,iflag)
 c Written by Claudia Filippi
 
+      use precision_kinds, only: dp
       use vmc_mod, only: MELEC
       use const, only: nelec
       use config, only: xold_dmc
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, ic, idum, iel, iflag, iw
+      real(dp) :: coord, psid, psij, x
 
       dimension coord(3),x(3,MELEC)
 
