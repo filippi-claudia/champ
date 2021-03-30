@@ -23,11 +23,6 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
 
 
       dimension x(3),orb(*)
-c     dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
-c    &,cos_g(MELEC,NGVECX),sin_g(MELEC,NGVECX),dcos_g(3,MELEC,NGVECX),dsin_g(3,MELEC,NGVECX)
-c    &,ddcos_g(MELEC,NGVECX),ddsin_g(MELEC,NGVECX)
-c    &,cos_k(MELEC,IVOL_RATIO),sin_k(MELEC,IVOL_RATIO),dcos_k(3,MELEC,IVOL_RATIO),dsin_k(3,MELEC,IVOL_RATIO)
-c    &,ddcos_k(MELEC,IVOL_RATIO),ddsin_k(MELEC,IVOL_RATIO)
       dimension cos_g(NGVECX),sin_g(NGVECX),dcos_g(3,NGVECX),dsin_g(3,NGVECX)
      &,ddcos_g(NGVECX),ddsin_g(NGVECX)
      &,cos_k(IVOL_RATIO),sin_k(IVOL_RATIO),dcos_k(3,IVOL_RATIO),dsin_k(3,IVOL_RATIO)

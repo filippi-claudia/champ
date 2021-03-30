@@ -5,11 +5,12 @@
 
 load $(general:pool)/geometry.0
 load $(general:pool)/global.inp
+load $(general:pool)/TZ_1M_128.orb
 load $(general:pool)/BFD-T.bfinfo
 
 load $(general:pool)/jastrow_optimal
 load $(general:pool)/TZ_1M_128.det
-load $(general:pool)/TZ_1M_128.orb
+
 load $(general:pool)/cas1010.sym
 
 &optwf ioptwf 1 ioptci 1 ioptjas 1 ioptorb 1

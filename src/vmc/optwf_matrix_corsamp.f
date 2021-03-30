@@ -1,6 +1,6 @@
       subroutine optwf_matrix_corsamp
 c written by Claudia Filippi
-
+      use precision_kinds, only: dp
       use csfs, only: nstates
       use forcepar, only: nforce
       use numbas, only: numr
@@ -12,21 +12,41 @@ c written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nopt_iter, multiple_adiag
       use optwf_contrl, only: energy_tol, dparm_norm_min, ilastvmc
       ! I think that's needed
-      use gradhess_all, only: grad
+      use gradhess_all, only: grad, h, s
       use optwf_corsam, only: add_diag
       
       implicit real*8(a-h,o-z)
 
 
-      parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
-      parameter(MWORK=50*MPARMALL)
+      ! parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
+      ! parameter(MWORK=50*MPARMALL)
+      ! dimension grad_sav(MPARMALL),h_sav(MPARMALL,MPARMALL),s_sav(MPARMALL2)
+      ! dimension work(MWORK),work2(MPARMALL,MPARMALL)
 
-      dimension grad_sav(MPARMALL),h_sav(MPARMALL,MPARMALL),s_sav(MPARMALL2)
-      dimension work(MWORK),work2(MPARMALL,MPARMALL)
+      integer :: MPARMALL2
+      integer :: MWORK
+      real(dp), DIMENSION(:), allocatable :: grad_sav
+      real(dp), DIMENSION(:,:), allocatable :: h_sav
+      real(dp), DIMENSION(:), allocatable :: s_sav
+      real(dp), DIMENSION(:), allocatable :: work
+      real(dp), DIMENSION(:, :), allocatable :: work2
+
+      MPARMALL2 = MPARMALL*(MPARMALL+1)/2
+      MWORK=50*MPARMALL
+
+      allocate(grad_sav(MPARMALL))
+      allocate(h_sav(MPARMALL,MPARMALL))
+      allocate(s_sav(MPARMALL2))
+      allocate(work(MWORK))
+      allocate(work2(MPARMALL,MPARMALL))
+
+    
+      
 
 c No dump/restart if optimizing wave function
       irstar=0
       idump=0
+
 c Set up basis functions for test run
       do 1 iwft=2,3
    1    iwftype(iwft)=iwft
@@ -38,6 +58,7 @@ c Set up basis functions for test run
    3      call copy_zex(iwft)
       endif
       call set_displace_zero(3)
+      
 
 c Number of iterations
       write(6,'(/,''Number of iterations'',i3)') nopt_iter
@@ -85,7 +106,7 @@ c CI step for state average of multiple states (optimal CI for input Jastrow and
         call save_wf
 
         call setup_optimization(nparm,MPARMALL,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
-
+        
         write(6,'(/,''Compute CI parameters'',/)')
         call compute_dparm(nparm,MPARMALL,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy(1),energy_err(1))
@@ -466,6 +487,12 @@ c end of optimization loop
       ioptci=ioptci_sav
 
       call write_wf_best
+
+      deallocate(grad_sav)
+      deallocate(h_sav)
+      deallocate(s_sav)
+      deallocate(work)
+      deallocate(work2)
 
       return
       end

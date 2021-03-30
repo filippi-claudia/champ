@@ -143,7 +143,7 @@ module estcum
      real(dp) :: r2sum
      real(dp), dimension(:), allocatable :: tjfsum !(MSTATES)
      real(dp), dimension(:), allocatable :: tpbsum !(MSTATES)
-     !> DMC variables: 
+     !> DMC variables:
      real(dp) :: efsum
      real(dp) :: efsum1
      real(dp), dimension(:), allocatable :: egsum  !(MFORCE)
@@ -308,7 +308,7 @@ module estcum
      public :: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
      public :: allocate_est2cm_dmc, deallocate_est2cm_dmc
      save
-    
+
  contains
      subroutine allocate_est2cm()
          use force_mod, only: MFORCE

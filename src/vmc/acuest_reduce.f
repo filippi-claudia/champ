@@ -1,6 +1,8 @@
       subroutine acuest_reduce(enow)
 c Written by Claudia Filippi
 
+      use mpi
+      use precision_kinds, only: dp
       use force_mod, only: MFORCE
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
@@ -21,78 +23,88 @@ c Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-      parameter (MOBS=MSTATES*(8+5*MFORCE)+10)
-      
+
+      integer MOBS
+      integer iupdate
       character*20 filename
 
-      dimension obs(MOBS)
-      dimension collect(MOBS),enow(MSTATES,MFORCE)
+      dimension enow(MSTATES,MFORCE)
+      !real, dimension(MSTATES, MFORCE), INTENT(INOUT) :: enow
+
+      real(dp), dimension(:), allocatable  :: local_obs
+      real(dp), dimension(:), allocatable  :: collect
+
+
+      MOBS = MSTATES*(8+5*MFORCE)+10
+      allocate(local_obs(MOBS))
+      allocate(collect(MOBS))
+
 
       ! ipudate was not declared anywhere
-      integer :: iupdate = 0
+      iupdate = 0
 
       iblk=iblk+nproc
 
       jo=0
       do 10 istate=1,nstates
         jo=jo+1
-        obs(jo)=enow(istate,1)
+        local_obs(jo)=enow(istate,1)
 
         jo=jo+1
-   10   obs(jo)=apsi(istate)
+   10   local_obs(jo)=apsi(istate)
 
       jo=jo+1
-      obs(jo)=aref
+      local_obs(jo)=aref
 
       do iab=1,2
         jo=jo+1
-        obs(jo)=detref(iab)
+        local_obs(jo)=detref(iab)
       enddo
 
       do 20 ifr=1,nforce
         do 20 istate=1,nstates
           jo=jo+1
-          obs(jo)=ecum(istate,ifr)
+          local_obs(jo)=ecum(istate,ifr)
 
           jo=jo+1
-          obs(jo)=ecm2(istate,ifr)
+          local_obs(jo)=ecm2(istate,ifr)
 
           jo=jo+1
-          obs(jo)=fcum(istate,ifr)
+          local_obs(jo)=fcum(istate,ifr)
 
           jo=jo+1
-          obs(jo)=fcm2(istate,ifr)
+          local_obs(jo)=fcm2(istate,ifr)
 
           jo=jo+1
-   20     obs(jo)=wcum(istate,ifr)
+   20     local_obs(jo)=wcum(istate,ifr)
 
       do 30 i=1,nstates
         jo=jo+1
-        obs(jo)=pecum(i)
+        local_obs(jo)=pecum(i)
 
         jo=jo+1
-        obs(jo)=tpbcum(i)
+        local_obs(jo)=tpbcum(i)
 
         jo=jo+1
-        obs(jo)=tjfcum(i)
+        local_obs(jo)=tjfcum(i)
 
         jo=jo+1
-        obs(jo)=pecm2(i)
+        local_obs(jo)=pecm2(i)
 
         jo=jo+1
-        obs(jo)=tpbcm2(i)
+        local_obs(jo)=tpbcm2(i)
 
         jo=jo+1
-   30   obs(jo)=tjfcm2(i)
-      
+   30   local_obs(jo)=tjfcm2(i)
+
       jo=jo+1
-      obs(jo)=acc
+      local_obs(jo)=acc
 
       jo_tot=jo
 
       if(jo_tot.gt.MOBS)  call fatal_error('ACUEST_REDUCE: increase MOBS')
- 
-      call mpi_reduce(obs,collect,jo_tot
+
+      call mpi_reduce(local_obs,collect,jo_tot
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       call mpi_bcast(collect,jo_tot
@@ -105,10 +117,10 @@ c Written by Claudia Filippi
 
         jo=jo+1
   110   apsi(istate)=collect(jo)/nproc
-      
+
       jo=jo+1
       aref=collect(jo)/nproc
-      
+
       do iab=1,2
         jo=jo+1
         detref(iab)=collect(jo)/nproc
@@ -149,10 +161,10 @@ c Written by Claudia Filippi
 
         jo=jo+1
   130   tjfcm2(i)=collect(jo)
-       
+
       jo=jo+1
       acollect=collect(jo)
-       
+
 c reduce properties
       call prop_reduce
 c optimization reduced at the end of the run: large vectors to pass
@@ -191,10 +203,13 @@ c optorb reduced at the end of the run: set printout to 0
         acc=0
       endif
 
+      if (allocated(local_obs)) deallocate(local_obs)
+      if (allocated(collect)) deallocate(collect)
+
       return
 
       entry acues1_reduce
-      
+
       call qpcm_update_vol()
       if(iupdate.eq.1) then
         call pcm_reduce_chvol
@@ -202,4 +217,5 @@ c optorb reduced at the end of the run: set printout to 0
       endif
 
       return
+
       end

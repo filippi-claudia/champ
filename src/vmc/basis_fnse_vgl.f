@@ -3,7 +3,7 @@ c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt rout
 c routine to calculate the values of the basis functions and their derivatives
       use numbas_mod, only: MRWF
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: iwctype, ncent
+      use atom, only: iwctype, ncent, ncent_tot
 
       use ghostatom, only: nghostcent
       use const, only: pi
@@ -15,6 +15,7 @@ c routine to calculate the values of the basis functions and their derivatives
       use basis, only: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
       use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
@@ -32,9 +33,9 @@ c nda < 0   (zr,x2y2...)*exp(-a*r^2)
 
 
 
-      dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
 
-      dimension wfv(4,MELEC,MRWF),xc(3)
+      dimension wfv(4,nelec,MRWF),xc(3)
 
       data rt3,rt3b2/1.732050808d0,0.866025404d0/
 c cs=1/sqrt(4*pi), cp=sqrt(3/(4*pi)), cd1=sqrt(5/(4*pi)), cd2=sqrt(15/(4*pi))

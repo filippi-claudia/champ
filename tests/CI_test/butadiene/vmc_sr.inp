@@ -5,10 +5,11 @@
 
 load $(general:pool)/geometry.0
 load $(general:pool)/global.inp
+load cas44.lcao
 load $(general:pool)/BFD-Q.bfinfo
 
 load jastrow_good_b3lyp.0
-load cas44.lcao
+
 load cas44.det.1
 
 &optwf ioptwf 1 ioptci 1 ioptjas 1 ioptorb 1

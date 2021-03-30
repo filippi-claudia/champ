@@ -1,20 +1,29 @@
 module gradhess_all
     !> Arguments: MPARMALL, grad, h, s
-    use optorb_mod, only: MXREDUCED
-    use optjas, only: MPARMJ
-    use optci, only: MXCIREDUCED
+    ! use optorb_mod, only: MXREDUCED
+    ! use optjas, only: MPARMJ
+    ! use optci, only: MXCIREDUCED
     use precision_kinds, only: dp
 
-    integer, parameter :: MPARMALL = MPARMJ + MXCIREDUCED + MXREDUCED
+    ! integer, parameter :: MPARMALL = MPARMJ + MXCIREDUCED + MXREDUCED
+    integer :: MPARMALL
     real(dp), dimension(:), allocatable :: grad !(MPARMALL)
     real(dp), dimension(:, :), allocatable :: h !(MPARMALL,MPARMALL)
     real(dp), dimension(:, :), allocatable :: s !(MPARMALL,MPARMALL)
 
     private
     public :: MPARMALL, grad, h, s
-    public :: allocate_gradhess_all, deallocate_gradhess_all
+    public :: allocate_gradhess_all, deallocate_gradhess_all, set_gradhess_all_size
     save
 contains
+
+    subroutine set_gradhess_all_size()
+        use optci, only: MXCIREDUCED
+        use optjas, only: MPARMJ
+        use optorb_mod, only: MXREDUCED
+        MPARMALL = MPARMJ + MXCIREDUCED + MXREDUCED
+    end subroutine set_gradhess_all_size
+
     subroutine allocate_gradhess_all()
         use optorb_mod, only: MXREDUCED
         use optjas, only: MPARMJ
@@ -58,6 +67,7 @@ module gradhessj
     save
 contains
     subroutine allocate_gradhessj()
+        use csfs, only: nstates
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
@@ -112,13 +122,15 @@ module gradhessjo
     save
 contains
     subroutine allocate_gradhessjo()
+        use csfs, only: nstates
+        use atom, only: nctype_tot
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
         use mstates_mod, only: MSTATES
-        if (.not. allocated(d1d2a_old)) allocate (d1d2a_old(MCTYPE))
+        if (.not. allocated(d1d2a_old)) allocate (d1d2a_old(nctype_tot))
         if (.not. allocated(d1d2b_old)) allocate (d1d2b_old(2))
-        if (.not. allocated(d2d2a_old)) allocate (d2d2a_old(MCTYPE))
+        if (.not. allocated(d2d2a_old)) allocate (d2d2a_old(nctype_tot))
         if (.not. allocated(d2d2b_old)) allocate (d2d2b_old(2))
         if (.not. allocated(denergy_old)) allocate (denergy_old(MPARMJ, MSTATES))
         if (.not. allocated(gvalue_old)) allocate (gvalue_old(MPARMJ))
@@ -302,6 +314,7 @@ module gradjerr
     save
 contains
     subroutine allocate_gradjerr()
+        use csfs, only: nstates
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES

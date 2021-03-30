@@ -1,4 +1,4 @@
-      subroutine acuest_write(enow,nproc)
+      subroutine acuest_write(enow, nproc)
 c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
@@ -15,9 +15,8 @@ c routine to write out estimators for energy etc.
       use forcewt, only: wcum
       use contr3, only: mode
       use contrl, only: nstep
-
+      use precision_kinds, only: i2b
       implicit real*8(a-h,o-z)
-
 
       dimension enow(MSTATES,MFORCE)
 
@@ -33,6 +32,9 @@ c write out header first time
      &,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr''
      &,t66,''tjfave'',t72,''(tjferr'',t83,''fave'',t97,''(ferr)''
      &,t108,''accept'',t119,''iter'')')
+
+     
+      
 
 c write out current values of averages
       acc_denom=dfloat(nstep*iblk)
@@ -50,12 +52,13 @@ c write out current values of averages
          else
           eerr=err(ecum(istate,ifr),ecm2(istate,ifr),istate,ifr)
         endif
+        
         ieerr=nint(100000*eerr)
         if(ifr.eq.1) then
           if(iblk.eq.1) then
-            peerr=0
-            tpberr=0
-            tjferr=0
+            peerr=0.
+            tpberr=0.
+            tjferr=0.
            else
             peerr=err(pecum(istate),pecm2(istate),istate,ifr)
             tpberr=err(tpbcum(istate),tpbcm2(istate),istate,ifr)
@@ -64,12 +67,16 @@ c write out current values of averages
           peave=pecum(istate)/wcum(istate,ifr)
           tpbave=tpbcum(istate)/wcum(istate,ifr)
           tjfave=tjfcum(istate)/wcum(istate,ifr)
-
-          ipeerr=nint(100000* peerr)
-          itpber=nint(100000*tpberr)
-          itjfer=nint(100000*tjferr)
+          
+          ! The definition peer tpberr tjferr contains uninitialized variables
+          ! for example pecum
+          ! That sometimes lead to issues .... 
+          ipeerr=nint(100000*peerr, i2b)
+          itpber=nint(100000*tpberr, i2b)
+          itjfer=nint(100000*tjferr, i2b)
 
           if(istate.eq.1) then
+
             write(6,'(f10.5,4(f10.5,''('',i5,'')''),25x,f10.5,i10)')
      &      enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,accept,iblk*nstep
 
@@ -84,7 +91,7 @@ c different meaning of last argument: 0 acuest, 1 finwrt
      &      enow(istate,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer
           endif
 
-
+         
          else
           fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))/deltot(ifr)
           ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)/abs(deltot(ifr))
@@ -93,6 +100,7 @@ c different meaning of last argument: 0 acuest, 1 finwrt
      &    ') enow(istate,ifr),eave,ieerr,fave,iferr
         endif
   25  continue
-
+      
+      
       return
       end

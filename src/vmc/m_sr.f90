@@ -1,12 +1,11 @@
 module sr_mod
     !> Arguments:
     integer, parameter :: MPARM = 15100
-    integer, parameter :: MOBS = 10 + 6*MPARM
-    integer, parameter :: MCONF = 10000
-    integer, parameter :: MVEC = 160
+    integer :: MOBS
+    integer :: MCONF
 
     private
-    public :: MPARM, MOBS, MCONF, MVEC
+    public :: MPARM, MOBS, MCONF
     save
 end module sr_mod
 
@@ -81,6 +80,7 @@ subroutine allocate_m_sr()
 
     call allocate_sr_mat_n()
 end subroutine allocate_m_sr
+
 
 subroutine deallocate_m_sr()
     use sr_mat_n, only: deallocate_sr_mat_n

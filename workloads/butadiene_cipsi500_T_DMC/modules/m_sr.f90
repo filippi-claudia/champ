@@ -1,12 +1,12 @@
 module sr_mod
     !> Arguments:
     integer, parameter :: MPARM = 15100
-    integer, parameter :: MOBS = 10 + 6*MPARM
-    integer, parameter :: MCONF = 10000
-    integer, parameter :: MVEC = 160
+    integer :: MOBS
+    integer :: MCONF
+    ! integer, parameter :: MVEC = 160 ! never  used anymore
 
     private
-    public :: MPARM, MOBS, MCONF, MVEC
+    public :: MPARM, MOBS, MCONF
     save
 end module sr_mod
 

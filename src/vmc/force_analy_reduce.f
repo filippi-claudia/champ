@@ -4,7 +4,8 @@
       use vmc_mod, only: radmax, delri
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use atom, only: ncent
+      use atom, only: ncent, ncent_tot
+
       use mpiconf, only: wid
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
       use force_analy, only: iforce_analy
@@ -13,7 +14,7 @@
       implicit real*8(a-h,o-z)
 
 
-      dimension collect(3*MCENT)
+      dimension collect(3*ncent_tot)
 
       if(iforce_analy.eq.0) return
 

@@ -17,6 +17,7 @@ c*******************************************************************************
  11   format(' compiled command-list from file ',a) 
  12   format(' $Revision: 1.5 $')
       end 
+
       subroutine p2go(iu,isil)
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
@@ -25,6 +26,7 @@ c*******************************************************************************
       dimension idx1(MXF)
       dimension idx2(MXF)
 ctest>  
+      
       if(ip2deb.gt.0) then
        write (6,*) 'nesting level ',lnest
        write (6,*) 'parser dimensions'
@@ -97,6 +99,7 @@ c     parse line ...
  103  format('Unbalanced quote on input line ',i6)
       call fatal('input error') 
       end 
+
       subroutine gpnln2(iu,il,lne,nl,idx1,idx2,mm,lbuf,errmsg)
       implicit double precision (a-h,o-z)
 C    wrapper around gpnlne which
@@ -137,6 +140,7 @@ C some other error
       lne(1:3)='end'
       return
       end 
+
       subroutine gpnlne(iu,il,lne,nl,idx1,idx2,mm,lbuf,ierr)
       implicit double precision (a-h,o-z)
       include 'inc/p2_dim.inc'
@@ -220,6 +224,7 @@ ctest<
 ccc *** 
       return
       end 
+      
       subroutine rdln(iu,line,lnum,ieof)
 C    read next line from input stream 
       implicit double precision (a-h,o-z)

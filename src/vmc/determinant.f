@@ -13,20 +13,15 @@ c Modified by A. Scemama
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use const, only: nelec
 
       use multislater, only: detiab
+      use atom, only: ncent_tot
       implicit real*8(a-h,o-z)
-
-
-
-
 
       parameter (one=1.d0,half=0.5d0)
 
-
-
-
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
 
 c compute orbitals
       call orbitals(x,rvec_en,r_en)
@@ -110,19 +105,9 @@ c-----------------------------------------------------------------------
       use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+      ! write(6, *) 'norb', norb
+      ! write(6, *) 'nadorb', nadorb
+      ! call fatal_error('determinant.f')
 
       iflag=0
       if(ipass.le.2) return
@@ -143,6 +128,7 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
         call multideterminants_define(iflag,icheck)
         if (ioptorb.ne.0) then
           norb=norb+nadorb
+          write(6, *) norb
           call optorb_define
         endif
       endif
@@ -166,14 +152,18 @@ c-----------------------------------------------------------------------
       use Bloc, only: b
       use force_analy, only: iforce_analy
       use velocity_jastrow, only: vj
-      
+      use array_resize_utils, only: resize_matrix, resize_tensor
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
 
       parameter (one=1.d0,half=0.5d0)
-
+      
+      ! resize ddor and dorb if necessary
+      ! call resize_matrix(ddorb, norb+nadorb, 2)
+      ! call resize_matrix(b, norb+nadorb, 1)
+      ! call resize_tensor(dorb, norb+nadorb, 3)
 
 c compute kinetic contribution of B+Btilde to compute Eloc
       do i=1,nelec
@@ -203,12 +193,12 @@ c compute derivative of kinetic contribution of B+Btilde wrt nuclear coordinates
         do ic=1,ncent
           do i=1,nelec
             do l=1,3
-              call daxpy(norb,2*vj(1,i),da_dorb(l,1,i,1,ic),9*MELEC,b_da(l,i,1,ic),3*MELEC)
-              call daxpy(norb,2*vj(2,i),da_dorb(l,2,i,1,ic),9*MELEC,b_da(l,i,1,ic),3*MELEC)
-              call daxpy(norb,2*vj(3,i),da_dorb(l,3,i,1,ic),9*MELEC,b_da(l,i,1,ic),3*MELEC)
-              call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1,i,1),3*MELEC,b_da(l,i,1,ic),3*MELEC)
-              call daxpy(norb,2*da_vj(l,2,i,ic),dorb(2,i,1),3*MELEC,b_da(l,i,1,ic),3*MELEC)
-              call daxpy(norb,2*da_vj(l,3,i,ic),dorb(3,i,1),3*MELEC,b_da(l,i,1,ic),3*MELEC)
+              call daxpy(norb,2*vj(1,i),da_dorb(l,1,i,1,ic),9*nelec,b_da(l,i,1,ic),3*nelec)
+              call daxpy(norb,2*vj(2,i),da_dorb(l,2,i,1,ic),9*nelec,b_da(l,i,1,ic),3*nelec)
+              call daxpy(norb,2*vj(3,i),da_dorb(l,3,i,1,ic),9*nelec,b_da(l,i,1,ic),3*nelec)
+              call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1,i,1),3*nelec,b_da(l,i,1,ic),3*nelec)
+              call daxpy(norb,2*da_vj(l,2,i,ic),dorb(2,i,1),3*nelec,b_da(l,i,1,ic),3*nelec)
+              call daxpy(norb,2*da_vj(l,3,i,ic),dorb(3,i,1),3*nelec,b_da(l,i,1,ic),3*nelec)
               do iorb=1,norb
                 b_da(l,i,iorb,ic)=-hb*b_da(l,i,iorb,ic)
               enddo

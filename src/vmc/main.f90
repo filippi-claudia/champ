@@ -17,7 +17,7 @@ program main
     use mpiconf, only: idtask, nproc
     use mpiconf, only: mpiconf_init
     use contr3, only: init_control_mode
-    use contrl_file, only: init_logfile, init_procfile, close_files 
+    use contrl_file, only: init_logfile, init_procfile, close_files
     use allocation_mod, only: deallocate_vmc
     use optwf_mod, only: optwf
 
@@ -36,13 +36,13 @@ program main
     call init_control_mode('vmc_one_mpi ')
 
     !> Initiaize output.log file.
-    call init_logfile() 
+    call init_logfile()
 
     ! read the input
     call read_input()
 
-    !> Initiaize log check.XXX files. It needs ipr flag value.  
-    call init_procfile() 
+    !> Initiaize log check.XXX files. It needs ipr flag value.
+    call init_procfile()
 
     ! run the the optimization
     call optwf()

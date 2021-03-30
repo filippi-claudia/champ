@@ -5,7 +5,7 @@ c Written by Cyrus Umrigar
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
       use vmc_mod, only: MCTYPE
-      use atom, only: znuc, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, pecent, iwctype, nctype, ncent, nctype_tot
       use const, only: pi, ipr
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
       use ewald_basis, only: vps_basis_fourier
@@ -30,11 +30,6 @@ c Written by Cyrus Umrigar
 
 
       parameter (eps=1.d-12)
-
-c     common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
-c    &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
-c    &,nlrad(MCTYPE)
-c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
 
 
       dimension r(MPS_GRID),vps_short(MPS_GRID),work(MPS_GRID)
@@ -1639,12 +1634,13 @@ c-----------------------------------------------------------------------
 
       function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
       use vmc_mod, only: MELEC
+      use const, only: nelec
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
 
-      dimension znuc(*),iwctype(*),igmult(*),cos_g(MELEC,*),sin_g(MELEC,*),y(*)
+      dimension znuc(*),iwctype(*),igmult(*),cos_g(nelec,*),sin_g(nelec,*),y(*)
 
       ivec=1
       vl=0
@@ -1666,12 +1662,13 @@ c-----------------------------------------------------------------------
 
       function vlrange_ee_old2(nelec,ngnorm,igmult,cos_g,sin_g,y)
       use vmc_mod, only: MELEC
+      use const, only: nelec
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
 
-      dimension igmult(*),cos_g(MELEC,*),sin_g(MELEC,*),y(*)
+      dimension igmult(*),cos_g(nelec,*),sin_g(nelec,*),y(*)
 
       ivec=1
       vl=0
@@ -1845,6 +1842,7 @@ c Written by Cyrus Umrigar
       use periodic, only: znuc_sum
       use pseudo, only: lpot, nloc
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      
       implicit real*8(a-h,o-z)
 
 
@@ -1957,12 +1955,13 @@ c-----------------------------------------------------------------------
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
       use ewald_mod, only: NG1DX
       use vmc_mod, only: MELEC
+      use const, only: nelec
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
 
-      dimension glatt(3,3),igvec(3,*),r(3,*),cos_g(MELEC,*),sin_g(MELEC,*)
+      dimension glatt(3,3),igvec(3,*),r(3,*),cos_g(nelec,*),sin_g(nelec,*)
      &,ng1d(3)
       dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
 
@@ -2004,6 +2003,7 @@ c-----------------------------------------------------------------------
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift,iflag)
       use ewald_mod, only: NG1DX
       use vmc_mod, only: MELEC
+      use const, only: nelec
 c Written by Cyrus Umrigar
 c iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positions.
@@ -2014,9 +2014,9 @@ c Presently using cossin_psi_g and cossin_psi_k instead.
 
 
       dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
-     &,cos_g(MELEC,*),sin_g(MELEC,*)
-     &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
-     &,ddcos_g(MELEC,*),ddsin_g(MELEC,*),g_shift(*)
+     &,cos_g(nelec,*),sin_g(nelec,*)
+     &,dcos_g(3,nelec,*),dsin_g(3,nelec,*)
+     &,ddcos_g(nelec,*),ddsin_g(nelec,*),g_shift(*)
       dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
 
 c Calculate cosines and sines for recip. lattice vectors along axes first.
@@ -2081,6 +2081,7 @@ c     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
       use ewald_mod, only: NG1DX
       use vmc_mod, only: MELEC
+      use const, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c Needed for orbitals and their Laplacian.
@@ -2089,9 +2090,9 @@ c Needed for orbitals and their Laplacian.
 
 
 c     dimension glatt(3,3),gnorm(*),igmult(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
-c    &,cos_g(MELEC,*),sin_g(MELEC,*)
-c    &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
-c    &,ddcos_g(MELEC,*),ddsin_g(MELEC,*),g_shift(*)
+c    &,cos_g(nelec,*),sin_g(nelec,*)
+c    &,dcos_g(3,nelec,*),dsin_g(3,nelec,*)
+c    &,ddcos_g(nelec,*),ddsin_g(nelec,*),g_shift(*)
       dimension glatt(3,3),gnorm(*),igmult(*),gvec(3,*),igvec(3,*),r(3),ng1d(3)
      &,cos_g(*),sin_g(*)
      &,dcos_g(3,*),dsin_g(3,*)
@@ -2174,6 +2175,7 @@ c     subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
       use vmc_mod, only: MELEC
+      use const, only: nelec
 c Written by Cyrus Umrigar
 c Needed for orbitals and their Laplacian.
 c For the k-vectors do it straightforwardly since there are few of them
@@ -2182,9 +2184,9 @@ c For the k-vectors do it straightforwardly since there are few of them
 
 
 c     dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
-c    &,cos_g(MELEC,*),sin_g(MELEC,*)
-c    &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
-c    &,ddcos_g(MELEC,*),ddsin_g(MELEC,*),g_shift(*)
+c    &,cos_g(nelec,*),sin_g(nelec,*)
+c    &,dcos_g(3,nelec,*),dsin_g(3,nelec,*)
+c    &,ddcos_g(nelec,*),ddsin_g(nelec,*),g_shift(*)
       dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3),ng1d(3)
      &,cos_g(*),sin_g(*)
      &,dcos_g(3,*),dsin_g(3,*)
@@ -2217,6 +2219,7 @@ c-----------------------------------------------------------------------
       subroutine cossin_n(znuc,iwctype,glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
       use vmc_mod, only: MCENT
+      use atom, only: ncent_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for nuclei
 
@@ -2224,7 +2227,7 @@ c Calculate cos_sum and sin_sum for nuclei
 
 
       dimension znuc(*),iwctype(*),glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
-      dimension cos_gr(-NG1DX:NG1DX,3,MCENT),sin_gr(-NG1DX:NG1DX,3,MCENT)
+      dimension cos_gr(-NG1DX:NG1DX,3,ncent_tot),sin_gr(-NG1DX:NG1DX,3,ncent_tot)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr
@@ -2266,15 +2269,16 @@ c-----------------------------------------------------------------------
       subroutine cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NGNORMX, NG1DX
       use vmc_mod, only: MCENT, MCTYPE
+      use atom, only: ncent_tot, nctype_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 
       implicit real*8(a-h,o-z)
 
 
-      dimension y_psp(NGNORMX,MCTYPE),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
+      dimension y_psp(NGNORMX,nctype_tot),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
      &,ng1d(3),cos_sum(*),sin_sum(*)
-      dimension cos_gr(-NG1DX:NG1DX,3,MCENT),sin_gr(-NG1DX:NG1DX,3,MCENT)
+      dimension cos_gr(-NG1DX:NG1DX,3,ncent_tot),sin_gr(-NG1DX:NG1DX,3,ncent_tot)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr
@@ -2319,6 +2323,7 @@ c-----------------------------------------------------------------------
       subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
       use vmc_mod, only: MELEC
+      use const, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons
 
@@ -2326,7 +2331,7 @@ c Calculate cos_sum and sin_sum for electrons
 
 
       dimension glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
-      dimension cos_gr(-NG1DX:NG1DX,3,MELEC),sin_gr(-NG1DX:NG1DX,3,MELEC)
+      dimension cos_gr(-NG1DX:NG1DX,3,nelec),sin_gr(-NG1DX:NG1DX,3,nelec)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr

@@ -5,11 +5,12 @@
       use const, only: nelec
       use da_jastrow4val, only: da_j
       use da_energy_now, only: da_psi
+      use atom, only: ncent_tot
 
       implicit real*8(a-h,o-z)
 
 
-      dimension da_psi_ref(3,MCENT)
+      dimension da_psi_ref(3,ncent_tot)
 
       call compute_da_psi(psid,da_psi_ref)
       call compute_da_energy(psid,denergy)
@@ -29,7 +30,7 @@ c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
       use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use vmc_mod, only: MMAT_DIM
-      use atom, only: ncent
+      use atom, only: ncent,ncent_tot
 
       use const, only: nelec, ipr
       use da_energy_now, only: da_psi
@@ -56,8 +57,8 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension b_a(MORB,MELEC),b_kref(MELEC*MELEC),tildem_a(MELEC,MORB)
-      dimension da_psi_ref(3,MCENT)
+      dimension b_a(MORB,nelec),b_kref(nelec*nelec),tildem_a(nelec,MORB)
+      dimension da_psi_ref(3,ncent_tot)
 
       do 400 ic=1,ncent
         do 400 k=1,3
@@ -126,7 +127,7 @@ c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
       use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use vmc_mod, only: MMAT_DIM
-      use atom, only: iwctype, ncent
+      use atom, only: iwctype, ncent, ncent_tot
       use const, only: hb, nelec
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_vj
@@ -156,7 +157,7 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension da_energy_ref(3,MCENT)
+      dimension da_energy_ref(3,ncent_tot)
 
       do 400 ic=1,ncent
         do 400 k=1,3

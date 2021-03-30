@@ -11,10 +11,13 @@
       use slatn, only: slmin
       use dorb_m, only: iworbd
       use multislatern, only: ddorbn, detn, dorbn, orbn 
+      use const, only: nelec
 
       use slater, only: d2dx2, ddx, fp, fpp, slmi
 
       use multislater, only: detiab
+
+      use atom, only: ncent_tot
       implicit real*8(a-h,o-z)
 
 
@@ -22,10 +25,10 @@
 
 
 
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-
+      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
+      
       call orbitalse(iel,x,rvec_en,r_en,iflag)
-
+      
       if(iel.le.nup) then
         iab=1
         nel=nup
@@ -64,7 +67,8 @@
       end
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
-
+      
+      use precision_kinds, only:dp
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -87,8 +91,9 @@ c-----------------------------------------------------------------------
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-
+      use const, only: nelec
       use multislater, only: detiab
+
       implicit real*8(a-h,o-z)
 
 
@@ -101,9 +106,13 @@ c-----------------------------------------------------------------------
 
 
       dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,MORB)
-      dimension ymat_tmp(MORB,MELEC)
+      ! real(dp), allocatable, save :: ymat(:,:)
+      ! if (.not. allocated(ymat)) then 
+      !   allocate(ymat_tmp(norb,MELEC))
+      ! endif
 
-      save ymat_tmp
+      dimension ymat_tmp(MORB,nelec)
+      ! save ymat_tmp
 
       if(iel.le.nup) then
         iab=1
@@ -260,6 +269,7 @@ c iel has different spin than the electron moved
 c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
+      use precision_kinds, only: dp
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -269,11 +279,12 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
+      use coefs, only: norb
 
       implicit real*8(a-h,o-z)
 
-
-      dimension slmi(MMAT_DIM),dorb(3,MORB)
+      dimension slmi(MMAT_DIM)
+      dimension dorb(3,MORB)
       dimension ddx_ref(3)
 
       ddx_ref(1)=0

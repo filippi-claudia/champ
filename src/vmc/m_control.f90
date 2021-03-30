@@ -7,11 +7,11 @@ module contrl
     integer :: isite
     integer :: nconf
     integer :: nblk
-    integer :: nblkeq
     integer :: nblk_max
+    integer :: nblkeq
     integer :: nconf_new
     integer :: nstep
-    integer :: icharged_atom 
+    integer :: icharged_atom
     integer :: nblk_ci
 
     private

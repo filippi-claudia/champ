@@ -96,8 +96,8 @@ c compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(rvec_en,r_en,iel)
 
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: znuc, iwctype, ncent
-
+      use atom, only: znuc, iwctype, ncent, ncent_tot
+      use const, only: nelec
       use pseudo, only: lpot, vps
 
       use da_pseudo, only: da_vps
@@ -108,7 +108,7 @@ c compute gauss-pseudopotential for electron iel
 
 
 
-      dimension r_en(MELEC,MCENT),rvec_en(3,MELEC,MCENT)
+      dimension r_en(nelec,ncent_tot),rvec_en(3,nelec,ncent_tot)
 
       do 10 ic=1,ncent
         ict=iwctype(ic)

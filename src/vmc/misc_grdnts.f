@@ -319,7 +319,7 @@ c   using Z matrix (internal) coordinates
       use vmc_mod, only: radmax, delri
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use atom, only: ncent
+      use atom, only: ncent, ncent_tot
       use forcestr, only: delc
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda
@@ -330,7 +330,7 @@ c   using Z matrix (internal) coordinates
 
 
 
-      dimension czint_t1(3,MCENT),czcart_t1(3,MCENT)
+      dimension czint_t1(3,ncent_tot),czcart_t1(3,ncent_tot)
 
 
       if(k_in.eq.1) then
@@ -348,7 +348,7 @@ c   using Z matrix (internal) coordinates
       
 
       czint_t1(k_in,ic_in)=czint_t1(k_in,ic_in)+delgrd_tmp
-      call zmat2cart_rc(MCENT,izcmat,czint_t1,czcart_t1,czcart_ref)
+      call zmat2cart_rc(ncent_tot,izcmat,czint_t1,czcart_t1,czcart_ref)
 
       do 30 ic=1,ncent
         do 30 k=1,3
@@ -560,7 +560,7 @@ c -----------------------------------------------------------------------
       use vmc_mod, only: radmax, delri
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use atom, only: cent, ncent
+      use atom, only: cent, ncent,ncent_tot
 
       use grdntsmv, only: igrdmv
       use zmatrix, only: czcart, czint, czcart_ref, izcmat
@@ -573,7 +573,7 @@ c -----------------------------------------------------------------------
       parameter (eps=1.d-5,epsi=0.5d0/eps)
 
 
-      dimension czcartp(3,MCENT),czcartm(3,MCENT)
+      dimension czcartp(3,ncent_tot),czcartm(3,ncent_tot)
       dimension bwilson(MCENT3,MCENT3),gmat(MCENT3*MCENT3)
       dimension force_cart(3,*),force_int(MCENT3)
 

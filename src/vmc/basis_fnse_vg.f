@@ -5,7 +5,7 @@ c vg -> value,gradient
 
       use numbas_mod, only: MRWF
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: iwctype, ncent
+      use atom, only: iwctype, ncent, ncent_tot
       use ghostatom, only: nghostcent
       use numbas, only: iwrwf, nrbas, numr
 
@@ -15,6 +15,7 @@ c vg -> value,gradient
       use basis, only: n1s, n2p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
       use basis, only: n4fzzx, n4fzzy, n4fxyz
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
@@ -24,7 +25,7 @@ c vg -> value,gradient
 
 
       dimension wfv(4,MRWF)
-      dimension xc(3),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension xc(3),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
 
       data rt3,rt3b2/1.732050808d0,0.866025404d0/
 c cs=1/sqrt(4*pi), cp=sqrt(3/(4*pi)), cd1=sqrt(5/(4*pi)), cd2=sqrt(15/(4*pi))

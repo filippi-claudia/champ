@@ -1,21 +1,30 @@
       subroutine read_input
 c Written by Friedemann Schautz
-      use allocation_mod, only: allocate_vmc, allocate_dmc 
-      use contr3, only: mode
 
+      use contr3, only: mode
+      use allocation_mod, only: allocate_vmc, allocate_dmc
       implicit real*8(a-h,o-z)
 
-      call allocate_vmc()
-      call allocate_dmc()
-
+      ! call allocate_vmc()
+      ! call allocate_dmc()
 
 c Initialize flags
       call flaginit
 c Initialize input parser
+
       call p2init
 
 c Parse input (standard input)
       call p2go(5,0)
+
+c Compute the size of some matrices we need
+      call preprocess_input()
+      call compute_mat_size()
+
+c Allocate memory of all arrays
+      ! call allocate_all_arrays()
+      call allocate_vmc()
+      call allocate_dmc()
 
 c Transfer from lists to fortran variables, print out, check,
 c and read in everything which is still in the old format
@@ -24,13 +33,128 @@ c and read in everything which is still in the old format
       if(index(mode,'mc').ne.0 ) call p2vin('input.log',1)
 
       return
-      end
+      end subroutine read_input
+
+      subroutine preprocess_input()
+        !> read some parts of the input that
+        !> are needed for the dynamic allocation
+        use elec, only: ndn, nup
+        use const, only: nelec
+        use ghostatom, only: newghostype, nghostcent
+        use atom, only: nctype, ncent
+        use contrl, only: nstep, nblk, nblk_max
+        use contr3, only: mode
+        use wfsec, only: nwftype
+        use forcepar, only: nforce
+        use force_mod, only: MFORCE
+        use method_opt, only: method
+
+        implicit none
+
+        !> electrons
+        call p2gti('electrons:nelec',nelec,1)
+        call p2gti('electrons:nup',nup,1)
+        ndn=nelec-nup
+
+        !> atoms
+        call p2gti('atoms:nctype',nctype,1)
+        call p2gti('atoms:natom',ncent,1)
+        call p2gtid('atoms:addghostype',newghostype,0,1)
+        call p2gtid('atoms:nghostcent',nghostcent,0,1)
+
+        !> force
+        call p2gtid('general:nforce',nforce,1,1)
+        MFORCE = nforce
+
+        !> wftype
+        call p2gtid('general:nwftype',nwftype,1,1)
+
+        !> sampling
+        if(index(mode,'vmc').eq.0) call p2gtad('dmc:mode_dmc',mode,'dmc_one_mpi1',1)
+        if(index(mode,'mc').ne.0 ) then
+
+          if(index(mode,'vmc').ne.0) then
+            call p2gti('blocking_vmc:nstep',nstep,1)
+            call p2gti('blocking_vmc:nblk',nblk,1)
+            call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
+          endif
+          if(index(mode,'dmc').ne.0) then
+            call p2gti('blocking_dmc:nstep',nstep,1)
+            call p2gti('blocking_dmc:nblk',nblk,1)
+            call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
+          endif
+        endif
+
+        !> optimization method
+        call p2gtad('optwf:method', method, 'linear', 1)
+        if (method .eq. 'linear') then
+          nwftype = 3
+          MFORCE = 3
+        endif
+
+      end subroutine preprocess_input
+
+      subroutine compute_mat_size()
+        !> compute various size that are derived from the input
+        ! use vmc_mod, only: MMAT_DIM, MMAT_DIM2, MCTYP3X, MCENT3
+        ! use const, only: nelec
+        ! use atom, only: nctype_tot, ncent_tot
+        use sr_mod, only: MPARM, MOBS, MCONF
+        use contrl, only: nstep, nblk_max
+
+        use vmc_mod, only: set_vmc_size
+        use optci, only: set_optci_size
+        use optorb_mod, only: set_optorb_size
+        use gradhess_all, only: set_gradhess_all_size
+        ! use sr_mod, only: set_sr_size
+
+        implicit none
+
+        ! leads to circular dependecy of put in sr_mod ..
+        MOBS = 10 + 6*MPARM
+        MCONF = nstep * nblk_max
+
+        call set_vmc_size
+        call set_optci_size
+        call set_optorb_size
+        call set_gradhess_all_size
+        ! call set_sr_size
+
+      end subroutine
+
+      subroutine allocate_all_arrays()
+            !> massive dynamic allocation
+            call allocate_m_common
+            call allocate_m_basis
+            call allocate_m_control
+            call allocate_m_deriv
+            call allocate_m_efield
+            call allocate_m_estimators
+            call allocate_m_ewald
+            call allocate_m_force
+            call allocate_m_gradhess
+            call allocate_m_grdnt
+            call allocate_m_grid
+            call allocate_m_jastrow
+            call allocate_m_mixderiv
+            call allocate_m_mmpol
+            call allocate_m_mstates
+            call allocate_m_optci
+            call allocate_m_optorb
+            call allocate_m_optwf
+            call allocate_m_pcm
+            call allocate_m_prop
+            call allocate_m_pseudo
+            call allocate_m_sampling
+            call allocate_m_sr
+            call allocate_m_state_avrg
+      end subroutine allocate_all_arrays
 
 c-----------------------------------------------------------------------
       subroutine process_input
 c Written by Cyrus Umrigar, Claudia Filippi, Friedemann Schautz,
 c and Anthony Scemema
-      use sr_mod, only: MCONF, MVEC
+      use sr_mod, only: MCONF
       use pseudo_mod, only: MPS_QUAD
       use properties, only: MAXPROP
       use optorb_mod, only: MXORBOP, MXREDUCED
@@ -38,13 +162,13 @@ c and Anthony Scemema
       use mmpol_mod, only: mmpolfile_sites, mmpolfile_chmm
       use force_mod, only: MFORCE, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use jaspar, only: nspin1, nspin2, is
       use ghostatom, only: newghostype, nghostcent
       use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
       use jaspar1, only: cjas1, cjas2
       use general, only: pooldir, pp_id, bas_id
-      use general, only: filenames_bas_num, wforce 
+      use general, only: filenames_bas_num, wforce
       use csfs, only: cxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
@@ -111,12 +235,13 @@ c and Anthony Scemema
       use method_opt, only: method
       use optorb_cblock, only: nefp_blocks, isample_cmat, iorbsample
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use array_resize_utils, only: resize_tensor
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       use inputflags, only: node_cutoff, eps_node_cutoff, iqmmm, scalecoef
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
       use optwf_contrl, only: ilastvmc, iroot_geo
-      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
       use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat
       use optwf_corsam, only: add_diag
       use dmc_mod, only: MWALK
@@ -129,7 +254,7 @@ c and Anthony Scemema
       character*32 keyname
       character*10 eunit
       character*16 cseed
-      dimension irn(4),cent_tmp(3),anorm(MBASIS)
+      dimension irn(4),cent_tmp(3),anorm(nbasis)
 
 c Inputs:
 c  title      title
@@ -249,7 +374,7 @@ c General section
       call p2gtid('general:iperiodic',iperiodic,0,1)
       call p2gtid('general:ibasis',ibasis,1,1)
 
-      if(index(mode,'vmc').ne.0 .and. iperiodic.gt.0) 
+      if(index(mode,'vmc').ne.0 .and. iperiodic.gt.0)
      & call fatal_error('INPUT: VMC for periodic system -> run dmc/dmc.mov1 with idmc < 0')
 
       if(index(mode,'mc').ne.0 ) then
@@ -268,19 +393,20 @@ c General section
 
       call p2gtid('general:nforce',nforce,1,1)
       write(6,'(/,''number of geometries ='',t30,i10)') nforce
-      if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
+
+      ! if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
       call p2gtid('general:nwftype',nwftype,1,1)
       write(6,'(/,''number of wave functions='',t30,i10)') nwftype
       if(nwftype.gt.nforce) call fatal_error('INPUT: nwftype gt nforce')
-      if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype gt MWF')
+      !if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype gt MWF')
 
 c Electron section
       call p2gti('electrons:nelec',nelec,1)
       write(6,'(''number of electrons ='',t30,i10)') nelec
-      if(nelec.gt.MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
+      ! if(nelec.gt.MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
 
       call p2gti('electrons:nup',nup,1)
-      if(nup.gt.MELEC/2) call fatal_error('INPUT: nup exceeds MELEC/2')
+      if(nup.gt.nelec/2) call fatal_error('INPUT: nup exceeds nelec/2')
       ndn=nelec-nup
       write(6,'(''number of up,dn electrons ='',t30,2i5)') nup,ndn
 
@@ -386,7 +512,7 @@ c Parameters for blocking/start/dump
         call p2gtid('startend:idump',idump,1,1)
         call p2gtid('startend:irstar',irstar,0,1)
         call p2gtid('startend:isite',isite,1,1)
-        if (isite.eq.1) call p2gtid('startend:icharged_atom',icharged_atom,0,1) 
+        if (isite.eq.1) call p2gtid('startend:icharged_atom',icharged_atom,0,1)
 
 c Make sure that the printout is not huge
         if(nstep*(nblk+2*nblkeq).gt.104000) ipr=-1
@@ -459,7 +585,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
         call p2gtad('optwf:method',method,'linear',1)
         call p2gtid('optwf:nblk_max',nblk_max,nblk,1)
 
-! lin_d, sr_n, mix_n and linear shared flags: 
+! lin_d, sr_n, mix_n and linear shared flags:
         if((method.eq.'lin_d').or.(method.eq.'sr_n').or.(method.eq.'mix_n')
      #       .or.(method.eq.'linear')) then
            call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
@@ -469,7 +595,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
            call p2gtid('optwf:micro_iter_sr', micro_iter_sr, 1, 1)
         end if
 
-! lin_d and sr_n shared flags: 
+! lin_d and sr_n shared flags:
         if((method.eq.'lin_d').or.(method.eq.'sr_n')) then
            call p2gtid('optwf:func_omega', ifunc_omega, 0, 1)
            if(ifunc_omega.gt.0) then
@@ -479,17 +605,17 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
            end if
         end if
 
-! lin_d and mix_n shared flags: 
+! lin_d and mix_n shared flags:
         if ((method.eq.'lin_d').or.(method.eq.'mix_n').or.(method.eq.'linear')) then
           call p2gtid('optwf:lin_nvec', nvec, 5, 1)
-          call p2gtid('optwf:lin_nvecx', nvecx, MVEC, 1)
+          call p2gtid('optwf:lin_nvecx', nvecx, 160, 1)
           call p2gtfd('optwf:lin_adiag', alin_adiag, 0.01, 1)
           call p2gtfd('optwf:lin_eps', alin_eps, 0.001, 1)
           call p2gtid('optwf:lin_jdav',lin_jdav,0,1)
           call p2gtid('optwf:multiple_adiag',multiple_adiag,0,1)
         end if
 
-! sr_n and mix_n shared flags: 
+! sr_n and mix_n shared flags:
         if ((method.eq.'sr_n').or.(method.eq.'mix_n')) then
           call p2gtfd('optwf:sr_tau', sr_tau, 0.02, 1)
           call p2gtfd('optwf:sr_adiag', sr_adiag, 0.01, 1)
@@ -502,7 +628,7 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
            call p2gtid('optwf:ilastvmc',ilastvmc,1,1)
         end if
 ! dl flags:
-        if (idl_flag .gt. 0) then 
+        if (idl_flag .gt. 0) then
             call p2gtid('optwf:nopt_iter', nopt_iter, 6, 1)
             call p2gtfd('optwf:energy_tol', energy_tol, 1.d-3, 1)
             call p2gtfd('optwf:dparm_norm_min', dparm_norm_min, 1.0d0, 1)
@@ -515,18 +641,18 @@ CVARDOC flag: oLBFGS optimization algorithm wil be used
             call p2gtad('optwf:dl_alg', dl_alg, 'nag', 1)
         end if
 
-        if(method.eq.'linear'.and.MXREDUCED.ne.MXORBOP) 
+        if(method.eq.'linear'.and.MXREDUCED.ne.MXORBOP)
      &    call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')
-        if((method.eq.'sr_n'.or.method.eq.'lin_d').and.nstep*nblk_max.gt.MCONF)
-     &    call fatal_error('READ_INPUT: nstep*nblk_max.gt.MCONF')
+    !     if((method.eq.'sr_n'.or.method.eq.'lin_d').and.nstep*nblk_max.gt.MCONF)
+    !  &    call fatal_error('READ_INPUT: nstep*nblk_max.gt.MCONF')
         endif
 
-        if(ioptjas.eq.1.or.ioptorb.eq.1.or.ioptci.eq.1) 
+        if(ioptjas.eq.1.or.ioptorb.eq.1.or.ioptci.eq.1)
      &  write(6,'(''Computing/writing quantities for optimization with method '',a10)') method
 
 c Jastrow optimization flag (vmc/dmc only)
         if(ioptjas.gt.0) then
-          write(6,'(''Jastrow derivatives are sampled'')') 
+          write(6,'(''Jastrow derivatives are sampled'')')
           write(6,'(''Number of Jastrow derivatives'',i5)') nparmj
           if(ijas.eq.4) then
             call cuspinit4(1)
@@ -610,7 +736,7 @@ CVARDOC flag: Efficiency for sampling states inputed in multiple_cistates
 
 c QMMM classical potential
       call p2gtid('qmmm:iqmmm',iqmmm,0,1)
-      if(iqmmm.gt.0) 
+      if(iqmmm.gt.0)
      & write(6,'(''QMMM external potential'')')
       if(iqmmm.gt.0) call qmmm_extpot_read
 
@@ -624,7 +750,7 @@ c External charges fetched in read_efield
 
 c PCM polarization charges
 c  ipcm=1 computes only the cavity (no qmc calculations)
-c  ipcm=2 runs qmc and creates/updates polarization charges 
+c  ipcm=2 runs qmc and creates/updates polarization charges
 c  ipcm=3 runs qmc with fixed polarization charges
       call p2gtid('pcm:ipcm',ipcm,0,1)
       call p2gtid('pcm:ipcmprt',ipcmprt,0,1)
@@ -654,7 +780,7 @@ c  ipcm=3 runs qmc with fixed polarization charges
         do i=1,ncent
           qfree=qfree+znuc(iwctype(i))
         enddo
-        
+
         write(6,'(''PCM polarization charges '')')
         write(6,'(''pcm ipcm   =  '',t30,i3)') ipcm
         write(6,'(''pcm ichpol =  '',t30,i3)') ichpol
@@ -676,15 +802,15 @@ c  ipcm=3 runs qmc with fixed polarization charges
         call p2gtid('pcm:nx_pcm',ipcm_nstep3d(1),IUNDEFINED,1)
         call p2gtid('pcm:ny_pcm',ipcm_nstep3d(2),IUNDEFINED,1)
         call p2gtid('pcm:nz_pcm',ipcm_nstep3d(3),IUNDEFINED,1)
- 
+
         call p2gtfd('pcm:dx_pcm',pcm_step3d(1),UNDEFINED,1)
         call p2gtfd('pcm:dy_pcm',pcm_step3d(2),UNDEFINED,1)
         call p2gtfd('pcm:dz_pcm',pcm_step3d(3),UNDEFINED,1)
-  
+
         call p2gtfd('pcm:x0_pcm',pcm_origin(1),UNDEFINED,1)
         call p2gtfd('pcm:y0_pcm',pcm_origin(2),UNDEFINED,1)
         call p2gtfd('pcm:z0_pcm',pcm_origin(3),UNDEFINED,1)
-  
+
         call p2gtfd('pcm:xn_pcm',pcm_endpt(1),UNDEFINED,1)
         call p2gtfd('pcm:yn_pcm',pcm_endpt(2),UNDEFINED,1)
         call p2gtfd('pcm:zn_pcm',pcm_endpt(3),UNDEFINED,1)
@@ -736,9 +862,9 @@ CVARDOC flag: properties will be printed
        nprop=MAXPROP
        write(6,'(''Properties will be sampled'')')
        write(6,'(''Properties printout flag = '',t30,i10)') ipropprt
-       call prop_cc_nuc(znuc,cent,iwctype,MCTYPE,MCENT,ncent,cc_nuc)
+       call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
       endif
-      
+
 c Pseudopotential section:
       call p2gtid('pseudo:nloc',nloc,0,1)
 
@@ -779,8 +905,8 @@ CVARDOC number of ghost atom types
       call p2gtid('atoms:nghostcent',nghostcent,0,1)
 CVARDOC number of ghost centers
       if(max(3,nctype).gt.MCTYP3X) call fatal_error('INPUT: max(3,nctype) > MCTYP3X')
-      if(nctype+newghostype.gt.MCTYPE) call fatal_error('INPUT: nctype+newghostype > MCTYPE')
-      if(ncent+nghostcent.gt.MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
+      ! if(nctype+newghostype.gt.MCTYPE) call fatal_error('INPUT: nctype+newghostype > MCTYPE')
+      ! if(ncent+nghostcent.gt.MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
 
       write(6,'(/,''nctype,ncent ='',t30,2i5)') nctype,ncent
       if(newghostype+nghostcent.gt.0)
@@ -892,6 +1018,7 @@ c Jastrow section
         do 303 it=1,nctype
   303     write(6,'(''c='',x,7f10.6,(8f10.6))')
      &                 (c(iparm,it,1),iparm=1,mparmjc)
+
 c Note: Fock terms yet to be put in ijas=4,5,6
       endif
 
@@ -930,7 +1057,7 @@ c should be dimensioned to MWF
       endif
       call set_scale_dist(1)
 
-c Write out information about calculation of energy gradients 
+c Write out information about calculation of energy gradients
 c and Z matrix
       write(6,*)
       if(ngradnts.gt.0 .and. igrdtype.eq.1) call inpwrt_grdnts_cart()
@@ -945,6 +1072,7 @@ c get normalization for basis functions
       endif
 c check if the orbitals coefficients are to be multiplied by a constant parameter
       call p2gtfd('general:scalecoef',scalecoef,1.0d0,1)
+      ! call resize_tensor(coef, norb+nadorb, 2)
       if(scalecoef.ne.1.0d0) then
         do 340 iwft=1,nwftype
           do 340 iorb=1,norb+nadorb
@@ -969,9 +1097,9 @@ c get parameters for the grid of the orbitals
       if((i3dsplorb.ge.1).or.(i3dlagorb.ge.1).or.(i3ddensity.ge.1))
      & i3dgrid=1
 
-      if(i3dgrid.ge.1) then 
+      if(i3dgrid.ge.1) then
 
-c Read the grid information: 
+c Read the grid information:
         call p2gtid('3dgrid:nstepx',nstep3d(1),IUNDEFINED,1)
         call p2gtid('3dgrid:nstepy',nstep3d(2),IUNDEFINED,1)
         call p2gtid('3dgrid:nstepz',nstep3d(3),IUNDEFINED,1)
@@ -979,11 +1107,11 @@ c Read the grid information:
         call p2gtfd('3dgrid:stepx',step3d(1),UNDEFINED,1)
         call p2gtfd('3dgrid:stepy',step3d(2),UNDEFINED,1)
         call p2gtfd('3dgrid:stepz',step3d(3),UNDEFINED,1)
- 
+
         call p2gtfd('3dgrid:x0',origin(1),UNDEFINED,1)
         call p2gtfd('3dgrid:y0',origin(2),UNDEFINED,1)
         call p2gtfd('3dgrid:z0',origin(3),UNDEFINED,1)
- 
+
         call p2gtfd('3dgrid:xn',endpt(1),UNDEFINED,1)
         call p2gtfd('3dgrid:yn',endpt(2),UNDEFINED,1)
         call p2gtfd('3dgrid:zn',endpt(3),UNDEFINED,1)
@@ -1005,521 +1133,6 @@ C Grid setup:
       return
       end
 
-c-----------------------------------------------------------------------
-      subroutine read_znuc(iu)
-C$INPUT znuc inp
-CKEYDOC nuclear charge for each atom type and ghost type
-
-      use vmc_mod, only: MCTYPE
-      use atom, only: znuc, nctype
-      use ghostatom, only: newghostype
-      use inputflags, only: iznuc
-
-      implicit real*8(a-h,o-z)
-
-
-      call p2gti('atoms:nctype',nctype,1)
-      call p2gtid('atoms:addghostype',newghostype,0,1)
-      if(nctype+newghostype.gt.MCTYPE) call fatal_error('INPUT: nctype+newghostype > MCTYPE')
-
-      call incpos(iu,itmp,1)
-      read(iu,*) (znuc(i),i=1,nctype+newghostype)
-      iznuc=1
-      call p2chkend(iu, 'znuc')
-      end
-
-c-----------------------------------------------------------------------
-      subroutine read_lcao(norb_tmp,nbasis_tmp,iwft,filename)
-C$INPUT lcao i i i=1 a=<input> 
-CKEYDOC Orbital coefficients wrt complete basis.
-CKEYDOC Usage:  {\tt lcao  norb,nbasis,filename,norbv}
-CKEYDOC norb: number of orbitals for trial wave function
-CKEYDOC nbasis: number of basis functiobns
-CKEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
-CKEYDOC filename: file containing orbitals coefficients
-
-      use vmc_mod, only: MORB, MBASIS
-      use coefs, only: coef, nbasis, norb
-      use inputflags, only: ilcao
-      use pcm_fdc, only: fs
-
-      ! was not in master but is needed
-      use wfsec, only: nwftype 
-
-      implicit real*8(a-h,o-z)
-
-c fs NOTE: additional variable norbv for efp orbitals removed 
-
-      character filename*(*)
-
-      call file(iu,filename,'old',1,0)
-      nbasis=nbasis_tmp
-      norb=norb_tmp
-      nototal=norb
-      if(nbasis.gt.MBASIS) call fatal_error('LCAO: nbasis > MBASIS')
-      if(nototal.gt.MORB) call fatal_error('LCAO: number of orbitals > MORB')
-
-      call p2gtid('general:nwftype',nwftype,1,1)
-      if(iwft.gt.nwftype) call fatal_error('LCAO: wave function type > nwftype')
-
-      do 20 i=1,nototal
-        call incpos(iu,itmp,1)
-   20   read(iu,*) (coef(j,i,iwft),j=1,nbasis)
-      ilcao=ilcao+1
-      if(filename.eq.'<input>') then
-       call p2chkend(iu, 'lcao')
-      endif
-      end
-
-c-----------------------------------------------------------------------
-      subroutine read_geometry(iu)
-C$INPUT geometry inp
-CKEYDOC position and type for each atom and ghost atom
-
-      use vmc_mod, only: MCENT
-      use atom, only: cent, iwctype, ncent
-      use ghostatom, only: nghostcent
-      use inputflags, only: igeometry
-
-      implicit real*8(a-h,o-z)
-
-
-      call p2gti('atoms:natom',ncent,1)
-      call p2gtid('atoms:nghostcent',nghostcent,0,1)
-      if(ncent+nghostcent.gt.MCENT) call fatal_error('INPUT: ncent+nghostcent > MCENT')
-
-      do 20 i=1,ncent+nghostcent
-        call incpos(iu,itmp,1)
-  20    read(iu,*) (cent(k,i),k=1,3),iwctype(i)
-
-      igeometry=1
-      call p2chkend(iu, 'geometry')
-      end
-
-c-----------------------------------------------------------------------
-      subroutine read_exponents(iu,iwft)
-C$INPUT exponents inp i=1
-CKEYDOC Basis function exponents (only if no numerical basis)
-
-      use coefs, only: nbasis
-      use basis, only: zex
-      use inputflags, only: iexponents
-
-      implicit real*8(a-h,o-z)
-
-
-      call incpos(iu,itmp,1)
-      read(iu,*) (zex(i,iwft),i=1,nbasis)
-      iexponents=iexponents+1
-      call p2chkend(iu, 'exponents')
-      end
-
-c-----------------------------------------------------------------------
-      subroutine read_determinants(iu,nd,iwft)
-C$INPUT determinants inp i i=1
-CKEYDOC CI coefficients and occupation of determinants in wf
-
-      use vmc_mod, only: MELEC, MDET
-      use dets, only: cdet, ndet
-      use dorb_m, only: iworbd
-      use inputflags, only: ideterminants
-
-      ! not sure if needed but it's called
-      use const, only: nelec
-      implicit real*8(a-h,o-z)
-
-
-      ndet=nd
-      if(ndet.gt.MDET) then
-        write (6,*)  "ndet=", ndet
-        write (6,*)  "MDET=", MDET
-        call fatal_error('DET: ndet > MDET')
-      endif
-
-      call p2gti('electrons:nelec',nelec,1)
-      if(nelec.gt.MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
-      call incpos(iu,itmp,1)
-      read(iu,*) (cdet(i,1,iwft),i=1,ndet)
-c     if(iwft.eq.1) then
-        do 20 i=1,ndet
-          call incpos(iu,itmp,1)
-   20     read(iu,*) (iworbd(j,i),j=1,nelec)
-c     endif
-      ideterminants=ideterminants+1
-      call p2chkend(iu, 'determinants')
-      end
-
-c-----------------------------------------------------------------------
-      subroutine read_multideterminants(iu,nd)
-C$INPUT multideterminants inp i 
-CKEYDOC CI coefficients and occupation of determinants in wf
-      use dets, only: ndet
-      use multidet, only: irepcol_det, ireporb_det, numrep_det
-      use inputflags, only: imultideterminants
-
-      implicit real*8(a-h,o-z)
-
-
-      if(nd.ne.ndet-1) call fatal_error('INPUT: problem in multidet')
-
-      call incpos(iu,itmp,1)
-      do k=2,nd+1
-        read(iu,*) (numrep_det(k,iab),iab=1,2)
-        do iab=1,2
-          do irep=1,numrep_det(k,iab)
-            read(iu,*) irepcol_det(irep,k,iab),ireporb_det(irep,k,iab)
-          enddo
-        enddo
-      enddo
-
-      imultideterminants=imultideterminants+1
-      call p2chkend(iu, 'multideterminants')
-      end
-
-c-----------------------------------------------------------------------
-      subroutine read_jastrow_parameter(iu,iwft)
-C$INPUT jastrow_parameter inp i=1
-CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
-
-      use jaspar, only: nspin1, nspin2
-      use elec, only: ndn
-      use jaspar3, only: a, b, c, scalek
-      use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: cutjas
-      use bparm, only: nocuspb, nspin2b
-      use contr2, only: ifock, ijas
-      use contr2, only: isc
-      use inputflags, only: ijastrow_parameter
-
-      use atom, only: ncent, nctype
-      
-      implicit real*8(a-h,o-z)
-
-
-      call p2gti('jastrow:ijas',ijas,1)
-      call p2gti('jastrow:isc',isc,1)
-      call p2gtid('jastrow:nspin1',nspin1,1,1)
-      call p2gtid('jastrow:nspin2',nspin2,1,1)
-      call p2gtid('jastrow:ifock',ifock,0,1)
-
-      call p2gti('atoms:natom',ncent,1)
-      call p2gti('atoms:nctype',nctype,1)
-
-      if(ijas.lt.4.or.ijas.gt.6) call fatal_error('JASTROW: only ijas=4,5,6 implemented')
-      if(ndn.eq.1.and.nspin2.eq.3) call fatal_error('JASTROW: 1 spin down and nspin2=3')
-      if((ijas.eq.4.or.ijas.eq.5).and.
-     &(isc.ne.2.and.isc.ne.4.and.isc.ne.6.and.isc.ne.7.and.
-     &isc.ne.12.and.isc.ne.14.and.isc.ne.16.and.isc.ne.17))
-     & call fatal_error('JASTROW: if ijas=4 or 5, isc must be one of 2,4,6,7,12,14,16,17')
-      if((ijas.eq.6).and.(isc.ne.6.and.isc.ne.7))
-     & call fatal_error('JASTROW: if ijas=6, isc must be 6 or 7')
-
-      nspin2b=iabs(nspin2)
-      nocuspb=0
-      if(nspin2.lt.0) then
-        if(nspin2.eq.-1) nocuspb=1
-        nspin2=1
-      endif
-
-      if(ijas.ge.4.and.ijas.le.6) then
-        if(ifock.gt.0) call fatal_error('JASTROW: fock not yet implemented for ijas=4,5,6')
-        read(iu,*) norda,nordb,nordc
-        if(isc.ge.2) read(iu,*) scalek(iwft),a21
-        mparmja=2+max(0,norda-1)
-        mparmjb=2+max(0,nordb-1)
-        mparmjc=nterms4(nordc)
-        do 70 it=1,nctype
-          read(iu,*) (a4(iparm,it,iwft),iparm=1,mparmja)
-   70     call incpos(iu,itmp,1)
-        do 80 isp=nspin1,nspin2b
-          read(iu,*) (b(iparm,isp,iwft),iparm=1,mparmjb)
-   80     call incpos(iu,itmp,1)
-        do 90 it=1,nctype
-          read(iu,*) (c(iparm,it,iwft),iparm=1,mparmjc)
-   90     call incpos(iu,itmp,1)
-      endif
-c Read cutoff for Jastrow4,5,6
-      if(isc.eq.6.or.isc.eq.7) read(iu,*) cutjas
-
-      ijastrow_parameter=ijastrow_parameter+1
-      call p2chkend(iu, 'jastrow_parameter')
-      end
-
-c-----------------------------------------------------------------------
-      subroutine read_bas_num_info(iu,numeric)
-C$INPUT basis inp i
-CKEYDOC Basis function types and pointers to radial parts tables
-C$INPUT qmc_bf_info inp i
-CKEYDOC alternative name for keyword basis because of GAMBLE input
-      use numbas_mod, only: MRWF
-      use vmc_mod, only: MCTYPE
-      use numbas, only: iwrwf, numr
-      use numbas1, only: iwlbas, nbastyp
-      use basis, only: n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
-      use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
-      use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
-      use inputflags, only: ibasis_num
-
-      use atom, only: nctype
-      use ghostatom, only: newghostype
-
-      implicit real*8(a-h,o-z)
-
-
-
-      call p2gti('atoms:nctype',nctype,1)
-      call p2gtid('atoms:addghostype',newghostype,0,1)
-      if(nctype+newghostype.gt.MCTYPE) call fatal_error('ATOMS: nctype+newghostype > MCTYPE')
-      numr=numeric
-      do 10 i=1,nctype+newghostype
-        read(iu,*) n1s(i),n2s(i),(n2p(j,i),j=1,3)
-     &  ,n3s(i),(n3p(j,i),j=1,3)
-     &  ,n3dzr(i),n3dx2(i),n3dxy(i),n3dxz(i),n3dyz(i)
-     &  ,n4s(i),(n4p(j,i),j=1,3)
-     &  ,n4fxxx(i),n4fyyy(i),n4fzzz(i),n4fxxy(i),n4fxxz(i)
-     &  ,n4fyyx(i),n4fyyz(i),n4fzzx(i),n4fzzy(i),n4fxyz(i)
-     &  ,nsa(i),(npa(j,i),j=1,3)
-     &  ,ndzra(i),ndx2a(i),ndxya(i),ndxza(i),ndyza(i)
-      call incpos(iu,itmp,1)
-        if(numr.gt.0) then
-          if(n2s(i).ne.0.or.n3s(i).ne.0.or.n4s(i).ne.0.or.
-     &      n3p(1,i).ne.0.or.n3p(2,i).ne.0.or.n3p(3,i).ne.0.or.
-     &      n4p(1,i).ne.0.or.n4p(2,i).ne.0.or.n4p(3,i).ne.0.or.
-     &      nsa(i).ne.0.or.npa(1,i).ne.0.or.npa(2,i).ne.0.or.
-     &      npa(3,i).ne.0.or.ndzra(i).ne.0.or.ndx2a(i).ne.0.or.
-     &      ndxya(i).ne.0.or.ndxza(i).ne.0.or.ndyza(i).ne.0)
-     &      call fatal_error('BASIS: n1s,n2p,n3d only for numerical basis')
-
-          nbastyp(i)=iabs(n1s(i))
-     &           +iabs(n2p(1,i))+iabs(n2p(2,i))+iabs(n2p(3,i))
-     &           +iabs(n3dzr(i))+iabs(n3dx2(i))
-     &           +iabs(n3dxy(i))+iabs(n3dxz(i))+iabs(n3dyz(i))
-     &           +iabs(n4fxxx(i))+iabs(n4fyyy(i))+iabs(n4fzzz(i))+iabs(n4fxxy(i))+iabs(n4fxxz(i))
-     &           +iabs(n4fyyx(i))+iabs(n4fyyz(i))+iabs(n4fzzx(i))+iabs(n4fzzy(i))+iabs(n4fxyz(i))
-
-          if(nbastyp(i).gt.MRWF) call fatal_error('BASIS: nbastyp > MRWF')
-
-          read(iu,*) (iwrwf(ib,i),ib=1,nbastyp(i))
-          call incpos(iu,itmp,1)
-         else
-          if(n4fxxx(i).ne.0.or.n4fyyy(i).ne.0.or.n4fzzz(i).ne.0.or.
-     &       n4fxxy(i).ne.0.or.n4fxxz(i).ne.0.or.n4fyyx(i).ne.0.or.
-     &       n4fyyz(i).ne.0.or.n4fzzx(i).ne.0.or.n4fzzy(i).ne.0.or.
-     &       n4fxyz(i).ne.0) call fatal_error('BASIS: n4f only for numerical basis')
-        endif
-   10 continue
-
-      if(numr.gt.0) then
-
-        do 1000 i=1,nctype+newghostype
-          jj=0
-          do 20 j=1,iabs(n1s(i))
-            jj=jj+1
-   20       iwlbas(jj,i)=1
-          do 30 j=1,iabs(n2p(1,i))
-            jj=jj+1
-   30       iwlbas(jj,i)=2
-          do 40 j=1,iabs(n2p(2,i))
-            jj=jj+1
-   40       iwlbas(jj,i)=3
-          do 50 j=1,iabs(n2p(3,i))
-            jj=jj+1
-   50       iwlbas(jj,i)=4
-          do 60 j=1,iabs(n3dzr(i))
-            jj=jj+1
-   60       iwlbas(jj,i)=5
-          do 70 j=1,iabs(n3dx2(i))
-            jj=jj+1
-   70       iwlbas(jj,i)=6
-          do 80 j=1,iabs(n3dxy(i))
-            jj=jj+1
-   80       iwlbas(jj,i)=7
-          do 90 j=1,iabs(n3dxz(i))
-            jj=jj+1
-   90       iwlbas(jj,i)=8
-          do 100 j=1,iabs(n3dyz(i))
-            jj=jj+1
-  100       iwlbas(jj,i)=9
-          do 110 j=1,iabs(n4fxxx(i))
-            jj=jj+1
-  110       iwlbas(jj,i)=10
-          do 120 j=1,iabs(n4fyyy(i))
-            jj=jj+1
-  120       iwlbas(jj,i)=11
-          do 130 j=1,iabs(n4fzzz(i))
-            jj=jj+1
-  130       iwlbas(jj,i)=12
-          do 140 j=1,iabs(n4fxxy(i))
-            jj=jj+1
-  140       iwlbas(jj,i)=13
-          do 150 j=1,iabs(n4fxxz(i))
-            jj=jj+1
-  150       iwlbas(jj,i)=14
-          do 160 j=1,iabs(n4fyyx(i))
-            jj=jj+1
-  160       iwlbas(jj,i)=15
-          do 170 j=1,iabs(n4fyyz(i))
-            jj=jj+1
-  170       iwlbas(jj,i)=16
-          do 180 j=1,iabs(n4fzzx(i))
-            jj=jj+1
-  180       iwlbas(jj,i)=17
-          do 190 j=1,iabs(n4fzzy(i))
-            jj=jj+1
-  190       iwlbas(jj,i)=18
-          do 200 j=1,iabs(n4fxyz(i))
-            jj=jj+1
-  200       iwlbas(jj,i)=19
-          
- 1000   continue
-      endif
-c     write(6,*) 'HELLO_INPUT',numr,nctype
-c     do i=1,nctype
-c     write(6,*) 'HELLO_INPUT',(iwlbas(j,i),j=1,nbastyp(i))
-c     enddo
-      ibasis_num=1
-      call p2chkend(iu, 'basis')
-      end
-
-c----------------------------------------------------------------------
-      subroutine read_lattice(iu)
-C$INPUT lattice inp
-CKEYDOC Lattice vectors of primitive and simulation cell
-      implicit real*8(a-h,o-z)
-      call do_read_lattice(iu)
-      end
-c-----------------------------------------------------------------------
-      subroutine read_forces(iu)
-C$INPUT forces_displace inp
-CKEYDOC Displacement parameters and wave function types
-
-      use force_mod, only: MFORCE
-      use vmc_mod, only: MCENT
-      use forcepar, only: nforce
-      use forcestr, only: delc
-      use wfsec, only: iwftype
-      use inputflags, only: iforces
-
-      use atom, only: ncent
-
-      implicit real*8(a-h,o-z)
-
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
-
-      call p2gtid('general:nforce',nforce,1,1)
-      if(nforce.gt.MFORCE) call fatal_error('FORCES: nforce > MFORCE')
-
-      do 60 i=1,nforce
-        do 60 ic=1,ncent
-          call incpos(iu,itmp,1)
-   60     read(iu,*)  (delc(k,ic,i),k=1,3)
-      call incpos(iu,itmp,1)
-      read(iu,*) (iwftype(i),i=1,nforce)
-      if(iwftype(1).ne.1) call fatal_error('INPUT: iwftype(1) ne 1')
-
-      iforces=1
-      call p2chkend(iu, 'forces')
-
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine read_csf(ncsf_read,nstates_read,fn)
-C$INPUT csf i i=1 a=<input>
-
-      use vmc_mod, only: MDET
-      use csfs, only: ccsf, ncsf, nstates
-      use mstates_mod, only: MSTATES
-      use inputflags, only: icsfs
-
-      implicit real*8(a-h,o-z)
-
-
-      character fn*(*)
-
-      call ptfile(iu,fn,'old')
-
-      ncsf=ncsf_read
-      if(ncsf.gt.MDET) 
-     $ call fatal_error('CSF: too many csf')
-
-      nstates=nstates_read
-      if(nstates.gt.MSTATES) 
-     $ call fatal_error('CSF: too many states')
-
-      do i=1,nstates
-        read(iu,*) (ccsf(j,i,1),j=1,ncsf)
-      enddo
-
-      icsfs=1
-
-      if(fn.eq.'<input>') then
-       call p2chkend(iu, 'csf')
-      endif
-
-      end   
-c-----------------------------------------------------------------------
-      subroutine read_csfmap(fn)
-C$INPUT csfmap a=<input>
-CKEYDOC Read mapping between csf and determinants.
-      use vmc_mod, only: MDET
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use mstates_mod, only: MDETCSFX
-
-      use dets, only: cdet, ndet
-      implicit real*8(a-h,o-z)
-
-
-      character fn*(*)
-c
-      call ptfile(iu,fn,'old')
-c
-      read(iu,*) ncsf_check,ndet_check,nmap_check
-      write(6,'(''csfmap'',3i4)') ncsf_check,ndet_check,nmap_check
-      if(ndet_check.ne.ndet) 
-     $ call fatal_error('CSFMAP: wrong number of determinants')
-      if(ncsf_check.ne.ncsf) 
-     $ call fatal_error('CSFMAP: wrong number of csf')
-      if(nmap_check.gt.float(MDET)*MDET) 
-     $ call fatal_error('CSFMAP: too many determinants in map list')
-c
-      nptr=1
-      do 10 i=1,ncsf
-       read(iu,*) nterm
-       iadet(i)=nptr
-       ibdet(i)=nptr+nterm-1
-       do 12 j=1,nterm
-        read(iu,*) id,c
-        icxdet(nptr)=id
-        cxdet(nptr)=c
-        nptr=nptr+1
-        if(nptr.gt.MDET*MDETCSFX)
-     $    call fatal_error('CSFMAP: problem with nmap')
- 12    enddo
- 10   enddo
-      if(nmap_check.ne.nptr-1)
-     $ call fatal_error('CSFMAP: problem with nmap')
-      nmap=nptr
-
-
-      write(6,'(''Warning: det coef overwritten with csf'')') 
-      do 30 k=1,nstates
-        do 15 j=1,ndet
- 15       cdet(j,k,1)=0
-        do 30 icsf=1,ncsf
-          do 20 j=iadet(icsf),ibdet(icsf)
-            jx=icxdet(j)
-            cdet(jx,k,1)=cdet(jx,k,1)+ccsf(icsf,k,1)*cxdet(j)
- 20       continue
- 30   continue
-
-      if(fn.eq.'<input>') then
-       call p2chkend(iu, 'csfmap')
-      endif
-
-      return
-      end
 c-----------------------------------------------------------------------
       subroutine flaginit
 c Initialize flags used to identify presence/absence of blocks in input
@@ -1570,7 +1183,7 @@ c Check that the required blocks are there in the input
       use mstates_ctrl, only: iguiding
       ! might not be needed
       use mstates_mod, only: MSTATES
-      use atom, only: znuc 
+      use atom, only: znuc
       use contrl_per, only: iperiodic, ibasis
       use force_analy, only: iforce_analy, iuse_zmat
       use forcepar, only: nforce
@@ -1579,8 +1192,8 @@ c Check that the required blocks are there in the input
       use wfsec, only: nwftype
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use elec, only: ndn, nup
-      use const, only: nelec 
-      use coefs, only: norb, next_max 
+      use const, only: nelec
+      use coefs, only: norb, next_max
 
       implicit real*8(a-h,o-z)
 
@@ -1588,9 +1201,9 @@ c Check that the required blocks are there in the input
       call p2gti('electrons:nup',nup,1)
       call p2gtid('general:nwftype',nwftype,1,1)
       call p2gtid('general:nforce',nforce,1,1)
-      if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
+      ! if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
       call p2gtid('general:nwftype',nwftype,1,1)
-      if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype gt MWF')
+      !if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype gt MWF')
       call p2gtid('general:iperiodic',iperiodic,0,1)
       call p2gtid('general:ibasis',ibasis,1,1)
 
@@ -1602,8 +1215,16 @@ c Check that the required blocks are there in the input
       call p2gtid('efield:iefield',iefield,0,1)
       call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
       call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
-      next_max=norb-ndetorb
-      call p2gtid('optwf:nextorb',nadorb,next_max,1)
+      ! next_max=norb-ndetorb
+      call p2gtid('optwf:nextorb',nadorb, next_max,1)
+      ! write(6, *) 'norb', norb
+      ! write(6, *) 'nadorb', nadorb
+      ! write(6, *) 'ndet_orb', ndetorb
+      ! write(6, *) 'next_max', next_max
+      ! if(nadorb.gt.next_max) nadorb=next_max
+      ! if (nadorb.gt.norb) call fatal_error('nadorb > norb')
+
+
 
       if(iznuc.eq.0) call fatal_error('INPUT: block znuc missing')
       if(igeometry.eq.0) call fatal_error('INPUT: block geometry missing')
@@ -1612,9 +1233,9 @@ c Check that the required blocks are there in the input
       if(iperiodic.gt.0.and.ilattice.eq.0) call fatal_error('INPUT: lattice vectors missing')
       if(ijastrow_parameter.eq.0) call fatal_error('INPUT: block jastrow_parameter missing')
       if(iefield.gt.0.and.icharge_efield.eq.0) call fatal_error('INPUT: block efield missing')
-       
+
       write(6,'(''========================================'')')
-      if(iexponents.eq.0) then 
+      if(iexponents.eq.0) then
         write(6,'(''INPUT: block exponents missing: all exponents set to 1'')')
         call inputzex
       endif
@@ -1622,7 +1243,7 @@ c Check that the required blocks are there in the input
         write(6,'(''INPUT: block csf missing: nstates set to 1'')')
         call inputcsf
       endif
-      if(nforce.gt.1.and.iforces.eq.0.and.igradients.eq.0) then
+      if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
         write(6,'(''INPUT: block forces_displace or gradients_* missing: geometries set equal to primary'')')
         call inputforces
       endif
@@ -1632,6 +1253,7 @@ c Check that the required blocks are there in the input
         if(ihessian_zmat.eq.0) call hessian_zmat_define
       endif
       if(imultideterminants.eq.0) then
+        write(6,'(''INPUT: multideterminant bloc MISSING'')')
         call multideterminants_define(0,0)
       endif
       if(ioptorb.ne.0) then
@@ -1671,806 +1293,16 @@ c Check that the required blocks are there in the input
       write(6,'(''========================================'')')
       return
       end
-c-----------------------------------------------------------------------
-      subroutine inputcsf
-c Check that the required blocks are there in the input
 
-      use csfs, only: ncsf, nstates
-      use inputflags, only: ici_def
-
-      use ci000, only: nciprim, nciterm
-
-      ! are they needed ??!!
-      use optwf_contrl, only: ioptci
-      implicit real*8(a-h,o-z)
-
-
-
-      nstates=1
-      ncsf=0
-
-      call p2gtid('optwf:ioptci',ioptci,0,1)
-      if(ioptci.ne.0.and.ici_def.eq.1) nciterm=nciprim
-      return
-      end
-c----------------------------------------------------------------------
-      subroutine inputzex
-c Set the exponents to one when using a numerical basis
-      use force_mod, only: MWF
-      use numbas, only: numr
-      use coefs, only: nbasis
-      use basis, only: zex
-
-      ! are they needed ??!!
-      use contrl_per, only: iperiodic
-      use wfsec, only: nwftype
-
-      implicit real*8(a-h,o-z)
-
-
-
-      call p2gtid('general:nwftype',nwftype,1,1)
-      call p2gtid('general:iperiodic',iperiodic,0,1)
-      if(nwftype.gt.MWF) call fatal_error('WF: nwftype gt MWF')
-
-      if(numr.eq.0.and.iperiodic.eq.0) 
-     & call fatal_error('ZEX: numr=0 and iperiodic=0 but no zex are inputed')
-      do 10 iwft=1,nwftype
-        do 10 i=1,nbasis
-   10     zex(i,iwft)=1
-
-      end
-
-c----------------------------------------------------------------------
-      subroutine inputdet(nwftype)
-c Set the cdet to be equal
-      use dets, only: cdet, ndet
-      implicit real*8(a-h,o-z)
-
-
-
-       do 10 iwft=2,nwftype
-         do 10 k=1,ndet
-   10      cdet(k,1,iwft)=cdet(k,1,1)
-
-      end
-c----------------------------------------------------------------------
-      subroutine inputlcao(nwftype)
-c Set the lcao to be equal
-      use coefs, only: coef, nbasis, norb
-      implicit real*8(a-h,o-z)
-
-
-
-
-       do 10 iwft=2,nwftype
-         do 10 i=1,norb
-           do 10 j=1,nbasis
-   10        coef(j,i,iwft)=coef(j,i,1)
-
-      end
-c----------------------------------------------------------------------
-      subroutine inputjastrow(nwftype)
-c Set the jastrow to be equal
-
-      use jaspar, only: nspin1, nspin2
-      use jaspar3, only: a, b, c, scalek
-      use jaspar4, only: a4, norda, nordb, nordc
-      use bparm, only: nspin2b
-      use contr2, only: ifock, ijas
-      use contr2, only: isc, ianalyt_lap
-
-      use atom, only: ncent, nctype
-
-      implicit real*8(a-h,o-z)
-
-
-      call p2gti('jastrow:ijas',ijas,1)
-      call p2gti('jastrow:isc',isc,1)
-      call p2gtid('jastrow:nspin1',nspin1,1,1)
-      call p2gtid('jastrow:nspin2',nspin2,1,1)
-      call p2gtid('jastrow:ifock',ifock,0,1)
-      call p2gtid('jastrow:ianalyt_lap',ianalyt_lap,1,1)
-
-      call p2gti('atoms:natom',ncent,1)
-      call p2gti('atoms:nctype',nctype,1)
-
-      if(ijas.ge.4.and.ijas.le.6) then
-        mparmja=2+max(0,norda-1)
-        mparmjb=2+max(0,nordb-1)
-        mparmjc=nterms4(nordc)
-        do 90 iwft=2,nwftype
-          scalek(iwft)=scalek(1)
-          do 70 it=1,nctype
-            do 70 iparm=1,mparmja
-   70         a4(iparm,it,iwft)=a4(iparm,it,1)
-        do 80 isp=nspin1,nspin2b
-          do 80 iparm=1,mparmjb
-   80       b(iparm,isp,iwft)=b(iparm,isp,1)
-        do 90 it=1,nctype
-          do 90 iparm=1,mparmjc
-   90       c(iparm,it,iwft)=c(iparm,it,1)
-      endif
-
-      end
-c----------------------------------------------------------------------
-      subroutine inputforces
-c Set all force displacements to zero
-      use force_mod, only: MWF
-      use vmc_mod, only: MCENT
-      use forcepar, only: nforce
-      use wfsec, only: iwftype, nwftype
-      use forcepar, only: istrech, alfstr
-      use atom, only: ncent
-
-      implicit real*8(a-h,o-z)
-
-      call p2gtid('forces:istrech',istrech,0,1)
-      call p2gtfd('forces:alfstr',alfstr,4.d0,1)
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
-
-      call p2gtid('general:nforce',nforce,1,1)
-
-      call set_displace_zero(nforce)
-
-      call p2gtid('general:nwftype',nwftype,1,1)
-      if(nwftype.gt.MWF) call fatal_error('FORCES: nwftype gt MWF')
-      
-      if(nwftype.eq.1) then
-        do 70 i=1,nforce
-   70     iwftype(i)=1
-       elseif(nwftype.eq.nforce) then
-        do 80 i=1,nforce
-   80     iwftype(i)=i
-       else
-        call fatal_error('FORCES: need to specify iwftype')
-      endif
-   
-      end
-c-----------------------------------------------------------------------
-      subroutine read_jasderiv(iu)
-C$INPUT jasderiv inp
-
-      use optjas, only: MPARMJ
-      use atom, only: nctype
-      use jaspar, only: nspin1, is
-      use jaspar4, only: norda, nordb, nordc
-      use jaspointer, only: npoint, npointa
-      use numbas, only: numr
-      use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-      use optwf_parms, only: nparmj
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc
-      use bparm, only: nspin2b
-      use contr2, only: ijas
-      use contr2, only: isc
-
-      implicit real*8(a-h,o-z)
-
-      na1=1
-      na2=nctype
-
-      read(iu,*) (nparma(ia),ia=na1,na2),
-     &(nparmb(isp),isp=nspin1,nspin2b),(nparmc(it),it=1,nctype),
-     &(nparmf(it),it=1,nctype)
-
-      if(ijas.ge.4.and.ijas.le.6) then
-        do 5 it=1,nctype
-          if(numr.eq.0) then
-c All-electron with analytic slater basis
-            if((nparma(it).gt.0.and.norda.eq.0).or.(nparma(it).gt.norda+1)) then
-              write(6,'(''it,norda,nparma(it)'',3i5)') it,norda,nparma(it)
-              stop 'nparma too large for norda'
-            endif
-           else
-c Pseudopotential with numerical basis: cannot vary a(1) or a(2)
-            if(norda.eq.1) stop 'makes no sense to have norda=1 for numr>0'
-            if((norda.eq.0.and.nparma(it).gt.0).or.(norda.gt.0.and.nparma(it).gt.norda-1)) then
-              write(6,'(''it,norda,nparma(it)'',3i5)') it,norda,nparma(it)
-              stop 'nparma too large for norda'
-            endif
-          endif
-          if(isc.le.7 .and.
-     &       ((nordc.le.2.and.nparmc(it).gt.0)
-     &    .or.(nordc.eq.3.and.nparmc(it).gt.2)
-     &    .or.(nordc.eq.4.and.nparmc(it).gt.7)
-     &    .or.(nordc.eq.5.and.nparmc(it).gt.15)
-     &    .or.(nordc.eq.6.and.nparmc(it).gt.27)
-     &    .or.(nordc.eq.7.and.nparmc(it).gt.43))) then
-            write(6,'(''it,nordc,nparmc(it)'',3i5)') it,nordc,nparmc(it)
-            stop 'nparmc too large for nordc in J_een with cusp conds'
-          endif
-          if(isc.gt.7 .and.
-     &       ((nordc.le.1.and.nparmc(it).gt.0)
-     &    .or.(nordc.eq.2.and.nparmc(it).gt.2)
-     &    .or.(nordc.eq.3.and.nparmc(it).gt.6)
-     &    .or.(nordc.eq.4.and.nparmc(it).gt.13)
-     &    .or.(nordc.eq.5.and.nparmc(it).gt.23)
-     &    .or.(nordc.eq.6.and.nparmc(it).gt.37)
-     &    .or.(nordc.eq.7.and.nparmc(it).gt.55))) then
-            write(6,'(''it,nordc,nparmc(it)'',3i5)') it,nordc,nparmc(it)
-            stop 'nparmc too large for nordc without cusp conds'
-          endif
-    5   continue
-c For the b coefs. we assume that b(1) is fixed by the cusp-cond.
-        do 6 isp=1,nspin1,nspin2b
-            if(nparmb(isp).gt.nordb) then
-              write(6,'(''isp,nordb,nparmb(isp)'',3i5)') isp,nordb,nparmb(isp)
-              stop 'nparmb too large for nordb'
-            endif
-    6   continue
-      endif
-
-c compute nparmj
-      nparmj=0
-      npointa(1)=0
-      do 30 ia=na1,na2
-        if(ia.gt.1) npointa(ia)=npointa(ia-1)+nparma(ia-1)
-   30   nparmj=nparmj+nparma(ia)
-      do 35 isp=nspin1,nspin2b
-   35   nparmj=nparmj+nparmb(isp)
-      npoint(1)=nparmj
-      do 45 it=1,nctype
-        if(it.gt.1) npoint(it)=npoint(it-1)+nparmc(it-1)
-   45   nparmj=nparmj+nparmc(it)+nparmf(it)
-
-      if(nparmj.gt.MPARMJ) call fatal_error('JASDERIV: MPARMJ too small') 
-
-      do 60 it=1,nctype
-   60   read(iu,*) (iwjasa(iparm,it),iparm=1,nparma(it))
-      do 65 isp=nspin1,nspin2b
-   65   read(iu,*) (iwjasb(iparm,isp),iparm=1,nparmb(isp))
-      do 70 it=1,nctype
-   70   read(iu,*) (iwjasc(iparm,it),iparm=1,nparmc(it))
-
-c     ifitparms=1
-      call p2chkend(iu, 'jasderiv')
-      end
-c-----------------------------------------------------------------------
-      subroutine read_sym(nsym,mo,fn)
-C$INPUT sym_labels i i a=<input>
-CKEYDOC Read symmetry information
-
-      use coefs, only: norb
-      use optorb, only: irrep
-
-      implicit real*8(a-h,o-z)
-
-      character fn*(*)
-      character atmp*80
-
-      call ptfile(iu,fn,'old')
-      nirrep=nsym
-      if(norb.ne.0.and.norb.ne.mo) then
-       write(6,'(2i5)') norb,mo
-       call fatal_error('READSYM: wrong number of orbitals') 
-      else
-       norb=mo
-      endif
-c Ignore irrep text labels
-      read(iu,'(a80)') atmp
-      read(iu,*) (irrep(io),io=1,norb)
-
-      if(fn.eq.'<input>') then
-       call p2chkend(iu, 'sym_labels')
-      endif
-      end
-c-----------------------------------------------------------------------
-      subroutine read_optorb_mixvirt(moopt,movirt,fn)
-C$INPUT optorb_mixvirt i i a=<input>
-CKEYDOC Read which virtual orbitals are mixed with the occupied ones
-
-      use optorb_mix, only: iwmix_virt, norbopt, norbvirt
-      use coefs, only: norb
-      use inputflags, only: ioptorb_mixvirt
-
-      implicit real*8(a-h,o-z)
-
-      character fn*(*)
-      character atmp*80
-
-      norbopt=moopt
-      norbvirt=movirt
-      call ptfile(iu,fn,'old')
-      if(norb.ne.0.and.norbopt.gt.norb) then
-       write(6,'(3i5)') norb,moopt,movirt
-       call fatal_error('READMIXVIRT: wrong number of orbitals')
-      endif
-
-      do 50 io=1,norbopt
-  50    read(iu,*) (iwmix_virt(io,jo),jo=1,norbvirt)
-
-      ioptorb_mixvirt=1
-
-      if(fn.eq.'<input>') then
-       call p2chkend(iu, 'optorb_mixvirt')
-      endif
-      end
-c-----------------------------------------------------------------------
-      subroutine read_energies(mo,fn)
-C$INPUT energies i a=<input>
-C$INPUT eigenvalues i a=<input>
-CKEYDOC Read orbital energies 
-
-      use coefs, only: norb
-      use optorb, only: orb_energy
-
-      implicit real*8(a-h,o-z)
-
-
-      character fn*(*)
-
-      call ptfile(iu,fn,'old')
-      if(norb.ne.0.and.norb.ne.mo) then
-        write(6,'(2i5)') norb,mo
-        call fatal_error('READEIG: wrong number of orbitals') 
-      endif
-      read(iu,*) (orb_energy(io),io=1,norb)
-
-      if(fn.eq.'<input>') then
-       call p2chkend(iu, 'energies')
-      endif
-      end
-c----------------------------------------------------------------------
-      subroutine read_dmatrix(no,ns,fn)
-C$INPUT dmatrix i i a=<input> 
-CKEYDOC Read diagonal density matrix information.
-
-      use vmc_mod, only: MORB
-      use sa_weights, only: iweight, nweight, weights
-      use mstates_mod, only: MSTATES
-      use coefs, only: norb
-      use optorb, only: dmat_diag
-
-      implicit real*8(a-h,o-z)
-
-      character fn*(*)
-
-      dimension dmat(MORB),iwdmat(MSTATES)
-
-      call p2gtid('general:ipr',ipr,-1,1)
-      call ptfile(iu,fn,'old')
-
-      ndetorb=no
-      if(ndetorb.gt.norb) call fatal('READ_DMATRIX: wrong number of orbitals')
-
-      call get_weights('weights:',weights,iweight,nweight)
-      if(ns.ne.nweight) call fatal('READ_DMATRIX: wrong number of dmatrices')
-
-      read(iu,*) (iwdmat(i),i=1,nweight)
-      do 10 iw=1,nweight
-  10    if(iwdmat(iw).ne.iweight(iw)) call fatal('READ_DMATRIX: iwdmat')
-
-      do 20 i=1,norb
-  20    dmat_diag(i)=0.d0
-
-      do 25 iw=1,nweight
-        read(iu,*) (dmat(j),j=1,ndetorb)
-        do 25 j=1,ndetorb
-  25      dmat_diag(j)=dmat_diag(j)+weights(iw)*dmat(j)
-       do 30 i=1,ndetorb 
-  30     if(dabs(dmat_diag(i)-1.d0).lt.1.d-6) dmat_diag(i)=1.d0
-
-      if(ipr.gt.2) then 
-       write(6,'(''diagonal elements of the density matrix'')')
-       write(6,'(100f10.6)') (dmat_diag(i),i=1,ndetorb)
-      endif
-
-      if(fn.eq.'<input>') then
-       call p2chkend(iu, 'dmatrix')
-      endif
-
-      return
-      end
-c----------------------------------------------------------------------
-      subroutine get_weights(field,weights,iweight,nweight)
-      use csfs, only: nstates
-      use mstates_mod, only: MSTATES
-
-      implicit real*8(a-h,o-z)
-
-c weights for state averaging
-
-
-      dimension weights(MSTATES),iweight(MSTATES)
-
-      character vname*(32)
-      character field*(32)
-      wsum=0.d0
-      nweight=0
-
-      write(6,*) field,field(1:index(field,' '))
-      do 10 i=1,nstates
-        wdef=0.d0
-        call append_number(field(1:index(field,' ')-1),i,vname,nv,0)
-        call p2gtfd(vname(1:nv),w,wdef,0)
-CVARDOC Input of weights for individual states.
-        w=dabs(w)
-        if(w.gt.1d-6) then
-          nweight=nweight+1
-          iweight(nweight)=i
-          weights(nweight)=w
-          wsum=wsum+w
-        endif
-   10 continue
-
-      do 20 i=1,nweight
-   20  weights(i)=weights(i)/wsum
-
-      if(nweight.eq.0) then
-        nweight=1
-        iweight(1)=1
-        weights(1)=1.d0
-      endif
-
-c TEMPORARY
-      if(nweight.ne.nstates) 
-     & call fatal_error('GET_WEIGHTS: problems with nweight')
-
-      end
-c----------------------------------------------------------------------
-      subroutine read_cavity_spheres(iu,nspheres)
-C$INPUT cavity_spheres inp i 
-CKEYDOC Read centers of cavity spheres and radii
-      use pcm_parms, only: nesph, re, re2
-      use pcm_parms, only: xe, ye, ze
-
-      implicit real*8(a-h,o-z)
-
-      nesph=nspheres 
-      do i=1,nesph
-        call incpos(iu,itmp,1)
-        read(iu,*) xe(i),ye(i),ze(i),re(i)
-        re2(i)=re(i)**2.0d0
-      enddo
-      call p2chkend(iu, 'cavity_spheres')
-
-      return
-      end
-c----------------------------------------------------------------------
-      subroutine read_gradnts_cart(iu)
-C$INPUT gradients_cartesian inp
-CKEYDOC Read for which x,y,z cartesian coordiantes of 
-CKEYDOC atoms energy gradients are to be calculated for.
-
-c     Written by Omar Valsson
-
-      use vmc_mod, only: MCENT
-      use forcepar, only: nforce
-      use forcestr, only: delc
-      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
-      use grdntspar, only: delgrdxyz, igrdtype, ngradnts
-      use wfsec, only: iwftype
-      use inputflags, only: igradients
-      use atom, only: ncent
-
-      implicit real*8(a-h,o-z)
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('GRADIENTS_CARTESIAN: ncent > MCENT')
-
-      call p2gtfd('gradients:delgrdxyz',delgrdxyz,0.001d0,1)
-
-      call p2gtid('gradients:igrdtype',igrdtype,1,1)
-      if(igrdtype.ne.1) call fatal_error('GRADIENTS_CARTESIAN: igrdtype /= 1')
-
-      call p2gtid('general:nforce',nforce,1,1)      
-      call p2gtid('gradients:ngradnts',ngradnts,0,1)      
-      if( (2*ngradnts+1).ne.nforce) call 
-     &  fatal_error('GRADIENTS_CARTESIAN: (2*ngradnts+1)  /=  nforce')
-
-
-      do 60 i=1,nforce
-        iwftype(i)=1
-        do 60 ic=1,ncent
-          do 60 k=1,3
-            igrdmv(k,ic)=0
-   60       delc(k,ic,i)=0.0d0
-
-      ia=2
-      do 70 ic=1,ncent
-        call incpos(iu,itmp,1)
-        read(iu,*)  (igrdmv(k,ic),k=1,3)
-          do 70 k=1,3            
-            if(igrdmv(k,ic).lt.0 .or. igrdmv(k,ic).gt.1) 
-     &        call fatal_error('GRADIENTS_CARTESIAN: igrdmv \= 0,1')
-            if(igrdmv(k,ic).eq.1) then
-              igrdaidx(ia/2)=ic
-              igrdcidx(ia/2)=k
-              delc(k,ic,ia)=delgrdxyz
-              delc(k,ic,ia+1)=-delgrdxyz
-              ia=ia+2
-            endif      
-   70     continue
-
-      igradients=1
-
-      call p2chkend(iu, 'gradients_cartesian')
-
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine read_gradnts_zmat(iu)
-C$INPUT gradients_zmatrix inp
-CKEYDOC Read for which Z matrix (internal) coordiantes of 
-CKEYDOC atoms energy gradients are to be calculated for.
-
-c      Written by Omar Valsson.
-
-      use vmc_mod, only: MCENT
-      use forcepar, only: nforce
-      use forcestr, only: delc
-      use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
-      use grdntspar, only: delgrdba, delgrdbl, delgrdda, igrdtype, ngradnts
-      use zmatrix, only: izmatrix
-      use wfsec, only: iwftype
-      use inputflags, only: igradients
-
-      use atom, only: ncent
-
-      implicit real*8(a-h,o-z)
-
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('GRADIENTS_ZMATRIX: ncent > MCENT')
-
-      call p2gtfd('gradients:delgrdbl',delgrdbl,0.001d0,1)
-      call p2gtfd('gradients:delgrdba',delgrdba,0.01d0,1)
-      call p2gtfd('gradients:delgrdda',delgrdda,0.01d0,1)
-
-      call p2gtid('gradients:igrdtype',igrdtype,2,1)
-      if(igrdtype.ne.2) call fatal_error('GRADIENTS_ZMATRIX: igrdtype /= 2')
-
-      if(izmatrix.ne.1) call fatal_error('GRADIENTS_ZMATRIX: No Z matrix connection matrix')
-
-      call p2gtid('general:nforce',nforce,1,1)      
-      call p2gtid('gradients:ngradnts',ngradnts,0,1)      
-      if( (2*ngradnts+1).ne.nforce) call 
-     &  fatal_error('GRADIENTS_ZMATRIX: (2*ngradnts+1)  /=  nforce')
-
-      do 60 i=1,nforce
-        iwftype(i)=1
-        do 60 ic=1,ncent
-          do 60 k=1,3
-            igrdmv(k,ic)=0
-   60       delc(k,ic,i)=0.0d0
-
-      ia=2
-
-      do 70 ic=1,ncent
-        call incpos(iu,itmp,1)
-        read(iu,*)  (igrdmv(k,ic),k=1,3)
-          do 70 k=1,3            
-            if(igrdmv(k,ic).lt.0 .or. igrdmv(k,ic).gt.1) 
-     &        call fatal_error('GRADIENTS_ZMATRIX: igrdmv \= 0,1')
-            if(igrdmv(k,ic).eq.1) then
-              igrdaidx(ia/2)=ic
-              igrdcidx(ia/2)=k
-              call grdzmat_displ(k,ic,ia  ,+1.0d0)
-              call grdzmat_displ(k,ic,ia+1,-1.0d0)
-              ia=ia+2
-            endif      
-   70     continue
-
- 
-      igradients=1
-
-      call p2chkend(iu, 'gradients_zmatrix')
-
-      return
-      end
 c-----------------------------------------------------------------------
 
-      subroutine read_modify_zmat(iu)
-C$INPUT modify_zmatrix inp
-CKEYDOC Read for which Z matrix (internal) coordiantes of 
-CKEYDOC atoms energy gradients are to be calculated for.
-
-      use vmc_mod, only: MCENT
-      use grdntsmv, only: igrdmv
-      use inputflags, only: imodify_zmat
-      use atom, only: ncent
-
-      implicit real*8(a-h,o-z)
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
-
-      do 70 ic=1,ncent
-        call incpos(iu,itmp,1)
-        read(iu,*)  (igrdmv(k,ic),k=1,3)
-          do 70 k=1,3            
-            if(igrdmv(k,ic).lt.0 .or. igrdmv(k,ic).gt.1) 
-     &        call fatal_error('MODIFY_ZMATRIX: igrdmv \= 0,1')
-   70     continue
-
-      imodify_zmat=1
-      call p2chkend(iu, 'modify_zmatrix')
-
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine read_hessian_zmat(iu)
-C$INPUT hessian_zmatrix inp
-CKEYDOC Read for which Z matrix (internal) coordiantes of 
-CKEYDOC atoms energy gradients are to be calculated for.
-
-      use vmc_mod, only: MCENT
-      use grdnthes, only: hessian_zmat
-      use inputflags, only: ihessian_zmat
-      use atom, only: ncent
-
-      implicit real*8(a-h,o-z)
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
-
-      do 70 ic=1,ncent
-        call incpos(iu,itmp,1)
-        read(iu,*)  (hessian_zmat(k,ic),k=1,3)
-          do 70 k=1,3            
-            if(hessian_zmat(k,ic).le.0 ) 
-     &        call fatal_error('HESSIAN_ZMATRIX: hess <=  0')
-   70     continue
-
-      ihessian_zmat=1
-      call p2chkend(iu, 'hessian_zmatrix')
-
-      return
-      end
-c-----------------------------------------------------------------------
-
-      subroutine read_zmat_conn(iu)
-C$INPUT zmatrix_connectionmatrix inp
-CKEYDOC Read the atom connection matrix for the Z matrix.
-CKEYDOC It is need when calculating forces in Z matrix
-CKEYDOC coordinates.
-
-c      Written by Omar Valsson
-
-      use vmc_mod, only: MCENT
-      use atom, only: cent, ncent
-      use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
-      use inputflags, only: izmatrix_check
-
-      implicit real*8(a-h,o-z)
-      
-      do 10 ic=1,3
-        do 10 k=1,3
-   10     czcart_ref(k,ic)=cent(k,ic)
-
-      do 20 ic=1,ncent
-        do 20 k=1,3
-          izcmat(k,ic)=0
-          czint(k,ic)=0.0d0
-   20     czcart(k,ic)=cent(k,ic)
-
-
-      do 30 ic=1,ncent
-        call incpos(iu,itmp,1)
-        read(iu,*)  (izcmat(k,ic),k=1,3)
-        do 30 k=1,3
-   30     if(izcmat(k,ic).ge.ic) call fatal_error('ZMATRIX: Error in connection matrix')
- 
-      call cart2zmat(MCENT,czcart,izcmat,czint)
-      call zmat2cart_rc(MCENT,izcmat,czint,czcart,czcart_ref)
-
-      izmatrix=1
-      izmatrix_check=1
-
-      call p2chkend(iu, 'zmatrix_connectionmatrix')
-
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine read_efield(ncharges_tmp,iscreen_tmp,filename)
-C$INPUT efield i i a=<input>
-
-      use efield_mod, only: MCHARGES
-      use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
-      use efield, only: iscreen, ncharges
-      use inputflags, only: icharge_efield
-
-      implicit real*8(a-h,o-z)
-
-
-      character filename*(*)
-
-      call file(iu,filename,'old',1,0)
-      ncharges=ncharges_tmp
-      iscreen=iscreen_tmp
-      write(6,*) 'reading in',ncharges,' charges!'
-
-      if(ncharges.gt.MCHARGES) call fatal_error('EFIELD: ncharges > MCHARGES')
-
-      do 20 i=1,ncharges
-        call incpos(iu,itmp,1)
-   20   read(iu,*) xcharge(i),ycharge(i),zcharge(i),qcharge(i),ascreen(i),bscreen(i)
-      icharge_efield=icharge_efield+1
-      write(6,*) 'icharge_efield=',icharge_efield
-
-      if(filename.eq.'<input>') then
-       call p2chkend(iu, 'efield')
-      endif
-      end
-c-----------------------------------------------------------------------
-      subroutine set_displace_zero(nforce_tmp)
-      use vmc_mod, only: MCENT
-      use forcestr, only: delc
-      use pcm_force, only: sch_s
-      use pcm_cntrl, only: ipcm
-      use pcm_parms, only: ch, nchs
-      use atom, only: ncent
-
-      implicit real*8(a-h,o-z)
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('FORCES: ncent > MCENT')
-
-      do 60 i=1,nforce_tmp
-        do 60 ic=1,ncent
-          do 60 k=1,3
-   60       delc(k,ic,i)=0.d0
-
-      if(ipcm.eq.3) then
-        do 65 i=1,nforce_tmp
-          do 65 j=1,nchs
-   65       sch_s(j,i)=ch(j)
-      endif
-
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine modify_zmat_define
-
-      use vmc_mod, only: MCENT
-      use grdntsmv, only: igrdmv
-      use atom, only: ncent
-      implicit real*8(a-h,o-z)
-
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
-
-      do 10 ic=1,ncent
-        do 10 k=1,3
- 10       igrdmv(k,ic)=1
-
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine hessian_zmat_define
-
-      use vmc_mod, only: MCENT
-      use grdnthes, only: hessian_zmat
-      use atom, only: ncent
-      
-
-      implicit real*8(a-h,o-z)
-
-
-      call p2gti('atoms:natom',ncent,1)
-      if(ncent.gt.MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
-
-      do 10 ic=1,ncent
-        do 10 k=1,3
- 10       hessian_zmat(k,ic)=1.d0
-
-      return
-      end
-
-c-----------------------------------------------------------------------
       subroutine set_ps_gauss_filenames()
 c ### Set name files of gaussian pseudopotentials.
-
       use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
       use general, only: filenames_ps_gauss
       use atom, only: nctype
-
       implicit real*8(a-h,o-z)
-
-c Allocation of the array storing the filenames of gaussian basis: 
+c Allocation of the array storing the filenames of gaussian basis:
       allocate(filenames_ps_gauss(nctype))
       do ic=1,nctype
         if(ic.lt.10) then
@@ -2488,32 +1320,28 @@ c Allocation of the array storing the filenames of gaussian basis:
      &         pp_id(1:index(pp_id,' ')-1)//
      &         '.gauss_ecp.dat.'//
      &         atomsymbol(1:index(atomsymbol,' ')-1)
-         endif 
+         endif
          filenames_ps_gauss(ic)=filename
         enddo
         end subroutine
 
 c-----------------------------------------------------------------------
+
       subroutine set_ps_champ_filenames()
 c ### Set name files of CHAMP-formatted pseudopotentials.
-
       use atom, only: nctype
       use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
-      use general, only: filenames_ps_champ 
-
+      use general, only: filenames_ps_champ
       implicit real*8(a-h,o-z)
-
-c Allocation of the array storing the filenames of gaussian basis: 
+c Allocation of the array storing the filenames of gaussian basis:
       allocate(filenames_ps_champ(nctype))
-      
-      do ict=1, nctype
 
+      do ict=1, nctype
         if(ict.lt.10) then
           write(atomtyp,'(i1)') ict
          elseif(ict.lt.100) then
           write(atomtyp,'(i2)') ict
         endif
-
         if(pp_id.eq.'none') then
 c old naming convention
           filename=pooldir(1:index(pooldir,' ')-1)//'/'//
@@ -2527,21 +1355,22 @@ c new naming convention
      &             pp_id(1:index(pp_id,' ')-1)//
      &             '.pseudopot_champ.'//
      &             atomsymbol(1:index(atomsymbol,' ')-1)
-        endif      
+        endif
         filenames_ps_champ(ict)=filename
       enddo
       end subroutine
+
 c-----------------------------------------------------------------------
+
       subroutine set_ps_tm_filenames()
 c ### Set name files of Troullier-Martins pseudopotentials.
-
       use atom, only: nctype
       use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
       use general, only: filenames_ps_tm
       use pseudo, only: nloc
-
       implicit real*8(a-h,o-z)
 
+      allocate(filenames_ps_tm(nctype))
       do ic=1,nctype
         if(pp_id.eq.'none') then
 c old naming convention
@@ -2575,19 +1404,17 @@ c new naming convention
       end subroutine
 
 c-----------------------------------------------------------------------
+
       subroutine set_bas_num_filenames()
 c ### Set numerical num. orbital filenames.
-
       use atom, only: nctype
       use general, only: pooldir, pp_id, bas_id, atomtyp, filename, atomsymbol
-      use general, only: filenames_bas_num, wforce 
+      use general, only: filenames_bas_num, wforce
       use ghostatom, only: newghostype
-
       implicit real*8(a-h,o-z)
-
-c Allocation of the array storing the filenames of numerical basis: 
+c Allocation of the array storing the filenames of numerical basis:
       allocate(filenames_bas_num(nctype+newghostype))
-  
+
       do ic=1,nctype+newghostype
         if(ic.lt.10) then
           write(atomtyp,'(i1)') ic
@@ -2597,7 +1424,7 @@ c Allocation of the array storing the filenames of numerical basis:
            write(wforce,'(i3)') iwf
          endif
         if(bas_id.eq.'none') then
-c old file name convention 
+c old file name convention
           filename=pooldir(1:index(pooldir,' ')-1)//'/'//
      &             'basis.'//atomtyp(1:index(atomtyp,' ')-1)
           if(iwf.ge.2) then

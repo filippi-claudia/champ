@@ -9,19 +9,17 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use grid_mod, only: MXNSTEP, MXNSTEP3
       use grid_mod, only: cart_from_int
       use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MORB
       use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, ncent
-
-      use ghostatom, only: newghostype, nghostcent
+      use const, only: nelec
       use ghostatom, only: newghostype, nghostcent
       use phifun, only: d2phin, dphin
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
-      use coefs, only: coef, nbasis, norb
       use phifun, only: d2phin, dphin, phin
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use grid3d_param, only: endpt, nstep3d, origin
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
@@ -29,7 +27,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
 
 
-      real*4  bc(MXNSTEP,MXNSTEP,3:8,MELEC/2+1), wk(80*MXNSTEP3)
+      real*4  bc(MXNSTEP,MXNSTEP,3:8,nelec/2+1), wk(80*MXNSTEP3)
 
 c     Note:
 c     The boundary condition array ranges from 3 to 8. This way, if we code
@@ -51,8 +49,8 @@ c     yz_max = 2+3+3 = 8
       iok=1
 
 c     Check the sizes
-      if (norb.gt.MORB_OCC) 
-     >  call fatal_error ('MORB_OCC too small. Recompile.')
+c      if (norb.gt.MORB_OCC) 
+c     >  call fatal_error ('MORB_OCC too small. Recompile.')
 
 c     We have no info on the derivatives, so use "not a knot" in the creation
 c     of the fit
@@ -396,12 +394,13 @@ c Lagrange interpolation routines
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: grid3d, cart_from_int
       use vmc_mod, only: MELEC, MORB, MCENT
+      use vmc_mod, only: MORB
       use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, ncent
       use wfsec, only: iwf
       use grid3d_param, only: nstep3d, endpt, origin
       use orbital_num_lag, only: denom
-
+      use const, only: nelec
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: nghostcent
       use contrl, only: irstar
@@ -420,8 +419,8 @@ c Lagrange interpolation routines
       iwf=1
 
 c     Check the sizes
-      if (norb.gt.MORB_OCC) 
-     >  call fatal_error ('MORB_OCC too small. Recompile.')
+c      if (norb.gt.MORB_OCC) 
+c     >  call fatal_error ('MORB_OCC too small. Recompile.')
 
 
 c     Evaluate the memory needed for the calculation
@@ -601,12 +600,13 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
 
 
-      dimension r(3),dr(3),orb(MELEC,MORB),ix(3)
+      dimension r(3),dr(3),orb(nelec,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 
@@ -682,11 +682,12 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
 
-      dimension r(3),dr(3),orb(3,MELEC,MORB),ix(3)
+      dimension r(3),dr(3),orb(3,nelec,MORB),ix(3)
       dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 

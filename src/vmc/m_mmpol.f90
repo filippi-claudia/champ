@@ -126,7 +126,7 @@ module mmpolo
 
     private
     public :: cmmpolo, dmmpolo, eeko
-    public :: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3 
+    public :: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
     public :: allocate_mmpolo, deallocate_mmpolo
     save
 contains

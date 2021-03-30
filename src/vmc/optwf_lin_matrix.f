@@ -21,7 +21,7 @@
 
       save eig_min
 
-      write(6,'(/,''Setup starting adiag'',/)') 
+      write(6,'(/,''Setup starting adiag'',/)')
       eig_min=0
 
       if(method.eq.'linear') then
@@ -49,12 +49,13 @@ c Symmetrize the overlap
         do 4 j=1,i
    4      s(j,i)=s(i,j)
 
-c     do i=1,nparm+is
-c       write(6,*) 'h =',(h(i,j),j=1,nparm+is)
-c     enddo
-c     do i=1,nparm+is
-c       write(6,*) 's =',(s(i,j),j=1,nparm+is)
-c     enddo
+      ! do i=1,nparm+is
+      !   write(6,*) 'h =',(h(i,j),j=1,nparm+is)
+      ! enddo
+      ! do i=1,nparm+is
+      !   write(6,*) 's =',(s(i,j),j=1,nparm+is)
+      ! enddo
+
 
       if(add_diag.gt.0.and.iter.eq.1) then
 
@@ -74,7 +75,7 @@ c Sort the eigenvalues
       ireal=0
       do 6 ii=1,nparm+is
         i=isort(ii)
-        if(eigi(i).eq.0) then 
+        if(eigi(i).eq.0) then
          ireal=ireal+1
          if(ireal.le.5)
      &   write(6,'(''eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') i,eig(i),eigi(i)
@@ -137,7 +138,7 @@ c           if(j.ne.1.and.k.ne.1) then
       else
         eig_min=0
       endif
- 
+
       write(6,'(''energy gap = '',f15.5)') eig_min
       endif
 
@@ -154,7 +155,7 @@ c       add_diag=0
       endif
       if(ioptjas.eq.0.and.ioptorb.eq.0) add_diag=0
       write(6,'(/,''starting adiag'',g12.4,/)') add_diag
-       
+
 
       return
       end
@@ -162,29 +163,31 @@ c-----------------------------------------------------------------------
       subroutine regularize_geneig(n,mparmx,h,s,work,seig_valinv,hmod)
 
       use gradhess_all, only: MPARMALL
-      
+
       implicit real*8(a-h,o-z)
 
 
       parameter(eps=1.d-12)
-      parameter(MWORK=50*MPARMALL)
+      ! parameter(MWORK=50*MPARMALL)
       parameter(eps_eigval=1.d-14)
-      
+
       dimension h(mparmx,*),s(mparmx,*)
       dimension seig_vals(MPARMALL),seig_valinv(*)
       dimension hmod(MPARMALL,*),work(*)
 
       call cpu_time(t0)
-
 c call dsyev to determine lworks
       call dsyev('V','U',n,s,mparmx,seig_vals,work,-1,isdinfo)
       lworks=work(1)
+
 c     write(6,*) 'S diag opt lwork=',lworks
 
 c diagonalize s=S -> S_diag=U^T S U -> in output, s contains the unitary matrix U
       call dsyev('V','U',n,s,mparmx,seig_vals,work,lworks,isdinfo)
+      if (isdinfo.gt.0) call fatal_error('Eigenvalue issues in regularize_geneig')
+
 c     call cpu_time(t)
-c     t_sdiag=t 
+c     t_sdiag=t
 c     write(6,*) 'elapsed time for diagonalization:',t_sdiag-t0
 
       icut=1
@@ -203,13 +206,13 @@ c     write(6,*) 'elapsed time for diagonalization:',t_sdiag-t0
       do 20 i=1,n
         if(seig_vals(i)/seig_vals(n).gt.eps_eigval) then
           seig_valinv(i)=1.0d0/dsqrt(seig_vals(i))
-         else 
+         else
           seig_valinv(i)=0.0d0
         endif
   20  continue
 
 c I = A^T S A where A_ij= U_ij/sqrt(s_eigval(j))
-c s in input contains U -> s is overwritten and contains A 
+c s in input contains U -> s is overwritten and contains A
       do 30 i=1,n
         do 30 j=1,n
           s(i,j)=s(i,j)*seig_valinv(j)
@@ -219,7 +222,7 @@ c Compute work_mat=A^T*H*A
       do 35 i=1,n
         do 35 l=1,n
   35      hmod(l,i)=0.d0
-       
+
       do 50 l=1,n
         do 40 m=1,n
           work(m)=0.d0
@@ -238,26 +241,31 @@ c     write(6,*) 'elapsed time to build Hmod:',t_hmod-t_sdiag
 
 c-----------------------------------------------------------------------
       subroutine solve_geneig(n,mparmx,hmod,s,seig_valinv,work,eig,eigi,eig_vec)
-      
+
       use gradhess_all, only: MPARMALL
 
       implicit real*8(a-h,o-z)
 
 
       parameter(eps=1.d-12)
-      parameter(MWORK=50*MPARMALL)
-      
+      ! parameter(MWORK=50*MPARMALL)
+
       dimension seig_valinv(*)
       dimension hmod(mparmx,*),s(mparmx,*)
 
-      dimension eig_vec(MPARMALL,*),eig_vecl(MPARMALL,1)
+      dimension eig_vec(MPARMALL,*)
+      ! dimension eig_vecl(MPARMALL,1)
+      dimension eig_vecl(MPARMALL,MPARMALL)
       dimension work(*)
 
-c s_fordiag: a copy of S for diagonalization. 
+      dimension eig(MPARMALL)
+      dimension eigi(MPARMALL)
+c s_fordiag: a copy of S for diagonalization.
 c hmod: the modified Hamiltonian matrix (in the end, S^-1*U*H*U^T)
-c s: overlap matrix, h: hamiltonian, eigenvec: eigenvectors, 
+c s: overlap matrix, h: hamiltonian, eigenvec: eigenvectors,
 
       call cpu_time(t0)
+
 
 c MISSING
 c hmod+adiag/s_diag
@@ -283,7 +291,7 @@ c     write(6,*) 'elapsed time to diagonalize Hmod:',t-t0
   10        work(i)=work(i)+s(i,j)*eig_vec(j,k)
         do 20 i=1,n
   20      eig_vec(i,k)=work(i)
-      
+
 c     call cpu_time(t)
 c     t_eigvec=t
 c     write(6,*) 'elapsed time to get eigenvectors:',t_eigvec-t_hmdiag
@@ -324,13 +332,13 @@ c-----------------------------------------------------------------------
       dimension isort(MPARMALL)
       dimension cdelta(MPARMALL)
       dimension overlap(MXCITERM)
-    
+
       if(method.eq.'linear') then
 
       nparmd=max(nciterm-1,0)
 
       is=1
-      if(ioptjas.eq.0.and.ioptorb.eq.0) then 
+      if(ioptjas.eq.0.and.ioptorb.eq.0) then
 	is=0
         idx=0
         do 105 i=1,nparm+is
@@ -430,7 +438,7 @@ c             if(j.ne.1.and.k.ne.1) then
         scale=scale*2
 
         no_real_found=no_real_found+1
-        if(no_real_found.gt.nparmd) 
+        if(no_real_found.gt.nparmd)
      &      call fatal_error('OPTWF: Cannot find real eigenvalues')
         goto 116
       endif
@@ -530,7 +538,7 @@ c minus sign because variation is subtracted when computing new parameters
 
               write(6,'(i4,'' eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') j,jsort,eig(jsort),eigi(jsort)
               write(6,'('' overlap state,eigenstate '',2i4,'' = '',f15.5)') jj,j,overlap(j)
-  
+
             endif
   172     continue
 
@@ -547,7 +555,7 @@ c minus sign because variation is subtracted when computing new parameters
           write(6,'(''state '',i4,'' norm'',1p1e12.5,'' overlap '',1p1e12.5)') jj,dnorm,overlap(i0)
           write(6,'(''pn  ='',1000f10.5)') (dparm(i+nparm*(jj-1)),i=1,nparm)
 
-          if(nstates.gt.1.and.jj.ne.nstates.and.eig(isort(i0+1)).eq.0.d0) 
+          if(nstates.gt.1.and.jj.ne.nstates.and.eig(isort(i0+1)).eq.0.d0)
      &      call fatal_error('OPTWF: Overlap with state 1 for highest eigenvalue >0')
   180   continue
        endif
