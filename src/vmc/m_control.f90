@@ -22,6 +22,51 @@ module contrl
     save
 end module contrl
 
+module control_vmc
+    !> Arguments: idump, irstar, isite, nconf, nblk, nblk_max, nblkeq, nconf_new, nstep,
+    !> icharged_atom, nblk_ci for vmc module
+
+    integer :: vmc_idump
+    integer :: vmc_irstar
+    integer :: vmc_isite
+    integer :: vmc_nconf
+    integer :: vmc_nblk
+    integer :: vmc_nblk_max
+    integer :: vmc_nblkeq
+    integer :: vmc_nconf_new
+    integer :: vmc_nstep
+    integer :: vmc_icharged_atom
+    integer :: vmc_nblk_ci
+
+    private
+    public :: vmc_idump, vmc_irstar, vmc_isite, vmc_nconf, vmc_nblk, vmc_nblk_max
+    public :: vmc_nblkeq, vmc_nconf_new, vmc_nstep, vmc_icharged_atom, vmc_nblk_ci  
+    save
+end module control_vmc
+
+module control_dmc
+    !> Arguments: idump, irstar, isite, nconf, nblk, nblk_max, nblkeq, nconf_new, nstep,
+    !> icharged_atom, nblk_ci for vmc module
+
+    integer :: dmc_idump
+    integer :: dmc_irstar
+    integer :: dmc_isite
+    integer :: dmc_nconf
+    integer :: dmc_nblk
+    integer :: dmc_nblk_max
+    integer :: dmc_nblkeq
+    integer :: dmc_nconf_new
+    integer :: dmc_nstep
+    integer :: dmc_icharged_atom
+    integer :: dmc_nblk_ci
+
+    private
+    public :: dmc_idump, dmc_irstar, dmc_isite, dmc_nconf, dmc_nblk, dmc_nblk_max
+    public :: dmc_nblkeq, dmc_nconf_new, dmc_nstep, dmc_icharged_atom, dmc_nblk_ci  
+    save
+end module control_dmc
+
+
 module contr2
     !> Arguments: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt, isc, istrch
 
