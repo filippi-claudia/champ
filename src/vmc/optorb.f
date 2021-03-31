@@ -1,4 +1,4 @@
-      subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
+      subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim,istate)
 
       use vmc_mod, only: MELEC, MORB, MDET
       use elec, only: ndn, nup
@@ -18,84 +18,79 @@
       dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
       dimension orbprim(*),eorbprim(*)
 
-
-c     RLPB some quantities still need to get state index!!!!
-
       if(ioptorb.eq.0) return
 
-      do istate=1,nstates
-         detratio=detiab(kref,1,istate)*detiab(kref,2,istate)/psid
-         do iterm=1,norbterm
-            io=ideriv(1,iterm)
-            jo=ideriv(2,iterm)
-            dorb_psi_ref=0.0d0
-            dorb_energy_ref=0.0d0
-            dorb_psi=0.0d0
-            dorb_energy=0.0d0
-            do iab=1,2
-               if(iab.eq.1) then
-                  ish=0
-                  nel=nup
-               else
-                  ish=nup
-                  nel=ndn
-               endif
-               if(io.ge.ivirt(iab)) then
-                  do i=1,nel
-                     dorb_psi=dorb_psi+zmat(io,i,iab)*orb(i+ish,jo,istate)
-                     dorb_energy=dorb_energy+dzmat(io,i,iab)*orb(i+ish,jo,istate)
-     &                    +zmat(io,i,iab)*b(jo,i+ish,istate)
-                  enddo
-               endif
-               if(ideriv_ref(iterm,iab).gt.0) then
-                  irep=irepcol_ref(iterm,iab)
-                  dorb_psi_ref=dorb_psi_ref+aa(irep,jo,iab,istate)
-                  dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,iab,istate)
-                  do i=1,nel
-                     dorb_psi=dorb_psi-aaz(irep,i,iab)*orb(i+ish,jo,istate)
-                     dorb_energy=dorb_energy-emz(irep,i,iab)*orb(i+ish,jo,istate)
-     &                    -aaz(irep,i,iab)*b(jo,i+ish,istate)
-                  enddo
-               endif
-            enddo
-            orbprim(iterm)=dorb_psi*detratio
-            eorbprim(iterm)=dorb_energy*detratio+dorb_energy_ref-denergy*orbprim(iterm)
-            orbprim(iterm)=orbprim(iterm)+dorb_psi_ref
+      detratio=detiab(kref,1,istate)*detiab(kref,2,istate)/psid
+      do iterm=1,norbterm
+         io=ideriv(1,iterm)
+         jo=ideriv(2,iterm)
+         dorb_psi_ref=0.0d0
+         dorb_energy_ref=0.0d0
+         dorb_psi=0.0d0
+         dorb_energy=0.0d0
+         do iab=1,2
+            if(iab.eq.1) then
+               ish=0
+               nel=nup
+            else
+               ish=nup
+               nel=ndn
+            endif
+            if(io.ge.ivirt(iab)) then
+               do i=1,nel
+                  dorb_psi=dorb_psi+zmat(io,i,iab)*orb(i+ish,jo,istate)
+                  dorb_energy=dorb_energy+dzmat(io,i,iab)*orb(i+ish,jo,istate)
+     &                 +zmat(io,i,iab)*b(jo,i+ish,istate)
+               enddo
+            endif
+            if(ideriv_ref(iterm,iab).gt.0) then
+               irep=irepcol_ref(iterm,iab)
+               dorb_psi_ref=dorb_psi_ref+aa(irep,jo,iab,istate)
+               dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,iab,istate)
+               do i=1,nel
+                  dorb_psi=dorb_psi-aaz(irep,i,iab)*orb(i+ish,jo,istate)
+                  dorb_energy=dorb_energy-emz(irep,i,iab)*orb(i+ish,jo,istate)
+     &                 -aaz(irep,i,iab)*b(jo,i+ish,istate)
+               enddo
+            endif
          enddo
+         orbprim(iterm)=dorb_psi*detratio
+         eorbprim(iterm)=dorb_energy*detratio+dorb_energy_ref-denergy*orbprim(iterm)
+         orbprim(iterm)=orbprim(iterm)+dorb_psi_ref
       enddo
 
       end subroutine
 
 c-----------------------------------------------------------------------
+
       subroutine optorb_compute(psid,eloc,deloc)
-
       use csfs, only: nstates
-
       use optwf_contrl, only: ioptorb
       use zcompact, only: aaz, dzmat, emz, zmat
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
+
       implicit real*8(a-h,o-z)
 
       dimension psid(*),eloc(*),deloc(*)
 
       if(ioptorb.eq.0) return
 
-      do 20 istate=1,nstates
-
-        call optorb_deriv(psid(istate),deloc(istate)
-     &   ,zmat(1,1,1,istate),dzmat(1,1,1,istate),emz(1,1,1,istate),aaz(1,1,1,istate)
-     &   ,orb_o(1,istate),orb_ho(1,istate))
-        
-        do 20 i=1,norbterm
+      do istate=1,nstates
+         call optorb_deriv(psid(istate),deloc(istate)
+     &        ,zmat(1,1,1,istate),dzmat(1,1,1,istate),emz(1,1,1,istate),aaz(1,1,1,istate)
+     &        ,orb_o(1,istate),orb_ho(1,istate),istate)
+         do i=1,norbterm
             orb_oe(i,istate)=orb_o(i,istate)*eloc(istate)
-  20        orb_ho(i,istate)=orb_ho(i,istate)+eloc(istate)*orb_o(i,istate)
+            orb_ho(i,istate)=orb_ho(i,istate)+eloc(istate)*orb_o(i,istate)
+         enddo
+      enddo
 
-      return
-      end
+      end subroutine
+
 c-----------------------------------------------------------------------
-      subroutine optorb_sum(wtg_new,wtg_old,enew,eold,iflag)
 
+      subroutine optorb_sum(wtg_new,wtg_old,enew,eold,iflag)
       use csfs, only: nstates
       use optwf_contrl, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm
@@ -111,113 +106,117 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
       dimension wtg_new(*),wtg_old(*),enew(*),eold(*)
 
       if(ioptorb.eq.0) return
 
-c     if(ns_current.ne.iorbsample) return
-c ns_current reset
-c     ns_current=0
-
       idiag_only=0
       if(iapprox.gt.0) idiag_only=1
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
+         p=wtg_new(istate)
+         do i=1,norbterm
+            orb_o_sum(i,istate)=orb_o_sum(i,istate)+p*orb_o(i,istate)
+            orb_oe_sum(i,istate) =orb_oe_sum(i,istate)+p*orb_oe(i,istate)
+            orb_ho_cum(i,istate) =orb_ho_cum(i,istate)+p*orb_ho(i,istate)
+         enddo
 
-      p=wtg_new(istate)
+         orb_wcum(istate)=orb_wcum(istate)+p
+         orb_ecum(istate)=orb_ecum(istate)+p*enew(istate)
 
-      do 10 i=1,norbterm
-       orb_o_sum(i,istate)=orb_o_sum(i,istate)+p*orb_o(i,istate)
-       orb_oe_sum(i,istate) =orb_oe_sum(i,istate)+p*orb_oe(i,istate)
-  10   orb_ho_cum(i,istate) =orb_ho_cum(i,istate)+p*orb_ho(i,istate)
+         if(isample_cmat.eq.0) cycle
 
-      orb_wcum(istate)=orb_wcum(istate)+p
-      orb_ecum(istate)=orb_ecum(istate)+p*enew(istate)
-
-      if(isample_cmat.eq.0) go to 200
-
-      if(idiag_only.eq.0) then
-        idx=0
-        do 20 i=1,nreduced
-         ie=i
-         do 20 j=1,i
-          idx=idx+1
-          je=j
-  20      orb_oo_cum(idx,istate)=orb_oo_cum(idx,istate)+p*orb_o(ie,istate)*orb_o(je,istate)
-
-        idx=0
-        do 21 i=1,nreduced
-         ie=i
-         do 21 j=1,nreduced
-          idx=idx+1
-          je=j
-  21      orb_oho_cum(idx,istate)=orb_oho_cum(idx,istate)+p*orb_o(je,istate)*orb_ho(ie,istate)
-       else
-        do 25 i=1,nreduced
-          ie=i
-          orb_oo_cum(i,istate)=orb_oo_cum(i,istate)+p*orb_o(ie,istate)*orb_o(ie,istate)
-  25      orb_oho_cum(i,istate)=orb_oho_cum(i,istate)+p*orb_o(ie,istate)*orb_ho(ie,istate)
-      endif
-
-  200 continue
+         if(idiag_only.eq.0) then
+            idx=0
+            do i=1,nreduced
+               ie=i
+               do j=1,i
+                  idx=idx+1
+                  je=j
+                  orb_oo_cum(idx,istate)=orb_oo_cum(idx,istate)+
+     &                 p*orb_o(ie,istate)*orb_o(je,istate)
+               enddo
+            enddo
+            idx=0
+            do i=1,nreduced
+               ie=i
+               do j=1,nreduced
+                  idx=idx+1
+                  je=j
+                  orb_oho_cum(idx,istate)=orb_oho_cum(idx,istate)
+     &                 +p*orb_o(je,istate)*orb_ho(ie,istate)
+               enddo
+            enddo
+         else
+            do i=1,nreduced
+               ie=i
+               orb_oo_cum(i,istate)=orb_oo_cum(i,istate)
+     &              +p*orb_o(ie,istate)*orb_o(ie,istate)
+               orb_oho_cum(i,istate)=orb_oho_cum(i,istate)
+     &              +p*orb_o(ie,istate)*orb_ho(ie,istate)
+            enddo
+         endif
+      enddo
 
       if(iflag.eq.0) return
 
-      do 300 istate=1,nstates
+      do istate=1,nstates
+         q=wtg_old(istate)
+         do i=1,norbterm
+            orb_o_sum(i,istate)=orb_o_sum(i,istate)+q*orb_o_old(i,istate)
+            orb_oe_sum(i,istate)=orb_oe_sum(i,istate)+q*orb_oe_old(i,istate)
+         enddo
+         orb_wcum(istate)=orb_wcum(istate)+q
+         orb_ecum(istate)=orb_ecum(istate)+q*eold(istate)
 
-      q=wtg_old(istate)
+         if(isample_cmat.eq.0) cycle
 
-      do 30 i=1,norbterm
-       orb_o_sum(i,istate)=orb_o_sum(i,istate)+q*orb_o_old(i,istate)
-  30   orb_oe_sum(i,istate) =orb_oe_sum(i,istate)+q*orb_oe_old(i,istate)
+         if(idiag_only.eq.0) then
+            idx=0
+            do i=1,nreduced
+               ie=i
+               do j=1,i
+                  idx=idx+1
+                  je=j
+                  orb_oo_cum(idx,istate)=orb_oo_cum(idx,istate)
+     &                 +q*orb_o_old(ie,istate)*orb_o_old(je,istate)
+               enddo
+            enddo
+            idx=0
+            do i=1,nreduced
+               ie=i
+               do j=1,nreduced
+                  idx=idx+1
+                  je=j
+                  orb_oho_cum(idx,istate)=orb_oho_cum(idx,istate)
+     &                 +q*orb_o_old(je,istate)*orb_ho_old(ie,istate)
+               enddo
+            enddo
+         else
+            do i=1,nreduced
+               ie=i
+               orb_oo_cum(i,istate)=orb_oo_cum(i,istate)
+     &              +q*orb_o_old(ie,istate)*orb_o_old(ie,istate)
+               orb_oho_cum(i,istate)=orb_oho_cum(i,istate)
+     &              +q*orb_o_old(ie,istate)*orb_ho_old(ie,istate)
+            enddo
+         endif
+      enddo
 
-      orb_wcum(istate)=orb_wcum(istate)+q
-      orb_ecum(istate)=orb_ecum(istate)+q*eold(istate)
+      end subroutine
 
-      if(isample_cmat.eq.0) go to 300
-
-      if(idiag_only.eq.0) then
-        idx=0
-        do 40 i=1,nreduced
-         ie=i
-         do 40 j=1,i
-          idx=idx+1
-          je=j
-  40      orb_oo_cum(idx,istate)=orb_oo_cum(idx,istate)+q*orb_o_old(ie,istate)*orb_o_old(je,istate)
-
-        idx=0
-        do 41 i=1,nreduced
-         ie=i
-         do 41 j=1,nreduced
-          idx=idx+1
-          je=j
-  41      orb_oho_cum(idx,istate)=orb_oho_cum(idx,istate)+q*orb_o_old(je,istate)*orb_ho_old(ie,istate)
-       else
-        do 45 i=1,nreduced
-          ie=i
-          orb_oo_cum(i,istate)=orb_oo_cum(i,istate)+q*orb_o_old(ie,istate)*orb_o_old(ie,istate)
-  45      orb_oho_cum(i,istate)=orb_oho_cum(i,istate)+q*orb_o_old(ie,istate)*orb_ho_old(ie,istate)
-      endif
-
-  300 continue
-      end
 c-----------------------------------------------------------------------
+
       subroutine optorb_cum(wsum,esum)
       use csfs, only: nstates
-
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm, idump_blockav
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
       use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
-
       use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
 
       implicit real*8(a-h,o-z)
-
-
-
 
       dimension wsum(*),esum(*)
 
@@ -225,49 +224,51 @@ c-----------------------------------------------------------------------
 
       nb_current=nb_current+1
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
+         orb_e_bsum(istate)=orb_e_bsum(istate)+esum(istate)
+         orb_w_bsum(istate)=orb_w_bsum(istate)+wsum(istate)
+         do i=1,norbterm
+            orb_o_bsum(i,istate)=orb_o_bsum(i,istate)+orb_o_sum(i,istate)
+            orb_oe_bsum(i,istate)=orb_oe_bsum(i,istate)+orb_oe_sum(i,istate)
+         enddo
 
-      orb_e_bsum(istate)=orb_e_bsum(istate)+esum(istate)
-      orb_w_bsum(istate)=orb_w_bsum(istate)+wsum(istate)
-      do 10 i=1,norbterm
-       orb_o_bsum(i,istate)=orb_o_bsum(i,istate)+orb_o_sum(i,istate)
-   10  orb_oe_bsum(i,istate)=orb_oe_bsum(i,istate)+orb_oe_sum(i,istate)
+         if(nb_current.eq.nefp_blocks)then
+            eb=orb_e_bsum(istate)/orb_w_bsum(istate)
+            do i=1,norbterm
+               fnow=orb_oe_bsum(i,istate)/orb_w_bsum(istate)
+     &              -orb_o_bsum(i,istate)/orb_w_bsum(istate)*eb
+               orb_f_bcum(i,istate)=orb_f_bcum(i,istate)+fnow
+               orb_f_bcm2(i,istate)=orb_f_bcm2(i,istate)+fnow**2
+            enddo
 
-      if(nb_current.eq.nefp_blocks)then
-       eb=orb_e_bsum(istate)/orb_w_bsum(istate)
+            orb_e_bsum(istate)=0.0d0
+            orb_w_bsum(istate)=0.0d0
+            do i=1,norbterm
+               orb_o_bsum(i,istate)=0.0d0
+               orb_oe_bsum(i,istate)=0.0d0
+            enddo
+         endif
 
-       do 40 i=1,norbterm
-         fnow=orb_oe_bsum(i,istate)/orb_w_bsum(istate)-orb_o_bsum(i,istate)/orb_w_bsum(istate)*eb
-         orb_f_bcum(i,istate)=orb_f_bcum(i,istate)+fnow
-   40    orb_f_bcm2(i,istate)=orb_f_bcm2(i,istate)+fnow**2
-
-       orb_e_bsum(istate)=0.d0
-       orb_w_bsum(istate)=0.d0
-       do 50 i=1,norbterm
-        orb_o_bsum(i,istate)=0.d0
-   50   orb_oe_bsum(i,istate)=0.d0
-      endif
-
-      do 60 i=1,norbterm
-       orb_o_cum(i,istate)=orb_o_cum(i,istate) + orb_o_sum(i,istate)
-   60  orb_oe_cum(i,istate)=orb_oe_cum(i,istate) + orb_oe_sum(i,istate)
-
-  200 continue
+         do i=1,norbterm
+            orb_o_cum(i,istate)=orb_o_cum(i,istate) + orb_o_sum(i,istate)
+            orb_oe_cum(i,istate)=orb_oe_cum(i,istate) + orb_oe_sum(i,istate)
+         enddo
+      enddo
 
       if(nb_current.eq.nefp_blocks) then
-        nb_current=0
-        norb_f_bcum=norb_f_bcum+1
+         nb_current=0
+         norb_f_bcum=norb_f_bcum+1
       endif
 
       if(idump_blockav.ne.0)then
-       write(idump_blockav) esum(1)/wsum(1),(orb_o_sum(i,1)/wsum(1),orb_oe_sum(i,1)/wsum(1),i=1,norbterm)
+         write(idump_blockav) esum(1)/wsum(1),(orb_o_sum(i,1)/wsum(1),orb_oe_sum(i,1)/wsum(1),i=1,norbterm)
       endif
 
-      end
+      end subroutine
 
 c-----------------------------------------------------------------------
-      subroutine optorb_init(iflg)
 
+      subroutine optorb_init(iflg)
       use csfs, only: nstates
       use optwf_contrl, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm
@@ -287,62 +288,67 @@ c-----------------------------------------------------------------------
       idiag_only=0
       if(iapprox.gt.0) idiag_only=1
 
-      do 100 istate=1,nstates
+      do istate=1,nstates
+         do i=1,norbterm
+            orb_o_sum(i,istate)=0.0d0
+            orb_oe_sum(i,istate) =0.0d0
+            orb_o_bsum(i,istate)=0.0d0
+            orb_oe_bsum(i,istate)=0.0d0
+         enddo
+         orb_e_bsum(istate)=0.0d0
+         orb_w_bsum(istate)=0.0d0
+      enddo
 
-      do 10 i=1,norbterm
-       orb_o_sum(i,istate)=0.d0
-       orb_oe_sum(i,istate) =0.d0
-       orb_o_bsum(i,istate)=0.d0
-  10   orb_oe_bsum(i,istate)=0.d0
-      orb_e_bsum(istate)=0.d0
-      orb_w_bsum(istate)=0.d0
+C     $ iflg = 0: init *cum, *cm2 as well
 
-  100 continue
-C$ iflg = 0: init *cum, *cm2 as well
       if(iflg.gt.0) return
 
       ns_current=0
       nb_current=0
       norb_f_bcum=0
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
+         do i=1,norbterm
+            orb_o_cum(i,istate)=0.0d0
+            orb_oe_cum(i,istate) =0.0d0
+            orb_ho_cum(i,istate) =0.0d0
+            orb_f_bcum(i,istate)=0.0d0
+            orb_f_bcm2(i,istate)=0.0d0
+         enddo
+         orb_wcum(istate)=0.0d0
+         orb_ecum(istate)=0.0d0
 
-      do 20 i=1,norbterm
-       orb_o_cum(i,istate)=0.d0
-       orb_oe_cum(i,istate) =0.d0
-       orb_ho_cum(i,istate) =0.d0
-       orb_f_bcum(i,istate)=0.d0
-  20   orb_f_bcm2(i,istate)=0.d0
-      orb_wcum(istate)=0.d0
-      orb_ecum(istate)=0.d0
+         if(isample_cmat.ne.0) then
+            if(idiag_only.eq.0) then
+               idx=0
+               do i=1,nreduced
+                  do j=1,i
+                     idx=idx+1
+                     orb_oo_cum(idx,istate)=0.0d0
+                  enddo
+               enddo
+               idx=0
+               do i=1,nreduced
+                  do j=1,nreduced
+                     idx=idx+1
+                     orb_oho_cum(idx,istate)=0.0d0
+                  enddo
+               enddo
+            else
+               do i=1,nreduced
+                  orb_oo_cum(i,istate)=0.0d0
+                  orb_oho_cum(i,istate)=0.0d0
+               enddo
+            endif
+         endif
+      enddo
 
-      if(isample_cmat.ne.0) then
-       if(idiag_only.eq.0) then
-         idx=0
-         do 30 i=1,nreduced
-          do 30 j=1,i
-           idx=idx+1
-  30       orb_oo_cum(idx,istate)=0.d0
+      end subroutine
 
-         idx=0
-         do 40 i=1,nreduced
-          do 40 j=1,nreduced
-           idx=idx+1
-  40       orb_oho_cum(idx,istate)=0.d0
-       else
-         do 50 i=1,nreduced
-           orb_oo_cum(i,istate)=0.d0
-  50       orb_oho_cum(i,istate)=0.d0
-       endif
-      endif
-
-  200 continue
-
-      end
 c-----------------------------------------------------------------------
+
       subroutine optorb_save
       use csfs, only: nstates
-
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
@@ -350,23 +356,22 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
       if(ioptorb.eq.0) return
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
+         do i=1,norbterm
+            orb_o_old(i,istate)=orb_o(i,istate)
+            orb_oe_old(i,istate)=orb_oe(i,istate)
+            orb_ho_old(i,istate)=orb_ho(i,istate)
+         enddo
+      enddo
 
-      do 10 i=1,norbterm
-       orb_o_old(i,istate)=orb_o(i,istate)
-       orb_oe_old(i,istate)=orb_oe(i,istate)
-  10   orb_ho_old(i,istate)=orb_ho(i,istate)
+      end subroutine
 
-  200 continue
-
-      end
 c-----------------------------------------------------------------------
+
       subroutine optorb_restore
       use csfs, only: nstates
-
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
@@ -374,53 +379,50 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-
-
-
       if(ioptorb.eq.0) return
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
+         do i=1,norbterm
+            orb_o(i,istate)=orb_o_old(i,istate)
+            orb_oe(i,istate)=orb_oe_old(i,istate)
+            orb_ho(i,istate)=orb_ho_old(i,istate)
+         enddo
+      enddo
 
-      do 10 i=1,norbterm
-       orb_o(i,istate)=orb_o_old(i,istate)
-       orb_oe(i,istate)=orb_oe_old(i,istate)
-  10   orb_ho(i,istate)=orb_ho_old(i,istate)
+      end subroutine
 
-  200 continue
-
-      end
 c-----------------------------------------------------------------------
+
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
-
       use optorb_cblock, only:  norb_f_bcum
 
       implicit real*8(a-h,o-z)
 
-
       dimension oav(*),eoav(*),fo(*),foerr(*)
-
 
       errn(x,x2,n)=dsqrt(dabs(x2/dble(n)-(x/dble(n))**2)/dble(n))
 
       if(ioptorb.eq.0) return
 
-      do 30 i=1,norbterm
-        oav(i)=orb_o_cum(i,istate)/wcum
-        eoav(i)=orb_oe_cum(i,istate)/wcum
-        fo(i)=eoav(i)-eave*oav(i)
-   30   foerr(i)=errn(orb_f_bcum(i,istate),orb_f_bcm2(i,istate),norb_f_bcum)
+      do i=1,norbterm
+         oav(i)=orb_o_cum(i,istate)/wcum
+         eoav(i)=orb_oe_cum(i,istate)/wcum
+         fo(i)=eoav(i)-eave*oav(i)
+         foerr(i)=errn(orb_f_bcum(i,istate),orb_f_bcm2(i,istate),norb_f_bcum)
+      enddo
 
       write(6,'(''ORB-PT: forces collected'',i4)') norb_f_bcum
 
-      end
-c-----------------------------------------------------------------------
-      subroutine optorb_dump(iu)
+      end subroutine
 
+c-----------------------------------------------------------------------
+
+      subroutine optorb_dump(iu)
       use csfs, only: nstates
       use optwf_contrl, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm, norbprim
@@ -442,20 +444,22 @@ c-----------------------------------------------------------------------
 
       write(iu) norbprim,norbterm,nreduced
       write(iu) nefp_blocks,norb_f_bcum
-      do 200 istate=1,nstates
-      write(iu) (orb_o_cum(i,istate),i=1,norbterm)
-      write(iu) (orb_oe_cum(i,istate),i=1,norbterm)
-      write(iu) (orb_ho_cum(i,istate),i=1,norbterm)
-      write(iu) (orb_f_bcum(i,istate),orb_f_bcm2(i,istate),i=1,norbterm)
-      write(iu) (orb_oo_cum(i,istate),i=1,matdim)
-      write(iu) (orb_oho_cum(i,istate),i=1,nreduced*nreduced)
-      write(iu) orb_wcum(istate),orb_ecum(istate)
-  200 continue
 
-      end
+      do istate=1,nstates
+         write(iu) (orb_o_cum(i,istate),i=1,norbterm)
+         write(iu) (orb_oe_cum(i,istate),i=1,norbterm)
+         write(iu) (orb_ho_cum(i,istate),i=1,norbterm)
+         write(iu) (orb_f_bcum(i,istate),orb_f_bcm2(i,istate),i=1,norbterm)
+         write(iu) (orb_oo_cum(i,istate),i=1,matdim)
+         write(iu) (orb_oho_cum(i,istate),i=1,nreduced*nreduced)
+         write(iu) orb_wcum(istate),orb_ecum(istate)
+      enddo
+
+      end subroutine
+
 c-----------------------------------------------------------------------
-      subroutine optorb_rstrt(iu)
 
+      subroutine optorb_rstrt(iu)
       use csfs, only: nstates
       use optwf_contrl, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm, norbprim
@@ -473,36 +477,41 @@ c-----------------------------------------------------------------------
       if(ioptorb.eq.0) return
       read(iu) morbprim,morbterm,mreduced
       if(morbprim.ne.norbprim) then
-       write (6,*) 'wrong number of primitive orb terms!'
-       write (6,*) 'old ',morbprim,' new ',norbprim
-       call fatal_error('OPTORB_RSTRT: Restart, inconsistent ORB information')
+         write (6,*) 'wrong number of primitive orb terms!'
+         write (6,*) 'old ',morbprim,' new ',norbprim
+         call fatal_error(
+     &        'OPTORB_RSTRT: Restart, inconsistent ORB information')
       endif
       if(morbterm.ne.norbterm) then
-       write (6,*) 'wrong number of orb terms!'
-       write (6,*) 'old ',morbterm,' new ',norbterm
-       call fatal_error('OPTORB_RSTRT: Restart, inconsistent ORB information')
+         write (6,*) 'wrong number of orb terms!'
+         write (6,*) 'old ',morbterm,' new ',norbterm
+         call fatal_error(
+     &        'OPTORB_RSTRT: Restart, inconsistent ORB information')
       endif
 
-c nreduced has to be set since it will only be known for non-continuation runs
+c     nreduced has to be set since it will only be known for non-continuation runs
       nreduced=mreduced
-      matdim=nreduced*(nreduced+1)/2 
+      matdim=nreduced*(nreduced+1)/2
+
       if(iapprox.gt.0) matdim=nreduced
 
       read(iu) nefp_blocks,norb_f_bcum
 
-      do 200 istate=1,nstates
-      read(iu) (orb_o_cum(i,istate),i=1,norbterm)
-      read(iu) (orb_oe_cum(i,istate),i=1,norbterm)
-      read(iu) (orb_ho_cum(i,istate),i=1,norbterm)
-      read(iu) (orb_f_bcum(i,istate),orb_f_bcm2(i,istate),i=1,norbterm)
-      read(iu) (orb_oo_cum(i,istate),i=1,matdim)
-      read(iu) (orb_oho_cum(i,istate),i=1,nreduced*nreduced)
-      read(iu) orb_wcum,orb_ecum
-  200 continue
-      end
-c-----------------------------------------------------------------------
-      subroutine optorb_fin(wcum,ecum)
+      do istate=1,nstates
+         read(iu) (orb_o_cum(i,istate),i=1,norbterm)
+         read(iu) (orb_oe_cum(i,istate),i=1,norbterm)
+         read(iu) (orb_ho_cum(i,istate),i=1,norbterm)
+         read(iu) (orb_f_bcum(i,istate),orb_f_bcm2(i,istate),i=1,norbterm)
+         read(iu) (orb_oo_cum(i,istate),i=1,matdim)
+         read(iu) (orb_oho_cum(i,istate),i=1,nreduced*nreduced)
+         read(iu) orb_wcum,orb_ecum
+      enddo
+      
+      end subroutine
 
+c-----------------------------------------------------------------------
+
+      subroutine optorb_fin(wcum,ecum)
       use optorb_mod, only: MXORBOP
       use csfs, only: nstates
       use optwf_contrl, only: ioptorb
@@ -532,145 +541,160 @@ c-----------------------------------------------------------------------
 
       s(1,1)=0
       h(1,1)=0
-      do 1 j=1,nreduced
-        grad(j+ish)=0
-        s(j+ish,1)=0
-        h(j+ish,1)=0
-        s(1,j+ish)=0
-        h(1,j+ish)=0
-        do 1 i=1,nreduced
-          s(i+ish,j+ish)=0
-   1      h(i+ish,j+ish)=0
+      do j=1,nreduced
+         grad(j+ish)=0
+         s(j+ish,1)=0
+         h(j+ish,1)=0
+         s(1,j+ish)=0
+         h(1,j+ish)=0
+         do i=1,nreduced
+            s(i+ish,j+ish)=0
+            h(i+ish,j+ish)=0
+         enddo
 
-      do 200 istate=1,nstates
+         do istate=1,nstates
 
-      wts=weights(istate)
+            wts=weights(istate)
 
-      passes=wcum(istate)
-      passesi=1/passes
-      eave=ecum(istate)*passesi
+            passes=wcum(istate)
+            passesi=1/passes
+            eave=ecum(istate)*passesi
 
-c     if(iorbsample.ne.1) then
-c       passes=orb_wcum(istate)
-c       passesi=1/passes
-c       eave=orb_ecum(istate)*passesi
-c     endif
+            call optorb_avrg(passes,eave,oav(1),eoav(1),fo(1),foerr(1),istate)
 
-      call optorb_avrg(passes,eave,oav(1),eoav(1),fo(1),foerr(1),istate)
+c     Hessian method
+            if(method.eq.'hessian') then
 
-c Hessian method
-      if(method.eq.'hessian') then
+               if(iuse_orbeigv.eq.0) then
+c     Formulas for exact orbital hessian not implemented
+                  call fatal_error(
+     &                 'OPTORB_FIN: formulas for exact hessian not implemented')
+               endif
 
-        if(iuse_orbeigv.eq.0) then
-c Formulas for exact orbital hessian not implemented
-          call fatal_error('OPTORB_FIN: formulas for exact hessian not implemented')
-        endif
+c     Linear method
+            elseif(method.eq.'linear') then
 
-c Linear method
-       elseif(method.eq.'linear') then
+               s(1,1)=1
+               h(1,1)=h(1,1)+wts*eave
+c     Exact Hamiltonian 
+               if(iuse_orbeigv.eq.0) then
 
-        s(1,1)=1
-        h(1,1)=h(1,1)+wts*eave
-c Exact Hamiltonian 
-        if(iuse_orbeigv.eq.0) then
+c     Hamiltonian on semi-orthogonal basis
+                  idx=0
+                  do i=1,nreduced
+                     s(i+ish,1)=0
+                     s(1,i+ish)=0
+                     h(i+ish,1)=h(i+ish,1)+wts*(eoav(i)-eave*oav(i))
+                     h(1,i+ish)=h(1,i+ish)+wts*(orb_ho_cum(i,istate)*passesi-eave*oav(i))
+c     write(6,*) 'H',wts,eoav(i)-eave*oav(i),orb_ho_cum(i,istate)*passesi-eave*oav(i)
+                     i0=1
+                     if(iapprox.gt.0) i0=i
+                     do j=i0,i
+                        idx=idx+1
+                        orb_oo=orb_oo_cum(idx,istate)*passesi-oav(i)*oav(j)
+                        s(i+ish,j+ish)=s(i+ish,j+ish)+wts*orb_oo
+                        s(j+ish,i+ish)=s(i+ish,j+ish)
+                     enddo
+                  enddo
 
-c Hamiltonian on semi-orthogonal basis
-        idx=0
-        do 30 i=1,nreduced
-          s(i+ish,1)=0
-          s(1,i+ish)=0
-          h(i+ish,1)=h(i+ish,1)+wts*(eoav(i)-eave*oav(i))
-          h(1,i+ish)=h(1,i+ish)+wts*(orb_ho_cum(i,istate)*passesi-eave*oav(i))
-c         write(6,*) 'H',wts,eoav(i)-eave*oav(i),orb_ho_cum(i,istate)*passesi-eave*oav(i)
-          i0=1
-          if(iapprox.gt.0) i0=i
-          do 30 j=i0,i
-            idx=idx+1
-            orb_oo=orb_oo_cum(idx,istate)*passesi-oav(i)*oav(j)
-            s(i+ish,j+ish)=s(i+ish,j+ish)+wts*orb_oo
-   30       s(j+ish,i+ish)=s(i+ish,j+ish)
+                  i0=1
+                  i1=nreduced
+                  idx=0
+                  do i=1,nreduced
+                     if(iapprox.gt.0) then
+                        i0=i
+                        i1=i
+                     endif
+                     do j=i0,i1
+                        idx=idx+1
+                        orb_oho=(orb_oho_cum(idx,istate)-oav(j)*orb_ho_cum(i,istate))*passesi
+     &                       -oav(i)*eoav(j)+eave*oav(i)*oav(j)
+                        h(j+ish,i+ish)=h(j+ish,i+ish)+wts*orb_oho
+                     enddo
+                  enddo
 
-        i0=1
-        i1=nreduced
-        idx=0
-        do 40 i=1,nreduced
-          if(iapprox.gt.0) then
-            i0=i
-            i1=i
-          endif
-          do 40 j=i0,i1
-            idx=idx+1
-            orb_oho=(orb_oho_cum(idx,istate)-oav(j)*orb_ho_cum(i,istate))*passesi
-     &             -oav(i)*eoav(j)+eave*oav(i)*oav(j)
-   40       h(j+ish,i+ish)=h(j+ish,i+ish)+wts*orb_oho
+               endif
 
-       endif
+c     Perturbative method
+            elseif(method.eq.'perturbative') then
+               
+               if(iuse_orbeigv.eq.0) then
+c     Formulas for exact orbital perturbative not implemented
+                  call fatal_error(
+                  &'OPTORB_FIN: formulas for exact perturbative not implemented')
+               else
+                  do i=1,nreduced
+                     grad(i)=grad(i)+wts*fo(i)
+                  enddo
+                  idx=0
+                  do i=1,nreduced
+                     do j=1,i
+                        idx=idx+1
+                        s(i,j)=s(i,j)+wts*(orb_oo_cum(idx,istate)*passesi-oav(i)*oav(j))
+                        s(j,i)=s(i,j)
+                     enddo
+                  enddo
+               endif
+            endif
+         enddo
 
-c Perturbative method
-       elseif(method.eq.'perturbative') then
-            
-        if(iuse_orbeigv.eq.0) then
-c Formulas for exact orbital perturbative not implemented
-          call fatal_error('OPTORB_FIN: formulas for exact perturbative not implemented')
-         else
-          do 60 i=1,nreduced
-   60       grad(i)=grad(i)+wts*fo(i)
-          idx=0
-          do 70 i=1,nreduced
-            do 70 j=1,i
-              idx=idx+1
-              s(i,j)=s(i,j)+wts*(orb_oo_cum(idx,istate)*passesi-oav(i)*oav(j))
-   70         s(j,i)=s(i,j)
-        endif
-      endif
 
-  200 continue
+c     Approximations on matrix elements
+         if(method.eq.'linear') then
+            if(iapprox.gt.0) then
+               do i=1,nreduced
+                  do j=1,i-1
+                     s(i+ish,j+ish)=0
+                     s(j+ish,i+ish)=0
+                     h(i+ish,j+ish)=0
+                     h(j+ish,i+ish)=0
+                  enddo
+               enddo
+               if(iapprox.eq.2) then
+                  do i=1,nreduced
+                     h(1,i+ish)=h(i+ish,1)
+                  enddo
+               endif
+            elseif(iapprox.lt.0) then
+               if(iapprox.eq.-1) then
+                  do i=1,nreduced
+                     h(1,i+ish)=h(i+ish,1)
+                  enddo
+               elseif(iapprox.eq.-2) then
+                  do i=1,nreduced
+                     h(1,i+ish)=h(i+ish,1)
+                     do j=1,i-1
+                        h(i+ish,j+ish)=0.5*(h(i+ish,j+ish)+h(j+ish,i+ish))
+                        h(j+ish,i+ish)=h(i+ish,j+ish)
+                     enddo
+                  enddo
+               elseif(iapprox.eq.-3) then
+                  do i=1,nreduced
+                     h(1,i+ish)=0.5*(h(i+ish,1)+h(1,i+ish))
+                     h(i+ish,1)=h(1,i+ish)
+                     do j=1,i-1
+                        h(i+ish,j+ish)=0.5*(h(i+ish,j+ish)+h(j+ish,i+ish))
+                        h(j+ish,i+ish)=h(i+ish,j+ish)
+                     enddo
+                  enddo
+               endif
+            endif
+         elseif(method.eq.'perturbative') then
+c     Approximation: diagonal perturbative approach
+            if(iapprox.gt.0) then
+               do i=1,nreduced
+                  do j=1,i-1
+                     s(j,i)=0
+                     s(i,j)=0
+                  enddo
+               enddo
+            endif
+         endif
 
-c Approximations on matrix elements
-      if(method.eq.'linear') then
-        if(iapprox.gt.0) then
-          do 230 i=1,nreduced
-            do 230 j=1,i-1
-              s(i+ish,j+ish)=0
-              s(j+ish,i+ish)=0
-              h(i+ish,j+ish)=0
-  230         h(j+ish,i+ish)=0
-          if(iapprox.eq.2) then
-            do 240 i=1,nreduced
-  240         h(1,i+ish)=h(i+ish,1)
-          endif
-         elseif(iapprox.lt.0) then
-          if(iapprox.eq.-1) then
-            do 250 i=1,nreduced
-  250         h(1,i+ish)=h(i+ish,1)
-           elseif(iapprox.eq.-2) then
-            do 260 i=1,nreduced
-              h(1,i+ish)=h(i+ish,1)
-              do 260 j=1,i-1
-                h(i+ish,j+ish)=0.5*(h(i+ish,j+ish)+h(j+ish,i+ish))
-  260           h(j+ish,i+ish)=h(i+ish,j+ish)
-           elseif(iapprox.eq.-3) then
-            do 270 i=1,nreduced
-              h(1,i+ish)=0.5*(h(i+ish,1)+h(1,i+ish))
-              h(i+ish,1)=h(1,i+ish)
-              do 270 j=1,i-1
-                h(i+ish,j+ish)=0.5*(h(i+ish,j+ish)+h(j+ish,i+ish))
-  270           h(j+ish,i+ish)=h(i+ish,j+ish)
-          endif
-        endif
-       elseif(method.eq.'perturbative') then
-c Approximation: diagonal perturbative approach
-        if(iapprox.gt.0) then
-          do 280 i=1,nreduced
-            do 280 j=1,i-1
-              s(j,i)=0
-  280         s(i,j)=0
-        endif
-      endif
+         if(idump_blockav.ne.0) close(idump_blockav)
 
-      if(idump_blockav.ne.0) close(idump_blockav)
+         end subroutine
 
-      end
 c-----------------------------------------------------------------------
       subroutine detratio_col(nel,orb,icol,sinvt,ratio,isltnew)
       implicit real*8(a-h,o-z)
