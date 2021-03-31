@@ -1,6 +1,7 @@
       subroutine walksav_det(iw)
 c Written by Claudia Filippi
 
+      use precision_kinds, only: dp
       use vmc_mod, only: MELEC, MORB, MDET
       use vmc_mod, only: MMAT_DIM
       use vmc_mod, only: MEXCIT
@@ -20,7 +21,16 @@ c Written by Claudia Filippi
       use multimat, only: aa, wfmat
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iab, ierr, iorb, irecv
+      integer :: irequest, irequest_array, isend, istate
+      integer :: istatus, itag, iw, iw2
+      integer :: j, k, kk, krefw
+      integer :: ndim, nel
+      real(dp) :: aaw, ddxw, detdw, detuw, dorbw
+      real(dp) :: fpdw, fpuw, orbw, slmdiw
+      real(dp) :: slmuiw, wfmatw, ymatw
 
       dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK),slmdiw(MMAT_DIM,MWALK)
      &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)
