@@ -18,7 +18,13 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       use branch, only: nwalk
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, icomm, icommunicate_all, ido_again, ierr
+      integer :: ihi, ilo, iwalk_stack, nhi
+      integer :: nlo, nwalk_all, nwalk_av_int, nwalk_stack
+      integer :: nwalk_sum
+
 
       dimension nwalk_all(0:NPROCX),icommunicate_all(0:NPROCX),
      &iwalk_stack(NPROCX)
