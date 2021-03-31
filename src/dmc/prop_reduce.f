@@ -1,5 +1,6 @@
       subroutine prop_reduce(wgsum)
 
+      use precision_kinds, only: dp
       use prp000, only: iprop, nprop
       use prp003, only: vprop_sum, vprop_cum, vprop_cm2
       use mpiconf, only: wid
@@ -7,7 +8,10 @@
       use properties, only: MAXPROP
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, ierr
+      real(dp) :: vp2collect, vp2sum, vpcollect, vpnow, wgsum
 
 
       dimension vp2sum(MAXPROP), vpcollect(MAXPROP), vp2collect(MAXPROP)
@@ -55,7 +59,11 @@
       use branch, only: nwalk
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ierr, irecv, irequest, isend, istatus
+      integer :: itag_r, itag_s
+
 
 
       dimension istatus(MPI_STATUS_SIZE)
