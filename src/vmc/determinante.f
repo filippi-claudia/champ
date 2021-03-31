@@ -119,7 +119,7 @@ c     All quantities saved (old) avaliable
 
          if(iguiding.eq.0) then
             do istate=1,nstates
-               detratio=detiab(kref,1,istate)*detiab(kref,2,istate)/psid(1)
+               detratio=detiab(kref,1,istate)*detiab(kref,2,istate)/psid(istate)
                call multideterminante_grad(iel,dorb_tmp(1,1,istate),detratio,slmi(1,iab,istate),
      &              aa(1,1,iab,istate),wfmat(1,1,iab,istate),ymat(1,1,iab,istate),vd)
                do kk=1,3
@@ -156,9 +156,9 @@ c     Within single-electron move - quantities of electron iel not saved
          if(iguiding.eq.0) then
             do istate=1,nstates
                if(iab.eq.1) then
-                  detratio=detn(kref,istate)*detiab(kref,2,istate)/psid(1)
+                  detratio=detn(kref,istate)*detiab(kref,2,istate)/psid(istate)
                else
-                  detratio=detiab(kref,1,istate)*detn(kref,istate)/psid(1)
+                  detratio=detiab(kref,1,istate)*detn(kref,istate)/psid(istate)
                endif
                call multideterminante_grad(iel,dorbn(1,1,istate),
      &              detratio,slmin(1,istate),aan(1,1,istate),
@@ -205,9 +205,9 @@ c     iel has same spin as electron moved
          if(iflag_move.eq.2) then
             do istate=1,nstates
                if(iab.eq.1) then
-                  detratio=detn(kref,istate)*detiab(kref,2,istate)/psid(1)
+                  detratio=detn(kref,istate)*detiab(kref,2,istate)/psid(istate)
                else
-                  detratio=detiab(kref,1,istate)*detn(kref,istate)/psid(1)
+                  detratio=detiab(kref,1,istate)*detn(kref,istate)/psid(istate)
                endif
                call determinante_ref_grad(iel,slmin(1,istate),dorb_tmp(1,1,istate),vref)
                call multideterminante_grad(iel,dorb_tmp(1,1,istate),
@@ -217,9 +217,9 @@ c     iel has different spin than the electron moved
          else
             do istate=1,nstates
                if(iab.eq.1) then
-                  detratio=detiab(kref,1,istate)*detn(kref,istate)/psid(1)
+                  detratio=detiab(kref,1,istate)*detn(kref,istate)/psid(istate)
                else
-                  detratio=detn(kref,istate)*detiab(kref,2,istate)/psid(1)
+                  detratio=detn(kref,istate)*detiab(kref,2,istate)/psid(istate)
                endif
                call determinante_ref_grad(iel,slmi(1,iab,istate),dorb_tmp(1,1,istate),vref)
                if(iel.eq.1) then

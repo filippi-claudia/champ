@@ -223,7 +223,6 @@ contains
           obs(i,istate) = 0.0d0
        enddo
        do iconf=1,nconf_n
-          ratio=sr_o(nparm+1,iconf,1)/sr_o(nparm+1,iconf,istate)
           obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
 
           do jstate=1,istate-1
@@ -236,11 +235,11 @@ contains
 
           do i=1,nparm
              obs(jfj+i-1,istate)=obs(jfj+i-1,istate)&              
-		     +sr_o(i,iconf,istate)*ratio*wtg(iconf,istate)
+		     +sr_o(i,iconf,istate)*wtg(iconf,istate)
              obs(jefj+i-1,istate)=obs(jefj+i-1,istate)&
-       		     +elocal(iconf,istate)*sr_o(i,iconf,istate)*ratio*wtg(iconf,istate)
+       		     +elocal(iconf,istate)*sr_o(i,iconf,istate)*wtg(iconf,istate)
              obs(jfifj+i-1,istate)=obs(jfifj+i-1,istate)&
-       		     +sr_o(i,iconf,istate)*sr_o(i,iconf,istate)*ratio*ratio*wtg(iconf,istate)
+       		     +sr_o(i,iconf,istate)*sr_o(i,iconf,istate)*wtg(iconf,istate)
           enddo
        enddo
 
@@ -256,13 +255,11 @@ contains
           do iconf=1,nconf_n
              aux(iconf)=aux(iconf)+sr_o(nparm+2,iconf,istate-1)&
        		     *obs_tot(jwtg+istate-1,istate)/obs_tot(jwtg,istate-1)
-
              do i=1,nparm
                 obs(jfjsi+i-1,istate)=obs(jfjsi+i-1,istate)&
-       			+sr_o(i,iconf,istate)*sr_o(nparm+2,iconf,1)*aux(iconf)
+       			+sr_o(i,iconf,istate)*sr_o(nparm+2,iconf,istate)*aux(iconf)
              enddo
           enddo
-
           call MPI_REDUCE(obs(jfjsi,istate),obs_tot(jfjsi,istate),&
        		  nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
        endif
@@ -337,8 +334,7 @@ contains
     call MPI_BCAST(z,n,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
     do iconf=1,nconf_n
-       ratio=sr_o(n+1,iconf,1)/sr_o(n+1,iconf,istat_curr)
-       aux(iconf)=ddot(n,z,1,sr_o(1,iconf,istat_curr),1)*ratio*ratio*wtg(iconf,istat_curr)
+       aux(iconf)=ddot(n,z,1,sr_o(1,iconf,istat_curr),1)*wtg(iconf,istat_curr)
     enddo
 
     do i=1,n
