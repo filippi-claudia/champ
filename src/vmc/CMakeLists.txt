@@ -52,6 +52,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_kinds.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_basis.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_periodic_table.F90    
     ${CMAKE_CURRENT_SOURCE_DIR}/m_atom.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_det.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_coefs.f90
@@ -157,6 +158,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/distances.f
     ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f
     ${CMAKE_CURRENT_SOURCE_DIR}/basis_fnse_vg.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/parser.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/read_input.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/hpsi.f
