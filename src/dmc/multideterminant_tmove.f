@@ -1,5 +1,6 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
+      use precision_kinds, only: dp
       use vmc_mod, only: MELEC, MORB
       use const, only: nelec
       use atom, only: ncent
@@ -15,7 +16,13 @@
       use multidet, only: iactv, ivirt, kref
       use multimat, only: aa
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i1, i2, iab, ic, iel
+      integer :: iel_move, iq, irep, ish
+      integer :: j, jel, jrep, nel
+      real(dp) :: detratio, dum, gmat, half, one
+      real(dp) :: psid
 
       parameter (one=1.d0,half=0.5d0)
 
