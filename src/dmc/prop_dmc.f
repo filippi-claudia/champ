@@ -6,6 +6,7 @@ C----------------------------------------------
 
       subroutine prop_prt_dmc(iblk,ifinal,wgcum,wgcm2)
 
+      use precision_kinds, only: dp
       use prp000, only: ipropprt, iprop, nprop
       use prp003, only: vprop_cum, vprop_cm2, cc_nuc
       use const, only: nelec
@@ -13,7 +14,14 @@ C----------------------------------------------
       use properties, only: MAXPROP
       use contrl, only: nconf, nstep
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iblk, icount, ifinal, iperr
+      real(dp) :: a25, a6, dabs, dip, diperr
+      real(dp) :: dipx, dipy, dipz, errg
+      real(dp) :: error, evalg_eff, pav, perr
+      real(dp) :: rn_eff, rtevalg_eff1, w, w2
+      real(dp) :: wgcm2, wgcum, x, x2
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
       dimension perr(MAXPROP),pav(MAXPROP)
@@ -86,7 +94,10 @@ c----------------------------------------------------------------------
       use prp001, only: vprop
       use prp002, only: vprop_old
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iw
+
 
       if(iprop.eq.0) return
       do i=1,nprop
@@ -96,12 +107,16 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       subroutine prop_sum_dmc(p,q,iw)
 
+      use precision_kinds, only: dp
       use prp000, only: iprop, nprop
       use prp001, only: vprop
       use prp002, only: vprop_old
       use prp003, only: vprop_sum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iw
+      real(dp) :: p, q
 
       if(iprop.eq.0) return
 
@@ -115,7 +130,10 @@ c----------------------------------------------------------------------
       use prp000, only: nprop
       use prp002, only: vprop_old
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iw, iw2
+
 
       do i=1,nprop
        vprop_old(i,iw2)=vprop_old(i,iw)
