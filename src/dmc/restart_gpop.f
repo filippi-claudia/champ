@@ -1,5 +1,6 @@
       subroutine startr_gpop
 
+      use precision_kinds, only: dp
       use vmc_mod, only: MORB, MBASIS, MDET, MCENT
       use vmc_mod, only: nrad
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
@@ -43,7 +44,25 @@
       use contrl, only: nconf
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iage_id, ib, ic, id
+      integer :: ie, ifr, irn, iw
+      integer :: j, k, n1sx, n2px
+      integer :: n2sx, n3dx2x, n3dxyx, n3dxzx
+      integer :: n3dyzx, n3dzrx, n3px, n3sx
+      integer :: n4px, n4sx, nbasx, ncentx
+      integer :: nctypex, ndetx, ndnx, ndx2ax
+      integer :: ndxyax, ndxzax, ndyzax, ndzrax
+      integer :: nelecx, newghostypex, nf_id, nghostcentx
+      integer :: npax, nprock, nq_id, nsax
+      integer :: num, nupx, nwalk_id
+      real(dp) :: cdetx, centx, cjas1x, cjas2x, coefx
+      real(dp) :: dabs, different, fmt, fratio_id
+      real(dp) :: hbx, one, small, taux
+      real(dp) :: wq_id, wt_id, xold_dmc_id, xq_id
+      real(dp) :: yq_id, zero, zexx, znucx
+      real(dp) :: zq_id
 
       parameter (zero=0.d0,one=1.d0)
       parameter (small=1.e-6)
