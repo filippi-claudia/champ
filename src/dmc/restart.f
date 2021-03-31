@@ -1,5 +1,6 @@
       subroutine startr
 
+      use precision_kinds, only: dp
       use vmc_mod, only: MORB, MBASIS, MDET, MCENT
       use vmc_mod, only: nrad
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
@@ -45,12 +46,30 @@
       use contrl, only: nconf
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iage_id, ib, ic, id
+      integer :: ie, ifr, ioldest_id, ioldestmx_id
+      integer :: irn, iw, j, k
+      integer :: n1_id, n1sx, n2_id, n2px
+      integer :: n2sx, n3dx2x, n3dxyx, n3dxzx
+      integer :: n3dyzx, n3dzrx, n3px, n3sx
+      integer :: n4px, n4sx, nbasx, ncentx
+      integer :: nctypex, ndetx, ndnx, ndx2ax
+      integer :: ndxyax, ndxzax, ndyzax, ndzrax
+      integer :: nelecx, newghostypex, nghostcentx, npax
+      integer :: nprock, nq_id, nsax, num
+      integer :: nupx, nwalk_id
+      real(dp) :: cdetx, centx, cjas1x, cjas2x, coefx
+      real(dp) :: dabs, different, eest_id, eigv_id
+      real(dp) :: ff_id, fmt, fprod_id, fratio_id
+      real(dp) :: hbx, one, small, taux
+      real(dp) :: wdsumo_id, wq_id, wt_id, xold_dmc_id
+      real(dp) :: xq_id, yq_id, zero, zexx
+      real(dp) :: znucx, zq_id
 
       parameter (zero=0.d0,one=1.d0)
       parameter (small=1.e-6)
-
-
 
 
       character*13 filename
