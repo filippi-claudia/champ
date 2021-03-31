@@ -1,5 +1,6 @@
       subroutine pcm_reduce(wgsum)
 
+      use precision_kinds, only: dp
       use mpiconf, only: wid
       use contr3, only: mode
       use pcm_cntrl, only: ipcm
@@ -7,7 +8,12 @@
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ierr
+      real(dp) :: qopcm2collect, qopcm2sum, qopcmcollect, qopcmnow, spcm2collect
+      real(dp) :: spcm2sum, spcmcollect, spcmnow, vpcm2collect
+      real(dp) :: vpcm2sum, vpcmcollect, vpcmnow, wgsum
 
       if(ipcm.eq.0) return
 
@@ -78,7 +84,11 @@
       use pcm_cntrl, only: ipcm
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ierr, irecv, irequest, isend, istatus
+      integer :: itag_r, itag_s
+
 
 
       dimension istatus(MPI_STATUS_SIZE)
