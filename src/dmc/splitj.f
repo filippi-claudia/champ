@@ -1,6 +1,7 @@
       subroutine splitj
 c Written by Cyrus Umrigar
 
+      use precision_kinds, only: dp
       use dmc_mod, only: MWALK
       use const, only: nelec
       use forcepar, only: nforce
@@ -13,7 +14,13 @@ c Written by Cyrus Umrigar
       use jacobsave, only: ajacold
       use velratio, only: fratio, xdrifted
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, ifr, ip, ipair, iunder
+      integer :: iw, iw2, iwundr, j
+      integer :: k, nwalk2
+      real(dp) :: half, rannyu, two, wtsm, wtsm2
+      real(dp) :: wttot, zero
 
       parameter (zero=0.d0,two=2.d0,half=.5d0)
 
