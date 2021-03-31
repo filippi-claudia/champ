@@ -1,6 +1,7 @@
       subroutine zerest
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 
+      use precision_kinds, only: dp
       use vmc_mod, only: nrad
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce
@@ -21,7 +22,10 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use denupdn, only: rprobdn, rprobup
       use mpiblk, only: iblk_proc
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, ifr, k
+      real(dp) :: one, zero
 
       parameter (zero=0.d0,one=1.d0)
 
