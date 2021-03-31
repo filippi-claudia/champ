@@ -5,9 +5,10 @@
 
 load $(general:pool)/psb3_PBE0_cc-pVQZ.geo
 load $(general:pool)/global.inp
+load $(general:pool)/ci66_BFD-Da_sa2.lcao
 load $(general:pool)/BFD-Da.bfinfo
 
-load $(general:pool)/ci66_BFD-Da_sa2.lcao
+
 load $(general:pool)/jastrow_optjci
 load $(general:pool)/det_optjci
 

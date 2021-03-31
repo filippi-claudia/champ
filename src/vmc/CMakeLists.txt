@@ -2,12 +2,12 @@ if (MPI_Fortran_FOUND)
 
   # Source files
   file(GLOB VMC_SOURCE *.f)
-  file(GLOB VMC90_SOURCE *.f90) 
+  file(GLOB VMC90_SOURCE *.f90)
 
   set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-check bounds -g -traceback")
 
   # --------------------------------------------------------------------
-  # Set files according to CMAKE options: 
+  # Set files according to CMAKE options:
   # --------------------------------------------------------------------
 
   if (NOT ENABLE_QMMM)
@@ -23,7 +23,7 @@ if (MPI_Fortran_FOUND)
     list(REMOVE_ITEM VMC_SOURCE
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f)
   endif()
-  
+
   if (NOT ENABLE_PERIODIC)
     message(STATUS "PERIODIC is NOT enabled!")
     list(REMOVE_ITEM VMC_SOURCE
@@ -37,21 +37,24 @@ if (MPI_Fortran_FOUND)
     list(REMOVE_ITEM VMC_SOURCE
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f)
   endif()
-  
+
   include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
   formatFortran("${VMC_SOURCE}") # Set Fixed format property
-  
+
   # --------------------------------------------------------------------
   # Create two libraries to share objects between the two binaries,
   # vmc.mov1 and dmc.mov1:
   # - shared_modules: all .f90 modules that must be compiled first.
-  # - shared_objects: rest of shared objects (.f90/.f). 
+  # - shared_objects: rest of shared objects (.f90/.f).
   # --------------------------------------------------------------------
-  
+
   set(SHARED_MODULES
     ${CMAKE_CURRENT_SOURCE_DIR}/m_kinds.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_basis.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_atom.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_det.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_coefs.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_constant.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_control.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_force.f90
@@ -87,6 +90,9 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_convcartzmat.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_coords_int.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/array_resize_utils.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/read_data.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/set_input_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pcm_3dgrid.f
     ${CMAKE_CURRENT_SOURCE_DIR}/strech.f
@@ -178,14 +184,14 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_INPUT_DIR}/p2_defaults.f
     ${CMAKE_INPUT_DIR}/p2etc.f
     ${CMAKE_INPUT_DIR}/p2nmcheck.f)
-  
+
   # --------------------------------------------------------------------
   # Remove objects to share depending on CMAKE options:
   # --------------------------------------------------------------------
   if (ENABLE_QMMM)
     list(REMOVE_ITEM SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f)
-    list(APPEND SHARED_OBJECTS 
+    list(APPEND SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_bspline.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_modules.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_pot.f90
@@ -196,7 +202,7 @@ if (MPI_Fortran_FOUND)
   if (ENABLE_PERIODIC)
     list(REMOVE_ITEM SHARED_SOURCE
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f)
-    list(APPEND SHARED_OBJECTS 
+    list(APPEND SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f
@@ -214,16 +220,16 @@ if (MPI_Fortran_FOUND)
   target_include_directories(shared_objects
     PUBLIC
     ${CMAKE_SOURCE_DIR}/src/input)
-  
+
   target_compile_options(shared_objects
     PRIVATE
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
-  
+
   add_dependencies(shared_objects generate-p2 shared_modules)
-  
+
   # --------------------------------------------------------------------
-  # Remove code that has been already compiled: 
+  # Remove code that has been already compiled:
   # --------------------------------------------------------------------
 
   foreach(s ${SHARED_OBJECTS})
@@ -238,33 +244,33 @@ if (MPI_Fortran_FOUND)
   foreach(s ${SHARED_MODULES})
     list(REMOVE_ITEM VMC90_SOURCE ${s})
   endforeach(s)
-  
+
   # --------------------------------------------------------------------
   # Compile and link executable:
   # --------------------------------------------------------------------
-  
+
   add_executable(vmc.mov1
     $<TARGET_OBJECTS:shared_modules>
     $<TARGET_OBJECTS:shared_objects>
     # source that is not already included in the objects
-    ${VMC_SOURCE} 
+    ${VMC_SOURCE}
     ${VMC90_SOURCE})
-  
+
   # compilation
   target_compile_options(vmc.mov1
     PRIVATE
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
     )
-  
+
   target_link_libraries(vmc.mov1
     cyrus pspline
     ${LINEAR_ALGEBRA})
-  
+
   # --------------------------------------------------------------------
   # Everything related to miniparser p2
   # --------------------------------------------------------------------
-  
+
   add_custom_command(
     OUTPUT
       ${CMAKE_INPUT_DIR}/p2nmcheck.f
@@ -273,7 +279,7 @@ if (MPI_Fortran_FOUND)
     WORKING_DIRECTORY
       ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND
-      ${CMAKE_INPUT_DIR}/inpt.awk -v p2file=commands.p2 -v logf=${CMAKE_INPUT_DIR}/commands.log ${CMAKE_CURRENT_SOURCE_DIR}/read_input.f
+      ${CMAKE_INPUT_DIR}/inpt.awk -v p2file=commands.p2 -v logf=${CMAKE_INPUT_DIR}/commands.log ${CMAKE_CURRENT_SOURCE_DIR}/read_data.f90
     COMMAND
       cat commands.p2 ${CMAKE_INPUT_DIR}/end.p2 ${CMAKE_INPUT_DIR}/auto.p2 > all.p2
     COMMAND
@@ -282,22 +288,22 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_INPUT_DIR}/mkp2nmcheck.pl namelist.p2 > ${CMAKE_INPUT_DIR}/p2nmcheck.f
     VERBATIM
   )
-  
+
   add_custom_target(
     generate-p2
     ${CMAKE_COMMAND} -E echo "Generating p2 files."
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
     DEPENDS ${CMAKE_INPUT_DIR}/p2nmcheck.f
   )
-  
+
   set_source_files_properties(
     ${CMAKE_INPUT_DIR}/p2nmcheck.f
     PROPERTIES GENERATED TRUE
   )
-  
+
   set_source_files_properties(
     ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
     PROPERTIES GENERATED TRUE
   )
-  
+
 endif()

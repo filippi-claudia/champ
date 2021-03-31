@@ -27,6 +27,7 @@ c MPI version written by Claudia Filippi
       dimension collect(MSTATES)
       dimension istatus(MPI_STATUS_SIZE)
 
+
       call mpi_reduce(ecum1,collect,nstates,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
       do 10 istate=1,nstates
@@ -78,13 +79,13 @@ c MPI version written by Claudia Filippi
           call mpi_send(ecum1,nstates,mpi_double_precision,id
      &    ,1,MPI_COMM_WORLD,ierr)
 c    &    ,1,MPI_COMM_WORLD,irequest,ierr)
-   60     call mpi_send(wcum,MSTATES*nforce,mpi_double_precision,id
+   60     call mpi_send(wcum,nstates*nforce,mpi_double_precision,id
      &    ,2,MPI_COMM_WORLD,ierr)
 c    &    ,2,MPI_COMM_WORLD,irequest,ierr)
        else
         call mpi_recv(ecum1,nstates,mpi_double_precision,0
      &  ,1,MPI_COMM_WORLD,istatus,ierr)
-        call mpi_recv(wcum,MSTATES*nforce,mpi_double_precision,0
+        call mpi_recv(wcum,nstates*nforce,mpi_double_precision,0
      &  ,2,MPI_COMM_WORLD,istatus,ierr)
       endif
 

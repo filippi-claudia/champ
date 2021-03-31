@@ -1,12 +1,14 @@
       subroutine mc_configs_start
-      
+
+      use mpi
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc_mod, only: radmax, delri
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use atom, only: znuc, iwctype, ncent
+      use atom, only: znuc, iwctype, ncent, ncent_tot
+
       use const, only: nelec
       use config, only: xnew, xold
       use mpiconf, only: idtask, nproc
@@ -14,13 +16,10 @@
       use mpi
 
       implicit real*8(a-h,o-z)
-
       character*20 filename
-
       dimension irn(4)
-      dimension nsite(MCENT)
+      dimension nsite(ncent_tot)
       dimension istatus(MPI_STATUS_SIZE)
-
       dimension irn_temp(4)
 
 c set the random number seed differently on each processor
@@ -55,7 +54,7 @@ c check sites flag if one gets initial configuration from sites routine
         write(6,'(/,''initial configuration from unit 9'')')
         goto 40
 
-   20   continue 
+   20   continue
 	ntotal_sites=0
         do 25 i=1,ncent
    25     ntotal_sites=ntotal_sites+int(znuc(iwctype(i))+0.5d0)
@@ -79,6 +78,7 @@ c check sites flag if one gets initial configuration from sites routine
         call sites(xold,nelec,nsite)
         open(unit=9,file='mc_configs_start')
         rewind 9
+
         write(6,'(/,''initial configuration from sites'')')
    40   continue
 

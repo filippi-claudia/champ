@@ -1,4 +1,8 @@
       subroutine read_bas_num(iwf)
+      use numbas_mod, only: MRWF, MRWF_PTS
+      use vmc_mod, only: MBASIS, MCTYPE
+      use vmc_mod, only: NCOEF
+      use atom, only: znuc, nctype, nctype_tot
 c Written by Claudia Filippi
 c Modified by F. Schautz to use fancy file names
 c Reads in localized orbitals on a radial grid
@@ -10,6 +14,7 @@ c Reads in localized orbitals on a radial grid
       use ghostatom, only: newghostype
       use const, only: ipr
       use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
+      use coefs, only: nbasis
       use numexp, only: ae, ce
       use pseudo, only: nloc
       use general, only: filename, filenames_bas_num, wforce
@@ -17,7 +22,7 @@ c Reads in localized orbitals on a radial grid
       implicit real*8(a-h,o-z)
 
       dimension x(MRWF_PTS),work(MRWF_PTS),y(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
-     &,l(MBASIS),icusp(MCTYPE)
+     &,l(nbasis),icusp(nctype_tot)
 
 c nrbas = number of numerical orbitals for each center
 c igrid = 1 linear r(i+1)=arg+r(i), r(1)=r0

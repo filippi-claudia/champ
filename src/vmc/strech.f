@@ -10,12 +10,12 @@ c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
 
 c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
-
+      use precision_kinds, only: dp
       use pcm, only: MCHS, MCHV
       use force_mod, only: MFORCE, MFORCE_WT_PRD
       use forcepar, only: istrech, alfstr
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: znuc, cent, pecent, iwctype, ncent
+      use atom, only: znuc, cent, pecent, iwctype, ncent, ncent_tot
       use const, only: nelec
       use force_dmc, only: itausec, nwprod
       use forcepar, only: deltot, istrech, nforce
@@ -36,13 +36,18 @@ c rigidly with that nucleus
 
       parameter (zero=0.d0,one=1.d0)
 
-      dimension x(3,MELEC),xstrech(3,MELEC),centsav(3,MCENT),pecentn(MFORCE)
-      dimension wt(MCENT),dvol(3,3),dwt(3,MCENT),dwtsm(3)
-      dimension cent_str(3,MCENT)
-      dimension xpolsav(3,MCHV),q_strech(MCHS),efsol(MCHS),wt_pcm(MCENT)
+      real(dp), ALLOCATABLE, save :: centsav(:,:)
+      real(dp), ALLOCATABLE, save :: pecentn(:)
+      real(dp), ALLOCATABLE, save :: xpolsav(:,:)
 
-      save centsav,pecentn,xpolsav
+      dimension x(3,nelec),xstrech(3,nelec)
+      dimension wt(ncent_tot),dvol(3,3),dwt(3,ncent_tot),dwtsm(3)
+      dimension cent_str(3,ncent_tot)
+      dimension q_strech(MCHS),efsol(MCHS),wt_pcm(ncent_tot)
 
+      if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
+      if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
+      if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV))
 
 c set center and n-n potential for secondary geometries
       pecent=pecentn(ifr)
@@ -85,13 +90,17 @@ c positions of volume charges space warped
 c endif PCM
       endif
 
-      if(istrech_el.eq.0) return
+      if(istrech_el.eq.0) then 
+        return
+      endif
 
       do 8 i=1,nelec
         do 8 k=1,3
     8     xstrech(k,i)=x(k,i)
 
-      if(istrech.eq.0) return
+      if(istrech.eq.0) then 
+        return
+      endif 
 
       do 50 i=1,nelec
 
@@ -144,6 +153,10 @@ c end loop over electrons
 
 c Set up n-n potential energy (and PCM related quantities) at displaced positions 
       entry setup_force
+
+      if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
+      if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
+      if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV))
 
       write(6,'(''istrech,alfstr ='',i4,2f10.5)') istrech,alfstr
 
@@ -312,6 +325,7 @@ c        deltot(ifl)=sign(dsqrt(deltot(ifl)*ncent),rsq-rsq1)
 
 
       write(6,'(''deltot '',10f10.5)') (deltot(ifl),ifl=1,nforce)
+
 
       return
       end

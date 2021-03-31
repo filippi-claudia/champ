@@ -172,11 +172,12 @@ module optwf_wjas
     save
 contains
     subroutine allocate_optwf_wjas()
+        use atom, only: nctype_tot
         use vmc_mod, only: MCTYPE, MCTYP3X
         if (.not. allocated(iwjasa)) allocate (iwjasa(83, MCTYP3X))
         if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3))
-        if (.not. allocated(iwjasc)) allocate (iwjasc(83, MCTYPE))
-        if (.not. allocated(iwjasf)) allocate (iwjasf(15, MCTYPE))
+        if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype_tot))
+        if (.not. allocated(iwjasf)) allocate (iwjasf(15, nctype_tot))
     end subroutine allocate_optwf_wjas
 
     subroutine deallocate_optwf_wjas()
@@ -190,11 +191,11 @@ end module optwf_wjas
 
 subroutine allocate_m_optwf()
     use optwf_corsam, only: allocate_optwf_corsam
-    use optwf_nparmj, only: allocate_optwf_nparmj
+    ! use optwf_nparmj, only: allocate_optwf_nparmj
     use optwf_wjas, only: allocate_optwf_wjas
 
     call allocate_optwf_corsam()
-    call allocate_optwf_nparmj()
+    ! call allocate_optwf_nparmj()
     call allocate_optwf_wjas()
 end subroutine allocate_m_optwf
 

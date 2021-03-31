@@ -7,6 +7,7 @@
       use ci001_blk, only: ci_o, ci_oe
       use ci003_blk, only: ci_e
       use ci004_blk, only: ci_de
+      use dets, only: ndet
 
       use method_opt, only: method
 

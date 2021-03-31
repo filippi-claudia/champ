@@ -20,7 +20,7 @@ c Written by Claudia Filippi
 
 
 
-      dimension v(3,*),vdonly(3,MELEC)
+      dimension v(3,*),vdonly(3,nelec)
 
       if(iflag.eq.0) then
         do 10 k=1,3

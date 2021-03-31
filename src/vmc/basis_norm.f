@@ -14,8 +14,8 @@ c Set normalization of basis fns.
       use coefs, only: coef, nbasis, norb
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+
       implicit real*8(a-h,o-z)
 
 
@@ -181,6 +181,10 @@ c Set normalization of basis fns.
    10 continue
 
       if(iflag.gt.0) return
+
+      ! potentially resize the 2nd dim of
+      ! coefs to norb+nadorb
+    !   call resize_tensor(coef, norb+nadorb, 2)
 
       do 300 iorb=1,norb+nadorb
         do 300 j=1,nbasis

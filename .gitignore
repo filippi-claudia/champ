@@ -6,6 +6,8 @@ settings.make
 *.mod
 *.a
 *.log
+local_test.sh
+
 # binaries
 *dmc.mov1*
 *vmc.mov1*

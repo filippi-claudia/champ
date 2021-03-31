@@ -32,7 +32,14 @@ if __name__ == "__main__":
     parser.add_argument("filename", help="name of the output file")
     parser.add_argument("keyword", help="name of the variable")
     parser.add_argument("values",  help="reference value")
+    parser.add_argument(
+        "--no_assert", action='store_true', help="skip the assertio and only prints warning")
     args = parser.parse_args()
 
     data = read_file(args.filename)
-    assert(compare_values(data, args.keyword, args.values))
+    if args.no_assert:
+        test = compare_values(data, args.keyword, args.values)
+        if not test:
+            print('Value Error : Reference and test values are different')
+    else:
+        assert(compare_values(data, args.keyword, args.values))

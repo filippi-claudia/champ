@@ -11,15 +11,20 @@ c Modified by A. Scemama
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use grid3dflag, only: i3dlagorb, i3dsplorb
-
+      use atom, only: ncent_tot
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use array_resize_utils, only: resize_matrix, resize_tensor
       implicit real*8(a-h,o-z)
 
 
 
 
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      dimension bhin(MELEC,MBASIS),dbhin(3*MELEC,MBASIS),d2bhin(MELEC,MBASIS)
+      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
+      dimension bhin(nelec,nbasis),dbhin(3*nelec,nbasis),d2bhin(nelec,nbasis)
+
+      ! call resize_matrix(orb, norb+nadorb, 2)
+      ! call resize_matrix(ddorb, norb+nadorb, 2)
+      ! call resize_tensor(dorb, norb+nadorb, 3)
 
       ier=1
       if(iperiodic.eq.0) then
@@ -85,7 +90,7 @@ c              do 24 m=1,nbasis
    25    continue
 
 c no 3d interpolation
-        else 
+        else
 
 c get basis functions for all electrons
          call basis_fns_vgl(x,rvec_en,r_en)
@@ -102,9 +107,10 @@ c          enddo
 c          d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
 c         enddo
 c        enddo
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   MELEC,  coef(1,1,iwf),MBASIS,0.d0,orb,   MELEC)
-c        call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*MELEC,  coef(1,1,iwf),MBASIS,0.d0,dorb,3*MELEC)
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, MELEC,  coef(1,1,iwf),MBASIS,0.d0,ddorb, MELEC)
+c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
+c        call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
+c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
+
          do 26 iorb=1,norb+nadorb
            do 26 i=1,nelec
             orb(i,iorb)=0
@@ -158,28 +164,28 @@ c assuming that basis function values in phin are up to date
 
 
 
-      dimension bhin(MELEC,MBASIS),dbhin(3,MELEC,MBASIS),d2bhin(MELEC,MBASIS)
+      dimension bhin(nelec,nbasis),dbhin(3,nelec,nbasis),d2bhin(nelec,nbasis)
 
       if (nadorb.eq.0.or.(ioptorb.eq.0.and.ioptci.eq.0)) return
 
 c primary geometry only:
       iwf=1
-      if(norb+nadorb.gt.MORB) then
-        write(6,'(''VIRTUAL_ORB: Too many orbitals, norb + nadorb='',
-     &  i4,'' > MORB='',i4)') norb+nadorb,MORB
-        call fatal_error('Aborted')
-      endif
+c      if(norb+nadorb.gt.MORB) then
+c        write(6,'(''VIRTUAL_ORB: Too many orbitals, norb + nadorb='',
+c     &  i4,'' > MORB='',i4)') norb+nadorb,MORB
+c        call fatal_error('Aborted')
+c      endif
 
       do i=1,nelec
-        call dcopy(nbasis,phin(1,i),1,bhin(i,1),MELEC)
-        call dcopy(nbasis,dphin(1,1,i),3,dbhin(1,i,1),3*MELEC)
-        call dcopy(nbasis,dphin(2,1,i),3,dbhin(2,i,1),3*MELEC)
-        call dcopy(nbasis,dphin(3,1,i),3,dbhin(3,i,1),3*MELEC)
-        call dcopy(nbasis,d2phin(1,i),1,d2bhin(i,1),MELEC)
+        call dcopy(nbasis,phin(1,i),1,bhin(i,1),nelec)
+        call dcopy(nbasis,dphin(1,1,i),3,dbhin(1,i,1),3*nelec)
+        call dcopy(nbasis,dphin(2,1,i),3,dbhin(2,i,1),3*nelec)
+        call dcopy(nbasis,dphin(3,1,i),3,dbhin(3,i,1),3*nelec)
+        call dcopy(nbasis,d2phin(1,i),1,d2bhin(i,1),nelec)
       enddo
-      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,  bhin,  MELEC,coef(1,norb+1,iwf),MBASIS,0.d0,  orb(  1,norb+1),  MELEC)
-      call dgemm('n','n',3*nelec,nadorb,nbasis,1.d0, dbhin,3*MELEC,coef(1,norb+1,iwf),MBASIS,0.d0, dorb(1,1,norb+1),3*MELEC)
-      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,d2bhin,  MELEC,coef(1,norb+1,iwf),MBASIS,0.d0,ddorb(  1,norb+1),  MELEC)
+      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,  bhin,  nelec,coef(1,norb+1,iwf),nbasis,0.d0,  orb(  1,norb+1),  nelec)
+      call dgemm('n','n',3*nelec,nadorb,nbasis,1.d0, dbhin,3*nelec,coef(1,norb+1,iwf),nbasis,0.d0, dorb(1,1,norb+1),3*nelec)
+      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,d2bhin,  nelec,coef(1,norb+1,iwf),nbasis,0.d0,ddorb(  1,norb+1),  nelec)
 
 c     do 25 iorb=norb+1,norb+nadorb
 c       do 25 i=1,nelec
@@ -211,14 +217,14 @@ c-------------------------------------------------------------------------------
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: ibasis
-      
+
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
 
 
 
-      dimension tphin(3*MELEC,MBASIS),t2phin_all(3*3*MELEC,MBASIS),t3phin(3*MELEC,MBASIS)
+      dimension tphin(3*nelec,nbasis),t2phin_all(3*3*nelec,nbasis),t3phin(3*nelec,nbasis)
 
       do ibasis=1,nbasis
        i=0
@@ -236,13 +242,13 @@ c-------------------------------------------------------------------------------
        enddo
       enddo
       n=3*nelec
-      m=3*MELEC
+      m=3*nelec
       do 50 ic=1,ncent
         k=ibas1(ic)-ibas0(ic)+1
         j=ibas0(ic)
-      call dgemm('n','n',  n,norb,k,-1.d0,tphin(1,j)     ,  m,coef(j,1,iwf),MBASIS,0.d0,da_orb(1,1,1,ic)   ,  m)
-      call dgemm('n','n',  n,norb,k,-1.d0,t3phin(1,j)    ,  m,coef(j,1,iwf),MBASIS,0.d0,da_d2orb(1,1,1,ic) ,  m)
-  50  call dgemm('n','n',3*n,norb,k,-1.d0,t2phin_all(1,j),3*m,coef(j,1,iwf),MBASIS,0.d0,da_dorb(1,1,1,1,ic),3*m)
+      call dgemm('n','n',  n,norb,k,-1.d0,tphin(1,j)     ,  m,coef(j,1,iwf),nbasis,0.d0,da_orb(1,1,1,ic)   ,  m)
+      call dgemm('n','n',  n,norb,k,-1.d0,t3phin(1,j)    ,  m,coef(j,1,iwf),nbasis,0.d0,da_d2orb(1,1,1,ic) ,  m)
+  50  call dgemm('n','n',3*n,norb,k,-1.d0,t2phin_all(1,j),3*m,coef(j,1,iwf),nbasis,0.d0,da_dorb(1,1,1,1,ic),3*m)
 
       return
       end
@@ -255,19 +261,15 @@ c-------------------------------------------------------------------------------
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic
-
+      use atom, only: ncent_tot
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use multislatern, only: ddorbn, detn, dorbn, orbn
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
 
-
-
-c     common /kinet/ dtdx2o(MELEC),dtdx2n(MELEC)
-
-
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
 
 
       if(iperiodic.eq.0) then
@@ -285,16 +287,17 @@ c spline interplolation
 
 c Lagrange interpolation
          elseif(i3dlagorb.ge.1) then
-          call lagrange_mose(1,x(1,iel),orb,ier)
-          call lagrange_mos_grade(2,x(1,iel),dorb,ier)
-          call lagrange_mos_grade(3,x(1,iel),dorb,ier)
-          call lagrange_mos_grade(4,x(1,iel),dorb,ier)
+          call lagrange_mose(1,x(1,iel),orbn,ier)
+          call lagrange_mos_grade(2,x(1,iel),dorbn,ier)
+          call lagrange_mos_grade(3,x(1,iel),dorbn,ier)
+          call lagrange_mos_grade(4,x(1,iel),dorbn,ier)
          else
           ier=1
-        endif 
+        endif
 
         if(ier.eq.1) then
 c get basis functions for electron iel
+
           if(iflag.eq.0) then
             call basis_fnse_vg(iel,rvec_en,r_en)
            else
@@ -316,9 +319,10 @@ c           do 25 m=1,nbasis
              dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(3,m,iel)
              if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
    25     continue
+
         endif
        else
-        call orbitals_pw_grade(iel,x(1,iel),orb,dorb,ddorb)
+        call orbitals_pw_grade(iel,x(1,iel),orbn,dorbn,ddorbn)
       endif
 
       return

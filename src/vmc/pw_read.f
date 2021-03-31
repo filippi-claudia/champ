@@ -197,8 +197,8 @@ c Warning: Temporary
 c Warning: why do I print out zeros if I dimension to MORB rather than IVOL_RATIO?
 c It should be MORB
       dimension r(3)
-      dimension orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)
-c     dimension orb(MELEC,IVOL_RATIO),dorb(3,MELEC,IVOL_RATIO),ddorb(MELEC,IVOL_RATIO)
+      dimension orb(nelec,MORB),dorb(3,nelec,MORB),ddorb(nelec,MORB)
+
 
 c Warning: For the moment we assume that orbitals_pw_tm contains only the bands we want to keep.
 c for each k-pt.
@@ -433,12 +433,12 @@ c This is the straightforward evaluation for checking purposes only.
 
 
 
-      dimension x(3),orb(MELEC,*),dorb(3,MELEC,*),ddorb(MELEC,*)
+      dimension x(3),orb(nelec,*),dorb(3,nelec,*),ddorb(nelec,*)
 c     dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
-c    &,cos_g(MELEC,NGVECX),sin_g(MELEC,NGVECX),dcos_g(3,MELEC,NGVECX),dsin_g(3,MELEC,NGVECX)
-c    &,ddcos_g(MELEC,NGVECX),ddsin_g(MELEC,NGVECX)
-c    &,cos_k(MELEC,IVOL_RATIO),sin_k(MELEC,IVOL_RATIO),dcos_k(3,MELEC,IVOL_RATIO),dsin_k(3,MELEC,IVOL_RATIO)
-c    &,ddcos_k(MELEC,IVOL_RATIO),ddsin_k(MELEC,IVOL_RATIO)
+c    &,cos_g(nelec,NGVECX),sin_g(nelec,NGVECX),dcos_g(3,nelec,NGVECX),dsin_g(3,nelec,NGVECX)
+c    &,ddcos_g(nelec,NGVECX),ddsin_g(nelec,NGVECX)
+c    &,cos_k(nelec,IVOL_RATIO),sin_k(nelec,IVOL_RATIO),dcos_k(3,nelec,IVOL_RATIO),dsin_k(3,nelec,IVOL_RATIO)
+c    &,ddcos_k(nelec,IVOL_RATIO),ddsin_k(nelec,IVOL_RATIO)
       dimension gvec_dft(3,NGVEC_BIGX),gnorm_dft(NGVEC_BIGX)
 
       write(6,'(''nelec,norb,nkvec in orbitals_pw'',9i5)') nelec,norb,nkvec

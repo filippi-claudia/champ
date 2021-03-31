@@ -15,13 +15,14 @@ module da_energy_sumcum
     save
 contains
     subroutine allocate_da_energy_sumcum()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
-        if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, MCENT))
-        if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, MCENT))
-        if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, MCENT))
-        if (.not. allocated(da_psi_cum)) allocate (da_psi_cum(3, MCENT))
-        if (.not. allocated(da_psi_sum)) allocate (da_psi_sum(3, MCENT))
+        if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, ncent_tot))
+        if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, ncent_tot))
+        if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, ncent_tot))
+        if (.not. allocated(da_psi_cum)) allocate (da_psi_cum(3, ncent_tot))
+        if (.not. allocated(da_psi_sum)) allocate (da_psi_sum(3, ncent_tot))
     end subroutine allocate_da_energy_sumcum
 
     subroutine deallocate_da_energy_sumcum()
@@ -49,11 +50,13 @@ module da_jastrow4val
     save
 contains
     subroutine allocate_da_jastrow4val()
+        use const, only: nelec
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
-        if (.not. allocated(da_d2j)) allocate (da_d2j(3, MELEC, MCENT))
-        if (.not. allocated(da_j)) allocate (da_j(3, MELEC, MCENT))
-        if (.not. allocated(da_vj)) allocate (da_vj(3, 3, MELEC, MCENT))
+        if (.not. allocated(da_d2j)) allocate (da_d2j(3, nelec, ncent_tot))
+        if (.not. allocated(da_j)) allocate (da_j(3, nelec, ncent_tot))
+        if (.not. allocated(da_vj)) allocate (da_vj(3, 3, nelec, ncent_tot))
     end subroutine allocate_da_jastrow4val
 
     subroutine deallocate_da_jastrow4val()
@@ -79,11 +82,14 @@ module da_orbval
     save
 contains
     subroutine allocate_da_orbval()
+        use const, only: nelec
+        use coefs, only: norb
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
-        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, MELEC, MORB, MCENT))
-        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, MELEC, MORB, MCENT))
-        if (.not. allocated(da_orb)) allocate (da_orb(3, MELEC, MORB, MCENT))
+        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, MORB, ncent_tot))
+        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, MORB, ncent_tot))
+        if (.not. allocated(da_orb)) allocate (da_orb(3, nelec, MORB, ncent_tot))
     end subroutine allocate_da_orbval
 
     subroutine deallocate_da_orbval()
@@ -111,12 +117,14 @@ module da_pseudo
     save
 contains
     subroutine allocate_da_pseudo()
+        use const, only: nelec
+        use atom, only: ncent_tot
         use pseudo_mod, only: MPS_L
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
-        if (.not. allocated(da_pecent)) allocate (da_pecent(3, MCENT))
-        if (.not. allocated(da_vps)) allocate (da_vps(3, MELEC, MCENT, MPS_L))
-        if (.not. allocated(da_nonloc)) allocate (da_nonloc(3, MCENT))
+        if (.not. allocated(da_pecent)) allocate (da_pecent(3, ncent_tot))
+        if (.not. allocated(da_vps)) allocate (da_vps(3, nelec, ncent_tot, MPS_L))
+        if (.not. allocated(da_nonloc)) allocate (da_nonloc(3, ncent_tot))
 
         da_nonloc = 0.0D0
 
@@ -144,10 +152,11 @@ module da_energy_now
     save
 contains
     subroutine allocate_da_energy_now()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
-        if (.not. allocated(da_energy)) allocate (da_energy(3, MCENT))
-        if (.not. allocated(da_psi)) allocate (da_psi(3, MCENT))
+        if (.not. allocated(da_energy)) allocate (da_energy(3, ncent_tot))
+        if (.not. allocated(da_psi)) allocate (da_psi(3, ncent_tot))
     end subroutine allocate_da_energy_now
 
     subroutine deallocate_da_energy_now()
@@ -171,6 +180,7 @@ module deloc_dj_m
     save
 contains
     subroutine allocate_deloc_dj_m()
+        use csfs, only: nstates
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
@@ -196,6 +206,7 @@ module denergy_det_m
     save
 contains
     subroutine allocate_denergy_det_m()
+        use dets, only: ndet
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
         if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2))
@@ -251,12 +262,13 @@ module derivjas
     save
 contains
     subroutine allocate_derivjas()
+        use const, only: nelec
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
         if (.not. allocated(d2g)) allocate (d2g(MPARMJ))
-        if (.not. allocated(g)) allocate (g(3, MELEC, MPARMJ))
-        if (.not. allocated(go)) allocate (go(MELEC, MELEC, MPARMJ))
+        if (.not. allocated(g)) allocate (g(3, nelec, MPARMJ))
+        if (.not. allocated(go)) allocate (go(nelec, nelec, MPARMJ))
         if (.not. allocated(gvalue)) allocate (gvalue(MPARMJ))
     end subroutine allocate_derivjas
 
@@ -272,6 +284,8 @@ end module derivjas
 module dorb_m
     !> Arguments: iworbd
     use vmc_mod, only: MELEC, MDET
+    use const, only: nelec
+    use dets, only: ndet
 
     integer, dimension(:, :), allocatable :: iworbd !(MELEC, MDET)
 
@@ -279,10 +293,13 @@ module dorb_m
     public :: iworbd
     public :: allocate_dorb_m, deallocate_dorb_m
     save
+
 contains
+
     subroutine allocate_dorb_m()
-        use vmc_mod, only: MELEC, MDET
-        if (.not. allocated(iworbd)) allocate(iworbd(MELEC, MDET))
+        use vmc_mod, only: MDET
+        use const, only: nelec
+        if (.not. allocated(iworbd)) allocate (iworbd(nelec, MDET))
     end subroutine allocate_dorb_m
 
     subroutine deallocate_dorb_m()
@@ -307,12 +324,13 @@ module ijasnonlin
     save
 contains
     subroutine allocate_ijasnonlin()
+        use atom, only: nctype_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
-        if (.not. allocated(d1d2a)) allocate(d1d2a(MCTYPE))
-        if (.not. allocated(d1d2b)) allocate(d1d2b(2))
-        if (.not. allocated(d2d2a)) allocate(d2d2a(MCTYPE))
-        if (.not. allocated(d2d2b)) allocate(d2d2b(2))
+        if (.not. allocated(d1d2a)) allocate (d1d2a(nctype_tot))
+        if (.not. allocated(d1d2b)) allocate (d1d2b(2))
+        if (.not. allocated(d2d2a)) allocate (d2d2a(nctype_tot))
+        if (.not. allocated(d2d2b)) allocate (d2d2b(2))
     end subroutine allocate_ijasnonlin
 
     subroutine deallocate_ijasnonlin()
@@ -338,7 +356,7 @@ module derivest
 
     private
     public :: derivcm2, derivcum, derivsum, derivtotave_num_old
-    public :: allocate_derivest, deallocate_derivest 
+    public :: allocate_derivest, deallocate_derivest
     save
 
 contains

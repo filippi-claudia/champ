@@ -4,14 +4,16 @@
       use vmc_mod, only: MMAT_DIM
       use elec, only: ndn, nup
       use dorb_m, only: iworbd
+      use coefs, only: norb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
 
 
 
-      dimension b(MORB,MELEC),btemp(MELEC**2,2),xmatu(MELEC**2),xmatd(MELEC**2),work(MELEC)
+      dimension b(MORB,nelec),btemp(nelec**2,2),xmatu(nelec**2),xmatd(nelec**2),work(nelec)
 
       do 110 iab=1,2
         if(iab.eq.1) then

@@ -4,7 +4,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use optjas, only: MPARMJ
       use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use vmc_mod, only: MMAT_DIM
-      use atom, only: iwctype, ncent
+      use atom, only: iwctype, ncent, ncent_tot
       use const, only: nelec, ipr
       use elec, only: nup
       use jaso, only: fso
@@ -25,8 +25,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-
       use multislater, only: detiab
+
       implicit real*8(a-h,o-z)
 
 
@@ -37,15 +37,17 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
 
 
-      dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),rr_en_sav(MCENT),rr_en2_sav(MCENT)
-     &,xsav(3),rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT)
+      dimension x(3,*),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
+      dimension rr_en(nelec,ncent_tot),rr_en2(nelec,ncent_tot),rr_en_sav(ncent_tot),rr_en2_sav(ncent_tot)
+     &,xsav(3),rshift_sav(3,ncent_tot),rvec_en_sav(3,ncent_tot),r_en_sav(ncent_tot)
 
-      dimension vpsp_det(*),dvpsp_dj(*),t_vpsp(MCENT,MPS_QUAD,*)
+      dimension vpsp_det(*),dvpsp_dj(*),t_vpsp(ncent_tot,MPS_QUAD,*)
       dimension dpsij_ratio(MPARMJ)
 
-      dimension orbn(MORB),dorbn(3,MORB),da_orbn(3,MCENT,MORB),term_radial_da_vps(3)
-      dimension vjn(3),da_ratio_jn(3,MCENT),dd1(MELEC,MCENT),dd1_sav(MCENT)
+      dimension orbn(MORB),dorbn(3,MORB),da_orbn(3,ncent_tot,MORB),term_radial_da_vps(3)
+      dimension vjn(3),da_ratio_jn(3,ncent_tot),dd1(nelec,ncent_tot),dd1_sav(ncent_tot)
+
+      ! call resize_matrix(b, norb+nadorb, 1)
 
       do 11 ic=1,ncent
 cJF this is the culprit
@@ -74,6 +76,8 @@ c           call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
         i1=1
         i2=nelec
       endif
+
+
 
       do 100 i=i1,i2
 
@@ -134,7 +138,7 @@ c             enddo
               do 50 l=1,lpot(ict)-1
    50           term_radial=term_radial+yl0(l,costh)*vps(i,ic,l)
               term_radial=term_radial*wq(iq)*exp(psij_ratio)
-        
+
 c vpsp_det  = vnl(D_kref J)/(D_kref J)
               vpsp_det(iab)=vpsp_det(iab)+det_ratio*term_radial
 
@@ -154,15 +158,15 @@ c dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
 
 c transition probabilities for Casula's moves in DMC
               if(index(mode,'dmc').ne.0) then
-                t_vpsp(ic,iq,i)=det_ratio*term_radial 
+                t_vpsp(ic,iq,i)=det_ratio*term_radial
                 do 56 iorb=1,norb
    56             b_t(iorb,iq,ic,i)=orbn(iorb)*term_radial
               endif
 
-              if(iforce_analy.gt.0) 
+              if(iforce_analy.gt.0)
      &        call compute_da_bnl(iel,ic,ict,iq,r_en_sav,rvec_en_sav,costh,
      &                                     term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
-               
+
 c end loop quadrature points
    60       continue
 
@@ -176,7 +180,7 @@ c end loop quadrature points
               do 70 k=1,3
                 rshift(k,i,jc)=rshift_sav(k,jc)
    70           rvec_en(k,i,jc)=rvec_en_sav(k,jc)
-              
+
 c elseif iskip
            elseif(i_vpsp.ne.0)then
             do 80 iq=1,nquad
@@ -233,18 +237,20 @@ c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: cent, ncent
+      use atom, only: cent, ncent, ncent_tot
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use qua, only: xq, yq, zq
+      use const, only: nelec
 
       implicit real*8(a-h,o-z)
 
       parameter (one=1.d0)
 
 
-      dimension x(3),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),dd1(MELEC,MCENT)
+      dimension x(3),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
+      dimension rr_en(nelec,ncent_tot),rr_en2(nelec,ncent_tot)
+      dimension dd1(nelec,ncent_tot)
 
       if(iperiodic.eq.0) then
         x(1)=r_en(i,ic)*xq(iq)+cent(1,ic)
@@ -288,15 +294,14 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use vmc_mod, only: MELEC, MORB, MCENT
-      use atom, only: iwctype, ncent
-
+      use atom, only: iwctype, ncent, ncent_tot
+      use const, only: nelec
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic
       use grid3dflag, only: i3dlagorb, i3dsplorb
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       implicit real*8(a-h,o-z)
 
@@ -304,8 +309,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
 
 
-      dimension x(3),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      dimension orbn(*),dorbn(3,*),da_orbn(3,MCENT,*),dtmp(3)
+      dimension x(3),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
+      dimension orbn(*),dorbn(3,*),da_orbn(3,ncent_tot,*),dtmp(3)
+
+
+      ! call resize_tensor(coef, norb+nadorb, 2)
 
       if(iperiodic.eq.0) then
 
@@ -322,7 +330,7 @@ c get the value from the 3d-interpolated orbitals
           call lagrange_mose(1,x,orbn,ier)
          else
           ier=1
-        endif 
+        endif
 
         if(ier.eq.1) then
 c get basis functions for electron iel
@@ -370,17 +378,13 @@ c-----------------------------------------------------------------------
       subroutine nonlocd(iel,orb,detu,detd,slmui,slmdi,ratio)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
-      use vmc_mod, only: MMAT_DIM
+      use precision_kinds, only: dp
       use elec, only: ndn, nup
       use multidet, only: kref
-
       use dorb_m, only: iworbd
+      use vmc_mod, only: MMAT_DIM
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
 
       dimension x(3)
@@ -412,7 +416,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use vmc_mod, only: MELEC, MCENT
-      use atom, only: iwctype, ncent
+      use atom, only: iwctype, ncent, ncent_tot
 
       use jaspar, only: sspinn, is
       use const, only: nelec
@@ -421,7 +425,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm, only: nocuspb, nspin2b
       use contr2, only: isc
       use contrl_per, only: iperiodic
-
+      use const, only: nelec
       use force_analy, only: iforce_analy
       implicit real*8(a-h,o-z)
 
@@ -430,10 +434,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       parameter (half=.5d0)
 
 
-      dimension fso(MELEC,*)
-      dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,*)
-      dimension r_en(MELEC,MCENT),rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT)
-     &,fsn(MELEC,MELEC),dx(3),dd1(MELEC,MCENT),vjn(3),da_ratio_jn(3,MCENT)
+      dimension fso(nelec,*)
+      dimension x(3,*),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,*)
+      dimension r_en(nelec,ncent_tot),rr_en(nelec,ncent_tot),rr_en2(nelec,ncent_tot)
+     &,fsn(nelec,nelec),dx(3),dd1(nelec,ncent_tot),vjn(3),da_ratio_jn(3,ncent_tot)
 
       fsumn=0
 
@@ -528,7 +532,7 @@ c-----------------------------------------------------------------------
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
       use vmc_mod, only: MORB, MCENT
-      use atom, only: ncent
+      use atom, only: ncent, ncent_tot
       use Bloc, only: db
       use coefs, only: norb
       use force_analy, only: iforce_analy
@@ -541,9 +545,9 @@ c-----------------------------------------------------------------------
       parameter (one=1.d0)
 
 
-      dimension rvec_en_sav(3,MCENT),r_en_sav(MCENT)
+      dimension rvec_en_sav(3,ncent_tot),r_en_sav(ncent_tot)
       dimension orbn(MORB),dorbn(3,MORB),vjn(3)
-      dimension da_orbn(3,MCENT,MORB),da_ratio_jn(3,MCENT)
+      dimension da_orbn(3,ncent_tot,MORB),da_ratio_jn(3,ncent_tot)
       dimension term_radial_da_vps(3)
 
       if(iforce_analy.eq.0) return
@@ -571,7 +575,7 @@ c-----------------------------------------------------------------------
         db(3,iel,iorb,ic)=db(3,iel,iorb,ic)+term_radial_da_vps(3)*orbn(iorb)
      &                   +da_term_radial*(-zq(iq)*r_en_savi+costh*rvec_en_sav(3,ic)*r_en_savi2)*orbn(iorb)
 
-                
+
          db_tmp1=term_radial*(dorbn(1,iorb)+orbn(iorb)*vjn(1))
          db_tmp2=term_radial*(dorbn(2,iorb)+orbn(iorb)*vjn(2))
          db_tmp3=term_radial*(dorbn(3,iorb)+orbn(iorb)*vjn(3))
@@ -588,7 +592,7 @@ c          if(jc.ne.ic) then
    53          db(k,iel,iorb,jc)=db(k,iel,iorb,jc)+term_radial*(da_orbn(k,jc,iorb)+orbn(iorb)*da_ratio_jn(k,jc))
 c          endif
    54 continue
-               
+
 c     write(6,*) 'AFT',iel,ic,iq,db(1,iel,1,ic)-sav_db
       return
       end

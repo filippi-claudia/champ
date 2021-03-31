@@ -27,7 +27,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 # documentation
 option(BUILD_DOC "build_doc" off)
 
-# MPI 
+# MPI
 option(ENABLE_MPI "enable_mpi" on)
 
 # QMMM option
@@ -57,7 +57,7 @@ else()
   message(STATUS "MKL NOT FOUND! Using default BLAS and LAPACK")
 endif(MKL_FOUND)
 
-  
+
 #  documentation requirements
 if (BUILD_DOC)
   find_package(DOXYGEN)
@@ -77,17 +77,17 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   if (MKL_FOUND)
     #list(APPEND Fortran_FLAGS "-fdefault-integer-8")
     list(APPEND Fortran_FLAGS "-m64")
-  endif()  
+  endif()
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
-  
+
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-O2" "-mcmodel=large" "-shared-intel"
     "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
   #    list(APPEND Fortran_FLAGS "-i8")
-  #endif()  
-  
+  #endif()
+
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
 endif()

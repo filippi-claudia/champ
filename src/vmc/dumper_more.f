@@ -4,7 +4,7 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE
       use vmc_mod, only: nrad
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent,ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
       use ghostatom, only: newghostype, nghostcent
       use const, only: hb, delta, nelec
@@ -45,14 +45,14 @@ c job where it left off
 
       parameter(half=0.5d0,small=1.d-6)
 
-      dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT)
-     &,znucx(MCTYPE),n1sx(MCTYPE),n2sx(MCTYPE),n2px(3,MCTYPE)
-     &,n3sx(MCTYPE),n3px(3,MCTYPE),n3dzrx(MCTYPE),n3dx2x(MCTYPE)
-     &,n3dxyx(MCTYPE),n3dxzx(MCTYPE),n3dyzx(MCTYPE),n4sx(MCTYPE)
-     &,n4px(3,MCTYPE),nsax(MCTYPE),npax(3,MCTYPE),ndzrax(MCTYPE)
-     &,ndx2ax(MCTYPE),ndxyax(MCTYPE),ndxzax(MCTYPE),ndyzax(MCTYPE)
-     &,cdetx(MDET)
-      dimension xstrech(3,MELEC)
+      dimension coefx(nbasis,MORB),zexx(nbasis),centx(3,ncent_tot)
+     &,znucx(nctype_tot),n1sx(nctype_tot),n2sx(nctype_tot),n2px(3,nctype_tot)
+     &,n3sx(nctype_tot),n3px(3,nctype_tot),n3dzrx(nctype_tot),n3dx2x(nctype_tot)
+     &,n3dxyx(nctype_tot),n3dxzx(nctype_tot),n3dyzx(nctype_tot),n4sx(nctype_tot)
+     &,n4px(3,nctype_tot),nsax(nctype_tot),npax(3,nctype_tot),ndzrax(nctype_tot)
+     &,ndx2ax(nctype_tot),ndxyax(nctype_tot),ndxzax(nctype_tot),ndyzax(nctype_tot)
+     &,cdetx(ndet)
+      dimension xstrech(3,nelec)
       dimension d2(MSTATES)
 
       write(10) delta,deltar,deltat

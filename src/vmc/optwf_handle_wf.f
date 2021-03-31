@@ -33,7 +33,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine write_wf_best
       implicit real*8(a-h,o-z)
-      
+
 
       call restore_jastrow_best
       call restore_lcao_best
@@ -111,13 +111,16 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use array_resize_utils, only: resize_tensor
       use inputflags, only: scalecoef
 
       implicit real*8(a-h,o-z)
 
       character*40 filename,filetype
 
-      dimension anorm(MBASIS)
+      dimension anorm(nbasis)
+
+      ! call resize_tensor(coef, norb+nadorb, 2)
 
       if(ioptorb.eq.0) return
 
@@ -167,7 +170,7 @@ c-----------------------------------------------------------------------
       write(2,'(100f15.8)') (cdet(i,istate,1),i=1,ndet)
       do 1 k=1,ndet
    1   write(2,'(100i4)') (iworbd(i,k),i=1,nelec)
- 
+
       write(2,'(''end'')')
 
       if(ncsf.ne.0) then
@@ -180,7 +183,7 @@ c
         nmap=0
         do 5 i=1,ncsf
    5      nmap=nmap+ibdet(i)-iadet(i)+1
-        write(2,'(''csfmap'')') 
+        write(2,'(''csfmap'')')
         write(2,'(3i10)') ncsf,ndet,nmap
         nptr=0
         do 10 i=1,ncsf
@@ -201,7 +204,7 @@ c
 c-----------------------------------------------------------------------
       subroutine setup_wf
       implicit real*8(a-h,o-z)
-  
+
       do 10 k=2,3
         call copy_jastrow(k)
         call copy_lcao(k)
@@ -217,7 +220,7 @@ c-----------------------------------------------------------------------
 
 
       if(ioptjas.ne.0) call save_jastrow
-      if(ioptorb.ne.0) call save_lcao 
+      if(ioptorb.ne.0) call save_lcao
       if(ioptci.ne.0) call save_ci
 
       return
@@ -247,12 +250,12 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_jastrow
-
+      use precision_kinds, only: dp
       use force_mod, only: MWF
       use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
-      use atom, only: nctype
-
+      use atom, only: nctype, nctype_tot
+      use wfsec, only: nwftype
       use jaspar3, only: a, b, c
 
       use jaspar4, only: a4, norda, nordb, nordc
@@ -260,14 +263,19 @@ c-----------------------------------------------------------------------
 
 
 
+      real(dp), allocatable, save :: a4_save(:,:,:)
+      real(dp), allocatable, save :: b_save(:,:,:)
+      real(dp), allocatable, save :: c_save(:,:,:)
 
+      ! dimension a4_save(MORDJ1,nctype_tot,MWF),b_save(MORDJ1,2,MWF),
+      ! dimension c_save(83,nctype_tot,MWF)
+      ! save a4_save,b_save,c_save
 
-
-      dimension a4_save(MORDJ1,MCTYPE,MWF),b_save(MORDJ1,2,MWF),
-     &c_save(83,MCTYPE,MWF)
-
-      save a4_save,b_save,c_save
       save mparmja,mparmjb,mparmjc
+
+      if(.not.allocated(a4_save)) allocate(a4_save(MORDJ1,nctype_tot,nwftype))
+      if(.not.allocated(b_save)) allocate(b_save(MORDJ1,2,nwftype))
+      if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
 
 c Save parameters corresponding to run generating hessian
 
@@ -284,9 +292,14 @@ c Save parameters corresponding to run generating hessian
         do 70 i=1,mparmjc
    70     c_save(i,ict,1)=c(i,ict,1)
 
+
+
       return
 
       entry restore_jastrow(iadiag)
+      if(.not.allocated(a4_save)) allocate(a4_save(MORDJ1,nctype_tot,nwftype))
+      if(.not.allocated(b_save)) allocate(b_save(MORDJ1,2,nwftype))
+      if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
 
 c Restore parameters corresponding to run generating hessian
       do 80 ict=1,nctype
@@ -303,16 +316,18 @@ c Restore parameters corresponding to run generating hessian
 
 c-----------------------------------------------------------------------
       subroutine save_lcao
+      use precision_kinds, only: dp
       use force_mod, only: MWF
       use vmc_mod, only: MORB, MBASIS
       use coefs, only: coef, nbasis, norb
+      use wfsec, only: nwftype
       implicit real*8(a-h,o-z)
 
 
-
-      dimension coef_save(MBASIS,MORB,MWF)
-
-      save coef_save
+      real(dp), allocatable, save :: coef_save(:,:,:)
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, MORB, nwftype))
+      ! dimension coef_save(nbasis,norb,MWF)
+      ! save coef_save
 
       do 10 i=1,norb
        do 10 j=1,nbasis
@@ -321,6 +336,7 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_lcao(iadiag)
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, MORB, nwftype))
 
       do 20 i=1,norb
        do 20 j=1,nbasis
@@ -330,6 +346,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci
+      use precision_kinds, only: dp
       use vmc_mod, only: MDET
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
@@ -339,11 +356,14 @@ c-----------------------------------------------------------------------
 
 
 
+      real(dp), ALLOCATABLE, save :: cdet_save(:,:)
+      real(dp), ALLOCATABLE, save :: ccsf_save(:,:)
 
+      if(.not. allocated(cdet_save)) allocate(cdet_save(MDET,MSTATES))
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(MDET,MSTATES))
 
-
-      dimension cdet_save(MDET,MSTATES),ccsf_save(MDET,MSTATES)
-      save cdet_save,ccsf_save
+      ! dimension cdet_save(ndet,nstates),ccsf_save(ndet,nstates)
+      ! save cdet_save,ccsf_save
 
       do 10 j=1,nstates
         do 10 i=1,ndet
@@ -356,6 +376,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci(iadiag)
+      if(.not. allocated(cdet_save)) allocate(cdet_save(MDET,MSTATES))
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(MDET,MSTATES))
 
       do 30 j=1,nstates
         do 30 i=1,ndet
@@ -384,17 +406,13 @@ c reset kref=1
       end
 c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
- 
+
       use atom, only: nctype
 
       use jaspar3, only: a, b, c, scalek
 
       use jaspar4, only: a4, norda, nordb, nordc
       implicit real*8(a-h,o-z)
-
-
-
-
 
 
       mparmja=2+max(0,norda-1)
@@ -468,11 +486,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
+      use precision_kinds, only: dp
       use force_mod, only: MWF
       use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
-      use atom, only: nctype
-
+      use atom, only: nctype, nctype_tot
+      use wfsec, only : nwftype
       use jaspar3, only: a, b, c
 
       use jaspar4, only: a4, norda, nordb, nordc
@@ -481,13 +500,19 @@ c-----------------------------------------------------------------------
 
 
 
+      real(dp), allocatable, save :: a4_best(:,:,:)
+      real(dp), allocatable, save :: b_best(:,:,:)
+      real(dp), allocatable, save :: c_best(:,:,:)
 
+      ! dimension a4_best(MORDJ1,nctype_tot,MWF),b_best(MORDJ1,2,MWF),
+      ! dimension c_best(83,nctype_tot,MWF)
+      ! save a4_best,b_best,c_best
 
-      dimension a4_best(MORDJ1,MCTYPE,MWF),b_best(MORDJ1,2,MWF),
-     &c_best(83,MCTYPE,MWF)
-
-      save a4_best,b_best,c_best
       save mparmja,mparmjb,mparmjc
+
+      if(.not.allocated(a4_best)) allocate(a4_best(MORDJ1,nctype_tot,nwftype))
+      if(.not.allocated(b_best)) allocate(b_best(MORDJ1,2,nwftype))
+      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype))
 
 c Save parameters corresponding to run generating hessian
 
@@ -507,6 +532,9 @@ c Save parameters corresponding to run generating hessian
       return
 
       entry restore_jastrow_best
+      if(.not.allocated(a4_best)) allocate(a4_best(MORDJ1,nctype_tot,nwftype))
+      if(.not.allocated(b_best)) allocate(b_best(MORDJ1,2,nwftype))
+      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype))
 
 c Restore parameters corresponding to run generating hessian
       do 80 ict=1,nctype
@@ -522,19 +550,21 @@ c Restore parameters corresponding to run generating hessian
       end
 c-----------------------------------------------------------------------
       subroutine save_lcao_best
+      use precision_kinds, only: dp
       use force_mod, only: MWF
       use vmc_mod, only: MORB, MBASIS
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb
+      use wfsec, only: nwftype
       implicit real*8(a-h,o-z)
 
 
 
 
-
-      dimension coef_best(MBASIS,MORB,MWF)
-
-      save coef_best
+      real(dp), allocatable, save :: coef_best(:,:,:)
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, MORB, nwftype))
+      ! dimension coef_best(nbasis,norb,MWF)
+      ! save coef_best
 
       do 10 i=1,norb
        do 10 j=1,nbasis
@@ -545,7 +575,7 @@ c-----------------------------------------------------------------------
       entry restore_lcao_best
 
 c     if(ioptorb.eq.0) return
-
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, MORB, nwftype))
       do 20 i=1,norb
        do 20 j=1,nbasis
    20   coef(j,i,1)=coef_best(j,i,1)
@@ -554,6 +584,7 @@ c     if(ioptorb.eq.0) return
       end
 c-----------------------------------------------------------------------
       subroutine save_ci_best
+      use precision_kinds, only: dp
       use vmc_mod, only: MDET
       use csfs, only: ccsf, ncsf, nstates
       use csfs, only: cxdet, iadet, ibdet, icxdet
@@ -564,12 +595,14 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
+      real(dp), ALLOCATABLE, save :: cdet_best(:,:)
+      real(dp), ALLOCATABLE, save :: ccsf_best(:,:)
 
+      if(.not. allocated(cdet_best)) allocate(cdet_best(MDET,MSTATES))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(MDET,MSTATES))
 
-
-
-      dimension cdet_best(MDET,MSTATES),ccsf_best(MDET,MSTATES)
-      save cdet_best,ccsf_best
+      ! dimension cdet_best(ndet,nstates),ccsf_best(ndet,nstates)
+      ! save cdet_best,ccsf_best
 
       do 10 j=1,nstates
         do 10 i=1,ndet
@@ -582,6 +615,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci_best
+      if(.not. allocated(cdet_best)) allocate(cdet_best(MDET,MSTATES))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(MDET,MSTATES))
 
 c     if(ioptci.eq.0) return
 
@@ -592,7 +627,7 @@ c     if(ioptci.eq.0) return
       do 40 j=1,nstates
        do 40 icsf=1,ncsf
    40   ccsf(icsf,j,1)=ccsf_best(icsf,j)
-          
+
 c if kref (iwdetorb, cxdet) has changed
       if(ncsf.gt.0) then
         do 50 j=1,nstates
@@ -636,7 +671,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
-      
+
       implicit real*8(a-h,o-z)
 
 
@@ -681,7 +716,7 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension acoef(MBASIS,MORB),dparm(*)
+      dimension acoef(nbasis,MORB),dparm(*)
 
       if(ioptorb.eq.0) return
 
@@ -797,7 +832,7 @@ c-----------------------------------------------------------------------
       do 60 i=1,nparmb(1)
    60   if(iwjasb(i,1).eq.2.and.b(2,1,1).le.scalem) iflagb=1
       if(iflagb.eq.1) write(6,'(''b2 < -scalek'',f10.5)') b(2,1,1)
-      
+
       if(iflaga.eq.1.or.iflagb.eq.1) iflag=1
 
       return
@@ -819,11 +854,11 @@ c Calculate rms change in parameters
   30    dparm_norm=dparm_norm+dparm(i)**2
       dparm_norm=sqrt(dparm_norm/nparm)
 
-      write(6,'(''dparm_norm,adiag ='',3g12.5)') 
+      write(6,'(''dparm_norm,adiag ='',3g12.5)')
      &dparm_norm,add_diag
 
       if(dparm_norm.gt.dparm_norm_min) iflag=1
-      
+
       return
       end
 c-----------------------------------------------------------------------
@@ -832,7 +867,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm, nreduced
-      
+
       use ci000, only: nciterm
 
       implicit real*8(a-h,o-z)
@@ -897,7 +932,7 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
         nparm=nparmj+nparmd+norbterm
 
       elseif(method.eq.'linear'.or.method.eq.'lin_d') then
-        
+
        i0=0
        if(ioptci.ne.0) i0=1
        if(ioptjas.eq.0.and.ioptorb.eq.0) i0=0
@@ -907,7 +942,7 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
 
       endif
 
-      write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)') 
+      write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)')
      & nparm,nparmj,nciterm,norbterm
 
       return
@@ -970,7 +1005,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       do istate=1,nstates
         sr_o(ii+istate,l)=psid(istate)
       enddo
-      
+
       nconf_n=l
 
       if(method.eq.'sr_n'.and.i_sr_rescale.eq.0.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
@@ -985,7 +1020,7 @@ c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secu
       call dcopy(ntmp,ci_e(1+i0),1,sr_ho(nparmj+1,l),1)
 
       call dcopy(norbterm,orb_ho(1,1),1,sr_ho(nparmj+ntmp+1,l),1)
-      
+
       return
       end
 c-----------------------------------------------------------------------

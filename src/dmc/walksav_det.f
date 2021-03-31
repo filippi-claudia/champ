@@ -6,11 +6,20 @@ c Written by Claudia Filippi
       use vmc_mod, only: MMAT_DIM
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: MWALK
+
       use const, only: nelec
-      use mstates_mod, only: MSTATES
-      use branch, only: nwalk
-      use slater, only: ddx, fpd, fpu, slmui, slmdi
-      use dets, only: ndet
+      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+      use vmc_mod, only: radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
+      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
+      use forcepar, only: deltot, istrech, nforce
+      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use mstates_mod, only: MSTATES, MDETCSFX
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo
+      use branch, only: wgdsumo, wt, wtgen, wthist
+      use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
+      use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use orbval, only: dorb, orb
       use coefs, only: norb
@@ -32,21 +41,58 @@ c Written by Claudia Filippi
       real(dp) :: fpdw, fpuw, orbw, slmdiw
       real(dp) :: slmuiw, wfmatw, ymatw
 
-      dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK),slmdiw(MMAT_DIM,MWALK)
-     &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)
-     &,ddxw(3,MELEC,MWALK)
-     &,detuw(MDET,MWALK),detdw(MDET,MWALK)
-
-      dimension aaw(MELEC,MORB,MWALK,2),wfmatw(MEXCIT**2,MDET,MWALK,2),ymatw(MORB,MELEC,MWALK,2,MSTATES)
-
-      dimension orbw(MELEC,MORB,MWALK),dorbw(3,MELEC,MORB,MWALK)
-
       dimension istatus(MPI_STATUS_SIZE)
       dimension irequest_array(MPI_STATUS_SIZE)
 
-      save krefw,slmuiw,slmdiw,fpuw,fpdw,detuw,detdw,ddxw
+    !   dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK),slmdiw(MMAT_DIM,MWALK)
+    !  &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)
+    !  &,fppuw(MMAT_DIM,MWALK),fppdw(MMAT_DIM,MWALK)
+    !  &,ddxw(3,MELEC,MWALK),d2dx2w(MELEC,MWALK)
+    !  &,detuw(MDET,MWALK),detdw(MDET,MWALK)
 
-      save aaw,wfmatw,ymatw,orbw,dorbw
+
+    !   dimension aaw(MELEC,MORB,MWALK,2),wfmatw(MEXCIT**2,MDET,MWALK,2),ymatw(MORB,MELEC,MWALK,2,MSTATES)
+    !   dimension orbw(MELEC,MORB,MWALK),dorbw(3,MELEC,MORB,MWALK)
+      ! save krefw,slmuiw,slmdiw,fpuw,fpdw,fppuw,fppdw,detuw,detdw,ddxw,d2dx2w
+      ! save aaw,wfmatw,ymatw,orbw,dorbw
+
+      real(dp), allocatable, save :: krefw(:)
+      real(dp), allocatable, save :: slmuiw(:, :)
+      real(dp), allocatable, save :: slmdiw(:, :)
+      real(dp), allocatable, save :: fpuw(:, :, :)
+      real(dp), allocatable, save :: fpdw(:, :, :)
+      real(dp), allocatable, save :: fppuw(:, :)
+      real(dp), allocatable, save :: fppdw(:, :)
+      real(dp), allocatable, save :: ddxw(:, :, :)
+      real(dp), allocatable, save :: d2dx2w(:, :)
+      real(dp), allocatable, save :: detuw(:, :)
+      real(dp), allocatable, save :: detdw(:, :)
+
+      real(dp), allocatable, save :: aaw(:,:,:,:)
+      real(dp), allocatable, save :: wfmatw(:,:,:,:)
+      real(dp), allocatable, save :: ymatw(:,:,:,:,:)
+      real(dp), allocatable, save :: orbw(:,:,:)
+      real(dp), allocatable, save :: dorbw(:,:,:,:)
+
+      if(.not.allocated(aaw)) allocate(aaw(nelec,MORB,MWALK,2))
+      if(.not.allocated(wfmatw)) allocate(wfmatw(MEXCIT**2,MDET,MWALK,2))
+      if(.not.allocated(ymatw)) allocate(ymatw(MORB,MELEC,MWALK,2,MSTATES))
+      if(.not.allocated(orbw)) allocate(orbw(MELEC,MORB,MWALK))
+      if(.not.allocated(dorbw)) allocate(dorbw(3,MELEC,MORB,MWALK))
+
+      if(.not.allocated(krefw)) allocate(krefw(MWALK))
+      if(.not.allocated(slmuiw)) allocate(slmuiw(MMAT_DIM,MWALK))
+      if(.not.allocated(slmdiw)) allocate(slmdiw(MMAT_DIM,MWALK))
+      if(.not.allocated(fpuw)) allocate(fpuw(3, MMAT_DIM,MWALK))
+      if(.not.allocated(fpdw)) allocate(fpdw(3, MMAT_DIM,MWALK))
+      if(.not.allocated(fppuw)) allocate(fppuw(MMAT_DIM,MWALK))
+      if(.not.allocated(fppdw)) allocate(fppdw(MMAT_DIM,MWALK))
+      if(.not.allocated(ddxw)) allocate(ddxw(3, nelec,MWALK))
+      if(.not.allocated(d2dx2w)) allocate(d2dx2w(nelec,MWALK))
+      if(.not.allocated(detuw)) allocate(detuw(MDET,MWALK))
+      if(.not.allocated(detdw)) allocate(detdw(MDET,MWALK))
+
+
 
        do 20 k=1,ndet
          detuw(k,iw)=detu(k)

@@ -11,9 +11,10 @@ module grdnthes
      save
  contains
      subroutine allocate_grdnthes()
+        use atom, only: ncent_tot
          use precision_kinds, only: dp
          use vmc_mod, only: MCENT
-         if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, MCENT))
+         if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent_tot))
      end subroutine allocate_grdnthes
 
      subroutine deallocate_grdnthes()
@@ -37,11 +38,12 @@ module grdnthes
      save
  contains
      subroutine allocate_grdntsmv()
+        use atom, only: ncent_tot
          use force_mod, only: MFORCE
          use vmc_mod, only: MCENT
          if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
          if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
-         if (.not. allocated(igrdmv)) allocate (igrdmv(3, MCENT))
+         if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent_tot))
      end subroutine allocate_grdntsmv
 
      subroutine deallocate_grdntsmv()

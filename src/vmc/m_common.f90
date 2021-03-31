@@ -1,46 +1,3 @@
-module atom
-    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
-    use precision_kinds, only: dp
-    use vmc_mod, only: MCENT, MCTYPE
-
-    real(dp), dimension(:, :), allocatable :: cent !( 3, MCENT)
-    real(dp), dimension(:), allocatable :: znuc !( MCTYPE)
-    real(dp) :: pecent
-    integer, dimension(:), allocatable :: iwctype !( MCENT)
-    integer :: nctype, ncent
-
-    private
-    public   :: znuc, cent, pecent, iwctype, nctype, ncent
-    public :: allocate_atom, deallocate_atom
-    save
-contains
-    subroutine allocate_atom()
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCENT, MCTYPE
-        if (.not. allocated(cent)) allocate (cent(3, MCENT))
-        if (.not. allocated(znuc)) allocate (znuc(MCTYPE))
-        if (.not. allocated(iwctype)) allocate (iwctype(MCENT))
-    end subroutine allocate_atom
-
-    subroutine deallocate_atom()
-        if (allocated(iwctype)) deallocate (iwctype)
-        if (allocated(znuc)) deallocate (znuc)
-        if (allocated(cent)) deallocate (cent)
-    end subroutine deallocate_atom
-
-end module atom
-
-module ghostatom
-    !> Arguments: newghostype, nghostcent
-
-    integer :: newghostype
-    integer :: nghostcent
-
-    private
-    public   :: newghostype, nghostcent
-    save
-end module ghostatom
-
 module b_tmove
     !> Arguments: b_t, iskip
     use pseudo_mod, only: MPS_QUAD
@@ -56,11 +13,14 @@ module b_tmove
     save
 contains
     subroutine allocate_b_tmove()
+        use const, only: nelec
+        use coefs, only: norb
+        use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
-        if (.not. allocated(b_t)) allocate (b_t(MORB, MPS_QUAD, MCENT, MELEC))
-        if (.not. allocated(iskip)) allocate (iskip(MELEC, MCENT))
+        if (.not. allocated(b_t)) allocate (b_t(MORB, MPS_QUAD, ncent_tot, nelec))
+        if (.not. allocated(iskip)) allocate (iskip(nelec, ncent_tot))
     end subroutine allocate_b_tmove
 
     subroutine deallocate_b_tmove()
@@ -95,15 +55,18 @@ module Bloc
     save
 contains
     subroutine allocate_Bloc()
+        use const, only: nelec
+        use coefs, only: norb
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
         use optjas, only: MPARMJ
-        if (.not. allocated(b)) allocate (b(MORB, MELEC))
-        if (.not. allocated(tildem)) allocate (tildem(MELEC, MORB, 2))
-        if (.not. allocated(xmat)) allocate (xmat(MELEC**2, 2))
-        if (.not. allocated(b_da)) allocate (b_da(3, MELEC, MORB, MCENT))
-        if (.not. allocated(db)) allocate (db(3, MELEC, MORB, MCENT))
-        if (.not. allocated(b_dj)) allocate (b_dj(MORB, MELEC, MPARMJ))
+        if (.not. allocated(b)) allocate (b(MORB, nelec))
+        if (.not. allocated(tildem)) allocate (tildem(nelec, MORB, 2))
+        if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
+        if (.not. allocated(b_da)) allocate (b_da(3, nelec, MORB, ncent_tot))
+        if (.not. allocated(db)) allocate (db(3, nelec, MORB, ncent_tot))
+        if (.not. allocated(b_dj)) allocate (b_dj(MORB, nelec, MPARMJ))
     end subroutine allocate_Bloc
 
     subroutine deallocate_Bloc()
@@ -143,10 +106,12 @@ module casula
     save
 contains
     subroutine allocate_casula()
+        use const, only: nelec
+        use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
-        if (.not. allocated(t_vpsp)) allocate (t_vpsp(MCENT, MPS_QUAD, MELEC))
+        if (.not. allocated(t_vpsp)) allocate (t_vpsp(ncent_tot, MPS_QUAD, nelec))
     end subroutine allocate_casula
 
     subroutine deallocate_casula()
@@ -166,80 +131,6 @@ module chck
     public :: bot
     save
 end module chck
-
-module coefs
-    !> need a better name is that the MO ?
-    !> if yes can we put it in basis ?
-    !> Arguments: coef, nbasis, norb
-    use force_mod, only: MWF
-    use precision_kinds, only: dp
-    use vmc_mod, only: MORB, MBASIS
-
-    real(dp), dimension(:, :, :), allocatable :: coef !(MBASIS,MORB,MWF)
-    integer :: nbasis
-    integer :: norb
-    integer :: next_max 
-
-    private
-    public :: coef, nbasis, norb
-    public :: allocate_coefs, deallocate_coefs
-    public :: next_max
-    save
-contains
-    subroutine allocate_coefs()
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MORB, MBASIS
-        if (.not. allocated(coef)) allocate (coef(MBASIS, MORB, MWF))
-    end subroutine allocate_coefs
-
-    subroutine deallocate_coefs()
-        if (allocated(coef)) deallocate (coef)
-    end subroutine deallocate_coefs
-
-end module coefs
-
-module csfs
-    !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    use force_mod, only: MWF
-    use precision_kinds, only: dp
-    use vmc_mod, only: MDET
-    use mstates_mod, only: MSTATES, MDETCSFX
-
-    real(dp), dimension(:, :, :), allocatable :: ccsf !(MDET,MSTATES,MWF)
-    real(dp), dimension(:), allocatable :: cxdet !(MDET*MDETCSFX)
-    integer, dimension(:), allocatable :: iadet !(MDET)
-    integer, dimension(:), allocatable :: ibdet !(MDET)
-    integer, dimension(:), allocatable :: icxdet !(MDET*MDETCSFX)
-    integer :: ncsf
-    integer :: nstates
-
-    private
-    public   :: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    public :: allocate_csfs, deallocate_csfs
-    save
-contains
-    subroutine allocate_csfs()
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MDET
-        use mstates_mod, only: MSTATES, MDETCSFX
-        if (.not. allocated(ccsf)) allocate (ccsf(MDET, MSTATES, MWF))
-        if (.not. allocated(cxdet)) allocate (cxdet(MDET*MDETCSFX))
-        if (.not. allocated(iadet)) allocate (iadet(MDET))
-        if (.not. allocated(ibdet)) allocate (ibdet(MDET))
-        if (.not. allocated(icxdet)) allocate (icxdet(MDET*MDETCSFX))
-    end subroutine allocate_csfs
-
-    subroutine deallocate_csfs()
-        if (allocated(icxdet)) deallocate (icxdet)
-        if (allocated(ibdet)) deallocate (ibdet)
-        if (allocated(iadet)) deallocate (iadet)
-        if (allocated(cxdet)) deallocate (cxdet)
-        if (allocated(ccsf)) deallocate (ccsf)
-    end subroutine deallocate_csfs
-
-end module csfs
 
 module cuspmat
     !> Never called !
@@ -299,62 +190,6 @@ contains
 
 end module cuspmat4
 
-module dets
-    !> Arguments: cdet, ndet
-    use force_mod, only: MWF
-    use precision_kinds, only: dp
-    use vmc_mod, only: MDET
-    use mstates_mod, only: MSTATES
-
-    real(dp), dimension(:, :, :), allocatable :: cdet !(MDET,MSTATES,MWF)
-    integer :: ndet
-
-    private
-    public   :: cdet, ndet
-    public :: allocate_dets, deallocate_dets
-    save
-contains
-    subroutine allocate_dets()
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MDET
-        use mstates_mod, only: MSTATES
-        if (.not. allocated(cdet)) allocate (cdet(MDET, MSTATES, MWF))
-    end subroutine allocate_dets
-
-    subroutine deallocate_dets()
-        if (allocated(cdet)) deallocate (cdet)
-    end subroutine deallocate_dets
-
-end module dets
-
-module dets_equiv
-    !> Arguments: cdet_equiv, dcdet_equiv
-    use precision_kinds, only: dp
-    use vmc_mod, only: MDET
-
-    real(dp), dimension(:), allocatable :: cdet_equiv !(MDET)
-    real(dp), dimension(:), allocatable :: dcdet_equiv !(MDET)
-
-    private
-    public   ::  cdet_equiv, dcdet_equiv
-    public :: allocate_dets_equiv, deallocate_dets_equiv
-    save
-contains
-    subroutine allocate_dets_equiv()
-        use precision_kinds, only: dp
-        use vmc_mod, only: MDET
-        if (.not. allocated(cdet_equiv)) allocate (cdet_equiv(MDET))
-        if (.not. allocated(dcdet_equiv)) allocate (dcdet_equiv(MDET))
-    end subroutine allocate_dets_equiv
-
-    subroutine deallocate_dets_equiv()
-        if (allocated(dcdet_equiv)) deallocate (dcdet_equiv)
-        if (allocated(cdet_equiv)) deallocate (cdet_equiv)
-    end subroutine deallocate_dets_equiv
-
-end module dets_equiv
-
 module distance_mod
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MCENT, MMAT_DIM2
@@ -375,13 +210,15 @@ module distance_mod
     save
 contains
     subroutine allocate_distance_mod()
+        use const, only: nelec
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT, MMAT_DIM2
-        if (.not. allocated(r_en)) allocate (r_en(MELEC, MCENT))
-        if (.not. allocated(rvec_en)) allocate (rvec_en(3, MELEC, MCENT))
+        if (.not. allocated(r_en)) allocate (r_en(nelec, ncent_tot))
+        if (.not. allocated(rvec_en)) allocate (rvec_en(3, nelec, ncent_tot))
         if (.not. allocated(r_ee)) allocate (r_ee(MMAT_DIM2))
         if (.not. allocated(rvec_ee)) allocate (rvec_ee(3, MMAT_DIM2))
-        if (.not. allocated(rshift)) allocate (rshift(3, MELEC, MCENT))
+        if (.not. allocated(rshift)) allocate (rshift(3, nelec, ncent_tot))
     end subroutine allocate_distance_mod
 
     subroutine deallocate_distance_mod()
@@ -411,13 +248,15 @@ module distances_sav
     save
 contains
     subroutine allocate_distances_sav()
+        use const, only: nelec
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
-        if (.not. allocated(r_ee_sav)) allocate (r_ee_sav(MELEC))
-        if (.not. allocated(r_en_sav)) allocate (r_en_sav(MCENT))
-        if (.not. allocated(rshift_sav)) allocate (rshift_sav(3, MCENT))
-        if (.not. allocated(rvec_ee_sav)) allocate (rvec_ee_sav(3, MELEC))
-        if (.not. allocated(rvec_en_sav)) allocate (rvec_en_sav(3, MCENT))
+        if (.not. allocated(r_ee_sav)) allocate (r_ee_sav(nelec))
+        if (.not. allocated(r_en_sav)) allocate (r_en_sav(ncent_tot))
+        if (.not. allocated(rshift_sav)) allocate (rshift_sav(3, ncent_tot))
+        if (.not. allocated(rvec_ee_sav)) allocate (rvec_ee_sav(3, nelec))
+        if (.not. allocated(rvec_en_sav)) allocate (rvec_en_sav(3, ncent_tot))
     end subroutine allocate_distances_sav
 
     subroutine deallocate_distances_sav()
@@ -479,13 +318,14 @@ module gauss_ecp
     save
 contains
     subroutine allocate_gauss_ecp()
+        use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MGAUSS
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
-        if (.not. allocated(ecp_coef)) allocate (ecp_coef(MGAUSS, MPS_L, MCTYPE))
-        if (.not. allocated(ecp_exponent)) allocate (ecp_exponent(MGAUSS, MPS_L, MCTYPE))
-        if (.not. allocated(necp_power)) allocate (necp_power(MGAUSS, MPS_L, MCTYPE))
-        if (.not. allocated(necp_term)) allocate (necp_term(MPS_L, MCTYPE))
+        if (.not. allocated(ecp_coef)) allocate (ecp_coef(MGAUSS, MPS_L, nctype_tot))
+        if (.not. allocated(ecp_exponent)) allocate (ecp_exponent(MGAUSS, MPS_L, nctype_tot))
+        if (.not. allocated(necp_power)) allocate (necp_power(MGAUSS, MPS_L, nctype_tot))
+        if (.not. allocated(necp_term)) allocate (necp_term(MPS_L, nctype_tot))
     end subroutine allocate_gauss_ecp
 
     subroutine deallocate_gauss_ecp()
@@ -579,7 +419,6 @@ end module linear_norm
 
 module multidet
     !> Arguments: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
-    use vmc_mod, only: MELEC, MDET
 
     integer, dimension(:), allocatable :: iactv !(2)
     integer, dimension(:, :, :), allocatable :: irepcol_det !(MELEC,MDET,2)
@@ -595,13 +434,15 @@ module multidet
     save
 contains
     subroutine allocate_multidet()
+        use const, only: nelec
+        use dets, only: ndet
         use vmc_mod, only: MELEC, MDET
         if (.not. allocated(iactv)) allocate (iactv(2))
-        if (.not. allocated(irepcol_det)) allocate (irepcol_det(MELEC, MDET, 2))
-        if (.not. allocated(ireporb_det)) allocate (ireporb_det(MELEC, MDET, 2))
+        if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
+        if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2))
         if (.not. allocated(ivirt)) allocate (ivirt(2))
-        if (.not. allocated(iwundet)) allocate (iwundet(MDET, 2))
-        if (.not. allocated(numrep_det)) allocate (numrep_det(MDET, 2))
+        if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
+        if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
     end subroutine allocate_multidet
 
     subroutine deallocate_multidet()
@@ -618,8 +459,6 @@ end module multidet
 module multimat
     !> Arguments: aa, wfmat
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC, MORB, MDET
-    use vmc_mod, only: MEXCIT
 
     real(dp), dimension(:, :, :), allocatable :: aa !(MELEC,MORB,2)
     real(dp), dimension(:, :, :), allocatable :: wfmat !(MEXCIT**2,MDET,2)
@@ -630,10 +469,13 @@ module multimat
     save
 contains
     subroutine allocate_multimat()
+        use const, only: nelec
+        use dets, only: ndet
+        use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aa)) allocate (aa(MELEC, MORB, 2))
+        if (.not. allocated(aa)) allocate (aa(nelec, MORB, 2))
         if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, MDET, 2))
     end subroutine allocate_multimat
 
@@ -647,8 +489,6 @@ end module multimat
 module multimatn
     !> Arguments: aan, wfmatn
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC, MORB, MDET
-    use vmc_mod, only: MEXCIT
 
     real(dp), dimension(:, :), allocatable :: aan !(MELEC,MORB)
     real(dp), dimension(:, :), allocatable :: wfmatn !(MEXCIT**2,MDET)
@@ -659,10 +499,13 @@ module multimatn
     save
 contains
     subroutine allocate_multimatn()
+        use const, only: nelec
+        use dets, only: ndet
+        use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aan)) allocate (aan(MELEC, MORB))
+        if (.not. allocated(aan)) allocate (aan(nelec, MORB))
         if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, MDET))
     end subroutine allocate_multimatn
 
@@ -690,6 +533,7 @@ module multislater
     save
 contains
     subroutine allocate_multislater()
+        use dets, only: ndet
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
         if (.not. allocated(detiab)) allocate(detiab(MDET, 2))
@@ -722,6 +566,8 @@ module multislatern
     save
 contains
     subroutine allocate_multislatern()
+        use dets, only: ndet
+        use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MORB, MDET
         if (.not. allocated(ddorbn)) allocate (ddorbn(MORB))
@@ -782,11 +628,13 @@ module orbval
     save
 contains
     subroutine allocate_orbval()
+        use const, only: nelec
+        use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
-        if (.not. allocated(ddorb)) allocate (ddorb(MELEC, MORB))
-        if (.not. allocated(dorb)) allocate (dorb(3, MELEC, MORB))
-        if (.not. allocated(orb)) allocate (orb(MELEC, MORB))
+        if (.not. allocated(ddorb)) allocate (ddorb(nelec, MORB))
+        if (.not. allocated(dorb)) allocate (dorb(3, nelec, MORB))
+        if (.not. allocated(orb)) allocate (orb(nelec, MORB))
     end subroutine allocate_orbval
 
     subroutine deallocate_orbval()
@@ -817,16 +665,18 @@ module phifun
     save
 contains
     subroutine allocate_phifun()
+        use const, only: nelec
+        use coefs, only: nbasis
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MBASIS
-        if (.not. allocated(d2phin)) allocate (d2phin(MBASIS, MELEC))
-        if (.not. allocated(d2phin_all)) allocate (d2phin_all(3, 3, MBASIS, MELEC))
-        if (.not. allocated(d3phin)) allocate (d3phin(3, MBASIS, MELEC))
-        if (.not. allocated(dphin)) allocate (dphin(3, MBASIS, MELEC))
-        if (.not. allocated(n0_ibasis)) allocate (n0_ibasis(MBASIS, MELEC))
-        if (.not. allocated(n0_ic)) allocate (n0_ic(MBASIS, MELEC))
-        if (.not. allocated(n0_nbasis)) allocate (n0_nbasis(MELEC))
-        if (.not. allocated(phin)) allocate (phin(MBASIS, MELEC))
+        if (.not. allocated(d2phin)) allocate (d2phin(nbasis, nelec))
+        if (.not. allocated(d2phin_all)) allocate (d2phin_all(3, 3, nbasis, nelec))
+        if (.not. allocated(d3phin)) allocate (d3phin(3, nbasis, nelec))
+        if (.not. allocated(dphin)) allocate (dphin(3, nbasis, nelec))
+        if (.not. allocated(n0_ibasis)) allocate (n0_ibasis(nbasis, nelec))
+        if (.not. allocated(n0_ic)) allocate (n0_ic(nbasis, nelec))
+        if (.not. allocated(n0_nbasis)) allocate (n0_nbasis(nelec))
+        if (.not. allocated(phin)) allocate (phin(nbasis, nelec))
     end subroutine allocate_phifun
 
     subroutine deallocate_phifun()
@@ -941,10 +791,13 @@ module scratch
     save
 contains
     subroutine allocate_scratch()
+        use const, only: nelec
+        use dets, only: ndet
+        use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
         if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2))
-        if (.not. allocated(dtildem)) allocate (dtildem(MELEC, MORB, 2))
+        if (.not. allocated(dtildem)) allocate (dtildem(nelec, MORB, 2))
     end subroutine allocate_scratch
 
     subroutine deallocate_scratch()
@@ -981,10 +834,11 @@ module slater
 
 contains
     subroutine allocate_slater()
+        use const, only: nelec
         use precision_kinds, only: dp
-        use vmc_mod, only: MELEC, MMAT_DIM
-        if (.not. allocated(d2dx2)) allocate(d2dx2(MELEC))
-        if (.not. allocated(ddx)) allocate(ddx(3, MELEC))
+        use vmc_mod, only: MMAT_DIM
+        if (.not. allocated(d2dx2)) allocate(d2dx2(nelec))
+        if (.not. allocated(ddx)) allocate(ddx(3, nelec))
         if (.not. allocated(fp)) allocate(fp(3, MMAT_DIM, 2))
         if (.not. allocated(fpp)) allocate(fpp(MMAT_DIM, 2))
         if (.not. allocated(slmi)) allocate(slmi(MMAT_DIM, 2))
@@ -1049,8 +903,6 @@ end module svd_mod
 module vardep
     !> Arguments: cdep, iwdepend, nvdepend
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
-    use vmc_mod, only: NEQSX
 
     real(dp), dimension(:, :, :), allocatable :: cdep !(NEQSX,83,MCTYPE)
     integer, dimension(:, :, :), allocatable :: iwdepend !(NEQSX,83,MCTYPE)
@@ -1062,12 +914,12 @@ module vardep
     save
 contains
     subroutine allocate_vardep()
+        use atom, only: nctype_tot
         use precision_kinds, only: dp
-        use vmc_mod, only: MCTYPE
         use vmc_mod, only: NEQSX
-        if (.not. allocated(cdep)) allocate (cdep(NEQSX, 83, MCTYPE))
-        if (.not. allocated(iwdepend)) allocate (iwdepend(NEQSX, 83, MCTYPE))
-        if (.not. allocated(nvdepend)) allocate (nvdepend(NEQSX, MCTYPE))
+        if (.not. allocated(cdep)) allocate (cdep(NEQSX, 83, nctype_tot))
+        if (.not. allocated(iwdepend)) allocate (iwdepend(NEQSX, 83, nctype_tot))
+        if (.not. allocated(nvdepend)) allocate (nvdepend(NEQSX, nctype_tot))
     end subroutine allocate_vardep
 
     subroutine deallocate_vardep()
@@ -1092,10 +944,11 @@ module velocity_jastrow
     save
 contains
     subroutine allocate_velocity_jastrow()
+        use const, only: nelec
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
-        if (.not. allocated(vj)) allocate (vj(3, MELEC))
-        if (.not. allocated(vjn)) allocate (vjn(3, MELEC))
+        if (.not. allocated(vj)) allocate (vj(3, nelec))
+        if (.not. allocated(vjn)) allocate (vjn(3, nelec))
     end subroutine allocate_velocity_jastrow
 
     subroutine deallocate_velocity_jastrow()
@@ -1104,30 +957,6 @@ contains
     end subroutine deallocate_velocity_jastrow
 
 end module velocity_jastrow
-
-module wfsec
-    use force_mod, only: MFORCE
-    !> Arguments: iwf, iwftype, nwftype
-
-    integer :: iwf
-    integer, dimension(:), allocatable :: iwftype !(MFORCE)
-    integer :: nwftype
-
-    private
-    public :: iwf, iwftype, nwftype
-    public :: allocate_wfsec, deallocate_wfsec
-    save
-contains
-    subroutine allocate_wfsec()
-        use force_mod, only: MFORCE
-        if (.not. allocated(iwftype)) allocate (iwftype(MFORCE))
-    end subroutine allocate_wfsec
-
-    subroutine deallocate_wfsec()
-        if (allocated(iwftype)) deallocate (iwftype)
-    end subroutine deallocate_wfsec
-
-end module wfsec
 
 module ycompact
     !> Arguments: dymat, ymat
@@ -1144,11 +973,14 @@ module ycompact
     save
 contains
     subroutine allocate_ycompact()
+        use const, only: nelec
+        use csfs, only: nstates
+        use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
-        if (.not. allocated(dymat)) allocate (dymat(MORB, MELEC, 2, MSTATES))
-        if (.not. allocated(ymat)) allocate (ymat(MORB, MELEC, 2, MSTATES))
+        if (.not. allocated(dymat)) allocate (dymat(MORB, nelec, 2, MSTATES))
+        if (.not. allocated(ymat)) allocate (ymat(MORB, nelec, 2, MSTATES))
     end subroutine allocate_ycompact
 
     subroutine deallocate_ycompact()
@@ -1172,10 +1004,13 @@ module ycompactn
     save
 contains
     subroutine allocate_ycompactn()
+        use const, only: nelec
+        use csfs, only: nstates
+        use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
-        if (.not. allocated(ymatn)) allocate (ymatn(MORB, MELEC, MSTATES))
+        if (.not. allocated(ymatn)) allocate (ymatn(MORB, nelec, MSTATES))
     end subroutine allocate_ycompactn
 
     subroutine deallocate_ycompactn()
@@ -1201,13 +1036,16 @@ module zcompact
     save
 contains
     subroutine allocate_zcompact()
+        use const, only: nelec
+        use csfs, only: nstates
+        use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
         use mstates_mod, only: MSTATES
-        if (.not. allocated(aaz)) allocate (aaz(MELEC, MELEC, 2, MSTATES))
-        if (.not. allocated(dzmat)) allocate (dzmat(MORB, MELEC, 2, MSTATES))
-        if (.not. allocated(emz)) allocate (emz(MELEC, MELEC, 2, MSTATES))
-        if (.not. allocated(zmat)) allocate (zmat(MORB, MELEC, 2, MSTATES))
+        if (.not. allocated(aaz)) allocate (aaz(nelec, nelec, 2, MSTATES))
+        if (.not. allocated(dzmat)) allocate (dzmat(MORB, nelec, 2, MSTATES))
+        if (.not. allocated(emz)) allocate (emz(nelec, nelec, 2, MSTATES))
+        if (.not. allocated(zmat)) allocate (zmat(MORB, nelec, 2, MSTATES))
     end subroutine allocate_zcompact
 
     subroutine deallocate_zcompact()
@@ -1236,12 +1074,13 @@ module zmatrix
     save
 contains
     subroutine allocate_zmatrix()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT
-        if (.not. allocated(czcart)) allocate (czcart(3, MCENT))
-        if (.not. allocated(czint)) allocate (czint(3, MCENT))
+        if (.not. allocated(czcart)) allocate (czcart(3, ncent_tot))
+        if (.not. allocated(czint)) allocate (czint(3, ncent_tot))
         if (.not. allocated(czcart_ref)) allocate (czcart_ref(3, 3))
-        if (.not. allocated(izcmat)) allocate (izcmat(3, MCENT))
+        if (.not. allocated(izcmat)) allocate (izcmat(3, ncent_tot))
     end subroutine allocate_zmatrix
 
     subroutine deallocate_zmatrix()
@@ -1267,6 +1106,7 @@ module zmatrix_grad
     save
 contains
     subroutine allocate_zmatrix_grad()
+        use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT3
         if (.not. allocated(transform_grd)) allocate (transform_grd(MCENT3, MCENT3))
@@ -1279,15 +1119,16 @@ contains
 end module zmatrix_grad
 
 subroutine allocate_m_common()
+
     use atom, only: allocate_atom
     use b_tmove, only: allocate_b_tmove
     use Bloc, only: allocate_Bloc
     use casula, only: allocate_casula
-    use coefs, only: allocate_coefs
+    ! use coefs, only: allocate_coefs
     use csfs, only: allocate_csfs
     use cuspmat, only: allocate_cuspmat
     use cuspmat4, only: allocate_cuspmat4
-    use dets, only: allocate_dets
+    ! use dets, only: allocate_dets
     use dets_equiv, only: allocate_dets_equiv
     use distance_mod, only: allocate_distance_mod
     use distances_sav, only: allocate_distances_sav
@@ -1308,7 +1149,7 @@ subroutine allocate_m_common()
     use slatn, only: allocate_slatn
     use vardep, only: allocate_vardep
     use velocity_jastrow, only: allocate_velocity_jastrow
-    use wfsec, only: allocate_wfsec
+    ! use wfsec, only: allocate_wfsec
     use ycompact, only: allocate_ycompact
     use ycompactn, only: allocate_ycompactn
     use zcompact, only: allocate_zcompact
@@ -1319,11 +1160,11 @@ subroutine allocate_m_common()
     call allocate_b_tmove()
     call allocate_Bloc()
     call allocate_casula()
-    call allocate_coefs()
+    ! call allocate_coefs()
     call allocate_csfs()
     call allocate_cuspmat()
     call allocate_cuspmat4()
-    call allocate_dets()
+    ! call allocate_dets()
     call allocate_dets_equiv()
     call allocate_distance_mod()
     call allocate_distances_sav()
@@ -1344,7 +1185,7 @@ subroutine allocate_m_common()
     call allocate_slatn()
     call allocate_vardep()
     call allocate_velocity_jastrow()
-    call allocate_wfsec()
+    ! call allocate_wfsec()
     call allocate_ycompact()
     call allocate_ycompactn()
     call allocate_zcompact()
@@ -1353,7 +1194,7 @@ subroutine allocate_m_common()
 end subroutine allocate_m_common
 
 subroutine deallocate_m_common()
-    use atom, only: deallocate_atom
+    ! use atom, only: deallocate_atom
     use b_tmove, only: deallocate_b_tmove
     use Bloc, only: deallocate_Bloc
     use casula, only: deallocate_casula
@@ -1389,7 +1230,7 @@ subroutine deallocate_m_common()
     use zmatrix, only: deallocate_zmatrix
     use zmatrix_grad, only: deallocate_zmatrix_grad
 
-    call deallocate_atom()
+    ! call deallocate_atom()
     call deallocate_b_tmove()
     call deallocate_Bloc()
     call deallocate_casula()
