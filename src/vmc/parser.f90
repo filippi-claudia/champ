@@ -384,6 +384,20 @@ subroutine parser
   nloc          = fdf_get('nloc',0)
   nquad         = fdf_get('nquad',6)    
 
+! geometry
+  nctype        = fdf_get('nctype',1)
+  ncent         = fdf_get('natom',1)
+  newghostype   = fdf_get('addghostype',0)
+  nghostcent    = fdf_get('nghostcent',0)
+
+! jastrow
+  ianalyt_lap   = fdf_get('ianalyt_lap',1)
+
+
+
+
+
+
   ! file_basis = fdf_load_filename('basis', 'default.bas')
   ! write(6,fmt=string_format) 'filename basis :: ', trim(file_basis)
 
