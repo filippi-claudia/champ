@@ -164,96 +164,82 @@ subroutine parser
 ! Initialize # get the filenames from the commandline arguments
   call fdf_init('test-champ.inp', 'test-champ.out')
 
-! Headers in general
+!! Number of input variables found so far :: 170
+
+
+! %module general (complete)
   title       = fdf_get('title', 'Untitled')
   pool_dir    = fdf_get('pool', '.')
   pp_id       = fdf_get('pseudopot', 'none')  
   bas_id      = fdf_get('basis', 'none')  
-
-! some units  
+  nforce      = fdf_get('nforce', 1)    
+  MFORCE      = nforce 
+  nwftype     = fdf_get('nwftype', 1)      
+  iperiodic   = fdf_get('iperiodic', 0)  
+  ibasis      = fdf_get('ibasis', 1)    
+  cseed       = fdf_get('seed', 1)    
+  ipr         = fdf_get('ipr', -1)    
   eunit       = fdf_get('unit', 'Hartrees')
   hb          = fdf_get('mass', 0.5d0)
+  scalecoef   = fdf_get('scalecoef',1.0d0)
+  i3dgrid     = fdf_get('i3dgrid',0)
+  i3dsplorb   = fdf_get('i3dsplorb',0)
+  i3dlagorb   = fdf_get('i3dlagorb',0)
+  i3ddensity  = fdf_get('i3ddensity',0)
 
-! %module electrons
+! %module electrons (complete)
   nelec       = fdf_get('nelec', 1)
   nup         = fdf_get('nup', 1)  
   ndn         = nelec-nup
 
-! %module atoms
+! %module atoms (complete)
   nctype      = fdf_get('nctype', 1)    
-  ncent       = fdf_get('ncent', 1)     
+  ncent       = fdf_get('natom', 1)     
   newghostype = fdf_get('newghostype', 0)       
   nghostcent  = fdf_get('nghostcent', 0)       
 
-! %module general
-  nforce      = fdf_get('nforce', 1)    
-  MFORCE      = nforce 
-  nwftype     = fdf_get('nwftype', 1)      
-
-! %module jastrow
+! %module jastrow (complete)
   ijas        = fdf_get('ijas', 1)      
   isc         = fdf_get('isc', 1)
   nspin1      = fdf_get('nspin1', 1)
   nspin2      = fdf_get('nspin2', 1)  
   ifock       = fdf_get('ifock', 0)
+  ianalyt_lap = fdf_get('ianalyt_lap',1)
 
-  ! general:
-  iperiodic   = fdf_get('iperiodic', 0)  
-  ibasis      = fdf_get('ibasis', 1)    
-  
-
-  ! mstates:
-  iguiding    = fdf_get('iguiding', 0)      
-  ! efield:  
-  iefield     = fdf_get('iefield', 0)       
-
-  ! optgeo:  
+! %module optgeo (complete)
   iforce_analy= fdf_get('iforce_analy', 0)  
   iuse_zmat   = fdf_get('iuse_zmat', 0)     
-  ! optwf:    
-  nadorb      = fdf_get('nextorb', next_max)
+  izvzb       = fdf_get('izvzb', 0)          
+  alfgeo      = fdf_get('alfgeo', 1.0d0)            
+  iroot_geo   = fdf_get('iroot_geo', 0)
 
+! %module gradients 
+  delgrdxyz   = fdf_get('delgrdxyz', 0.001d0)
+  igrdtype    = fdf_get('igrdtype', 1)
+  ngradnts    = fdf_get('ngradnts', 0)
+  delgrdbl    = fdf_get('delgrdbl', 0.001d0)
+  delgrdba    = fdf_get('delgrdba', 0.01d0)
+  delgrdda    = fdf_get('delgrdda', 0.01d0)
+  igrdtype    = fdf_get('igrdtype', 2)
+  ngradnts    = fdf_get('ngradnts', 0)
+  
+! %module mstates (complete)
+  iguiding      = fdf_get('iguiding',0)
+  iefficiency   = fdf_get('iefficiency',0)
 
-  ! module vmc
+! %module efield (complete)
+  iefield     = fdf_get('iefield', 0)       
+
+! module vmc (complete)
   imetro      = fdf_get('imetro', 6)     
   node_cutoff = fdf_get('node_cutoff', 0)       
-  eps_node_cutoff = fdf_get('eps_node_cutoff', 1.0d-7)         
-  
+  eps_node_cutoff = fdf_get('enode_cutoff', 1.0d-7)         
   delta       = fdf_get('delta', 1)       
   deltar      = fdf_get('deltar', 1)         
   deltat      = fdf_get('deltat', 1)         
   fbias       = fdf_get('fbias', 1.0d0)           
 
-
-  !module dmc
-  idmc        = fdf_get('idmc', 2)       
-  ipq         = fdf_get('ipq', 1)       
-  itau_eff    = fdf_get('itau_eff', 1)       
-  iacc_rej    = fdf_get('iacc_rej', 1)       
-  icross      = fdf_get('icross', 1)       
-  icuspg      = fdf_get('icuspg', 0)
-  idiv_v      = fdf_get('idiv_v', 0)
-  icut_br     = fdf_get('icut_br', 0)  
-  icut_e      = fdf_get('icut_e', 0)    
-
-! attention conflict dmc and vmc variable names match
-  dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)       
-  dmc_eps_node_cutoff = fdf_get('dmc_eps_node_cutoff', 1.0d-7)           
-!  call p2gtid('dmc:node_cutoff',node_cutoff,0,1)
-!  call p2gtfd('dmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
-
-  nfprod      = fdf_get('nfprod', 1)    
-  tau         = fdf_get('tau', 1)      
-  rttau=dsqrt(tau)
-
-  etrial      = fdf_get('etrial', 1)    
-  nfprod      = fdf_get('nfprod', 200)      
-  itausec     = fdf_get('itausec', 1)        
-
-  icasula     = fdf_get('icasula', 0)      
-  nloc        = fdf_get('nloc', 0)        
-
-! vmc
+! %module vmc / blocking_vmc (complete)
   vmc_nstep     = fdf_get('vmc_nstep', 1)    
   vmc_nblk      = fdf_get('vmc_nblk', 1)      
   vmc_nblkeq    = fdf_get('vmc_nblkeq', 2)        
@@ -266,7 +252,27 @@ subroutine parser
   vmc_icharged_atom     = fdf_get('vmc_icharged_atom', 0)            
 
 
-!dmc
+!module dmc (complete)
+  idmc        = fdf_get('idmc', 2)       
+  ipq         = fdf_get('ipq', 1)       
+  itau_eff    = fdf_get('itau_eff', 1)       
+  iacc_rej    = fdf_get('iacc_rej', 1)       
+  icross      = fdf_get('icross', 1)       
+  icuspg      = fdf_get('icuspg', 0)
+  idiv_v      = fdf_get('idiv_v', 0)
+  icut_br     = fdf_get('icut_br', 0)  
+  icut_e      = fdf_get('icut_e', 0)    
+  dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)       
+  dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)           
+  nfprod      = fdf_get('nfprod', 1)    
+  tau         = fdf_get('tau', 1)      
+  rttau=dsqrt(tau)
+  etrial      = fdf_get('etrial', 1)    
+  nfprod      = fdf_get('nfprod', 200)      
+  itausec     = fdf_get('itausec', 1)        
+  icasula     = fdf_get('icasula', 0)      
+
+! %module dmc / blocking_dmc (complete)
   dmc_nstep     = fdf_get('dmc_nstep', 1)    
   dmc_nblk      = fdf_get('dmc_nblk', 1)      
   dmc_nblkeq    = fdf_get('dmc_nblkeq', 2)          
@@ -278,9 +284,8 @@ subroutine parser
   dmc_isite     = fdf_get('dmc_isite', 1)          
   dmc_icharged_atom     = fdf_get('dmc_icharged_atom', 0)            
 
-!forces
-  izvzb         = fdf_get('izvzb', 0)          
-  alfgeo        = fdf_get('alfgeo', 1.0d0)            
+
+
 
 !optimization flags vmc/dmc
   ioptwf        = fdf_get('ioptwf', 0)    
@@ -288,66 +293,57 @@ subroutine parser
   idl_flag      = fdf_get('idl_flag', 0)      
   ilbfgs_flag   = fdf_get('ilbfgs_flag', 0)        
   ilbfgs_m      = fdf_get('ilbfgs_m', 5)        
-  i_sr_rescale  = fdf_get('i_sr_rescale', 0)        
-
+  i_sr_rescale  = fdf_get('sr_rescale', 0)        
   ibeta         = fdf_get('ibeta', -1)    
   ratio         = fdf_get('ratio', ratio_j)    
   iapprox       = fdf_get('iapprox', 0)    
   ncore         = fdf_get('ncore', 0)      
   iuse_orbeigv  = fdf_get('iuse_orbeigv', 0)    
-  
   ioptjas       = fdf_get('ioptjas', 0)    
   ioptorb       = fdf_get('ioptorb', 0)    
   ioptci        = fdf_get('ioptci', 0)    
   no_active     = fdf_get('no_active', 0)        
-
-! attention check the keyword nblk_max. it appears in opt/vmc/dmc
-  nblk_max      = fdf_get('nblk_max', nblk) !or vmc_nblk      
-
   energy_tol    = fdf_get('energy_tol', 1.d-3)
   dparm_norm_min = fdf_get('dparm_norm_min', 1.0d0)
   add_diag(1)   = fdf_get('add_diag',1.d-6)
   nopt_iter     = fdf_get('nopt_iter',6)
   micro_iter_sr = fdf_get('micro_iter_sr', 1)
-
   ifunc_omega   = fdf_get('func_omega', 0)
   omega0        = fdf_get('omega', 0.d0)
   n_omegaf      = fdf_get('n_omegaf', nopt_iter)
   n_omegat      = fdf_get('n_omegat', 0)
-
   nvec          = fdf_get('lin_nvec', 5)
   nvecx         = fdf_get('lin_nvecx', MVEC)
   alin_adiag    = fdf_get('lin_adiag', 0.01)
   alin_eps      = fdf_get('lin_eps', 0.001)
   lin_jdav      = fdf_get('lin_jdav',0)
   multiple_adiag = fdf_get('multiple_adiag',0)
-
   sr_tau        = fdf_get('sr_tau', 0.02)
   sr_adiag      = fdf_get('sr_adiag', 0.01)
   sr_eps        = fdf_get('sr_eps', 0.001)
-
-  iroot_geo     = fdf_get('iroot_geo', 0)
-  nblk_ci       = fdf_get('nblk_ci', nblk)  !attention
   ilastvmc      = fdf_get('ilastvmc',1)
   dl_mom        = fdf_get('dl_mom', 0.0)
   dl_alg        = fdf_get('dl_alg','nag')
-
-
+  nadorb        = fdf_get('nextorb', next_max)
   ngrad_jas_blocks = fdf_get('ngrad_jas_blocks',0)
   isample_cmat  = fdf_get('isample_cmat', 1)
   isavebl       = fdf_get('save_blocks', 0)
   nefp_blocks   = fdf_get('force_blocks',1)
   iorbsample    = fdf_get('iorbsample',1)
-  !ci
+! attention check the keyword nblk_max. it appears in opt/vmc/dmc
+  nblk_max      = fdf_get('nblk_max', nblk) !or vmc_nblk      
+  nblk_ci       = fdf_get('nblk_ci', nblk)  !attention conflicting default
+
+  
+  
+! %module ci
   iciprt        = fdf_get('ci:iciprt',0)  
-  !mstates
-  iguiding      = fdf_get('iguiding',0)
-  iefficiency   = fdf_get('iefficiency',0)
-  !pcm
-  iefield       = fdf_get('efield:iefield',0)
+
+
+!%module pcm (complete)
+
   ipcm          = fdf_get('ipcm',0)
   ipcmprt       = fdf_get('ipcmprt',0)
-
   pcmfile_cavity = fdf_get('file_cavity','pcm000.dat')
   pcmfile_chs   = fdf_get('file_chs','chsurf_old')
   pcmfile_chv   = fdf_get('file_chv','chvol_old')
@@ -372,29 +368,24 @@ subroutine parser
   pcm_endpt(3)  = fdf_get('zn_pcm',UNDEFINED)
   PCM_SHIFT     = fdf_get('shift',4.d0)
 
-
+! %module mmpol (complete)
   immpol        = fdf_get('immpol',0)
   immpolprt     = fdf_get('immpolprt',0)
   mmpolfile_sites = fdf_get('file_sites','mmpol000.dat')
   mmpolfile_chmm = fdf_get('file_mmdipo','mmdipo_old')
   a_cutoff      = fdf_get('a_cutoff',2.5874d0)
   rcolm         = fdf_get('rcolm',0.04d0)
+
+! %module properties
   iprop         = fdf_get('sample',0)
   ipropprt      = fdf_get('print',0)
-  nloc          = fdf_get('nloc',0)
   nquad         = fdf_get('nquad',6)    
 
-! geometry
-  nctype        = fdf_get('nctype',1)
-  ncent         = fdf_get('natom',1)
-  newghostype   = fdf_get('addghostype',0)
-  nghostcent    = fdf_get('nghostcent',0)
+! %module pseudo
+  nloc          = fdf_get('nloc',0)  
 
-! jastrow
-  ianalyt_lap   = fdf_get('ianalyt_lap',1)
-
-
-
+! %module qmmm
+  iqmm          = fdf_get('iqmm',0)    
 
 
 
@@ -403,27 +394,27 @@ subroutine parser
 
 ! module dependent processing . These will be replaced by inliners
 
-! %module blocking_vmc  
-  if (fdf_defined("blocking_vmc")) then
-    mode      = fdf_get('mode_dmc', 'dmc_one_mpi1')        
-    vmc_nstep     = fdf_get('vmc_nstep', 1)    
-    vmc_nblk      = fdf_get('vmc_nblk', 1)      
-    ! set variable default from %optwf module
-    vmc_nblk_max  = fdf_get('vmc_nblk_max', 1)      
-  endif 
+! ! %module blocking_vmc  
+!   if (fdf_defined("blocking_vmc")) then
+!     mode      = fdf_get('mode_dmc', 'dmc_one_mpi1')        
+!     vmc_nstep     = fdf_get('vmc_nstep', 1)    
+!     vmc_nblk      = fdf_get('vmc_nblk', 1)      
+!     ! set variable default from %optwf module
+!     vmc_nblk_max  = fdf_get('vmc_nblk_max', 1)      
+!   endif 
 
-  if (fdf_defined("blocking_dmc")) then
-    dmc_nstep     = fdf_get('dmc_nstep', 1)    
-    dmc_nblk      = fdf_get('dmc_nblk', 1)      
-    ! set variable default from %optwf module
-    dmc_nblk_max  = fdf_get('dmc_nblk_max', 1)      
-  endif 
+!   if (fdf_defined("blocking_dmc")) then
+!     dmc_nstep     = fdf_get('dmc_nstep', 1)    
+!     dmc_nblk      = fdf_get('dmc_nblk', 1)      
+!     ! set variable default from %optwf module
+!     dmc_nblk_max  = fdf_get('dmc_nblk_max', 1)      
+!   endif 
   
 ! %module optwf
-  if (fdf_defined("optwf")) then
-    method        = fdf_get('method', 'linear')        
-    nwftype = 3; MFORCE = 3
-  endif
+  ! if (fdf_defined("optwf")) then
+  !   method        = fdf_get('method', 'linear')        
+  !   nwftype = 3; MFORCE = 3
+  ! endif
 
   call compute_mat_size_new()
 
@@ -506,113 +497,6 @@ endif
 
 
 
-
-
-
-
-
-
-! ! &optwf ioptwf 1 ioptci 1 ioptjas 1 ioptorb 1
-!   optimize_wavefunction = fdf_boolean("optimize_wavefunction", .false.)
-!   write(6,*) ' optimize_wavefunction = ', optimize_wavefunction
-
-!   optimize_ci = fdf_boolean('optimize_ci', .false.)
-!   write(6,*) ' optimize_ci = ', optimize_ci
-
-!   optimize_jastrow = fdf_boolean('optimize_jastrow', .false.)
-!   write(6,*) ' optimize_jastrow = ', optimize_jastrow
-
-!   optimize_orbitals = fdf_boolean('optimize_orbitals', .false.)
-!   write(6,*) ' optimize_orbitals = ', optimize_orbitals
-
-!   write(6,'(A)')  
-!   write(6,*) '------------------------------------------------------'
-
-
-! !Integer numbers (keyword, default_value). The variable is assigned default_value when keyword is not present
-!   ! &optwf ncore 0 nextorb 280 no_active 0
-!   ! &optwf nblk_max 200 nopt_iter 2
-!   ncore = fdf_integer('ncore', 0)
-!   write(6,fmt=int_format) 'NCore =', ncore
-
-!   nextorb = fdf_integer('nextorb', 0)
-!   write(6,fmt=int_format) 'Next Orb =', nextorb
-
-!   no_active = fdf_integer('no_active', 0)
-!   write(6,fmt=int_format) 'no_active =', no_active
-
-!   nblk_max = fdf_integer('nblk_max', 0)
-!   write(6,fmt=int_format) 'nblk max =', nblk_max
-
-!   nopt_iter = fdf_integer('nopt_iter', 0)
-!   write(6,fmt=int_format) 'nopt_iter =', nopt_iter
-
-
-! ! floats (keyword, default_value) variable is assigned default_value when keyword is not present
-
-!   ! &optwf sr_tau 0.025 sr_eps 0.001 sr_adiag 0.01
-!   ! &optwf isample_cmat 0 energy_tol 0.0
-  
-!   sr_tau = fdf_get('sr_tau', 0.025d0)
-!   write(6,fmt=real_format) 'sr_tau:', sr_tau
-
-!   sr_eps = fdf_get('sr_eps', 0.001d0)
-!   write(6,fmt=real_format) 'sr_eps:', sr_eps
-
-!   sr_adiag = fdf_get('sr_adiag', 0.01d0)
-!   write(6,fmt=real_format) 'sr_adiag:', sr_adiag
-
-!   energy_tol = fdf_get('energy_tol', 0.00001d0)
-!   write(6,fmt=real_format) 'energy_tol:', energy_tol
-
-!   ! &optwf method sr_n multiple_adiag 0
-
-!   opt_method = fdf_get('opt_method', "sr_n")
-!   write(6,*) 'Optimization method ', opt_method
-
-!   multiple_adiag = fdf_get('multiple_adiag', .false.)
-!   write(6,*) 'multiple_adiag:', multiple_adiag
-
-
-!   ! logical :: true, .true., yes, T, and TRUE are equivalent
-!   debug = fdf_boolean('Debug', .TRUE.)
-!   write(6,'(A, L2)') 'Debug:', debug
-
-
-! ! ianalyt_lap 1 isc 2 nspin1 1 nspin2 1 ifock 0
-!   analytic_laplacian = fdf_get('ianalyt_lap', 1)
-!   write(6,*) 'analytic laplacian from global.fdf pointer explained ', ianalyt_lap
-
-!   nspin1 = fdf_get('nspin1', 1)
-!   write(6,*) 'nspin1 from global.fdf ', nspin1
-
-!   nspin2 = fdf_get('nspin2', 1)
-!   write(6,*) 'nspin2 from global.fdf ', nspin2
-
-!   ifock = fdf_get('ifock', 1)
-!   write(6,*) 'ifock from global.fdf ', ifock
-
-
-!   ! mixed types in one line (for example, reading a number with units)
-  ! tau = fdf_get('tau', 0.05)
-  ! write(6,fmt=real_format) 'DMC tau = ', tau
-
-  ! etrial = fdf_physical('etrial', -20.d0, 'eV')
-  ! write(6,fmt=real_format) 'Energy CutOff in eV :: ', etrial
-
-!   write(6,'(A)')  
-
-!   write(6,*) '------------------------------------------------------'
-
-
-
-! !  Additional keywords. check if they clash with existing
-
-!   excess_charge = fdf_integer('excess_charge', 0)
-!   write(6,fmt=int_format) 'Excess charges =', excess_charge
-
-!   multiplicity = fdf_integer('multiplicity', 1)   ! default multiplicity singlet. An assertion is needed
-!   write(6,fmt=int_format) 'multiplicity =', multiplicity
 
   
 
