@@ -105,7 +105,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
   
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-	list(APPEND Fortran_FLAGS "-O2" "-mcmodel=small" "-shared-intel" "-qopt-zmm-usage=high" "-xHOST" "-qopenmp-simd"
+	list(APPEND Fortran_FLAGS "-g" "-check all" "-traceback" "-warn all" "-O0" "-mcmodel=large" "-shared-intel" "-qopt-zmm-usage=high" "-xHOST" "-qopenmp-simd"
     "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
@@ -121,6 +121,7 @@ message(STATUS "compiler flags are: " ${Fortran_FLAGS})
 ## Subdirectories
 # Include the following subdirectories
 add_subdirectory(src/input)
+#add_subdirectory(src/parser)
 add_subdirectory(tools/interface)
 add_subdirectory(lib/cyrus)
 add_subdirectory(lib/pspline)

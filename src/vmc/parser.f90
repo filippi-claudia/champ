@@ -56,6 +56,7 @@ subroutine parser
   use optwf_contrl, only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
   use optwf_contrl, only: ibeta, ratio_j, iapprox, ncore
   use optwf_contrl, only: iuse_orbeigv
+  use optwf_contrl, only: no_active
   use optwf_parms, only: nparmj
   use optwf_sr_mod, only: i_sr_rescale, izvzb
   use pars, only: Z, a20, a21
@@ -112,7 +113,7 @@ subroutine parser
   use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
   use array_resize_utils, only: resize_tensor
   use grid3d_param, only: endpt, nstep3d, origin, step3d
-  use inputflags, only: node_cutoff, eps_node_cutoff, iqmmm, scalecoef
+  use inputflags, only: node_cutoff, eps_node_cutoff, dmc_node_cutoff, dmc_eps_node_cutoff, iqmmm, scalecoef
   use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
   use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
   use optwf_contrl, only: ilastvmc, iroot_geo
@@ -120,6 +121,15 @@ subroutine parser
   use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat
   use optwf_corsam, only: add_diag
   use dmc_mod, only: MWALK  
+
+  use grdntspar, only: delgrdxyz, igrdtype, ngradnts
+  use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
+
+  use inputflags, only: iznuc, igeometry, ibasis_num, ilcao, iexponents
+  use inputflags, only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
+  use inputflags, only: ici_def, iforces, icsfs, icharge_efield
+  use inputflags, only: imultideterminants, imodify_zmat, izmatrix_check
+  use inputflags, only: ihessian_zmat
 
 
 ! Note the following modules are new additions
@@ -131,7 +141,8 @@ subroutine parser
   integer, parameter         :: maxa = 100
   logical                    :: doit, debug
 
-  character(len=72)          :: fname, filename, fmt, title
+  character(len=72)          :: fname, filename, pool_dir
+  integer                    :: ifock , ratio, isavebl
 
   type(block_fdf)            :: bfdf
   type(parsed_line), pointer :: pline
@@ -139,15 +150,13 @@ subroutine parser
   character(len=20)          :: real_format    = '(A, T20, F14.8)'
   character(len=20)          :: int_format     = '(A, T20, I8)'
   character(len=80)          :: string_format  = '(A, T40, A)'  
-  character(len=132)         :: file_basis, file_pseudo, path_pool
-! for determinants sections
-  ! integer                    :: nelectrons, nexcitation, iostat
-  ! integer, allocatable       :: det_alpha(:), det_beta(:)
-  ! real(selected_real_kind(6,15)), allocatable :: det_coeff(:)
-  ! character(len=20)          :: temp1, temp2, temp3, temp4, temp5
+
+
 !------------------------------------------------------------------------- BEGIN
 ! debug purpose only
   character(len=72)          :: optwf, blocking_vmc, blocking_dmc
+  character(len=72)          :: file_basis, file_geometry, file_determinants, file_symmetry    
+  character(len=72)          :: file_jastrow, file_jastrow_der, file_orbitals, file_pseudo
 
 
 ! from process input subroutine
@@ -164,7 +173,9 @@ subroutine parser
 ! Initialize # get the filenames from the commandline arguments
   call fdf_init('test-champ.inp', 'test-champ.out')
 
-!! Number of input variables found so far :: 170
+
+  call flaginit_new()
+  !! Number of input variables found so far :: 170
 
 
 ! %module general (complete)
@@ -177,7 +188,7 @@ subroutine parser
   nwftype     = fdf_get('nwftype', 1)      
   iperiodic   = fdf_get('iperiodic', 0)  
   ibasis      = fdf_get('ibasis', 1)    
-  cseed       = fdf_get('seed', 1)    
+!  cseed       = fdf_get('seed', 1)    
   ipr         = fdf_get('ipr', -1)    
   eunit       = fdf_get('unit', 'Hartrees')
   hb          = fdf_get('mass', 0.5d0)
@@ -234,9 +245,9 @@ subroutine parser
   imetro      = fdf_get('imetro', 6)     
   node_cutoff = fdf_get('node_cutoff', 0)       
   eps_node_cutoff = fdf_get('enode_cutoff', 1.0d-7)         
-  delta       = fdf_get('delta', 1)       
-  deltar      = fdf_get('deltar', 1)         
-  deltat      = fdf_get('deltat', 1)         
+  delta       = fdf_get('delta', 1.)       
+  deltar      = fdf_get('deltar', 1.)         
+  deltat      = fdf_get('deltat', 1.)         
   fbias       = fdf_get('fbias', 1.0d0)           
 
 ! %module vmc / blocking_vmc (complete)
@@ -250,7 +261,7 @@ subroutine parser
   vmc_irstar    = fdf_get('vmc_irstar', 0)        
   vmc_isite     = fdf_get('vmc_isite', 1)          
   vmc_icharged_atom     = fdf_get('vmc_icharged_atom', 0)            
-
+  vmc_nblk_ci       = fdf_get('vmc_nblk_ci', vmc_nblk) 
 
 !module dmc (complete)
   idmc        = fdf_get('idmc', 2)       
@@ -265,9 +276,9 @@ subroutine parser
   dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)       
   dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)           
   nfprod      = fdf_get('nfprod', 1)    
-  tau         = fdf_get('tau', 1)      
+  tau         = fdf_get('tau', 1.)      
   rttau=dsqrt(tau)
-  etrial      = fdf_get('etrial', 1)    
+  etrial      = fdf_get('etrial', 1.)    
   nfprod      = fdf_get('nfprod', 200)      
   itausec     = fdf_get('itausec', 1)        
   icasula     = fdf_get('icasula', 0)      
@@ -283,6 +294,7 @@ subroutine parser
   dmc_irstar    = fdf_get('dmc_irstar', 0)        
   dmc_isite     = fdf_get('dmc_isite', 1)          
   dmc_icharged_atom     = fdf_get('dmc_icharged_atom', 0)            
+  dmc_nblk_ci       = fdf_get('dmc_nblk_ci', dmc_nblk) 
 
 
 
@@ -305,7 +317,7 @@ subroutine parser
   no_active     = fdf_get('no_active', 0)        
   energy_tol    = fdf_get('energy_tol', 1.d-3)
   dparm_norm_min = fdf_get('dparm_norm_min', 1.0d0)
-  add_diag(1)   = fdf_get('add_diag',1.d-6)
+!  add_diag(1)   = fdf_get('add_diag',1.d-6)
   nopt_iter     = fdf_get('nopt_iter',6)
   micro_iter_sr = fdf_get('micro_iter_sr', 1)
   ifunc_omega   = fdf_get('func_omega', 0)
@@ -324,19 +336,17 @@ subroutine parser
   ilastvmc      = fdf_get('ilastvmc',1)
   dl_mom        = fdf_get('dl_mom', 0.0)
   dl_alg        = fdf_get('dl_alg','nag')
-  nadorb        = fdf_get('nextorb', next_max)
   ngrad_jas_blocks = fdf_get('ngrad_jas_blocks',0)
   isample_cmat  = fdf_get('isample_cmat', 1)
   isavebl       = fdf_get('save_blocks', 0)
   nefp_blocks   = fdf_get('force_blocks',1)
   iorbsample    = fdf_get('iorbsample',1)
-! attention check the keyword nblk_max. it appears in opt/vmc/dmc
-  nblk_max      = fdf_get('nblk_max', nblk) !or vmc_nblk      
-  nblk_ci       = fdf_get('nblk_ci', nblk)  !attention conflicting default
+! attention please
+!  nadorb        = fdf_get('nextorb', next_max)  
 
   
   
-! %module ci
+! %module ci (complete)
   iciprt        = fdf_get('ci:iciprt',0)  
 
 
@@ -347,25 +357,25 @@ subroutine parser
   pcmfile_cavity = fdf_get('file_cavity','pcm000.dat')
   pcmfile_chs   = fdf_get('file_chs','chsurf_old')
   pcmfile_chv   = fdf_get('file_chv','chvol_old')
-  nscv          = fdf_get('nblk_chv',nblk)
-  iscov         = fdf_get('nstep_chv',nstep2)
+!  nscv          = fdf_get('nblk_chv',nblk)   ! attention
+!  iscov         = fdf_get('nstep_chv',nstep2) ! attention
   eps_solv      = fdf_get('eps_solv',1)
-  fcol          = fdf_get('fcol',1.d0)
+!  fcol          = fdf_get('fcol',1.d0)
   rcolv         = fdf_get('rcolv',0.04d0)
-  npmax         = fdf_get('npmax',1)
-  ipcm_3dgrid   = fdf_get('ipcm_3dgrid',ipcm_3dgrid,0)
-  ipcm_nstep3d(1) = fdf_get('nx_pcm',IUNDEFINED)
-  ipcm_nstep3d(2) = fdf_get('ny_pcm',IUNDEFINED)
-  ipcm_nstep3d(3) = fdf_get('nz_pcm',IUNDEFINED)
-  pcm_step3d(1) = fdf_get('dx_pcm',UNDEFINED)
-  pcm_step3d(2) = fdf_get('dy_pcm',UNDEFINED)
-  pcm_step3d(3) = fdf_get('dz_pcm',UNDEFINED)
-  pcm_origin(1) = fdf_get('x0_pcm',UNDEFINED)
-  pcm_origin(2) = fdf_get('y0_pcm',UNDEFINED)
-  pcm_origin(3) = fdf_get('z0_pcm',UNDEFINED)
-  pcm_endpt(1)  = fdf_get('xn_pcm',UNDEFINED)
-  pcm_endpt(2)  = fdf_get('yn_pcm',UNDEFINED)
-  pcm_endpt(3)  = fdf_get('zn_pcm',UNDEFINED)
+!  npmax         = fdf_get('npmax',1)
+  ipcm_3dgrid   = fdf_get('ipcm_3dgrid',0)
+  ! ipcm_nstep3d(1) = fdf_get('nx_pcm',IUNDEFINED)
+  ! ipcm_nstep3d(2) = fdf_get('ny_pcm',IUNDEFINED)
+  ! ipcm_nstep3d(3) = fdf_get('nz_pcm',IUNDEFINED)
+  ! pcm_step3d(1) = fdf_get('dx_pcm',UNDEFINED)
+  ! pcm_step3d(2) = fdf_get('dy_pcm',UNDEFINED)
+  ! pcm_step3d(3) = fdf_get('dz_pcm',UNDEFINED)
+  ! pcm_origin(1) = fdf_get('x0_pcm',UNDEFINED)
+  ! pcm_origin(2) = fdf_get('y0_pcm',UNDEFINED)
+  ! pcm_origin(3) = fdf_get('z0_pcm',UNDEFINED)
+  ! pcm_endpt(1)  = fdf_get('xn_pcm',UNDEFINED)
+  ! pcm_endpt(2)  = fdf_get('yn_pcm',UNDEFINED)
+  ! pcm_endpt(3)  = fdf_get('zn_pcm',UNDEFINED)
   PCM_SHIFT     = fdf_get('shift',4.d0)
 
 ! %module mmpol (complete)
@@ -376,45 +386,45 @@ subroutine parser
   a_cutoff      = fdf_get('a_cutoff',2.5874d0)
   rcolm         = fdf_get('rcolm',0.04d0)
 
-! %module properties
+! %module properties (complete)
   iprop         = fdf_get('sample',0)
   ipropprt      = fdf_get('print',0)
   nquad         = fdf_get('nquad',6)    
 
-! %module pseudo
+! %module pseudo (complete)
   nloc          = fdf_get('nloc',0)  
 
-! %module qmmm
-  iqmm          = fdf_get('iqmm',0)    
+! %module qmmm (complete)
+!  iqmm          = fdf_get('iqmm',0)    
+
+! Filenames parsing
+  file_basis        = fdf_load_filename('basis', 'default.bas')
+  file_geometry     = fdf_load_filename('geometry', 'default.xyz')
+  file_determinants = fdf_load_filename('determinants', 'default.det')
+  file_symmetry     = fdf_load_filename('symmetry', 'default.sym')  
+  file_jastrow      = fdf_load_filename('jastrow', 'default.jas')    
+  file_jastrow_der  = fdf_load_filename('jastrow_der', 'default.jasder')      
+  file_orbitals     = fdf_load_filename('orbitals', 'default.orb')        
 
 
-
-  ! file_basis = fdf_load_filename('basis', 'default.bas')
-  ! write(6,fmt=string_format) 'filename basis :: ', trim(file_basis)
 
 ! module dependent processing . These will be replaced by inliners
+  write(*,*) "printing the filenames parsed"
+  write(*,fmt=string_format) "basis       :: ", file_basis
+  write(*,fmt=string_format) "geometry    :: ", file_geometry
+  write(*,fmt=string_format) "determinants:: ", file_determinants
+  write(*,fmt=string_format) "symmetry    :: ", file_symmetry
+  write(*,fmt=string_format) "jastrow     :: ", file_jastrow
+  write(*,fmt=string_format) "jastrow_der :: ", file_jastrow_der          
+  write(*,fmt=string_format) "orbitals    :: ", file_orbitals            
 
-! ! %module blocking_vmc  
-!   if (fdf_defined("blocking_vmc")) then
-!     mode      = fdf_get('mode_dmc', 'dmc_one_mpi1')        
-!     vmc_nstep     = fdf_get('vmc_nstep', 1)    
-!     vmc_nblk      = fdf_get('vmc_nblk', 1)      
-!     ! set variable default from %optwf module
-!     vmc_nblk_max  = fdf_get('vmc_nblk_max', 1)      
-!   endif 
-
-!   if (fdf_defined("blocking_dmc")) then
-!     dmc_nstep     = fdf_get('dmc_nstep', 1)    
-!     dmc_nblk      = fdf_get('dmc_nblk', 1)      
-!     ! set variable default from %optwf module
-!     dmc_nblk_max  = fdf_get('dmc_nblk_max', 1)      
-!   endif 
   
 ! %module optwf
-  ! if (fdf_defined("optwf")) then
-  !   method        = fdf_get('method', 'linear')        
-  !   nwftype = 3; MFORCE = 3
-  ! endif
+  if (fdf_defined("optwf")) then
+    nwftype = 3; MFORCE = 3
+  endif
+
+
 
   call compute_mat_size_new()
 
@@ -429,74 +439,78 @@ subroutine parser
 
 ! Some sanity check  !! Make sure that all the variables are parsed before this line
 
-  if(iexponents.eq.0) then
-    write(6,'(''INPUT: block exponents missing: all exponents set to 1'')')
-    call inputzex
-  endif
-
-  if(icsfs.eq.0) then
-    write(6,'(''INPUT: block csf missing: nstates set to 1'')')
-    call inputcsf
-  endif
-
-  if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
-    write(6,'(''INPUT: block forces_displace or gradients_* missing: geometries set equal to primary'')')
-    call inputforces
-  endif
-
-  if(iforce_analy.gt.0) then
-    if(iuse_zmat.gt.0.and.izmatrix_check.eq.0) call fatal_error('INPUT: block connectionzmatrix missing')
-    if(imodify_zmat.eq.0) call modify_zmat_define
-    if(ihessian_zmat.eq.0) call hessian_zmat_define
-  endif
-
-  if(imultideterminants.eq.0) then
-    write(6,'(''INPUT: multideterminant bloc MISSING'')')
-    call multideterminants_define(0,0)
-  endif
-
-  if(ioptorb.ne.0) then
-    if(ioptorb_mixvirt.eq.0) then
-      norbopt=0
-      norbvirt=0
-    endif
-
-    if(ioptorb_def.eq.0) then
-      write(6,'(''INPUT: definition of orbital variations missing'')')
-      call optorb_define
-    endif
-
-  endif
-
-  if(ioptci.ne.0.and.ici_def.eq.0) then
-    write(6,'(''INPUT: definition of OPTCI operators missing'')')
-    call optci_define
-  endif
-
-  if(nwftype.gt.1) then
-    if(ijastrow_parameter .ne. nwftype) then
-      write(6,'(''INPUT: block jastrow_parameter missing for one wave function'')')
-      write(6,'(''INPUT: jastrow_parameter blocks equal for all wave functions'')')
-      call inputjastrow(nwftype)
-    endif
-
-    if(iperiodic .eq. 0 .and. ilcao .ne. nwftype) then
-      write(6,'(''Warning INPUT: block lcao missing for one wave function'')')
-      write(6,'(''Warning INPUT: lcao blocks equal for all wave functions'')')
-      call inputlcao(nwftype)
-    endif
-
-    if(ideterminants .ne. nwftype) then
-      write(6,'(''Warning INPUT: block determinants missing for one wave function'')')
-      write(6,'(''Warning INPUT: determinants blocks equal for all wave functions'')')
-      call inputdet(nwftype)
-    endif
-
-    write(6,*)
-endif
+  call flagcheck_new
 
 
 
+!   if(iexponents.eq.0) then
+!     write(6,'(''INPUT: block exponents missing: all exponents set to 1'')')
+!     call inputzex
+!   endif
+
+!   if(icsfs.eq.0) then
+!     write(6,'(''INPUT: block csf missing: nstates set to 1'')')
+!     call inputcsf
+!   endif
+
+!   if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
+!     write(6,'(''INPUT: block forces_displace or gradients_* missing: geometries set equal to primary'')')
+!     call inputforces
+!   endif
+
+!   if(iforce_analy.gt.0) then
+!     if(iuse_zmat.gt.0.and.izmatrix_check.eq.0) call fatal_error('INPUT: block connectionzmatrix missing')
+!     if(imodify_zmat.eq.0) call modify_zmat_define
+!     if(ihessian_zmat.eq.0) call hessian_zmat_define
+!   endif
+
+!   if(imultideterminants.eq.0) then
+!     write(6,'(''INPUT: multideterminant bloc MISSING'')')
+!     call multideterminants_define(0,0)
+!   endif
+
+!   if(ioptorb.ne.0) then
+!     if(ioptorb_mixvirt.eq.0) then
+!       norbopt=0
+!       norbvirt=0
+!     endif
+
+!     if(ioptorb_def.eq.0) then
+!       write(6,'(''INPUT: definition of orbital variations missing'')')
+!       call optorb_define
+!     endif
+
+!   endif
+
+!   if(ioptci.ne.0.and.ici_def.eq.0) then
+!     write(6,'(''INPUT: definition of OPTCI operators missing'')')
+!     call optci_define
+!   endif
+
+!   if(nwftype.gt.1) then
+!     if(ijastrow_parameter .ne. nwftype) then
+!       write(6,'(''INPUT: block jastrow_parameter missing for one wave function'')')
+!       write(6,'(''INPUT: jastrow_parameter blocks equal for all wave functions'')')
+!       call inputjastrow(nwftype)
+!     endif
+
+!     if(iperiodic .eq. 0 .and. ilcao .ne. nwftype) then
+!       write(6,'(''Warning INPUT: block lcao missing for one wave function'')')
+!       write(6,'(''Warning INPUT: lcao blocks equal for all wave functions'')')
+!       call inputlcao(nwftype)
+!     endif
+
+!     if(ideterminants .ne. nwftype) then
+!       write(6,'(''Warning INPUT: block determinants missing for one wave function'')')
+!       write(6,'(''Warning INPUT: determinants blocks equal for all wave functions'')')
+!       call inputdet(nwftype)
+!     endif
+
+!     write(6,*)
+! endif
+
+
+error stop "after the initial sanity check"
 
   
 
@@ -781,3 +795,130 @@ subroutine compute_mat_size_new()
   ! call set_sr_size
 
 end subroutine compute_mat_size_new
+
+
+subroutine flagcheck_new
+  
+  use force_mod, only: MFORCE, MWF
+  use vmc_mod, only: MELEC, MORB
+  use numbas, only: numr
+  use optorb_mix, only: norbopt, norbvirt
+  use efield, only: iefield
+  use inputflags, only: iznuc, igeometry, ibasis_num, ilcao, iexponents
+  use inputflags, only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
+  use inputflags, only: ici_def, iforces, icsfs, igradients, icharge_efield
+  use inputflags, only: imultideterminants, ioptorb_mixvirt, imodify_zmat, izmatrix_check
+  use inputflags, only: ihessian_zmat
+  use mstates_ctrl, only: iguiding
+  ! might not be needed
+  use mstates_mod, only: MSTATES
+  use atom, only: znuc
+  use contrl_per, only: iperiodic, ibasis
+  use force_analy, only: iforce_analy, iuse_zmat
+  use forcepar, only: nforce
+  use optwf_contrl, only: ioptci, ioptorb
+  use optwf_contrl, only: no_active
+  use wfsec, only: nwftype
+  use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+  use elec, only: ndn, nup
+  use const, only: nelec
+  use coefs, only: norb, next_max
+
+  implicit real*8(a-h,o-z)
+
+  ! call p2gti('electrons:nelec',nelec,1)
+  ! call p2gti('electrons:nup',nup,1)
+  ! call p2gtid('general:nwftype',nwftype,1,1)
+  ! call p2gtid('general:nforce',nforce,1,1)
+  ! ! if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
+  ! call p2gtid('general:nwftype',nwftype,1,1)
+  ! !if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype gt MWF')
+  ! call p2gtid('general:iperiodic',iperiodic,0,1)
+  ! call p2gtid('general:ibasis',ibasis,1,1)
+
+  ! call p2gtid('optwf:ioptorb',ioptorb,0,1)
+  ! call p2gtid('optwf:ioptci',ioptci,0,1)
+  ! call p2gtid('optwf:no_active',no_active,0,1)
+
+  ! call p2gtid('mstates:iguiding',iguiding,0,1)
+  ! call p2gtid('efield:iefield',iefield,0,1)
+  ! call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
+  ! call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
+  ! ! next_max=norb-ndetorb
+  ! call p2gtid('optwf:nextorb',nadorb, next_max,1)
+  ! ! write(6, *) 'norb', norb
+  ! ! write(6, *) 'nadorb', nadorb
+  ! ! write(6, *) 'ndet_orb', ndetorb
+  ! ! write(6, *) 'next_max', next_max
+  ! ! if(nadorb.gt.next_max) nadorb=next_max
+  ! ! if (nadorb.gt.norb) call fatal_error('nadorb > norb')
+
+
+
+  ! if(iznuc.eq.0) call fatal_error('INPUT: block znuc missing')
+  ! if(igeometry.eq.0) call fatal_error('INPUT: block geometry missing')
+  ! if(ibasis.eq.1.and.numr.gt.0.and.ibasis_num.eq.0) call fatal_error('INPUT: block basis missing')
+  ! if(iperiodic.eq.0.and.ilcao.eq.0) call fatal_error('INPUT: block lcao missing')
+  ! if(iperiodic.gt.0.and.ilattice.eq.0) call fatal_error('INPUT: lattice vectors missing')
+  ! if(ijastrow_parameter.eq.0) call fatal_error('INPUT: block jastrow_parameter missing')
+  ! if(iefield.gt.0.and.icharge_efield.eq.0) call fatal_error('INPUT: block efield missing')
+
+  write(6,'(''========================================'')')
+  if(iexponents.eq.0) then
+    write(6,'(''INPUT: block exponents missing: all exponents set to 1'')')
+    call inputzex
+  endif
+  if(icsfs.eq.0) then
+    write(6,'(''INPUT: block csf missing: nstates set to 1'')')
+    call inputcsf
+  endif
+  if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
+    write(6,'(''INPUT: block forces_displace or gradients_* missing: geometries set equal to primary'')')
+    call inputforces
+  endif
+  if(iforce_analy.gt.0) then
+    if(iuse_zmat.gt.0.and.izmatrix_check.eq.0) call fatal_error('INPUT: block connectionzmatrix missing')
+    if(imodify_zmat.eq.0) call modify_zmat_define
+    if(ihessian_zmat.eq.0) call hessian_zmat_define
+  endif
+  if(imultideterminants.eq.0) then
+    write(6,'(''INPUT: multideterminant bloc MISSING'')')
+    call multideterminants_define(0,0)
+  endif
+  if(ioptorb.ne.0) then
+    if(ioptorb_mixvirt.eq.0) then
+      norbopt=0
+      norbvirt=0
+    endif
+    if(ioptorb_def.eq.0) then
+      write(6,'(''INPUT: definition of orbital variations missing'')')
+      call optorb_define
+    endif
+  endif
+  if(ioptci.ne.0.and.ici_def.eq.0) then
+    write(6,'(''INPUT: definition of OPTCI operators missing'')')
+    call optci_define
+  endif
+
+  if(nwftype.gt.1) then
+    if(ijastrow_parameter.ne.nwftype) then
+      write(6,'(''INPUT: block jastrow_parameter missing for one wave function'')')
+      write(6,'(''INPUT: jastrow_parameter blocks equal for all wave functions'')')
+      call inputjastrow(nwftype)
+    endif
+    if(iperiodic.eq.0.and.ilcao.ne.nwftype) then
+      write(6,'(''Warning INPUT: block lcao missing for one wave function'')')
+      write(6,'(''Warning INPUT: lcao blocks equal for all wave functions'')')
+      call inputlcao(nwftype)
+    endif
+    if(ideterminants.ne.nwftype) then
+      write(6,'(''Warning INPUT: block determinants missing for one wave function'')')
+      write(6,'(''Warning INPUT: determinants blocks equal for all wave functions'')')
+      call inputdet(nwftype)
+    endif
+    write(6,*)
+  endif
+
+  write(6,'(''========================================'')')
+  return
+  end subroutine flagcheck_new

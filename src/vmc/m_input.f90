@@ -1,7 +1,7 @@
 module header
     !> Arguments: date, title
 
-    character*20 title
+    character*80 title
     character*24 date
 
     private
@@ -37,8 +37,8 @@ module inputflags
     integer :: imodify_zmat
     integer :: izmatrix_check
     integer :: ihessian_zmat
-    integer :: node_cutoff
-    real(dp) :: eps_node_cutoff
+    integer :: node_cutoff, dmc_node_cutoff
+    real(dp) :: eps_node_cutoff, dmc_eps_node_cutoff
     real(dp) :: scalecoef
     integer :: iqmmm
 
@@ -48,7 +48,7 @@ module inputflags
     public :: ici_def, iforces, icsfs, imstates, igradients, icharge_efield
     public :: imultideterminants, ioptorb_mixvirt, imodify_zmat, izmatrix_check
     public :: ihessian_zmat
-    public :: node_cutoff, eps_node_cutoff, scalecoef
+    public :: node_cutoff, dmc_node_cutoff, eps_node_cutoff, dmc_eps_node_cutoff, scalecoef
     public :: iqmmm
     save
 end module inputflags
