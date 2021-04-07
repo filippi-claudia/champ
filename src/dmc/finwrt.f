@@ -42,16 +42,15 @@ c routine to print out final results
       real(dp) :: efave, eferr, eferr1, egave, egerr, egerr1, errc
       real(dp) :: errc1, errf, errf1, errg, errg1, error
       real(dp) :: errorn, errw, errw1, eval, eval_eff, eval_proc, evalf_eff
-      real(dp) :: evalg_eff, ferr_grdnts, ffin_grdnts, fgave, fgerr, half
-      real(dp) :: one, pass_proc, passes, peave, peerr, rn, rn_eff
+      real(dp) :: evalg_eff, ferr_grdnts, ffin_grdnts, fgave, fgerr
+      real(dp) :: pass_proc, passes, peave, peerr, rn, rn_eff
       real(dp) :: rprobcollect, rteval_eff1, rtevalf_eff1, rtevalg_eff1, rtpass1, term
-      real(dp) :: tjfave, tjferr, tpbave, tpberr, trymove_collect, two, w
+      real(dp) :: tjfave, tjferr, tpbave, tpberr, trymove_collect, w
       real(dp) :: w2, wave, werr, werr1, wfave, wferr
       real(dp) :: wferr1, wgave, wgerr, wgerr1, x, x2
-
-
-      parameter (one=1.d0,two=2.d0,half=.5d0)
-
+      real(dp), parameter :: one = 1.0d0
+      real(dp), parameter :: two = 2.0d0
+      real(dp), parameter :: half = 0.5d0
 
       dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
       dimension rprobcollect(nrad)

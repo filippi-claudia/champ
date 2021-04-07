@@ -24,9 +24,8 @@ c routine to accumulate estimators for energy etc.
       implicit none
 
       integer :: i, ie, ifr, ip, iw, k
-      real(dp) :: one, zero
-
-      parameter (zero=0.d0,one=1.d0)
+      real(dp), parameter :: zero = 0.0d0 
+      real(dp), parameter :: one = 1.0d0 
 
 c Initialize various quantities at beginning of run
 c the initial values of energy psi etc. are calculated here

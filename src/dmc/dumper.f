@@ -49,10 +49,9 @@ c job where it left off
 
       integer :: irn, istatus, irn_tmp, ierr, nscounts, irequest, ic
       integer :: i, j, k, iw, ifr, id, ib
-      real(dp) :: zero, one, small
-
-      parameter (zero=0.d0,one=1.d0)
-      parameter (small=1.e-6)
+      real(dp), parameter :: zero = 0.0d0 
+      real(dp), parameter :: one = 1.0d0 
+      real(dp), parameter :: small = 1.0d-6 
 
       dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
       dimension irn_tmp(4,0:NPROCX)

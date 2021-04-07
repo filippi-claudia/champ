@@ -27,14 +27,15 @@ c routine to accumulate estimators for energy etc.
 
       integer :: i, npass, ierr, ioldest_collect, ioldestmx_collect, ifr
       integer :: k, ifgerr, iegerr, ipeerr, itpber, itjfer
-      real(dp) :: zero, one, pecollect, tpbcollect, tjfcollect, taucollect, derivcollect
+      real(dp) :: pecollect, tpbcollect, tjfcollect, taucollect, derivcollect
       real(dp) :: rn_eff, w, w2, error, x, x2, errg
       real(dp) :: dum, wnow, wfnow, enow, efnow, ei1now
       real(dp) :: ei2now, rinow, r2now, wgnow, egnow, penow, tpbnow
       real(dp) :: tjfnow, egerr, peerr, tpberr, tjferr, egave
       real(dp) :: peave, tpbave, tjfave, fgave, fgerr, egave1, derivtotave
 
-      parameter (zero=0.d0,one=1.d0)
+      real(dp), parameter :: zero = 0.0d0 
+      real(dp), parameter :: one = 1.0d0 
 
       dimension pecollect(MFORCE), tpbcollect(MFORCE), tjfcollect(MFORCE),
      & taucollect(MFORCE), derivcollect(10,MFORCE)

@@ -25,10 +25,10 @@ c routine to accumulate estimators for energy etc.
       implicit none
 
       integer :: ierr, ifr, ipmod, mod, iabs, nfpro
-      real(dp) :: zero, one, egcollect, wgcollect, wgdsum1, ecollect
+      real(dp) :: egcollect, wgcollect, wgdsum1, ecollect
       real(dp) :: wcollect, efcollect, wfcollect, taublock, eisum, accavn
-
-      parameter (zero=0.d0,one=1.d0)
+      real(dp), parameter :: zero = 0.0d0 
+      real(dp), parameter :: one = 1.0d0 
 
       dimension egcollect(MFORCE), wgcollect(MFORCE)
 

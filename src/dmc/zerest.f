@@ -25,9 +25,8 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       implicit none
 
       integer :: i, ifr, k
-      real(dp) :: one, zero
-
-      parameter (zero=0.d0,one=1.d0)
+      real(dp), parameter :: zero = 0.0d0 
+      real(dp), parameter :: one = 1.0d0 
 
 c routine to accumulate estimators for energy etc.
 

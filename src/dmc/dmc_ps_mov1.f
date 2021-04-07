@@ -74,7 +74,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       integer :: ipmod, ipmod2, iwmod
       integer :: imove, ncount_casula, nmove_casula, iaccept, iflag_up
       integer :: iflag_dn, jel, int, iel
-      real(dp) :: zero, one, two, half, adrift, xstrech, xnew
+      real(dp) :: xstrech, xnew
       real(dp) :: vnew, xbac, xdriftedn, unacp, eps_node_cutoff, e_cutoff, expon
       real(dp) :: dwt, ginv, ffn, ffi, vav2sumo, v2sumo
       real(dp) :: tratio, v2old, vavvt, vavvo, r2sume, risume, drifdif
@@ -87,8 +87,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: dabs, drifdifgfunc, wtnow, ro, wtg, pen
       real(dp) :: d2n, psi2savo, wtg_derivsum1
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
-      parameter (adrift=0.5d0)
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: adrift = 0.5d0
 
       dimension xstrech(3,MELEC)
       dimension xnew(3),vnew(3,MELEC)

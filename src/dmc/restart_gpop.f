@@ -59,15 +59,13 @@
       integer :: num, nupx, nwalk_id
       real(dp) :: cdetx, centx, cjas1x, cjas2x, coefx
       real(dp) :: dabs, different, fmt, fratio_id
-      real(dp) :: hbx, one, small, taux
+      real(dp) :: hbx, taux
       real(dp) :: wq_id, wt_id, xold_dmc_id, xq_id
-      real(dp) :: yq_id, zero, zexx, znucx
+      real(dp) :: yq_id, zexx, znucx
       real(dp) :: zq_id
-
-      parameter (zero=0.d0,one=1.d0)
-      parameter (small=1.e-6)
-
-
+      real(dp), parameter :: zero = 0.0d0 
+      real(dp), parameter :: one = 1.0d0 
+      real(dp), parameter :: small = 1.0d-6 
 
       character*13 filename
 
