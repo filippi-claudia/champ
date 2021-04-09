@@ -1,7 +1,7 @@
 module optorb_mod
      ! flags and dimensions for orbital optimization
      ! maximal number of terms, max dim of reduced matrices
-     integer, parameter :: MXORBOP = 1000
+     integer, parameter :: MXORBOP = 3000
      integer, parameter :: MXREDUCED = 1
      integer, parameter :: MXMATDIM = MXREDUCED*(MXREDUCED + 1)
      integer, parameter :: MXMATDIM2 = MXMATDIM/2

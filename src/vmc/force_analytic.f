@@ -238,8 +238,8 @@ c-----------------------------------------------------------------------
       do ic=1,ncent
          do k=1,3
             da_energy(k,ic,istate)=da_energy(k,ic,istate)+2*eloc*da_psi(k,ic,istate)
-            da_psi_sum(k,ic,istate)= da_psi_sum(k,ic,istate)+p*da_psi(k,ic,istate)
-            da_energy_sum(k,ic,istate)= da_energy_sum(k,ic,istate)+p*da_energy(k,ic,istate)
+            da_psi_sum(k,ic,istate)=da_psi_sum(k,ic,istate)+p*da_psi(k,ic,istate)
+            da_energy_sum(k,ic,istate)=da_energy_sum(k,ic,istate)+p*da_energy(k,ic,istate)
          enddo
       enddo
 

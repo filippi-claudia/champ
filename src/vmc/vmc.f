@@ -1,6 +1,5 @@
       subroutine vmc
 c Written by Cyrus Umrigar and Claudia Filippi
-
 c Program to do variational Monte Carlo calculations 
 c on atoms and molecules.
 c Various types of Metropolis moves can be done, including a few
@@ -9,7 +8,6 @@ c Also, one or all electrons can be moved at once.
 c Currently this program contains
 c 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater basis states.
 c and sa, pa, da asymptotic functions
-
       use jaspar, only: is
       use const, only: pi, hb, delta, deltai, fbias, nelec, imetro
       use config, only: enew, eold, pen, peo, psi2n, psi2o
@@ -26,9 +24,6 @@ c and sa, pa, da asymptotic functions
       use pseudo, only: nloc
 
       implicit real*8(a-h,o-z)
-
-
-
 
       character*25 fmt
 

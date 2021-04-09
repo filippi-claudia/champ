@@ -2,12 +2,12 @@
 
       call vmc
 
-      return
-      end
+      end subroutine
+
 c---------------------------------------------------
+
       subroutine reset_configs_start
 
       call mc_configs_start
 
-      return
-      end
+      end subroutine

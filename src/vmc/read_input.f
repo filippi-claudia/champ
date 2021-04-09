@@ -594,6 +594,7 @@ CVARDOC flag: Use guiding wave function constructed from mstates
           write(6,'(''Guiding function: square root of sum of squares'')')
           keyname='weights_guiding:'
           call get_weights(keyname,weights_g,iweight_g,nstates_g)
+          if(nstates.eq.1) call fatal_error('INPUT: iguiding >0 and nstates=1')
         endif
         call p2gtid('mstates:iefficiency',iefficiency,0,1)
 CVARDOC flag: Efficiency for sampling states inputed in multiple_cistates
@@ -1768,23 +1769,24 @@ c----------------------------------------------------------------------
       subroutine inputlcao(nwftype)
 c     Set the lcao to be equal
       use coefs, only: coef, nbasis, norb
+      use orbval, only: nadorb
       use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
 c TMP - RLPB
-
+  
       do istate=2,nstates
-        do i=1,norb
-          do j=1,nbasis
-            coef(j,i,istate,1)=coef(j,i,1,1)
-          enddo
-        enddo
+         do i=1,norb+nadorb
+            do j=1,nbasis
+               coef(j,i,istate,1)=coef(j,i,1,1)
+            enddo
+         enddo
       enddo
 
       do iwft=2,nwftype
         do istate=1,nstates
-          do i=1,norb
+          do i=1,norb+nadorb
              do j=1,nbasis
                 coef(j,i,istate,iwft)=coef(j,i,istate,1)
              enddo

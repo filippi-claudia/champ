@@ -34,7 +34,7 @@ c     Written by Claudia Filippi, modified by Cyrus Umrigar, A. Scemama and RLPB
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),rr_en_sav(MCENT),rr_en2_sav(MCENT)
      &     ,xsav(3),rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT)
-      dimension vpsp_det(*),dvpsp_dj(*),t_vpsp(MCENT,MPS_QUAD,*)
+      dimension vpsp_det(2,MSTATES),dvpsp_dj(*),t_vpsp(MCENT,MPS_QUAD,*)
       dimension dpsij_ratio(MPARMJ)
       dimension orbn(MORB,MSTATES),dorbn(3,MORB,MSTATES),
      &     da_orbn(3,MCENT,MORB,MSTATES),term_radial_da_vps(3)
@@ -54,8 +54,7 @@ c     Written by Claudia Filippi, modified by Cyrus Umrigar, A. Scemama and RLPB
          endif
       enddo
 
-      vpsp_det(1)=0.0d0
-      vpsp_det(2)=0.0d0
+      vpsp_det(:,:)=0.0d0
       do iparm=1,nparmj
          dvpsp_dj(iparm)=0.0d0
       enddo
@@ -110,29 +109,29 @@ c     loop quadrature points
      &                    da_orbn(1,1,1,istate),iforce_analy,istate)
                      call nonlocd(iel,orbn(1,istate),detiab(1,1,istate),detiab(1,2,istate),
      &                    slmi(1,1,istate),slmi(1,2,istate),det_ratio)
-                  enddo
-                  if(ioptjas.gt.0) then
-                     call deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,
-     &                    rr_en2,dd1,psij_ratio,dpsij_ratio,vjn,da_ratio_jn)
-                  else
-                     call nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,
-     &                    rr_en2,dd1,fso,psij_ratio,vjn,da_ratio_jn)
-                  endif
 
-                  term_radial=0.0d0
-                  do l=1,lpot(ict)-1
-                     term_radial=term_radial+yl0(l,costh)*vps(i,ic,l)
-                  enddo
-                  term_radial=term_radial*wq(iq)*exp(psij_ratio)
-                  
+                     if(ioptjas.gt.0) then
+                        call deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,
+     &                       rr_en2,dd1,psij_ratio,dpsij_ratio,vjn,da_ratio_jn)
+                     else
+                        call nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,
+     &                       rr_en2,dd1,fso,psij_ratio,vjn,da_ratio_jn)
+                     endif
+
+                     term_radial=0.0d0
+                     do l=1,lpot(ict)-1
+                        term_radial=term_radial+yl0(l,costh)*vps(i,ic,l)
+                     enddo
+                     term_radial=term_radial*wq(iq)*exp(psij_ratio)
+                     
 c     vpsp_det  = vnl(D_kref J)/(D_kref J)
-                  vpsp_det(iab)=vpsp_det(iab)+det_ratio*term_radial
+                     vpsp_det(iab,istate)=vpsp_det(iab,istate)+det_ratio*term_radial
 
 c     pseudopotential contribution to B_eloc matrix
-                  do istate=1,nstates
                      do iorb=1,norb+nadorb
                         b(iorb,i,istate)=b(iorb,i,istate)+orbn(iorb,istate)*term_radial
                      enddo
+
 c     dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
                      if(ioptjas.gt.0) then
                         term=term_radial*det_ratio
@@ -197,7 +196,7 @@ c     end loop nelec, ncent
          do istate=1,nstates
             write(6,*) "STATE", istate
             write(6,'(''vpsp_det,det,r_en(1)='',100d12.4)')
-     &           ,(vpsp_det(iab),detiab(1,iab,istate),iab=1,2),r_en(1,1)
+     &           ,(vpsp_det(iab,istate),detiab(1,iab,istate),iab=1,2),r_en(1,1)
          enddo
       endif
 

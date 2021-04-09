@@ -178,7 +178,7 @@ module coefs
     use vmc_mod, only: MORB, MBASIS
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :, :, :), allocatable :: coef !(MBASIS,MORB,MWF)
+    real(dp), dimension(:, :, :, :), allocatable :: coef !(MBASIS,MORB,MSTATES,MWF)
     integer :: nbasis
     integer :: norb
     integer :: next_max 
@@ -778,11 +778,11 @@ module orbval
     use vmc_mod, only: MELEC, MORB
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :, :), allocatable :: ddorb !(MELEC,MORB)
-    real(dp), dimension(:, :, :, :), allocatable :: dorb !(3,MELEC,MORB)
+    real(dp), dimension(:, :, :), allocatable :: ddorb !(MELEC,MORB,MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: dorb !(3,MELEC,MORB,MSTATES)
     integer :: nadorb
     integer :: ndetorb
-    real(dp), dimension(:, :, :), allocatable :: orb !(MELEC,MORB)
+    real(dp), dimension(:, :, :), allocatable :: orb !(MELEC,MORB,MSTATES)
 
     private
     public :: ddorb, dorb, nadorb, ndetorb, orb

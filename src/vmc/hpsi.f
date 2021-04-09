@@ -35,7 +35,8 @@ c     modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 c     Calculates energy
 
       dimension coord(3,*),psid(*),energy(*)
-      dimension denergy(MSTATES),eloc_det(MDET,2,MSTATES),vpsp_det(2),dvpsp_dj(MPARMJ)
+      dimension denergy(MSTATES),eloc_det(MDET,2,MSTATES),
+     &     vpsp_det(2,MSTATES),dvpsp_dj(MPARMJ)
 
       iwf=iwftype(ifr)
 
@@ -106,7 +107,10 @@ c     nonloc_pot must be called after determinant because slater matrices are ne
 
       if(ipr.ge.3) then 
          write(6,'(''pe_loc after nonloc_pot'',9f12.5)') pe_local
-         write(6,'(''pe_ref after nonloc_pot'',9f12.5)') (vpsp_det(ii),ii=1,2)
+         do istate=1,nstates
+            write(6,*) "STATE", istate
+            write(6,'(''pe_ref after nonloc_pot'',9f12.5)') (vpsp_det(ii,istate),ii=1,2)
+         enddo
       endif
 
       call multideterminant_hpsi(vj,vpsp_det,eloc_det)

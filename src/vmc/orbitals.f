@@ -107,24 +107,24 @@ c     get basis functions for all electrons
          call orbitals_pw(x,orb,dorb,ddorb)
       endif
 
-         if(ipr.ge.4) then
-            do istate=1,nstates
-	       print *, "ORBITALS STATE", istate
+      if(ipr.ge.4) then
+         do istate=1,nstates
+            print *, "ORBITALS STATE", istate
+            do iorb=1,norb+nadorb
+               write(6,'(''iorb,orb='',i4,1000f15.11)')iorb,(orb(i,iorb,istate),i=1,nelec)
+            enddo
+            do iorb=1,norb+nadorb
+               write(6,'(''iorb,d2orb='',i4,1000f15.11)')iorb,(ddorb(i,iorb,istate),i=1,nelec)
+            enddo
+            do k=1,3
                do iorb=1,norb+nadorb
-                  write(6,'(''iorb,orb='',i4,1000f15.11)')iorb,(orb(i,iorb,istate),i=1,nelec)
-               enddo
-               do iorb=1,norb+nadorb
-                  write(6,'(''iorb,d2orb='',i4,1000f15.11)')iorb,(ddorb(i,iorb,istate),i=1,nelec)
-               enddo
-               do k=1,3
-                  do iorb=1,norb+nadorb
-                     write(6,'(''iorb,dorb='',2i4,1000f12.8)')k,iorb,(dorb(k,i,iorb,istate),i=1,nelec)
-                  enddo
+                  write(6,'(''iorb,dorb='',2i4,1000f12.8)')k,iorb,(dorb(k,i,iorb,istate),i=1,nelec)
                enddo
             enddo
-         endif
+         enddo
+      endif
 
-         end subroutine
+      end subroutine
 
 c------------------------------------------------------------------------------------
 

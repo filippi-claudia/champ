@@ -15,12 +15,14 @@
 
       implicit real*8(a-h,o-z)
 
-      dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2),emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
+      dimension zmat(MORB,MELEC,2),dzmat(MORB,MELEC,2)
+      dimension emz(MELEC,MELEC,2),aaz(MELEC,MELEC,2)
       dimension orbprim(*),eorbprim(*)
 
       if(ioptorb.eq.0) return
 
       detratio=detiab(kref,1,istate)*detiab(kref,2,istate)/psid
+
       do iterm=1,norbterm
          io=ideriv(1,iterm)
          jo=ideriv(2,iterm)
@@ -512,6 +514,7 @@ c     nreduced has to be set since it will only be known for non-continuation ru
 c-----------------------------------------------------------------------
 
       subroutine optorb_fin(wcum,ecum)
+
       use optorb_mod, only: MXORBOP
       use csfs, only: nstates
       use optwf_contrl, only: ioptorb
@@ -541,200 +544,190 @@ c-----------------------------------------------------------------------
 
       s(1,1)=0
       h(1,1)=0
-      do j=1,nreduced
-         grad(j+ish)=0
-         s(j+ish,1)=0
-         h(j+ish,1)=0
-         s(1,j+ish)=0
-         h(1,j+ish)=0
-         do i=1,nreduced
-            s(i+ish,j+ish)=0
-            h(i+ish,j+ish)=0
-         enddo
+      do 1 j=1,nreduced
+        grad(j+ish)=0
+        s(j+ish,1)=0
+        h(j+ish,1)=0
+        s(1,j+ish)=0
+        h(1,j+ish)=0
+        do 1 i=1,nreduced
+          s(i+ish,j+ish)=0
+   1      h(i+ish,j+ish)=0
 
-         do istate=1,nstates
+      do 200 istate=1,nstates
 
-            wts=weights(istate)
+      wts=weights(istate)
 
-            passes=wcum(istate)
-            passesi=1/passes
-            eave=ecum(istate)*passesi
+      passes=wcum(istate)
+      passesi=1/passes
+      eave=ecum(istate)*passesi
 
-            call optorb_avrg(passes,eave,oav(1),eoav(1),fo(1),foerr(1),istate)
+c     if(iorbsample.ne.1) then
+c       passes=orb_wcum(istate)
+c       passesi=1/passes
+c       eave=orb_ecum(istate)*passesi
+c     endif
 
-c     Hessian method
-            if(method.eq.'hessian') then
+      call optorb_avrg(passes,eave,oav(1),eoav(1),fo(1),foerr(1),istate)
 
-               if(iuse_orbeigv.eq.0) then
-c     Formulas for exact orbital hessian not implemented
-                  call fatal_error(
-     &                 'OPTORB_FIN: formulas for exact hessian not implemented')
-               endif
+c Hessian method
+      if(method.eq.'hessian') then
 
-c     Linear method
-            elseif(method.eq.'linear') then
-
-               s(1,1)=1
-               h(1,1)=h(1,1)+wts*eave
-c     Exact Hamiltonian 
-               if(iuse_orbeigv.eq.0) then
-
-c     Hamiltonian on semi-orthogonal basis
-                  idx=0
-                  do i=1,nreduced
-                     s(i+ish,1)=0
-                     s(1,i+ish)=0
-                     h(i+ish,1)=h(i+ish,1)+wts*(eoav(i)-eave*oav(i))
-                     h(1,i+ish)=h(1,i+ish)+wts*(orb_ho_cum(i,istate)*passesi-eave*oav(i))
-c     write(6,*) 'H',wts,eoav(i)-eave*oav(i),orb_ho_cum(i,istate)*passesi-eave*oav(i)
-                     i0=1
-                     if(iapprox.gt.0) i0=i
-                     do j=i0,i
-                        idx=idx+1
-                        orb_oo=orb_oo_cum(idx,istate)*passesi-oav(i)*oav(j)
-                        s(i+ish,j+ish)=s(i+ish,j+ish)+wts*orb_oo
-                        s(j+ish,i+ish)=s(i+ish,j+ish)
-                     enddo
-                  enddo
-
-                  i0=1
-                  i1=nreduced
-                  idx=0
-                  do i=1,nreduced
-                     if(iapprox.gt.0) then
-                        i0=i
-                        i1=i
-                     endif
-                     do j=i0,i1
-                        idx=idx+1
-                        orb_oho=(orb_oho_cum(idx,istate)-oav(j)*orb_ho_cum(i,istate))*passesi
-     &                       -oav(i)*eoav(j)+eave*oav(i)*oav(j)
-                        h(j+ish,i+ish)=h(j+ish,i+ish)+wts*orb_oho
-                     enddo
-                  enddo
-
-               endif
-
-c     Perturbative method
-            elseif(method.eq.'perturbative') then
-               
-               if(iuse_orbeigv.eq.0) then
-c     Formulas for exact orbital perturbative not implemented
-                  call fatal_error(
-                  &'OPTORB_FIN: formulas for exact perturbative not implemented')
-               else
-                  do i=1,nreduced
-                     grad(i)=grad(i)+wts*fo(i)
-                  enddo
-                  idx=0
-                  do i=1,nreduced
-                     do j=1,i
-                        idx=idx+1
-                        s(i,j)=s(i,j)+wts*(orb_oo_cum(idx,istate)*passesi-oav(i)*oav(j))
-                        s(j,i)=s(i,j)
-                     enddo
-                  enddo
-               endif
-            endif
-         enddo
-
-
-c     Approximations on matrix elements
-         if(method.eq.'linear') then
-            if(iapprox.gt.0) then
-               do i=1,nreduced
-                  do j=1,i-1
-                     s(i+ish,j+ish)=0
-                     s(j+ish,i+ish)=0
-                     h(i+ish,j+ish)=0
-                     h(j+ish,i+ish)=0
-                  enddo
-               enddo
-               if(iapprox.eq.2) then
-                  do i=1,nreduced
-                     h(1,i+ish)=h(i+ish,1)
-                  enddo
-               endif
-            elseif(iapprox.lt.0) then
-               if(iapprox.eq.-1) then
-                  do i=1,nreduced
-                     h(1,i+ish)=h(i+ish,1)
-                  enddo
-               elseif(iapprox.eq.-2) then
-                  do i=1,nreduced
-                     h(1,i+ish)=h(i+ish,1)
-                     do j=1,i-1
-                        h(i+ish,j+ish)=0.5*(h(i+ish,j+ish)+h(j+ish,i+ish))
-                        h(j+ish,i+ish)=h(i+ish,j+ish)
-                     enddo
-                  enddo
-               elseif(iapprox.eq.-3) then
-                  do i=1,nreduced
-                     h(1,i+ish)=0.5*(h(i+ish,1)+h(1,i+ish))
-                     h(i+ish,1)=h(1,i+ish)
-                     do j=1,i-1
-                        h(i+ish,j+ish)=0.5*(h(i+ish,j+ish)+h(j+ish,i+ish))
-                        h(j+ish,i+ish)=h(i+ish,j+ish)
-                     enddo
-                  enddo
-               endif
-            endif
-         elseif(method.eq.'perturbative') then
-c     Approximation: diagonal perturbative approach
-            if(iapprox.gt.0) then
-               do i=1,nreduced
-                  do j=1,i-1
-                     s(j,i)=0
-                     s(i,j)=0
-                  enddo
-               enddo
-            endif
-         endif
-
-         if(idump_blockav.ne.0) close(idump_blockav)
-
-         end subroutine
-
-c-----------------------------------------------------------------------
-      subroutine detratio_col(nel,orb,icol,sinvt,ratio,isltnew)
-      implicit real*8(a-h,o-z)
-c values of new orbital
-      dimension orb(nel)
-c inverse transposed slater matrix (first index electron, 2nd orbital)
-      dimension sinvt(nel,nel)
-c compute ratio of new and old determinant, if isltnew is
-c not zero, update inverse slater matrix as well
-c the new determinant differs from the old by replacing column icol
-c with the orbital values in orb
-
-      ratio=0.d0
-      do ie=1,nel
-       ratio=ratio+sinvt(icol,ie)*orb(ie)
-      enddo
-      if(isltnew.gt.0) then
-c matrix except replaced column
-       do jcol=1,nel
-        if(jcol.ne.icol) then
-         sum=0.d0
-         do je=1,nel
-          sum=sum+orb(je)*sinvt(jcol,je)
-         enddo
-         sum=sum/ratio
-         do je=1,nel
-          sinvt(jcol,je)=sinvt(jcol,je)-sum*sinvt(icol,je)
-         enddo
+        if(iuse_orbeigv.eq.0) then
+c Formulas for exact orbital hessian not implemented
+          call fatal_error('OPTORB_FIN: formulas for exact hessian not implemented')
         endif
-       enddo
-c replaced column
-       do ie=1,nel
-        sinvt(icol,ie)=sinvt(icol,ie)/ratio
-       enddo
+
+c Linear method
+       elseif(method.eq.'linear') then
+
+        s(1,1)=1
+        h(1,1)=h(1,1)+wts*eave
+c Exact Hamiltonian 
+        if(iuse_orbeigv.eq.0) then
+
+c Hamiltonian on semi-orthogonal basis
+        idx=0
+        do 30 i=1,nreduced
+          s(i+ish,1)=0
+          s(1,i+ish)=0
+          h(i+ish,1)=h(i+ish,1)+wts*(eoav(i)-eave*oav(i))
+          h(1,i+ish)=h(1,i+ish)+wts*(orb_ho_cum(i,istate)*passesi-eave*oav(i))
+c         write(6,*) 'H',wts,eoav(i)-eave*oav(i),orb_ho_cum(i,istate)*passesi-eave*oav(i)
+          i0=1
+          if(iapprox.gt.0) i0=i
+          do 30 j=i0,i
+            idx=idx+1
+            orb_oo=orb_oo_cum(idx,istate)*passesi-oav(i)*oav(j)
+            s(i+ish,j+ish)=s(i+ish,j+ish)+wts*orb_oo
+   30       s(j+ish,i+ish)=s(i+ish,j+ish)
+
+        i0=1
+        i1=nreduced
+        idx=0
+        do 40 i=1,nreduced
+          if(iapprox.gt.0) then
+            i0=i
+            i1=i
+          endif
+          do 40 j=i0,i1
+            idx=idx+1
+            orb_oho=(orb_oho_cum(idx,istate)-oav(j)*orb_ho_cum(i,istate))*passesi
+     &             -oav(i)*eoav(j)+eave*oav(i)*oav(j)
+   40       h(j+ish,i+ish)=h(j+ish,i+ish)+wts*orb_oho
+
+       endif
+
+c Perturbative method
+       elseif(method.eq.'perturbative') then
+            
+        if(iuse_orbeigv.eq.0) then
+c Formulas for exact orbital perturbative not implemented
+          call fatal_error('OPTORB_FIN: formulas for exact perturbative not implemented')
+         else
+          do 60 i=1,nreduced
+   60       grad(i)=grad(i)+wts*fo(i)
+          idx=0
+          do 70 i=1,nreduced
+            do 70 j=1,i
+              idx=idx+1
+              s(i,j)=s(i,j)+wts*(orb_oo_cum(idx,istate)*passesi-oav(i)*oav(j))
+   70         s(j,i)=s(i,j)
+        endif
       endif
 
-      end
-c-----------------------------------------------------------------------
-      subroutine optorb_define
+  200 continue
 
+c Approximations on matrix elements
+      if(method.eq.'linear') then
+        if(iapprox.gt.0) then
+          do 230 i=1,nreduced
+            do 230 j=1,i-1
+              s(i+ish,j+ish)=0
+              s(j+ish,i+ish)=0
+              h(i+ish,j+ish)=0
+  230         h(j+ish,i+ish)=0
+          if(iapprox.eq.2) then
+            do 240 i=1,nreduced
+  240         h(1,i+ish)=h(i+ish,1)
+          endif
+         elseif(iapprox.lt.0) then
+          if(iapprox.eq.-1) then
+            do 250 i=1,nreduced
+  250         h(1,i+ish)=h(i+ish,1)
+           elseif(iapprox.eq.-2) then
+            do 260 i=1,nreduced
+              h(1,i+ish)=h(i+ish,1)
+              do 260 j=1,i-1
+                h(i+ish,j+ish)=0.5*(h(i+ish,j+ish)+h(j+ish,i+ish))
+  260           h(j+ish,i+ish)=h(i+ish,j+ish)
+           elseif(iapprox.eq.-3) then
+            do 270 i=1,nreduced
+              h(1,i+ish)=0.5*(h(i+ish,1)+h(1,i+ish))
+              h(i+ish,1)=h(1,i+ish)
+              do 270 j=1,i-1
+                h(i+ish,j+ish)=0.5*(h(i+ish,j+ish)+h(j+ish,i+ish))
+  270           h(j+ish,i+ish)=h(i+ish,j+ish)
+          endif
+        endif
+       elseif(method.eq.'perturbative') then
+c Approximation: diagonal perturbative approach
+        if(iapprox.gt.0) then
+          do 280 i=1,nreduced
+            do 280 j=1,i-1
+              s(j,i)=0
+  280         s(i,j)=0
+        endif
+      endif
+
+      if(idump_blockav.ne.0) close(idump_blockav)
+
+      end subroutine
+
+c-----------------------------------------------------------------------
+
+      subroutine detratio_col(nel,orb,icol,sinvt,ratio,isltnew)
+
+      implicit real*8(a-h,o-z)
+c     values of new orbital
+      dimension orb(nel)
+c     inverse transposed slater matrix (first index electron, 2nd orbital)
+      dimension sinvt(nel,nel)
+c     compute ratio of new and old determinant, if isltnew is
+c     not zero, update inverse slater matrix as well
+c     the new determinant differs from the old by replacing column icol
+c     with the orbital values in orb
+
+      ratio=0.0d0
+      do ie=1,nel
+         ratio=ratio+sinvt(icol,ie)*orb(ie)
+      enddo
+
+      if(isltnew.gt.0) then
+c     matrix except replaced column
+         do jcol=1,nel
+            if(jcol.ne.icol) then
+               sum=0.0d0
+               do je=1,nel
+                  sum=sum+orb(je)*sinvt(jcol,je)
+               enddo
+               sum=sum/ratio
+               do je=1,nel
+                  sinvt(jcol,je)=sinvt(jcol,je)-sum*sinvt(icol,je)
+               enddo
+            endif
+         enddo
+c     replaced column
+         do ie=1,nel
+            sinvt(icol,ie)=sinvt(icol,ie)/ratio
+         enddo
+      endif
+
+      end subroutine
+
+c-----------------------------------------------------------------------
+
+      subroutine optorb_define
       use optorb_mod, only: MXORBOP, MXREDUCED
       use vmc_mod, only: MELEC, MORB, MDET
       use const, only: nelec
@@ -931,16 +924,15 @@ c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
 
       return
       end
+
 c-----------------------------------------------------------------------
+
       subroutine check_orbitals
       use vmc_mod, only: MELEC, MORB
-
-c Do not compute virtual orbitals during single-electron move
+c     Do not compute virtual orbitals during single-electron move
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+
       implicit real*8(a-h,o-z)
-
-
-
 
       save nadorb_save
 
@@ -950,8 +942,6 @@ c Do not compute virtual orbitals during single-electron move
       return
 
       entry check_orbitals_reset
-
       nadorb=nadorb_save
 
-      return
-      end
+      end subroutine

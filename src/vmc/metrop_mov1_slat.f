@@ -94,6 +94,7 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
          else
           call determinant_psig(psido,psig)
         endif
+
         call compute_determinante_grad(i,psig,psido,vold(1,i),1)
 
         fxop=one

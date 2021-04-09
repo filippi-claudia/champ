@@ -36,7 +36,7 @@ c     nelec is close to MELEC. The Slater matrices must be
 c     dimensioned at least max(nup**2,ndn**2)
 
       dimension eloc_det(MDET,2,MSTATES)
-      dimension vj(3,MELEC),vpsp_det(*)
+      dimension vj(3,MELEC),vpsp_det(2,MSTATES)
       dimension btemp(MELEC**2,MSTATES,2)
       dimension dum1(MSTATES),dum2(MSTATES),dum3(MSTATES)
 
@@ -48,7 +48,7 @@ c     dimensioned at least max(nup**2,ndn**2)
                nel=ndn
                ish=nup
             endif
-            eloc_det(kref,iab,istate)=vpsp_det(iab)
+            eloc_det(kref,iab,istate)=vpsp_det(iab,istate)
             do i=1,nel
                eloc_det(kref,iab,istate)=eloc_det(kref,iab,istate)
      &              -hb*(d2dx2(i+ish,istate)+2.d0*(vj(1,i+ish)*ddx(1,i+ish,istate)
@@ -463,7 +463,8 @@ c-----------------------------------------------------------------------
                if(in.eq.0) then
                   numrep_det(k,iab)=numrep_det(k,iab)+1
                   if(numrep_det(k,iab).gt.MEXCIT) then
-                     call fatal_error('MULTIDET_DEF: numrep exceeds MEXCIT')
+                     call fatal_error(
+     &                    'MULTIDET_DEF: numrep exceeds MEXCIT')
                   endif
                   irepcol_det(numrep_det(k,iab),k,iab)=iref
                endif

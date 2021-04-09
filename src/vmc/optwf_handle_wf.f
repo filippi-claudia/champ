@@ -1,6 +1,4 @@
-c-----------------------------------------------------------------------
       subroutine write_wf(iwf_fit,iter)
-
       use mpiconf, only: idtask
       use mpi
 
@@ -11,29 +9,29 @@ c-----------------------------------------------------------------------
       if(idtask.ne.0) return
 
       if(iter.lt.0) then
-        filetype='_optimal.'//wf(1:index(wf,' ')-1)
-       else
-        write(wf,'(i1)') iwf_fit
-        if(iter.lt.10) then
-          write(itn,'(i1)') iter
+         filetype='_optimal.'//wf(1:index(wf,' ')-1)
+      else
+         write(wf,'(i1)') iwf_fit
+         if(iter.lt.10) then
+            write(itn,'(i1)') iter
          elseif(iter.lt.100) then
-          write(itn,'(i2)') iter
+            write(itn,'(i2)') iter
          elseif(iter.lt.1000) then
-          write(itn,'(i3)') iter
-        endif
-        filetype='_optimal.'//wf(1:index(wf,' ')-1)//'.iter'//itn(1:index(itn,' ')-1)
+            write(itn,'(i3)') iter
+         endif
+         filetype='_optimal.'//wf(1:index(wf,' ')-1)//'.iter'//itn(1:index(itn,' ')-1)
       endif
 
       call write_jastrow(iwf_fit,filetype)
       call write_lcao(iwf_fit,filetype)
       call write_ci(iwf_fit,filetype)
 
-      return
-      end
+      end subroutine
+
 c-----------------------------------------------------------------------
+
       subroutine write_wf_best
       implicit real*8(a-h,o-z)
-      
 
       call restore_jastrow_best
       call restore_lcao_best
@@ -41,11 +39,11 @@ c-----------------------------------------------------------------------
 
       call write_wf(1,-1)
 
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine write_jastrow(iwf_fit,filetype)
+      end subroutine
 
+c-----------------------------------------------------------------------
+
+      subroutine write_jastrow(iwf_fit,filetype)
       use atom, only: nctype
       use jaspar, only: nspin1, nspin2
       use jaspar3, only: a, b, c, scalek
@@ -207,54 +205,61 @@ c
 
       return
       end
+
 c-----------------------------------------------------------------------
+
       subroutine setup_wf
+
       implicit real*8(a-h,o-z)
   
-      do 10 k=2,3
-        call copy_jastrow(k)
-        call copy_lcao(k)
-  10    call copy_ci(k)
+      do k=2,3
+         call copy_jastrow(k)
+         call copy_lcao(k)
+         call copy_ci(k)
+      enddo
 
-      return
-      end
+      end subroutine
+
 c-----------------------------------------------------------------------
+
       subroutine save_wf
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
+
       implicit real*8(a-h,o-z)
-
-
 
       if(ioptjas.ne.0) call save_jastrow
       if(ioptorb.ne.0) call save_lcao 
       if(ioptci.ne.0) call save_ci
 
-      return
-      end
+      end subroutine
+
 c-----------------------------------------------------------------------
+
       subroutine restore_wf(iadiag)
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
+
       implicit real*8(a-h,o-z)
-
-
 
       if(ioptjas.ne.0) call restore_jastrow(iadiag)
       if(ioptorb.ne.0) call restore_lcao(iadiag)
       if(ioptci.ne.0) call restore_ci(iadiag)
 
-      return
-      end
+      end subroutine
+
 c-----------------------------------------------------------------------
+
       subroutine save_wf_best(ioptjas,ioptorb,ioptci)
+
       implicit real*8(a-h,o-z)
 
       if(ioptjas.ne.0) call save_jastrow_best
       if(ioptorb.ne.0) call save_lcao_best
       if(ioptci.ne.0) call save_ci_best
 
-      return
-      end
+      end subroutine
+
 c-----------------------------------------------------------------------
+
       subroutine save_jastrow
 
       use force_mod, only: MWF
@@ -303,7 +308,8 @@ c Restore parameters corresponding to run generating hessian
   100     c(i,ict,iadiag)=c_save(i,ict,1)
 
       return
-      end
+
+      end subroutine
 
 c-----------------------------------------------------------------------
 
@@ -395,16 +401,15 @@ c     reset kref=1
 
       return
 
-      end
+      end subroutine
 
 c-----------------------------------------------------------------------
 
       subroutine copy_jastrow(iadiag)
- 
       use atom, only: nctype
-
       use jaspar3, only: a, b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
+
       implicit real*8(a-h,o-z)
 
       mparmja=2+max(0,norda-1)
@@ -421,8 +426,7 @@ c-----------------------------------------------------------------------
         do 100 i=1,mparmjc
   100     c(i,ict,iadiag)=c(i,ict,1)
 
-      return
-      end
+      end subroutine
 
 c-----------------------------------------------------------------------
 
@@ -462,38 +466,32 @@ c-----------------------------------------------------------------------
 
       return
       end
-c-----------------------------------------------------------------------
-      subroutine copy_zex(iadiag)
 
+c-----------------------------------------------------------------------
+
+      subroutine copy_zex(iadiag)
       use coefs, only: nbasis
       use basis, only: zex
 
       implicit real*8(a-h,o-z)
 
+      do i=1,nbasis
+         zex(i,iadiag)=zex(i,1)
+      enddo
 
+      end subroutine
 
-      do 20 i=1,nbasis
-   20   zex(i,iadiag)=zex(i,1)
-
-      return
-      end
 c-----------------------------------------------------------------------
-      subroutine save_jastrow_best
 
+      subroutine save_jastrow_best
       use force_mod, only: MWF
       use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
       use atom, only: nctype
-
       use jaspar3, only: a, b, c
-
       use jaspar4, only: a4, norda, nordb, nordc
+
       implicit real*8(a-h,o-z)
-
-
-
-
-
 
       dimension a4_best(MORDJ1,MCTYPE,MWF),b_best(MORDJ1,2,MWF),
      &c_best(83,MCTYPE,MWF)
@@ -531,7 +529,8 @@ c Restore parameters corresponding to run generating hessian
   100     c(i,ict,1)=c_best(i,ict,1)
 
       return
-      end
+
+      end subroutine
 
 c-----------------------------------------------------------------------
 
@@ -628,7 +627,8 @@ c reset kref=1
       endif
 
       return
-      end
+
+      end subroutine
 
 c-----------------------------------------------------------------------
 
@@ -652,7 +652,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 
       subroutine compute_jastrow(dparm,iflag,iadiag)
-
       use atom, only: nctype
       use jaspar3, only: a, b, c, scalek
       use jaspar4, only: a4
@@ -687,15 +686,15 @@ c Add change to old parameters
 c Check parameters a2 and b2 > -scalek
       call check_parms_jas(iflag)
 
-      return
-      end
+      end subroutine
 
 c-----------------------------------------------------------------------
 
       subroutine compute_lcao(dparm,iadiag)
-
+      use precision_kinds, only: dp
       use vmc_mod, only: MORB, MBASIS
       use mstates_mod, only: MSTATES
+      use sr_mod, only: MPARM
       use optwf_contrl, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
       use coefs, only: coef, nbasis, norb
@@ -705,13 +704,13 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      dimension acoef(MBASIS,MORB,MSTATES),dparm(*)
+      dimension acoef(MBASIS,MORB,MSTATES), dparm(*)
 
       if(ioptorb.eq.0) return
 
-      do i=1,norb
-         do j=1,nbasis
-            do istate=1,nstates
+      do istate=1,nstates
+         do i=1,norb
+            do j=1,nbasis
                acoef(j,i,istate)=coef(j,i,istate,iadiag)
             enddo
          enddo
@@ -719,20 +718,21 @@ c-----------------------------------------------------------------------
 
 c     Update the orbitals
 
-      do i=1,norbterm
-         io=ideriv(1,i)
-         jo=ideriv(2,i)
-         do j=1,nbasis
-            do istate=1,nstates
+      do istate=1,nstates
+         do i=1,norbterm
+            io=ideriv(1,i)
+            jo=ideriv(2,i)
+            do j=1,nbasis
                acoef(j,io,istate)=acoef(j,io,istate)
-     &              -dparm(i+nparmj+nparmd)*coef(j,jo,istate,iadiag)
+     &              -dparm((istate-1)*MPARM+i+nparmj+nparmd)
+     &              *coef(j,jo,istate,iadiag)
             enddo
          enddo
       enddo
 
-      do i=1,norb
-         do j=1,nbasis
-            do istate=1,nstates
+      do istate=1,nstates
+         do i=1,norb
+            do j=1,nbasis
                coef(j,i,istate,iadiag)=acoef(j,i,istate)
             enddo
          enddo
@@ -741,6 +741,7 @@ c     Update the orbitals
       end subroutine
 
 c-----------------------------------------------------------------------
+
       subroutine compute_ci(dparm,iadiag)
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use sr_mod, only: MPARM
@@ -757,54 +758,57 @@ c-----------------------------------------------------------------------
 
       if((method.eq.'linear'.or.method.eq.'lin_d')
      &     .and.ioptjas+ioptorb.eq.0) then
-         do 31 k=1,nstates
+         do k=1,nstates
             if(ncsf.eq.0) then
-               do 10 idet=1,ndet
+               do idet=1,ndet
                   cdet(idet,k,1)=dparm(idet+ndet*(k-1))
- 10            continue
+               enddo
             else
-               do 15 j=1,ndet
- 15               cdet(j,k,1)=0
-
-               do 30 icsf=1,ncsf
-                  do 20 j=iadet(icsf),ibdet(icsf)
+               do j=1,ndet
+                  cdet(j,k,1)=0.0d0
+               enddo
+               do icsf=1,ncsf
+                  do j=iadet(icsf),ibdet(icsf)
                      jx=icxdet(j)
                      cdet(jx,k,1)=cdet(jx,k,1)+dparm(icsf+ncsf*(k-1))*cxdet(j)
- 20               continue
+                  enddo
                   ccsf(icsf,k,1)=dparm(icsf+ncsf*(k-1))
- 30            continue
+               enddo
             endif
- 31         continue
+         enddo
       else
-         ! MPARM addition is a brute force check
-         do 51 k=1,nstates
+!     MPARM addition is a brute force check
+         do k=1,nstates
             if(ncsf.eq.0) then
-               do 35 idet=2,ndet
-                  cdet(idet,k,iadiag)=cdet(idet,k,iadiag)-dparm(MPARM*(k-1)+idet-1+nparmj)
- 35            continue
+               do idet=2,ndet
+                  cdet(idet,k,iadiag)=cdet(idet,k,iadiag)
+     &                 -dparm(MPARM*(k-1)+idet-1+nparmj)
+               enddo
             else
-               do 50 icsf=2,ncsf
-                  do 40 j=iadet(icsf),ibdet(icsf)
+               do icsf=2,ncsf
+                  do j=iadet(icsf),ibdet(icsf)
                      jx=icxdet(j)
-                     cdet(jx,k,iadiag)=cdet(jx,k,iadiag)-dparm(MPARM*(k-1)+icsf-1+nparmj)*cxdet(j)
- 40               continue
-                  ccsf(icsf,k,iadiag)=ccsf(icsf,k,iadiag)-dparm(MPARM*(k-1)+icsf-1+nparmj)
- 50            continue
+                     cdet(jx,k,iadiag)=cdet(jx,k,iadiag)
+     &                    -dparm(MPARM*(k-1)+icsf-1+nparmj)*cxdet(j)
+                  enddo
+                  ccsf(icsf,k,iadiag)=ccsf(icsf,k,iadiag)
+     &                 -dparm(MPARM*(k-1)+icsf-1+nparmj)
+               enddo
             endif
- 51      continue
+         enddo
       endif
 
       end subroutine
+
 c-----------------------------------------------------------------------
+
       subroutine check_parms_jas(iflag)
-
       use atom, only: nctype
-
       use jaspar3, only: a, b, scalek
-
       use jaspar4, only: a4
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
+
       implicit real*8(a-h,o-z)
 
       iflag=0
@@ -812,48 +816,54 @@ c-----------------------------------------------------------------------
       iflagb=0
 
       scalem=-scalek(1)
-      do 50 ict=1,nctype
-        do 50 i=1,nparma(ict)
-   50     if(iwjasa(i,ict).eq.2.and.a4(2,ict,1).le.scalem) iflaga=1
+      do ict=1,nctype
+         do i=1,nparma(ict)
+            if(iwjasa(i,ict).eq.2.and.a4(2,ict,1).le.scalem) iflaga=1
+         enddo
+      enddo
       if(iflaga.eq.1) then
-        do 55 ict=1,nctype
-   55     write(6,'(''a2 < -scalek'',f10.5)') a4(2,ict,1)
+         do ict=1,nctype
+            write(6,'(''a2 < -scalek'',f10.5)') a4(2,ict,1)
+         enddo
       endif
-      do 60 i=1,nparmb(1)
-   60   if(iwjasb(i,1).eq.2.and.b(2,1,1).le.scalem) iflagb=1
+      do i=1,nparmb(1)
+         if(iwjasb(i,1).eq.2.and.b(2,1,1).le.scalem) iflagb=1
+      enddo
       if(iflagb.eq.1) write(6,'(''b2 < -scalek'',f10.5)') b(2,1,1)
       
       if(iflaga.eq.1.or.iflagb.eq.1) iflag=1
 
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine test_solution_parm(nparm,dparm,
-     &              dparm_norm,dparm_norm_min,add_diag,iflag)
-      implicit real*8(a-h,o-z)
+      end subroutine
 
+c-----------------------------------------------------------------------
+
+      subroutine test_solution_parm(nparm,dparm,
+     &     dparm_norm,dparm_norm_min,add_diag,iflag)
+
+      implicit real*8(a-h,o-z)
 
       dimension dparm(*)
 
       iflag=0
       if(add_diag.le.0.d0) return
 
-c Calculate rms change in parameters
-      dparm_norm=0
-      do 30 i=1,nparm
-  30    dparm_norm=dparm_norm+dparm(i)**2
+c     Calculate rms change in parameters
+      dparm_norm=0.0d0
+      do i=1,nparm
+         dparm_norm=dparm_norm+dparm(i)**2
+      enddo
       dparm_norm=sqrt(dparm_norm/nparm)
 
       write(6,'(''dparm_norm,adiag ='',3g12.5)') 
-     &dparm_norm,add_diag
+     &     dparm_norm,add_diag
 
       if(dparm_norm.gt.dparm_norm_min) iflag=1
       
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine save_nparms
+      end subroutine
 
+c-----------------------------------------------------------------------
+
+      subroutine save_nparms
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm, nreduced
@@ -871,7 +881,9 @@ c-----------------------------------------------------------------------
       nparmd=max(nciterm-1,0)
       nparmd_sav=nparmd
 
-      write(6,'(''Saved max number of parameters, nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
+      write(6,'(''Saved max number of parameters,
+     &nparmj,norb,nciterm,nciterm-1: '',5i5)')
+     &     nparmj,norbterm,nciterm,nparmd
       return
 
       entry set_nparms
@@ -884,55 +896,57 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0) nparmj=0
       if(ioptorb.eq.0) then
-        norbterm=0
-        nreduced=0
+         norbterm=0
+         nreduced=0
       endif
       if(ioptci.eq.0) then
-        nciterm=0
-        nparmd=0
+         nciterm=0
+         nparmd=0
       endif
 
-      write(6,'(''Max number of parameters set to nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
+      write(6,'(''Max number of parameters set to nparmj,
+     &norb,nciterm,nciterm-1: '',5i5)')
+     &     nparmj,norbterm,nciterm,nparmd
       call set_nparms_tot
 
       return
-      end
-c-----------------------------------------------------------------------
-      subroutine set_nparms_tot
 
+      end subroutine
+
+c-----------------------------------------------------------------------
+
+      subroutine set_nparms_tot
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
       use ci000, only: nciterm
-
       use method_opt, only: method
 
       implicit real*8(a-h,o-z)
 
-
-c Note: we do not vary the first (i0) CI coefficient unless a run where we only optimize the CI coefs
+c     Note: we do not vary the first (i0) CI coefficient unless a run where we only optimize the CI coefs
 
       if(method.eq.'sr_n') then
 
-        nparmd=max(nciterm-1,0)
-        nparm=nparmj+nparmd+norbterm
+         nparmd=max(nciterm-1,0)
+         nparm=nparmj+nparmd+norbterm
 
       elseif(method.eq.'linear'.or.method.eq.'lin_d') then
-        
-       i0=0
-       if(ioptci.ne.0) i0=1
-       if(ioptjas.eq.0.and.ioptorb.eq.0) i0=0
+         
+         i0=0
+         if(ioptci.ne.0) i0=1
+         if(ioptjas.eq.0.and.ioptorb.eq.0) i0=0
 
-       nparmd=max(nciterm-1,0)
-       nparm=nparmj+norbterm+nciterm-i0
+         nparmd=max(nciterm-1,0)
+         nparm=nparmj+norbterm+nciterm-i0
 
       endif
 
-      write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)') 
-     & nparm,nparmj,nciterm,norbterm
+      write(6,'(/,''number of parms: total,
+     &Jastrow, CI, orbitals= '',4i5)') 
+     &     nparm,nparmj,nciterm,norbterm
 
-      return
-      end
+      end subroutine
 
 c-----------------------------------------------------------------------
 

@@ -86,19 +86,22 @@ contains
              call dscal(nparm,-sr_tau,deltap(:,istate),1)
              call test_solution_parm(nparm,deltap(:,istate),&
 		     dparm_norm,dparm_norm_min,adiag,iflag)
+
+	     ! RLPB: this must be generalized to nstates
+             !write(6,'(''Norm of parm variation '',d12.5)') dparm_norm
+
+             !if(iflag.ne.0) then
+             !   write(6,'(''Warning: dparm_norm>1'')')
+             !   adiag=10*adiag
+             !   write(6,'(''adiag increased to '',f10.5)') adiag
+             !   sr_adiag=adiag
+             !   go to 6
+             !else
+             !   sr_adiag=sr_adiag_sav
+             !endif
           end do
-
-          write(6,'(''Norm of parm variation '',d12.5)') dparm_norm
-
-          if(iflag.ne.0) then
-             write(6,'(''Warning: dparm_norm>1'')')
-             adiag=10*adiag
-             write(6,'(''adiag increased to '',f10.5)') adiag
-             sr_adiag=adiag
-             go to 6
-          else
-             sr_adiag=sr_adiag_sav
-          endif
+	  ! RLPB: this must be generalized to nstates
+	  sr_adiag=sr_adiag_sav
 
           call compute_parameters(deltap,iflag,1)
           call write_wf(1,iter)
@@ -143,6 +146,7 @@ contains
   end subroutine optwf_sr_ortho
 
   subroutine sr_ortho(nparm,deltap,sr_adiag,sr_eps,i)
+    use const, only: ipr
     use csfs, only: nstates
     use sr_mat_n, only: h_sr, istat_curr
     use mpiconf, only: idtask
@@ -161,11 +165,12 @@ contains
     imod=50                   ! inv. freq. of calc. r=b-Ax vs. r=r-\alpha q (see pcg)
     deltap=0.0d0              ! initial guess of solution
 
+    !if (idtask.eq.0.and.ipr.ge.4) then
     if (idtask.eq.0) then
        print *, "Gradient state 1"
-       print *, h_sr(1:nparm+1,1)
+       print *, h_sr(1:nparm,1)
        print *, "Gradient state 2"
-       print *, h_sr(1:nparm+1,2)
+       print *, h_sr(1:nparm,2)
     end if
 
     do j=1,nstates
@@ -184,7 +189,6 @@ contains
     use mstates_mod, only: MSTATES
     use mpiconf, only: idtask
     use optwf_func, only: ifunc_omega, omega
-    use sa_weights, only: weights
     use sr_index, only: jelo, jelo2, jelohfj
     use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
     use sr_mat_n, only: sr_o, wtg, obs_tot
@@ -284,11 +288,11 @@ contains
 
           if(istate.gt.1) then
              aux1=aux1+obs_tot(jwtg+istate-1,istate)*obs_tot(jwtg+istate-1,istate)&
-       		     *obs_tot(jwtg,istate)/obs_tot(jwtg,istate-1)
+       	             *obs_tot(jwtg,istate)/obs_tot(jwtg,istate-1)
 
              do k=1,nparm
                 h_sr(k,istate)=h_sr(k,istate)&
-       			-alambda*2.d0*(obs_tot(jfjsi+k-1,istate)-aux1*obs_tot(jfj+k-1,istate))
+       	        	-alambda*2.d0*(obs_tot(jfjsi+k-1,istate)-aux1*obs_tot(jfj+k-1,istate))
              enddo
           endif
 
@@ -320,7 +324,6 @@ contains
     use mstates_mod, only: MSTATES
     use mpiconf, only: idtask
     use optwf_func, only: ifunc_omega, omega
-    use sa_weights, only: weights
     use sr_index, only: jelo, jelo2, jelohfj
     use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
     use sr_mat_n, only: sr_o, wtg, obs_tot, istat_curr
