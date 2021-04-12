@@ -446,18 +446,27 @@ subroutine parser
 
       if (.not. allocated(cent)) allocate(cent(3,ncent))
       if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))      
+      if (.not. allocated(iwctype)) allocate(iwctype(ncent))                  
       if (.not. allocated(symbol)) allocate(symbol(ncent))            
       if (.not. allocated(znuc)) allocate(znuc(nctype))                  
 
+      if (key(1:12) == "&atom_types") then
+        backspace(12)
+        read(12, *) temp1, (iwctype(i), atomtyp(i), i =1, nctype) 
+        write(*, '(A, <nctype>(A3, A3, i3) )') "Atom type :: ", ( atomtyp(i), " = ", iwctype(i), i =1, nctype) 
+      endif 
+
       ! if (key(1:12) == "&atom_types") then
       !   backspace(12)
-      !   read(12, *) (j, atomtyp(i), i =1, nctype) !  temp1, temp2, nctype, temp3, ncent
-      !   write(*,*) atomtyp
+      !   read(12, *) temp1, (iwctype(i), atomtyp(i), i =1, nctype) 
+      !   write(*, '(A, <nctype>(A3, A3, i3) )') "Atom type :: ", ( atomtyp(i), " = ", iwctype(i), i =1, nctype) 
       ! endif 
+
+
 
       if (key(1:9) == "geometry") then
         do i = 1, ncent
-          read(12, *) cent(1,i), cent(2,i), cent(3,i), j
+          read(12, *) cent(1,i), cent(2,i), cent(3,i), iwctype(i) 
         enddo
       endif 
 
@@ -465,17 +474,21 @@ subroutine parser
           read(12, *) (znuc(i), i= 1,nctype)
       endif 
       
-
       if (is_iostat_end(iostat)) exit
       enddo
+!     geometry.0 file reading ends here      
 
-      print*, "znuc", (znuc(i), i= 1, nctype)    
-      print*, "atom types", atomtyp
+      do i= 1, ncent
+        symbol(i) = atomtyp(iwctype(i))
+      enddo    
+
+!      write(*,*) (iwctype(i), i =1, ncent)      
+
       write(6,*) 'Coordinates from the geometry.0 coordinates file '
       do i= 1, ncent
-        write(6,'(3F10.6)') (cent(j,i),j=1,3)
+        write(6,'(A, 3F10.6,i4)') symbol(i), (cent(j,i),j=1,3), iwctype(i)
       enddo    
-      
+      write(6,'(A, <nctype>F10.6)') "znuc", (znuc(i), i= 1, nctype)          
 
     close(12)
 
