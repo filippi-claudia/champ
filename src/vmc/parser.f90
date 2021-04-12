@@ -456,14 +456,6 @@ subroutine parser
         write(*, '(A, <nctype>(A3, A3, i3) )') "Atom type :: ", ( atomtyp(i), " = ", iwctype(i), i =1, nctype) 
       endif 
 
-      ! if (key(1:12) == "&atom_types") then
-      !   backspace(12)
-      !   read(12, *) temp1, (iwctype(i), atomtyp(i), i =1, nctype) 
-      !   write(*, '(A, <nctype>(A3, A3, i3) )') "Atom type :: ", ( atomtyp(i), " = ", iwctype(i), i =1, nctype) 
-      ! endif 
-
-
-
       if (key(1:9) == "geometry") then
         do i = 1, ncent
           read(12, *) cent(1,i), cent(2,i), cent(3,i), iwctype(i) 
@@ -482,18 +474,12 @@ subroutine parser
         symbol(i) = atomtyp(iwctype(i))
       enddo    
 
-!      write(*,*) (iwctype(i), i =1, ncent)      
-
       write(6,*) 'Coordinates from the geometry.0 coordinates file '
       do i= 1, ncent
         write(6,'(A, 3F10.6,i4)') symbol(i), (cent(j,i),j=1,3), iwctype(i)
       enddo    
       write(6,'(A, <nctype>F10.6)') "znuc", (znuc(i), i= 1, nctype)          
-
     close(12)
-
-
-
   else
     if (.not. fdf_block('molecule', bfdf)) then
         !   External file reading
@@ -520,12 +506,7 @@ subroutine parser
     endif
   endif
 
-
-
-
-
-
-
+! Reading geometry file ends here
 
 
 
