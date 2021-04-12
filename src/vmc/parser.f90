@@ -5,6 +5,8 @@ subroutine parser
   use fdf 
   use prec
 
+  Use, intrinsic :: iso_fortran_env, only : iostat_end
+
 ! CHAMP modules
   use contr3,         only: mode
   use allocation_mod, only: allocate_vmc, allocate_dmc
@@ -31,7 +33,7 @@ subroutine parser
   use mmpol_mod, only: mmpolfile_sites, mmpolfile_chmm
   use force_mod, only: MFORCE, MWF
   use vmc_mod, only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
-  use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
+  use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, only: nspin1, nspin2, is
   use ghostatom, only: newghostype, nghostcent
   use const, only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
@@ -141,7 +143,8 @@ subroutine parser
   integer, parameter         :: maxa = 100
   logical                    :: doit, debug
 
-  character(len=72)          :: fname, filename, pool_dir
+  character(len=72)          :: fname, filename, pool_dir, key
+  character(len=20)          :: temp1, temp2, temp3, temp4, temp5   
   integer                    :: ifock , ratio, isavebl
 
   type(block_fdf)            :: bfdf
@@ -168,7 +171,8 @@ subroutine parser
   integer                    :: irn(4), cent_tmp(3)
   integer, allocatable       :: anorm(:) ! dimensions = nbasis
 
-
+! local counter variables
+  integer                    :: i,j, iostat
 
 ! Initialize # get the filenames from the commandline arguments
   call fdf_init('test-champ.inp', 'test-champ.out')
@@ -234,7 +238,7 @@ subroutine parser
   igrdtype    = fdf_get('igrdtype', 2)
   ngradnts    = fdf_get('ngradnts', 0)
   
-! %module mstates (complete)
+! %module iguiding (complete)
   iguiding      = fdf_get('iguiding',0)
   iefficiency   = fdf_get('iefficiency',0)
 
@@ -399,12 +403,15 @@ subroutine parser
 
 ! Filenames parsing
   file_basis        = fdf_load_filename('basis', 'default.bas')
-  file_geometry     = fdf_load_filename('geometry', 'default.xyz')
+  file_geometry     = fdf_load_filename('geometry', 'geometry.0')
   file_determinants = fdf_load_filename('determinants', 'default.det')
   file_symmetry     = fdf_load_filename('symmetry', 'default.sym')  
   file_jastrow      = fdf_load_filename('jastrow', 'default.jas')    
   file_jastrow_der  = fdf_load_filename('jastrow_der', 'default.jasder')      
   file_orbitals     = fdf_load_filename('orbitals', 'default.orb')        
+
+! Reading of smaller blocks of data goes here.
+
 
 
 
@@ -418,7 +425,98 @@ subroutine parser
   write(*,fmt=string_format) "jastrow_der :: ", file_jastrow_der          
   write(*,fmt=string_format) "orbitals    :: ", file_orbitals            
 
-  
+! Processing of data read from the parsed files
+
+! (1) Geometry  
+  if (file_geometry == 'geometry.0') then
+    write(*,*) "Reading geometry from geometry.0 file in old champ format" , trim(pool_dir) // trim(file_geometry)
+
+    open (unit=12,file=trim(pool_dir)//trim(file_geometry), iostat=iostat, action='read' , access='sequential')
+    if (iostat .ne. 0) stop "Problem in opening the molecule file"
+    do 
+      read(12, *, iostat=iostat) key
+      key = trim(key)
+      if (key(1:1) == "#") then
+!        write(*,*) "Comment from the geometry.0 file", key(2:)
+      endif 
+      if (key(1:7) == "&atoms") then
+        backspace(12)
+        read(12, *) temp1, temp2, nctype, temp3, ncent
+      endif 
+
+      if (.not. allocated(cent)) allocate(cent(3,ncent))
+      if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))      
+      if (.not. allocated(symbol)) allocate(symbol(ncent))            
+      if (.not. allocated(znuc)) allocate(znuc(nctype))                  
+
+      ! if (key(1:12) == "&atom_types") then
+      !   backspace(12)
+      !   read(12, *) (j, atomtyp(i), i =1, nctype) !  temp1, temp2, nctype, temp3, ncent
+      !   write(*,*) atomtyp
+      ! endif 
+
+      if (key(1:9) == "geometry") then
+        do i = 1, ncent
+          read(12, *) cent(1,i), cent(2,i), cent(3,i), j
+        enddo
+      endif 
+
+      if (key(1:5) == "znuc") then
+          read(12, *) (znuc(i), i= 1,nctype)
+      endif 
+      
+
+      if (is_iostat_end(iostat)) exit
+      enddo
+
+      print*, "znuc", (znuc(i), i= 1, nctype)    
+      print*, "atom types", atomtyp
+      write(6,*) 'Coordinates from the geometry.0 coordinates file '
+      do i= 1, ncent
+        write(6,'(3F10.6)') (cent(j,i),j=1,3)
+      enddo    
+      
+
+    close(12)
+
+
+
+  else
+    if (.not. fdf_block('molecule', bfdf)) then
+        !   External file reading
+            write(6,*) 'Reading coordinates of the molecule from ', trim(file_geometry), ' file'
+
+            open (unit=12,file=file_geometry, iostat=iostat, action='read' )
+            if (iostat .ne. 0) stop "Problem in opening the molecule file"
+            read(12,*) ncent
+            print*, "natoms ", ncent
+            if (.not. allocated(cent)) allocate(cent(3,ncent))
+            if (.not. allocated(symbol)) allocate(symbol(ncent))            
+            
+            read(12,'(A)')  key
+            print*, "Comment :: ", trim(key)
+            do i = 1, ncent
+              read(12,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
+            enddo
+            close(12)
+
+            write(6,*) 'Coordinates from the molecule coordinates file '
+            do j= 1, ncent
+              write(6,'(A4,3F10.6)') symbol(j), (cent(i,j),i=1,3)
+            enddo
+    endif
+  endif
+
+
+
+
+
+
+
+
+
+
+
 ! %module optwf
   if (fdf_defined("optwf")) then
     nwftype = 3; MFORCE = 3
@@ -426,11 +524,9 @@ subroutine parser
 
 
 
-  call compute_mat_size_new()
-
-
-  call allocate_vmc()
-  call allocate_dmc()
+  !call compute_mat_size_new()
+  !call allocate_vmc()
+  !call allocate_dmc()
 
 
 
@@ -439,7 +535,7 @@ subroutine parser
 
 ! Some sanity check  !! Make sure that all the variables are parsed before this line
 
-  call flagcheck_new
+  !call flagcheck_new
 
 
 
@@ -617,66 +713,6 @@ error stop "after the initial sanity check"
 !   endif
 
 !   write(6,*) '------------------------------------------------------'
-
-
-!   if (fdf_block('inline_xyz', bfdf)) then
-! !   Forward reading 
-!     write(6,*) 'Reading an inline_xyz block  '
-!     ia = 1
-
-!     do while((fdf_bline(bfdf, pline)))
-
-!       if (pline%ntokens == 1) then
-!         number_of_atoms = fdf_bintegers(pline, 1)
-!         write(*,*) "Number of atoms", number_of_atoms
-!       endif
-!       na = number_of_atoms
-
-!       if (pline%ntokens == 4) then
-!         symbol(ia) = fdf_bnames(pline, 1)
-!         do i= 1, 3
-!           xa(i,ia) = fdf_bvalues(pline, i)
-!         enddo
-!         ia = ia + 1
-!       endif
-!     enddo
-
-!     write(6,*) 'Inline XYZ Coordinates block:'
-!     do ia= 1, na
-!       write(6,'(A4,3F10.6)') symbol(ia), (xa(i,ia),i=1,3)
-!     enddo
-!   endif
-
-!   write(6,'(A)')  
-
-!   write(6,*) '------------------------------------------------------'
-
-
-!   !  Determinants as a block. read directly from the input file
-! !    under construction
-!     if (fdf_block('determinants', bfdf)) then
-!       ia = 1
-!       do while(fdf_bline(bfdf, pline))
-!         symbol(ia) = fdf_bnames(pline, 1)
-!         do i= 1, 3
-!           xa(i,ia) = fdf_bvalues(pline, i)
-!         enddo
-!         ia = ia + 1
-!       enddo
-!       na = ia - 1 
-
-!     endif
-
-!     ! if (fdf_block('Coordinates', bfdf)) then
-!     !   write(6,*) 'Coordinates:'
-!     !   do ia = 1, na
-!     !     write(6,'(A, 4x, 3F10.6)') symbol(ia), (xa(i,ia),i=1,3) 
-!     !   enddo
-!     ! endif
-
-
-!     write(6,*) '------------------------------------------------------'
-
 
 
 !   if (.not. fdf_block('determinants', bfdf)) then
