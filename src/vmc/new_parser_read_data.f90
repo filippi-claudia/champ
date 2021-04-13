@@ -17,7 +17,8 @@ subroutine read_determinants_file(file_determinants)
     !   local use  
     character(len=72), intent(in)   :: file_determinants
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5   
-    integer                         :: iostat, i, j
+    integer                         :: iostat, i, j, iunit
+    logical                         :: exist
 
     !   Formatting
     character(len=100)               :: int_format     = '(A, T40, I8)'
@@ -28,8 +29,13 @@ subroutine read_determinants_file(file_determinants)
     write(6,string_format)  " Reading determinants from the file :: ",  trim(file_determinants)
     write(6,*) '------------------------------------------------------'      
 
-    open (unit=13,file=file_determinants, iostat=iostat, action='read' )
-    if (iostat .ne. 0) stop "Problem in opening the determinant file"
+    inquire(file=file_determinants, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
+        if (iostat .ne. 0) stop "Problem in opening the determinant file"
+    else
+        error stop " determinant file "// trim(file_determinants) // " does not exist."
+    endif
 
     ndn  = nelec - nup        
 
@@ -40,20 +46,20 @@ subroutine read_determinants_file(file_determinants)
     write(*,*) 
 
     ! read the first word of the file
-    read(13,*) temp1
+    read(iunit,*) temp1
     temp1 = trim(temp1)
 
     if (temp1(1:1) == "#") then
         write(*,*) "Comment from the file ", temp1
-        read(13, *, iostat=iostat)  temp2, ndet, nwftype
+        read(iunit, *, iostat=iostat)  temp2, ndet, nwftype
         if (iostat == 0) then 
             if (trim(temp2) == "determinants") write(*,int_format) " Number of determinants ", ndet 
         else
             error stop "Error in reading number of determinants / number of wavefunction types"
         endif
     else
-        backspace(13)   ! go a line back
-        read(13, *, iostat=iostat)  temp2, ndet, nwftype
+        backspace(iunit)   ! go a line back
+        read(iunit, *, iostat=iostat)  temp2, ndet, nwftype
         if (iostat == 0) then 
             if (trim(temp2) == "determinants") write(*,int_format) " Number of determinants ", ndet 
         else
@@ -64,7 +70,7 @@ subroutine read_determinants_file(file_determinants)
     !BUG :: the number 1 should be replaced by nstates. undefined at this point
     if (.not. allocated(cdet)) allocate(cdet(ndet,1,nwftype))           
 
-    read(13,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
+    read(iunit,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
     if (iostat /= 0) error stop "Error in determinant coefficients "
 
     write(*,*)         
@@ -75,7 +81,7 @@ subroutine read_determinants_file(file_determinants)
     if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
     
     do i = 1, ndet
-        read(13,*, iostat=iostat) (iworbd(j,i), j=1,nelec)
+        read(iunit,*, iostat=iostat) (iworbd(j,i), j=1,nelec)
         if (iostat /= 0) error stop "Error in reading orbital -- determinants mapping "
     enddo
     
@@ -85,10 +91,10 @@ subroutine read_determinants_file(file_determinants)
         write(*,'(<nelec>(i4, 1x))') (iworbd(j,i), j=1,nelec)
     enddo
     
-    read(13,*) temp1
+    read(iunit,*) temp1
     if (temp1 == "end" ) write(*,*) " Single state determinant file read successfully "
 
-    close(13)
+    close(iunit)
 end subroutine read_determinants_file
 
 
@@ -112,34 +118,48 @@ subroutine read_jastrow_file(file_jastrow)
     use inputflags,         only: ijastrow_parameter
     use wfsec,              only: nwftype
     use atom,               only: ncent, nctype
+    use precision_kinds,    only: dp
 
     implicit none
 
     !   local use  
     character(len=72), intent(in)   :: file_jastrow
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5   
-    integer                         :: iostat, it, isp
+    integer                         :: iunit, iostat, it, isp, iparm, iwft
+    integer                         :: mparmja, mparmjb, mparmjc, nterms4
+    logical                         :: exist
+    real(dp)                        :: a21
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T40, I8)'
-    character(len=100)               :: string_format  = '(A, T40, A)'  
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
   
     !   External file reading
-    write(6,*) '------------------------------------------------------'      
+    write(6,*) '---------------------------------------------------------------------------'      
     write(6,string_format)  " Reading jastrow parameters from the file :: ",  trim(file_jastrow)
-    write(6,*) '------------------------------------------------------'      
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_jastrow, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_jastrow, iostat=iostat, action='read' )
+        print *, " unit of file opened ", iunit
+        if (iostat .ne. 0) stop "Problem in opening the jastrow file"
+    else
+        error stop " Jastrow file "// trim(file_jastrow) // " does not exist."
+    endif
 
 
-    if (ijas .lt. 4 .or. ijas .gt. 6) call fatal_error('JASTROW: only ijas=4,5,6 implemented')
-    if (ndn .eq. 1 .and. nspin2 .eq. 3) call fatal_error('JASTROW: 1 spin down and nspin2=3')
+
+    if (ijas .lt. 4 .or. ijas .gt. 6) error stop 'JASTROW: only ijas=4,5,6 implemented'
+    if (ndn .eq. 1 .and. nspin2 .eq. 3) error stop 'JASTROW: 1 spin down and nspin2=3'
 
     if ((ijas .eq. 4 .or. ijas .eq. 5) .and. &
         (isc .ne. 2 .and. isc .ne. 4 .and. isc .ne. 6 .and. isc .ne. 7 .and. &
          isc .ne. 12 .and. isc .ne. 14 .and. isc .ne. 16 .and. isc .ne. 17)) &
-        call fatal_error('JASTROW: if ijas=4 or 5, isc must be one of 2,4,6,7,12,14,16,17')
+         error stop 'JASTROW: if ijas=4 or 5, isc must be one of 2,4,6,7,12,14,16,17'
 
     if ((ijas .eq. 6) .and. (isc .ne. 6 .and. isc .ne. 7)) &
-        call fatal_error('JASTROW: if ijas=6, isc must be 6 or 7')
+        error stop 'JASTROW: if ijas=6, isc must be 6 or 7'
 
     nspin2b = iabs(nspin2)
     nocuspb = 0
@@ -148,43 +168,55 @@ subroutine read_jastrow_file(file_jastrow)
         nspin2 = 1
     endif
 
+    ! read the first word of the file
+    read(iunit, *, iostat=iostat)  temp2, nwftype
+    if (iostat == 0) then 
+        if (trim(temp2) == "jastrow_parameter") write(*,int_format) " Jastrow parameters being read : types ", nwftype
+    else
+        error stop "Error in reading jastrow parameters / number of wavefunction types"
+    endif
+
     allocate (scalek(nwftype))
 
-    ! if (ijas .ge. 4 .and. ijas .le. 6) then
-    !     if (ifock .gt. 0) call fatal_error('JASTROW: fock not yet implemented for ijas=4,5,6')
-    !     read (iu, *) norda, nordb, nordc
-    !     if (isc .ge. 2) read (iu, *) scalek(iwft), a21
-    !     mparmja = 2 + max(0, norda - 1)
-    !     mparmjb = 2 + max(0, nordb - 1)
-    !     mparmjc = nterms4(nordc)
+    if (ijas .ge. 4 .and. ijas .le. 6) then
+        if (ifock .gt. 0) error stop 'JASTROW: fock not yet implemented for ijas=4,5,6'
+        read (iunit, *) norda, nordb, nordc
+        write (*, *) norda, nordb, nordc
+        if (isc .ge. 2) read (iunit, *) scalek(iwft), a21
+        write (*, *) scalek(iwft), a21
+        mparmja = 2 + max(0, norda - 1)
+        mparmjb = 2 + max(0, nordb - 1)
+        mparmjc = nterms4(nordc)
 
-    !     allocate (a4(mparmja, nctype, nwftype))
+        allocate (a4(mparmja, nctype, nwftype))
 
-    !     do it = 1, nctype
-    !         read (iu, *) (a4(iparm, it, iwft), iparm=1, mparmja)
-    !         call incpos(iu, itmp, 1)
-    !     enddo
+        do it = 1, nctype
+            read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
+            write (*, *) (a4(iparm, it, iwft), iparm=1, mparmja)
+        enddo
 
-    !     allocate (b(mparmjb, 2, nwftype))
+        allocate (b(mparmjb, 2, nwftype))
 
-    !     do isp = nspin1, nspin2b
-    !         read (iu, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
-    !         call incpos(iu, itmp, 1)
-    !     enddo
+        do isp = nspin1, nspin2b
+            read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
+            write (*, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
+        enddo
 
-    !     allocate (c(mparmjc, nctype, nwftype))
+        allocate (c(mparmjc, nctype, nwftype))
 
-    !     do it = 1, nctype
-    !         read (iu, *) (c(iparm, it, iwft), iparm=1, mparmjc)
-    !         call incpos(iu, itmp, 1)
-    !     enddo
+        do it = 1, nctype
+            read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+            write (*, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+        enddo
 
-    ! endif
-    ! !Read cutoff for Jastrow4, 5, 6
-    ! if (isc .eq. 6 .or. isc .eq. 7) read (iu, *) cutjas
+    endif
+    !Read cutoff for Jastrow4, 5, 6
+    if (isc .eq. 6 .or. isc .eq. 7) read (iunit, *) cutjas
 
-    ! ijastrow_parameter = ijastrow_parameter + 1
-    ! call p2chkend(iu, 'jastrow_parameter')
+    ijastrow_parameter = ijastrow_parameter + 1
+    call p2chkend(iunit, 'jastrow_parameter')
+    
+    close(iunit)
 
 end subroutine read_jastrow_file
 
