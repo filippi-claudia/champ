@@ -150,10 +150,9 @@ subroutine parser
   type(block_fdf)            :: bfdf
   type(parsed_line), pointer :: pline
 
-  character(len=20)          :: real_format    = '(A, T20, F14.8)'
-  character(len=20)          :: int_format     = '(A, T20, I8)'
-  character(len=80)          :: string_format  = '(A, T40, A)'  
-
+  character(len=100)         :: real_format    = '(A, T40, F14.8)'
+  character(len=100)         :: int_format     = '(A, T40, I8)'
+  character(len=100)         :: string_format  = '(A, T40, A)'  
 
 !------------------------------------------------------------------------- BEGIN
 ! debug purpose only
@@ -511,58 +510,18 @@ subroutine parser
 
   if (.not. fdf_block('determinants', bfdf)) then
     if ( fdf_load_defined('determinants') ) then
-      !   External file reading
-        write(6,*) '------------------------------------------------------'      
-        write(6,'(A)')  " Reading determinants from the file ",  trim(file_determinants)
-        write(6,*) '------------------------------------------------------'      
-
-        open (unit=13,file=file_determinants, iostat=iostat, action='read' )
-        if (iostat .ne. 0) stop "Problem in opening the determinant file"
-        read(13,*) temp1, temp2, nelec, temp3, nup
-
-        if (trim(temp3) == "nelec") then
-          print*, " temp3", trim(temp3)
-          nelec =  nelec + nup; nup = nelec - nup ; nelec = nelec - nup
-        endif 
-
-        ndn       = nelec - nup        
-
-        write(*,*) " Number of total electrons ", nelec
-        write(*,*) " Number of alpha electrons ", nup        
-        write(*,*) " Number of beta  electrons ", ndn
-
-        read(13,*)  temp1, ndet  ! one more number to be read on this line
-        if (trim(temp1) == "determinants") write(*,*) "Number of determinants ", ndet
-
-        if (.not. allocated(cdet)) allocate(cdet(ndet,1,1))           
-
-        read(13,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
-        write(*,*) "iostat", iostat
-        write(*,*) "Determinant coefficients "
-        ! write(fmt,*)  '(', ndet, '(f11.8,1x))'
-        ! write(*,fmt) (cdet(i,1,1), i=1,ndet)
-        write(*,'(<ndet>(f11.8, 1x))') (cdet(i,1,1), i=1,ndet)    ! for Intel Fortran  
-        
-!       allocate the orbital mapping array        
-        if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
-      
-        do i = 1, ndet
-          read(13,*) (iworbd(j,i), j=1,nelec)
-        enddo
-
-        write(fmt,*)  '(i4,1x)'        
-        do i = 1, ndet
-          write(*,'(<nelec>(i4, 1x))') (iworbd(j,i), j=1,nelec)
-        enddo
-     
-        ! read(13,*) temp1
-        ! if (temp1 == "end" ) write(*,*) "Determinant File read successfully "
-
-        close(13)
-
+      call read_determinants_file(file_determinants)
     endif ! condition if load determinant is present
-
   endif ! condition determinant block not present
+
+
+! (5) Jastrow Parameters (either block or from a file)
+
+  if (.not. fdf_block('jastrow', bfdf)) then
+    if ( fdf_load_defined('jastrow') ) then
+      call read_jastrow_file(file_jastrow)
+    endif ! condition if load jastrow is present
+  endif ! condition jastrow block not present
 
 
 ! %module optwf
