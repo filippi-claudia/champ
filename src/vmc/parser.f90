@@ -480,9 +480,8 @@ subroutine parser
       enddo    
       write(6,'(A, <nctype>F10.6)') "znuc", (znuc(i), i= 1, nctype)          
     close(12)
-  else
+  else  ! Read the geometry in the newer .xyz format
     if (.not. fdf_block('molecule', bfdf)) then
-        !   External file reading
             write(6,*) 'Reading coordinates of the molecule from ', trim(file_geometry), ' file'
 
             open (unit=12,file=file_geometry, iostat=iostat, action='read' )
@@ -493,7 +492,7 @@ subroutine parser
             if (.not. allocated(symbol)) allocate(symbol(ncent))            
             
             read(12,'(A)')  key
-            print*, "Comment :: ", trim(key)
+            print*, "Comment from the file :: ", trim(key)
             do i = 1, ncent
               read(12,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
             enddo
@@ -508,7 +507,62 @@ subroutine parser
 
 ! Reading geometry file ends here
 
+! (2) Determinants (including / excluding csf and csfmap)
 
+  if (.not. fdf_block('determinants', bfdf)) then
+    if ( fdf_load_defined('determinants') ) then
+      !   External file reading
+        write(6,*) '------------------------------------------------------'      
+        write(6,'(A)')  " Reading determinants from the file ",  trim(file_determinants)
+        write(6,*) '------------------------------------------------------'      
+
+        open (unit=13,file=file_determinants, iostat=iostat, action='read' )
+        if (iostat .ne. 0) stop "Problem in opening the determinant file"
+        read(13,*) temp1, temp2, nelec, temp3, nup
+
+        if (trim(temp3) == "nelec") then
+          print*, " temp3", trim(temp3)
+          nelec =  nelec + nup; nup = nelec - nup ; nelec = nelec - nup
+        endif 
+
+        ndn       = nelec - nup        
+
+        write(*,*) " Number of total electrons ", nelec
+        write(*,*) " Number of alpha electrons ", nup        
+        write(*,*) " Number of beta  electrons ", ndn
+
+        read(13,*)  temp1, ndet  ! one more number to be read on this line
+        if (trim(temp1) == "determinants") write(*,*) "Number of determinants ", ndet
+
+        if (.not. allocated(cdet)) allocate(cdet(ndet,1,1))           
+
+        read(13,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
+        write(*,*) "iostat", iostat
+        write(*,*) "Determinant coefficients "
+        ! write(fmt,*)  '(', ndet, '(f11.8,1x))'
+        ! write(*,fmt) (cdet(i,1,1), i=1,ndet)
+        write(*,'(<ndet>(f11.8, 1x))') (cdet(i,1,1), i=1,ndet)    ! for Intel Fortran  
+        
+!       allocate the orbital mapping array        
+        if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
+      
+        do i = 1, ndet
+          read(13,*) (iworbd(j,i), j=1,nelec)
+        enddo
+
+        write(fmt,*)  '(i4,1x)'        
+        do i = 1, ndet
+          write(*,'(<nelec>(i4, 1x))') (iworbd(j,i), j=1,nelec)
+        enddo
+     
+        ! read(13,*) temp1
+        ! if (temp1 == "end" ) write(*,*) "Determinant File read successfully "
+
+        close(13)
+
+    endif ! condition if load determinant is present
+
+  endif ! condition determinant block not present
 
 
 ! %module optwf
@@ -709,51 +763,7 @@ error stop "after the initial sanity check"
 !   write(6,*) '------------------------------------------------------'
 
 
-!   if (.not. fdf_block('determinants', bfdf)) then
-!     if ( fdf_load_defined('determinants') ) then
-!       !   External file reading
-!         write(6,'(A)')  " Determinants Block"
 
-!         write(6,*) '------------------------------------------------------'      
-
-!         write(6,*) 'Reading the determinants block from an external file '
-
-!         open (unit=11,file=file_determinants, iostat=iostat, action='read' )
-!         if (iostat .ne. 0) stop "Problem in opening the determinant file"
-!         read(11,*) temp1, temp2, nelectrons, temp3, nalpha
-
-!         read(11,*)  temp1, ndeterminants, nexcitation
-!         if (.not. allocated(det_coeff)) allocate(det_coeff(ndeterminants))           
-
-!         read(11,*) (det_coeff(i), i=1,ndeterminants)
-!         write(fmt,*)  '(', ndeterminants, '(f11.8,1x))'
-!         write(*,fmt) (det_coeff(i), i=1,ndeterminants)
-! !        write(*,'(<ndeterminants>(f11.8, 1x))') (det_coeff(i), i=1,ndeterminants)    ! for Intel Fortran  
-
-!         nbeta       = nelectrons - nalpha        
-! !       allocate the orbital mapping array        
-!         if (.not. allocated(iworbd)) allocate(iworbd(nelectrons, ndeterminants))
-        
-!         write(*,*) "total number of       electrons ", nelectrons
-!         write(*,*) "      number of alpha electrons ", nalpha        
-!         write(*,*) "      number of beta  electrons ", nbeta
-
-!         do i = 1, ndeterminants
-!           read(11,*) (iworbd(j,i), j=1,nelectrons)
-!         enddo
-
-!         write(fmt,*)  '(i4,1x)'        
-!         do i = 1, ndeterminants
-!           write(*,'(<nelectrons>(i4, 1x))') (iworbd(j,i), j=1,nelectrons)
-!         enddo
-     
-!         read(11,*) temp1
-!         if (temp1 == "end" ) write(*,*) "Determinant File read successfully "
-!         close(11)
-
-!     endif ! condition if load determinant is present
-
-!   endif ! condition determinant block not present
 
 !   write(6,'(A)')  
 
