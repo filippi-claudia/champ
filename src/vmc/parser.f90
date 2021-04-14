@@ -157,7 +157,7 @@ subroutine parser
 !------------------------------------------------------------------------- BEGIN
 ! debug purpose only
   character(len=72)          :: optwf, blocking_vmc, blocking_dmc
-  character(len=72)          :: file_basis, file_geometry, file_determinants, file_symmetry    
+  character(len=72)          :: file_basis, file_molecule, file_determinants, file_symmetry    
   character(len=72)          :: file_jastrow, file_jastrow_der, file_orbitals, file_pseudo
 
 
@@ -402,7 +402,7 @@ subroutine parser
 
 ! Filenames parsing
   file_basis        = fdf_load_filename('basis', 'default.bas')
-  file_geometry     = fdf_load_filename('geometry', 'geometry.0')
+  file_molecule     = fdf_load_filename('molecule', 'default.xyz')
   file_determinants = fdf_load_filename('determinants', 'default.det')
   file_symmetry     = fdf_load_filename('symmetry', 'default.sym')  
   file_jastrow      = fdf_load_filename('jastrow', 'default.jas')    
@@ -417,7 +417,7 @@ subroutine parser
 ! module dependent processing . These will be replaced by inliners
   write(*,*) "printing the filenames parsed"
   write(*,fmt=string_format) "basis       :: ", file_basis
-  write(*,fmt=string_format) "geometry    :: ", file_geometry
+  write(*,fmt=string_format) "molecule    :: ", file_molecule
   write(*,fmt=string_format) "determinants:: ", file_determinants
   write(*,fmt=string_format) "symmetry    :: ", file_symmetry
   write(*,fmt=string_format) "jastrow     :: ", file_jastrow
@@ -426,85 +426,45 @@ subroutine parser
 
 ! Processing of data read from the parsed files
 
-! (1) Geometry  
-  if (file_geometry == 'geometry.0') then
-    write(*,*) "Reading geometry from geometry.0 file in old champ format" , trim(pool_dir) // trim(file_geometry)
+! (1) Molecular geometry file exclusively in .xyz format
+  if (.not. fdf_block('molecule', bfdf)) then
+    if ( fdf_load_defined('molecule') ) then
+      call read_molecule_file(file_molecule)
+    endif ! condition if load molecule is present
+  else
+    write(*,*) ' Molecular Coordinates from molecule block '
 
-    open (unit=12,file=trim(pool_dir)//trim(file_geometry), iostat=iostat, action='read' , access='sequential')
-    if (iostat .ne. 0) stop "Problem in opening the molecule file"
-    do 
-      read(12, *, iostat=iostat) key
-      key = trim(key)
-      if (key(1:1) == "#") then
-!        write(*,*) "Comment from the geometry.0 file", key(2:)
-      endif 
-      if (key(1:7) == "&atoms") then
-        backspace(12)
-        read(12, *) temp1, temp2, nctype, temp3, ncent
-      endif 
+    do while((fdf_bline(bfdf, pline)))
+!     get the integer from the first line 
+     if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then  ! check if it is the only integer present in a line
+        ncent = fdf_bintegers(pline, 1)
+        write(*,fmt=int_format) " Number of atoms ::  ", ncent
+     endif
 
       if (.not. allocated(cent)) allocate(cent(3,ncent))
-      if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))      
-      if (.not. allocated(iwctype)) allocate(iwctype(ncent))                  
-      if (.not. allocated(symbol)) allocate(symbol(ncent))            
-      if (.not. allocated(znuc)) allocate(znuc(nctype))                  
+      if (.not. allocated(symbol)) allocate(symbol(ncent))                  
 
-      if (key(1:12) == "&atom_types") then
-        backspace(12)
-        read(12, *) temp1, (iwctype(i), atomtyp(i), i =1, nctype) 
-        write(*, '(A, <nctype>(A3, A3, i3) )') "Atom type :: ", ( atomtyp(i), " = ", iwctype(i), i =1, nctype) 
-      endif 
+      j = 1 !local counter    
 
-      if (key(1:9) == "geometry") then
-        do i = 1, ncent
-          read(12, *) cent(1,i), cent(2,i), cent(3,i), iwctype(i) 
+      if (pline%ntokens == 4) then
+        symbol(j) = fdf_bnames(pline, 1)
+        do i= 1, 3
+          cent(i,j) = fdf_bvalues(pline, i)
         enddo
-      endif 
+        j = j + 1
+      endif
+    enddo
 
-      if (key(1:5) == "znuc") then
-          read(12, *) (znuc(i), i= 1,nctype)
-      endif 
-      
-      if (is_iostat_end(iostat)) exit
-      enddo
-!     geometry.0 file reading ends here      
+    write(*,*) 'Coordinates from the molecular coordinates block :: '
+    do j= 1, ncent
+      write(*,'(A4,3F10.6)') symbol(j), (cent(i,j),i=1,3)
+    enddo
+    write(*,'(A)')  
+    write(*,*) '------------------------------------------------------'
+  endif ! condition molecule block not present
 
-      do i= 1, ncent
-        symbol(i) = atomtyp(iwctype(i))
-      enddo    
 
-      write(6,*) 'Coordinates from the geometry.0 coordinates file '
-      do i= 1, ncent
-        write(6,'(A, 3F10.6,i4)') symbol(i), (cent(j,i),j=1,3), iwctype(i)
-      enddo    
-      write(6,'(A, <nctype>F10.6)') "znuc", (znuc(i), i= 1, nctype)          
-    close(12)
-  else  ! Read the geometry in the newer .xyz format
-    if (.not. fdf_block('molecule', bfdf)) then
-            write(6,*) 'Reading coordinates of the molecule from ', trim(file_geometry), ' file'
-
-            open (unit=12,file=file_geometry, iostat=iostat, action='read' )
-            if (iostat .ne. 0) stop "Problem in opening the molecule file"
-            read(12,*) ncent
-            print*, "natoms ", ncent
-            if (.not. allocated(cent)) allocate(cent(3,ncent))
-            if (.not. allocated(symbol)) allocate(symbol(ncent))            
-            
-            read(12,'(A)')  key
-            print*, "Comment from the file :: ", trim(key)
-            do i = 1, ncent
-              read(12,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
-            enddo
-            close(12)
-
-            write(6,*) 'Coordinates from the molecule coordinates file '
-            do j= 1, ncent
-              write(6,'(A4,3F10.6)') symbol(j), (cent(i,j),i=1,3)
-            enddo
-    endif
-  endif
-
-! Reading geometry file ends here
+  stop "breakpoint"
 
 ! (2) Determinants (including / excluding csf and csfmap)
 

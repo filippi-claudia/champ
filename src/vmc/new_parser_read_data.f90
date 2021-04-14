@@ -1,3 +1,115 @@
+subroutine read_molecule_file(file_molecule)
+    ! This subroutine reads the .xyz molecule file.
+    ! Ravindra
+
+    use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp    
+    use ghostatom, only: nghostcent
+    use inputflags, only: igeometry
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_molecule
+    character(len=40)               :: temp1, temp2, temp3, temp4
+    character(len=80)               :: comment
+    integer                         :: iostat, i, j, iunit
+    logical                         :: exist
+
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T30, I8)'
+    character(len=100)               :: float_format   = '(A, T60, f12.8)'    
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+  
+    !   External file reading
+    write(6,*) '------------------------------------------------------'      
+    write(6,string_format)  " Reading molecular coordinates from the file :: ",  trim(file_molecule)
+    write(6,*) '------------------------------------------------------'      
+
+    inquire(file=file_molecule, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_molecule, iostat=iostat, action='read' )
+        if (iostat .ne. 0) stop "Problem in opening the molecule file"
+    else
+        error stop " molecule file "// trim(file_molecule) // " does not exist."
+    endif
+
+    read(iunit,*) ncent
+    write(*,fmt=int_format) " Number of atoms ::  ", ncent
+
+    if (.not. allocated(cent)) allocate(cent(3,ncent))
+    if (.not. allocated(symbol)) allocate(symbol(ncent))            
+    
+    read(iunit,'(A)')  comment
+    write(*,*) "Comment from the molecule file :: ", trim(comment)
+    do i = 1, ncent
+        read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
+    enddo
+    close(iunit)
+
+    write(6,*) 'Coordinates from the molecule coordinates file '
+    do j= 1, ncent
+        write(6,'(A4,3F10.6)') symbol(j), (cent(i,j),i=1,3)
+    enddo
+
+end subroutine read_molecule_file
+
+
+!   if (file_geometry == 'geometry.0') then
+!     write(*,*) "Reading geometry from geometry.0 file in old champ format" , trim(pool_dir) // trim(file_geometry)
+
+!     open (unit=12,file=trim(pool_dir)//trim(file_geometry), iostat=iostat, action='read' , access='sequential')
+!     if (iostat .ne. 0) stop "Problem in opening the molecule file"
+!     do 
+!       read(12, *, iostat=iostat) key
+!       key = trim(key)
+!       if (key(1:1) == "#") then
+! !        write(*,*) "Comment from the geometry.0 file", key(2:)
+!       endif 
+!       if (key(1:7) == "&atoms") then
+!         backspace(12)
+!         read(12, *) temp1, temp2, nctype, temp3, ncent
+!       endif 
+
+!       if (.not. allocated(cent)) allocate(cent(3,ncent))
+!       if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))      
+!       if (.not. allocated(iwctype)) allocate(iwctype(ncent))                  
+!       if (.not. allocated(symbol)) allocate(symbol(ncent))            
+!       if (.not. allocated(znuc)) allocate(znuc(nctype))                  
+
+!       if (key(1:12) == "&atom_types") then
+!         backspace(12)
+!         read(12, *) temp1, (iwctype(i), atomtyp(i), i =1, nctype) 
+!         write(*, '(A, <nctype>(A3, A3, i3) )') "Atom type :: ", ( atomtyp(i), " = ", iwctype(i), i =1, nctype) 
+!       endif 
+
+!       if (key(1:9) == "geometry") then
+!         do i = 1, ncent
+!           read(12, *) cent(1,i), cent(2,i), cent(3,i), iwctype(i) 
+!         enddo
+!       endif 
+
+!       if (key(1:5) == "znuc") then
+!           read(12, *) (znuc(i), i= 1,nctype)
+!       endif 
+      
+!       if (is_iostat_end(iostat)) exit
+!       enddo
+! !     geometry.0 file reading ends here      
+
+!       do i= 1, ncent
+!         symbol(i) = atomtyp(iwctype(i))
+!       enddo    
+
+!       write(6,*) 'Coordinates from the geometry.0 coordinates file '
+!       do i= 1, ncent
+!         write(6,'(A, 3F10.6,i4)') symbol(i), (cent(j,i),j=1,3), iwctype(i)
+!       enddo    
+!       write(6,'(A, <nctype>F10.6)') "znuc", (znuc(i), i= 1, nctype)          
+!     close(12)
+!   else  ! Read the geometry in the newer .xyz format
+
+
+
 subroutine read_determinants_file(file_determinants)
     ! This subroutine reads the single state determinant file.
     ! Ravindra
@@ -67,7 +179,6 @@ subroutine read_determinants_file(file_determinants)
         endif
     endif 
 
-    !BUG :: the number 1 should be replaced by nstates. undefined at this point
     if (.not. allocated(cdet)) allocate(cdet(ndet,1,nwftype))           
 
     read(iunit,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
@@ -96,8 +207,6 @@ subroutine read_determinants_file(file_determinants)
 
     close(iunit)
 end subroutine read_determinants_file
-
-
 
 
 subroutine read_jastrow_file(file_jastrow)
@@ -142,8 +251,7 @@ subroutine read_jastrow_file(file_jastrow)
     inquire(file=file_jastrow, exist=exist)
     if (exist) then
         open (newunit=iunit,file=file_jastrow, iostat=iostat, action='read' )
-        print *, " unit of file opened ", iunit
-        if (iostat .ne. 0) stop "Problem in opening the jastrow file"
+        if (iostat .ne. 0) error stop "Problem in opening the jastrow file"
     else
         error stop " Jastrow file "// trim(file_jastrow) // " does not exist."
     endif
@@ -169,9 +277,9 @@ subroutine read_jastrow_file(file_jastrow)
     endif
 
     ! read the first word of the file
-    read(iunit, *, iostat=iostat)  temp2, nwftype
+    read(iunit, *, iostat=iostat)  temp2, iwft
     if (iostat == 0) then 
-        if (trim(temp2) == "jastrow_parameter") write(*,int_format) " Jastrow parameters being read : types ", nwftype
+        if (trim(temp2) == "jastrow_parameter") write(*,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
     else
         error stop "Error in reading jastrow parameters / number of wavefunction types"
     endif
@@ -181,40 +289,45 @@ subroutine read_jastrow_file(file_jastrow)
     if (ijas .ge. 4 .and. ijas .le. 6) then
         if (ifock .gt. 0) error stop 'JASTROW: fock not yet implemented for ijas=4,5,6'
         read (iunit, *) norda, nordb, nordc
-        write (*, *) norda, nordb, nordc
+        write (*, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc 
+
         if (isc .ge. 2) read (iunit, *) scalek(iwft), a21
-        write (*, *) scalek(iwft), a21
+        write (*, '(2(A,f12.6))') " scalek = ", scalek(iwft), "; a21 = ", a21
+
         mparmja = 2 + max(0, norda - 1)
         mparmjb = 2 + max(0, nordb - 1)
         mparmjc = nterms4(nordc)
 
         allocate (a4(mparmja, nctype, nwftype))
 
+        write (*, '(A)') "Jastrow parameters :: "
         do it = 1, nctype
             read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
-            write (*, *) (a4(iparm, it, iwft), iparm=1, mparmja)
+            write (*, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)
         enddo
 
         allocate (b(mparmjb, 2, nwftype))
 
         do isp = nspin1, nspin2b
             read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
-            write (*, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
+            write (*, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)
         enddo
 
         allocate (c(mparmjc, nctype, nwftype))
 
         do it = 1, nctype
             read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
-            write (*, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+            write (*, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)
         enddo
 
     endif
     !Read cutoff for Jastrow4, 5, 6
-    if (isc .eq. 6 .or. isc .eq. 7) read (iunit, *) cutjas
+    if (isc .eq. 6 .or. isc .eq. 7) then 
+        read (iunit, *) cutjas
+        write(iunit, '(A,2X,f12.8)') " cutjas = ", cutjas
+    endif
 
     ijastrow_parameter = ijastrow_parameter + 1
-    call p2chkend(iunit, 'jastrow_parameter')
     
     close(iunit)
 
