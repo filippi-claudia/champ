@@ -5,6 +5,7 @@ subroutine read_molecule_file(file_molecule)
     use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp    
     use ghostatom, only: nghostcent
     use inputflags, only: igeometry
+    use periodic_table, only: atom_t, element
 
     implicit none
 
@@ -12,8 +13,10 @@ subroutine read_molecule_file(file_molecule)
     character(len=72), intent(in)   :: file_molecule
     character(len=40)               :: temp1, temp2, temp3, temp4
     character(len=80)               :: comment
-    integer                         :: iostat, i, j, iunit
+    integer                         :: iostat, i, j, k, iunit
     logical                         :: exist
+    type(atom_t)                    :: atoms
+    character(len=2), allocatable   :: unique(:)
 
     !   Formatting
     character(len=100)               :: int_format     = '(A, T30, I8)'
@@ -35,79 +38,70 @@ subroutine read_molecule_file(file_molecule)
 
     read(iunit,*) ncent
     write(*,fmt=int_format) " Number of atoms ::  ", ncent
+    write(*,*)
 
     if (.not. allocated(cent)) allocate(cent(3,ncent))
-    if (.not. allocated(symbol)) allocate(symbol(ncent))            
+    if (.not. allocated(symbol)) allocate(symbol(ncent)) 
+    if (.not. allocated(iwctype)) allocate(iwctype(ncent))              
+    if (.not. allocated(unique)) allocate(unique(ncent))  
     
     read(iunit,'(A)')  comment
     write(*,*) "Comment from the molecule file :: ", trim(comment)
+    write(*,*)
+
     do i = 1, ncent
         read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
     enddo
     close(iunit)
 
-    write(6,*) 'Coordinates from the molecule coordinates file '
-    do j= 1, ncent
-        write(6,'(A4,3F10.6)') symbol(j), (cent(i,j),i=1,3)
+
+    ! Count unique type of elements
+    nctype = 1 
+    unique(1) = symbol(1)
+    do j= 2, ncent  
+        if (any(unique == symbol(j) ))  cycle
+        nctype = nctype + 1 
+        unique(nctype) = symbol(j)
     enddo
 
+    write(*,*) " Number of distinct types of elements (nctype) :: ", nctype 
+    write(*,*)
+
+    if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))                              
+    if (.not. allocated(znuc)) allocate(znuc(nctype))                  
+
+    ! get the correspondence for each atom according to the rule defined for atomtypes
+    do j = 1, ncent
+        do k = 1, nctype
+            if (symbol(j) == unique(k))   iwctype(j) = k
+        enddo
+    enddo
+
+    ! Get the correspondence rule
+    do k = 1, nctype
+        atomtyp(k) = unique(k)
+    enddo
+    if (allocated(unique)) deallocate(unique)  
+
+    ! Get the znuc for each unique atom
+    do j = 1, nctype
+        atoms = element(symbol(j))
+        znuc(j) = atoms%nvalence
+    enddo
+
+    write(6,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
+    write(*,*)
+    do j= 1, ncent
+        write(6,'(A4,3F10.6, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
+    enddo
+
+    write(*,*)
+    write(*,*) " Values of znuc (number of valence electrons) "
+    write(*,'(10F10.6)') (znuc(j), j = 1, nctype)
+    write(*,*)
+    
+
 end subroutine read_molecule_file
-
-
-!   if (file_geometry == 'geometry.0') then
-!     write(*,*) "Reading geometry from geometry.0 file in old champ format" , trim(pool_dir) // trim(file_geometry)
-
-!     open (unit=12,file=trim(pool_dir)//trim(file_geometry), iostat=iostat, action='read' , access='sequential')
-!     if (iostat .ne. 0) stop "Problem in opening the molecule file"
-!     do 
-!       read(12, *, iostat=iostat) key
-!       key = trim(key)
-!       if (key(1:1) == "#") then
-! !        write(*,*) "Comment from the geometry.0 file", key(2:)
-!       endif 
-!       if (key(1:7) == "&atoms") then
-!         backspace(12)
-!         read(12, *) temp1, temp2, nctype, temp3, ncent
-!       endif 
-
-!       if (.not. allocated(cent)) allocate(cent(3,ncent))
-!       if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))      
-!       if (.not. allocated(iwctype)) allocate(iwctype(ncent))                  
-!       if (.not. allocated(symbol)) allocate(symbol(ncent))            
-!       if (.not. allocated(znuc)) allocate(znuc(nctype))                  
-
-!       if (key(1:12) == "&atom_types") then
-!         backspace(12)
-!         read(12, *) temp1, (iwctype(i), atomtyp(i), i =1, nctype) 
-!         write(*, '(A, <nctype>(A3, A3, i3) )') "Atom type :: ", ( atomtyp(i), " = ", iwctype(i), i =1, nctype) 
-!       endif 
-
-!       if (key(1:9) == "geometry") then
-!         do i = 1, ncent
-!           read(12, *) cent(1,i), cent(2,i), cent(3,i), iwctype(i) 
-!         enddo
-!       endif 
-
-!       if (key(1:5) == "znuc") then
-!           read(12, *) (znuc(i), i= 1,nctype)
-!       endif 
-      
-!       if (is_iostat_end(iostat)) exit
-!       enddo
-! !     geometry.0 file reading ends here      
-
-!       do i= 1, ncent
-!         symbol(i) = atomtyp(iwctype(i))
-!       enddo    
-
-!       write(6,*) 'Coordinates from the geometry.0 coordinates file '
-!       do i= 1, ncent
-!         write(6,'(A, 3F10.6,i4)') symbol(i), (cent(j,i),j=1,3), iwctype(i)
-!       enddo    
-!       write(6,'(A, <nctype>F10.6)') "znuc", (znuc(i), i= 1, nctype)          
-!     close(12)
-!   else  ! Read the geometry in the newer .xyz format
-
 
 
 subroutine read_determinants_file(file_determinants)

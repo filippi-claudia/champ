@@ -10,7 +10,7 @@ subroutine parser
 ! CHAMP modules
   use contr3,         only: mode
   use allocation_mod, only: allocate_vmc, allocate_dmc
-  use periodic_table
+  use periodic_table, only: atom_t, element
 
 ! in the replacement of preprocess input
   use elec,           only: ndn, nup
@@ -171,7 +171,10 @@ subroutine parser
   integer, allocatable       :: anorm(:) ! dimensions = nbasis
 
 ! local counter variables
-  integer                    :: i,j, iostat
+  integer                    :: i,j,k, iostat
+  type(atom_t)               :: atoms
+  character(len=2), allocatable   :: unique(:)
+
 
 ! Initialize # get the filenames from the commandline arguments
   call fdf_init('test-champ.inp', 'test-champ.out')
@@ -436,16 +439,21 @@ subroutine parser
 
     do while((fdf_bline(bfdf, pline)))
 !     get the integer from the first line 
-     if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then  ! check if it is the only integer present in a line
+      if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then  ! check if it is the only integer present in a line
         ncent = fdf_bintegers(pline, 1)
         write(*,fmt=int_format) " Number of atoms ::  ", ncent
-     endif
+      endif
 
       if (.not. allocated(cent)) allocate(cent(3,ncent))
-      if (.not. allocated(symbol)) allocate(symbol(ncent))                  
+      if (.not. allocated(symbol)) allocate(symbol(ncent)) 
+      if (.not. allocated(iwctype)) allocate(iwctype(ncent))              
+      if (.not. allocated(unique)) allocate(unique(ncent))  
+      
+      if (((pline%id(1) .eq. "n") .or. (pline%id(1) .eq. "v")) .and. (pline%ntokens .eq. 1) ) then  ! check if it is the only integer present in a line
+        write(*,fmt=string_format) " Comment from the file ::  ", fdf_bnames(pline,1)
+      endif
 
       j = 1 !local counter    
-
       if (pline%ntokens == 4) then
         symbol(j) = fdf_bnames(pline, 1)
         do i= 1, 3
@@ -455,16 +463,54 @@ subroutine parser
       endif
     enddo
 
-    write(*,*) 'Coordinates from the molecular coordinates block :: '
-    do j= 1, ncent
-      write(*,'(A4,3F10.6)') symbol(j), (cent(i,j),i=1,3)
+    ! Count unique type of elements
+    nctype = 1 
+    unique(1) = symbol(1)
+    do j= 2, ncent  
+        if (any(unique == symbol(j) ))  cycle
+        nctype = nctype + 1 
+        unique(nctype) = symbol(j)
     enddo
-    write(*,'(A)')  
+
+    write(*,*) " Number of distinct types of elements (nctype) :: ", nctype 
+    write(*,*)
+
+    if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))                              
+    if (.not. allocated(znuc)) allocate(znuc(nctype))                  
+
+    ! get the correspondence for each atom according to the rule defined for atomtypes
+    do j = 1, ncent
+        do k = 1, nctype
+            if (symbol(j) == unique(k))   iwctype(j) = k
+        enddo
+    enddo
+
+    ! Get the correspondence rule
+    do k = 1, nctype
+        atomtyp(k) = unique(k)
+    enddo
+    if (allocated(unique)) deallocate(unique)
+
+    ! Get the znuc for each unique atom
+    do j = 1, nctype
+        atoms = element(symbol(j))
+        znuc(j) = atoms%nvalence
+    enddo
+
+    write(6,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
+    write(*,*)
+    do j= 1, ncent
+        write(6,'(A4,3F10.6, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
+    enddo
+
+    write(*,*)
+    write(*,*) " Values of znuc (number of valence electrons) "
+    write(*,'(10F10.6)') (znuc(j), j = 1, nctype)
+    write(*,*)
+
     write(*,*) '------------------------------------------------------'
   endif ! condition molecule block not present
 
-
-  stop "breakpoint"
 
 ! (2) Determinants (including / excluding csf and csfmap)
 
