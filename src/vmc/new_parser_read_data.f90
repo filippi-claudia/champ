@@ -459,46 +459,37 @@ subroutine read_csf_file(file_determinants)
     endif        
 
     do 
-    read(iunit,*) temp1
-    temp1 = trim(temp1)
+        read(iunit,*, iostat=iostat) temp1
+        temp1 = trim(temp1)
+        if (is_iostat_end(iostat)) exit
 
-    if (temp1(1:1) == "csf") then
-        write(*,*) "CSF found ", temp1
-        read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
-        if (iostat == 0) then 
-            if (trim(temp2) == "csf") write(*,int_format) " Number of csf ", ncsf
-        else
-            error stop "Error in reading number of csfs / number of states"
-        endif
-    else
-        backspace(iunit)   ! go a line back
-        read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
-        if (iostat == 0) then 
-            if (trim(temp2) == "csf") write(*,int_format) " Number of csf ", ncsf
-        else
-            error stop "Error in reading number of csfs / number of states"
-        endif
-    endif 
-    
-    if(is_iostat_end(iostat)) exit
+
+        if (temp1 == "csf") then
+            backspace(iunit)   ! go a line back
+            read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
+            write(*,*) " Number of csf and nstates ", ncsf, nstates
+            if (iostat == 0) then 
+                if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))    
+                do i = 1, nstates
+                    read(iunit,*, iostat=iostat) (ccsf(j,1,1), j=1,ncsf)
+                enddo
+                if (iostat /= 0) error stop "Error in reading csf coefficients "
+            else
+                error stop "Error in reading number of csfs / number of states"
+            endif
+        endif 
+        
+        
     enddo
-
-    if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))    
-
-    do i = 1, nstates
-        read(iunit,*, iostat=iostat) (ccsf(j,i,1), j=1,ncsf)
-    enddo
-    if (iostat /= 0) error stop "Error in reading csf coefficients "
-
 
     write(*,*)         
     write(*,*) " CSF coefficients "
     
     do i = 1, nstates
-        write(*,'(10(1x, f11.8, 1x))') (ccsf(j,i,1), j=1,ncsf)   
+        write(*,*) " State :: ", i , " out of ", nstates
+        write(*,'(10(1x, f11.8, 1x))') (ccsf(j,1,1), j=1,ncsf)   
     enddo   
 
-    
 end subroutine read_csf_file
 
 
