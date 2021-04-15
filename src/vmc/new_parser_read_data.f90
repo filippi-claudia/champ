@@ -341,9 +341,10 @@ subroutine read_orbitals_file(file_orbitals)
     
 !   local use  
     character(len=72), intent(in)   :: file_orbitals
-    character(len=40)               :: temp1, temp2, temp3
+    character(len=40)               :: temp1, temp2
+    character(len=120)               :: temp3
     integer                         :: iunit, iostat, iwft
-    integer                         :: iorb, ibasis, k    
+    integer                         :: iorb, ibasis, i, k, counter    
     logical                         :: exist
 
     !   Formatting
@@ -393,13 +394,28 @@ subroutine read_orbitals_file(file_orbitals)
     write(*,*)         
     write(*,*) " LCAO orbitals "
 
-!    write (*, '(T8, T<15*k>, 10i4)')  ( k, k = 1, 10)
+    temp3 = '(T8, T14, i3, T28, i3, T42, i3, T56, i3, T70, i3, T84, i3, T98, i3, T112, i3, T126, i3, T140, i3)'
+    ! print orbs in blocks of 10
+    counter = 0
     do k = 10, nbasis, 10
+!        write(*,*) " Orbitals  ", k-9 , "  to ", k       
+        write (*, fmt=temp3 )  (i, i = k-9, k)
         do iorb = 1, norb
             write (*, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=k-9, k)
         enddo
-        write(*,*)         
+        counter = counter + 10
     enddo
+
+
+    ! Remaining block
+    write (*, fmt=temp3 )  (i, i = counter, nbasis)        
+    do k = counter, nbasis
+!        write(*,*) " Orbitals  ", counter , "  to ", nbasis
+        do iorb = 1, norb
+            write (*, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=counter, nbasis)
+        enddo
+    enddo
+
 
     write(*,*) "----------------------------------------------------------"        
 
