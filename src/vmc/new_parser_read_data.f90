@@ -81,11 +81,12 @@ subroutine read_molecule_file(file_molecule)
     do k = 1, nctype
         atomtyp(k) = unique(k)
     enddo
+
     if (allocated(unique)) deallocate(unique)  
 
     ! Get the znuc for each unique atom
     do j = 1, nctype
-        atoms = element(symbol(j))
+        atoms = element(atomtyp(j))
         znuc(j) = atoms%nvalence
     enddo
 
@@ -99,8 +100,6 @@ subroutine read_molecule_file(file_molecule)
     write(*,*) " Values of znuc (number of valence electrons) "
     write(*,'(10F10.6)') (znuc(j), j = 1, nctype)
     write(*,*)
-    
-
 end subroutine read_molecule_file
 
 
@@ -327,3 +326,81 @@ subroutine read_jastrow_file(file_jastrow)
 
 end subroutine read_jastrow_file
 
+
+subroutine read_orbitals_file(file_orbitals)
+    
+    use coefs, only: coef, nbasis, norb
+    use inputflags, only: ilcao
+    use orbval, only: nadorb
+    use pcm_fdc, only: fs
+
+    ! was not in master but is needed
+    use wfsec, only: nwftype
+
+    implicit none
+    
+!   local use  
+    character(len=72), intent(in)   :: file_orbitals
+    character(len=40)               :: temp1, temp2, temp3
+    integer                         :: iunit, iostat, iwft
+    integer                         :: iorb, ibasis, k    
+    logical                         :: exist
+
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+    character(len=100)               :: float_format   = '(A, T60, f12.8)'    
+
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading LCAO orbitals from the file :: ",  trim(file_orbitals)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_orbitals, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_orbitals, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the LCAO orbitals file"
+    else
+        error stop " Jastrow file "// trim(file_orbitals) // " does not exist."
+    endif
+
+    ! read the first line 
+    read(iunit, *, iostat=iostat)  temp1, nbasis, norb, iwft
+    if (iostat == 0) then 
+        if (trim(temp2) == "lcao") then
+            write(*,int_format) " Number of basis functions ", nbasis
+            write(*,int_format) " Number of lcao orbitals ", norb            
+            write(*,int_format) " Type of wave functions ", iwft
+        endif
+    else
+        error stop "Error in reading number of lcao orbitals / basis / number of wavefunction types"
+    endif
+
+    ! Fix the maximum size of all array relative
+    ! to MOs with the maximum number of MOs
+    ! this may not be needed later
+    !MORB = norb
+
+    if (iwft .gt. nwftype) error stop 'LCAO: wave function type > nwftype'
+
+    if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))           
+
+    do iorb = 1, norb
+        read (iunit, *, iostat=iostat) (coef(ibasis, iorb, iwft), ibasis=1, nbasis)
+    enddo
+    if (iostat /= 0) error stop "Error in reading lcao orbitals "
+
+    write(*,*)         
+    write(*,*) " LCAO orbitals "
+
+!    write (*, '(T8, T<15*k>, 10i4)')  ( k, k = 1, 10)
+    do k = 10, nbasis, 10
+        do iorb = 1, norb
+            write (*, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=k-9, k)
+        enddo
+        write(*,*)         
+    enddo
+
+    write(*,*) "----------------------------------------------------------"        
+
+end subroutine read_orbitals_file

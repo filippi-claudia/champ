@@ -449,8 +449,8 @@ subroutine parser
       if (.not. allocated(iwctype)) allocate(iwctype(ncent))              
       if (.not. allocated(unique)) allocate(unique(ncent))  
       
-      if (((pline%id(1) .eq. "n") .or. (pline%id(1) .eq. "v")) .and. (pline%ntokens .eq. 1) ) then  ! check if it is the only integer present in a line
-        write(*,fmt=string_format) " Comment from the file ::  ", fdf_bnames(pline,1)
+      if (pline%ntokens .ne. 4) then  ! check if it is the only integer present in a line
+        write(*,*) " Comment from the file ::  ", trim(pline%line)
       endif
 
       j = 1 !local counter    
@@ -463,9 +463,11 @@ subroutine parser
       endif
     enddo
 
+
     ! Count unique type of elements
     nctype = 1 
     unique(1) = symbol(1)
+
     do j= 2, ncent  
         if (any(unique == symbol(j) ))  cycle
         nctype = nctype + 1 
@@ -493,7 +495,7 @@ subroutine parser
 
     ! Get the znuc for each unique atom
     do j = 1, nctype
-        atoms = element(symbol(j))
+        atoms = element(atomtyp(j)) 
         znuc(j) = atoms%nvalence
     enddo
 
@@ -528,6 +530,15 @@ subroutine parser
       call read_jastrow_file(file_jastrow)
     endif ! condition if load jastrow is present
   endif ! condition jastrow block not present
+
+! (6) LCAO orbitals
+
+  if (.not. fdf_block('orbitals', bfdf)) then
+    if ( fdf_load_defined('orbitals') ) then
+      call read_orbitals_file(file_orbitals)
+    endif ! condition if load orbitals is present
+  endif ! condition orbitals block not present
+
 
 
 ! %module optwf

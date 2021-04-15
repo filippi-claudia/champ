@@ -14,7 +14,7 @@ module atom
 
     private
     public   :: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-    public :: allocate_atom, deallocate_atom
+    public   :: allocate_atom, deallocate_atom
     save
 contains
     subroutine allocate_atom()
