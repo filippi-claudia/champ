@@ -1,3 +1,58 @@
+
+subroutine header_printing()
+    ! Ravindra
+    implicit none 
+    !character(len=80)           :: date_and_time, GIT_HASH
+    integer                     :: status
+    character(len=8)            :: date
+    character(len=10)           :: time
+    character(len=40)           :: env_variable, output
+    
+
+    write(*,*) "____________________________________________________________________"
+    write(*,*)                   
+    write(*,*)
+    write(*,*) ' .d8888b.   888    888         d8888  888b     d888  8888888b. '
+    write(*,*) 'd88P  Y88b  888    888        d88888  8888b   d8888  888   Y88b'
+    write(*,*) '888    888  888    888       d88P888  88888b.d88888  888    888'
+    write(*,*) '888         8888888888      d88P 888  888Y88888P888  888   d88P'
+    write(*,*) '888         888    888     d88P  888  888 Y888P 888  8888888P" '
+    write(*,*) '888    888  888    888    d88P   888  888  Y8P  888  888       '
+    write(*,*) 'Y88b  d88P  888    888   d8888888888  888   "   888  888       '
+    write(*,*) ' "Y8888P"   888    888  d88P     888  888       888  888       '
+    write(*,*)
+    write(*,*) "____________________________________________________________________"
+    write(*,*)
+    write(*,*) ' Cornell Holland Ab-initio Materials Package'
+    write(*,*)
+    write(*,*)
+
+    write(*,*) " information about the contributors goes here"
+    write(*,*) " paper to cite for this code goes here"
+    write(*,*) " license information goes here"
+
+    write(*,*) "____________________________________________________________________"
+
+    call date_and_time(DATE=date,TIME=time)
+    write(*, '(12a)') " Date and Time        :: ",   date(1:4), "-", date(5:6), "-", date(7:8), " at ",  time(1:2), ":", time(3:4), ":", time(5:6)                                                               
+    call get_environment_variable ("PWD", output)
+    write(*, '(12a)') " Current directory    :: ",   output
+    call get_environment_variable ("HOSTNAME", output)
+    write(*, '(12a)') " Hostname             :: ",   output
+
+
+    ! compiled date and time 
+    ! source directory 
+    ! branch   
+    ! git commit id 
+
+    ! input filename  
+    ! nproc           
+   
+   
+end subroutine header_printing
+
+
 subroutine read_molecule_file(file_molecule)
     ! This subroutine reads the .xyz molecule file.
     ! Ravindra
@@ -471,7 +526,7 @@ subroutine read_csf_file(file_determinants)
             if (iostat == 0) then 
                 if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))    
                 do i = 1, nstates
-                    read(iunit,*, iostat=iostat) (ccsf(j,1,1), j=1,ncsf)
+                    read(iunit,*, iostat=iostat) (ccsf(j,i,1), j=1,ncsf)
                 enddo
                 if (iostat /= 0) error stop "Error in reading csf coefficients "
             else
@@ -487,7 +542,8 @@ subroutine read_csf_file(file_determinants)
     
     do i = 1, nstates
         write(*,*) " State :: ", i , " out of ", nstates
-        write(*,'(10(1x, f11.8, 1x))') (ccsf(j,1,1), j=1,ncsf)   
+        write(*,'(10(1x, f11.8, 1x))') (ccsf(j,i,1), j=1,ncsf)   
+        write(*,*) 
     enddo   
 
 end subroutine read_csf_file

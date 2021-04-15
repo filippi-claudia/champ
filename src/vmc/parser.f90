@@ -412,7 +412,8 @@ subroutine parser
   file_jastrow_der  = fdf_load_filename('jastrow_der', 'default.jasder')      
   file_orbitals     = fdf_load_filename('orbitals', 'default.orb')        
 
-! Reading of smaller blocks of data goes here.
+  call header_printing()
+  ! Reading of smaller blocks of data goes here.
 
 
 
