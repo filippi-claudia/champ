@@ -514,11 +514,19 @@ subroutine parser
   endif ! condition molecule block not present
 
 
-! (2) Determinants (including / excluding csf and csfmap)
+! (2) Determinants (excluding csf and csfmap)
 
   if (.not. fdf_block('determinants', bfdf)) then
     if ( fdf_load_defined('determinants') ) then
       call read_determinants_file(file_determinants)
+    endif ! condition if load determinant is present
+  endif ! condition determinant block not present
+
+! (3) CSF 
+
+  if (.not. fdf_block('determinants', bfdf)) then
+    if ( fdf_load_defined('determinants') ) then
+      call read_csf_file(file_determinants)
     endif ! condition if load determinant is present
   endif ! condition determinant block not present
 

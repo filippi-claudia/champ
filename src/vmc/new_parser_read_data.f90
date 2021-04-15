@@ -420,3 +420,85 @@ subroutine read_orbitals_file(file_orbitals)
     write(*,*) "----------------------------------------------------------"        
 
 end subroutine read_orbitals_file
+
+subroutine read_csf_file(file_determinants)
+    ! This subroutine reads the csf coefficients from the determinant file.
+    ! Ravindra
+
+    use, intrinsic :: iso_fortran_env!, only: is_iostat_end
+    use vmc_mod, only: MDET
+    use csfs, only: ccsf, ncsf, nstates
+    use mstates_mod, only: MSTATES
+    use inputflags, only: icsfs
+    use wfsec, only: nwftype
+    use dets, only: ndet
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_determinants
+    character(len=40)               :: temp1, temp2, temp3, temp4, temp5   
+    integer                         :: iostat, i, j, iunit
+    logical                         :: exist
+
+    !   Formatting
+    character(len=100)              :: int_format     = '(A, T40, I8)'
+    character(len=100)              :: string_format  = '(A, T40, A)'  
+    
+    !   External file reading
+    write(6,*) '------------------------------------------------------'      
+    write(6,string_format)  " Reading csf from the file :: ",  trim(file_determinants)
+    write(6,*) '------------------------------------------------------'      
+
+    inquire(file=file_determinants, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
+        if (iostat .ne. 0) stop "Problem in opening the determinant file for reading csfs"
+    else
+        error stop " determinant file "// trim(file_determinants) // " does not exist."
+    endif        
+
+    do 
+    read(iunit,*) temp1
+    temp1 = trim(temp1)
+
+    if (temp1(1:1) == "csf") then
+        write(*,*) "CSF found ", temp1
+        read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
+        if (iostat == 0) then 
+            if (trim(temp2) == "csf") write(*,int_format) " Number of csf ", ncsf
+        else
+            error stop "Error in reading number of csfs / number of states"
+        endif
+    else
+        backspace(iunit)   ! go a line back
+        read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
+        if (iostat == 0) then 
+            if (trim(temp2) == "csf") write(*,int_format) " Number of csf ", ncsf
+        else
+            error stop "Error in reading number of csfs / number of states"
+        endif
+    endif 
+    
+    if(is_iostat_end(iostat)) exit
+    enddo
+
+    if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))    
+
+    do i = 1, nstates
+        read(iunit,*, iostat=iostat) (ccsf(j,i,1), j=1,ncsf)
+    enddo
+    if (iostat /= 0) error stop "Error in reading csf coefficients "
+
+
+    write(*,*)         
+    write(*,*) " CSF coefficients "
+    
+    do i = 1, nstates
+        write(*,'(10(1x, f11.8, 1x))') (ccsf(j,i,1), j=1,ncsf)   
+    enddo   
+
+    
+end subroutine read_csf_file
+
+
