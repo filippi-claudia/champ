@@ -159,6 +159,7 @@ subroutine parser
   character(len=72)          :: optwf, blocking_vmc, blocking_dmc
   character(len=72)          :: file_basis, file_molecule, file_determinants, file_symmetry    
   character(len=72)          :: file_jastrow, file_jastrow_der, file_orbitals, file_pseudo
+  character(len=72)          :: file_exponents
 
 
 ! from process input subroutine
@@ -411,6 +412,7 @@ subroutine parser
   file_jastrow      = fdf_load_filename('jastrow', 'default.jas')    
   file_jastrow_der  = fdf_load_filename('jastrow_der', 'default.jasder')      
   file_orbitals     = fdf_load_filename('orbitals', 'default.orb')        
+  file_exponents    = fdf_load_filename('exponents', 'exponents.exp')
 
   call header_printing()
   ! Reading of smaller blocks of data goes here.
@@ -419,15 +421,16 @@ subroutine parser
 
 
 ! module dependent processing . These will be replaced by inliners
-  write(*,*) "printing the filenames parsed"
-  write(*,fmt=string_format) "basis       :: ", file_basis
-  write(*,fmt=string_format) "molecule    :: ", file_molecule
-  write(*,fmt=string_format) "determinants:: ", file_determinants
-  write(*,fmt=string_format) "symmetry    :: ", file_symmetry
-  write(*,fmt=string_format) "jastrow     :: ", file_jastrow
-  write(*,fmt=string_format) "jastrow_der :: ", file_jastrow_der          
-  write(*,fmt=string_format) "orbitals    :: ", file_orbitals            
-
+  write(*,*) "Names of the external files being read for this calculation :: "
+  write(*,*)
+  write(*,fmt=string_format) " Basis                      :: ", file_basis
+  write(*,fmt=string_format) " Molecule                   :: ", file_molecule
+  write(*,fmt=string_format) " Determinants               :: ", file_determinants
+  write(*,fmt=string_format) " Symmetry                   :: ", file_symmetry
+  write(*,fmt=string_format) " Jastrow                    :: ", file_jastrow
+  write(*,fmt=string_format) " Jastrow_der                :: ", file_jastrow_der          
+  write(*,fmt=string_format) " Orbitals                   :: ", file_orbitals            
+  write(*,*)
 ! Processing of data read from the parsed files
 
 ! (1) Molecular geometry file exclusively in .xyz format
@@ -547,6 +550,14 @@ subroutine parser
       call read_orbitals_file(file_orbitals)
     endif ! condition if load orbitals is present
   endif ! condition orbitals block not present
+
+  ! (7) exponents 
+
+  if (.not. fdf_block('exponents', bfdf)) then
+    if ( fdf_load_defined('exponents') ) then
+      call read_exponents_file(file_exponents)
+    endif ! condition if load exponent is present
+  endif ! condition exponent block not present
 
 
 

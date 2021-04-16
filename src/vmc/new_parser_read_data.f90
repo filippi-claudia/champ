@@ -1,12 +1,16 @@
 
 subroutine header_printing()
     ! Ravindra
+    use mpi_f08
+    use, intrinsic :: iso_fortran_env, only: iostat_end
     implicit none 
-    !character(len=80)           :: date_and_time, GIT_HASH
-    integer                     :: status
-    character(len=8)            :: date
-    character(len=10)           :: time
-    character(len=40)           :: env_variable, output
+    
+    integer                             :: status, i
+    character(len=8)                    :: date
+    character(len=10)                   :: time
+    character(len=40)                   :: env_variable
+    character(len=100)                  :: input_filename, output
+    
     
 
     write(*,*) "____________________________________________________________________"
@@ -28,19 +32,50 @@ subroutine header_printing()
     write(*,*)
 
     write(*,*) " information about the contributors goes here"
+    write(*,*)
+    write(*,*)
+    write(*,*)
+    write(*,*)
+
     write(*,*) " paper to cite for this code goes here"
+    write(*,*)
+    write(*,*)
+    write(*,*)
+    write(*,*)
+
     write(*,*) " license information goes here"
 
     write(*,*) "____________________________________________________________________"
+    write(*,*)
+    write(*,*)
+    write(*,*)
+    write(*,*)
 
-    call date_and_time(DATE=date,TIME=time)
-    write(*, '(12a)') " Date and Time        :: ",   date(1:4), "-", date(5:6), "-", date(7:8), " at ",  time(1:2), ":", time(3:4), ":", time(5:6)                                                               
+    call date_and_time(date=date,time=time)
+    write(*, '(12a)') " Calculation started on     :: ",   date(1:4), "-", date(5:6), "-", date(7:8), " at ",  time(1:2), ":", time(3:4), ":", time(5:6)                                                               
     call get_environment_variable ("PWD", output)
-    write(*, '(12a)') " Current directory    :: ",   output
-    call get_environment_variable ("HOSTNAME", output)
-    write(*, '(12a)') " Hostname             :: ",   output
+    write(*, '(2a)') " Current directory          :: ",   output
+    call get_command_argument(number=0, value=output)
+    write(*, '(2a)') " Executable                 :: ",   output
+    call hostnm(output)
+    write(*, '(2a)') " Hostname                   :: ",   output
+    write(*,*)
+    write(*,*)
+    write(*,*)
+    write(*,*)
+
+    ! Get Command line arguments
+    ! i = 0
+    ! do
+    !     call get_command_argument(number=i, value=output)
+    !     if (len_trim(output) == 0) exit
+    !     print*, "number ", i, " output", trim(output)
+    !     i = i+1
+    ! end do
 
 
+    
+    
     ! compiled date and time 
     ! source directory 
     ! branch   
@@ -79,9 +114,9 @@ subroutine read_molecule_file(file_molecule)
     character(len=100)               :: string_format  = '(A, T60, A)'  
   
     !   External file reading
-    write(6,*) '------------------------------------------------------'      
+    write(6,*) '-----------------------------------------------------------------------'      
     write(6,string_format)  " Reading molecular coordinates from the file :: ",  trim(file_molecule)
-    write(6,*) '------------------------------------------------------'      
+    write(6,*) '-----------------------------------------------------------------------'      
 
     inquire(file=file_molecule, exist=exist)
     if (exist) then
@@ -176,9 +211,9 @@ subroutine read_determinants_file(file_determinants)
 
     !   local use  
     character(len=72), intent(in)   :: file_determinants
-    character(len=40)               :: temp1, temp2, temp3, temp4, temp5   
-    integer                         :: iostat, i, j, iunit
-    logical                         :: exist
+    character(len=80)               :: temp1, temp2, temp3
+    integer                         :: iostat, i, j, iunit, counter
+    logical                         :: exist, skip = .true.
 
     !   Formatting
     character(len=100)               :: int_format     = '(A, T40, I8)'
@@ -205,27 +240,25 @@ subroutine read_determinants_file(file_determinants)
     write(*,int_format) " Number of beta  electrons ", ndn
     write(*,*) 
 
-    ! read the first word of the file
-    read(iunit,*) temp1
-    temp1 = trim(temp1)
 
-    if (temp1(1:1) == "#") then
-        write(*,*) "Comment from the file ", temp1
-        read(iunit, *, iostat=iostat)  temp2, ndet, nwftype
-        if (iostat == 0) then 
-            if (trim(temp2) == "determinants") write(*,int_format) " Number of determinants ", ndet 
-        else
-            error stop "Error in reading number of determinants / number of wavefunction types"
+    ! to escape the comments before the "lcao nbasis norb" line
+    do while (skip)
+        read(iunit,*, iostat=iostat) temp1
+        temp1 = trim(temp1)
+        if (temp1 == "determinants") then
+            backspace(iunit)
+            skip = .false. 
         endif
+    enddo
+
+!   Read the first main line
+    read(iunit, *, iostat=iostat)  temp2, ndet, nwftype
+    if (iostat == 0) then 
+        if (trim(temp2) == "determinants") write(*,int_format) " Number of determinants ", ndet 
     else
-        backspace(iunit)   ! go a line back
-        read(iunit, *, iostat=iostat)  temp2, ndet, nwftype
-        if (iostat == 0) then 
-            if (trim(temp2) == "determinants") write(*,int_format) " Number of determinants ", ndet 
-        else
-            error stop "Error in reading number of determinants / number of wavefunction types"
-        endif
-    endif 
+        error stop "Error in reading number of determinants / number of wavefunction types"
+    endif
+
 
     if (.not. allocated(cdet)) allocate(cdet(ndet,1,nwftype))           
 
@@ -397,10 +430,11 @@ subroutine read_orbitals_file(file_orbitals)
 !   local use  
     character(len=72), intent(in)   :: file_orbitals
     character(len=40)               :: temp1, temp2
-    character(len=120)               :: temp3
+    character(len=120)              :: temp3
     integer                         :: iunit, iostat, iwft
     integer                         :: iorb, ibasis, i, k, counter    
-    logical                         :: exist
+    logical                         :: exist 
+    logical                         :: skip = .true.
 
     !   Formatting
     character(len=100)               :: int_format     = '(A, T60, I8)'
@@ -420,8 +454,19 @@ subroutine read_orbitals_file(file_orbitals)
         error stop " Jastrow file "// trim(file_orbitals) // " does not exist."
     endif
 
+    ! to escape the comments before the "lcao nbasis norb" line
+    do while (skip)
+        read(iunit,*, iostat=iostat) temp1
+        temp1 = trim(temp1)
+        if (temp1 == "lcao") then
+            backspace(iunit)
+            skip = .false. 
+        endif
+    enddo
+
     ! read the first line 
     read(iunit, *, iostat=iostat)  temp1, nbasis, norb, iwft
+
     if (iostat == 0) then 
         if (trim(temp2) == "lcao") then
             write(*,int_format) " Number of basis functions ", nbasis
@@ -429,6 +474,7 @@ subroutine read_orbitals_file(file_orbitals)
             write(*,int_format) " Type of wave functions ", iwft
         endif
     else
+        write(*, *) " Check ", temp1, nbasis, norb, iwft
         error stop "Error in reading number of lcao orbitals / basis / number of wavefunction types"
     endif
 
@@ -471,7 +517,7 @@ subroutine read_orbitals_file(file_orbitals)
         enddo
     enddo
 
-
+    close(iunit)
     write(*,*) "----------------------------------------------------------"        
 
 end subroutine read_orbitals_file
@@ -545,7 +591,172 @@ subroutine read_csf_file(file_determinants)
         write(*,'(10(1x, f11.8, 1x))') (ccsf(j,i,1), j=1,ncsf)   
         write(*,*) 
     enddo   
+    close(iunit)
 
 end subroutine read_csf_file
+
+subroutine read_csfmap_file(file_determinants)
+    ! This subroutine reads the csf coefficients from the determinant file.
+    ! Ravindra
+
+    use, intrinsic :: iso_fortran_env
+    use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+    use dets, only: cdet, ndet
+    use wfsec, only: nwftype
+    use mstates_mod, only: MDETCSFX
+    use precision_kinds,    only: dp
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_determinants
+    character(len=40)               :: temp1, temp2, temp3, temp4, temp5   
+    integer                         :: iostat, i, j, iunit
+    integer                         :: nptr, nterm, id, nmap
+    real(dp)                        :: c
+    logical                         :: exist
+
+    !   Formatting
+    character(len=100)              :: int_format     = '(A, T40, I8)'
+    character(len=100)              :: string_format  = '(A, T40, A)'  
+    
+    !   External file reading
+    write(6,*) '------------------------------------------------------'      
+    write(6,string_format)  " Reading csfmap from the file :: ",  trim(file_determinants)
+    write(6,*) '------------------------------------------------------'      
+
+    inquire(file=file_determinants, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
+        if (iostat .ne. 0) stop "Problem in opening the determinant file for reading csfmap"
+    else
+        error stop " determinant file "// trim(file_determinants) // " does not exist."
+    endif        
+
+    
+    
+    do 
+        read(iunit,*, iostat=iostat) temp1
+        temp1 = trim(temp1)
+        if (is_iostat_end(iostat)) exit
+
+
+        if (temp1 == "csfmap") then
+            backspace(iunit)   ! go a line back
+            read(iunit, *, iostat=iostat)  temp2, ncsf, ndet, nmap
+            write(*,*) " Number of csf, number of determinants, and number of mappings ", ncsf, ndet, nmap
+            if (iostat == 0) then 
+                if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))
+                if (.not. allocated(iadet)) allocate (iadet(ndet))
+                if (.not. allocated(ibdet)) allocate (ibdet(ndet))
+                if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))                
+                
+                nptr = 1
+                do i = 1, ncsf
+                    read (iunit, *) nterm
+                    iadet(i) = nptr
+                    ibdet(i) = nptr + nterm - 1
+                    do j = 1, nterm
+                        read (iunit, *) id, c
+                        icxdet(nptr) = id
+                        cxdet(nptr) = c
+                        nptr = nptr + 1
+                        if (nptr .gt. ndet*MDETCSFX) error stop 'Error in CSFMAP:: problem with nmap'
+                    enddo
+                enddo
+
+                if (nmap .ne. nptr - 1) error stop 'Error in CSFMAP:: not enough nmaps / file is corrupt'
+                nmap = nptr
+            
+                if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
+        
+                ! write (6, '(''Warning: det coef overwritten with csf'')')
+                ! do k = 1, nstates
+                !     do j = 1, ndet
+                !         cdet(j, k, 1) = 0
+                !     enddo
+                !     do icsf = 1, ncsf
+                !         do j = iadet(icsf), ibdet(icsf)
+                !             jx = icxdet(j)
+                !             cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
+                !         enddo
+                !     enddo
+                ! enddo
+                
+
+            else
+                error stop "Error in reading number of csfs, number of determinants, or number of mappings"
+            endif
+        endif         
+    enddo
+
+    write(*,*)         
+    close(iunit)
+    
+    ! do i = 1, nstates
+    !     write(*,*) " State :: ", i , " out of ", nstates
+    !     write(*,'(10(1x, f11.8, 1x))') (ccsf(j,i,1), j=1,ncsf)   
+    !     write(*,*) 
+    ! enddo   
+
+end subroutine read_csfmap_file
+
+
+
+
+subroutine read_exponents_file(file_exponents)
+    ! Read basis function exponents (only if no numerical basis)
+    ! Ravindra
+    
+    use coefs, only: nbasis
+    use basis, only: zex
+    use inputflags, only: iexponents
+    use wfsec, only: nwftype
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_exponents
+    character(len=40)               :: temp1, temp2
+    integer                         :: iostat, i, iwft, iunit
+    logical                         :: exist
+
+    !   Formatting
+    character(len=100)              :: int_format     = '(A, T40, I8)'
+    character(len=100)              :: string_format  = '(A, T40, A)'  
+    
+    !   External file reading
+    write(6,*) '------------------------------------------------------'      
+    write(6,string_format)  " Reading exponents from the file :: ",  trim(file_exponents)
+    write(6,*) '------------------------------------------------------'      
+
+    inquire(file=file_exponents, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_exponents, iostat=iostat, action='read' )
+        if (iostat .ne. 0) stop "Problem in opening the exponents file for reading csfs"
+    else
+        error stop " exponents file "// trim(file_exponents) // " does not exist."
+    endif        
+
+
+    write (6, *) 'nbasis', nbasis
+    write (6, *) 'nwftype', nwftype
+
+    if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))    
+    
+    do iwft = 1, nwftype
+        read(iunit,*, iostat=iostat)  (zex(i, iwft), i=1, nbasis)
+
+        if (iostat /= 0) error stop "Error in reading exponents from the exponent file "
+
+        write(*,*)         
+        write(*,*) " Basis set exponents "
+        
+        write(*,'(10(1x, f11.8, 1x))') (zex(i, iwft), i=1, nbasis)
+        write(*,*) 
+    enddo
+    close(iunit)
+
+end subroutine read_exponents_file
 
 
