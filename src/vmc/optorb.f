@@ -779,6 +779,7 @@ c orbital indices in determinants of trial wave function
   1   format('Det ',i4,' column ',i4,' orb index ',i4,' norb ',i4)
 
 c Number of external orbitals for orbital optimization
+      write(*,*) "DEBUG::", norb, ndetorb, nadorb
       next_max=norb-ndetorb
       if(nadorb.gt.next_max) nadorb=next_max
       ! write(6, *) 'norb', norb

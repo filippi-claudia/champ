@@ -559,7 +559,13 @@ subroutine parser
     endif ! condition if load exponent is present
   endif ! condition exponent block not present
 
+! (5) Jastrow derivative Parameters (either block or from a file)
 
+  if (.not. fdf_block('jastrow_der', bfdf)) then
+    if ( fdf_load_defined('jastrow_der') ) then
+      call read_jasderiv_file(file_jastrow_der)
+    endif ! condition if load jastrow_der is present
+  endif ! condition jastrow_der block not present
 
 ! %module optwf
   if (fdf_defined("optwf")) then
