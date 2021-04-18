@@ -934,3 +934,243 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
 
 end subroutine read_jasderiv_file
+
+
+subroutine read_forces_file(file_forces)
+    !
+    ! Ravindra
+    
+    use forcepar, only: nforce
+    use forcestr, only: delc
+    use wfsec, only: iwftype
+    use inputflags, only: iforces
+
+    use atom, only: ncent
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_forces
+    character(len=40)               :: temp1, temp2, temp3, temp4, temp5   
+    integer                         :: iunit, iostat 
+    integer                         :: i,ic,j, k
+    logical                         :: exist, skip = .true.
+    !real(dp)                        :: 
+
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+    
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading forces from the file :: ",  trim(file_forces)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_forces, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_forces, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the forces file"
+    else
+        error stop " Forces file "// trim(file_forces) // " does not exist."
+    endif
+
+
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
+    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
+
+    do i = 1, nforce
+        do ic = 1, ncent
+            read (iunit, *, iostat=iostat) delc(1, ic, i), delc(2, ic, i), delc(3, ic, i)
+            if (iostat /= 0) error stop "Error in reading delc"
+        enddo
+    enddo
+
+    read (iunit, *) (iwftype(i), i=1, nforce)
+    if (iwftype(1) .ne. 1) error stop 'INPUT: iwftype(1) ne 1'
+    
+end subroutine read_forces_file
+
+subroutine read_symmetry_file(file_symmetry)
+
+    use coefs, only: norb
+    use optorb, only: irrep
+    use vmc_mod, only: MORB
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_symmetry
+    character(len=40)               :: temp1, temp2
+    integer                         :: iunit, iostat 
+    integer                         :: io, nsym, mo
+    logical                         :: exist, skip = .true.
+
+
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+  
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading orbital symmetries from the file :: ",  trim(file_symmetry)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_symmetry, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_symmetry, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the symmetry file"
+    else
+        error stop " Orbital symmetries file "// trim(file_symmetry) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) temp1, nsym, mo
+    if (iostat /= 0) error stop "Error in reading symmetry file :: expecting 'sym_labels', nsym, norb"
+
+    
+    if (trim(temp1) == "sym_labels") then
+        if (norb /= mo) error stop "Number of orbitals not consistent with previous records"
+    else
+        error stop " Orbital symmetries file "// trim(file_symmetry) // " is corrupt."
+    endif
+
+    
+    ! Ignore irrep text labels
+    read (iunit, '(a80)') temp2
+
+    ! safe allocate
+    if (.not. allocated(irrep)) allocate (irrep(norb))
+    
+    ! read data
+    read (iunit, *, iostat=iostat) (irrep(io), io=1, norb)
+    if (iostat /= 0) error stop "Error in reading symmetry file :: expecting irrep correspondence for all norb orbitals"
+
+    write (*, *) "Irreducible representation correspondence for all norb orbitals"
+    write (*, '(10(1x, i3))') (irrep(io), io=1, norb)
+
+end subroutine read_symmetry_file
+
+
+subroutine read_optorb_mixvirt_file(file_optorb_mixvirt) 
+    !
+    ! Ravindra
+    
+    use optorb_mix, only: iwmix_virt, norbopt, norbvirt
+    use coefs, only: norb
+    use inputflags, only: ioptorb_mixvirt
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_optorb_mixvirt
+    character(len=40)               :: temp1, temp2
+    integer                         :: iunit, iostat, io, jo
+    integer                         :: moopt, movirt
+    logical                         :: exist, skip = .true.
+
+
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+    
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading optorb_mixvirt from the file :: ",  trim(file_optorb_mixvirt)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_optorb_mixvirt, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_optorb_mixvirt, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the optorb_mixvirt file"
+    else
+        error stop " optorb_mixvirt file "// trim(file_optorb_mixvirt) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) temp1, moopt, movirt
+    if (iostat /= 0) error stop "Error in reading optorb_mixvirt file :: expecting 'optorb_mixvirt', norbopt, norbvirt"
+
+    
+    if (trim(temp1) == "optorb_mixvirt") then
+        if (moopt .gt. norb) error stop "Number of orbitals for optimization are greater than the total orbitals"
+    else
+        error stop " optorb_mixvirt file "// trim(file_optorb_mixvirt) // " is corrupt."
+    endif
+
+    norbopt     =   moopt
+    norbvirt    =   movirt
+
+
+    if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norbopt, norbvirt))
+
+    do io = 1, norbopt
+        read (iunit, *, iostat=iostat) (iwmix_virt(io, jo), jo=1, norbvirt)
+        if (iostat /= 0) error stop "Error in reading optorb_mixvirt file :: incomplete data"
+    enddo
+
+
+    write (*, *) "Printing which virtual orbitals are mixed with the occupied ones "
+    do io = 1, norbopt
+        write(*, (10(1x, i5))) (iwmix_virt(io, jo), jo=1, norbvirt)
+    enddo
+
+end subroutine read_optorb_mixvirt_file
+
+
+
+subroutine read_eigenvalues_file(file_eigenvalues)
+
+    use coefs, only: norb
+    use vmc_mod, only: MORB
+    use optorb, only: orb_energy
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_eigenvalues
+    character(len=40)               :: temp1, temp2
+    integer                         :: iunit, iostat 
+    integer                         :: io, mo
+    logical                         :: exist, skip = .true.
+
+
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+  
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading orbital eigenvalues from the file :: ",  trim(file_eigenvalues)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_eigenvalues, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_eigenvalues, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the eigenvalues file"
+    else
+        error stop " Orbital eigenvalues file "// trim(file_eigenvalues) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) temp1, mo
+    if (iostat /= 0) error stop "Error in reading eigenvalues file :: expecting 'eigenvalues / energies', norb"
+
+    
+    if ((trim(temp1) == "eigenvalues")  .or. (trim(temp1) == "energies")) then
+        if (norb /= mo) error stop "Number of orbitals not consistent with previous records"
+    else
+        error stop " Orbital eigenvalues file "// trim(file_eigenvalues) // " is corrupt."
+    endif
+
+  
+    ! safe allocate 
+    if (.not. allocated(orb_energy)) allocate (orb_energy(norb))
+    
+    ! read data
+    read (iunit, *, iostat=iostat) (orb_energy(io), io=1, norb)
+    if (iostat /= 0) error stop "Error in reading eigenvalues file :: expecting eigenvalues of all norb orbitals"
+
+    write (*, *) "Eigenvalues of all orbitals"
+    write (*, '(10(1x, i3))') (orb_energy(io), io=1, norb)
+
+end subroutine read_eigenvalues_file

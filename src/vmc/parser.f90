@@ -534,6 +534,13 @@ subroutine parser
     endif ! condition if load determinant is present
   endif ! condition determinant block not present
 
+! (4) CSFMAP
+
+  if (.not. fdf_block('determinants', bfdf)) then
+    if ( fdf_load_defined('determinants') ) then
+      call read_csfmap_file(file_determinants)
+    endif ! condition if load determinant is present
+  endif ! condition determinant block not present
 
 ! (5) Jastrow Parameters (either block or from a file)
 
@@ -551,7 +558,7 @@ subroutine parser
     endif ! condition if load orbitals is present
   endif ! condition orbitals block not present
 
-  ! (7) exponents 
+! (7) exponents 
 
   if (.not. fdf_block('exponents', bfdf)) then
     if ( fdf_load_defined('exponents') ) then
@@ -559,13 +566,28 @@ subroutine parser
     endif ! condition if load exponent is present
   endif ! condition exponent block not present
 
-! (5) Jastrow derivative Parameters (either block or from a file)
+! (8) Jastrow derivative Parameters (either block or from a file)
 
   if (.not. fdf_block('jastrow_der', bfdf)) then
     if ( fdf_load_defined('jastrow_der') ) then
       call read_jasderiv_file(file_jastrow_der)
     endif ! condition if load jastrow_der is present
   endif ! condition jastrow_der block not present
+
+! (9) Symmetry information of orbitals (either block or from a file)
+
+  if (.not. fdf_block('symmetry', bfdf)) then
+    if ( fdf_load_defined('symmetry') ) then
+      call read_symmetry_file(file_symmetry)
+    endif ! condition if load symmetry is present
+  endif ! condition symmetry block not present
+
+
+
+
+
+
+
 
 ! %module optwf
   if (fdf_defined("optwf")) then
