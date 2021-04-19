@@ -996,7 +996,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
         error stop "Error in reading the first line of jastrow derivative file."
     endif
 
-
+    close(iunit)
 end subroutine read_jasderiv_file
 
 
@@ -1051,7 +1051,7 @@ subroutine read_forces_file(file_forces)
 
     read (iunit, *) (iwftype(i), i=1, nforce)
     if (iwftype(1) .ne. 1) error stop 'INPUT: iwftype(1) ne 1'
-    
+    close(iunit)
 end subroutine read_forces_file
 
 subroutine read_symmetry_file(file_symmetry)
@@ -1112,6 +1112,7 @@ subroutine read_symmetry_file(file_symmetry)
     write (*, *) "Irreducible representation correspondence for all norb orbitals"
     write (*, '(10(1x, i3))') (irrep(io), io=1, norb)
 
+    close(iunit)
 end subroutine read_symmetry_file
 
 
@@ -1175,9 +1176,10 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
 
     write (*, *) "Printing which virtual orbitals are mixed with the occupied ones "
     do io = 1, norbopt
-        write(*, (10(1x, i5))) (iwmix_virt(io, jo), jo=1, norbvirt)
+        write(*, '(10(1x, i5))') (iwmix_virt(io, jo), jo=1, norbvirt)
     enddo
 
+    close(iunit)
 end subroutine read_optorb_mixvirt_file
 
 
@@ -1236,7 +1238,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
 
     write (*, *) "Eigenvalues of all orbitals"
     write (*, '(10(1x, i3))') (orb_energy(io), io=1, norb)
-
+    close(iunit)
 end subroutine read_eigenvalues_file
 
 
@@ -1264,7 +1266,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     character(len=72), intent(in)   :: file_basis_num_info
     character(len=40)               :: temp1, temp2
     integer                         :: iunit, iostat 
-    integer                         :: i,j, jj
+    integer                         :: i,j, jj, ib, nctot
     logical                         :: exist, skip = .true.
 
 
@@ -1297,42 +1299,42 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
 
-    if (.not. allocated(nbastyp) allocate (nbastyp(nctot)))
-    if (.not. allocated(n1s) allocate (n1s(nctot)))
-    if (.not. allocated(n2s) allocate (n2s(nctot)))
-    if (.not. allocated(n2p) allocate (n2p(3, nctot)))
-    if (.not. allocated(n3s) allocate (n3s(nctot)))
-    if (.not. allocated(n3p) allocate (n3p(3, nctot)))
-    if (.not. allocated(n3dzr) allocate (n3dzr(nctot)))
-    if (.not. allocated(n3dx2) allocate (n3dx2(nctot)))
-    if (.not. allocated(n3dxy) allocate (n3dxy(nctot)))
-    if (.not. allocated(n3dxz) allocate (n3dxz(nctot)))
-    if (.not. allocated(n3dyz) allocate (n3dyz(nctot)))
-    if (.not. allocated(n4s) allocate (n4s(nctot)))
-    if (.not. allocated(n4p) allocate (n4p(3, nctot)))
-    if (.not. allocated(n4fxxx) allocate (n4fxxx(nctot)))
-    if (.not. allocated(n4fyyy) allocate (n4fyyy(nctot)))
-    if (.not. allocated(n4fzzz) allocate (n4fzzz(nctot)))
-    if (.not. allocated(n4fxxy) allocate (n4fxxy(nctot)))
-    if (.not. allocated(n4fxxz) allocate (n4fxxz(nctot)))
-    if (.not. allocated(n4fyyx) allocate (n4fyyx(nctot)))
-    if (.not. allocated(n4fyyz) allocate (n4fyyz(nctot)))
-    if (.not. allocated(n4fzzx) allocate (n4fzzx(nctot)))
-    if (.not. allocated(n4fzzy) allocate (n4fzzy(nctot)))
-    if (.not. allocated(n4fxyz) allocate (n4fxyz(nctot)))
-    if (.not. allocated(nsa) allocate (nsa(nctot)))
-    if (.not. allocated(npa) allocate (npa(3, nctot)))
-    if (.not. allocated(ndzra) allocate (ndzra(nctot)))
-    if (.not. allocated(ndz2a) allocate (ndz2a(nctot)))
-    if (.not. allocated(ndxya) allocate (ndxya(nctot)))
-    if (.not. allocated(ndxza) allocate (ndxza(nctot)))
-    if (.not. allocated(ndx2a) allocate (ndx2a(nctot)))
-    if (.not. allocated(ndyza) allocate (ndyza(nctot)))
+    if (.not. allocated(nbastyp)) allocate (nbastyp(nctot))
+    if (.not. allocated(n1s)) allocate (n1s(nctot))
+    if (.not. allocated(n2s)) allocate (n2s(nctot))
+    if (.not. allocated(n2p)) allocate (n2p(3, nctot))
+    if (.not. allocated(n3s)) allocate (n3s(nctot))
+    if (.not. allocated(n3p)) allocate (n3p(3, nctot))
+    if (.not. allocated(n3dzr)) allocate (n3dzr(nctot))
+    if (.not. allocated(n3dx2)) allocate (n3dx2(nctot))
+    if (.not. allocated(n3dxy)) allocate (n3dxy(nctot))
+    if (.not. allocated(n3dxz)) allocate (n3dxz(nctot))
+    if (.not. allocated(n3dyz)) allocate (n3dyz(nctot))
+    if (.not. allocated(n4s)) allocate (n4s(nctot))
+    if (.not. allocated(n4p)) allocate (n4p(3, nctot))
+    if (.not. allocated(n4fxxx)) allocate (n4fxxx(nctot))
+    if (.not. allocated(n4fyyy)) allocate (n4fyyy(nctot))
+    if (.not. allocated(n4fzzz)) allocate (n4fzzz(nctot))
+    if (.not. allocated(n4fxxy)) allocate (n4fxxy(nctot))
+    if (.not. allocated(n4fxxz)) allocate (n4fxxz(nctot))
+    if (.not. allocated(n4fyyx)) allocate (n4fyyx(nctot))
+    if (.not. allocated(n4fyyz)) allocate (n4fyyz(nctot))
+    if (.not. allocated(n4fzzx)) allocate (n4fzzx(nctot))
+    if (.not. allocated(n4fzzy)) allocate (n4fzzy(nctot))
+    if (.not. allocated(n4fxyz)) allocate (n4fxyz(nctot))
+    if (.not. allocated(nsa)) allocate (nsa(nctot))
+    if (.not. allocated(npa)) allocate (npa(3, nctot))
+    if (.not. allocated(ndzra)) allocate (ndzra(nctot))
+    if (.not. allocated(ndz2a)) allocate (ndz2a(nctot))
+    if (.not. allocated(ndxya)) allocate (ndxya(nctot))
+    if (.not. allocated(ndxza)) allocate (ndxza(nctot))
+    if (.not. allocated(ndx2a)) allocate (ndx2a(nctot))
+    if (.not. allocated(ndyza)) allocate (ndyza(nctot))
 
 
 
-    if (.not. allocated(iwlbas) allocate (iwlbas(nbasis, nctot)))
-    if (.not. allocated(iwrwf)  allocate (iwrwf(nbasis, nctot)))
+    if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctot))
+    if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctot))
 
 
     do i = 1, nctype + newghostype
@@ -1459,6 +1461,101 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
         enddo
     endif
-
+    close(iunit)
 end subroutine read_basis_num_info_file
 
+
+subroutine read_dmatrix_file(file_dmatrix)
+    ! Ravindra (no=ndetorb, ns=nweight)
+    !INPUT dmatrix i i a=<input>
+    !KEYDOC Read diagonal density matrix information.
+    use precision_kinds, only: dp
+    use vmc_mod, only: MORB
+    use csfs, only: nstates
+    use sa_weights, only: iweight, nweight, weights
+    use mstates_mod, only: MSTATES
+    use coefs, only: norb
+    use optorb, only: dmat_diag
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_dmatrix
+    character(len=40)               :: temp1, temp2
+    integer                         :: iunit, iostat 
+    integer                         :: i,j, iw
+    logical                         :: exist, skip = .true.
+
+    real(dp), dimension(:), allocatable :: dmat
+    integer, dimension(:), allocatable  :: iwdmat
+
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+  
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading dmatrix the file :: ",  trim(file_dmatrix)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_dmatrix, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_dmatrix, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the dmatrix file"
+    else
+        error stop " dmatrix file "// trim(file_dmatrix) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) temp1, ndetorb, nweight
+    if (iostat /= 0) error stop "Error in reading dmatrix file :: expecting 'dmatrix', ndetorb, nweight"
+
+    
+    if (.not. (trim(temp1) == "dmatrix") ) then
+        error stop "Error in reading dmatrix file :: expecting 'dmatrix'"
+    endif
+
+
+    allocate (dmat(norb))
+    allocate (iwdmat(nstates))
+
+    if (ndetorb .gt. norb) error stop 'READ_DMATRIX: wrong number of orbitals'
+
+    allocate (weights(nstates))
+    allocate (iweight(nstates))
+
+    ! ravindra: bring the get_weight subroutine
+    call get_weights('weights:', weights, iweight, nweight)
+    !if (ns .ne. nweight) call fatal('READ_DMATRIX: wrong number of dmatrices')
+
+    read (iunit, *) (iwdmat(i), i=1, nweight)
+    do iw = 1, nweight
+        if (iwdmat(iw) .ne. iweight(iw)) call fatal('READ_DMATRIX: iwdmat')
+    enddo
+
+    allocate (dmat_diag(norb))
+    dmat_diag = 0.0d0
+
+
+    do iw = 1, nweight
+        read (iunit, *, iostat=iostat) (dmat(j), j=1, ndetorb)
+        do j = 1, ndetorb
+            dmat_diag(j) = dmat_diag(j) + weights(iw)*dmat(j)
+        enddo
+    enddo
+
+    ! why
+    do i = 1, ndetorb
+        if (dabs(dmat_diag(i) - 1.d0) .lt. 1.d-6) dmat_diag(i) = 1.d0
+    enddo
+
+    if (ipr .gt. 2) then
+        write (6, '(''diagonal elements of the density matrix'')')
+        write (6, '(100f10.6)') (dmat_diag(i), i=1, ndetorb)
+    endif
+
+    deallocate (dmat)
+    deallocate (iwdmat)
+    close(iunit)
+
+end subroutine read_dmatrix_file

@@ -159,7 +159,8 @@ subroutine parser
   character(len=72)          :: optwf, blocking_vmc, blocking_dmc
   character(len=72)          :: file_basis, file_molecule, file_determinants, file_symmetry    
   character(len=72)          :: file_jastrow, file_jastrow_der, file_orbitals, file_pseudo
-  character(len=72)          :: file_exponents
+  character(len=72)          :: file_exponents, file_optorb_mixvirt, file_multideterminants
+  character(len=72)          :: file_eigenvalues, file_basis_num_info
 
 
 ! from process input subroutine
@@ -606,10 +607,6 @@ subroutine parser
     endif ! condition if load basis_num_info is present
   endif ! condition basis_num_info block not present
  
-
-  
-
-  read_bas_num_info_file(file_basis_num_info)
 
 ! %module optwf
   if (fdf_defined("optwf")) then
