@@ -289,6 +289,70 @@ subroutine read_determinants_file(file_determinants)
     close(iunit)
 end subroutine read_determinants_file
 
+subroutine read_multideterminants_file(file_multideterminants)
+    ! Ravindra
+    ! 'multideterminants' ndet_local
+    ! CI coefficients and occupation of determinants in wf
+    use dets, only: ndet
+    use const, only: nelec
+    use multidet, only: irepcol_det, ireporb_det, numrep_det, iwundet
+    use inputflags, only: imultideterminants
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_multideterminants
+    character(len=80)               :: temp1, temp2, temp3
+    integer                         :: iostat, k, iunit, ndet_local, iab, irep
+    logical                         :: exist, skip = .true.
+
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T40, I8)'
+    character(len=100)               :: string_format  = '(A, T40, A)'  
+  
+    !   External file reading
+    write(6,*) '------------------------------------------------------'      
+    write(6,string_format)  " Reading multideterminants from the file :: ",  trim(file_multideterminants)
+    write(6,*) '------------------------------------------------------'      
+
+    inquire(file=file_multideterminants, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_multideterminants, iostat=iostat, action='read' )
+        if (iostat .ne. 0) stop "Problem in opening the multideterminant file"
+    else
+        error stop " Multideterminant file "// trim(file_multideterminants) // " does not exist."
+    endif
+
+    read (iunit, *, iostat=iostat) temp1, ndet_local
+    if (iostat /= 0) error stop "Error in reading multideterminant file :: expecting 'multideterminants', ndet"
+
+    
+    if (trim(temp1) /= "multideterminants") then
+        error stop "Error in reading multideterminant file :: expecting 'multideterminants'"
+    elseif (ndet_local .ne. ndet ) then 
+        error stop 'Error: ndet not matching with previous records'
+    endif
+
+
+    if (.not. allocated(iwundet)) allocate(iwundet(ndet, 2))
+    if (.not. allocated(numrep_det)) allocate(numrep_det(ndet, 2))
+    if (.not. allocated(irepcol_det)) allocate(irepcol_det(nelec, ndet, 2))
+    if (.not. allocated(ireporb_det)) allocate(ireporb_det(nelec, ndet, 2))
+
+    
+    do k = 2, ndet_local
+        read (iunit, *, iostat=iostat) (numrep_det(k, iab), iab=1, 2)
+        do iab = 1, 2
+            do irep = 1, numrep_det(k, iab)
+                read (iunit, *, iostat=iostat) irepcol_det(irep, k, iab), ireporb_det(irep, k, iab)
+            enddo
+        enddo
+    enddo
+    
+end subroutine read_multideterminants_file
+
+
+
 
 subroutine read_jastrow_file(file_jastrow)
     ! This subroutine reads jastrow parameters from a file.
@@ -1174,3 +1238,227 @@ subroutine read_eigenvalues_file(file_eigenvalues)
     write (*, '(10(1x, i3))') (orb_energy(io), io=1, norb)
 
 end subroutine read_eigenvalues_file
+
+
+
+subroutine read_basis_num_info_file(file_basis_num_info)
+    ! Ravindra
+    ! Basis function types and pointers to radial parts tables
+    ! alternative name for keyword basis because of GAMBLE inputword basis because of GAMBLE input
+    use numbas_mod, only: MRWF
+    use vmc_mod, only: MCTYPE, MBASIS
+    use numbas, only: iwrwf, numr
+    use numbas1, only: iwlbas, nbastyp
+    use basis, only: n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
+    use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
+    use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a, ndz2a
+    use inputflags, only: ibasis_num
+    use coefs, only: nbasis
+
+    use atom, only: nctype
+    use ghostatom, only: newghostype
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_basis_num_info
+    character(len=40)               :: temp1, temp2
+    integer                         :: iunit, iostat 
+    integer                         :: i,j, jj
+    logical                         :: exist, skip = .true.
+
+
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+  
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading Basis function types and pointers to radial parts tables from the file :: ",  trim(file_basis_num_info)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_basis_num_info, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_basis_num_info, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the basis num info file"
+    else
+        error stop " Basis num info file "// trim(file_basis_num_info) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) temp1, numr
+    if (iostat /= 0) error stop "Error in reading basis num info file :: expecting 'qmc_bf_info / basis', numr"
+
+    
+    if (.not. ((trim(temp1) == "qmc_bf_info")  .or. (trim(temp1) == "basis"))) then
+        error stop "Error in reading basis num info file :: expecting 'qmc_bf_info / basis'"
+    endif
+
+
+    nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
+
+    if (.not. allocated(nbastyp) allocate (nbastyp(nctot)))
+    if (.not. allocated(n1s) allocate (n1s(nctot)))
+    if (.not. allocated(n2s) allocate (n2s(nctot)))
+    if (.not. allocated(n2p) allocate (n2p(3, nctot)))
+    if (.not. allocated(n3s) allocate (n3s(nctot)))
+    if (.not. allocated(n3p) allocate (n3p(3, nctot)))
+    if (.not. allocated(n3dzr) allocate (n3dzr(nctot)))
+    if (.not. allocated(n3dx2) allocate (n3dx2(nctot)))
+    if (.not. allocated(n3dxy) allocate (n3dxy(nctot)))
+    if (.not. allocated(n3dxz) allocate (n3dxz(nctot)))
+    if (.not. allocated(n3dyz) allocate (n3dyz(nctot)))
+    if (.not. allocated(n4s) allocate (n4s(nctot)))
+    if (.not. allocated(n4p) allocate (n4p(3, nctot)))
+    if (.not. allocated(n4fxxx) allocate (n4fxxx(nctot)))
+    if (.not. allocated(n4fyyy) allocate (n4fyyy(nctot)))
+    if (.not. allocated(n4fzzz) allocate (n4fzzz(nctot)))
+    if (.not. allocated(n4fxxy) allocate (n4fxxy(nctot)))
+    if (.not. allocated(n4fxxz) allocate (n4fxxz(nctot)))
+    if (.not. allocated(n4fyyx) allocate (n4fyyx(nctot)))
+    if (.not. allocated(n4fyyz) allocate (n4fyyz(nctot)))
+    if (.not. allocated(n4fzzx) allocate (n4fzzx(nctot)))
+    if (.not. allocated(n4fzzy) allocate (n4fzzy(nctot)))
+    if (.not. allocated(n4fxyz) allocate (n4fxyz(nctot)))
+    if (.not. allocated(nsa) allocate (nsa(nctot)))
+    if (.not. allocated(npa) allocate (npa(3, nctot)))
+    if (.not. allocated(ndzra) allocate (ndzra(nctot)))
+    if (.not. allocated(ndz2a) allocate (ndz2a(nctot)))
+    if (.not. allocated(ndxya) allocate (ndxya(nctot)))
+    if (.not. allocated(ndxza) allocate (ndxza(nctot)))
+    if (.not. allocated(ndx2a) allocate (ndx2a(nctot)))
+    if (.not. allocated(ndyza) allocate (ndyza(nctot)))
+
+
+
+    if (.not. allocated(iwlbas) allocate (iwlbas(nbasis, nctot)))
+    if (.not. allocated(iwrwf)  allocate (iwrwf(nbasis, nctot)))
+
+
+    do i = 1, nctype + newghostype
+        read (iunit, *, iostat=iostat) n1s(i), n2s(i), (n2p(j, i), j=1, 3), &
+            n3s(i), (n3p(j, i), j=1, 3), &
+            n3dzr(i), n3dx2(i), n3dxy(i), n3dxz(i), n3dyz(i), &
+            n4s(i), (n4p(j, i), j=1, 3), &
+            n4fxxx(i), n4fyyy(i), n4fzzz(i), n4fxxy(i), n4fxxz(i), &
+            n4fyyx(i), n4fyyz(i), n4fzzx(i), n4fzzy(i), n4fxyz(i), &
+            nsa(i), (npa(j, i), j=1, 3), &
+            ndzra(i), ndx2a(i), ndxya(i), ndxza(i), ndyza(i)
+        if (iostat /= 0) error stop "Error in reading basis num info file"    
+
+
+        if (numr .gt. 0) then
+            if (n2s(i) .ne. 0 .or. n3s(i) .ne. 0 .or. n4s(i) .ne. 0 .or. &
+                n3p(1, i) .ne. 0 .or. n3p(2, i) .ne. 0 .or. n3p(3, i) .ne. 0 .or. &
+                n4p(1, i) .ne. 0 .or. n4p(2, i) .ne. 0 .or. n4p(3, i) .ne. 0 .or. &
+                nsa(i) .ne. 0 .or. npa(1, i) .ne. 0 .or. npa(2, i) .ne. 0 .or. &
+                npa(3, i) .ne. 0 .or. ndzra(i) .ne. 0 .or. ndx2a(i) .ne. 0 .or. &
+                ndxya(i) .ne. 0 .or. ndxza(i) .ne. 0 .or. ndyza(i) .ne. 0) &
+                call fatal_error('BASIS: n1s,n2p,n3d only for numerical basis')
+
+            nbastyp(i) = iabs(n1s(i)) &
+                            + iabs(n2p(1, i)) + iabs(n2p(2, i)) + iabs(n2p(3, i)) &
+                            + iabs(n3dzr(i)) + iabs(n3dx2(i)) &
+                            + iabs(n3dxy(i)) + iabs(n3dxz(i)) + iabs(n3dyz(i)) &
+                            + iabs(n4fxxx(i)) + iabs(n4fyyy(i)) + iabs(n4fzzz(i)) + iabs(n4fxxy(i)) + iabs(n4fxxz(i)) &
+                            + iabs(n4fyyx(i)) + iabs(n4fyyz(i)) + iabs(n4fzzx(i)) + iabs(n4fzzy(i)) + iabs(n4fxyz(i))
+
+            if (nbastyp(i) .gt. MRWF) call fatal_error('BASIS: nbastyp > MRWF')
+
+            read (iunit, *, iostat=iostat) (iwrwf(ib, i), ib=1, nbastyp(i))
+            if (iostat /= 0) error stop "Error in reading basis num info file"    
+
+        else
+            if (n4fxxx(i) .ne. 0 .or. n4fyyy(i) .ne. 0 .or. n4fzzz(i) .ne. 0 .or. &
+                n4fxxy(i) .ne. 0 .or. n4fxxz(i) .ne. 0 .or. n4fyyx(i) .ne. 0 .or. &
+                n4fyyz(i) .ne. 0 .or. n4fzzx(i) .ne. 0 .or. n4fzzy(i) .ne. 0 .or. &
+                n4fxyz(i) .ne. 0) call fatal_error('BASIS: n4f only for numerical basis')
+        endif
+    enddo
+
+    if (numr .gt. 0) then
+
+        do i = 1, nctype + newghostype
+            jj = 0
+            do j = 1, iabs(n1s(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 1
+            enddo
+            do j = 1, iabs(n2p(1, i))
+                jj = jj + 1
+                iwlbas(jj, i) = 2
+            enddo
+            do j = 1, iabs(n2p(2, i))
+                jj = jj + 1
+                iwlbas(jj, i) = 3
+            enddo
+            do j = 1, iabs(n2p(3, i))
+                jj = jj + 1
+                iwlbas(jj, i) = 4
+            enddo
+            do j = 1, iabs(n3dzr(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 5
+            enddo
+            do j = 1, iabs(n3dx2(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 6
+            enddo
+            do j = 1, iabs(n3dxy(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 7
+            enddo
+            do j = 1, iabs(n3dxz(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 8
+            enddo
+            do j = 1, iabs(n3dyz(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 9
+            enddo
+            do j = 1, iabs(n4fxxx(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 10
+            enddo
+            do j = 1, iabs(n4fyyy(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 11
+            enddo
+            do j = 1, iabs(n4fzzz(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 12
+            enddo
+            do j = 1, iabs(n4fxxy(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 13
+            enddo
+            do j = 1, iabs(n4fxxz(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 14
+            enddo
+            do j = 1, iabs(n4fyyx(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 15
+            enddo
+            do j = 1, iabs(n4fyyz(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 16
+            enddo
+            do j = 1, iabs(n4fzzx(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 17
+            enddo
+            do j = 1, iabs(n4fzzy(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 18
+            enddo
+            do j = 1, iabs(n4fxyz(i))
+                jj = jj + 1
+                iwlbas(jj, i) = 19
+            enddo
+
+        enddo
+    endif
+
+end subroutine read_basis_num_info_file
+

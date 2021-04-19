@@ -582,12 +582,34 @@ subroutine parser
     endif ! condition if load symmetry is present
   endif ! condition symmetry block not present
 
+! (10) optorb_mixvirt information of orbitals (either block or from a file)
 
+  if (.not. fdf_block('optorb_mixvirt', bfdf)) then
+    if ( fdf_load_defined('optorb_mixvirt') ) then
+      call read_optorb_mixvirt_file(file_optorb_mixvirt)
+    endif ! condition if load optorb_mixvirt is present
+  endif ! condition optorb_mixvirt block not present
 
+! (11) Eigenvalues information of orbitals (either block or from a file)
 
+  if (.not. fdf_block('eigenvalues', bfdf)) then
+    if ( fdf_load_defined('eigenvalues') ) then
+      call read_eigenvalues_file(file_eigenvalues)
+    endif ! condition if load eigenvalues is present
+  endif ! condition eigenvalues block not present
+  
+! (12) Basis num information (either block or from a file)
 
+  if (.not. fdf_block('basis_num_info', bfdf)) then
+    if ( fdf_load_defined('basis_num_info') ) then
+      call read_basis_num_info_file(file_basis_num_info)
+    endif ! condition if load basis_num_info is present
+  endif ! condition basis_num_info block not present
+ 
 
+  
 
+  read_bas_num_info_file(file_basis_num_info)
 
 ! %module optwf
   if (fdf_defined("optwf")) then
