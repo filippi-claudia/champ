@@ -1525,7 +1525,7 @@ subroutine read_dmatrix_file(file_dmatrix)
     allocate (iweight(nstates))
 
     ! ravindra: bring the get_weight subroutine
-    call get_weights('weights:', weights, iweight, nweight)
+    call get_weights_new('weights:', weights, iweight, nweight)
     !if (ns .ne. nweight) call fatal('READ_DMATRIX: wrong number of dmatrices')
 
     read (iunit, *) (iwdmat(i), i=1, nweight)
@@ -1559,3 +1559,558 @@ subroutine read_dmatrix_file(file_dmatrix)
     close(iunit)
 
 end subroutine read_dmatrix_file
+
+
+subroutine get_weights_new(field, weights, iweight, nweight)
+
+    use precision_kinds, only: dp
+    use csfs, only: nstates
+    use mstates_mod, only: MSTATES
+
+    implicit real*8(a - h, o - z)
+
+    ! weights for state averaging
+    character(len=*), intent(in) :: field
+    real(dp), dimension(MSTATES), intent(inout) :: weights
+    integer, dimension(MSTATES), intent(inout) :: iweight
+    integer, intent(inout) :: nweight
+
+    ! dimension weights(MSTATES), iweight(MSTATES)
+    ! character field*(32)
+    character vname*(32)
+
+    wsum = 0.d0
+    nweight = 0
+
+    write (6, *) field, field(1:index(field, ' '))
+    do i = 1, nstates
+        wdef = 0.d0
+        call append_number(field(1:index(field, ' ') - 1), i, vname, nv, 0)
+        call p2gtfd(vname(1:nv), w, wdef, 0)
+        !VARDOC Input of weights for individual states.
+        w = dabs(w)
+        if (w .gt. 1d-6) then
+            nweight = nweight + 1
+            iweight(nweight) = i
+            weights(nweight) = w
+            wsum = wsum + w
+        endif
+    enddo
+
+    do i = 1, nweight
+        weights(i) = weights(i)/wsum
+    enddo
+
+    if (nweight .eq. 0) then
+        nweight = 1
+        iweight(1) = 1
+        weights(1) = 1.d0
+    endif
+
+    ! TEMPORARY
+    if (nweight .ne. nstates) error stop 'GET_WEIGHTS: problems with nweight'
+
+end subroutine get_weights_new
+
+subroutine read_cavity_spheres_file(file_cavity_spheres)
+    ! Ravindra
+    ! Read centers of cavity spheres and radii
+    use pcm_parms, only: nesph, re, re2
+    use pcm_parms, only: xe, ye, ze
+
+    implicit none
+
+    !   local use  
+    character(len=72), intent(in)   :: file_cavity_spheres
+    character(len=40)               :: key
+    integer                         :: iunit, iostat 
+    integer                         :: i,j
+    logical                         :: exist, skip = .true.
+    
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+    
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading cavity spheres from the file :: ",  trim(file_cavity_spheres)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_cavity_spheres, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_cavity_spheres, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the cavity spheres file"
+    else
+        error stop " cavity spheres file "// trim(file_cavity_spheres) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) key, nesph
+    if (iostat /= 0) error stop "Error in reading cavity spheres file :: expecting 'cavity_spheres', nspheres"
+
+    
+    if (.not. (trim(key) == "cavity_spheres") ) then
+        error stop "Error in reading cavity_spheres file :: expecting 'cavity_spheres'"
+    endif
+    
+    if (.not. allocated(re)) allocate (re(nesph))
+    if (.not. allocated(re2)) allocate (re2(nesph))
+    if (.not. allocated(xe)) allocate (xe(nesph))
+    if (.not. allocated(ye)) allocate (ye(nesph))
+    if (.not. allocated(ze)) allocate (ze(nesph))
+
+    do i = 1, nesph
+        read (iunit, *) xe(i), ye(i), ze(i), re(i)
+        re2(i) = re(i)*re(i)
+    enddo
+
+    close(iunit)
+end subroutine read_cavity_spheres_file
+
+
+subroutine read_gradients_cartesian_file(file_gradients_cartesian)
+    !Ravindra
+    !INPUT gradients_cartesian inp
+    !KEYDOC Read for which x,y,z cartesian coordiantes of
+    !KEYDOC atoms energy gradients are to be calculated for.
+    
+    !     Originally written by Omar Valsson
+
+    use vmc_mod, only: MCENT
+    use forcepar, only: nforce
+    use force_mod, only: MFORCE
+    use forcestr, only: delc
+    use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+    use grdntspar, only: delgrdxyz, igrdtype, ngradnts
+    use wfsec, only: iwftype
+    use inputflags, only: igradients
+
+    use atom, only: ncent
+
+    implicit none
+
+!   local use  
+    character(len=72), intent(in)   :: file_gradients_cartesian
+    character(len=40)               :: key
+    integer                         :: iunit, iostat 
+    integer                         :: i,ia, ic, k
+    logical                         :: exist, skip = .true.
+    
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+    
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading gradients cartesian from the file :: ",  trim(file_gradients_cartesian)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_gradients_cartesian, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_gradients_cartesian, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the gradients_cartesian file"
+    else
+        error stop " Gradients cartesian file "// trim(file_gradients_cartesian) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) key 
+    if (iostat /= 0) error stop "Error in reading gradients cartesian file :: expecting 'gradients_cartesian'"
+
+    
+    if (.not. (trim(key) == "gradients_cartesian") ) then
+        error stop "Error in reading gradients cartesian file :: expecting 'gradients_cartesian'"
+    endif    
+
+
+    if (igrdtype .ne. 1) call fatal_error('GRADIENTS_CARTESIAN: igrdtype /= 1')
+    if ((2*ngradnts + 1) .ne. nforce) call fatal_error('GRADIENTS_CARTESIAN: (2*ngradnts+1)  /=  nforce')
+
+    if (.not. allocated(delc)) allocate (delc(3, ncent, MFORCE))
+    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
+    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
+
+    ! initialize the values to zero 
+
+    iwftype = 1
+    igrdmv  = 0
+    delc    = 0.0d0
+
+    ia = 2
+    do ic = 1, ncent
+        read (iunit, *, iostat=iostat) (igrdmv(k, ic), k=1, 3)
+        do k = 1, 3
+            if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) then
+                call fatal_error('GRADIENTS_CARTESIAN: igrdmv \= 0,1')
+            endif
+            if (igrdmv(k, ic) .eq. 1) then
+                igrdaidx(ia/2) = ic
+                igrdcidx(ia/2) = k
+                delc(k, ic, ia) = delgrdxyz
+                delc(k, ic, ia + 1) = -delgrdxyz
+                ia = ia + 2
+            endif
+        enddo
+    enddo
+
+    close(iunit)
+end subroutine read_gradients_cartesian_file
+
+subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
+    ! Ravindra
+    ! Read for which Z matrix (internal) coordiantes of
+    ! atoms energy gradients are to be calculated for.
+    
+    ! Originally written by Omar Valsson.
+    
+    use vmc_mod, only: MCENT
+    use forcepar, only: nforce
+    use force_mod, only: MFORCE
+    use forcestr, only: delc
+    use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+    use grdntspar, only: delgrdba, delgrdbl, delgrdda, igrdtype, ngradnts
+    use zmatrix, only: izmatrix
+    use wfsec, only: iwftype
+    use inputflags, only: igradients
+
+    use atom, only: ncent
+
+    implicit none
+
+!   local use  
+    character(len=72), intent(in)   :: file_gradients_zmatrix
+    character(len=40)               :: key
+    integer                         :: iunit, iostat 
+    integer                         :: i,ia, ic, k
+    logical                         :: exist, skip = .true.
+    
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+    
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading gradients zmatrix from the file :: ",  trim(file_gradients_zmatrix)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_gradients_zmatrix, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_gradients_zmatrix, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the gradients_zmatrix file"
+    else
+        error stop " Gradients zmatrix file "// trim(file_gradients_zmatrix) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) key 
+    if (iostat /= 0) error stop "Error in reading gradients zmatrix file :: expecting 'gradients_zmatrix'"
+
+    
+    if (.not. (trim(key) == "gradients_zmatrix") ) then
+        error stop "Error in reading gradients zmatrix file :: expecting 'gradients_zmatrix'"
+    endif    
+    
+    if (igrdtype .ne. 2) call fatal_error('GRADIENTS_ZMATRIX: igrdtype /= 2')
+    if (izmatrix .ne. 1) call fatal_error('GRADIENTS_ZMATRIX: No Z matrix connection matrix')
+    if ((2*ngradnts + 1) .ne. nforce) call fatal_error('GRADIENTS_ZMATRIX: (2*ngradnts+1)  /=  nforce')
+
+    if (.not. allocated(delc)) allocate (delc(3, ncent, MFORCE))
+    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
+    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
+
+    ! initialize the values to zero 
+
+    iwftype = 1
+    igrdmv  = 0
+    delc    = 0.0d0
+
+
+    ia = 2
+    do ic = 1, ncent
+
+        read (iunit, *, iostat=iostat) (igrdmv(k, ic), k=1, 3)
+        do k = 1, 3
+            if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) call fatal_error('GRADIENTS_ZMATRIX: igrdmv \= 0,1')
+            if (igrdmv(k, ic) .eq. 1) then
+                igrdaidx(ia/2) = ic
+                igrdcidx(ia/2) = k
+                call grdzmat_displ(k, ic, ia, +1.0d0)
+                call grdzmat_displ(k, ic, ia + 1, -1.0d0)
+                ia = ia + 2
+            endif
+        enddo
+    enddo
+
+    close(iunit)
+
+end subroutine read_gradients_zmatrix_file
+
+subroutine read_modify_zmatrix_file(file_modify_zmatrix)
+    ! Ravindra
+    !
+    ! Read for which Z matrix (internal) coordiantes of
+    ! atoms energy gradients are to be calculated for.
+    
+    use grdntsmv, only: igrdmv
+    use inputflags, only: imodify_zmat
+
+    use atom, only: ncent
+
+    implicit none
+
+!   local use  
+    character(len=72), intent(in)   :: file_modify_zmatrix
+    character(len=40)               :: key
+    integer                         :: iunit, iostat 
+    integer                         :: 
+    logical                         :: exist, skip = .true.
+    
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+    
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading modify zmatrix from the file :: ",  trim(file_modify_zmatrix)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_modify_zmatrix, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_modify_zmatrix, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the modify_zmatrix file"
+    else
+        error stop " modify zmatrix file "// trim(file_modify_zmatrix) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) key 
+    if (iostat /= 0) error stop "Error in reading modify zmatrix file"
+
+    
+    if (.not. (trim(key) == "modify_zmatrix") ) then
+        error stop "Error in reading modify zmatrix file :: expecting 'modify_zmatrix'"
+    endif    
+
+
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
+
+    do ic = 1, ncent
+        read (iunit, *, iostat=iostat) (igrdmv(k, ic), k=1, 3)
+        do k = 1, 3
+            if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) then
+                call fatal_error('MODIFY_ZMATRIX: igrdmv \= 0,1')
+            endif
+        enddo
+    enddo
+
+    close(iunit)
+end subroutine read_modify_zmatrix_file
+
+subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
+    ! Ravindra
+    !
+    ! Read for which Z matrix (internal) coordiantes of
+    ! atoms energy gradients are to be calculated for.
+    
+
+    use grdnthes, only: hessian_zmat
+    use inputflags, only: ihessian_zmat
+    use atom, only: ncent
+
+    implicit none
+
+!   local use  
+    character(len=72), intent(in)   :: file_hessian_zmatrix
+    character(len=40)               :: key
+    integer                         :: iunit, iostat 
+    integer                         :: 
+    logical                         :: exist, skip = .true.
+    
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+    
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading hessian zmatrix from the file :: ",  trim(file_hessian_zmatrix)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_hessian_zmatrix, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_hessian_zmatrix, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the hessian_zmatrix file"
+    else
+        error stop " hessian zmatrix file "// trim(file_hessian_zmatrix) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) key 
+    if (iostat /= 0) error stop "Error in reading hessian zmatrix file"
+
+    
+    if (.not. (trim(key) == "hessian_zmatrix") ) then
+        error stop "Error in reading hessian zmatrix file :: expecting 'hessian_zmatrix'"
+    endif    
+    
+
+
+    if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))
+
+    do ic = 1, ncent
+        call incpos(iu, itmp, 1)
+        read (iu, *) (hessian_zmat(k, ic), k=1, 3)
+        do k = 1, 3
+            if (hessian_zmat(k, ic) .le. 0) then
+                call fatal_error('HESSIAN_ZMATRIX: hess <=  0')
+            endif
+        enddo
+    enddo
+
+    close(iunit)
+end subroutine read_hessian_zmatrix_file
+    
+
+subroutine read_zmatrix_connection_file(file_zmatrix_connection)
+    ! Ravindra
+    ! 
+    ! Read the atom connection matrix for the Z matrix.
+    ! It is need when calculating forces in Z matrix
+    ! coordinates.
+    
+    ! Originally written by Omar Valsson
+    
+    use atom, only: cent, ncent
+    use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+    use inputflags, only: izmatrix_check
+
+    implicit none
+
+!   local use  
+    character(len=72), intent(in)   :: file_zmatrix_connection
+    character(len=40)               :: key
+    integer                         :: iunit, iostat 
+    integer                         :: k, ic, 
+    logical                         :: exist, skip = .true.
+    
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+    
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading zmatrix connection matrix from the file :: ",  trim(file_zmatrix_connection)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_zmatrix_connection, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_zmatrix_connection, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the zmatrix connection matrix file"
+    else
+        error stop " zmatrix connection matrix file "// trim(file_zmatrix_connection) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) key 
+    if (iostat /= 0) error stop "Error in reading zmatrix connection matrix file"
+
+    
+    if (.not. (trim(key) == "zmatrix_connectionmatrix") ) then
+        error stop "Error in reading zmatrix connection matrix file :: expecting 'zmatrix_connectionmatrix'"
+    endif    
+
+
+
+    if (.not. allocated(czcart)) allocate (czcart(3, ncent))
+    if (.not. allocated(czint)) allocate (czint(3, ncent))
+    if (.not. allocated(czcart_ref)) allocate (czcart_ref(3, 3))
+    if (.not. allocated(izcmat)) allocate (izcmat(3, ncent))
+
+    czcart_ref = cent
+
+    izcmat     = 0
+    czint      = 0.0d0
+    czcart     = cent
+    
+
+    do ic = 1, ncent
+        read (iunit, *, iostat=iostat) (izcmat(k, ic), k=1, 3)
+        do k = 1, 3
+            if (izcmat(k, ic) .ge. ic) call fatal_error('ZMATRIX: Error in connection matrix')
+        enddo
+    enddo
+    call cart2zmat(MCENT, czcart, izcmat, czint)
+    call zmat2cart_rc(MCENT, izcmat, czint, czcart, czcart_ref)
+
+    close(iunit)
+end subroutine read_zmatrix_connection_file
+    
+subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
+!INPUT efield i i a=<input>
+
+    use efield_mod, only: MCHARGES
+    use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
+    use efield, only: iscreen, ncharges
+    use inputflags, only: icharge_efield
+
+    implicit none
+
+!   local use  
+    character(len=72), intent(in)   :: file_efield
+    character(len=40)               :: key
+    integer                         :: iunit, iostat 
+    integer                         :: ncharges_tmp, iscreen_tmp 
+    logical                         :: exist, skip = .true.
+    
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: string_format  = '(A, T60, A)'  
+    
+    !   External file reading
+    write(6,*) '---------------------------------------------------------------------------'      
+    write(6,string_format)  " Reading efield from the file :: ",  trim(file_efield)
+    write(6,*) '---------------------------------------------------------------------------'      
+    
+    inquire(file=file_efield, exist=exist)
+    if (exist) then
+        open (newunit=iunit,file=file_efield, iostat=iostat, action='read' )
+        if (iostat .ne. 0) error stop "Problem in opening the efield file"
+    else
+        error stop " efield file "// trim(file_efield) // " does not exist."
+    endif
+
+
+    read (iunit, *, iostat=iostat) key, ncharges_tmp, iscreen_tmp
+    if (iostat /= 0) error stop "Error in reading efield file"
+
+    
+    if (.not. (trim(key) == "efield") ) then
+        error stop "Error in reading efield file :: expecting 'efield'"
+    endif    
+
+
+!    call file(iu, filename, 'old', 1, 0)  <-- whats is this?
+    ncharges = ncharges_tmp
+    iscreen  = iscreen_tmp
+    write (6, *) 'reading in', ncharges, ' charges!'
+
+    if (ncharges .gt. MCHARGES) call fatal_error('EFIELD: ncharges > MCHARGES')
+
+    if (.not. allocated(ascreen)) allocate (ascreen(ncharges))
+    if (.not. allocated(bscreen)) allocate (bscreen(ncharges))
+    if (.not. allocated(qcharge)) allocate (qcharge(ncharges))
+    if (.not. allocated(xcharge)) allocate (xcharge(ncharges))
+    if (.not. allocated(ycharge)) allocate (ycharge(ncharges))
+    if (.not. allocated(zcharge)) allocate (zcharge(ncharges))
+
+    do i = 1, ncharges
+        read (iunit, *, iostat=iostat) xcharge(i), ycharge(i), zcharge(i), qcharge(i), ascreen(i), bscreen(i)
+    enddo
+
+    icharge_efield = icharge_efield + 1
+    write (6, *) 'icharge_efield=', icharge_efield
+
+    close(iunit)
+end subroutine read_efield_file
+    
