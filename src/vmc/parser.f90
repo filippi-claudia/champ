@@ -18,7 +18,6 @@ subroutine parser
   use ghostatom,      only: newghostype, nghostcent
   use atom,           only: nctype, ncent
   use contrl,         only: nstep, nblk, nblk_max
-  use contr3,         only: mode
   use wfsec,          only: nwftype
   use forcepar,       only: nforce
   use force_mod,      only: MFORCE
@@ -72,7 +71,6 @@ subroutine parser
   use const2, only: deltar, deltat
   use contr2, only: ianalyt_lap, ijas
   use contr2, only: isc
-  use contr3, only: mode
   use contrldmc, only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
   use contrldmc, only: itau_eff, nfprod, rttau, tau
 
@@ -183,10 +181,11 @@ subroutine parser
 
 
   call flaginit_new()
-  !! Number of input variables found so far :: 170
+  !! Number of input variables found so far :: 171
 
 
 ! %module general (complete)
+  mode        = fdf_get('mode', 'vmc_one_mpi')  
   title       = fdf_get('title', 'Untitled')
   pool_dir    = fdf_get('pool', '.')
   pp_id       = fdf_get('pseudopot', 'none')  

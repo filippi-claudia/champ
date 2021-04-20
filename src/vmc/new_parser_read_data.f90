@@ -34,6 +34,7 @@ subroutine header_printing()
     write(*,*) " information about the contributors goes here"
     write(*,*)
     write(*,*)
+    write(*,*) " https://github.com/filippi-claudia/champ"
     write(*,*)
     write(*,*)
 
@@ -48,7 +49,7 @@ subroutine header_printing()
     write(*,*) "____________________________________________________________________"
     write(*,*)
     write(*,*)
-    write(*,*)
+    write(*,*) 
     write(*,*)
 
     call date_and_time(date=date,time=time)
@@ -1483,7 +1484,7 @@ subroutine read_dmatrix_file(file_dmatrix)
     character(len=72), intent(in)   :: file_dmatrix
     character(len=40)               :: temp1, temp2
     integer                         :: iunit, iostat 
-    integer                         :: i,j, iw
+    integer                         :: i,j, iw, ndetorb, ipr
     logical                         :: exist, skip = .true.
 
     real(dp), dimension(:), allocatable :: dmat
@@ -1864,7 +1865,7 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     character(len=72), intent(in)   :: file_modify_zmatrix
     character(len=40)               :: key
     integer                         :: iunit, iostat 
-    integer                         :: 
+    integer                         :: ic,k
     logical                         :: exist, skip = .true.
     
     !   Formatting
@@ -1925,7 +1926,7 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     character(len=72), intent(in)   :: file_hessian_zmatrix
     character(len=40)               :: key
     integer                         :: iunit, iostat 
-    integer                         :: 
+    integer                         :: ic,k
     logical                         :: exist, skip = .true.
     
     !   Formatting
@@ -1959,8 +1960,7 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))
 
     do ic = 1, ncent
-        call incpos(iu, itmp, 1)
-        read (iu, *) (hessian_zmat(k, ic), k=1, 3)
+        read (iunit, *) (hessian_zmat(k, ic), k=1, 3)
         do k = 1, 3
             if (hessian_zmat(k, ic) .le. 0) then
                 call fatal_error('HESSIAN_ZMATRIX: hess <=  0')
@@ -1991,7 +1991,7 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     character(len=72), intent(in)   :: file_zmatrix_connection
     character(len=40)               :: key
     integer                         :: iunit, iostat 
-    integer                         :: k, ic, 
+    integer                         :: k, ic
     logical                         :: exist, skip = .true.
     
     !   Formatting
@@ -2040,8 +2040,8 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
             if (izcmat(k, ic) .ge. ic) call fatal_error('ZMATRIX: Error in connection matrix')
         enddo
     enddo
-    call cart2zmat(MCENT, czcart, izcmat, czint)
-    call zmat2cart_rc(MCENT, izcmat, czint, czcart, czcart_ref)
+    call cart2zmat(ncent, czcart, izcmat, czint)
+    call zmat2cart_rc(ncent, izcmat, czint, czcart, czcart_ref)
 
     close(iunit)
 end subroutine read_zmatrix_connection_file
@@ -2060,7 +2060,7 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     character(len=72), intent(in)   :: file_efield
     character(len=40)               :: key
     integer                         :: iunit, iostat 
-    integer                         :: ncharges_tmp, iscreen_tmp 
+    integer                         :: ncharges_tmp, iscreen_tmp, i
     logical                         :: exist, skip = .true.
     
     !   Formatting

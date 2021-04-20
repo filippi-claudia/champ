@@ -160,7 +160,7 @@ module contrl_file
     private
     public :: log_filename, proc_filename
     public :: close_files
-    public :: init_procfile, init_logfile
+    public :: init_procfile, init_logfile, initialize
     save
 contains
 
@@ -190,6 +190,109 @@ contains
         endif
         open (45, file=log_filename, status='unknown')
     end subroutine init_logfile
+
+    subroutine initialize() 
+        ! Ravindra 
+        use mpiconf, only: wid      ! logical :: true only for mpirank=0
+        use, intrinsic :: iso_fortran_env !, only: stdin=>input_unit, stdout=>output_unit, stderr=>error_unit
+
+    
+        implicit none
+        character(len=40), parameter            :: VERSION = 'v1.0.0'
+        character(len=80), allocatable          :: arg(:)
+        integer                                 :: i, j, iostat, iunit, ounit, eunit, argcount !, input_unit, output_unit, error_unit 
+        character(len=10), dimension(12)        :: extensions
+        character(len=80)                       :: file_input, file_output, file_error 
+        character(len=100)                      :: string_format  = '(A, T40, A)'  
+    
+        ! Get all the command line arguments
+        if ( wid ) then
+            argcount = command_argument_count() 
+            if ( .not. allocated(arg)) allocate(arg(argcount))
+            do i = 1, argcount
+                call get_command_argument(i, arg(i))
+            end do
+
+            do i = 1,argcount
+                select case (arg(i))
+                    case ('-v', '-ver', '--version')
+                        write(*, '(a)') 'version ', VERSION
+            
+                    case ('-V', '--verbose')
+                        write(output_unit, '(a)') 'verbose mode '
+            
+                    case ('-d', '-debug', '--debug')
+                        write(output_unit, '(a)') 'debug mode '
+            
+                    case ('-p', '-prefix', '--prefix')
+                        write(output_unit, '(a)') 'prefix text for generated files '
+            
+                    case ('-i', '-in', '-inp', '-input', '--input')
+                        if ((index(arg(i+1), ".in") /= 0) .or. (index(arg(i+1), ".inp") /= 0) .or. (index(arg(i+1), ".dat") /= 0) ) then            
+                            file_input = arg(i+1)
+                        else
+                            write(error_unit,*) "input file should have an extention .in / .inp / .dat"
+                            stop
+                        endif
+                        write(output_unit, fmt=string_format) ' input file      :: ', file_input
+                        open (newunit=iunit,file=file_input, iostat=iostat, action='read' )                      
+            
+                    case ('-o', '-ou', '-out', '-output', '--output')
+                        if ((index(arg(i+1), ".out") /= 0) .or. (index(arg(i+1), ".log") /= 0) .or. (index(arg(i+1), ".dat") /= 0) ) then            
+                            file_output = arg(i+1)
+                        else
+                            write(error_unit,*) "output file should have an extention .log / .out / .dat"
+                            stop
+                        endif
+                        write(output_unit, fmt=string_format) ' output file     :: ', file_output
+                        open (newunit=ounit,file=file_output, iostat=iostat, action='write' )
+            
+                    case ('-e', '-er', '-err', '-error', '--error')
+                        if ((index(arg(i+1), "error") /= 0) .or. (index(arg(i+1), ".err") /= 0) .or. (index(arg(i+1), ".e") /= 0) ) then            
+                            file_error = arg(i+1)
+                        else
+                            write(error_unit,*) "error file should be named 'error' or should have an extention .e / .err to the filename"
+                            stop
+                        endif                            
+                        write(output_unit, fmt=string_format) ' error file      :: ', file_error
+                        open (newunit=eunit,file=file_error, iostat=iostat, action='write' )                        
+            
+                    case ('-h', '--help')
+                        call print_help()           
+            
+                    case default
+                        extensions(1) = ".in"  ; extensions(2) = ".inp" ; extensions(3) = ".dat" ; extensions(4) = ".out" ; 
+                        extensions(5) = ".log" ; extensions(6) = ".err" ; extensions(7) = ".e"   ; extensions(8) = "error" 
+            
+                        do j = 1, 8
+                            if (index(arg(i+1), extensions(j)) /= 0) then
+                                write(output_unit, '(2a)') 'unrecognised command-line option: ', arg(i)
+                                call print_help()
+                            endif
+                        enddo
+                        
+                end select
+            enddo
+            if ( allocated(arg)) deallocate(arg)
+        endif
+
+        contains
+        subroutine print_help()
+            write(output_unit, '(a, /)') "Command line options::"
+            write(output_unit, '(a)')    "  '-i', '-in', '-inp', '-input',  '--input'       Provide input  file i.e. '-i input.inp' "
+            write(output_unit, '(a)')    "  '-o', '-ou', '-out', '-output', '--output'      Provide output file i.e. '-o output.log' "        
+            write(output_unit, '(a)')    "  '-e', '-er', '-err', '-error',  '--error'       Provide error  file i.e. '-e error' "        
+    
+            write(output_unit, '(a)')    "  '-v', '-ver', '--version'                       print version information"
+            write(output_unit, '(a, /)') "  '-h', '--help'                                  print usage information"
+            write(output_unit, '(a, /)') "  '-V', '--verbose'                               verbose mode printing"        
+            write(output_unit, '(a, /)') "  '-d', '-debug', '--debug'                       run in debug mode"       
+            write(output_unit, '(a, /)') "  '-p', '-prefix', '--prefix'                     Attach prefix to generated filenames"       
+        end subroutine print_help
+  
+    end subroutine initialize
+
+
 
     subroutine init_procfile()
         use mpiconf, only: idtask
