@@ -250,7 +250,6 @@ contains
                         write(output_unit, fmt=string_format) ' output file     :: ', file_output
                         open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='replace' )
                         if (iostat /= 0) error stop "error in opening output unit"
-                        write(output_unit, *) ' output unit opened at first     :: ', ounit
             
                     case ('-e', '-er', '-err', '-error', '--error')
                         if ((index(arg(i+1), "error") /= 0) .or. (index(arg(i+1), ".err") /= 0) .or. (index(arg(i+1), ".e") /= 0) ) then            

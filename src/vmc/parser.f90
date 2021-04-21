@@ -416,8 +416,7 @@ subroutine parser
   file_orbitals     = fdf_load_filename('orbitals', 'default.orb')        
   file_exponents    = fdf_load_filename('exponents', 'exponents.exp')
 
-  write(ounit, *) ' output unit at parser     :: ', ounit  
-
+  
   call header_printing()
   ! Reading of smaller blocks of data goes here.
 
@@ -443,13 +442,13 @@ subroutine parser
       call read_molecule_file(file_molecule)
     endif ! condition if load molecule is present
   else
-    write(*,*) ' Molecular Coordinates from molecule block '
+    write(ounit,*) ' Molecular Coordinates from molecule block '
 
     do while((fdf_bline(bfdf, pline)))
 !     get the integer from the first line 
       if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then  ! check if it is the only integer present in a line
         ncent = fdf_bintegers(pline, 1)
-        write(*,fmt=int_format) " Number of atoms ::  ", ncent
+        write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
       endif
 
       if (.not. allocated(cent)) allocate(cent(3,ncent))
@@ -458,7 +457,7 @@ subroutine parser
       if (.not. allocated(unique)) allocate(unique(ncent))  
       
       if (pline%ntokens .ne. 4) then  ! check if it is the only integer present in a line
-        write(*,*) " Comment from the file ::  ", trim(pline%line)
+        write(ounit,*) " Comment from the file ::  ", trim(pline%line)
       endif
 
       j = 1 !local counter    
@@ -482,8 +481,8 @@ subroutine parser
         unique(nctype) = symbol(j)
     enddo
 
-    write(*,*) " Number of distinct types of elements (nctype) :: ", nctype 
-    write(*,*)
+    write(ounit,*) " Number of distinct types of elements (nctype) :: ", nctype 
+    write(ounit,*)
 
     if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))                              
     if (.not. allocated(znuc)) allocate(znuc(nctype))                  
@@ -507,18 +506,18 @@ subroutine parser
         znuc(j) = atoms%nvalence
     enddo
 
-    write(6,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
-    write(*,*)
+    write(ounit,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
+    write(ounit,*)
     do j= 1, ncent
-        write(6,'(A4,3F10.6, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
+        write(ounit,'(A4,3F10.6, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
     enddo
 
-    write(*,*)
-    write(*,*) " Values of znuc (number of valence electrons) "
-    write(*,'(10F10.6)') (znuc(j), j = 1, nctype)
-    write(*,*)
+    write(ounit,*)
+    write(ounit,*) " Values of znuc (number of valence electrons) "
+    write(ounit,'(10F10.6)') (znuc(j), j = 1, nctype)
+    write(ounit,*)
 
-    write(*,*) '------------------------------------------------------'
+    write(ounit,*) '------------------------------------------------------'
   endif ! condition molecule block not present
 
 

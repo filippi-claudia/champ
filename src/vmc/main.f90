@@ -20,6 +20,7 @@ program main
     use contrl_file, only: init_logfile, init_procfile, close_files, initialize
     use allocation_mod, only: deallocate_vmc
     use optwf_mod, only: optwf
+    use mpiconf, only: wid      ! logical :: true only for mpirank=0
 
     implicit None
     integer :: ierr
@@ -41,9 +42,10 @@ program main
     
 
     ! read the input
-    call parser()    
-!    call read_input()
-    error stop " pause for a moment"
+    if ( wid ) then
+        call parser()    
+        error stop " pause for a moment"
+    endif 
 
     !> Initiaize log check.XXX files. It needs ipr flag value.
     call init_procfile()
