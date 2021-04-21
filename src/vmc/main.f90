@@ -39,12 +39,11 @@ program main
     !call init_logfile()
     call initialize()
     
-    error stop " pause for a moment"
 
     ! read the input
     call parser()    
 !    call read_input()
-
+    error stop " pause for a moment"
 
     !> Initiaize log check.XXX files. It needs ipr flag value.
     call init_procfile()

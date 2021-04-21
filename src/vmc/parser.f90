@@ -178,7 +178,7 @@ subroutine parser
 
 
 ! Initialize # get the filenames from the commandline arguments
-  call fdf_init(file_input, 'test-champ.out')
+  call fdf_init('test-champ.inp', 'test-champ.out')
 
 
   call flaginit_new()
