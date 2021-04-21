@@ -13,8 +13,8 @@ subroutine inputzex
 
     allocate (zex(nbasis, nwftype))
 
-    call p2gtid('general:nwftype', nwftype, 1, 1)
-    call p2gtid('general:iperiodic', iperiodic, 0, 1)
+    !!call p2gtid('general:nwftype', nwftype, 1, 1)
+    !!call p2gtid('general:iperiodic', iperiodic, 0, 1)
     if (nwftype .gt. MWF) call fatal_error('WF: nwftype gt MWF')
 
     if (numr .eq. 0 .and. iperiodic .eq. 0) &
@@ -42,7 +42,7 @@ subroutine inputcsf
     nstates = 1
     ncsf = 0
 
-    call p2gtid('optwf:ioptci', ioptci, 0, 1)
+    !!call p2gtid('optwf:ioptci', ioptci, 0, 1)
     if (ioptci .ne. 0 .and. ici_def .eq. 1) nciterm = nciprim
     return
 end
@@ -72,14 +72,14 @@ subroutine multideterminants_define(iflag, icheck)
 
     save kref_old
 
-    call p2gti('electrons:nelec', nelec, 1)
+    !call p2gti('electrons:nelec', nelec, 1)
     ! if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
 
-    call p2gti('electrons:nup', nup, 1)
+    !call p2gti('electrons:nup', nup, 1)
     if (nup .gt. nelec/2) call fatal_error('INPUT: nup exceeds nelec/2')
     ndn = nelec - nup
 
-    call p2gtid('general:nwftype', nwftype, 1, 1)
+    !!call p2gtid('general:nwftype', nwftype, 1, 1)
     if (nwftype .gt. MWF) call fatal_error('INPUT: nwftype exceeds MWF')
 
     if (iflag .eq. 0) then
@@ -269,17 +269,17 @@ subroutine inputforces
 
     implicit real*8(a - h, o - z)
 
-    call p2gti('atoms:natom', ncent, 1)
+    !call p2gti('atoms:natom', ncent, 1)
     ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
 
-    call p2gtid('general:nforce', nforce, 1, 1)
+    !!call p2gtid('general:nforce', nforce, 1, 1)
 
     allocate (delc(3, ncent, MFORCE))
     allocate (iwftype(MFORCE))
 
     call set_displace_zero(nforce)
 
-    call p2gtid('general:nwftype', nwftype, 1, 1)
+    !!call p2gtid('general:nwftype', nwftype, 1, 1)
     if (nwftype .gt. MWF) call fatal_error('FORCES: nwftype gt MWF')
 
     if (nwftype .eq. 1) then
@@ -346,14 +346,14 @@ subroutine inputjastrow(nwftype)
 
     implicit real*8(a - h, o - z)
 
-    call p2gti('jastrow:ijas', ijas, 1)
-    call p2gti('jastrow:isc', isc, 1)
-    call p2gtid('jastrow:nspin1', nspin1, 1, 1)
-    call p2gtid('jastrow:nspin2', nspin2, 1, 1)
-    call p2gtid('jastrow:ifock', ifock, 0, 1)
+    !call p2gti('jastrow:ijas', ijas, 1)
+    !call p2gti('jastrow:isc', isc, 1)
+    !!call p2gtid('jastrow:nspin1', nspin1, 1, 1)
+    !!call p2gtid('jastrow:nspin2', nspin2, 1, 1)
+    !!call p2gtid('jastrow:ifock', ifock, 0, 1)
 
-    call p2gti('atoms:natom', ncent, 1)
-    call p2gti('atoms:nctype', nctype, 1)
+    !call p2gti('atoms:natom', ncent, 1)
+    !call p2gti('atoms:nctype', nctype, 1)
 
     allocate (scalek(nwftype))
 
@@ -402,7 +402,7 @@ subroutine set_displace_zero(nforce_tmp)
 
     implicit real*8(a - h, o - z)
 
-    call p2gti('atoms:natom', ncent, 1)
+    !call p2gti('atoms:natom', ncent, 1)
     ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, nforce_tmp))
@@ -435,7 +435,7 @@ subroutine modify_zmat_define
     use atom, only: ncent
     implicit real*8(a - h, o - z)
 
-    call p2gti('atoms:natom', ncent, 1)
+    !call p2gti('atoms:natom', ncent, 1)
     ! if (ncent .gt. MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
 
     if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
@@ -457,7 +457,7 @@ subroutine hessian_zmat_define
 
     implicit real*8(a - h, o - z)
 
-    call p2gti('atoms:natom', ncent, 1)
+    !call p2gti('atoms:natom', ncent, 1)
     ! if (ncent .gt. MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
 
     if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))

@@ -18,7 +18,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_VMC_DIR ${CMAKE_SOURCE_DIR}/src/vmc)
 set(CMAKE_DMC_DIR ${CMAKE_SOURCE_DIR}/src/dmc)
-set(CMAKE_INPUT_DIR ${CMAKE_SOURCE_DIR}/src/input)
+#set(CMAKE_INPUT_DIR ${CMAKE_SOURCE_DIR}/src/input)
 set(CMAKE_PARSER_DIR ${CMAKE_SOURCE_DIR}/src/parser)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -98,7 +98,7 @@ message(STATUS "compiler flags are: " ${Fortran_FLAGS})
 
 ## Subdirectories
 # Include the following subdirectories
-add_subdirectory(src/input)
+# add_subdirectory(src/input)
 add_subdirectory(src/parser)
 add_subdirectory(tools/interface)
 add_subdirectory(lib/cyrus)

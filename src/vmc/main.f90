@@ -44,7 +44,6 @@ program main
     ! read the input
     if ( wid ) then
         call parser()    
-        error stop " pause for a moment"
     endif 
 
     !> Initiaize log check.XXX files. It needs ipr flag value.

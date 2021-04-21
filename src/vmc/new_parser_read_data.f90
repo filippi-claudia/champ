@@ -1545,7 +1545,7 @@ subroutine read_dmatrix_file(file_dmatrix)
 
     read (iunit, *) (iwdmat(i), i=1, nweight)
     do iw = 1, nweight
-        if (iwdmat(iw) .ne. iweight(iw)) call fatal('READ_DMATRIX: iwdmat')
+        if (iwdmat(iw) .ne. iweight(iw)) call fatal_error('READ_DMATRIX: iwdmat')
     enddo
 
     allocate (dmat_diag(norb))
@@ -1601,8 +1601,9 @@ subroutine get_weights_new(field, weights, iweight, nweight)
     write(ounit, *) field, field(1:index(field, ' '))
     do i = 1, nstates
         wdef = 0.d0
-        call append_number(field(1:index(field, ' ') - 1), i, vname, nv, 0)
-        call p2gtfd(vname(1:nv), w, wdef, 0)
+        ! BUG:: Ravindra. Replce following two lines with appropriate ones
+!        call append_number(field(1:index(field, ' ') - 1), i, vname, nv, 0)
+!        call p2gtfd(vname(1:nv), w, wdef, 0)
         !VARDOC Input of weights for individual states.
         w = dabs(w)
         if (w .gt. 1d-6) then

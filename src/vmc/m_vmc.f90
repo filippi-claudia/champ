@@ -59,11 +59,12 @@ module vmc_mod
 contains
     subroutine set_vmc_size
         use const, only: nelec
+        use atom,  only: nctype, ncent  ! Ravindra
 
         MMAT_DIM = nelec*nelec/4
         MMAT_DIM2 = nelec*(nelec - 1)/2
-        MCTYP3X = max(3, nctype_tot)
-        MCENT3 = 3*ncent_tot
+        MCTYP3X = max(3, nctype) ! BUG:: Ravindra max(3, nctype_tot)
+        MCENT3 = 3*ncent         ! BUG:: Ravindra 3*ncent_tot
 
     end subroutine set_vmc_size
 end module vmc_mod

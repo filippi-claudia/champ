@@ -80,11 +80,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 c     term=(sqrt(two*pi*tau))**3/pi
 
-      call p2gtid('dmc:node_cutoff',node_cutoff,0,1)
-      call p2gtfd('dmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
+!      call p2gtid('dmc:node_cutoff',node_cutoff,0,1)
+!      call p2gtfd('dmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
       eps_node_cutoff=eps_node_cutoff*sqrt(tau)
-      call p2gtid('dmc:icircular',icircular,0,1)
-      call p2gtid('dmc:idrifdifgfunc',idrifdifgfunc,0,1)
+!      call p2gtid('dmc:icircular',icircular,0,1)
+!      call p2gtid('dmc:idrifdifgfunc',idrifdifgfunc,0,1)
 
       e_cutoff=0.2d0*sqrt(nelec/tau)
 

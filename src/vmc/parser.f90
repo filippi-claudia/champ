@@ -1,11 +1,9 @@
-!
-!     Shows FDF capabilities..
-!
-subroutine parser
-  use fdf 
-  use prec
 
-  Use, intrinsic :: iso_fortran_env, only : iostat_end
+subroutine parser
+  use fdf     ! modified libfdf
+  use prec    ! modified libfdf
+
+  use, intrinsic :: iso_fortran_env, only : iostat_end
 
 ! CHAMP modules
   use contr3,         only: mode
@@ -617,11 +615,9 @@ subroutine parser
 
 
 
-  !call compute_mat_size_new()
-  !call allocate_vmc()
-  !call allocate_dmc()
-
-
+  call compute_mat_size_new()
+  call allocate_vmc()
+  call allocate_dmc()
 
 
 
