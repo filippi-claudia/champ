@@ -696,7 +696,7 @@ subroutine parser
 ! endif
 
 
-error stop "after the initial sanity check"
+
 
   
 
@@ -813,7 +813,7 @@ error stop "after the initial sanity check"
 
 
   call fdf_shutdown()
-
+  error stop "after the initial sanity check"
 !----------------------------------------------------------------------------END
 end subroutine parser
 
