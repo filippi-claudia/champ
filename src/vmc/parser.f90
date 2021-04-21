@@ -10,6 +10,7 @@ subroutine parser
 ! CHAMP modules
   use contr3,         only: mode
   use contrl_file,    only: file_input, file_output, file_error 
+  use contrl_file,    only: iunit,      ounit,       errunit
   use allocation_mod, only: allocate_vmc, allocate_dmc
   use periodic_table, only: atom_t, element
 
@@ -178,7 +179,7 @@ subroutine parser
 
 
 ! Initialize # get the filenames from the commandline arguments
-  call fdf_init('test-champ.inp', 'test-champ.out')
+  call fdf_init(file_input, 'test-champ.out')
 
 
   call flaginit_new()
@@ -415,6 +416,8 @@ subroutine parser
   file_orbitals     = fdf_load_filename('orbitals', 'default.orb')        
   file_exponents    = fdf_load_filename('exponents', 'exponents.exp')
 
+  write(ounit, *) ' output unit at parser     :: ', ounit  
+
   call header_printing()
   ! Reading of smaller blocks of data goes here.
 
@@ -422,16 +425,16 @@ subroutine parser
 
 
 ! module dependent processing . These will be replaced by inliners
-  write(*,*) "Names of the external files being read for this calculation :: "
-  write(*,*)
-  write(*,fmt=string_format) " Basis                      :: ", file_basis
-  write(*,fmt=string_format) " Molecule                   :: ", file_molecule
-  write(*,fmt=string_format) " Determinants               :: ", file_determinants
-  write(*,fmt=string_format) " Symmetry                   :: ", file_symmetry
-  write(*,fmt=string_format) " Jastrow                    :: ", file_jastrow
-  write(*,fmt=string_format) " Jastrow_der                :: ", file_jastrow_der          
-  write(*,fmt=string_format) " Orbitals                   :: ", file_orbitals            
-  write(*,*)
+  write(ounit,*) "Names of the external files being read for this calculation :: "
+  write(ounit,*)
+  write(ounit,fmt=string_format) " Basis                      :: ", file_basis
+  write(ounit,fmt=string_format) " Molecule                   :: ", file_molecule
+  write(ounit,fmt=string_format) " Determinants               :: ", file_determinants
+  write(ounit,fmt=string_format) " Symmetry                   :: ", file_symmetry
+  write(ounit,fmt=string_format) " Jastrow                    :: ", file_jastrow
+  write(ounit,fmt=string_format) " Jastrow_der                :: ", file_jastrow_der          
+  write(ounit,fmt=string_format) " Orbitals                   :: ", file_orbitals            
+  write(ounit,*)
 ! Processing of data read from the parsed files
 
 ! (1) Molecular geometry file exclusively in .xyz format

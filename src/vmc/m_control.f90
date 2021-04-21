@@ -157,12 +157,14 @@ module contrl_file
     character(20) :: log_filename
     character(20) :: proc_filename
     character(80) :: file_input, file_output, file_error 
+    integer       :: iunit, ounit, errunit     
 
     private
     public :: log_filename, proc_filename
     public :: file_input, file_output, file_error 
     public :: close_files
     public :: init_procfile, init_logfile, initialize
+    public :: iunit, ounit, errunit
     save
 contains
 
@@ -202,9 +204,8 @@ contains
         implicit none
         character(len=40), parameter            :: VERSION = 'v1.0.0'
         character(len=80), allocatable          :: arg(:)
-        integer                                 :: i, j, iostat, iunit, ounit, eunit, argcount !, input_unit, output_unit, error_unit 
+        integer                                 :: i, j, iostat, argcount
         character(len=10), dimension(12)        :: extensions
-        character(len=80)                       :: file_input, file_output, file_error 
         character(len=100)                      :: string_format  = '(A, T40, A)'  
     
         ! Get all the command line arguments
@@ -247,7 +248,9 @@ contains
                             stop
                         endif
                         write(output_unit, fmt=string_format) ' output file     :: ', file_output
-                        open (newunit=ounit,file=file_output, iostat=iostat, action='write' )
+                        open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='replace' )
+                        if (iostat /= 0) error stop "error in opening output unit"
+                        write(output_unit, *) ' output unit opened at first     :: ', ounit
             
                     case ('-e', '-er', '-err', '-error', '--error')
                         if ((index(arg(i+1), "error") /= 0) .or. (index(arg(i+1), ".err") /= 0) .or. (index(arg(i+1), ".e") /= 0) ) then            
@@ -257,7 +260,7 @@ contains
                             stop
                         endif                            
                         write(output_unit, fmt=string_format) ' error file      :: ', file_error
-                        open (newunit=eunit,file=file_error, iostat=iostat, action='write' )                        
+                        open (newunit=errunit,file=file_error, iostat=iostat, action='write' )                        
             
                     case ('-h', '--help')
                         call print_help()           
