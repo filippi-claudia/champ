@@ -156,9 +156,11 @@ module contrl_file
     implicit None
     character(20) :: log_filename
     character(20) :: proc_filename
+    character(80) :: file_input, file_output, file_error 
 
     private
     public :: log_filename, proc_filename
+    public :: file_input, file_output, file_error 
     public :: close_files
     public :: init_procfile, init_logfile, initialize
     save
@@ -279,11 +281,11 @@ contains
         contains
         subroutine print_help()
             write(output_unit, '(a, /)') "Command line options::"
-            write(output_unit, '(a)')    "  '-i', '-in', '-inp', '-input',  '--input'       Provide input  file i.e. '-i input.inp' "
-            write(output_unit, '(a)')    "  '-o', '-ou', '-out', '-output', '--output'      Provide output file i.e. '-o output.log' "        
-            write(output_unit, '(a)')    "  '-e', '-er', '-err', '-error',  '--error'       Provide error  file i.e. '-e error' "        
+            write(output_unit, '(a, /)')    "  '-i', '-in', '-inp', '-input',  '--input'       Provide input  file i.e. '-i input.inp' "
+            write(output_unit, '(a, /)')    "  '-o', '-ou', '-out', '-output', '--output'      Provide output file i.e. '-o output.log' "        
+            write(output_unit, '(a, /)')    "  '-e', '-er', '-err', '-error',  '--error'       Provide error  file i.e. '-e error' "        
     
-            write(output_unit, '(a)')    "  '-v', '-ver', '--version'                       print version information"
+            write(output_unit, '(a, /)')    "  '-v', '-ver', '--version'                       print version information"
             write(output_unit, '(a, /)') "  '-h', '--help'                                  print usage information"
             write(output_unit, '(a, /)') "  '-V', '--verbose'                               verbose mode printing"        
             write(output_unit, '(a, /)') "  '-d', '-debug', '--debug'                       run in debug mode"       

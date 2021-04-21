@@ -9,6 +9,7 @@ subroutine parser
 
 ! CHAMP modules
   use contr3,         only: mode
+  use contrl_file,    only: file_input, file_output, file_error 
   use allocation_mod, only: allocate_vmc, allocate_dmc
   use periodic_table, only: atom_t, element
 
@@ -177,7 +178,7 @@ subroutine parser
 
 
 ! Initialize # get the filenames from the commandline arguments
-  call fdf_init('test-champ.inp', 'test-champ.out')
+  call fdf_init(file_input, 'test-champ.out')
 
 
   call flaginit_new()
