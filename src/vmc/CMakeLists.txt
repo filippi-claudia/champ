@@ -84,7 +84,12 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_input.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_grdnt.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_allocation.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_state_avrg.f90)
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_state_avrg.f90
+    ${CMAKE_PARSER_DIR}/fdf.F90
+    ${CMAKE_PARSER_DIR}/io_fdf.F90
+    ${CMAKE_PARSER_DIR}/parse.F90
+    ${CMAKE_PARSER_DIR}/prec.F90
+    ${CMAKE_PARSER_DIR}/utils.F90)
 
   set(SHARED_OBJECTS
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr.f90
@@ -187,6 +192,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_INPUT_DIR}/p2_defaults.f
     ${CMAKE_INPUT_DIR}/p2etc.f
     ${CMAKE_INPUT_DIR}/p2nmcheck.f)
+
 
   # --------------------------------------------------------------------
   # Remove objects to share depending on CMAKE options:
