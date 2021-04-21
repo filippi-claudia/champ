@@ -71,6 +71,12 @@ if (ENABLE_MPI)
   find_package(MPI COMPONENTS Fortran REQUIRED)
 endif(ENABLE_MPI)
 
+# Git info
+execute_process(COMMAND git rev-parse --abbrev-ref HEAD  OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
+#
+
+
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
@@ -83,8 +89,8 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
   
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-	list(APPEND Fortran_FLAGS "-g" "-traceback" "-O0" "-fpp" "-mcmodel=large" "-shared-intel" "-qopt-zmm-usage=high" "-xCOMMON-AVX512" "-qopenmp-simd"
-    "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
+	list(APPEND Fortran_FLAGS "-g" "-traceback" "-O0" "-fpp" "-mcmodel=large" "-shared-intel" "-qopt-zmm-usage=high" "-xCOMMON-AVX512" "-DGIT_BRANCH='${GIT_BRANCH}'" "-DGIT_HASH='${GIT_HASH}'" 
+    "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
   #    list(APPEND Fortran_FLAGS "-i8")

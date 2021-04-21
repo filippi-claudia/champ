@@ -60,19 +60,27 @@ subroutine header_printing()
     write(ounit, '(12a)') " Calculation started on     :: ",   date(1:4), "-", date(5:6), "-", date(7:8), " at ",  time(1:2), ":", time(3:4), ":", time(5:6)                                                               
     call get_command_argument(number=0, value=output)
     write(ounit, '(2a)') " Executable                 :: ",   output
+
+!    #if defined(GIT_BRANCH)
+        write(ounit,'(2a)')  " Git branch                 :: ", GIT_BRANCH
+!    #endif
+  
+!    #if defined(GIT_HASH)
+        write(ounit,'(2a)')  " Git commit hash            :: ", GIT_HASH
+!    #endif
+
     call hostnm(output)
     write(ounit, '(2a)') " Hostname                   :: ",   output
     call get_environment_variable ("PWD", output)
     write(ounit, '(2a)') " Current directory          :: ",   output
+    call get_environment_variable ("USERNAME", output)
+    write(ounit, '(2a)') " Username                   :: ",   output
     write(ounit, '(2a)') " Input file                 :: ",   file_input
     write(ounit, '(2a)') " Output file                :: ",   file_output    
     write(ounit, '(2a)') " Error file                 :: ",   file_error
     write(ounit, '(4a)') " Code compiled on           :: ",__DATE__, " at ", __TIME__
     write(ounit, '(a,i5.5)') " Number of processors       :: ", nproc
     write(ounit,*) 
-    write(ounit,*)     
-    ! branch   
-    ! git commit hash
 
    
    
