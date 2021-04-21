@@ -2135,12 +2135,12 @@ c weights for state averaging
         call p2gtfd(vname(1:nv),w,wdef,0)
 CVARDOC Input of weights for individual states.
         w=dabs(w)
-        if(w.gt.1d-6) then
+        !if(w.gt.1d-6) then
           nweight=nweight+1
           iweight(nweight)=i
           weights(nweight)=w
           wsum=wsum+w
-        endif
+        !endif
    10 continue
 
       do 20 i=1,nweight

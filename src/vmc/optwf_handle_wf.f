@@ -867,7 +867,6 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm, nreduced
-      
       use ci000, only: nciterm
 
       implicit real*8(a-h,o-z)

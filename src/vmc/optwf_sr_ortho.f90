@@ -44,7 +44,7 @@ contains
     use force_analy, only: alfgeo
     use optwf_contrl, only: nparm
     use method_opt, only: method
-    use optwf_sr_mod, only: save_params, forces_zvzb
+    use optwf_sr_mod, only: forces_zvzb
 
     implicit real*8(a-h, o-z)
 
@@ -82,26 +82,24 @@ contains
           call sr_ortho(nparm,deltap,sr_adiag,sr_eps,i)
 
           adiag=sr_adiag
+	  iflagin=0
           do istate=1,nstates
              call dscal(nparm,-sr_tau,deltap(:,istate),1)
              call test_solution_parm(nparm,deltap(:,istate),&
 		     dparm_norm,dparm_norm_min,adiag,iflag)
-
-	     ! RLPB: this must be generalized to nstates
-             !write(6,'(''Norm of parm variation '',d12.5)') dparm_norm
-
-             !if(iflag.ne.0) then
-             !   write(6,'(''Warning: dparm_norm>1'')')
-             !   adiag=10*adiag
-             !   write(6,'(''adiag increased to '',f10.5)') adiag
-             !   sr_adiag=adiag
-             !   go to 6
-             !else
-             !   sr_adiag=sr_adiag_sav
-             !endif
+             write(6,'(''Norm of parm variation '',d12.5)') dparm_norm
+             if(iflag.ne.0) iflagin=1
           end do
-	  ! RLPB: this must be generalized to nstates
-	  sr_adiag=sr_adiag_sav
+
+          if(iflagin.ne.0) then
+             write(6,'(''Warning: dparm_norm>1'')')
+             adiag=10*adiag
+             write(6,'(''adiag increased to '',f10.5)') adiag
+             sr_adiag=adiag
+             go to 6
+          else
+             sr_adiag=sr_adiag_sav
+          endif
 
           call compute_parameters(deltap,iflag,1)
           call write_wf(1,iter)
@@ -154,7 +152,7 @@ contains
 
     implicit real*8(a-h,o-z)
     integer, intent(in) :: nparm
-    real(dp), dimension(:,:), intent(inout) :: deltap
+    real(dp), dimension(:,:), intent(out) :: deltap
     real(dp), intent(in) :: sr_adiag
     real(dp), intent(in) :: sr_eps
     integer, intent(inout) :: i
@@ -165,8 +163,7 @@ contains
     imod=50                   ! inv. freq. of calc. r=b-Ax vs. r=r-\alpha q (see pcg)
     deltap=0.0d0              ! initial guess of solution
 
-    !if (idtask.eq.0.and.ipr.ge.4) then
-    if (idtask.eq.0) then
+    if (idtask.eq.0.and.ipr.gt.4) then
        print *, "Gradient state 1"
        print *, h_sr(1:nparm,1)
        print *, "Gradient state 2"
@@ -356,4 +353,13 @@ contains
 
   end subroutine atimes_n_ortho
 
+  subroutine save_params()
+      sr_adiag_sav = sr_adiag
+      iforce_analy_sav = iforce_analy
+      ioptjas_sav = ioptjas
+      ioptorb_sav = ioptorb
+      ioptci_sav = ioptci
+  end subroutine save_params
+
 end module optwf_sr_ortho_mod
+
