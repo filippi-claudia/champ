@@ -46,9 +46,8 @@ program main
         call parser()    
     endif 
 
-    ! stop "after the initial sanity check"
     !> Initiaize log check.XXX files. It needs ipr flag value.
-    ! call init_procfile()
+    call init_procfile()
 
     ! ! run the the optimization
     ! call optwf()
