@@ -813,7 +813,6 @@ subroutine parser
 
 
   call fdf_shutdown()
-  error stop "after the initial sanity check"
 !----------------------------------------------------------------------------END
 end subroutine parser
 
