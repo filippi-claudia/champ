@@ -151,6 +151,7 @@ subroutine parser
   character(len=100)         :: real_format    = '(A, T40, F14.8)'
   character(len=100)         :: int_format     = '(A, T40, I8)'
   character(len=100)         :: string_format  = '(A, T40, A)'  
+  character(len=100)         :: fmt32          = '(A, T32, A)'  
 
 !------------------------------------------------------------------------- BEGIN
 ! debug purpose only
@@ -424,13 +425,13 @@ subroutine parser
 ! module dependent processing . These will be replaced by inliners
   write(ounit,*) "Names of the external files being read for this calculation :: "
   write(ounit,*)
-  write(ounit,fmt=string_format) " Basis                      :: ", file_basis
-  write(ounit,fmt=string_format) " Molecule                   :: ", file_molecule
-  write(ounit,fmt=string_format) " Determinants               :: ", file_determinants
-  write(ounit,fmt=string_format) " Symmetry                   :: ", file_symmetry
-  write(ounit,fmt=string_format) " Jastrow                    :: ", file_jastrow
-  write(ounit,fmt=string_format) " Jastrow_der                :: ", file_jastrow_der          
-  write(ounit,fmt=string_format) " Orbitals                   :: ", file_orbitals            
+  write(ounit,fmt=fmt32) " Basis                      :: ", file_basis
+  write(ounit,fmt=fmt32) " Molecule                   :: ", file_molecule
+  write(ounit,fmt=fmt32) " Determinants               :: ", file_determinants
+  write(ounit,fmt=fmt32) " Symmetry                   :: ", file_symmetry
+  write(ounit,fmt=fmt32) " Jastrow                    :: ", file_jastrow
+  write(ounit,fmt=fmt32) " Jastrow_der                :: ", file_jastrow_der          
+  write(ounit,fmt=fmt32) " Orbitals                   :: ", file_orbitals            
   write(ounit,*)
 ! Processing of data read from the parsed files
 

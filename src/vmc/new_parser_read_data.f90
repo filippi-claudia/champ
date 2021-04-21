@@ -2,8 +2,9 @@
 subroutine header_printing()
     ! Ravindra
     use mpi_f08
+    use mpiconf, only: idtask, nproc
     use, intrinsic :: iso_fortran_env, only: iostat_end
-    use contrl_file,    only: file_output, file_error 
+    use contrl_file,    only: file_input, file_output, file_error 
     use contrl_file,    only: ounit, errunit
 
     implicit none 
@@ -57,36 +58,22 @@ subroutine header_printing()
 
     call date_and_time(date=date,time=time)
     write(ounit, '(12a)') " Calculation started on     :: ",   date(1:4), "-", date(5:6), "-", date(7:8), " at ",  time(1:2), ":", time(3:4), ":", time(5:6)                                                               
-    call get_environment_variable ("PWD", output)
-    write(ounit, '(2a)') " Current directory          :: ",   output
     call get_command_argument(number=0, value=output)
     write(ounit, '(2a)') " Executable                 :: ",   output
     call hostnm(output)
     write(ounit, '(2a)') " Hostname                   :: ",   output
-    write(ounit,*)
-    write(ounit,*)
-    write(ounit,*)
-    write(ounit,*)
-
-    ! Get Command line arguments
-    ! i = 0
-    ! do
-    !     call get_command_argument(number=i, value=output)
-    !     if (len_trim(output) == 0) exit
-    !     print*, "number ", i, " output", trim(output)
-    !     i = i+1
-    ! end do
-
-
-    
-    
-    ! compiled date and time 
-    ! source directory 
+    call get_environment_variable ("PWD", output)
+    write(ounit, '(2a)') " Current directory          :: ",   output
+    write(ounit, '(2a)') " Input file                 :: ",   file_input
+    write(ounit, '(2a)') " Output file                :: ",   file_output    
+    write(ounit, '(2a)') " Error file                 :: ",   file_error
+    write(ounit, '(4a)') " Code compiled on           :: ",__DATE__, " at ", __TIME__
+    write(ounit, '(a,i5.5)') " Number of processors       :: ", nproc
+    write(ounit,*) 
+    write(ounit,*)     
     ! branch   
-    ! git commit id 
+    ! git commit hash
 
-    ! input filename  
-    ! nproc           
    
    
 end subroutine header_printing
