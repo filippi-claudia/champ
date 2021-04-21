@@ -52,6 +52,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_kinds.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_basis.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_periodic_table.F90    
     ${CMAKE_CURRENT_SOURCE_DIR}/m_atom.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_det.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_coefs.f90
@@ -83,7 +84,12 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_input.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_grdnt.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_allocation.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_state_avrg.f90)
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_state_avrg.f90
+    ${CMAKE_PARSER_DIR}/fdf.F90
+    ${CMAKE_PARSER_DIR}/io_fdf.F90
+    ${CMAKE_PARSER_DIR}/parse.F90
+    ${CMAKE_PARSER_DIR}/prec.F90
+    ${CMAKE_PARSER_DIR}/utils.F90)
 
   set(SHARED_OBJECTS
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr.f90
@@ -92,6 +98,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/array_resize_utils.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/read_data.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/new_parser_read_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/set_input_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pcm_3dgrid.f
@@ -157,6 +164,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/distances.f
     ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f
     ${CMAKE_CURRENT_SOURCE_DIR}/basis_fnse_vg.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/parser.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/read_input.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/hpsi.f
@@ -184,6 +192,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_INPUT_DIR}/p2_defaults.f
     ${CMAKE_INPUT_DIR}/p2etc.f
     ${CMAKE_INPUT_DIR}/p2nmcheck.f)
+
 
   # --------------------------------------------------------------------
   # Remove objects to share depending on CMAKE options:

@@ -19,6 +19,7 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_VMC_DIR ${CMAKE_SOURCE_DIR}/src/vmc)
 set(CMAKE_DMC_DIR ${CMAKE_SOURCE_DIR}/src/dmc)
 set(CMAKE_INPUT_DIR ${CMAKE_SOURCE_DIR}/src/input)
+set(CMAKE_PARSER_DIR ${CMAKE_SOURCE_DIR}/src/parser)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -27,7 +28,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 # documentation
 option(BUILD_DOC "build_doc" off)
 
-# MPI
+# MPI 
 option(ENABLE_MPI "enable_mpi" on)
 
 # QMMM option
@@ -57,6 +58,7 @@ else()
   message(STATUS "MKL NOT FOUND! Using default BLAS and LAPACK")
 endif(MKL_FOUND)
 
+# LibFDF is built-in in the src/parser folder
 
 #  documentation requirements
 if (BUILD_DOC)
@@ -72,22 +74,22 @@ endif(ENABLE_MPI)
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O2" "-mcmodel=large")
+  list(APPEND Fortran_FLAGS "-g" "-O2" "-mcmodel=large")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
   if (MKL_FOUND)
     #list(APPEND Fortran_FLAGS "-fdefault-integer-8")
     list(APPEND Fortran_FLAGS "-m64")
-  endif()
+  endif()  
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
-
+  
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  list(APPEND Fortran_FLAGS "-O2" "-mcmodel=large" "-shared-intel"
+	list(APPEND Fortran_FLAGS "-g" "-traceback" "-O0" "-mcmodel=large" "-shared-intel" "-qopt-zmm-usage=high" "-xCOMMON-AVX512" "-qopenmp-simd"
     "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
   #    list(APPEND Fortran_FLAGS "-i8")
-  #endif()
-
+  #endif()  
+  
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
 endif()
@@ -97,6 +99,7 @@ message(STATUS "compiler flags are: " ${Fortran_FLAGS})
 ## Subdirectories
 # Include the following subdirectories
 add_subdirectory(src/input)
+add_subdirectory(src/parser)
 add_subdirectory(tools/interface)
 add_subdirectory(lib/cyrus)
 add_subdirectory(lib/pspline)
