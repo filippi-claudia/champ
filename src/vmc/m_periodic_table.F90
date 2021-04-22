@@ -36,6 +36,10 @@ module periodic_table
     character(len=*) :: sym
 
     select case(sym)
+        case("ghost", "Ghost Atom", "X", "0")
+
+            atom = atom_t(name="ghost",  symbol="X",     atomic_mass=0.0,   znuclear=0, core=0, nvalence=0)
+
         case("hydrogen", "Hydrogen", "H", "1")
 
             atom = atom_t(name="hydrogen",  symbol="H",     atomic_mass=1.007825,   znuclear=1, core=0, nvalence=1)

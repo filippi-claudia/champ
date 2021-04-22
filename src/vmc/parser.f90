@@ -415,17 +415,31 @@ subroutine parser
 ! %module qmmm (complete)
 !  iqmm          = fdf_get('iqmm',0)    
 
-! Filenames parsing
-  file_basis        = fdf_load_filename('basis', 'default.bas')
-  file_molecule     = fdf_load_filename('molecule', 'default.xyz')
-  file_determinants = fdf_load_filename('determinants', 'default.det')
-  file_symmetry     = fdf_load_filename('symmetry', 'default.sym')  
-  file_jastrow      = fdf_load_filename('jastrow', 'default.jas')    
-  file_jastrow_der  = fdf_load_filename('jastrow_der', 'default.jasder')      
-  file_orbitals     = fdf_load_filename('orbitals', 'default.orb')        
-  file_exponents    = fdf_load_filename('exponents', 'exponents.exp')
 
-  
+  ! Filenames parsing
+  file_basis        		= fdf_load_filename('basis', 			'default.bas')
+  file_molecule     		= fdf_load_filename('molecule', 		'default.xyz')
+  file_determinants 		= fdf_load_filename('determinants', 	'default.det')
+  file_symmetry     		= fdf_load_filename('symmetry', 		'default.sym')  
+  file_jastrow      		= fdf_load_filename('jastrow', 			'default.jas')    
+  file_jastrow_der  		= fdf_load_filename('jastrow_der', 		'default.jasder')      
+  file_orbitals     		= fdf_load_filename('orbitals', 		'default.orb')        
+  file_exponents    		= fdf_load_filename('exponents', 		'exponents.exp') 
+  file_pseudo 			    = fdf_load_filename('pseudo', 			'default.psp')
+  file_optorb_mixvirt       = fdf_load_filename('optorb_mixvirt', 	'default.mix')
+  file_multideterminants    = fdf_load_filename('multideterminants', 'default.mdet')
+  file_forces       		= fdf_load_filename('forces', 			'default.for')
+  file_eigenvalues	       	= fdf_load_filename('eigenvalues', 		'default.eig')
+  file_basis_num_info       = fdf_load_filename('basis_num_info', 	'default.bni')
+  file_dmatrix		       	= fdf_load_filename('dmatrix', 			'default.dmat')
+  file_cavity_spheres       = fdf_load_filename('cavity_spheres', 	'default.cav')
+  file_gradients_zmatrix    = fdf_load_filename('gradients_zmatrix','default.gzmat')
+  file_gradients_cartesian  = fdf_load_filename('gradients_cartesian', 'default.gcart')
+  file_modify_zmatrix       = fdf_load_filename('modify_zmatrix', 	'default.mzmat')
+  file_hessian_zmatrix      = fdf_load_filename('hessian_zmatrix', 	'default.hzmat')
+  file_zmatrix_connection   = fdf_load_filename('zmatrix_connection', 'default.zmcon')
+  file_efield	       		= fdf_load_filename('efield', 			'default.efield')
+
   call header_printing()
   ! Reading of smaller blocks of data goes here.
 
