@@ -85,6 +85,8 @@ subroutine parser
   use contrl_per, 		only: iperiodic, ibasis
   use force_analy, 		only: iforce_analy, iuse_zmat, alfgeo
   use force_dmc, 		only: itausec, nwprod
+  use forcestr,     only: delc
+  use wfsec, only: iwftype
   use pseudo, 			only: nloc
   use optorb_cblock, 	only: idump_blockav
   use gradjerrb, 		only: ngrad_jas_blocks
@@ -417,28 +419,28 @@ subroutine parser
 
 
   ! Filenames parsing
-  file_basis        		= fdf_load_filename('basis', 			'default.bas')
-  file_molecule     		= fdf_load_filename('molecule', 		'default.xyz')
-  file_determinants 		= fdf_load_filename('determinants', 	'default.det')
-  file_symmetry     		= fdf_load_filename('symmetry', 		'default.sym')  
-  file_jastrow      		= fdf_load_filename('jastrow', 			'default.jas')    
-  file_jastrow_der  		= fdf_load_filename('jastrow_der', 		'default.jasder')      
-  file_orbitals     		= fdf_load_filename('orbitals', 		'default.orb')        
-  file_exponents    		= fdf_load_filename('exponents', 		'exponents.exp') 
-  file_pseudo 			    = fdf_load_filename('pseudo', 			'default.psp')
+  file_basis        		    = fdf_load_filename('basis', 			'default.bas')
+  file_molecule     		    = fdf_load_filename('molecule', 		'default.xyz')
+  file_determinants 		    = fdf_load_filename('determinants', 	'default.det')
+  file_symmetry     		    = fdf_load_filename('symmetry', 		'default.sym')  
+  file_jastrow      		    = fdf_load_filename('jastrow', 			'default.jas')    
+  file_jastrow_der  		    = fdf_load_filename('jastrow_der', 		'default.jasder')      
+  file_orbitals     		    = fdf_load_filename('orbitals', 		'default.orb')        
+  file_exponents    		    = fdf_load_filename('exponents', 		'exponents.exp') 
+  file_pseudo 			        = fdf_load_filename('pseudo', 			'default.psp')
   file_optorb_mixvirt       = fdf_load_filename('optorb_mixvirt', 	'default.mix')
   file_multideterminants    = fdf_load_filename('multideterminants', 'default.mdet')
-  file_forces       		= fdf_load_filename('forces', 			'default.for')
+  file_forces       		    = fdf_load_filename('forces', 			'default.for')
   file_eigenvalues	       	= fdf_load_filename('eigenvalues', 		'default.eig')
   file_basis_num_info       = fdf_load_filename('basis_num_info', 	'default.bni')
-  file_dmatrix		       	= fdf_load_filename('dmatrix', 			'default.dmat')
+  file_dmatrix		       	  = fdf_load_filename('dmatrix', 			'default.dmat')
   file_cavity_spheres       = fdf_load_filename('cavity_spheres', 	'default.cav')
   file_gradients_zmatrix    = fdf_load_filename('gradients_zmatrix','default.gzmat')
   file_gradients_cartesian  = fdf_load_filename('gradients_cartesian', 'default.gcart')
   file_modify_zmatrix       = fdf_load_filename('modify_zmatrix', 	'default.mzmat')
   file_hessian_zmatrix      = fdf_load_filename('hessian_zmatrix', 	'default.hzmat')
   file_zmatrix_connection   = fdf_load_filename('zmatrix_connection', 'default.zmcon')
-  file_efield	       		= fdf_load_filename('efield', 			'default.efield')
+  file_efield	       		    = fdf_load_filename('efield', 			'default.efield')
 
   call header_printing()
   ! Reading of smaller blocks of data goes here.
@@ -635,6 +637,141 @@ subroutine parser
     endif ! condition if load basis_num_info is present
   endif ! condition basis_num_info block not present
  
+
+! (13) Forces information (either block or from a file)
+
+  if (.not. fdf_block('forces', bfdf)) then
+    if ( fdf_load_defined('forces') ) then
+      call read_forces_file(file_forces)
+    endif ! condition if load forces is present
+  else ! %block forces present
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
+    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
+
+    do while((fdf_bline(bfdf, pline)))     
+      if (pline%ntokens == 3) then
+        do i = 1, nforce
+          do j = 1, ncent
+            do k = 1, 3
+              delc(k, j, i) = fdf_bvalues(pline, k)
+            enddo ! xyz
+          enddo ! centers
+        enddo ! forces
+      endif ! expect only three values in a line
+    enddo ! parse entire file
+
+    write(ounit,*) 'Forces from the %block forces  '
+    write(ounit,*)
+    do i = 1, nforce
+      write(ounit,'(a,i4)') 'Number ::',i
+      do j= 1, ncent
+          write(ounit,'(3F10.6, i3)') (delc(k, j, i),k=1,3) 
+      enddo    
+    enddo
+  endif ! condition forces block not present
+
+! (14) Dmatrix information (either block or from a file)
+
+  if (.not. fdf_block('dmatrix', bfdf)) then
+    if ( fdf_load_defined('dmatrix') ) then
+      call read_dmatrix_file(file_dmatrix)
+    endif ! condition if load dmatrix is present
+  endif ! condition dmatrix block not present
+
+! (15) basis information (either block or from a file)
+
+  if (.not. fdf_block('basis', bfdf)) then
+    if ( fdf_load_defined('basis') ) then
+      call read_basis_file(file_basis)
+    endif ! condition if load basis is present
+  endif ! condition basis block not present
+
+! (16) exponents information (either block or from a file)
+
+  if (.not. fdf_block('exponents', bfdf)) then
+    if ( fdf_load_defined('exponents') ) then
+      call read_exponents_file(file_exponents)
+    endif ! condition if load exponents is present
+  endif ! condition exponents block not present
+
+! (17) pseudo information (either block or from a file)
+
+  if (.not. fdf_block('pseudo', bfdf)) then
+    if ( fdf_load_defined('pseudo') ) then
+      call read_pseudo_file(file_pseudo)
+    endif ! condition if load pseudo is present
+  endif ! condition pseudo block not present
+
+! (18) multideterminants information (either block or from a file)
+
+  if (.not. fdf_block('multideterminants', bfdf)) then
+    if ( fdf_load_defined('multideterminants') ) then
+      call read_multideterminants_file(file_multideterminants)
+    endif ! condition if load multideterminants is present
+  endif ! condition multideterminants block not present
+
+! (19) cavity_spheres information (either block or from a file)
+
+  if (.not. fdf_block('cavity_spheres', bfdf)) then
+    if ( fdf_load_defined('cavity_spheres') ) then
+      call read_cavity_spheres_file(file_cavity_spheres)
+    endif ! condition if load cavity_spheres is present
+  endif ! condition cavity_spheres block not present
+
+! (20) gradients_zmatrix information (either block or from a file)
+
+  if (.not. fdf_block('gradients_zmatrix', bfdf)) then
+    if ( fdf_load_defined('gradients_zmatrix') ) then
+      call read_gradients_zmatrix_file(file_gradients_zmatrix)
+    endif ! condition if load gradients_zmatrix is present
+  endif ! condition gradients_zmatrix block not present
+
+! (21) gradients_cartesian information (either block or from a file)
+
+  if (.not. fdf_block('gradients_cartesian', bfdf)) then
+    if ( fdf_load_defined('gradients_cartesian') ) then
+      call read_gradients_cartesian_file(file_gradients_cartesian)
+    endif ! condition if load gradients_cartesian is present
+  endif ! condition gradients_cartesian block not present
+
+! (22) modify_zmatrix information (either block or from a file)
+
+  if (.not. fdf_block('modify_zmatrix', bfdf)) then
+    if ( fdf_load_defined('modify_zmatrix') ) then
+      call read_modify_zmatrix_file(file_modify_zmatrix)
+    endif ! condition if load modify_zmatrix is present
+  endif ! condition modify_zmatrix block not present
+
+! (23) hessian_zmatrix information (either block or from a file)
+
+  if (.not. fdf_block('hessian_zmatrix', bfdf)) then
+    if ( fdf_load_defined('hessian_zmatrix') ) then
+      call read_hessian_zmatrix_file(file_hessian_zmatrix)
+    endif ! condition if load hessian_zmatrix is present
+  endif ! condition hessian_zmatrix block not present
+
+! (24) zmatrix_connection information (either block or from a file)
+
+  if (.not. fdf_block('zmatrix_connection', bfdf)) then
+    if ( fdf_load_defined('zmatrix_connection') ) then
+      call read_zmatrix_connection_file(file_zmatrix_connection)
+    endif ! condition if load zmatrix_connection is present
+  endif ! condition zmatrix_connection block not present
+  
+! (25) efield information (either block or from a file)
+
+  if (.not. fdf_block('efield', bfdf)) then
+    if ( fdf_load_defined('efield') ) then
+      call read_efield_file(file_efield)
+    endif ! condition if load efield is present
+  endif ! condition efield block not present
+
+
+! Done reading all the files
+
+
+
+
 
 ! %module optwf
   if (fdf_defined("optwf")) then

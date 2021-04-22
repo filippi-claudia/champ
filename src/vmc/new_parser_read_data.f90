@@ -881,7 +881,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
     na1 = 1
     na2 = nctype
-    MCTYP3X = max(3, nctype) !nctype_tot
+    MCTYP3X = max(3, nctype) !BUG nctype_tot
 
     if (.not. allocated(nparma)) allocate (nparma(MCTYP3X))
     if (.not. allocated(nparmb)) allocate (nparmb(3))
@@ -1534,7 +1534,7 @@ subroutine read_dmatrix_file(file_dmatrix)
     allocate (weights(nstates))
     allocate (iweight(nstates))
 
-    ! ravindra: bring the get_weight subroutine
+    ! BUG ravindra: bring the get_weight subroutine
     call get_weights_new('weights:', weights, iweight, nweight)
     !if (ns .ne. nweight) call fatal('READ_DMATRIX: wrong number of dmatrices')
 
@@ -1554,7 +1554,7 @@ subroutine read_dmatrix_file(file_dmatrix)
         enddo
     enddo
 
-    ! why
+    !DEBUG why
     do i = 1, ndetorb
         if (dabs(dmat_diag(i) - 1.d0) .lt. 1.d-6) dmat_diag(i) = 1.d0
     enddo

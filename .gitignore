@@ -5,6 +5,7 @@ settings.make
 *.o
 *.mod
 *.a
+*.i90
 *.log
 local_test.sh
 
