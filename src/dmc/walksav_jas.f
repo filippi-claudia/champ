@@ -1,7 +1,6 @@
       subroutine walksav_jas(iw)
 c Written by Claudia Filippi
 
-      use precision_kinds, only: dp
       use vmc_mod, only: MELEC
       use dmc_mod, only: MWALK
       use const, only: nelec
@@ -10,19 +9,22 @@ c Written by Claudia Filippi
       use velocity_jastrow, only: vj
       use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ierr, irecv, irequest, isend
-      integer :: istatus, itag, iw, iw2
-      integer :: j, kk
-      real(dp) :: fijow, fjow, fsow, fsumow, vjw
+      integer :: itag, iw, iw2, j
+      integer :: kk
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
-      dimension fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK)
-     &,fsumow(MWALK),fjow(3,MELEC,MWALK)
+      real(dp), dimension(MELEC, MELEC, MWALK) :: fsow
+      real(dp), dimension(3, MELEC, MELEC, MWALK) :: fijow
+      real(dp), dimension(MWALK) :: fsumow
+      real(dp), dimension(3, MELEC, MWALK) :: fjow
+      real(dp), dimension(3, MELEC, MWALK) :: vjw
 
-      dimension vjw(3,MELEC,MWALK)
 
-      dimension istatus(MPI_STATUS_SIZE)
+
 
       save fsow,fijow,fsumow,fjow
 

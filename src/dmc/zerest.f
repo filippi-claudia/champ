@@ -1,7 +1,6 @@
       subroutine zerest
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 
-      use precision_kinds, only: dp
       use vmc_mod, only: nrad
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce
@@ -22,11 +21,14 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use denupdn, only: rprobdn, rprobup
       use mpiblk, only: iblk_proc
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ifr, k
-      real(dp), parameter :: zero = 0.0d0 
-      real(dp), parameter :: one = 1.0d0 
+
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+
 
 c routine to accumulate estimators for energy etc.
 

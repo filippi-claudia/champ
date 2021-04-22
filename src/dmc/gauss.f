@@ -9,10 +9,11 @@ c backward compatibility generate just 1.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use const, only: pi
       use precision_kinds, only: dp
-
       implicit none
 
+
       real(dp) :: gauss, rannyu
+
 
       gauss=dcos(2*pi*rannyu(0))
       gauss=gauss*sqrt(-2*dlog(rannyu(0)))

@@ -1,6 +1,5 @@
       subroutine pcm_reduce(wgsum)
 
-      use precision_kinds, only: dp
       use mpiconf, only: wid
       use contr3, only: mode
       use pcm_cntrl, only: ipcm
@@ -8,6 +7,7 @@
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: ierr
@@ -86,12 +86,12 @@
 
       implicit none
 
-      integer :: ierr, irecv, irequest, isend, istatus
-      integer :: itag_r, itag_s
+      integer :: ierr, irecv, irequest, isend, itag_r
+      integer :: itag_s
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
 
 
-      dimension istatus(MPI_STATUS_SIZE)
 
       if(ipcm.eq.0) return
 

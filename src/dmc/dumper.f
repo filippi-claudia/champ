@@ -2,7 +2,6 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
-      use precision_kinds, only: dp
       use vmc_mod, only: MELEC
       use vmc_mod, only: nrad
       use dmc_mod, only: MWALK
@@ -45,16 +44,21 @@ c job where it left off
       use contrl, only: nconf
       use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
-      integer :: irn, istatus, irn_tmp, ierr, nscounts, irequest, ic
-      integer :: i, j, k, iw, ifr, id, ib
-      real(dp), parameter :: zero = 0.0d0 
-      real(dp), parameter :: one = 1.0d0 
-      real(dp), parameter :: small = 1.0d-6 
+      integer :: i, ib, ic, id, ierr
+      integer :: ifr, irequest, iw, j
+      integer :: k, nscounts
+      integer, dimension(4, 0:NPROCX) :: irn
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      integer, dimension(4, 0:NPROCX) :: irn_tmp
 
-      dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
-      dimension irn_tmp(4,0:NPROCX)
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: small = 1.e-6
+
+
 
       if(mode.eq.'dmc_one_mpi2') then
         call dumper_gpop

@@ -1,6 +1,5 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
-      use precision_kinds, only: dp
       use vmc_mod, only: MELEC, MORB
       use const, only: nelec
       use atom, only: ncent
@@ -16,17 +15,18 @@
       use multidet, only: iactv, ivirt, kref
       use multimat, only: aa
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i1, i2, iab, ic, iel
       integer :: iel_move, iq, irep, ish
       integer :: j, jel, jrep, nel
-      real(dp) :: detratio, dum, gmat
-      real(dp) :: psid
-      real(dp), parameter :: one  = 1.0d0
-      real(dp), parameter :: half = 0.5d0 
+      real(dp) :: detratio, dum, psid
+      real(dp), dimension(MELEC, MORB) :: gmat
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = 0.5d0
 
-      dimension gmat(MELEC,MORB)
+
 
       if(icasula.gt.0)then
         i1=iel_move

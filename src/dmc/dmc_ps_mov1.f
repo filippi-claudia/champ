@@ -39,8 +39,6 @@ c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-      use precision_kinds, only: dp
       use vmc_mod, only: MELEC
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
@@ -67,37 +65,46 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use velratio, only: fratio, xdrifted
       use contrl, only: irstar, nconf
 
+      use precision_kinds, only: dp
       implicit none
 
-      integer :: i, ii, j, k, iw, ifr
-      integer :: itryo, itryn, iacc_elec, ncall, node_cutoff, icircular, idrifdifgfunc
-      integer :: ipmod, ipmod2, iwmod
-      integer :: imove, ncount_casula, nmove_casula, iaccept, iflag_up
-      integer :: iflag_dn, jel, int, iel
-      real(dp) :: xstrech, xnew
-      real(dp) :: vnew, xbac, xdriftedn, unacp, eps_node_cutoff, e_cutoff, expon
-      real(dp) :: dwt, ginv, ffn, ffi, vav2sumo, v2sumo
-      real(dp) :: tratio, v2old, vavvt, vavvo, r2sume, risume, drifdif
-      real(dp) :: psidn, psijn, dr2, dfus2o, drift, dfus
-      real(dp) :: gauss, dx, distance_node_ratio2, distance_node, rnorm_nodes_old, rnorm_nodes_num
-      real(dp) :: rnorm_nodes_new, p, v2new, dfus2n, pp, dmin1
-      real(dp) :: r2o, r2n, rmino, rminn, q, rannyu, tauprim
-      real(dp) :: drifdifr, enew, rnorm_nodes, drifdifs, vav2sumn, v2sumn
-      real(dp) :: vavvn, fration, taunow, ewto, ewtn, deo, den
-      real(dp) :: dabs, drifdifgfunc, wtnow, ro, wtg, pen
-      real(dp) :: d2n, psi2savo, wtg_derivsum1
-
+      integer :: i, iaccept, icircular, idrifdifgfunc, iel
+      integer :: iflag_dn, iflag_up, ifr, ii
+      integer :: imove, ipmod, ipmod2, iw
+      integer :: iwmod, j, jel, k
+      integer :: ncall, ncount_casula, nmove_casula, node_cutoff
+      integer, dimension(MELEC) :: itryo
+      integer, dimension(MELEC) :: itryn
+      integer, dimension(MELEC) :: iacc_elec
+      real(dp) :: d2n, dabs, den, deo, dfus
+      real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
+      real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
+      real(dp) :: drifdifr, drifdifs, drift, dwt
+      real(dp) :: dx, e_cutoff, enew, eps_node_cutoff
+      real(dp) :: ewtn, ewto, expon, ffi
+      real(dp) :: ffn, fration, gauss, ginv
+      real(dp) :: p, pen, pp, psi2savo
+      real(dp) :: psidn, psijn, q, r2n
+      real(dp) :: r2o, r2sume, rannyu, risume
+      real(dp) :: rminn, rmino, rnorm_nodes, rnorm_nodes_new
+      real(dp) :: rnorm_nodes_num, rnorm_nodes_old, ro, taunow
+      real(dp) :: tauprim, tratio, v2new, v2old
+      real(dp) :: v2sumn, v2sumo, vav2sumn, vav2sumo
+      real(dp) :: vavvn, vavvo, vavvt, wtg
+      real(dp) :: wtg_derivsum1, wtnow
+      real(dp), dimension(3, MELEC) :: xstrech
+      real(dp), dimension(3) :: xnew
+      real(dp), dimension(3, MELEC) :: vnew
+      real(dp), dimension(3) :: xbac
+      real(dp), dimension(3, MELEC) :: xdriftedn
+      real(dp), dimension(MELEC) :: unacp
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0
-      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: half = .5d0
       real(dp), parameter :: adrift = 0.5d0
 
-      dimension xstrech(3,MELEC)
-      dimension xnew(3),vnew(3,MELEC)
-      dimension xbac(3),xdriftedn(3,MELEC)
-      dimension itryo(MELEC),itryn(MELEC),unacp(MELEC)
-      dimension iacc_elec(MELEC)
+
 
       data ncall /0/
 

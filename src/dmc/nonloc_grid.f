@@ -1,6 +1,5 @@
       subroutine nonloc_grid(iel,iw,x,psid,imove)
 
-      use precision_kinds, only: dp
       use const, only: nelec
       use contrl_per, only: iperiodic
       use contrldmc, only: tau
@@ -13,20 +12,21 @@
       use wfsec, only: iwf, iwftype
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, i1, i2, ic, ic_good
       integer :: iel, iel_good, ii, imove
       integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iq
       integer :: iq_good, iw
-      real(dp) :: costh, dvpsp_dj, one, p, pe
-      real(dp) :: psid, psidi, rannyu, ri
-      real(dp) :: t_cum, t_norm, t_normi, tauprim
-      real(dp) :: vpsp_det, x
+      real(dp) :: costh, one, p, pe, psid
+      real(dp) :: psidi, rannyu, ri, t_cum
+      real(dp) :: t_norm, t_normi, tauprim
+      real(dp), dimension(2) :: vpsp_det
+      real(dp), dimension(MPARMJ) :: dvpsp_dj
+      real(dp), dimension(*) :: x
 
 c here vpsp_det and dvpsp_det are dummy
-      dimension vpsp_det(2),dvpsp_dj(MPARMJ)
-      dimension x(*)
 
       iwf=iwftype(1)
 
@@ -129,20 +129,22 @@ c       write(6,*) 'moved A',iw,iel,(x(kk),kk=1,3)
 c-----------------------------------------------------------------------
       subroutine t_vpsp_sav
 
-      use precision_kinds, only: dp
       use vmc_mod, only: MELEC, MCENT
       use const, only: nelec
       use atom, only: ncent
       use qua, only: nquad
       use pseudo_mod, only: MPS_QUAD
-      use casula, only: t_vpsp
 
+      use casula, only: t_vpsp
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ic, iq
-      real(dp) :: t_vpsp_save
 
-      dimension t_vpsp_save(MCENT,MPS_QUAD,MELEC)
+      real(dp), dimension(MCENT, MPS_QUAD, MELEC) :: t_vpsp_save
+
+
+
 
       save t_vpsp_save
 

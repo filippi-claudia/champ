@@ -24,8 +24,8 @@ c routine to accumulate estimators for energy etc.
 
       integer :: ifr, ipmod, nfpro
       real(dp) :: wgdsum1, eisum
-      real(dp), parameter :: zero = 0.0d0 
-      real(dp), parameter :: one = 1.0d0 
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
 
       if(mode.eq.'dmc_one_mpi2') then
         call acues1_gpop

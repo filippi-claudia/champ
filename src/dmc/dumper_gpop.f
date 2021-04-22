@@ -2,7 +2,6 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
-      use precision_kinds, only: dp
       use vmc_mod, only: MELEC
       use vmc_mod, only: nrad
       use dmc_mod, only: MWALK
@@ -43,17 +42,20 @@ c job where it left off
       use contrl, only: nconf
       use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
-      integer :: i, j, k
-      integer :: irn, istatus, irn_tmp, nscounts, ierr, irequest
-      integer :: ic, iw, ifr, id, ib
-      real(dp) :: zero, one
+      integer :: i, ib, ic, id, ierr
+      integer :: ifr, irequest, iw, j
+      integer :: k, nscounts
+      integer, dimension(4, 0:NPROCX) :: irn
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      integer, dimension(4, 0:NPROCX) :: irn_tmp
 
-      parameter (zero=0.d0,one=1.d0)
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
 
-      dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
-      dimension irn_tmp(4,0:NPROCX)
+
 
       if(nforce.gt.1) call strech(xold_dmc,xold_dmc,ajacob,1,0)
 

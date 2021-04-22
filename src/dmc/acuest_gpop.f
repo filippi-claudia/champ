@@ -2,7 +2,6 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use precision_kinds, only: dp
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, nforce
       use age, only: ioldest, ioldestmx
@@ -23,22 +22,29 @@ c routine to accumulate estimators for energy etc.
       use contrl, only: nstep
       use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
-      integer :: i, npass, ierr, ioldest_collect, ioldestmx_collect, ifr
-      integer :: k, ifgerr, iegerr, ipeerr, itpber, itjfer
-      real(dp) :: pecollect, tpbcollect, tjfcollect, taucollect, derivcollect
-      real(dp) :: rn_eff, w, w2, error, x, x2, errg
-      real(dp) :: dum, wnow, wfnow, enow, efnow, ei1now
-      real(dp) :: ei2now, rinow, r2now, wgnow, egnow, penow, tpbnow
-      real(dp) :: tjfnow, egerr, peerr, tpberr, tjferr, egave
-      real(dp) :: peave, tpbave, tjfave, fgave, fgerr, egave1, derivtotave
+      integer :: i, iegerr, ierr, ifgerr, ifr
+      integer :: ioldest_collect, ioldestmx_collect, ipeerr, itjfer
+      integer :: itpber, k, npass
+      real(dp) :: derivtotave, dum, efnow, egave, egave1
+      real(dp) :: egerr, egnow, ei1now, ei2now
+      real(dp) :: enow, errg, error, fgave
+      real(dp) :: fgerr, peave, peerr, penow
+      real(dp) :: r2now, rinow, rn_eff, tjfave
+      real(dp) :: tjferr, tjfnow, tpbave, tpberr
+      real(dp) :: tpbnow, w, w2, wfnow
+      real(dp) :: wgnow, wnow, x, x2
+      real(dp), dimension(MFORCE) :: pecollect
+      real(dp), dimension(MFORCE) :: tpbcollect
+      real(dp), dimension(MFORCE) :: tjfcollect
+      real(dp), dimension(MFORCE) :: taucollect
+      real(dp), dimension(10, MFORCE) :: derivcollect
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
 
-      real(dp), parameter :: zero = 0.0d0 
-      real(dp), parameter :: one = 1.0d0 
 
-      dimension pecollect(MFORCE), tpbcollect(MFORCE), tjfcollect(MFORCE),
-     & taucollect(MFORCE), derivcollect(10,MFORCE)
 
 c statement function for error calculation
       rn_eff(w,w2)=w**2/w2

@@ -1,7 +1,6 @@
       subroutine splitj
 c Written by Cyrus Umrigar
 
-      use precision_kinds, only: dp
       use dmc_mod, only: MWALK
       use const, only: nelec
       use forcepar, only: nforce
@@ -14,18 +13,19 @@ c Written by Cyrus Umrigar
       use jacobsave, only: ajacold
       use velratio, only: fratio, xdrifted
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ifr, ip, ipair, iunder
-      integer :: iw, iw2, iwundr, j
-      integer :: k, nwalk2
-      real(dp) :: rannyu, wtsm, wtsm2
-      real(dp) :: wttot
-      real(dp), parameter :: zero = 0.0d0 
-      real(dp), parameter :: two = 2.0d0 
-      real(dp), parameter :: half = 0.5d0 
+      integer :: iw, iw2, j, k
+      integer :: nwalk2
+      integer, dimension(MWALK) :: iwundr
+      real(dp) :: rannyu, wtsm, wtsm2, wttot
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = .5d0
 
-      dimension iwundr(MWALK)
+
 
       iunder=0
       ipair=0

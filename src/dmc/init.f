@@ -2,7 +2,6 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use precision_kinds, only: dp
       use dmc_mod, only: MFPRD1
       use const, only: etrial, nelec
       use forcepar, only: istrech, nforce
@@ -21,11 +20,15 @@ c routine to accumulate estimators for energy etc.
       use contrl, only: nconf
       use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
-      integer :: i, ie, ifr, ip, iw, k
-      real(dp), parameter :: zero = 0.0d0 
-      real(dp), parameter :: one = 1.0d0 
+      integer :: i, ie, ifr, ip, iw
+      integer :: k
+
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+
 
 c Initialize various quantities at beginning of run
 c the initial values of energy psi etc. are calculated here

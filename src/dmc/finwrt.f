@@ -2,7 +2,6 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to print out final results
 
-      use precision_kinds, only: dp
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
       use const, only: etrial, ipr, nelec
@@ -34,26 +33,36 @@ c routine to print out final results
       use contrl, only: nblkeq, nconf, nstep
       use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
-      integer :: i, j, k 
-      integer :: ierr, ifr, nacc_collect, nodecr_collect
-      real(dp) :: acc_collect, accav, accavn, delr, eave, eerr, eerr1
-      real(dp) :: efave, eferr, eferr1, egave, egerr, egerr1, errc
-      real(dp) :: errc1, errf, errf1, errg, errg1, error
-      real(dp) :: errorn, errw, errw1, eval, eval_eff, eval_proc, evalf_eff
-      real(dp) :: evalg_eff, ferr_grdnts, ffin_grdnts, fgave, fgerr
-      real(dp) :: pass_proc, passes, peave, peerr, rn, rn_eff
-      real(dp) :: rprobcollect, rteval_eff1, rtevalf_eff1, rtevalg_eff1, rtpass1, term
-      real(dp) :: tjfave, tjferr, tpbave, tpberr, trymove_collect, w
-      real(dp) :: w2, wave, werr, werr1, wfave, wferr
-      real(dp) :: wferr1, wgave, wgerr, wgerr1, x, x2
-      real(dp), parameter :: one = 1.0d0
-      real(dp), parameter :: two = 2.0d0
-      real(dp), parameter :: half = 0.5d0
+      integer :: i, ierr, ifr, j, k
+      integer :: nacc_collect, nodecr_collect
+      real(dp) :: acc_collect, accav, accavn, delr, eave
+      real(dp) :: eerr, eerr1, efave, eferr
+      real(dp) :: eferr1, egave, egerr, egerr1
+      real(dp) :: errc, errc1, errf, errf1
+      real(dp) :: errg, errg1, error, errorn
+      real(dp) :: errw, errw1, eval, eval_eff
+      real(dp) :: eval_proc, evalf_eff, evalg_eff, fgave
+      real(dp) :: fgerr, pass_proc, passes, peave
+      real(dp) :: peerr, rn, rn_eff, rteval_eff1
+      real(dp) :: rtevalf_eff1, rtevalg_eff1, rtpass1, term
+      real(dp) :: tjfave, tjferr, tpbave, tpberr
+      real(dp) :: trymove_collect, w, w2, wave
+      real(dp) :: werr, werr1, wfave, wferr
+      real(dp) :: wferr1, wgave, wgerr, wgerr1
+      real(dp) :: x, x2
+      real(dp), dimension(MFORCE) :: ffin_grdnts
+      real(dp), dimension(MFORCE) :: ferr_grdnts
+      real(dp), dimension(nrad) :: rprobcollect
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = .5d0
 
-      dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
-      dimension rprobcollect(nrad)
+
+
+
 
 c statement functions for error calculation
       rn_eff(w,w2)=w**2/w2

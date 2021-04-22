@@ -1,6 +1,5 @@
       subroutine mmpol_reduce(wgsum)
 
-      use precision_kinds, only: dp
       use mpiconf, only: wid
       use contr3, only: mode
       use mmpol_cntrl, only: immpol
@@ -8,6 +7,7 @@
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2
       use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: ierr
@@ -72,11 +72,11 @@
 
       implicit none
 
-      integer :: ierr, irecv, irequest, isend, istatus
-      integer :: itag_r, itag_s
+      integer :: ierr, irecv, irequest, isend, itag_r
+      integer :: itag_s
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
 
-      dimension istatus(MPI_STATUS_SIZE)
 
       if(immpol.eq.0) return
 

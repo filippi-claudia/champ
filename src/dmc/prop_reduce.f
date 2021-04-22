@@ -1,6 +1,5 @@
       subroutine prop_reduce(wgsum)
 
-      use precision_kinds, only: dp
       use prp000, only: iprop, nprop
       use prp003, only: vprop_sum, vprop_cum, vprop_cm2
       use mpiconf, only: wid
@@ -8,13 +7,16 @@
       use properties, only: MAXPROP
       use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ierr
-      real(dp) :: vp2collect, vp2sum, vpcollect, vpnow, wgsum
+      real(dp) :: vpnow, wgsum
+      real(dp), dimension(MAXPROP) :: vp2sum
+      real(dp), dimension(MAXPROP) :: vpcollect
+      real(dp), dimension(MAXPROP) :: vp2collect
 
 
-      dimension vp2sum(MAXPROP), vpcollect(MAXPROP), vp2collect(MAXPROP)
 
       if(iprop.eq.0) return
 
@@ -61,12 +63,12 @@
 
       implicit none
 
-      integer :: ierr, irecv, irequest, isend, istatus
-      integer :: itag_r, itag_s
+      integer :: ierr, irecv, irequest, isend, itag_r
+      integer :: itag_s
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
 
 
-      dimension istatus(MPI_STATUS_SIZE)
 
       if(iprop.eq.0) return
 

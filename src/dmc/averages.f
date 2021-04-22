@@ -1,16 +1,20 @@
       subroutine deriv(wtg,eold,pwt,ajac,psid,psij,idrifdifgfunc,iw,mwalk)
 
-      use precision_kinds, only: dp
       use forcepar, only: nforce
       use c_averages, only: prop, wprop
       use c_averages_index, only: jderiv
 
+      use precision_kinds, only: dp
       implicit none
 
-      integer :: mwalk, ifr, idrifdifgfunc, log, iw
-      real(dp) :: eold, pwt, ajac, psij, psid, ro, wtg
+      integer :: idrifdifgfunc, ifr, iw, mwalk
+      real(dp) :: ro, wtg
+      real(dp), dimension(mwalk, *) :: eold
+      real(dp), dimension(mwalk, *) :: pwt
+      real(dp), dimension(mwalk, *) :: ajac
+      real(dp), dimension(mwalk, *) :: psij
+      real(dp), dimension(mwalk, *) :: psid
 
-      dimension eold(mwalk,*),pwt(mwalk,*),ajac(mwalk,*),psij(mwalk,*),psid(mwalk,*)
 
       do ifr=1,nforce
         if(idrifdifgfunc.gt.0) then
@@ -37,7 +41,8 @@
 
       implicit none
 
-      integer :: j, ifr, k
+      integer :: ifr, j, k
+
 
       nprop=0
 c elocal
@@ -58,16 +63,17 @@ c deriv
 
       subroutine average(ido)
 
-      use precision_kinds, only: dp
       use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
       use prp000, only: nprop
 
+      use precision_kinds, only: dp
       implicit none
 
-      integer :: ido, i
-      real(dp) :: sum_av, sum_w
+      integer :: i, ido
 
-      dimension sum_av(mprop),sum_w(mprop)
+      real(dp), dimension(mprop) :: sum_av
+      real(dp), dimension(mprop) :: sum_w
+
       if(ido.eq.0)then
        do i=1,nprop
         cum_av(i)=0
@@ -95,15 +101,15 @@ c deriv
 
       subroutine average_write
 
-      use precision_kinds, only: dp
       use forcepar, only: nforce
       use c_averages, only: cum_av, cum_w
       use c_averages_index, only: jderiv
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: ifr
-      real(dp) :: egave, derivtotave
+      real(dp) :: derivtotave, egave
 
       egave=cum_av(jderiv(1,1))/cum_w(jderiv(1,1))
       do ifr=2,nforce

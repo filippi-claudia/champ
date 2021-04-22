@@ -2,7 +2,6 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use precision_kinds, only: dp
       use forcest, only: fgcm2, fgcum
       use forcepar, only: deltot, nforce
       use age, only: ioldest
@@ -25,31 +24,49 @@ c routine to accumulate estimators for energy etc.
       use contrl, only: nstep
       use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
-      integer :: i, npass, ifr, ierr, k, ifgerr, iderivgerr
-      integer :: iegerr, ipeerr, itpber, itjfer
-      real(dp) :: egcollect, wgcollect, pecollect, tjfcollect, eg2collect
-      real(dp) :: wg2collect, tpb2collect, tjf2collect, fsum, eg2sum, wg2sum, pe2sum
-      real(dp) :: tpb2sum, taucollect, fcollect, f2collect, rn_eff, w
-      real(dp) :: w2, error, x, x2, errg, wnow, wfnow
-      real(dp) :: enow, efnow, ei1now, ei2now, rinow, r2now
-      real(dp) :: w2sum, wf2sum, e2sum, ef2sum, wgnow, egnow, penow
-      real(dp) :: tpbnow, tjfnow, tjf2sum, f2sum, tpbcollect, pe2collect
-      real(dp) :: derivcollect, ecollect, wcollect, efcollect, wfcollect, e2collect, w2collect
-      real(dp) :: ef2collect, wf2collect, egerr, peerr, tpberr, tjferr
-      real(dp) :: egave, peave, tpbave, tjfave, fgave, fgerr
-      real(dp) :: egave1, derivtotave_num, derivtotave, delta_derivtotave_num, derivgerr
-      real(dp) :: fgerr_n
-      real(dp), parameter :: zero = 0.0d0 
-      real(dp), parameter :: one = 1.0d0 
+      integer :: i, iderivgerr, iegerr, ierr, ifgerr
+      integer :: ifr, ipeerr, itjfer, itpber
+      integer :: k, npass
+      real(dp) :: delta_derivtotave_num, derivgerr, derivtotave, derivtotave_num, e2collect
+      real(dp) :: e2sum, ecollect, ef2collect, ef2sum
+      real(dp) :: efcollect, efnow, egave, egave1
+      real(dp) :: egerr, egnow, ei1now, ei2now
+      real(dp) :: enow, errg, error, fgave
+      real(dp) :: fgerr, peave, peerr, penow
+      real(dp) :: r2now, rinow, rn_eff, tjfave
+      real(dp) :: tjferr, tjfnow, tpbave, tpberr
+      real(dp) :: tpbnow, w, w2, w2collect
+      real(dp) :: w2sum, wcollect, wf2collect, wf2sum
+      real(dp) :: wfcollect, wfnow, wgnow, wnow
+      real(dp) :: x, x2
+      real(dp), dimension(MFORCE) :: egcollect
+      real(dp), dimension(MFORCE) :: wgcollect
+      real(dp), dimension(MFORCE) :: pecollect
+      real(dp), dimension(MFORCE) :: tpbcollect
+      real(dp), dimension(MFORCE) :: tjfcollect
+      real(dp), dimension(MFORCE) :: eg2collect
+      real(dp), dimension(MFORCE) :: wg2collect
+      real(dp), dimension(MFORCE) :: pe2collect
+      real(dp), dimension(MFORCE) :: tpb2collect
+      real(dp), dimension(MFORCE) :: tjf2collect
+      real(dp), dimension(MFORCE) :: fsum
+      real(dp), dimension(MFORCE) :: f2sum
+      real(dp), dimension(MFORCE) :: eg2sum
+      real(dp), dimension(MFORCE) :: wg2sum
+      real(dp), dimension(MFORCE) :: pe2sum
+      real(dp), dimension(MFORCE) :: tpb2sum
+      real(dp), dimension(MFORCE) :: tjf2sum
+      real(dp), dimension(MFORCE) :: taucollect
+      real(dp), dimension(MFORCE) :: fcollect
+      real(dp), dimension(MFORCE) :: f2collect
+      real(dp), dimension(10, MFORCE) :: derivcollect
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
 
-      dimension egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE),
-     &tpbcollect(MFORCE),tjfcollect(MFORCE),eg2collect(MFORCE),wg2collect(MFORCE),
-     &pe2collect(MFORCE),tpb2collect(MFORCE),tjf2collect(MFORCE),fsum(MFORCE),
-     &f2sum(MFORCE),eg2sum(MFORCE),wg2sum(MFORCE),pe2sum(MFORCE),tpb2sum(MFORCE),
-     &tjf2sum(MFORCE),taucollect(MFORCE),fcollect(MFORCE),f2collect(MFORCE),
-     &derivcollect(10,MFORCE)
+
 
 c statement function for error calculation
       rn_eff(w,w2)=w**2/w2

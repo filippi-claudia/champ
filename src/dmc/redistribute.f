@@ -20,14 +20,14 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
 
       implicit none
 
-      integer :: i, icomm, icommunicate_all, ido_again, ierr
-      integer :: ihi, ilo, iwalk_stack, nhi
-      integer :: nlo, nwalk_all, nwalk_av_int, nwalk_stack
-      integer :: nwalk_sum
+      integer :: i, icomm, ido_again, ierr, ihi
+      integer :: ilo, nhi, nlo, nwalk_av_int
+      integer :: nwalk_stack, nwalk_sum
+      integer, dimension(0:NPROCX) :: nwalk_all
+      integer, dimension(0:NPROCX) :: icommunicate_all
+      integer, dimension(NPROCX) :: iwalk_stack
 
 
-      dimension nwalk_all(0:NPROCX),icommunicate_all(0:NPROCX),
-     &iwalk_stack(NPROCX)
 
 c     call mpi_allgather(nwalk,1,mpi_integer,nwalk_all,1,mpi_integer,
 c    &MPI_COMM_WORLD,ierr)

@@ -1,23 +1,25 @@
       subroutine mmpol_prt(iblk,wgcum,wgcm2)
 
-      use precision_kinds, only: dp
       use force_mod, only: MFORCE
       use contrl, only: nconf, nstep
       use mmpol_cntrl, only: immpol, immpolprt
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2
       use mmpol_averages, only: dmmpol_cum, dmmpol_cm2
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iblk, icmmpol_err, idmmpol_err
-      real(dp) :: cekcal, cmmpol_ave, cmmpol_err, cmmpol_kcal, dckcal, dekcal, dmmpol_ave
-      real(dp) :: dmmpol_err, dmmpol_kcal, errg, error, evalg_eff, hatokc, rn_eff
-      real(dp) :: rtevalg_eff1, w, w2, wgcm2, wgcum, x
-      real(dp) :: x2
+      real(dp) :: cekcal, cmmpol_ave, cmmpol_err, cmmpol_kcal, dckcal
+      real(dp) :: dekcal, dmmpol_ave, dmmpol_err, dmmpol_kcal
+      real(dp) :: errg, error, evalg_eff, hatokc
+      real(dp) :: rn_eff, rtevalg_eff1, w, w2
+      real(dp) :: x, x2
+      real(dp), dimension(MFORCE) :: wgcum
+      real(dp), dimension(MFORCE) :: wgcm2
  
       data hatokc/627.509541d0/
 
-      dimension wgcum(MFORCE),wgcm2(MFORCE)
 
 
       rn_eff(w,w2)=w**2/w2
@@ -61,17 +63,18 @@
 c-----------------------------------------------------------------------
       subroutine mmpol_fin(iblk,wgcum,wgcm2)
 
-      use precision_kinds, only: dp
       use mmpol_cntrl, only: immpol, immpolprt
       use force_mod, only: MFORCE
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: iblk, immpolprt_sav
-      real(dp) :: wgcm2, wgcum
+
+      real(dp), dimension(MFORCE) :: wgcum
+      real(dp), dimension(MFORCE) :: wgcm2
 
 
-      dimension wgcum(MFORCE),wgcm2(MFORCE)
 
 
       if(immpol.eq.0) return
@@ -86,12 +89,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_save(iw)
 
-      use precision_kinds, only: dp
       use mmpol_hpsi, only: eek_pol
       use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iw
@@ -113,7 +116,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_sum(p,q,iw)
 
-      use precision_kinds, only: dp
       use mmpol_hpsi, only: eek_pol
       use mmpolo, only: eeko1, eeko2, eeko3, cmmpolo_dmc, dmmpolo_dmc
       use mmpol_cntrl, only: immpol
@@ -121,6 +123,7 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: dmmpol_sum
       use mmpol_averages, only: eek_sum, cmmpol_sum
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iw
@@ -142,14 +145,15 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_cum(wsum_dmc)
 
-      use precision_kinds, only: dp
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, immpol, nchmm
-      real(dp) :: cmmpolnow, dmmpolnow, eek_now1, eek_now2, eek_now3, wsum_dmc
+      real(dp) :: cmmpolnow, dmmpolnow, eek_now1, eek_now2, eek_now3
+      real(dp) :: wsum_dmc
  
       if(immpol.eq.0) return
 

@@ -1,6 +1,5 @@
       subroutine mc_configs
 
-      use precision_kinds, only: dp
       use const, only: ipr, nelec
       use config, only: psido_dmc, psijo_dmc, xold_dmc
       use mpiconf, only: idtask, nproc
@@ -8,16 +7,18 @@
       use contrl, only: irstar, nblk, nblkeq, nconf, nconf_new, nstep
       use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
-      integer :: i, iblk, ic, id, ii, ipass, irn
-      integer :: iwalk, j, jj, ngfmc
+      integer :: i, iblk, ic, id, ii
+      integer :: index, ipass, iwalk, j
+      integer :: jj, ngfmc
+      integer, dimension(4) :: irn
       real(dp) :: dabs, rannyu, rnd
 
       character*25 fmt
       character*20 filename
 
-      dimension irn(4)
       save ngfmc
 
       if(ipr.gt.-2) then
