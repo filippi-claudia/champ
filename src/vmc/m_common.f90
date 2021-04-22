@@ -1109,6 +1109,7 @@ contains
         use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT3
+        
         if (.not. allocated(transform_grd)) allocate (transform_grd(MCENT3, MCENT3))
     end subroutine allocate_zmatrix_grad
 

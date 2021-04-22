@@ -2,7 +2,11 @@
 subroutine header_printing()
     ! Ravindra
     use mpi_f08
+    use mpiconf, only: idtask, nproc
     use, intrinsic :: iso_fortran_env, only: iostat_end
+    use contrl_file,    only: file_input, file_output, file_error 
+    use contrl_file,    only: ounit, errunit
+
     implicit none 
     
     integer                             :: status, i
@@ -13,77 +17,71 @@ subroutine header_printing()
     
     
 
-    write(*,*) "____________________________________________________________________"
-    write(*,*)                   
-    write(*,*)
-    write(*,*) ' .d8888b.   888    888         d8888  888b     d888  8888888b. '
-    write(*,*) 'd88P  Y88b  888    888        d88888  8888b   d8888  888   Y88b'
-    write(*,*) '888    888  888    888       d88P888  88888b.d88888  888    888'
-    write(*,*) '888         8888888888      d88P 888  888Y88888P888  888   d88P'
-    write(*,*) '888         888    888     d88P  888  888 Y888P 888  8888888P" '
-    write(*,*) '888    888  888    888    d88P   888  888  Y8P  888  888       '
-    write(*,*) 'Y88b  d88P  888    888   d8888888888  888   "   888  888       '
-    write(*,*) ' "Y8888P"   888    888  d88P     888  888       888  888       '
-    write(*,*)
-    write(*,*) "____________________________________________________________________"
-    write(*,*)
-    write(*,*) ' Cornell Holland Ab-initio Materials Package'
-    write(*,*)
-    write(*,*)
+    write(ounit,*) "____________________________________________________________________"
+    write(ounit,*)                   
+    write(ounit,*)
+    write(ounit,*) ' .d8888b.   888    888         d8888  888b     d888  8888888b. '
+    write(ounit,*) 'd88P  Y88b  888    888        d88888  8888b   d8888  888   Y88b'
+    write(ounit,*) '888    888  888    888       d88P888  88888b.d88888  888    888'
+    write(ounit,*) '888         8888888888      d88P 888  888Y88888P888  888   d88P'
+    write(ounit,*) '888         888    888     d88P  888  888 Y888P 888  8888888P" '
+    write(ounit,*) '888    888  888    888    d88P   888  888  Y8P  888  888       '
+    write(ounit,*) 'Y88b  d88P  888    888   d8888888888  888   "   888  888       '
+    write(ounit,*) ' "Y8888P"   888    888  d88P     888  888       888  888       '
+    write(ounit,*)
+    write(ounit,*) "____________________________________________________________________"
+    write(ounit,*)
+    write(ounit,*) ' Cornell Holland Ab-initio Materials Package'
+    write(ounit,*)
+    write(ounit,*)
 
-    write(*,*) " information about the contributors goes here"
-    write(*,*)
-    write(*,*)
-    write(*,*) " https://github.com/filippi-claudia/champ"
-    write(*,*)
-    write(*,*)
+    write(ounit,*) " information about the contributors goes here"
+    write(ounit,*)
+    write(ounit,*)
+    write(ounit,*) " https://github.com/filippi-claudia/champ"
+    write(ounit,*)
+    write(ounit,*)
 
-    write(*,*) " paper to cite for this code goes here"
-    write(*,*)
-    write(*,*)
-    write(*,*)
-    write(*,*)
+    write(ounit,*) " paper to cite for this code goes here"
+    write(ounit,*)
+    write(ounit,*)
+    write(ounit,*)
+    write(ounit,*)
 
-    write(*,*) " license information goes here"
+    write(ounit,*) " license information goes here"
 
-    write(*,*) "____________________________________________________________________"
-    write(*,*)
-    write(*,*)
-    write(*,*) 
-    write(*,*)
+    write(ounit,*) "____________________________________________________________________"
+    write(ounit,*)
+    write(ounit,*)
+    write(ounit,*) 
+    write(ounit,*)
 
     call date_and_time(date=date,time=time)
-    write(*, '(12a)') " Calculation started on     :: ",   date(1:4), "-", date(5:6), "-", date(7:8), " at ",  time(1:2), ":", time(3:4), ":", time(5:6)                                                               
-    call get_environment_variable ("PWD", output)
-    write(*, '(2a)') " Current directory          :: ",   output
+    write(ounit, '(12a)') " Calculation started on     :: ",   date(1:4), "-", date(5:6), "-", date(7:8), " at ",  time(1:2), ":", time(3:4), ":", time(5:6)                                                               
     call get_command_argument(number=0, value=output)
-    write(*, '(2a)') " Executable                 :: ",   output
+    write(ounit, '(2a)') " Executable                 :: ",   output
+
+!    #if defined(GIT_BRANCH)
+        write(ounit,'(2a)')  " Git branch                 :: ", GIT_BRANCH
+!    #endif
+  
+!    #if defined(GIT_HASH)
+        write(ounit,'(2a)')  " Git commit hash            :: ", GIT_HASH
+!    #endif
+
     call hostnm(output)
-    write(*, '(2a)') " Hostname                   :: ",   output
-    write(*,*)
-    write(*,*)
-    write(*,*)
-    write(*,*)
+    write(ounit, '(2a)') " Hostname                   :: ",   output
+    call get_environment_variable ("PWD", output)
+    write(ounit, '(2a)') " Current directory          :: ",   output
+    call get_environment_variable ("USERNAME", output)
+    write(ounit, '(2a)') " Username                   :: ",   output
+    write(ounit, '(2a)') " Input file                 :: ",   file_input
+    write(ounit, '(2a)') " Output file                :: ",   file_output    
+    write(ounit, '(2a)') " Error file                 :: ",   file_error
+    write(ounit, '(4a)') " Code compiled on           :: ",__DATE__, " at ", __TIME__
+    write(ounit, '(a,i5.5)') " Number of processors       :: ", nproc
+    write(ounit,*) 
 
-    ! Get Command line arguments
-    ! i = 0
-    ! do
-    !     call get_command_argument(number=i, value=output)
-    !     if (len_trim(output) == 0) exit
-    !     print*, "number ", i, " output", trim(output)
-    !     i = i+1
-    ! end do
-
-
-    
-    
-    ! compiled date and time 
-    ! source directory 
-    ! branch   
-    ! git commit id 
-
-    ! input filename  
-    ! nproc           
    
    
 end subroutine header_printing
@@ -97,6 +95,7 @@ subroutine read_molecule_file(file_molecule)
     use ghostatom, only: nghostcent
     use inputflags, only: igeometry
     use periodic_table, only: atom_t, element
+    use contrl_file,    only: ounit, errunit    
 
     implicit none
 
@@ -115,9 +114,9 @@ subroutine read_molecule_file(file_molecule)
     character(len=100)               :: string_format  = '(A, T60, A)'  
   
     !   External file reading
-    write(6,*) '-----------------------------------------------------------------------'      
-    write(6,string_format)  " Reading molecular coordinates from the file :: ",  trim(file_molecule)
-    write(6,*) '-----------------------------------------------------------------------'      
+    write(ounit,*) '-----------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading molecular coordinates from the file :: ",  trim(file_molecule)
+    write(ounit,*) '-----------------------------------------------------------------------'      
 
     inquire(file=file_molecule, exist=exist)
     if (exist) then
@@ -128,8 +127,8 @@ subroutine read_molecule_file(file_molecule)
     endif
 
     read(iunit,*) ncent
-    write(*,fmt=int_format) " Number of atoms ::  ", ncent
-    write(*,*)
+    write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
+    write(ounit,*)
 
     if (.not. allocated(cent)) allocate(cent(3,ncent))
     if (.not. allocated(symbol)) allocate(symbol(ncent)) 
@@ -137,8 +136,8 @@ subroutine read_molecule_file(file_molecule)
     if (.not. allocated(unique)) allocate(unique(ncent))  
     
     read(iunit,'(A)')  comment
-    write(*,*) "Comment from the molecule file :: ", trim(comment)
-    write(*,*)
+    write(ounit,*) "Comment from the molecule file :: ", trim(comment)
+    write(ounit,*)
 
     do i = 1, ncent
         read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
@@ -155,8 +154,8 @@ subroutine read_molecule_file(file_molecule)
         unique(nctype) = symbol(j)
     enddo
 
-    write(*,*) " Number of distinct types of elements (nctype) :: ", nctype 
-    write(*,*)
+    write(ounit,*) " Number of distinct types of elements (nctype) :: ", nctype 
+    write(ounit,*)
 
     if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))                              
     if (.not. allocated(znuc)) allocate(znuc(nctype))                  
@@ -181,16 +180,16 @@ subroutine read_molecule_file(file_molecule)
         znuc(j) = atoms%nvalence
     enddo
 
-    write(6,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
-    write(*,*)
+    write(ounit,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
+    write(ounit,*)
     do j= 1, ncent
-        write(6,'(A4,3F10.6, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
+        write(ounit,'(A4,3F10.6, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
     enddo
 
-    write(*,*)
-    write(*,*) " Values of znuc (number of valence electrons) "
-    write(*,'(10F10.6)') (znuc(j), j = 1, nctype)
-    write(*,*)
+    write(ounit,*)
+    write(ounit,*) " Values of znuc (number of valence electrons) "
+    write(ounit,'(10F10.6)') (znuc(j), j = 1, nctype)
+    write(ounit,*)
 end subroutine read_molecule_file
 
 
@@ -198,7 +197,8 @@ subroutine read_determinants_file(file_determinants)
     ! This subroutine reads the single state determinant file.
     ! Ravindra
 
-    use, intrinsic :: iso_fortran_env, only: iostat_eor   
+    use, intrinsic :: iso_fortran_env, only: iostat_eor  
+    use contrl_file,    only: ounit, errunit 
     use dets,           only: cdet, ndet
     use dorb_m,         only: iworbd
     use inputflags,     only: ideterminants
@@ -221,9 +221,9 @@ subroutine read_determinants_file(file_determinants)
     character(len=100)               :: string_format  = '(A, T40, A)'  
   
     !   External file reading
-    write(6,*) '------------------------------------------------------'      
-    write(6,string_format)  " Reading determinants from the file :: ",  trim(file_determinants)
-    write(6,*) '------------------------------------------------------'      
+    write(ounit,*) '------------------------------------------------------'      
+    write(ounit,string_format)  " Reading determinants from the file :: ",  trim(file_determinants)
+    write(ounit,*) '------------------------------------------------------'      
 
     inquire(file=file_determinants, exist=exist)
     if (exist) then
@@ -235,11 +235,11 @@ subroutine read_determinants_file(file_determinants)
 
     ndn  = nelec - nup        
 
-    write(*,*)     
-    write(*,int_format) " Number of total electrons ", nelec
-    write(*,int_format) " Number of alpha electrons ", nup        
-    write(*,int_format) " Number of beta  electrons ", ndn
-    write(*,*) 
+    write(ounit,*)     
+    write(ounit,int_format) " Number of total electrons ", nelec
+    write(ounit,int_format) " Number of alpha electrons ", nup        
+    write(ounit,int_format) " Number of beta  electrons ", ndn
+    write(ounit,*) 
 
 
     ! to escape the comments before the "lcao nbasis norb" line
@@ -255,7 +255,7 @@ subroutine read_determinants_file(file_determinants)
 !   Read the first main line
     read(iunit, *, iostat=iostat)  temp2, ndet, nwftype
     if (iostat == 0) then 
-        if (trim(temp2) == "determinants") write(*,int_format) " Number of determinants ", ndet 
+        if (trim(temp2) == "determinants") write(ounit,int_format) " Number of determinants ", ndet 
     else
         error stop "Error in reading number of determinants / number of wavefunction types"
     endif
@@ -266,9 +266,9 @@ subroutine read_determinants_file(file_determinants)
     read(iunit,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
     if (iostat /= 0) error stop "Error in determinant coefficients "
 
-    write(*,*)         
-    write(*,*) " Determinant coefficients "
-    write(*,'(10(1x, f11.8, 1x))') (cdet(i,1,1), i=1,ndet)   
+    write(ounit,*)         
+    write(ounit,*) " Determinant coefficients "
+    write(ounit,'(10(1x, f11.8, 1x))') (cdet(i,1,1), i=1,ndet)   
     
 !       allocate the orbital mapping array        
     if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
@@ -278,14 +278,14 @@ subroutine read_determinants_file(file_determinants)
         if (iostat /= 0) error stop "Error in reading orbital -- determinants mapping "
     enddo
     
-    write(*,*)     
-    write(*,*) " Orbitals <--> Determinants mapping :: which orbitals enter in which dets"
+    write(ounit,*)     
+    write(ounit,*) " Orbitals <--> Determinants mapping :: which orbitals enter in which dets"
     do i = 1, ndet
-        write(*,'(<nelec>(i4, 1x))') (iworbd(j,i), j=1,nelec)
+        write(ounit,'(<nelec>(i4, 1x))') (iworbd(j,i), j=1,nelec)
     enddo
     
     read(iunit,*) temp1
-    if (temp1 == "end" ) write(*,*) " Single state determinant file read successfully "
+    if (temp1 == "end" ) write(ounit,*) " Single state determinant file read successfully "
 
     close(iunit)
 end subroutine read_determinants_file
@@ -294,6 +294,7 @@ subroutine read_multideterminants_file(file_multideterminants)
     ! Ravindra
     ! 'multideterminants' ndet_local
     ! CI coefficients and occupation of determinants in wf
+    use contrl_file,    only: ounit, errunit
     use dets, only: ndet
     use const, only: nelec
     use multidet, only: irepcol_det, ireporb_det, numrep_det, iwundet
@@ -312,9 +313,9 @@ subroutine read_multideterminants_file(file_multideterminants)
     character(len=100)               :: string_format  = '(A, T40, A)'  
   
     !   External file reading
-    write(6,*) '------------------------------------------------------'      
-    write(6,string_format)  " Reading multideterminants from the file :: ",  trim(file_multideterminants)
-    write(6,*) '------------------------------------------------------'      
+    write(ounit,*) '------------------------------------------------------'      
+    write(ounit,string_format)  " Reading multideterminants from the file :: ",  trim(file_multideterminants)
+    write(ounit,*) '------------------------------------------------------'      
 
     inquire(file=file_multideterminants, exist=exist)
     if (exist) then
@@ -359,7 +360,8 @@ subroutine read_jastrow_file(file_jastrow)
     ! This subroutine reads jastrow parameters from a file.
     ! Ravindra
 
-    use, intrinsic :: iso_fortran_env, only: iostat_eor !, iostat_eof   
+    use, intrinsic :: iso_fortran_env, only: iostat_eor !, iostat_eof
+    use contrl_file,    only: ounit, errunit   
 
     use force_mod,          only: MWF
     use jaspar,             only: nspin1, nspin2
@@ -390,9 +392,9 @@ subroutine read_jastrow_file(file_jastrow)
     character(len=100)               :: string_format  = '(A, T60, A)'  
   
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading jastrow parameters from the file :: ",  trim(file_jastrow)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading jastrow parameters from the file :: ",  trim(file_jastrow)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_jastrow, exist=exist)
     if (exist) then
@@ -425,7 +427,7 @@ subroutine read_jastrow_file(file_jastrow)
     ! read the first word of the file
     read(iunit, *, iostat=iostat)  temp2, iwft
     if (iostat == 0) then 
-        if (trim(temp2) == "jastrow_parameter") write(*,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
+        if (trim(temp2) == "jastrow_parameter") write(ounit,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
     else
         error stop "Error in reading jastrow parameters / number of wavefunction types"
     endif
@@ -435,10 +437,10 @@ subroutine read_jastrow_file(file_jastrow)
     if (ijas .ge. 4 .and. ijas .le. 6) then
         if (ifock .gt. 0) error stop 'JASTROW: fock not yet implemented for ijas=4,5,6'
         read (iunit, *) norda, nordb, nordc
-        write (*, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc 
+        write(ounit, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc 
 
         if (isc .ge. 2) read (iunit, *) scalek(iwft), a21
-        write (*, '(2(A,f12.6))') " scalek = ", scalek(iwft), "; a21 = ", a21
+        write(ounit, '(2(A,f12.6))') " scalek = ", scalek(iwft), "; a21 = ", a21
 
         mparmja = 2 + max(0, norda - 1)
         mparmjb = 2 + max(0, nordb - 1)
@@ -446,24 +448,24 @@ subroutine read_jastrow_file(file_jastrow)
 
         allocate (a4(mparmja, nctype, nwftype))
 
-        write (*, '(A)') "Jastrow parameters :: "
+        write(ounit, '(A)') "Jastrow parameters :: "
         do it = 1, nctype
             read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
-            write (*, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)
+            write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)
         enddo
 
         allocate (b(mparmjb, 2, nwftype))
 
         do isp = nspin1, nspin2b
             read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
-            write (*, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)
+            write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)
         enddo
 
         allocate (c(mparmjc, nctype, nwftype))
 
         do it = 1, nctype
             read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
-            write (*, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)
+            write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)
         enddo
 
     endif
@@ -481,7 +483,8 @@ end subroutine read_jastrow_file
 
 
 subroutine read_orbitals_file(file_orbitals)
-    
+    ! Ravindra
+    use contrl_file,    only: ounit, errunit
     use coefs, only: coef, nbasis, norb
     use inputflags, only: ilcao
     use orbval, only: nadorb
@@ -507,9 +510,9 @@ subroutine read_orbitals_file(file_orbitals)
     character(len=100)               :: float_format   = '(A, T60, f12.8)'    
 
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading LCAO orbitals from the file :: ",  trim(file_orbitals)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading LCAO orbitals from the file :: ",  trim(file_orbitals)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_orbitals, exist=exist)
     if (exist) then
@@ -534,12 +537,12 @@ subroutine read_orbitals_file(file_orbitals)
 
     if (iostat == 0) then 
         if (trim(temp2) == "lcao") then
-            write(*,int_format) " Number of basis functions ", nbasis
-            write(*,int_format) " Number of lcao orbitals ", norb            
-            write(*,int_format) " Type of wave functions ", iwft
+            write(ounit,int_format) " Number of basis functions ", nbasis
+            write(ounit,int_format) " Number of lcao orbitals ", norb            
+            write(ounit,int_format) " Type of wave functions ", iwft
         endif
     else
-        write(*, *) " Check ", temp1, nbasis, norb, iwft
+        write(ounit, *) " Check ", temp1, nbasis, norb, iwft
         error stop "Error in reading number of lcao orbitals / basis / number of wavefunction types"
     endif
 
@@ -557,33 +560,33 @@ subroutine read_orbitals_file(file_orbitals)
     enddo
     if (iostat /= 0) error stop "Error in reading lcao orbitals "
 
-    write(*,*)         
-    write(*,*) " LCAO orbitals "
+    write(ounit,*)         
+    write(ounit,*) " LCAO orbitals "
 
     temp3 = '(T8, T14, i3, T28, i3, T42, i3, T56, i3, T70, i3, T84, i3, T98, i3, T112, i3, T126, i3, T140, i3)'
     ! print orbs in blocks of 10
     counter = 0
     do k = 10, nbasis, 10
-!        write(*,*) " Orbitals  ", k-9 , "  to ", k       
-        write (*, fmt=temp3 )  (i, i = k-9, k)
+!        write(ounit,*) " Orbitals  ", k-9 , "  to ", k       
+        write(ounit, fmt=temp3 )  (i, i = k-9, k)
         do iorb = 1, norb
-            write (*, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=k-9, k)
+            write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=k-9, k)
         enddo
         counter = counter + 10
     enddo
 
 
     ! Remaining block
-    write (*, fmt=temp3 )  (i, i = counter, nbasis)        
+    write(ounit, fmt=temp3 )  (i, i = counter, nbasis)        
     do k = counter, nbasis
-!        write(*,*) " Orbitals  ", counter , "  to ", nbasis
+!        write(ounit,*) " Orbitals  ", counter , "  to ", nbasis
         do iorb = 1, norb
-            write (*, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=counter, nbasis)
+            write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=counter, nbasis)
         enddo
     enddo
 
     close(iunit)
-    write(*,*) "----------------------------------------------------------"        
+    write(ounit,*) "----------------------------------------------------------"        
 
 end subroutine read_orbitals_file
 
@@ -592,6 +595,7 @@ subroutine read_csf_file(file_determinants)
     ! Ravindra
 
     use, intrinsic :: iso_fortran_env!, only: is_iostat_end
+    use contrl_file,    only: ounit, errunit
     use vmc_mod, only: MDET
     use csfs, only: ccsf, ncsf, nstates
     use mstates_mod, only: MSTATES
@@ -612,9 +616,9 @@ subroutine read_csf_file(file_determinants)
     character(len=100)              :: string_format  = '(A, T40, A)'  
     
     !   External file reading
-    write(6,*) '------------------------------------------------------'      
-    write(6,string_format)  " Reading csf from the file :: ",  trim(file_determinants)
-    write(6,*) '------------------------------------------------------'      
+    write(ounit,*) '------------------------------------------------------'      
+    write(ounit,string_format)  " Reading csf from the file :: ",  trim(file_determinants)
+    write(ounit,*) '------------------------------------------------------'      
 
     inquire(file=file_determinants, exist=exist)
     if (exist) then
@@ -633,7 +637,7 @@ subroutine read_csf_file(file_determinants)
         if (temp1 == "csf") then
             backspace(iunit)   ! go a line back
             read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
-            write(*,*) " Number of csf and nstates ", ncsf, nstates
+            write(ounit,*) " Number of csf and nstates ", ncsf, nstates
             if (iostat == 0) then 
                 if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))    
                 do i = 1, nstates
@@ -648,13 +652,13 @@ subroutine read_csf_file(file_determinants)
         
     enddo
 
-    write(*,*)         
-    write(*,*) " CSF coefficients "
+    write(ounit,*)         
+    write(ounit,*) " CSF coefficients "
     
     do i = 1, nstates
-        write(*,*) " State :: ", i , " out of ", nstates
-        write(*,'(10(1x, f11.8, 1x))') (ccsf(j,i,1), j=1,ncsf)   
-        write(*,*) 
+        write(ounit,*) " State :: ", i , " out of ", nstates
+        write(ounit,'(10(1x, f11.8, 1x))') (ccsf(j,i,1), j=1,ncsf)   
+        write(ounit,*) 
     enddo   
     close(iunit)
 
@@ -665,6 +669,7 @@ subroutine read_csfmap_file(file_determinants)
     ! Ravindra
 
     use, intrinsic :: iso_fortran_env
+    use contrl_file,    only: ounit, errunit
     use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet
     use wfsec, only: nwftype
@@ -686,9 +691,9 @@ subroutine read_csfmap_file(file_determinants)
     character(len=100)              :: string_format  = '(A, T40, A)'  
     
     !   External file reading
-    write(6,*) '------------------------------------------------------'      
-    write(6,string_format)  " Reading csfmap from the file :: ",  trim(file_determinants)
-    write(6,*) '------------------------------------------------------'      
+    write(ounit,*) '------------------------------------------------------'      
+    write(ounit,string_format)  " Reading csfmap from the file :: ",  trim(file_determinants)
+    write(ounit,*) '------------------------------------------------------'      
 
     inquire(file=file_determinants, exist=exist)
     if (exist) then
@@ -709,7 +714,7 @@ subroutine read_csfmap_file(file_determinants)
         if (temp1 == "csfmap") then
             backspace(iunit)   ! go a line back
             read(iunit, *, iostat=iostat)  temp2, ncsf, ndet, nmap
-            write(*,*) " Number of csf, number of determinants, and number of mappings ", ncsf, ndet, nmap
+            write(ounit,*) " Number of csf, number of determinants, and number of mappings ", ncsf, ndet, nmap
             if (iostat == 0) then 
                 if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))
                 if (.not. allocated(iadet)) allocate (iadet(ndet))
@@ -735,7 +740,7 @@ subroutine read_csfmap_file(file_determinants)
             
                 if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
         
-                ! write (6, '(''Warning: det coef overwritten with csf'')')
+                ! write(ounit, '(''Warning: det coef overwritten with csf'')')
                 ! do k = 1, nstates
                 !     do j = 1, ndet
                 !         cdet(j, k, 1) = 0
@@ -755,13 +760,13 @@ subroutine read_csfmap_file(file_determinants)
         endif         
     enddo
 
-    write(*,*)         
+    write(ounit,*)         
     close(iunit)
     
     ! do i = 1, nstates
-    !     write(*,*) " State :: ", i , " out of ", nstates
-    !     write(*,'(10(1x, f11.8, 1x))') (ccsf(j,i,1), j=1,ncsf)   
-    !     write(*,*) 
+    !     write(ounit,*) " State :: ", i , " out of ", nstates
+    !     write(ounit,'(10(1x, f11.8, 1x))') (ccsf(j,i,1), j=1,ncsf)   
+    !     write(ounit,*) 
     ! enddo   
 
 end subroutine read_csfmap_file
@@ -772,7 +777,7 @@ end subroutine read_csfmap_file
 subroutine read_exponents_file(file_exponents)
     ! Read basis function exponents (only if no numerical basis)
     ! Ravindra
-    
+    use contrl_file,    only: ounit, errunit
     use coefs, only: nbasis
     use basis, only: zex
     use inputflags, only: iexponents
@@ -791,9 +796,9 @@ subroutine read_exponents_file(file_exponents)
     character(len=100)              :: string_format  = '(A, T40, A)'  
     
     !   External file reading
-    write(6,*) '------------------------------------------------------'      
-    write(6,string_format)  " Reading exponents from the file :: ",  trim(file_exponents)
-    write(6,*) '------------------------------------------------------'      
+    write(ounit,*) '------------------------------------------------------'      
+    write(ounit,string_format)  " Reading exponents from the file :: ",  trim(file_exponents)
+    write(ounit,*) '------------------------------------------------------'      
 
     inquire(file=file_exponents, exist=exist)
     if (exist) then
@@ -804,8 +809,8 @@ subroutine read_exponents_file(file_exponents)
     endif        
 
 
-    write (6, *) 'nbasis', nbasis
-    write (6, *) 'nwftype', nwftype
+    write(ounit, *) 'nbasis', nbasis
+    write(ounit, *) 'nwftype', nwftype
 
     if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))    
     
@@ -814,11 +819,11 @@ subroutine read_exponents_file(file_exponents)
 
         if (iostat /= 0) error stop "Error in reading exponents from the exponent file "
 
-        write(*,*)         
-        write(*,*) " Basis set exponents "
+        write(ounit,*)         
+        write(ounit,*) " Basis set exponents "
         
-        write(*,'(10(1x, f11.8, 1x))') (zex(i, iwft), i=1, nbasis)
-        write(*,*) 
+        write(ounit,'(10(1x, f11.8, 1x))') (zex(i, iwft), i=1, nbasis)
+        write(ounit,*) 
     enddo
     close(iunit)
 
@@ -828,7 +833,7 @@ end subroutine read_exponents_file
 subroutine read_jasderiv_file(file_jastrow_der)
     ! Read jastrow derivatives
     ! Ravindra
-
+    use contrl_file,    only: ounit, errunit
     use optjas, only: MPARMJ
     use atom, only: nctype
     use jaspar, only: nspin1, is
@@ -860,9 +865,9 @@ subroutine read_jasderiv_file(file_jastrow_der)
     character(len=100)               :: string_format  = '(A, T60, A)'  
   
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading jastrow derivative parameters from the file :: ",  trim(file_jastrow_der)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading jastrow derivative parameters from the file :: ",  trim(file_jastrow_der)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_jastrow_der, exist=exist)
     if (exist) then
@@ -917,14 +922,14 @@ subroutine read_jasderiv_file(file_jastrow_der)
                     if (numr .eq. 0) then
                         ! All-electron with analytic slater basis
                         if ((nparma(it) .gt. 0 .and. norda .eq. 0) .or. (nparma(it) .gt. norda + 1)) then
-                            write (6, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
+                            write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
                             error stop 'nparma too large for norda'
                         endif
                     else
                         ! Pseudopotential with numerical basis: cannot vary a(1) or a(2)
                         if (norda .eq. 1) error stop 'makes no sense to have norda=1 for numr>0'
                         if ((norda .eq. 0 .and. nparma(it) .gt. 0) .or. (norda .gt. 0 .and. nparma(it) .gt. norda - 1)) then
-                            write (6, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
+                            write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
                             error stop 'nparma too large for norda'
                         endif
                     endif
@@ -936,7 +941,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
                             .or. (nordc .eq. 5 .and. nparmc(it) .gt. 15) &
                             .or. (nordc .eq. 6 .and. nparmc(it) .gt. 27) &
                             .or. (nordc .eq. 7 .and. nparmc(it) .gt. 43))) then
-                        write (6, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
+                        write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
                         error stop 'nparmc too large for nordc in J_een with cusp conds'
                     endif
 
@@ -948,7 +953,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
                             .or. (nordc .eq. 5 .and. nparmc(it) .gt. 23) &
                             .or. (nordc .eq. 6 .and. nparmc(it) .gt. 37) &
                             .or. (nordc .eq. 7 .and. nparmc(it) .gt. 55))) then
-                        write (6, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
+                        write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
                         error stop 'nparmc too large for nordc without cusp conds'
                     endif
 
@@ -957,7 +962,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
                 ! For the b coefs. we assume that b(1) is fixed by the cusp-cond.
                 do isp = 1, nspin1, nspin2b
                     if (nparmb(isp) .gt. nordb) then
-                        write (6, '(''isp,nordb,nparmb(isp)'',3i5)') isp, nordb, nparmb(isp)
+                        write(ounit, '(''isp,nordb,nparmb(isp)'',3i5)') isp, nordb, nparmb(isp)
                         error stop 'nparmb too large for nordb'
                     endif
                 enddo
@@ -1004,7 +1009,7 @@ end subroutine read_jasderiv_file
 subroutine read_forces_file(file_forces)
     !
     ! Ravindra
-    
+    use contrl_file,    only: ounit, errunit
     use forcepar, only: nforce
     use forcestr, only: delc
     use wfsec, only: iwftype
@@ -1027,9 +1032,9 @@ subroutine read_forces_file(file_forces)
     character(len=100)               :: string_format  = '(A, T60, A)'  
     
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading forces from the file :: ",  trim(file_forces)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading forces from the file :: ",  trim(file_forces)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_forces, exist=exist)
     if (exist) then
@@ -1056,7 +1061,8 @@ subroutine read_forces_file(file_forces)
 end subroutine read_forces_file
 
 subroutine read_symmetry_file(file_symmetry)
-
+    ! Ravindra
+    use contrl_file,    only: ounit, errunit
     use coefs, only: norb
     use optorb, only: irrep
     use vmc_mod, only: MORB
@@ -1076,9 +1082,9 @@ subroutine read_symmetry_file(file_symmetry)
     character(len=100)               :: string_format  = '(A, T60, A)'  
   
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading orbital symmetries from the file :: ",  trim(file_symmetry)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading orbital symmetries from the file :: ",  trim(file_symmetry)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_symmetry, exist=exist)
     if (exist) then
@@ -1110,8 +1116,8 @@ subroutine read_symmetry_file(file_symmetry)
     read (iunit, *, iostat=iostat) (irrep(io), io=1, norb)
     if (iostat /= 0) error stop "Error in reading symmetry file :: expecting irrep correspondence for all norb orbitals"
 
-    write (*, *) "Irreducible representation correspondence for all norb orbitals"
-    write (*, '(10(1x, i3))') (irrep(io), io=1, norb)
+    write(ounit, *) "Irreducible representation correspondence for all norb orbitals"
+    write(ounit, '(10(1x, i3))') (irrep(io), io=1, norb)
 
     close(iunit)
 end subroutine read_symmetry_file
@@ -1120,7 +1126,7 @@ end subroutine read_symmetry_file
 subroutine read_optorb_mixvirt_file(file_optorb_mixvirt) 
     !
     ! Ravindra
-    
+    use contrl_file,    only: ounit, errunit
     use optorb_mix, only: iwmix_virt, norbopt, norbvirt
     use coefs, only: norb
     use inputflags, only: ioptorb_mixvirt
@@ -1140,9 +1146,9 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     character(len=100)               :: string_format  = '(A, T60, A)'  
     
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading optorb_mixvirt from the file :: ",  trim(file_optorb_mixvirt)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading optorb_mixvirt from the file :: ",  trim(file_optorb_mixvirt)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_optorb_mixvirt, exist=exist)
     if (exist) then
@@ -1175,9 +1181,9 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     enddo
 
 
-    write (*, *) "Printing which virtual orbitals are mixed with the occupied ones "
+    write(ounit, *) "Printing which virtual orbitals are mixed with the occupied ones "
     do io = 1, norbopt
-        write(*, '(10(1x, i5))') (iwmix_virt(io, jo), jo=1, norbvirt)
+        write(ounit, '(10(1x, i5))') (iwmix_virt(io, jo), jo=1, norbvirt)
     enddo
 
     close(iunit)
@@ -1187,6 +1193,7 @@ end subroutine read_optorb_mixvirt_file
 
 subroutine read_eigenvalues_file(file_eigenvalues)
 
+    use contrl_file,    only: ounit, errunit
     use coefs, only: norb
     use vmc_mod, only: MORB
     use optorb, only: orb_energy
@@ -1206,9 +1213,9 @@ subroutine read_eigenvalues_file(file_eigenvalues)
     character(len=100)               :: string_format  = '(A, T60, A)'  
   
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading orbital eigenvalues from the file :: ",  trim(file_eigenvalues)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading orbital eigenvalues from the file :: ",  trim(file_eigenvalues)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_eigenvalues, exist=exist)
     if (exist) then
@@ -1237,8 +1244,8 @@ subroutine read_eigenvalues_file(file_eigenvalues)
     read (iunit, *, iostat=iostat) (orb_energy(io), io=1, norb)
     if (iostat /= 0) error stop "Error in reading eigenvalues file :: expecting eigenvalues of all norb orbitals"
 
-    write (*, *) "Eigenvalues of all orbitals"
-    write (*, '(10(1x, i3))') (orb_energy(io), io=1, norb)
+    write(ounit, *) "Eigenvalues of all orbitals"
+    write(ounit, '(10(1x, i3))') (orb_energy(io), io=1, norb)
     close(iunit)
 end subroutine read_eigenvalues_file
 
@@ -1248,6 +1255,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     ! Ravindra
     ! Basis function types and pointers to radial parts tables
     ! alternative name for keyword basis because of GAMBLE inputword basis because of GAMBLE input
+    use contrl_file,    only: ounit, errunit
     use numbas_mod, only: MRWF
     use vmc_mod, only: MCTYPE, MBASIS
     use numbas, only: iwrwf, numr
@@ -1276,9 +1284,9 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     character(len=100)               :: string_format  = '(A, T60, A)'  
   
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading Basis function types and pointers to radial parts tables from the file :: ",  trim(file_basis_num_info)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading Basis function types and pointers to radial parts tables from the file :: ",  trim(file_basis_num_info)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_basis_num_info, exist=exist)
     if (exist) then
@@ -1470,6 +1478,7 @@ subroutine read_dmatrix_file(file_dmatrix)
     ! Ravindra (no=ndetorb, ns=nweight)
     !INPUT dmatrix i i a=<input>
     !KEYDOC Read diagonal density matrix information.
+    use contrl_file,    only: ounit, errunit
     use precision_kinds, only: dp
     use vmc_mod, only: MORB
     use csfs, only: nstates
@@ -1495,9 +1504,9 @@ subroutine read_dmatrix_file(file_dmatrix)
     character(len=100)               :: string_format  = '(A, T60, A)'  
   
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading dmatrix the file :: ",  trim(file_dmatrix)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading dmatrix the file :: ",  trim(file_dmatrix)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_dmatrix, exist=exist)
     if (exist) then
@@ -1531,7 +1540,7 @@ subroutine read_dmatrix_file(file_dmatrix)
 
     read (iunit, *) (iwdmat(i), i=1, nweight)
     do iw = 1, nweight
-        if (iwdmat(iw) .ne. iweight(iw)) call fatal('READ_DMATRIX: iwdmat')
+        if (iwdmat(iw) .ne. iweight(iw)) call fatal_error('READ_DMATRIX: iwdmat')
     enddo
 
     allocate (dmat_diag(norb))
@@ -1551,8 +1560,8 @@ subroutine read_dmatrix_file(file_dmatrix)
     enddo
 
     if (ipr .gt. 2) then
-        write (6, '(''diagonal elements of the density matrix'')')
-        write (6, '(100f10.6)') (dmat_diag(i), i=1, ndetorb)
+        write(ounit, '(''diagonal elements of the density matrix'')')
+        write(ounit, '(100f10.6)') (dmat_diag(i), i=1, ndetorb)
     endif
 
     deallocate (dmat)
@@ -1564,6 +1573,7 @@ end subroutine read_dmatrix_file
 
 subroutine get_weights_new(field, weights, iweight, nweight)
 
+    use contrl_file,    only: ounit, errunit
     use precision_kinds, only: dp
     use csfs, only: nstates
     use mstates_mod, only: MSTATES
@@ -1583,11 +1593,12 @@ subroutine get_weights_new(field, weights, iweight, nweight)
     wsum = 0.d0
     nweight = 0
 
-    write (6, *) field, field(1:index(field, ' '))
+    write(ounit, *) field, field(1:index(field, ' '))
     do i = 1, nstates
         wdef = 0.d0
-        call append_number(field(1:index(field, ' ') - 1), i, vname, nv, 0)
-        call p2gtfd(vname(1:nv), w, wdef, 0)
+        ! BUG:: Ravindra. Replce following two lines with appropriate ones
+!        call append_number(field(1:index(field, ' ') - 1), i, vname, nv, 0)
+!        call p2gtfd(vname(1:nv), w, wdef, 0)
         !VARDOC Input of weights for individual states.
         w = dabs(w)
         if (w .gt. 1d-6) then
@@ -1616,6 +1627,7 @@ end subroutine get_weights_new
 subroutine read_cavity_spheres_file(file_cavity_spheres)
     ! Ravindra
     ! Read centers of cavity spheres and radii
+    use contrl_file,    only: ounit, errunit
     use pcm_parms, only: nesph, re, re2
     use pcm_parms, only: xe, ye, ze
 
@@ -1633,9 +1645,9 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
     character(len=100)               :: string_format  = '(A, T60, A)'  
     
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading cavity spheres from the file :: ",  trim(file_cavity_spheres)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading cavity spheres from the file :: ",  trim(file_cavity_spheres)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_cavity_spheres, exist=exist)
     if (exist) then
@@ -1676,7 +1688,7 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     !KEYDOC atoms energy gradients are to be calculated for.
     
     !     Originally written by Omar Valsson
-
+    use contrl_file,    only: ounit, errunit
     use vmc_mod, only: MCENT
     use forcepar, only: nforce
     use force_mod, only: MFORCE
@@ -1702,9 +1714,9 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     character(len=100)               :: string_format  = '(A, T60, A)'  
     
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading gradients cartesian from the file :: ",  trim(file_gradients_cartesian)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading gradients cartesian from the file :: ",  trim(file_gradients_cartesian)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_gradients_cartesian, exist=exist)
     if (exist) then
@@ -1764,7 +1776,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     ! atoms energy gradients are to be calculated for.
     
     ! Originally written by Omar Valsson.
-    
+    use contrl_file,    only: ounit, errunit
     use vmc_mod, only: MCENT
     use forcepar, only: nforce
     use force_mod, only: MFORCE
@@ -1791,9 +1803,9 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     character(len=100)               :: string_format  = '(A, T60, A)'  
     
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading gradients zmatrix from the file :: ",  trim(file_gradients_zmatrix)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading gradients zmatrix from the file :: ",  trim(file_gradients_zmatrix)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_gradients_zmatrix, exist=exist)
     if (exist) then
@@ -1853,7 +1865,7 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     !
     ! Read for which Z matrix (internal) coordiantes of
     ! atoms energy gradients are to be calculated for.
-    
+    use contrl_file,    only: ounit, errunit
     use grdntsmv, only: igrdmv
     use inputflags, only: imodify_zmat
 
@@ -1873,9 +1885,9 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     character(len=100)               :: string_format  = '(A, T60, A)'  
     
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading modify zmatrix from the file :: ",  trim(file_modify_zmatrix)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading modify zmatrix from the file :: ",  trim(file_modify_zmatrix)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_modify_zmatrix, exist=exist)
     if (exist) then
@@ -1915,7 +1927,7 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     ! Read for which Z matrix (internal) coordiantes of
     ! atoms energy gradients are to be calculated for.
     
-
+    use contrl_file,    only: ounit, errunit
     use grdnthes, only: hessian_zmat
     use inputflags, only: ihessian_zmat
     use atom, only: ncent
@@ -1934,9 +1946,9 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     character(len=100)               :: string_format  = '(A, T60, A)'  
     
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading hessian zmatrix from the file :: ",  trim(file_hessian_zmatrix)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading hessian zmatrix from the file :: ",  trim(file_hessian_zmatrix)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_hessian_zmatrix, exist=exist)
     if (exist) then
@@ -1980,7 +1992,7 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     ! coordinates.
     
     ! Originally written by Omar Valsson
-    
+    use contrl_file,    only: ounit, errunit
     use atom, only: cent, ncent
     use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
     use inputflags, only: izmatrix_check
@@ -1999,9 +2011,9 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     character(len=100)               :: string_format  = '(A, T60, A)'  
     
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading zmatrix connection matrix from the file :: ",  trim(file_zmatrix_connection)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading zmatrix connection matrix from the file :: ",  trim(file_zmatrix_connection)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_zmatrix_connection, exist=exist)
     if (exist) then
@@ -2047,8 +2059,8 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
 end subroutine read_zmatrix_connection_file
     
 subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
-!INPUT efield i i a=<input>
-
+    ! Ravindra
+    use contrl_file,    only: ounit, errunit
     use efield_mod, only: MCHARGES
     use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
     use efield, only: iscreen, ncharges
@@ -2068,9 +2080,9 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     character(len=100)               :: string_format  = '(A, T60, A)'  
     
     !   External file reading
-    write(6,*) '---------------------------------------------------------------------------'      
-    write(6,string_format)  " Reading efield from the file :: ",  trim(file_efield)
-    write(6,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading efield from the file :: ",  trim(file_efield)
+    write(ounit,*) '---------------------------------------------------------------------------'      
     
     inquire(file=file_efield, exist=exist)
     if (exist) then
@@ -2093,7 +2105,7 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
 !    call file(iu, filename, 'old', 1, 0)  <-- whats is this?
     ncharges = ncharges_tmp
     iscreen  = iscreen_tmp
-    write (6, *) 'reading in', ncharges, ' charges!'
+    write(ounit, *) 'reading in', ncharges, ' charges!'
 
     if (ncharges .gt. MCHARGES) call fatal_error('EFIELD: ncharges > MCHARGES')
 
@@ -2109,7 +2121,7 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     enddo
 
     icharge_efield = icharge_efield + 1
-    write (6, *) 'icharge_efield=', icharge_efield
+    write(ounit, *) 'icharge_efield=', icharge_efield
 
     close(iunit)
 end subroutine read_efield_file

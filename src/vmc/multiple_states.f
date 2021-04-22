@@ -85,7 +85,7 @@ c-----------------------------------------------------------------------
       if(iefficiency.eq.0) return
 
       read(iu) nstates_psig,(effcum(i),effcm2(i),i=1,nstates_psig)
-      if(nstates_psig.ne.nstates) call fatal('EFFICIENCY: different nstates')
+      if(nstates_psig.ne.nstates) call fatal_error('EFFICIENCY: different nstates')
 
       end
 c-----------------------------------------------------------------------

@@ -1,1 +1,0 @@
-file(GLOB INC LIST_DIRECTORIES false *.h)

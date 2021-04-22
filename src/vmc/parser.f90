@@ -1,15 +1,14 @@
-!
-!     Shows FDF capabilities..
-!
-subroutine parser
-  use fdf 
-  use prec
 
-  Use, intrinsic :: iso_fortran_env, only : iostat_end
+subroutine parser
+  use fdf     ! modified libfdf
+  use prec    ! modified libfdf
+
+  use, intrinsic :: iso_fortran_env, only : iostat_end
 
 ! CHAMP modules
   use contr3,         only: mode
   use contrl_file,    only: file_input, file_output, file_error 
+  use contrl_file,    only: iunit,      ounit,       errunit
   use allocation_mod, only: allocate_vmc, allocate_dmc
   use periodic_table, only: atom_t, element
 
@@ -152,6 +151,7 @@ subroutine parser
   character(len=100)         :: real_format    = '(A, T40, F14.8)'
   character(len=100)         :: int_format     = '(A, T40, I8)'
   character(len=100)         :: string_format  = '(A, T40, A)'  
+  character(len=100)         :: fmt32          = '(A, T32, A)'  
 
 !------------------------------------------------------------------------- BEGIN
 ! debug purpose only
@@ -415,6 +415,7 @@ subroutine parser
   file_orbitals     = fdf_load_filename('orbitals', 'default.orb')        
   file_exponents    = fdf_load_filename('exponents', 'exponents.exp')
 
+  
   call header_printing()
   ! Reading of smaller blocks of data goes here.
 
@@ -422,16 +423,16 @@ subroutine parser
 
 
 ! module dependent processing . These will be replaced by inliners
-  write(*,*) "Names of the external files being read for this calculation :: "
-  write(*,*)
-  write(*,fmt=string_format) " Basis                      :: ", file_basis
-  write(*,fmt=string_format) " Molecule                   :: ", file_molecule
-  write(*,fmt=string_format) " Determinants               :: ", file_determinants
-  write(*,fmt=string_format) " Symmetry                   :: ", file_symmetry
-  write(*,fmt=string_format) " Jastrow                    :: ", file_jastrow
-  write(*,fmt=string_format) " Jastrow_der                :: ", file_jastrow_der          
-  write(*,fmt=string_format) " Orbitals                   :: ", file_orbitals            
-  write(*,*)
+  write(ounit,*) "Names of the external files being read for this calculation :: "
+  write(ounit,*)
+  write(ounit,fmt=fmt32) " Basis                      :: ", file_basis
+  write(ounit,fmt=fmt32) " Molecule                   :: ", file_molecule
+  write(ounit,fmt=fmt32) " Determinants               :: ", file_determinants
+  write(ounit,fmt=fmt32) " Symmetry                   :: ", file_symmetry
+  write(ounit,fmt=fmt32) " Jastrow                    :: ", file_jastrow
+  write(ounit,fmt=fmt32) " Jastrow_der                :: ", file_jastrow_der          
+  write(ounit,fmt=fmt32) " Orbitals                   :: ", file_orbitals            
+  write(ounit,*)
 ! Processing of data read from the parsed files
 
 ! (1) Molecular geometry file exclusively in .xyz format
@@ -440,13 +441,13 @@ subroutine parser
       call read_molecule_file(file_molecule)
     endif ! condition if load molecule is present
   else
-    write(*,*) ' Molecular Coordinates from molecule block '
+    write(ounit,*) ' Molecular Coordinates from molecule block '
 
     do while((fdf_bline(bfdf, pline)))
 !     get the integer from the first line 
       if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then  ! check if it is the only integer present in a line
         ncent = fdf_bintegers(pline, 1)
-        write(*,fmt=int_format) " Number of atoms ::  ", ncent
+        write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
       endif
 
       if (.not. allocated(cent)) allocate(cent(3,ncent))
@@ -455,7 +456,7 @@ subroutine parser
       if (.not. allocated(unique)) allocate(unique(ncent))  
       
       if (pline%ntokens .ne. 4) then  ! check if it is the only integer present in a line
-        write(*,*) " Comment from the file ::  ", trim(pline%line)
+        write(ounit,*) " Comment from the file ::  ", trim(pline%line)
       endif
 
       j = 1 !local counter    
@@ -479,8 +480,8 @@ subroutine parser
         unique(nctype) = symbol(j)
     enddo
 
-    write(*,*) " Number of distinct types of elements (nctype) :: ", nctype 
-    write(*,*)
+    write(ounit,*) " Number of distinct types of elements (nctype) :: ", nctype 
+    write(ounit,*)
 
     if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))                              
     if (.not. allocated(znuc)) allocate(znuc(nctype))                  
@@ -504,18 +505,18 @@ subroutine parser
         znuc(j) = atoms%nvalence
     enddo
 
-    write(6,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
-    write(*,*)
+    write(ounit,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
+    write(ounit,*)
     do j= 1, ncent
-        write(6,'(A4,3F10.6, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
+        write(ounit,'(A4,3F10.6, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
     enddo
 
-    write(*,*)
-    write(*,*) " Values of znuc (number of valence electrons) "
-    write(*,'(10F10.6)') (znuc(j), j = 1, nctype)
-    write(*,*)
+    write(ounit,*)
+    write(ounit,*) " Values of znuc (number of valence electrons) "
+    write(ounit,'(10F10.6)') (znuc(j), j = 1, nctype)
+    write(ounit,*)
 
-    write(*,*) '------------------------------------------------------'
+    write(ounit,*) '------------------------------------------------------'
   endif ! condition molecule block not present
 
 
@@ -615,11 +616,9 @@ subroutine parser
 
 
 
-  !call compute_mat_size_new()
-  !call allocate_vmc()
-  !call allocate_dmc()
-
-
+  call compute_mat_size_new()
+  call allocate_vmc()
+  call allocate_dmc()
 
 
 
@@ -697,7 +696,6 @@ subroutine parser
 ! endif
 
 
-error stop "after the initial sanity check"
 
   
 
@@ -814,7 +812,6 @@ error stop "after the initial sanity check"
 
 
   call fdf_shutdown()
-
 !----------------------------------------------------------------------------END
 end subroutine parser
 

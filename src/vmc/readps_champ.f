@@ -54,7 +54,7 @@ c They are the number of different l components of the psp.
         write(6,'(''Reading psp in champ format'')')
         read(title,*) lpot_max(ict),zion,r_asymp
         write(6,'(''ict,lpot_max(ict),zion,r_asymp'',2i2,f4.0,f8.3)') ict,lpot_max(ict),zion,r_asymp
-        if(lpot_max(ict).le.0 .or. lpot_max(ict).gt.MPS_L) call fatal('READTM_CHAMP: lpot_max must be > 0 and <= MPS_L')
+        if(lpot_max(ict).le.0 .or. lpot_max(ict).gt.MPS_L) call fatal_error('READTM_CHAMP: lpot_max must be > 0 and <= MPS_L')
 
 c Presently, only allow highest component to be the local
 c       if(lpot(ict).gt.lpot_max(ict)) then
@@ -74,7 +74,7 @@ c       endif
 
         if(znuc(ict).ne.zion) then
           write(6,'(''znuc(ict) != zion in readps_tm'',2f6.1)') znuc(ict),zion
-          call fatal('READTM_CHAMP: znuc(ict) != zion in readps_tm')
+          call fatal_error('READTM_CHAMP: znuc(ict) != zion in readps_tm')
         endif
 
         read(1,*) igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps

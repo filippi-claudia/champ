@@ -39,14 +39,15 @@ c Open the standard output and the log file only on the master
       endif
       open(18,file=filename, status='unknown')
 
-      call read_input
+!      BUG:: Ravindra. Following line needs a replacement
+!      call read_input
 
-      call p2gtid('optwf:ioptwf', ioptwf, 0, 1)
+!      call p2gtid('optwf:ioptwf', ioptwf, 0, 1)
 
       if(mode.eq.'dmc_one_mpi2') then
         if(ioptwf.gt.0) call fatal_error('MAIN: no DMC optimization with global population')
 
-        call p2gtid('dmc:ibranch_elec', ibranch_elec, 0, 1)
+!        call p2gtid('dmc:ibranch_elec', ibranch_elec, 0, 1)
         if(ibranch_elec.gt.0) call fatal_error('MAIN: no DMC single-branch with global population')
       endif
 

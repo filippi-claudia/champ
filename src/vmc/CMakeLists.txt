@@ -97,7 +97,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_coords_int.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/array_resize_utils.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/read_data.f90
+#    ${CMAKE_CURRENT_SOURCE_DIR}/read_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/new_parser_read_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/set_input_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f
@@ -137,7 +137,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/pot.f
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/mmpol.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
+#    ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
     ${CMAKE_CURRENT_SOURCE_DIR}/basis_fnse_vgl.f
     ${CMAKE_CURRENT_SOURCE_DIR}/determinant_psit.f
     ${CMAKE_CURRENT_SOURCE_DIR}/determinant.f
@@ -165,7 +165,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f
     ${CMAKE_CURRENT_SOURCE_DIR}/basis_fnse_vg.f
     ${CMAKE_CURRENT_SOURCE_DIR}/parser.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/read_input.f
+#    ${CMAKE_CURRENT_SOURCE_DIR}/read_input.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/hpsi.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4e.f
@@ -188,10 +188,11 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optjas_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/error.f
-    ${CMAKE_INPUT_DIR}/p2_defaults.f
-    ${CMAKE_INPUT_DIR}/p2etc.f
-    ${CMAKE_INPUT_DIR}/p2nmcheck.f)
+    ${CMAKE_CURRENT_SOURCE_DIR}/error.f)
+    # ${CMAKE_INPUT_DIR}/p2_defaults.f
+    # ${CMAKE_INPUT_DIR}/p2etc.f
+    # ${CMAKE_INPUT_DIR}/p2nmcheck.f)
+
 
 
   # --------------------------------------------------------------------
@@ -280,39 +281,39 @@ if (MPI_Fortran_FOUND)
   # Everything related to miniparser p2
   # --------------------------------------------------------------------
 
-  add_custom_command(
-    OUTPUT
-      ${CMAKE_INPUT_DIR}/p2nmcheck.f
-    OUTPUT
-      ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
-    WORKING_DIRECTORY
-      ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMAND
-      ${CMAKE_INPUT_DIR}/inpt.awk -v p2file=commands.p2 -v logf=${CMAKE_INPUT_DIR}/commands.log ${CMAKE_CURRENT_SOURCE_DIR}/read_data.f90
-    COMMAND
-      cat commands.p2 ${CMAKE_INPUT_DIR}/end.p2 ${CMAKE_INPUT_DIR}/auto.p2 > all.p2
-    COMMAND
-      ${CMAKE_INPUT_DIR}/genp2_defaults.awk -v ofile=${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f all.p2 > genp2.log
-    COMMAND
-      ${CMAKE_INPUT_DIR}/mkp2nmcheck.pl namelist.p2 > ${CMAKE_INPUT_DIR}/p2nmcheck.f
-    VERBATIM
-  )
+  # add_custom_command(
+  #   OUTPUT
+  #     ${CMAKE_INPUT_DIR}/p2nmcheck.f
+  #   OUTPUT
+  #     ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
+  #   WORKING_DIRECTORY
+  #     ${CMAKE_CURRENT_SOURCE_DIR}
+  #   COMMAND
+  #     ${CMAKE_INPUT_DIR}/inpt.awk -v p2file=commands.p2 -v logf=${CMAKE_INPUT_DIR}/commands.log ${CMAKE_CURRENT_SOURCE_DIR}/read_data.f90
+  #   COMMAND
+  #     cat commands.p2 ${CMAKE_INPUT_DIR}/end.p2 ${CMAKE_INPUT_DIR}/auto.p2 > all.p2
+  #   COMMAND
+  #     ${CMAKE_INPUT_DIR}/genp2_defaults.awk -v ofile=${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f all.p2 > genp2.log
+  #   COMMAND
+  #     ${CMAKE_INPUT_DIR}/mkp2nmcheck.pl namelist.p2 > ${CMAKE_INPUT_DIR}/p2nmcheck.f
+  #   VERBATIM
+  # )
 
-  add_custom_target(
-    generate-p2
-    ${CMAKE_COMMAND} -E echo "Generating p2 files."
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
-    DEPENDS ${CMAKE_INPUT_DIR}/p2nmcheck.f
-  )
+  # add_custom_target(
+  #   generate-p2
+  #   ${CMAKE_COMMAND} -E echo "Generating p2 files."
+  #   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
+  #   DEPENDS ${CMAKE_INPUT_DIR}/p2nmcheck.f
+  # )
 
-  set_source_files_properties(
-    ${CMAKE_INPUT_DIR}/p2nmcheck.f
-    PROPERTIES GENERATED TRUE
-  )
+  # set_source_files_properties(
+  #   ${CMAKE_INPUT_DIR}/p2nmcheck.f
+  #   PROPERTIES GENERATED TRUE
+  # )
 
-  set_source_files_properties(
-    ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
-    PROPERTIES GENERATED TRUE
-  )
+  # set_source_files_properties(
+  #   ${CMAKE_CURRENT_SOURCE_DIR}/p2prog.f
+  #   PROPERTIES GENERATED TRUE
+  # )
 
 endif()

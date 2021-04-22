@@ -157,12 +157,14 @@ module contrl_file
     character(20) :: log_filename
     character(20) :: proc_filename
     character(80) :: file_input, file_output, file_error 
+    integer       :: iunit, ounit, errunit     
 
     private
     public :: log_filename, proc_filename
     public :: file_input, file_output, file_error 
     public :: close_files
     public :: init_procfile, init_logfile, initialize
+    public :: iunit, ounit, errunit
     save
 contains
 
@@ -202,9 +204,8 @@ contains
         implicit none
         character(len=40), parameter            :: VERSION = 'v1.0.0'
         character(len=80), allocatable          :: arg(:)
-        integer                                 :: i, j, iostat, iunit, ounit, eunit, argcount !, input_unit, output_unit, error_unit 
+        integer                                 :: i, j, iostat, argcount
         character(len=10), dimension(12)        :: extensions
-        character(len=80)                       :: file_input, file_output, file_error 
         character(len=100)                      :: string_format  = '(A, T40, A)'  
     
         ! Get all the command line arguments
@@ -236,7 +237,7 @@ contains
                             write(error_unit,*) "input file should have an extention .in / .inp / .dat"
                             stop
                         endif
-                        write(output_unit, fmt=string_format) ' input file      :: ', file_input
+!                        write(output_unit, fmt=string_format) ' input file      :: ', file_input
                         open (newunit=iunit,file=file_input, iostat=iostat, action='read' )                      
             
                     case ('-o', '-ou', '-out', '-output', '--output')
@@ -246,8 +247,9 @@ contains
                             write(error_unit,*) "output file should have an extention .log / .out / .dat"
                             stop
                         endif
-                        write(output_unit, fmt=string_format) ' output file     :: ', file_output
-                        open (newunit=ounit,file=file_output, iostat=iostat, action='write' )
+!                        write(output_unit, fmt=string_format) ' output file     :: ', file_output
+                        open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='replace' )
+                        if (iostat /= 0) error stop "error in opening output unit"
             
                     case ('-e', '-er', '-err', '-error', '--error')
                         if ((index(arg(i+1), "error") /= 0) .or. (index(arg(i+1), ".err") /= 0) .or. (index(arg(i+1), ".e") /= 0) ) then            
@@ -256,8 +258,8 @@ contains
                             write(error_unit,*) "error file should be named 'error' or should have an extention .e / .err to the filename"
                             stop
                         endif                            
-                        write(output_unit, fmt=string_format) ' error file      :: ', file_error
-                        open (newunit=eunit,file=file_error, iostat=iostat, action='write' )                        
+!                        write(output_unit, fmt=string_format) ' error file      :: ', file_error
+                        open (newunit=errunit,file=file_error, iostat=iostat, action='write' )                        
             
                     case ('-h', '--help')
                         call print_help()           
@@ -299,19 +301,14 @@ contains
     subroutine init_procfile()
         use mpiconf, only: idtask
         use const, only: ipr
+        
+        implicit none
+
+        integer  :: iunit
 
         if (ipr .gt. 1) then
-            if (idtask .lt. 10) then
-                write (proc_filename, '(i1)') idtask
-            elseif (idtask .lt. 100) then
-                write (proc_filename, '(i2)') idtask
-            elseif (idtask .lt. 1000) then
-                write (proc_filename, '(i3)') idtask
-            else
-                write (proc_filename, '(i4)') idtask
-            endif
-            proc_filename = 'check.'//proc_filename(1:index(proc_filename, ' ') - 1)
-            open (unit=88, form='formatted', file=proc_filename)
+            write(proc_filename, '(a,i5.5)') "check.", idtask
+            open (newunit=iunit, form='formatted', file=proc_filename)
         endif
     end subroutine init_procfile
 
