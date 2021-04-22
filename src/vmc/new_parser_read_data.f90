@@ -73,7 +73,7 @@ subroutine header_printing()
     write(ounit, '(2a)') " Hostname                   :: ",   output
     call get_environment_variable ("PWD", output)
     write(ounit, '(2a)') " Current directory          :: ",   output
-    call get_environment_variable ("USERNAME", output)
+    call get_environment_variable ("USER", output)
     write(ounit, '(2a)') " Username                   :: ",   output
     write(ounit, '(2a)') " Input file                 :: ",   file_input
     write(ounit, '(2a)') " Output file                :: ",   file_output    
