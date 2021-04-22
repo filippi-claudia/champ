@@ -1373,6 +1373,14 @@ subroutine read_basis_num_info_file(file_basis_num_info)
             nsa(i), (npa(j, i), j=1, 3), &
             ndzra(i), ndx2a(i), ndxya(i), ndxza(i), ndyza(i)
         if (iostat /= 0) error stop "Error in reading basis num info file"    
+        write (ounit, '(100i3)') n1s(i), n2s(i), (n2p(j, i), j=1, 3), &
+            n3s(i), (n3p(j, i), j=1, 3), &
+            n3dzr(i), n3dx2(i), n3dxy(i), n3dxz(i), n3dyz(i), &
+            n4s(i), (n4p(j, i), j=1, 3), &
+            n4fxxx(i), n4fyyy(i), n4fzzz(i), n4fxxy(i), n4fxxz(i), &
+            n4fyyx(i), n4fyyz(i), n4fzzx(i), n4fzzy(i), n4fxyz(i), &
+            nsa(i), (npa(j, i), j=1, 3), &
+            ndzra(i), ndx2a(i), ndxya(i), ndxza(i), ndyza(i)
 
 
         if (numr .gt. 0) then
@@ -1395,6 +1403,8 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
             read (iunit, *, iostat=iostat) (iwrwf(ib, i), ib=1, nbastyp(i))
             if (iostat /= 0) error stop "Error in reading basis num info file"    
+            write(ounit, '(100i3)') (iwrwf(ib, i), ib=1, nbastyp(i))            
+            write(ounit, *) 
 
         else
             if (n4fxxx(i) .ne. 0 .or. n4fyyy(i) .ne. 0 .or. n4fzzz(i) .ne. 0 .or. &
