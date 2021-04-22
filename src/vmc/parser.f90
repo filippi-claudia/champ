@@ -680,11 +680,11 @@ subroutine parser
 
 ! (15) basis information (either block or from a file)
 
-  if (.not. fdf_block('basis', bfdf)) then
-    if ( fdf_load_defined('basis') ) then
-      call read_basis_file(file_basis)
-    endif ! condition if load basis is present
-  endif ! condition basis block not present
+  ! if (.not. fdf_block('basis', bfdf)) then
+  !   if ( fdf_load_defined('basis') ) then
+  !     call read_basis_file(file_basis)
+  !   endif ! condition if load basis is present
+  ! endif ! condition basis block not present
 
 ! (16) exponents information (either block or from a file)
 
@@ -696,11 +696,11 @@ subroutine parser
 
 ! (17) pseudo information (either block or from a file)
 
-  if (.not. fdf_block('pseudo', bfdf)) then
-    if ( fdf_load_defined('pseudo') ) then
-      call read_pseudo_file(file_pseudo)
-    endif ! condition if load pseudo is present
-  endif ! condition pseudo block not present
+  ! if (.not. fdf_block('pseudo', bfdf)) then
+  !   if ( fdf_load_defined('pseudo') ) then
+  !     call read_pseudo_file(file_pseudo)
+  !   endif ! condition if load pseudo is present
+  ! endif ! condition pseudo block not present
 
 ! (18) multideterminants information (either block or from a file)
 

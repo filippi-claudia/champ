@@ -425,7 +425,7 @@ subroutine read_jastrow_file(file_jastrow)
     endif
 
     ! read the first word of the file
-    read(iunit, *, iostat=iostat)  temp2, iwft
+    read (iunit, *, iostat=iostat)  temp2, iwft
     if (iostat == 0) then 
         if (trim(temp2) == "jastrow_parameter") write(ounit,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
     else
@@ -898,7 +898,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
     ! to escape the comments before the "lcao nbasis norb" line
     do while (skip)
-        read(iunit,*, iostat=iostat) temp1
+        read (iunit,*, iostat=iostat) temp1
         temp1 = trim(temp1)
         if (temp1 == "jasderiv") then
             backspace(iunit)
@@ -916,6 +916,11 @@ subroutine read_jasderiv_file(file_jastrow_der)
                 (nparmb(isp), isp=nspin1, nspin2b), &
                 (nparmc(it), it=1, nctype), &
                 (nparmf(it), it=1, nctype)
+            write(ounit, '(A,10i4)') " nparma = ", (nparma(ia), ia=na1, na2) 
+            write(ounit, '(A,10i4)') " nparmb = ", (nparmb(isp), isp=nspin1, nspin2b)
+            write(ounit, '(A,10i4)') " nparmc = ", (nparmc(it), it=1, nctype)
+            write(ounit, '(A,10i4)') " nparmf = ", (nparmf(it), it=1, nctype)
+
 
             if (ijas .ge. 4 .and. ijas .le. 6) then
                 do it = 1, nctype
@@ -988,12 +993,15 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
             do it = 1, nctype
                 read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))
+                write(ounit, '(A,10i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))                
             enddo
             do isp = nspin1, nspin2b
                 read (iunit, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+                write(ounit, '(A,10i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))                
             enddo
             do it = 1, nctype
                 read (iunit, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
+                write(ounit, '(A,10i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
             enddo
 
                 ! end of reading the jasderiv file block
@@ -1055,7 +1063,16 @@ subroutine read_forces_file(file_forces)
         enddo
     enddo
 
-    read (iunit, *) (iwftype(i), i=1, nforce)
+
+    do i = 1, nforce
+      write(ounit,'(a,i4)') 'Number ::',i
+      do j= 1, ncent
+          write(ounit,'(3F10.6, i3)') (delc(k, j, i),k=1,3) 
+      enddo    
+    enddo
+
+    read (iunit, *, iostat=iostat) (iwftype(i), i=1, nforce)
+    if (iostat /= 0) error stop "Error in reading iwftype"
     if (iwftype(1) .ne. 1) error stop 'INPUT: iwftype(1) ne 1'
     close(iunit)
 end subroutine read_forces_file
