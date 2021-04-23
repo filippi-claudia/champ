@@ -461,94 +461,19 @@ subroutine parser
   write(ounit,*)
 
 
-  ! Processing of data read from the parsed files
+! Processing of data read from the parsed files or setting them with defaults
 
-! (1) Molecular geometry file exclusively in .xyz format
-  if (.not. fdf_block('molecule', bfdf)) then
-    if ( fdf_load_defined('molecule') ) then
-      call read_molecule_file(file_molecule)
-    endif ! condition if load molecule is present
+! (1) Molecular geometry file exclusively in .xyz format [#####]
+  if (fdf_block('molecule', bfdf)) then
+    call fdf_read_molecule_block(bfdf)
+  elseif ( fdf_load_defined('molecule') ) then
+    call read_molecule_file(file_molecule)
   else
-    write(ounit,*) ' Molecular Coordinates from molecule block '
-
-	j = 1 !local counter    	
-    do while((fdf_bline(bfdf, pline)))
-!     get the integer from the first line 
-      if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then  ! check if it is the only integer present in a line
-        ncent = fdf_bintegers(pline, 1)
-        write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
-      endif
-
-      if (.not. allocated(cent)) allocate(cent(3,ncent))
-      if (.not. allocated(symbol)) allocate(symbol(ncent)) 
-      if (.not. allocated(iwctype)) allocate(iwctype(ncent))              
-      if (.not. allocated(unique)) allocate(unique(ncent))  
-      
-      if (pline%ntokens .ne. 4) then  ! check if it is the only integer present in a line
-        write(ounit,*) " Comment from the file ::  ", trim(pline%line)
-      endif
-
-
-      if (pline%ntokens == 4) then
-        symbol(j) = fdf_bnames(pline, 1)
-        do i= 1, 3
-          cent(i,j) = fdf_bvalues(pline, i)
-        enddo
-        j = j + 1
-      endif
-    enddo
-
-
-    ! Count unique type of elements
-    nctype = 1 
-    unique(1) = symbol(1)
-
-    do j= 2, ncent  
-        if (any(unique == symbol(j) ))  cycle
-        nctype = nctype + 1 
-        unique(nctype) = symbol(j)
-    enddo
-
-    write(ounit,*) " Number of distinct types of elements (nctype) :: ", nctype 
-    write(ounit,*)
-
-    if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))                              
-    if (.not. allocated(znuc)) allocate(znuc(nctype))                  
-
-    ! get the correspondence for each atom according to the rule defined for atomtypes
-    do j = 1, ncent
-        do k = 1, nctype
-            if (symbol(j) == unique(k))   iwctype(j) = k
-        enddo
-    enddo
-
-    ! Get the correspondence rule
-    do k = 1, nctype
-        atomtyp(k) = unique(k)
-    enddo
-    if (allocated(unique)) deallocate(unique)
-
-    ! Get the znuc for each unique atom
-    do j = 1, nctype
-        atoms = element(atomtyp(j)) 
-        znuc(j) = atoms%nvalence
-    enddo
-
-    write(ounit,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
-    write(ounit,*)
-    do j= 1, ncent
-        write(ounit,'(A4,3F10.6, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
-    enddo
-
-    write(ounit,*)
-    write(ounit,*) " Values of znuc (number of valence electrons) "
-    write(ounit,'(10F10.6)') (znuc(j), j = 1, nctype)
-    write(ounit,*)
-
-    write(ounit,*) '------------------------------------------------------'
-  endif ! condition molecule block not present
-
-
+    write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop 
+  endif 
+    
 ! (2) Determinants (excluding csf and csfmap)
 
   if (.not. fdf_block('determinants', bfdf)) then
@@ -633,42 +558,20 @@ subroutine parser
 
   if (.not. fdf_block('basis_num_info', bfdf)) then
     if ( fdf_load_defined('basis_num_info') ) then
-      call read_basis_num_info_file(file_basis_num_info)
+      call read_basis_num_info_file(pooldir // file_basis_num_info)
     endif ! condition if load basis_num_info is present
   endif ! condition basis_num_info block not present
  
 
-! (13) Forces information (either block or from a file)
+! (13) Forces information (either block or from a file) [#####]
 
-  if (.not. fdf_block('forces', bfdf)) then
-    if ( fdf_load_defined('forces') ) then
-      call read_forces_file(file_forces)
-    endif ! condition if load forces is present
-  else ! %block forces present
-    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
-    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
-
-    do while((fdf_bline(bfdf, pline)))     
-      if (pline%ntokens == 3) then
-        do i = 1, nforce
-          do j = 1, ncent
-            do k = 1, 3
-              delc(k, j, i) = fdf_bvalues(pline, k)
-            enddo ! xyz
-          enddo ! centers
-        enddo ! forces
-      endif ! expect only three values in a line
-    enddo ! parse entire file
-
-    write(ounit,*) 'Forces from the %block forces  '
-    write(ounit,*)
-    do i = 1, nforce
-      write(ounit,'(a,i4)') 'Number ::',i
-      do j= 1, ncent
-          write(ounit,'(3F10.6, i3)') (delc(k, j, i),k=1,3) 
-      enddo    
-    enddo
-  endif ! condition forces block not present
+  if (fdf_block('forces', bfdf)) then
+    call fdf_read_forces_block(bfdf)
+  elseif (fdf_load_defined('forces') ) then
+    call read_forces_file(file_forces)
+  else
+    call inputforces()
+  endif ! condition if load forces is present   
 
 ! (14) Dmatrix information (either block or from a file)
 
@@ -860,124 +763,131 @@ subroutine parser
 ! endif
 
 
-
-
-  
-
-
-! !  write(6,'(A,4X)') 'optimize_wavefunction using bline', (subblock(i), i = 1, 4)
-
-!   if (fdf_block('general', bfdf)) then
-!     write(*,*) "inside general block"
-!     i = 1
-!     do while(fdf_bline(bfdf, pline))    
-!       doit = fdf_bsearch(pline, "pool")    
-!       write(*,*) "pool found", doit      
-!       i = i + 1
-!     enddo
-!   endif
-
-!   write(6,'(A)')  
-
-!   write(6,*) '------------------------------------------------------'
-  
-  
-  
-
-!   if (.not. fdf_block('molecule', bfdf)) then
-!       !   External file reading
-!           write(6,*) 'Reading coordinates of the molecule from an external file'
-!           ia = 1
-
-!           open (unit=12,file=file_molecule, iostat=iostat, action='read' )
-!           if (iostat .ne. 0) stop "Problem in opening the molecule file"
-!           read(12,*) natoms
-!           print*, "natoms ", natoms
-!           if (.not. allocated(cent)) allocate(cent(3,natoms))
-          
-!           read(12,'(A)')  key
-!           print*, "Comment :: ", trim(key)
-!           do i = 1, natoms
-!             read(12,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
-!           enddo
-!           close(12)
-
-!           write(6,*) 'Coordinates from Molecule load construct: '
-!           do ia= 1, natoms
-!             write(6,'(A4,3F10.6)') symbol(ia), (cent(i,ia),i=1,3)
-!           enddo
-!   endif
- 
-!   write(6,'(A)')  
-!   write(6,*) '------------------------------------------------------'
-
-
-
-
-!   if (fdf_block('molecule', bfdf)) then
-!     !   External file reading
-!         write(6,*) 'beginning of external file coordinates block  '
-!         ia = 1
-! !        write(*,*) "linecount", fdf_block_linecount("molecule")
-    
-!         do while((fdf_bline(bfdf, pline)))
-! !         get the integer from the first line 
-!           if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then        ! check if it is the only integer present in a line
-!             natoms = fdf_bintegers(pline, 1)
-!             write(*,*) "Number of atoms = ", natoms
-!           endif
-
-!           if (.not. allocated(cent)) allocate(cent(3,natoms))
-        
-!           if (pline%ntokens == 4) then
-!             symbol(ia) = fdf_bnames(pline, 1)
-!             do i= 1, 3
-!               cent(i,ia) = fdf_bvalues(pline, i)
-!             enddo
-!             ia = ia + 1
-!           endif
-!         enddo
-
-!         write(6,*) 'Coordinates from single line Molecule block: '
-!         do ia= 1, natoms
-!           write(6,'(A4,3F10.6)') symbol(ia), (cent(i,ia),i=1,3)
-!         enddo
-!       endif
-
-!   write(6,'(A)')  
-
-!   write(6,*) '------------------------------------------------------'
-
-
-! !  Molecule coordinate block begins here  for demonstration
-
-!   if (fdf_block('Coordinates', bfdf)) then
-!     ia = 1
-!     do while(fdf_bline(bfdf, pline))
-!       symbol(ia) = fdf_bnames(pline, 1)
-!       do i= 1, 3
-!         xa(i,ia) = fdf_bvalues(pline, i)
-!       enddo
-!       ia = ia + 1
-!     enddo
-!     write(6,*) 'Coordinates from explicit data block:'
-!     do j = 1, ia
-!       write(6,'(A, 4x, 3F10.6)') symbol(j), (xa(i,j),i=1,3) 
-!     enddo
-!   endif
-
-!   write(6,*) '------------------------------------------------------'
-
-
-
-
-!   write(6,'(A)')  
-
-!   write(6,*) '------------------------------------------------------'
-
-
   call fdf_shutdown()
 !----------------------------------------------------------------------------END
+  contains
+  
+  subroutine fdf_read_molecule_block(bfdf)
+    implicit none 
+    
+    type(block_fdf)            :: bfdf
+    type(parsed_line), pointer :: pline
+
+    write(ounit,*) ' Molecular Coordinates from molecule block '
+
+	  j = 1 !local counter    	
+    do while((fdf_bline(bfdf, pline)))
+!     get the integer from the first line 
+      if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then  ! check if it is the only integer present in a line
+        ncent = fdf_bintegers(pline, 1)
+        write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
+      endif
+
+      if (.not. allocated(cent)) allocate(cent(3,ncent))
+      if (.not. allocated(symbol)) allocate(symbol(ncent)) 
+      if (.not. allocated(iwctype)) allocate(iwctype(ncent))              
+      if (.not. allocated(unique)) allocate(unique(ncent))  
+      
+      if (pline%ntokens .ne. 4) then  ! check if it is the only integer present in a line
+        write(ounit,*) " Comment from the file ::  ", trim(pline%line)
+      endif
+
+
+      if (pline%ntokens == 4) then
+        symbol(j) = fdf_bnames(pline, 1)
+        do i= 1, 3
+          cent(i,j) = fdf_bvalues(pline, i)
+        enddo
+        j = j + 1
+      endif
+    enddo
+
+
+    ! Count unique type of elements
+    nctype = 1 
+    unique(1) = symbol(1)
+
+    do j= 2, ncent  
+        if (any(unique == symbol(j) ))  cycle
+        nctype = nctype + 1 
+        unique(nctype) = symbol(j)
+    enddo
+
+    write(ounit,*) " Number of distinct types of elements (nctype) :: ", nctype 
+    write(ounit,*)
+
+    if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))                              
+    if (.not. allocated(znuc)) allocate(znuc(nctype))                  
+
+    ! get the correspondence for each atom according to the rule defined for atomtypes
+    do j = 1, ncent
+        do k = 1, nctype
+            if (symbol(j) == unique(k))   iwctype(j) = k
+        enddo
+    enddo
+
+    ! Get the correspondence rule
+    do k = 1, nctype
+        atomtyp(k) = unique(k)
+    enddo
+    if (allocated(unique)) deallocate(unique)
+
+    ! Get the znuc for each unique atom
+    do j = 1, nctype
+        atoms = element(atomtyp(j)) 
+        znuc(j) = atoms%nvalence
+    enddo
+
+    write(ounit,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
+    write(ounit,*)
+    do j= 1, ncent
+        write(ounit,'(A4, 2x, 3F12.6, 2x, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
+    enddo
+
+    write(ounit,*)
+    write(ounit,*) " Values of znuc (number of valence electrons) "
+    write(ounit,'(10F12.6)') (znuc(j), j = 1, nctype)
+    write(ounit,*)
+
+    write(ounit,*) '------------------------------------------------------'
+  end subroutine fdf_read_molecule_block
+
+  subroutine fdf_read_forces_block(bfdf)
+    implicit none 
+    type(block_fdf)            :: bfdf
+    type(parsed_line), pointer :: pline
+
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
+    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
+
+    i = 1; j = 1
+    do while((fdf_bline(bfdf, pline)))     
+      if (pline%ntokens == 1) i = fdf_bintegers(pline, 1)
+      if (pline%ntokens == 3) then
+        do k = 1, 3
+          delc(k, j, i) = fdf_bvalues(pline, k)
+        enddo ! xyz
+        j = j + 1
+      endif ! expect only three values in a line
+    enddo ! parse entire file
+
+    write(ounit,*) 'Force displacements from the %block forces  '
+    write(ounit,*)
+    do i = 1, nforce
+      write(ounit,'(a,i4)') 'Number ::',i
+      write(ounit,*) '-----------------------------------------------------------------------'      
+      write(ounit,'(a, t15, a, t27, a, t39, a, t45)') 'Symbol', 'x', 'y', 'z'
+      write(ounit,'(t14, a, t26, a, t38, a )') '(A)', '(A)', '(A)'
+      write(ounit,*) '-----------------------------------------------------------------------'    
+      do j= 1, ncent
+        write(ounit,'(A4, 2x, 3F12.6)') symbol(j), (delc(k, j, i),k=1,3) 
+      enddo    
+    enddo
+    write(ounit,*)
+    write(ounit,*) '-----------------------------------------------------------------------'      
+  end subroutine fdf_read_forces_block
+
+
 end subroutine parser
 
 

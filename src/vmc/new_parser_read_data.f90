@@ -109,7 +109,7 @@ subroutine read_molecule_file(file_molecule)
     character(len=2), allocatable   :: unique(:)
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T30, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I8)'
     character(len=100)               :: float_format   = '(A, T60, f12.8)'    
     character(len=100)               :: string_format  = '(A, T60, A)'  
   
@@ -154,7 +154,7 @@ subroutine read_molecule_file(file_molecule)
         unique(nctype) = symbol(j)
     enddo
 
-    write(ounit,*) " Number of distinct types of elements (nctype) :: ", nctype 
+    write(ounit,fmt=int_format) " Number of distinct types of elements (nctype) :: ", nctype 
     write(ounit,*)
 
     if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))                              
@@ -180,15 +180,19 @@ subroutine read_molecule_file(file_molecule)
         znuc(j) = atoms%nvalence
     enddo
 
-    write(ounit,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
-    write(ounit,*)
+    write(ounit,*) '-----------------------------------------------------------------------'      
+    write(ounit,'(a, t15, a, t27, a, t39, a, t45, a)') 'Symbol', 'x', 'y', 'z', 'Type'
+    write(ounit,'(t14, a, t26, a, t38, a )') '(A)', '(A)', '(A)'
+    write(ounit,*) '-----------------------------------------------------------------------'      
+
     do j= 1, ncent
-        write(ounit,'(A4,3F10.6, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
+        write(ounit,'(A4, 2x, 3F12.6, 2x, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
     enddo
 
-    write(ounit,*)
+    write(ounit,*) '-----------------------------------------------------------------------'      
     write(ounit,*) " Values of znuc (number of valence electrons) "
-    write(ounit,'(10F10.6)') (znuc(j), j = 1, nctype)
+    write(ounit,'(10F12.6)') (znuc(j), j = 1, nctype)
+    write(ounit,*) '-----------------------------------------------------------------------'      
     write(ounit,*)
 end subroutine read_molecule_file
 
@@ -1017,6 +1021,7 @@ end subroutine read_jasderiv_file
 subroutine read_forces_file(file_forces)
     !
     ! Ravindra
+    use atom,           only: symbol
     use contrl_file,    only: ounit, errunit
     use forcepar, only: nforce
     use forcestr, only: delc
@@ -1040,9 +1045,9 @@ subroutine read_forces_file(file_forces)
     character(len=100)               :: string_format  = '(A, T60, A)'  
     
     !   External file reading
-    write(ounit,*) '---------------------------------------------------------------------------'      
-    write(ounit,string_format)  " Reading forces from the file :: ",  trim(file_forces)
-    write(ounit,*) '---------------------------------------------------------------------------'      
+    write(ounit,*) '-----------------------------------------------------------------------'      
+    write(ounit,string_format)  " Reading force displacements from the file :: ",  trim(file_forces)
+    write(ounit,*) '-----------------------------------------------------------------------'      
     
     inquire(file=file_forces, exist=exist)
     if (exist) then
@@ -1052,9 +1057,12 @@ subroutine read_forces_file(file_forces)
         error stop " Forces file "// trim(file_forces) // " does not exist."
     endif
 
-
     if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
     if (.not. allocated(iwftype)) allocate (iwftype(nforce))
+
+    read (iunit, *, iostat=iostat) (iwftype(i), i=1, nforce)
+    if (iostat /= 0) error stop "Error in reading iwftype"
+    if (iwftype(1) .ne. 1) error stop 'INPUT: iwftype(1) ne 1'    
 
     do i = 1, nforce
         do ic = 1, ncent
@@ -1066,14 +1074,16 @@ subroutine read_forces_file(file_forces)
 
     do i = 1, nforce
       write(ounit,'(a,i4)') 'Number ::',i
+      write(ounit,*) '-----------------------------------------------------------------------'      
+      write(ounit,'(a, t15, a, t27, a, t39, a, t45)') 'Symbol', 'x', 'y', 'z'
+      write(ounit,'(t14, a, t26, a, t38, a )') '(A)', '(A)', '(A)'
+      write(ounit,*) '-----------------------------------------------------------------------'    
       do j= 1, ncent
-          write(ounit,'(3F10.6, i3)') (delc(k, j, i),k=1,3) 
+          write(ounit,'(A4, 2x, 3F12.6)') symbol(j), (delc(k, j, i),k=1,3) 
       enddo    
     enddo
 
-    read (iunit, *, iostat=iostat) (iwftype(i), i=1, nforce)
-    if (iostat /= 0) error stop "Error in reading iwftype"
-    if (iwftype(1) .ne. 1) error stop 'INPUT: iwftype(1) ne 1'
+
     close(iunit)
 end subroutine read_forces_file
 

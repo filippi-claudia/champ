@@ -258,34 +258,26 @@ end subroutine multideterminants_define
 
 subroutine inputforces
 ! Set all force displacements to zero
-    use force_mod, only: MWF
-    use vmc_mod, only: MCENT
-    use force_mod, only: MFORCE
+!    use force_mod, only: MWF
+!    use vmc_mod, only: MCENT
+!    use force_mod, only: MFORCE
     use forcepar, only: nforce
     use forcestr, only: delc
     use wfsec, only: iwftype, nwftype
 
     use atom, only: ncent
 
-    implicit real*8(a - h, o - z)
+    implicit none 
+    integer             :: i
 
-    !call p2gti('atoms:natom', ncent, 1)
-    ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
-
-    !!call p2gtid('general:nforce', nforce, 1, 1)
-
-    allocate (delc(3, ncent, MFORCE))
-    allocate (iwftype(MFORCE))
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
+    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
 
     call set_displace_zero(nforce)
 
-    !!call p2gtid('general:nwftype', nwftype, 1, 1)
-    if (nwftype .gt. MWF) call fatal_error('FORCES: nwftype gt MWF')
 
     if (nwftype .eq. 1) then
-        do i = 1, nforce
-            iwftype(i) = 1
-        enddo
+        iwftype = 1             ! set array to 1 for all nforce elements
     elseif (nwftype .eq. nforce) then
         do i = 1, nforce
             iwftype(i) = i
@@ -391,7 +383,7 @@ subroutine inputjastrow(nwftype)
 end subroutine inputjastrow
 
 subroutine set_displace_zero(nforce_tmp)
-    use vmc_mod, only: MCENT
+!    use vmc_mod, only: MCENT
     use pcm, only: MCHS
     use forcestr, only: delc
     use pcm_force, only: sch_s
@@ -400,20 +392,12 @@ subroutine set_displace_zero(nforce_tmp)
 
     use atom, only: ncent
 
-    implicit real*8(a - h, o - z)
-
-    !call p2gti('atoms:natom', ncent, 1)
-    ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
+    implicit none
+    integer         :: i, j, nforce_tmp
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, nforce_tmp))
 
-    do i = 1, nforce_tmp
-        do ic = 1, ncent
-            do k = 1, 3
-                delc(k, ic, i) = 0.d0
-            enddo
-        enddo
-    enddo
+    delc = 0.d0
 
     if (.not. allocated(sch_s)) allocate (sch_s(MCHS, nforce_tmp))
 
