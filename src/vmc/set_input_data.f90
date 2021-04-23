@@ -9,43 +9,35 @@ subroutine inputzex
     use contrl_per, only: iperiodic
     use wfsec, only: nwftype
 
-    implicit real*8(a - h, o - z)
+    implicit none 
 
-    allocate (zex(nbasis, nwftype))
 
-    !!call p2gtid('general:nwftype', nwftype, 1, 1)
-    !!call p2gtid('general:iperiodic', iperiodic, 0, 1)
-    if (nwftype .gt. MWF) call fatal_error('WF: nwftype gt MWF')
+    if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
 
     if (numr .eq. 0 .and. iperiodic .eq. 0) &
         call fatal_error('ZEX: numr=0 and iperiodic=0 but no zex are inputed')
-    do iwft = 1, nwftype
-        do i = 1, nbasis
-            zex(i, iwft) = 1
-        enddo
-    enddo
 
+    zex = 1    
+    return
 end subroutine inputzex
 
 subroutine inputcsf
     ! Check that the required blocks are there in the input
 
+
     use csfs, only: ncsf, nstates
     use inputflags, only: ici_def
-
     use ci000, only: nciprim, nciterm
 
     ! are they needed ??!!
     use optwf_contrl, only: ioptci
-    implicit real*8(a - h, o - z)
 
     nstates = 1
     ncsf = 0
 
-    !!call p2gtid('optwf:ioptci', ioptci, 0, 1)
     if (ioptci .ne. 0 .and. ici_def .eq. 1) nciterm = nciprim
     return
-end
+end subroutine inputcsf
 
 subroutine multideterminants_define(iflag, icheck)
 

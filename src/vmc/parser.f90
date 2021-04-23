@@ -484,11 +484,13 @@ subroutine parser
 
 ! (3) CSF 
 
-  if (.not. fdf_block('determinants', bfdf)) then
-    if ( fdf_load_defined('determinants') ) then
-      call read_csf_file(file_determinants)
-    endif ! condition if load determinant is present
-  endif ! condition determinant block not present
+  if (fdf_block('csf', bfdf)) then
+    call fdf_read_csf_block(bfdf)
+  elseif ( fdf_load_defined('determinants') ) then
+    call read_csf_file(file_determinants)
+  else 
+    call inputcsf()
+  endif 
 
 ! (4) CSFMAP
 
@@ -856,6 +858,7 @@ subroutine parser
     implicit none 
     type(block_fdf)            :: bfdf
     type(parsed_line), pointer :: pline
+    integer                    :: i,j,k    
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
     if (.not. allocated(iwftype)) allocate (iwftype(nforce))
@@ -886,6 +889,37 @@ subroutine parser
     write(ounit,*)
     write(ounit,*) '-----------------------------------------------------------------------'      
   end subroutine fdf_read_forces_block
+
+  subroutine fdf_read_csf_block(bfdf)
+    use csfs, only: ccsf, ncsf, nstates
+    implicit none 
+    
+    type(block_fdf)            :: bfdf
+    type(parsed_line), pointer :: pline
+    integer                    :: i,j,k
+
+!   Format of the CSF block
+!   %block csf
+!   # State 1           State 2           State N     ...
+!   csf(1,1,1)          csf(1,2,1)        csf(1,N,1)          
+!   csf(2,1,1)          csf(2,2,1)        csf(2,N,1)              
+!   .                   .                 .
+!   csf(ncsf,1,1)       csf(ncsf,2,1)     csf(ncsf,N,1)
+!   %endblock
+
+    if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))    
+
+    j = 1
+    do while((fdf_bline(bfdf, pline)))     
+      if (pline%ntokens == nstates) then
+        do k = 1, nstates
+          ccsf(j,k,1) = fdf_bvalues(pline, k)
+          print*,"j,k,ccsf ", k,j, ccsf(j,k,1)
+        enddo 
+        j = j + 1
+      endif 
+    enddo 
+  end subroutine fdf_read_csf_block
 
 
 end subroutine parser
