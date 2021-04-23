@@ -101,6 +101,7 @@ contains
              sr_adiag=sr_adiag_sav
           endif
 
+	  call compute_norm_lin(nparm,deltap)
           call compute_parameters(deltap,iflag,1)
           call write_wf(1,iter)
           call save_wf
@@ -178,6 +179,58 @@ contains
     enddo
 
   end subroutine sr_ortho
+
+  subroutine compute_norm_lin(nparm,deltap)
+    use mpi
+    use mpiconf, only: idtask
+    use sr_mod, only: MOBS
+    use mstates_mod, only: MSTATES
+    use sr_mod, only: MPARM
+    use csfs, only: nstates
+    use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
+    use sr_mat_n, only: sr_o, wtg, obs_tot
+    use optorb_cblock, only: norbterm
+    use config, only: anormo
+
+    implicit real*8 (a-h,o-z)
+
+    integer, intent(in) :: nparm
+    real(dp), dimension(MPARM,MSTATES), intent(in) :: deltap
+
+    real(dp), dimension(MOBS,MSTATES) :: obs_norm
+    real(dp), dimension(MOBS,MSTATES) :: obs_norm_tot
+
+    jwtg=1
+    jwfj=1
+    jsqfj=2
+    n_obs=2
+
+    obs_norm=0.0d0
+
+    do istate=1,nstates
+       do iconf=1,nconf_n
+          tmp=0.0d0
+          do i=1,nparm
+             tmp=tmp+deltap(i,istate)*sr_o(i,iconf,istate)
+          enddo
+          obs_norm(jwfj,istate)=obs_norm(jwfj,istate)+tmp*wtg(iconf,istate)
+          obs_norm(jsqfj,istate)=obs_norm(jsqfj,istate)+tmp*tmp*wtg(iconf,istate)
+       enddo
+       obs_norm(jwfj,istate)=2.0d0*obs_norm(jwfj,istate)
+       call MPI_REDUCE(obs_norm(1,istate),obs_norm_tot(1,istate),&
+       	       n_obs,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
+    enddo
+
+    if(idtask.eq.0) then
+       do istate=1,nstates
+          anormo(istate)=obs_tot(jwtg,istate)+obs_norm_tot(jwfj,istate)&
+		  +obs_norm_tot(jsqfj,istate)
+       enddo
+    endif
+
+    call MPI_BCAST(anormo(1),nstates,MPI_REAL8,0,MPI_COMM_WORLD,i)
+
+  end subroutine
 
   subroutine compute_gradient_sr_ortho(nparm,sr_adiag)
     use mpi

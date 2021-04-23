@@ -13,9 +13,13 @@ contains
         use optwf_contrl, only: ioptwf, idl_flag, ilbfgs_flag
         use optwf_dl_mod, only: optwf_dl
         use optwf_sr_mod, only: optwf_sr
+	use config, only: anormo
         use optwf_sr_ortho_mod, only: optwf_sr_ortho
 
         implicit None
+
+	!RLPB initialize anormo
+	anormo=1.0d0
 
         if (ioptwf .gt. 0) then
             if (idl_flag .gt. 0) then

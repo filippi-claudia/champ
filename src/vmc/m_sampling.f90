@@ -21,6 +21,7 @@ module config
     real(dp), dimension(:), allocatable :: psi2n !(MFORCE)
     real(dp), dimension(:, :), allocatable :: psi2o !(MSTATES, MFORCE)
     real(dp), dimension(:), allocatable :: psido !(MSTATES)
+    real(dp), dimension(:), allocatable :: anormo !(MSTATES) RLPB
     real(dp) :: psijo
     real(dp), dimension(:), allocatable :: rminn !(MELEC)
     real(dp), dimension(:), allocatable :: rminno !(MELEC)
@@ -47,7 +48,7 @@ module config
 
     private
     public   :: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n
-    public   :: psi2o, psido, psijo, rminn, rminno, rmino, rminon, rvminn
+    public   :: psi2o, psido, psijo, anormo, rminn, rminno, rmino, rminon, rvminn
     public   :: rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold
     public   :: allocate_config, deallocate_config
     !> DMC variables:
@@ -69,6 +70,7 @@ contains
         if (.not. allocated(psi2n)) allocate (psi2n(MFORCE))
         if (.not. allocated(psi2o)) allocate (psi2o(MSTATES, MFORCE))
         if (.not. allocated(psido)) allocate (psido(MSTATES))
+        if (.not. allocated(anormo)) allocate (anormo(MSTATES))
         if (.not. allocated(rminn)) allocate (rminn(MELEC))
         if (.not. allocated(rminno)) allocate (rminno(MELEC))
         if (.not. allocated(rmino)) allocate (rmino(MELEC))
@@ -99,6 +101,7 @@ contains
         if (allocated(rminno)) deallocate (rminno)
         if (allocated(rminn)) deallocate (rminn)
         if (allocated(psido)) deallocate (psido)
+        if (allocated(anormo)) deallocate (anormo)
         if (allocated(psi2o)) deallocate (psi2o)
         if (allocated(psi2n)) deallocate (psi2n)
         if (allocated(peo)) deallocate (peo)
