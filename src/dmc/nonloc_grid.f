@@ -15,12 +15,21 @@
       use precision_kinds, only: dp
       implicit none
 
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
+
       integer :: i, i1, i2, ic, ic_good
       integer :: iel, iel_good, ii, imove
       integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iq
       integer :: iq_good, iw
       real(dp) :: costh, one, p, pe, psid
-      real(dp) :: psidi, rannyu, ri, t_cum
+      real(dp) :: psidi, ri, t_cum
       real(dp) :: t_norm, t_normi, tauprim
       real(dp), dimension(2) :: vpsp_det
       real(dp), dimension(MPARMJ) :: dvpsp_dj

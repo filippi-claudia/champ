@@ -11,9 +11,16 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use precision_kinds, only: dp
       implicit none
 
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
 
-      real(dp) :: gauss, rannyu
-
+      real(dp) :: gauss
 
       gauss=dcos(2*pi*rannyu(0))
       gauss=gauss*sqrt(-2*dlog(rannyu(0)))

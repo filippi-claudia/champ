@@ -64,9 +64,26 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use elec, only: nup
       use velratio, only: fratio, xdrifted
       use contrl, only: irstar, nconf
-
       use precision_kinds, only: dp
+
       implicit none
+
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
+
+      interface
+         function gauss()
+          use precision_kinds, only: dp
+         implicit none
+         real(dp) :: gauss
+         end function gauss
+      end interface
 
       integer :: i, iaccept, icircular, idrifdifgfunc, iel
       integer :: iflag_dn, iflag_up, ifr, ii
@@ -82,10 +99,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: drifdifr, drifdifs, drift, dwt
       real(dp) :: dx, e_cutoff, enew, eps_node_cutoff
       real(dp) :: ewtn, ewto, expon, ffi
-      real(dp) :: ffn, fration, gauss, ginv
+      real(dp) :: ffn, fration, ginv
       real(dp) :: p, pen, pp, psi2savo
       real(dp) :: psidn, psijn, q, r2n
-      real(dp) :: r2o, r2sume, rannyu, risume
+      real(dp) :: r2o, r2sume, risume
       real(dp) :: rminn, rmino, rnorm_nodes, rnorm_nodes_new
       real(dp) :: rnorm_nodes_num, rnorm_nodes_old, ro, taunow
       real(dp) :: tauprim, tratio, v2new, v2old
