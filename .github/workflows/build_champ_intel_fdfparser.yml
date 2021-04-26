@@ -1,4 +1,4 @@
-name: Intel Compiler 
+name: Intel OneAPI build
 
 on:
   push:
@@ -20,7 +20,9 @@ jobs:
         sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
         sudo apt-get update 
     - name: install
-      run: sudo apt-get install -y intel-oneapi-dev-utilities intel-oneapi-compiler-fortran
+      run: |
+        sudo apt-get install intel-hpckit-getting-started intel-oneapi-clck intel-oneapi-common-licensing intel-oneapi-common-vars
+        sudo apt-get install -y intel-oneapi-dev-utilities intel-oneapi-dpcpp-cpp-compiler-pro intel-oneapi-compiler-fortran intel-oneapi-itac
     - name: Compile
       run: |
         source /opt/intel/oneapi/setvars.sh
