@@ -489,7 +489,9 @@ subroutine parser
   elseif ( fdf_load_defined('determinants') ) then
     call read_csf_file(file_determinants)
   else 
-    call inputcsf()
+    ! No csf present; set default values (in replacement of inputcsf)
+    nstates = 1 ; ncsf = 0
+    if (ioptci .ne. 0) nciterm = nciprim
   endif 
 
 ! (4) CSFMAP
@@ -900,6 +902,7 @@ subroutine parser
 
 !   Format of the CSF block
 !   %block csf
+!    ncsf 200     nstates 2
 !   # State 1           State 2           State N     ...
 !   csf(1,1,1)          csf(1,2,1)        csf(1,N,1)          
 !   csf(2,1,1)          csf(2,2,1)        csf(2,N,1)              
@@ -907,18 +910,31 @@ subroutine parser
 !   csf(ncsf,1,1)       csf(ncsf,2,1)     csf(ncsf,N,1)
 !   %endblock
 
-    if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))    
+!     First get the two numbers required for allocations
+    ncsf    = fdf_bintegers(bfdf%mark%pline, 1) ! 1st integer in the line
+    nstates = fdf_bintegers(bfdf%mark%pline, 2) ! 2nd integer in the line
+    if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))        
 
     j = 1
     do while((fdf_bline(bfdf, pline)))     
+
       if (pline%ntokens == nstates) then
         do k = 1, nstates
           ccsf(j,k,1) = fdf_bvalues(pline, k)
-          print*,"j,k,ccsf ", k,j, ccsf(j,k,1)
         enddo 
         j = j + 1
       endif 
     enddo 
+
+    write(ounit,*)         
+    write(ounit,*) " CSF coefficients from %block csf"
+    
+    write(ounit,'(10(1x, a9, i3, 1x))') ((" State: ", i), i =1, nstates)    
+    do j = 1, ncsf
+      write(ounit,'(10(1x, f12.8, 1x))') (ccsf(j,i,1), i=1,nstates)   
+    enddo   
+
+
   end subroutine fdf_read_csf_block
 
 
