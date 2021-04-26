@@ -43,24 +43,54 @@
       use contrl, only: nconf
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0)
-      parameter (small=1.e-6)
+      integer :: i, iage_id, ib, ic, id
+      integer :: ie, ifr, iw, j
+      integer :: k, nbasx, ncentx, nctypex
+      integer :: ndetx, ndnx, nelecx, newghostypex
+      integer :: nf_id, nghostcentx, nprock, nq_id
+      integer :: num, nupx, nwalk_id
+      integer, dimension(4, 0:NPROCX) :: irn
+      integer, dimension(MCENT) :: n1sx
+      integer, dimension(MCENT) :: n2sx
+      integer, dimension(3, MCENT) :: n2px
+      integer, dimension(MCENT) :: n3sx
+      integer, dimension(3, MCENT) :: n3px
+      integer, dimension(MCENT) :: n3dzrx
+      integer, dimension(MCENT) :: n3dx2x
+      integer, dimension(MCENT) :: n3dxyx
+      integer, dimension(MCENT) :: n3dxzx
+      integer, dimension(MCENT) :: n3dyzx
+      integer, dimension(MCENT) :: n4sx
+      integer, dimension(3, MCENT) :: n4px
+      integer, dimension(MCENT) :: nsax
+      integer, dimension(3, MCENT) :: npax
+      integer, dimension(MCENT) :: ndzrax
+      integer, dimension(MCENT) :: ndx2ax
+      integer, dimension(MCENT) :: ndxyax
+      integer, dimension(MCENT) :: ndxzax
+      integer, dimension(MCENT) :: ndyzax
+      real(dp) :: cjas1x, cjas2x, dabs, different, fmt
+      real(dp) :: fratio_id, hbx, taux, wq_id
+      real(dp) :: wt_id, xold_dmc_id, xq_id, yq_id
+      real(dp) :: zq_id
+      real(dp), dimension(MBASIS, MORB) :: coefx
+      real(dp), dimension(MBASIS) :: zexx
+      real(dp), dimension(3, MCENT) :: centx
+      real(dp), dimension(MCENT) :: znucx
+      real(dp), dimension(MDET) :: cdetx
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: small = 1.e-6
+
 
 
 
       character*13 filename
 
-      dimension irn(4,0:NPROCX)
 
-      dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT)
-     &,znucx(MCENT),n1sx(MCENT),n2sx(MCENT),n2px(3,MCENT)
-     &,n3sx(MCENT),n3px(3,MCENT),n3dzrx(MCENT),n3dx2x(MCENT)
-     &,n3dxyx(MCENT),n3dxzx(MCENT),n3dyzx(MCENT),n4sx(MCENT)
-     &,n4px(3,MCENT),nsax(MCENT),npax(3,MCENT),ndzrax(MCENT)
-     &,ndx2ax(MCENT),ndxyax(MCENT),ndxzax(MCENT),ndyzax(MCENT)
-     &,cdetx(MDET)
 
       write(6,'(1x,''attempting restart from unit 10'')')
       rewind 10

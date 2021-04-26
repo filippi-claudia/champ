@@ -15,11 +15,18 @@
       use multidet, only: iactv, ivirt, kref
       use multimat, only: aa
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (one=1.d0,half=0.5d0)
+      integer :: i1, i2, iab, ic, iel
+      integer :: iel_move, iq, irep, ish
+      integer :: j, jel, jrep, nel
+      real(dp) :: detratio, dum, psid
+      real(dp), dimension(MELEC, MORB) :: gmat
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = 0.5d0
 
-      dimension gmat(MELEC,MORB)
+
 
       if(icasula.gt.0)then
         i1=iel_move

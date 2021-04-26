@@ -33,18 +33,35 @@ c routine to print out final results
       use contrl, only: nblkeq, nconf, nstep
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
+      integer :: i, ierr, ifr, j, k
+      integer :: nacc_collect, nodecr_collect
+      real(dp) :: acc_collect, accav, accavn, delr, eave
+      real(dp) :: eerr, eerr1, efave, eferr
+      real(dp) :: eferr1, egave, egerr, egerr1
+      real(dp) :: errc, errc1, errf, errf1
+      real(dp) :: errg, errg1, error, errorn
+      real(dp) :: errw, errw1, eval, eval_eff
+      real(dp) :: eval_proc, evalf_eff, evalg_eff, fgave
+      real(dp) :: fgerr, pass_proc, passes, peave
+      real(dp) :: peerr, rn, rn_eff, rteval_eff1
+      real(dp) :: rtevalf_eff1, rtevalg_eff1, rtpass1, term
+      real(dp) :: tjfave, tjferr, tpbave, tpberr
+      real(dp) :: trymove_collect, w, w2, wave
+      real(dp) :: werr, werr1, wfave, wferr
+      real(dp) :: wferr1, wgave, wgerr, wgerr1
+      real(dp) :: x, x2
+      real(dp), dimension(MFORCE) :: ffin_grdnts
+      real(dp), dimension(MFORCE) :: ferr_grdnts
+      real(dp), dimension(nrad) :: rprobcollect
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = .5d0
 
-      parameter (one=1.d0,two=2.d0,half=.5d0)
-
-
-      dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
-      dimension rprobcollect(nrad)
-
-c statement functions for error calculation
+c Statement functions for error calculation, it might be reaplaced in the near future:
       rn_eff(w,w2)=w**2/w2
-
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errorn(x,x2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn-1),0.d0))
       errc(x,x2)=error(x,x2,wcum_dmc,wcm2)

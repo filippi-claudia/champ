@@ -12,12 +12,29 @@ c Written by Cyrus Umrigar
       use branch, only: wthist
       use jacobsave, only: ajacold
       use velratio, only: fratio, xdrifted
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      parameter (zero=0.d0,two=2.d0,half=.5d0)
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
 
-      dimension iwundr(MWALK)
+      integer :: i, ifr, ip, ipair, iunder
+      integer :: iw, iw2, j, k
+      integer :: nwalk2
+      integer, dimension(MWALK) :: iwundr
+      real(dp) :: wtsm, wtsm2, wttot
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = .5d0
+
+
 
       iunder=0
       ipair=0

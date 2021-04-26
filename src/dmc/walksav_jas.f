@@ -9,14 +9,22 @@ c Written by Claudia Filippi
       use velocity_jastrow, only: vj
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK)
-     &,fsumow(MWALK),fjow(3,MELEC,MWALK)
+      integer :: i, ierr, irecv, irequest, isend
+      integer :: itag, iw, iw2, j
+      integer :: kk
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
-      dimension vjw(3,MELEC,MWALK)
+      real(dp), dimension(MELEC, MELEC, MWALK) :: fsow
+      real(dp), dimension(3, MELEC, MELEC, MWALK) :: fijow
+      real(dp), dimension(MWALK) :: fsumow
+      real(dp), dimension(3, MELEC, MWALK) :: fjow
+      real(dp), dimension(3, MELEC, MWALK) :: vjw
 
-      dimension istatus(MPI_STATUS_SIZE)
+
+
 
       save fsow,fijow,fsumow,fjow
 

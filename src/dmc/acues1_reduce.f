@@ -19,16 +19,18 @@
 
       implicit none
 
-      integer :: istatus, ierr, ifr, i, nodecr_collect, nacc_collect, id, irequest
-      real(dp) :: eg1collect, eg21collect, wg1collect, wg21collect, rprobcollect
+      integer :: ierr, ifr, i, nodecr_collect, nacc_collect, id, irequest
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
       real(dp) :: e1collect, e21collect, w1collect, w21collect, ef1collect
       real(dp) :: ef21collect, wf1collect, wf21collect, trymove_collect
       real(dp) :: acc_collect, efin
 
-      dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
-     &,wg21collect(MFORCE),rprobcollect(nrad)
+      real(dp), dimension(MFORCE) :: eg1collect
+      real(dp), dimension(MFORCE) :: eg21collect
+      real(dp), dimension(MFORCE) :: wg1collect
+      real(dp), dimension(MFORCE) :: wg21collect
+      real(dp), dimension(nrad) :: rprobcollect
 
-      dimension istatus(MPI_STATUS_SIZE)
 
       if(mode.eq.'dmc_one_mpi2') return
 

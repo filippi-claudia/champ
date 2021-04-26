@@ -64,17 +64,64 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use elec, only: nup
       use velratio, only: fratio, xdrifted
       use contrl, only: irstar, nconf
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
-      parameter (adrift=0.5d0)
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
 
-      dimension xstrech(3,MELEC)
-      dimension xnew(3),vnew(3,MELEC)
-      dimension xbac(3),xdriftedn(3,MELEC)
-      dimension itryo(MELEC),itryn(MELEC),unacp(MELEC)
-      dimension iacc_elec(MELEC)
+      interface
+         function gauss()
+          use precision_kinds, only: dp
+         implicit none
+         real(dp) :: gauss
+         end function gauss
+      end interface
+
+      integer :: i, iaccept, icircular, idrifdifgfunc, iel
+      integer :: iflag_dn, iflag_up, ifr, ii
+      integer :: imove, ipmod, ipmod2, iw
+      integer :: iwmod, j, jel, k
+      integer :: ncall, ncount_casula, nmove_casula, node_cutoff
+      integer, dimension(MELEC) :: itryo
+      integer, dimension(MELEC) :: itryn
+      integer, dimension(MELEC) :: iacc_elec
+      real(dp) :: d2n, dabs, den, deo, dfus
+      real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
+      real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
+      real(dp) :: drifdifr, drifdifs, drift, dwt
+      real(dp) :: dx, e_cutoff, enew, eps_node_cutoff
+      real(dp) :: ewtn, ewto, expon, ffi
+      real(dp) :: ffn, fration, ginv
+      real(dp) :: p, pen, pp, psi2savo
+      real(dp) :: psidn, psijn, q, r2n
+      real(dp) :: r2o, r2sume, risume
+      real(dp) :: rminn, rmino, rnorm_nodes, rnorm_nodes_new
+      real(dp) :: rnorm_nodes_num, rnorm_nodes_old, ro, taunow
+      real(dp) :: tauprim, tratio, v2new, v2old
+      real(dp) :: v2sumn, v2sumo, vav2sumn, vav2sumo
+      real(dp) :: vavvn, vavvo, vavvt, wtg
+      real(dp) :: wtg_derivsum1, wtnow
+      real(dp), dimension(3, MELEC) :: xstrech
+      real(dp), dimension(3) :: xnew
+      real(dp), dimension(3, MELEC) :: vnew
+      real(dp), dimension(3) :: xbac
+      real(dp), dimension(3, MELEC) :: xdriftedn
+      real(dp), dimension(MELEC) :: unacp
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: adrift = 0.5d0
+
+
 
       data ncall /0/
 

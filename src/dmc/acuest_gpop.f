@@ -22,14 +22,29 @@ c routine to accumulate estimators for energy etc.
       use contrl, only: nstep
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0)
+      integer :: i, iegerr, ierr, ifgerr, ifr
+      integer :: ioldest_collect, ioldestmx_collect, ipeerr, itjfer
+      integer :: itpber, k, npass
+      real(dp) :: derivtotave, dum, efnow, egave, egave1
+      real(dp) :: egerr, egnow, ei1now, ei2now
+      real(dp) :: enow, errg, error, fgave
+      real(dp) :: fgerr, peave, peerr, penow
+      real(dp) :: r2now, rinow, rn_eff, tjfave
+      real(dp) :: tjferr, tjfnow, tpbave, tpberr
+      real(dp) :: tpbnow, w, w2, wfnow
+      real(dp) :: wgnow, wnow, x, x2
+      real(dp), dimension(MFORCE) :: pecollect
+      real(dp), dimension(MFORCE) :: tpbcollect
+      real(dp), dimension(MFORCE) :: tjfcollect
+      real(dp), dimension(MFORCE) :: taucollect
+      real(dp), dimension(10, MFORCE) :: derivcollect
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
 
-      dimension pecollect(MFORCE), tpbcollect(MFORCE), tjfcollect(MFORCE),
-     & taucollect(MFORCE), derivcollect(10,MFORCE)
-
-c statement function for error calculation
+c Statement functions for error calculation, it might be reaplaced in the near future:
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))

@@ -21,9 +21,14 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use denupdn, only: rprobdn, rprobup
       use mpiblk, only: iblk_proc
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0)
+      integer :: i, ifr, k
+
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+
 
 c routine to accumulate estimators for energy etc.
 

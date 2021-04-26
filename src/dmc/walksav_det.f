@@ -1,6 +1,12 @@
       subroutine walksav_det(iw)
 c Written by Claudia Filippi
+
       use precision_kinds, only: dp
+      use vmc_mod, only: MELEC, MORB, MDET
+      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MEXCIT
+      use dmc_mod, only: MWALK
+
       use const, only: nelec
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -24,10 +30,14 @@ c Written by Claudia Filippi
       use multimat, only: aa, wfmat
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension istatus(MPI_STATUS_SIZE)
-      dimension irequest_array(MPI_STATUS_SIZE)
+      integer :: i, iab, ierr, iorb, irecv
+      integer :: irequest, irequest_array, isend, istate
+      integer :: istatus, itag, iw, iw2
+      integer :: j, k, kk
+      integer :: ndim, nel
+
 
     !   dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK),slmdiw(MMAT_DIM,MWALK)
     !  &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)
@@ -41,7 +51,7 @@ c Written by Claudia Filippi
       ! save krefw,slmuiw,slmdiw,fpuw,fpdw,fppuw,fppdw,detuw,detdw,ddxw,d2dx2w
       ! save aaw,wfmatw,ymatw,orbw,dorbw
 
-      real(dp), allocatable, save :: krefw(:)
+      integer, allocatable, save :: krefw(:)
       real(dp), allocatable, save :: slmuiw(:, :)
       real(dp), allocatable, save :: slmdiw(:, :)
       real(dp), allocatable, save :: fpuw(:, :, :)
@@ -52,12 +62,14 @@ c Written by Claudia Filippi
       real(dp), allocatable, save :: d2dx2w(:, :)
       real(dp), allocatable, save :: detuw(:, :)
       real(dp), allocatable, save :: detdw(:, :)
-
       real(dp), allocatable, save :: aaw(:,:,:,:)
       real(dp), allocatable, save :: wfmatw(:,:,:,:)
       real(dp), allocatable, save :: ymatw(:,:,:,:,:)
       real(dp), allocatable, save :: orbw(:,:,:)
       real(dp), allocatable, save :: dorbw(:,:,:,:)
+
+      dimension istatus(MPI_STATUS_SIZE)
+      dimension irequest_array(MPI_STATUS_SIZE)
 
       if(.not.allocated(aaw)) allocate(aaw(nelec,MORB,MWALK,2))
       if(.not.allocated(wfmatw)) allocate(wfmatw(MEXCIT**2,MDET,MWALK,2))

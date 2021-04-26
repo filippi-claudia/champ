@@ -7,12 +7,27 @@
       use contrl, only: irstar, nblk, nblkeq, nconf, nconf_new, nstep
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
+
+      integer :: i, iblk, ic, id, ii
+      integer :: index, ipass, iwalk, j
+      integer :: jj, ngfmc
+      integer, dimension(4) :: irn
+      real(dp) :: dabs, rnd
 
       character*25 fmt
       character*20 filename
 
-      dimension irn(4)
       save ngfmc
 
       if(ipr.gt.-2) then

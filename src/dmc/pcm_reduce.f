@@ -7,7 +7,13 @@
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ierr
+      real(dp) :: qopcm2collect, qopcm2sum, qopcmcollect, qopcmnow, spcm2collect
+      real(dp) :: spcm2sum, spcmcollect, spcmnow, vpcm2collect
+      real(dp) :: vpcm2sum, vpcmcollect, vpcmnow, wgsum
 
       if(ipcm.eq.0) return
 
@@ -78,10 +84,14 @@
       use pcm_cntrl, only: ipcm
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ierr, irecv, irequest, isend, itag_r
+      integer :: itag_s
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
 
-      dimension istatus(MPI_STATUS_SIZE)
+
 
       if(ipcm.eq.0) return
 

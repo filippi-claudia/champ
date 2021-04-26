@@ -17,9 +17,9 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       implicit none 
 
       integer :: i, j
-      real(dp) :: one, four
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: four = 4.d0
 
-      parameter (one=1.d0,four=4.d0)
 
 c variables:
 c        nelec  = number of electrons

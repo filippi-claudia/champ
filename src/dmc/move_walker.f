@@ -12,10 +12,14 @@ c Written by Claudia Filippi
       use velratio, only: fratio
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ierr, ifr, ip, irecv, irequest
+      integer :: isend, itag
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
 
-      dimension istatus(MPI_STATUS_SIZE)
+
 
       call mpi_isend(wt(nwalk),1,mpi_double_precision,irecv,1
      &,MPI_COMM_WORLD,irequest,ierr)
