@@ -474,7 +474,7 @@ subroutine parser
     error stop 
   endif 
     
-! (2) Determinants (excluding csf and csfmap)
+! (2) Determinants (excluding csf and csfmap) [#####]
 
   if (.not. fdf_block('determinants', bfdf)) then
     if ( fdf_load_defined('determinants') ) then
@@ -482,7 +482,7 @@ subroutine parser
     endif ! condition if load determinant is present
   endif ! condition determinant block not present
 
-! (3) CSF 
+! (3) CSF [#####]
 
   if (fdf_block('csf', bfdf)) then
     call fdf_read_csf_block(bfdf)

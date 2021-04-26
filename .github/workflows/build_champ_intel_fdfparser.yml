@@ -21,10 +21,11 @@ jobs:
         sudo apt-get update 
     - name: install
       run: |
+        sudo apt-get install -y intel-oneapi-common-vars
         sudo apt-get install -y intel-oneapi-compiler-fortran
         sudo apt-get install -y intel-oneapi-mkl 
         sudo apt-get install -y intel-oneapi-mpi 
-        sudo apt-get install -y intel-oneapi-dev-utilities
+        sudo apt-get install -y intel-oneapi-mpi-devel         
         
     - name: Compile
       run: |

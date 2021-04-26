@@ -657,13 +657,13 @@ subroutine read_csf_file(file_determinants)
     enddo
 
     write(ounit,*)         
-    write(ounit,*) " CSF coefficients "
+    write(ounit,*) " CSF coefficients from an external file "
     
-    do i = 1, nstates
-        write(ounit,*) " State :: ", i , " out of ", nstates
-        write(ounit,'(10(1x, f11.8, 1x))') (ccsf(j,i,1), j=1,ncsf)   
-        write(ounit,*) 
+    write(ounit,'(10(1x, a9, i3, 1x))') ((" State: ", i), i =1, nstates)    
+    do j = 1, ncsf
+      write(ounit,'(10(1x, f12.8, 1x))') (ccsf(j,i,1), i=1,nstates)   
     enddo   
+
     close(iunit)
 
 end subroutine read_csf_file
@@ -685,7 +685,8 @@ subroutine read_csfmap_file(file_determinants)
     !   local use  
     character(len=72), intent(in)   :: file_determinants
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5   
-    integer                         :: iostat, i, j, iunit
+    integer                         :: iostat, i, j, k, iunit
+    integer                         :: icsf, jx    
     integer                         :: nptr, nterm, id, nmap
     real(dp)                        :: c
     logical                         :: exist
@@ -707,8 +708,6 @@ subroutine read_csfmap_file(file_determinants)
         error stop " determinant file "// trim(file_determinants) // " does not exist."
     endif        
 
-    
-    
     do 
         read(iunit,*, iostat=iostat) temp1
         temp1 = trim(temp1)
@@ -720,10 +719,10 @@ subroutine read_csfmap_file(file_determinants)
             read(iunit, *, iostat=iostat)  temp2, ncsf, ndet, nmap
             write(ounit,*) " Number of csf, number of determinants, and number of mappings ", ncsf, ndet, nmap
             if (iostat == 0) then 
-                if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))
+                if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
                 if (.not. allocated(iadet)) allocate (iadet(ndet))
                 if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-                if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))                
+                if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))   ! why MDETCSFX             
                 
                 nptr = 1
                 do i = 1, ncsf
@@ -744,34 +743,44 @@ subroutine read_csfmap_file(file_determinants)
             
                 if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
         
-                ! write(ounit, '(''Warning: det coef overwritten with csf'')')
-                ! do k = 1, nstates
-                !     do j = 1, ndet
-                !         cdet(j, k, 1) = 0
-                !     enddo
-                !     do icsf = 1, ncsf
-                !         do j = iadet(icsf), ibdet(icsf)
-                !             jx = icxdet(j)
-                !             cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
-                !         enddo
-                !     enddo
-                ! enddo
+                write(ounit, '(''Warning: det coef overwritten with csf'')')
+                do k = 1, nstates
+                    do j = 1, ndet
+                        cdet(j, k, 1) = 0
+                    enddo
+                    do icsf = 1, ncsf
+                        do j = iadet(icsf), ibdet(icsf)
+                            jx = icxdet(j)
+                            cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
+                        enddo
+                    enddo
+                enddo
                 
-
             else
                 error stop "Error in reading number of csfs, number of determinants, or number of mappings"
             endif
         endif         
     enddo
 
-    write(ounit,*)         
     close(iunit)
     
-    ! do i = 1, nstates
-    !     write(ounit,*) " State :: ", i , " out of ", nstates
-    !     write(ounit,'(10(1x, f11.8, 1x))') (ccsf(j,i,1), j=1,ncsf)   
-    !     write(ounit,*) 
-    ! enddo   
+    write(ounit,*)         
+    write(ounit,*) " Determinant coefficients "
+    write(ounit,'(10(1x, f12.8, 1x))') (cdet(i,1,1), i=1,ndet)   
+
+    write(ounit,*)         
+    write(ounit,*) " Determinant - CSF mapping  "
+
+    do icsf = 1, ncsf
+        write(ounit,'(i4)') icsf         
+        do j = iadet(icsf), ibdet(icsf)
+            jx = icxdet(j)
+            write(ounit,'(1(5x, i4, t12, f12.8, 1x))') icxdet(j), cxdet(j)
+        enddo
+        !write(ounit,*)                 
+    enddo
+    write(ounit,*) '------------------------------------------------------'      
+
 
 end subroutine read_csfmap_file
 
