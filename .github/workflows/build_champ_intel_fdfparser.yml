@@ -20,7 +20,7 @@ jobs:
         sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
         sudo apt-get update 
     - name: install
-      run: sudo apt-get install -y intel-oneapi-compiler-ifort-mpiifort
+      run: sudo apt-get install -y intel-oneapi-dev-utilities intel-oneapi-compiler-fortran
     - name: Compile
       run: |
         source /opt/intel/oneapi/setvars.sh
