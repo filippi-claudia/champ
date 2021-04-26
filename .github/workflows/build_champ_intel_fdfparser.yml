@@ -21,10 +21,10 @@ jobs:
         sudo apt-get update 
     - name: install
       run: |
-        sudo apt-get install -y intel-basekit-runtime
-        sudo apt-get install -y intel-hpckit-runtime        
+#        sudo apt-get install -y intel-basekit-runtime
+#        sudo apt-get install -y intel-hpckit-runtime        
         sudo apt-get install -y intel-oneapi-compiler-fortran-2021.2.0
-        sudo apt-get install -y intel-oneapi-compiler-fortran-common-2021.1.2
+#        sudo apt-get install -y intel-oneapi-compiler-fortran-common-2021.1.2
         sudo apt-get install -y intel-mkl 
         sudo apt-get install -y intel-oneapi-mpi-2021.2.0     
         
