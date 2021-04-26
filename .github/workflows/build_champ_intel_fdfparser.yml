@@ -31,7 +31,6 @@ jobs:
         ifort --version
         which mpirun
         mpirun --version
-        which mpiifort
-        mpiifort --version    
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+        ls -l /opt/intel/oneapi/mpi/latest/bin/*
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=/opt/intel/oneapi/mpi/latest/bin/mpiifort
         cmake --build build -- -j1
