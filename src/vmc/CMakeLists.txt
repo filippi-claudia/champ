@@ -235,7 +235,8 @@ if (MPI_Fortran_FOUND)
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
 
-  add_dependencies(shared_objects generate-p2 shared_modules)
+  #add_dependencies(shared_objects generate-p2 shared_modules)
+  add_dependencies(shared_objects shared_modules)
 
   # --------------------------------------------------------------------
   # Remove code that has been already compiled:

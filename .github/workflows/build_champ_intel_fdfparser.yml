@@ -30,11 +30,5 @@ jobs:
     - name: Compile
       run: |
         source /opt/intel/oneapi/setvars.sh
-        echo $PATH
-        which ifort 
-        ifort --version
-        which mpirun
-        mpirun --version
-        ls -l /opt/intel/oneapi/mpi/latest/bin/*
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=/opt/intel/oneapi/mpi/latest/bin/mpiifort
-        cmake --build build -- -j1
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+        cmake --build build -- -j4

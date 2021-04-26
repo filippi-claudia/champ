@@ -494,7 +494,7 @@ subroutine parser
     if (ioptci .ne. 0) nciterm = nciprim
   endif 
 
-! (4) CSFMAP
+! (4) CSFMAP [#####]
 
   if (.not. fdf_block('determinants', bfdf)) then
     if ( fdf_load_defined('determinants') ) then
@@ -933,7 +933,6 @@ subroutine parser
     do j = 1, ncsf
       write(ounit,'(10(1x, f12.8, 1x))') (ccsf(j,i,1), i=1,nstates)   
     enddo   
-
 
   end subroutine fdf_read_csf_block
 
