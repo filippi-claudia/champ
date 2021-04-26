@@ -22,9 +22,16 @@ jobs:
     - name: install
       run: |
         sudo apt-get install intel-hpckit-getting-started intel-oneapi-clck intel-oneapi-common-licensing intel-oneapi-common-vars
-        sudo apt-get install -y intel-oneapi-dev-utilities intel-oneapi-dpcpp-cpp-compiler-pro intel-oneapi-compiler-fortran intel-oneapi-itac
+        sudo apt-get install intel-oneapi-dev-utilities intel-oneapi-dpcpp-cpp-compiler-pro intel-oneapi-compiler-fortran intel-oneapi-itac
     - name: Compile
       run: |
         source /opt/intel/oneapi/setvars.sh
+        echo $PATH
+        which ifort 
+        ifort --version
+        which mpirun
+        mpirun --version
+        which mpiifort
+        mpiifort --version    
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
         cmake --build build -- -j1
