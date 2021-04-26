@@ -1979,10 +1979,10 @@ CONTAINS
         endif
 
         fdf_integer = integers(mark%pline, 1, 1)
-        if (fdf_output) write(fdf_out,'(a,5x,i10)') label, fdf_integer
+        if (fdf_output) write(fdf_out,'(a,t30,i10)') label, fdf_integer
       else
         fdf_integer = default
-        if (fdf_output) write(fdf_out,'(a,i10,5x,a)') label, default, '# default value'
+        if (fdf_output) write(fdf_out,'(a,t30,i10,t60,a)') label, default, '# default value'
       endif
 
       if (PRESENT(line)) line = mark
@@ -2020,7 +2020,7 @@ CONTAINS
       else
          fdf_isphysical = .false.
       endif
-      if (fdf_output) write(fdf_out,'(a,5x,l10)') "#:physical? " // label, fdf_isphysical
+      if (fdf_output) write(fdf_out,'(a,t30,l10)') "#:physical? " // label, fdf_isphysical
 
       RETURN
 !--------------------------------------------------------------------------- END
@@ -2054,7 +2054,7 @@ CONTAINS
       else
          fdf_islist = .false.
       endif
-      if (fdf_output) write(fdf_out,'(a,5x,l10)') "#:list? " // label, fdf_islist
+      if (fdf_output) write(fdf_out,'(a,t30,l10)') "#:list? " // label, fdf_islist
 
       RETURN
 !--------------------------------------------------------------------------- END
@@ -2084,7 +2084,7 @@ CONTAINS
       else
          fdf_islinteger = .false.
       endif
-      if (fdf_output) write(fdf_out,'(a,5x,l10)') "#:linteger? " // label, &
+      if (fdf_output) write(fdf_out,'(a,t30,l10)') "#:linteger? " // label, &
           fdf_islinteger
 
       RETURN
@@ -2115,7 +2115,7 @@ CONTAINS
       else
          fdf_islreal = .false.
       endif
-      if (fdf_output) write(fdf_out,'(a,5x,l10)') "#:lreal? " // label, &
+      if (fdf_output) write(fdf_out,'(a,t30,l10)') "#:lreal? " // label, &
           fdf_islreal
 
       RETURN
@@ -2172,7 +2172,7 @@ CONTAINS
          end if
 
          ! find a way to write out the list anyway
-         if (fdf_output) write(fdf_out,'(a,5x,i10)') label, lni
+         if (fdf_output) write(fdf_out,'(a,t30,i10)') label, lni
       else
          write(msg,*) 'no list value for ', label
          call die('FDF module: fdf_linteger', msg, THIS_FILE, __LINE__, fdf_err)
@@ -2234,7 +2234,7 @@ CONTAINS
             call valuelists(mark%pline,1,nv,list)
          end if
 
-         if (fdf_output) write(fdf_out,'(a,5x,i10)') label, lnv
+         if (fdf_output) write(fdf_out,'(a,t30,i10)') label, lnv
       else
          write(msg,*) 'no list value for ', label
          call die('FDF module: fdf_ldouble', msg, THIS_FILE, __LINE__, fdf_err)
@@ -2274,17 +2274,17 @@ CONTAINS
       if (fdf_locate(label, mark)) then
          if (ntokens(mark%pline) < 2) then
             fdf_string = ""
-            if (fdf_output) write(fdf_out,'(a,5x,a)') label, &
+            if (fdf_output) write(fdf_out,'(a,t30,a)') label, &
              "#  *** Set to empty string *** "
          else
             ! Get all the characters spanning the space from the second to
             ! the last token
             fdf_string = characters(mark%pline, ind_init=2, ind_final=-1)
-            if (fdf_output) write(fdf_out,'(a,5x,a)') label, fdf_string
+            if (fdf_output) write(fdf_out,'(a,t30,a)') label, fdf_string
          endif
       else
         fdf_string = default
-        if (fdf_output) write(fdf_out,'(a,5x,a,5x,a)') label, default, '# default value'
+        if (fdf_output) write(fdf_out,'(a,t30,a,t60,a)') label, default, '# default value'
       endif
 
       if (PRESENT(line)) line = mark
@@ -2322,20 +2322,20 @@ CONTAINS
         if (tokens(mark%pline, 1) == "load" ) then
           if (ntokens(mark%pline) < 3) then
               fdf_load_filename = ""
-              if (fdf_output) write(fdf_out,'(a,5x,a)') label, &
+              if (fdf_output) write(fdf_out,'(a,t30,a)') label, &
               "#  *** Set to empty string *** "
           else
               ! Get all the characters spanning the space from the second to
               ! the last token
               fdf_load_filename = trim(characters(mark%pline, ind_init=3, ind_final=-1))
-              if (fdf_output) write(fdf_out,'(a,5x,a)') label, fdf_load_filename
+              if (fdf_output) write(fdf_out,'(a,t30,a)') label, fdf_load_filename
           endif
         else
           call die('FDF module: fdf_load_filename', 'Incorrect load statement', THIS_FILE, __LINE__, fdf_err)
         endif          
       else
         fdf_load_filename = default
-        if (fdf_output) write(fdf_out,'(a,5x,a,5x,a)') label, default, '# default value'
+        if (fdf_output) write(fdf_out,'(a,t30,a,t60,a)') label, default, '# default value'
       endif
 
       if (PRESENT(line)) line = mark
@@ -2373,20 +2373,20 @@ CONTAINS
         if (tokens(mark%pline, 1) == "load" ) then
           if (ntokens(mark%pline) < 3) then
               fdf_locate_module = ""
-              if (fdf_output) write(fdf_out,'(a,5x,a)') label, &
+              if (fdf_output) write(fdf_out,'(a,t30,a)') label, &
               "#  *** Set to empty string *** "
           else
               ! Get all the characters spanning the space from the second to
               ! the last token
               fdf_locate_module = trim(characters(mark%pline, ind_init=3, ind_final=-1))
-              if (fdf_output) write(fdf_out,'(a,5x,a)') label, fdf_locate_module
+              if (fdf_output) write(fdf_out,'(a,t30,a)') label, fdf_locate_module
           endif
         else
           call die('FDF module: fdf_locate_module', 'Incorrect load statement', THIS_FILE, __LINE__, fdf_err)
         endif          
       else
         fdf_locate_module = default
-        if (fdf_output) write(fdf_out,'(a,5x,a,5x,a)') label, default, '# default value'
+        if (fdf_output) write(fdf_out,'(a,t30,a,t60,a)') label, default, '# default value'
       endif
 
       if (PRESENT(line)) line = mark
@@ -2444,11 +2444,11 @@ CONTAINS
 
             if (is_true(valstr)) then
               fdf_boolean = .TRUE.
-              if (fdf_output) write(fdf_out,'(a,5x,l10)') label, fdf_boolean
+              if (fdf_output) write(fdf_out,'(a,t30,l10)') label, fdf_boolean
 
             elseif (is_false(valstr)) then
               fdf_boolean = .FALSE.
-              if (fdf_output) write(fdf_out,'(a,5x,l10)') label, fdf_boolean
+              if (fdf_output) write(fdf_out,'(a,t30,l10)') label, fdf_boolean
 
             else
               write(msg,*) 'unexpected logical value ', label, ' = ', valstr
@@ -2460,11 +2460,11 @@ CONTAINS
 
             if ( valint == 1 ) then
               fdf_boolean = .TRUE.
-              if (fdf_output) write(fdf_out,'(a,5x,l10)') label, fdf_boolean
+              if (fdf_output) write(fdf_out,'(a,t30,l10)') label, fdf_boolean
 
             elseif (valint == 0) then
               fdf_boolean = .FALSE.
-              if (fdf_output) write(fdf_out,'(a,5x,l10)') label, fdf_boolean
+              if (fdf_output) write(fdf_out,'(a,t30,l10)') label, fdf_boolean
 
             else
               write(msg,*) 'unexpected logical value ', label, ' = ', valint
@@ -2473,13 +2473,13 @@ CONTAINS
             endif
           else
             fdf_boolean = .TRUE.
-            if (fdf_output) write(fdf_out,'(a,5x,l10,5x,a)') label, fdf_boolean,          &
+            if (fdf_output) write(fdf_out,'(a,t30,l10,5x,a)') label, fdf_boolean,          &
                                            '# label by itself'
           endif
         endif
       else
         fdf_boolean = default
-        if (fdf_output) write(fdf_out,'(a,5x,l10,5x,a)') label, default, '# default value'
+        if (fdf_output) write(fdf_out,'(a,t30,l10,t60,a)') label, default, '# default value'
       endif
 
       if (PRESENT(line)) line = mark
@@ -2545,11 +2545,11 @@ CONTAINS
 
         if (is_true(valstr)) then
            fdf_bboolean = .TRUE.
-           if (fdf_output) write(fdf_out,'(a,5x,l10)') valstr, fdf_bboolean
+           if (fdf_output) write(fdf_out,'(a,t30,l10)') valstr, fdf_bboolean
 
         elseif (is_false(valstr)) then
            fdf_bboolean = .FALSE.
-           if (fdf_output) write(fdf_out,'(a,5x,l10)') valstr, fdf_bboolean
+           if (fdf_output) write(fdf_out,'(a,t30,l10)') valstr, fdf_bboolean
 
         else
            write(msg,*) 'unexpected logical value ', valstr
@@ -2616,10 +2616,10 @@ CONTAINS
           call die('FDF module: fdf_single', msg, THIS_FILE, __LINE__,  fdf_err)
         endif
         fdf_single = values(mark%pline, 1, 1)
-        if (fdf_output) write(fdf_out,'(a,5x,g20.10)') label, fdf_single
+        if (fdf_output) write(fdf_out,'(a,t30,g20.10)') label, fdf_single
       else
         fdf_single = default
-        if (fdf_output) write(fdf_out,'(a,5x,g20.10,5x,a)') label, default, '# default value'
+        if (fdf_output) write(fdf_out,'(a,t30,g20.10,t60,a)') label, default, '# default value'
       endif
 
       if (PRESENT(line)) line = mark
@@ -2661,10 +2661,10 @@ CONTAINS
           call die('FDF module: fdf_double', msg, THIS_FILE, __LINE__, fdf_err)
         endif
         fdf_double = values(mark%pline, 1, 1)
-        if (fdf_output) write(fdf_out,'(a,5x,g20.10)') label, fdf_double
+        if (fdf_output) write(fdf_out,'(a,t30,g20.10)') label, fdf_double
       else
         fdf_double = default
-        if (fdf_output) write(fdf_out,'(a,5x,g20.10,5x,a)') label, default, '# default value'
+        if (fdf_output) write(fdf_out,'(a,t30,g20.10,t60,a)') label, default, '# default value'
       endif
 
       if (PRESENT(line)) line = mark
@@ -2723,12 +2723,12 @@ CONTAINS
         if (.not. leqi(unitstr, defunit))                               &
           fdf_physical = value * fdf_convfac(unitstr, defunit)
 
-        if (fdf_output) write(fdf_out,'(a,5x,g20.10,1x,a10)') label, fdf_physical, defunit
-        if (fdf_output) write(fdf_out,'(a,a,5x,g20.10,1x,a10)')                         &
+        if (fdf_output) write(fdf_out,'(a,t30,g20.10,1x,a10)') label, fdf_physical, defunit
+        if (fdf_output) write(fdf_out,'(a,a,t30,g20.10,1x,a10)')                         &
              '# above item originally: ', label, value, unitstr
       else
         fdf_physical = default
-        if (fdf_output) write(fdf_out,'(a,5x,g20.10,1x,a,5x,a)')                        &
+        if (fdf_output) write(fdf_out,'(a,t30,g20.10,1x,a,t60,a)')                        &
              label, default, defunit, '# default value'
       endif
 
@@ -2791,7 +2791,7 @@ CONTAINS
          else
             write(fdf_out,'(5x,g20.10,1x,a10)') fdf_bphysical, defunit
          end if
-         write(fdf_out,'(a,a,5x,g20.10,1x,a10)') &
+         write(fdf_out,'(a,a,t30,g20.10,1x,a10)') &
               '# above item on line: ', pline%line
       end if
 
@@ -3118,7 +3118,7 @@ CONTAINS
         mark => mark%next
       end do
       
-      if (fdf_output) write(fdf_out,'(a,5x,l10)') "#:block? " // label, fdf_isblock
+      if (fdf_output) write(fdf_out,'(a,t30,l10)') "Is block " // trim(label) // ' present?',  fdf_isblock
 
       RETURN
 !--------------------------------------------------------------------------- END
@@ -3460,7 +3460,7 @@ CONTAINS
          fdf_defined = fdf_isblock(label)
       endif
       if ( fdf_output ) then
-        write(fdf_out,'(a,5x,l10)') '#:defined? ' // label, fdf_defined
+        write(fdf_out,'(a,t30,l10)') 'Is defined? ' // label, fdf_defined
       endif
 
       RETURN
@@ -3485,7 +3485,7 @@ CONTAINS
          fdf_load_defined = fdf_isblock(label)
       endif
       if ( fdf_output ) then
-        write(fdf_out,'(a,5x,l10)') '#:defined? ' // label, fdf_load_defined
+        write(fdf_out,'(a,t30,l10)') 'Is  load ' //  trim(label) //  ' defined? ' , fdf_load_defined
       endif
 
       RETURN

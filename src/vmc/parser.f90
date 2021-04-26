@@ -504,11 +504,24 @@ subroutine parser
 
 ! (5) Jastrow Parameters (either block or from a file)
 
-  if (.not. fdf_block('jastrow', bfdf)) then
-    if ( fdf_load_defined('jastrow') ) then
+  ! if (.not. fdf_block('jastrow', bfdf)) then
+  !   if ( fdf_load_defined('jastrow') ) then
+  !     call read_jastrow_file(file_jastrow)
+  !   endif ! condition if load jastrow is present
+  ! endif ! condition jastrow block not present
+
+  if (fdf_block('jastrow', bfdf)) then
+    call fdf_read_jastrow_block(bfdf)
+  elseif ( fdf_load_defined('jastrow') ) then
       call read_jastrow_file(file_jastrow)
-    endif ! condition if load jastrow is present
-  endif ! condition jastrow block not present
+  else 
+    ! no information about jastrow present. Set some values
+    call inputjastrow()
+  endif 
+
+
+
+
 
 ! (6) LCAO orbitals
 
@@ -935,6 +948,76 @@ subroutine parser
     enddo   
 
   end subroutine fdf_read_csf_block
+
+  subroutine fdf_read_jastrow_block(bfdf)
+
+    implicit none 
+    
+    type(block_fdf)            :: bfdf
+    type(parsed_line), pointer :: pline
+    integer                    :: i,j,k, iwft
+    integer                    :: mparmja, mparmjb, mparmjc, nterms4
+!   Format of the jastrow block
+!   %block csf
+!   jastrow_parameter 1 
+!    5  5  0           norda,nordb,nordc
+!     0.60000000   0.00000000     scalek,a21
+!     0.00000000   0.00000000   0.05946443  -0.68575835   0.42250502  -0.10845009 (a(iparmj),iparmj=1,nparma)
+!     0.00000000   0.00000000  -0.13082284  -0.06620300   0.18687803  -0.08503472 (a(iparmj),iparmj=1,nparma)
+!     0.50000000   0.38065787   0.16654238  -0.05430118   0.00399345   0.00429553 (b(iparmj),iparmj=1,nparmb)
+!   %endblock
+
+
+    allocate (scalek(nwftype))
+
+
+    j = 1
+    do while((fdf_bline(bfdf, pline)))     
+!     First get the first number required for allocations
+      if ((pline%id(2) .eq. "i") .and. (pline%ntokens .eq. 2)) then  ! check if it is the only integer present in a line
+        iwft  = fdf_bintegers(pline, 1) ! 1st integer in the line
+      endif
+
+      if ((pline%id(2) .eq. "i") .and. (pline%id(4) .eq. "i") .and. (pline%id(6) .eq. "i")) then  
+        norda = fdf_bintegers(pline, 1) ! 1st integer in the line
+        nordb = fdf_bintegers(pline, 2) ! 2nd integer in the line
+        nordc = fdf_bintegers(pline, 3) ! 3rd integer in the line     
+
+        mparmja = 2 + max(0, norda - 1)
+        mparmjb = 2 + max(0, nordb - 1)
+        mparmjc = nterms4(nordc)
+
+        print*, "mparmja ", mparmja
+        print*, "mparmjb ", mparmjb      
+        print*, "mparmjc ", mparmjc
+      endif
+
+      if ((pline%id(2) .eq. "r") .and. (pline%id(4) .eq. "r") .and. (pline%id(1) .eq. "n") .and. (pline%id(3) .eq. "n")) then  ! check if it is the only integer present in a line
+        scalek(iwft) = fdf_bvalues(pline, 1) ! 1st integer in the line
+        print*, "scalek ", scalek(iwft)
+        a21          = fdf_bvalues(pline, 2) ! 2nd integer in the line
+        print*, "a21 ", a21
+      endif
+
+      !print*, "check all the ids ", pline%id(1:6)
+      ! fix this part
+
+      ! if ((pline%id(1) .eq. "n") .and. (pline%ntokens .eq. mparmja+1) ) then  ! check if it is the only integer present in a line
+      !   do j = 1, nctype
+      !     do i = 1, mparmja
+      !       a4(i,j,iwft) = fdf_bvalues(pline, i)
+      !       print *, a4(i,j,iwft)
+      !     enddo
+      !   enddo
+      ! endif
+
+
+
+    enddo 
+
+
+  end subroutine fdf_read_jastrow_block
+
 
 
 end subroutine parser
