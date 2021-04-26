@@ -5,8 +5,8 @@
       use pcm_cntrl, only: ipcm, ipcmprt
       use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_cum, qopcm_cm2
-
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: i, iblk, iqopcm_err, ispcmerr, ivpcmerr
@@ -20,8 +20,7 @@
  
       data hatokc/627.509541d0/
 
-
-
+c Statement functions for error calculation, it might be reaplaced in the near future:
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))

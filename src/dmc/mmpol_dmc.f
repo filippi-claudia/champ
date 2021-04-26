@@ -5,8 +5,8 @@
       use mmpol_cntrl, only: immpol, immpolprt
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2
       use mmpol_averages, only: dmmpol_cum, dmmpol_cm2
-
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: i, iblk, icmmpol_err, idmmpol_err
@@ -20,8 +20,7 @@
  
       data hatokc/627.509541d0/
 
-
-
+c Statement functions for error calculation, it might be reaplaced in the near future:
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))

@@ -44,9 +44,7 @@ c routine to accumulate estimators for energy etc.
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
-
-
-c statement function for error calculation
+c Statement functions for error calculation, it might be reaplaced in the near future:
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
