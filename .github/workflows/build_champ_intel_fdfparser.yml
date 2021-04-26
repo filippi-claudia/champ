@@ -21,8 +21,8 @@ jobs:
         sudo apt-get update 
     - name: install
       run: |
-        sudo apt-get install intel-hpckit-getting-started intel-oneapi-clck intel-oneapi-common-licensing intel-oneapi-common-vars
-        sudo apt-get install intel-oneapi-dev-utilities intel-oneapi-dpcpp-cpp-compiler-pro intel-oneapi-compiler-fortran intel-oneapi-itac
+        sudo apt-get install -yqq intel-basekit intel-hpckit intel-oneapi-runtime-libs
+#        sudo apt-get install -yqq intel-oneapi-dev-utilities intel-oneapi-dpcpp-cpp-compiler-pro intel-oneapi-compiler-fortran intel-oneapi-itac
     - name: Compile
       run: |
         source /opt/intel/oneapi/setvars.sh
