@@ -72,6 +72,7 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: radmax, delri
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use elec, only: nup
       use multidet, only: kref
@@ -88,7 +89,7 @@ c-----------------------------------------------------------------------
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
       use multislater, only: detiab
-      use mstates_mod, only: MSTATES
+      use config, only: anormo
 
       implicit real*8(a-h,o-z)
 
@@ -133,7 +134,8 @@ c     All quantities saved (old) avaliable
                call multideterminante_grad(iel,dorb_tmp(1,1,istate),detratio,slmi(1,iab,istate),
      &              aa(1,1,iab,istate),wfmat(1,1,iab,istate),ymat(1,1,iab,istate),vd_s)
                do kk=1,3
-                  vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk,istate))
+                  vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)
+     &                   *(vd_s(kk)+vref(kk,istate))/anormo(istate)
                enddo
             enddo
             vd(1)=vd(1)*psi2gi
@@ -175,7 +177,8 @@ c     Within single-electron move - quantities of electron iel not saved
                call multideterminante_grad(iel,dorbn(1,1,istate),detratio,slmin(1,istate),
      &              aan(1,1,istate),wfmatn(1,1,istate),ymatn(1,1,istate),vd_s)
                do kk=1,3
-                  vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk,istate))
+                  vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)
+     &                   *(vd_s(kk)+vref(kk,istate))/anormo(istate)
                enddo
             enddo
             vd(1)=vd(1)*psi2gi

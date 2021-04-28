@@ -189,6 +189,8 @@ contains
     use csfs, only: nstates
     use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
     use sr_mat_n, only: sr_o, wtg, obs_tot
+    use estcum, only: iblk
+    use contrl, only: nstep
     use optorb_cblock, only: norbterm
     use config, only: anormo
 
@@ -206,6 +208,7 @@ contains
     n_obs=2
 
     obs_norm=0.0d0
+    passes=dfloat(iblk*nstep)
 
     do istate=1,nstates
        do iconf=1,nconf_n
@@ -226,8 +229,9 @@ contains
           anormo(istate)=obs_tot(jwtg,istate)+obs_norm_tot(jwfj,istate)&
 		  +obs_norm_tot(jsqfj,istate)
        enddo
+       anormo=anormo/passes
+       print *, "ANORMO", anormo
     endif
-
     call MPI_BCAST(anormo(1),nstates,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
   end subroutine

@@ -116,32 +116,34 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      character*40 filename,filetype
+      character*40 filename,filetype,fint,xstate
 
       dimension anorm(MBASIS)
 
-c     RLPB
-      kstate=1
+      fint='(I1.1)'
 
       if(ioptorb.eq.0) return
 
-      filename='orbitals'//filetype(1:index(filetype,' ')-1)
-      open(2,file=filename,status='unknown')
-      write(2,'(''lcao '',3i4)') norb+nadorb,nbasis,iwf_fit
+      do istate=1,nstates
+         write (xstate,fint) istate
+         filename='orbitals_state_'//trim(xstate)//filetype(1:index(filetype,' ')-1)
+         open(2,file=filename,status='unknown')
+         write(2,'(''lcao '',3i4)') norb+nadorb,nbasis,iwf_fit
 
-      if(numr.gt.0) then
-         do i=1,norb+nadorb
-            write(2,'(1000e20.8)') (coef(j,i,kstate,1)/scalecoef,j=1,nbasis)
-         enddo
-      else
-         call basis_norm(1,anorm,1)
-         do i=1,norb+nadorb
-            write(2,'(1000e20.8)') (coef(j,i,kstate,1)/(anorm(j)*scalecoef),j=1,nbasis)
-         enddo
-      endif
+         if(numr.gt.0) then
+            do i=1,norb+nadorb
+               write(2,'(1000e20.8)') (coef(j,i,istate,1)/scalecoef,j=1,nbasis)
+            enddo
+         else
+            call basis_norm(1,anorm,1)
+            do i=1,norb+nadorb
+               write(2,'(1000e20.8)') (coef(j,i,istate,1)/(anorm(j)*scalecoef),j=1,nbasis)
+            enddo
+         endif
 
-      write(2,'(''end'')')
-      close(2)
+         write(2,'(''end'')')
+         close(2)
+      enddo
 
       end subroutine
 
