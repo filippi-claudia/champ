@@ -132,7 +132,7 @@ subroutine parser
   use inputflags, 		only: ici_def, iforces, icsfs, icharge_efield
   use inputflags, 		only: imultideterminants, imodify_zmat, izmatrix_check
   use inputflags, 		only: ihessian_zmat
-
+  use basis,          only: zex
 
 ! Note the following modules are new additions
 

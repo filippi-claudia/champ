@@ -336,7 +336,7 @@ subroutine inputjastrow()
 
     implicit none 
     integer         :: iwft, it, iparm, isp
-    integer         :: mparmja, mparmjb, mparmjc
+    integer         :: mparmja, mparmjb, mparmjc, nterms4
 
     if (.not. allocated(scalek)) allocate (scalek(nwftype))
 
