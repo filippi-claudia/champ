@@ -280,16 +280,18 @@ subroutine inputforces
 
 end subroutine inputforces
 
-subroutine inputdet(nwftype)
+subroutine inputdet()
     ! Set the cdet to be equal
     use dets, only: cdet, ndet
     use csfs, only: nstates
-    use vmc_mod, only: MORB
-    use mstates_mod, only: MSTATES
+!    use vmc_mod, only: MORB
+!    use mstates_mod, only: MSTATES
+    use wfsec, only: nwftype
 
-    implicit real*8(a - h, o - z)
+    implicit none 
+    integer             :: iwft, k
 
-    allocate (cdet(MDET, MSTATES, nwftype))
+    if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
 
     do iwft = 2, nwftype
         do k = 1, ndet
@@ -299,12 +301,16 @@ subroutine inputdet(nwftype)
 
 end subroutine inputdet
 
-subroutine inputlcao(nwftype)
+subroutine inputlcao()
     ! Set the lcao to be equal
     use coefs, only: coef, nbasis, norb
-    implicit real*8(a - h, o - z)
+    use wfsec, only: nwftype
 
-    allocate (coef(nbasis, MORB, nwftype))
+    implicit none
+    integer             :: iwft, i,j
+
+
+    if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
 
     do iwft = 2, nwftype
         do i = 1, norb
@@ -316,7 +322,7 @@ subroutine inputlcao(nwftype)
 
 end subroutine inputlcao
 
-subroutine inputjastrow(nwftype)
+subroutine inputjastrow()
     ! Set the jastrow to be equal
 
     use jaspar, only: nspin1, nspin2
@@ -325,30 +331,23 @@ subroutine inputjastrow(nwftype)
     use bparm, only: nspin2b
     use contr2, only: ifock, ijas
     use contr2, only: isc
-
+    use wfsec, only: nwftype
     use atom, only: ncent, nctype
 
-    implicit real*8(a - h, o - z)
+    implicit none 
+    integer         :: iwft, it, iparm, isp
+    integer         :: mparmja, mparmjb, mparmjc
 
-    !call p2gti('jastrow:ijas', ijas, 1)
-    !call p2gti('jastrow:isc', isc, 1)
-    !!call p2gtid('jastrow:nspin1', nspin1, 1, 1)
-    !!call p2gtid('jastrow:nspin2', nspin2, 1, 1)
-    !!call p2gtid('jastrow:ifock', ifock, 0, 1)
-
-    !call p2gti('atoms:natom', ncent, 1)
-    !call p2gti('atoms:nctype', nctype, 1)
-
-    allocate (scalek(nwftype))
+    if (.not. allocated(scalek)) allocate (scalek(nwftype))
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
         mparmja = 2 + max(0, norda - 1)
         mparmjb = 2 + max(0, nordb - 1)
         mparmjc = nterms4(nordc)
 
-        allocate (a4(mparmja, nctype, nwftype))
-        allocate (b(mparmjb, 2, nwftype))
-        allocate (c(mparmjc, nctype, nwftype))
+        if (.not. allocated(a4)) allocate (a4(mparmja, nctype, nwftype))
+        if (.not. allocated(b))  allocate (b(mparmjb, 2, nwftype))
+        if (.not. allocated(c))  allocate (c(mparmjc, nctype, nwftype))
 
         do iwft = 2, nwftype
             scalek(iwft) = scalek(1)

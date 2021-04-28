@@ -464,10 +464,11 @@ subroutine parser
 ! Processing of data read from the parsed files or setting them with defaults
 
 ! (1) Molecular geometry file exclusively in .xyz format [#####]
-  if (fdf_block('molecule', bfdf)) then
-    call fdf_read_molecule_block(bfdf)
-  elseif ( fdf_load_defined('molecule') ) then
+
+  if ( fdf_load_defined('molecule') ) then
     call read_molecule_file(file_molecule)
+  elseif (fdf_block('molecule', bfdf)) then
+    call fdf_read_molecule_block(bfdf)
   else
     write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
@@ -475,19 +476,24 @@ subroutine parser
   endif 
     
 ! (2) Determinants (excluding csf and csfmap) [#####]
-
-  if (.not. fdf_block('determinants', bfdf)) then
-    if ( fdf_load_defined('determinants') ) then
-      call read_determinants_file(file_determinants)
-    endif ! condition if load determinant is present
-  endif ! condition determinant block not present
+  
+  if ( fdf_load_defined('determinants') ) then
+    call read_determinants_file(file_determinants)
+  elseif ( fdf_block('determinants', bfdf)) then
+  ! call fdf_read_determinants_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about determinants provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop     
+  else
+    call inputdet()
+  endif 
 
 ! (3) CSF [#####]
 
-  if (fdf_block('csf', bfdf)) then
-    call fdf_read_csf_block(bfdf)
-  elseif ( fdf_load_defined('determinants') ) then
+  if ( fdf_load_defined('determinants') ) then
     call read_csf_file(file_determinants)
+  elseif (fdf_block('csf', bfdf)) then
+    call fdf_read_csf_block(bfdf)
   else 
     ! No csf present; set default values (in replacement of inputcsf)
     nstates = 1 ; ncsf = 0
@@ -495,201 +501,310 @@ subroutine parser
   endif 
 
 ! (4) CSFMAP [#####]
-
-  if (.not. fdf_block('determinants', bfdf)) then
-    if ( fdf_load_defined('determinants') ) then
-      call read_csfmap_file(file_determinants)
-    endif ! condition if load determinant is present
-  endif ! condition determinant block not present
+  
+  if ( fdf_load_defined('determinants') ) then
+    call read_csfmap_file(file_determinants)
+  elseif (fdf_block('determinants', bfdf)) then
+  ! call fdf_read_csfmap_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about csfmaps provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop         
+  endif 
 
 ! (5) Jastrow Parameters (either block or from a file)
 
-  ! if (.not. fdf_block('jastrow', bfdf)) then
-  !   if ( fdf_load_defined('jastrow') ) then
-  !     call read_jastrow_file(file_jastrow)
-  !   endif ! condition if load jastrow is present
-  ! endif ! condition jastrow block not present
-
-  if (fdf_block('jastrow', bfdf)) then
-    call fdf_read_jastrow_block(bfdf)
-  elseif ( fdf_load_defined('jastrow') ) then
+  if ( fdf_load_defined('jastrow') ) then
       call read_jastrow_file(file_jastrow)
+  elseif (fdf_block('jastrow', bfdf)) then
+  !call fdf_read_jastrow_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about jastrow provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop         
   else 
     ! no information about jastrow present. Set some values
     call inputjastrow()
   endif 
 
-
-
-
-
 ! (6) LCAO orbitals
 
-  if (.not. fdf_block('orbitals', bfdf)) then
-    if ( fdf_load_defined('orbitals') ) then
-      call read_orbitals_file(file_orbitals)
-    endif ! condition if load orbitals is present
-  endif ! condition orbitals block not present
+  if ( fdf_load_defined('orbitals') ) then
+    call read_orbitals_file(file_orbitals)
+  elseif ( fdf_block('orbitals', bfdf)) then
+  ! call fdf_read_orbitals_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about orbitals provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop     
+  else
+    call inputlcao()    
+  endif 
 
 ! (7) exponents 
 
-  if (.not. fdf_block('exponents', bfdf)) then
-    if ( fdf_load_defined('exponents') ) then
-      call read_exponents_file(file_exponents)
-    endif ! condition if load exponent is present
-  endif ! condition exponent block not present
+  if ( fdf_load_defined('exponents') ) then
+    call read_exponents_file(file_exponents)
+  elseif ( fdf_block('exponents', bfdf)) then
+  ! call fdf_read_exponents_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about exponents provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop         
+  else
+    zex = 1   ! debug check condition about numr == 0
+  endif 
 
 ! (8) Jastrow derivative Parameters (either block or from a file)
 
-  if (.not. fdf_block('jastrow_der', bfdf)) then
-    if ( fdf_load_defined('jastrow_der') ) then
-      call read_jasderiv_file(file_jastrow_der)
-    endif ! condition if load jastrow_der is present
-  endif ! condition jastrow_der block not present
+  if ( fdf_load_defined('jastrow_der') ) then
+    call read_jasderiv_file(file_jastrow_der)
+  elseif ( fdf_block('jastrow_der', bfdf)) then
+  !call fdf_read_jastrow_derivative_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else  
+    write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif 
 
 ! (9) Symmetry information of orbitals (either block or from a file)
 
-  if (.not. fdf_block('symmetry', bfdf)) then
-    if ( fdf_load_defined('symmetry') ) then
-      call read_symmetry_file(file_symmetry)
-    endif ! condition if load symmetry is present
-  endif ! condition symmetry block not present
+  if ( fdf_load_defined('symmetry') ) then
+    call read_symmetry_file(file_symmetry)
+  elseif ( fdf_block('symmetry', bfdf)) then
+  ! call fdf_read_symmetry_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif
 
 ! (10) optorb_mixvirt information of orbitals (either block or from a file)
 
-  if (.not. fdf_block('optorb_mixvirt', bfdf)) then
-    if ( fdf_load_defined('optorb_mixvirt') ) then
-      call read_optorb_mixvirt_file(file_optorb_mixvirt)
-    endif ! condition if load optorb_mixvirt is present
-  endif ! condition optorb_mixvirt block not present
+  if ( fdf_load_defined('optorb_mixvirt') ) then
+    call read_optorb_mixvirt_file(file_optorb_mixvirt)
+  elseif ( fdf_block('optorb_mixvirt', bfdf)) then
+  ! call fdf_read_optorb_mixvirt_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif
 
 ! (11) Eigenvalues information of orbitals (either block or from a file)
 
-  if (.not. fdf_block('eigenvalues', bfdf)) then
-    if ( fdf_load_defined('eigenvalues') ) then
-      call read_eigenvalues_file(file_eigenvalues)
-    endif ! condition if load eigenvalues is present
-  endif ! condition eigenvalues block not present
+  if ( fdf_load_defined('eigenvalues') ) then
+    call read_eigenvalues_file(file_eigenvalues)
+  elseif ( fdf_block('eigenvalues', bfdf)) then
+  ! call fdf_read_eigenvalues_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif
   
 ! (12) Basis num information (either block or from a file)
 
-  if (.not. fdf_block('basis_num_info', bfdf)) then
-    if ( fdf_load_defined('basis_num_info') ) then
-      call read_basis_num_info_file(pooldir // file_basis_num_info)
-    endif ! condition if load basis_num_info is present
-  endif ! condition basis_num_info block not present
- 
+  if ( fdf_load_defined('basis_num_info') ) then
+    call read_basis_num_info_file(file_basis_num_info)
+  elseif (.not. fdf_block('basis_num_info', bfdf)) then
+  ! call fdf_read_eigenvalues_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif
 
 ! (13) Forces information (either block or from a file) [#####]
-
-  if (fdf_block('forces', bfdf)) then
-    call fdf_read_forces_block(bfdf)
-  elseif (fdf_load_defined('forces') ) then
+  
+  if (fdf_load_defined('forces') ) then
     call read_forces_file(file_forces)
+  elseif (fdf_block('forces', bfdf)) then
+    call fdf_read_forces_block(bfdf)
   else
     call inputforces()
-  endif ! condition if load forces is present   
+  endif 
 
 ! (14) Dmatrix information (either block or from a file)
 
-  if (.not. fdf_block('dmatrix', bfdf)) then
-    if ( fdf_load_defined('dmatrix') ) then
-      call read_dmatrix_file(file_dmatrix)
-    endif ! condition if load dmatrix is present
-  endif ! condition dmatrix block not present
+  if ( fdf_load_defined('dmatrix') ) then
+    call read_dmatrix_file(file_dmatrix)
+  elseif (fdf_block('dmatrix', bfdf)) then
+  ! call fdf_read_dmatrix_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about dmatrix provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about dmatrix provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif
+
 
 ! (15) basis information (either block or from a file)
 
-  ! if (.not. fdf_block('basis', bfdf)) then
-  !   if ( fdf_load_defined('basis') ) then
-  !     call read_basis_file(file_basis)
-  !   endif ! condition if load basis is present
-  ! endif ! condition basis block not present
+  ! if ( fdf_load_defined('basis') ) then
+  !   call read_basis_file(file_basis)
+  ! elseif ( fdf_block('basis', bfdf)) then
+  ! ! call fdf_read_basis_block(bfdf)
+  !   write(errunit,'(a)') "Error:: No information about basis provided in the block."
+  !   write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+  !   error stop             
+  ! else
+  !   write(errunit,'(a)') "Error:: No information about basis provided in the block."
+  !   write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+  !   error stop             
+  ! endif
 
-! (16) exponents information (either block or from a file)
+! (16) pseudo information (either block or from a file)
 
-  if (.not. fdf_block('exponents', bfdf)) then
-    if ( fdf_load_defined('exponents') ) then
-      call read_exponents_file(file_exponents)
-    endif ! condition if load exponents is present
-  endif ! condition exponents block not present
+  ! if ( fdf_load_defined('pseudo') ) then
+  !   call read_pseudo_file(file_pseudo)
+  ! elseif ( fdf_block('pseudo', bfdf)) then
+  ! ! call fdf_read_pseudo_block(bfdf)
+  !   write(errunit,'(a)') "Error:: No information about pseudo provided in the block."
+  !   write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+  !   error stop             
+  ! else
+  !   write(errunit,'(a)') "Error:: No information about pseudo provided in the block."
+  !   write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+  !   error stop             
+  ! endif
 
-! (17) pseudo information (either block or from a file)
 
-  ! if (.not. fdf_block('pseudo', bfdf)) then
-  !   if ( fdf_load_defined('pseudo') ) then
-  !     call read_pseudo_file(file_pseudo)
-  !   endif ! condition if load pseudo is present
-  ! endif ! condition pseudo block not present
+! (17) multideterminants information (either block or from a file)
 
-! (18) multideterminants information (either block or from a file)
+  if ( fdf_load_defined('multideterminants') ) then
+    call read_multideterminants_file(file_multideterminants)
+  elseif (fdf_block('multideterminants', bfdf)) then
+  ! call fdf_read_multideterminants_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about multideterminants provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about multideterminants provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif
 
-  if (.not. fdf_block('multideterminants', bfdf)) then
-    if ( fdf_load_defined('multideterminants') ) then
-      call read_multideterminants_file(file_multideterminants)
-    endif ! condition if load multideterminants is present
-  endif ! condition multideterminants block not present
+! (18) cavity_spheres information (either block or from a file)
 
-! (19) cavity_spheres information (either block or from a file)
+  if ( fdf_load_defined('cavity_spheres') ) then
+    call read_cavity_spheres_file(file_cavity_spheres)
+  elseif ( fdf_block('cavity_spheres', bfdf)) then
+  ! call fdf_read_cavity_spheres_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif
 
-  if (.not. fdf_block('cavity_spheres', bfdf)) then
-    if ( fdf_load_defined('cavity_spheres') ) then
-      call read_cavity_spheres_file(file_cavity_spheres)
-    endif ! condition if load cavity_spheres is present
-  endif ! condition cavity_spheres block not present
+! (19) gradients_zmatrix information (either block or from a file)
 
-! (20) gradients_zmatrix information (either block or from a file)
+  if ( fdf_load_defined('gradients_zmatrix') ) then
+    call read_gradients_zmatrix_file(file_gradients_zmatrix)
+  elseif ( fdf_block('gradients_zmatrix', bfdf)) then
+  ! call fdf_read_gradients_zmatrix_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about gradients_zmatrix provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about gradients_zmatrix provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif
 
-  if (.not. fdf_block('gradients_zmatrix', bfdf)) then
-    if ( fdf_load_defined('gradients_zmatrix') ) then
-      call read_gradients_zmatrix_file(file_gradients_zmatrix)
-    endif ! condition if load gradients_zmatrix is present
-  endif ! condition gradients_zmatrix block not present
+! (20) gradients_cartesian information (either block or from a file)
 
-! (21) gradients_cartesian information (either block or from a file)
+  if ( fdf_load_defined('gradients_cartesian') ) then
+    call read_gradients_cartesian_file(file_gradients_cartesian)
+  elseif ( fdf_block('gradients_cartesian', bfdf)) then
+  ! call fdf_read_gradients_cartesian_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about gradients_cartesian provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about gradients_cartesian provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif
 
-  if (.not. fdf_block('gradients_cartesian', bfdf)) then
-    if ( fdf_load_defined('gradients_cartesian') ) then
-      call read_gradients_cartesian_file(file_gradients_cartesian)
-    endif ! condition if load gradients_cartesian is present
-  endif ! condition gradients_cartesian block not present
+! (21) modify_zmatrix information (either block or from a file)
 
-! (22) modify_zmatrix information (either block or from a file)
+  if ( fdf_load_defined('modify_zmatrix') ) then
+    call read_modify_zmatrix_file(file_modify_zmatrix)
+  elseif ( fdf_block('modify_zmatrix', bfdf)) then
+  ! call fdf_read_modify_zmatrix_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about modify_zmatrix provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about modify_zmatrix provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif    
 
-  if (.not. fdf_block('modify_zmatrix', bfdf)) then
-    if ( fdf_load_defined('modify_zmatrix') ) then
-      call read_modify_zmatrix_file(file_modify_zmatrix)
-    endif ! condition if load modify_zmatrix is present
-  endif ! condition modify_zmatrix block not present
+! (22) hessian_zmatrix information (either block or from a file)
 
-! (23) hessian_zmatrix information (either block or from a file)
+  if ( fdf_load_defined('hessian_zmatrix') ) then
+    call read_hessian_zmatrix_file(file_hessian_zmatrix)
+  elseif ( fdf_block('hessian_zmatrix', bfdf)) then
+  ! call fdf_read_hessian_zmatrix_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about hessian_zmatrix provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about hessian_zmatrix provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif    
 
-  if (.not. fdf_block('hessian_zmatrix', bfdf)) then
-    if ( fdf_load_defined('hessian_zmatrix') ) then
-      call read_hessian_zmatrix_file(file_hessian_zmatrix)
-    endif ! condition if load hessian_zmatrix is present
-  endif ! condition hessian_zmatrix block not present
 
-! (24) zmatrix_connection information (either block or from a file)
+! (23) zmatrix_connection information (either block or from a file)
 
-  if (.not. fdf_block('zmatrix_connection', bfdf)) then
-    if ( fdf_load_defined('zmatrix_connection') ) then
-      call read_zmatrix_connection_file(file_zmatrix_connection)
-    endif ! condition if load zmatrix_connection is present
-  endif ! condition zmatrix_connection block not present
-  
-! (25) efield information (either block or from a file)
+  if ( fdf_load_defined('zmatrix_connection') ) then
+    call read_zmatrix_connection_file(file_zmatrix_connection)
+  elseif ( fdf_block('zmatrix_connection', bfdf)) then
+  ! call fdf_read_zmatrix_connection_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about zmatrix_connection provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about zmatrix_connection provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif    
+    
+! (24) efield information (either block or from a file)
 
-  if (.not. fdf_block('efield', bfdf)) then
-    if ( fdf_load_defined('efield') ) then
-      call read_efield_file(file_efield)
-    endif ! condition if load efield is present
-  endif ! condition efield block not present
-
+  if ( fdf_load_defined('efield') ) then
+    call read_efield_file(file_efield)
+  elseif ( fdf_block('efield', bfdf)) then
+  ! call fdf_read_efield_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about efield provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  else
+    write(errunit,'(a)') "Error:: No information about efield provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif    
 
 ! Done reading all the files
-
-
 
 
 
@@ -705,84 +820,11 @@ subroutine parser
   call allocate_dmc()
 
 
-
-
-! Some sanity check  !! Make sure that all the variables are parsed before this line
-
-  !call flagcheck_new
-
-
-
-!   if(iexponents.eq.0) then
-!     write(6,'(''INPUT: block exponents missing: all exponents set to 1'')')
-!     call inputzex
-!   endif
-
-!   if(icsfs.eq.0) then
-!     write(6,'(''INPUT: block csf missing: nstates set to 1'')')
-!     call inputcsf
-!   endif
-
-!   if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
-!     write(6,'(''INPUT: block forces_displace or gradients_* missing: geometries set equal to primary'')')
-!     call inputforces
-!   endif
-
-!   if(iforce_analy.gt.0) then
-!     if(iuse_zmat.gt.0.and.izmatrix_check.eq.0) call fatal_error('INPUT: block connectionzmatrix missing')
-!     if(imodify_zmat.eq.0) call modify_zmat_define
-!     if(ihessian_zmat.eq.0) call hessian_zmat_define
-!   endif
-
-!   if(imultideterminants.eq.0) then
-!     write(6,'(''INPUT: multideterminant bloc MISSING'')')
-!     call multideterminants_define(0,0)
-!   endif
-
-!   if(ioptorb.ne.0) then
-!     if(ioptorb_mixvirt.eq.0) then
-!       norbopt=0
-!       norbvirt=0
-!     endif
-
-!     if(ioptorb_def.eq.0) then
-!       write(6,'(''INPUT: definition of orbital variations missing'')')
-!       call optorb_define
-!     endif
-
-!   endif
-
-!   if(ioptci.ne.0.and.ici_def.eq.0) then
-!     write(6,'(''INPUT: definition of OPTCI operators missing'')')
-!     call optci_define
-!   endif
-
-!   if(nwftype.gt.1) then
-!     if(ijastrow_parameter .ne. nwftype) then
-!       write(6,'(''INPUT: block jastrow_parameter missing for one wave function'')')
-!       write(6,'(''INPUT: jastrow_parameter blocks equal for all wave functions'')')
-!       call inputjastrow(nwftype)
-!     endif
-
-!     if(iperiodic .eq. 0 .and. ilcao .ne. nwftype) then
-!       write(6,'(''Warning INPUT: block lcao missing for one wave function'')')
-!       write(6,'(''Warning INPUT: lcao blocks equal for all wave functions'')')
-!       call inputlcao(nwftype)
-!     endif
-
-!     if(ideterminants .ne. nwftype) then
-!       write(6,'(''Warning INPUT: block determinants missing for one wave function'')')
-!       write(6,'(''Warning INPUT: determinants blocks equal for all wave functions'')')
-!       call inputdet(nwftype)
-!     endif
-
-!     write(6,*)
-! endif
-
-
   call fdf_shutdown()
 !----------------------------------------------------------------------------END
   contains
+
+  !! Here all the subroutines that handle the block data are written
   
   subroutine fdf_read_molecule_block(bfdf)
     implicit none 
@@ -1014,10 +1056,7 @@ subroutine parser
 
 
     enddo 
-
-
   end subroutine fdf_read_jastrow_block
-
 
 
 end subroutine parser

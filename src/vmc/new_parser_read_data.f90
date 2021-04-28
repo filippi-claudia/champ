@@ -1301,6 +1301,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a, ndz2a
     use inputflags, only: ibasis_num
     use coefs, only: nbasis
+    use general, only: pooldir
 
     use atom, only: nctype
     use ghostatom, only: newghostype
