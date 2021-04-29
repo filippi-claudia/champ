@@ -1,4 +1,5 @@
  module precision_kinds
+    implicit none
    ! named constants for 4, 2, and 1 byte integers:
    integer, parameter :: &
         i4b = selected_int_kind(9), &
