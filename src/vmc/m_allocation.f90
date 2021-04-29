@@ -1,13 +1,13 @@
 module allocation_mod
 !> Contains subroutines to allocate/deallocate VMC and DMC calculations.
 
+implicit none
 public
 contains
   !> Subroutines to allocate/deallocate memory of specific VMC-related
   !> variables.
   !> The allocation will occurr only in via read_input.f
   subroutine allocate_vmc()
-    implicit none
   
         call allocate_m_common()
         call allocate_m_basis
@@ -37,7 +37,6 @@ contains
   end subroutine allocate_vmc
   
   subroutine deallocate_vmc()
-    implicit none
   
         call deallocate_m_common
         call deallocate_m_basis
@@ -116,8 +115,6 @@ contains
     use jacobsave, only: deallocate_jacobsave
     use velratio, only: deallocate_velratio
 
-    implicit none
-  
     !> Deallocate dmc-related arrays:
   
     call deallocate_iage()
