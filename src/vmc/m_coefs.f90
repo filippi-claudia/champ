@@ -4,6 +4,8 @@ module coefs
     !> Arguments: coef, nbasis, norb
     use precision_kinds, only: dp
 
+    implicit none
+
     real(dp), dimension(:, :, :), allocatable :: coef !(MBASIS,MORB,MWF)
     integer :: nbasis
     integer :: norb
@@ -11,7 +13,8 @@ module coefs
 
     private
     public :: coef, nbasis, norb, next_max
-    public :: allocate_coefs, deallocate_coefs
+!    public :: allocate_coefs
+    public :: deallocate_coefs
     save
 contains
     ! subroutine allocate_coefs()
