@@ -7,6 +7,7 @@ contains
   !> variables.
   !> The allocation will occurr only in via read_input.f
   subroutine allocate_vmc()
+    implicit none
   
         call allocate_m_common()
         call allocate_m_basis
@@ -36,6 +37,7 @@ contains
   end subroutine allocate_vmc
   
   subroutine deallocate_vmc()
+    implicit none
   
         call deallocate_m_common
         call deallocate_m_basis
@@ -80,6 +82,8 @@ contains
     use c_averages_index, only: allocate_c_averages_index
     use jacobsave, only: allocate_jacobsave
     use velratio, only: allocate_velratio
+
+    implicit none
   
     !> Allocate dmc-related arrays:
   
@@ -111,6 +115,8 @@ contains
     use c_averages_index, only: deallocate_c_averages_index
     use jacobsave, only: deallocate_jacobsave
     use velratio, only: deallocate_velratio
+
+    implicit none
   
     !> Deallocate dmc-related arrays:
   
