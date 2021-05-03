@@ -38,11 +38,12 @@ end module da_energy_sumcum
 module da_jastrow4val
     !> Arguments: da_d2j, da_j, da_vj
     use precision_kinds, only: dp
+    use mstates_mod, only: MSTATES
     use vmc_mod, only: MELEC, MCENT
 
-    real(dp), dimension(:, :, :), allocatable :: da_d2j !(3, MELEC, MCENT)
-    real(dp), dimension(:, :, :), allocatable :: da_j !(3, MELEC, MCENT)
-    real(dp), dimension(:, :, :, :), allocatable :: da_vj !(3, 3, MELEC, MCENT)
+    real(dp), dimension(:, :, :, :), allocatable :: da_d2j !(3, MELEC, MCENT, MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: da_j !(3, MELEC, MCENT, MSTATES)
+    real(dp), dimension(:, :, :, :, :), allocatable :: da_vj !(3, 3, MELEC, MCENT, MSTATES)
 
     private
     public   ::  da_d2j, da_j, da_vj
@@ -52,9 +53,9 @@ contains
     subroutine allocate_da_jastrow4val()
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MCENT
-        if (.not. allocated(da_d2j)) allocate (da_d2j(3, MELEC, MCENT))
-        if (.not. allocated(da_j)) allocate (da_j(3, MELEC, MCENT))
-        if (.not. allocated(da_vj)) allocate (da_vj(3, 3, MELEC, MCENT))
+        if (.not. allocated(da_d2j)) allocate (da_d2j(3, MELEC, MCENT, MSTATES))
+        if (.not. allocated(da_j)) allocate (da_j(3, MELEC, MCENT, MSTATES))
+        if (.not. allocated(da_vj)) allocate (da_vj(3, 3, MELEC, MCENT, MSTATES))
     end subroutine allocate_da_jastrow4val
 
     subroutine deallocate_da_jastrow4val()
@@ -242,12 +243,13 @@ module derivjas
     !> Arguments: d2g, g, go, gvalue
     use optjas, only: MPARMJ
     use precision_kinds, only: dp
+    use mstates_mod, only: MSTATES
     use vmc_mod, only: MELEC
 
-    real(dp), dimension(:), allocatable :: d2g !(MPARMJ)
-    real(dp), dimension(:, :, :), allocatable :: g !(3, MELEC, MPARMJ)
-    real(dp), dimension(:, :, :), allocatable :: go !(MELEC, MELEC, MPARMJ)
-    real(dp), dimension(:), allocatable :: gvalue !(MPARMJ)
+    real(dp), dimension(:, :), allocatable :: d2g !(MPARMJ, MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: g !(3, MELEC, MPARMJ, MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: go !(MELEC, MELEC, MPARMJ, MSTATES)
+    real(dp), dimension(:, :), allocatable :: gvalue !(MPARMJ, MSTATES)
 
     private
     public   :: d2g, g, go, gvalue
@@ -258,10 +260,10 @@ contains
         use optjas, only: MPARMJ
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
-        if (.not. allocated(d2g)) allocate (d2g(MPARMJ))
-        if (.not. allocated(g)) allocate (g(3, MELEC, MPARMJ))
-        if (.not. allocated(go)) allocate (go(MELEC, MELEC, MPARMJ))
-        if (.not. allocated(gvalue)) allocate (gvalue(MPARMJ))
+        if (.not. allocated(d2g)) allocate (d2g(MPARMJ, MSTATES))
+        if (.not. allocated(g)) allocate (g(3, MELEC, MPARMJ, MSTATES))
+        if (.not. allocated(go)) allocate (go(MELEC, MELEC, MPARMJ, MSTATES))
+        if (.not. allocated(gvalue)) allocate (gvalue(MPARMJ, MSTATES))
     end subroutine allocate_derivjas
 
     subroutine deallocate_derivjas()

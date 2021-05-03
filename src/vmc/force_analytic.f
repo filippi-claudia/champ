@@ -19,7 +19,7 @@
             do k=1,3
                da_psi(k,ic,istate)=da_psi(k,ic,istate)+da_psi_ref(k,ic,istate)
                do i=1,nelec
-                  da_psi(k,ic,istate)=da_psi(k,ic,istate)+da_j(k,i,ic)
+                  da_psi(k,ic,istate)=da_psi(k,ic,istate)+da_j(k,i,ic,istate)
                enddo
             enddo
          enddo
@@ -175,8 +175,10 @@ c     enddo iab
             da_other_kin=0.d0
             da_other_pot=da_pecent(k,ic)
             do i=1,nelec
-               da_other_kin=da_other_kin+da_d2j(k,i,ic)
-     &              +2*(vj(1,i)*da_vj(k,1,i,ic)+vj(2,i)*da_vj(k,2,i,ic)+vj(3,i)*da_vj(k,3,i,ic))
+               da_other_kin=da_other_kin+da_d2j(k,i,ic,istate)
+     &              +2*(vj(1,i,istate)*da_vj(k,1,i,ic,istate)
+     &              +vj(2,i,istate)*da_vj(k,2,i,ic,istate)
+     &              +vj(3,i,istate)*da_vj(k,3,i,ic,istate))
                da_other_pot=da_other_pot+da_vps(k,i,ic,lpot(ict))
             enddo
             da_energy(k,ic,istate)=da_energy(k,ic,istate)+da_energy_ref(k,ic)-hb*da_other_kin+da_other_pot

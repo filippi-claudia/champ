@@ -31,12 +31,12 @@
 c-----------------------------------------------------------------------
 
       subroutine write_wf_best
+
       implicit real*8(a-h,o-z)
 
       call restore_jastrow_best
       call restore_lcao_best
       call restore_ci_best
-
       call write_wf(1,-1)
 
       end subroutine
@@ -64,43 +64,55 @@ c-----------------------------------------------------------------------
       open(2,file=filename,status='unknown')
 
       write(2,'(''&jastrow ianalyt_lap'',i2,'' ijas'',i2,'' isc'',i2,
-     &'' nspin1'',i2,'' nspin2'',i2,'' ifock'',i2)') ianalyt_lap,ijas,isc,nspin1,nspin2,ifock
+     &'' nspin1'',i2,'' nspin2'',i2,'' ifock'',i2)')
+     &     ianalyt_lap,ijas,isc,nspin1,nspin2,ifock
+
       write(2,*)
       write(2,'(''jastrow_parameter'',i4)') iwf_fit
       write(2,'(3i3,a28)') norda,nordb,nordc,' norda,nordb,nordc'
-c tmp
+
+c     tmp
       a21=0
       write(2,'(2f13.8,a15)') scalek(1),a21,' scalek,a21'
       mparmja=2+max(0,norda-1)
       mparmjb=2+max(0,nordb-1)
       mparmjc=nterms4(nordc)
+
       if(mparmja.gt.0) then
-        write(fmt,'(''(''i2,''f13.8,a28)'')') mparmja
-       else
-        write(fmt,'(''(a28)'')')
+         write(fmt,'(''(''i2,''f13.8,a28)'')') mparmja
+      else
+         write(fmt,'(''(a28)'')')
       endif
-      do 80 ict=1,nctype
-   80   write(2,fmt) (a4(i,ict,1),i=1,mparmja),' (a(iparmj),iparmj=1,nparma)'
+
+      do ict=1,nctype
+         write(2,fmt)
+     &        (a4(i,ict,1),i=1,mparmja),' (a(iparmj),iparmj=1,nparma)'
+      enddo
 
       if(mparmjb.gt.0) then
-        write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjb
-       else
-        write(fmt,'(''(a28)'')')
+         write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjb
+      else
+         write(fmt,'(''(a28)'')')
       endif
-      write(2,fmt) (b(i,1,1),i=1,mparmjb),' (b(iparmj),iparmj=1,nparmb)'
+
+      write(2,fmt) 
+     &     (b(i,1,1),i=1,mparmjb),' (b(iparmj),iparmj=1,nparmb)'
 
       if(mparmjc.gt.0) then
-        write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjc
-       else
-        write(fmt,'(''(a28)'')')
+         write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjc
+      else
+         write(fmt,'(''(a28)'')')
       endif
-      do 90 ict=1,nctype
-   90   write(2,fmt) (c(i,ict,1),i=1,mparmjc),' (c(iparmj),iparmj=1,nparmc)'
+
+      do ict=1,nctype
+         write(2,fmt) 
+     &        (c(i,ict,1),i=1,mparmjc),' (c(iparmj),iparmj=1,nparmc)'
+      enddo
+
       write(2,'(''end'')')
       close(2)
 
-      return
-      end
+      end subroutine
 
 c-----------------------------------------------------------------------
 
@@ -170,43 +182,46 @@ c-----------------------------------------------------------------------
 
       write(2,'(''&electrons nelec '',i4,'' nup '',i4)') nelec,nup
       write(2,'(''# kref'',i4)') kref
-      do 1 istate=1,nstates
-      write(2,'(''# State '',i4)') istate
-      write(2,'(''determinants'',i10,i4)') ndet,iwf_fit
-      write(2,'(100f15.8)') (cdet(i,istate,1),i=1,ndet)
-      do 1 k=1,ndet
-   1   write(2,'(100i4)') (iworbd(i,k),i=1,nelec)
- 
+
+      do istate=1,nstates
+         write(2,'(''# State '',i4)') istate
+         write(2,'(''determinants'',i10,i4)') ndet,iwf_fit
+         write(2,'(100f15.8)') (cdet(i,istate,1),i=1,ndet)
+         do k=1,ndet
+            write(2,'(100i4)') (iworbd(i,k),i=1,nelec)
+         enddo
+      enddo
+      
       write(2,'(''end'')')
 
       if(ncsf.ne.0) then
-        write(2,'(''csf '',i10,i4)') ncsf,nstates
-        do i=1,nstates
-          write(2,'(100f15.8)') (ccsf(j,i,1),j=1,ncsf)
-        enddo
-        write(2,'(''end'')')
-c
-        nmap=0
-        do 5 i=1,ncsf
-   5      nmap=nmap+ibdet(i)-iadet(i)+1
-        write(2,'(''csfmap'')') 
-        write(2,'(3i10)') ncsf,ndet,nmap
-        nptr=0
-        do 10 i=1,ncsf
-         nterm=ibdet(i)-iadet(i)+1
-         write(2,'(i10)') ibdet(i)-iadet(i)+1
-         do 12 j=1,nterm
-           nptr=nptr+1
-           write(2,'(i10,f10.6)') icxdet(nptr),cxdet(nptr)
-  12     enddo
-  10    enddo
-        write(2,'(''end'')')
+         write(2,'(''csf '',i10,i4)') ncsf,nstates
+         do i=1,nstates
+            write(2,'(100f15.8)') (ccsf(j,i,1),j=1,ncsf)
+         enddo
+         write(2,'(''end'')')
+
+         nmap=0
+         do i=1,ncsf
+            nmap=nmap+ibdet(i)-iadet(i)+1
+         enddo
+         write(2,'(''csfmap'')') 
+         write(2,'(3i10)') ncsf,ndet,nmap
+         nptr=0
+         do i=1,ncsf
+            nterm=ibdet(i)-iadet(i)+1
+            write(2,'(i10)') ibdet(i)-iadet(i)+1
+            do j=1,nterm
+               nptr=nptr+1
+               write(2,'(i10,f10.6)') icxdet(nptr),cxdet(nptr)
+            enddo
+         enddo
+         write(2,'(''end'')')
       endif
 
       close(2)
 
-      return
-      end
+      end subroutine
 
 c-----------------------------------------------------------------------
 
@@ -263,51 +278,60 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 
       subroutine save_jastrow
-
       use force_mod, only: MWF
       use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
       use atom, only: nctype
-
       use jaspar3, only: a, b, c
-
       use jaspar4, only: a4, norda, nordb, nordc
+
       implicit real*8(a-h,o-z)
 
       dimension a4_save(MORDJ1,MCTYPE,MWF),b_save(MORDJ1,2,MWF),
-     &c_save(83,MCTYPE,MWF)
+     &     c_save(83,MCTYPE,MWF)
 
       save a4_save,b_save,c_save
       save mparmja,mparmjb,mparmjc
 
-c Save parameters corresponding to run generating hessian
+c     Save parameters corresponding to run generating hessian
 
       mparmja=2+max(0,norda-1)
       mparmjb=2+max(0,nordb-1)
       mparmjc=nterms4(nordc)
 
-      do 50 ict=1,nctype
-        do 50 i=1,mparmja
-   50     a4_save(i,ict,1)=a4(i,ict,1)
-      do 60 i=1,mparmjb
-   60   b_save(i,1,1)=b(i,1,1)
-      do 70 ict=1,nctype
-        do 70 i=1,mparmjc
-   70     c_save(i,ict,1)=c(i,ict,1)
+      do ict=1,nctype
+         do i=1,mparmja
+            a4_save(i,ict,1)=a4(i,ict,1)
+         enddo
+      enddo
+      do i=1,mparmjb
+         b_save(i,1,1)=b(i,1,1)
+      enddo
+      do ict=1,nctype
+         do i=1,mparmjc
+            c_save(i,ict,1)=c(i,ict,1)
+         enddo
+      enddo
 
       return
 
       entry restore_jastrow(iadiag)
 
-c Restore parameters corresponding to run generating hessian
-      do 80 ict=1,nctype
-        do 80 i=1,mparmja
-   80     a4(i,ict,iadiag)=a4_save(i,ict,1)
-      do 90 i=1,mparmjb
-   90   b(i,1,iadiag)=b_save(i,1,1)
-      do 100 ict=1,nctype
-        do 100 i=1,mparmjc
-  100     c(i,ict,iadiag)=c_save(i,ict,1)
+c     Restore parameters corresponding to run generating hessian
+
+      do ict=1,nctype
+         do i=1,mparmja
+            a4(i,ict,iadiag)=a4_save(i,ict,1)
+         enddo
+      enddo
+      do i=1,mparmjb
+         b(i,1,iadiag)=b_save(i,1,1)
+      enddo
+      do ict=1,nctype
+         do i=1,mparmjc
+            c(i,ict,iadiag)=c_save(i,ict,1)
+         enddo
+      enddo
 
       return
 
@@ -366,39 +390,50 @@ c-----------------------------------------------------------------------
       dimension cdet_save(MDET,MSTATES),ccsf_save(MDET,MSTATES)
       save cdet_save,ccsf_save
 
-      do 10 j=1,nstates
-        do 10 i=1,ndet
-   10     cdet_save(i,j)=cdet(i,j,1)
+      do j=1,nstates
+         do i=1,ndet
+            cdet_save(i,j)=cdet(i,j,1)
+         enddo
+      enddo
 
-      do 20 j=1,nstates
-       do 20 icsf=1,ncsf
-   20   ccsf_save(icsf,j)=ccsf(icsf,j,1)
+      do j=1,nstates
+         do icsf=1,ncsf
+            ccsf_save(icsf,j)=ccsf(icsf,j,1)
+         enddo
+      enddo
 
       return
 
       entry restore_ci(iadiag)
 
-      do 30 j=1,nstates
-        do 30 i=1,ndet
-   30     cdet(i,j,iadiag)=cdet_save(i,j)
+      do j=1,nstates
+         do i=1,ndet
+            cdet(i,j,iadiag)=cdet_save(i,j)
+         enddo
+      enddo
 
-      do 40 j=1,nstates
-       do 40 icsf=1,ncsf
-   40   ccsf(icsf,j,iadiag)=ccsf_save(icsf,j)
+      do j=1,nstates
+         do icsf=1,ncsf
+            ccsf(icsf,j,iadiag)=ccsf_save(icsf,j)
+         enddo
+      enddo
 
-c if kref (iwdetorb, cxdet) has changed
+c     if kref (iwdetorb, cxdet) has changed
       if(ncsf.gt.0) then
-        do 50 j=1,nstates
-          do 45 k=1,ndet
-   45       cdet(k,j,iadiag)=0
-          do 50 icsf=1,ncsf
-            do 50 k=iadet(icsf),ibdet(icsf)
-              kx=icxdet(k)
-              cdet(kx,j,iadiag)=cdet(kx,j,iadiag)+ccsf(icsf,j,iadiag)*cxdet(k)
-   50  continue
+         do j=1,nstates
+            do k=1,ndet
+               cdet(k,j,iadiag)=0
+            enddo
+            do icsf=1,ncsf
+               do k=iadet(icsf),ibdet(icsf)
+                  kx=icxdet(k)
+                  cdet(kx,j,iadiag)=cdet(kx,j,iadiag)+ccsf(icsf,j,iadiag)*cxdet(k)
+               enddo
+            enddo
+         enddo
 
 c     reset kref=1
-      call multideterminants_define(0,0)
+         call multideterminants_define(0,0)
       endif
 
       return
@@ -419,14 +454,21 @@ c-----------------------------------------------------------------------
       mparmjc=nterms4(nordc)
 
       scalek(iadiag)=scalek(1)
-      do 80 ict=1,nctype
-        do 80 i=1,mparmja
-   80     a4(i,ict,iadiag)=a4(i,ict,1)
-      do 90 i=1,mparmjb
-   90   b(i,1,iadiag)=b(i,1,1)
-      do 100 ict=1,nctype
-        do 100 i=1,mparmjc
-  100     c(i,ict,iadiag)=c(i,ict,1)
+      do ict=1,nctype
+         do i=1,mparmja
+            a4(i,ict,iadiag)=a4(i,ict,1)
+         enddo
+      enddo
+
+      do i=1,mparmjb
+         b(i,1,iadiag)=b(i,1,1)
+      enddo
+
+      do ict=1,nctype
+         do i=1,mparmjc
+            c(i,ict,iadiag)=c(i,ict,1)
+         enddo
+      enddo
 
       end subroutine
 
@@ -452,22 +494,26 @@ c-----------------------------------------------------------------------
       end subroutine
 
 c-----------------------------------------------------------------------
+
       subroutine copy_ci(iadiag)
       use csfs, only: ccsf, ncsf, nstates
-
       use dets, only: cdet, ndet
+
       implicit real*8(a-h,o-z)
 
-      do 30 j=1,nstates
-        do 30 i=1,ndet
-   30     cdet(i,j,iadiag)=cdet(i,j,1)
+      do j=1,nstates
+         do i=1,ndet
+            cdet(i,j,iadiag)=cdet(i,j,1)
+         enddo
+      enddo
 
-      do 40 j=1,nstates
-       do 40 icsf=1,ncsf
-   40   ccsf(icsf,j,iadiag)=ccsf(icsf,j,1)
+      do j=1,nstates
+         do icsf=1,ncsf
+            ccsf(icsf,j,iadiag)=ccsf(icsf,j,1)
+         enddo
+      enddo
 
-      return
-      end
+      end subroutine
 
 c-----------------------------------------------------------------------
 
@@ -496,39 +542,53 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
       dimension a4_best(MORDJ1,MCTYPE,MWF),b_best(MORDJ1,2,MWF),
-     &c_best(83,MCTYPE,MWF)
+     &     c_best(83,MCTYPE,MWF)
 
       save a4_best,b_best,c_best
       save mparmja,mparmjb,mparmjc
 
-c Save parameters corresponding to run generating hessian
+c     Save parameters corresponding to run generating hessian
 
       mparmja=2+max(0,norda-1)
       mparmjb=2+max(0,nordb-1)
       mparmjc=nterms4(nordc)
 
-      do 50 ict=1,nctype
-        do 50 i=1,mparmja
-   50     a4_best(i,ict,1)=a4(i,ict,1)
-      do 60 i=1,mparmjb
-   60   b_best(i,1,1)=b(i,1,1)
-      do 70 ict=1,nctype
-        do 70 i=1,mparmjc
-   70     c_best(i,ict,1)=c(i,ict,1)
+      do ict=1,nctype
+         do i=1,mparmja
+            a4_best(i,ict,1)=a4(i,ict,1)
+         enddo
+      enddo
+
+      do i=1,mparmjb
+         b_best(i,1,1)=b(i,1,1)
+      enddo
+
+      do ict=1,nctype
+         do i=1,mparmjc
+            c_best(i,ict,1)=c(i,ict,1)
+         enddo
+      enddo
 
       return
 
       entry restore_jastrow_best
 
-c Restore parameters corresponding to run generating hessian
-      do 80 ict=1,nctype
-        do 80 i=1,mparmja
-   80     a4(i,ict,1)=a4_best(i,ict,1)
-      do 90 i=1,mparmjb
-   90   b(i,1,1)=b_best(i,1,1)
-      do 100 ict=1,nctype
-        do 100 i=1,mparmjc
-  100     c(i,ict,1)=c_best(i,ict,1)
+c     Restore parameters corresponding to run generating hessian
+      do ict=1,nctype
+         do i=1,mparmja
+            a4(i,ict,1)=a4_best(i,ict,1)
+         enddo
+      enddo
+
+      do i=1,mparmjb
+         b(i,1,1)=b_best(i,1,1)
+      enddo
+
+      do ict=1,nctype
+         do i=1,mparmjc
+            c(i,ict,1)=c_best(i,ict,1)
+         enddo
+      enddo
 
       return
 
@@ -591,13 +651,17 @@ c-----------------------------------------------------------------------
       dimension cdet_best(MDET,MSTATES),ccsf_best(MDET,MSTATES)
       save cdet_best,ccsf_best
 
-      do 10 j=1,nstates
-        do 10 i=1,ndet
-   10     cdet_best(i,j)=cdet(i,j,1)
+      do j=1,nstates
+         do i=1,ndet
+            cdet_best(i,j)=cdet(i,j,1)
+         enddo
+      enddo
 
-      do 20 j=1,nstates
-       do 20 icsf=1,ncsf
-   20   ccsf_best(icsf,j)=ccsf(icsf,j,1)
+      do j=1,nstates
+         do icsf=1,ncsf
+            ccsf_best(icsf,j)=ccsf(icsf,j,1)
+         enddo
+      enddo
 
       return
 
@@ -605,27 +669,34 @@ c-----------------------------------------------------------------------
 
 c     if(ioptci.eq.0) return
 
-      do 30 j=1,nstates
-        do 30 i=1,ndet
-   30     cdet(i,j,1)=cdet_best(i,j)
+      do j=1,nstates
+         do i=1,ndet
+            cdet(i,j,1)=cdet_best(i,j)
+         enddo
+      enddo
 
-      do 40 j=1,nstates
-       do 40 icsf=1,ncsf
-   40   ccsf(icsf,j,1)=ccsf_best(icsf,j)
-          
-c if kref (iwdetorb, cxdet) has changed
+      do j=1,nstates
+         do icsf=1,ncsf
+            ccsf(icsf,j,1)=ccsf_best(icsf,j)
+         enddo
+      enddo
+      
+c     if kref (iwdetorb, cxdet) has changed
       if(ncsf.gt.0) then
-        do 50 j=1,nstates
-          do 45 k=1,ndet
-   45       cdet(k,j,1)=0
-          do 50 icsf=1,ncsf
-            do 50 k=iadet(icsf),ibdet(icsf)
-              kx=icxdet(k)
-              cdet(kx,j,1)=cdet(kx,j,1)+ccsf(icsf,j,1)*cxdet(k)
-   50  continue
+         do j=1,nstates
+            do k=1,ndet
+               cdet(k,j,1)=0
+            enddo
+            do icsf=1,ncsf
+               do k=iadet(icsf),ibdet(icsf)
+                  kx=icxdet(k)
+                  cdet(kx,j,1)=cdet(kx,j,1)+ccsf(icsf,j,1)*cxdet(k)
+               enddo
+            enddo
+         enddo
 
-c reset kref=1
-      call multideterminants_define(0,0)
+c     reset kref=1
+         call multideterminants_define(0,0)
       endif
 
       return
@@ -667,25 +738,33 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0) return
 
-c Set up cusp conditions
+c     Set up cusp conditions
       call cuspinit4(0)
 
-c Add change to old parameters
+c     Add change to old parameters
       iparm=0
-      do 50 ict=1,nctype
-        do 50 i=1,nparma(ict)
-          iparm=iparm+1
-   50     a4(iwjasa(i,ict),ict,iadiag)=a4(iwjasa(i,ict),ict,iadiag)-dparm(iparm)
-      do 60 i=1,nparmb(1)
-        iparm=iparm+1
-   60   b(iwjasb(i,1),1,iadiag)=b(iwjasb(i,1),1,iadiag)-dparm(iparm)
-      do 70 ict=1,nctype
-        do 70 i=1,nparmc(ict)
-          iparm=iparm+1
-   70     c(iwjasc(i,ict),ict,iadiag)=c(iwjasc(i,ict),ict,iadiag)-dparm(iparm)
+      do ict=1,nctype
+         do i=1,nparma(ict)
+            iparm=iparm+1
+            a4(iwjasa(i,ict),ict,iadiag)=a4(iwjasa(i,ict),ict,iadiag)-dparm(iparm)
+         enddo
+      enddo
+
+      do i=1,nparmb(1)
+         iparm=iparm+1
+         b(iwjasb(i,1),1,iadiag)=b(iwjasb(i,1),1,iadiag)-dparm(iparm)
+      enddo
+
+      do ict=1,nctype
+         do i=1,nparmc(ict)
+            iparm=iparm+1
+            c(iwjasc(i,ict),ict,iadiag)=c(iwjasc(i,ict),ict,iadiag)-dparm(iparm)
+         enddo
+      enddo
+
       call cuspexact4(0,iadiag)
 
-c Check parameters a2 and b2 > -scalek
+c     Check parameters a2 and b2 > -scalek
       call check_parms_jas(iflag)
 
       end subroutine

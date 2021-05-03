@@ -1092,10 +1092,11 @@ end module vardep
 module velocity_jastrow
     !> Arguments: vj, vjn
     use precision_kinds, only: dp
+    use mstates_mod, only: MSTATES
     use vmc_mod, only: MELEC
 
-    real(dp), dimension(:, :), allocatable :: vj !(3,MELEC)
-    real(dp), dimension(:, :), allocatable :: vjn !(3,MELEC)
+    real(dp), dimension(:, :, :), allocatable :: vj !(3,MELEC,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: vjn !(3,MELEC,MSTATES)
 
     private
     public :: vj, vjn
@@ -1105,8 +1106,8 @@ contains
     subroutine allocate_velocity_jastrow()
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
-        if (.not. allocated(vj)) allocate (vj(3, MELEC))
-        if (.not. allocated(vjn)) allocate (vjn(3, MELEC))
+        if (.not. allocated(vj)) allocate (vj(3, MELEC, MSTATES))
+        if (.not. allocated(vjn)) allocate (vjn(3, MELEC, MSTATES))
     end subroutine allocate_velocity_jastrow
 
     subroutine deallocate_velocity_jastrow()

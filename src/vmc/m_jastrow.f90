@@ -1,14 +1,15 @@
 module jasn
     !> Arguments: d2ijn, d2n, fijn, fjn, fsn, fsumn
     use precision_kinds, only: dp
+    use mstates_mod, only: MSTATES
     use vmc_mod, only: MELEC
 
-    real(dp), dimension(:, :), allocatable :: d2ijn !(MELEC,MELEC)
-    real(dp) :: d2n
-    real(dp), dimension(:, :, :), allocatable :: fijn !(3,MELEC,MELEC)
-    real(dp), dimension(:, :), allocatable :: fjn !(3,MELEC)
-    real(dp), dimension(:, :), allocatable :: fsn !(MELEC,MELEC)
-    real(dp) :: fsumn
+    real(dp), dimension(:, :, :), allocatable :: d2ijn !(MELEC,MELEC,MSTATES)
+    real(dp), dimension(:), allocatable :: d2n !(MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: fijn !(3,MELEC,ME,MSTATESLEC)
+    real(dp), dimension(:, :, :), allocatable :: fjn !(3,MELEC,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: fsn !(MELEC,MELEC,MSTATES)
+    real(dp), dimension(:), allocatable :: fsumn !(MSTATES)
 
     private
     public :: d2ijn, d2n, fijn, fjn, fsn, fsumn
@@ -18,15 +19,19 @@ contains
     subroutine allocate_jasn()
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
-        if (.not. allocated(d2ijn)) allocate (d2ijn(MELEC, MELEC))
-        if (.not. allocated(fijn)) allocate (fijn(3, MELEC, MELEC))
-        if (.not. allocated(fjn)) allocate (fjn(3, MELEC))
-        if (.not. allocated(fsn)) allocate (fsn(MELEC, MELEC))
+        if (.not. allocated(d2ijn)) allocate (d2ijn(MELEC, MELEC, MSTATES))
+        if (.not. allocated(fijn)) allocate (fijn(3, MELEC, MELEC, MSTATES))
+        if (.not. allocated(fjn)) allocate (fjn(3, MELEC, MSTATES))
+        if (.not. allocated(fsn)) allocate (fsn(MELEC, MELEC, MSTATES))
+        if (.not. allocated(d2n)) allocate (d2n(MSTATES))
+        if (.not. allocated(fsumn)) allocate (fsumn(MSTATES))
     end subroutine allocate_jasn
 
     subroutine deallocate_jasn()
         if (allocated(fsn)) deallocate (fsn)
         if (allocated(fjn)) deallocate (fjn)
+        if (allocated(d2n)) deallocate (d2n)
+        if (allocated(fsumn)) deallocate (fsumn)
         if (allocated(fijn)) deallocate (fijn)
         if (allocated(d2ijn)) deallocate (d2ijn)
     end subroutine deallocate_jasn
@@ -36,14 +41,15 @@ end module jasn
 module jaso
     !> Arguments: d2ijo, d2o, fijo, fjo, fso, fsumo
     use precision_kinds, only: dp
+    use mstates_mod, only: MSTATES
     use vmc_mod, only: MELEC
 
-    real(dp), dimension(:, :), allocatable :: d2ijo !(MELEC,MELEC)
-    real(dp) :: d2o
-    real(dp), dimension(:, :, :), allocatable :: fijo !(3,MELEC,MELEC)
-    real(dp), dimension(:, :), allocatable :: fjo !(3,MELEC)
-    real(dp), dimension(:, :), allocatable :: fso !(MELEC,MELEC)
-    real(dp) :: fsumo
+    real(dp), dimension(:, :, :), allocatable :: d2ijo !(MELEC,MELEC,MSTATES)
+    real(dp), dimension(:), allocatable :: d2o !(MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: fijo !(3,MELEC,MELEC,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: fjo !(3,MELEC,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: fso !(MELEC,MELEC,MSTATES)
+    real(dp), dimension(:), allocatable :: fsumo !(MSTATES)
     !> DMC
     real(dp) :: d2jo
 
@@ -56,15 +62,19 @@ contains
     subroutine allocate_jaso()
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
-        if (.not. allocated(d2ijo)) allocate (d2ijo(MELEC, MELEC))
-        if (.not. allocated(fijo)) allocate (fijo(3, MELEC, MELEC))
-        if (.not. allocated(fjo)) allocate (fjo(3, MELEC))
-        if (.not. allocated(fso)) allocate (fso(MELEC, MELEC))
+        if (.not. allocated(d2ijo)) allocate (d2ijo(MELEC, MELEC, MSTATES))
+        if (.not. allocated(fijo)) allocate (fijo(3, MELEC, MELEC, MSTATES))
+        if (.not. allocated(fjo)) allocate (fjo(3, MELEC, MSTATES))
+        if (.not. allocated(d2o)) allocate (d2o(MSTATES))
+        if (.not. allocated(fsumo)) allocate (fsumo(MSTATES))
+        if (.not. allocated(fso)) allocate (fso(MELEC, MELEC, MSTATES))
     end subroutine allocate_jaso
 
     subroutine deallocate_jaso()
         if (allocated(fso)) deallocate (fso)
+        if (allocated(d2o)) deallocate (d2o)
         if (allocated(fjo)) deallocate (fjo)
+        if (allocated(fsumo)) deallocate (fsumo)
         if (allocated(fijo)) deallocate (fijo)
         if (allocated(d2ijo)) deallocate (d2ijo)
     end subroutine deallocate_jaso
@@ -144,12 +154,13 @@ module jaspar3
     !> Arguments: a, b, c, fck, nord, scalek
     use force_mod, only: MWF
     use precision_kinds, only: dp
+    use mstates_mod, only: MSTATES
     use vmc_mod, only: MCTYPE
     use vmc_mod, only: MORDJ1
 
     real(dp), dimension(:, :), allocatable :: a !(MORDJ1,MWF)
-    real(dp), dimension(:, :, :), allocatable :: b !(MORDJ1,2,MWF)
-    real(dp), dimension(:, :, :), allocatable :: c !(83,MCTYPE,MWF)
+    real(dp), dimension(:, :, :, :), allocatable :: b !(MORDJ1,2,MSTATES,MWF)
+    real(dp), dimension(:, :, :, :), allocatable :: c !(83,MCTYPE,MSTATES,MWF)
     real(dp), dimension(:, :, :), allocatable :: fck !(15,MCTYPE,MWF)
     integer :: nord
     real(dp), dimension(:), allocatable :: scalek !(MWF)
@@ -165,8 +176,8 @@ contains
         use vmc_mod, only: MCTYPE
         use vmc_mod, only: MORDJ1
         if (.not. allocated(a)) allocate (a(MORDJ1, MWF))
-        if (.not. allocated(b)) allocate (b(MORDJ1, 2, MWF))
-        if (.not. allocated(c)) allocate (c(83, MCTYPE, MWF))
+        if (.not. allocated(b)) allocate (b(MORDJ1, 2, MSTATES, MWF))
+        if (.not. allocated(c)) allocate (c(83, MCTYPE, MSTATES, MWF))
         if (.not. allocated(fck)) allocate (fck(15, MCTYPE, MWF))
         if (.not. allocated(scalek)) allocate (scalek(MWF))
     end subroutine allocate_jaspar3
@@ -185,10 +196,11 @@ module jaspar4
     !> Arguments: a4, norda, nordb, nordc
     use force_mod, only: MWF
     use precision_kinds, only: dp
+    use mstates_mod, only: MSTATES
     use vmc_mod, only: MCTYPE
     use vmc_mod, only: MORDJ1
 
-    real(dp), dimension(:, :, :), allocatable :: a4 !(MORDJ1,MCTYPE,MWF)
+    real(dp), dimension(:, :, :, :), allocatable :: a4 !(MORDJ1,MCTYPE,MSTATES,MWF)
     integer :: norda
     integer :: nordb
     integer :: nordc
@@ -203,7 +215,7 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
         use vmc_mod, only: MORDJ1
-        if (.not. allocated(a4)) allocate (a4(MORDJ1, MCTYPE, MWF))
+        if (.not. allocated(a4)) allocate (a4(MORDJ1, MCTYPE, MSTATES, MWF))
     end subroutine allocate_jaspar4
 
     subroutine deallocate_jaspar4()
@@ -215,10 +227,11 @@ end module jaspar4
 module jaspar6
     !> Arguments: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
     use precision_kinds, only: dp
+    use mstates_mod, only: MSTATES
     use vmc_mod, only: MCTYPE
 
-    real(dp), dimension(:), allocatable :: asymp_jasa !(MCTYPE)
-    real(dp), dimension(:), allocatable :: asymp_jasb !(2)
+    real(dp), dimension(:, :), allocatable :: asymp_jasa !(MCTYPE,MSTATES)
+    real(dp), dimension(:, :), allocatable :: asymp_jasb !(2,MSTATES)
     real(dp) :: asymp_r
     real(dp) :: c1_jas6
     real(dp) :: c1_jas6i
@@ -234,8 +247,8 @@ contains
     subroutine allocate_jaspar6()
         use precision_kinds, only: dp
         use vmc_mod, only: MCTYPE
-        if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(MCTYPE))
-        if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2))
+        if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(MCTYPE,MSTATES))
+        if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2,MSTATES))
     end subroutine allocate_jaspar6
 
     subroutine deallocate_jaspar6()
