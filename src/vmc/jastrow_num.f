@@ -16,39 +16,70 @@ c numerical Laplacian for periodic systems.
       use const, only: nelec
       use elec, only: nup
       use jaspar3, only: a, c, scalek
-
       use jaspar6, only: c1_jas6
       use wfsec, only: iwf
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
+      interface
+        function psia(ri, it)
+            use precision_kinds, only: dp
+            implicit none
+            integer, intent(in) ::it 
+            real(dp), intent(in) :: ri
+            real(dp) :: psia 
+        end function psia 
+      end interface
 
+      interface
+        function psib(rij, isb, ipar)
+            use precision_kinds, only: dp
+            implicit none
+            integer, intent(in) :: isb, ipar 
+            real(dp), intent(in) :: rij 
+            real(dp) :: psib 
+        end function psib 
+      end interface
 
-
-
-
-
-
-      parameter (zero=0.d0,one=1.d0,two=2.d0)
-      parameter (half=.5d0)
-      parameter (eps=.5d-4,eps2=2.d0*eps,eps4=4.d0*eps,epssq=eps**2
-     &,eps2sq=eps2**2)
-      parameter (d1b12=8.333333333333333d-2,d2b3=0.666666666666667d0,
-     &d4b3=1.333333333333333d0)
-
-
+      integer :: i, ic, ij, im1, ipar
+      integer :: isb, it, j, jk
+      integer :: k, m, ncentt
+      real(dp) :: c3, d2, ftmp, psi, psiac
+      real(dp) :: psiami, psiami2, psiapi, psiapi2
+      real(dp) :: psibc, psibmi, psibmi2, psibpi
+      real(dp) :: psibpi2, psic, psimi, psimi2
+      real(dp) :: psimj, psimj2, psipi, psipi2
+      real(dp) :: psipj, psipj2, term, usum
+      real(dp) :: value, wtj
+      real(dp), dimension(3, *) :: x
+      real(dp), dimension(3, *) :: v
+      real(dp), dimension(3, nelec, ncent_tot) :: rp
+      real(dp), dimension(3, nelec, ncent_tot) :: rm
+      real(dp), dimension(3, nelec, ncent_tot) :: rp2
+      real(dp), dimension(3, nelec, ncent_tot) :: rm2
+      real(dp), dimension(3, MMAT_DIM2) :: rrp
+      real(dp), dimension(3, MMAT_DIM2) :: rrm
+      real(dp), dimension(3, MMAT_DIM2) :: rrp2
+      real(dp), dimension(3, MMAT_DIM2) :: rrm2
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: eps = .5d-4
+      real(dp), parameter :: eps2 = 2.d0*eps
+      real(dp), parameter :: eps4 = 4.d0*eps
+      real(dp), parameter :: epssq = eps**2
+      real(dp), parameter :: eps2sq = eps2**2
+      real(dp), parameter :: d1b12 = 8.333333333333333d-2
+      real(dp), parameter :: d2b3 = 0.666666666666667d0
+      real(dp), parameter :: d4b3 = 1.333333333333333d0
 
 c subroutine to calculate jastrow factor,its derivatives
 c and the potential
-
-
-      dimension x(3,*),v(3,*)
-      dimension rp(3,nelec,ncent_tot),rm(3,nelec,ncent_tot)
-     &,rp2(3,nelec,ncent_tot),rm2(3,nelec,ncent_tot)
-     &,rrp(3,MMAT_DIM2),rrm(3,MMAT_DIM2),rrp2(3,MMAT_DIM2),rrm2(3,MMAT_DIM2)
 
       do 10 i=1,nelec
       v(1,i)=zero
