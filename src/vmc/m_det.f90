@@ -8,7 +8,8 @@ module dets
 
     private
     public   :: cdet, ndet
-    public :: allocate_dets, deallocate_dets
+!    public :: allocate_dets
+    public :: deallocate_dets
     save
 contains
     ! subroutine allocate_dets()
