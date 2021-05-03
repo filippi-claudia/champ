@@ -24,15 +24,35 @@ c Jastrow 6   must be used with one of isc=6,7
       use contr2, only: isc
       use force_analy, only: iforce_analy
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
-      
-      parameter (half=.5d0,eps=1.d-12)
+      implicit none
 
-      dimension x(3,*),v(3,*),div_vj(*)
-      
-      dimension uu(-2:MORDJ),ss(-2:MORDJ),tt(-2:MORDJ),rri(-2:MORDJ)
-     &,rrj(-2:MORDJ)
+      integer :: i, ic, ij, im1, iord
+      integer :: ipar, isb, it, j
+      integer :: k, l, l_hi, ll
+      integer :: m, n
+      real(dp) :: bot, bot2, boti, botii, botu
+      real(dp) :: botuu, d2, dd1, dd10
+      real(dp) :: dd2, dd7, dd8, dd9
+      real(dp) :: fc, fee, feeu, feeuu
+      real(dp) :: fen, feni, feni_save, fenii
+      real(dp) :: fenii_save, fi, fii, fj
+      real(dp) :: fjj, fsum, fu, fui
+      real(dp) :: fuj, fuu, ri, rij
+      real(dp) :: rj, s, t, term
+      real(dp) :: top, topi, topii, topu
+      real(dp) :: topuu, u2mst, u2pst, value
+      real(dp), dimension(3, *) :: x
+      real(dp), dimension(3, *) :: v
+      real(dp), dimension(*) :: div_vj
+      real(dp), dimension(-2:MORDJ) :: uu
+      real(dp), dimension(-2:MORDJ) :: ss
+      real(dp), dimension(-2:MORDJ) :: tt
+      real(dp), dimension(-2:MORDJ) :: rri
+      real(dp), dimension(-2:MORDJ) :: rrj
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: eps = 1.d-12
 
       fsum=0
       do 5 i=-2,-1
@@ -343,7 +363,11 @@ c       write(6,'(''v='',9d12.4)') (v(k,i),k=1,3)
 c-----------------------------------------------------------------------
       function nterms4(nord)
 c Written by Cyrus Umrigar
-      implicit real*8(a-h,o-z)
+
+      implicit none
+
+      integer :: i, k, l, l_hi, m
+      integer :: n, nord, nterms4
 
       i=0
       do 20 n=2,nord
@@ -375,14 +399,16 @@ c-----------------------------------------------------------------------
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use jaspar4, only: a4, norda
       use scale_more, only: dd3
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
- 
-
-
-      dimension rvec_en(3),rr(-2:MORDJ)
+      integer :: i, ic, iord, it, iwf
+      integer :: k, l
+      real(dp) :: dd1, dd2, feni, fenii, feniii
+      real(dp) :: r, ri, ri2
+      real(dp), dimension(3) :: rvec_en
+      real(dp), dimension(-2:MORDJ) :: rr
 
       feniii=0.d0
       do 10 iord=3,norda
