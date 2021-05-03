@@ -26,6 +26,16 @@ c numerical Laplacian for periodic systems.
       implicit none
 
       interface
+        function psi(rij,ri,rj,it)
+            use precision_kinds, only: dp
+            implicit none
+            integer, intent(in) ::it 
+            real(dp), intent(in) :: rij, ri, rj
+            real(dp) :: psi
+        end function psi
+      end interface
+
+      interface
         function psia(ri, it)
             use precision_kinds, only: dp
             implicit none
@@ -48,7 +58,7 @@ c numerical Laplacian for periodic systems.
       integer :: i, ic, ij, im1, ipar
       integer :: isb, it, j, jk
       integer :: k, m, ncentt
-      real(dp) :: c3, d2, ftmp, psi, psiac
+      real(dp) :: c3, d2, ftmp, psiac
       real(dp) :: psiami, psiami2, psiapi, psiapi2
       real(dp) :: psibc, psibmi, psibmi2, psibpi
       real(dp) :: psibpi2, psic, psimi, psimi2
