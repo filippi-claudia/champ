@@ -6,11 +6,13 @@
       use da_jastrow4val, only: da_j
       use da_energy_now, only: da_psi
       use atom, only: ncent_tot
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-      dimension da_psi_ref(3,ncent_tot)
+      integer :: i, ic, k
+      real(dp) :: denergy, psid
+      real(dp), dimension(3, ncent_tot) :: da_psi_ref
 
       call compute_da_psi(psid,da_psi_ref)
       call compute_da_energy(psid,denergy)
@@ -28,37 +30,34 @@ c     write(6,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
+
       use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use vmc_mod, only: MMAT_DIM
       use atom, only: ncent,ncent_tot
-
       use const, only: nelec, ipr
       use da_energy_now, only: da_psi
       use da_jastrow4val, only: da_j
       use da_orbval, only: da_orb
-
       use elec, only: ndn, nup
       use multidet, only: ivirt, kref
-
       use zcompact, only: aaz, zmat
-
       use coefs, only: norb
       use dorb_m, only: iworbd
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-
       use multislater, only: detiab
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
-
-
-
-      dimension b_a(MORB,nelec),b_kref(nelec*nelec),tildem_a(nelec,MORB)
-      dimension da_psi_ref(3,ncent_tot)
+      integer :: i, iab, ic, ii, iorb
+      integer :: irep, ish, j, jorb
+      integer :: jrep, k, nel
+      real(dp) :: c800, psid, trace
+      real(dp), dimension(MORB, nelec) :: b_a
+      real(dp), dimension(nelec*nelec) :: b_kref
+      real(dp), dimension(nelec, MORB) :: tildem_a
+      real(dp), dimension(3, ncent_tot) :: da_psi_ref
 
       do 400 ic=1,ncent
         do 400 k=1,3
@@ -125,6 +124,7 @@ c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
+
       use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use vmc_mod, only: MMAT_DIM
       use atom, only: iwctype, ncent, ncent_tot
@@ -139,25 +139,21 @@ c-----------------------------------------------------------------------
       use coefs, only: norb
       use Bloc, only: xmat
       use dorb_m, only: iworbd
-
       use pseudo, only: lpot
-
       use da_pseudo, only: da_pecent, da_vps
-
       use velocity_jastrow, only: vj
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-
       use multislater, only: detiab
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
-
-
-      dimension da_energy_ref(3,ncent_tot)
+      integer :: i, iab, ic, ict, irep
+      integer :: ish, j, jorb, jrep
+      integer :: k, nel
+      real(dp) :: da_other_kin, da_other_pot, denergy, psid, trace
+      real(dp), dimension(3, ncent_tot) :: da_energy_ref
 
       do 400 ic=1,ncent
         do 400 k=1,3
@@ -224,13 +220,14 @@ c     write(6,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_init(iflag)
+
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
-
       use force_analy, only: iforce_analy
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
+      integer :: ic, iflag, k
 
       if(iforce_analy.eq.0) return
 
@@ -252,19 +249,17 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine force_analy_sum(p,q,eloc,eloco)
+
       use atom, only: ncent
       use da_energy_now, only: da_energy, da_psi
       use da_energy_sumcum, only: da_energy_sum, da_psi_sum
-
       use force_analy, only: iforce_analy
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
-
-
+      integer :: ic, k
+      real(dp) :: eloc, eloco, p, q
 
       if(iforce_analy.eq.0) return
 
@@ -278,16 +273,16 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_cum(wsum,eave,wcum)
+
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
-
       use force_analy, only: iforce_analy
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
+      integer :: ic, k
+      real(dp) :: da_energy_now, eave, wcum, wsum
 
       if(iforce_analy.eq.0) return
 
@@ -302,20 +297,18 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_fin(wcum,iblk,eave)
+
       use atom, only: ncent
       use force_fin, only: da_energy_ave, da_energy_err
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
-
       use force_analy, only: iforce_analy
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
-
-
-
+      integer :: iblk, ic, k
+      real(dp) :: eave, err, rtpass, wcum, x
+      real(dp) :: x2
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
@@ -338,17 +331,14 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_dump(iu)
+
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
-
       use force_analy, only: iforce_analy
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
-
-
-
-
+      integer :: ic, iu, k
 
       if(iforce_analy.eq.0) return
 
@@ -358,17 +348,14 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_rstrt(iu)
+
       use atom, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
-
       use force_analy, only: iforce_analy
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
-
-
-
-
+      integer :: ic, iu, k
 
       if(iforce_analy.eq.0) return
 
@@ -378,7 +365,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine force_analy_save
-      implicit real*8(a-h,o-z)
+      implicit none
 
       return
       end
