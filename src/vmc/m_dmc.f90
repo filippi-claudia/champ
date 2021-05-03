@@ -1,6 +1,9 @@
 module dmc_mod
     !> Arguments: MWALK, MFPROD, MFPRD1, MPATH
     !> MWALK: Maximum number of walkers
+
+    implicit none
+
     integer, parameter :: MWALK = 600
     integer, parameter :: MFPROD=3201
     integer, parameter :: MFPRD1=MFPROD-1
@@ -15,6 +18,8 @@ module age
   !> Arguments: iage, ioldest, ioldestmx
   use precision_kinds, only: dp
   use dmc_mod, only: MWALK 
+
+  implicit none
 
   integer, dimension(:), allocatable:: iage
   integer  :: ioldest
@@ -41,6 +46,8 @@ module branch
    use precision_kinds, only: dp
    use force_mod, only: MFORCE, MFORCE_WT_PRD
    use dmc_mod, only: MWALK, MFPRD1
+
+  implicit none
 
    real(dp) :: eest
    real(dp) :: eigv
@@ -88,6 +95,8 @@ module c_averages
   !> Arguments: mprop, prop, wprop, cum_av, cum_av2, cum_w
    use precision_kinds, only: dp
 
+   implicit none
+
    integer, parameter :: mprop = 100
    real(dp), dimension(:), allocatable :: prop !(mprop)
    real(dp), dimension(:), allocatable :: wprop !(mprop)
@@ -122,6 +131,8 @@ module c_averages_index
    !> Arguments: jeloc, jderiv 
    use force_mod, only: MFORCE
 
+   implicit none
+
    integer :: jeloc
    integer, dimension(:,:), allocatable :: jderiv !(3,MFORCE) 
 
@@ -145,6 +156,8 @@ module jacobsave
    use dmc_mod, only: MWALK
    use force_mod, only: MFORCE
    use precision_kinds, only: dp
+
+   implicit none
 
     real(dp) :: ajacob
     real(dp), dimension(:,:), allocatable :: ajacold
@@ -172,6 +185,8 @@ module velratio
    use force_mod, only: MFORCE
    use vmc_mod, only: MELEC
 
+   implicit none
+
    real(dp), dimension(:,:), allocatable :: fratio !(MWALK,MFORCE)
    real(dp), dimension(:,:,:,:), allocatable :: xdrifted !(3,MELEC,MWALK,MFORCE)
 
@@ -191,4 +206,3 @@ contains
       if (allocated(xdrifted)) deallocate(xdrifted)
    end subroutine deallocate_velratio
  end module velratio
-
