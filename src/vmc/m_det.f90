@@ -1,5 +1,8 @@
 module dets
     use precision_kinds, only: dp
+
+    implicit none
+
     real(dp), dimension(:, :, :), allocatable :: cdet !(MDET,MSTATES,MWF)
     integer :: ndet
 
@@ -25,6 +28,8 @@ end module dets
 module dets_equiv
     !> Arguments: cdet_equiv, dcdet_equiv
     use precision_kinds, only: dp
+
+    implicit none
 
     real(dp), dimension(:), allocatable :: cdet_equiv !(MDET)
     real(dp), dimension(:), allocatable :: dcdet_equiv !(MDET)
