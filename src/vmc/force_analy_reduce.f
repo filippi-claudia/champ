@@ -11,10 +11,14 @@
       use force_analy, only: iforce_analy
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ierr, ii, k
+
+      real(dp), dimension(3*ncent_tot) :: collect
 
 
-      dimension collect(3*ncent_tot)
 
       if(iforce_analy.eq.0) return
 
