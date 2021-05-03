@@ -46,7 +46,6 @@ c          -gammac, iflag=-1,   x >= a+4 even though it is called gammai
 
       use pcm_parms, only: re
       use precision_kinds, only: dp
-
       implicit none
 
       integer :: iflag, iter, itmax, large, n
@@ -54,7 +53,7 @@ c          -gammac, iflag=-1,   x >= a+4 even though it is called gammai
       real(dp) :: anf, ap, b0, b1
       real(dp) :: cc, ci, d3b2, d5b2
       real(dp) :: del, eps, fac, g
-      real(dp) :: g3b2, g5b2, gamm, gammcf
+      real(dp) :: g3b2, g5b2, gamm, gammai, gammcf
       real(dp) :: go, gold, sum, too
       real(dp) :: x, xae
 
@@ -125,7 +124,6 @@ c Written by Cyrus Umrigar
 c Evaluate the Gamma function.
 c For a=3/2 the error of this formula is 5.d-11
       use precision_kinds, only: dp
-
       implicit none
 
       integer :: j
