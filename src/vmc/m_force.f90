@@ -1,4 +1,7 @@
 module force_mod
+
+     implicit none
+
      integer :: MFORCE
      integer, parameter :: MFORCE_WT_PRD = 1000
      integer, parameter :: MWF = 3
@@ -12,6 +15,8 @@ module force_mod
     !> Arguments: deltot, istrech, nforce, alfstr
     use force_mod, only: MFORCE
     use precision_kinds, only: dp
+
+    implicit none
 
     real(dp), dimension(:), allocatable :: deltot !(MFORCE)
     integer :: istrech
@@ -38,6 +43,8 @@ end module forcepar
  module force_analy
      !> Arguments: iforce_analy, iuse_zmat, alfgeo
      use precision_kinds, only: dp
+
+     implicit none
 
      integer :: iforce_analy
      integer :: iuse_zmat
@@ -92,11 +99,14 @@ end module forcepar
      use precision_kinds, only: dp
      use vmc_mod, only: MCENT
 
+     implicit none
+
      real(dp), dimension(:, :, :), allocatable :: delc !(3,MCENT,MFORCE)
 
      private
      public   ::  delc
-     public :: allocate_forcestr, deallocate_forcestr
+!     public :: allocate_forcestr
+     public :: deallocate_forcestr
      save
  contains
     !  subroutine allocate_forcestr()
@@ -117,6 +127,8 @@ end module forcepar
      use force_mod, only: MFORCE
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
+
+     implicit none
 
      real(dp), dimension(:, :), allocatable :: wcum !(MSTATES,MFORCE)
      real(dp), dimension(:, :), allocatable :: wsum !(MSTATES,MFORCE)
@@ -144,6 +156,8 @@ end module forcepar
  module force_dmc
      !> Arguments: itausec, nwprod
 
+     implicit none
+
      integer :: itausec
      integer :: nwprod
 
@@ -156,6 +170,8 @@ end module forcepar
      !> Arguments: da_energy_ave, da_energy_err
      use precision_kinds, only: dp
      use vmc_mod, only: MCENT
+
+     implicit none
 
      real(dp), dimension(:, :), allocatable :: da_energy_ave !(3,MCENT)
      real(dp), dimension(:), allocatable :: da_energy_err !(3)
@@ -181,9 +197,12 @@ end module forcepar
 
  module force_mat_n
      !> Arguments: force_o
+
      use sr_mod, only: MCONF
      use precision_kinds, only: dp
      use vmc_mod, only: MCENT
+
+     implicit none
 
      real(dp), dimension(:, :), allocatable :: force_o !(6*MCENT,MCONF)
 
@@ -205,8 +224,6 @@ end module forcepar
 
  end module force_mat_n
 
-
-
  subroutine allocate_m_force()
      use forcest, only: allocate_forcest
     !  use forcestr, only: allocate_forcestr
@@ -214,6 +231,8 @@ end module forcepar
      use force_fin, only: allocate_force_fin
      use force_mat_n, only: allocate_force_mat_n
      use forcepar, only: allocate_forcepar
+
+     implicit none
 
      call allocate_forcest()
     !  call allocate_forcestr()
@@ -230,6 +249,8 @@ end module forcepar
      use force_fin, only: deallocate_force_fin
      use force_mat_n, only: deallocate_force_mat_n
      use forcepar, only: deallocate_forcepar
+
+     implicit none
 
      call deallocate_forcest()
      call deallocate_forcestr()
