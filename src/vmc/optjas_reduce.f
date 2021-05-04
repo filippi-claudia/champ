@@ -12,11 +12,15 @@ c Written by Claudia Filippi
       use gradhessj, only: e2
       use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
       use method_opt, only: method
-      use mpi
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension collect(MPARMJ,MSTATES),collect2(MPARMJ,MPARMJ,MSTATES)
+      integer :: i, ierr, istate, j, ngrad_jas_collect
+
+      real(dp), dimension(MPARMJ, MSTATES) :: collect
+      real(dp), dimension(MPARMJ, MPARMJ, MSTATES) :: collect2
+
 
       if(ioptjas.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
