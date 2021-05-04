@@ -13,11 +13,21 @@
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use multislater, only: detiab
       use const, only: nelec
-      
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
-      dimension zmat(MORB,nelec,2),dzmat(MORB,nelec,2),emz(nelec,nelec,2),aaz(nelec,nelec,2)
-      dimension orbprim(*),eorbprim(*)
+      implicit none
+
+      integer :: i, iab, io, irep, ish
+      integer :: iterm, jo, nel
+      real(dp) :: denergy, detratio, dorb_energy, dorb_energy_ref, dorb_psi
+      real(dp) :: dorb_psi_ref, psid
+      real(dp), dimension(MORB, nelec, 2) :: zmat
+      real(dp), dimension(MORB, nelec, 2) :: dzmat
+      real(dp), dimension(nelec, nelec, 2) :: emz
+      real(dp), dimension(nelec, nelec, 2) :: aaz
+      real(dp), dimension(*) :: orbprim
+      real(dp), dimension(*) :: eorbprim
+
 
       if(ioptorb.eq.0) return
 
@@ -80,16 +90,18 @@ c-----------------------------------------------------------------------
       subroutine optorb_compute(psid,eloc,deloc)
 
       use csfs, only: nstates
-
       use optwf_contrl, only: ioptorb
       use zcompact, only: aaz, dzmat, emz, zmat
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-      dimension psid(*),eloc(*),deloc(*)
+      integer :: i, istate
+      real(dp), dimension(*) :: psid
+      real(dp), dimension(*) :: eloc
+      real(dp), dimension(*) :: deloc
 
       if(ioptorb.eq.0) return
 
@@ -125,11 +137,17 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_030, only: orb_ecum, orb_wcum
       use optorb_cblock, only: isample_cmat, nreduced
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-      dimension wtg_new(*),wtg_old(*),enew(*),eold(*)
+      integer :: i, idiag_only, idx, ie, iflag
+      integer :: istate, j, je
+      real(dp) :: go, p, q
+      real(dp), dimension(*) :: wtg_new
+      real(dp), dimension(*) :: wtg_old
+      real(dp), dimension(*) :: enew
+      real(dp), dimension(*) :: eold
 
       if(ioptorb.eq.0) return
 
@@ -221,22 +239,22 @@ c     ns_current=0
       end
 c-----------------------------------------------------------------------
       subroutine optorb_cum(wsum,esum)
-      use csfs, only: nstates
 
+      use csfs, only: nstates
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm, idump_blockav
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
       use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
-
       use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
-      dimension wsum(*),esum(*)
+      integer :: i, istate
+      real(dp) :: eb, fnow
+      real(dp), dimension(*) :: wsum
+      real(dp), dimension(*) :: esum
 
       if(ioptorb.eq.0) return
 
@@ -297,7 +315,10 @@ c-----------------------------------------------------------------------
       use orb_mat_030, only: orb_ecum, orb_wcum
       use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, idiag_only, idx, iflg, istate
+      integer :: j, ns_current
 
       if(ioptorb.eq.0) return
 
@@ -358,15 +379,16 @@ C$ iflg = 0: init *cum, *cm2 as well
       end
 c-----------------------------------------------------------------------
       subroutine optorb_save
-      use csfs, only: nstates
 
+      use csfs, only: nstates
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, istate
 
       if(ioptorb.eq.0) return
 
@@ -382,17 +404,16 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_restore
-      use csfs, only: nstates
 
+      use csfs, only: nstates
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
+      integer :: i, istate
 
       if(ioptorb.eq.0) return
 
@@ -408,19 +429,24 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
+
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
-
       use optorb_cblock, only:  norb_f_bcum
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-      dimension oav(*),eoav(*),fo(*),foerr(*)
-
+      integer :: i, istate, n
+      real(dp) :: dabs, dble, eave, errn, wcum
+      real(dp) :: x, x2
+      real(dp), dimension(*) :: oav
+      real(dp), dimension(*) :: eoav
+      real(dp), dimension(*) :: fo
+      real(dp), dimension(*) :: foerr
 
       errn(x,x2,n)=dsqrt(dabs(x2/dble(n)-(x/dble(n))**2)/dble(n))
 
@@ -450,7 +476,10 @@ c-----------------------------------------------------------------------
       use orb_mat_030, only: orb_ecum, orb_wcum
       use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, istate, iu, matdim
+
 
       if(ioptorb.eq.0) return
 
@@ -485,7 +514,11 @@ c-----------------------------------------------------------------------
       use orb_mat_030, only: orb_ecum, orb_wcum
       use optorb_cblock, only: nreduced, nefp_blocks, norb_f_bcum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, istate, iu, matdim, morbprim
+      integer :: morbterm, mreduced
+
 
       if(ioptorb.eq.0) return
       read(iu) morbprim,morbterm,mreduced
@@ -535,11 +568,20 @@ c-----------------------------------------------------------------------
       use method_opt, only: method
       use optorb_cblock, only: nreduced
       use optwf_contrl, only: iapprox, iuse_orbeigv
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension oav(MXORBOP),eoav(MXORBOP),fo(MXORBOP),foerr(MXORBOP)
-      dimension wcum(*),ecum(*)
+      integer :: i, i0, i1, idx, ish
+      integer :: istate, j
+      real(dp) :: eave, orb_oho, orb_oo, passes, passesi
+      real(dp) :: wts
+      real(dp), dimension(MXORBOP) :: oav
+      real(dp), dimension(MXORBOP) :: eoav
+      real(dp), dimension(MXORBOP) :: fo
+      real(dp), dimension(MXORBOP) :: foerr
+      real(dp), dimension(*) :: wcum
+      real(dp), dimension(*) :: ecum
 
       if(ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -690,11 +732,19 @@ c Approximation: diagonal perturbative approach
       end
 c-----------------------------------------------------------------------
       subroutine detratio_col(nel,orb,icol,sinvt,ratio,isltnew)
-      implicit real*8(a-h,o-z)
+
+      use precision_kinds, only: dp
+
+      implicit none
+
+      integer :: icol, ie, isltnew, jcol, je
+      integer :: nel
+      real(dp) :: ratio, sum
+      real(dp), dimension(nel) :: orb
+      real(dp), dimension(nel, nel) :: sinvt
+
 c values of new orbital
-      dimension orb(nel)
 c inverse transposed slater matrix (first index electron, 2nd orbital)
-      dimension sinvt(nel,nel)
 c compute ratio of new and old determinant, if isltnew is
 c not zero, update inverse slater matrix as well
 c the new determinant differs from the old by replacing column icol
@@ -746,13 +796,19 @@ c-----------------------------------------------------------------------
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use optwf_contrl, only: ncore, no_active
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iab, icount_orbdef, ie, iesave
+      integer :: io, iocc, iprt, iterm
+      integer :: j, jo, k, n0
+      integer :: n1, noporb
+      integer, dimension(2, MDET) :: iodet
+      integer, dimension(2, MDET) :: iopos
+      integer, dimension(2, MORB) :: iflag
+      integer, dimension(2) :: ne
+      integer, dimension(2) :: m
 
       data icount_orbdef /1/
-
-      dimension iodet(2,MDET),iopos(2,MDET),iflag(2,MORB)
-
-      dimension ne(2),m(2)
 
       save icount_orbdef
 
@@ -939,14 +995,14 @@ c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
       end
 c-----------------------------------------------------------------------
       subroutine check_orbitals
-      use vmc_mod, only: MELEC, MORB
 
 c Do not compute virtual orbitals during single-electron move
+      use vmc_mod, only: MELEC, MORB
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
-
+      integer :: nadorb_save
 
       save nadorb_save
 
