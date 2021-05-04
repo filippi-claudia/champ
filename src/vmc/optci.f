@@ -12,14 +12,21 @@
       use method_opt, only: method
 
       use multislater, only: detiab
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, icsf, idet, ix, j
+      integer :: jcsf, k
+      real(dp) :: ci_e_csf, ci_o_csf, e_other, energy, psid
+      real(dp) :: psidi
+      real(dp), dimension(MDET) :: ciprim
+      real(dp), dimension(MDET) :: cieprim
+      real(dp), dimension(MDET, 2) :: eloc_det
 
 
 
 
 
-      dimension ciprim(MDET),cieprim(MDET)
-      dimension eloc_det(MDET,2)
       
       if(ioptci.eq.0) return 
       
@@ -78,7 +85,11 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, idx, iflg, j
+      real(dp) :: guid_weight, guid_weight_sq
 
 
 
@@ -132,7 +143,10 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, j
+
 
 
 
@@ -158,7 +172,10 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, j
+
 
 
 
@@ -189,7 +206,12 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, idx, j
+      real(dp) :: ci_oo_new, ci_oo_old, enew, eold, p
+      real(dp) :: q
 
 
 
@@ -226,7 +248,11 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, idx, j
+      real(dp) :: ci_oe_now, wsum
 
 
 
@@ -261,7 +287,10 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu, j, matdim
+
 
 
 
@@ -288,7 +317,11 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu, j, matdim, mciprim
+      integer :: mciterm
+
 
 
 
@@ -327,14 +360,21 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iblk, idx, j
+      real(dp) :: err, wcum, x, x2
+      real(dp), dimension(MXCITERM) :: oav
+      real(dp), dimension(MXCITERM) :: deav
+      real(dp), dimension(MXCITERM, MXCIREDUCED) :: oeav
+      real(dp), dimension(MXCITERM, MXCIREDUCED) :: oeerr
+      real(dp), dimension(MXCIMATDIM) :: ooav
+      real(dp), dimension(MXCIMATDIM) :: ooerr
+      real(dp), dimension(MXCIMATDIM) :: ooeav
 
 
 
-      dimension oav(MXCITERM),deav(MXCITERM)
-      dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)
-      dimension ooav(MXCIMATDIM),ooerr(MXCIMATDIM)
-      dimension ooeav(MXCIMATDIM)
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
@@ -371,15 +411,23 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iblk, iciprt_sav, idx, is
+      integer :: j
+      real(dp) :: etot, passes
+      real(dp), dimension(MXCITERM) :: deav
+      real(dp), dimension(MXCITERM, MXCIREDUCED) :: oeav
+      real(dp), dimension(MXCITERM, MXCIREDUCED) :: oeerr
+      real(dp), dimension(MXCIMATDIM) :: ooav
+      real(dp), dimension(MXCIMATDIM) :: ooerr
+      real(dp), dimension(MXCIMATDIM) :: ooeav
+      real(dp), dimension(MXCITERM) :: oelocav
+      real(dp), dimension(MXCITERM) :: eav
 
 
 
-      dimension deav(MXCITERM)
-      dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)
-      dimension ooav(MXCIMATDIM),ooerr(MXCIMATDIM)
-      dimension ooeav(MXCIMATDIM)
-      dimension oelocav(MXCITERM),eav(MXCITERM)
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -481,17 +529,25 @@ c-----------------------------------------------------------------------
       use m_icount, only: icount_ci
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iblk, idx, iu, j
+      integer :: jmax, k
+      integer, dimension(5) :: itemp_print
+      real(dp) :: w, while
+      real(dp), dimension(MXCITERM) :: deav
+      real(dp), dimension(MXCITERM, MXCIREDUCED) :: oeav
+      real(dp), dimension(MXCITERM, MXCIREDUCED) :: oeerr
+      real(dp), dimension(MXCIMATDIM) :: ooav
+      real(dp), dimension(MXCIMATDIM) :: ooerr
+      real(dp), dimension(MXCIMATDIM) :: ooeav
+      real(dp), dimension(5) :: temp_print
 
 
 c compute averages and print then out
 
 
-      dimension deav(MXCITERM)
-      dimension oeav(MXCITERM,MXCIREDUCED),oeerr(MXCITERM,MXCIREDUCED)
-      dimension ooav(MXCIMATDIM),ooerr(MXCIMATDIM)
-      dimension ooeav(MXCIMATDIM)
-      dimension itemp_print(5), temp_print(5)
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -579,7 +635,10 @@ c-----------------------------------------------------------------------
 
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: is
+
 
 
 
