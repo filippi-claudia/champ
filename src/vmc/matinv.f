@@ -5,15 +5,23 @@
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
-      implicit real*8 (a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, info, nsub
+      integer, dimension(nelec) :: ipvt
+      real(dp) :: aux, dabs, determinant, deti, go
+      real(dp) :: ten
+      real(dp), dimension(nsub, nsub) :: a
+      real(dp), dimension(nelec) :: work
+      real(dp), dimension(9) :: work2
+      real(dp), dimension(2) :: det
+      real(dp), parameter :: eps = 10.d0**(-40)
 
 c routine to calculate inverse and determinant of matrix a
 c assumed to be dimensioned a(nsub,nsub).
 c the matrix a is replaced by its inverse.
 
-      parameter (eps=10.d0**(-40))
-      dimension a(nsub,nsub)
-      dimension ipvt(nelec),work(nelec),work2(9),det(2)
 
       if(nsub.eq.1) then
         determinant=a(1,1)
