@@ -94,6 +94,8 @@ c-----------------------------------------------------------------------
       ! use csfs, only: nstates
       ! no idea if that would be correct
       use precision_kinds, only: dp
+      
+      use csfs, only: nstates           ! added by Ravindra
       implicit none
 
       integer :: i, iu

@@ -18,18 +18,28 @@
       use const, only: nelec
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use multislater, only: detiab
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iab, iel, index_det, iorb
+      integer :: irep, ish, istate, jj
+      integer :: jorb, jrep, k, ndim
+      integer :: nel
+      real(dp) :: det, dum1
+      real(dp), dimension(nelec, MORB, 3) :: gmat
+      real(dp), dimension(MEXCIT**2, 3) :: gmatn
+      real(dp), dimension(MORB, 3) :: b
+      real(dp), dimension(3) :: ddx_mdet
+      real(dp), dimension(MORB) :: orb_sav
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = 0.5d0
 
 
 
 
 
-      parameter (one=1.d0,half=0.5d0)
 
 
-      dimension gmat(nelec,MORB,3),gmatn(MEXCIT**2,3)
-      dimension b(MORB,3),ddx_mdet(3)
-      dimension orb_sav(MORB)
 
       if(ndet.eq.1) return
 
@@ -129,16 +139,25 @@ c-----------------------------------------------------------------------
       use dorb_m, only: iworbd
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      parameter (one=1.d0,half=0.5d0)
+      integer :: iab, iel, iorb, irep, ish
+      integer :: j, jel, jrep, k
+      integer :: kk, nel
+      real(dp) :: detratio, dum
+      real(dp), dimension(nelec, MORB) :: aa
+      real(dp), dimension(MEXCIT**2, MDET) :: wfmat
+      real(dp), dimension(MORB, nelec) :: ymat
+      real(dp), dimension(MORB, 3) :: b
+      real(dp), dimension(3, MORB) :: dorb
+      real(dp), dimension(nelec, MORB, 3) :: gmat
+      real(dp), dimension(3) :: velocity
+      real(dp), dimension(MMAT_DIM) :: slmi
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = 0.5d0
 
-      dimension aa(nelec,MORB),wfmat(MEXCIT**2,MDET),ymat(MORB,nelec)
-      dimension b(MORB,3),dorb(3,MORB)
-      dimension gmat(nelec,MORB,3)
-      dimension velocity(3)
 
-      dimension slmi(MMAT_DIM)
+
 
       do k=1,3
         velocity(k)=0.d0
