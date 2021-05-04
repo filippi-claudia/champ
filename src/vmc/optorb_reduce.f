@@ -13,10 +13,13 @@
       use orb_mat_030, only: orb_ecum, orb_wcum
       use method_opt, only: method
       use mpi
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension collect(MXORBOP+MXMATDIM)
+      integer :: i, iefpsample, ierr, isample_cmat, istate
+      integer :: matdim, norb_f_bcum, norb_f_collect, nreduced
+      real(dp), dimension(MXORBOP+MXMATDIM) :: collect
 
       if(ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
