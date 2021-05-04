@@ -7,8 +7,9 @@
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: cent, iwctype, nctype, ncent
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, index, iter, k
       character*40 filename,itn
 
       if(iter.lt.0) then
@@ -52,9 +53,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         use force_fin, only: da_energy_ave
         use zmatrix, only: czint, izcmat
         use force_analy, only: iforce_analy, iuse_zmat, alfgeo
-        implicit real*8(a-h,o-z)
 
+      implicit none
 
+      integer :: ic, k
 
         if (iforce_analy.eq.0) return
 
@@ -96,7 +98,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use force_analy, only: iforce_analy
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i
 
       if(iforce_analy.eq.0)return
 
@@ -117,15 +121,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
-
       use da_energy_now, only: da_energy, da_psi
       use force_mat_n, only: force_o
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
-
-
-
+      integer :: i, ii, k, l
 
       ii=0
       do 10 i=1,ncent
