@@ -1,8 +1,16 @@
       subroutine multiply_slmi_mderiv_simple(nel,work_mat,work,slmi,xmat)
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension slmi(*),work_mat(*),xmat(nel,*),work(*)
+      integer :: i, j, jsh, m, msh
+      integer :: n, nel
+
+      real(dp), dimension(*) :: slmi
+      real(dp), dimension(*) :: work_mat
+      real(dp), dimension(nel, *) :: xmat
+      real(dp), dimension(*) :: work
+
 
       msh=-nel
       do 20 m=1,nel
