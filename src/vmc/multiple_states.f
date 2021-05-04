@@ -3,11 +3,15 @@ c----------------------------------------------------------------------
 
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ipass, j
+      real(dp) :: determ_psig, determ_psigi, ratio, wi
+      real(dp), dimension(*) :: determ_s
 
 
 
-      dimension determ_s(*)
 
       if(iefficiency.eq.0) return
 
@@ -28,7 +32,10 @@ c----------------------------------------------------------------------
       subroutine efficiency_init
       use mstates_ctrl, only: nstates_psig
       use mstates2, only: effcm2, effcum
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: j
+
 
 
       do 100 j=1,nstates_psig
@@ -40,7 +47,11 @@ c----------------------------------------------------------------------
       subroutine efficiency_prt(passes)
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: j
+      real(dp) :: efficiency, passes
 
 
 
@@ -59,7 +70,10 @@ c----------------------------------------------------------------------
       subroutine efficiency_dump(iu)
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu
+
 
 
 
@@ -79,7 +93,11 @@ c-----------------------------------------------------------------------
       ! one replacement is 
       ! use csfs, only: nstates
       ! no idea if that would be correct
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iu
+      real(dp) :: different
 
 
       if(iefficiency.eq.0) return
