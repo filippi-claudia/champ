@@ -53,22 +53,22 @@ c     local potential contributions
 
 c     external potential on a grid (e.g. MM from CPMD)
       if(iqmmm.eq.1) then
-         ext_pot=0
+         ext_pot=0.0d0
          call qmmm_extpot_ene(coord,nelec,ext_pot)
          pe_local=pe_local+ext_pot
       endif
 
 c     external charges
       if(iefield.eq.1) then
-         ext_pot=0
+         ext_pot=0.0d0
          call efield_extpot_ene(coord,nelec,ext_pot)
          pe_local=pe_local+ext_pot
       endif
 
 c     PCM polarization charges 
       if(ipcm.gt.1) then
-         pepcms=0
-         pepcmv=0
+         pepcms=0.0d0
+         pepcmv=0.0d0
          call pcm_extpot_ene(coord,nelec,pepcms,pepcmv)
          pepcm=pepcms+pepcmv
          pe_local=pe_local+pepcm
@@ -76,8 +76,8 @@ c     PCM polarization charges
 
 c     QM-MMPOL (charges+induced dipoles) 
       if(immpol.gt.1) then
-         peQMdp=0
-         peQMq=0
+         peQMdp=0.0d0
+         peQMq=0.0d0
          call mmpol_extpot_ene(coord,nelec,peQMdp,peQMq)
          peQM=peQMdp+peQMq
          pe_local=pe_local+peQM
@@ -115,12 +115,12 @@ c     nonloc_pot must be called after determinant because slater matrices are ne
 
       call multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
-      e_other=pe_local-hb*d2j
-      do i=1,nelec
-         e_other=e_other-hb*(vj(1,i)**2+vj(2,i)**2+vj(3,i)**2)
-      enddo
-
       do istate=1,nstates
+         e_other=pe_local-hb*d2j
+         do i=1,nelec
+            e_other=e_other-hb*(vj(1,i,istate)**2+vj(2,i,istate)**2+vj(3,i,istate)**2)
+         enddo
+
 c     combine determinantal quantities to obtain trial wave function
          call determinant_psit(psid(istate),istate)
 c     compute energy using Ymat

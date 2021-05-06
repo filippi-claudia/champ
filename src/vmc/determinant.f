@@ -1,7 +1,6 @@
       subroutine determinant(ipass,x,rvec_en,r_en)
 c     Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c     Modified by A. Scemama
-
       use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use vmc_mod, only: MMAT_DIM
       use const, only: ipr
@@ -157,8 +156,8 @@ c-----------------------------------------------------------------------
 c     compute kinetic contribution of B+Btilde to compute Eloc
          do i=1,nelec
             do iorb=1,norb+nadorb
-               b(iorb,i,istate)=-hb*(ddorb(i,iorb,istate)+2*(vj(1,i)*dorb(1,i,iorb,istate)
-     &              +vj(2,i)*dorb(2,i,iorb,istate)+vj(3,i)*dorb(3,i,iorb,istate)))
+               b(iorb,i,istate)=-hb*(ddorb(i,iorb,istate)+2*(vj(1,i,istate)*dorb(1,i,iorb,istate)
+     &              +vj(2,i,istate)*dorb(2,i,iorb,istate)+vj(3,i,istate)*dorb(3,i,iorb,istate)))
             enddo
          enddo
 
@@ -168,8 +167,9 @@ c     compute derivative of kinetic contribution of B+Btilde wrt jastrow paramet
             do iparm=1,nparmj
                do i=1,nelec
                   do iorb=1,norb
-                     b_dj(iorb,i,iparm,istate)=-2*hb*(g(1,i,iparm)*dorb(1,i,iorb,istate)
-     &                    +g(2,i,iparm)*dorb(2,i,iorb,istate)+g(3,i,iparm)*dorb(3,i,iorb,istate))
+                     b_dj(iorb,i,iparm,istate)=-2*hb*(g(1,i,iparm,istate)*dorb(1,i,iorb,istate)
+     &                    +g(2,i,iparm,istate)*dorb(2,i,iorb,istate)
+     &                    +g(3,i,iparm,istate)*dorb(3,i,iorb,istate))
                   enddo
                enddo
             enddo
@@ -186,17 +186,17 @@ c     compute derivative of kinetic contribution of B+Btilde wrt nuclear coordin
             do ic=1,ncent
                do i=1,nelec
                   do l=1,3
-                     call daxpy(norb,2*vj(1,i),da_dorb(l,1,i,1,ic,istate),
+                     call daxpy(norb,2*vj(1,i,istate),da_dorb(l,1,i,1,ic,istate),
      &                    9*MELEC,b_da(l,i,1,ic,istate),3*MELEC)
-                     call daxpy(norb,2*vj(2,i),da_dorb(l,2,i,1,ic,istate),
+                     call daxpy(norb,2*vj(2,i,istate),da_dorb(l,2,i,1,ic,istate),
      &                    9*MELEC,b_da(l,i,1,ic,istate),3*MELEC)
-                     call daxpy(norb,2*vj(3,i),da_dorb(l,3,i,1,ic,istate),
+                     call daxpy(norb,2*vj(3,i,istate),da_dorb(l,3,i,1,ic,istate),
      &                    9*MELEC,b_da(l,i,1,ic,istate),3*MELEC)
-                     call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1,i,1,istate),
+                     call daxpy(norb,2*da_vj(l,1,i,ic,istate),dorb(1,i,1,istate),
      &                    3*MELEC,b_da(l,i,1,ic,istate),3*MELEC)
-                     call daxpy(norb,2*da_vj(l,2,i,ic),dorb(2,i,1,istate),
+                     call daxpy(norb,2*da_vj(l,2,i,ic,istate),dorb(2,i,1,istate),
      &                    3*MELEC,b_da(l,i,1,ic,istate),3*MELEC)
-                     call daxpy(norb,2*da_vj(l,3,i,ic),dorb(3,i,1,istate),
+                     call daxpy(norb,2*da_vj(l,3,i,ic,istate),dorb(3,i,1,istate),
      &                    3*MELEC,b_da(l,i,1,ic,istate),3*MELEC)
                      do iorb=1,norb
                         b_da(l,i,iorb,ic,istate)=-hb*b_da(l,i,iorb,ic,istate)

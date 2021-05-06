@@ -126,18 +126,18 @@ c     written for general iwf, whereas others (asymp_r) assume iwf=1.
 
       if(ijas.ge.4.and.ijas.le.6) then
 
-         deriv_psianl=a4(1,it,istate,iwf)*rri/(one+a4(2,it,iwf)*rri)-asymp_jasa(it)
+         deriv_psianl=a4(1,it,istate,iwf)*rri/(one+a4(2,it,istate,iwf)*rri)-asymp_jasa(it,istate)
          do i=2,norda
             deriv_psianl=deriv_psianl+a4(i+1,it,istate,iwf)*rri**i
          enddo
          do jparm=1,nparma(it)
             if(iwjasa(jparm,it).eq.1) then
                top=rri
-               bot=one+a4(2,it,iwf)*rri
-               gen=top/bot-asymp_r/(1+a4(2,it,iwf)*asymp_r)
+               bot=one+a4(2,it,istate,iwf)*rri
+               gen=top/bot-asymp_r/(1+a4(2,it,istate,iwf)*asymp_r)
             elseif(iwjasa(jparm,it).eq.2) then
-               top=-a4(1,it,iwf)*rri*rri
-               bot=one+a4(2,it,iwf)*rri
+               top=-a4(1,it,istate,iwf)*rri*rri
+               bot=one+a4(2,it,istate,iwf)*rri
                bot=bot*bot
                gen=top/bot+a4(1,it,istate,iwf)*asymp_r**2/(1+a4(2,it,istate,iwf)*asymp_r)**2
             else
@@ -154,7 +154,7 @@ c     written for general iwf, whereas others (asymp_r) assume iwf=1.
 
 c-----------------------------------------------------------------------
 
-      function deriv_psibnl(u,gn,isb,ipar)
+      function deriv_psibnl(u,gn,isb,ipar,istate)
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -183,29 +183,29 @@ c     If we want to use ijas=5,6 update this routine similarly to psi.f
       if(ijas.ge.5) stop 'ijas >= 5 not implemented in psibnl'
 
       if(u.eq.asymp_r) then
-         deriv_psibnl=0
+         deriv_psibnl=0.0d0
          return
       endif
 
-      fee=b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)
+      fee=b(1,isb,istate,iwf)*u/(one+b(2,isb,istate,iwf)*u)
 
-      deriv_psibnl=sspinn*fee-asymp_jasb(ipar+1)
+      deriv_psibnl=sspinn*fee-asymp_jasb(ipar+1,istate)
       if(ijas.ge.4.and.ijas.le.6) then
          do i=2,nordb
-            deriv_psibnl=deriv_psibnl+b(i+1,isb,iwf)*u**i
+            deriv_psibnl=deriv_psibnl+b(i+1,isb,istate,iwf)*u**i
          enddo
       endif
 
       do jparm=1,nparmb(isb)
          if(iwjasb(jparm,isb).eq.1) then
             top=u
-            bot=one+b(2,isb,iwf)*u
-            gee=sspinn*(top/bot-asymp_r/(1+b(2,isb,iwf)*asymp_r))
+            bot=one+b(2,isb,istate,iwf)*u
+            gee=sspinn*(top/bot-asymp_r/(1+b(2,isb,istate,iwf)*asymp_r))
          elseif(iwjasb(jparm,isb).eq.2) then
-            top=-b(1,isb,iwf)*u*u
-            bot=one+b(2,isb,iwf)*u
+            top=-b(1,isb,istate,iwf)*u*u
+            bot=one+b(2,isb,istate,iwf)*u
             bot=bot*bot
-            gee=sspinn*(top/bot+b(1,isb,iwf)*asymp_r**2/(1+b(2,isb,iwf)*asymp_r)**2)
+            gee=sspinn*(top/bot+b(1,isb,istate,iwf)*asymp_r**2/(1+b(2,isb,istate,iwf)*asymp_r)**2)
          else
             iord=iwjasb(jparm,isb)-1
             gee=u**iord-asymp_r**iord
