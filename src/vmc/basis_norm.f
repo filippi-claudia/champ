@@ -16,16 +16,26 @@ c Set normalization of basis fns.
       use basis, only: n4s, n4p
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iabs, ic, iflag, iorb
+      integer :: iwf, j, ju, k
+      integer :: l
+
+      real(dp), dimension(*) :: anorm
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: three = 3.d0
+      real(dp), parameter :: five = 5.d0
+      real(dp), parameter :: six = 6.d0
+      real(dp), parameter :: seven = 7.d0
+      real(dp), parameter :: third = 1.d0/3.d0
 
 
 
-      parameter (one=1.d0,two=2.d0,three=3.d0)
-      parameter (five=5.d0,six=6.d0,seven=7.d0)
-      parameter (third=1.d0/3.d0)
 
 
-      dimension anorm(*)
 
       do 5 j=1,nbasis
     5   anorm(j)=one
