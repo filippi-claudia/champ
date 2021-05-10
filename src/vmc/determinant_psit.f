@@ -10,7 +10,11 @@
       use wfsec, only: iwf
 
       use multislater, only: detiab
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: istate, k
+      real(dp) :: determ
 
 
 
