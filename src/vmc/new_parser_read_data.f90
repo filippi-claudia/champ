@@ -92,7 +92,7 @@ subroutine read_molecule_file(file_molecule)
     ! Ravindra
 
     use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp    
-    use ghostatom, only: nghostcent
+    use ghostatom, 		only: newghostype, nghostcent
     use inputflags, only: igeometry
     use periodic_table, only: atom_t, element
     use contrl_file,    only: ounit, errunit    
@@ -179,6 +179,9 @@ subroutine read_molecule_file(file_molecule)
         atoms = element(atomtyp(j))
         znuc(j) = atoms%nvalence
     enddo
+
+    ncent_tot = ncent + nghostcent
+    nctype_tot = nctype + newghostype
 
     write(ounit,*) '-----------------------------------------------------------------------'      
     write(ounit,'(a, t15, a, t27, a, t39, a, t45, a)') 'Symbol', 'x', 'y', 'z', 'Type'

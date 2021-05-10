@@ -15,7 +15,6 @@ subroutine parser
 ! in the replacement of preprocess input
   use elec,           	only: ndn, nup
   use const,          	only: nelec
-  use ghostatom,      	only: newghostype, nghostcent
   use atom,           	only: nctype, ncent
   use contrl,         	only: nstep, nblk, nblk_max
   use wfsec,          	only: nwftype
@@ -143,7 +142,7 @@ subroutine parser
   integer, parameter         :: maxa = 100
   logical                    :: doit, debug
 
-  character(len=72)          :: fname, filename, pool_dir, key
+  character(len=72)          :: fname, key
   character(len=20)          :: temp1, temp2, temp3, temp4, temp5   
   integer                    :: ifock , ratio, isavebl
 
@@ -197,7 +196,7 @@ subroutine parser
 ! %module general (complete)
   mode        = fdf_get('mode', 'vmc_one_mpi')  
   title       = fdf_get('title', 'Untitled')
-  pool_dir    = fdf_get('pool', '.')
+  pooldir     = fdf_get('pool', '.')
   pp_id       = fdf_get('pseudopot', 'none')  
   bas_id      = fdf_get('basis', 'none')  
   nforce      = fdf_get('nforce', 1)    
@@ -221,8 +220,8 @@ subroutine parser
   ndn         = nelec-nup
 
 ! %module atoms (complete)
-  nctype      = fdf_get('nctype', 1)    
-  ncent       = fdf_get('natom', 1)     
+!  nctype      = fdf_get('nctype', 1)    
+!  ncent       = fdf_get('natom', 1)     
   newghostype = fdf_get('newghostype', 0)       
   nghostcent  = fdf_get('nghostcent', 0)       
 
@@ -449,16 +448,16 @@ subroutine parser
 
 
 ! module dependent processing . These will be replaced by inliners
-  write(ounit,*) "Names of the external files being read for this calculation :: "
-  write(ounit,*)
-  write(ounit,fmt=fmt32) " Basis                      :: ", file_basis
-  write(ounit,fmt=fmt32) " Molecule                   :: ", file_molecule
-  write(ounit,fmt=fmt32) " Determinants               :: ", file_determinants
-  write(ounit,fmt=fmt32) " Symmetry                   :: ", file_symmetry
-  write(ounit,fmt=fmt32) " Jastrow                    :: ", file_jastrow
-  write(ounit,fmt=fmt32) " Jastrow_der                :: ", file_jastrow_der          
-  write(ounit,fmt=fmt32) " Orbitals                   :: ", file_orbitals            
-  write(ounit,*)
+  ! write(ounit,*) "Names of the external files being read for this calculation :: "
+  ! write(ounit,*)
+  ! write(ounit,fmt=fmt32) " Basis                      :: ", file_basis
+  ! write(ounit,fmt=fmt32) " Molecule                   :: ", file_molecule
+  ! write(ounit,fmt=fmt32) " Determinants               :: ", file_determinants
+  ! write(ounit,fmt=fmt32) " Symmetry                   :: ", file_symmetry
+  ! write(ounit,fmt=fmt32) " Jastrow                    :: ", file_jastrow
+  ! write(ounit,fmt=fmt32) " Jastrow_der                :: ", file_jastrow_der          
+  ! write(ounit,fmt=fmt32) " Orbitals                   :: ", file_orbitals            
+  ! write(ounit,*)
 
 
 ! Processing of data read from the parsed files or setting them with defaults
@@ -593,7 +592,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+!    error stop             
   endif
 
 ! (11) Eigenvalues information of orbitals (either block or from a file)
@@ -608,7 +607,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+!    error stop             
   endif
   
 ! (12) Basis num information (either block or from a file)
@@ -648,24 +647,19 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about dmatrix provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+!    error stop             
   endif
 
 
 ! (15) basis information (either block or from a file)
 
-  ! if ( fdf_load_defined('basis') ) then
-  !   call read_basis_file(file_basis)
-  ! elseif ( fdf_block('basis', bfdf)) then
-  ! ! call fdf_read_basis_block(bfdf)
-  !   write(errunit,'(a)') "Error:: No information about basis provided in the block."
-  !   write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-  !   error stop             
-  ! else
-  !   write(errunit,'(a)') "Error:: No information about basis provided in the block."
-  !   write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-  !   error stop             
-  ! endif
+  if ( fdf_defined('basis') ) then
+    call read_bas_num(1)   ! i == iwf debug
+  else
+    write(errunit,'(a)') "Error:: No information about basis provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif
 
 ! (16) pseudo information (either block or from a file)
 
@@ -695,7 +689,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about multideterminants provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+!    error stop             
   endif
 
 ! (18) cavity_spheres information (either block or from a file)
@@ -710,7 +704,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+!    error stop             
   endif
 
 ! (19) gradients_zmatrix information (either block or from a file)
@@ -725,7 +719,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about gradients_zmatrix provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+!    error stop             
   endif
 
 ! (20) gradients_cartesian information (either block or from a file)
@@ -740,7 +734,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about gradients_cartesian provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+!    error stop             
   endif
 
 ! (21) modify_zmatrix information (either block or from a file)
@@ -755,7 +749,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about modify_zmatrix provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+!    error stop             
   endif    
 
 ! (22) hessian_zmatrix information (either block or from a file)
@@ -770,7 +764,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about hessian_zmatrix provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+!    error stop             
   endif    
 
 
@@ -786,7 +780,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about zmatrix_connection provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+!    error stop             
   endif    
     
 ! (24) efield information (either block or from a file)
@@ -801,7 +795,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about efield provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+!    error stop             
   endif    
 
 ! Done reading all the files
@@ -862,6 +856,8 @@ subroutine parser
     enddo
 
 
+    ncent_tot = ncent + nghostcent
+
     ! Count unique type of elements
     nctype = 1 
     unique(1) = symbol(1)
@@ -896,6 +892,8 @@ subroutine parser
         atoms = element(atomtyp(j)) 
         znuc(j) = atoms%nvalence
     enddo
+
+    nctype_tot = nctype + newghostype
 
     write(ounit,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
     write(ounit,*)
