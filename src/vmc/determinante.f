@@ -18,14 +18,21 @@
       use multislater, only: detiab
 
       use atom, only: ncent_tot
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iab, iel, iflag, ik
+      integer :: ikel, ish, j, nel
+      real(dp) :: ratio_kref, sum
+      real(dp), dimension(3, *) :: x
+      real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
+      real(dp), dimension(nelec, ncent_tot) :: r_en
 
 
 
 
 
 
-      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
       
       call orbitalse(iel,x,rvec_en,r_en,iflag)
       
@@ -94,7 +101,17 @@ c-----------------------------------------------------------------------
       use const, only: nelec
       use multislater, only: detiab
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iab, iel, iflag_move, iorb
+      integer :: istate, kk
+      real(dp) :: detratio, psi2g, psi2gi, psig
+      real(dp), dimension(*) :: psid
+      real(dp), dimension(3) :: vd
+      real(dp), dimension(3) :: vref
+      real(dp), dimension(3) :: vd_s
+      real(dp), dimension(3, MORB) :: dorb_tmp
+      real(dp), dimension(MORB, nelec) :: ymat_tmp
 
 
 
@@ -105,13 +122,11 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension psid(*),vd(3),vref(3),vd_s(3),dorb_tmp(3,MORB)
       ! real(dp), allocatable, save :: ymat(:,:)
       ! if (.not. allocated(ymat)) then 
       !   allocate(ymat_tmp(norb,MELEC))
       ! endif
 
-      dimension ymat_tmp(MORB,nelec)
       ! save ymat_tmp
 
       if(iel.le.nup) then
@@ -281,11 +296,15 @@ c-----------------------------------------------------------------------
       use dorb_m, only: iworbd
       use coefs, only: norb
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension slmi(MMAT_DIM)
-      dimension dorb(3,MORB)
-      dimension ddx_ref(3)
+      integer :: iel, ik, ish, j, jel
+      integer :: nel
+
+      real(dp), dimension(MMAT_DIM) :: slmi
+      real(dp), dimension(3, MORB) :: dorb
+      real(dp), dimension(3) :: ddx_ref
+
 
       ddx_ref(1)=0
       ddx_ref(2)=0
