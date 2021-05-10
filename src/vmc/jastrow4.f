@@ -394,7 +394,7 @@ c-----------------------------------------------------------------------
 
       feniii=0.0d0
       do iord=3,norda
-         feniii=feniii+a4(iord+1,it,iwf)*iord*(iord-1)*(iord-2)*rr(iord-3)
+         feniii=feniii+a4(iord+1,it,istate,iwf)*iord*(iord-1)*(iord-2)*rr(iord-3)
       enddo
 
       ri=1.0d0/r

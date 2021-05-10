@@ -1,5 +1,4 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
-
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -135,17 +134,18 @@ c     All quantities saved (old) avaliable
      &              aa(1,1,iab,istate),wfmat(1,1,iab,istate),ymat(1,1,iab,istate),vd_s)
                do kk=1,3
                   vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)
-     &                   *(vd_s(kk)+vref(kk,istate))/anormo(istate)
+     &                 *(vd_s(kk)+vref(kk,istate))/anormo(istate)
                enddo
             enddo
             vd(1)=vd(1)*psi2gi
             vd(2)=vd(2)*psi2gi
             vd(3)=vd(3)*psi2gi
          endif
-         
-         vd(1)=vj(1,iel)+vd(1)
-         vd(2)=vj(2,iel)+vd(2)
-         vd(3)=vj(3,iel)+vd(3)
+
+c        RLPB (this is not clear still, vd state dependent?)
+         vd(1)=vj(1,iel,1)+vd(1)
+         vd(2)=vj(2,iel,1)+vd(2)
+         vd(3)=vj(3,iel,1)+vd(3)
 
 c     Within single-electron move - quantities of electron iel not saved 
       elseif(iflag_move.eq.0) then
@@ -178,7 +178,7 @@ c     Within single-electron move - quantities of electron iel not saved
      &              aan(1,1,istate),wfmatn(1,1,istate),ymatn(1,1,istate),vd_s)
                do kk=1,3
                   vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)
-     &                   *(vd_s(kk)+vref(kk,istate))/anormo(istate)
+     &                 *(vd_s(kk)+vref(kk,istate))/anormo(istate)
                enddo
             enddo
             vd(1)=vd(1)*psi2gi
@@ -186,9 +186,10 @@ c     Within single-electron move - quantities of electron iel not saved
             vd(3)=vd(3)*psi2gi
          endif
 
-         vd(1)=vjn(1,iel)+vd(1)
-         vd(2)=vjn(2,iel)+vd(2)
-         vd(3)=vjn(3,iel)+vd(3)
+c        RLPB (this is not clear still, vd state dependent?)
+         vd(1)=vjn(1,iel,1)+vd(1)
+         vd(2)=vjn(2,iel,1)+vd(2)
+         vd(3)=vjn(3,iel,1)+vd(3)
       else
 c     Within single-electron move - iel not equal to electron moved - quantities of electron iel not saved 
          do kk=1,3
@@ -232,9 +233,11 @@ c     iel has different spin than the electron moved
             enddo
          endif
 
-         vd(1)=vjn(1,iel)+vd(1)+vref(1,istate)
-         vd(2)=vjn(2,iel)+vd(2)+vref(2,istate)
-         vd(3)=vjn(3,iel)+vd(3)+vref(3,istate)
+c     RLPB (this is not clear still, vd state dependent?)
+         istate=1
+         vd(1)=vjn(1,iel,istate)+vd(1)+vref(1,istate)
+         vd(2)=vjn(2,iel,istate)+vd(2)+vref(2,istate)
+         vd(3)=vjn(3,iel,istate)+vd(3)+vref(3,istate)
       endif
 
       end subroutine

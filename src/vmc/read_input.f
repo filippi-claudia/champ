@@ -8,7 +8,6 @@ c Written by Friedemann Schautz
       call allocate_vmc()
       call allocate_dmc()
 
-
 c Initialize flags
       call flaginit
 c Initialize input parser
@@ -23,8 +22,7 @@ c and read in everything which is still in the old format
 
       if(index(mode,'mc').ne.0 ) call p2vin('input.log',1)
 
-      return
-      end
+      end subroutine
 
 c-----------------------------------------------------------------------
       subroutine process_input
@@ -886,13 +884,13 @@ c Jastrow section
         write(6,'(''mparmja,mparmjb,mparmjc='',3i5)') mparmja,mparmjb,mparmjc
         do 301 it=1,nctype
   301     write(6,'(''a='',x,7f10.6,(8f10.6))')
-     &                  (a4(iparm,it,1),iparm=1,mparmja)
+     &                  (a4(iparm,it,1,1),iparm=1,mparmja)
         do 302 isp=nspin1,nspin2b
   302     write(6,'(''b='',x,7f10.6,(8f10.6))')
-     &                 (b(iparm,isp,1),iparm=1,mparmjb)
+     &                 (b(iparm,isp,1,1),iparm=1,mparmjb)
         do 303 it=1,nctype
   303     write(6,'(''c='',x,7f10.6,(8f10.6))')
-     &                 (c(iparm,it,1),iparm=1,mparmjc)
+     &                 (c(iparm,it,1,1),iparm=1,mparmjc)
 c Note: Fock terms yet to be put in ijas=4,5,6
       endif
 
@@ -925,9 +923,9 @@ c should be dimensioned to MWF
         c2_jas6=0
         asymp_r=0
         do 310 it=1,nctype
- 310      asymp_jasa(it)=0
+ 310      asymp_jasa(it,:)=0.0d0
         do 320 i=1,2
- 320      asymp_jasb(i)=0
+ 320      asymp_jasb(i,:)=0.0d0
       endif
       call set_scale_dist(1)
 
@@ -1204,7 +1202,6 @@ c-----------------------------------------------------------------------
       subroutine read_jastrow_parameter(iu,iwft)
 C$INPUT jastrow_parameter inp i=1
 CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
-
       use jaspar, only: nspin1, nspin2
       use elec, only: ndn
       use jaspar3, only: a, b, c, scalek
@@ -1214,7 +1211,7 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       use contr2, only: ifock, ijas
       use contr2, only: isc
       use inputflags, only: ijastrow_parameter
-
+      use csfs, only: nstates
       use atom, only: ncent, nctype
       
       implicit real*8(a-h,o-z)
@@ -1253,13 +1250,13 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
         mparmjb=2+max(0,nordb-1)
         mparmjc=nterms4(nordc)
         do 70 it=1,nctype
-          read(iu,*) (a4(iparm,it,iwft),iparm=1,mparmja)
+          read(iu,*) (a4(iparm,it,1,iwft),iparm=1,mparmja)
    70     call incpos(iu,itmp,1)
         do 80 isp=nspin1,nspin2b
-          read(iu,*) (b(iparm,isp,iwft),iparm=1,mparmjb)
+          read(iu,*) (b(iparm,isp,1,iwft),iparm=1,mparmjb)
    80     call incpos(iu,itmp,1)
         do 90 it=1,nctype
-          read(iu,*) (c(iparm,it,iwft),iparm=1,mparmjc)
+          read(iu,*) (c(iparm,it,1,iwft),iparm=1,mparmjc)
    90     call incpos(iu,itmp,1)
       endif
 c Read cutoff for Jastrow4,5,6
@@ -1799,19 +1796,17 @@ c TMP - RLPB
 c----------------------------------------------------------------------
 
       subroutine inputjastrow(nwftype)
-c Set the jastrow to be equal
-
+c     Set the jastrow to be equal
       use jaspar, only: nspin1, nspin2
       use jaspar3, only: a, b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
       use bparm, only: nspin2b
       use contr2, only: ifock, ijas
       use contr2, only: isc, ianalyt_lap
-
+      use csfs, only: nstates
       use atom, only: ncent, nctype
 
       implicit real*8(a-h,o-z)
-
 
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
@@ -1819,28 +1814,37 @@ c Set the jastrow to be equal
       call p2gtid('jastrow:nspin2',nspin2,1,1)
       call p2gtid('jastrow:ifock',ifock,0,1)
       call p2gtid('jastrow:ianalyt_lap',ianalyt_lap,1,1)
-
       call p2gti('atoms:natom',ncent,1)
       call p2gti('atoms:nctype',nctype,1)
 
       if(ijas.ge.4.and.ijas.le.6) then
-        mparmja=2+max(0,norda-1)
-        mparmjb=2+max(0,nordb-1)
-        mparmjc=nterms4(nordc)
-        do 90 iwft=2,nwftype
-          scalek(iwft)=scalek(1)
-          do 70 it=1,nctype
-            do 70 iparm=1,mparmja
-   70         a4(iparm,it,iwft)=a4(iparm,it,1)
-        do 80 isp=nspin1,nspin2b
-          do 80 iparm=1,mparmjb
-   80       b(iparm,isp,iwft)=b(iparm,isp,1)
-        do 90 it=1,nctype
-          do 90 iparm=1,mparmjc
-   90       c(iparm,it,iwft)=c(iparm,it,1)
+         mparmja=2+max(0,norda-1)
+         mparmjb=2+max(0,nordb-1)
+         mparmjc=nterms4(nordc)
+         do iwft=2,nwftype
+            scalek(iwft)=scalek(1)
+            do istate=2,nstates
+               do it=1,nctype
+                  do iparm=1,mparmja
+                     a4(iparm,it,istate,iwft)=a4(iparm,it,1,1)
+                  enddo
+               enddo
+               do isp=nspin1,nspin2b
+                  do iparm=1,mparmjb
+                     b(iparm,isp,istate,iwft)=b(iparm,isp,1,1)
+                  enddo
+               enddo
+               do it=1,nctype
+                  do iparm=1,mparmjc
+                     c(iparm,it,istate,iwft)=c(iparm,it,1,1)
+                  enddo
+               enddo
+            enddo
+         enddo
       endif
 
-      end
+      end subroutine
+
 c----------------------------------------------------------------------
       subroutine inputforces
 c Set all force displacements to zero

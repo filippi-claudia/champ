@@ -51,66 +51,74 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use contr2, only: ianalyt_lap, ijas, ifock, isc
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
       character*50 fmt
-      character*40 filename,filetype
+      character*40 filename,filetype,fint,xstate
 
       if(ioptjas.eq.0) return
 
-      filename='jastrow'//filetype(1:index(filetype,' ')-1)
+      fint='(I1.1)'
+      do istate=1,nstates
+         write (xstate,fint) istate
+         filename='jastrow_state_'//trim(xstate)//filetype(1:index(filetype,' ')-1)
 
-      open(2,file=filename,status='unknown')
+         open(2,file=filename,status='unknown')
 
-      write(2,'(''&jastrow ianalyt_lap'',i2,'' ijas'',i2,'' isc'',i2,
+         write(2,'(''&jastrow ianalyt_lap'',i2,'' ijas'',i2,'' isc'',i2,
      &'' nspin1'',i2,'' nspin2'',i2,'' ifock'',i2)')
-     &     ianalyt_lap,ijas,isc,nspin1,nspin2,ifock
+     &        ianalyt_lap,ijas,isc,nspin1,nspin2,ifock
 
-      write(2,*)
-      write(2,'(''jastrow_parameter'',i4)') iwf_fit
-      write(2,'(3i3,a28)') norda,nordb,nordc,' norda,nordb,nordc'
+         write(2,*)
+         write(2,'(''jastrow_parameter'',i4)') iwf_fit
+         write(2,'(3i3,a28)') norda,nordb,nordc,' norda,nordb,nordc'
 
 c     tmp
-      a21=0
-      write(2,'(2f13.8,a15)') scalek(1),a21,' scalek,a21'
-      mparmja=2+max(0,norda-1)
-      mparmjb=2+max(0,nordb-1)
-      mparmjc=nterms4(nordc)
+         a21=0
+         write(2,'(2f13.8,a15)') scalek(1),a21,' scalek,a21'
+         mparmja=2+max(0,norda-1)
+         mparmjb=2+max(0,nordb-1)
+         mparmjc=nterms4(nordc)
 
-      if(mparmja.gt.0) then
-         write(fmt,'(''(''i2,''f13.8,a28)'')') mparmja
-      else
-         write(fmt,'(''(a28)'')')
-      endif
+         if(mparmja.gt.0) then
+            write(fmt,'(''(''i2,''f13.8,a28)'')') mparmja
+         else
+            write(fmt,'(''(a28)'')')
+         endif
 
-      do ict=1,nctype
-         write(2,fmt)
-     &        (a4(i,ict,1),i=1,mparmja),' (a(iparmj),iparmj=1,nparma)'
-      enddo
+         do ict=1,nctype
+            write(2,fmt)
+     &           (a4(i,ict,istate,1),i=1,mparmja),
+     &' (a(iparmj),iparmj=1,nparma)'
+         enddo
 
-      if(mparmjb.gt.0) then
-         write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjb
-      else
-         write(fmt,'(''(a28)'')')
-      endif
+         if(mparmjb.gt.0) then
+            write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjb
+         else
+            write(fmt,'(''(a28)'')')
+         endif
 
-      write(2,fmt) 
-     &     (b(i,1,1),i=1,mparmjb),' (b(iparmj),iparmj=1,nparmb)'
-
-      if(mparmjc.gt.0) then
-         write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjc
-      else
-         write(fmt,'(''(a28)'')')
-      endif
-
-      do ict=1,nctype
          write(2,fmt) 
-     &        (c(i,ict,1),i=1,mparmjc),' (c(iparmj),iparmj=1,nparmc)'
-      enddo
+     &        (b(i,1,istate,1),i=1,mparmjb),
+     &' (b(iparmj),iparmj=1,nparmb)'
 
-      write(2,'(''end'')')
-      close(2)
+         if(mparmjc.gt.0) then
+            write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjc
+         else
+            write(fmt,'(''(a28)'')')
+         endif
+
+         do ict=1,nctype
+            write(2,fmt) 
+     &           (c(i,ict,istate,1),i=1,mparmjc),
+     &' (c(iparmj),iparmj=1,nparmc)'
+         enddo
+
+         write(2,'(''end'')')
+         close(2)
+      enddo
 
       end subroutine
 
@@ -281,14 +289,16 @@ c-----------------------------------------------------------------------
       use force_mod, only: MWF
       use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
+      use mstates_mod, only: MSTATES
       use atom, only: nctype
       use jaspar3, only: a, b, c
       use jaspar4, only: a4, norda, nordb, nordc
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
-      dimension a4_save(MORDJ1,MCTYPE,MWF),b_save(MORDJ1,2,MWF),
-     &     c_save(83,MCTYPE,MWF)
+      dimension a4_save(MORDJ1,MCTYPE,MSTATES,MWF),b_save(MORDJ1,2,MSTATES,MWF),
+     &     c_save(83,MCTYPE,MSTATES,MWF)
 
       save a4_save,b_save,c_save
       save mparmja,mparmjb,mparmjc
@@ -299,17 +309,19 @@ c     Save parameters corresponding to run generating hessian
       mparmjb=2+max(0,nordb-1)
       mparmjc=nterms4(nordc)
 
-      do ict=1,nctype
-         do i=1,mparmja
-            a4_save(i,ict,1)=a4(i,ict,1)
+      do istate=1,nstates
+         do ict=1,nctype
+            do i=1,mparmja
+               a4_save(i,ict,istate,1)=a4(i,ict,istate,1)
+            enddo
          enddo
-      enddo
-      do i=1,mparmjb
-         b_save(i,1,1)=b(i,1,1)
-      enddo
-      do ict=1,nctype
-         do i=1,mparmjc
-            c_save(i,ict,1)=c(i,ict,1)
+         do i=1,mparmjb
+            b_save(i,1,istate,1)=b(i,1,istate,1)
+         enddo
+         do ict=1,nctype
+            do i=1,mparmjc
+               c_save(i,ict,istate,1)=c(i,ict,istate,1)
+            enddo
          enddo
       enddo
 
@@ -319,17 +331,19 @@ c     Save parameters corresponding to run generating hessian
 
 c     Restore parameters corresponding to run generating hessian
 
-      do ict=1,nctype
-         do i=1,mparmja
-            a4(i,ict,iadiag)=a4_save(i,ict,1)
+      do istate=1,nstates
+         do ict=1,nctype
+            do i=1,mparmja
+               a4(i,ict,istate,iadiag)=a4_save(i,ict,istate,1)
+            enddo
          enddo
-      enddo
-      do i=1,mparmjb
-         b(i,1,iadiag)=b_save(i,1,1)
-      enddo
-      do ict=1,nctype
-         do i=1,mparmjc
-            c(i,ict,iadiag)=c_save(i,ict,1)
+         do i=1,mparmjb
+            b(i,1,istate,iadiag)=b_save(i,1,istate,1)
+         enddo
+         do ict=1,nctype
+            do i=1,mparmjc
+               c(i,ict,istate,iadiag)=c_save(i,ict,istate,1)
+            enddo
          enddo
       enddo
 
@@ -352,9 +366,9 @@ c-----------------------------------------------------------------------
       dimension coef_save(MBASIS,MORB,MSTATES,MWF)
       save coef_save
 
-      do i=1,norb
-         do j=1,nbasis
-            do istate=1,nstates
+      do istate=1,nstates
+         do i=1,norb
+            do j=1,nbasis
                coef_save(j,i,istate,1)=coef(j,i,istate,1)
             enddo
          enddo
@@ -364,9 +378,9 @@ c-----------------------------------------------------------------------
 
       entry restore_lcao(iadiag)
 
-      do i=1,norb
-         do j=1,nbasis
-            do istate=1,nstates
+      do istate=1,nstates
+         do i=1,norb
+            do j=1,nbasis
                coef(j,i,istate,iadiag)=coef_save(j,i,istate,1)
             enddo
          enddo
@@ -446,6 +460,7 @@ c-----------------------------------------------------------------------
       use atom, only: nctype
       use jaspar3, only: a, b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
@@ -454,19 +469,22 @@ c-----------------------------------------------------------------------
       mparmjc=nterms4(nordc)
 
       scalek(iadiag)=scalek(1)
-      do ict=1,nctype
-         do i=1,mparmja
-            a4(i,ict,iadiag)=a4(i,ict,1)
+
+      do istate=1,nstates
+         do ict=1,nctype
+            do i=1,mparmja
+               a4(i,ict,istate,iadiag)=a4(i,ict,istate,1)
+            enddo
          enddo
-      enddo
 
-      do i=1,mparmjb
-         b(i,1,iadiag)=b(i,1,1)
-      enddo
+         do i=1,mparmjb
+            b(i,1,istate,iadiag)=b(i,1,istate,1)
+         enddo
 
-      do ict=1,nctype
-         do i=1,mparmjc
-            c(i,ict,iadiag)=c(i,ict,1)
+         do ict=1,nctype
+            do i=1,mparmjc
+               c(i,ict,istate,iadiag)=c(i,ict,istate,1)
+            enddo
          enddo
       enddo
 
@@ -475,7 +493,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 
       subroutine copy_lcao(iadiag)
-
       use vmc_mod, only: MELEC, MORB
       use coefs, only: coef, nbasis, norb
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
@@ -483,9 +500,9 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      do i=1,norb+nadorb
-         do j=1,nbasis
-            do istate=1,nstates
+      do istate=1,nstates
+         do i=1,norb+nadorb
+            do j=1,nbasis
                coef(j,i,istate,iadiag)=coef(j,i,istate,1)
             enddo
          enddo
@@ -535,14 +552,16 @@ c-----------------------------------------------------------------------
       use force_mod, only: MWF
       use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
+      use mstates_mod, only: MSTATES
       use atom, only: nctype
       use jaspar3, only: a, b, c
       use jaspar4, only: a4, norda, nordb, nordc
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
-      dimension a4_best(MORDJ1,MCTYPE,MWF),b_best(MORDJ1,2,MWF),
-     &     c_best(83,MCTYPE,MWF)
+      dimension a4_best(MORDJ1,MCTYPE,MSTATES,MWF),b_best(MORDJ1,2,MSTATES,MWF),
+     &     c_best(83,MCTYPE,MSTATES,MWF)
 
       save a4_best,b_best,c_best
       save mparmja,mparmjb,mparmjc
@@ -553,19 +572,21 @@ c     Save parameters corresponding to run generating hessian
       mparmjb=2+max(0,nordb-1)
       mparmjc=nterms4(nordc)
 
-      do ict=1,nctype
-         do i=1,mparmja
-            a4_best(i,ict,1)=a4(i,ict,1)
+      do istate=1,nstates
+         do ict=1,nctype
+            do i=1,mparmja
+               a4_best(i,ict,istate,1)=a4(i,ict,istate,1)
+            enddo
          enddo
-      enddo
 
-      do i=1,mparmjb
-         b_best(i,1,1)=b(i,1,1)
-      enddo
+         do i=1,mparmjb
+            b_best(i,1,istate,1)=b(i,1,istate,1)
+         enddo
 
-      do ict=1,nctype
-         do i=1,mparmjc
-            c_best(i,ict,1)=c(i,ict,1)
+         do ict=1,nctype
+            do i=1,mparmjc
+               c_best(i,ict,istate,1)=c(i,ict,istate,1)
+            enddo
          enddo
       enddo
 
@@ -574,19 +595,22 @@ c     Save parameters corresponding to run generating hessian
       entry restore_jastrow_best
 
 c     Restore parameters corresponding to run generating hessian
-      do ict=1,nctype
-         do i=1,mparmja
-            a4(i,ict,1)=a4_best(i,ict,1)
+
+      do istate=1,nstates
+         do ict=1,nctype
+            do i=1,mparmja
+               a4(i,ict,istate,1)=a4_best(i,ict,istate,1)
+            enddo
          enddo
-      enddo
 
-      do i=1,mparmjb
-         b(i,1,1)=b_best(i,1,1)
-      enddo
+         do i=1,mparmjb
+            b(i,1,istate,1)=b_best(i,1,istate,1)
+         enddo
 
-      do ict=1,nctype
-         do i=1,mparmjc
-            c(i,ict,1)=c_best(i,ict,1)
+         do ict=1,nctype
+            do i=1,mparmjc
+               c(i,ict,istate,1)=c_best(i,ict,istate,1)
+            enddo
          enddo
       enddo
 
@@ -725,12 +749,14 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 
       subroutine compute_jastrow(dparm,iflag,iadiag)
+      use sr_mod, only: MPARM
       use atom, only: nctype
       use jaspar3, only: a, b, c, scalek
       use jaspar4, only: a4
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
+      use csfs, only: nstates
       
       implicit real*8(a-h,o-z)
 
@@ -742,23 +768,28 @@ c     Set up cusp conditions
       call cuspinit4(0)
 
 c     Add change to old parameters
-      iparm=0
-      do ict=1,nctype
-         do i=1,nparma(ict)
-            iparm=iparm+1
-            a4(iwjasa(i,ict),ict,iadiag)=a4(iwjasa(i,ict),ict,iadiag)-dparm(iparm)
+      do istate=1,nstates
+         iparm=0
+         do ict=1,nctype
+            do i=1,nparma(ict)
+               iparm=iparm+1
+               a4(iwjasa(i,ict),ict,istate,iadiag)=a4(iwjasa(i,ict),ict,istate,iadiag)
+     &              -dparm((istate-1)*MPARM+iparm)
+            enddo
          enddo
-      enddo
 
-      do i=1,nparmb(1)
-         iparm=iparm+1
-         b(iwjasb(i,1),1,iadiag)=b(iwjasb(i,1),1,iadiag)-dparm(iparm)
-      enddo
-
-      do ict=1,nctype
-         do i=1,nparmc(ict)
+         do i=1,nparmb(1)
             iparm=iparm+1
-            c(iwjasc(i,ict),ict,iadiag)=c(iwjasc(i,ict),ict,iadiag)-dparm(iparm)
+            b(iwjasb(i,1),1,istate,iadiag)=b(iwjasb(i,1),1,istate,iadiag)
+     &           -dparm((istate-1)*MPARM+iparm)
+         enddo
+
+         do ict=1,nctype
+            do i=1,nparmc(ict)
+               iparm=iparm+1
+               c(iwjasc(i,ict),ict,istate,iadiag)=c(iwjasc(i,ict),ict,istate,iadiag)
+     &              -dparm((istate-1)*MPARM+iparm)
+            enddo
          enddo
       enddo
 
@@ -889,6 +920,7 @@ c-----------------------------------------------------------------------
       use jaspar4, only: a4
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
@@ -897,20 +929,29 @@ c-----------------------------------------------------------------------
       iflagb=0
 
       scalem=-scalek(1)
-      do ict=1,nctype
-         do i=1,nparma(ict)
-            if(iwjasa(i,ict).eq.2.and.a4(2,ict,1).le.scalem) iflaga=1
-         enddo
-      enddo
-      if(iflaga.eq.1) then
+      do istate=1,nstates
          do ict=1,nctype
-            write(6,'(''a2 < -scalek'',f10.5)') a4(2,ict,1)
+            do i=1,nparma(ict)
+               if(iwjasa(i,ict).eq.2.and.a4(2,ict,istate,1).le.scalem) iflaga=1
+            enddo
          enddo
-      endif
-      do i=1,nparmb(1)
-         if(iwjasb(i,1).eq.2.and.b(2,1,1).le.scalem) iflagb=1
+
+         if(iflaga.eq.1) then
+            do ict=1,nctype
+               write(6,*) "STATE", istate
+               write(6,'(''a2 < -scalek'',f10.5)') a4(2,ict,istate,1)
+            enddo
+         endif
+
+         do i=1,nparmb(1)
+            if(iwjasb(i,1).eq.2.and.b(2,1,istate,1).le.scalem) iflagb=1
+         enddo
+
+         if(iflagb.eq.1) then
+            write(6,*) "STATE", istate
+            write(6,'(''b2 < -scalek'',f10.5)') b(2,1,istate,1)
+         endif
       enddo
-      if(iflagb.eq.1) write(6,'(''b2 < -scalek'',f10.5)') b(2,1,1)
       
       if(iflaga.eq.1.or.iflagb.eq.1) iflag=1
 
@@ -1101,7 +1142,7 @@ c     store elocal and derivatives of psi for each configuration (call in vmc)
      &     .and.izvzb.eq.0.and.ifunc_omega.eq.0) return
 
       do j=1,nparmj
-         tmp_ho(j)=denergy(j,1)+gvalue(j)*energy(1)
+         tmp_ho(j)=denergy(j,1)+gvalue(j,1)*energy(1)
       end do
 
       call dcopy(nparmj,tmp_ho,1,sr_ho(1,l),1)

@@ -1,5 +1,4 @@
       subroutine optx_jas_orb_sum(wtg_new,wtg_old,iflag)
-
       use csfs, only: nstates
       use derivjas, only: gvalue
       use gradhessjo, only: denergy_old, gvalue_old
@@ -16,16 +15,17 @@
 
       dimension wtg_new(*),wtg_old(*)
 
-      if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
+      if(ioptjas.eq.0.or.ioptorb.eq.0.or.
+     &   method.eq.'sr_n'.or.method.eq.'lin_d') return
 
       do 200 istate=1,nstates
 
       p=wtg_new(istate)
       do 10 i=1,nparmj
         do 10 j=1,nreduced
-        dj_o(i,j,istate)=dj_o(i,j,istate)  +p*gvalue(i)*orb_o(j,istate)
-        dj_oe(i,j,istate)=dj_oe(i,j,istate)+p*gvalue(i)*orb_oe(j,istate)
-        dj_ho(i,j,istate)=dj_ho(i,j,istate)+p*gvalue(i)*orb_ho(j,istate)
+        dj_o(i,j,istate)=dj_o(i,j,istate)  +p*gvalue(i,istate)*orb_o(j,istate)
+        dj_oe(i,j,istate)=dj_oe(i,j,istate)+p*gvalue(i,istate)*orb_oe(j,istate)
+        dj_ho(i,j,istate)=dj_ho(i,j,istate)+p*gvalue(i,istate)*orb_ho(j,istate)
    10   de_o(i,j,istate)=de_o(i,j,istate)  +p*denergy(i,istate)*orb_o(j,istate)
 
   200 continue
@@ -37,9 +37,9 @@
       q=wtg_old(istate)
       do 20 i=1,nparmj
         do 20 j=1,nreduced
-        dj_o(i,j,istate)=dj_o(i,j,istate)  +q*gvalue_old(i)*orb_o_old(j,istate)
-        dj_oe(i,j,istate)=dj_oe(i,j,istate)+q*gvalue_old(i)*orb_oe_old(j,istate)
-        dj_ho(i,j,istate)=dj_ho(i,j,istate)+q*gvalue_old(i)*orb_ho_old(j,istate)
+        dj_o(i,j,istate)=dj_o(i,j,istate)  +q*gvalue_old(i,istate)*orb_o_old(j,istate)
+        dj_oe(i,j,istate)=dj_oe(i,j,istate)+q*gvalue_old(i,istate)*orb_oe_old(j,istate)
+        dj_ho(i,j,istate)=dj_ho(i,j,istate)+q*gvalue_old(i,istate)*orb_ho_old(j,istate)
    20   de_o(i,j,istate)=de_o(i,j,istate)  +q*denergy_old(i,istate)*orb_o_old(j,istate)
 
   300 continue

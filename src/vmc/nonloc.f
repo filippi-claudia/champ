@@ -402,7 +402,8 @@ c     Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
 c-----------------------------------------------------------------------
 
-      subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn)
+      subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,
+     &rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn,istate)
 c     Written by Claudia Filippi, modified by Cyrus Umrigar
       use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent
@@ -509,7 +510,7 @@ c     e-n terms
          do  k=1,3
             dumk=dum*rvec_en(k,iel,ic)
             vjn(k)=vjn(k)+dumk
-            da_ratio_jn(k,ic)=-dumk-da_j(k,iel,ic)
+            da_ratio_jn(k,ic)=-dumk-da_j(k,iel,ic,istate)
          enddo
       enddo
 

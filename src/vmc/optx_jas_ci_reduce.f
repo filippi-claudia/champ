@@ -1,6 +1,5 @@
       subroutine optx_jas_ci_reduce
 c Written by Claudia Filippi
-
       use optjas, only: MPARMJ
       use vmc_mod, only: MDET
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
@@ -14,7 +13,10 @@ c Written by Claudia Filippi
 
       dimension collect(MPARMJ,MDET)
 
-      if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
+      if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'
+     &     .or.method.eq.'lin_d') return
+
+c    RLPB added index of state 1 (Not in SR)
 
       call mpi_reduce(dj_o_ci,collect,MPARMJ*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -24,7 +26,7 @@ c Written by Claudia Filippi
 
       do 10 i=1,nparmj
         do 10 j=1,nciterm
-  10     dj_o_ci(i,j)=collect(i,j)
+  10     dj_o_ci(i,j,1)=collect(i,j)
 
       call mpi_reduce(dj_de_ci,collect,MPARMJ*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -34,7 +36,7 @@ c Written by Claudia Filippi
 
       do 20 i=1,nparmj
         do 20 j=1,nciterm
-  20     dj_de_ci(i,j)=collect(i,j)
+  20     dj_de_ci(i,j,1)=collect(i,j)
 
       call mpi_reduce(de_o_ci,collect,MPARMJ*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -44,7 +46,7 @@ c Written by Claudia Filippi
 
       do 30 i=1,nparmj
         do 30 j=1,nciterm
-  30     de_o_ci(i,j)=collect(i,j)
+  30     de_o_ci(i,j,1)=collect(i,j)
 
       call mpi_reduce(dj_oe_ci,collect,MPARMJ*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -54,7 +56,7 @@ c Written by Claudia Filippi
 
       do 40 i=1,nparmj
         do 40 j=1,nciterm
-  40     dj_oe_ci(i,j)=collect(i,j)
+  40     dj_oe_ci(i,j,1)=collect(i,j)
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 

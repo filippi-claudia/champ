@@ -104,7 +104,7 @@ module gradhessjo
     real(dp), dimension(:), allocatable :: d2d2a_old !(MCTYPE)
     real(dp), dimension(:), allocatable :: d2d2b_old !(2)
     real(dp), dimension(:, :), allocatable :: denergy_old !(MPARMJ,MSTATES)
-    real(dp), dimension(:), allocatable :: gvalue_old !(MPARMJ)
+    real(dp), dimension(:, :), allocatable :: gvalue_old !(MPARMJ,MSTATES)
 
     private
     public   ::  d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
@@ -121,7 +121,7 @@ contains
         if (.not. allocated(d2d2a_old)) allocate (d2d2a_old(MCTYPE))
         if (.not. allocated(d2d2b_old)) allocate (d2d2b_old(2))
         if (.not. allocated(denergy_old)) allocate (denergy_old(MPARMJ, MSTATES))
-        if (.not. allocated(gvalue_old)) allocate (gvalue_old(MPARMJ))
+        if (.not. allocated(gvalue_old)) allocate (gvalue_old(MPARMJ, MSTATES))
     end subroutine allocate_gradhessjo
 
     subroutine deallocate_gradhessjo()

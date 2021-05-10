@@ -177,7 +177,7 @@ c     If we want to use ijas=5,6 update this routine similarly to psi.f
 
 c-----------------------------------------------------------------------
 
-      function dpsibnl(u,isb,ipar)
+      function dpsibnl(u,isb,ipar,istateOB)
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -201,17 +201,17 @@ c     If we want to use ijas=5,6 update this routine similarly to psi.f
       dpsibnl=0.0d0
       if(u.eq.asymp_r) return
 
-      top=b(1,isb,iwf)*u
-      dtop=b(1,isb,iwf)
-      bot=1+b(2,isb,iwf)*u
-      dbot=b(2,isb,iwf)
+      top=b(1,isb,istate,iwf)*u
+      dtop=b(1,isb,istate,iwf)
+      bot=1+b(2,isb,istate,iwf)*u
+      dbot=b(2,isb,istate,iwf)
       boti=1.d0/bot
 
       dfee=dtop*boti-top*boti*boti*dbot
       dpsibnl=sspinn*dfee
 
       do i=2,nordb
-         dpsibnl=dpsibnl+i*b(i+1,isb,iwf)*u**(i-1)
+         dpsibnl=dpsibnl+i*b(i+1,isb,istate,iwf)*u**(i-1)
       enddo
 
       return

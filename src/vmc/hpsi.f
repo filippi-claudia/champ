@@ -34,7 +34,7 @@ c     modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
 c     Calculates energy
 
-      dimension coord(3,*),psid(*),energy(*)
+      dimension coord(3,*),psid(*),energy(*),d2j(MSTATES)
       dimension denergy(MSTATES),eloc_det(MDET,2,MSTATES),
      &     vpsp_det(2,MSTATES),dvpsp_dj(MPARMJ)
 
@@ -86,16 +86,22 @@ c     QM-MMPOL (charges+induced dipoles)
       if(ipr.ge.3) write(6,'(''pe_loc before nonloc_pot'',9f12.5)') pe_local
 
 c     get contribution from jastrow (also compute derivatives wrt parameters and nuclei)
-      if(ianalyt_lap.eq.1) then
-         call jastrow(coord,vj,d2j,psij,ifr)
-      else
-         call jastrow_num(coord,vj,d2j,psij)
-      endif
-      if(ipr.ge.3) write(6,'(''d2j,psij'',9f12.5)') d2j,psij
+      do istate=1,nstates
+         if(ianalyt_lap.eq.1) then
+            call jastrow(coord,vj(:,:,istate),d2j(istate),psij,ifr,istate)
+         else
+            call jastrow_num(coord,vj(:,:,istate),d2j(istate),psij)
+         endif
+         if(ipr.ge.3) then
+            write(6, *) "STATE", istate
+            write(6,'(''d2j,psij'',9f12.5)') d2j(istate),psij
+         endif
+      enddo
 
-c     compute reference determinant, its derivatives, and kinetic contribution to B_eloc and its derivatives
+c     compute reference determinant, its derivatives,
+c     and kinetic contribution to B_eloc and its derivatives
+
       call determinant(ipass,coord,rvec_en,r_en)
-
       call compute_bmatrices_kin
 
 c     compute pseudo-potential contribution
@@ -116,7 +122,7 @@ c     nonloc_pot must be called after determinant because slater matrices are ne
       call multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
       do istate=1,nstates
-         e_other=pe_local-hb*d2j
+         e_other=pe_local-hb*d2j(istate)
          do i=1,nelec
             e_other=e_other-hb*(vj(1,i,istate)**2+vj(2,i,istate)**2+vj(3,i,istate)**2)
          enddo

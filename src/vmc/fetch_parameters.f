@@ -29,6 +29,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
@@ -37,22 +38,24 @@ c-----------------------------------------------------------------------
       if(ioptjas.eq.0) return
 
       iparm=0
-      do ict=1,nctype
-         do i=1,nparma(ict)
-            iparm=iparm+1
-            p(iparm)=a4(iwjasa(i,ict),ict,1)
+      do istate=1,nstates
+         do ict=1,nctype
+            do i=1,nparma(ict)
+               iparm=iparm+1
+               p(iparm)=a4(iwjasa(i,ict),ict,istate,1)
+            enddo
          enddo
-      enddo
 
-      do i=1,nparmb(1)
-         iparm=iparm+1
-         p(iparm)=b(iwjasb(i,1),1,1)
-      enddo
-
-      do ict=1,nctype
-         do i=1,nparmc(ict)
+         do i=1,nparmb(1)
             iparm=iparm+1
-            p(iparm)=c(iwjasc(i,ict),ict,1)
+            p(iparm)=b(iwjasb(i,1),1,istate,1)
+         enddo
+
+         do ict=1,nctype
+            do i=1,nparmc(ict)
+               iparm=iparm+1
+               p(iparm)=c(iwjasc(i,ict),ict,istate,1)
+            enddo
          enddo
       enddo
 
@@ -73,7 +76,7 @@ c-----------------------------------------------------------------------
       if(ioptorb.eq.0) return
 
       do i=1,norbterm
-         p(i)=0.d0
+         p(i)=0.0d0
       enddo
       n=norbterm
 

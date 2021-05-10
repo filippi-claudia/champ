@@ -1,5 +1,4 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
-
       use optjas, only: MPARMJ
       use vmc_mod, only: MELEC, MORB, MDET
       use vmc_mod, only: MMAT_DIM
@@ -35,9 +34,9 @@
             deloc_dj(iparm)=dvpsp_dj(iparm)
             do i=1,nelec
                deloc_dj(iparm)=deloc_dj(iparm)
-     &              -2.d0*hb*(g(1,i,iparm)*ddx(1,i,istate)
-     &              +g(2,i,iparm)*ddx(2,i,istate)
-     &              +g(3,i,iparm)*ddx(3,i,istate))
+     &              -2.d0*hb*(g(1,i,iparm,istate)*ddx(1,i,istate)
+     &              +g(2,i,iparm,istate)*ddx(2,i,istate)
+     &              +g(3,i,iparm,istate)*ddx(3,i,istate))
             enddo
             deloc_dj_kref=deloc_dj(iparm)
             denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref
@@ -105,9 +104,10 @@ c     endif ndet.gt.1
          enddo
 
 c     d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
-         term_jas=d2g(iparm)
+         term_jas=d2g(iparm,istate)
          do i=1,nelec
-            term_jas=term_jas+2.d0*(g(1,i,iparm)*vj(1,i)+g(2,i,iparm)*vj(2,i)+g(3,i,iparm)*vj(3,i))
+            term_jas=term_jas+2.d0*(g(1,i,iparm,istate)*vj(1,i)
+     &               +g(2,i,iparm,istate)*vj(2,i)+g(3,i,iparm,istate)*vj(3,i))
          enddo
          term_jas=-hb*term_jas
          denergy(iparm,istate)=term_jas+denergy(iparm,istate)/psid(istate)
@@ -122,9 +122,9 @@ c     d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
       end subroutine
 
 c-----------------------------------------------------------------------
+
       subroutine optjas_sum(wtg_new,wtg_old,enew,eold,iflag)
 c Written by Claudia Filippi
-
       use atom, only: nctype
       use csfs, only: nstates
       use derivjas, only: gvalue
@@ -150,18 +150,18 @@ c Written by Claudia Filippi
       p=wtg_new(istate)
 
       do 10 i=1,nparmj
-        dj(i,istate)=dj(i,istate)      +p*gvalue(i)
-        de(i,istate)=de(i,istate)      +p*denergy(i,istate)
-        dj_e(i,istate)=dj_e(i,istate)  +p*gvalue(i)*enew(istate)
-        de_e(i,istate)=de_e(i,istate)  +p*denergy(i,istate)*enew(istate)
-        dj_e2(i,istate)=dj_e2(i,istate)+p*gvalue(i)*enew(istate)**2
-        e2(i,istate)=e2(i,istate)      +p*enew(istate)**2
+        dj(i,istate)=dj(i,istate)+p*gvalue(i,istate)
+        de(i,istate)=de(i,istate)+p*denergy(i,istate)
+        dj_e(i,istate)=dj_e(i,istate)+p*gvalue(i,istate)*enew(istate)
+        de_e(i,istate)=de_e(i,istate)+p*denergy(i,istate)*enew(istate)
+        dj_e2(i,istate)=dj_e2(i,istate)+p*gvalue(i,istate)*enew(istate)**2
+        e2(i,istate)=e2(i,istate)+p*enew(istate)**2
         do 10 j=1,i
-          dj_dj(i,j,istate)=dj_dj(i,j,istate)           +p*gvalue(i)*gvalue(j)
-          dj_de(i,j,istate)=dj_de(i,j,istate)           +p*gvalue(i)*denergy(j,istate)
-          if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+p*gvalue(j)*denergy(i,istate)
-          dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)       +p*gvalue(i)*gvalue(j)*enew(istate)
-   10     de_de(i,j,istate)=de_de(i,j,istate)           +p*denergy(i,istate)*denergy(j,istate)
+          dj_dj(i,j,istate)=dj_dj(i,j,istate)+p*gvalue(i,istate)*gvalue(j,istate)
+          dj_de(i,j,istate)=dj_de(i,j,istate)+p*gvalue(i,istate)*denergy(j,istate)
+          if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+p*gvalue(j,istate)*denergy(i,istate)
+          dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)+p*gvalue(i,istate)*gvalue(j,istate)*enew(istate)
+   10     de_de(i,j,istate)=de_de(i,j,istate)+p*denergy(i,istate)*denergy(j,istate)
 
       do 20 it=1,nctype
         do 20 jparm=1,nparma(it)
@@ -220,18 +220,18 @@ c Written by Claudia Filippi
       q=wtg_old(istate)
 
       do 40 i=1,nparmj
-        dj(i,istate)=dj(i,istate)      +q*gvalue_old(i)
-        de(i,istate)=de(i,istate)      +q*denergy_old(i,istate)
-        dj_e(i,istate)=dj_e(i,istate)  +q*gvalue_old(i)*eold(istate)
-        de_e(i,istate)=de_e(i,istate)  +q*denergy_old(i,istate)*eold(istate)
-        dj_e2(i,istate)=dj_e2(i,istate)+q*gvalue_old(i)*eold(istate)**2
-        e2(i,istate)=e2(i,istate)      +q*eold(istate)**2
+        dj(i,istate)=dj(i,istate)+q*gvalue_old(i,istate)
+        de(i,istate)=de(i,istate)+q*denergy_old(i,istate)
+        dj_e(i,istate)=dj_e(i,istate)+q*gvalue_old(i,istate)*eold(istate)
+        de_e(i,istate)=de_e(i,istate)+q*denergy_old(i,istate)*eold(istate)
+        dj_e2(i,istate)=dj_e2(i,istate)+q*gvalue_old(i,istate)*eold(istate)**2
+        e2(i,istate)=e2(i,istate)+q*eold(istate)**2
         do 40 j=1,i
-          dj_dj(i,j,istate)=dj_dj(i,j,istate)           +q*gvalue_old(i)*gvalue_old(j)
-          dj_de(i,j,istate)=dj_de(i,j,istate)           +q*gvalue_old(i)*denergy_old(j,istate)
-          if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+q*gvalue_old(j)*denergy_old(i,istate)
-          dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)       +q*gvalue_old(i)*gvalue_old(j)*eold(istate)
-   40     de_de(i,j,istate)=de_de(i,j,istate)           +q*denergy_old(i,istate)*denergy_old(j,istate)
+          dj_dj(i,j,istate)=dj_dj(i,j,istate)+q*gvalue_old(i,istate)*gvalue_old(j,istate)
+          dj_de(i,j,istate)=dj_de(i,j,istate)+q*gvalue_old(i,istate)*denergy_old(j,istate)
+          if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+q*gvalue_old(j,istate)*denergy_old(i,istate)
+          dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)+q*gvalue_old(i,istate)*gvalue_old(j,istate)*eold(istate)
+   40     de_de(i,j,istate)=de_de(i,j,istate)+q*denergy_old(i,istate)*denergy_old(j,istate)
 
       do 50 it=1,nctype
         do 50 jparm=1,nparma(it)
@@ -283,14 +283,12 @@ c Written by Claudia Filippi
 
   200 continue
 
-c     write(6,*) 'HELLO',enew,p,eold,q,(dj_dj_e(nparmj,i),i=1,nparmj)
+      end subroutine
 
-      return
-      end
 c-----------------------------------------------------------------------
-      subroutine optjas_cum(wsum,enow)
-c Written by Claudia Filippi
 
+      subroutine optjas_cum(wsum,enow)
+c     Written by Claudia Filippi
       use csfs, only: nstates
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
       use optwf_contrl, only: ioptjas
@@ -306,45 +304,47 @@ c Written by Claudia Filippi
 
       nbj_current=nbj_current+1
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
+         do i=1,nparmj
+            dj_e_b(i)=dj_e(i,istate)-dj_e_save(i,istate)
+            dj_b(i)=dj(i,istate)-dj_save(i,istate)
+         enddo
+         
+         e_bsum(istate)=e_bsum(istate)+enow(istate)
+         do i=1,nparmj
+            dj_e_bsum(i,istate)=dj_e_bsum(i,istate)+dj_e_b(i)/wsum
+            dj_bsum(i,istate)=dj_bsum(i,istate)+dj_b(i)/wsum
+         enddo
 
-      do 10 i=1,nparmj
-        dj_e_b(i)=dj_e(i,istate)-dj_e_save(i,istate)
-  10    dj_b(i)=dj(i,istate)-dj_save(i,istate)
- 
-      e_bsum(istate)=e_bsum(istate)+enow(istate)
-      do 20 i=1,nparmj
-        dj_e_bsum(i,istate)=dj_e_bsum(i,istate)+dj_e_b(i)/wsum
-  20    dj_bsum(i,istate)=dj_bsum(i,istate)+dj_b(i)/wsum
-
-      do 30 i=1,nparmj
-         dj_e_save(i,istate)=dj_e(i,istate)
-  30     dj_save(i,istate)=dj(i,istate)
-      
-      if(nbj_current.eq.ngrad_jas_blocks)then
-        eb=e_bsum(istate)/dble(ngrad_jas_blocks)
-        e_bsum(istate)=0
-        do 40 i=1,nparmj
-          gnow=2*(dj_e_bsum(i,istate)-dj_bsum(i,istate)*eb)/dble(ngrad_jas_blocks)
-          grad_jas_bcum(i,istate)=grad_jas_bcum(i,istate)+gnow
-          grad_jas_bcm2(i,istate)=grad_jas_bcm2(i,istate)+gnow**2
-          dj_e_bsum(i,istate)=0
-  40      dj_bsum(i,istate)=0
-      endif
-
-  200 continue
+         do i=1,nparmj
+            dj_e_save(i,istate)=dj_e(i,istate)
+            dj_save(i,istate)=dj(i,istate)
+         enddo
+         
+         if(nbj_current.eq.ngrad_jas_blocks)then
+            eb=e_bsum(istate)/dble(ngrad_jas_blocks)
+            e_bsum(istate)=0.0d0
+            do i=1,nparmj
+               gnow=2*(dj_e_bsum(i,istate)-dj_bsum(i,istate)*eb)/dble(ngrad_jas_blocks)
+               grad_jas_bcum(i,istate)=grad_jas_bcum(i,istate)+gnow
+               grad_jas_bcm2(i,istate)=grad_jas_bcm2(i,istate)+gnow**2
+               dj_e_bsum(i,istate)=0.0d0
+               dj_bsum(i,istate)=0.0d0
+            enddo
+         endif
+      enddo
 
       if(nbj_current.eq.ngrad_jas_blocks) then
-        nbj_current=0
-        ngrad_jas_bcum=ngrad_jas_bcum+1
+         nbj_current=0
+         ngrad_jas_bcum=ngrad_jas_bcum+1
       endif
 
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine optjas_save
-c Written by Claudia Filippi
+      end subroutine
 
+c-----------------------------------------------------------------------
+
+      subroutine optjas_save
+c     Written by Claudia Filippi
       use atom, only: nctype
       use csfs, only: nstates
       use derivjas, only: gvalue
@@ -359,21 +359,25 @@ c Written by Claudia Filippi
 
       if(ioptjas.eq.0) return
 
-      do 10 i=1,nparmj
-        gvalue_old(i)=gvalue(i)
-        do 10 istate=1,nstates
-  10      denergy_old(i,istate)=denergy(i,istate)
+      do istate=1,nstates
+         do i=1,nparmj
+            gvalue_old(i,istate)=gvalue(i,istate)
+            denergy_old(i,istate)=denergy(i,istate)
+         enddo
+      enddo
 
-      do 20 it=1,nctype
-        d1d2a_old(it)=d1d2a(it)
-  20    d2d2a_old(it)=d2d2a(it)
+      do it=1,nctype
+         d1d2a_old(it)=d1d2a(it)
+         d2d2a_old(it)=d2d2a(it)
+      enddo
 
-      do 30 isb=1,nspin2b
-        d1d2b_old(isb)=d1d2b(isb)
-  30    d2d2b_old(isb)=d2d2b(isb)
+      do isb=1,nspin2b
+         d1d2b_old(isb)=d1d2b(isb)
+         d2d2b_old(isb)=d2d2b(isb)
+      enddo
 
-      return
-      end
+      end subroutine
+
 c-----------------------------------------------------------------------
       subroutine optjas_init
 c Written by Claudia Filippi

@@ -6,6 +6,7 @@
       use optwf_parms, only: nparmj
       use deloc_dj_m, only: denergy
       use ci000, only: nciterm
+      use csfs, only: nstates
       use ci001_blk, only: ci_o
       use ci002_blk, only: ci_o_old
       use ci004_blk, only: ci_de, ci_de_old
@@ -14,19 +15,18 @@
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
-c     RLPB (change when Jastrow opt implemented)
-      istate=1
-
-      do i=1,nparmj
-         do j=1,nciterm
-            dj_o_ci(i,j)=dj_o_ci(i,j)+p*gvalue(i)*ci_o(j,istate)
-     &           +q*gvalue_old(i)*ci_o_old(j,istate)
-            dj_oe_ci(i,j)=dj_oe_ci(i,j)+p*gvalue(i)*ci_o(j,istate)*enew
-     &           +q*gvalue_old(i)*ci_o_old(j,istate)*eold
-            de_o_ci(i,j)=de_o_ci(i,j)+p*denergy(i,1)*ci_o(j,istate)
-     &           +q*denergy_old(i,1)*ci_o_old(j,istate)
-            dj_de_ci(i,j)=dj_de_ci(i,j)+p*gvalue(i)*ci_de(j,istate)
-     &           +q*gvalue_old(i)*ci_de_old(j,istate)
+      do istate=1,nstates
+         do i=1,nparmj
+            do j=1,nciterm
+               dj_o_ci(i,j,istate)=dj_o_ci(i,j,istate)+p*gvalue(i,istate)*ci_o(j,istate)
+     &              +q*gvalue_old(i,istate)*ci_o_old(j,istate)
+               dj_oe_ci(i,j,istate)=dj_oe_ci(i,j,istate)+p*gvalue(i,istate)*ci_o(j,istate)*enew
+     &              +q*gvalue_old(i,istate)*ci_o_old(j,istate)*eold
+               de_o_ci(i,j,istate)=de_o_ci(i,j,istate)+p*denergy(i,1)*ci_o(j,istate)
+     &              +q*denergy_old(i,1)*ci_o_old(j,istate)
+               dj_de_ci(i,j,istate)=dj_de_ci(i,j,istate)+p*gvalue(i,istate)*ci_de(j,istate)
+     &              +q*gvalue_old(i,istate)*ci_de_old(j,istate)
+            enddo
          enddo
       enddo
 
@@ -46,10 +46,10 @@ c-----------------------------------------------------------------------
 
       do i=1,nparmj
          do j=1,nciterm
-            dj_o_ci(i,j)=0.0d0
-            dj_oe_ci(i,j)=0.0d0
-            de_o_ci(i,j)=0.0d0
-            dj_de_ci(i,j)=0.0d0
+            dj_o_ci(i,j,istate)=0.0d0
+            dj_oe_ci(i,j,istate)=0.0d0
+            de_o_ci(i,j,istate)=0.0d0
+            dj_de_ci(i,j,istate)=0.0d0
          enddo
       enddo
 
@@ -65,8 +65,12 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
+c     RLPB extend to several states
+      istate=1
+
       if(ioptjas.eq.0.or.ioptci.eq.0) return
-      write(iu) ((dj_o_ci(i,j),dj_oe_ci(i,j),dj_de_ci(i,j),de_o_ci(i,j),i=1,nparmj),j=1,nciterm)
+      write(iu) ((dj_o_ci(i,j,istate),dj_oe_ci(i,j,istate),
+     &     dj_de_ci(i,j,istate),de_o_ci(i,j,istate),i=1,nparmj),j=1,nciterm)
 
       end subroutine
 
@@ -80,8 +84,12 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
+c     RLPB extend to several states
+      istate=1
+
       if(ioptjas.eq.0.or.ioptci.eq.0) return
-      read(iu) ((dj_o_ci(i,j),dj_oe_ci(i,j),dj_de_ci(i,j),de_o_ci(i,j),i=1,nparmj),j=1,nciterm)
+      read(iu) ((dj_o_ci(i,j,istate),dj_oe_ci(i,j,istate),dj_de_ci(i,j,istate),
+     &     de_o_ci(i,j,istate),i=1,nparmj),j=1,nciterm)
 
       end subroutine
 
@@ -118,10 +126,10 @@ c     RLPB (change when Jastrow opt implemented)
 c     Compute mix Hessian
          do i=1,nparmj
             do j=1,nciterm
-               h1=2*(2*(dj_oe_ci(i,j)-eave*dj_o_ci(i,j))-dj(i,1)*grad_ci(j)
+               h1=2*(2*(dj_oe_ci(i,j,istate)-eave*dj_o_ci(i,j,istate))-dj(i,1)*grad_ci(j)
      &              -grad_jas(i)*ci_o_cum(j,istate))
-               h2=de_o_ci(i,j)-de(i,1)*ci_o_cum(j,istate)/passes
-     &              +dj_de_ci(i,j)-dj(i,1)*ci_de_cum(j,istate)/passes
+               h2=de_o_ci(i,j,istate)-de(i,1)*ci_o_cum(j,istate)/passes
+     &              +dj_de_ci(i,j,istate)-dj(i,1)*ci_de_cum(j,istate)/passes
                h_mix_jas_ci(i,j)=(h1+h2)/passes
             enddo
          enddo
@@ -150,13 +158,13 @@ c     Compute mix Hessian
          do i=1,nparmj
             do j=1,nciterm
 c     Overlap s_jas_ci
-               s_mix_jas_ci(i,j)=(dj_o_ci(i,j)-dj(i,1)*ci_o_cum(j,istate)/passes)/passes
+               s_mix_jas_ci(i,j)=(dj_o_ci(i,j,istate)-dj(i,1)*ci_o_cum(j,istate)/passes)/passes
 c     H matrix h_jas_ci
-               h_mix_jas_ci(i,j)=(dj_de_ci(i,j)+dj_oe_ci(i,j)
+               h_mix_jas_ci(i,j)=(dj_de_ci(i,j,istate)+dj_oe_ci(i,j,istate)
      &              +eave*dj(i,1)*ci_o_cum(j,istate)/passes-dj(i,1)*eav(j)
      &              -ci_o_cum(j,istate)*dj_e(i,1)/passes)/passes
 c     H matrix h_ci_jas
-               h_mix_jas_ci(i+nparmj,j)=(de_o_ci(i,j)+dj_oe_ci(i,j)
+               h_mix_jas_ci(i+nparmj,j)=(de_o_ci(i,j,istate)+dj_oe_ci(i,j,istate)
      &              +eave*dj(i,1)*ci_o_cum(j,istate)/passes-dj(i,1)*oelocav(j)
      &              -ci_o_cum(j,istate)*(de(i,1)+dj_e(i,1))/passes)/passes
             enddo
