@@ -8,7 +8,11 @@ c Written by Cyrus Umrigar
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use jaspar4, only: nordc
       use cuspmat4, only: d, iwc4, nterms
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iord, iprin, k, l
+      integer :: l_hi, m, n
+
 
 
 
@@ -81,7 +85,12 @@ c-----------------------------------------------------------------------
       use vardep, only: cdep, iwdepend, nvdepend
 
       use cuspmat4, only: d, iwc4, nterms
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iprin, it, j, l
+      integer :: neqs
+      real(dp) :: dabs, factor
 
 
 
