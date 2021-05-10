@@ -29,14 +29,47 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use force_analy, only: iforce_analy
       use cuspmat4, only: d, iwc4, nterms
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0)
-      parameter (half=.5d0,eps=1.d-12)
+      integer :: i, ic, id, ideriv, ij
+      integer :: im1, iord, ipar, iparm
+      integer :: iparm0, iparma, isb, it
+      integer :: j, jj, jparm, k
+      integer :: l, l_hi, ll, m
+      integer :: n
+      real(dp) :: bot, bot0, bot2, boti, botii
+      real(dp) :: botu, botuu, cd, d2
+      real(dp) :: dd1, dd10, dd2, dd7
+      real(dp) :: dd8, dd9, fc, fee
+      real(dp) :: feeu, feeuu, fen, feni
+      real(dp) :: feni_save, fenii, fenii_save, fi
+      real(dp) :: fii, fj, fjj, fsum
+      real(dp) :: fu, fui, fuj, fuu
+      real(dp) :: gee, geeu, geeuu, gen
+      real(dp) :: geni, genii, gi, gii
+      real(dp) :: gj, gjj, gp, gu
+      real(dp) :: gui, guj, guu, pc
+      real(dp) :: pii, pj, pjj, ppi
+      real(dp) :: pu, pui, puj, puu
+      real(dp) :: ri, rij, rj, s
+      real(dp) :: t, top, topi, topii
+      real(dp) :: topu, topuu, u2mst, u2pst
+      real(dp) :: value
+      real(dp), dimension(3, *) :: x
+      real(dp), dimension(3, *) :: v
+      real(dp), dimension(-2:MORDJ) :: uu
+      real(dp), dimension(-2:MORDJ) :: ss
+      real(dp), dimension(-2:MORDJ) :: tt
+      real(dp), dimension(-2:MORDJ) :: rri
+      real(dp), dimension(-2:MORDJ) :: rrj
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: eps = 1.d-12
 
-      dimension x(3,*),v(3,*)
-      dimension uu(-2:MORDJ),ss(-2:MORDJ),tt(-2:MORDJ),rri(-2:MORDJ)
-     &,rrj(-2:MORDJ)
+
 
       iparma=nparma(1)
       do 1 it=2,nctype
