@@ -33,9 +33,7 @@ c numerical Laplacian for periodic systems.
             real(dp), intent(in) :: rij, ri, rj
             real(dp) :: psi
         end function psi
-      end interface
 
-      interface
         function psia(ri, it)
             use precision_kinds, only: dp
             implicit none
@@ -43,9 +41,7 @@ c numerical Laplacian for periodic systems.
             real(dp), intent(in) :: ri
             real(dp) :: psia 
         end function psia 
-      end interface
 
-      interface
         function psib(rij, isb, ipar)
             use precision_kinds, only: dp
             implicit none
