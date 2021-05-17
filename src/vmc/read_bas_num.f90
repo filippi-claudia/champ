@@ -28,7 +28,7 @@
       implicit none
 
       integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
-      integer         ::  iwf, info
+      integer         :: iwf, info
       real(dp)        :: val, dwf1, wfm, dwfn, dwfm
       integer         :: iunit, iostat, counter = 0
       logical         :: exist, skip = .true.
@@ -55,7 +55,6 @@
         if (ic .gt. 999) call fatal_error('READ_BAS_NUM: atomtyp > 999')
         filename =  trim(pooldir) //  trim(bas_id) // ".basis." // atomtyp(ic)
 
-
         inquire(file=filename, exist=exist)
         if (exist) then
           open (newunit=iunit,file=filename, iostat=iostat, action='read', status='old')
@@ -75,12 +74,20 @@
         if(igrid(ic).ne.1.and.igrid(ic).ne.2.and.igrid(ic).ne.3) &
         call fatal_error('READ_BAS_NUM: grid not implemented')
 
-        if(nloc.eq.0) read(iunit,*) (l(irb),irb=1,nrbas(ic))
+!       Debug:: remove the comment         
+!        if(nloc.eq.0) read(iunit,*,iostat=iostat) (l(irb),irb=1,nrbas(ic))
+        if (iostat .ne. 0) then
+          write(errunit,'(a)') "Error:: Problem in reading the numerical basis file"
+          write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+        endif
 
         do ir=1,nr(ic)
           read(iunit,*,iostat=iostat) x(ir),(rwf(ir,irb,ic,iwf),irb=1,nrbas(ic))
         enddo
-
+        if (iostat .ne. 0) then
+          write(errunit,'(a)') "Error:: Problem in reading the numerical basis file"
+          write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+        endif
 
         if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
         if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)
@@ -169,7 +176,6 @@
             ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf)
           write(ounit,*) 'dwf1,dwfn',dwf1,dwfn
 ! c       endif
-        print*, "ae(2,irb,ic,iwf) ", irb, ic, iwf, ae(2,irb,ic,iwf)
         if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
         call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn,  &
@@ -181,3 +187,119 @@
 
       return
       end subroutine read_bas_num
+
+!  This is a temporary shift of the following subroutine
+
+subroutine readps_gauss
+  ! read 'Quantum-chemist' gauss pseudopotentials
+  ! file format: one text file with basename gauss_ecp.dat
+  !              for each atom type 
+  ! first line : arbitrary label (written to log-file)
+  ! second line: number of projectors + 1 (i.e. total number of components)
+  ! remaining lines: components in the order (local,L=0,L=1 ...)
+  !     repeated for each component
+  !        number terms 
+  !        repeated for each term in this component 
+  !          coefficient power exponent 
+  !
+  ! NOTE: as usual power n means r**(n-2)
+  !
+  use pseudo_mod, only: MPS_L, MGAUSS
+  use atom, only: nctype, atomtyp
+  use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
+  use gauss_ecp, only: allocate_gauss_ecp
+  use pseudo, only: lpot
+  use qua, only: nquad, wq, xq0, yq0, zq0
+  use general, only: pooldir, filename, pp_id, filenames_ps_gauss
+  use contrl_file,        only: ounit, errunit      
+
+  implicit real*8(a-h,o-z)
+
+  integer         :: iunit, iostat, counter = 0
+  logical         :: exist, skip = .true.
+
+  character*80 label
+  
+  !CVARDOC String to identify pseudopotential. If set, fancy names for 
+  !CVARDOC the pseudopotential files will be used.  
+  
+  do ic=1,nctype
+    if (nctype.gt.100) call fatal_error('READPS_GAUSS: nctype>100')
+    filename =  trim(pooldir) // trim(pp_id) // ".gauss_ecp.dat." // atomtyp(ic)
+   
+    inquire(file=filename, exist=exist)
+    if (exist) then
+      open (newunit=iunit,file=filename, iostat=iostat, action='read', status='old')
+      if (iostat .ne. 0) error stop "Problem in opening the pseudopotential file (Gaussian)"
+    else
+      error stop " Pseudopotential file (Gaussian) "// filename // " does not exist."
+    endif
+
+  !   External file reading
+    write(ounit,*) '-----------------------------------------------------------------------'      
+    write(ounit,'(4a)')  " Reading ECP pseudopotential for ", trim(atomtyp(ic))," from the file :: ", trim(filename)
+    write(ounit,*) '-----------------------------------------------------------------------'      
+
+! label 
+
+    read(iunit,'(a80)',iostat=iostat) label
+    if (iostat .ne. 0) then
+      write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: label"
+      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    endif
+    write(ounit,'(a,i4,a,a80)') 'ECP for atom type ', ic, ' label = ', adjustl(label)
+
+
+! max projector
+    if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
+
+    read(iunit,'(i3)',iostat=iostat) lpot(ic)
+    if (iostat .ne. 0) then
+      write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: lpot"
+      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    endif
+    write(ounit,'(a,i4,a,a80)') 'ECP for atom type ', ic, ' lpot = ', lpot(ic)
+
+    if(lpot(ic).gt.MPS_L) call fatal_error('READPS_GAUSS: increase MPS_L')
+
+! read terms of local part and all non-local parts
+! local part first in file, but stored at index lpot
+! non-local l=0 at index 1 etc, up to lpot-1 
+
+  call allocate_gauss_ecp()
+
+  do l=1,lpot(ic)
+      if(l.eq.1)then
+        idx=lpot(ic)
+        else
+        idx=l-1
+      endif
+      read(iunit,*,iostat=iostat) necp_term(idx,ic)
+      if (iostat .ne. 0) then
+          write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: necp_term"
+          write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+      endif
+
+      if(necp_term(idx,ic).gt.MGAUSS) call fatal_error('READPS_GAUSS: increase MGAUSS')
+
+      write(ounit,'(a,2i6)') '    component, #terms ', l,necp_term(idx,ic)
+
+      do i=1,necp_term(idx,ic)
+        read(iunit,*,iostat=iostat) ecp_coef(i,idx,ic), necp_power(i,idx,ic),ecp_exponent(i,idx,ic)
+
+        if (iostat .ne. 0) then
+        write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: ecp_coeff, power, ecp_exponents"
+        write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+        endif
+
+        write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic),necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
+      enddo
+  enddo
+
+  close(iunit)
+  enddo
+
+  call gesqua(nquad,xq0,yq0,zq0,wq)
+
+  return
+end subroutine readps_gauss      

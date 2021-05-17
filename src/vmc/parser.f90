@@ -645,13 +645,22 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop             
   else
-    write(errunit,'(a)') "Error:: No information about dmatrix provided in the block."
+    write(errunit,'(a)') "Error:: No information about dmatrix provided in the input."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !    error stop             
   endif
 
+! (15) pseudo information (either block or from a file)
 
-! (15) basis information (either block or from a file)
+  ! if ( fdf_defined('pseudopot') ) then
+  !   call readps_gauss()
+  ! else
+  !   write(errunit,'(a)') "Error:: No information about pseudo provided in the input."
+  !   write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+  !   error stop             
+  ! endif
+
+! (16) basis information (either block or from a file)
 
   if ( fdf_defined('basis') ) then
     call read_bas_num(1)   ! i == iwf debug
@@ -661,20 +670,6 @@ subroutine parser
     error stop             
   endif
 
-! (16) pseudo information (either block or from a file)
-
-  ! if ( fdf_load_defined('pseudo') ) then
-  !   call read_pseudo_file(file_pseudo)
-  ! elseif ( fdf_block('pseudo', bfdf)) then
-  ! ! call fdf_read_pseudo_block(bfdf)
-  !   write(errunit,'(a)') "Error:: No information about pseudo provided in the block."
-  !   write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-  !   error stop             
-  ! else
-  !   write(errunit,'(a)') "Error:: No information about pseudo provided in the block."
-  !   write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-  !   error stop             
-  ! endif
 
 
 ! (17) multideterminants information (either block or from a file)
