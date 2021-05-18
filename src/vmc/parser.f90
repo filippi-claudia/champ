@@ -123,6 +123,8 @@ subroutine parser
   use optwf_corsam, 	only: add_diag
   use dmc_mod, 			only: MWALK  
 
+  use optorb_mix,   only: norbopt, norbvirt
+
   use grdntspar, 		only: delgrdxyz, igrdtype, ngradnts
   use grdntspar, 		only: delgrdba, delgrdbl, delgrdda, ngradnts
 
@@ -590,9 +592,9 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop             
   else
-    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop             
+    !use optorb_mix, only: norbopt, norbvirt
+    norbopt   = 0
+    norbvirt  = 0
   endif
 
 ! (11) Eigenvalues information of orbitals (either block or from a file)

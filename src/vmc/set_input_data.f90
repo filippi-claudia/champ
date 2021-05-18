@@ -55,6 +55,8 @@ subroutine multideterminants_define(iflag, icheck)
     use coefs, only: norb
     use dorb_m, only: iworbd
 
+    use contrl_file,    	only: ounit, errunit
+
     ! not sure about that one either ....
     use wfsec, only: nwftype
 
@@ -85,7 +87,7 @@ subroutine multideterminants_define(iflag, icheck)
         if (kref .gt. ndet) call fatal_error('MULTIDET_DEFINE: kref > ndet')
 
 2       if (idiff(kref_old, kref, iflag) .eq. 0) goto 1
-        write (6, *) 'kref change', iflag, kref_old, kref
+        write (ounit, *) 'kref change', iflag, kref_old, kref
     endif
     kref_old = kref
 
@@ -135,7 +137,7 @@ subroutine multideterminants_define(iflag, icheck)
                 endif
             enddo
             if (isub .ne. numrep_det(k, iab)) then
-                write (6, *) isub, numrep_det(k, iab)
+                write (ounit, *) isub, numrep_det(k, iab)
                 stop 'silly error'
             endif
             do irep = 1, nel
@@ -200,9 +202,9 @@ subroutine multideterminants_define(iflag, icheck)
 8       continue
     enddo
 
-    write (6, *) 'norb  =', norb
-    write (6, *) 'iactv =', (iactv(iab), iab=1, 2)
-    write (6, *) 'ivirt =', (ivirt(iab), iab=1, 2)
+    write (ounit, *) 'norb  =', norb
+    write (ounit, *) 'iactv =', (iactv(iab), iab=1, 2)
+    write (ounit, *) 'ivirt =', (ivirt(iab), iab=1, 2)
 
     idist = 1
     if (idist .eq. 0) then
@@ -236,7 +238,7 @@ subroutine multideterminants_define(iflag, icheck)
                     ndet_dist = ndet_dist + 1
                 endif
             enddo
-            write (6, *) iab, ndet_dist, ' distinct out of ', ndet
+            write (ounit, *) iab, ndet_dist, ' distinct out of ', ndet
         enddo
     endif
 

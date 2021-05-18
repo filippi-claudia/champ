@@ -1,7 +1,7 @@
 
 subroutine header_printing()
     ! Ravindra
-    use mpi_f08
+    use mpi
     use mpiconf, only: idtask, nproc
     use, intrinsic :: iso_fortran_env, only: iostat_end
     use contrl_file,    only: file_input, file_output, file_error 
