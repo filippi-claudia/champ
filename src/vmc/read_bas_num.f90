@@ -78,7 +78,7 @@
         if(igrid(ic).ne.1.and.igrid(ic).ne.2.and.igrid(ic).ne.3) &
         call fatal_error('READ_BAS_NUM: grid not implemented')
 
-!       Debug:: remove the comment         
+!       Debug:: remove the comment BUG
 !        if(nloc.eq.0) read(iunit,*,iostat=iostat) (l(irb),irb=1,nrbas(ic))
         if (iostat .ne. 0) then
           write(errunit,'(a)') "Error:: Problem in reading the numerical basis file"
