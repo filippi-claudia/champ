@@ -107,7 +107,7 @@ subroutine parser
   use pcm_fdc, 			only: qfree, rcolv
   use pcm_grid3d_contrl,only: ipcm_3dgrid
   use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d, pcm_origin, pcm_endpt, allocate_pcm_grid3d_param
-  use pcm_3dgrid, 		only: PCM_SHIFT !UNDEFINED=>PCM_UNDEFINED, IUNDEFINED=>PCM_IUNDEFINED 
+  use pcm_3dgrid, 		only: PCM_SHIFT, PCM_UNDEFINED, PCM_IUNDEFINED 
   use prp003, 			only: cc_nuc
   use method_opt, 		only: method
   use optorb_cblock, 	only: nefp_blocks, isample_cmat, iorbsample
@@ -384,19 +384,19 @@ subroutine parser
 
 
   call allocate_pcm_grid3d_param()
-  ipcm_3dgrid   = fdf_get('ipcm_3dgrid',0)  
-!   ipcm_nstep3d(1) 	= fdf_get('nx_pcm',PCM_IUNDEFINED)
-!   ipcm_nstep3d(2) 	= fdf_get('ny_pcm',PCM_IUNDEFINED)
-!   ipcm_nstep3d(3) 	= fdf_get('nz_pcm',PCM_IUNDEFINED)
-!   pcm_step3d(1) 	= fdf_get('dx_pcm',PCM_UNDEFINED)
-!   pcm_step3d(2) 	= fdf_get('dy_pcm',PCM_UNDEFINED)
-!   pcm_step3d(3) 	= fdf_get('dz_pcm',PCM_UNDEFINED)
-!   pcm_origin(1) 	= fdf_get('x0_pcm',PCM_UNDEFINED)
-!   pcm_origin(2) 	= fdf_get('y0_pcm',PCM_UNDEFINED)
-!   pcm_origin(3) 	= fdf_get('z0_pcm',PCM_UNDEFINED)
-!   pcm_endpt(1)  	= fdf_get('xn_pcm',PCM_UNDEFINED)
-!   pcm_endpt(2)  	= fdf_get('yn_pcm',PCM_UNDEFINED)
-!   pcm_endpt(3)  	= fdf_get('zn_pcm',PCM_UNDEFINED)
+  ipcm_3dgrid   = fdf_get('ipcm_3dgrid',0)
+  ipcm_nstep3d(1) 	= fdf_get('nx_pcm',PCM_IUNDEFINED)
+  ipcm_nstep3d(2) 	= fdf_get('ny_pcm',PCM_IUNDEFINED)
+  ipcm_nstep3d(3) 	= fdf_get('nz_pcm',PCM_IUNDEFINED)
+  pcm_step3d(1) 	= fdf_get('dx_pcm',PCM_UNDEFINED)
+  pcm_step3d(2) 	= fdf_get('dy_pcm',PCM_UNDEFINED)
+  pcm_step3d(3) 	= fdf_get('dz_pcm',PCM_UNDEFINED)
+  pcm_origin(1) 	= fdf_get('x0_pcm',PCM_UNDEFINED)
+  pcm_origin(2) 	= fdf_get('y0_pcm',PCM_UNDEFINED)
+  pcm_origin(3) 	= fdf_get('z0_pcm',PCM_UNDEFINED)
+  pcm_endpt(1)  	= fdf_get('xn_pcm',PCM_UNDEFINED)
+  pcm_endpt(2)  	= fdf_get('yn_pcm',PCM_UNDEFINED)
+  pcm_endpt(3)  	= fdf_get('zn_pcm',PCM_UNDEFINED)
   PCM_SHIFT     	= fdf_get('shift',4.d0)
 
 ! %module mmpol (complete)
