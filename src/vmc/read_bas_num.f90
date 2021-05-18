@@ -63,6 +63,10 @@
           error stop " Numerical Basis file "// filename // " does not exist."
         endif
 
+        write(ounit,*) '-----------------------------------------------------------------------'      
+        write(ounit,'(4a)')  " Reading numerical basis for ", trim(atomtyp(ic))," from the file :: ", trim(filename)
+        write(ounit,*) '-----------------------------------------------------------------------'      
+
         read(iunit,*, iostat=iostat) nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
         write(ounit,*) "reading the content ", nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)        
         write(ounit,*) "(Reading basis grid file = [ ",  trim(filename), " ] )"
@@ -204,7 +208,7 @@ subroutine readps_gauss
   !
   ! NOTE: as usual power n means r**(n-2)
   !
-  use pseudo_mod, only: MPS_L, MGAUSS
+  use pseudo_mod, only: MPS_L, MGAUSS, MPS_QUAD
   use atom, only: nctype, atomtyp
   use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
   use gauss_ecp, only: allocate_gauss_ecp
@@ -298,6 +302,15 @@ subroutine readps_gauss
 
   close(iunit)
   enddo
+
+!  call allocate_qua()   ! Debug:: Ravindra. This line was added on purpose
+
+
+
+  if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
+  if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
+  if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
+  if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))	 	 	  
 
   call gesqua(nquad,xq0,yq0,zq0,wq)
 

@@ -652,13 +652,13 @@ subroutine parser
 
 ! (15) pseudo information (either block or from a file)
 
-  ! if ( fdf_defined('pseudopot') ) then
-  !   call readps_gauss()
-  ! else
-  !   write(errunit,'(a)') "Error:: No information about pseudo provided in the input."
-  !   write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-  !   error stop             
-  ! endif
+  if ( fdf_defined('pseudopot') ) then
+    call readps_gauss()
+  else
+    write(errunit,'(a)') "Error:: No information about pseudo provided in the input."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop             
+  endif
 
 ! (16) basis information (either block or from a file)
 
