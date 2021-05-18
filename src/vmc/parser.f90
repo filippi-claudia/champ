@@ -682,9 +682,7 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop             
   else
-    write(errunit,'(a)') "Error:: No information about multideterminants provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop             
+    call multideterminants_define(0,0)
   endif
 
 ! (18) cavity_spheres information (either block or from a file)
@@ -1050,8 +1048,6 @@ subroutine parser
 
     enddo 
   end subroutine fdf_read_jastrow_block
-
-
 end subroutine parser
 
 
@@ -1183,27 +1179,27 @@ subroutine flagcheck_new
   ! if(iefield.gt.0.and.icharge_efield.eq.0) call fatal_error('INPUT: block efield missing')
 
   write(6,'(''========================================'')')
-  if(iexponents.eq.0) then
-    write(6,'(''INPUT: block exponents missing: all exponents set to 1'')')
-    call inputzex
-  endif
-  if(icsfs.eq.0) then
-    write(6,'(''INPUT: block csf missing: nstates set to 1'')')
-    call inputcsf
-  endif
-  if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
-    write(6,'(''INPUT: block forces_displace or gradients_* missing: geometries set equal to primary'')')
-    call inputforces
-  endif
+  ! if(iexponents.eq.0) then
+  !   write(6,'(''INPUT: block exponents missing: all exponents set to 1'')')
+  !   call inputzex
+  ! endif
+  ! if(icsfs.eq.0) then
+  !   write(6,'(''INPUT: block csf missing: nstates set to 1'')')
+  !   call inputcsf
+  ! endif
+  ! if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
+  !   write(6,'(''INPUT: block forces_displace or gradients_* missing: geometries set equal to primary'')')
+  !   call inputforces
+  ! endif
   if(iforce_analy.gt.0) then
     if(iuse_zmat.gt.0.and.izmatrix_check.eq.0) call fatal_error('INPUT: block connectionzmatrix missing')
     if(imodify_zmat.eq.0) call modify_zmat_define
     if(ihessian_zmat.eq.0) call hessian_zmat_define
   endif
-  if(imultideterminants.eq.0) then
-    write(6,'(''INPUT: multideterminant bloc MISSING'')')
-    call multideterminants_define(0,0)
-  endif
+  ! if(imultideterminants.eq.0) then
+  !   write(6,'(''INPUT: multideterminant bloc MISSING'')')
+  !   call multideterminants_define(0,0)
+  ! endif
   if(ioptorb.ne.0) then
     if(ioptorb_mixvirt.eq.0) then
       norbopt=0
@@ -1219,24 +1215,24 @@ subroutine flagcheck_new
     call optci_define
   endif
 
-  if(nwftype.gt.1) then
-    if(ijastrow_parameter.ne.nwftype) then
-      write(6,'(''INPUT: block jastrow_parameter missing for one wave function'')')
-      write(6,'(''INPUT: jastrow_parameter blocks equal for all wave functions'')')
-      call inputjastrow(nwftype)
-    endif
-    if(iperiodic.eq.0.and.ilcao.ne.nwftype) then
-      write(6,'(''Warning INPUT: block lcao missing for one wave function'')')
-      write(6,'(''Warning INPUT: lcao blocks equal for all wave functions'')')
-      call inputlcao(nwftype)
-    endif
-    if(ideterminants.ne.nwftype) then
-      write(6,'(''Warning INPUT: block determinants missing for one wave function'')')
-      write(6,'(''Warning INPUT: determinants blocks equal for all wave functions'')')
-      call inputdet(nwftype)
-    endif
-    write(6,*)
-  endif
+  ! if(nwftype.gt.1) then
+    ! if(ijastrow_parameter.ne.nwftype) then
+    !   write(6,'(''INPUT: block jastrow_parameter missing for one wave function'')')
+    !   write(6,'(''INPUT: jastrow_parameter blocks equal for all wave functions'')')
+    !   call inputjastrow(nwftype)
+    ! endif
+    ! if(iperiodic.eq.0.and.ilcao.ne.nwftype) then
+    !   write(6,'(''Warning INPUT: block lcao missing for one wave function'')')
+    !   write(6,'(''Warning INPUT: lcao blocks equal for all wave functions'')')
+    !   call inputlcao(nwftype)
+    ! endif
+    ! if(ideterminants.ne.nwftype) then
+    !   write(6,'(''Warning INPUT: block determinants missing for one wave function'')')
+    !   write(6,'(''Warning INPUT: determinants blocks equal for all wave functions'')')
+    !   call inputdet(nwftype)
+    ! endif
+    ! write(6,*)
+  ! endif
 
   write(6,'(''========================================'')')
   return

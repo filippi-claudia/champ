@@ -51,7 +51,7 @@ subroutine multideterminants_define(iflag, icheck)
     use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet
     use elec, only: ndn, nup
-    use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+    use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, allocate_multidet
     use coefs, only: norb
     use dorb_m, only: iworbd
 
@@ -60,7 +60,7 @@ subroutine multideterminants_define(iflag, icheck)
 
     implicit real*8(a - h, o - z)
 
-    dimension iswapped(nelec), itotphase(MDET)
+    dimension iswapped(nelec), itotphase(ndet)
 
     save kref_old
 
@@ -89,10 +89,10 @@ subroutine multideterminants_define(iflag, icheck)
     endif
     kref_old = kref
 
-    if (.not. allocated(iwundet)) allocate (iwundet(MDET, 2))
-    if (.not. allocated(numrep_det)) allocate (numrep_det(MDET, 2))
-    if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, MDET, 2))
-    if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, MDET, 2))
+    if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
+    if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
+    if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
+    if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2))
 
     do iab = 1, 2
         numrep_det(kref, iab) = 0
@@ -182,6 +182,8 @@ subroutine multideterminants_define(iflag, icheck)
         enddo
 6       continue
     enddo
+
+    call allocate_multidet()
 
     iactv(1) = nup + 1
     iactv(2) = ndn + 1
