@@ -7,7 +7,7 @@ subroutine parser
 
 ! CHAMP modules
   use contr3,         	only: mode
-  use contrl_file,    	only: file_input, file_output, file_error 
+  use contrl_file,    	only: file_input, file_output, file_error
   use contrl_file,    	only: iunit, ounit, errunit
   use allocation_mod, 	only: allocate_vmc, allocate_dmc
   use periodic_table, 	only: atom_t, element
@@ -75,10 +75,10 @@ subroutine parser
 
 ! Note the additions: Ravindra
   use control_vmc, 		only: vmc_idump,  vmc_irstar, vmc_isite, vmc_nconf, vmc_nblk, vmc_nblk_max
-  use control_vmc, 		only: vmc_nblkeq, vmc_nconf_new, vmc_nstep, vmc_icharged_atom, vmc_nblk_ci  
+  use control_vmc, 		only: vmc_nblkeq, vmc_nconf_new, vmc_nstep, vmc_icharged_atom, vmc_nblk_ci
 ! Note the additions: Ravindra
   use control_dmc, 		only: dmc_idump, dmc_irstar, dmc_isite, dmc_nconf, dmc_nblk, dmc_nblk_max
-  use control_dmc, 		only: dmc_nblkeq, dmc_nconf_new, dmc_nstep, dmc_icharged_atom, dmc_nblk_ci  
+  use control_dmc, 		only: dmc_nblkeq, dmc_nconf_new, dmc_nstep, dmc_icharged_atom, dmc_nblk_ci
 
   use dorb_m, 			only: iworbd
   use contrl_per, 		only: iperiodic, ibasis
@@ -107,7 +107,7 @@ subroutine parser
   use pcm_fdc, 			only: qfree, rcolv
   use pcm_grid3d_contrl,only: ipcm_3dgrid
   use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d, pcm_origin, pcm_endpt, allocate_pcm_grid3d_param
-  use pcm_3dgrid, 		only: PCM_SHIFT, PCM_UNDEFINED, PCM_IUNDEFINED 
+  use pcm_3dgrid, 		only: PCM_SHIFT, PCM_UNDEFINED, PCM_IUNDEFINED
   use prp003, 			only: cc_nuc
   use method_opt, 		only: method
   use optorb_cblock, 	only: nefp_blocks, isample_cmat, iorbsample
@@ -121,7 +121,7 @@ subroutine parser
   use optwf_contrl, 	only: sr_tau , sr_adiag, sr_eps
   use optwf_func, 		only: ifunc_omega, omega0, n_omegaf, n_omegat
   use optwf_corsam, 	only: add_diag
-  use dmc_mod, 			only: MWALK  
+  use dmc_mod, 			only: MWALK
 
   use optorb_mix,   only: norbopt, norbvirt
 
@@ -138,14 +138,14 @@ subroutine parser
 ! Note the following modules are new additions
 
 
-!  
+!
   implicit none
 !--------------------------------------------------------------- Local Variables
   integer, parameter         :: maxa = 100
   logical                    :: doit, debug
 
   character(len=72)          :: fname, key
-  character(len=20)          :: temp1, temp2, temp3, temp4, temp5   
+  character(len=20)          :: temp1, temp2, temp3, temp4, temp5
   integer                    :: ifock , ratio, isavebl
 
   type(block_fdf)            :: bfdf
@@ -153,17 +153,17 @@ subroutine parser
 
   character(len=100)         :: real_format    = '(A, T40, F14.8)'
   character(len=100)         :: int_format     = '(A, T40, I8)'
-  character(len=100)         :: string_format  = '(A, T40, A)'  
-  character(len=100)         :: fmt32          = '(A, T32, A)'  
+  character(len=100)         :: string_format  = '(A, T40, A)'
+  character(len=100)         :: fmt32          = '(A, T32, A)'
 
 !------------------------------------------------------------------------- BEGIN
 ! debug purpose only
   character(len=72)          :: optwf, blocking_vmc, blocking_dmc
-  character(len=72)          :: file_basis, 			file_molecule 
-  character(len=72)          ::	file_determinants, 		file_symmetry    
-  character(len=72)          :: file_jastrow, 			file_jastrow_der 
+  character(len=72)          :: file_basis, 			file_molecule
+  character(len=72)          ::	file_determinants, 		file_symmetry
+  character(len=72)          :: file_jastrow, 			file_jastrow_der
   character(len=72)          ::	file_orbitals, 			file_pseudo
-  character(len=72)          :: file_exponents, 		file_optorb_mixvirt 
+  character(len=72)          :: file_exponents, 		file_optorb_mixvirt
   character(len=72)          ::	file_multideterminants, file_forces
   character(len=72)          :: file_eigenvalues, 		file_basis_num_info
   character(len=72)          :: file_dmatrix,			file_cavity_spheres
@@ -196,18 +196,18 @@ subroutine parser
 
 
 ! %module general (complete)
-  mode        = fdf_get('mode', 'vmc_one_mpi')  
+  mode        = fdf_get('mode', 'vmc_one_mpi')
   title       = fdf_get('title', 'Untitled')
   pooldir     = fdf_get('pool', '.')
-  pp_id       = fdf_get('pseudopot', 'none')  
-  bas_id      = fdf_get('basis', 'none')  
-  nforce      = fdf_get('nforce', 1)    
-  MFORCE      = nforce 
-  nwftype     = fdf_get('nwftype', 1)      
-  iperiodic   = fdf_get('iperiodic', 0)  
-  ibasis      = fdf_get('ibasis', 1)    
-!  cseed       = fdf_get('seed', 1)    
-  ipr         = fdf_get('ipr', -1)    
+  pp_id       = fdf_get('pseudopot', 'none')
+  bas_id      = fdf_get('basis', 'none')
+  nforce      = fdf_get('nforce', 1)
+  MFORCE      = nforce
+  nwftype     = fdf_get('nwftype', 1)
+  iperiodic   = fdf_get('iperiodic', 0)
+  ibasis      = fdf_get('ibasis', 1)
+!  cseed       = fdf_get('seed', 1)
+  ipr         = fdf_get('ipr', -1)
   eunit       = fdf_get('unit', 'Hartrees')
   hb          = fdf_get('mass', 0.5d0)
   scalecoef   = fdf_get('scalecoef',1.0d0)
@@ -218,31 +218,31 @@ subroutine parser
 
 ! %module electrons (complete)
   nelec       = fdf_get('nelec', 1)
-  nup         = fdf_get('nup', 1)  
+  nup         = fdf_get('nup', 1)
   ndn         = nelec-nup
 
 ! %module atoms (complete)
-!  nctype      = fdf_get('nctype', 1)    
-!  ncent       = fdf_get('natom', 1)     
-  newghostype = fdf_get('newghostype', 0)       
-  nghostcent  = fdf_get('nghostcent', 0)       
+!  nctype      = fdf_get('nctype', 1)
+!  ncent       = fdf_get('natom', 1)
+  newghostype = fdf_get('newghostype', 0)
+  nghostcent  = fdf_get('nghostcent', 0)
 
 ! %module jastrow (complete)
-  ijas        = fdf_get('ijas', 1)      
+  ijas        = fdf_get('ijas', 1)
   isc         = fdf_get('isc', 1)
   nspin1      = fdf_get('nspin1', 1)
-  nspin2      = fdf_get('nspin2', 1)  
+  nspin2      = fdf_get('nspin2', 1)
   ifock       = fdf_get('ifock', 0)
   ianalyt_lap = fdf_get('ianalyt_lap',1)
 
 ! %module optgeo (complete)
-  iforce_analy= fdf_get('iforce_analy', 0)  
-  iuse_zmat   = fdf_get('iuse_zmat', 0)     
-  izvzb       = fdf_get('izvzb', 0)          
-  alfgeo      = fdf_get('alfgeo', 1.0d0)            
+  iforce_analy= fdf_get('iforce_analy', 0)
+  iuse_zmat   = fdf_get('iuse_zmat', 0)
+  izvzb       = fdf_get('izvzb', 0)
+  alfgeo      = fdf_get('alfgeo', 1.0d0)
   iroot_geo   = fdf_get('iroot_geo', 0)
 
-! %module gradients 
+! %module gradients
   delgrdxyz   = fdf_get('delgrdxyz', 0.001d0)
   igrdtype    = fdf_get('igrdtype', 1)
   ngradnts    = fdf_get('ngradnts', 0)
@@ -251,88 +251,88 @@ subroutine parser
   delgrdda    = fdf_get('delgrdda', 0.01d0)
   igrdtype    = fdf_get('igrdtype', 2)
   ngradnts    = fdf_get('ngradnts', 0)
-  
+
 ! %module iguiding (complete)
   iguiding      = fdf_get('iguiding',0)
   iefficiency   = fdf_get('iefficiency',0)
 
 ! %module efield (complete)
-  iefield     = fdf_get('iefield', 0)       
+  iefield     = fdf_get('iefield', 0)
 
 ! module vmc (complete)
-  imetro      = fdf_get('imetro', 6)     
-  node_cutoff = fdf_get('node_cutoff', 0)       
-  eps_node_cutoff = fdf_get('enode_cutoff', 1.0d-7)         
-  delta       = fdf_get('delta', 1.)       
-  deltar      = fdf_get('deltar', 1.)         
-  deltat      = fdf_get('deltat', 1.)         
-  fbias       = fdf_get('fbias', 1.0d0)           
+  imetro      = fdf_get('imetro', 6)
+  node_cutoff = fdf_get('node_cutoff', 0)
+  eps_node_cutoff = fdf_get('enode_cutoff', 1.0d-7)
+  delta       = fdf_get('delta', 1.)
+  deltar      = fdf_get('deltar', 1.)
+  deltat      = fdf_get('deltat', 1.)
+  fbias       = fdf_get('fbias', 1.0d0)
 
 ! %module vmc / blocking_vmc (complete)
-  vmc_nstep     = fdf_get('vmc_nstep', 1)    
-  vmc_nblk      = fdf_get('vmc_nblk', 1)      
-  vmc_nblkeq    = fdf_get('vmc_nblkeq', 2)        
-  vmc_nblk_max  = fdf_get('vmc_nblk_max', 1)      
-  vmc_nconf     = fdf_get('vmc_nconf', 1)        
-  vmc_nconf_new = fdf_get('vmc_nconf_new', 1)      
-  vmc_idump     = fdf_get('vmc_idump', 1)        
-  vmc_irstar    = fdf_get('vmc_irstar', 0)        
-  vmc_isite     = fdf_get('vmc_isite', 1)          
-  vmc_icharged_atom     = fdf_get('vmc_icharged_atom', 0)            
-  vmc_nblk_ci       = fdf_get('vmc_nblk_ci', vmc_nblk) 
+  vmc_nstep     = fdf_get('vmc_nstep', 1)
+  vmc_nblk      = fdf_get('vmc_nblk', 1)
+  vmc_nblkeq    = fdf_get('vmc_nblkeq', 2)
+  vmc_nblk_max  = fdf_get('vmc_nblk_max', 1)
+  vmc_nconf     = fdf_get('vmc_nconf', 1)
+  vmc_nconf_new = fdf_get('vmc_nconf_new', 1)
+  vmc_idump     = fdf_get('vmc_idump', 1)
+  vmc_irstar    = fdf_get('vmc_irstar', 0)
+  vmc_isite     = fdf_get('vmc_isite', 1)
+  vmc_icharged_atom     = fdf_get('vmc_icharged_atom', 0)
+  vmc_nblk_ci       = fdf_get('vmc_nblk_ci', vmc_nblk)
 
 !module dmc (complete)
-  idmc        = fdf_get('idmc', 2)       
-  ipq         = fdf_get('ipq', 1)       
-  itau_eff    = fdf_get('itau_eff', 1)       
-  iacc_rej    = fdf_get('iacc_rej', 1)       
-  icross      = fdf_get('icross', 1)       
+  idmc        = fdf_get('idmc', 2)
+  ipq         = fdf_get('ipq', 1)
+  itau_eff    = fdf_get('itau_eff', 1)
+  iacc_rej    = fdf_get('iacc_rej', 1)
+  icross      = fdf_get('icross', 1)
   icuspg      = fdf_get('icuspg', 0)
   idiv_v      = fdf_get('idiv_v', 0)
-  icut_br     = fdf_get('icut_br', 0)  
-  icut_e      = fdf_get('icut_e', 0)    
-  dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)       
-  dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)           
-  nfprod      = fdf_get('nfprod', 1)    
-  tau         = fdf_get('tau', 1.)      
+  icut_br     = fdf_get('icut_br', 0)
+  icut_e      = fdf_get('icut_e', 0)
+  dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)
+  dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)
+  nfprod      = fdf_get('nfprod', 1)
+  tau         = fdf_get('tau', 1.)
   rttau=dsqrt(tau)
-  etrial      = fdf_get('etrial', 1.)    
-  nfprod      = fdf_get('nfprod', 200)      
-  itausec     = fdf_get('itausec', 1)        
-  icasula     = fdf_get('icasula', 0)      
+  etrial      = fdf_get('etrial', 1.)
+  nfprod      = fdf_get('nfprod', 200)
+  itausec     = fdf_get('itausec', 1)
+  icasula     = fdf_get('icasula', 0)
 
 ! %module dmc / blocking_dmc (complete)
-  dmc_nstep     = fdf_get('dmc_nstep', 1)    
-  dmc_nblk      = fdf_get('dmc_nblk', 1)      
-  dmc_nblkeq    = fdf_get('dmc_nblkeq', 2)          
-  dmc_nblk_max  = fdf_get('dmc_nblk_max', 1)      
-  dmc_nconf     = fdf_get('dmc_nconf', 1)        
-  dmc_nconf_new = fdf_get('dmc_nconf_new', 1)      
-  dmc_idump     = fdf_get('dmc_idump', 1)        
-  dmc_irstar    = fdf_get('dmc_irstar', 0)        
-  dmc_isite     = fdf_get('dmc_isite', 1)          
-  dmc_icharged_atom     = fdf_get('dmc_icharged_atom', 0)            
-  dmc_nblk_ci       = fdf_get('dmc_nblk_ci', dmc_nblk) 
+  dmc_nstep     = fdf_get('dmc_nstep', 1)
+  dmc_nblk      = fdf_get('dmc_nblk', 1)
+  dmc_nblkeq    = fdf_get('dmc_nblkeq', 2)
+  dmc_nblk_max  = fdf_get('dmc_nblk_max', 1)
+  dmc_nconf     = fdf_get('dmc_nconf', 1)
+  dmc_nconf_new = fdf_get('dmc_nconf_new', 1)
+  dmc_idump     = fdf_get('dmc_idump', 1)
+  dmc_irstar    = fdf_get('dmc_irstar', 0)
+  dmc_isite     = fdf_get('dmc_isite', 1)
+  dmc_icharged_atom     = fdf_get('dmc_icharged_atom', 0)
+  dmc_nblk_ci       = fdf_get('dmc_nblk_ci', dmc_nblk)
 
 
 
 
 !optimization flags vmc/dmc
-  ioptwf        = fdf_get('ioptwf', 0)    
-  method        = fdf_get('method', 'linear')            
-  idl_flag      = fdf_get('idl_flag', 0)      
-  ilbfgs_flag   = fdf_get('ilbfgs_flag', 0)        
-  ilbfgs_m      = fdf_get('ilbfgs_m', 5)        
-  i_sr_rescale  = fdf_get('sr_rescale', 0)        
-  ibeta         = fdf_get('ibeta', -1)    
-  ratio         = fdf_get('ratio', ratio_j)    
-  iapprox       = fdf_get('iapprox', 0)    
-  ncore         = fdf_get('ncore', 0)      
-  iuse_orbeigv  = fdf_get('iuse_orbeigv', 0)    
-  ioptjas       = fdf_get('ioptjas', 0)    
-  ioptorb       = fdf_get('ioptorb', 0)    
-  ioptci        = fdf_get('ioptci', 0)    
-  no_active     = fdf_get('no_active', 0)        
+  ioptwf        = fdf_get('ioptwf', 0)
+  method        = fdf_get('method', 'linear')
+  idl_flag      = fdf_get('idl_flag', 0)
+  ilbfgs_flag   = fdf_get('ilbfgs_flag', 0)
+  ilbfgs_m      = fdf_get('ilbfgs_m', 5)
+  i_sr_rescale  = fdf_get('sr_rescale', 0)
+  ibeta         = fdf_get('ibeta', -1)
+  ratio         = fdf_get('ratio', ratio_j)
+  iapprox       = fdf_get('iapprox', 0)
+  ncore         = fdf_get('ncore', 0)
+  iuse_orbeigv  = fdf_get('iuse_orbeigv', 0)
+  ioptjas       = fdf_get('ioptjas', 0)
+  ioptorb       = fdf_get('ioptorb', 0)
+  ioptci        = fdf_get('ioptci', 0)
+  no_active     = fdf_get('no_active', 0)
   energy_tol    = fdf_get('energy_tol', 1.d-3)
   dparm_norm_min = fdf_get('dparm_norm_min', 1.0d0)
 !  add_diag(1)   = fdf_get('add_diag',1.d-6)
@@ -360,12 +360,12 @@ subroutine parser
   nefp_blocks   = fdf_get('force_blocks',1)
   iorbsample    = fdf_get('iorbsample',1)
 ! attention please
-!  nadorb        = fdf_get('nextorb', next_max)  
+!  nadorb        = fdf_get('nextorb', next_max)
 
-  
-  
+
+
 ! %module ci (complete)
-  iciprt        = fdf_get('ci:iciprt',0)  
+  iciprt        = fdf_get('ci:iciprt',0)
 
 
 !%module pcm (complete)
@@ -410,24 +410,24 @@ subroutine parser
 ! %module properties (complete)
   iprop         = fdf_get('sample',0)
   ipropprt      = fdf_get('print',0)
-  nquad         = fdf_get('nquad',6)    
+  nquad         = fdf_get('nquad',6)
 
 ! %module pseudo (complete)
-  nloc          = fdf_get('nloc',0)  
+  nloc          = fdf_get('nloc',0)
 
 ! %module qmmm (complete)
-!  iqmm          = fdf_get('iqmm',0)    
+!  iqmm          = fdf_get('iqmm',0)
 
 
   ! Filenames parsing
   file_basis        		    = fdf_load_filename('basis', 			'default.bas')
   file_molecule     		    = fdf_load_filename('molecule', 		'default.xyz')
   file_determinants 		    = fdf_load_filename('determinants', 	'default.det')
-  file_symmetry     		    = fdf_load_filename('symmetry', 		'default.sym')  
-  file_jastrow      		    = fdf_load_filename('jastrow', 			'default.jas')    
-  file_jastrow_der  		    = fdf_load_filename('jastrow_der', 		'default.jasder')      
-  file_orbitals     		    = fdf_load_filename('orbitals', 		'default.orb')        
-  file_exponents    		    = fdf_load_filename('exponents', 		'exponents.exp') 
+  file_symmetry     		    = fdf_load_filename('symmetry', 		'default.sym')
+  file_jastrow      		    = fdf_load_filename('jastrow', 			'default.jas')
+  file_jastrow_der  		    = fdf_load_filename('jastrow_der', 		'default.jasder')
+  file_orbitals     		    = fdf_load_filename('orbitals', 		'default.orb')
+  file_exponents    		    = fdf_load_filename('exponents', 		'exponents.exp')
   file_pseudo 			        = fdf_load_filename('pseudo', 			'default.psp')
   file_optorb_mixvirt       = fdf_load_filename('optorb_mixvirt', 	'default.mix')
   file_multideterminants    = fdf_load_filename('multideterminants', 'default.mdet')
@@ -444,23 +444,6 @@ subroutine parser
   file_efield	       		    = fdf_load_filename('efield', 			'default.efield')
 
   call header_printing()
-  ! Reading of smaller blocks of data goes here.
-
-
-
-
-! module dependent processing . These will be replaced by inliners
-  ! write(ounit,*) "Names of the external files being read for this calculation :: "
-  ! write(ounit,*)
-  ! write(ounit,fmt=fmt32) " Basis                      :: ", file_basis
-  ! write(ounit,fmt=fmt32) " Molecule                   :: ", file_molecule
-  ! write(ounit,fmt=fmt32) " Determinants               :: ", file_determinants
-  ! write(ounit,fmt=fmt32) " Symmetry                   :: ", file_symmetry
-  ! write(ounit,fmt=fmt32) " Jastrow                    :: ", file_jastrow
-  ! write(ounit,fmt=fmt32) " Jastrow_der                :: ", file_jastrow_der          
-  ! write(ounit,fmt=fmt32) " Orbitals                   :: ", file_orbitals            
-  ! write(ounit,*)
-
 
 ! Processing of data read from the parsed files or setting them with defaults
 
@@ -473,21 +456,21 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop 
-  endif 
-    
+    error stop
+  endif
+
 ! (2) Determinants (excluding csf and csfmap) [#####]
-  
+
   if ( fdf_load_defined('determinants') ) then
     call read_determinants_file(file_determinants)
   elseif ( fdf_block('determinants', bfdf)) then
   ! call fdf_read_determinants_block(bfdf)
     write(errunit,'(a)') "Error:: No information about determinants provided."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop     
+    error stop
   else
     call inputdet()
-  endif 
+  endif
 
 ! (3) CSF [#####]
 
@@ -495,22 +478,22 @@ subroutine parser
     call read_csf_file(file_determinants)
   elseif (fdf_block('csf', bfdf)) then
     call fdf_read_csf_block(bfdf)
-  else 
+  else
     ! No csf present; set default values (in replacement of inputcsf)
     nstates = 1 ; ncsf = 0
     if (ioptci .ne. 0) nciterm = nciprim
-  endif 
+  endif
 
 ! (4) CSFMAP [#####]
-  
+
   if ( fdf_load_defined('determinants') ) then
     call read_csfmap_file(file_determinants)
   elseif (fdf_block('determinants', bfdf)) then
   ! call fdf_read_csfmap_block(bfdf)
     write(errunit,'(a)') "Error:: No information about csfmaps provided."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop         
-  endif 
+    error stop
+  endif
 
 ! (5) Jastrow Parameters (either block or from a file)
 
@@ -520,11 +503,11 @@ subroutine parser
   !call fdf_read_jastrow_block(bfdf)
     write(errunit,'(a)') "Error:: No information about jastrow provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop         
-  else 
+    error stop
+  else
     ! no information about jastrow present. Set some values
     call inputjastrow()
-  endif 
+  endif
 
 ! (6) LCAO orbitals
 
@@ -534,12 +517,12 @@ subroutine parser
   ! call fdf_read_orbitals_block(bfdf)
     write(errunit,'(a)') "Error:: No information about orbitals provided."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop     
+    error stop
   else
-    call inputlcao()    
-  endif 
+    call inputlcao()
+  endif
 
-! (7) exponents 
+! (7) exponents
 
   if ( fdf_load_defined('exponents') ) then
     call read_exponents_file(file_exponents)
@@ -547,10 +530,10 @@ subroutine parser
   ! call fdf_read_exponents_block(bfdf)
     write(errunit,'(a)') "Error:: No information about exponents provided."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop         
+    error stop
   else
     zex = 1   ! debug check condition about numr == 0
-  endif 
+  endif
 
 ! (8) Jastrow derivative Parameters (either block or from a file)
 
@@ -560,12 +543,12 @@ subroutine parser
   !call fdf_read_jastrow_derivative_block(bfdf)
     write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
-  else  
+    error stop
+  else
     write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
-  endif 
+    error stop
+  endif
 
 ! (9) Symmetry information of orbitals (either block or from a file)
 
@@ -575,11 +558,11 @@ subroutine parser
   ! call fdf_read_symmetry_block(bfdf)
     write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
     write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   endif
 
 ! (10) optorb_mixvirt information of orbitals (either block or from a file)
@@ -590,7 +573,7 @@ subroutine parser
   ! call fdf_read_optorb_mixvirt_block(bfdf)
     write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
     !use optorb_mix, only: norbopt, norbvirt
     norbopt   = 0
@@ -605,13 +588,13 @@ subroutine parser
   ! call fdf_read_eigenvalues_block(bfdf)
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop             
+!    error stop
   endif
-  
+
 ! (12) Basis num information (either block or from a file)
 
   if ( fdf_load_defined('basis_num_info') ) then
@@ -620,22 +603,22 @@ subroutine parser
   ! call fdf_read_eigenvalues_block(bfdf)
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   endif
 
 ! (13) Forces information (either block or from a file) [#####]
-  
+
   if (fdf_load_defined('forces') ) then
     call read_forces_file(file_forces)
   elseif (fdf_block('forces', bfdf)) then
     call fdf_read_forces_block(bfdf)
   else
     call inputforces()
-  endif 
+  endif
 
 ! (14) Dmatrix information (either block or from a file)
 
@@ -645,11 +628,11 @@ subroutine parser
   ! call fdf_read_dmatrix_block(bfdf)
     write(errunit,'(a)') "Error:: No information about dmatrix provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
     write(errunit,'(a)') "Error:: No information about dmatrix provided in the input."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop             
+!    error stop
   endif
 
 ! (15) pseudo information (either block or from a file)
@@ -659,7 +642,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about pseudo provided in the input."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   endif
 
 ! (16) basis information (either block or from a file)
@@ -669,7 +652,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about basis provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   endif
 
 
@@ -682,7 +665,7 @@ subroutine parser
   ! call fdf_read_multideterminants_block(bfdf)
     write(errunit,'(a)') "Error:: No information about multideterminants provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
     call multideterminants_define(0,0)
   endif
@@ -695,11 +678,11 @@ subroutine parser
   ! call fdf_read_cavity_spheres_block(bfdf)
     write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
     write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop             
+!    error stop
   endif
 
 ! (19) gradients_zmatrix information (either block or from a file)
@@ -710,11 +693,11 @@ subroutine parser
   ! call fdf_read_gradients_zmatrix_block(bfdf)
     write(errunit,'(a)') "Error:: No information about gradients_zmatrix provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
     write(errunit,'(a)') "Error:: No information about gradients_zmatrix provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop             
+!    error stop
   endif
 
 ! (20) gradients_cartesian information (either block or from a file)
@@ -725,11 +708,11 @@ subroutine parser
   ! call fdf_read_gradients_cartesian_block(bfdf)
     write(errunit,'(a)') "Error:: No information about gradients_cartesian provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
     write(errunit,'(a)') "Error:: No information about gradients_cartesian provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop             
+!    error stop
   endif
 
 ! (21) modify_zmatrix information (either block or from a file)
@@ -740,12 +723,10 @@ subroutine parser
   ! call fdf_read_modify_zmatrix_block(bfdf)
     write(errunit,'(a)') "Error:: No information about modify_zmatrix provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
-    write(errunit,'(a)') "Error:: No information about modify_zmatrix provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop             
-  endif    
+    call modify_zmat_define
+  endif
 
 ! (22) hessian_zmatrix information (either block or from a file)
 
@@ -755,12 +736,10 @@ subroutine parser
   ! call fdf_read_hessian_zmatrix_block(bfdf)
     write(errunit,'(a)') "Error:: No information about hessian_zmatrix provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
-    write(errunit,'(a)') "Error:: No information about hessian_zmatrix provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop             
-  endif    
+    call hessian_zmat_define
+  endif
 
 
 ! (23) zmatrix_connection information (either block or from a file)
@@ -771,13 +750,13 @@ subroutine parser
   ! call fdf_read_zmatrix_connection_block(bfdf)
     write(errunit,'(a)') "Error:: No information about zmatrix_connection provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
     write(errunit,'(a)') "Error:: No information about zmatrix_connection provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop             
-  endif    
-    
+!    error stop
+  endif
+
 ! (24) efield information (either block or from a file)
 
   if ( fdf_load_defined('efield') ) then
@@ -786,12 +765,12 @@ subroutine parser
   ! call fdf_read_efield_block(bfdf)
     write(errunit,'(a)') "Error:: No information about efield provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop             
+    error stop
   else
     write(errunit,'(a)') "Error:: No information about efield provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop             
-  endif    
+!    error stop
+  endif
 
 ! Done reading all the files
 
@@ -814,28 +793,28 @@ subroutine parser
   contains
 
   !! Here all the subroutines that handle the block data are written
-  
+
   subroutine fdf_read_molecule_block(bfdf)
-    implicit none 
-    
+    implicit none
+
     type(block_fdf)            :: bfdf
     type(parsed_line), pointer :: pline
 
     write(ounit,*) ' Molecular Coordinates from molecule block '
 
-	  j = 1 !local counter    	
+	  j = 1 !local counter
     do while((fdf_bline(bfdf, pline)))
-!     get the integer from the first line 
+!     get the integer from the first line
       if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then  ! check if it is the only integer present in a line
         ncent = fdf_bintegers(pline, 1)
         write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
       endif
 
       if (.not. allocated(cent)) allocate(cent(3,ncent))
-      if (.not. allocated(symbol)) allocate(symbol(ncent)) 
-      if (.not. allocated(iwctype)) allocate(iwctype(ncent))              
-      if (.not. allocated(unique)) allocate(unique(ncent))  
-      
+      if (.not. allocated(symbol)) allocate(symbol(ncent))
+      if (.not. allocated(iwctype)) allocate(iwctype(ncent))
+      if (.not. allocated(unique)) allocate(unique(ncent))
+
       if (pline%ntokens .ne. 4) then  ! check if it is the only integer present in a line
         write(ounit,*) " Comment from the file ::  ", trim(pline%line)
       endif
@@ -854,20 +833,20 @@ subroutine parser
     ncent_tot = ncent + nghostcent
 
     ! Count unique type of elements
-    nctype = 1 
+    nctype = 1
     unique(1) = symbol(1)
 
-    do j= 2, ncent  
+    do j= 2, ncent
         if (any(unique == symbol(j) ))  cycle
-        nctype = nctype + 1 
+        nctype = nctype + 1
         unique(nctype) = symbol(j)
     enddo
 
-    write(ounit,*) " Number of distinct types of elements (nctype) :: ", nctype 
+    write(ounit,*) " Number of distinct types of elements (nctype) :: ", nctype
     write(ounit,*)
 
-    if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))                              
-    if (.not. allocated(znuc)) allocate(znuc(nctype))                  
+    if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))
+    if (.not. allocated(znuc)) allocate(znuc(nctype))
 
     ! get the correspondence for each atom according to the rule defined for atomtypes
     do j = 1, ncent
@@ -884,7 +863,7 @@ subroutine parser
 
     ! Get the znuc for each unique atom
     do j = 1, nctype
-        atoms = element(atomtyp(j)) 
+        atoms = element(atomtyp(j))
         znuc(j) = atoms%nvalence
     enddo
 
@@ -905,16 +884,16 @@ subroutine parser
   end subroutine fdf_read_molecule_block
 
   subroutine fdf_read_forces_block(bfdf)
-    implicit none 
+    implicit none
     type(block_fdf)            :: bfdf
     type(parsed_line), pointer :: pline
-    integer                    :: i,j,k    
+    integer                    :: i,j,k
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
     if (.not. allocated(iwftype)) allocate (iwftype(nforce))
 
     i = 1; j = 1
-    do while((fdf_bline(bfdf, pline)))     
+    do while((fdf_bline(bfdf, pline)))
       if (pline%ntokens == 1) i = fdf_bintegers(pline, 1)
       if (pline%ntokens == 3) then
         do k = 1, 3
@@ -928,22 +907,22 @@ subroutine parser
     write(ounit,*)
     do i = 1, nforce
       write(ounit,'(a,i4)') 'Number ::',i
-      write(ounit,*) '-----------------------------------------------------------------------'      
+      write(ounit,*) '-----------------------------------------------------------------------'
       write(ounit,'(a, t15, a, t27, a, t39, a, t45)') 'Symbol', 'x', 'y', 'z'
       write(ounit,'(t14, a, t26, a, t38, a )') '(A)', '(A)', '(A)'
-      write(ounit,*) '-----------------------------------------------------------------------'    
+      write(ounit,*) '-----------------------------------------------------------------------'
       do j= 1, ncent
-        write(ounit,'(A4, 2x, 3F12.6)') symbol(j), (delc(k, j, i),k=1,3) 
-      enddo    
+        write(ounit,'(A4, 2x, 3F12.6)') symbol(j), (delc(k, j, i),k=1,3)
+      enddo
     enddo
     write(ounit,*)
-    write(ounit,*) '-----------------------------------------------------------------------'      
+    write(ounit,*) '-----------------------------------------------------------------------'
   end subroutine fdf_read_forces_block
 
   subroutine fdf_read_csf_block(bfdf)
     use csfs, only: ccsf, ncsf, nstates
-    implicit none 
-    
+    implicit none
+
     type(block_fdf)            :: bfdf
     type(parsed_line), pointer :: pline
     integer                    :: i,j,k
@@ -952,8 +931,8 @@ subroutine parser
 !   %block csf
 !    ncsf 200     nstates 2
 !   # State 1           State 2           State N     ...
-!   csf(1,1,1)          csf(1,2,1)        csf(1,N,1)          
-!   csf(2,1,1)          csf(2,2,1)        csf(2,N,1)              
+!   csf(1,1,1)          csf(1,2,1)        csf(1,N,1)
+!   csf(2,1,1)          csf(2,2,1)        csf(2,N,1)
 !   .                   .                 .
 !   csf(ncsf,1,1)       csf(ncsf,2,1)     csf(ncsf,N,1)
 !   %endblock
@@ -961,40 +940,40 @@ subroutine parser
 !     First get the two numbers required for allocations
     ncsf    = fdf_bintegers(bfdf%mark%pline, 1) ! 1st integer in the line
     nstates = fdf_bintegers(bfdf%mark%pline, 2) ! 2nd integer in the line
-    if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))        
+    if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
 
     j = 1
-    do while((fdf_bline(bfdf, pline)))     
+    do while((fdf_bline(bfdf, pline)))
 
       if (pline%ntokens == nstates) then
         do k = 1, nstates
           ccsf(j,k,1) = fdf_bvalues(pline, k)
-        enddo 
+        enddo
         j = j + 1
-      endif 
-    enddo 
+      endif
+    enddo
 
-    write(ounit,*)         
+    write(ounit,*)
     write(ounit,*) " CSF coefficients from %block csf"
-    
-    write(ounit,'(10(1x, a9, i3, 1x))') ((" State: ", i), i =1, nstates)    
+
+    write(ounit,'(10(1x, a9, i3, 1x))') ((" State: ", i), i =1, nstates)
     do j = 1, ncsf
-      write(ounit,'(10(1x, f12.8, 1x))') (ccsf(j,i,1), i=1,nstates)   
-    enddo   
+      write(ounit,'(10(1x, f12.8, 1x))') (ccsf(j,i,1), i=1,nstates)
+    enddo
 
   end subroutine fdf_read_csf_block
 
   subroutine fdf_read_jastrow_block(bfdf)
 
-    implicit none 
-    
+    implicit none
+
     type(block_fdf)            :: bfdf
     type(parsed_line), pointer :: pline
     integer                    :: i,j,k, iwft
     integer                    :: mparmja, mparmjb, mparmjc, nterms4
 !   Format of the jastrow block
 !   %block csf
-!   jastrow_parameter 1 
+!   jastrow_parameter 1
 !    5  5  0           norda,nordb,nordc
 !     0.60000000   0.00000000     scalek,a21
 !     0.00000000   0.00000000   0.05946443  -0.68575835   0.42250502  -0.10845009 (a(iparmj),iparmj=1,nparma)
@@ -1007,23 +986,23 @@ subroutine parser
 
 
     j = 1
-    do while((fdf_bline(bfdf, pline)))     
+    do while((fdf_bline(bfdf, pline)))
 !     First get the first number required for allocations
       if ((pline%id(2) .eq. "i") .and. (pline%ntokens .eq. 2)) then  ! check if it is the only integer present in a line
         iwft  = fdf_bintegers(pline, 1) ! 1st integer in the line
       endif
 
-      if ((pline%id(2) .eq. "i") .and. (pline%id(4) .eq. "i") .and. (pline%id(6) .eq. "i")) then  
+      if ((pline%id(2) .eq. "i") .and. (pline%id(4) .eq. "i") .and. (pline%id(6) .eq. "i")) then
         norda = fdf_bintegers(pline, 1) ! 1st integer in the line
         nordb = fdf_bintegers(pline, 2) ! 2nd integer in the line
-        nordc = fdf_bintegers(pline, 3) ! 3rd integer in the line     
+        nordc = fdf_bintegers(pline, 3) ! 3rd integer in the line
 
         mparmja = 2 + max(0, norda - 1)
         mparmjb = 2 + max(0, nordb - 1)
         mparmjc = nterms4(nordc)
 
         print*, "mparmja ", mparmja
-        print*, "mparmjb ", mparmjb      
+        print*, "mparmjb ", mparmjb
         print*, "mparmjc ", mparmjc
       endif
 
@@ -1048,22 +1027,22 @@ subroutine parser
 
 
 
-    enddo 
+    enddo
   end subroutine fdf_read_jastrow_block
 end subroutine parser
 
 
 subroutine flaginit_new
 ! Flags used to identify the presence or absence of certain blocks/modules
-  
+
         use inputflags, only: iznuc, igeometry, ibasis_num, ilcao, iexponents
         use inputflags, only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
         use inputflags, only: ici_def, iforces, icsfs, icharge_efield
         use inputflags, only: imultideterminants, imodify_zmat, izmatrix_check
         use inputflags, only: ihessian_zmat
-  
+
         implicit real*8(a-h,o-z)
-  
+
         iznuc=0
         igeometry=0
         ibasis_num=0
@@ -1081,7 +1060,7 @@ subroutine flaginit_new
         izmatrix_check=0
         imodify_zmat=0
         ihessian_zmat=0
-  
+
         return
 end subroutine flaginit_new
 
@@ -1115,7 +1094,7 @@ end subroutine compute_mat_size_new
 
 
 subroutine flagcheck_new
-  
+
   use force_mod, only: MFORCE, MWF
   use vmc_mod, only: MELEC, MORB
   use numbas, only: numr
