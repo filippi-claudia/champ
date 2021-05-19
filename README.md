@@ -19,6 +19,8 @@
 
 [![Intel OneAPI build](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel_fdfparser.yml/badge.svg?branch=new-parser)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel_fdfparser.yml)
 
+[![Self-hosted Intel OneAPI build](https://github.com/neelravi/champ/actions/workflows/self_hosted_oneapi_new_parser.yml/badge.svg)](https://github.com/neelravi/champ/actions/workflows/self_hosted_oneapi_new_parser.yml)
+
 The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo 
 suite of programs for electronic structure calculations of atomic and molecular systems. 
 The code is a sister code of the homonymous program originally developed by Cyrus Umrigar 
