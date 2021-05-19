@@ -33,6 +33,7 @@ c routine to accumulate estimators for energy etc.
       common /age/ iage(MWALK),ioldest,ioldestmx
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
+      common /sigma_branch/ sigma
 
       character*12 mode
       common /contr3/ mode
@@ -181,6 +182,8 @@ c xerr = current error of x
       call pcm_reduce(wgsum(1))
       call mmpol_reduce(wgsum(1))
 
+      call max_sigma
+
       if(.not.wid) goto 17
 
       wcm2=wcm2+w2collect
@@ -257,13 +260,16 @@ c xerr = current error of x
           call mmpol_prt(iblk,wgcum,wgcm2)
         endif
 
+c        call max_sigma
+
 c write out header first time
 
         if (iblk.eq.1.and.ifr.eq.1)
      &  write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
      &  ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
-     &  ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t96,''(fgerr)'',
-     &  t114,''fgave_n'',t131,''(fgerr_n)'',t146,''npass'',t156,''wgsum'',t164,''ioldest'')')
+     &  ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t96,''(fgerr)''
+     &  ,t114,''fgave_n'',t131,''(fgerr_n)'',t146,''npass'',t156,''wgsum'',t164,''ioldest''
+     &  ,t177,''max_sigma'')')
 
 c write out current values of averages etc.
 
@@ -273,10 +279,10 @@ c write out current values of averages etc.
         itjfer=nint(100000*tjferr)
 
         if(ifr.eq.1) then
-          write(6,'(f10.5,4(f10.5,''('',i5,'')''),62x,3i10)')
+          write(6,'(f10.5,4(f10.5,''('',i5,'')''),62x,3i10,5x,f10.5)')
      &    egcollect(ifr)/wgcollect(ifr),
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,
-     &    nint(wgcollect(ifr)/nproc),ioldest
+     &    nint(wgcollect(ifr)/nproc),ioldest,sigma
          else
           write(6,'(f10.5,4(f10.5,''('',i5,'')''),f17.12,
      &    ''('',i12,'')'',f17.12,''('',i12,'')'',10x,i10)')
@@ -318,3 +324,68 @@ c zero out xsum variables for metrop
 
       return
       end
+
+c-----------------------------------------------------------------------
+      subroutine max_sigma
+
+      implicit real*8(a-h,o-z)
+      include 'vmc.h'
+      include 'dmc.h'
+      include 'force.h'
+      include 'mpif.h'
+
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /estsum/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
+     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
+     &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),
+     &ei1sum,ei2sum,ei3sum, pesum(MFORCE),tpbsum(MFORCE),tjfsum(MFORCE),r2sum,
+     &risum,tausum(MFORCE)
+      common /estcum/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
+     &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
+     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
+     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
+     &ricum,taucum(MFORCE)
+      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
+     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
+     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
+     &tjfcm2(MFORCE),r2cm2,ricm2
+      logical wid
+      common /mpiconf/ idtask,nproc,wid
+      common /sigma_branch/ sigma
+      dimension wg2collect(MFORCE), wg2sum(MFORCE), wgcm2temp(MFORCE)
+
+c statement function for error calculation
+      rn_eff(w,w2)=w**2/w2
+      error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
+      errg1(x,x2)=error(x,x2,wgcum1temp,wgcm21temp)
+      ifr=1
+
+      call mpi_reduce(egcum1(ifr),egcum1temp,1,mpi_double_precision
+     &,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(egcm21(ifr),egcm21temp,1,mpi_double_precision
+     &,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(wgcum1(ifr),wgcum1temp,1,mpi_double_precision
+     &,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(wgcm21(ifr),wgcm21temp,1,mpi_double_precision
+     &,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+      wg2sum(ifr)=wgsum(ifr)**2
+      call mpi_reduce(wg2sum,wg2collect,1
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+      if(wid) then
+        wgcm2temp(ifr)=wgcm2(ifr)+wg2collect(ifr)
+        egerr1=errg1(egcum1temp,egcm21temp)
+c determining maximum sigma for local energy
+        evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2temp(1))
+        rtevalg_eff1=dsqrt(evalg_eff-1)
+        sigma=egerr1*rtevalg_eff1
+        do 150 id=1,nproc-1
+  150     call mpi_isend(sigma,1,mpi_double_precision,id
+     &    ,1,MPI_COMM_WORLD,irequest,ierr)
+        else
+          call mpi_recv(sigma,1,mpi_double_precision,0
+     &  ,1,MPI_COMM_WORLD,istatus,ierr)
+      endif
+
+      end subroutine

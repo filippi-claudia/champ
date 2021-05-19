@@ -85,6 +85,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &,iwctype(MCENT),nctype,ncent
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
+      common /sigma_branch/ sigma
 
       dimension xstrech(3,MELEC)
       dimension xnew(3),vnew(3,MELEC),xtmp(3,MELEC)
@@ -95,7 +96,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
-      dimension iacc_elec(MELEC)
+      dimension iacc_elec(MELEC), p_elec(nelec)
 
       data ncall /0/
 
@@ -148,7 +149,11 @@ c Tau secondary in drift is one (first time around)
               do 4 k=1,3
                 xdrifted(k,i,iw,ifr)=xold(k,i,iw,ifr)+vold(k,i,iw,ifr)*vavvt
    4          continue
-            fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
+            if(icut_e.eq.0) then
+              fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
+            elseif(icut_e.eq.1) then
+              fratio(iw,ifr)=one/(one+(v2sumo*tau/nelec)**2)
+            endif
    5      continue
         ncall=ncall+1
       endif
@@ -360,6 +365,7 @@ c If we are using weights rather than accept/reject
             if(ipq.le.0) p=zero
             call distancese_restore(i)
           endif
+          p_elec(i)=p
           q=one-p
 
 c Calculate moments of r and save rejection probability for primary walk
@@ -373,6 +379,7 @@ c Calculate moments of r and save rejection probability for primary walk
 
 c Effective tau for branching
         tauprim=tau*dfus2ac/dfus2un
+        p_av=sum(p_elec)/nelec
 
         do 280 ifr=1,nforce
 
@@ -447,24 +454,31 @@ c Use more accurate formula for the drift and tau secondary in drift
             do 260 k=1,3
               xdriftedn(k,i)=xold(k,i,iw,ifr)+vold(k,i,iw,ifr)*vavvt
   260     continue
-          fration=dsqrt(vav2sumn/v2sumn)
-
           taunow=tauprim*drifdifr
 
           if(ipr.ge.1)write(6,'(''wt'',9f10.5)') wt(iw),etrial,eest
 
           if(icut_e.eq.0) then
-            ewto=eest-(eest-eold(iw,ifr))*fratio(iw,ifr)
-            ewtn=eest-(eest-enew)*fration
-           else
+            fration=dsqrt(vav2sumn/v2sumn)
+            ewto=etrial-eest+(eest-eold(iw,ifr))*fratio(iw,ifr)
+            ewtn=etrial-eest+(eest-enew)*fration
+          elseif(icut_e.eq.1) then
+            fration=one/(one+(v2sumn*tau/nelec)**2)
             deo=eest-eold(iw,ifr)
             den=eest-enew
-            ewto=eest-sign(1.d0,deo)*min(e_cutoff,dabs(deo))
-            ewtn=eest-sign(1.d0,den)*min(e_cutoff,dabs(den))
+            ecuto=min(dabs(deo),10.d0*sigma)*sign(1.d0,deo) 
+            ecutn=min(dabs(den),10.d0*sigma)*sign(1.d0,den)
+            ewto=etrial-eest+ecuto*fratio(iw,ifr)
+            ewtn=etrial-eest+ecutn*fration
+           elseif(icut_e.eq.2) then
+            deo=eest-eold(iw,ifr)
+            den=eest-enew
+            ewto=etrial-eest+sign(1.d0,deo)*min(e_cutoff,dabs(deo))
+            ewtn=etrial-eest+sign(1.d0,den)*min(e_cutoff,dabs(den))
           endif
 
           if(idmc.gt.0) then
-            expon=(etrial-half*(ewto+ewtn))*taunow
+            expon=((1-p_av*half)*ewto+p_av*half*ewtn)*taunow
             if(icut_br.le.0) then
               dwt=dexp(expon)
              else

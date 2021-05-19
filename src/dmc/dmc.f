@@ -61,6 +61,7 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+      common /sigma_branch/ sigma
 
 c common block variables:
 
@@ -197,6 +198,9 @@ c loops for dmc calculation
           call my_second(2,'equilb')
           call zerest
           call average(0)
+        endif
+        if(i.le.2*nblkeq+1) then
+          sigma=0.2d0*sqrt(nelec*1.d0)
         endif
         do 355 j=1,nstep
           ipass=ipass+1
