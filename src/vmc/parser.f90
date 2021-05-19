@@ -567,17 +567,24 @@ subroutine parser
 
 ! (10) optorb_mixvirt information of orbitals (either block or from a file)
 
-  if ( fdf_load_defined('optorb_mixvirt') ) then
-    call read_optorb_mixvirt_file(file_optorb_mixvirt)
-  elseif ( fdf_block('optorb_mixvirt', bfdf)) then
-  ! call fdf_read_optorb_mixvirt_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    !use optorb_mix, only: norbopt, norbvirt
-    norbopt   = 0
-    norbvirt  = 0
+  if(ioptorb .ne. 0) then   ! read next file only if orb optimization is requested
+    if ( fdf_load_defined('optorb_mixvirt') ) then
+      call read_optorb_mixvirt_file(file_optorb_mixvirt)
+    elseif ( fdf_block('optorb_mixvirt', bfdf)) then
+    ! call fdf_read_optorb_mixvirt_block(bfdf)
+      write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
+      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+      error stop
+    else
+      !use optorb_mix, only: norbopt, norbvirt
+      norbopt   = 0
+      norbvirt  = 0
+    endif
+
+    if(ioptorb_def.eq.0) then
+      write(6,'(''INPUT: definition of orbital variations missing'')')
+      call optorb_define
+    endif
   endif
 
 ! (11) Eigenvalues information of orbitals (either block or from a file)
@@ -717,30 +724,32 @@ subroutine parser
 
 ! (21) modify_zmatrix information (either block or from a file)
 
-  if ( fdf_load_defined('modify_zmatrix') ) then
-    call read_modify_zmatrix_file(file_modify_zmatrix)
-  elseif ( fdf_block('modify_zmatrix', bfdf)) then
-  ! call fdf_read_modify_zmatrix_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about modify_zmatrix provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    call modify_zmat_define
+  if(iforce_analy.gt.0) then
+    if ( fdf_load_defined('modify_zmatrix') ) then
+      call read_modify_zmatrix_file(file_modify_zmatrix)
+    elseif ( fdf_block('modify_zmatrix', bfdf)) then
+    ! call fdf_read_modify_zmatrix_block(bfdf)
+      write(errunit,'(a)') "Error:: No information about modify_zmatrix provided in the block."
+      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+      error stop
+    else
+      call modify_zmat_define
+    endif
   endif
 
 ! (22) hessian_zmatrix information (either block or from a file)
-
-  if ( fdf_load_defined('hessian_zmatrix') ) then
-    call read_hessian_zmatrix_file(file_hessian_zmatrix)
-  elseif ( fdf_block('hessian_zmatrix', bfdf)) then
-  ! call fdf_read_hessian_zmatrix_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about hessian_zmatrix provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    call hessian_zmat_define
+  if(iforce_analy.gt.0) then
+    if ( fdf_load_defined('hessian_zmatrix') ) then
+      call read_hessian_zmatrix_file(file_hessian_zmatrix)
+    elseif ( fdf_block('hessian_zmatrix', bfdf)) then
+    ! call fdf_read_hessian_zmatrix_block(bfdf)
+      write(errunit,'(a)') "Error:: No information about hessian_zmatrix provided in the block."
+      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+      error stop
+    else
+      call hessian_zmat_define
+    endif
   endif
-
 
 ! (23) zmatrix_connection information (either block or from a file)
 
@@ -787,8 +796,18 @@ subroutine parser
   call allocate_vmc()
   call allocate_dmc()
 
-
   call fdf_shutdown()
+
+  ! The following portion can be shifted to another subroutine.
+  ! It does the processing of the input read so far and initializes some
+  ! arrays if something is missing.
+
+  if(ioptci.ne.0 .and. ici_def.eq.0) then
+    write(6,'(''INPUT: definition of OPTCI operators missing'')')
+    call optci_define
+  endif
+
+
 !----------------------------------------------------------------------------END
   contains
 
@@ -1091,130 +1110,3 @@ subroutine compute_mat_size_new()
   ! call set_sr_size
 
 end subroutine compute_mat_size_new
-
-
-subroutine flagcheck_new
-
-  use force_mod, only: MFORCE, MWF
-  use vmc_mod, only: MELEC, MORB
-  use numbas, only: numr
-  use optorb_mix, only: norbopt, norbvirt
-  use efield, only: iefield
-  use inputflags, only: iznuc, igeometry, ibasis_num, ilcao, iexponents
-  use inputflags, only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
-  use inputflags, only: ici_def, iforces, icsfs, igradients, icharge_efield
-  use inputflags, only: imultideterminants, ioptorb_mixvirt, imodify_zmat, izmatrix_check
-  use inputflags, only: ihessian_zmat
-  use mstates_ctrl, only: iguiding
-  ! might not be needed
-  use mstates_mod, only: MSTATES
-  use atom, only: znuc
-  use contrl_per, only: iperiodic, ibasis
-  use force_analy, only: iforce_analy, iuse_zmat
-  use forcepar, only: nforce
-  use optwf_contrl, only: ioptci, ioptorb
-  use optwf_contrl, only: no_active
-  use wfsec, only: nwftype
-  use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-  use elec, only: ndn, nup
-  use const, only: nelec
-  use coefs, only: norb, next_max
-
-  implicit real*8(a-h,o-z)
-
-  ! call p2gti('electrons:nelec',nelec,1)
-  ! call p2gti('electrons:nup',nup,1)
-  ! call p2gtid('general:nwftype',nwftype,1,1)
-  ! call p2gtid('general:nforce',nforce,1,1)
-  ! ! if(nforce.gt.MFORCE) call fatal_error('INPUT: nforce > MFORCE')
-  ! call p2gtid('general:nwftype',nwftype,1,1)
-  ! !if(nwftype.gt.MWF) call fatal_error('INPUT: nwftype gt MWF')
-  ! call p2gtid('general:iperiodic',iperiodic,0,1)
-  ! call p2gtid('general:ibasis',ibasis,1,1)
-
-  ! call p2gtid('optwf:ioptorb',ioptorb,0,1)
-  ! call p2gtid('optwf:ioptci',ioptci,0,1)
-  ! call p2gtid('optwf:no_active',no_active,0,1)
-
-  ! call p2gtid('mstates:iguiding',iguiding,0,1)
-  ! call p2gtid('efield:iefield',iefield,0,1)
-  ! call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
-  ! call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
-  ! ! next_max=norb-ndetorb
-  ! call p2gtid('optwf:nextorb',nadorb, next_max,1)
-  ! ! write(6, *) 'norb', norb
-  ! ! write(6, *) 'nadorb', nadorb
-  ! ! write(6, *) 'ndet_orb', ndetorb
-  ! ! write(6, *) 'next_max', next_max
-  ! ! if(nadorb.gt.next_max) nadorb=next_max
-  ! ! if (nadorb.gt.norb) call fatal_error('nadorb > norb')
-
-
-
-  ! if(iznuc.eq.0) call fatal_error('INPUT: block znuc missing')
-  ! if(igeometry.eq.0) call fatal_error('INPUT: block geometry missing')
-  ! if(ibasis.eq.1.and.numr.gt.0.and.ibasis_num.eq.0) call fatal_error('INPUT: block basis missing')
-  ! if(iperiodic.eq.0.and.ilcao.eq.0) call fatal_error('INPUT: block lcao missing')
-  ! if(iperiodic.gt.0.and.ilattice.eq.0) call fatal_error('INPUT: lattice vectors missing')
-  ! if(ijastrow_parameter.eq.0) call fatal_error('INPUT: block jastrow_parameter missing')
-  ! if(iefield.gt.0.and.icharge_efield.eq.0) call fatal_error('INPUT: block efield missing')
-
-  write(6,'(''========================================'')')
-  ! if(iexponents.eq.0) then
-  !   write(6,'(''INPUT: block exponents missing: all exponents set to 1'')')
-  !   call inputzex
-  ! endif
-  ! if(icsfs.eq.0) then
-  !   write(6,'(''INPUT: block csf missing: nstates set to 1'')')
-  !   call inputcsf
-  ! endif
-  ! if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
-  !   write(6,'(''INPUT: block forces_displace or gradients_* missing: geometries set equal to primary'')')
-  !   call inputforces
-  ! endif
-  if(iforce_analy.gt.0) then
-    if(iuse_zmat.gt.0.and.izmatrix_check.eq.0) call fatal_error('INPUT: block connectionzmatrix missing')
-    if(imodify_zmat.eq.0) call modify_zmat_define
-    if(ihessian_zmat.eq.0) call hessian_zmat_define
-  endif
-  ! if(imultideterminants.eq.0) then
-  !   write(6,'(''INPUT: multideterminant bloc MISSING'')')
-  !   call multideterminants_define(0,0)
-  ! endif
-  if(ioptorb.ne.0) then
-    if(ioptorb_mixvirt.eq.0) then
-      norbopt=0
-      norbvirt=0
-    endif
-    if(ioptorb_def.eq.0) then
-      write(6,'(''INPUT: definition of orbital variations missing'')')
-      call optorb_define
-    endif
-  endif
-  if(ioptci.ne.0.and.ici_def.eq.0) then
-    write(6,'(''INPUT: definition of OPTCI operators missing'')')
-    call optci_define
-  endif
-
-  ! if(nwftype.gt.1) then
-    ! if(ijastrow_parameter.ne.nwftype) then
-    !   write(6,'(''INPUT: block jastrow_parameter missing for one wave function'')')
-    !   write(6,'(''INPUT: jastrow_parameter blocks equal for all wave functions'')')
-    !   call inputjastrow(nwftype)
-    ! endif
-    ! if(iperiodic.eq.0.and.ilcao.ne.nwftype) then
-    !   write(6,'(''Warning INPUT: block lcao missing for one wave function'')')
-    !   write(6,'(''Warning INPUT: lcao blocks equal for all wave functions'')')
-    !   call inputlcao(nwftype)
-    ! endif
-    ! if(ideterminants.ne.nwftype) then
-    !   write(6,'(''Warning INPUT: block determinants missing for one wave function'')')
-    !   write(6,'(''Warning INPUT: determinants blocks equal for all wave functions'')')
-    !   call inputdet(nwftype)
-    ! endif
-    ! write(6,*)
-  ! endif
-
-  write(6,'(''========================================'')')
-  return
-  end subroutine flagcheck_new

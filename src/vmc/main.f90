@@ -39,12 +39,12 @@ program main
     !> Initiaize output.log file.
     !call init_logfile()
     call initialize()
-    
+
 
     ! read the input
     if ( wid ) then
-        call parser()    
-    endif 
+        call parser()
+    endif
 
     !> Initiaize log check.XXX files. It needs ipr flag value.
     call init_procfile()
