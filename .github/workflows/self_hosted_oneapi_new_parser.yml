@@ -1,0 +1,19 @@
+name: Self-hosted Intel OneAPI build
+
+on:
+  push:
+    branches: [new-parser, merging-parser, refac-problematic]
+  pull_request:
+    branches: [new-parser, merging-parser, refac-problematic]
+jobs:
+  build_intel_champ_fparser:
+    runs-on: self-hosted
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - uses: actions/checkout@v2
+    - name: Compile
+      run: |
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+        cmake --build build -- -j1
