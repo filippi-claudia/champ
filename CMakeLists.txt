@@ -18,7 +18,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_VMC_DIR ${CMAKE_SOURCE_DIR}/src/vmc)
 set(CMAKE_DMC_DIR ${CMAKE_SOURCE_DIR}/src/dmc)
-#set(CMAKE_INPUT_DIR ${CMAKE_SOURCE_DIR}/src/input)
 set(CMAKE_PARSER_DIR ${CMAKE_SOURCE_DIR}/src/parser)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -28,7 +27,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 # documentation
 option(BUILD_DOC "build_doc" off)
 
-# MPI 
+# MPI
 option(ENABLE_MPI "enable_mpi" on)
 
 # QMMM option
@@ -85,17 +84,17 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   if (MKL_FOUND)
     #list(APPEND Fortran_FLAGS "-fdefault-integer-8")
     list(APPEND Fortran_FLAGS "-m64")
-  endif()  
+  endif()
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
-  
+
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-	list(APPEND Fortran_FLAGS "-g" "-init=arrays" "-traceback" "-O0" "-fpp" "-mcmodel=large" "-shared-intel" "-qopt-zmm-usage=high" "-xCOMMON-AVX512" "-DGIT_BRANCH='${GIT_BRANCH}'" "-DGIT_HASH='${GIT_HASH}'" 
+	list(APPEND Fortran_FLAGS "-g" "-debug" "-init=arrays" "-traceback" "-O0" "-fpp" "-mcmodel=large" "-shared-intel" "-qopt-zmm-usage=high" "-xCOMMON-AVX512" "-DGIT_BRANCH='${GIT_BRANCH}'" "-DGIT_HASH='${GIT_HASH}'"
     "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
   #    list(APPEND Fortran_FLAGS "-i8")
-  #endif()  
-  
+  #endif()
+
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
 endif()

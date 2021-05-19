@@ -1,7 +1,7 @@
       subroutine vmc
 c Written by Cyrus Umrigar and Claudia Filippi
 
-c Program to do variational Monte Carlo calculations 
+c Program to do variational Monte Carlo calculations
 c on atoms and molecules.
 c Various types of Metropolis moves can be done, including a few
 c versions of directed Metropolis in spherical polar coordinates.
@@ -78,6 +78,8 @@ c        ndn    = number of down spin electrons
 c   /jaspar/
 c        Jastrow function is dexp(cjas1*rij/(1+cjas2*rij)) if ijas=1
 
+      if (.not. allocated(iwftype)) allocate (iwftype(nforce))
+
       if(nforce.gt.1) then
 c force parameters
         call setup_force
@@ -88,7 +90,6 @@ c force parameters
 
 c initialize the walker configuration
       call mc_configs_start
-      
       if (nconf_new.eq.0) then
         ngfmc=2*nstep*nblk
        else
@@ -96,8 +97,9 @@ c initialize the walker configuration
       endif
 
 c zero out estimators and averages
+      print*, "debug: before entering zerest"
       if (irstar.ne.1) call zerest
-
+      print*, "debug: after exiting zerest"
 c check if restart flag is on. If so then read input from
 c dumped data to restart
 
@@ -111,8 +113,9 @@ c dumped data to restart
       endif
 
 c get initial value of cpu time
-      call my_second(0,'begin ')
 
+      call my_second(0,'begin ')
+      print*, "debug: after my_second"
 c if there are equilibrium steps to take, do them here
 c skip equilibrium steps if restart run
 c imetro = 6 spherical-polar with slater T
@@ -120,11 +123,11 @@ c imetro = 6 spherical-polar with slater T
         l=0
         do i=1,nblkeq
           do j=1,nstep
-            l=l+1            
+            l=l+1
             if (nloc.gt.0) call rotqua
             call metrop6(l,0)
           enddo
-          
+
          call acuest
         enddo
 
@@ -153,14 +156,14 @@ c write out configuration for optimization/dmc/gfmc here
      &    int(sign(1.d0,psido(1))),log(dabs(psido(1)))+psijo,eold(1,1)
         endif
   430   continue
-      
+
   440 call acuest
 
       call my_second(2,'all   ')
 
 c write out last configuration to mc_configs_start
 c call fin_reduce to write out additional files for efpci, embedding etc.
-c collected over all the run and to reduce cum1 in mpi version 
+c collected over all the run and to reduce cum1 in mpi version
       call mc_configs_write
 
 c print out final results

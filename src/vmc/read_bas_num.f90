@@ -20,7 +20,7 @@
       use pseudo, only: nloc
       use general, only: filename, filenames_bas_num, wforce
 
-      use atom, 			        only: atomtyp   
+      use atom, 			        only: atomtyp
       use general, 			      only: pooldir, bas_id
       use contrl_file,        only: ounit, errunit
       use precision_kinds,    only: dp
@@ -37,7 +37,7 @@
       real(dp), dimension(ncoef)          ::  y
       real(dp), dimension(ncoef*ncoef)    ::  dmatr
       real(dp), dimension(nbasis)         ::  l
-      integer, dimension(ncoef)           :: ipiv 
+      integer, dimension(ncoef)           :: ipiv
       integer, dimension(nctype)          :: icusp
 
 ! c nrbas = number of numerical orbitals for each center
@@ -63,12 +63,12 @@
           error stop " Numerical Basis file "// filename // " does not exist."
         endif
 
-        write(ounit,*) '-----------------------------------------------------------------------'      
+        write(ounit,*) '-----------------------------------------------------------------------'
         write(ounit,'(4a)')  " Reading numerical basis for ", trim(atomtyp(ic))," from the file :: ", trim(filename)
-        write(ounit,*) '-----------------------------------------------------------------------'      
+        write(ounit,*) '-----------------------------------------------------------------------'
 
         read(iunit,*, iostat=iostat) nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
-        write(ounit,*) "reading the content ", nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)        
+        write(ounit,*) "reading the content ", nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
         write(ounit,*) "(Reading basis grid file = [ ",  trim(filename), " ] )"
         write(ounit,'(''center type '',i4,'' nrbas,igrid,nr,arg,r0 ='',2i4,i5,2f10.5)') &
         ic,nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic)
@@ -78,8 +78,10 @@
         if(igrid(ic).ne.1.and.igrid(ic).ne.2.and.igrid(ic).ne.3) &
         call fatal_error('READ_BAS_NUM: grid not implemented')
 
-!       Debug:: remove the comment BUG
+!        Known bug::  DEBUG make sure that the following lines are read only for all-ele calcs
 !        if(nloc.eq.0) read(iunit,*,iostat=iostat) (l(irb),irb=1,nrbas(ic))
+!        if(nloc.eq.0) write(ounit,*) "nloc = 0 :: ", (l(irb),irb=1,nrbas(ic))
+
         if (iostat .ne. 0) then
           write(errunit,'(a)') "Error:: Problem in reading the numerical basis file"
           write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
@@ -197,14 +199,14 @@
 subroutine readps_gauss
   ! read 'Quantum-chemist' gauss pseudopotentials
   ! file format: one text file with basename gauss_ecp.dat
-  !              for each atom type 
+  !              for each atom type
   ! first line : arbitrary label (written to log-file)
   ! second line: number of projectors + 1 (i.e. total number of components)
   ! remaining lines: components in the order (local,L=0,L=1 ...)
   !     repeated for each component
-  !        number terms 
-  !        repeated for each term in this component 
-  !          coefficient power exponent 
+  !        number terms
+  !        repeated for each term in this component
+  !          coefficient power exponent
   !
   ! NOTE: as usual power n means r**(n-2)
   !
@@ -215,7 +217,7 @@ subroutine readps_gauss
   use pseudo, only: lpot
   use qua, only: nquad, wq, xq0, yq0, zq0
   use general, only: pooldir, filename, pp_id, filenames_ps_gauss
-  use contrl_file,        only: ounit, errunit      
+  use contrl_file,        only: ounit, errunit
 
   implicit real*8(a-h,o-z)
 
@@ -223,14 +225,14 @@ subroutine readps_gauss
   logical         :: exist, skip = .true.
 
   character*80 label
-  
-  !CVARDOC String to identify pseudopotential. If set, fancy names for 
-  !CVARDOC the pseudopotential files will be used.  
-  
+
+  !CVARDOC String to identify pseudopotential. If set, fancy names for
+  !CVARDOC the pseudopotential files will be used.
+
   do ic=1,nctype
     if (nctype.gt.100) call fatal_error('READPS_GAUSS: nctype>100')
     filename =  trim(pooldir) // trim(pp_id) // ".gauss_ecp.dat." // atomtyp(ic)
-   
+
     inquire(file=filename, exist=exist)
     if (exist) then
       open (newunit=iunit,file=filename, iostat=iostat, action='read', status='old')
@@ -240,11 +242,11 @@ subroutine readps_gauss
     endif
 
   !   External file reading
-    write(ounit,*) '-----------------------------------------------------------------------'      
+    write(ounit,*) '-----------------------------------------------------------------------'
     write(ounit,'(4a)')  " Reading ECP pseudopotential for ", trim(atomtyp(ic))," from the file :: ", trim(filename)
-    write(ounit,*) '-----------------------------------------------------------------------'      
+    write(ounit,*) '-----------------------------------------------------------------------'
 
-! label 
+! label
 
     read(iunit,'(a80)',iostat=iostat) label
     if (iostat .ne. 0) then
@@ -268,7 +270,7 @@ subroutine readps_gauss
 
 ! read terms of local part and all non-local parts
 ! local part first in file, but stored at index lpot
-! non-local l=0 at index 1 etc, up to lpot-1 
+! non-local l=0 at index 1 etc, up to lpot-1
 
   call allocate_gauss_ecp()
 
@@ -303,16 +305,12 @@ subroutine readps_gauss
   close(iunit)
   enddo
 
-!  call allocate_qua()   ! Debug:: Ravindra. This line was added on purpose
-
-
-
   if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
   if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
   if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
-  if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))	 	 	  
+  if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))
 
   call gesqua(nquad,xq0,yq0,zq0,wq)
 
   return
-end subroutine readps_gauss      
+end subroutine readps_gauss

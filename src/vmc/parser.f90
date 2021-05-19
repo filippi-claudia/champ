@@ -474,7 +474,7 @@ subroutine parser
 
 ! (3) CSF [#####]
 
-  if ( fdf_load_defined('determinants') ) then
+  if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
     call read_csf_file(file_determinants)
   elseif (fdf_block('csf', bfdf)) then
     call fdf_read_csf_block(bfdf)
@@ -486,7 +486,7 @@ subroutine parser
 
 ! (4) CSFMAP [#####]
 
-  if ( fdf_load_defined('determinants') ) then
+  if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
     call read_csfmap_file(file_determinants)
   elseif (fdf_block('determinants', bfdf)) then
   ! call fdf_read_csfmap_block(bfdf)
@@ -646,10 +646,11 @@ subroutine parser
 
   if ( fdf_defined('pseudopot') ) then
     call readps_gauss()
+  elseif (nloc .eq. 0) then
+    write(ounit,'(a)') "Warning:: Is this an all electron calculation?"
   else
     write(errunit,'(a)') "Error:: No information about pseudo provided in the input."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
   endif
 
 ! (16) basis information (either block or from a file)
@@ -661,8 +662,6 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif
-
-
 
 ! (17) multideterminants information (either block or from a file)
 
@@ -784,13 +783,10 @@ subroutine parser
 ! Done reading all the files
 
 
-
 ! %module optwf
   if (fdf_defined("optwf")) then
     nwftype = 3; MFORCE = 3
   endif
-
-
 
   call compute_mat_size_new()
   call allocate_vmc()
@@ -806,7 +802,6 @@ subroutine parser
     write(6,'(''INPUT: definition of OPTCI operators missing'')')
     call optci_define
   endif
-
 
 !----------------------------------------------------------------------------END
   contains

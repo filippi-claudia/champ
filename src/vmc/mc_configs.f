@@ -108,7 +108,6 @@ c then set up so no configurations are written.
         rewind 7
       endif
       call pcm_qvol(nproc)
-
       return
 
 c-----------------------------------------------------------------------

@@ -50,7 +50,7 @@ program main
     call init_procfile()
 
     ! ! run the the optimization
-    ! call optwf()
+    call optwf()
 
     ! call close_files()
     call mpi_finalize(ierr)
