@@ -907,7 +907,7 @@ subroutine parser
     if(nciterm.gt.MXCITERM) call fatal_error('INPUT: nciterm gt MXCITERM')
 
     ! Multiple states/efficiency/guiding flags
-    stop "possible bug in the following part"
+
     ! Use guiding wave function constructed from mstates
     if(iguiding.gt.0) then
       write(6,'(''Guiding function: square root of sum of squares'')')
@@ -1019,6 +1019,32 @@ subroutine parser
   endif
 
 
+! (13) Forces information (either block or from a file) [#####]
+
+  if (fdf_load_defined('forces') ) then
+    call read_forces_file(file_forces)
+  elseif (fdf_block('forces', bfdf)) then
+    call fdf_read_forces_block(bfdf)
+  else
+    call inputforces()
+  endif
+
+! (14) Dmatrix information (either block or from a file)
+
+  if ( fdf_load_defined('dmatrix') ) then
+    call read_dmatrix_file(file_dmatrix)
+  elseif (fdf_block('dmatrix', bfdf)) then
+  ! call fdf_read_dmatrix_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about dmatrix provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    write(errunit,'(a)') "Error:: No information about dmatrix provided in the input."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!    error stop
+  endif
+
+
 
 
 
@@ -1048,32 +1074,6 @@ subroutine parser
       write(6,'(''INPUT: definition of orbital variations missing'')')
       call optorb_define
     endif
-  endif
-
-
-! (13) Forces information (either block or from a file) [#####]
-
-  if (fdf_load_defined('forces') ) then
-    call read_forces_file(file_forces)
-  elseif (fdf_block('forces', bfdf)) then
-    call fdf_read_forces_block(bfdf)
-  else
-    call inputforces()
-  endif
-
-! (14) Dmatrix information (either block or from a file)
-
-  if ( fdf_load_defined('dmatrix') ) then
-    call read_dmatrix_file(file_dmatrix)
-  elseif (fdf_block('dmatrix', bfdf)) then
-  ! call fdf_read_dmatrix_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about dmatrix provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    write(errunit,'(a)') "Error:: No information about dmatrix provided in the input."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop
   endif
 
 
@@ -1185,7 +1185,6 @@ subroutine parser
 
 ! Done reading all the files
 
-
 ! %module optwf
   if (fdf_defined("optwf")) then
     nwftype = 3; MFORCE = 3
@@ -1200,11 +1199,6 @@ subroutine parser
   ! The following portion can be shifted to another subroutine.
   ! It does the processing of the input read so far and initializes some
   ! arrays if something is missing.
-
-  if(ioptci.ne.0 .and. ici_def.eq.0) then
-    write(6,'(''INPUT: definition of OPTCI operators missing'')')
-    call optci_define
-  endif
 
 !----------------------------------------------------------------------------END
   contains

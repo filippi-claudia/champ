@@ -1669,7 +1669,7 @@ subroutine get_weights_new(field, weights, iweight, nweight)
     wsum = 0.d0
     nweight = 0
 
-    write(ounit, *) field, field(1:index(field, ' '))
+    write(ounit, *) field, adjustl(field), len(field), len(adjustl(field))
     do i = 1, nstates
         wdef = 0.d0
         ! BUG:: Ravindra. Replce following two lines with appropriate ones
