@@ -1,7 +1,6 @@
 
 subroutine parser
   use fdf     ! modified libfdf
-  use prec    ! modified libfdf
 
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
@@ -135,6 +134,7 @@ subroutine parser
   use inputflags, 		only: ihessian_zmat
   use basis,          only: zex
 
+  use precision_kinds,    only: dp
 ! Note the following modules are new additions
 
 
@@ -186,6 +186,10 @@ subroutine parser
   type(atom_t)               :: atoms
   character(len=2), allocatable   :: unique(:)
 
+  real(dp), parameter :: zero = 0.d0
+  real(dp), parameter :: one  = 1.d0
+  real(dp), parameter :: two  = 2.d0
+
 
 ! Initialize # get the filenames from the commandline arguments
   call fdf_init(file_input, 'parser.log')
@@ -206,7 +210,7 @@ subroutine parser
   nwftype     = fdf_get('nwftype', 1)
   iperiodic   = fdf_get('iperiodic', 0)
   ibasis      = fdf_get('ibasis', 1)
-!  cseed       = fdf_get('seed', 1)
+  cseed       = fdf_string('seed', "1837465927472523")
   ipr         = fdf_get('ipr', -1)
   eunit       = fdf_get('unit', 'Hartrees')
   hb          = fdf_get('mass', 0.5d0)
@@ -295,7 +299,6 @@ subroutine parser
   dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)
   nfprod      = fdf_get('nfprod', 1)
   tau         = fdf_get('tau', 1.)
-  rttau=dsqrt(tau)
   etrial      = fdf_get('etrial', 1.)
   nfprod      = fdf_get('nfprod', 200)
   itausec     = fdf_get('itausec', 1)
@@ -445,24 +448,124 @@ subroutine parser
 
   call header_printing()
 
-! printing some information about calculation setup
+! to be moved in a separate subroutine
+! printing some information about calculation setup.
+
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+  write(ounit,'(a)') " General input parameters :: "
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+
 
   select case (mode)
   case ('vmc')
-    write(ounit,'(a,a)') "Calculation mode :: Variational MC for ", title
+    write(ounit,'(a,a)') " Calculation mode :: Variational MC for ", title
   case ('vmc_one_mpi')
-    write(ounit,'(a,a)') "Calculation mode :: Variational MC one-electron move mpi for ",  title
+    write(ounit,'(a,a)') " Calculation mode :: Variational MC one-electron move mpi for ",  title
   case ('dmc')
-    write(ounit,'(a,a)') "Calculation mode :: Diffusion MC for ",  title
+    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC for ",  title
   case ('dmc_one_mpi1')
-    write(ounit,'(a,a)') "Calculation mode :: Diffusion MC 1-electron move, mpi no global pop for ", title
+    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC 1-electron move, mpi no global pop for ", title
   case ('dmc_one_mpi2')
-    write(ounit,'(a,a)') "Calculation mode :: Diffusion MC 1-electron move, mpi global pop comm for ",  title
+    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC 1-electron move, mpi global pop comm for ",  title
   end select
+
+  write(ounit,*)
+  read(cseed,'(4i4)') irn
+  write(ounit,'(a,t40,4i4)') " Random number seeds", irn
+  call setrn(irn)
+
+  write(ounit,*)
+  write(ounit,'(a,t40,a)') " All energies are in units of ", eunit
+  write(ounit,'(a,t36,f12.6)') " hbar**2/(2.*m) = ",  hb
+  write(ounit, int_format) " Number of geometries = ", nforce
+  write(ounit, int_format) " Number of wave functions = ", nwftype
+  if(nwftype.gt.nforce) call fatal_error('INPUT: nwftype gt nforce')
+  write(ounit,*)
+
+  write(ounit,*)
+  write(ounit,'(a)') " System Information :: Electrons : "
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+
+
+  write(ounit,*)
+  write(ounit,int_format) " Number of total electrons = ", nelec
+  write(ounit,int_format) " Number of alpha electrons = ", nup
+  write(ounit,int_format) " Number of beta  electrons = ", ndn
+  write(ounit,*)
+
+  if( (mode == 'vmc') .or. (mode == 'vmc_one_mpi') ) then
+    write(ounit,*)
+    write(ounit,'(a)') " Calculation Parameters :: VMC : "
+    write(ounit,*) '____________________________________________________________________'
+    write(ounit,*)
+
+    write(ounit,int_format)  " Version of Metropolis = ", imetro
+
+    if (imetro.eq.1) then
+      deltai= one /delta
+      write(ounit,'(a,t36,f12.6)') " Step size = ",  delta
+    else
+      if(deltar .lt. one) then
+        write(ounit,'(a)') '**Warning value of deltar reset to 2.'
+        deltar = two
+      endif
+      if(deltat .lt. zero .or. deltat .gt. two) then
+        write(ounit,'(a)') '**Warning value of deltat reset to 2.'
+        deltat = two
+      endif
+      write(ounit,'(a,t36,f12.6)')  " Radial step multiplier = ", deltar
+      write(ounit,'(a,t36,f12.6)')  " cos(theta) step size = ",   deltat
+    endif
+
+    ! Truncate fbias so that fbias and the sampled quantity are never negative
+    fbias=dmin1(two,dmax1(zero,fbias))
+    write(ounit,'(a,t36,f12.6)')  " Force bias = ",   fbias
+  endif
+
+  if( mode == 'dmc' ) then
+    write(ounit,*)
+    write(ounit,'(a)') " Calculation Parameters :: DMC : "
+    write(ounit,*) '____________________________________________________________________'
+    write(ounit,*)
+
+    rttau=dsqrt(tau)
+
+    write(ounit,int_format) " Version of DMC = ",  idmc
+    write(ounit,int_format) " nfprod = ",  nfprod
+    write(ounit,'(a,t36,f12.6)') " tau = ", tau
+
+    write(ounit,int_format) " ipq = ", ipq
+    write(ounit,int_format) " itau_eff = ", itau_eff
+    write(ounit,int_format) " iacc_rej = ", iacc_rej
+    write(ounit,int_format) " icross = ", icross
+    write(ounit,int_format) " icuspg = ", icuspg
+    write(ounit,int_format) " idiv_v = ", idiv_v
+    write(ounit,int_format) " icut_br = ", icut_br
+    write(ounit,int_format) " icut_e = ", icut_e
+    write(ounit,int_format) " ipq = ", ipq
+    write(ounit,'(a,t36,f12.6)') " etrial ", etrial
+    write(ounit,int_format)  " casula ",  icasula
+    write(ounit,int_format) " node_cutoff = ", dmc_node_cutoff
+
+    if (dmc_node_cutoff.gt.0) write(ounit,'(a,t36,f12.6)') " enode cutoff = ", dmc_eps_node_cutoff
+
+    if (idmc.ne.2) call fatal_error('INPUT: only idmc=2 supported')
+
+    if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
+  else
+    icasula=0
+  endif
+
+  ! Inizialized to zero for call to hpsi in vmc or dmc with no casula or/and in acuest
+  i_vpsp=0
+
 
 ! Processing of data read from the parsed files or setting them with defaults
 
-! (1) Molecular geometry file exclusively in .xyz format [#####]
+! Molecular geometry file exclusively in .xyz format [#####]
 
   if ( fdf_load_defined('molecule') ) then
     call read_molecule_file(file_molecule)

@@ -80,8 +80,6 @@ c        ndn    = number of down spin electrons
 c   /jaspar/
 c        Jastrow function is dexp(cjas1*rij/(1+cjas2*rij)) if ijas=1
 
-      if (.not. allocated(iwftype)) allocate (iwftype(nforce))
-
       if(nforce.gt.1) then
 c force parameters
         call setup_force
@@ -99,11 +97,15 @@ c initialize the walker configuration
       endif
 
 c zero out estimators and averages
-!      print*, "debug: before entering zerest"
-!      stop "stopping before the buggy line of segmentation fault"
-!      if (irstar.ne.1) call zerest
-      if (vmc_irstar.ne.1) call zeroout_estimators
+      print*, "debug: before entering zerest printing vmc parameters"
+      print*, "vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk"
+      print*, vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
+      print*, "vmc_nblkeq, vmc_nconf_new, vmc_nstep"
+      print*, vmc_nblkeq, vmc_nconf_new, vmc_nstep
 
+      if (vmc_irstar.ne.1) call zerest
+
+      stop "after calling zerest"
 c check if restart flag is on. If so then read input from
 c dumped data to restart
 
@@ -138,11 +140,9 @@ c imetro = 6 spherical-polar with slater T
 c       Equilibration steps done. Zero out estimators again.
         call my_second(2,'equilb')
         print*, "debug: timings after"
-        ! DEBUG: Ravindra uncomment zerest and comment zeroout_estimators
-        !call zerest
-        call zeroout_estimators
+        call zerest
       endif
-
+      stop "after going through metrop6 and zerest"
 c now do averaging steps
 
       l=0
