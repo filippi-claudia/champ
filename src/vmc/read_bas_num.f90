@@ -257,9 +257,8 @@ subroutine readps_gauss
 
 
 ! max projector
-    if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
-
-    read(iunit,'(i3)',iostat=iostat) lpot(ic)
+    if (.not. allocated(lpot)) allocate (lpot(nctype))
+    read(iunit,*,iostat=iostat) lpot(ic)
     if (iostat .ne. 0) then
       write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: lpot"
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__

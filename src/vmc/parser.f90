@@ -484,6 +484,24 @@ subroutine parser
   if(nwftype.gt.nforce) call fatal_error('INPUT: nwftype gt nforce')
   write(ounit,*)
 
+! Molecular geometry file in .xyz format [#####]
+  write(ounit,*)
+  write(ounit,'(a)') " System Information :: Geometry : "
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+
+  write(ounit,*)
+  if ( fdf_load_defined('molecule') ) then
+    call read_molecule_file(file_molecule)
+  elseif (fdf_block('molecule', bfdf)) then
+    call fdf_read_molecule_block(bfdf)
+  else
+    write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  endif
+
+  ! Electrons
   write(ounit,*)
   write(ounit,'(a)') " System Information :: Electrons : "
   write(ounit,*) '____________________________________________________________________'
@@ -495,6 +513,46 @@ subroutine parser
   write(ounit,int_format) " Number of alpha electrons = ", nup
   write(ounit,int_format) " Number of beta  electrons = ", ndn
   write(ounit,*)
+
+
+
+  ! Pseudopotential section:
+  ! Pseudopotential information (either block or from a file)
+
+  write(ounit,*)
+  write(ounit,'(a)') " Calculation Parameters :: Pseudopotential / All Electron : "
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+
+  if ( fdf_defined('pseudopot') ) then
+    call readps_gauss()
+    ! nquad :: number of quadrature points
+    write(ounit,*)
+    write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
+  elseif (nloc .eq. 0) then
+    write(ounit,'(a)') "Warning:: Is this an all electron calculation?"
+  else
+    write(errunit,'(a)') "Error:: No information about pseudo provided in the input."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+  endif
+
+
+! Basis num information (either block or from a file)
+
+  if ( fdf_load_defined('basis_num_info') ) then
+    call read_basis_num_info_file(file_basis_num_info)
+  elseif (.not. fdf_block('basis_num_info', bfdf)) then
+  ! call fdf_read_eigenvalues_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  endif
+
+
 
   if( mode(1:3) == 'vmc') then
     write(ounit,*)
@@ -698,22 +756,107 @@ subroutine parser
     call efield_compute_extint
   endif
 
+  !  PCM polarization charges
+  !  ipcm=1 computes only the cavity (no qmc calculations)
+  !  ipcm=2 runs qmc and creates/updates polarization charges
+  !  ipcm=3 runs qmc with fixed polarization charges
+
+  ! isurf=0
+  ! ncopcm=0
+  ! nvopcm=0
+  ! ichpol=0
+  ! if(ipcm.ne.0) then
+  !   if(ipcm.eq.2) ichpol=1
+  !   if(ipcm.eq.1) isurf=1
+
+  !   nstep2=nstep/2
+  !   if(iscov.eq.0) call fatal_error('READ_INPUT: iscov eq 0')
+
+  !   qfree=-nelec
+  !   do i=1,ncent
+  !     qfree=qfree+znuc(iwctype(i))
+  !   enddo
+
+  !   write(6,'(''PCM polarization charges '')')
+  !   write(6,'(''pcm ipcm   =  '',t30,i3)') ipcm
+  !   write(6,'(''pcm ichpol =  '',t30,i3)') ichpol
+  !   write(6,'(''pcm isurf  =  '',t30,i3)') isurf
+  !   write(6,'(''pcm file (cavity) ='',t30,a20)') pcmfile_cavity
+  !   write(6,'(''pcm file (chs)    ='',t30,a20)') pcmfile_chs
+  !   write(6,'(''pcm file (chv)    ='',t30,a20)') pcmfile_chv
+  !   write(6,'(''pcm nconf sampled for chv ='',t30,i10)') nscv
+  !   write(6,'(''pcm frequency for chv ='',t30,i10)') iscov
+  !   write(6,'(''pcm epsilon_solvent ='',t30,f7.3)') eps_solv
+  !   write(6,'(''pcm rcolv ='',t30,f7.3)') rcolv
+  !   write(6,'(''pcm fcol  ='',t30,f7.3)') fcol
+  !   write(6,'(''pcm npmax ='',t30,i10)') npmax
+
+  !   call pcm_extpot_read(fcol,npmax)
+
+  !   !  We use the UNDEFINED, IUNDEFINED from grid_mod (that are the same as pcm_3dgrid)
+
+  !   if(ipcm_3dgrid.gt.0) then
+  !     if(ipcm.ne.3) call fatal('READ_INPUT:ipcm_3dgrid gt 0 & ipcm ne 3')
+  !     call pcm_setup_grid
+  !     call pcm_setup_3dspl
+  !   endif
+  ! endif
+
+  ! QM-MMPOL  (fxed charges)
+  !  immpol=1 runs qmc (QM-MM)  and creates the first set of induced dipoles on MM sites
+  !  immpol=2 runs qmc (QM-MMPOL) and updates the set of induced dipoles on MM sites
+  !  immpol=3 runs qmc  (QM-MMPOL) with fixed induced dipoles
+
+  ! isites_mmpol=0
+  ! ich_mmpol=0
+  ! if(immpol.ne.0) then
+  !   if(immpol.eq.2) ich_mmpol=1
+
+  !   write(6,'(''QM-MMPOL fixed charges and induced dipoles '')')
+  !   write(6,'(''mmpol immpol   =  '',t30,i3)') immpol
+  !   write(6,'(''mmpol ich_mmpol =  '',t30,i3)') ich_mmpol
+  !   write(6,'(''mmpol isites  =  '',t30,i3)') isites_mmpol
+  !   write(6,'(''mmpol file (sites)    ='',t30,a20)') mmpolfile_sites
+  !   write(6,'(''mmpol file (chmm)    ='',t30,a20)') mmpolfile_chmm
+  !   write(6,'(''mmpol a_cutoff ='',t30,f7.3)') a_cutoff
+  !   write(6,'(''mmpol rcolm ='',t30,f7.3)') rcolm
+
+  !   call mmpol_extpot_read
+  ! endif
+
+  ! properties will be sampled iprop
+  ! properties will be printed ipropprt
+
+  if(iprop.ne.0) then
+    nprop=MAXPROP
+    write(ounit,'(a)' ) " Properties will be sampled "
+    write(ounit,int_format ) " Properties printout flag = ", ipropprt
+    call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
+  endif
+
+
+! basis information (either block or from a file)
+
+  write(ounit,*)
+  write(ounit,'(a)') " Calculation Parameters :: Basis : "
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+
+
+  if ( fdf_defined('basis') ) then
+    call read_bas_num(1)   ! i == iwf debug
+  else
+    write(errunit,'(a)') "Error:: No information about basis provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  endif
+
+
 
 
 
 ! Processing of data read from the parsed files or setting them with defaults
 
-! Molecular geometry file exclusively in .xyz format [#####]
-  write(ounit,*)
-  if ( fdf_load_defined('molecule') ) then
-    call read_molecule_file(file_molecule)
-  elseif (fdf_block('molecule', bfdf)) then
-    call fdf_read_molecule_block(bfdf)
-  else
-    write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  endif
 
 ! (2) Determinants (excluding csf and csfmap) [#####]
 
@@ -858,20 +1001,6 @@ subroutine parser
 !    error stop
   endif
 
-! (12) Basis num information (either block or from a file)
-
-  if ( fdf_load_defined('basis_num_info') ) then
-    call read_basis_num_info_file(file_basis_num_info)
-  elseif (.not. fdf_block('basis_num_info', bfdf)) then
-  ! call fdf_read_eigenvalues_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  endif
 
 ! (13) Forces information (either block or from a file) [#####]
 
@@ -898,26 +1027,7 @@ subroutine parser
 !    error stop
   endif
 
-! (15) pseudo information (either block or from a file)
 
-  if ( fdf_defined('pseudopot') ) then
-    call readps_gauss()
-  elseif (nloc .eq. 0) then
-    write(ounit,'(a)') "Warning:: Is this an all electron calculation?"
-  else
-    write(errunit,'(a)') "Error:: No information about pseudo provided in the input."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-  endif
-
-! (16) basis information (either block or from a file)
-
-  if ( fdf_defined('basis') ) then
-    call read_bas_num(1)   ! i == iwf debug
-  else
-    write(errunit,'(a)') "Error:: No information about basis provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  endif
 
 ! (17) multideterminants information (either block or from a file)
 

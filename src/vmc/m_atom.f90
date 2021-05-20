@@ -23,7 +23,7 @@ contains
         if (.not. allocated(cent)) allocate (cent(3, ncent_tot))
         if (.not. allocated(znuc)) allocate (znuc(nctype_tot))
         if (.not. allocated(iwctype)) allocate (iwctype(nctype_tot))
-        if (.not. allocated(symbol)) allocate (symbol(ncent_tot))        
+        if (.not. allocated(symbol)) allocate (symbol(ncent_tot))
     end subroutine allocate_atom
 
     subroutine deallocate_atom()
