@@ -178,7 +178,7 @@ subroutine parser
   character(len=32)          :: keyname
   character(len=10)          :: eunit
   character(len=16)          :: cseed
-  integer                    :: irn(4), cent_tmp(3)
+  integer                    :: irn(4), cent_tmp(3), nefpterm
   integer, allocatable       :: anorm(:) ! dimensions = nbasis
 
 ! local counter variables
@@ -496,7 +496,7 @@ subroutine parser
   write(ounit,int_format) " Number of beta  electrons = ", ndn
   write(ounit,*)
 
-  if( (mode == 'vmc') .or. (mode == 'vmc_one_mpi') ) then
+  if( mode(1:3) == 'vmc') then
     write(ounit,*)
     write(ounit,'(a)') " Calculation Parameters :: VMC : "
     write(ounit,*) '____________________________________________________________________'
@@ -523,9 +523,17 @@ subroutine parser
     ! Truncate fbias so that fbias and the sampled quantity are never negative
     fbias=dmin1(two,dmax1(zero,fbias))
     write(ounit,'(a,t36,f12.6)')  " Force bias = ",   fbias
+
+    if(vmc_nstep*(vmc_nblk+2*vmc_nblkeq) .gt. 104000) ipr=-1
+    if(vmc_irstar.eq.1) vmc_nblkeq=0
+
+    write(ounit,int_format) " Number of steps/block = ", vmc_nstep
+    write(ounit,int_format) " Number of blocks after eq. = ", vmc_nblk
+    write(ounit,int_format) " Number of blocks before eq. = ", vmc_nblkeq
+    write(ounit,int_format) " Number of configurations saved = ", vmc_nconf_new
   endif
 
-  if( mode == 'dmc' ) then
+  if( mode(1:3) == 'dmc' ) then
     write(ounit,*)
     write(ounit,'(a)') " Calculation Parameters :: DMC : "
     write(ounit,*) '____________________________________________________________________'
@@ -562,11 +570,79 @@ subroutine parser
   ! Inizialized to zero for call to hpsi in vmc or dmc with no casula or/and in acuest
   i_vpsp=0
 
+! Common parameters to be printed
+
+  if(vmc_nstep*(vmc_nblk+2*vmc_nblkeq) .gt. 104000) ipr=-1
+  if(vmc_irstar.eq.1) vmc_nblkeq=0
+
+  ! These two lines are additional : Debug Ravindra
+  if(dmc_nstep*(dmc_nblk+2*dmc_nblkeq) .gt. 104000) ipr=-1
+  if(dmc_irstar.eq.1) dmc_nblkeq=0
+
+  if( mode(1:3) == 'dmc' ) then
+    write(ounit,int_format) " Number of steps/block = ", dmc_nstep
+    write(ounit,int_format) " Number of blocks after eq. = ", dmc_nblk
+    write(ounit,int_format) " Number of blocks before eq. = ", dmc_nblkeq
+
+    write(ounit,int_format) " Target walker population = ", dmc_nconf
+    if(dmc_nconf .le. 0) call fatal_error('INPUT: target population <= 0')
+    if(dmc_nconf .gt. MWALK) call fatal_error('INPUT: target population > MWALK')
+    write(ounit,int_format) " Number of configurations saved = ", dmc_nconf_new
+  endif
+
+  ! Analytical forces flags (vmc only)
+  if( mode(1:3) == 'vmc' ) then
+    if(iforce_analy.gt.0) then
+      if(nordc.gt.0) call fatal_error('READ_INPUT: Nuclear analytic forces not implemented for 3-body J')
+      write(ounit,'(a)' ) " Geometry optimization with analytic gradients"
+      if(iuse_zmat.gt.0) write(ounit,'(a)' ) " Using internal coordinates "
+      write(ounit,'(a,t36,f12.6)') " starting alfgeo = ", alfgeo
+    endif
+  endif
+
+  ! Optimization flags (vmc/dmc only)
+  write(ounit,*)
+  write(ounit,'(a)') " Calculation Parameters :: optimizations : "
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+
+  if(ioptwf.gt.0) then
+    write(ounit,'(a)' ) " Perform wave function optimization in vmc/dmc"
+  elseif((ioptjas.eq.1) .or. (ioptorb.eq.1) .or. (ioptci.eq.1) ) then
+    write(ounit,'(a)' ) " Only sample derivatives of wave function for external use"
+    write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
+  endif
+
+  ! Jastrow optimization flag (vmc/dmc only)
+  write(ounit,*)
+  if(ioptjas.gt.0) then
+    write(ounit,'(a)' ) " Jastrow derivatives are sampled "
+    write(ounit,int_format) " Number of Jastrow derivatives ",  nparmj
+    if(ijas.eq.4) then
+      call cuspinit4(1)
+     else
+      call fatal_error('READ_INPUT: jasderiv only for ijas=4')
+    endif
+   else
+    nparmj=0
+  endif
+
+  ! ORB optimization flags (vmc/dmc only)
+  if(ioptorb.ne.0) then
+    write(ounit,'(a)' ) " Orbital derivatives are sampled"
+    write(ounit,int_format)  " ORB-PT blocks in force average = ", nefp_blocks
+    if(isavebl.ne.0)then
+      write(ounit,'(a)' ) " ORB-PT block averages will be saved "
+      idump_blockav=43
+      open(unit=idump_blockav,file='efpci_blockav.dat',status='unknown',form='unformatted')
+      write(idump_blockav) nefpterm
+    endif
+  endif
 
 ! Processing of data read from the parsed files or setting them with defaults
 
 ! Molecular geometry file exclusively in .xyz format [#####]
-
+  write(ounit,*)
   if ( fdf_load_defined('molecule') ) then
     call read_molecule_file(file_molecule)
   elseif (fdf_block('molecule', bfdf)) then
