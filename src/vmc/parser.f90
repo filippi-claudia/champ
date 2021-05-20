@@ -178,7 +178,7 @@ subroutine parser
   character(len=32)          :: keyname
   character(len=10)          :: eunit
   character(len=16)          :: cseed
-  integer                    :: irn(4), cent_tmp(3), nefpterm
+  integer                    :: irn(4), cent_tmp(3), nefpterm, nstates_g
   integer, allocatable       :: anorm(:) ! dimensions = nbasis
 
 ! local counter variables
@@ -601,43 +601,105 @@ subroutine parser
   endif
 
   ! Optimization flags (vmc/dmc only)
-  write(ounit,*)
-  write(ounit,'(a)') " Calculation Parameters :: optimizations : "
-  write(ounit,*) '____________________________________________________________________'
-  write(ounit,*)
+  if( (mode(1:3) == 'vmc') .or. (mode(1:3) == 'dmc') ) then
 
-  if(ioptwf.gt.0) then
-    write(ounit,'(a)' ) " Perform wave function optimization in vmc/dmc"
-  elseif((ioptjas.eq.1) .or. (ioptorb.eq.1) .or. (ioptci.eq.1) ) then
-    write(ounit,'(a)' ) " Only sample derivatives of wave function for external use"
-    write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
-  endif
+    write(ounit,*)
+    write(ounit,'(a)') " Calculation Parameters :: optimizations : "
+    write(ounit,*) '____________________________________________________________________'
+    write(ounit,*)
 
-  ! Jastrow optimization flag (vmc/dmc only)
-  write(ounit,*)
-  if(ioptjas.gt.0) then
-    write(ounit,'(a)' ) " Jastrow derivatives are sampled "
-    write(ounit,int_format) " Number of Jastrow derivatives ",  nparmj
-    if(ijas.eq.4) then
-      call cuspinit4(1)
-     else
-      call fatal_error('READ_INPUT: jasderiv only for ijas=4')
+    if(ioptwf.gt.0) then
+      write(ounit,'(a)' ) " Perform wave function optimization in vmc/dmc"
+    elseif((ioptjas.eq.1) .or. (ioptorb.eq.1) .or. (ioptci.eq.1) ) then
+      write(ounit,'(a)' ) " Only sample derivatives of wave function for external use"
+      write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
     endif
-   else
-    nparmj=0
+
+    ! Jastrow optimization flag (vmc/dmc only)
+    write(ounit,*)
+    if(ioptjas.gt.0) then
+      write(ounit,'(a)' ) " Jastrow derivatives are sampled "
+      write(ounit,int_format) " Number of Jastrow derivatives ",  nparmj
+      if(ijas.eq.4) then
+        call cuspinit4(1)
+      else
+        call fatal_error('READ_INPUT: jasderiv only for ijas=4')
+      endif
+    else
+      nparmj=0
+    endif
+
+    ! ORB optimization flags (vmc/dmc only)
+    if(ioptorb.ne.0) then
+      write(ounit,'(a)' ) " Orbital derivatives are sampled"
+      write(ounit,int_format)  " ORB-PT blocks in force average = ", nefp_blocks
+      if(isavebl.ne.0)then
+        write(ounit,'(a)' ) " ORB-PT block averages will be saved "
+        idump_blockav=43
+        open(unit=idump_blockav,file='efpci_blockav.dat',status='unknown',form='unformatted')
+        write(idump_blockav) nefpterm
+      endif
+    endif
+
+    ! CI optimization
+    if(ioptci.ne.0) then
+      write(ounit,'(a)' ) " CI is sampled "
+      write(ounit,int_format)  " CI printout flag = ", iciprt
+      if( (ioptjas.eq.0) .and. (ioptorb.eq.0) .and. (method.eq.'hessian') ) then
+        method='linear'
+        write(ounit,'(a)' ) " Reset optimization method to linear"
+      endif
+  ! TMP due to changing kref -> also for ncsf=0, we need to have cxdet(i) carrying the phase
+  !         if(ncsf.eq.0) call fatal_error('ncsf.eq.0 - further changes needed due to kref')
+      if(ncsf.gt.0) then
+        nciterm=ncsf
+      else
+        nciterm=nciprim
+      endif
+    else
+      nciprim=0
+      nciterm=0
+    endif
+    write(ounit,int_format)  " CI number of coefficients ", nciterm
+    if((ncsf.eq.0) .and. (nciprim.gt.MXCITERM) ) call fatal_error('INPUT: nciprim gt MXCITERM')
+    if(nciterm.gt.MXCITERM) call fatal_error('INPUT: nciterm gt MXCITERM')
+
+    ! Multiple states/efficiency/guiding flags
+
+    ! Use guiding wave function constructed from mstates
+    if(iguiding.gt.0) then
+      write(6,'(''Guiding function: square root of sum of squares'')')
+      keyname='weights_guiding:'
+      call get_weights_new(keyname,weights_g,iweight_g,nstates_g)
+    endif
+
+    ! Efficiency for sampling states inputed in multiple_cistates
+    if(iefficiency.gt.0) nstates_psig=nstates
+  else
+    ioptorb=0
+    ioptci=0
+    ioptjas=0
+    iefficiency=0
+    iguiding=0
+    nstates=1
+  endif ! Condition of either vmc/dmc
+
+  ! QMMM classical potential
+  if(iqmmm.gt.0) then
+    write(ounit,'(a)' ) "QMMM external potential "
+    call qmmm_extpot_read
   endif
 
-  ! ORB optimization flags (vmc/dmc only)
-  if(ioptorb.ne.0) then
-    write(ounit,'(a)' ) " Orbital derivatives are sampled"
-    write(ounit,int_format)  " ORB-PT blocks in force average = ", nefp_blocks
-    if(isavebl.ne.0)then
-      write(ounit,'(a)' ) " ORB-PT block averages will be saved "
-      idump_blockav=43
-      open(unit=idump_blockav,file='efpci_blockav.dat',status='unknown',form='unformatted')
-      write(idump_blockav) nefpterm
-    endif
+! Read in point charges
+
+  if(iefield.gt.0) then
+! External charges fetched in read_efield
+    write(ounit,'(a,i4,a)')  " Read in ", ncharges, " external charges"
+    call efield_compute_extint
   endif
+
+
+
 
 ! Processing of data read from the parsed files or setting them with defaults
 
