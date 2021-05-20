@@ -1,5 +1,5 @@
 # Source files
-file(GLOB DMC_SOURCE *.f *.f90)
+file(GLOB DMC_SOURCE *.f)
 
 include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
 formatFortran("${DMC_SOURCE}") # Set Fixed format property

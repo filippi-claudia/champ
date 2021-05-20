@@ -1,5 +1,5 @@
       subroutine zerest
-! Written by Cyrus Umrigar, modified by Claudia Filippi
+c Written by Cyrus Umrigar, modified by Claudia Filippi
 
       use vmc_mod, only: nrad
       use forcest, only: fgcm2, fgcum
@@ -21,14 +21,6 @@
       use denupdn, only: rprobdn, rprobup
       use mpiblk, only: iblk_proc
 
-      use estsum, only: allocate_estsum
-      use estcum, only: allocate_estcum
-      use est2cm, only: allocate_est2cm
-      use derivest, only: allocate_derivest
-      use forcest, only: allocate_forcest
-      use step, only: allocate_step
-      use denupdn, only:  allocate_denupdn
-
       use precision_kinds, only: dp
       implicit none
 
@@ -37,13 +29,12 @@
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
-! routine to accumulate estimators for energy etc.
-      print*, "debug inside the zerest"
+c routine to accumulate estimators for energy etc.
 
       iblk=0
       iblk_proc=0
 
-! zero out estimators
+c zero out estimators
 
       wcum1=zero
       wfcum1=zero
@@ -91,15 +82,7 @@
       r2sum=zero
       risum=zero
 
-      call allocate_denupdn()
-      call allocate_estsum()
-      call allocate_estcum()
-      call allocate_est2cm()
-      call allocate_derivest()
-      call allocate_forcest()
-      call allocate_step()
-
-      do ifr=1,nforce
+      do 85 ifr=1,nforce
         tausum(ifr)=zero
         taucum(ifr)=zero
         wgcum1(ifr)=zero
@@ -128,24 +111,21 @@
         fgcum(ifr)=zero
         fgcm2(ifr)=zero
         derivcm2(ifr)=zero
-        do k=1,10
+        do 85 k=1,10
           derivsum(k,ifr)=zero
-          derivcum(k,ifr)=zero
-        enddo
-      enddo
+   85     derivcum(k,ifr)=zero
 
-      nbrnch=zero
-      trymove=zero
-      acc=zero
-      nacc=zero
-      nodecr=zero
+      nbrnch=0
+      trymove=0
+      acc=0
+      nacc=0
+      nodecr=0
 
-! Zero out estimators for charge density of atom.
-      do i=1,nrad
+c Zero out estimators for charge density of atom.
+      do 90 i=1,nrad
         rprobup(i)=zero
         rprobdn(i)=zero
-        rprob(i)=zero
-      enddo
+   90   rprob(i)=zero
 
       call optjas_init
       call optci_init(0)
@@ -159,4 +139,4 @@
       call mmpol_init(0)
 
       return
-      end subroutine zerest
+      end

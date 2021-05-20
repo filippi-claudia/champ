@@ -197,7 +197,7 @@ subroutine parser
 
 ! %module general (complete)
   mode        = fdf_get('mode', 'vmc_one_mpi')
-  title       = fdf_get('title', 'Untitled')
+  title       = adjustl(fdf_get('title', 'Untitled'))
   pooldir     = fdf_get('pool', '.')
   pp_id       = fdf_get('pseudopot', 'none')
   bas_id      = fdf_get('basis', 'none')
@@ -444,6 +444,21 @@ subroutine parser
   file_efield	       		    = fdf_load_filename('efield', 			'default.efield')
 
   call header_printing()
+
+! printing some information about calculation setup
+
+  select case (mode)
+  case ('vmc')
+    write(ounit,'(a,a)') "Calculation mode :: Variational MC for ", title
+  case ('vmc_one_mpi')
+    write(ounit,'(a,a)') "Calculation mode :: Variational MC one-electron move mpi for ",  title
+  case ('dmc')
+    write(ounit,'(a,a)') "Calculation mode :: Diffusion MC for ",  title
+  case ('dmc_one_mpi1')
+    write(ounit,'(a,a)') "Calculation mode :: Diffusion MC 1-electron move, mpi no global pop for ", title
+  case ('dmc_one_mpi2')
+    write(ounit,'(a,a)') "Calculation mode :: Diffusion MC 1-electron move, mpi global pop comm for ",  title
+  end select
 
 ! Processing of data read from the parsed files or setting them with defaults
 
