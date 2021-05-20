@@ -22,7 +22,9 @@ c and sa, pa, da asymptotic functions
       use jaspar3, only: a, c
       use wfsec, only: iwftype, nwftype
       use coefs, only: coef, nbasis
-      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
+!      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
+      use control_vmc, only: vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
+      use control_vmc, only: vmc_nblkeq, vmc_nconf_new, vmc_nstep
       use pseudo, only: nloc
 
       implicit real*8(a-h,o-z)
@@ -90,20 +92,22 @@ c force parameters
 
 c initialize the walker configuration
       call mc_configs_start
-      if (nconf_new.eq.0) then
-        ngfmc=2*nstep*nblk
+      if (vmc_nconf_new.eq.0) then
+        ngfmc=2*vmc_nstep*vmc_nblk
        else
-        ngfmc=(nstep*nblk+nconf_new-1)/nconf_new
+        ngfmc=(vmc_nstep*vmc_nblk+vmc_nconf_new-1)/vmc_nconf_new
       endif
 
 c zero out estimators and averages
-      print*, "debug: before entering zerest"
-      if (irstar.ne.1) call zerest
-      print*, "debug: after exiting zerest"
+!      print*, "debug: before entering zerest"
+!      stop "stopping before the buggy line of segmentation fault"
+!      if (irstar.ne.1) call zerest
+      if (vmc_irstar.ne.1) call zeroout_estimators
+
 c check if restart flag is on. If so then read input from
 c dumped data to restart
 
-      if (irstar.eq.1) then
+      if (vmc_irstar.eq.1) then
         open(10,err=401,form='unformatted',file='restart_vmc')
         goto 402
   401   call fatal_error('VMC: restart_vmc empty, not able to restart')
@@ -115,14 +119,14 @@ c dumped data to restart
 c get initial value of cpu time
 
       call my_second(0,'begin ')
-      print*, "debug: after my_second"
+      print*, "debug: timings begin"
 c if there are equilibrium steps to take, do them here
 c skip equilibrium steps if restart run
 c imetro = 6 spherical-polar with slater T
-      if (nblkeq.ge.1.and.irstar.ne.1) then
+      if (vmc_nblkeq.ge.1.and.vmc_irstar.ne.1) then
         l=0
-        do i=1,nblkeq
-          do j=1,nstep
+        do i=1,vmc_nblkeq
+          do j=1,vmc_nstep
             l=l+1
             if (nloc.gt.0) call rotqua
             call metrop6(l,0)
@@ -130,17 +134,20 @@ c imetro = 6 spherical-polar with slater T
 
          call acuest
         enddo
-
+        print*, "debug: after metrop6 and acuest"
 c       Equilibration steps done. Zero out estimators again.
         call my_second(2,'equilb')
-        call zerest
+        print*, "debug: timings after"
+        ! DEBUG: Ravindra uncomment zerest and comment zeroout_estimators
+        !call zerest
+        call zeroout_estimators
       endif
 
 c now do averaging steps
 
       l=0
-      do 440 i=1,nblk
-        do 430 j=1,nstep
+      do 440 i=1,vmc_nblk
+        do 430 j=1,vmc_nstep
         l=l+1
       !   write(6, *) i, nblk, j, nstep
         if (nloc.gt.0) call rotqua
@@ -167,16 +174,18 @@ c collected over all the run and to reduce cum1 in mpi version
       call mc_configs_write
 
 c print out final results
+      print*, "DEBUG, stop before calling finwrt"
+      stop
       call finwrt
 
 c if dump flag is on then dump out data for a restart
-      if (idump.eq.1) then
+      if (vmc_idump.eq.1) then
         open(10,form='unformatted',file='restart_vmc')
         rewind 10
         call dumper
         close(10)
       endif
-      if(nconf_new.ne.0) close(7)
+      if(vmc_nconf_new.ne.0) close(7)
 
       return
       end

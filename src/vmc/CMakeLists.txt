@@ -52,7 +52,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_kinds.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_basis.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_periodic_table.F90    
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_periodic_table.F90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_atom.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_det.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_coefs.f90
@@ -189,6 +189,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optjas_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/zero_out_estimators.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/error.f)
     # ${CMAKE_INPUT_DIR}/p2_defaults.f
     # ${CMAKE_INPUT_DIR}/p2etc.f
