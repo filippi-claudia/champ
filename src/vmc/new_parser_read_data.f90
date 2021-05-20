@@ -608,7 +608,7 @@ subroutine read_csf_file(file_determinants)
     use mstates_mod, only: MSTATES
     use inputflags, only: icsfs
     use wfsec, only: nwftype
-    use dets, only: ndet
+    use dets, only: ndet, cdet
 
     implicit none
 
@@ -616,7 +616,7 @@ subroutine read_csf_file(file_determinants)
     character(len=72), intent(in)   :: file_determinants
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iostat, i, j, iunit
-    logical                         :: exist
+    logical                         :: exist, printed
 
     !   Formatting
     character(len=100)              :: int_format     = '(A, T40, I8)'
@@ -644,7 +644,6 @@ subroutine read_csf_file(file_determinants)
         if (temp1 == "csf") then
             backspace(iunit)   ! go a line back
             read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
-            write(ounit,*) " Number of csf and nstates ", ncsf, nstates
             if (iostat == 0) then
                 if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
                 do i = 1, nstates
@@ -654,18 +653,35 @@ subroutine read_csf_file(file_determinants)
             else
                 error stop "Error in reading number of csfs / number of states"
             endif
+            write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
+            write(ounit,int_format) " Number of states (nstates) ", nstates
+        else
+            ! No csf information present. One to one mapping cdet == ccsf
+            do i = 1, nstates
+                do j = 1, ncsf
+                    ccsf(j,i,nwftype) = cdet(j,i,nwftype)
+                enddo
+            enddo
+            printed = .true.
         endif
 
 
     enddo
 
-    write(ounit,*)
-    write(ounit,*) " CSF coefficients from an external file "
+    if (.not. printed) then
+        write(ounit,*)
+        write(ounit,*) " CSF coefficients from an external file "
 
-    write(ounit,'(10(1x, a9, i3, 1x))') ((" State: ", i), i =1, nstates)
-    do j = 1, ncsf
-      write(ounit,'(10(1x, f12.8, 1x))') (ccsf(j,i,1), i=1,nstates)
-    enddo
+        write(ounit,'(10(1x, a9, i3, 1x))') ((" State: ", i), i =1, nstates)
+        do j = 1, ncsf
+            write(ounit,'(10(1x, f12.8, 1x))') (ccsf(j,i,1), i=1,nstates)
+        enddo
+    else
+        write(ounit,*)
+        write(ounit,*) " CSF coefficients not present in the determinant file "
+        write(ounit,*) " CSF coefficients map one-to-one to determinant coefficients "
+        write(ounit,*)
+    endif
 
     close(iunit)
 
@@ -692,7 +708,7 @@ subroutine read_csfmap_file(file_determinants)
     integer                         :: icsf, jx
     integer                         :: nptr, nterm, id, nmap
     real(dp)                        :: c
-    logical                         :: exist
+    logical                         :: exist, printed
 
     !   Formatting
     character(len=100)              :: int_format     = '(A, T40, I8)'
@@ -720,12 +736,17 @@ subroutine read_csfmap_file(file_determinants)
         if (temp1 == "csfmap") then
             backspace(iunit)   ! go a line back
             read(iunit, *, iostat=iostat)  temp2, ncsf, ndet, nmap
-            write(ounit,*) " Number of csf, number of determinants, and number of mappings ", ncsf, ndet, nmap
+
             if (iostat == 0) then
                 if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
                 if (.not. allocated(iadet)) allocate (iadet(ndet))
                 if (.not. allocated(ibdet)) allocate (ibdet(ndet))
                 if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))   ! why MDETCSFX
+
+                write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
+                write(ounit,int_format) " Number of determinants (ndet) ", ndet
+                write(ounit,int_format) " Number of mappings (nmap) ", nmap
+                write(ounit,*)
 
                 nptr = 1
                 do i = 1, ncsf
@@ -762,26 +783,31 @@ subroutine read_csfmap_file(file_determinants)
             else
                 error stop "Error in reading number of csfs, number of determinants, or number of mappings"
             endif
+        else
+            ! No csfmap information present. One to one mapping cdet == ccsf
+            printed = .true.
         endif
     enddo
 
     close(iunit)
 
-    write(ounit,*)
-    write(ounit,*) " Determinant coefficients "
-    write(ounit,'(10(1x, f12.8, 1x))') (cdet(i,1,1), i=1,ndet)
+    if (.not. printed) then
+        write(ounit,*)
+        write(ounit,*) " Determinant coefficients "
+        write(ounit,'(10(1x, f12.8, 1x))') (cdet(i,1,1), i=1,ndet)
+    else
+        write(ounit,*)
+        write(ounit,*) " Determinant - CSF mapping  "
 
-    write(ounit,*)
-    write(ounit,*) " Determinant - CSF mapping  "
-
-    do icsf = 1, ncsf
-        write(ounit,'(i4)') icsf
-        do j = iadet(icsf), ibdet(icsf)
-            jx = icxdet(j)
-            write(ounit,'(1(5x, i4, t12, f12.8, 1x))') icxdet(j), cxdet(j)
+        do icsf = 1, ncsf
+            write(ounit,'(i4)') icsf
+            do j = iadet(icsf), ibdet(icsf)
+                jx = icxdet(j)
+                write(ounit,'(1(5x, i4, t12, f12.8, 1x))') icxdet(j), cxdet(j)
+            enddo
+            !write(ounit,*)
         enddo
-        !write(ounit,*)
-    enddo
+    endif
     write(ounit,*) '------------------------------------------------------'
 
 
@@ -1325,7 +1351,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading Basis function types and pointers to radial parts tables from the file :: ",  trim(file_basis_num_info)
+    write(ounit,'(a)')  " Reading Basis function types and pointers to radial parts tables from the file :: ",  trim(file_basis_num_info)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     inquire(file=file_basis_num_info, exist=exist)
@@ -1348,42 +1374,42 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
 
-    if (.not. allocated(nbastyp)) allocate (nbastyp(nctot))
-    if (.not. allocated(n1s)) allocate (n1s(nctot))
-    if (.not. allocated(n2s)) allocate (n2s(nctot))
-    if (.not. allocated(n2p)) allocate (n2p(3, nctot))
-    if (.not. allocated(n3s)) allocate (n3s(nctot))
-    if (.not. allocated(n3p)) allocate (n3p(3, nctot))
-    if (.not. allocated(n3dzr)) allocate (n3dzr(nctot))
-    if (.not. allocated(n3dx2)) allocate (n3dx2(nctot))
-    if (.not. allocated(n3dxy)) allocate (n3dxy(nctot))
-    if (.not. allocated(n3dxz)) allocate (n3dxz(nctot))
-    if (.not. allocated(n3dyz)) allocate (n3dyz(nctot))
-    if (.not. allocated(n4s)) allocate (n4s(nctot))
-    if (.not. allocated(n4p)) allocate (n4p(3, nctot))
-    if (.not. allocated(n4fxxx)) allocate (n4fxxx(nctot))
-    if (.not. allocated(n4fyyy)) allocate (n4fyyy(nctot))
-    if (.not. allocated(n4fzzz)) allocate (n4fzzz(nctot))
-    if (.not. allocated(n4fxxy)) allocate (n4fxxy(nctot))
-    if (.not. allocated(n4fxxz)) allocate (n4fxxz(nctot))
-    if (.not. allocated(n4fyyx)) allocate (n4fyyx(nctot))
-    if (.not. allocated(n4fyyz)) allocate (n4fyyz(nctot))
-    if (.not. allocated(n4fzzx)) allocate (n4fzzx(nctot))
-    if (.not. allocated(n4fzzy)) allocate (n4fzzy(nctot))
-    if (.not. allocated(n4fxyz)) allocate (n4fxyz(nctot))
-    if (.not. allocated(nsa)) allocate (nsa(nctot))
-    if (.not. allocated(npa)) allocate (npa(3, nctot))
-    if (.not. allocated(ndzra)) allocate (ndzra(nctot))
-    if (.not. allocated(ndz2a)) allocate (ndz2a(nctot))
-    if (.not. allocated(ndxya)) allocate (ndxya(nctot))
-    if (.not. allocated(ndxza)) allocate (ndxza(nctot))
-    if (.not. allocated(ndx2a)) allocate (ndx2a(nctot))
-    if (.not. allocated(ndyza)) allocate (ndyza(nctot))
+    allocate (nbastyp(nctot))
+    allocate (n1s(nctot))
+    allocate (n2s(nctot))
+    allocate (n2p(3, nctot))
+    allocate (n3s(nctot))
+    allocate (n3p(3, nctot))
+    allocate (n3dzr(nctot))
+    allocate (n3dx2(nctot))
+    allocate (n3dxy(nctot))
+    allocate (n3dxz(nctot))
+    allocate (n3dyz(nctot))
+    allocate (n4s(nctot))
+    allocate (n4p(3, nctot))
+    allocate (n4fxxx(nctot))
+    allocate (n4fyyy(nctot))
+    allocate (n4fzzz(nctot))
+    allocate (n4fxxy(nctot))
+    allocate (n4fxxz(nctot))
+    allocate (n4fyyx(nctot))
+    allocate (n4fyyz(nctot))
+    allocate (n4fzzx(nctot))
+    allocate (n4fzzy(nctot))
+    allocate (n4fxyz(nctot))
+    allocate (nsa(nctot))
+    allocate (npa(3, nctot))
+    allocate (ndzra(nctot))
+    allocate (ndz2a(nctot))
+    allocate (ndxya(nctot))
+    allocate (ndxza(nctot))
+    allocate (ndx2a(nctot))
+    allocate (ndyza(nctot))
 
 
 
-    if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctot))
-    if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctot))
+    allocate (iwlbas(nbasis, nctot))
+    allocate (iwrwf(nbasis, nctot))
 
 
     do i = 1, nctype + newghostype

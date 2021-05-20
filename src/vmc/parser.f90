@@ -535,24 +535,10 @@ subroutine parser
     write(errunit,'(a)') "Error:: No information about pseudo provided in the input."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
   endif
+  write(ounit,*)
 
 
-! Basis num information (either block or from a file)
-
-  if ( fdf_load_defined('basis_num_info') ) then
-    call read_basis_num_info_file(file_basis_num_info)
-  elseif (.not. fdf_block('basis_num_info', bfdf)) then
-  ! call fdf_read_eigenvalues_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  endif
-
-
+! More about calculation parameters :: VMC / DMC settings
 
   if( mode(1:3) == 'vmc') then
     write(ounit,*)
@@ -648,6 +634,199 @@ subroutine parser
     write(ounit,int_format) " Number of configurations saved = ", dmc_nconf_new
   endif
 
+! LCAO orbitals (must be loaded before reading basis )
+
+  write(ounit,*)
+  write(ounit,'(a)') " Calculation Parameters :: Orbital Information : "
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+
+  if ( fdf_load_defined('orbitals') ) then
+    call read_orbitals_file(file_orbitals)
+  elseif ( fdf_block('orbitals', bfdf)) then
+  ! call fdf_read_orbitals_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about orbitals provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    call inputlcao()
+  endif
+
+! Basis num information (either block or from a file)
+
+  write(ounit,*)
+  write(ounit,'(a)') " Calculation Parameters :: Numerical Basis Information : "
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+
+  if ( fdf_load_defined('basis_num_info') ) then
+    call read_basis_num_info_file(file_basis_num_info)
+  elseif (.not. fdf_block('basis_num_info', bfdf)) then
+  ! call fdf_read_eigenvalues_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  endif
+
+
+! Determinants (only)
+
+  write(ounit,*)
+  write(ounit,'(a)') " Calculation Parameters :: Determinants : "
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+
+  if ( fdf_load_defined('determinants') ) then
+    call read_determinants_file(file_determinants)
+  elseif ( fdf_block('determinants', bfdf)) then
+  ! call fdf_read_determinants_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about determinants provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    call inputdet()
+  endif
+
+! (3) CSF only
+
+  if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
+    call read_csf_file(file_determinants)
+  elseif (fdf_block('csf', bfdf)) then
+    call fdf_read_csf_block(bfdf)
+  else
+    ! No csf present; set default values (in replacement of inputcsf)
+    nstates = 1 ; ncsf = 0
+    if (ioptci .ne. 0) nciterm = nciprim
+  endif
+
+! (4) CSFMAP [#####]
+
+  if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
+    call read_csfmap_file(file_determinants)
+  elseif (fdf_block('determinants', bfdf)) then
+  ! call fdf_read_csfmap_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about csfmaps provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  endif
+
+! (17) multideterminants information (either block or from a file)
+
+  if ( fdf_load_defined('multideterminants') ) then
+    call read_multideterminants_file(file_multideterminants)
+  elseif (fdf_block('multideterminants', bfdf)) then
+  ! call fdf_read_multideterminants_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about multideterminants provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    call multideterminants_define(0,0)
+  endif
+
+
+
+! (5) Jastrow Parameters (either block or from a file)
+
+  if ( fdf_load_defined('jastrow') ) then
+      call read_jastrow_file(file_jastrow)
+  elseif (fdf_block('jastrow', bfdf)) then
+  !call fdf_read_jastrow_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about jastrow provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    ! no information about jastrow present. Set some values
+    call inputjastrow()
+  endif
+
+
+! (8) Jastrow derivative Parameters (either block or from a file)
+
+  if ( fdf_load_defined('jastrow_der') ) then
+    call read_jasderiv_file(file_jastrow_der)
+  elseif ( fdf_block('jastrow_der', bfdf)) then
+  !call fdf_read_jastrow_derivative_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  endif
+
+
+
+! (7) exponents
+
+  if ( fdf_load_defined('exponents') ) then
+    call read_exponents_file(file_exponents)
+  elseif ( fdf_block('exponents', bfdf)) then
+  ! call fdf_read_exponents_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about exponents provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    zex = 1   ! debug check condition about numr == 0
+  endif
+
+
+
+! (9) Symmetry information of orbitals (either block or from a file)
+
+  if ( fdf_load_defined('symmetry') ) then
+    call read_symmetry_file(file_symmetry)
+  elseif ( fdf_block('symmetry', bfdf)) then
+  ! call fdf_read_symmetry_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  endif
+
+! (11) Eigenvalues information of orbitals (either block or from a file)
+
+  if ( fdf_load_defined('eigenvalues') ) then
+    call read_eigenvalues_file(file_eigenvalues)
+  elseif ( fdf_block('eigenvalues', bfdf)) then
+  ! call fdf_read_eigenvalues_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!    error stop
+  endif
+
+
+! basis information (either block or from a file)
+
+  write(ounit,*)
+  write(ounit,'(a)') " Calculation Parameters :: Basis : "
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+
+
+  if ( fdf_defined('basis') ) then
+    call read_bas_num(1)   ! i == iwf debug
+  else
+    write(errunit,'(a)') "Error:: No information about basis provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  endif
+
+
+
+
+
   ! Analytical forces flags (vmc only)
   if( mode(1:3) == 'vmc' ) then
     if(iforce_analy.gt.0) then
@@ -657,6 +836,11 @@ subroutine parser
       write(ounit,'(a,t36,f12.6)') " starting alfgeo = ", alfgeo
     endif
   endif
+
+
+
+
+
 
   ! Optimization flags (vmc/dmc only)
   if( (mode(1:3) == 'vmc') .or. (mode(1:3) == 'dmc') ) then
@@ -723,7 +907,7 @@ subroutine parser
     if(nciterm.gt.MXCITERM) call fatal_error('INPUT: nciterm gt MXCITERM')
 
     ! Multiple states/efficiency/guiding flags
-
+    stop "possible bug in the following part"
     ! Use guiding wave function constructed from mstates
     if(iguiding.gt.0) then
       write(6,'(''Guiding function: square root of sum of squares'')')
@@ -835,22 +1019,6 @@ subroutine parser
   endif
 
 
-! basis information (either block or from a file)
-
-  write(ounit,*)
-  write(ounit,'(a)') " Calculation Parameters :: Basis : "
-  write(ounit,*) '____________________________________________________________________'
-  write(ounit,*)
-
-
-  if ( fdf_defined('basis') ) then
-    call read_bas_num(1)   ! i == iwf debug
-  else
-    write(errunit,'(a)') "Error:: No information about basis provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  endif
-
 
 
 
@@ -858,111 +1026,7 @@ subroutine parser
 ! Processing of data read from the parsed files or setting them with defaults
 
 
-! (2) Determinants (excluding csf and csfmap) [#####]
 
-  if ( fdf_load_defined('determinants') ) then
-    call read_determinants_file(file_determinants)
-  elseif ( fdf_block('determinants', bfdf)) then
-  ! call fdf_read_determinants_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about determinants provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    call inputdet()
-  endif
-
-! (3) CSF [#####]
-
-  if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
-    call read_csf_file(file_determinants)
-  elseif (fdf_block('csf', bfdf)) then
-    call fdf_read_csf_block(bfdf)
-  else
-    ! No csf present; set default values (in replacement of inputcsf)
-    nstates = 1 ; ncsf = 0
-    if (ioptci .ne. 0) nciterm = nciprim
-  endif
-
-! (4) CSFMAP [#####]
-
-  if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
-    call read_csfmap_file(file_determinants)
-  elseif (fdf_block('determinants', bfdf)) then
-  ! call fdf_read_csfmap_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about csfmaps provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  endif
-
-! (5) Jastrow Parameters (either block or from a file)
-
-  if ( fdf_load_defined('jastrow') ) then
-      call read_jastrow_file(file_jastrow)
-  elseif (fdf_block('jastrow', bfdf)) then
-  !call fdf_read_jastrow_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about jastrow provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    ! no information about jastrow present. Set some values
-    call inputjastrow()
-  endif
-
-! (6) LCAO orbitals
-
-  if ( fdf_load_defined('orbitals') ) then
-    call read_orbitals_file(file_orbitals)
-  elseif ( fdf_block('orbitals', bfdf)) then
-  ! call fdf_read_orbitals_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about orbitals provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    call inputlcao()
-  endif
-
-! (7) exponents
-
-  if ( fdf_load_defined('exponents') ) then
-    call read_exponents_file(file_exponents)
-  elseif ( fdf_block('exponents', bfdf)) then
-  ! call fdf_read_exponents_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about exponents provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    zex = 1   ! debug check condition about numr == 0
-  endif
-
-! (8) Jastrow derivative Parameters (either block or from a file)
-
-  if ( fdf_load_defined('jastrow_der') ) then
-    call read_jasderiv_file(file_jastrow_der)
-  elseif ( fdf_block('jastrow_der', bfdf)) then
-  !call fdf_read_jastrow_derivative_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  endif
-
-! (9) Symmetry information of orbitals (either block or from a file)
-
-  if ( fdf_load_defined('symmetry') ) then
-    call read_symmetry_file(file_symmetry)
-  elseif ( fdf_block('symmetry', bfdf)) then
-  ! call fdf_read_symmetry_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  endif
 
 ! (10) optorb_mixvirt information of orbitals (either block or from a file)
 
@@ -984,21 +1048,6 @@ subroutine parser
       write(6,'(''INPUT: definition of orbital variations missing'')')
       call optorb_define
     endif
-  endif
-
-! (11) Eigenvalues information of orbitals (either block or from a file)
-
-  if ( fdf_load_defined('eigenvalues') ) then
-    call read_eigenvalues_file(file_eigenvalues)
-  elseif ( fdf_block('eigenvalues', bfdf)) then
-  ! call fdf_read_eigenvalues_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop
   endif
 
 
@@ -1029,18 +1078,6 @@ subroutine parser
 
 
 
-! (17) multideterminants information (either block or from a file)
-
-  if ( fdf_load_defined('multideterminants') ) then
-    call read_multideterminants_file(file_multideterminants)
-  elseif (fdf_block('multideterminants', bfdf)) then
-  ! call fdf_read_multideterminants_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about multideterminants provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    call multideterminants_define(0,0)
-  endif
 
 ! (18) cavity_spheres information (either block or from a file)
 

@@ -226,9 +226,6 @@ subroutine readps_gauss
 
   character*80 label
 
-  !CVARDOC String to identify pseudopotential. If set, fancy names for
-  !CVARDOC the pseudopotential files will be used.
-
   do ic=1,nctype
     if (nctype.gt.100) call fatal_error('READPS_GAUSS: nctype>100')
     filename =  trim(pooldir) // trim(pp_id) // ".gauss_ecp.dat." // atomtyp(ic)
@@ -263,7 +260,7 @@ subroutine readps_gauss
       write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: lpot"
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     endif
-    write(ounit,'(a,i4,a,a80)') 'ECP for atom type ', ic, ' lpot = ', lpot(ic)
+    write(ounit,'(a,i4,a,i4)') 'ECP for atom type ', ic, ' lpot = ', lpot(ic)
 
     if(lpot(ic).gt.MPS_L) call fatal_error('READPS_GAUSS: increase MPS_L')
 
