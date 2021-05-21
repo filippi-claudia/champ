@@ -456,6 +456,7 @@ subroutine read_jastrow_file(file_jastrow)
         allocate (a4(mparmja, nctype, nwftype))
 
         write(ounit, '(A)') "Jastrow parameters :: "
+        write(ounit, '(A)') "mparmja : "
         do it = 1, nctype
             read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
             write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)
@@ -463,6 +464,7 @@ subroutine read_jastrow_file(file_jastrow)
 
         allocate (b(mparmjb, 2, nwftype))
 
+        write(ounit, '(A)') "mparmjb : "
         do isp = nspin1, nspin2b
             read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
             write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)
@@ -470,6 +472,7 @@ subroutine read_jastrow_file(file_jastrow)
 
         allocate (c(mparmjc, nctype, nwftype))
 
+        write(ounit, '(A)') "mparmjc : "
         do it = 1, nctype
             read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
             write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)

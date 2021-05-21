@@ -760,6 +760,30 @@ subroutine parser
     error stop
   endif
 
+  !printing some information and warnings about jastrow
+  write(ounit, * )
+  write(ounit, int_format) " Analytical laplacian (ianalyt_lap) = ",  ianalyt_lap
+  if(ianalyt_lap.eq.0) then
+    if(nloc.gt.0) call fatal_error('No numerical jastrow derivatives with pseudopotentials')
+    if(ioptjas.gt.0) call fatal_error('No numerical jastrow derivatives and parms derivatives')
+  endif
+
+  write(ounit, int_format ) " ijas = ", ijas
+  write(ounit, int_format ) " isc = ",  isc
+  write(ounit, int_format ) " nspin1 = ", nspin1
+  write(ounit, int_format ) " nspin2 = ", nspin2
+
+
+   if(ijas.eq.4) write(ounit,'(a)') " new transferable standard form 4"
+   if(ijas.eq.5) write(ounit,'(a)') " new transferable standard form 5"
+   if(ijas.eq.6) write(ounit,'(a)') " new transferable standard form 6"
+
+   if(isc.eq.2) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r))/scalek"
+   if(isc.eq.3) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r-(scalek*r)**2/2))/scalek"
+   if(isc.eq.4) write(ounit,'(a)') " dist scaled r=r/(1+scalek*r)"
+   if(isc.eq.5) write(ounit,'(a)') " dist scaled r=r/(1+(scalek*r)**2)**.5"
+
+
 
 
 ! (7) exponents
@@ -838,6 +862,50 @@ subroutine parser
       error stop
     endif
 endif
+
+! get normalization for basis functions
+      if(numr.eq.0) then
+        do iwft=1,nwftype
+          call basis_norm(iwft,anorm,0)
+        enddo
+      endif
+
+! check if the orbitals coefficients are to be multiplied by a constant parameter
+      if(scalecoef.ne.1.0d0) then
+        do  iwft=1,nwftype
+          do  i=1,norb+nadorb
+	          do  j=1,nbasis
+               coef(j,i,iwft)=coef(j,i,iwft)*scalecoef
+            enddo
+          enddo
+        enddo
+        write(ounit, real_format) " Orbital coefficients scaled by a constant parameter = ",  scalecoef
+	      write(ounit,*)
+      endif
+
+! verify number of orbitals and setup optorb
+      call verify_orbitals
+
+!! Grid information
+
+  if((i3dsplorb.ge.1).or.(i3dlagorb.ge.1).or.(i3ddensity.ge.1))  i3dgrid=1
+
+  if(i3dgrid.ge.1) then
+
+    ! Grid setup:
+            call setup_grid
+
+            if(i3dlagorb.ge.1) then
+              write(ounit, '(a)') " Orbitals on a grid: splines interpolation"
+              call setup_3dlagorb
+              i3dsplorb=0
+             elseif(i3dsplorb.ge.1) then
+              write(ounit, '(a)') " Orbitals on a grid: Lagrange interpolation"
+              call setup_3dsplorb
+              i3dlagorb=0
+            endif
+  endif
+
 
 
 
