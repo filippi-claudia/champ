@@ -183,6 +183,7 @@ subroutine parser
 
 ! local counter variables
   integer                    :: i,j,k, iostat
+  integer                    :: ic, iwft
   type(atom_t)               :: atoms
   character(len=2), allocatable   :: unique(:)
 
@@ -814,14 +815,29 @@ subroutine parser
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
 
+  if(ibasis.eq.1) then
+    write(ounit,'(a)') " Orbitals on localized basis "
+    write(ounit, int_format) " Total no. of basis = ", nbasis
+    call write_orb_loc
 
-  if ( fdf_defined('basis') ) then
-    call read_bas_num(1)   ! i == iwf debug
-  else
-    write(errunit,'(a)') "Error:: No information about basis provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  endif
+    if ( fdf_defined('basis') ) then
+      if(numr.gt.0) then
+        do iwft=1,nwftype
+          call read_bas_num(iwft)
+        enddo
+        ibas0(1)=1
+        ibas1(1)=nbastyp(iwctype(1))
+        do ic=2,ncent
+          ibas0(ic)=ibas1(ic-1)+1
+          ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
+        enddo
+      endif
+    else
+      write(errunit,'(a)') "Error:: No information about basis provided in the block."
+      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+      error stop
+    endif
+endif
 
 
 
