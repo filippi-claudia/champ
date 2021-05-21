@@ -12,7 +12,8 @@
       use const, only: nelec
       use config, only: xnew, xold
       use mpiconf, only: idtask, nproc
-      use contrl, only: irstar, isite, nconf_new, icharged_atom
+      !use contrl, only: irstar, isite, nconf_new, icharged_atom
+      use control_vmc, only: vmc_irstar, vmc_isite, vmc_nconf_new, vmc_icharged_atom
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -24,7 +25,7 @@
 
 c set the random number seed differently on each processor
 c call to setrn must be in read_input since irn local there
-      if(irstar.ne.1) then
+      if(vmc_irstar.ne.1) then
 
 c         if(idtask.ne.0) then
 c          call mpi_isend(irn,4,mpi_integer,0,1,MPI_COMM_WORLD,irequest,ierr)
@@ -46,7 +47,7 @@ c         endif
         endif
 
 c check sites flag if one gets initial configuration from sites routine
-        if (isite.eq.1) goto 20
+        if (vmc_isite.eq.1) goto 20
         open(unit=9,err=20,file='mc_configs_start')
         rewind 9
         do 10 id=0,idtask
@@ -63,7 +64,7 @@ c check sites flag if one gets initial configuration from sites routine
         l=0
         do 30 i=1,ncent
           nsite(i)=int(znuc(iwctype(i))+0.5d0)
-          if (icharged_atom.eq.i) then
+          if (vmc_icharged_atom.eq.i) then
             nsite(i)=int(znuc(iwctype(i))+0.5d0)-icharge_system
 	    if (nsite(i).lt.0) call fatal_error('MC_CONFIG: error in icharged_atom')
 	  endif
@@ -93,7 +94,7 @@ c If nconf_new > 0 then we want to dump configurations for a future
 c optimization or dmc calculation. So figure out how often we need to write a
 c configuration to produce nconf_new configurations. If nconf_new = 0
 c then set up so no configurations are written.
-      if (nconf_new.gt.0) then
+      if (vmc_nconf_new.gt.0) then
         if(idtask.lt.10) then
           write(filename,'(i1)') idtask
          elseif(idtask.lt.100) then

@@ -15,9 +15,10 @@ module optwf_sr_mod
     use precision_kinds, only: dp
     use optwf_contrl, only: ioptci, ioptjas, ioptorb
     use force_analy, only: iforce_analy
-    use contrl, only: nblk_max
+!    use contrl, only: nblk_max
+    use control_vmc, only: vmc_nblk_max
     use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
-    use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+    use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
 
     real(dp) :: omega0
     integer :: n_omegaf, n_omegat
@@ -71,7 +72,7 @@ contains
         write (6, '(/,''SR adiag: '',f10.5)') sr_adiag
         write (6, '(''SR tau:   '',f10.5)') sr_tau
         write (6, '(''SR eps:   '',f10.5)') sr_eps
-    
+
 
         call save_params()
 
@@ -149,7 +150,7 @@ contains
                 denergy_err = sqrt(energy_err(1)**2 + energy_err_sav**2)
 
                 nblk = nblk*1.2
-                nblk = min(nblk, nblk_max)
+                nblk = min(nblk, vmc_nblk_max)
 
             endif
             write (6, '(''nblk = '',i6)') nblk

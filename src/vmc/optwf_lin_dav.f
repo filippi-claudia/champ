@@ -11,11 +11,12 @@
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
-      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps 
+      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
       use optwf_func, only: ifunc_omega, omega, omega0, n_omegaf, n_omegat
-      use contrl, only: nblk, nblk_max
+      !use contrl, only: nblk, nblk_max
+      use control_vmc, only: vmc_nblk, vmc_nblk_max
       use force_analy, only: iforce_analy, alfgeo
       use method_opt, only: method
 
@@ -52,7 +53,7 @@
       if(nstates.gt.1.and.nvec.lt.nstates) call fatal_error('OPTWF_LIN_D: nvec < nstates')
 
       inc_nblk=0
-      
+
       alin_adiag_sav=alin_adiag
 
       nstates_sav=nstates
@@ -119,8 +120,8 @@ c        efin_old = efin define efin_old as the energy before
           endif
 
 
-c Here I should save the old parameters 
- 
+c Here I should save the old parameters
+
           call compute_parameters(grad,iflag,1)
           call write_wf(1,iter)
 
@@ -132,16 +133,16 @@ c Here I should save the old parameters
           endif
         enddo
 c enddo micro_iteration
- 
+
         if(iter.ge.2) then
           denergy=energy(1)-energy_sav
           denergy_err=sqrt(energy_err(1)**2+energy_err_sav**2)
-c         call check_length_run_sr(iter,inc_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
-          nblk=nblk*1.2
-          nblk=min(nblk,nblk_max)
+c         call check_length_run_sr(iter,inc_nblk,vmc_nblk,vmc_nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
+          vmc_nblk=vmc_nblk*1.2
+          vmc_nblk=min(vmc_nblk,vmc_nblk_max)
 c         if(-denergy.gt.3*denergy_err) alfgeo=alfgeo/1.2
         endif
-        write(6,'(''nblk = '',i6)') nblk
+        write(6,'(''vmc_nblk = '',i6)') vmc_nblk
         write(6,'(''alfgeo = '',f10.4)') alfgeo
 
         energy_sav=energy(1)
@@ -185,7 +186,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        else
         call h_psi_omegamin(ndim,nvec,psi,hpsi )
       endif
-      
+
       return
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -196,7 +197,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit real*8(a-h,o-z)
 
 
- 
+
 
       dimension psi(MPARM,*),spsi(MPARM,*)
 
@@ -205,7 +206,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        else
         call s_psi_omegamin(ndim,nvec,psi,spsi )
       endif
-      
+
       return
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
