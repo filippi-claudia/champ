@@ -3,9 +3,10 @@
       use olbfgs, only: initialize_olbfgs
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, force
-      use contrl, only: nblk, nblk_max
+!      use contrl, only: nblk, nblk_max
+      use control_vmc, only: vmc_nblk, vmc_nblk_max
       use optwf_contrl, only: idl_flag, ilbfgs_flag
-      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter
       use method_opt, only: method
 
@@ -31,7 +32,7 @@ c vector of wave function parameters
       write(6,'(''SR tau:   '',f10.5)') sr_tau
       write(6,'(''SR eps:   '',f10.5)') sr_eps
       write(6,'(''DL flag:   '',I10)') idl_flag
-      write(6,'(''LBFGS flag:   '',I10)') ilbfgs_flag 
+      write(6,'(''LBFGS flag:   '',I10)') ilbfgs_flag
 
       inc_nblk=0
 c Initialize DL vectors to zero
@@ -42,7 +43,7 @@ c Initialize DL vectors to zero
       call save_nparms
 
       call fetch_parameters(parameters)
-      
+
       ! initialize olbfgs
       call initialize_olbfgs(nparm, ilbfgs_m)
 
@@ -73,17 +74,17 @@ c         go to 6
 
         call compute_parameters(deltap,iflag,1)
         call write_wf(1,iter)
- 
+
         call save_wf
 
         if(iter.ge.2) then
           denergy=energy(1)-energy_sav
           denergy_err=sqrt(energy_err(1)**2+energy_err_sav**2)
 c         call check_length_run_sr(iter,inc_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
-          nblk=nblk*1.2
-          nblk=min(nblk,nblk_max)
+          vmc_nblk=vmc_nblk*1.2
+          vmc_nblk=min(vmc_nblk,vmc_nblk_max)
         endif
-        write(6,'(''nblk = '',i6)') nblk
+        write(6,'(''nblk = '',i6)') vmc_nblk
 
         energy_sav=energy(1)
         energy_err_sav=energy_err(1)

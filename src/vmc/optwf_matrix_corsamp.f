@@ -7,14 +7,18 @@ c written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
       use wfsec, only: iwftype, nwftype
-      use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
+
+!     use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
+      use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite
+      use control_vmc, only: vmc_nblk, vmc_nblk_max, vmc_nblk_ci
+
       use gradhess_all, only: MPARMALL
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nopt_iter, multiple_adiag
       use optwf_contrl, only: energy_tol, dparm_norm_min, ilastvmc
       ! I think that's needed
       use gradhess_all, only: grad, h, s
       use optwf_corsam, only: add_diag
-      
+
       implicit real*8(a-h,o-z)
 
 
@@ -40,12 +44,12 @@ c written by Claudia Filippi
       allocate(work(MWORK))
       allocate(work2(MPARMALL,MPARMALL))
 
-    
-      
+
+
 
 c No dump/restart if optimizing wave function
-      irstar=0
-      idump=0
+      vmc_irstar=0
+      vmc_idump=0
 
 c Set up basis functions for test run
       do 1 iwft=2,3
@@ -58,7 +62,7 @@ c Set up basis functions for test run
    3      call copy_zex(iwft)
       endif
       call set_displace_zero(3)
-      
+
 
 c Number of iterations
       write(6,'(/,''Number of iterations'',i3)') nopt_iter
@@ -67,12 +71,12 @@ c Number of iterations
         write(6,'(''Reset number of iterations to 1'')')
       endif
 c Max number of blocks
-      write(6,'(/,''Maximum number of blocks'',i4)') nblk_max
+      write(6,'(/,''Maximum number of blocks'',i4)') vmc_nblk_max
 c Compute multiple adiag
       write(6,'(/,''Perform test run with multiple adiag'',i2)') multiple_adiag
 c Tolerance on energy
       write(6,'(/,''Energy tolerance'',d12.2)') energy_tol
-  
+
       if(ioptjas.eq.0.and.ioptorb.eq.0) add_diag(1)=-1
 
 c Set dparm_norm_min
@@ -88,7 +92,7 @@ c Set dparm_norm_min
 
 c CI step for state average of multiple states (optimal CI for input Jastrow and LCAO)
       if(ioptci.ne.0.and.nstates.gt.1.and.(ioptorb+ioptjas.gt.0)) then
-        write(6,'(/,''Perform CI run for SA calculation'')') 
+        write(6,'(/,''Perform CI run for SA calculation'')')
         ioptjas=0
         ioptorb=0
         add_diag_sav=add_diag(1)
@@ -96,17 +100,17 @@ c CI step for state average of multiple states (optimal CI for input Jastrow and
 
         call set_nparms
 
-        nblk_sav=nblk
-        nblk=nblk_ci
+        nblk_sav=vmc_nblk
+        vmc_nblk=vmc_nblk_ci
         call qmc
-        nblk=nblk_sav
+        vmc_nblk=nblk_sav
 
         call combine_derivatives
 
         call save_wf
 
         call setup_optimization(nparm,MPARMALL,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
-        
+
         write(6,'(/,''Compute CI parameters'',/)')
         call compute_dparm(nparm,MPARMALL,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy(1),energy_err(1))
@@ -121,7 +125,7 @@ c CI step for state average of multiple states (optimal CI for input Jastrow and
 c Iterate optimization
       do 900 iter=1,nopt_iter
 
-      
+
       write(6,'(/,''Optimization iteration'',i2)') iter
       iadd_diag_loop1=0
 
@@ -158,7 +162,7 @@ c the CI step is unlikely to go wrong (unless the CI run is too short)
      &                     add_diag(1),energy_sav,energy_err_sav)
          call compute_parameters(grad,iflag,1)
 c In case starting config is very bad, reset configuration by calling sites
-         isite=1
+         vmc_isite=1
          call reset_configs_start
          if(ioptci_sav.ne.0.and.nstates.gt.1.and.(ioptorb.ne.0.or.ioptjas.ne.0)) then
 c This case should never happen
@@ -190,7 +194,7 @@ c Compute corrections to parameters
     6 write(6,'(/,''Compute parameters 1'',/)')
       call compute_dparm(nparm,MPARMALL,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy_sav,energy_err_sav)
- 
+
       call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,add_diag(1),iflag)
       if(iflag.ne.0) then
        write(6,'(''Warning: add_diag_1 has dparm_norm>1'')')
@@ -243,15 +247,15 @@ c       write(6,'(''-x='',9f15.9)') (-grad(i),i=1,nparm)
 
        write(6,'(/,''adiag1,adiag2,adiag3'',1p3g15.8,/)') (add_diag(i),i=1,3)
        write(6,'(/,''Correlated sampling test run for adiag'',/)')
- 
+
        ioptjas=0
        ioptorb=0
        ioptci=0
 
 c Test run for adiag_1,2,3 with correlated sampling
-       nblk_sav=nblk
-       nblk=max(2,nblk/2)
-c      nblk=max(2,nblk/10)
+       nblk_sav=vmc_nblk
+       vmc_nblk=max(2,vmc_nblk/2)
+c      vmc_nblk=max(2,vmc_nblk/10)
 
        call qmc
 
@@ -260,7 +264,7 @@ c      nblk=max(2,nblk/10)
        ioptci=ioptci_sav
        if(ioptci.ne.0.and.nstates.gt.1.and.(ioptorb.ne.0.or.ioptjas.ne.0)) ioptci=0
 
-       nblk=nblk_sav
+       vmc_nblk=nblk_sav
 
 c Check if something is very wrong in correlated sampling run
        denergy_min=1.d+99
@@ -277,7 +281,7 @@ c Check if something is very wrong in correlated sampling run
        enddo
        if(denergy_max/denergy_min.gt.10) then
          write(6,'(/,''Problem with correlated sampling run'')')
-         write(6,'(''e,demin,e,demax'',2(f12.5,'' +- '',f12.5))') 
+         write(6,'(''e,demin,e,demax'',2(f12.5,'' +- '',f12.5))')
      &   energy(k_demin),denergy_min,energy(k_demax),denergy_max
 
          if(k_demax.eq.1) then
@@ -290,7 +294,7 @@ c Check if something is very wrong in correlated sampling run
 
          call restore_wf(1)
 c In case starting config is very bad, reset configuration by calling sites
-         isite=1
+         vmc_isite=1
          call reset_configs_start
 
          energy(1)=energy_sav
@@ -320,16 +324,16 @@ c      if(de_worse2.gt.3*de_worse_err2.or.de_worse3.gt.3*de_worse_err3) then
        if(de_worse3.gt.3*de_worse_err3) then
 c        write(6,'(/,''energy_adiag2_3 is much worse than old energy'')')
          write(6,'(/,''energy_adiag3 is much worse than old energy'')')
- 
+
          add_diag(1)=add_diag(1)*200
          write(6,'(''adiag_1 increased to '',g12.5)') add_diag(1)
          write(6,'(''generate again parameters for correlated sampling'')')
 
          call restore_wf(1)
 c In case starting config is very bad, reset configuration by calling sites
-         isite=1
+         vmc_isite=1
          call reset_configs_start
- 
+
          energy(1)=energy_sav
          go to 6
        endif
@@ -368,7 +372,7 @@ c Compute new parameters
 
        call write_wf(1,iter)
 
-       call check_length_run(iter,increase_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
+       call check_length_run(iter,increase_nblk,vmc_nblk,vmc_nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
 
        add_diag(1)=0.1d0*add_diag(1)
       else
@@ -394,11 +398,11 @@ c CI step for state average of multiple states
 
         call set_nparms
 
-        nblk_sav=nblk
-        nblk=nblk_ci
+        nblk_sav=vmc_nblk
+        vmc_nblk=vmc_nblk_ci
         call qmc
-        nblk=nblk_sav
-        
+        vmc_nblk=nblk_sav
+
         call combine_derivatives
 
         if(iter.ge.1) then
@@ -417,7 +421,7 @@ c           add_diag(1)=20*add_diag_sav
             write(6,'(''new energy'',2f12.5)') energy(1),energy_err(1)
             write(6,'(/,''Energy is worse, increase adiag to '',1pd11.4)') add_diag(1)
 
-c Jastrow and orbital parameters give worse energy 
+c Jastrow and orbital parameters give worse energy
             ioptjas=ioptjas_sav
             ioptorb=ioptorb_sav
             ioptci=0
@@ -429,7 +433,7 @@ c Jastrow and orbital parameters give worse energy
      &                     add_diag(1),energy_sav,energy_err_sav)
             call compute_parameters(grad,iflag,1)
 c In case starting config is very bad, reset configuration by calling sites
-            isite=1
+            vmc_isite=1
             call reset_configs_start
 
             call write_wf(1,iter)
@@ -450,7 +454,7 @@ c save CI coefficients
         call save_wf
         call write_wf(1,iter)
 
-c save orb and jastrow 
+c save orb and jastrow
         ioptjas=ioptjas_sav
         ioptorb=ioptorb_sav
         ioptci=0
@@ -656,24 +660,24 @@ c-----------------------------------------------------------------------
 
 
 
-        
+
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
 c Note: we do not vary the first (i0) CI coefficient unless full CI
 
       if(method.eq.'linear') then
-        
+
        is=1
        i0=0
        ishift=1
-       if(ioptjas.eq.0) go to 115 
+       if(ioptjas.eq.0) go to 115
 
 c Jastrow Hamiltonian
        do 110 j=1,nparmj+is
          do 110 i=1,nparmj+is
            h(i,j)=h_jas(i,j)
   110      s(i,j)=s_jas(i,j)
-        
+
 c      do 111 i=1,nparmj+1
 c 111    write(6,'(''h1= '',1000d12.5)') (h(i,j),j=1,nparmj+1)
 c      do 112 i=1,nparmj+1
@@ -762,7 +766,7 @@ c ORB-CI Hamiltonian
 
   175  nparm=nparmj+nciterm+nreduced-i0
 
-       write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)') 
+       write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)')
      & nparm,nparmj,nciterm,nreduced
 
 c      do 180 i=1,nparm+1
