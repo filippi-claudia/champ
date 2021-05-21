@@ -13,12 +13,27 @@
       use sr_mat_n, only: obs_tot
       use optwf_sr_mod, only: sr_hs
       use mpiconf
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+
+      implicit none
+
+      integer :: i, i0, i_ortho_min, i_overlap_max, idav_iter
+      integer :: idx_ivec, ier, iparm, istate
+      integer :: ivec, notcnv, nparm, nparm_p1
+      integer :: nvec, nvecx
+      integer, dimension(nvecx) :: itype
+      integer, dimension(nvecx) :: index_overlap
+      integer, dimension(5,MSTATES) :: index_more
+      real(dp) :: adiag, bot, ethr, ortho_min
+      real(dp), dimension(nvecx) :: e
+      real(dp), dimension(MPARM,nvecx) :: evc
+      real(dp), dimension(nvecx,MSTATES) :: overlap_psi
+      real(dp), dimension(nvecx) :: anorm
+      real(dp), dimension(*) :: deltap
+      real(dp), dimension(MPARM*MSTATES,5) :: deltap_more
 
       ! include 'mpif.h'
 
-      dimension e(nvecx), evc(MPARM,nvecx), itype(nvecx), overlap_psi(nvecx,MSTATES),index_overlap(nvecx),anorm(nvecx)
-      dimension deltap(*),deltap_more(MPARM*MSTATES,5),index_more(5,MSTATES)
 
       write(6,*) 'LIN_D NPARM',nparm
 
@@ -149,9 +164,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use jd_scratch, only: qr, rr
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, ier, n
       complex*16 q(n),r(n)
+
       do i=1,n
         qr(i)=real(q(i))
       enddo
@@ -173,9 +190,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use jd_scratch, only: qr, rr
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, ier, n
       complex*16 q(n),r(n)
+
       do i=1,n
         qr(i)=real(q(i))
       enddo
@@ -194,8 +213,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine precon(n,q)
-      implicit real*8 (a-h,o-z)
 
+      implicit none
+
+      integer :: n
       complex*16 q(n)
 
       return
@@ -203,22 +224,30 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
+
       use sr_mod, only: MPARM, MCONF
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+      use precision_kinds, only: dp
       use mpi
 
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension psi(MPARM,*),hpsi(MPARM,*),aux(MCONF),hpsiloc(MPARM,nvecx)
-
+      integer :: i, i0, iconf, ier, ivec
+      integer :: jelo, jfifj, jwtg, n_obs
+      integer :: ndim, nvec
+      real(dp) :: aux0, aux1, aux2, ddot
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: hpsi
+      real(dp), dimension(MCONF) :: aux
+      real(dp), dimension(MPARM,nvecx) :: hpsiloc
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -298,22 +327,30 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
+
       use sr_mod, only: MPARM, MCONF
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n
       use sr_mat_n, only: sr_o, wtg, obs_tot
+      use precision_kinds, only: dp
       use mpi
 
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-      dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,nvecx),aux(MCONF)
+      integer :: i, i0, iconf, ier, ivec
+      integer :: jelo, jfifj, jwtg, n_obs
+      integer :: ndim, nvec
+      real(dp) :: aux0, ddot
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: spsi
+      real(dp), dimension(MPARM,nvecx) :: spsiloc
+      real(dp), dimension(MCONF) :: aux
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -374,6 +411,7 @@ c     STOP
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
+
       use sr_mod, only: MPARM, MCONF
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
@@ -381,15 +419,23 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+      use precision_kinds, only: dp
       use mpi
 
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,nvecx),aux(MCONF)
+      integer :: i, i0, iconf, ier, ivec
+      integer :: jelo, jfifj, jwtg, n_obs
+      integer :: ndim, nvec
+      real(dp) :: aux0, aux1, aux2, ddot
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: hpsi
+      real(dp), dimension(MPARM,nvecx) :: hpsiloc
+      real(dp), dimension(MCONF) :: aux
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -484,6 +530,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
+
       use sr_mod, only: MPARM, MCONF
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
@@ -491,17 +538,25 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+      use precision_kinds, only: dp
       use mpi
 
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-      dimension psi(MPARM,*),spsi(MPARM,*),spsiloc(MPARM,nvecx),aux(MCONF),h_sr_sym(MPARM)
+      integer :: i, i0, iconf, ier, ivec
+      integer :: jelo, jelo2, jelohfj, jfhfj
+      integer :: jfifj, jwtg, n_obs, ndim
+      integer :: nvec
+      real(dp) :: aux0, aux1, aux2, aux3, ddot
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: spsi
+      real(dp), dimension(MPARM,nvecx) :: spsiloc
+      real(dp), dimension(MCONF) :: aux
+      real(dp), dimension(MPARM) :: h_sr_sym
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -612,18 +667,28 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use optwf_func, only: ifunc_omega, omega
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
+      use precision_kinds, only: dp
       use mpi
 
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-      dimension psi(MPARM,*),hpsi(MPARM,*),hpsiloc(MPARM,nvecx),aux0(MCONF),aux1(MCONF),aux2(MCONF)
-      dimension grad_ene(MPARM)
+      integer :: i, i0, iconf, ier, ivec
+      integer :: jelo, jelo2, jelohfj, jfhfj
+      integer :: jfifj, jwtg, k, n_obs
+      integer :: ndim, nvec
+      real(dp) :: auxx0, auxx2, auxx3, ddot, hoz
+      real(dp) :: oz, var
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: hpsi
+      real(dp), dimension(MPARM,nvecx) :: hpsiloc
+      real(dp), dimension(MCONF) :: aux0
+      real(dp), dimension(MCONF) :: aux1
+      real(dp), dimension(MCONF) :: aux2
+      real(dp), dimension(MPARM) :: grad_ene
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -731,23 +796,30 @@ c end loop vec
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine g_psi_lin_d( ndim, nvec, nb1, psi, ew )
+
       use mpi
       use sr_mod, only: MPARM
       use sr_mat_n, only: jefj, jfj, jhfj, s_diag
       use sr_mat_n, only: obs_tot
+      use optwf_contrl, only: ioptorb, ioptjas
+      use precision_kinds, only: dp
+      use mpi
 
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo
 
-      ! thi was not in master but is clearly needed
-      use optwf_contrl, only: ioptorb, ioptjas
-      use mpi
+      ! this was not in master but is clearly needed
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension psi(MPARM,*),ew(*)
-      dimension s(MPARM),h(MPARM)
+      integer :: i, i0, ivec, jelo, jfhfj
+      integer :: jfifj, jwtg, k, n_obs
+      integer :: nb1, ndim, nparm, nvec
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(*) :: ew
+      real(dp), dimension(MPARM) :: s
+      real(dp), dimension(MPARM) :: h
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -804,6 +876,7 @@ c         if(i.ne.ivec+nb1-1) psi(i,ivec)=psi(i,ivec)/(h(i)+s_diag(1,1)-ew(ivec)
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
+
       use sr_mod, only: MPARM
       use optwf_contrl, only: nvecx
       use csfs, only: nstates
@@ -813,9 +886,18 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: nconf_n
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use mpi
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
-      dimension psi(MPARM,*),overlap_psi(nvecx,*),anorm(*),overlap_psiloc(nvecx,MSTATES),anorm_loc(nvecx)
+      implicit none
+
+      integer :: i0, iconf, ier, istate, ivec
+      integer :: ndim, nvec
+      real(dp) :: dabs, ddot, den, dum, ratio
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(nvecx,*) :: overlap_psi
+      real(dp), dimension(*) :: anorm
+      real(dp), dimension(nvecx,MSTATES) :: overlap_psiloc
+      real(dp), dimension(nvecx) :: anorm_loc
 
       i0=1
       if(ioptjas+ioptorb.eq.0) i0=0
