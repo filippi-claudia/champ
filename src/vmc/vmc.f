@@ -103,10 +103,9 @@ c zero out estimators and averages
       print*, "vmc_nblkeq, vmc_nconf_new, vmc_nstep"
       print*, vmc_nblkeq, vmc_nconf_new, vmc_nstep
 
-      stop "before calling zerest "
+!      debug note: acuest is not called yet
       if (vmc_irstar.ne.1) call zerest
 
-      stop "after calling zerest "
 c check if restart flag is on. If so then read input from
 c dumped data to restart
 

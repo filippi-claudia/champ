@@ -42,7 +42,7 @@
         ish=nup
       endif
 
-c temporarely copy orbn to orb 
+c temporarely copy orbn to orb
       do iorb=1,norb
         orb_sav(iorb)=orb(iel,iorb)
         orb(iel,iorb)=orbn(iorb)
@@ -60,7 +60,7 @@ c temporarely copy orbn to orb
         enddo
       enddo
 
-c compute wave function 
+c compute wave function
       do 200 k=1,ndet
 
         if(k.ne.kref) then
@@ -163,6 +163,9 @@ c TMP to fix
           b(iorb,kk)=dorb(kk,iorb)
         enddo
       enddo
+
+      print*, "debug ", ivirt(iab), norb
+
 
       do 50 kk=1,3
 
