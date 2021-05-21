@@ -62,7 +62,7 @@ contains
         use vmc_mod, only: MELEC, MORB, MCENT
         use optjas, only: MPARMJ
         if (.not. allocated(b)) allocate (b(MORB, nelec))
-        if (.not. allocated(tildem)) allocate (tildem(nelec, MORB, 2))
+        if (.not. allocated(tildem)) allocate (tildem(nelec, norb, 2))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
         if (.not. allocated(b_da)) allocate (b_da(3, nelec, MORB, ncent_tot))
         if (.not. allocated(db)) allocate (db(3, nelec, MORB, ncent_tot))
@@ -478,7 +478,7 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MDET
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aa)) allocate (aa(nelec, MORB, 2))
+        if (.not. allocated(aa)) allocate (aa(nelec, norb, 2))
         if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, MDET, 2))
     end subroutine allocate_multimat
 
@@ -541,7 +541,7 @@ contains
         use dets, only: ndet
         use precision_kinds, only: dp
         use vmc_mod, only: MDET
-        if (.not. allocated(detiab)) allocate(detiab(MDET, 2))
+        if (.not. allocated(detiab)) allocate(detiab(ndet, 2))
         if (.not. allocated(detu)) allocate(detu(MDET))
         if (.not. allocated(detd)) allocate(detd(MDET))
     end subroutine allocate_multislater
@@ -637,9 +637,9 @@ contains
         use coefs, only: norb
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB
-        if (.not. allocated(ddorb)) allocate (ddorb(nelec, MORB))
-        if (.not. allocated(dorb)) allocate (dorb(3, nelec, MORB))
-        if (.not. allocated(orb)) allocate (orb(nelec, MORB))
+        if (.not. allocated(ddorb)) allocate (ddorb(nelec, norb))
+        if (.not. allocated(dorb)) allocate (dorb(3, nelec, norb))
+        if (.not. allocated(orb)) allocate (orb(nelec, norb))
     end subroutine allocate_orbval
 
     subroutine deallocate_orbval()
@@ -1114,7 +1114,7 @@ contains
         use atom, only: ncent_tot
         use precision_kinds, only: dp
         use vmc_mod, only: MCENT3
-        
+
         if (.not. allocated(transform_grd)) allocate (transform_grd(MCENT3, MCENT3))
     end subroutine allocate_zmatrix_grad
 

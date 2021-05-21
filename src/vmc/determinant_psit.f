@@ -12,8 +12,9 @@
       use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
-
-
+      print*, "determ, istate", determ, istate
+      print*, shape(detiab)
+      print*, shape(cdet)
 
       determ=0
       do 110 k=1,ndet

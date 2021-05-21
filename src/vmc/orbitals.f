@@ -91,7 +91,6 @@ c              do 24 m=1,nbasis
 
 c no 3d interpolation
         else
-
 c get basis functions for all electrons
          call basis_fns_vgl(x,rvec_en,r_en)
 

@@ -38,7 +38,7 @@ c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
 
-      dimension eloc_det(MDET,2)
+      dimension eloc_det(ndet,2)
       dimension vj(3,nelec),vpsp_det(*)
 
       dimension btemp(nelec**2,2)
