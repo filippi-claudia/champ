@@ -417,7 +417,7 @@ subroutine parser
   nquad         = fdf_get('nquad',6)
 
 ! %module pseudo (complete)
-  nloc          = fdf_get('nloc',0)
+  nloc          = fdf_get('nloc',4)  ! for pseudo in Gauss format
 
 ! %module qmmm (complete)
 !  iqmm          = fdf_get('iqmm',0)
@@ -849,6 +849,9 @@ subroutine parser
         do iwft=1,nwftype
           call read_bas_num(iwft)
         enddo
+        ! See if this is really allocated at this point
+        if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
+        if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
         ibas0(1)=1
         ibas1(1)=nbastyp(iwctype(1))
         do ic=2,ncent
@@ -925,7 +928,6 @@ endif
 
 
 
-
   ! Optimization flags (vmc/dmc only)
   if( (mode(1:3) == 'vmc') .or. (mode(1:3) == 'dmc') ) then
 
@@ -941,6 +943,8 @@ endif
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
     endif
 
+
+
     ! Jastrow optimization flag (vmc/dmc only)
     write(ounit,*)
     if(ioptjas.gt.0) then
@@ -955,6 +959,8 @@ endif
       nparmj=0
     endif
 
+
+
     ! ORB optimization flags (vmc/dmc only)
     if(ioptorb.ne.0) then
       write(ounit,'(a)' ) " Orbital derivatives are sampled"
@@ -966,6 +972,8 @@ endif
         write(idump_blockav) nefpterm
       endif
     endif
+
+
 
     ! CI optimization
     if(ioptci.ne.0) then
@@ -991,6 +999,7 @@ endif
     if(nciterm.gt.MXCITERM) call fatal_error('INPUT: nciterm gt MXCITERM')
 
     ! Multiple states/efficiency/guiding flags
+
 
     ! Use guiding wave function constructed from mstates
     if(iguiding.gt.0) then
@@ -1269,10 +1278,13 @@ endif
 
 ! Done reading all the files
 
+! ISSUE: DEBUG: see if the following commented block is really intended
 ! %module optwf
-  if (fdf_defined("optwf")) then
-    nwftype = 3; MFORCE = 3
-  endif
+  ! if (fdf_defined("optwf")) then
+  !   nwftype = 3; MFORCE = 3
+  ! endif
+
+
 
   call compute_mat_size_new()
   call allocate_vmc()
@@ -1283,7 +1295,6 @@ endif
   ! The following portion can be shifted to another subroutine.
   ! It does the processing of the input read so far and initializes some
   ! arrays if something is missing.
-
 !----------------------------------------------------------------------------END
   contains
 

@@ -50,7 +50,6 @@
       call allocate_numbas()
       call allocate_numexp()
 
-
       do 100 ic=1,nctype+newghostype
         if (ic .gt. 999) call fatal_error('READ_BAS_NUM: atomtyp > 999')
         filename =  trim(pooldir) //  trim(bas_id) // ".basis." // atomtyp(ic)
@@ -78,9 +77,8 @@
         if(igrid(ic).ne.1.and.igrid(ic).ne.2.and.igrid(ic).ne.3) &
         call fatal_error('READ_BAS_NUM: grid not implemented')
 
-!        Known bug::  DEBUG make sure that the following lines are read only for all-ele calcs
-!        if(nloc.eq.0) read(iunit,*,iostat=iostat) (l(irb),irb=1,nrbas(ic))
-!        if(nloc.eq.0) write(ounit,*) "nloc = 0 :: ", (l(irb),irb=1,nrbas(ic))
+        if(nloc.eq.0) read(iunit,*,iostat=iostat) (l(irb),irb=1,nrbas(ic))
+        if(nloc.eq.0) write(ounit,*) "nloc = 0 :: ", (l(irb),irb=1,nrbas(ic))
 
         if (iostat .ne. 0) then
           write(errunit,'(a)') "Error:: Problem in reading the numerical basis file"
@@ -97,7 +95,6 @@
 
         if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
         if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)
-
 
 
         do 100 irb=1,nrbas(ic)
@@ -137,6 +134,8 @@
   26        ce(icoef,irb,ic,iwf)=y(icoef)
 
         endif
+
+
 
 ! c       if(ipr.gt.1) then
           write(ounit,'(''basis = '',i4)') irb
@@ -189,7 +188,6 @@
 
       close(iunit)
  100  continue
-
 
       return
       end subroutine read_bas_num
