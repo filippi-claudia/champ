@@ -6,14 +6,15 @@
       use mpiconf, only: idtask
       use optwf_contrl, only: sr_tau , sr_adiag
       use mpi
-      
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
+
+      integer :: ier, iter, nparm
+
+      real(dp), dimension(*) :: deltap
+      real(dp), dimension(*) :: parameters
       character*20 dl_alg
-
-
-      dimension deltap(*), parameters(*)
-
       real(kind=8), dimension(1), allocatable :: parameters_old(:)
       real(kind=8), dimension(1), allocatable :: parms_lbfgs(:)
 
@@ -21,7 +22,6 @@
       allocate(parms_lbfgs(nparm))
 
       parms_lbfgs = parameters(1:nparm)
-      parameters_old = parms_lbfgs
 
 
 c we only need h_sr = - grad_parm E
@@ -35,7 +35,6 @@ c perform actual oLBFGS iteration
         call olbfgs_iteration(parms_lbfgs, -h_sr, sr_tau, iter)
 
         deltap(1:nparm) = parms_lbfgs - parameters_old
-        parameters(1:nparm) = parameters(1:nparm) + deltap(1:nparm)
       end if
 
 c Update parameter changes
