@@ -8,11 +8,10 @@ c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.in
       use mpiconf, only: idtask
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      integer m_parm_opt
-      parameter(m_parm_opt=59000)
-      integer n,imax,imod,i,j
+      integer, parameter :: m_parm_opt = 59000
+      integer :: n, imax, imod, i, j
       real*8 b(*),x(*),eps
       real*8 r(m_parm_opt),d(m_parm_opt),q(m_parm_opt),s(m_parm_opt)
       real*8 delta_0,delta_new,delta_old,alpha,beta,ddot
@@ -74,11 +73,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
       use sr_mat_n, only: s_ii_inv
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-      dimension x(*),b(*)
+      integer :: i, n
+      real(dp), dimension(*) :: x
+      real(dp), dimension(*) :: b
 
       do i=1,n
        x(i)=b(i)*s_ii_inv(i)
@@ -102,11 +103,24 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       use optorb_cblock, only: norbterm
       use mpiconf, only: idtask
       use mpi
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension z(*),r(*),aux(0:MCONF),aux1(0:MCONF),rloc(MPARM),r_s(MPARM),oz_jasci(MCONF)
-      dimension tmp(MPARM),tmp2(MPARM)
+      integer :: i, i0, i1, iconf, istate
+      integer :: k, n, nmparm_jasci, nparm_jasci
+      real(dp) :: aux0, aux2, aux3, aux4, ddot
+      real(dp) :: hoz, oz, oz_orb, var
+      real(dp) :: wts
+      real(dp), dimension(*) :: z
+      real(dp), dimension(*) :: r
+      real(dp), dimension(0:MCONF) :: aux
+      real(dp), dimension(0:MCONF) :: aux1
+      real(dp), dimension(MPARM) :: rloc
+      real(dp), dimension(MPARM) :: r_s
+      real(dp), dimension(MCONF) :: oz_jasci
+      real(dp), dimension(MPARM) :: tmp
+      real(dp), dimension(MPARM) :: tmp2
 
       call MPI_BCAST(z,n,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
