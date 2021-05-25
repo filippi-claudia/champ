@@ -6,6 +6,8 @@ jobs:
   build:
 
     runs-on: ubuntu-18.04
+    # Time limit for running all sets of tests
+    timeout-minutes: 30
 
     steps:
     - uses: actions/checkout@v1
