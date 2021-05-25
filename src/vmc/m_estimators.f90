@@ -4,6 +4,8 @@ module estcum
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
 
+     implicit none 
+
      real(dp), dimension(:, :), allocatable :: ecum !(MSTATES,MFORCE)
      real(dp), dimension(:), allocatable :: ecum1 !(MSTATES)
      integer :: iblk
@@ -104,6 +106,8 @@ module estcum
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
 
+     implicit none 
+
      real(dp), dimension(:), allocatable :: ecm21s !(MSTATES)
      real(dp), dimension(:), allocatable :: ecum1s !(MSTATES)
 
@@ -135,6 +139,8 @@ module estcum
      use force_mod, only: MFORCE
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
+
+     implicit none 
 
      real(dp) :: acc
      real(dp), dimension(:, :), allocatable :: esum !(MSTATES,MFORCE)
@@ -234,6 +240,8 @@ module estcum
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
 
+     implicit none 
+
      real(dp), dimension(:), allocatable :: apsi !(MSTATES)
      real(dp) :: aref
      real(dp), dimension(:), allocatable :: detref !(2)
@@ -266,6 +274,8 @@ module estcum
      use force_mod, only: MFORCE
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
+
+     implicit none 
 
      real(dp), dimension(:, :), allocatable :: ecm2 !(MSTATES,MFORCE)
      real(dp), dimension(:), allocatable :: ecm21 !(MSTATES)
@@ -360,6 +370,8 @@ module estcum
      use estpsi, only: allocate_estpsi
      use est2cm, only: allocate_est2cm
 
+     implicit none 
+
      call allocate_estcum()
      call allocate_estsig()
      call allocate_estsum()
@@ -373,6 +385,8 @@ module estcum
      use estsum, only: deallocate_estsum
      use estpsi, only: deallocate_estpsi
      use est2cm, only: deallocate_est2cm
+
+     implicit none 
 
      call deallocate_estcum()
      call deallocate_estsig()

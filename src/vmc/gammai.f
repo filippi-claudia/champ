@@ -45,7 +45,17 @@ c Returns   gammai, iflag=1,    x <  a+4
 c          -gammac, iflag=-1,   x >= a+4 even though it is called gammai
 
       use pcm_parms, only: re
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iflag, iter, itmax, large, n
+      real(dp) :: a, a0, a1, an, ana
+      real(dp) :: anf, ap, b0, b1
+      real(dp) :: cc, ci, d3b2, d5b2
+      real(dp) :: del, eps, fac, g
+      real(dp) :: g3b2, g5b2, gamm, gammai, gammcf
+      real(dp) :: go, gold, sum, too
+      real(dp) :: x, xae
 
 c     parameter (itmax=100,eps=1.d-14, d3b2=1.5d0,d5b2=2.5d0,
 c    & g3b2=.886226925452758d0,g5b2=1.329340388179137d0)
@@ -113,8 +123,13 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Evaluate the Gamma function.
 c For a=3/2 the error of this formula is 5.d-11
-      implicit real*8(a-h,o-z)
-      dimension cof(6)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: j
+      real(dp) :: a, fpf, gamm, half, one
+      real(dp) :: ser, stp, tmp, x
+      real(dp), dimension(6) :: cof
       data cof,stp/76.18009173d0,-86.50532033d0,24.01409822d0,
      * -1.231739516d0,.120858003d-2,-.536382d-5,2.50662827465d0/
       data half,one,fpf/.5d0,1.d0,5.5d0/

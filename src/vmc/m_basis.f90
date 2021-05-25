@@ -4,6 +4,8 @@ module basis
     use precision_kinds, only: dp
     use vmc_mod, only: MBASIS, MCTYPE
 
+    implicit none
+
     !  ncent  = number of centers
     !  zex    = screening constants for each basis function
     !  cent   = positions of each center
@@ -70,6 +72,7 @@ contains
         use force_mod, only: MWF
         use precision_kinds, only: dp
         use vmc_mod, only: MBASIS, MCTYPE
+
         ! if (.not. allocated(zex)) allocate (zex(MBASIS, MWF))
         ! if (.not. allocated(n1s)) allocate (n1s(MCTYPE))
         ! if (.not. allocated(n2s)) allocate (n2s(MCTYPE))
@@ -141,20 +144,27 @@ end module basis
 
 module numbas_mod
     !> Arguments: MRWF_PTS, MRWF
+
+    implicit none
+
     integer, parameter :: MRWF_PTS = 4000
     integer, parameter :: MRWF = 200
     private
     public :: MRWF, MRWF_PTS
     save
+
 end module numbas_mod
 
 module numexp
     !> Arguments: ae, ce
+
     use numbas_mod, only: MRWF
     use force_mod, only: MFORCE
     use precision_kinds, only: dp
     use vmc_mod, only: MCTYPE
     use vmc_mod, only: NCOEF
+
+    implicit none
 
     real(dp), dimension(:, :, :, :), allocatable :: ae !(2,MRWF,MCTYPE,MFORCE)
     real(dp), dimension(:, :, :, :), allocatable :: ce !(NCOEF,MRWF,MCTYPE,MFORCE)
@@ -184,10 +194,13 @@ end module numexp
 
 module numbas
     !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
     use numbas_mod, only: MRWF, MRWF_PTS
     use force_mod, only: MWF
     use precision_kinds, only: dp
     use vmc_mod, only: MBASIS, MCTYPE
+
+    implicit none
 
     real(dp), dimension(:), allocatable :: arg !(MCTYPE)
     real(dp), dimension(:, :, :, :), allocatable :: d2rwf !(MRWF_PTS,MRWF,MCTYPE,MWF)
@@ -239,6 +252,8 @@ module numbas1
     !> Arguments: iwlbas, nbastyp
     use vmc_mod, only: MBASIS, MCTYPE
 
+    implicit none
+
     integer, dimension(:, :), allocatable :: iwlbas !(MBASIS,MCTYPE)
     integer, dimension(:), allocatable :: nbastyp !(MCTYPE)
 
@@ -265,6 +280,8 @@ end module numbas1
 module numbas2
     !> Arguments: ibas0, ibas1
     use vmc_mod, only: MCENT
+
+    implicit none
 
     integer, dimension(:), allocatable :: ibas0 !(MCENT)
     integer, dimension(:), allocatable :: ibas1 !(MCENT)
@@ -295,6 +312,8 @@ subroutine allocate_m_basis()
     use numbas1, only: allocate_numbas1
     use numbas2, only: allocate_numbas2
 
+    implicit none
+
     ! call allocate_basis()
     call allocate_numexp()
     call allocate_numbas()
@@ -308,6 +327,8 @@ subroutine deallocate_m_basis()
     use numbas, only: deallocate_numbas
     use numbas1, only: deallocate_numbas1
     use numbas2, only: deallocate_numbas2
+
+    implicit none
 
     call deallocate_basis()
     call deallocate_numexp()

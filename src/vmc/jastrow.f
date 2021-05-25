@@ -4,14 +4,15 @@ c Written by Cyrus Umrigar
       use vmc_mod, only: MELEC
       use const, only: nelec
       use optwf_contrl, only: ioptjas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
-
-      dimension x(3,*),v(3,*),div_vj(nelec)
+      integer :: i, ifr
+      real(dp) :: d2, value
+      real(dp), dimension(3, *) :: x
+      real(dp), dimension(3, *) :: v
+      real(dp), dimension(nelec) :: div_vj
 
       do 10 i=1,nelec
         div_vj(i)=0

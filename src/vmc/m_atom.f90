@@ -2,6 +2,7 @@ module atom
     !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
     use precision_kinds, only: dp
 
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: cent
     real(dp), dimension(:), allocatable :: znuc
@@ -33,6 +34,8 @@ end module atom
 
 module ghostatom
     !> Arguments: newghostype, nghostcent
+
+    implicit none
 
     integer :: newghostype
     integer :: nghostcent

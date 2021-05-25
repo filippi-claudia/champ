@@ -1,6 +1,7 @@
 module allocation_mod
 !> Contains subroutines to allocate/deallocate VMC and DMC calculations.
 
+implicit none
 public
 contains
   !> Subroutines to allocate/deallocate memory of specific VMC-related
@@ -80,6 +81,8 @@ contains
     use c_averages_index, only: allocate_c_averages_index
     use jacobsave, only: allocate_jacobsave
     use velratio, only: allocate_velratio
+
+    implicit none
   
     !> Allocate dmc-related arrays:
   
@@ -111,7 +114,7 @@ contains
     use c_averages_index, only: deallocate_c_averages_index
     use jacobsave, only: deallocate_jacobsave
     use velratio, only: deallocate_velratio
-  
+
     !> Deallocate dmc-related arrays:
   
     call deallocate_iage()

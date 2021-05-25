@@ -5,6 +5,9 @@ module ewald_mod
      !            to the number after the separation
      ! NSYM       is the ratio of the number of vectors to the number of norms
      !            and depends on the symmetry of the lattice.
+
+     implicit none
+
      integer, parameter :: NCOEFX = 10, NPX = 4, IVOL_RATIO = 10, IBIG_RATIO = 15, NSYM = 8
      integer, parameter :: NGNORMX = 1000, NGVECX = NGNORMX*NSYM, NG1DX = 60
      integer, parameter :: NGNORM_SIMX = NGNORMX*IVOL_RATIO, NGVEC_SIMX = NGVECX*IVOL_RATIO
@@ -24,6 +27,8 @@ module ewald_mod
      !> Arguments: b_coul, b_coul_sim, y_coul, y_coul_sim
      use precision_kinds, only: dp
      use ewald_mod, only: NCOEFX, NGNORMX, NGNORM_SIMX
+
+     implicit none
 
      real(dp), dimension(:), allocatable :: b_coul !(NCOEFX)
      real(dp), dimension(:), allocatable :: b_coul_sim !(NCOEFX)
@@ -58,6 +63,8 @@ module ewald_mod
      use precision_kinds, only: dp
      use ewald_mod, only: NGNORM_BIGX
 
+     implicit none
+
      real(dp), dimension(:), allocatable :: vps_basis_fourier !(NGNORM_BIGX)
 
      private
@@ -84,6 +91,8 @@ module ewald_mod
      use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
      use precision_kinds, only: dp
      use vmc_mod, only: MORB
+
+     implicit none
 
      real(dp) :: cutg
      real(dp) :: cutg_big
@@ -213,6 +222,8 @@ module ewald_mod
      use precision_kinds, only: dp
      use vmc_mod, only: MORB
 
+     implicit none
+
      real(dp), dimension(:, :), allocatable :: c_im !(NGVECX,MORB)
      real(dp), dimension(:, :), allocatable :: c_ip !(NGVECX,MORB)
      real(dp), dimension(:, :), allocatable :: c_rm !(NGVECX,MORB)
@@ -259,6 +270,8 @@ module ewald_mod
      use ewald_mod, only: NGNORM_SIM_BIGX
      use precision_kinds, only: dp
 
+     implicit none
+
      real(dp) :: f
      real(dp), dimension(:), allocatable :: vbare_coul !(NGNORM_SIM_BIGX)
      real(dp), dimension(:), allocatable :: vbare_jas !(NGNORM_SIM_BIGX)
@@ -290,6 +303,8 @@ module ewald_mod
      !> Arguments: dist_nn
      use precision_kinds, only: dp
 
+     implicit none
+
      real(dp) :: dist_nn
 
      private
@@ -302,6 +317,8 @@ module ewald_mod
      use ewald_mod, only: IVOL_RATIO
      use ewald_mod, only: NGVEC_BIGX
      use precision_kinds, only: dp
+
+     implicit none
 
      real(dp), dimension(:), allocatable :: c_imag !(NGVEC_BIGX)
      real(dp), dimension(:), allocatable :: c_real !(NGVEC_BIGX)
@@ -350,6 +367,8 @@ module ewald_mod
      use test, only: allocate_test
      use tempor_test, only: allocate_tempor_test
 
+     implicit none
+
      call allocate_ewald()
      call allocate_ewald_basis()
      call allocate_periodic()
@@ -365,6 +384,8 @@ module ewald_mod
      use pworbital, only: deallocate_pworbital
      use test, only: deallocate_test
      use tempor_test, only: deallocate_tempor_test
+
+     implicit none
 
      call deallocate_ewald()
      call deallocate_ewald_basis()

@@ -2,6 +2,8 @@ module const
     !> Arguments: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
     use precision_kinds, only: dp
 
+    implicit none
+
     real(dp) :: delta
     real(dp) :: deltai
     real(dp) :: etrial
@@ -21,6 +23,8 @@ module const2
     !> Arguments: deltar, deltat
     use precision_kinds, only: dp
 
+    implicit none
+
     real(dp) :: deltar
     real(dp) :: deltat
 
@@ -33,11 +37,11 @@ module constant
     !> Arguments: twopi
     use precision_kinds, only: dp
 
+    implicit none
+
     real(dp) :: twopi
 
     private
     public :: twopi
     save
 end module constant
-
-

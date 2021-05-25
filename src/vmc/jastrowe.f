@@ -2,18 +2,16 @@
 c Written by Claudia Filippi by modifying jastrow
 
       use const, only: nelec
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
+      integer :: i, iel, iflag
+      real(dp) :: d2, value
+      real(dp), dimension(3, *) :: x
+      real(dp), dimension(3, *) :: v
+      real(dp), parameter :: zero = 0.d0
 
-
-      parameter (zero=0.d0)
-
-
-
-
-
-      dimension x(3,*),v(3,*)
 
       do 10 i=1,nelec
         v(1,i)=zero

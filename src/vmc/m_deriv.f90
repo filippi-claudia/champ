@@ -3,6 +3,8 @@ module da_energy_sumcum
     use precision_kinds, only: dp
     use vmc_mod, only: MCENT
 
+    implicit none
+
     real(dp), dimension(:, :), allocatable :: da_energy_cm2 !(3, MCENT)
     real(dp), dimension(:, :), allocatable :: da_energy_cum !(3, MCENT)
     real(dp), dimension(:, :), allocatable :: da_energy_sum !(3, MCENT)
@@ -40,6 +42,8 @@ module da_jastrow4val
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MCENT
 
+    implicit none
+
     real(dp), dimension(:, :, :), allocatable :: da_d2j !(3, MELEC, MCENT)
     real(dp), dimension(:, :, :), allocatable :: da_j !(3, MELEC, MCENT)
     real(dp), dimension(:, :, :, :), allocatable :: da_vj !(3, 3, MELEC, MCENT)
@@ -71,6 +75,8 @@ module da_orbval
     !> Arguments: da_d2orb, da_dorb, da_orb
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MORB, MCENT
+
+    implicit none
 
     real(dp), dimension(:, :, :, :), allocatable :: da_d2orb !(3, MELEC, MORB, MCENT)
     real(dp), dimension(:, :, :, :, :), allocatable :: da_dorb !(3, 3, MELEC, MORB, MCENT)
@@ -106,6 +112,8 @@ module da_pseudo
     use pseudo_mod, only: MPS_L
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MCENT
+
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: da_pecent !(3, MCENT)
     real(dp), dimension(:, :, :, :), allocatable :: da_vps !(3, MELEC, MCENT, MPS_L)
@@ -143,6 +151,8 @@ module da_energy_now
     use precision_kinds, only: dp
     use vmc_mod, only: MCENT
 
+    implicit none
+
     real(dp), dimension(:, :), allocatable :: da_energy !(3, MCENT)
     real(dp), dimension(:, :), allocatable :: da_psi !(3, MCENT)
 
@@ -172,6 +182,8 @@ module deloc_dj_m
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
+    implicit none
+
     real(dp), dimension(:, :), allocatable :: denergy !(MPARMJ, MSTATES)
 
     private
@@ -198,6 +210,8 @@ module denergy_det_m
     use precision_kinds, only: dp
     use vmc_mod, only: MDET
 
+    implicit none
+
     real(dp), dimension(:, :), allocatable :: denergy_det !(MDET, 2)
 
     private
@@ -222,6 +236,8 @@ module denupdn
     !> Arguments: rprobdn, rprobup
     use precision_kinds, only: dp
     use vmc_mod, only: nrad
+
+    implicit none
 
     real(dp), dimension(:), allocatable :: rprobdn !(nrad)
     real(dp), dimension(:), allocatable :: rprobup !(nrad)
@@ -250,6 +266,8 @@ module derivjas
     use optjas, only: MPARMJ
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC
+
+    implicit none
 
     real(dp), dimension(:), allocatable :: d2g !(MPARMJ)
     real(dp), dimension(:, :, :), allocatable :: g !(3, MELEC, MPARMJ)
@@ -287,6 +305,8 @@ module dorb_m
     use const, only: nelec
     use dets, only: ndet
 
+    implicit none
+
     integer, dimension(:, :), allocatable :: iworbd !(MELEC, MDET)
 
     private
@@ -312,6 +332,8 @@ module ijasnonlin
     !> Arguments: d1d2a, d1d2b, d2d2a, d2d2b
     use precision_kinds, only: dp
     use vmc_mod, only: MCTYPE
+
+    implicit none
 
     real(dp), dimension(:), allocatable :: d1d2a !(MCTYPE)
     real(dp), dimension(:), allocatable :: d1d2b !(2)
@@ -348,6 +370,9 @@ module derivest
 
    use force_mod, only: MFORCE
    use precision_kinds, only: dp
+
+   implicit none
+
 
     real(dp), dimension(:), allocatable :: derivcm2 !(MFORCE)
     real(dp), dimension(:,:), allocatable :: derivcum !(10,MFORCE)
@@ -388,6 +413,8 @@ subroutine allocate_m_deriv()
     use dorb_m, only: allocate_dorb_m
     use ijasnonlin, only: allocate_ijasnonlin
 
+    implicit none
+
     call allocate_da_energy_sumcum()
     call allocate_da_jastrow4val()
     call allocate_da_orbval()
@@ -413,6 +440,8 @@ subroutine deallocate_m_deriv()
     use derivjas, only: deallocate_derivjas
     use dorb_m, only: deallocate_dorb_m
     use ijasnonlin, only: deallocate_ijasnonlin
+
+    implicit none
 
     call deallocate_da_energy_sumcum()
     call deallocate_da_jastrow4val()

@@ -3,6 +3,8 @@ module jasn
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC
 
+    implicit none
+
     real(dp), dimension(:, :), allocatable :: d2ijn !(MELEC,MELEC)
     real(dp) :: d2n
     real(dp), dimension(:, :, :), allocatable :: fijn !(3,MELEC,MELEC)
@@ -38,6 +40,8 @@ module jaso
     !> Arguments: d2ijo, d2o, fijo, fjo, fso, fsumo
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC
+
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: d2ijo !(MELEC,MELEC)
     real(dp) :: d2o
@@ -76,6 +80,8 @@ module jaspar
     !> Arguments: nspin1, nspin2, sspin, sspinn, is
     use precision_kinds, only: dp
 
+    implicit none
+
     integer :: is
     integer :: nspin1
     integer :: nspin2
@@ -91,6 +97,8 @@ module jaspar1
     !> Arguments: cjas1, cjas2
     use force_mod, only: MWF
     use precision_kinds, only: dp
+
+    implicit none
 
     real(dp), dimension(:), allocatable :: cjas1 !(MWF)
     real(dp), dimension(:), allocatable :: cjas2 !(MWF)
@@ -119,6 +127,8 @@ module jaspar2
     !> Arguments: a1, a2
     use force_mod, only: MWF
     use precision_kinds, only: dp
+
+    implicit none
 
     real(dp), dimension(:, :, :), allocatable :: a1 !(83,3,MWF)
     real(dp), dimension(:, :, :), allocatable :: a2 !(83,3,MWF)
@@ -149,6 +159,8 @@ module jaspar3
     use precision_kinds, only: dp
     use vmc_mod, only: MCTYPE
     use vmc_mod, only: MORDJ1
+
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: a !(MORDJ1,MWF)
     real(dp), dimension(:, :, :), allocatable :: b !(MORDJ1,2,MWF)
@@ -193,6 +205,8 @@ module jaspar4
     use vmc_mod, only: MCTYPE
     use vmc_mod, only: MORDJ1
 
+    implicit none
+
     real(dp), dimension(:, :, :), allocatable :: a4 !(MORDJ1,MCTYPE,MWF)
     integer :: norda
     integer :: nordb
@@ -200,7 +214,8 @@ module jaspar4
 
     private
     public :: a4, norda, nordb, nordc
-    public :: allocate_jaspar4, deallocate_jaspar4
+!    public :: allocate_jaspar4
+    public :: deallocate_jaspar4
     save
 contains
     ! subroutine allocate_jaspar4()
@@ -221,6 +236,8 @@ module jaspar6
     !> Arguments: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
     use precision_kinds, only: dp
     use vmc_mod, only: MCTYPE
+
+    implicit none
 
     real(dp), dimension(:), allocatable :: asymp_jasa !(MCTYPE)
     real(dp), dimension(:), allocatable :: asymp_jasb !(2)
@@ -255,6 +272,8 @@ module jaspointer
     !> Arguments: npoint, npointa
     use vmc_mod, only: MCTYP3X
 
+    implicit none
+
     integer, dimension(:), allocatable :: npoint !(MCTYP3X)
     integer, dimension(:), allocatable :: npointa !(3*MCTYP3X)
 
@@ -282,9 +301,11 @@ subroutine allocate_m_jastrow()
     use jaspar1, only: allocate_jaspar1
     use jaspar2, only: allocate_jaspar2
     use jaspar3, only: allocate_jaspar3
-    use jaspar4, only: allocate_jaspar4
+!    use jaspar4, only: allocate_jaspar4
     use jaspar6, only: allocate_jaspar6
     use jaspointer, only: allocate_jaspointer
+
+    implicit none
 
     call allocate_jasn()
     call allocate_jaso()
@@ -306,6 +327,8 @@ subroutine deallocate_m_jastrow()
     use jaspar4, only: deallocate_jaspar4
     use jaspar6, only: deallocate_jaspar6
     use jaspointer, only: deallocate_jaspointer
+
+    implicit none
 
     call deallocate_jasn()
     call deallocate_jaso()

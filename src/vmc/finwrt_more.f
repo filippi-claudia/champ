@@ -15,8 +15,12 @@ c written by Claudia Filippi
       use contrl, only: nstep
       use sa_check, only: energy_all, energy_err_all
       use mpi
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: iab, ierr, istate
+      real(dp) :: passes, sigma
 
 
 c     dimension istatus(MPI_STATUS_SIZE)
