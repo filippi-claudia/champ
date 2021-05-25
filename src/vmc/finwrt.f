@@ -23,7 +23,8 @@ c routine to print out final results
       use step, only: rprob, suc, try
       use tmpnode, only: distance_node_sum
       use contr3, only: mode
-      use contrl, only: nblk, nstep
+      !use contrl, only: nblk, nstep
+      use control_vmc, only: vmc_nblk, vmc_nstep
       use contrl_per, only: iperiodic
       use sa_check, only: energy_all, energy_err_all
       use ci000, only: iciprt
@@ -40,7 +41,7 @@ c routine to print out final results
       err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
       err1(x,x2,j)=dsqrt(dabs(x2/wcum(j,1)-(x/wcum(j,1))**2)/passes)
 
-      passes=dfloat(iblk*nstep)
+      passes=dfloat(iblk*vmc_nstep)
       rtpass=dsqrt(passes)
 
 c quantities not computed in acuest_write
@@ -115,7 +116,7 @@ c is precisely what is being reflected when we get T_corr < 1.
       if(istate.eq.1) then
         write(6,'(a12,2x,a20)') mode,title
         write(6,'(''results after '',f12.0,'' passes,  nstep, nblk ='',3i6)')
-     &  passes, nstep,iblk
+     &  passes, vmc_nstep,iblk
       endif
       if(nstates.gt.1) write(6,'(/,''State '',i4)') istate
       write(6,'(''physical variable'',t20,''average'',t34,''rms error''

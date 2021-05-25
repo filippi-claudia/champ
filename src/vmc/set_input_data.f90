@@ -51,16 +51,18 @@ subroutine multideterminants_define(iflag, icheck)
     use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet
     use elec, only: ndn, nup
-    use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+    use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, allocate_multidet
     use coefs, only: norb
     use dorb_m, only: iworbd
+
+    use contrl_file,    	only: ounit, errunit
 
     ! not sure about that one either ....
     use wfsec, only: nwftype
 
     implicit real*8(a - h, o - z)
 
-    dimension iswapped(nelec), itotphase(MDET)
+    dimension iswapped(nelec), itotphase(ndet)
 
     save kref_old
 
@@ -85,14 +87,14 @@ subroutine multideterminants_define(iflag, icheck)
         if (kref .gt. ndet) call fatal_error('MULTIDET_DEFINE: kref > ndet')
 
 2       if (idiff(kref_old, kref, iflag) .eq. 0) goto 1
-        write (6, *) 'kref change', iflag, kref_old, kref
+        write (ounit, *) 'kref change', iflag, kref_old, kref
     endif
     kref_old = kref
 
-    if (.not. allocated(iwundet)) allocate (iwundet(MDET, 2))
-    if (.not. allocated(numrep_det)) allocate (numrep_det(MDET, 2))
-    if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, MDET, 2))
-    if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, MDET, 2))
+    if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
+    if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
+    if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
+    if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2))
 
     do iab = 1, 2
         numrep_det(kref, iab) = 0
@@ -135,7 +137,7 @@ subroutine multideterminants_define(iflag, icheck)
                 endif
             enddo
             if (isub .ne. numrep_det(k, iab)) then
-                write (6, *) isub, numrep_det(k, iab)
+                write (ounit, *) isub, numrep_det(k, iab)
                 stop 'silly error'
             endif
             do irep = 1, nel
@@ -183,6 +185,8 @@ subroutine multideterminants_define(iflag, icheck)
 6       continue
     enddo
 
+    call allocate_multidet()
+
     iactv(1) = nup + 1
     iactv(2) = ndn + 1
     ivirt(1) = nup + 1
@@ -198,9 +202,9 @@ subroutine multideterminants_define(iflag, icheck)
 8       continue
     enddo
 
-    write (6, *) 'norb  =', norb
-    write (6, *) 'iactv =', (iactv(iab), iab=1, 2)
-    write (6, *) 'ivirt =', (ivirt(iab), iab=1, 2)
+    write (ounit, *) 'norb  =', norb
+    write (ounit, *) 'iactv =', (iactv(iab), iab=1, 2)
+    write (ounit, *) 'ivirt =', (ivirt(iab), iab=1, 2)
 
     idist = 1
     if (idist .eq. 0) then
@@ -234,7 +238,7 @@ subroutine multideterminants_define(iflag, icheck)
                     ndet_dist = ndet_dist + 1
                 endif
             enddo
-            write (6, *) iab, ndet_dist, ' distinct out of ', ndet
+            write (ounit, *) iab, ndet_dist, ' distinct out of ', ndet
         enddo
     endif
 

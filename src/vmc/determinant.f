@@ -15,7 +15,7 @@ c Modified by A. Scemama
       use slater, only: d2dx2, ddx, fp, fpp, slmi
       use const, only: nelec
 
-      use multislater, only: detiab
+      use multislater, only: detiab, allocate_multislater
       use atom, only: ncent_tot
       implicit real*8(a-h,o-z)
 
@@ -39,6 +39,7 @@ c compute orbitals
         nel=ndn
       endif
 
+      call allocate_multislater() ! properly accessing array elements
       detiab(kref,iab)=1.d0
 
       jk=-nel
@@ -102,7 +103,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use multislater, only: detiab
+      use multislater, only: detiab, allocate_multislater
       implicit real*8(a-h,o-z)
 
       ! write(6, *) 'norb', norb
@@ -112,6 +113,7 @@ c-----------------------------------------------------------------------
       iflag=0
       if(ipass.le.2) return
 
+      call allocate_multislater() !access elements after allocating
       do iab=1,2
         dlogdet=dlog10(dabs(detiab(kref,iab)))
 c       dcheck=dabs(dlogdet-detref(iab)/ipass)
@@ -132,7 +134,7 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
           call optorb_define
         endif
       endif
-    
+
       return
       end
 c-----------------------------------------------------------------------
@@ -159,7 +161,7 @@ c-----------------------------------------------------------------------
 
 
       parameter (one=1.d0,half=0.5d0)
-      
+
       ! resize ddor and dorb if necessary
       ! call resize_matrix(ddorb, norb+nadorb, 2)
       ! call resize_matrix(b, norb+nadorb, 1)

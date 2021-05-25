@@ -59,13 +59,13 @@ c The foll. still need to be tried:
 c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best
 
- 
+
 c TMP
       dimension xstrech(3,nelec)
       dimension xaxis(3),yaxis(3),zaxis(3),idist(nelec)
       dimension ddx_ref(3)
       dimension psidn(MSTATES) ,wtg(MSTATES)
-      
+
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
 c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
@@ -77,7 +77,6 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
       deltri=one/deltar
 
       call check_orbitals
-      
       do 300 i=1,nelec
 
         if(i.le.nup) then
@@ -114,7 +113,7 @@ c Calculate magnitude of the velocity in the radial direction
         voldr=zero
         do 10 ic=1,3
    10     voldr=voldr+vold(ic,i)*rvmino(ic,i)
-        
+
         voldr=voldr/rmino(i)
 
 c Place x-axis along direction of angular change and
@@ -311,7 +310,7 @@ c Do geometrical rejections for molecules
 c rratio^2 is needed for the density of the angular moves
         rratio=rminno(i)/rminon(i)
 
-        if(ipr.ge.1) then
+!        if(ipr.ge.1) then
           rtest=dsqrt(rvminn(1,i)**2+rvminn(2,i)**2+rvminn(3,i)**2)
           rtest2=dsqrt(xprime**2+yprime**2+zprime**2)
           write(6,'(''ELECTRON'',i6)') i
@@ -326,11 +325,11 @@ c rratio^2 is needed for the density of the angular moves
           write(6,'(''rtry,costht,sintht,phitry'',9f9.4)') rtry,costht,
      &    sintht,phitry
           write(6,'(''fxop'',9f12.4)') fxop
-        endif
+!        endif
 
 c calculate psi at new configuration
       iel=i
-  
+
       call psie(iel,xnew,psidn,psijn,ipass,0)
       if(iguiding.eq.0) then
 
@@ -585,7 +584,7 @@ c Note when one electron moves the velocity on all electrons change.
       call update_ymat(i)
 
   300 continue
-      
+
 
 c loop over secondary configurations
       do 350 ifr=2,nforce
@@ -594,9 +593,9 @@ c loop over secondary configurations
         do 350 istate=1,nstates
   350     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
 
-      
+
       call check_orbitals_reset
-      
+
 c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido(1),psijo,eold(1,1),ipass,1)
@@ -612,7 +611,7 @@ c primary configuration
       if(ipr.gt.1) then
         write(6,'(''psid,psig ='',2d12.4)') psido(1),psidg
       endif
-      
+
 
       rnorm_nodes=1.d0
       if(node_cutoff.gt.0) then
@@ -632,7 +631,7 @@ c primary configuration
       do 360 istate=1,nstates
         wtg(istate)=psido(istate)/psidg
         wtg(istate)=wtg(istate)*wtg(istate)
-     
+
 c form expected values of e, pe, etc.
         esum1(istate)=eold(istate,1)
         wsum(istate,1)=wsum(istate,1)+wtg(istate)
@@ -647,8 +646,8 @@ c normal component efield on cavity surface to compute a new set of polarization
       if(ichpol.eq.1) call qpcm_efield(nelec,xold)
 c efield dovuto agli elettroni sui siti dei dipoli
       if(ich_mmpol.eq.1) call mmpol_efield(nelec,xold)
-      
-c use 'new' not 'old' value  
+
+c use 'new' not 'old' value
       call pcm_sum(wtg,0.d0)
       call mmpol_sum(wtg,0.d0)
       call prop_sum(wtg,0.d0)
@@ -682,12 +681,11 @@ c use 'new' not 'old' value
         ekin(idist(i))=ekin(idist(i))+dtdx2o(i)*wtg(1)
   390   ekin2(idist(i))=ekin2(idist(i))+dtdx2o(i)**2*wtg(1)
 
-c rewrite psi2o for next metropolis step if you are sampling guiding 
+c rewrite psi2o for next metropolis step if you are sampling guiding
       if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
 
       if(node_cutoff.gt.0) then
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)
       endif
-      
       return
       end

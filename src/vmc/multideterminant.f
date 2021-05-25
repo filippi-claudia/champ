@@ -16,7 +16,7 @@
       use zcompact, only: aaz, dzmat, emz, zmat
       use coefs, only: norb
       use Bloc, only: b, tildem, xmat
-      use denergy_det_m, only: denergy_det
+      use denergy_det_m, only: denergy_det, allocate_denergy_det_m
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
       use force_analy, only: iforce_analy
@@ -38,7 +38,7 @@ c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
 
-      dimension eloc_det(MDET,2)
+      dimension eloc_det(ndet,2)
       dimension vj(3,nelec),vpsp_det(*)
 
       dimension btemp(nelec**2,2)
@@ -65,7 +65,7 @@ c dimensioned at least max(nup**2,ndn**2)
 c     write(6,*) 'eloc_ref',eloc_det(kref,1),eloc_det(kref,2)
 
       if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) call bxmatrix(kref,xmat(1,1),xmat(1,2),b)
-     
+
       if(ndet.eq.1.and.ioptorb.eq.0) return
 
       nel=nup
@@ -123,6 +123,7 @@ c         write(6,'(''AA-2 '',15f7.2)') (aa(irep,jrep,2),jrep=1,15)
 c       enddo
 c     endif
 
+      call allocate_denergy_det_m()
       denergy_det(kref,1)=0
       denergy_det(kref,2)=0
 
@@ -485,7 +486,7 @@ c     enddo
       end
 
 c-----------------------------------------------------------------------
- 
+
 c-----------------------------------------------------------------------
       function idiff(j,i,iab)
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
@@ -506,5 +507,5 @@ c-----------------------------------------------------------------------
       idiff=0
       return
       end
-           
+
 c-----------------------------------------------------------------------

@@ -2,7 +2,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
-      use precision_kinds, only: dp 
+      use precision_kinds, only: dp
       use force_mod, only: MFORCE
       use vmc_mod, only: MELEC, MDET, MCENT
       use vmc_mod, only: nrad, MMAT_DIM2
@@ -13,10 +13,10 @@ c routine to accumulate estimators for energy etc.
       use config, only: psido, psijo, rmino, rvmino
       use config, only: vold, xold
       use csfs, only: nstates
-      use denupdn, only: rprobdn, rprobup
+      use denupdn, only: rprobdn, rprobup, allocate_denupdn
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
-      use estpsi, only: apsi, aref, detref
+      use estpsi, only: apsi, aref, detref, allocate_estpsi
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use forcepar, only: nforce
@@ -24,11 +24,11 @@ c routine to accumulate estimators for energy etc.
       use forcewt, only: wcum, wsum
       use multidet, only: kref
       use optwf_contrl, only: ioptorb
-      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try, allocate_step
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq
       use mstates_ctrl, only: iguiding
-      
+
       use optorb_cblock, only: ns_current
       use distance_mod, only: rshift, r_en, rvec_en
       use multislater, only: detiab
@@ -41,7 +41,7 @@ c routine to accumulate estimators for energy etc.
       parameter (half=.5d0)
 
       dimension xstrech(3,nelec)
-      real(dp), dimension(:,:), allocatable :: enow 
+      real(dp), dimension(:,:), allocatable :: enow
 
 c xsum = sum of values of x from metrop
 c xnow = average of values of x from metrop
@@ -56,7 +56,7 @@ c collect cumulative averages
 
       do 10 ifr=1,nforce
         do 10 istate=1,nstates
-     
+
         enow(istate,ifr)=esum(istate,ifr)/wsum(istate,ifr)
         wcum(istate,ifr)=wcum(istate,ifr)+wsum(istate,ifr)
         ecum(istate,ifr)=ecum(istate,ifr)+esum(istate,ifr)
@@ -110,7 +110,7 @@ c zero out xsum variables for metrop
       call pcm_init(1)
       call mmpol_init(1)
       call force_analy_init(1)
-      
+
 
       call acuest_reduce(enow)
       if(allocated(enow)) deallocate(enow)
@@ -123,12 +123,13 @@ c statistical fluctuations without blocking
         ecum1(istate)=ecum1(istate)+esum1(istate)*wtg(istate)
         ecm21(istate)=ecm21(istate)+esum1(istate)**2*wtg(istate)
         esum1(istate)=0
-        
+
         apsi(istate)=apsi(istate)+dabs(psido(istate))
   30  continue
-    
+
       aref=aref+dabs(detiab(kref,1)*detiab(kref,2))
 
+      call allocate_estpsi()
       detref(1)=detref(1)+dlog10(dabs(detiab(kref,1)))
       detref(2)=detref(2)+dlog10(dabs(detiab(kref,2)))
 
@@ -177,6 +178,7 @@ c zero out estimators
         apsi(istate)=0
   50  continue
 
+      call allocate_estpsi()
       detref(1)=0
       detref(2)=0
 
@@ -210,6 +212,8 @@ c zero out estimators
    65     fcm2(istate,ifr)=0
 
 c Zero out estimators for acceptance, force-bias trun., kin. en. and density
+      call allocate_step()
+      call allocate_denupdn()
       do 70 i=1,nrad
         try(i)=0
         suc(i)=0

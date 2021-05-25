@@ -15,9 +15,10 @@ module optwf_sr_mod
     use precision_kinds, only: dp
     use optwf_contrl, only: ioptci, ioptjas, ioptorb
     use force_analy, only: iforce_analy
-    use contrl, only: nblk_max
+!    use contrl, only: nblk_max
+    use control_vmc, only: vmc_nblk_max
     use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
-    use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+    use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
 
     real(dp) :: omega0
     integer :: n_omegaf, n_omegat
@@ -42,7 +43,8 @@ contains
         use mstates_mod, only: MSTATES
         use optwf_corsam, only: energy, energy_err, force
         use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
-        use contrl, only: nblk
+        !use contrl, only: nblk
+        use control_vmc, only: vmc_nblk
         use force_analy, only: alfgeo
         use optwf_contrl, only: nparm
         use method_opt, only: method
@@ -71,7 +73,7 @@ contains
         write (6, '(/,''SR adiag: '',f10.5)') sr_adiag
         write (6, '(''SR tau:   '',f10.5)') sr_tau
         write (6, '(''SR eps:   '',f10.5)') sr_eps
-    
+
 
         call save_params()
 
@@ -148,11 +150,11 @@ contains
                 denergy = energy(1) - energy_sav
                 denergy_err = sqrt(energy_err(1)**2 + energy_err_sav**2)
 
-                nblk = nblk*1.2
-                nblk = min(nblk, nblk_max)
+                vmc_nblk = vmc_nblk*1.2
+                vmc_nblk = min(vmc_nblk, vmc_nblk_max)
 
             endif
-            write (6, '(''nblk = '',i6)') nblk
+            write (6, '(''nblk = '',i6)') vmc_nblk
             write (6, '(''alfgeo = '',f10.4)') alfgeo
 
             energy_sav = energy(1)

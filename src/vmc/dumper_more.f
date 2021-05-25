@@ -29,7 +29,8 @@ c job where it left off
       use wfsec, only: iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use const2, only: deltar, deltat
-      use contrl, only: nstep
+!      use contrl, only: nstep
+      use control_vmc, only: vmc_nstep
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
       use basis, only: nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
@@ -37,7 +38,7 @@ c job where it left off
       use inputflags, only: node_cutoff, eps_node_cutoff
 
       ! I'm 50% sure it's needed
-      ! it was in master as part of the include optorb.h 
+      ! it was in master as part of the include optorb.h
       use optorb_cblock, only: ns_current
       implicit real*8(a-h,o-z)
 
@@ -57,7 +58,7 @@ c job where it left off
 
       write(10) delta,deltar,deltat
 
-      write(10) nstep,iblk
+      write(10) vmc_nstep,iblk
       do 1 istate=1,nstates
         write(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),tjfcum(istate),r2cum,acc
         write(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),tjfcm2(istate),r2cm2
@@ -127,7 +128,7 @@ c-----------------------------------------------------------------------
       if (dabs(deltatx-deltat).gt.small) call fatal_error('STARTR: deltat')
 
       read(10) nstepx,iblk
-      if (nstepx.ne.nstep) call fatal_error('STARTR: nstep')
+      if (nstepx.ne.vmc_nstep) call fatal_error('STARTR: nstep')
       do 2 istate=1,nstates
         read(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),tjfcum(istate),r2cum,acc
         read(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),tjfcm2(istate),r2cm2

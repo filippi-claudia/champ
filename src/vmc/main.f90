@@ -39,18 +39,18 @@ program main
     !> Initiaize output.log file.
     !call init_logfile()
     call initialize()
-    
+
 
     ! read the input
     if ( wid ) then
-        call parser()    
-    endif 
+        call parser()
+    endif
 
     !> Initiaize log check.XXX files. It needs ipr flag value.
     call init_procfile()
 
     ! ! run the the optimization
-    ! call optwf()
+    call optwf()
 
     ! call close_files()
     call mpi_finalize(ierr)
