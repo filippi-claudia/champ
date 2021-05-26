@@ -15,7 +15,7 @@ subroutine parser
   use elec,           	only: ndn, nup
   use const,          	only: nelec
   use atom,           	only: nctype, ncent
-  use contrl,         	only: nstep, nblk, nblk_max
+!  use contrl,         	only: nstep, nblk, nblk_max
   use wfsec,          	only: nwftype
   use forcepar,       	only: nforce
   use force_mod,      	only: MFORCE
@@ -569,6 +569,7 @@ subroutine parser
     fbias=dmin1(two,dmax1(zero,fbias))
     write(ounit,'(a,t36,f12.6)')  " Force bias = ",   fbias
 
+    ! Reduce the output printing for a large calculation
     if(vmc_nstep*(vmc_nblk+2*vmc_nblkeq) .gt. 104000) ipr=-1
     if(vmc_irstar.eq.1) vmc_nblkeq=0
 
@@ -840,6 +841,9 @@ subroutine parser
   write(ounit,'(a)') " Calculation Parameters :: Basis : "
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
+
+  if(ibasis.eq.2) write(ounit,'(a)') " PW orbitals "
+  if(numr.gt.0)   write(ounit,'(a)') " numerical basis used"
 
   if(ibasis.eq.1) then
     write(ounit,'(a)') " Orbitals on localized basis "
@@ -1578,7 +1582,7 @@ subroutine compute_mat_size_new()
   ! use const, only: nelec
   ! use atom, only: nctype_tot, ncent_tot
   use sr_mod, only: MPARM, MOBS, MCONF
-  use contrl, only: nstep, nblk_max
+  use control_vmc, only: vmc_nstep, vmc_nblk
 
   use vmc_mod, only: set_vmc_size
   use optci, only: set_optci_size
@@ -1590,7 +1594,7 @@ subroutine compute_mat_size_new()
 
   ! leads to circular dependecy of put in sr_mod ..
   MOBS = 10 + 6*MPARM
-  MCONF = nstep * nblk_max
+  MCONF = vmc_nstep * vmc_nblk
 
   call set_vmc_size
   call set_optci_size

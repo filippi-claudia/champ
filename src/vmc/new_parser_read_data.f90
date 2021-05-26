@@ -209,6 +209,7 @@ subroutine read_determinants_file(file_determinants)
     use dets,           only: cdet, ndet
     use vmc_mod,        only: MDET
     use dorb_m,         only: iworbd
+    use coefs,          only: norb
     use inputflags,     only: ideterminants
     use wfsec,          only: nwftype
     use csfs,           only: nstates
@@ -287,6 +288,8 @@ subroutine read_determinants_file(file_determinants)
         read(iunit,*, iostat=iostat) (iworbd(j,i), j=1,nelec)
         if (iostat /= 0) call fatal_error("Error in reading orbital -- determinants mapping ")
     enddo
+
+    if(any(iworbd .gt. norb))  call fatal_error('INPUT: iworbd > norb')
 
     write(ounit,*)
     write(ounit,*) " Orbitals <--> Determinants mapping :: which orbitals enter in which dets"

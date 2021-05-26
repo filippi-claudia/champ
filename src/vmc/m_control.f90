@@ -288,10 +288,10 @@ contains
             write(output_unit, '(a, /)')    "  '-e', '-er', '-err', '-error',  '--error'       Provide error  file i.e. '-e error' "
 
             write(output_unit, '(a, /)')    "  '-v', '-ver', '--version'                       print version information"
-            write(output_unit, '(a, /)') "  '-h', '--help'                                  print usage information"
-            write(output_unit, '(a, /)') "  '-V', '--verbose'                               verbose mode printing"
-            write(output_unit, '(a, /)') "  '-d', '-debug', '--debug'                       run in debug mode"
-            write(output_unit, '(a, /)') "  '-p', '-prefix', '--prefix'                     Attach prefix to generated filenames"
+            write(output_unit, '(a, /)')    "  '-h', '--help'                                  print usage information"
+            write(output_unit, '(a, /)')    "  '-V', '--verbose'                               verbose mode printing"
+            write(output_unit, '(a, /)')    "  '-d', '-debug', '--debug'                       run in debug mode"
+            write(output_unit, '(a, /)')    "  '-p', '-prefix', '--prefix'                     Attach prefix to generated filenames"
         end subroutine print_help
 
     end subroutine initialize
