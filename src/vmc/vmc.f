@@ -97,13 +97,7 @@ c initialize the walker configuration
       endif
 
 c zero out estimators and averages
-      print*, "debug: before entering zerest printing vmc parameters"
-      print*, "vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk"
-      print*, vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
-      print*, "vmc_nblkeq, vmc_nconf_new, vmc_nstep"
-      print*, vmc_nblkeq, vmc_nconf_new, vmc_nstep
 
-!      debug note: acuest is not called yet
       if (vmc_irstar.ne.1) call zerest
 
 c check if restart flag is on. If so then read input from
@@ -121,7 +115,7 @@ c dumped data to restart
 c get initial value of cpu time
 
       call my_second(0,'begin ')
-      print*, "debug: timings begin"
+
 c if there are equilibrium steps to take, do them here
 c skip equilibrium steps if restart run
 c imetro = 6 spherical-polar with slater T
@@ -136,10 +130,10 @@ c imetro = 6 spherical-polar with slater T
 
          call acuest
         enddo
-        print*, "debug: after metrop6 and acuest"
+
 c       Equilibration steps done. Zero out estimators again.
         call my_second(2,'equilb')
-        print*, "debug: timings after"
+
         call zerest
       endif
 c now do averaging steps
