@@ -59,7 +59,7 @@
           open (newunit=iunit,file=filename, iostat=iostat, action='read', status='old')
           if (iostat .ne. 0) error stop "Problem in opening the numerical basis file"
         else
-          error stop " Numerical Basis file "// filename // " does not exist."
+          call fatal_error( " Numerical Basis file "// filename // " does not exist.")
         endif
 
         write(ounit,*) '-----------------------------------------------------------------------'
@@ -233,7 +233,7 @@ subroutine readps_gauss
       open (newunit=iunit,file=filename, iostat=iostat, action='read', status='old')
       if (iostat .ne. 0) error stop "Problem in opening the pseudopotential file (Gaussian)"
     else
-      error stop " Pseudopotential file (Gaussian) "// filename // " does not exist."
+      call fatal_error( " Pseudopotential file (Gaussian) "// filename // " does not exist.")
     endif
 
   !   External file reading
