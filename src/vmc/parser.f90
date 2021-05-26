@@ -796,6 +796,8 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
+    allocate (zex(nbasis, nwftype))
+    if (numr .eq. 0 .and. iperiodic .eq. 0) call fatal_error('ZEX: numr=0 and iperiodic=0 but no zex are inputed')
     zex = 1   ! debug check condition about numr == 0
   endif
 
