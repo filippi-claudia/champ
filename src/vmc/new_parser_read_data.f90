@@ -207,6 +207,7 @@ subroutine read_determinants_file(file_determinants)
     use, intrinsic :: iso_fortran_env, only: iostat_eor
     use contrl_file,    only: ounit, errunit
     use dets,           only: cdet, ndet
+    use vmc_mod,        only: MDET
     use dorb_m,         only: iworbd
     use inputflags,     only: ideterminants
     use wfsec,          only: nwftype
@@ -267,6 +268,8 @@ subroutine read_determinants_file(file_determinants)
         error stop "Error in reading number of determinants / number of wavefunction types"
     endif
 
+    ! Note the hack here about capitalized variables. DEBUG
+    MDET = ndet
 
     if (.not. allocated(cdet)) allocate(cdet(ndet,1,nwftype))
 
@@ -499,7 +502,7 @@ subroutine read_orbitals_file(file_orbitals)
     use inputflags, only: ilcao
     use orbval, only: nadorb
     use pcm_fdc, only: fs
-
+    use vmc_mod, only: MORB, MBASIS
     ! was not in master but is needed
     use wfsec, only: nwftype
 
@@ -550,6 +553,9 @@ subroutine read_orbitals_file(file_orbitals)
             write(ounit,int_format) " Number of basis functions ", nbasis
             write(ounit,int_format) " Number of lcao orbitals ", norb
             write(ounit,int_format) " Type of wave functions ", iwft
+            ! Note the hack with capitalized variables DEBUG
+            MBASIS = nbasis
+            NORB = norb
         endif
     else
         write(ounit, *) " Check ", temp1, nbasis, norb, iwft
@@ -612,7 +618,9 @@ subroutine read_csf_file(file_determinants)
     use inputflags, only: icsfs
     use wfsec, only: nwftype
     use dets, only: ndet, cdet
-
+!   Not sure about the following two lines
+    use ci000, only: nciprim, nciterm
+    use optwf_contrl, only: ioptci
     implicit none
 
     !   local use
@@ -648,7 +656,7 @@ subroutine read_csf_file(file_determinants)
             backspace(iunit)   ! go a line back
             read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
             if (iostat == 0) then
-                if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
+                if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
                 do i = 1, nstates
                     read(iunit,*, iostat=iostat) (ccsf(j,i,1), j=1,ncsf)
                 enddo
@@ -660,8 +668,11 @@ subroutine read_csf_file(file_determinants)
             write(ounit,int_format) " Number of states (nstates) ", nstates
         else
             ! No csf information present. One to one mapping cdet == ccsf
+            nstates = 1
+            if (ioptci .ne. 0) nciterm = nciprim
+            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
             do i = 1, nstates
-                do j = 1, ncsf
+                do j = 1, ndet
                     ccsf(j,i,nwftype) = cdet(j,i,nwftype)
                 enddo
             enddo

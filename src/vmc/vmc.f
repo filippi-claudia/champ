@@ -142,7 +142,6 @@ c       Equilibration steps done. Zero out estimators again.
         print*, "debug: timings after"
         call zerest
       endif
-      stop "after going through metrop6 and zerest"
 c now do averaging steps
 
       l=0
@@ -174,8 +173,6 @@ c collected over all the run and to reduce cum1 in mpi version
       call mc_configs_write
 
 c print out final results
-      print*, "DEBUG, stop before calling finwrt"
-      stop
       call finwrt
 
 c if dump flag is on then dump out data for a restart

@@ -699,8 +699,8 @@ subroutine parser
   elseif (fdf_block('csf', bfdf)) then
     call fdf_read_csf_block(bfdf)
   else
-    ! No csf present; set default values (in replacement of inputcsf)
-    nstates = 1 ; ncsf = 0
+    ! No csf present; set default values
+    nstates = 1
     if (ioptci .ne. 0) nciterm = nciprim
   endif
 

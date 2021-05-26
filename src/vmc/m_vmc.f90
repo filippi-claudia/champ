@@ -29,9 +29,10 @@ module vmc_mod
     real(dp), parameter :: delri = (nrad - 1)/radmax
 
     ! integer, parameter :: MELEC = 32, MORB = 500, MBASIS = 500, MDET = 1000, MCENT = 20
-    integer, parameter :: MELEC = 32, MBASIS = 500, MCENT = 20
+    integer, parameter :: MELEC = 32, MCENT = 20
     integer, parameter :: MCTYPE = 3
-    integer :: MORB
+    integer :: MBASIS = 500
+    integer :: MORB = 500
     integer :: MDET
     integer :: MCTYP3X
     integer, parameter :: NSPLIN = 1001, MORDJ = 7
@@ -59,12 +60,11 @@ module vmc_mod
 contains
     subroutine set_vmc_size
         use const, only: nelec
-        use atom,  only: nctype, ncent  ! Ravindra
-
+        use atom, only: nctype_tot, ncent_tot
         MMAT_DIM = nelec*nelec/4
         MMAT_DIM2 = nelec*(nelec - 1)/2
-        MCTYP3X = max(3, nctype) ! BUG:: Ravindra max(3, nctype_tot)
-        MCENT3 = 3*ncent         ! BUG:: Ravindra 3*ncent_tot
+        MCTYP3X = max(3, nctype_tot)
+        MCENT3 = 3*ncent_tot
 
     end subroutine set_vmc_size
 end module vmc_mod

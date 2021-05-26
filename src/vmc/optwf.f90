@@ -13,7 +13,13 @@ contains
         use optwf_contrl, only: ioptwf, idl_flag, ilbfgs_flag
         use optwf_dl_mod, only: optwf_dl
         use optwf_sr_mod, only: optwf_sr
-
+        ! debug lines below  ravindra
+        use dets, only: ndet
+        use coefs, only: norb
+        use atom, only: nctype_tot, ncent_tot
+        use csfs, only: nstates
+        use const, only: nelec
+        use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE
         implicit None
 
         if (ioptwf .gt. 0) then
@@ -31,6 +37,13 @@ contains
                 call optwf_matrix_corsamp
             endif
         else
+            print*, "printing nctype_tot, ncent_tot ", nctype_tot, ncent_tot
+            print*, "printing ndet ", ndet
+            print*, "printing norb ", norb
+            print*, "printing nstates ", nstates
+            print*, "printing nelec ", nelec
+            print*, "MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE"
+            print*, MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE
             call vmc
         endif
 
