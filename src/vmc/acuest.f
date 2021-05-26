@@ -239,7 +239,7 @@ c     set n- and e-coords and n-n potentials before getting wavefn. etc.
          call strech(xold,xstrech,ajacob,ifr,1)
          call hpsi(xstrech,psido,psijo,eold(1,ifr),0,ifr)
          do istate=1,nstates
-            psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+            psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(istate))+dlog(ajacob)
          enddo
       enddo
 
@@ -249,17 +249,17 @@ c     set n- and e-coords and n-n potentials before getting wavefn. etc.
       call hpsi(xold,psido,psijo,eold(1,1),0,1)
 
       do istate=1,nstates
-         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
+         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(istate))
       enddo
 
       if(iguiding.gt.0) then
-         call determinant_psig(psido,psidg)
+         call determinant_psig(psido,psijo,psig)
 c     rewrite psi2o if you are sampling guiding
-         psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
+         psi2o(1,1)=2*(dlog(dabs(psig)))
       endif
 
       if(ipr.gt.1) then
-         write(6,'(''psid, psidg='',2d12.4)') psido,psidg
+         write(6,'(''psid(istate), psig='',10d12.4)') (psido(istate),istate=1,nstates),psig
          write(6,'(''psid2o='',f9.4)') psi2o(1,1)
       endif
 

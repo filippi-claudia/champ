@@ -112,10 +112,10 @@ c     loop quadrature points
 
                      if(ioptjas.gt.0) then
                         call deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,
-     &                       rr_en2,dd1,psij_ratio,dpsij_ratio,vjn,da_ratio_jn)
+     &                       rr_en2,dd1,psij_ratio,dpsij_ratio,vjn,da_ratio_jn,istate)
                      else
                         call nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,
-     &                       rr_en2,dd1,fso,psij_ratio,vjn,da_ratio_jn)
+     &                       rr_en2,dd1,fso,psij_ratio,vjn,da_ratio_jn,istate)
                      endif
 
                      term_radial=0.0d0
@@ -471,13 +471,13 @@ c     e-e terms
             call scale_dist(rij,u,1)
          else
             call scale_dist1(rij,u,dd1u,1)
-            dum=dpsibnl(u,isb,ipar)*dd1u/rij
+            dum=dpsibnl(u,isb,ipar,istate)*dd1u/rij
             do k=1,3
                dumk=-dum*dx(k)
                vjn(k)=vjn(k)+dumk
             enddo
          endif
-         fsn(i,j)=psibnl(u,isb,ipar)
+         fsn(i,j)=psibnl(u,isb,ipar,istate)
 
 c     e-e-n terms
 c     The scaling is switched in psinl, so do not do it here.
@@ -486,7 +486,7 @@ c     The scaling is switched in psinl, so do not do it here.
          do ic=1,ncent
             it=iwctype(ic)
             fsn(i,j)=fsn(i,j) +
-     &           psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,ic),it)
+     &               psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,ic),it,istate)
          enddo
          fsumn=fsumn+fsn(i,j)-fso(i,j)
       enddo
@@ -496,7 +496,7 @@ c     e-n terms
 
       do ic=1,ncent
          it=iwctype(ic)
-         fsn(iel,iel)=fsn(iel,iel)+psianl(rr_en(iel,ic),it)
+         fsn(iel,iel)=fsn(iel,iel)+psianl(rr_en(iel,ic),it,istate)
       enddo
 
       fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)
@@ -506,7 +506,7 @@ c     e-n terms
 
       do  ic=1,ncent
          it=iwctype(ic)
-         dum=dpsianl(rr_en(iel,ic),it)*dd1(iel,ic)/r_en(iel,ic)
+         dum=dpsianl(rr_en(iel,ic),it,istate)*dd1(iel,ic)/r_en(iel,ic)
          do  k=1,3
             dumk=dum*rvec_en(k,iel,ic)
             vjn(k)=vjn(k)+dumk

@@ -12,7 +12,6 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use vmc_mod, only: delri
       use atom, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
-
       use const, only: pi, fbias, nelec, ipr
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
       use config, only: psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon
@@ -63,7 +62,7 @@ c TMP
       dimension xstrech(3,MELEC)
       dimension xaxis(3),yaxis(3),zaxis(3),idist(MELEC)
       dimension ddx_ref(3)
-      dimension psidn(MSTATES),wtg(MSTATES),wtg_sqrt(MSTATES)
+      dimension psidn(MSTATES),psijn(MSTATES),wtg(MSTATES),wtg_sqrt(MSTATES)
       
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
@@ -90,12 +89,13 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
         endif
 
         if(iguiding.eq.0) then
-          psig=psido(1)
+          psidg=psido(1)
+          psig=psido(1)*exp(psijo(1))
          else
-          call determinant_psig(psido,psig)
+          call determinant_psig(psido,psijo,psig)
         endif
 
-        call compute_determinante_grad(i,psig,psido,vold(1,i),1)
+        call compute_determinante_grad(i,psig,psido,psijo,vold(1,i),1)
 
         fxop=one
         nearo=nearesto(i)
@@ -331,10 +331,12 @@ c rratio^2 is needed for the density of the angular moves
 c calculate psi at new configuration
       iel=i
       call psie(iel,xnew,psidn,psijn,ipass,0)
+
       if(iguiding.eq.0) then
-        psig=psidn(1)
+        psidg=psidn(1)
+	psig=psidn(1)*exp(psijn(1))
        else
-        call determinant_psig(psidn,psig)
+        call determinant_psig(psidn,psijn,psig)
       endif
 
       if(psig.eq.0.d0) then
@@ -343,20 +345,20 @@ c calculate psi at new configuration
         goto 208
       endif
 
-      call compute_determinante_grad(iel,psig,psidn,vnew(1,iel),0)
+      call compute_determinante_grad(iel,psig,psidn,psijn,vnew(1,iel),0)
 
       if(ipr.gt.1) then
         write(6,'(''psidn,psig ='',2d12.4)') psidn(1),psig
       endif
 
-      psi2n(1)=2*(dlog(dabs(psig))+psijn)
+      psi2n(1)=2*(dlog(dabs(psig)))
 
       if(node_cutoff.ne.0) then
         do 100 jel=1,nup
-  100     if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,vnew(1,jel),iflag_up)
+  100     if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,psijn,vnew(1,jel),iflag_up)
 
         do 105 jel=nup+1,nelec
-  105     if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,vnew(1,jel),iflag_dn)
+  105     if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,psijn,vnew(1,jel),iflag_dn)
 
         call nodes_distance(vnew,distance_node,0)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
@@ -548,6 +550,7 @@ c and q times old, and keep track of which bin the old was in
 
 c accept new move with probability p
 c Note when one electron moves the velocity on all electrons change.
+
       if (rannyu(0).lt.p) then
         idist(i)=itryn
         rmino(i)=rminn(i)
@@ -563,10 +566,12 @@ c Note when one electron moves the velocity on all electrons change.
         endif
         do istate=1,nstates
           psido(istate)=psidn(istate)
+          psijo(istate)=psijn(istate)
         enddo
-        psijo=psijn
         acc=acc+one
-        call jassav(i,0)
+        do istate=1,nstates
+           call jassav(i,0, istate)
+	enddo
         call detsav(i,0)
         if(ipr.ge.1) write(6,*)'METROP ACCEPT'
        else
@@ -586,32 +591,33 @@ c loop over secondary configurations
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido(1),psijo,eold(1,ifr),ipass,ifr)
         do 350 istate=1,nstates
-  350     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+  350     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(istate))+dlog(ajacob)
 
       call check_orbitals_reset
 c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido(1),psijo,eold(1,1),ipass,1)
       do 355 istate=1,nstates
-  355    psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
+  355    psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(istate))
 
       if(iguiding.eq.0) then
         psidg=psido(1)
+	psig=psido(1)*exp(psijo(1))
        else
-        call determinant_psig(psido,psidg)
+        call determinant_psig(psido,psijo,psig)
       endif
 
       if(ipr.gt.1) then
-        write(6,'(''psid,psig ='',2d12.4)') psido(1),psidg
+        write(6,'(''psid,psig ='',2d12.4)') psido(1),psig
       endif
 
       rnorm_nodes=1.d0
       if(node_cutoff.gt.0) then
         do 356 jel=1,nelec
-  356     call compute_determinante_grad(jel,psidg,psido(1),vold(1,jel),1)
+  356     call compute_determinante_grad(jel,psig,psido(1),psijo,vold(1,jel),1)
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
-        psidg=psido(1)*rnorm_nodes
+        psig=psig*rnorm_nodes
         if(ipr.gt.1) then
           write(6,'(''distance_node='',d12.4)') distance_node
           write(6,'(''rnorm_nodes='',d12.4)') rnorm_nodes
@@ -621,7 +627,7 @@ c primary configuration
       endif
 
       do 360 istate=1,nstates
-        wtg_sqrt(istate)=psido(istate)/psidg
+        wtg_sqrt(istate)=psido(istate)*exp(psijo(istate))/psig
         wtg(istate)=wtg_sqrt(istate)*wtg_sqrt(istate)
      
 c form expected values of e, pe, etc.
@@ -656,7 +662,7 @@ c RLPB now this has a last argument of states
 
       if(irun.eq.1) call optwf_store(ipass,wtg,wtg_sqrt,psido,eold(1,1))
 
-      call efficiency_sample(ipass,psido,psidg)
+      call efficiency_sample(ipass,psido,psig)
 
       call acues1(wtg)
 
@@ -675,7 +681,7 @@ c RLPB now this has a last argument of states
   390   ekin2(idist(i))=ekin2(idist(i))+dtdx2o(i)**2*wtg(1)
 
 c rewrite psi2o for next metropolis step if you are sampling guiding 
-      if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
+      if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psig)))
 
       if(node_cutoff.gt.0) then
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)

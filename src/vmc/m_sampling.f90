@@ -22,7 +22,7 @@ module config
     real(dp), dimension(:, :), allocatable :: psi2o !(MSTATES, MFORCE)
     real(dp), dimension(:), allocatable :: psido !(MSTATES)
     real(dp), dimension(:), allocatable :: anormo !(MSTATES) RLPB
-    real(dp) :: psijo
+    real(dp), dimension(:), allocatable :: psijo !(MSTATES) RLPB
     real(dp), dimension(:), allocatable :: rminn !(MELEC)
     real(dp), dimension(:), allocatable :: rminno !(MELEC)
     real(dp), dimension(:), allocatable :: rmino !(MELEC)
@@ -71,6 +71,7 @@ contains
         if (.not. allocated(psi2o)) allocate (psi2o(MSTATES, MFORCE))
         if (.not. allocated(psido)) allocate (psido(MSTATES))
         if (.not. allocated(anormo)) allocate (anormo(MSTATES))
+        if (.not. allocated(psijo)) allocate (psijo(MSTATES))
         if (.not. allocated(rminn)) allocate (rminn(MELEC))
         if (.not. allocated(rminno)) allocate (rminno(MELEC))
         if (.not. allocated(rmino)) allocate (rmino(MELEC))
@@ -102,6 +103,7 @@ contains
         if (allocated(rminn)) deallocate (rminn)
         if (allocated(psido)) deallocate (psido)
         if (allocated(anormo)) deallocate (anormo)
+        if (allocated(psijo)) deallocate (psijo)
         if (allocated(psi2o)) deallocate (psi2o)
         if (allocated(psi2n)) deallocate (psi2n)
         if (allocated(peo)) deallocate (peo)

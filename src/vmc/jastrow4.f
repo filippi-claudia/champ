@@ -83,7 +83,7 @@ c Check rij after scaling because uu(1) used in e-e-n terms too
 
       top=sspinn*b(1,isb,istate,iwf)*uu(1)
       topu=sspinn*b(1,isb,istate,iwf)
-      topuu=0
+      topuu=0.0d0
 
       if(ijas.eq.4.or.ijas.eq.5) then
          bot=1+b(2,isb,istate,iwf)*uu(1)
@@ -136,7 +136,6 @@ c There are no C terms to order 1.
 
       do 50 ic=1,ncent
         it=iwctype(ic)
-
         ri=r_en(i,ic)
         rj=r_en(j,ic)
 
@@ -334,8 +333,8 @@ c e-n terms
          enddo
       endif
 
-      fsumo=fsum
-      d2o=d2
+      fsumo(istate)=fsum
+      d2o(istate)=d2
       do i=1,nelec
          fjo(1,i,istate)=v(1,i)
          fjo(2,i,istate)=v(2,i)

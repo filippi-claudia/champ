@@ -48,6 +48,7 @@ c     local component (highest angular momentum)
       endif
 
 c     non-local component (division by the Jastrow already in nonloc)
+
       call nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 
       end subroutine

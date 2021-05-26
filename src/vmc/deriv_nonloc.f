@@ -1,5 +1,5 @@
-      subroutine deriv_nonlocj(istate,iel,x,rshift,rvec_en,r_en,rr_en,
-     &     rr_en2,dd1,value,gn,vjn,da_ratio_jn)
+      subroutine deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,
+     &     rr_en2,dd1,value,gn,vjn,da_ratio_jn,istate)
 c     Written by Claudia Filippi, modified by Cyrus Umrigar
       use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, nctype, ncent
@@ -98,7 +98,7 @@ c     e-e terms
             call scale_dist(rij,u,1)
          else
             call scale_dist1(rij,u,dd1u,1)
-            dum=dpsibnl(u,isb,ipar)*dd1u/rij
+            dum=dpsibnl(u,isb,ipar,istate)*dd1u/rij
             do k=1,3
                dumk=-dum*dx(k)
                vjn(k)=vjn(k)+dumk
@@ -107,7 +107,7 @@ c     e-e terms
 
          iparm0=ipara
          if(isb.eq.2) iparm0=iparm0+nparmb(1)
-         fsn(i,j)=deriv_psibnl(u,gn(iparm0+1),isb,ipar)
+         fsn(i,j)=deriv_psibnl(u,gn(iparm0+1),isb,ipar,istate)
 
          do jparm=1,nparmb(isb)
             iparm=iparm0+jparm
@@ -123,7 +123,7 @@ c     The scaling is switched in deriv_psinl, so do not do it here.
             iparm0=npoint(it)
             fsn(i,j)=fsn(i,j) +
      &           deriv_psinl(u,rshift(1,i,ic),rshift(1,j,ic),
-     &           rr_en2(i,ic),rr_en2(j,ic),gn(iparm0+1),it)
+     &           rr_en2(i,ic),rr_en2(j,ic),gn(iparm0+1),it,istate)
          enddo
 
          do it=1,nctype
@@ -145,7 +145,7 @@ c     e-n terms
             it=iwctype(ic)
             iparm0=npointa(it)
             fsn(iel,iel)=fsn(iel,iel)+
-     &           deriv_psianl(rr_en(iel,ic),gn(iparm0+1),it)
+     &           deriv_psianl(rr_en(iel,ic),gn(iparm0+1),it,istate)
          enddo
          do it=1,nctype
             iparm0=npointa(it)
@@ -163,7 +163,7 @@ c     e-n terms
 
       do ic=1,ncent
          it=iwctype(ic)
-         dum=dpsianl(rr_en(iel,ic),it)*dd1(iel,ic)/r_en(iel,ic)
+         dum=dpsianl(rr_en(iel,ic),it,istate)*dd1(iel,ic)/r_en(iel,ic)
          do k=1,3
             dumk=dum*rvec_en(k,iel,ic)
             vjn(k)=vjn(k)+dumk

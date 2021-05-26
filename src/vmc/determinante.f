@@ -64,7 +64,7 @@
 
 c-----------------------------------------------------------------------
 
-      subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
+      subroutine compute_determinante_grad(iel,psig,psid,psij,vd,iflag_move)
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -92,7 +92,7 @@ c-----------------------------------------------------------------------
 
       implicit real*8(a-h,o-z)
 
-      dimension psid(*),vd(3),vref(3,MSTATES),vd_s(3),dorb_tmp(3,MORB,MSTATES)
+      dimension psid(*),psij(*),vd(3),vref(3,MSTATES),vd_s(3,MSTATES),dorb_tmp(3,MORB,MSTATES)
       dimension ymat_tmp(MORB,MELEC,MSTATES)
       save ymat_tmp
 
@@ -131,21 +131,16 @@ c     All quantities saved (old) avaliable
                istate=iweight_g(i)
                detratio=detiab(kref,1,istate)*detiab(kref,2,istate)/psid(istate)
                call multideterminante_grad(iel,dorb_tmp(1,1,istate),detratio,slmi(1,iab,istate),
-     &              aa(1,1,iab,istate),wfmat(1,1,iab,istate),ymat(1,1,iab,istate),vd_s)
+     &              aa(1,1,iab,istate),wfmat(1,1,iab,istate),ymat(1,1,iab,istate),vd_s(1,istate))
                do kk=1,3
-                  vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)
-     &                 *(vd_s(kk)+vref(kk,istate))/anormo(istate)
+                  vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(istate))
+     &                  *(vd_s(kk,istate)+vref(kk,istate)+vj(kk,iel,istate))/anormo(istate)
                enddo
             enddo
             vd(1)=vd(1)*psi2gi
             vd(2)=vd(2)*psi2gi
             vd(3)=vd(3)*psi2gi
          endif
-
-c        RLPB (this is not clear still, vd state dependent?)
-         vd(1)=vj(1,iel,1)+vd(1)
-         vd(2)=vj(2,iel,1)+vd(2)
-         vd(3)=vj(3,iel,1)+vd(3)
 
 c     Within single-electron move - quantities of electron iel not saved 
       elseif(iflag_move.eq.0) then
@@ -175,21 +170,16 @@ c     Within single-electron move - quantities of electron iel not saved
                   detratio=detiab(kref,1,istate)*detn(kref,istate)/psid(istate)
                endif
                call multideterminante_grad(iel,dorbn(1,1,istate),detratio,slmin(1,istate),
-     &              aan(1,1,istate),wfmatn(1,1,istate),ymatn(1,1,istate),vd_s)
+     &              aan(1,1,istate),wfmatn(1,1,istate),ymatn(1,1,istate),vd_s(1,istate))
                do kk=1,3
-                  vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)
-     &                 *(vd_s(kk)+vref(kk,istate))/anormo(istate)
+                  vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(istate))
+     &                  *(vd_s(kk,istate)+vref(kk,istate)+vjn(kk,iel,istate))/anormo(istate)
                enddo
             enddo
             vd(1)=vd(1)*psi2gi
             vd(2)=vd(2)*psi2gi
             vd(3)=vd(3)*psi2gi
          endif
-
-c        RLPB (this is not clear still, vd state dependent?)
-         vd(1)=vjn(1,iel,1)+vd(1)
-         vd(2)=vjn(2,iel,1)+vd(2)
-         vd(3)=vjn(3,iel,1)+vd(3)
       else
 c     Within single-electron move - iel not equal to electron moved - quantities of electron iel not saved 
          do kk=1,3
@@ -233,7 +223,7 @@ c     iel has different spin than the electron moved
             enddo
          endif
 
-c     RLPB (this is not clear still, vd state dependent?)
+c     RLPB
          istate=1
          vd(1)=vjn(1,iel,istate)+vd(1)+vref(1,istate)
          vd(2)=vjn(2,iel,istate)+vd(2)+vref(2,istate)

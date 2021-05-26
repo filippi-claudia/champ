@@ -164,7 +164,8 @@ contains
     imod=50                   ! inv. freq. of calc. r=b-Ax vs. r=r-\alpha q (see pcg)
     deltap=0.0d0              ! initial guess of solution
 
-    if (idtask.eq.0.and.ipr.gt.4) then
+    !if (idtask.eq.0.and.ipr.gt.4) then
+    if (idtask.eq.0) then
        print *, "Gradient state 1"
        print *, h_sr(1:nparm,1)
        print *, "Gradient state 2"
@@ -230,7 +231,6 @@ contains
 		  +obs_norm_tot(jsqfj,istate)
        enddo
        anormo=anormo/passes
-       print *, "ANORMO", anormo
     endif
     call MPI_BCAST(anormo(1),nstates,MPI_REAL8,0,MPI_COMM_WORLD,i)
 

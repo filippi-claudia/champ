@@ -1,26 +1,16 @@
-      subroutine jastrowe(iel,x,v,d2,value,iflag)
+      subroutine jastrowe(iel,x,v,d2,value,iflag,istate)
 c Written by Claudia Filippi by modifying jastrow
-
       use const, only: nelec
       implicit real*8(a-h,o-z)
 
-
-
-
-      parameter (zero=0.d0)
-
-
-
-
-
       dimension x(3,*),v(3,*)
 
-      do 10 i=1,nelec
-        v(1,i)=zero
-        v(2,i)=zero
-   10   v(3,i)=zero
+      do i=1,nelec
+         v(1,i)=0.0d0
+         v(2,i)=0.0d0
+         v(3,i)=0.0d0
+      enddo
 
-      call jastrow4e(iel,x,v,d2,value,iflag)
+      call jastrow4e(iel,x,v,d2,value,iflag,istate)
 
-      return
-      end
+      end subroutine

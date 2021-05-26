@@ -2,6 +2,35 @@
 c Written by Friedemann Schautz
       use allocation_mod, only: allocate_vmc, allocate_dmc 
       use contr3, only: mode
+      use force_mod, only: MFORCE, MWF
+      use vmc_mod, only: MELEC, MORB
+      use numbas, only: numr
+      use optorb_mix, only: norbopt, norbvirt
+      use efield, only: iefield
+      use inputflags, only: iznuc, igeometry, ibasis_num, ilcao, iexponents
+      use inputflags, only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
+      use inputflags, only: ici_def, iforces, icsfs, igradients, icharge_efield
+      use inputflags, only: imultideterminants, ioptorb_mixvirt, imodify_zmat, izmatrix_check
+      use inputflags, only: ihessian_zmat
+      use mstates_ctrl, only: iguiding
+      use csfs, only: nstates
+      ! might not be needed
+      use atom, only: znuc, nctype
+      use mstates_mod, only: MSTATES
+      use atom, only: znuc 
+      use contrl_per, only: iperiodic, ibasis
+      use force_analy, only: iforce_analy, iuse_zmat
+      use forcepar, only: nforce
+      use optwf_contrl, only: ioptci, ioptorb
+      use optwf_contrl, only: no_active
+      use wfsec, only: nwftype
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar3, only: a, b, c, nord, scalek
+      use elec, only: ndn, nup
+      use const, only: nelec 
+      use coefs, only: norb, next_max 
+
 
       implicit real*8(a-h,o-z)
 
@@ -882,15 +911,18 @@ c Jastrow section
         mparmjb=2+max(0,nordb-1)
         mparmjc=nterms4(nordc)
         write(6,'(''mparmja,mparmjb,mparmjc='',3i5)') mparmja,mparmjb,mparmjc
+        do istate=1,nstates
+        print *, "STATE", istate
         do 301 it=1,nctype
   301     write(6,'(''a='',x,7f10.6,(8f10.6))')
-     &                  (a4(iparm,it,1,1),iparm=1,mparmja)
+     &                  (a4(iparm,it,istate,1),iparm=1,mparmja)
         do 302 isp=nspin1,nspin2b
   302     write(6,'(''b='',x,7f10.6,(8f10.6))')
-     &                 (b(iparm,isp,1,1),iparm=1,mparmjb)
+     &                 (b(iparm,isp,istate,1),iparm=1,mparmjb)
         do 303 it=1,nctype
   303     write(6,'(''c='',x,7f10.6,(8f10.6))')
-     &                 (c(iparm,it,1,1),iparm=1,mparmjc)
+     &                 (c(iparm,it,istate,1),iparm=1,mparmjc)
+        enddo
 c Note: Fock terms yet to be put in ijas=4,5,6
       endif
 
@@ -1216,7 +1248,6 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       
       implicit real*8(a-h,o-z)
 
-
       call p2gti('jastrow:ijas',ijas,1)
       call p2gti('jastrow:isc',isc,1)
       call p2gtid('jastrow:nspin1',nspin1,1,1)
@@ -1249,16 +1280,31 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
         mparmja=2+max(0,norda-1)
         mparmjb=2+max(0,nordb-1)
         mparmjc=nterms4(nordc)
-        do 70 it=1,nctype
-          read(iu,*) (a4(iparm,it,1,iwft),iparm=1,mparmja)
-   70     call incpos(iu,itmp,1)
-        do 80 isp=nspin1,nspin2b
-          read(iu,*) (b(iparm,isp,1,iwft),iparm=1,mparmjb)
-   80     call incpos(iu,itmp,1)
-        do 90 it=1,nctype
-          read(iu,*) (c(iparm,it,1,iwft),iparm=1,mparmjc)
-   90     call incpos(iu,itmp,1)
+	do istate=1,nstates
+           do it=1,nctype
+              read(iu,*) (a4(iparm,it,istate,iwft),iparm=1,mparmja)
+              call incpos(iu,itmp,1)
+           enddo
+           do isp=nspin1,nspin2b
+              read(iu,*) (b(iparm,isp,istate,iwft),iparm=1,mparmjb)
+              call incpos(iu,itmp,1)
+           enddo
+           do it=1,nctype
+              read(iu,*) (c(iparm,it,istate,iwft),iparm=1,mparmjc)
+              call incpos(iu,itmp,1)
+           enddo
+	 enddo
+   !     do 70 it=1,nctype
+   !       read(iu,*) (a4(iparm,it,1,iwft),iparm=1,mparmja)
+   !70     call incpos(iu,itmp,1)
+   !     do 80 isp=nspin1,nspin2b
+   !       read(iu,*) (b(iparm,isp,1,iwft),iparm=1,mparmjb)
+   !80     call incpos(iu,itmp,1)
+   !     do 90 it=1,nctype
+   !       read(iu,*) (c(iparm,it,1,iwft),iparm=1,mparmjc)
+   !90     call incpos(iu,itmp,1)
       endif
+
 c Read cutoff for Jastrow4,5,6
       if(isc.eq.6.or.isc.eq.7) read(iu,*) cutjas
 
@@ -1541,7 +1587,9 @@ c
 
       return
       end
+
 c-----------------------------------------------------------------------
+
       subroutine flaginit
 c Initialize flags used to identify presence/absence of blocks in input
 
@@ -1674,6 +1722,7 @@ c Check that the required blocks are there in the input
 c TMP - RLPB
       if(nstates.gt.1) then
         call inputlcao(nwftype)
+        !call inputjastrow(2)
       endif
 
       if(nwftype.gt.1) then
@@ -1827,6 +1876,7 @@ c     Set the jastrow to be equal
                do it=1,nctype
                   do iparm=1,mparmja
                      a4(iparm,it,istate,iwft)=a4(iparm,it,1,1)
+		     print *, "A4", istate, a4(iparm,it,istate,iwft), a4(iparm,it,1,1)
                   enddo
                enddo
                do isp=nspin1,nspin2b

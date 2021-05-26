@@ -14,6 +14,7 @@ c     Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
       fsumo(istate)=fsumn(istate)
+
       do i=1,nelec
          fjo(1,i,istate)=fjn(1,i,istate)
          fjo(2,i,istate)=fjn(2,i,istate)

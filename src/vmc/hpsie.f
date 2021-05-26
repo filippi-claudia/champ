@@ -2,6 +2,7 @@
 c     Written by Claudia Filippi by modifying hpsi
       use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use vmc_mod, only: MMAT_DIM2
+      use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use estpsi, only: apsi, aref
       use multidet, only: kref
@@ -10,21 +11,22 @@ c     Written by Claudia Filippi by modifying hpsi
       use velocity_jastrow, only: vjn
       use multislatern, only: ddorbn, detn, dorbn, orbn
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-
       implicit real*8(a-h,o-z)
 
 c     Calculates wave function
 
-      dimension coord(3,*),psid(*)
+      dimension coord(3,*),psid(*),psij(*),d2j(MSTATES)
 
       iwf=iwftype(1)
 
       call distances(iel,coord)
 
       if(ianalyt_lap.eq.1) then
-         call jastrowe(iel,coord,vjn,d2j,psij,iflag)
+         do istate=1,nstates
+            call jastrowe(iel,coord,vjn(:,:,istate),d2j(istate),psij(istate),iflag,istate)
+         enddo
       else
-!     call fatal_error('HPSIE: numerical one-electron move not implemented')
+         call fatal_error('HPSIE: numerical one-electron move not implemented')
       endif
 
 c     compute all determinants 
@@ -33,7 +35,7 @@ c     compute all determinants
 c     RLPB added flag
       iflagdet=0
       do istate=1,nstates
-         if(detn(kref,istate).eq.0.d0) then
+         if(detn(kref,istate).eq.0.0d0) then
             psid(istate)=0.0d0
             iflagdet=1
          endif

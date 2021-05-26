@@ -251,21 +251,21 @@ c set n- and e-coord and n-n potential
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,eold(1,ifr),0,ifr)
         do 60 istate=1,nforce
-   60     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+   60     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(istate))+dlog(ajacob)
 
 c primary config
 c set n-coord and n-n potential
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,eold(1,1),0,1)
       do 65 istate=1,nforce
-        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
+        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(istate))
         tjfo(istate)=d2(istate)
    65   tjfo(istate)=-tjfo(istate)*half*hb
 
       if(iguiding.gt.0) then
         call determinant_psig(psido,psidg)
 c rewrite psi2o if you are sampling guiding
-        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
+        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo(1))
       endif
 
       if(node_cutoff.gt.0) then

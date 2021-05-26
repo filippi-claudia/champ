@@ -34,7 +34,7 @@ c     modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
 c     Calculates energy
 
-      dimension coord(3,*),psid(*),energy(*),d2j(MSTATES)
+      dimension coord(3,*),psid(*),energy(*),psij(*),d2j(MSTATES)
       dimension denergy(MSTATES),eloc_det(MDET,2,MSTATES),
      &     vpsp_det(2,MSTATES),dvpsp_dj(MPARMJ)
 
@@ -88,13 +88,13 @@ c     QM-MMPOL (charges+induced dipoles)
 c     get contribution from jastrow (also compute derivatives wrt parameters and nuclei)
       do istate=1,nstates
          if(ianalyt_lap.eq.1) then
-            call jastrow(coord,vj(:,:,istate),d2j(istate),psij,ifr,istate)
+            call jastrow(coord,vj(:,:,istate),d2j(istate),psij(istate),ifr,istate)
          else
-            call jastrow_num(coord,vj(:,:,istate),d2j(istate),psij)
+            call jastrow_num(coord,vj(:,:,istate),d2j(istate),psij(istate))
          endif
          if(ipr.ge.3) then
             write(6, *) "STATE", istate
-            write(6,'(''d2j,psij'',9f12.5)') d2j(istate),psij
+            write(6,'(''d2j,psij'',9f12.5)') d2j(istate),psij(istate)
          endif
       enddo
 
@@ -106,6 +106,7 @@ c     and kinetic contribution to B_eloc and its derivatives
 
 c     compute pseudo-potential contribution
 c     nonloc_pot must be called after determinant because slater matrices are needed
+
       if(nloc.gt.0) then
          call nonloc_pot(coord,rshift,rvec_en,r_en,pe_local,
      &        vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
@@ -150,12 +151,11 @@ c     compute energy using Ymat
 
          if(ipr.ge.2) then
             write(6,'(''state'',i4)') istate
-            write(6,'(''psid,psij'',9d12.5)') psid(istate),psij
-            write(6,'(''psitot   '',e18.11)') psid(istate)*exp(psij)
+            write(6,'(''psid,psij'',9d12.5)') psid(istate),psij(istate)
+            write(6,'(''psitot   '',e18.11)') psid(istate)*exp(psij(istate))
             if(ipr.ge.3) write(6,'(''energy'',9f16.10)') energy(istate)
          endif
       enddo
-
 
       if(ifr.eq.1) then
          if(iforce_analy.eq.1) call compute_force(psid(1),denergy(1))

@@ -1,4 +1,4 @@
-      subroutine determinant_psig(psid,psig)
+      subroutine determinant_psig(psid,psij,psig)
 
       use csfs, only: nstates
       use config, only: anormo
@@ -6,12 +6,12 @@
 
       implicit real*8(a-h,o-z)
 
-      dimension psid(*)
+      dimension psid(*), psij(*)
 
       psig=0.0d0
       do i=1,nstates
          istate=iweight_g(i)
-         psig=psig+weights_g(i)*psid(istate)*psid(istate)/anormo(istate)
+         psig=psig+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(istate))/anormo(istate)
       enddo
 
       psig=dsqrt(psig)

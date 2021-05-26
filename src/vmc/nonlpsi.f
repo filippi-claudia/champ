@@ -1,4 +1,4 @@
-      function psinl(u,rshifti,rshiftj,rri,rrj,it)
+      function psinl(u,rshifti,rshiftj,rri,rrj,it,istate)
 c     Written by Claudia Filippi, modified by Cyrus Umrigar
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
@@ -177,7 +177,7 @@ c     If we want to use ijas=5,6 update this routine similarly to psi.f
 
 c-----------------------------------------------------------------------
 
-      function dpsibnl(u,isb,ipar,istateOB)
+      function dpsibnl(u,isb,ipar,istate)
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
