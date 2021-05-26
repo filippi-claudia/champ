@@ -799,6 +799,20 @@ subroutine read_csfmap_file(file_determinants)
             endif
         else
             ! No csfmap information present. One to one mapping cdet == ccsf
+            ! Check this part carefully
+            if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
+            if (.not. allocated(iadet)) allocate (iadet(ndet))
+            if (.not. allocated(ibdet)) allocate (ibdet(ndet))
+            if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))   ! why MDETCSFX
+
+            do i = 1, ncsf
+                iadet(i) = i
+                ibdet(i) = i
+                icxdet(i) = i
+                cxdet(i) = 1.0d0
+            enddo
+            ! default mapping loop ends here
+
             printed = .true.
         endif
     enddo
@@ -812,7 +826,7 @@ subroutine read_csfmap_file(file_determinants)
     else
         write(ounit,*)
         write(ounit,*) " Determinant - CSF mapping  "
-
+! debug uncomment later
         do icsf = 1, ncsf
             write(ounit,'(i4)') icsf
             do j = iadet(icsf), ibdet(icsf)
