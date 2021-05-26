@@ -164,8 +164,6 @@ c TMP to fix
         enddo
       enddo
 
-      print*, "debug ", ivirt(iab), norb
-
 
       do 50 kk=1,3
 
