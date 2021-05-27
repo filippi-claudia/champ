@@ -310,7 +310,7 @@ c Do geometrical rejections for molecules
 c rratio^2 is needed for the density of the angular moves
         rratio=rminno(i)/rminon(i)
 
-!        if(ipr.ge.1) then
+        if(ipr.ge.1) then
           rtest=dsqrt(rvminn(1,i)**2+rvminn(2,i)**2+rvminn(3,i)**2)
           rtest2=dsqrt(xprime**2+yprime**2+zprime**2)
           write(6,'(''ELECTRON'',i6)') i
@@ -325,7 +325,7 @@ c rratio^2 is needed for the density of the angular moves
           write(6,'(''rtry,costht,sintht,phitry'',9f9.4)') rtry,costht,
      &    sintht,phitry
           write(6,'(''fxop'',9f12.4)') fxop
-!        endif
+        endif
 
 c calculate psi at new configuration
       iel=i
@@ -553,6 +553,7 @@ c and q times old, and keep track of which bin the old was in
 c accept new move with probability p
 c Note when one electron moves the velocity on all electrons change.
       if (rannyu(0).lt.p) then
+        print*, "debug before accept ranu p condition ", rannyu(0), p, rannyu(0).lt.p
         idist(i)=itryn
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)
@@ -574,6 +575,7 @@ c Note when one electron moves the velocity on all electrons change.
         call detsav(i,0)
         if(ipr.ge.1) write(6,*)'METROP ACCEPT'
        else
+        print*, "debug before reject ranu p condition ", rannyu(0), p, rannyu(0).lt.p
         if(ipr.ge.1) write(6,*)'METROP REJECT'
         idist(i)=itryo
         do 250 ic=1,3

@@ -252,8 +252,8 @@ c rewrite psi2o if you are sampling guiding
       endif
 
       if(ipr.gt.1) then
-        write(6,'(''psid, psidg='',2d12.4)') psido(1),psidg
-        write(6,'(''psid2o='',f9.4)') psi2o(1,1)
+        write(6,'(''psid, psidg='',2d16.6)') psido(1),psidg
+        write(6,'(''psid2o='',f16.8)') psi2o(1,1)
       endif
 
       if(node_cutoff.gt.0) then

@@ -893,6 +893,7 @@ endif
       endif
 
 ! verify number of orbitals and setup optorb
+! verification already handeled in read_data file.
       call verify_orbitals
 
 !! Grid information
