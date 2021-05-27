@@ -381,7 +381,7 @@ subroutine read_jastrow_file(file_jastrow)
     use elec,               only: ndn
     use jaspar3,            only: a, b, c, scalek
     use jaspar4,            only: a4, norda, nordb, nordc
-    use jaspar6,            only: cutjas
+    use jaspar6,            only: cutjas, cutjasi, allocate_jaspar6
     use bparm,              only: nocuspb, nspin2b
     use contr2,             only: ifock, ijas
     use contr2,             only: isc
@@ -389,7 +389,8 @@ subroutine read_jastrow_file(file_jastrow)
     use wfsec,              only: nwftype
     use atom,               only: ncent, nctype
     use precision_kinds,    only: dp
-
+    use contrl_per, 		only: iperiodic
+    use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
     implicit none
 
     !   local use
@@ -398,7 +399,8 @@ subroutine read_jastrow_file(file_jastrow)
     integer                         :: iunit, iostat, it, isp, iparm, iwft
     integer                         :: mparmja, mparmjb, mparmjc, nterms4
     logical                         :: exist
-    real(dp)                        :: a21
+    real(dp)                        :: a21, cutjas_tmp
+    integer                         :: i, j
 
     !   Formatting
     character(len=100)               :: int_format     = '(A, T60, I8)'
@@ -485,6 +487,45 @@ subroutine read_jastrow_file(file_jastrow)
         enddo
 
     endif
+
+    ! Call set_scale_dist to evaluate constants that need to be reset if
+    ! scalek is being varied. If cutjas=0, then reset cutjas to infinity
+    ! Warning: At present we are assuming that the same scalek is used for
+    ! primary and secondary wavefns.  Otherwise c1_jas6i,c1_jas6,c2_jas6
+    ! should be dimensioned to MWF
+    if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
+        if(iperiodic.ne.0 .and. cutjas_tmp.gt.cutjas) then
+            write(ounit, '(a,f9.5,a,f9.5)')  "**Warning: input cutjas > half shortest sim. cell lattice vector;  cutjas reset from ", cutjas_tmp, " to ", cutjas
+            else
+            cutjas=cutjas_tmp
+            write(ounit,'(a, d12.5)' ) " input cutjas = ", cutjas_tmp
+        endif
+        if(cutjas.gt.0.d0) then
+            cutjasi=1/cutjas
+            else
+            write(ounit, *) "cutjas reset to infinity"
+            cutjas=1.d99
+            cutjasi=0
+        endif
+        call set_scale_dist(1)
+    else
+        cutjas=1.d99
+        cutjasi=0
+        c1_jas6i=1
+        c1_jas6=1
+        c2_jas6=0
+        asymp_r=0
+        call allocate_jaspar6()  ! Needed for the following two arrays
+        do it=1,nctype
+            asymp_jasa(it)=0
+        enddo
+        do i=1,2
+            asymp_jasb(i)=0
+        enddo
+    endif
+    call set_scale_dist(1)
+
+
     !Read cutoff for Jastrow4, 5, 6
     if (isc .eq. 6 .or. isc .eq. 7) then
         read (iunit, *) cutjas

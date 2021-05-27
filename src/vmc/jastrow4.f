@@ -26,11 +26,11 @@ c Jastrow 6   must be used with one of isc=6,7
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit real*8(a-h,o-z)
 
-      
+
       parameter (half=.5d0,eps=1.d-12)
 
       dimension x(3,*),v(3,*),div_vj(*)
-      
+
       dimension uu(-2:MORDJ),ss(-2:MORDJ),tt(-2:MORDJ),rri(-2:MORDJ)
      &,rrj(-2:MORDJ)
 
@@ -379,7 +379,7 @@ c-----------------------------------------------------------------------
 
 
 
- 
+
 
 
       dimension rvec_en(3),rr(-2:MORDJ)
