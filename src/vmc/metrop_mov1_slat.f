@@ -553,7 +553,6 @@ c and q times old, and keep track of which bin the old was in
 c accept new move with probability p
 c Note when one electron moves the velocity on all electrons change.
       if (rannyu(0).lt.p) then
-        print*, "debug before accept ranu p condition ", rannyu(0), p, rannyu(0).lt.p
         idist(i)=itryn
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)
@@ -575,7 +574,6 @@ c Note when one electron moves the velocity on all electrons change.
         call detsav(i,0)
         if(ipr.ge.1) write(6,*)'METROP ACCEPT'
        else
-        print*, "debug before reject ranu p condition ", rannyu(0), p, rannyu(0).lt.p
         if(ipr.ge.1) write(6,*)'METROP REJECT'
         idist(i)=itryo
         do 250 ic=1,3

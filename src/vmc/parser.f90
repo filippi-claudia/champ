@@ -269,7 +269,7 @@ subroutine parser
   node_cutoff = fdf_get('node_cutoff', 0)
   eps_node_cutoff = fdf_get('enode_cutoff', 1.0d-7)
   delta       = fdf_get('delta', 1.)
-  deltar      = fdf_get('deltar', 1.)
+  deltar      = fdf_get('deltar', 5.)
   deltat      = fdf_get('deltat', 1.)
   fbias       = fdf_get('fbias', 1.0d0)
 
