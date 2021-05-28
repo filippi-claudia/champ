@@ -7,17 +7,31 @@
       use gradhess_all, only: MPARMALL
       use ci000, only: nciterm
       use method_opt, only: method
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      parameter(eps=1.d-12)
+      integer :: i, i0, i1, i_ovr, idx
+      integer :: ii, imag, ireal, is
+      integer :: isort_ovr, iter, j, k
+      integer :: lwork, mparmx, nparm
+      integer, dimension(MPARMALL) :: isort
+      real(dp) :: MWORK, add_diag, anorm_orth, anorm_orth_min, bot
+      real(dp) :: dabs, de_range, dmult, eig_min
+      real(dp) :: emax, emin, go, scale
+      real(dp), dimension(mparmx,*) :: h
+      real(dp), dimension(mparmx,*) :: s
+      real(dp), dimension(mparmx,*) :: h_sav
+      real(dp), dimension(*) :: s_sav
+      real(dp), dimension(MPARMALL) :: eig
+      real(dp), dimension(MPARMALL) :: eigi
+      real(dp), dimension(MPARMALL) :: seig_inv
+      real(dp), dimension(MPARMALL,*) :: eig_vec
+      real(dp), dimension(MPARMALL,MPARMALL) :: hmod
+      real(dp), dimension(*) :: work
+      real(dp), parameter :: eps = 1.d-12
 
-      dimension h(mparmx,*),s(mparmx,*)
-      dimension h_sav(mparmx,*),s_sav(*)
-      dimension eig(MPARMALL),eigi(MPARMALL),seig_inv(MPARMALL)
-      dimension eig_vec(MPARMALL,*),hmod(MPARMALL,MPARMALL)
-      dimension isort(MPARMALL)
-      dimension work(*)
+
 
       save eig_min
 
@@ -163,17 +177,24 @@ c-----------------------------------------------------------------------
       subroutine regularize_geneig(n,mparmx,h,s,work,seig_valinv,hmod)
 
       use gradhess_all, only: MPARMALL
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, icut, ineg, isdinfo, j
+      integer :: k, l, lworks, m
+      integer :: mparmx, n
+      real(dp) :: t, t0
+      real(dp), dimension(mparmx,*) :: h
+      real(dp), dimension(mparmx,*) :: s
+      real(dp), dimension(MPARMALL) :: seig_vals
+      real(dp), dimension(*) :: seig_valinv
+      real(dp), dimension(MPARMALL,*) :: hmod
+      real(dp), dimension(*) :: work
+      real(dp), parameter :: eps = 1.d-12
+      real(dp), parameter :: eps_eigval = 1.d-14
 
-      parameter(eps=1.d-12)
       ! parameter(MWORK=50*MPARMALL)
-      parameter(eps_eigval=1.d-14)
-
-      dimension h(mparmx,*),s(mparmx,*)
-      dimension seig_vals(MPARMALL),seig_valinv(*)
-      dimension hmod(MPARMALL,*),work(*)
 
       call cpu_time(t0)
 c call dsyev to determine lworks
@@ -243,23 +264,25 @@ c-----------------------------------------------------------------------
       subroutine solve_geneig(n,mparmx,hmod,s,seig_valinv,work,eig,eigi,eig_vec)
 
       use gradhess_all, only: MPARMALL
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-      parameter(eps=1.d-12)
+      integer :: i, ilwork, isdinfo, j, k
+      integer :: mparmx, n
+      real(dp) :: t0
+      real(dp), dimension(*) :: seig_valinv
+      real(dp), dimension(mparmx,*) :: hmod
+      real(dp), dimension(mparmx,*) :: s
+      real(dp), dimension(MPARMALL,*) :: eig_vec
+      real(dp), dimension(MPARMALL,MPARMALL) :: eig_vecl
+      real(dp), dimension(*) :: work
+      real(dp), dimension(MPARMALL) :: eig
+      real(dp), dimension(MPARMALL) :: eigi
+      real(dp), parameter :: eps = 1.d-12
       ! parameter(MWORK=50*MPARMALL)
-
-      dimension seig_valinv(*)
-      dimension hmod(mparmx,*),s(mparmx,*)
-
-      dimension eig_vec(MPARMALL,*)
       ! dimension eig_vecl(MPARMALL,1)
-      dimension eig_vecl(MPARMALL,MPARMALL)
-      dimension work(*)
 
-      dimension eig(MPARMALL)
-      dimension eigi(MPARMALL)
 c s_fordiag: a copy of S for diagonalization.
 c hmod: the modified Hamiltonian matrix (in the end, S^-1*U*H*U^T)
 c s: overlap matrix, h: hamiltonian, eigenvec: eigenvectors,
@@ -309,29 +332,37 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use gradhess_all, only: MPARMALL
-
       use ci000, only: nciterm
-
       use method_opt, only: method
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
-      parameter(eps=1.d-12)
-
-      dimension dparm(*)
-      dimension h(mparmx,*),h_sav(mparmx,*)
-      dimension s(mparmx,*),s_sav(*)
-      dimension work(*)
-
-      dimension eig(MPARMALL),eigi(MPARMALL),seig_inv(MPARMALL)
-      dimension eig_vec(MPARMALL,*),hmod(MPARMALL,MPARMALL)
-      dimension s_norm(MXCIMATDIM)
-      dimension isort(MPARMALL)
-      dimension cdelta(MPARMALL)
-      dimension overlap(MXCITERM)
+      integer :: i, i0, i_good, i_min, i_ovr
+      integer :: idx, ii, imag, ireal
+      integer :: is, j, jj, jsort
+      integer :: k, lwork, mparmx, no_real_found
+      integer :: nparm
+      integer, dimension(MPARMALL) :: isort
+      real(dp) :: add_diag, anorm_orth, anorm_orth_min, bot, dabs
+      real(dp) :: de_range, dmul, dmult, dnorm
+      real(dp) :: dnorm_jj, emax, emin, energy_err_sav
+      real(dp) :: energy_sav, go, scale, target_overlap
+      real(dp), dimension(*) :: dparm
+      real(dp), dimension(mparmx,*) :: h
+      real(dp), dimension(mparmx,*) :: h_sav
+      real(dp), dimension(mparmx,*) :: s
+      real(dp), dimension(*) :: s_sav
+      real(dp), dimension(*) :: work
+      real(dp), dimension(MPARMALL) :: eig
+      real(dp), dimension(MPARMALL) :: eigi
+      real(dp), dimension(MPARMALL) :: seig_inv
+      real(dp), dimension(MPARMALL,*) :: eig_vec
+      real(dp), dimension(MPARMALL,MPARMALL) :: hmod
+      real(dp), dimension(MXCIMATDIM) :: s_norm
+      real(dp), dimension(MPARMALL) :: cdelta
+      real(dp), dimension(MXCITERM) :: overlap
+      real(dp), parameter :: eps = 1.d-12
 
       if(method.eq.'linear') then
 
