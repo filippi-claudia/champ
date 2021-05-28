@@ -47,7 +47,7 @@ subroutine parser
   use jaspar3, 			only: a, b, c, nord, scalek
   use jaspar4, 			only: a4, norda, nordb, nordc
   use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
-  use jaspar6, 			only: cutjas, cutjasi
+  use jaspar6, 			only: cutjas, cutjasi, allocate_jaspar6
   use numbas, 			only: numr
   use numbas1, 			only: nbastyp
   use numbas2, 			only: ibas0, ibas1
@@ -147,6 +147,7 @@ subroutine parser
   character(len=72)          :: fname, key
   character(len=20)          :: temp1, temp2, temp3, temp4, temp5
   integer                    :: ifock , ratio, isavebl
+  real(dp)                   :: cutjas_tmp
 
   type(block_fdf)            :: bfdf
   type(parsed_line), pointer :: pline
@@ -324,6 +325,14 @@ subroutine parser
 !optimization flags vmc/dmc
   ioptwf        = fdf_get('ioptwf', 0)
   method        = fdf_get('method', 'linear')
+
+! %module optwf (can be moved somewhere else)
+  if (fdf_defined("optwf")) then
+    if ( method .eq. 'linear' ) then
+      nwftype = 3; MFORCE = 3
+    endif
+  endif
+
   idl_flag      = fdf_get('idl_flag', 0)
   ilbfgs_flag   = fdf_get('ilbfgs_flag', 0)
   ilbfgs_m      = fdf_get('ilbfgs_m', 5)
@@ -473,6 +482,13 @@ subroutine parser
   end select
 
   write(ounit,*)
+  write(ounit,'(a,a)') " Pool directory for common input files :: ",  pooldir
+
+  !checks
+  if( (mode(1:3) == 'vmc') .and. iperiodic.gt.0) &
+    call fatal_error('INPUT: VMC for periodic system -> run dmc/dmc.mov1 with idmc < 0')
+
+  write(ounit,*)
   read(cseed,'(4i4)') irn
   write(ounit,'(a,t40,4i4)') " Random number seeds", irn
   call setrn(irn)
@@ -484,6 +500,8 @@ subroutine parser
   write(ounit, int_format) " Number of wave functions = ", nwftype
   if(nwftype.gt.nforce) call fatal_error('INPUT: nwftype gt nforce')
   write(ounit,*)
+! Printing header information and common calculation parameters ends here
+
 
 ! Molecular geometry file in .xyz format [#####]
   write(ounit,*)
@@ -501,24 +519,30 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif
+! By this point all information about geometry and znuc should be present.
+  iznuc     = 1
+  igeometry = 1
+! Molecular geometry section ends here
 
-  ! Electrons
+! Electrons
   write(ounit,*)
   write(ounit,'(a)') " System Information :: Electrons : "
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
 
+  !checks
+  if(nup.gt.nelec/2) call fatal_error('INPUT: nup exceeds nelec/2')
 
   write(ounit,*)
   write(ounit,int_format) " Number of total electrons = ", nelec
   write(ounit,int_format) " Number of alpha electrons = ", nup
   write(ounit,int_format) " Number of beta  electrons = ", ndn
   write(ounit,*)
+! Electrons section ends here
 
 
-
-  ! Pseudopotential section:
-  ! Pseudopotential information (either block or from a file)
+! Pseudopotential section:
+! Pseudopotential information (either block or from a file)
 
   write(ounit,*)
   write(ounit,'(a)') " Calculation Parameters :: Pseudopotential / All Electron : "
@@ -537,6 +561,8 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
   endif
   write(ounit,*)
+! Pseudopotential section ends here
+
 
 
 ! More about calculation parameters :: VMC / DMC settings
@@ -550,7 +576,7 @@ subroutine parser
     write(ounit,int_format)  " Version of Metropolis = ", imetro
 
     if (imetro.eq.1) then
-      deltai= one /delta
+      deltai= one/delta
       write(ounit,'(a,t36,f12.6)') " Step size = ",  delta
     else
       if(deltar .lt. one) then
@@ -569,16 +595,16 @@ subroutine parser
     fbias=dmin1(two,dmax1(zero,fbias))
     write(ounit,'(a,t36,f12.6)')  " Force bias = ",   fbias
 
-    ! Reduce the output printing for a large calculation
-    if(vmc_nstep*(vmc_nblk+2*vmc_nblkeq) .gt. 104000) ipr=-1
-    if(vmc_irstar.eq.1) vmc_nblkeq=0
-
-    write(ounit,int_format) " Number of steps/block = ", vmc_nstep
-    write(ounit,int_format) " Number of blocks after eq. = ", vmc_nblk
-    write(ounit,int_format) " Number of blocks before eq. = ", vmc_nblkeq
-    write(ounit,int_format) " Number of configurations saved = ", vmc_nconf_new
+    write(ounit,int_format) " Number of VMC steps/block = ", vmc_nstep
+    write(ounit,int_format) " Number of VMC blocks after eq. = ", vmc_nblk
+    write(ounit,int_format) " Number of VMC blocks before eq. = ", vmc_nblkeq
+    write(ounit,int_format) " Number of VMC configurations saved = ", vmc_nconf_new
   endif
 
+  !checks
+  if(index(mode,'mov1').ne.0 .and. imetro.eq.1) call fatal_error('INPUT: metrop_mov1 not updated')
+
+  ! DMC
   if( mode(1:3) == 'dmc' ) then
     write(ounit,*)
     write(ounit,'(a)') " Calculation Parameters :: DMC : "
@@ -616,25 +642,26 @@ subroutine parser
   ! Inizialized to zero for call to hpsi in vmc or dmc with no casula or/and in acuest
   i_vpsp=0
 
-! Common parameters to be printed
+  ! Reduce printing in case of a large calculation
 
   if(vmc_nstep*(vmc_nblk+2*vmc_nblkeq) .gt. 104000) ipr=-1
   if(vmc_irstar.eq.1) vmc_nblkeq=0
 
-  ! These two lines are additional : Debug Ravindra
   if(dmc_nstep*(dmc_nblk+2*dmc_nblkeq) .gt. 104000) ipr=-1
   if(dmc_irstar.eq.1) dmc_nblkeq=0
 
   if( mode(1:3) == 'dmc' ) then
-    write(ounit,int_format) " Number of steps/block = ", dmc_nstep
-    write(ounit,int_format) " Number of blocks after eq. = ", dmc_nblk
-    write(ounit,int_format) " Number of blocks before eq. = ", dmc_nblkeq
+    write(ounit,int_format) " Number of DMC steps/block = ", dmc_nstep
+    write(ounit,int_format) " Number of DMC blocks after eq. = ", dmc_nblk
+    write(ounit,int_format) " Number of DMC blocks before eq. = ", dmc_nblkeq
 
     write(ounit,int_format) " Target walker population = ", dmc_nconf
     if(dmc_nconf .le. 0) call fatal_error('INPUT: target population <= 0')
     if(dmc_nconf .gt. MWALK) call fatal_error('INPUT: target population > MWALK')
     write(ounit,int_format) " Number of configurations saved = ", dmc_nconf_new
   endif
+! VMC/DMC calculation parameters settings ends here.
+
 
 ! LCAO orbitals (must be loaded before reading basis )
 
@@ -653,6 +680,10 @@ subroutine parser
   else
     call inputlcao()
   endif
+
+
+
+
 
 ! Basis num information (either block or from a file)
 
@@ -731,7 +762,7 @@ subroutine parser
 
 
 
-! (5) Jastrow Parameters (either block or from a file)
+! Jastrow Parameters (either block or from a file)
 
   if ( fdf_load_defined('jastrow') ) then
       call read_jastrow_file(file_jastrow)
@@ -746,7 +777,7 @@ subroutine parser
   endif
 
 
-! (8) Jastrow derivative Parameters (either block or from a file)
+! Jastrow derivative Parameters (either block or from a file)
 
   if ( fdf_load_defined('jastrow_der') ) then
     call read_jasderiv_file(file_jastrow_der)
@@ -761,11 +792,13 @@ subroutine parser
     error stop
   endif
 
-  !printing some information and warnings about jastrow
+!printing some information and warnings and checks about Jastrow
   write(ounit, * )
   write(ounit, int_format) " Analytical laplacian (ianalyt_lap) = ",  ianalyt_lap
   if(ianalyt_lap.eq.0) then
     if(nloc.gt.0) call fatal_error('No numerical jastrow derivatives with pseudopotentials')
+    if(iperiodic.gt.0) &
+      call fatal_error('No numerical jastrow derivatives with periodic system: distances in jastrow_num not correct')
     if(ioptjas.gt.0) call fatal_error('No numerical jastrow derivatives and parms derivatives')
   endif
 
@@ -774,17 +807,54 @@ subroutine parser
   write(ounit, int_format ) " nspin1 = ", nspin1
   write(ounit, int_format ) " nspin2 = ", nspin2
 
+  if(ijas.ne.4 .and. iperiodic.gt.0) &
+    call fatal_error('Only ijas=4 implemented for periodic systems')
 
-   if(ijas.eq.4) write(ounit,'(a)') " new transferable standard form 4"
-   if(ijas.eq.5) write(ounit,'(a)') " new transferable standard form 5"
-   if(ijas.eq.6) write(ounit,'(a)') " new transferable standard form 6"
+  if(ijas.eq.4) write(ounit,'(a)') " new transferable standard form 4"
+  if(ijas.eq.5) write(ounit,'(a)') " new transferable standard form 5"
+  if(ijas.eq.6) write(ounit,'(a)') " new transferable standard form 6"
 
-   if(isc.eq.2) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r))/scalek"
-   if(isc.eq.3) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r-(scalek*r)**2/2))/scalek"
-   if(isc.eq.4) write(ounit,'(a)') " dist scaled r=r/(1+scalek*r)"
-   if(isc.eq.5) write(ounit,'(a)') " dist scaled r=r/(1+(scalek*r)**2)**.5"
+  if(isc.eq.2) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r))/scalek"
+  if(isc.eq.3) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r-(scalek*r)**2/2))/scalek"
+  if(isc.eq.4) write(ounit,'(a)') " dist scaled r=r/(1+scalek*r)"
+  if(isc.eq.5) write(ounit,'(a)') " dist scaled r=r/(1+(scalek*r)**2)**.5"
 
-
+  ! Call set_scale_dist to evaluate constants that need to be reset if
+  ! scalek is being varied. If cutjas=0, then reset cutjas to infinity
+  ! Warning: At present we are assuming that the same scalek is used for
+  ! primary and secondary wavefns.  Otherwise c1_jas6i,c1_jas6,c2_jas6
+  ! should be dimensioned to MWF
+  if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
+    if(iperiodic.ne.0 .and. cutjas_tmp.gt.cutjas) then
+        write(ounit, '(a,f9.5,a,f9.5)')  "**Warning: input cutjas > half shortest sim. cell lattice vector;  cutjas reset from ", cutjas_tmp, " to ", cutjas
+        else
+        cutjas=cutjas_tmp
+        write(ounit,'(a, d12.5)' ) " input cutjas = ", cutjas_tmp
+    endif
+    if(cutjas.gt.0.d0) then
+        cutjasi=1/cutjas
+        else
+        write(ounit, *) "cutjas reset to infinity"
+        cutjas=1.d99
+        cutjasi=0
+    endif
+    call set_scale_dist(1)
+  else
+    cutjas=1.d99
+    cutjasi=0
+    c1_jas6i=1
+    c1_jas6=1
+    c2_jas6=0
+    asymp_r=0
+    call allocate_jaspar6()  ! Needed for the following two arrays
+    do i=1,nctype
+        asymp_jasa(i)=0
+    enddo
+    do i=1,2
+        asymp_jasb(i)=0
+    enddo
+  endif
+  call set_scale_dist(1)
 
 
 ! (7) exponents
@@ -843,7 +913,7 @@ subroutine parser
   write(ounit,*)
 
   if(ibasis.eq.2) write(ounit,'(a)') " PW orbitals "
-  if(numr.gt.0)   write(ounit,'(a)') " numerical basis used"
+  if(numr.gt.0)   write(ounit,'(a)') " Numerical basis used"
 
   if(ibasis.eq.1) then
     write(ounit,'(a)') " Orbitals on localized basis "
@@ -870,31 +940,34 @@ subroutine parser
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     endif
-endif
+  elseif (ibasis.eq.2) then
+    call read_orb_pw_tm
+  endif
+! Basis information section ends here
 
 ! get normalization for basis functions
-      if(numr.eq.0) then
-        do iwft=1,nwftype
-          call basis_norm(iwft,anorm,0)
-        enddo
-      endif
+  if(numr.eq.0) then
+    do iwft=1,nwftype
+      call basis_norm(iwft,anorm,0)
+    enddo
+  endif
 
 ! check if the orbitals coefficients are to be multiplied by a constant parameter
-      if(scalecoef.ne.1.0d0) then
-        do  iwft=1,nwftype
-          do  i=1,norb+nadorb
-	          do  j=1,nbasis
-               coef(j,i,iwft)=coef(j,i,iwft)*scalecoef
-            enddo
-          enddo
+  if(scalecoef.ne.1.0d0) then
+    do  iwft=1,nwftype
+      do  i=1,norb+nadorb
+        do  j=1,nbasis
+            coef(j,i,iwft)=coef(j,i,iwft)*scalecoef
         enddo
-        write(ounit, real_format) " Orbital coefficients scaled by a constant parameter = ",  scalecoef
-	      write(ounit,*)
-      endif
+      enddo
+    enddo
+    write(ounit, real_format) " Orbital coefficients scaled by a constant parameter = ",  scalecoef
+    write(ounit,*)
+  endif
 
 ! verify number of orbitals and setup optorb
 ! verification already handeled in read_data file.
-      call verify_orbitals
+
 
 !! Grid information
 
@@ -918,9 +991,6 @@ endif
 
 
 
-
-
-
   ! Analytical forces flags (vmc only)
   if( mode(1:3) == 'vmc' ) then
     if(iforce_analy.gt.0) then
@@ -935,7 +1005,7 @@ endif
 
 
 
-  ! Optimization flags (vmc/dmc only)
+! Optimization flags WF (vmc/dmc only)
   if( (mode(1:3) == 'vmc') .or. (mode(1:3) == 'dmc') ) then
 
     write(ounit,*)
@@ -950,9 +1020,12 @@ endif
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
     endif
 
+    if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
+      if(method.eq.'linear' .and. MXREDUCED.ne.MXORBOP )  &
+          call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')
+    endif
 
-
-    ! Jastrow optimization flag (vmc/dmc only)
+! Optimization flag Jastrow  (vmc/dmc only)
     write(ounit,*)
     if(ioptjas.gt.0) then
       write(ounit,'(a)' ) " Jastrow derivatives are sampled "
@@ -967,8 +1040,7 @@ endif
     endif
 
 
-
-    ! ORB optimization flags (vmc/dmc only)
+! ORB optimization flags (vmc/dmc only)
     if(ioptorb.ne.0) then
       write(ounit,'(a)' ) " Orbital derivatives are sampled"
       write(ounit,int_format)  " ORB-PT blocks in force average = ", nefp_blocks
@@ -982,7 +1054,7 @@ endif
 
 
 
-    ! CI optimization
+! CI optimization flags
     if(ioptci.ne.0) then
       write(ounit,'(a)' ) " CI is sampled "
       write(ounit,int_format)  " CI printout flag = ", iciprt
@@ -1005,9 +1077,7 @@ endif
     if((ncsf.eq.0) .and. (nciprim.gt.MXCITERM) ) call fatal_error('INPUT: nciprim gt MXCITERM')
     if(nciterm.gt.MXCITERM) call fatal_error('INPUT: nciterm gt MXCITERM')
 
-    ! Multiple states/efficiency/guiding flags
-
-
+! Multiple states/efficiency/guiding flags
     ! Use guiding wave function constructed from mstates
     if(iguiding.gt.0) then
       write(6,'(''Guiding function: square root of sum of squares'')')
@@ -1024,23 +1094,25 @@ endif
     iefficiency=0
     iguiding=0
     nstates=1
-  endif ! Condition of either vmc/dmc
+  endif ! if loop of condition of either vmc/dmc ends here
 
-  ! QMMM classical potential
+
+
+! QMMM classical potential
   if(iqmmm.gt.0) then
     write(ounit,'(a)' ) "QMMM external potential "
     call qmmm_extpot_read
   endif
 
 ! Read in point charges
-
   if(iefield.gt.0) then
 ! External charges fetched in read_efield
     write(ounit,'(a,i4,a)')  " Read in ", ncharges, " external charges"
     call efield_compute_extint
   endif
 
-  !  PCM polarization charges
+!  PCM polarization charges (currently, this section is deactivated)
+
   !  ipcm=1 computes only the cavity (no qmc calculations)
   !  ipcm=2 runs qmc and creates/updates polarization charges
   !  ipcm=3 runs qmc with fixed polarization charges
@@ -1085,6 +1157,7 @@ endif
   !     call pcm_setup_3dspl
   !   endif
   ! endif
+  ! PCM section ends here
 
   ! QM-MMPOL  (fxed charges)
   !  immpol=1 runs qmc (QM-MM)  and creates the first set of induced dipoles on MM sites
@@ -1107,16 +1180,21 @@ endif
 
   !   call mmpol_extpot_read
   ! endif
+! QM-MMPOL section ends here
 
-  ! properties will be sampled iprop
-  ! properties will be printed ipropprt
 
+! Additional Properties
+! properties will be sampled iprop
+! properties will be printed ipropprt
   if(iprop.ne.0) then
     nprop=MAXPROP
     write(ounit,'(a)' ) " Properties will be sampled "
     write(ounit,int_format ) " Properties printout flag = ", ipropprt
     call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
   endif
+
+
+
 
 
 ! (13) Forces information (either block or from a file) [#####]
@@ -1194,7 +1272,10 @@ endif
 !    error stop
   endif
 
-! (19) gradients_zmatrix information (either block or from a file)
+
+
+! ZMATRIX begins here
+! gradients_zmatrix information (either block or from a file)
 
   if ( fdf_load_defined('gradients_zmatrix') ) then
     call read_gradients_zmatrix_file(file_gradients_zmatrix)
@@ -1209,7 +1290,7 @@ endif
 !    error stop
   endif
 
-! (20) gradients_cartesian information (either block or from a file)
+! gradients_cartesian information (either block or from a file)
 
   if ( fdf_load_defined('gradients_cartesian') ) then
     call read_gradients_cartesian_file(file_gradients_cartesian)
@@ -1224,7 +1305,7 @@ endif
 !    error stop
   endif
 
-! (21) modify_zmatrix information (either block or from a file)
+! modify_zmatrix information (either block or from a file)
 
   if(iforce_analy.gt.0) then
     if ( fdf_load_defined('modify_zmatrix') ) then
@@ -1239,7 +1320,7 @@ endif
     endif
   endif
 
-! (22) hessian_zmatrix information (either block or from a file)
+! hessian_zmatrix information (either block or from a file)
   if(iforce_analy.gt.0) then
     if ( fdf_load_defined('hessian_zmatrix') ) then
       call read_hessian_zmatrix_file(file_hessian_zmatrix)
@@ -1253,7 +1334,7 @@ endif
     endif
   endif
 
-! (23) zmatrix_connection information (either block or from a file)
+! zmatrix_connection information (either block or from a file)
 
   if ( fdf_load_defined('zmatrix_connection') ) then
     call read_zmatrix_connection_file(file_zmatrix_connection)
@@ -1267,6 +1348,17 @@ endif
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !    error stop
   endif
+
+! Some checks on Z Matrixs.
+! Write out information about calculation of energy gradients and Z matrix
+  write(ounit,*)
+  if(ngradnts.gt.0 .and. igrdtype.eq.1) call inpwrt_grdnts_cart()
+  if(ngradnts.gt.0 .and. igrdtype.eq.2) call inpwrt_grdnts_zmat()
+  if(izmatrix.eq.1) call inpwrt_zmatrix()
+  write(ounit,*)
+
+! ZMATRIX section ends here
+
 
 ! (24) efield information (either block or from a file)
 
@@ -1285,11 +1377,13 @@ endif
 
 ! Done reading all the files
 
-! ISSUE: DEBUG: see if the following commented block is really intended
-! %module optwf
-  ! if (fdf_defined("optwf")) then
-  !   nwftype = 3; MFORCE = 3
-  ! endif
+! Make sure that all the blocks are read. Use inputflags here to check
+  call verify_orbitals()
+
+  if(iznuc.eq.0) call fatal_error('INPUT: block znuc missing')
+  if(igeometry.eq.0) call fatal_error('INPUT: block geometry missing')
+  if(ijastrow_parameter.eq.0) call fatal_error('INPUT: block jastrow_parameter missing')
+  if(iefield.gt.0.and.icharge_efield.eq.0) call fatal_error('INPUT: block efield missing')
 
 
 
