@@ -301,7 +301,7 @@ subroutine read_determinants_file(file_determinants)
 
     read(iunit,*) temp1
     if (temp1 == "end" ) write(ounit,*) " Single state determinant file read successfully "
-
+    ideterminants = ideterminants + 1
     close(iunit)
 end subroutine read_determinants_file
 
@@ -365,7 +365,7 @@ subroutine read_multideterminants_file(file_multideterminants)
             enddo
         enddo
     enddo
-
+    imultideterminants = imultideterminants + 1
 end subroutine read_multideterminants_file
 
 
@@ -573,7 +573,7 @@ subroutine read_orbitals_file(file_orbitals)
     ! Fix the maximum size of all array relative
     ! to MOs with the maximum number of MOs
     ! this may not be needed later
-    !MORB = norb
+    MORB = norb
 
     if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
 
@@ -608,7 +608,7 @@ subroutine read_orbitals_file(file_orbitals)
             write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=counter, nbasis)
         enddo
     enddo
-
+    ilcao = ilcao + 1
     close(iunit)
     write(ounit,*) "----------------------------------------------------------"
 
@@ -704,7 +704,7 @@ subroutine read_csf_file(file_determinants)
         write(ounit,*) " CSF coefficients map one-to-one to determinant coefficients "
         write(ounit,*)
     endif
-
+    icsfs = 1
     close(iunit)
 
 end subroutine read_csf_file
@@ -1157,7 +1157,7 @@ subroutine read_forces_file(file_forces)
       enddo
     enddo
 
-
+    iforces = 1
     close(iunit)
 end subroutine read_forces_file
 
@@ -1286,7 +1286,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     do io = 1, norbopt
         write(ounit, '(10(1x, i5))') (iwmix_virt(io, jo), jo=1, norbvirt)
     enddo
-
+    ioptorb_mixvirt = 1
     close(iunit)
 end subroutine read_optorb_mixvirt_file
 
@@ -1584,6 +1584,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
         enddo
     endif
+    ibasis_num = 1
     close(iunit)
 end subroutine read_basis_num_info_file
 
@@ -1881,7 +1882,7 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
             endif
         enddo
     enddo
-
+    igradients = 1
     close(iunit)
 end subroutine read_gradients_cartesian_file
 
@@ -1970,7 +1971,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
             endif
         enddo
     enddo
-
+    igradients = 1
     close(iunit)
 
 end subroutine read_gradients_zmatrix_file
@@ -2032,7 +2033,7 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
             endif
         enddo
     enddo
-
+    imodify_zmat = 1
     close(iunit)
 end subroutine read_modify_zmatrix_file
 
@@ -2094,7 +2095,7 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
             endif
         enddo
     enddo
-
+    ihessian_zmat = 1
     close(iunit)
 end subroutine read_hessian_zmatrix_file
 
@@ -2170,6 +2171,8 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     call cart2zmat(ncent, czcart, izcmat, czint)
     call zmat2cart_rc(ncent, izcmat, czint, czcart, czcart_ref)
 
+    izmatrix = 1
+    izmatrix_check = 1
     close(iunit)
 end subroutine read_zmatrix_connection_file
 

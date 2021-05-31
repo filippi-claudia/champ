@@ -431,7 +431,7 @@ subroutine parser
 
 ! attention please. The following line moved here because next_max was not defined yet.
   nadorb        = fdf_get('nextorb', -1)  ! the default should be next_max
-
+  print*, " nextorb read from the input == nadorb ", nadorb
 
   ! Filenames parsing
   file_basis        		    = fdf_load_filename('basis', 			'default.bas')
@@ -761,6 +761,14 @@ subroutine parser
     error stop
   endif
 
+  ! allocation after determinants and basis
+  call compute_mat_size_new()
+  call allocate_vmc()
+  call allocate_dmc()
+
+
+
+
 ! (17) multideterminants information (either block or from a file)
 
   if ( fdf_load_defined('multideterminants') ) then
@@ -893,7 +901,7 @@ subroutine parser
     allocate (zex(nbasis, nwftype))
     zex = 1   ! debug check condition about numr == 0
   endif
-
+  iexponents = iexponents + 1
 
 
 ! (9) Symmetry information of orbitals (either block or from a file)
@@ -990,10 +998,6 @@ subroutine parser
 ! verify number of orbitals and setup optorb
 ! verification already handeled in read_data file.
 
-  ! allocation after determinants and basis
-  call compute_mat_size_new()
-  call allocate_vmc()
-  call allocate_dmc()
 
 
 !! Grid information
@@ -1041,6 +1045,7 @@ subroutine parser
     if(ioptorb_def.eq.0) then
       write(ounit,*) "INPUT: definition of orbital variations missing"
       call optorb_define
+      write(6, *) 'next_max after coming from optorb define', next_max
     endif
   endif
   if(ioptci.ne.0.and.ici_def.eq.0) then
@@ -1414,6 +1419,9 @@ subroutine parser
 
 ! Done reading all the files
 
+  ! Not sure if this line should be here or not.
+  call pot_nn(cent,znuc,iwctype,ncent,pecent)
+
 ! Make sure that all the blocks are read. Use inputflags here to check
   call verify_orbitals()
 
@@ -1430,7 +1438,7 @@ subroutine parser
 
   call fdf_shutdown()
 
-  print*, "sanity check norb, ndet, nadorb, ndetorb ", norb, ndet, nadorb, ndetorb, next_max
+  print*, "sanity check norb, ndet, nadorb, ndetorb next_max ", norb, ndet, nadorb, ndetorb, next_max
 
   ! The following portion can be shifted to another subroutine.
   ! It does the processing of the input read so far and initializes some
