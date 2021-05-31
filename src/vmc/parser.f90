@@ -429,6 +429,9 @@ subroutine parser
 ! %module qmmm (complete)
 !  iqmm          = fdf_get('iqmm',0)
 
+! attention please. The following line moved here because next_max was not defined yet.
+  nadorb        = fdf_get('nextorb', -1)  ! the default should be next_max
+
 
   ! Filenames parsing
   file_basis        		    = fdf_load_filename('basis', 			'default.bas')
@@ -987,6 +990,11 @@ subroutine parser
 ! verify number of orbitals and setup optorb
 ! verification already handeled in read_data file.
 
+  ! allocation after determinants and basis
+  call compute_mat_size_new()
+  call allocate_vmc()
+  call allocate_dmc()
+
 
 !! Grid information
 
@@ -1023,6 +1031,8 @@ subroutine parser
 
 ! Contents from flagcheck. Moved here because ndet and norb should be defined by now
 
+  print*, "DEBUG: checking optorb_define ioptorb ioptorb_def",ioptorb, ioptorb_def
+
   if(ioptorb.ne.0) then
     if(ioptorb_mixvirt.eq.0) then
       norbopt=0
@@ -1037,11 +1047,6 @@ subroutine parser
     write(ounit,*) "INPUT: definition of OPTCI operators missing"
     call optci_define
   endif
-
-
-! attention please. The following line moved here because next_max was not defined yet.
-  nadorb        = fdf_get('nextorb', next_max)
-
 
 
 ! Optimization flags WF (vmc/dmc only)
@@ -1419,13 +1424,13 @@ subroutine parser
 
 
 
-  call compute_mat_size_new()
-  call allocate_vmc()
-  call allocate_dmc()
+  ! call compute_mat_size_new()
+  ! call allocate_vmc()
+  ! call allocate_dmc()
 
   call fdf_shutdown()
 
-  print*, "sanity check norb, ndet, nadorb, ndetorb ", norb, ndet, nadorb, ndetorb
+  print*, "sanity check norb, ndet, nadorb, ndetorb ", norb, ndet, nadorb, ndetorb, next_max
 
   ! The following portion can be shifted to another subroutine.
   ! It does the processing of the input read so far and initializes some
