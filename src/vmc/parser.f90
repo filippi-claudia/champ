@@ -65,7 +65,7 @@ subroutine parser
   use zmatrix, 			only: izmatrix
   use bparm, 			only: nocuspb, nspin2b
   use casula, 			only: i_vpsp, icasula
-  use coefs, 			only: coef, nbasis, norb
+  use coefs, 			only: coef, nbasis, norb, next_max
   use const2, 			only: deltar, deltat
   use contr2, 			only: ianalyt_lap, ijas
   use contr2, 			only: isc
@@ -131,7 +131,7 @@ subroutine parser
   use inputflags, 		only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
   use inputflags, 		only: ici_def, iforces, icsfs, icharge_efield
   use inputflags, 		only: imultideterminants, imodify_zmat, izmatrix_check
-  use inputflags, 		only: ihessian_zmat
+  use inputflags,     only: ioptorb_mixvirt, ihessian_zmat, igradients
   use basis,          only: zex
 
   use precision_kinds,    only: dp
@@ -372,8 +372,6 @@ subroutine parser
   isavebl       = fdf_get('save_blocks', 0)
   nefp_blocks   = fdf_get('force_blocks',1)
   iorbsample    = fdf_get('iorbsample',1)
-! attention please
-!  nadorb        = fdf_get('nextorb', next_max)
 
 
 
@@ -678,7 +676,13 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    call inputlcao()
+    if(nwftype.gt.1) then
+      if(iperiodic.eq.0.and.ilcao.ne.nwftype) then
+        write(ounit,*) "Warning INPUT: block lcao missing for one wave function"
+        write(ounit,*) "Warning INPUT: lcao blocks equal for all wave functions"
+        call inputlcao(nwftype)
+      endif
+    endif
   endif
 
 
@@ -721,7 +725,13 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    call inputdet()
+    if(nwftype.gt.1) then
+      if(ideterminants.ne.nwftype) then
+        write(ounit,*) "Warning INPUT: block determinants missing for one wave function"
+        write(ounit,*) "Warning INPUT: determinants blocks equal for all wave functions"
+        call inputdet(nwftype)
+      endif
+    endif
   endif
 
 ! (3) CSF only
@@ -731,9 +741,10 @@ subroutine parser
   elseif (fdf_block('csf', bfdf)) then
     call fdf_read_csf_block(bfdf)
   else
-    ! No csf present; set default values
+    ! No csf present; set default values; This replaces inputcsf
     nstates = 1
-    if (ioptci .ne. 0) nciterm = nciprim
+    ncsf = 0
+    if (ioptci .ne. 0 .and. ici_def .eq. 1) nciterm = nciprim
   endif
 
 ! (4) CSFMAP [#####]
@@ -757,7 +768,10 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    call multideterminants_define(0,0)
+    if(imultideterminants.eq.0) then
+      write(errunit,*) "INPUT: multideterminant bloc MISSING"
+      call multideterminants_define(0,0)
+    endif
   endif
 
 
@@ -772,8 +786,14 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    ! no information about jastrow present. Set some values
-    call inputjastrow()
+    ! no information about jastrow present.
+    if(nwftype.gt.1) then
+      if(ijastrow_parameter.ne.nwftype) then
+        write(ounit,*) "INPUT: block jastrow_parameter missing for one wave function"
+        write(ounit,*) "INPUT: jastrow_parameter blocks equal for all wave functions"
+        call inputjastrow(nwftype)
+      endif
+    endif
   endif
 
 
@@ -868,7 +888,6 @@ subroutine parser
     error stop
   else
     allocate (zex(nbasis, nwftype))
-    if (numr .eq. 0 .and. iperiodic .eq. 0) call fatal_error('ZEX: numr=0 and iperiodic=0 but no zex are inputed')
     zex = 1   ! debug check condition about numr == 0
   endif
 
@@ -1002,6 +1021,26 @@ subroutine parser
   endif
 
 
+! Contents from flagcheck. Moved here because ndet and norb should be defined by now
+
+  if(ioptorb.ne.0) then
+    if(ioptorb_mixvirt.eq.0) then
+      norbopt=0
+      norbvirt=0
+    endif
+    if(ioptorb_def.eq.0) then
+      write(ounit,*) "INPUT: definition of orbital variations missing"
+      call optorb_define
+    endif
+  endif
+  if(ioptci.ne.0.and.ici_def.eq.0) then
+    write(ounit,*) "INPUT: definition of OPTCI operators missing"
+    call optci_define
+  endif
+
+
+! attention please. The following line moved here because next_max was not defined yet.
+  nadorb        = fdf_get('nextorb', next_max)
 
 
 
@@ -1080,7 +1119,7 @@ subroutine parser
 ! Multiple states/efficiency/guiding flags
     ! Use guiding wave function constructed from mstates
     if(iguiding.gt.0) then
-      write(6,'(''Guiding function: square root of sum of squares'')')
+      write(ounit, *) "Guiding function: square root of sum of squares"
       keyname='weights_guiding:'
       call get_weights_new(keyname,weights_g,iweight_g,nstates_g)
     endif
@@ -1133,19 +1172,19 @@ subroutine parser
   !     qfree=qfree+znuc(iwctype(i))
   !   enddo
 
-  !   write(6,'(''PCM polarization charges '')')
-  !   write(6,'(''pcm ipcm   =  '',t30,i3)') ipcm
-  !   write(6,'(''pcm ichpol =  '',t30,i3)') ichpol
-  !   write(6,'(''pcm isurf  =  '',t30,i3)') isurf
-  !   write(6,'(''pcm file (cavity) ='',t30,a20)') pcmfile_cavity
-  !   write(6,'(''pcm file (chs)    ='',t30,a20)') pcmfile_chs
-  !   write(6,'(''pcm file (chv)    ='',t30,a20)') pcmfile_chv
-  !   write(6,'(''pcm nconf sampled for chv ='',t30,i10)') nscv
-  !   write(6,'(''pcm frequency for chv ='',t30,i10)') iscov
-  !   write(6,'(''pcm epsilon_solvent ='',t30,f7.3)') eps_solv
-  !   write(6,'(''pcm rcolv ='',t30,f7.3)') rcolv
-  !   write(6,'(''pcm fcol  ='',t30,f7.3)') fcol
-  !   write(6,'(''pcm npmax ='',t30,i10)') npmax
+  !   write(ounit,'(''PCM polarization charges '')')
+  !   write(ounit,'(''pcm ipcm   =  '',t30,i3)') ipcm
+  !   write(ounit,'(''pcm ichpol =  '',t30,i3)') ichpol
+  !   write(ounit,'(''pcm isurf  =  '',t30,i3)') isurf
+  !   write(ounit,'(''pcm file (cavity) ='',t30,a20)') pcmfile_cavity
+  !   write(ounit,'(''pcm file (chs)    ='',t30,a20)') pcmfile_chs
+  !   write(ounit,'(''pcm file (chv)    ='',t30,a20)') pcmfile_chv
+  !   write(ounit,'(''pcm nconf sampled for chv ='',t30,i10)') nscv
+  !   write(ounit,'(''pcm frequency for chv ='',t30,i10)') iscov
+  !   write(ounit,'(''pcm epsilon_solvent ='',t30,f7.3)') eps_solv
+  !   write(ounit,'(''pcm rcolv ='',t30,f7.3)') rcolv
+  !   write(ounit,'(''pcm fcol  ='',t30,f7.3)') fcol
+  !   write(ounit,'(''pcm npmax ='',t30,i10)') npmax
 
   !   call pcm_extpot_read(fcol,npmax)
 
@@ -1169,14 +1208,14 @@ subroutine parser
   ! if(immpol.ne.0) then
   !   if(immpol.eq.2) ich_mmpol=1
 
-  !   write(6,'(''QM-MMPOL fixed charges and induced dipoles '')')
-  !   write(6,'(''mmpol immpol   =  '',t30,i3)') immpol
-  !   write(6,'(''mmpol ich_mmpol =  '',t30,i3)') ich_mmpol
-  !   write(6,'(''mmpol isites  =  '',t30,i3)') isites_mmpol
-  !   write(6,'(''mmpol file (sites)    ='',t30,a20)') mmpolfile_sites
-  !   write(6,'(''mmpol file (chmm)    ='',t30,a20)') mmpolfile_chmm
-  !   write(6,'(''mmpol a_cutoff ='',t30,f7.3)') a_cutoff
-  !   write(6,'(''mmpol rcolm ='',t30,f7.3)') rcolm
+  !   write(ounit,'(''QM-MMPOL fixed charges and induced dipoles '')')
+  !   write(ounit,'(''mmpol immpol   =  '',t30,i3)') immpol
+  !   write(ounit,'(''mmpol ich_mmpol =  '',t30,i3)') ich_mmpol
+  !   write(ounit,'(''mmpol isites  =  '',t30,i3)') isites_mmpol
+  !   write(ounit,'(''mmpol file (sites)    ='',t30,a20)') mmpolfile_sites
+  !   write(ounit,'(''mmpol file (chmm)    ='',t30,a20)') mmpolfile_chmm
+  !   write(ounit,'(''mmpol a_cutoff ='',t30,f7.3)') a_cutoff
+  !   write(ounit,'(''mmpol rcolm ='',t30,f7.3)') rcolm
 
   !   call mmpol_extpot_read
   ! endif
@@ -1204,7 +1243,10 @@ subroutine parser
   elseif (fdf_block('forces', bfdf)) then
     call fdf_read_forces_block(bfdf)
   else
-    call inputforces()
+    if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
+      write(ounit,*) "INPUT: block forces_displace or gradients_* missing: geometries set equal to primary"
+      call inputforces()
+    endif
   endif
 
 ! (14) Dmatrix information (either block or from a file)
@@ -1234,27 +1276,17 @@ subroutine parser
 
 ! (10) optorb_mixvirt information of orbitals (either block or from a file)
 
-  if(ioptorb .ne. 0) then   ! read next file only if orb optimization is requested
-    if ( fdf_load_defined('optorb_mixvirt') ) then
-      call read_optorb_mixvirt_file(file_optorb_mixvirt)
-    elseif ( fdf_block('optorb_mixvirt', bfdf)) then
-    ! call fdf_read_optorb_mixvirt_block(bfdf)
-      write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
-      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-      error stop
-    else
-      !use optorb_mix, only: norbopt, norbvirt
-      norbopt   = 0
-      norbvirt  = 0
-    endif
-
-    if(ioptorb_def.eq.0) then
-      write(6,'(''INPUT: definition of orbital variations missing'')')
-      call optorb_define
-    endif
+  if ( fdf_load_defined('optorb_mixvirt') ) then
+    call read_optorb_mixvirt_file(file_optorb_mixvirt)
+  elseif ( fdf_block('optorb_mixvirt', bfdf)) then
+  ! call fdf_read_optorb_mixvirt_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
   endif
-
-
 
 
 ! (18) cavity_spheres information (either block or from a file)
@@ -1316,7 +1348,7 @@ subroutine parser
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     else
-      call modify_zmat_define
+      if(imodify_zmat.eq.0) call modify_zmat_define
     endif
   endif
 
@@ -1330,7 +1362,7 @@ subroutine parser
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     else
-      call hessian_zmat_define
+      if(ihessian_zmat.eq.0) call hessian_zmat_define
     endif
   endif
 
@@ -1346,7 +1378,7 @@ subroutine parser
   else
     write(errunit,'(a)') "Error:: No information about zmatrix_connection provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop
+    if(iuse_zmat.gt.0.and.izmatrix_check.eq.0) call fatal_error('INPUT: block connectionzmatrix missing')
   endif
 
 ! Some checks on Z Matrixs.
@@ -1392,6 +1424,8 @@ subroutine parser
   call allocate_dmc()
 
   call fdf_shutdown()
+
+  print*, "sanity check norb, ndet, nadorb, ndetorb ", norb, ndet, nadorb, ndetorb
 
   ! The following portion can be shifted to another subroutine.
   ! It does the processing of the input read so far and initializes some

@@ -1442,12 +1442,14 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     allocate (ndx2a(nctot))
     allocate (ndyza(nctot))
 
-
+    if (nbasis .eq. 0) then
+        call fatal_error('Please Load LCAO before basis info in the input file')
+    endif
 
     allocate (iwlbas(nbasis, nctot))
     allocate (iwrwf(nbasis, nctot))
 
-
+    numr = 1  ! DEBUG ISSUE Please confirm this
     do i = 1, nctype + newghostype
         read (iunit, *, iostat=iostat) n1s(i), n2s(i), (n2p(j, i), j=1, 3), &
             n3s(i), (n3p(j, i), j=1, 3), &
