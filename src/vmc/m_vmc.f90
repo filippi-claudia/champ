@@ -31,8 +31,8 @@ module vmc_mod
     ! integer, parameter :: MELEC = 32, MORB = 500, MBASIS = 500, MDET = 1000, MCENT = 20
     integer, parameter :: MELEC = 32, MCENT = 20
     integer, parameter :: MCTYPE = 3
-    integer :: MBASIS = 500
-    integer :: MORB = 500
+    integer :: MBASIS
+    integer :: MORB 
     integer :: MDET
     integer :: MCTYP3X
     integer, parameter :: NSPLIN = 1001, MORDJ = 7

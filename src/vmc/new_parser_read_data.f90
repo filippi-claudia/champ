@@ -1649,8 +1649,9 @@ subroutine read_dmatrix_file(file_dmatrix)
     allocate (weights(nstates))
     allocate (iweight(nstates))
 
+    print*, "DEBUG: do i get called dmatrix "
     ! BUG ravindra: bring the get_weight subroutine
-    call get_weights_new('weights:', weights, iweight, nweight)
+    ! call get_weights_new('weights:', weights, iweight, nweight)
     !if (ns .ne. nweight) call fatal('READ_DMATRIX: wrong number of dmatrices')
 
     read (iunit, *) (iwdmat(i), i=1, nweight)
@@ -1708,12 +1709,12 @@ subroutine get_weights_new(field, weights, iweight, nweight)
     wsum = 0.d0
     nweight = 0
 
-    write(ounit, *) field, adjustl(field)
+    write (6, *) field, field(1:index(field, ' '))
     print*, "length of fields in get_weight ", len(field), len(adjustl(field))
     do i = 1, nstates
         wdef = 0.d0
         ! BUG:: Ravindra. Replce following two lines with appropriate ones
-!        call append_number(field(1:index(field, ' ') - 1), i, vname, nv, 0)
+        ! call append_number(field(1:index(field, ' ') - 1), i, vname, nv, 0)
 !        call p2gtfd(vname(1:nv), w, wdef, 0)
         !VARDOC Input of weights for individual states.
         w = dabs(w)

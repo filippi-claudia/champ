@@ -65,7 +65,7 @@ subroutine parser
   use zmatrix, 			only: izmatrix
   use bparm, 			only: nocuspb, nspin2b
   use casula, 			only: i_vpsp, icasula
-  use coefs, 			only: coef, nbasis, norb, next_max
+  use coefs, 			only: coef, nbasis, norb
   use const2, 			only: deltar, deltat
   use contr2, 			only: ianalyt_lap, ijas
   use contr2, 			only: isc
@@ -148,6 +148,8 @@ subroutine parser
   character(len=20)          :: temp1, temp2, temp3, temp4, temp5
   integer                    :: ifock , ratio, isavebl
   real(dp)                   :: cutjas_tmp
+
+  real(dp)                   :: wsum
 
   type(block_fdf)            :: bfdf
   type(parsed_line), pointer :: pline
@@ -1035,7 +1037,6 @@ subroutine parser
 
 ! Contents from flagcheck. Moved here because ndet and norb should be defined by now
 
-  print*, "DEBUG: checking optorb_define ioptorb ioptorb_def",ioptorb, ioptorb_def
 
   if(ioptorb.ne.0) then
     if(ioptorb_mixvirt.eq.0) then
@@ -1045,7 +1046,6 @@ subroutine parser
     if(ioptorb_def.eq.0) then
       write(ounit,*) "INPUT: definition of orbital variations missing"
       call optorb_define
-      write(6, *) 'next_max after coming from optorb define', next_max
     endif
   endif
   if(ioptci.ne.0.and.ici_def.eq.0) then
@@ -1146,7 +1146,6 @@ subroutine parser
   endif ! if loop of condition of either vmc/dmc ends here
 
 
-
 ! QMMM classical potential
   if(iqmmm.gt.0) then
     write(ounit,'(a)' ) "QMMM external potential "
@@ -1245,7 +1244,6 @@ subroutine parser
 
 
 
-
 ! (13) Forces information (either block or from a file) [#####]
 
   if (fdf_load_defined('forces') ) then
@@ -1275,8 +1273,44 @@ subroutine parser
   endif
 
 
+! Part which handles the weights. needs modifications for guiding
 
+  if (.not. allocated(weights)) allocate (weights(nstates))
+  if (.not. allocated(iweight)) allocate (iweight(nstates))
 
+  if ( fdf_islreal('weights') .and. fdf_islist('weights') &
+      .and. (.not. fdf_islinteger('weights')) ) then
+    i = -1
+    call fdf_list('weights',i,weights)
+    write(*,'(tr1,a,i0,a)') ' has ',i,' entries'
+    if ( i < 2 ) stop 1
+    call fdf_list('weights',i,weights)
+    write(*, * ) 'weights : ', weights(1:i)
+  else
+    write(*,*)'weights was not recognized'
+    stop 1
+  end if
+
+  wsum = 0.d0
+  nweight = 0
+  do i = 1, nstates
+    if (weights(i) .gt. 1d-6) then
+        nweight = nweight + 1
+        iweight(nweight) = i
+        wsum = wsum + weights(i)
+    endif
+  enddo
+
+  do i = 1, nweight
+    weights(i) = weights(i)/wsum
+  enddo
+
+  if (nweight .eq. 0) then
+      nweight = 1
+      iweight(1) = 1
+      weights(1) = 1.d0
+  endif
+! The above part should be moved to get_weights subroutine
 
 
 ! Processing of data read from the parsed files or setting them with defaults
@@ -1313,7 +1347,6 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !    error stop
   endif
-
 
 
 ! ZMATRIX begins here
@@ -1401,7 +1434,6 @@ subroutine parser
 
 ! ZMATRIX section ends here
 
-
 ! (24) efield information (either block or from a file)
 
   if ( fdf_load_defined('efield') ) then
@@ -1438,7 +1470,6 @@ subroutine parser
 
   call fdf_shutdown()
 
-  print*, "sanity check norb, ndet, nadorb, ndetorb next_max ", norb, ndet, nadorb, ndetorb, next_max
 
   ! The following portion can be shifted to another subroutine.
   ! It does the processing of the input read so far and initializes some
