@@ -27,6 +27,7 @@ subroutine parser
   use properties,     	only: MAXPROP
   use optorb_mod,     	only: MXORBOP, MXREDUCED
   use optci,          	only: MXCITERM
+  use mstates_mod,      only: MSTATES
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
   use vmc_mod, 			only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
@@ -65,7 +66,7 @@ subroutine parser
   use zmatrix, 			only: izmatrix
   use bparm, 			only: nocuspb, nspin2b
   use casula, 			only: i_vpsp, icasula
-  use coefs, 			only: coef, nbasis, norb
+  use coefs, 			only: coef, nbasis, norb, next_max
   use const2, 			only: deltar, deltat
   use contr2, 			only: ianalyt_lap, ijas
   use contr2, 			only: isc
@@ -1275,8 +1276,9 @@ subroutine parser
 
 ! Part which handles the weights. needs modifications for guiding
 
-  if (.not. allocated(weights)) allocate (weights(nstates))
-  if (.not. allocated(iweight)) allocate (iweight(nstates))
+  if (.not. allocated(weights)) allocate (weights(MSTATES))
+  if (.not. allocated(iweight)) allocate (iweight(MSTATES))
+  print*, "DEBUG: shape of weights ", shape(weights)
 
   if ( fdf_islreal('weights') .and. fdf_islist('weights') &
       .and. (.not. fdf_islinteger('weights')) ) then

@@ -13,8 +13,10 @@ contains
         use optwf_contrl, only: ioptwf, idl_flag, ilbfgs_flag
         use optwf_dl_mod, only: optwf_dl
         use optwf_sr_mod, only: optwf_sr
+        ! debug
+        use coefs, only: next_max
         implicit None
-
+        print*, "DEBUG: inside optwf :: next_max ", next_max;  next_max = 0
         if (ioptwf .gt. 0) then
             if (idl_flag .gt. 0) then
                 call optwf_dl()
