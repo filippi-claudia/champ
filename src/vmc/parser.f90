@@ -434,7 +434,7 @@ subroutine parser
 
 ! attention please. The following line moved here because next_max was not defined yet.
   nadorb        = fdf_get('nextorb', -1)  ! the default should be next_max
-  print*, " nextorb read from the input == nadorb ", nadorb
+
 
   ! Filenames parsing
   file_basis        		    = fdf_load_filename('basis', 			'default.bas')
@@ -1278,7 +1278,7 @@ subroutine parser
 
   if (.not. allocated(weights)) allocate (weights(MSTATES))
   if (.not. allocated(iweight)) allocate (iweight(MSTATES))
-  print*, "DEBUG: shape of weights ", shape(weights)
+
 
   if ( fdf_islreal('weights') .and. fdf_islist('weights') &
       .and. (.not. fdf_islinteger('weights')) ) then
@@ -1287,7 +1287,7 @@ subroutine parser
     write(*,'(tr1,a,i0,a)') ' has ',i,' entries'
     if ( i < 2 ) stop 1
     call fdf_list('weights',i,weights)
-    write(*, * ) 'weights : ', weights(1:i)
+    write(*, '(a,<MSTATES>(f12.6))') 'weights : ', weights(1:i)
   else
     write(*,*)'weights was not recognized'
     stop 1
