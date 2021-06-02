@@ -29,7 +29,7 @@ jobs:
         cp -v mc_configs_start_save mc_configs_start
 
         echo "Running the calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i test-champ.inp  -o test.out  -e error > screen
+        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i test-champ.inp  -o test.out  -e error > screen
 
         echo "Comparing the initial energy with the reference one"
         python comparison.py
