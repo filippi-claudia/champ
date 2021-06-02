@@ -1283,7 +1283,7 @@ subroutine parser
       .and. (.not. fdf_islinteger('weights')) ) then
     i = -1
     call fdf_list('weights',i,weights)
-    write(*,'(tr1,a,i0,a)') ' has ',i,' entries'
+    write(*,'(tr1,a,i0,a)') 'Weights has ',i,' entries'
     if ( i < 2 ) stop 1
     call fdf_list('weights',i,weights)
     write(*, '(a,<MSTATES>(f12.6))') 'weights : ', weights(1:i)

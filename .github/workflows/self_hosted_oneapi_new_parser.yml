@@ -17,3 +17,19 @@ jobs:
       run: |
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
         cmake --build build -- -j1
+        echo "Build is sucessfull"
+
+
+    - name: "Test VMC only"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-butadiene-vmc-only
+
+        echo "Copy an initial mc configuration for reference"
+        cp -v mc_configs_start_save mc_configs_start
+
+        echo "Running the calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i test-champ.inp  -o test.out  -e error > screen
+
+        echo "Comparing the initial energy with the reference one"
+        python comparison.py
