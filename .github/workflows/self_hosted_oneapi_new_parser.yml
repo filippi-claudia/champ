@@ -29,7 +29,21 @@ jobs:
         cp -v mc_configs_start_save mc_configs_start
 
         echo "Running the calculation"
-        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i test-champ.inp  -o test.out  -e error > screen
+        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only > screen
+
+        echo "Comparing the initial energy with the reference one"
+        python comparison.py
+
+    - name: "Test 02 VMC optimization all"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-butadiene-vmc-only
+
+        echo "Copy an initial mc configuration for reference"
+        cp -v mc_configs_start_save mc_configs_start
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
         echo "Comparing the initial energy with the reference one"
         python comparison.py
