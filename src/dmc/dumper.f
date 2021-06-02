@@ -41,7 +41,8 @@ c job where it left off
       use ghostatom, only: newghostype, nghostcent
       use jaspar1, only: cjas1, cjas2
       use velratio, only: fratio
-      use contrl, only: nconf
+!      use contrl, only: nconf
+      use control_dmc, only: dmc_nconf
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -165,7 +166,7 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(10) ((irn_tmp(i,j),i=1,4),j=0,nproc-1)
       write(10) hb
       write(10) tau,rttau,idmc
-      write(10) nelec,nconf,nforce
+      write(10) nelec,dmc_nconf,nforce
       write(10) (wtgen(i),i=0,nfprod),wgdsumo
       write(10) wcum_dmc,wfcum,wdcum,wgdcum
      &,wcum1/nproc,wfcum1/nproc,(wgcum1(i)/nproc,i=1,nforce),wdcum1

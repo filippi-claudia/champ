@@ -1,10 +1,11 @@
       program maindmc
 c Written by Claudia Filippi
       use mpiconf, only: idtask, nproc, wid, NPROCX
-      use mpiconf, only: mpiconf_init 
+      use mpiconf, only: mpiconf_init
       use allocation_mod, only: deallocate_dmc
       use optwf_contrl, only: ioptwf
       use contr3, only: mode
+      use contrl_file, only: initialize
       use mpi
 
       implicit none
@@ -18,6 +19,7 @@ c Written by Claudia Filippi
 
       call mpiconf_init()
 
+      call initialize()
 
 c Open the standard output and the log file only on the master
       if(wid) then
@@ -39,8 +41,12 @@ c Open the standard output and the log file only on the master
       endif
       open(18,file=filename, status='unknown')
 
-!      BUG:: Ravindra. Following line needs a replacement
+
 !      call read_input
+      if ( wid ) then
+        call parser()
+      endif
+
 
 !      call p2gtid('optwf:ioptwf', ioptwf, 0, 1)
 
@@ -48,6 +54,7 @@ c Open the standard output and the log file only on the master
         if(ioptwf.gt.0) call fatal_error('MAIN: no DMC optimization with global population')
 
 !        call p2gtid('dmc:ibranch_elec', ibranch_elec, 0, 1)
+        ! why a local variable is used to decide the following line
         if(ibranch_elec.gt.0) call fatal_error('MAIN: no DMC single-branch with global population')
       endif
 

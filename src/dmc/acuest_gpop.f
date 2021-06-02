@@ -19,7 +19,8 @@ c routine to accumulate estimators for energy etc.
       use derivest, only: derivcum, derivsum
       use mpiconf, only: wid
       use force_mod, only: MFORCE
-      use contrl, only: nstep
+!      use contrl, only: nstep
+      use control_dmc, only: dmc_nstep
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -44,7 +45,7 @@ c xerr = current error of x
 
       iblk=iblk+1
 
-      npass=iblk*nstep
+      npass=iblk*dmc_nstep
 
       call mpi_reduce(pesum_dmc,pecollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -73,8 +74,8 @@ c xerr = current error of x
 
       if(.not.wid) goto 17
 
-      wnow=wsum_dmc/nstep
-      wfnow=wfsum/nstep
+      wnow=wsum_dmc/dmc_nstep
+      wfnow=wfsum/dmc_nstep
       enow=esum_dmc/wsum_dmc
       efnow=efsum/wfsum
       ei1now=wfsum/wdsum
@@ -113,7 +114,7 @@ c xerr = current error of x
         do 13 k=1,3
   13      derivsum(k,ifr)=derivcollect(k,ifr)
 
-        wgnow=wgsum(ifr)/nstep
+        wgnow=wgsum(ifr)/dmc_nstep
         egnow=egsum(ifr)/wgsum(ifr)
         penow=pesum_dmc(ifr)/wgsum(ifr)
         tpbnow=tpbsum_dmc(ifr)/wgsum(ifr)
@@ -232,6 +233,6 @@ c zero out xsum variables for metrop
       call prop_init(1)
       call pcm_init(1)
       call mmpol_init(1)
-      
+
       return
       end

@@ -1,16 +1,13 @@
-subroutine gesqua(nq,xq,yq,zq,wq)
-!c Written by Lubos Mitas
+	subroutine gesqua(nq,xq,yq,zq,wq)
+c Written by Lubos Mitas
 
-	use precision_kinds, only: dp
-	use pseudo_mod, only: MPS_QUAD
-
-	implicit real*8(a-h,o-z)
+        implicit real*8(a-h,o-z)
 
 	parameter (ncase=10,npoint=86,ntype=4,ntypm=6)
 
-	dimension iocta(ntype),icosa(ntype),ww(ncase,ntypm),iq(ncase), itetr(ntype),i20(ntype),i24(ntype),i86(ntypm)
-
-	real(dp), dimension(MPS_QUAD):: xq, yq, zq, wq
+	dimension wq(*),xq(*),yq(*),zq(*),
+     &	iocta(ntype),icosa(ntype),ww(ncase,ntypm),iq(ncase),
+     &  itetr(ntype),i20(ntype),i24(ntype),i86(ntypm)
 
 	data iq/4,6,12,18,26,32,50,24,20,86/
 	data itetr/4,0,0,0/
@@ -37,7 +34,6 @@ subroutine gesqua(nq,xq,yq,zq,wq)
 	  do 5 k=1,ntypm
 	    ww(ic,k)=0.d0
  5	continue
-
 	do 7 j=1,npoint
 	  xq(j)=0.d0
 	  yq(j)=0.d0
@@ -45,7 +41,7 @@ subroutine gesqua(nq,xq,yq,zq,wq)
 	  wq(j)=0.d0
  7	continue
 
-    ww(1,1)=1.d0/4.d0
+	ww(1,1)=1.d0/4.d0
 	ww(2,1)=1.d0/6.d0
 	ww(3,1)=1.d0/12.d0
 	ww(4,1)=1.d0/30.d0
@@ -92,7 +88,7 @@ subroutine gesqua(nq,xq,yq,zq,wq)
 
 	go to (10,20,130,20,20,130,20,230,130,530) icase
 
-!c       tetrahedron symmetry quadrature
+c       tetrahedron symmetry quadrature
 
 10	continue
 	do 12 j=1,4
@@ -105,7 +101,7 @@ subroutine gesqua(nq,xq,yq,zq,wq)
  12	continue
 	return
 
-!c       octahedron symmetry quadrature
+c       octahedron symmetry quadrature
 
  20	continue
 	ip=0
@@ -153,7 +149,7 @@ subroutine gesqua(nq,xq,yq,zq,wq)
  40	continue
 	return
 
-!c       icosahedron symmetry quadrature
+c       icosahedron symmetry quadrature
 
  130	zq(1)=1.d0
 	zq(2)=-1.d0
@@ -309,11 +305,11 @@ subroutine gesqua(nq,xq,yq,zq,wq)
 440	continue
 
 	return
-end subroutine gesqua
-!c-----------------------------------------------------------------------
+	end
+c-----------------------------------------------------------------------
 
 	subroutine rotqua
-!c Written by Lubos Mitas
+c Written by Lubos Mitas
         use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
         implicit real*8(a-h,o-z)
 
@@ -355,12 +351,12 @@ end subroutine gesqua
         uu=dsqrt(usum)
 	u1=u1/uu
 	u2=u2/uu
-!c       yu1=yy1*u1
-!c       yu2=yy2*u1
-!c       yu3=yy3*u1
-!c       zu1=zz1*u2
-!c       zu2=zz2*u2
-!c       zu3=zz3*u2
+c       yu1=yy1*u1
+c       yu2=yy2*u1
+c       yu3=yy3*u1
+c       zu1=zz1*u2
+c       zu2=zz2*u2
+c       zu3=zz3*u2
 	y1=yy1*u1+zz1*u2
 	y2=yy2*u1+zz2*u2
 	y3=yy3*u1+zz3*u2

@@ -765,9 +765,9 @@ subroutine parser
 
   ! allocation after determinants and basis
   call compute_mat_size_new()
-  ! call allocate_vmc()
-  ! call allocate_dmc()
-
+  call allocate_vmc()
+  call allocate_dmc()
+  print*, "after allocating vmc and dmc "
 
 
 
@@ -1159,76 +1159,6 @@ subroutine parser
     call efield_compute_extint
   endif
 
-!  PCM polarization charges (currently, this section is deactivated)
-
-  !  ipcm=1 computes only the cavity (no qmc calculations)
-  !  ipcm=2 runs qmc and creates/updates polarization charges
-  !  ipcm=3 runs qmc with fixed polarization charges
-
-  ! isurf=0
-  ! ncopcm=0
-  ! nvopcm=0
-  ! ichpol=0
-  ! if(ipcm.ne.0) then
-  !   if(ipcm.eq.2) ichpol=1
-  !   if(ipcm.eq.1) isurf=1
-
-  !   nstep2=nstep/2
-  !   if(iscov.eq.0) call fatal_error('READ_INPUT: iscov eq 0')
-
-  !   qfree=-nelec
-  !   do i=1,ncent
-  !     qfree=qfree+znuc(iwctype(i))
-  !   enddo
-
-  !   write(ounit,'(''PCM polarization charges '')')
-  !   write(ounit,'(''pcm ipcm   =  '',t30,i3)') ipcm
-  !   write(ounit,'(''pcm ichpol =  '',t30,i3)') ichpol
-  !   write(ounit,'(''pcm isurf  =  '',t30,i3)') isurf
-  !   write(ounit,'(''pcm file (cavity) ='',t30,a20)') pcmfile_cavity
-  !   write(ounit,'(''pcm file (chs)    ='',t30,a20)') pcmfile_chs
-  !   write(ounit,'(''pcm file (chv)    ='',t30,a20)') pcmfile_chv
-  !   write(ounit,'(''pcm nconf sampled for chv ='',t30,i10)') nscv
-  !   write(ounit,'(''pcm frequency for chv ='',t30,i10)') iscov
-  !   write(ounit,'(''pcm epsilon_solvent ='',t30,f7.3)') eps_solv
-  !   write(ounit,'(''pcm rcolv ='',t30,f7.3)') rcolv
-  !   write(ounit,'(''pcm fcol  ='',t30,f7.3)') fcol
-  !   write(ounit,'(''pcm npmax ='',t30,i10)') npmax
-
-  !   call pcm_extpot_read(fcol,npmax)
-
-  !   !  We use the UNDEFINED, IUNDEFINED from grid_mod (that are the same as pcm_3dgrid)
-
-  !   if(ipcm_3dgrid.gt.0) then
-  !     if(ipcm.ne.3) call fatal('READ_INPUT:ipcm_3dgrid gt 0 & ipcm ne 3')
-  !     call pcm_setup_grid
-  !     call pcm_setup_3dspl
-  !   endif
-  ! endif
-  ! PCM section ends here
-
-  ! QM-MMPOL  (fxed charges)
-  !  immpol=1 runs qmc (QM-MM)  and creates the first set of induced dipoles on MM sites
-  !  immpol=2 runs qmc (QM-MMPOL) and updates the set of induced dipoles on MM sites
-  !  immpol=3 runs qmc  (QM-MMPOL) with fixed induced dipoles
-
-  ! isites_mmpol=0
-  ! ich_mmpol=0
-  ! if(immpol.ne.0) then
-  !   if(immpol.eq.2) ich_mmpol=1
-
-  !   write(ounit,'(''QM-MMPOL fixed charges and induced dipoles '')')
-  !   write(ounit,'(''mmpol immpol   =  '',t30,i3)') immpol
-  !   write(ounit,'(''mmpol ich_mmpol =  '',t30,i3)') ich_mmpol
-  !   write(ounit,'(''mmpol isites  =  '',t30,i3)') isites_mmpol
-  !   write(ounit,'(''mmpol file (sites)    ='',t30,a20)') mmpolfile_sites
-  !   write(ounit,'(''mmpol file (chmm)    ='',t30,a20)') mmpolfile_chmm
-  !   write(ounit,'(''mmpol a_cutoff ='',t30,f7.3)') a_cutoff
-  !   write(ounit,'(''mmpol rcolm ='',t30,f7.3)') rcolm
-
-  !   call mmpol_extpot_read
-  ! endif
-! QM-MMPOL section ends here
 
 
 ! Additional Properties
@@ -1463,13 +1393,6 @@ subroutine parser
   if(ijastrow_parameter.eq.0) call fatal_error('INPUT: block jastrow_parameter missing')
   if(iefield.gt.0.and.icharge_efield.eq.0) call fatal_error('INPUT: block efield missing')
 
-
-
-  ! call compute_mat_size_new()
-  call allocate_vmc()
-  print *, " after allocation of vmc "
-  call allocate_dmc()
-  print *, " after allocation of dmc "
 
   call fdf_shutdown()
 

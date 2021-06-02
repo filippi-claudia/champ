@@ -152,8 +152,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/nonlpsi.f
     ${CMAKE_CURRENT_SOURCE_DIR}/basis_norm.f
     ${CMAKE_CURRENT_SOURCE_DIR}/psi.f
-#    ${CMAKE_CURRENT_SOURCE_DIR}/rotqua.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/rotqua.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/rotqua.f
     ${CMAKE_CURRENT_SOURCE_DIR}/misc_grdnts.f
     ${CMAKE_CURRENT_SOURCE_DIR}/spline.f
     ${CMAKE_CURRENT_SOURCE_DIR}/spline2.f
