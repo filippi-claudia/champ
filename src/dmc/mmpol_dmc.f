@@ -1,13 +1,14 @@
       subroutine mmpol_prt(iblk,wgcum,wgcm2)
 
       use force_mod, only: MFORCE
-      use contrl, only: nconf, nstep
+!      use contrl, only: nconf, nstep
+      use control_dmc, only: dmc_nconf, dmc_nstep
       use mmpol_cntrl, only: immpol, immpolprt
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2
       use mmpol_averages, only: dmmpol_cum, dmmpol_cm2
 
       implicit real*8(a-h,o-z)
- 
+
       data hatokc/627.509541d0/
 
       dimension wgcum(MFORCE),wgcm2(MFORCE)
@@ -33,7 +34,7 @@
         icmmpol_err=nint(100000*cmmpol_err)
       endif
 
-      evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
+      evalg_eff=dmc_nconf*dmc_nstep*rn_eff(wgcum(1),wgcm2(1))
       rtevalg_eff1=dsqrt(evalg_eff-1)
 
       dmmpol_kcal=dmmpol_ave*hatokc
@@ -64,7 +65,7 @@ c-----------------------------------------------------------------------
 
 
       if(immpol.eq.0) return
-    
+
       immpolprt_sav=immpolprt
       immpolprt=1
       call mmpol_prt(iblk,wgcum(1),wgcm2(1))
@@ -106,7 +107,7 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: eek_sum, cmmpol_sum
 
       implicit real*8(a-h,o-z)
- 
+
       if(immpol.eq.0) return
 
       dmmpol_sum=dmmpol_sum+p*QMdp+q*dmmpolo_dmc(iw)
@@ -127,7 +128,7 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
 
       implicit real*8(a-h,o-z)
- 
+
       if(immpol.eq.0) return
 
       dmmpolnow=dmmpol_sum/wsum_dmc

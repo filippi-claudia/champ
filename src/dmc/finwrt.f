@@ -30,7 +30,8 @@ c routine to print out final results
       use force_mod, only: MFORCE
       use branch, only: eold, nwalk
       use optwf_corsam, only: energy, energy_err, force, force_err
-      use contrl, only: nblkeq, nconf, nstep
+!      use contrl, only: nblkeq, nconf, nstep
+      use control_dmc, only: dmc_nblkeq, dmc_nconf, dmc_nstep
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -53,7 +54,7 @@ c statement functions for error calculation
       errc1(x,x2)=error(x,x2,wcum1,wcm21)
       errf1(x,x2)=error(x,x2,wfcum1,wfcm21)
       errg1(x,x2,i)=error(x,x2,wgcum1(i),wgcm21(i))
-      errw(x,x2)=errorn(x,x2,dfloat(iblk_proc))/nstep
+      errw(x,x2)=errorn(x,x2,dfloat(iblk_proc))/dmc_nstep
       errw1(x,x2)=errorn(x,x2,pass_proc)
 
       do 1 ifr=1,nforce
@@ -65,10 +66,10 @@ c statement functions for error calculation
     1   force_err(ifr)=0
 
       passes=dfloat(iblk*nstep)
-      eval=nconf*passes
+      eval=dmc_nconf*passes
       if(mode.eq.'dmc_one_mpi1') then
         pass_proc=dfloat(iblk_proc*nstep)
-        eval_proc=nconf*pass_proc
+        eval_proc=dmc_nconf*pass_proc
        else
         iblk_proc=iblk
         pass_proc=passes
@@ -80,9 +81,9 @@ c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-b
 c     eval_eff=nconf*rn_eff(wcum1,wcm21)
 c     evalf_eff=nconf*rn_eff(wfcum1,wfcm21)
 c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
-      eval_eff=nconf*nstep*rn_eff(wcum_dmc,wcm2)
-      evalf_eff=nconf*nstep*rn_eff(wfcum,wfcm2)
-      evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
+      eval_eff=dmc_nconf*dmc_nstep*rn_eff(wcum_dmc,wcm2)
+      evalf_eff=dmc_nconf*dmc_nstep*rn_eff(wfcum,wfcm2)
+      evalg_eff=dmc_nconf*dmc_nstep*rn_eff(wgcum(1),wgcm2(1))
       rtpass1=dsqrt(pass_proc-1)
       rteval_eff1=dsqrt(eval_eff-1)
       rtevalf_eff1=dsqrt(evalf_eff-1)
@@ -121,7 +122,7 @@ c Collect radial charge density for atoms
       if (ipr.gt.-2)
      &  write(11,'(3i5,f11.5,f7.4,f10.7,
      &  '' nstep,nblk,nconf,etrial,tau,taueff'')')
-     &  nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)
+     &  dmc_nstep,iblk,dmc_nconf,etrial,tau,taucum(1)/wgcum(1)
 
       if(.not.wid.and.mode.eq.'dmc_one_mpi2') return
 
@@ -191,7 +192,7 @@ c    & f10.5)') dr2ac/trymove
 
       write(6,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq  nproc  tau    taueff'',
      &/,2f12.0,5i6,2f9.5)')
-     &eval,passes,nconf,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
+     &eval,passes,dmc_nconf,dmc_nstep,iblk,dmc_nblkeq,nproc,tau,taucum(1)/wgcum(1)
       write(6,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
       if(idmc.ge.0) then
         write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')

@@ -21,7 +21,7 @@ c routine to accumulate estimators for energy etc.
       use contr3, only: mode
       use mpiblk, only: iblk_proc
       use force_mod, only: MFORCE
-      use contrl, only: nstep
+      use control_dmc, only: dmc_nstep
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -56,10 +56,10 @@ c xerr = current error of x
       iblk=iblk+1
       iblk_proc=iblk_proc+nproc
 
-      npass=iblk_proc*nstep
+      npass=iblk_proc*dmc_nstep
 
-      wnow=wsum_dmc/nstep
-      wfnow=wfsum/nstep
+      wnow=wsum_dmc/dmc_nstep
+      wfnow=wfsum/dmc_nstep
       enow=esum_dmc/wsum_dmc
       efnow=efsum/wfsum
       ei1now=wfsum/wdsum
@@ -85,7 +85,7 @@ c xerr = current error of x
       ef2sum=efsum*efnow
 
       do 10 ifr=1,nforce
-        wgnow=wgsum(ifr)/nstep
+        wgnow=wgsum(ifr)/dmc_nstep
         egnow=egsum(ifr)/wgsum(ifr)
         penow=pesum_dmc(ifr)/wgsum(ifr)
         tpbnow=tpbsum_dmc(ifr)/wgsum(ifr)
