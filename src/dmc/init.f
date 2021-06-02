@@ -3,6 +3,8 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use dmc_mod, only: MFPRD1
+      ! debug remove line below
+      use branch, only:  allocate_branch
       use const, only: etrial, nelec
       use forcepar, only: istrech, nforce
       use atom, only: cent, iwctype, ncent, pecent, znuc
@@ -82,6 +84,10 @@ c           call t_vpsp_sav(iw)
       if(mode.eq.'dmc_one_mpi2') nconf=nconf*nproc
       wdsumo=nconf
       wgdsumo=nconf
+      print*, "debug: ravindra MFPRD1 ", MFPRD1
+      print*, "is wtgen allocated ", allocated(wtgen)
+      call allocate_branch()
+      print*, "debug remove above line "
       do 70 i=0,MFPRD1
         wtgen(i)=nconf
    70   ff(i)=one

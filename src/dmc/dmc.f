@@ -120,6 +120,8 @@ c     call flush(6)
       if(nforce.gt.1) then
         call setup_force
        else
+        ! debug line. ravindra
+        if (.not. allocated(iwftype)) allocate (iwftype(nforce))
         nwprod=1
         nwftype=1
         iwftype(1)=1

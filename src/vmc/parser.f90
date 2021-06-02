@@ -765,8 +765,8 @@ subroutine parser
 
   ! allocation after determinants and basis
   call compute_mat_size_new()
-  call allocate_vmc()
-  call allocate_dmc()
+  ! call allocate_vmc()
+  ! call allocate_dmc()
 
 
 
@@ -1466,8 +1466,10 @@ subroutine parser
 
 
   ! call compute_mat_size_new()
-  ! call allocate_vmc()
-  ! call allocate_dmc()
+  call allocate_vmc()
+  print *, " after allocation of vmc "
+  call allocate_dmc()
+  print *, " after allocation of dmc "
 
   call fdf_shutdown()
 

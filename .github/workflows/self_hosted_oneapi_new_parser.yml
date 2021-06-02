@@ -20,7 +20,7 @@ jobs:
         echo "Build is sucessfull"
 
 
-    - name: "Test VMC only"
+    - name: "Test 01 VMC only"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-butadiene-vmc-only
