@@ -65,10 +65,10 @@ c statement functions for error calculation
         force(ifr)=0
     1   force_err(ifr)=0
 
-      passes=dfloat(iblk*nstep)
+      passes=dfloat(iblk*dmc_nstep)
       eval=dmc_nconf*passes
       if(mode.eq.'dmc_one_mpi1') then
-        pass_proc=dfloat(iblk_proc*nstep)
+        pass_proc=dfloat(iblk_proc*dmc_nstep)
         eval_proc=dmc_nconf*pass_proc
        else
         iblk_proc=iblk
