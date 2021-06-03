@@ -557,7 +557,7 @@ subroutine read_orbitals_file(file_orbitals)
     read(iunit, *, iostat=iostat)  temp1, nbasis, norb, iwft
 
     if (iostat == 0) then
-        if (trim(temp2) == "lcao") then
+        if (trim(temp1) == "lcao") then
             write(ounit,int_format) " Number of basis functions ", nbasis
             write(ounit,int_format) " Number of lcao orbitals ", norb
             write(ounit,int_format) " Type of wave functions ", iwft
@@ -569,11 +569,6 @@ subroutine read_orbitals_file(file_orbitals)
         write(ounit, *) " Check ", temp1, nbasis, norb, iwft
         call fatal_error ("Error in reading number of lcao orbitals / basis / number of wavefunction types")
     endif
-
-    ! Fix the maximum size of all array relative
-    ! to MOs with the maximum number of MOs
-    ! this may not be needed later
-    MORB = norb
 
     if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
 
@@ -602,11 +597,8 @@ subroutine read_orbitals_file(file_orbitals)
 
     ! Remaining block
     write(ounit, fmt=temp3 )  (i, i = counter, nbasis)
-    do k = counter, nbasis
-!        write(ounit,*) " Orbitals  ", counter , "  to ", nbasis
-        do iorb = 1, norb
-            write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=counter, nbasis)
-        enddo
+    do iorb = 1, norb
+        write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=counter, nbasis)
     enddo
     ilcao = ilcao + 1
     close(iunit)

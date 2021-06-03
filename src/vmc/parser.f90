@@ -231,8 +231,8 @@ subroutine parser
   ndn         = nelec-nup
 
 ! %module atoms (complete)
-!  nctype      = fdf_get('nctype', 1)
-!  ncent       = fdf_get('natom', 1)
+!  nctype      = fdf_get('nctype', 1)  ! These are computed
+!  ncent       = fdf_get('natom', 1)   ! These are computed
   newghostype = fdf_get('newghostype', 0)
   nghostcent  = fdf_get('nghostcent', 0)
 
@@ -351,7 +351,10 @@ subroutine parser
   no_active     = fdf_get('no_active', 0)
   energy_tol    = fdf_get('energy_tol', 1.d-3)
   dparm_norm_min = fdf_get('dparm_norm_min', 1.0d0)
-!  add_diag(1)   = fdf_get('add_diag',1.d-6)
+! attention needed here.
+  if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
+  add_diag(1)   = fdf_get('add_diag',1.d-6)
+
   nopt_iter     = fdf_get('nopt_iter',6)
   micro_iter_sr = fdf_get('micro_iter_sr', 1)
   ifunc_omega   = fdf_get('func_omega', 0)
