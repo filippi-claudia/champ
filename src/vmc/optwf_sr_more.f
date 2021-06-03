@@ -119,7 +119,7 @@ c for omega functional
         smax=0.d0
         do k=1,nparm
           if(s_ii_inv(k).gt.smax) smax=s_ii_inv(k)
-        enddo 
+        enddo
         write(6,'(''max S diagonal element '',t41,d8.2)') smax
 
         kk=0
@@ -174,7 +174,7 @@ c variance
           var=obs_tot(jelo2,1)-obs_tot(jelo,1)**2
           do k=1,nparm
            h_sr(k)=-2*(obs_tot(jelohfj+k-1,1)-(obs_tot(jhfj+k-1,1)-obs_tot(jefj+k-1,1))*obs_tot(jelo,1)
-     &             -obs_tot(jfj+k-1,1)*obs_tot(jelo2,1) 
+     &             -obs_tot(jfj+k-1,1)*obs_tot(jelo2,1)
      &             -2*obs_tot(jelo,1)*(obs_tot(jefj+k-1,1)-obs_tot(jfj+k-1,1)*obs_tot(jelo,1)))
           enddo
         elseif(ifunc_omega.eq.2) then
@@ -234,7 +234,7 @@ c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.in
       call MPI_BCAST(delta_new,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
       delta_0=delta_new*eps**2            ! convergence thr
       do i=0,imax-1
-c      write(*,*)i,idtask,'ECCO ',delta_0,delta_new 
+c      write(*,*)i,idtask,'ECCO ',delta_0,delta_new
        if(delta_new.lt.delta_0)then
         if(idtask.eq.0)print*,'CG iter ',i
 c     write(*,*)'ECCO pcg esce ',idtask
@@ -320,7 +320,7 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
         r(i)=0.d0
       enddo
 
-      if(ifunc_omega.eq.0) then 
+      if(ifunc_omega.eq.0) then
 
       do iconf=1,nconf_n
         oz_jasci(iconf)=ddot(nparm_jasci,z,1,sr_o(1,iconf),1)
@@ -348,13 +348,13 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 !          i0=i+(istate-1)*norbterm
 !          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i0,1),MPARM)
 !        enddo
- 
+
         i0 = nparm_jasci + 1 +(istate-1)*norbterm
-        i1 = nparm_jasci + 1         
-        call dgemv('N', n - nmparm_jasci, nconf_n, 1.0d0, sr_o(i0,1), MPARM, aux(1), 1, 0.0d0, rloc(i1), 1)
- 
+        i1 = nparm_jasci + 1
+        call dgemv('N', n - nparm_jasci, nconf_n, 1.0d0, sr_o(i0,1), MPARM, aux(1), 1, 0.0d0, rloc(i1), 1)
+
         call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
-        
+
         if(idtask.eq.0)then
          aux0=ddot(n,z,1,obs_tot(jfj,istate),1)
          do i=1,n
