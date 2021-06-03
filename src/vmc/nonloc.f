@@ -34,7 +34,7 @@ c     Written by Claudia Filippi, modified by Cyrus Umrigar, A. Scemama and RLPB
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),rr_en_sav(MCENT),rr_en2_sav(MCENT)
      &     ,xsav(3),rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT)
-      dimension vpsp_det(2,MSTATES),dvpsp_dj(*),t_vpsp(MCENT,MPS_QUAD,*)
+      dimension vpsp_det(2,MSTATES),dvpsp_dj(MPARMJ,MSTATES),t_vpsp(MCENT,MPS_QUAD,*)
       dimension dpsij_ratio(MPARMJ)
       dimension orbn(MORB,MSTATES),dorbn(3,MORB,MSTATES),
      &     da_orbn(3,MCENT,MORB,MSTATES),term_radial_da_vps(3)
@@ -55,9 +55,7 @@ c     Written by Claudia Filippi, modified by Cyrus Umrigar, A. Scemama and RLPB
       enddo
 
       vpsp_det(:,:)=0.0d0
-      do iparm=1,nparmj
-         dvpsp_dj(iparm)=0.0d0
-      enddo
+      dvpsp_dj(:,:)=0.0d0
 
       if(i_vpsp.gt.0)then
          i1=i_vpsp
@@ -115,7 +113,7 @@ c     loop quadrature points
      &                       rr_en2,dd1,psij_ratio,dpsij_ratio,vjn,da_ratio_jn,istate)
                      else
                         call nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,
-     &                       rr_en2,dd1,fso,psij_ratio,vjn,da_ratio_jn,istate)
+     &                       rr_en2,dd1,fso(:,:,istate),psij_ratio,vjn,da_ratio_jn,istate)
                      endif
 
                      term_radial=0.0d0
@@ -136,10 +134,10 @@ c     dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
                      if(ioptjas.gt.0) then
                         term=term_radial*det_ratio
                         do iparm=1,nparmj
-                           dvpsp_dj(iparm)=dvpsp_dj(iparm)+term*dpsij_ratio(iparm)
+                           dvpsp_dj(iparm,istate)=dvpsp_dj(iparm,istate)+term*dpsij_ratio(iparm)
                            do iorb=1,norb
                               b_dj(iorb,i,iparm,istate)=b_dj(iorb,i,iparm,istate)
-     &                             +orbn(iorb,istate)*term_radial*dpsij_ratio(iparm)
+     &                     +orbn(iorb,istate)*term_radial*dpsij_ratio(iparm)
                            enddo
                         enddo
                      endif

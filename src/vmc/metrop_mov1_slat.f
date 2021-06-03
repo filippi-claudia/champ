@@ -662,7 +662,7 @@ c RLPB now this has a last argument of states
 
       if(irun.eq.1) call optwf_store(ipass,wtg,wtg_sqrt,psido,eold(1,1))
 
-      call efficiency_sample(ipass,psido,psig)
+      call efficiency_sample(ipass,psido,psijo,psig)
 
       call acues1(wtg)
 

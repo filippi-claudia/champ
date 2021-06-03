@@ -1,17 +1,17 @@
-      subroutine efficiency_sample(ipass,determ_s,determ_psig)
+      subroutine efficiency_sample(ipass,determ_s,psij,determ_psig)
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
 
       implicit real*8(a-h,o-z)
 
-      dimension determ_s(*)
+      dimension determ_s(*), psij(*)
 
       if(iefficiency.eq.0) return
 
       determ_psigi=1.0d0/determ_psig
 
       do j=1,nstates_psig
-         ratio=determ_s(j)*determ_psigi
+         ratio=determ_s(j)*exp(psij(j))*determ_psigi
          wi=ratio*ratio
          effcum(j)=effcum(j)+wi
          effcm2(j)=effcm2(j)+wi*wi

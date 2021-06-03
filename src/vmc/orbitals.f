@@ -109,7 +109,7 @@ c     get basis functions for all electrons
 
       if(ipr.ge.4) then
          do istate=1,nstates
-            print *, "ORBITALS STATE", istate
+            !print *, "ORBITALS STATE", istate
             do iorb=1,norb+nadorb
                write(6,'(''iorb,orb='',i4,1000f15.11)')iorb,(orb(i,iorb,istate),i=1,nelec)
             enddo

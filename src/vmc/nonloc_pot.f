@@ -4,6 +4,7 @@ c     Calculates the local and nonlocal components of the pseudopotential
 c     Calculates non-local potential derivatives
 c     pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
       use mstates_mod, only: MSTATES
+      use optjas, only: MPARMJ
       use pseudo_mod, only: MPS_QUAD
       use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent
@@ -14,7 +15,7 @@ c     pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot i
       implicit real*8(a-h,o-z)
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-     &     ,dvpsp_dj(*),t_vpsp(MCENT,MPS_QUAD,*)
+     &     ,dvpsp_dj(MPARMJ,MSTATES),t_vpsp(MCENT,MPS_QUAD,*)
       dimension vpsp_det(2,MSTATES)
 
       if(i_vpsp.gt.0)then

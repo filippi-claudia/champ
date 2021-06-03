@@ -23,22 +23,22 @@
 
       implicit real*8(a-h,o-z)
 
-      dimension psid(*),dvpsp_dj(*),energy(*),vj(3,*)
-      dimension deloc_dj(MPARMJ)
+      dimension psid(*),dvpsp_dj(MPARMJ,MSTATES),energy(*),vj(3,nelec,MSTATES)
+      dimension deloc_dj(MPARMJ,MSTATES)
       dimension dum2(MSTATES),dum3(MSTATES)
 
       if(ioptjas.eq.0) return
 
       do istate=1,nstates
          do iparm=1,nparmj
-            deloc_dj(iparm)=dvpsp_dj(iparm)
+            deloc_dj(iparm,istate)=dvpsp_dj(iparm,istate)
             do i=1,nelec
-               deloc_dj(iparm)=deloc_dj(iparm)
+               deloc_dj(iparm,istate)=deloc_dj(iparm,istate)
      &              -2.d0*hb*(g(1,i,iparm,istate)*ddx(1,i,istate)
      &              +g(2,i,iparm,istate)*ddx(2,i,istate)
      &              +g(3,i,iparm,istate)*ddx(3,i,istate))
             enddo
-            deloc_dj_kref=deloc_dj(iparm)
+            deloc_dj_kref=deloc_dj(iparm,istate)
             denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref
      &           *detiab(kref,1,istate)*detiab(kref,2,istate)
             if(ndet.gt.1) then
@@ -106,8 +106,9 @@ c     endif ndet.gt.1
 c     d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
          term_jas=d2g(iparm,istate)
          do i=1,nelec
-            term_jas=term_jas+2.d0*(g(1,i,iparm,istate)*vj(1,i)
-     &               +g(2,i,iparm,istate)*vj(2,i)+g(3,i,iparm,istate)*vj(3,i))
+            term_jas=term_jas+2.d0*(g(1,i,iparm,istate)*vj(1,i,istate)
+     &               +g(2,i,iparm,istate)*vj(2,i,istate)
+     &               +g(3,i,iparm,istate)*vj(3,i,istate))
          enddo
          term_jas=-hb*term_jas
          denergy(iparm,istate)=term_jas+denergy(iparm,istate)/psid(istate)

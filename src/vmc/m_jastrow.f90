@@ -6,7 +6,7 @@ module jasn
 
     real(dp), dimension(:, :, :), allocatable :: d2ijn !(MELEC,MELEC,MSTATES)
     real(dp), dimension(:), allocatable :: d2n !(MSTATES)
-    real(dp), dimension(:, :, :, :), allocatable :: fijn !(3,MELEC,ME,MSTATESLEC)
+    real(dp), dimension(:, :, :, :), allocatable :: fijn !(3,MELEC,MELEC,MSTATES)
     real(dp), dimension(:, :, :), allocatable :: fjn !(3,MELEC,MSTATES)
     real(dp), dimension(:, :, :), allocatable :: fsn !(MELEC,MELEC,MSTATES)
     real(dp), dimension(:), allocatable :: fsumn !(MSTATES)

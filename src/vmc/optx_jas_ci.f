@@ -39,17 +39,20 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
+      use csfs, only: nstates
 
       implicit real*8(a-h,o-z)
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
-      do i=1,nparmj
+      do istate=1,nstates
          do j=1,nciterm
-            dj_o_ci(i,j,istate)=0.0d0
-            dj_oe_ci(i,j,istate)=0.0d0
-            de_o_ci(i,j,istate)=0.0d0
-            dj_de_ci(i,j,istate)=0.0d0
+            do i=1,nparmj
+               dj_o_ci(i,j,istate)=0.0d0
+               dj_oe_ci(i,j,istate)=0.0d0
+               de_o_ci(i,j,istate)=0.0d0
+               dj_de_ci(i,j,istate)=0.0d0
+            enddo
          enddo
       enddo
 

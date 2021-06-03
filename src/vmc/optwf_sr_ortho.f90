@@ -340,15 +340,16 @@ contains
        		     -obs_tot(jfj+k-1,istate)*obs_tot(jelo,istate))
           enddo
 
-          if(istate.gt.1) then
-             aux1=aux1+obs_tot(jwtg+istate-1,istate)*obs_tot(jwtg+istate-1,istate)&
-       	             *obs_tot(jwtg,istate)/obs_tot(jwtg,istate-1)
+	  ! Orthogonalization
+          !if(istate.gt.1) then
+          !   aux1=aux1+obs_tot(jwtg+istate-1,istate)*obs_tot(jwtg+istate-1,istate)&
+       	  !           *obs_tot(jwtg,istate)/obs_tot(jwtg,istate-1)
 
-             do k=1,nparm
-                h_sr(k,istate)=h_sr(k,istate)&
-       	        	-alambda*2.d0*(obs_tot(jfjsi+k-1,istate)-aux1*obs_tot(jfj+k-1,istate))
-             enddo
-          endif
+          !   do k=1,nparm
+          !      h_sr(k,istate)=h_sr(k,istate)&
+       	  !      	-alambda*2.d0*(obs_tot(jfjsi+k-1,istate)-aux1*obs_tot(jfj+k-1,istate))
+          !   enddo
+          !endif
 
           smax=0.0d0
           do k=1,nparm

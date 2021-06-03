@@ -36,7 +36,7 @@ c     Calculates energy
 
       dimension coord(3,*),psid(*),energy(*),psij(*),d2j(MSTATES)
       dimension denergy(MSTATES),eloc_det(MDET,2,MSTATES),
-     &     vpsp_det(2,MSTATES),dvpsp_dj(MPARMJ)
+     &     vpsp_det(2,MSTATES),dvpsp_dj(MPARMJ,MSTATES)
 
       iwf=iwftype(ifr)
 
@@ -131,7 +131,7 @@ c     nonloc_pot must be called after determinant because slater matrices are ne
 c     combine determinantal quantities to obtain trial wave function
          call determinant_psit(psid(istate),istate)
 c     compute energy using Ymat
-         denergy(istate)=0
+         denergy(istate)=0.0d0
          do iab=1,2
             nel=nup
             if(iab.eq.2) nel=ndn

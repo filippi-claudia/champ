@@ -912,7 +912,6 @@ c Jastrow section
         mparmjc=nterms4(nordc)
         write(6,'(''mparmja,mparmjb,mparmjc='',3i5)') mparmja,mparmjb,mparmjc
         do istate=1,nstates
-        print *, "STATE", istate
         do 301 it=1,nctype
   301     write(6,'(''a='',x,7f10.6,(8f10.6))')
      &                  (a4(iparm,it,istate,1),iparm=1,mparmja)
@@ -1294,15 +1293,6 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
               call incpos(iu,itmp,1)
            enddo
 	 enddo
-   !     do 70 it=1,nctype
-   !       read(iu,*) (a4(iparm,it,1,iwft),iparm=1,mparmja)
-   !70     call incpos(iu,itmp,1)
-   !     do 80 isp=nspin1,nspin2b
-   !       read(iu,*) (b(iparm,isp,1,iwft),iparm=1,mparmjb)
-   !80     call incpos(iu,itmp,1)
-   !     do 90 it=1,nctype
-   !       read(iu,*) (c(iparm,it,1,iwft),iparm=1,mparmjc)
-   !90     call incpos(iu,itmp,1)
       endif
 
 c Read cutoff for Jastrow4,5,6
@@ -1876,7 +1866,6 @@ c     Set the jastrow to be equal
                do it=1,nctype
                   do iparm=1,mparmja
                      a4(iparm,it,istate,iwft)=a4(iparm,it,1,1)
-		     print *, "A4", istate, a4(iparm,it,istate,iwft), a4(iparm,it,1,1)
                   enddo
                enddo
                do isp=nspin1,nspin2b

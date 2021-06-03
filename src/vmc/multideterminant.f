@@ -36,7 +36,7 @@ c     nelec is close to MELEC. The Slater matrices must be
 c     dimensioned at least max(nup**2,ndn**2)
 
       dimension eloc_det(MDET,2,MSTATES)
-      dimension vj(3,MELEC),vpsp_det(2,MSTATES)
+      dimension vj(3,MELEC,MSTATES),vpsp_det(2,MSTATES)
       dimension btemp(MELEC**2,MSTATES,2)
       dimension dum1(MSTATES),dum2(MSTATES),dum3(MSTATES)
 
@@ -51,8 +51,8 @@ c     dimensioned at least max(nup**2,ndn**2)
             eloc_det(kref,iab,istate)=vpsp_det(iab,istate)
             do i=1,nel
                eloc_det(kref,iab,istate)=eloc_det(kref,iab,istate)
-     &              -hb*(d2dx2(i+ish,istate)+2.d0*(vj(1,i+ish)*ddx(1,i+ish,istate)
-     &              +vj(2,i+ish)*ddx(2,i+ish,istate)+vj(3,i+ish)*ddx(3,i+ish,istate)))
+     &              -hb*(d2dx2(i+ish,istate)+2.d0*(vj(1,i+ish,istate)*ddx(1,i+ish,istate)
+     &              +vj(2,i+ish,istate)*ddx(2,i+ish,istate)+vj(3,i+ish,istate)*ddx(3,i+ish,istate)))
             enddo
          enddo
 
