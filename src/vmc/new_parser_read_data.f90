@@ -563,7 +563,7 @@ subroutine read_orbitals_file(file_orbitals)
             write(ounit,int_format) " Type of wave functions ", iwft
             ! Note the hack with capitalized variables DEBUG
             MBASIS = nbasis
-            NORB = norb
+            MORB = norb
         endif
     else
         write(ounit, *) " Check ", temp1, nbasis, norb, iwft
@@ -729,6 +729,7 @@ subroutine read_csfmap_file(file_determinants)
     integer                         :: iostat, i, j, k, iunit
     integer                         :: icsf, jx
     integer                         :: nptr, nterm, id, nmap
+    integer                         :: ncsf_check, ndet_check, nmap_check
     real(dp)                        :: c
     logical                         :: exist, printed
 
@@ -757,9 +758,14 @@ subroutine read_csfmap_file(file_determinants)
 
         if (temp1 == "csfmap") then
             backspace(iunit)   ! go a line back
-            read(iunit, *, iostat=iostat)  temp2, ncsf, ndet, nmap
+            read(iunit, *, iostat=iostat)  temp2, ncsf_check, ndet_check, nmap_check
 
             if (iostat == 0) then
+
+                if (ndet_check .ne. ndet) call fatal_error('CSFMAP: wrong number of determinants')
+                if (ncsf_check .ne. ncsf) call fatal_error('CSFMAP: wrong number of csf')
+                if (nmap_check .gt. float(ndet)*ndet) call fatal_error('CSFMAP: too many determinants in map list')
+
                 if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
                 if (.not. allocated(iadet)) allocate (iadet(ndet))
                 if (.not. allocated(ibdet)) allocate (ibdet(ndet))
@@ -784,7 +790,7 @@ subroutine read_csfmap_file(file_determinants)
                     enddo
                 enddo
 
-                if (nmap .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
+                if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
                 nmap = nptr
 
                 if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
@@ -1398,7 +1404,6 @@ subroutine read_basis_num_info_file(file_basis_num_info)
         call fatal_error (" Basis num info file "// trim(file_basis_num_info) // " does not exist.")
     endif
 
-
     read (iunit, *, iostat=iostat) temp1, numr
     if (iostat /= 0) call fatal_error( "Error in reading basis num info file :: expecting 'qmc_bf_info / basis', numr")
 
@@ -1449,7 +1454,6 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     allocate (iwlbas(nbasis, nctot))
     allocate (iwrwf(nbasis, nctot))
 
-    numr = 1  ! DEBUG ISSUE Please confirm this
     do i = 1, nctype + newghostype
         read (iunit, *, iostat=iostat) n1s(i), n2s(i), (n2p(j, i), j=1, 3), &
             n3s(i), (n3p(j, i), j=1, 3), &

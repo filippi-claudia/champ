@@ -739,6 +739,11 @@ subroutine parser
     endif
   endif
 
+  ! allocation after determinants and basis
+  call compute_mat_size_new()
+  call allocate_vmc()
+  call allocate_dmc()
+
 ! (3) CSF only
 
   if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
@@ -763,11 +768,6 @@ subroutine parser
     error stop
   endif
 
-  ! allocation after determinants and basis
-  call compute_mat_size_new()
-  call allocate_vmc()
-  call allocate_dmc()
-  print*, "after allocating vmc and dmc "
 
 
 
