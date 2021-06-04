@@ -290,7 +290,7 @@ subroutine read_determinants_file(file_determinants)
     enddo
 
     ! This part replaces a call to verify_orbitals
-    if(any(iworbd .gt. norb))  call fatal_error('INPUT: iworbd > norb')
+    !if(any(iworbd .gt. norb))  call fatal_error('INPUT: iworbd > norb')
 
 
     write(ounit,*)
@@ -1645,7 +1645,6 @@ subroutine read_dmatrix_file(file_dmatrix)
     allocate (weights(nstates))
     allocate (iweight(nstates))
 
-    print*, "DEBUG: do i get called dmatrix "
     ! BUG ravindra: bring the get_weight subroutine
     ! call get_weights_new('weights:', weights, iweight, nweight)
     !if (ns .ne. nweight) call fatal('READ_DMATRIX: wrong number of dmatrices')

@@ -387,42 +387,42 @@ subroutine parser
 
 !%module pcm (complete)
 
-  ipcm          = fdf_get('ipcm',0)
-  ipcmprt       = fdf_get('ipcmprt',0)
-  pcmfile_cavity = fdf_get('file_cavity','pcm000.dat')
-  pcmfile_chs   = fdf_get('file_chs','chsurf_old')
-  pcmfile_chv   = fdf_get('file_chv','chvol_old')
-!  nscv          = fdf_get('nblk_chv',nblk)   ! attention
-!  iscov         = fdf_get('nstep_chv',nstep2) ! attention
-  eps_solv      = fdf_get('eps_solv',1)
-!  fcol          = fdf_get('fcol',1.d0)
-  rcolv         = fdf_get('rcolv',0.04d0)
+!   ipcm          = fdf_get('ipcm',0)
+!   ipcmprt       = fdf_get('ipcmprt',0)
+!   pcmfile_cavity = fdf_get('file_cavity','pcm000.dat')
+!   pcmfile_chs   = fdf_get('file_chs','chsurf_old')
+!   pcmfile_chv   = fdf_get('file_chv','chvol_old')
+! !  nscv          = fdf_get('nblk_chv',nblk)   ! attention
+! !  iscov         = fdf_get('nstep_chv',nstep2) ! attention
+!   eps_solv      = fdf_get('eps_solv',1)
+! !  fcol          = fdf_get('fcol',1.d0)
+!   rcolv         = fdf_get('rcolv',0.04d0)
 !  npmax         = fdf_get('npmax',1)
 
 
-  call allocate_pcm_grid3d_param()
-  ipcm_3dgrid   = fdf_get('ipcm_3dgrid',0)
-  ipcm_nstep3d(1) 	= fdf_get('nx_pcm',PCM_IUNDEFINED)
-  ipcm_nstep3d(2) 	= fdf_get('ny_pcm',PCM_IUNDEFINED)
-  ipcm_nstep3d(3) 	= fdf_get('nz_pcm',PCM_IUNDEFINED)
-  pcm_step3d(1) 	= fdf_get('dx_pcm',PCM_UNDEFINED)
-  pcm_step3d(2) 	= fdf_get('dy_pcm',PCM_UNDEFINED)
-  pcm_step3d(3) 	= fdf_get('dz_pcm',PCM_UNDEFINED)
-  pcm_origin(1) 	= fdf_get('x0_pcm',PCM_UNDEFINED)
-  pcm_origin(2) 	= fdf_get('y0_pcm',PCM_UNDEFINED)
-  pcm_origin(3) 	= fdf_get('z0_pcm',PCM_UNDEFINED)
-  pcm_endpt(1)  	= fdf_get('xn_pcm',PCM_UNDEFINED)
-  pcm_endpt(2)  	= fdf_get('yn_pcm',PCM_UNDEFINED)
-  pcm_endpt(3)  	= fdf_get('zn_pcm',PCM_UNDEFINED)
-  PCM_SHIFT     	= fdf_get('shift',4.d0)
+  ! call allocate_pcm_grid3d_param()
+  ! ipcm_3dgrid   = fdf_get('ipcm_3dgrid',0)
+  ! ipcm_nstep3d(1) 	= fdf_get('nx_pcm',PCM_IUNDEFINED)
+  ! ipcm_nstep3d(2) 	= fdf_get('ny_pcm',PCM_IUNDEFINED)
+  ! ipcm_nstep3d(3) 	= fdf_get('nz_pcm',PCM_IUNDEFINED)
+  ! pcm_step3d(1) 	= fdf_get('dx_pcm',PCM_UNDEFINED)
+  ! pcm_step3d(2) 	= fdf_get('dy_pcm',PCM_UNDEFINED)
+  ! pcm_step3d(3) 	= fdf_get('dz_pcm',PCM_UNDEFINED)
+  ! pcm_origin(1) 	= fdf_get('x0_pcm',PCM_UNDEFINED)
+  ! pcm_origin(2) 	= fdf_get('y0_pcm',PCM_UNDEFINED)
+  ! pcm_origin(3) 	= fdf_get('z0_pcm',PCM_UNDEFINED)
+  ! pcm_endpt(1)  	= fdf_get('xn_pcm',PCM_UNDEFINED)
+  ! pcm_endpt(2)  	= fdf_get('yn_pcm',PCM_UNDEFINED)
+  ! pcm_endpt(3)  	= fdf_get('zn_pcm',PCM_UNDEFINED)
+  ! PCM_SHIFT     	= fdf_get('shift',4.d0)
 
 ! %module mmpol (complete)
-  immpol        = fdf_get('immpol',0)
-  immpolprt     = fdf_get('immpolprt',0)
-  mmpolfile_sites = fdf_get('file_sites','mmpol000.dat')
-  mmpolfile_chmm = fdf_get('file_mmdipo','mmdipo_old')
-  a_cutoff      = fdf_get('a_cutoff',2.5874d0)
-  rcolm         = fdf_get('rcolm',0.04d0)
+  ! immpol        = fdf_get('immpol',0)
+  ! immpolprt     = fdf_get('immpolprt',0)
+  ! mmpolfile_sites = fdf_get('file_sites','mmpol000.dat')
+  ! mmpolfile_chmm = fdf_get('file_mmdipo','mmdipo_old')
+  ! a_cutoff      = fdf_get('a_cutoff',2.5874d0)
+  ! rcolm         = fdf_get('rcolm',0.04d0)
 
 ! %module properties (complete)
   iprop         = fdf_get('sample',0)
@@ -692,10 +692,6 @@ subroutine parser
       endif
     endif
   endif
-
-
-
-
 
 ! Basis num information (either block or from a file)
 
@@ -1133,8 +1129,44 @@ subroutine parser
     ! Use guiding wave function constructed from mstates
     if(iguiding.gt.0) then
       write(ounit, *) "Guiding function: square root of sum of squares"
-      keyname='weights_guiding:'
-      call get_weights_new(keyname,weights_g,iweight_g,nstates_g)
+
+      ! Part which handles the guiding weights
+      if (.not. allocated(weights_g)) allocate (weights_g(MSTATES))
+      if (.not. allocated(iweight_g)) allocate (iweight_g(MSTATES))
+
+      if ( fdf_islreal('weights_guiding') .and. fdf_islist('weights_guiding') &
+          .and. (.not. fdf_islinteger('weights_guiding')) ) then
+        i = -1
+        call fdf_list('weights_guiding',i,weights_g)
+        write(*,'(tr1,a,i0,a)') 'Guiding weights has ',i,' entries'
+        if ( i < 2 ) stop 1
+        call fdf_list('weights_guiding',i,weights_g)
+        write(*, '(a,<MSTATES>(f12.6))') 'Weights_guiding : ', weights_g(1:i)
+      else
+        write(*,*)'guiding_weights keyword not recognized'
+        stop 1
+      end if
+
+      wsum = 0.d0
+      nweight = 0
+      do i = 1, nstates_g
+        if (weights_g(i) .gt. 1d-6) then
+            nweight = nweight + 1
+            iweight_g(nweight) = i
+            wsum = wsum + weights_g(i)
+        endif
+      enddo
+
+      do i = 1, nweight
+        weights_g(i) = weights_g(i)/wsum
+      enddo
+
+      if (nweight .eq. 0) then
+          nweight = 1
+          iweight_g(1) = 1
+          weights_g(1) = 1.d0
+      endif
+    ! The above part should be moved to get_weights subroutine
     endif
 
     ! Efficiency for sampling states inputed in multiple_cistates
@@ -1150,10 +1182,10 @@ subroutine parser
 
 
 ! QMMM classical potential
-  if(iqmmm.gt.0) then
-    write(ounit,'(a)' ) "QMMM external potential "
-    call qmmm_extpot_read
-  endif
+  ! if(iqmmm.gt.0) then
+  !   write(ounit,'(a)' ) "QMMM external potential "
+  !   call qmmm_extpot_read
+  ! endif
 
 ! Read in point charges
   if(iefield.gt.0) then
@@ -1269,18 +1301,18 @@ subroutine parser
 
 ! (18) cavity_spheres information (either block or from a file)
 
-  if ( fdf_load_defined('cavity_spheres') ) then
-    call read_cavity_spheres_file(file_cavity_spheres)
-  elseif ( fdf_block('cavity_spheres', bfdf)) then
-  ! call fdf_read_cavity_spheres_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop
-  endif
+!   if ( fdf_load_defined('cavity_spheres') ) then
+!     call read_cavity_spheres_file(file_cavity_spheres)
+!   elseif ( fdf_block('cavity_spheres', bfdf)) then
+!   ! call fdf_read_cavity_spheres_block(bfdf)
+!     write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
+!     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!     error stop
+!   else
+!     write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
+!     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+! !    error stop
+!   endif
 
 
 ! ZMATRIX begins here
