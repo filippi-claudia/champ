@@ -1110,7 +1110,7 @@ c     store elocal and derivatives of psi for each configuration (call in vmc)
       if(l.gt.MCONF) call fatal_error('SR_STORE: l gt MCONF')
 
       do istate=1,nstates
-         call dcopy(nparmj,gvalue,1,sr_o(1,l,istate),1)
+         call dcopy(nparmj,gvalue(1,istate),1,sr_o(1,l,istate),1)
       enddo
 
       ntmp=max(nciterm-i0,0)

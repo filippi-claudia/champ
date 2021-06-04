@@ -346,7 +346,6 @@ c calculate psi at new configuration
       endif
 
       call compute_determinante_grad(iel,psig,psidn,psijn,vnew(1,iel),0)
-      print *, "VNEW", iel, vnew(1:3,iel)
 
       if(ipr.gt.1) then
         write(6,'(''psidn,psig ='',2d12.4)') psidn(1),psig
