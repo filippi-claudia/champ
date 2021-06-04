@@ -22,6 +22,8 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use mpiblk, only: iblk_proc
 
       use precision_kinds, only: dp
+!     debug fixing ioldest in the output
+      use age, only: iage, ioldest, ioldestmx
       implicit none
 
       integer :: i, ifr, k
@@ -81,6 +83,11 @@ c zero out estimators
       ei3sum=zero
       r2sum=zero
       risum=zero
+
+      ! debug
+      iage=0
+      ioldest=0
+      ioldestmx=0
 
       do 85 ifr=1,nforce
         tausum(ifr)=zero
