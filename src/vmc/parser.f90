@@ -1138,12 +1138,12 @@ subroutine parser
           .and. (.not. fdf_islinteger('weights_guiding')) ) then
         i = -1
         call fdf_list('weights_guiding',i,weights_g)
-        write(*,'(tr1,a,i0,a)') 'Guiding weights has ',i,' entries'
+        write(ounit,'(tr1,a,i0,a)') 'Guiding weights has ',i,' entries'
         if ( i < 2 ) stop 1
         call fdf_list('weights_guiding',i,weights_g)
-        write(*, '(a,<MSTATES>(f12.6))') 'Weights_guiding : ', weights_g(1:i)
+        write(ounit, '(a,<MSTATES>(f12.6))') 'Weights_guiding : ', weights_g(1:i)
       else
-        write(*,*)'guiding_weights keyword not recognized'
+        write(ounit,*)'guiding_weights keyword not recognized'
         stop 1
       end if
 
@@ -1248,12 +1248,12 @@ subroutine parser
       .and. (.not. fdf_islinteger('weights')) ) then
     i = -1
     call fdf_list('weights',i,weights)
-    write(*,'(tr1,a,i0,a)') 'Weights has ',i,' entries'
+    write(ounit,'(tr1,a,i0,a)') 'Weights has ',i,' entries'
     if ( i < 2 ) stop 1
     call fdf_list('weights',i,weights)
-    write(*, '(a,<MSTATES>(f12.6))') 'weights : ', weights(1:i)
+    write(ounit, '(a,<MSTATES>(f12.6))') 'weights : ', weights(1:i)
   else
-    write(*,*)'weights was not recognized'
+    write(ounit,*)'weights was not recognized'
     stop 1
   end if
 

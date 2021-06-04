@@ -209,7 +209,8 @@ contains
         character(len=100)                      :: string_format  = '(A, T40, A)'
 
         ! Get all the command line arguments
-        if ( wid ) then
+! The next line is commented as all mpi processes read this information. old style
+!        if ( wid ) then
             argcount = command_argument_count()
             if ( .not. allocated(arg)) allocate(arg(argcount))
             do i = 1, argcount
@@ -248,7 +249,14 @@ contains
                             stop
                         endif
 !                        write(output_unit, fmt=string_format) ' output file     :: ', file_output
-                        open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='replace' )
+!                       debug lines. remove after checking
+                        if (.not. wid ) then
+                            file_output = '/dev/null'
+                            close (6)
+                            open (6, file='/dev/null')
+                        endif
+                        open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='unknown' )
+!                       open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='replace' )
                         if (iostat /= 0) error stop "error in opening output unit"
 
                     case ('-e', '-er', '-err', '-error', '--error')
@@ -278,7 +286,7 @@ contains
                 end select
             enddo
             if ( allocated(arg)) deallocate(arg)
-        endif
+!        endif
 
         contains
         subroutine print_help()

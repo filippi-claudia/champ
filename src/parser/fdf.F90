@@ -129,7 +129,7 @@ MODULE fdf
   public :: fdf_bboolean, fdf_bphysical
   public :: fdf_bnlists, fdf_bnilists, fdf_bnrlists, fdf_bnvlists
   public :: fdf_bilists, fdf_brlists, fdf_bvlists
-  
+
 ! Match, search over blocks, and destroy block structure
   public :: fdf_bmatch, fdf_bsearch, fdf_substring_search
 
@@ -203,11 +203,11 @@ MODULE fdf
   interface fdf_bilists
     module procedure integerlists
   end interface
-  
+
   interface fdf_brlists
     module procedure reallists
   end interface
-  
+
   interface fdf_bvlists
     module procedure valuelists
   end interface
@@ -266,7 +266,7 @@ MODULE fdf
   type, public :: block_fdf
     character(len=MAX_LENGTH) :: label
     type(line_dlist), pointer :: mark => null()
-    character(len=MAX_LENGTH) :: modulename = ""  
+    character(len=MAX_LENGTH) :: modulename = ""
   end type block_fdf
 
 ! Dynamic list for parsed_line structures
@@ -286,7 +286,7 @@ MODULE fdf
   end type fdf_file
 
 ! Input FDF file
-  type(fdf_file), private :: file_in 
+  type(fdf_file), private :: file_in
 
 ! Export the following to enable serialization by clients of the library
 
@@ -512,7 +512,7 @@ CONTAINS
 !         %block directive
           ind_less = search('<', pline)
           if (search('%block', pline) .eq. 1) then
-!            print*, "debug::library::  inside block construct "                        
+!            print*, "debug::library::  inside block construct "
 !           No label found in %block directive
             if (ntok .eq. 1) then
               write(msg,*) '%block label not found in ', TRIM(filein)
@@ -590,7 +590,7 @@ CONTAINS
 
 !         %endblock directive
           elseif (search('%endblock', pline) .eq. 1) then
-!            print*, "debug::library::  inside endblock construct "                        
+!            print*, "debug::library::  inside endblock construct "
 !           Check if %block exists before %endblock
             if (label .eq. ' ') then
               write(msg,*) 'Bad %endblock found in ', TRIM(filein)
@@ -614,44 +614,44 @@ CONTAINS
               label = ' '
             endif
 
-!         %module construction            
+!         %module construction
           elseif (search('%module', pline) .eq. 1) then
-            counter = counter + 1 
-            pline => digest(line)            
+            counter = counter + 1
+            pline => digest(line)
 !            print*, "debug::library::  inside module construct ", pline%line
             call setmorphol(1, 'b', pline)
-            call setmorphol(2, 'l', pline)            
-            call fdf_addtoken(line, pline)    
+            call setmorphol(2, 'l', pline)
+            call fdf_addtoken(line, pline)
             nullify(pline) ! it is stored in line
             nlstart = file_in%nlines
             modulename = trim(line(8:))
-            write(*,'(A,1x,i1,1x,A)') "Module #", counter , trim(line(8:))
-            nullify(pline) ! it is stored in line            
+            write(msg,'(A,1x,i1,1x,A)') "Module #", counter , trim(line(8:))
+            nullify(pline) ! it is stored in line
 !           No label found in %module directive
             if (ntok .eq. 1) then
               write(msg,*) '%module label not found in ', TRIM(filein)
               call die('FDF module: fdf_read', msg,                     &
                         THIS_FILE, __LINE__, fdf_err)
             endif
-              
+
 ! !           Add begin, body and end sections of module
-!           %module Label                     
+!           %module Label
 !              call destroy(pline)
-              line = '%module ' // label  
+              line = '%module ' // label
               !nlstart = file_in%nlines
 !              print*, "debug:: beginning line no in the input file ", nlstart
 
-!             structure created          
-            
+!             structure created
+
 !          %endmodule directive
           elseif (search('%endmodule', pline) .eq. 1) then
-!            print*, "debug::library::  inside endmodule construct "            
+!            print*, "debug::library::  inside endmodule construct "
 !           Check if %module exists before %endmodule
 !              call destroy(pline)
-              line = '%endmodule ' // label              
+              line = '%endmodule ' // label
               nlend = file_in%nlines
 !              print*, "debug:: ending line no in the input file ", nlend
-              
+
 
 ! custom added part ends here
 
@@ -669,7 +669,7 @@ CONTAINS
 
             ! Clean pline (we simply insert the next file)
             call destroy(pline)
-          
+
 
 !         Label1 Label2 ... < Filename directive
           elseif (ind_less .ne. -1) then
@@ -683,7 +683,7 @@ CONTAINS
             elseif (ind_less .eq. ntok) then
               write(msg,*) 'Filename not found after ''<'' in ', TRIM(filein)
               call die('FDF module: fdf_read', msg,                     &
-                       THIS_FILE, __LINE__, fdf_err)        
+                       THIS_FILE, __LINE__, fdf_err)
 
             else
 !             Search label(s) in Filename
@@ -715,7 +715,7 @@ CONTAINS
               call destroy(pline)
               DEALLOCATE(found)
             endif
-            
+
 
 !         Add remaining kind of tokens to dynamic list as labels
           else
@@ -914,7 +914,7 @@ CONTAINS
             elseif (ind_less .eq. ntok) then
               write(msg,*) 'Filename not found after ''<'' in ', TRIM(filein)
               call die('FDF module: fdf_read', msg,                     &
-                       THIS_FILE, __LINE__, fdf_err)        
+                       THIS_FILE, __LINE__, fdf_err)
 
             else
 !             Search label(s) in Filename
@@ -946,7 +946,7 @@ CONTAINS
               call destroy(pline)
               DEALLOCATE(found)
             endif
-            
+
 
 !         Add remaining kind of tokens to dynamic list as labels
           else
@@ -2332,7 +2332,7 @@ CONTAINS
           endif
         else
           call die('FDF module: fdf_load_filename', 'Incorrect load statement', THIS_FILE, __LINE__, fdf_err)
-        endif          
+        endif
       else
         fdf_load_filename = default
         if (fdf_output) write(fdf_out,'(a,t30,a,t60,a)') label, default, '# default value'
@@ -2383,7 +2383,7 @@ CONTAINS
           endif
         else
           call die('FDF module: fdf_locate_module', 'Incorrect load statement', THIS_FILE, __LINE__, fdf_err)
-        endif          
+        endif
       else
         fdf_locate_module = default
         if (fdf_output) write(fdf_out,'(a,t30,a,t60,a)') label, default, '# default value'
@@ -2492,14 +2492,14 @@ CONTAINS
       character(len=*), intent(in) :: valstr
       a = leqi(valstr, 'yes')    .or. leqi(valstr, 'true') .or. &
           leqi(valstr, '.true.') .or. leqi(valstr, 't')    .or. &
-          leqi(valstr, 'y')      
+          leqi(valstr, 'y')
       end function is_true
 
       logical function is_false(valstr)  result(a)
       character(len=*), intent(in) :: valstr
       a = leqi(valstr, 'no')      .or. leqi(valstr, 'false') .or. &
           leqi(valstr, '.false.') .or. leqi(valstr, 'f')     .or. &
-          leqi(valstr, 'n')       
+          leqi(valstr, 'n')
       end function is_false
 
 !--------------------------------------------------------------------------- END
@@ -2830,7 +2830,7 @@ CONTAINS
       ! Add the appropriate unit in the designated unit-type and
       ! run the python script. It will then create (to std-out)
       ! a drop-in replacement for the following lines.
-      
+
       integer(ip), parameter :: nu = 81
       character(8) :: dimm(nu)
       character(10) :: name(nu)
@@ -3088,7 +3088,7 @@ CONTAINS
       endif
 
       fdf_isblock = .false.
-      
+
       mark => file_in%first
       do while ( associated(mark) )
 
@@ -3108,7 +3108,7 @@ CONTAINS
 
         if ( match(mark%pline, 'bl') ) then
           strlabel = blocks(mark%pline)
-          
+
           if ( labeleq(strlabel, label, fdf_log) ) then
             fdf_isblock = .true.
             exit
@@ -3117,13 +3117,13 @@ CONTAINS
 
         mark => mark%next
       end do
-      
+
       if (fdf_output) write(fdf_out,'(a,t30,l10)') "Is block " // trim(label) // ' present?',  fdf_isblock
 
       RETURN
 !--------------------------------------------------------------------------- END
     END FUNCTION fdf_isblock
-    
+
 !
 !   Searches for block label in the fdf hierarchy. If it appears returns
 !   .TRUE. and leaves block mark pointer positioned at the first line.
@@ -3375,7 +3375,7 @@ CONTAINS
 !--------------------------------------------------------------------------- END
     END SUBROUTINE fdf_bclose
 
-    
+
 !
 !   Count number of lines with an optional specification.
 !   I.e. this will read through the block and return the number of lines in the
@@ -3391,7 +3391,7 @@ CONTAINS
       character(len=*), optional :: morph
 !-------------------------------------------------------------- Output Variables
       integer(ip) :: fdf_block_linecount
-      
+
 !--------------------------------------------------------------- Local Variables
       type(block_fdf) :: bfdf
       type(parsed_line), pointer :: pline
@@ -3436,7 +3436,7 @@ CONTAINS
               trim(label), fdf_block_linecount
         end if
       end if
-      
+
       RETURN
 !--------------------------------------------------------------------------- END
     END FUNCTION fdf_block_linecount
@@ -3611,7 +3611,7 @@ CONTAINS
     end subroutine fdf_obsolete
 
 !===================== Serialization utilities for clients
-    
+
     subroutine fdf_serialize_struct(buffer)
     character(len=1), intent(inout), allocatable   :: buffer(:)
 
@@ -3624,7 +3624,7 @@ CONTAINS
     if (allocated(buffer)) deallocate(buffer)
     nchars = file_in%nlines * SERIALIZED_LENGTH
     allocate(buffer(nchars))
-    
+
     mark => file_in%first
     do i= 1, file_in%nlines
        call serialize_pline(mark%pline,bufline,length)
@@ -3643,7 +3643,7 @@ CONTAINS
     integer(ip) :: nlines, i, init, final
 
     nlines = size(bufferFDF) / SERIALIZED_LENGTH
-    
+
     do i= 1, nlines
        init  = (i-1)*SERIALIZED_LENGTH+1
        final = (i)*SERIALIZED_LENGTH
