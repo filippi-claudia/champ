@@ -123,6 +123,9 @@ c     All quantities saved (old) avaliable
             do kk=1,3
                vd(kk)=vd(kk)+vref(kk,1)
             enddo
+            vd(1)=vj(1,iel,1)+vd(1)
+            vd(2)=vj(2,iel,1)+vd(2)
+            vd(3)=vj(3,iel,1)+vd(3)
          else
             do kk=1,3
                vd(kk)=0.0d0
@@ -158,6 +161,10 @@ c     Within single-electron move - quantities of electron iel not saved
             do kk=1,3
                vd(kk)=vd(kk)+vref(kk,1)
             enddo
+
+            vd(1)=vjn(1,iel,1)+vd(1)
+            vd(2)=vjn(2,iel,1)+vd(2)
+            vd(3)=vjn(3,iel,1)+vd(3)
          else
             do kk=1,3
                vd(kk)=0.0d0

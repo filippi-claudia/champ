@@ -39,6 +39,7 @@ c----------------------------------------------------------------------
       subroutine efficiency_prt(passes)
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
+      use config, only: anormo
 
       implicit real*8(a-h,o-z)
 
@@ -48,7 +49,8 @@ c----------------------------------------------------------------------
       write(6,'(''efficiency for multiple states'')')
       do j=1,nstates_psig
          efficiency=effcum(j)*effcum(j)/effcm2(j)/passes
-         write(6,'(''efficiency state '',i4,f8.3)') j,efficiency
+         write(6,'(''efficiency state '',i4, f8.3)') j,efficiency
+         write(6,'(''anorm correction '',i4, E15.8)') j,anormo(j)
       enddo
 
       end subroutine
