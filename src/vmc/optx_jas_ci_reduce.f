@@ -9,10 +9,14 @@ c Written by Claudia Filippi
       use ci000, only: nciterm
       use method_opt, only: method
       use mpi
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension collect(MPARMJ,MDET)
+      integer :: i, ierr, j
+
+      real(dp), dimension(MPARMJ,MDET) :: collect
+
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
