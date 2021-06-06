@@ -11,10 +11,14 @@
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
       use method_opt, only: method
       use optorb_cblock, only: nreduced
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension wtg_new(*),wtg_old(*)
+      integer :: i, iflag, istate, j
+      real(dp) :: p, q
+      real(dp), dimension(*) :: wtg_new
+      real(dp), dimension(*) :: wtg_old
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -56,7 +60,10 @@ c-----------------------------------------------------------------------
       use method_opt, only: method
       use optorb_cblock, only: nreduced
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, istate, j
+
 
 
 
@@ -85,7 +92,10 @@ c-----------------------------------------------------------------------
       use method_opt, only: method
       use optorb_cblock, only: nreduced
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, istate, iu, j
+
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -105,7 +115,10 @@ c-----------------------------------------------------------------------
       use method_opt, only: method
       use optorb_cblock, only: nreduced
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, istate, iu, j
+
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -132,10 +145,17 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: nreduced
       ! I think this one is not needed ... 
       ! use gradhess_jas, only: grad_jas
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension wcum(*),ecum(*),grad_orb(MXREDUCED)
+      integer :: i, istate, j
+      real(dp) :: eave, grad_jas, h1, h2, passes
+      real(dp) :: passesi, wts
+      real(dp), dimension(*) :: wcum
+      real(dp), dimension(*) :: ecum
+      real(dp), dimension(MXREDUCED) :: grad_orb
+
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
