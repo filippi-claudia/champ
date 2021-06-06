@@ -9,10 +9,13 @@ c Written by Claudia Filippi
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
       use method_opt, only: method
       use mpi
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension collect(MPARMJ,MXREDUCED)
+      integer :: i, ierr, istate, j, nreduced
+      real(dp), dimension(MPARMJ,MXREDUCED) :: collect
+
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
