@@ -97,13 +97,19 @@ c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-b
 c     eval_eff=nconf*rn_eff(wcum1,wcm21)
 c     evalf_eff=nconf*rn_eff(wfcum1,wfcm21)
 c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
-      eval_eff=nconf*nstep*rn_eff(wcum_dmc,wcm2)
-      evalf_eff=nconf*nstep*rn_eff(wfcum,wfcm2)
-      evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
-      rtpass1=dsqrt(pass_proc-1)
-      rteval_eff1=dsqrt(eval_eff-1)
-      rtevalf_eff1=dsqrt(evalf_eff-1)
-      rtevalg_eff1=dsqrt(evalg_eff-1)
+
+c The intrinsic rn_eff function must be evaluated only by the 'wid' (leading) node.
+c Why? wcum_dmc and wcm2 are non-zero only for the 'wid' node. If the condition is left out,
+c the rest of the nodes rise the IEEE_DIVIDE_BY_ZERO warning.
+      if (wid) then
+         eval_eff=nconf*nstep*rn_eff(wcum_dmc,wcm2)
+         evalf_eff=nconf*nstep*rn_eff(wfcum,wfcm2)
+         evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
+         rtpass1=dsqrt(pass_proc-1)
+         rteval_eff1=dsqrt(eval_eff-1)
+         rtevalf_eff1=dsqrt(evalf_eff-1)
+         rtevalg_eff1=dsqrt(evalg_eff-1)
+      endif
 
       write(6,'(''passes,eval,pass_proc,eval_proc,eval_eff,
      &evalf_eff,evalg_eff'',19f9.0)')
@@ -170,65 +176,72 @@ c    & f10.5)') dr2ac/trymove
       write(6,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),
      & ifr=1,nforce)
 
-      accav=acc/trymove
-      accavn=dfloat(nacc)/trymove
+      if (wid) then
+        accav=acc/trymove
+        accavn=dfloat(nacc)/trymove
+        wave=wcum_dmc/pass_proc
+        wfave=wfcum/pass_proc
+        eave=ecum_dmc/wcum_dmc
+        efave=efcum/wfcum
 
-      wave=wcum_dmc/pass_proc
-      wfave=wfcum/pass_proc
-      eave=ecum_dmc/wcum_dmc
-      efave=efcum/wfcum
-
-      werr=errw(wcum_dmc,wcm2)
-      wferr=errw(wfcum,wfcm2)
-      werr1=errw1(wcum1,wcm21)
-      wferr1=errw1(wfcum1,wfcm21)
-      eerr=errc(ecum_dmc,ecm2_dmc)
-      eferr=errf(efcum,efcm2)
-      eerr1=errc1(ecum1_dmc,ecm21_dmc)
-      eferr1=errf1(efcum1,efcm21)
+        werr=errw(wcum_dmc,wcm2)
+        wferr=errw(wfcum,wfcm2)
+        werr1=errw1(wcum1,wcm21)
+        wferr1=errw1(wfcum1,wfcm21)
+        eerr=errc(ecum_dmc,ecm2_dmc)
+        eferr=errf(efcum,efcm2)
+        eerr1=errc1(ecum1_dmc,ecm21_dmc)
+        eferr1=errf1(efcum1,efcm21)
+      endif
 
       if(mode.eq.'dmc_one_mpi1') then
         write(6,'(''dmc_mov1_mpi '',2a10)') title
        else
         write(6,'(''dmc_mov1_mpi_globalpop '',2a10)') title
       endif
-      write(6,'(''No/frac. of node crossings,acceptance='',i9,3f10.6)')
-     &nodecr,dfloat(nodecr)/trymove,accav,accavn
-      if(idmc.ge.0) then
-        write(6,'(''No. of walkers at end of run='',i5)') nwalk
 
-        write(6,'(''nwalk_eff/nwalk         ='',2f6.3)')
+      if (wid) then
+        write(6,'(''No/frac. of node crossings,acceptance='',i9,3f10.6)')
+     &nodecr,dfloat(nodecr)/trymove,accav,accavn
+        if(idmc.ge.0) then
+          write(6,'(''No. of walkers at end of run='',i5)') nwalk
+
+          write(6,'(''nwalk_eff/nwalk         ='',2f6.3)')
      &   rn_eff(wcum1,wcm21)/pass_proc,rn_eff(wcum_dmc,wcm2)/iblk_proc
-        write(6,'(''nwalk_eff/nwalk with f  ='',2f6.3)')
+          write(6,'(''nwalk_eff/nwalk with f  ='',2f6.3)')
      &   rn_eff(wfcum1,wfcm21)/pass_proc,rn_eff(wfcum,wfcm2)/iblk_proc
-        write(6,'(''nwalk_eff/nwalk with fs ='',2f6.3)')
+          write(6,'(''nwalk_eff/nwalk with fs ='',2f6.3)')
      &   rn_eff(wgcum1(1),wgcm21(1))/pass_proc,rn_eff(wgcum(1),
      &   wgcm2(1))/iblk_proc
+        endif
       endif
 
       write(6,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq  nproc  tau    taueff'',
      &/,2f12.0,5i6,2f9.5)')
      &eval,passes,nconf,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
       write(6,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
-      if(idmc.ge.0) then
-        write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+
+      if(wid) then
+        if(idmc.ge.0) then
+          write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  wave,werr,werr*rtpass1,werr1*rtpass1,(werr/werr1)**2
-        write(6,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+          write(6,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  wfave,wferr,wferr*rtpass1,wferr1*rtpass1,(wferr/wferr1)**2
-        do 20 ifr=1,nforce
-          wgave=wgcum(ifr)/pass_proc
-          wgerr=errw(wgcum(ifr),wgcm2(ifr))
-          wgerr1=errw1(wgcum1(ifr),wgcm21(ifr))
-          write(6,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
-     &    wgave,wgerr,wgerr*rtpass1,wgerr1*rtpass1,(wgerr/wgerr1)**2
-  20    continue
-        write(6,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,
+          do 20 ifr=1,nforce
+            wgave=wgcum(ifr)/pass_proc
+            wgerr=errw(wgcum(ifr),wgcm2(ifr))
+            wgerr1=errw1(wgcum1(ifr),wgcm21(ifr))
+            write(6,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+     &      wgave,wgerr,wgerr*rtpass1,wgerr1*rtpass1,(wgerr/wgerr1)**2
+  20      continue
+          write(6,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,
      &  2f9.5,f8.2)') eave,eerr,eerr*rteval_eff1,eerr1*rteval_eff1,
      &  (eerr/eerr1)**2
-        write(6,'(''total energy (   1) ='',t24,f12.7,'' +-'',f11.7,
+          write(6,'(''total energy (   1) ='',t24,f12.7,'' +-'',f11.7,
      &  2f9.5,f8.2)') efave,eferr,eferr*rtevalf_eff1,eferr1*rtevalf_eff1,
      &  (eferr/eferr1)**2
-      endif
+        endif
+
       do 30 ifr=1,nforce
         egave=egcum(ifr)/wgcum(ifr)
         egerr=errg(egcum(ifr),egcm2(ifr),ifr)
@@ -270,6 +283,7 @@ c Done by Omar Valsson 2008-12-01
         force(ifr)=fgave
         force_err(ifr)=fgerr
   50  continue
+      endif
 
       call prop_prt_dmc(iblk,1,wgcum,wgcm2)
       call pcm_fin(iblk,wgcum,wgcm2)
