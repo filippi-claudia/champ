@@ -71,8 +71,8 @@ if (ENABLE_MPI)
 endif(ENABLE_MPI)
 
 # Git info
-execute_process(COMMAND git rev-parse --abbrev-ref HEAD  OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
+#execute_process(COMMAND git rev-parse --abbrev-ref HEAD  OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
+#execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
 #
 
 
@@ -88,12 +88,15 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
 
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-	list(APPEND Fortran_FLAGS "-fpp" "-g" "-debug" "-traceback" "-mcmodel=large" "-shared-intel" "-DGIT_BRANCH='${GIT_BRANCH}'" "-DGIT_HASH='${GIT_HASH}'"
+	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=large" "-shared-intel" #"-DGIT_BRANCH='${GIT_BRANCH}'" "-DGIT_HASH='${GIT_HASH}'"
     "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
   #    list(APPEND Fortran_FLAGS "-i8")
   #endif()
+
+ # list(APPEND Fortran_FLAGS "-fpp" "-g" "-debug" "-traceback" "-mcmodel=large" "-shared-intel" "-DGIT_BRANCH='${GIT_BRANCH}'" "-DGIT_HASH='${GIT_HASH}'"
+
 
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
