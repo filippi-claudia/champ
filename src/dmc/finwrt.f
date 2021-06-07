@@ -81,6 +81,10 @@ c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-b
 c     eval_eff=nconf*rn_eff(wcum1,wcm21)
 c     evalf_eff=nconf*rn_eff(wfcum1,wfcm21)
 c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
+
+c The intrinsic rn_eff function must be evaluated only by the 'wid' (leading) node.
+c Why? wcum_dmc and wcm2 are non-zero only for the 'wid' node. If the condition is left out,
+c the rest of the nodes rise the IEEE_DIVIDE_BY_ZERO warning.
       if (wid) then
          eval_eff=nconf*nstep*rn_eff(wcum_dmc,wcm2)
          evalf_eff=nconf*nstep*rn_eff(wfcum,wfcm2)
