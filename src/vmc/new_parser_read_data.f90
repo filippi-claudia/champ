@@ -109,7 +109,7 @@ subroutine read_molecule_file(file_molecule)
     character(len=2), allocatable   :: unique(:)
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: float_format   = '(A, T60, f12.8)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
@@ -405,7 +405,7 @@ subroutine read_jastrow_file(file_jastrow)
     integer                         :: i, j
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -526,7 +526,7 @@ subroutine read_orbitals_file(file_orbitals)
     logical                         :: skip = .true.
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
     character(len=100)               :: float_format   = '(A, T60, f12.8)'
 
@@ -937,7 +937,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
     !real(dp)                        ::
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -1113,7 +1113,7 @@ subroutine read_forces_file(file_forces)
     !real(dp)                        ::
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -1177,7 +1177,7 @@ subroutine read_symmetry_file(file_symmetry)
 
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -1241,7 +1241,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
 
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -1308,7 +1308,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
 
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -1380,7 +1380,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -1611,7 +1611,7 @@ subroutine read_dmatrix_file(file_dmatrix)
     integer, dimension(:), allocatable  :: iwdmat
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -1753,7 +1753,7 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
     logical                         :: exist, skip = .true.
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -1822,7 +1822,7 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     logical                         :: exist, skip = .true.
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -1911,7 +1911,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     logical                         :: exist, skip = .true.
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -1993,7 +1993,7 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     logical                         :: exist, skip = .true.
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -2054,7 +2054,7 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     logical                         :: exist, skip = .true.
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -2119,7 +2119,7 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     logical                         :: exist, skip = .true.
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
@@ -2190,7 +2190,7 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     logical                         :: exist, skip = .true.
 
     !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I8)'
+    character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading

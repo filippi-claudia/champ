@@ -156,7 +156,7 @@ subroutine parser
   type(parsed_line), pointer :: pline
 
   character(len=100)         :: real_format    = '(A, T40, F14.8)'
-  character(len=100)         :: int_format     = '(A, T40, I8)'
+  character(len=100)         :: int_format     = '(A, T40, I0)'
   character(len=100)         :: string_format  = '(A, T40, A)'
   character(len=100)         :: fmt32          = '(A, T32, A)'
 
