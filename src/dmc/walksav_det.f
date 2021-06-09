@@ -18,14 +18,14 @@ c Written by Claudia Filippi
       use mstates_mod, only: MSTATES, MDETCSFX
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo
       use branch, only: wgdsumo, wt, wtgen, wthist
-      use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
+      use slater, only: d2dx2, ddx, fp, fpp, slmi
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use orbval, only: dorb, orb
       use coefs, only: norb
       use csfs, only: nstates
       use ycompact, only: ymat
-      use multislater, only: detd, detu
+      use multislater, only: detiab
       use multidet, only: ivirt, kref, numrep_det
       use multimat, only: aa, wfmat
       use mpi
@@ -92,20 +92,20 @@ c Written by Claudia Filippi
 
 
        do 20 k=1,ndet
-         detuw(k,iw)=detu(k)
-   20    detdw(k,iw)=detd(k)
+         detuw(k,iw)=detiab(k,1)
+   20    detdw(k,iw)=detiab(k,2)
 
        krefw(iw)=kref
        do 40 j=1,nup*nup
-         slmuiw(j,iw)=slmui(j)
-         fpuw(1,j,iw)=fpu(1,j)
-         fpuw(2,j,iw)=fpu(2,j)
-   40    fpuw(3,j,iw)=fpu(3,j)
+         slmuiw(j,iw)=slmi(j,1)
+         fpuw(1,j,iw)=fp(1,j,1)
+         fpuw(2,j,iw)=fp(2,j,1)
+   40    fpuw(3,j,iw)=fp(3,j,1)
        do 50 j=1,ndn*ndn
-         slmdiw(j,iw)=slmdi(j)
-         fpdw(1,j,iw)=fpd(1,j)
-         fpdw(2,j,iw)=fpd(2,j)
-   50    fpdw(3,j,iw)=fpd(3,j)
+         slmdiw(j,iw)=slmi(j,2)
+         fpdw(1,j,iw)=fp(1,j,2)
+         fpdw(2,j,iw)=fp(2,j,2)
+   50    fpdw(3,j,iw)=fp(3,j,2)
        do 55 i=1,nelec
          ddxw(1,i,iw)=ddx(1,i)
          ddxw(2,i,iw)=ddx(2,i)
@@ -138,20 +138,20 @@ c Written by Claudia Filippi
       entry walkstrdet(iw)
 
       do 70 k=1,ndet
-        detu(k)=detuw(k,iw)
-   70   detd(k)=detdw(k,iw)
+        detiab(k,1)=detuw(k,iw)
+   70   detiab(k,2)=detdw(k,iw)
 
       kref=krefw(iw)
       do 80 j=1,nup*nup
-        slmui(j)=slmuiw(j,iw)
-        fpu(1,j)=fpuw(1,j,iw)
-        fpu(2,j)=fpuw(2,j,iw)
-   80   fpu(3,j)=fpuw(3,j,iw)
+        slmi(j,1)=slmuiw(j,iw)
+        fp(1,j,1)=fpuw(1,j,iw)
+        fp(2,j,1)=fpuw(2,j,iw)
+   80   fp(3,j,1)=fpuw(3,j,iw)
       do 90 j=1,ndn*ndn
-        slmdi(j)=slmdiw(j,iw)
-        fpd(1,j)=fpdw(1,j,iw)
-        fpd(2,j)=fpdw(2,j,iw)
-   90   fpd(3,j)=fpdw(3,j,iw)
+        slmi(j,2)=slmdiw(j,iw)
+        fp(1,j,2)=fpdw(1,j,iw)
+        fp(2,j,2)=fpdw(2,j,iw)
+   90   fp(3,j,2)=fpdw(3,j,iw)
       do 95 i=1,nelec
         ddx(1,i)=ddxw(1,i,iw)
         ddx(2,i)=ddxw(2,i,iw)
