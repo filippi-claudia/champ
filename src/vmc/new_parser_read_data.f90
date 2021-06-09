@@ -61,13 +61,13 @@ subroutine header_printing()
     call get_command_argument(number=0, value=output)
     write(ounit, '(2a)') " Executable                 :: ",   output
 
-!#if defined(GIT_BRANCH)
-!        write(ounit,'(2a)')  " Git branch                 :: ", GIT_BRANCH
-!#endif
+#if defined(GIT_BRANCH)
+    write(ounit,'(2a)')  " Git branch                 :: ", GIT_BRANCH
+#endif
 
-!#if defined(GIT_HASH)
-!        write(ounit,'(2a)')  " Git commit hash            :: ", GIT_HASH
-!#endif
+#if defined(GIT_HASH)
+    write(ounit,'(2a)')  " Git commit hash            :: ", GIT_HASH
+#endif
 
 #if defined(COMPILER)
     write(ounit,'(2a)')  " Compiler                   :: ", COMPILER
@@ -87,7 +87,7 @@ subroutine header_printing()
     write(ounit, '(2a)') " Output file                :: ",   file_output
     write(ounit, '(2a)') " Error file                 :: ",   file_error
     write(ounit, '(4a)') " Code compiled on           :: ",__DATE__, " at ", __TIME__
-    write(ounit, '(a,i5.5)') " Number of processors       :: ", nproc
+    write(ounit, '(a,i0)') " Number of processors       :: ", nproc
     write(ounit,*)
 
 
