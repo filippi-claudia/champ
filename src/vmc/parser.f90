@@ -155,10 +155,10 @@ subroutine parser
   type(block_fdf)            :: bfdf
   type(parsed_line), pointer :: pline
 
-  character(len=100)         :: real_format    = '(A, T40, F14.8)'
-  character(len=100)         :: int_format     = '(A, T40, I0)'
-  character(len=100)         :: string_format  = '(A, T40, A)'
-  character(len=100)         :: fmt32          = '(A, T32, A)'
+  character(len=100)         :: real_format    = '(A, T40, ":: ", T42, F25.16)'
+  character(len=100)         :: int_format     = '(A, T40, ":: ", T50, I0)'
+  character(len=100)         :: string_format  = '(A, T40, ":: ", T50, A)'
+!  character(len=100)         :: fmt32          = '(A, T32, A)'
 
 !------------------------------------------------------------------------- BEGIN
 ! debug purpose only
@@ -500,10 +500,10 @@ subroutine parser
   call setrn(irn)
 
   write(ounit,*)
-  write(ounit,'(a,t40,a)') " All energies are in units of ", eunit
-  write(ounit,'(a,t36,f12.6)') " hbar**2/(2.*m) = ",  hb
-  write(ounit, int_format) " Number of geometries = ", nforce
-  write(ounit, int_format) " Number of wave functions = ", nwftype
+  write(ounit, string_format) " All energies are in units of ", eunit
+  write(ounit, real_format) " hbar**2/(2.*m) ",  hb
+  write(ounit, int_format) " Number of geometries ", nforce
+  write(ounit, int_format) " Number of wave functions ", nwftype
   if(nwftype.gt.nforce) call fatal_error('INPUT: nwftype gt nforce')
   write(ounit,*)
 ! Printing header information and common calculation parameters ends here
@@ -593,18 +593,18 @@ subroutine parser
         write(ounit,'(a)') '**Warning value of deltat reset to 2.'
         deltat = two
       endif
-      write(ounit,'(a,t36,f12.6)')  " Radial step multiplier = ", deltar
-      write(ounit,'(a,t36,f12.6)')  " cos(theta) step size = ",   deltat
+      write(ounit,real_format)  " Radial step multiplier  ", deltar
+      write(ounit,real_format)  " cos(theta) step size  ",   deltat
     endif
 
     ! Truncate fbias so that fbias and the sampled quantity are never negative
     fbias=dmin1(two,dmax1(zero,fbias))
-    write(ounit,'(a,t36,f12.6)')  " Force bias = ",   fbias
+    write(ounit,real_format)  " Force bias  ",   fbias
 
-    write(ounit,int_format) " Number of VMC steps/block = ", vmc_nstep
-    write(ounit,int_format) " Number of VMC blocks after eq. = ", vmc_nblk
-    write(ounit,int_format) " Number of VMC blocks before eq. = ", vmc_nblkeq
-    write(ounit,int_format) " Number of VMC configurations saved = ", vmc_nconf_new
+    write(ounit,int_format) " Number of VMC steps/block  ", vmc_nstep
+    write(ounit,int_format) " Number of VMC blocks after eq.  ", vmc_nblk
+    write(ounit,int_format) " Number of VMC blocks before eq.  ", vmc_nblkeq
+    write(ounit,int_format) " Number of VMC configurations saved  ", vmc_nconf_new
   endif
 
   !checks
@@ -619,24 +619,24 @@ subroutine parser
 
     rttau=dsqrt(tau)
 
-    write(ounit,int_format) " Version of DMC = ",  idmc
-    write(ounit,int_format) " nfprod = ",  nfprod
-    write(ounit,'(a,t36,f12.6)') " tau = ", tau
+    write(ounit,int_format) " Version of DMC ",  idmc
+    write(ounit,int_format) " nfprod ",  nfprod
+    write(ounit,real_format) " tau ", tau
 
-    write(ounit,int_format) " ipq = ", ipq
-    write(ounit,int_format) " itau_eff = ", itau_eff
-    write(ounit,int_format) " iacc_rej = ", iacc_rej
-    write(ounit,int_format) " icross = ", icross
-    write(ounit,int_format) " icuspg = ", icuspg
-    write(ounit,int_format) " idiv_v = ", idiv_v
-    write(ounit,int_format) " icut_br = ", icut_br
-    write(ounit,int_format) " icut_e = ", icut_e
-    write(ounit,int_format) " ipq = ", ipq
-    write(ounit,'(a,t36,f12.6)') " etrial ", etrial
+    write(ounit,int_format) " ipq ", ipq
+    write(ounit,int_format) " itau_eff ", itau_eff
+    write(ounit,int_format) " iacc_rej ", iacc_rej
+    write(ounit,int_format) " icross ", icross
+    write(ounit,int_format) " icuspg ", icuspg
+    write(ounit,int_format) " idiv_v ", idiv_v
+    write(ounit,int_format) " icut_br ", icut_br
+    write(ounit,int_format) " icut_e ", icut_e
+    write(ounit,int_format) " ipq ", ipq
+    write(ounit,real_format) " etrial ", etrial
     write(ounit,int_format)  " casula ",  icasula
-    write(ounit,int_format) " node_cutoff = ", dmc_node_cutoff
+    write(ounit,int_format) " node_cutoff ", dmc_node_cutoff
 
-    if (dmc_node_cutoff.gt.0) write(ounit,'(a,t36,f12.6)') " enode cutoff = ", dmc_eps_node_cutoff
+    if (dmc_node_cutoff.gt.0) write(ounit,real_format) " enode cutoff = ", dmc_eps_node_cutoff
 
     if (idmc.ne.2) call fatal_error('INPUT: only idmc=2 supported')
 
