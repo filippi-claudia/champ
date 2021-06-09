@@ -69,6 +69,14 @@ subroutine header_printing()
 !        write(ounit,'(2a)')  " Git commit hash            :: ", GIT_HASH
 !#endif
 
+#if defined(COMPILER)
+    write(ounit,'(2a)')  " Compiler                   :: ", COMPILER
+#endif
+
+#if defined(COMPILER_VERSION)
+    write(ounit,'(2a)')  " Compiler version           :: ", COMPILER_VERSION
+#endif
+
     call hostnm(output)
     write(ounit, '(2a)') " Hostname                   :: ",   output
     call get_environment_variable ("PWD", output)

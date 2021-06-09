@@ -74,7 +74,11 @@ endif(ENABLE_MPI)
 #execute_process(COMMAND git rev-parse --abbrev-ref HEAD  OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
 #execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
 #
+# useful info
+execute_process(COMMAND CMAKE_Fortran_COMPILER --version | sed '/^[ ]*$$/d;q' OUTPUT_VARIABLE COMPILER_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE )
 
+message(STATUS "CMAKE_Fortran_COMPILER         :: " ${CMAKE_Fortran_COMPILER} )
+message(STATUS "CMAKE_Fortran_COMPILER_VERSION :: " ${CMAKE_Fortran_COMPILER_VERSION} )
 
 
 ## Compiler FLAGS
@@ -88,8 +92,11 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
 
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=large" "-shared-intel" #"-DGIT_BRANCH='${GIT_BRANCH}'" "-DGIT_HASH='${GIT_HASH}'"
-    "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
+	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=large" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
+  list(APPEND Fortran_FLAGS "-DCOMPILER='${CMAKE_Fortran_COMPILER}'")
+  list(APPEND Fortran_FLAGS "-DCOMPILER_VERSION='${CMAKE_Fortran_COMPILER_VERSION}'")
+   #"-DGIT_BRANCH='${GIT_BRANCH}'" "-DGIT_HASH='${GIT_HASH}'"
+
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
   #    list(APPEND Fortran_FLAGS "-i8")
