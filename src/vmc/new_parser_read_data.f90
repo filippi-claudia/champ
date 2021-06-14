@@ -57,7 +57,8 @@ subroutine header_printing()
     write(ounit,*)
 
     call date_and_time(date=date,time=time)
-    write(ounit, '(12a)') " Calculation started on     :: ",   date(1:4), "-", date(5:6), "-", date(7:8), " at ",  time(1:2), ":", time(3:4), ":", time(5:6)
+    write(ounit, '(12a)') " Calculation started on     :: ",  &
+                            date(1:4), "-", date(5:6), "-", date(7:8), " at ",  time(1:2), ":", time(3:4), ":", time(5:6)
     call get_command_argument(number=0, value=output)
     write(ounit, '(2a)') " Executable                 :: ",   output
 
@@ -452,7 +453,8 @@ subroutine read_jastrow_file(file_jastrow)
     ! read the first word of the file
     read (iunit, *, iostat=iostat)  temp2, iwft
     if (iostat == 0) then
-        if (trim(temp2) == "jastrow_parameter") write(ounit,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
+        if (trim(temp2) == "jastrow_parameter") &
+        write(ounit,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
     else
         call fatal_error ("Error in reading jastrow parameters / number of wavefunction types")
     endif
@@ -1393,7 +1395,8 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,'(a)')  " Reading Basis function types and pointers to radial parts tables from the file :: ",  trim(file_basis_num_info)
+    write(ounit,'(a)')  " Reading Basis function types and pointers to radial parts tables from the file :: ", &
+                          trim(file_basis_num_info)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     inquire(file=file_basis_num_info, exist=exist)

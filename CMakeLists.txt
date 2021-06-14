@@ -75,8 +75,6 @@ execute_process(COMMAND git rev-parse --abbrev-ref HEAD  OUTPUT_VARIABLE GIT_BRA
 execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
 #
 # useful info
-execute_process(COMMAND CMAKE_Fortran_COMPILER --version | sed '/^[ ]*$$/d;q' OUTPUT_VARIABLE COMPILER_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE )
-
 message(STATUS "CMAKE_Fortran_COMPILER         :: " ${CMAKE_Fortran_COMPILER} )
 message(STATUS "CMAKE_Fortran_COMPILER_VERSION :: " ${CMAKE_Fortran_COMPILER_VERSION} )
 
