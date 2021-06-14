@@ -4132,17 +4132,18 @@ endif ! (rank==0)
 !===================== Serialization utilities for clients
 
     subroutine serialize_fdf_struct(buffer)
-    character(len=1), intent(inout), allocatable   :: buffer(:)
+    character, pointer        :: buffer(:)
+!    character(len=1), intent(inout), allocatable   :: buffer(:)
 
     character(len=SERIALIZED_LENGTH)  bufline
     type(line_dlist), pointer :: mark
     integer(ip) :: i, length, init, final
 
-    integer :: nchars ! total size of serialized content
-
-    if (allocated(buffer)) deallocate(buffer)
-    nchars = file_in%nlines * SERIALIZED_LENGTH
-    allocate(buffer(nchars))
+!    integer :: nchars ! total size of serialized content
+!
+!    if (allocated(buffer)) deallocate(buffer)
+!    nchars = file_in%nlines * SERIALIZED_LENGTH
+!    allocate(buffer(nchars))
 
     mark => file_in%first
     do i= 1, file_in%nlines

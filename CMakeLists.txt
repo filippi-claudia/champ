@@ -95,6 +95,9 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-DCOMPILER_VERSION=\"${CMAKE_Fortran_COMPILER_VERSION}\"")
   list(APPEND Fortran_FLAGS "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
   list(APPEND Fortran_FLAGS "-DGIT_HASH=\"${GIT_HASH}\"")
+  #list(APPEND Fortran_FLAGS "-D_MPI_")
+  #list(APPEND Fortran_FLAGS "-DCLUSTER")
+
 
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
