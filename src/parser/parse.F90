@@ -4,15 +4,15 @@
 
 #define THIS_FILE "parse.F90"
 !=====================================================================
-! 
+!
 ! This file is part of the FDF package.
-! 
+!
 ! This module provides a simple yet powerful way to analyze the information
-! in a string (such as an input line). 
-! 
+! in a string (such as an input line).
+!
 ! Routine, 'digest' takes as input a string 'line' and returns a pointer
 ! to a derived type 'parsed_line':
-! 
+!
 !   Parsed line info (ntokens, token info and identification)
 !   Note that the token characters are stored in a single "line",
 !   and addressed using the starting and ending points.
@@ -25,13 +25,13 @@
 !    integer(ip)               :: last(MAX_NTOKENS)
 !    character(len=1)          :: id(MAX_NTOKENS)
 !  end type parsed_line
-! 
+!
 ! which holds a list of tokens and token tags (id). The
 ! parsing (split string into tokens) is done by a helper routine
 ! 'parses' which currently behaves according to the FDF standard.
 ! Each token is classified by helper routine 'morphol' and a token
 ! id is assigned in the following way:
-! 
+!
 ! * Tokens that can be read as real numbers are assigned to class
 ! 'values' and given a token id 'v'. These are further classified as
 ! 'integers' (id 'i') or 'reals' (id 'r').
@@ -40,9 +40,9 @@
 !    'c' == real list
 !    'e' == real or integer list
 ! * All other tokens are tagged as 'names' (id 'n').
-! 
+!
 ! The recommended usage follows the outline:
-! 
+!
 !     use parse
 !     character(len=?) line
 !     type(parsed_line), pointer :: p
@@ -50,27 +50,27 @@
 !     p=>digest(line)
 !     (extract information from p)
 !     call destroy(p)
-! 
+!
 ! Note the pointer assignment and the explicit call to a destroyer
 ! routine that frees the storage associated to p.
-! 
+!
 ! The information is extracted by module procedures that fall into three
-! classes: 
-! 
+! classes:
+!
 ! a) Enquiry functions: 'search' and 'match'
-! 
+!
 ! *  'search' determines whether a token in 'line' matches the given
 !    string, optionally returning an index. The search is
 !    case-insensitive by default, but this can be changed by supplying
 !    an extra procedure argument 'eq_func' with interface:
-! 
+!
 !       interface
 !         function eq_func(s1,s2)
 !           logical eq_func
 !           character(len=*), intent(in) :: s1,s2
 !         end function eq_func
 !       end interface
-! 
+!
 !    We have two different implementations of 'search' function,
 !    through a wrapper (function overload):
 !
@@ -94,20 +94,20 @@
 !    Example:  if (search('Mary', p) .ne. -1) ...
 !    will return the index of the first token that matches
 !    "Mary", or -1 if not found.
-! 
+!
 !    This function can take an optional keyword 'after=' (see below).
-! 
+!
 ! *  'substring_search' does not match whole tokens, but substrings in
 !    tokens. And it uses the *case sensitive* Fortran 'index' function.
 
 ! *  'match' is probably the most powerful routine in the module. It
 !    checks whether the token morphology of 'line' conforms to the
 !    sequence of characters specified. For example,
-! 
+!
 !    if (match(p,'nii')) ...
-! 
+!
 !    returns .TRUE. if 'line' contains at least three tokens and they are
-!    a 'name' and two 'integers'. 
+!    a 'name' and two 'integers'.
 !    Apart from the 'primitive' one-character ids, there is the
 !    possibility of using 'compound' virtual ids for generalized matchings:
 !
@@ -121,18 +121,18 @@
 !    - A 'd' is reserved for future dictionaries...
 
 !    This function can take an optional keyword 'after=' (see below).
-! 
+!
 ! b) Number functions: ntokens ('n|i|r|b|e|l|a'), nnames ('n'), nreals ('r'),
 !                      nintegers ('i'), nvalues ('i|r'), nblocks ('b'),
 !                      nendblocks ('e'), nlabels ('l'), nlists('a|c'),
 !                      nintegerlists ('a'), nreallists('c')
-! 
+!
 !    These functions return the number of tokens of each kind in 'line':
-! 
+!
 !    number_of_energies = nreals(p)
-! 
+!
 !    These functions can take an optional keyword 'after=' (see below).
-! 
+!
 ! c) Extraction functions: tokens ('n|i|r|b|e|l|a|c'), names ('n'), reals ('r'),
 !                          characters,
 !                          integers ('i'), values ('i|r'), blocks ('b'),
@@ -140,13 +140,13 @@
 !                          integerlists('a') <- a subroutine
 !                          reallists('c') <- a subroutine
 !                          valuelists('a|c') <- a subroutine
-! 
+!
 !    These functions return a piece of data which corresponds to a token
 !    of the specified kind with sequence number matching the index
 !    provided. For example,
-! 
+!
 !    nlevels = integers(p,2)
-! 
+!
 !    assigns to variable 'nlevels' the second integer in 'line'.
 !    Execution stops in the assignment cannot be made. The user should
 !    call the corresponding 'number' routine to make sure there are
@@ -154,32 +154,32 @@
 !
 !    Function 'characters' returns a string of characters spanning
 !    several tokens (with the original whitespace)
-! 
+!
 !    These functions can take an optional keyword 'after=' (see below).
-! 
-! 
+!
+!
 ! By default, the routines in the module perform any indexing from the
 ! beginning of 'line', in such a way that the first token is assigned the
 ! index 1. It is possible to specify a given token as 'origin' by using
 ! the 'after=' optional keyword. For example:
-! 
+!
 !     if (search(p, 'P', ind=jp)) then            # Old implementation
 !       if (match(p, 'i', after=jp) npol = integers(p, 1, after=jp)
-!     endif			 
-! 
+!     endif
+!
 ! first checks whether 'P' is found in 'line'. If so, 'match' is used to
 ! check whether it is followed by at least an 'integer'. If so, its
 ! valued is assigned to variable 'npol'.
-! 
+!
 ! If the 'after=' optional keyword is used in routine 'search', the
 ! returned index is absolute, not relative. For example, to get the
 ! real number coming right after the first 'Q' which appears to the
 ! right of the 'P' found above:
-! 
+!
 !     if (search(p, 'Q', ind=jq, after=jp)) then  # Old implementation
 !       if (match(p, 'r', after=jq) energy = reals(p, 1, after=jq)
 !     endif
-! 
+!
 ! Alberto Garcia, 1995-2007, original implementation
 ! Raul de la Cruz, September 2007
 ! Alberto Garcia, July 2008
@@ -289,7 +289,7 @@ MODULE parse
 !------------------------------------------------------------- END
     END SUBROUTINE destroy
 
-!     
+!
 !   Return the number of items of a certain class among the tokens.
 !
     FUNCTION nitems(class, pline, after)
@@ -327,7 +327,7 @@ MODULE parse
 !------------------------------------------------------------- END
     END FUNCTION nitems
 
-!     
+!
 !   Return the number of integers in the tokens.
 !
     FUNCTION nintegers(pline, after)
@@ -626,7 +626,7 @@ MODULE parse
 !----------------------------------------------------------- BEGIN
       if (PRESENT(after)) then
         if (after .lt. 0) then
-          call die('PARSE module: reals', 'Wrong starting position', &
+          call die('PARSE module: reals', 'Wrong starting position',    &
                    THIS_FILE, __LINE__,cline=characters(pline,1,-1))
         endif
         starting_pos = after
@@ -647,7 +647,7 @@ MODULE parse
       enddo
 
       if (.not. found) then
-        call die('PARSE module: reals', 'Not enough reals in line', &
+        call die('PARSE module: reals', 'Not enough reals in line',     &
                  THIS_FILE, __LINE__,cline=characters(pline,1,-1))
       endif
 
@@ -713,13 +713,13 @@ MODULE parse
 
            ! We now have converted the list into a
            ! parseable line
-           
+
            ! Does the user request length?
            count = nv <= 0
            li = 0 ! counter for the number of items in the list
            ti = 1 ! the current token iterator
            is_del = .false.
-           do while ( ti < lpline%ntokens ) 
+           do while ( ti < lpline%ntokens )
 
               ! First we need to check whether we have a list delimiter next
               if (leqi(lpline%id(ti+1),'n')) then
@@ -762,7 +762,7 @@ MODULE parse
                           end if
                        end if
                     end if
-                    
+
                     ! Correct sign of stepper
                     if ( lR <= uR ) sR = abs(sR)
                     if ( uR <  lR ) sR = -abs(sR)
@@ -790,7 +790,7 @@ MODULE parse
 
               ti = ti + 1
               if ( is_del ) then
-                 ti = ti + 1 
+                 ti = ti + 1
                  is_del = .false.
               end if
 
@@ -805,7 +805,7 @@ MODULE parse
 
            ! Clean-up parsed list-line
            call destroy(lpline)
-           
+
            if ( count ) then
              ! User explicitly asked for acount
              nv = li
@@ -827,7 +827,7 @@ MODULE parse
 !------------------------------------------------------------- END
 
     contains
-      
+
       subroutine add_exit(is_counting,idx,nv,val)
         logical, intent(in) :: is_counting
         integer, intent(inout) :: idx
@@ -904,13 +904,13 @@ MODULE parse
 
            ! We now have converted the list into a
            ! parseable line
-           
+
            ! Does the user request length?
            count = nv <= 0
            li = 0 ! counter for the number of items in the list
            ti = 1 ! the current token iterator
            is_del = .false.
-           do while ( ti < lpline%ntokens ) 
+           do while ( ti < lpline%ntokens )
 
               ! First we need to check whether we have a list delimiter next
               if (leqi(lpline%id(ti+1),'n')) then
@@ -953,7 +953,7 @@ MODULE parse
                           end if
                        end if
                     end if
-                    
+
                     ! Correct sign of stepper
                     if ( lR <= uR ) sR = abs(sR)
                     if ( uR <  lR ) sR = -abs(sR)
@@ -981,7 +981,7 @@ MODULE parse
 
               ti = ti + 1
               if ( is_del ) then
-                 ti = ti + 1 
+                 ti = ti + 1
                  is_del = .false.
               end if
 
@@ -996,7 +996,7 @@ MODULE parse
 
            ! Clean-up parsed list-line
            call destroy(lpline)
-           
+
            if ( count ) then
              ! User explicitly asked for acount
              nv = li
@@ -1004,7 +1004,7 @@ MODULE parse
              ! Update the number of elements returned
              nv = li
            end if
-           
+
         endif
         i = i + 1
       enddo
@@ -1018,7 +1018,7 @@ MODULE parse
 !------------------------------------------------------------- END
 
     contains
-      
+
       subroutine add_exit(is_counting,idx,nv,val)
         logical, intent(in) :: is_counting
         integer, intent(inout) :: idx
@@ -1036,7 +1036,7 @@ MODULE parse
 
     END SUBROUTINE valuelists
 
-    
+
 !
 !   Return a given integer list token, specifying it by its sequence
 !   number. It is also possible to make the sequence start after
@@ -1065,8 +1065,8 @@ MODULE parse
 !----------------------------------------------------------- BEGIN
       if (PRESENT(after)) then
         if (after .lt. 0) then
-          call die('PARSE module: integerlists', &
-              'Wrong starting position', THIS_FILE, __LINE__)
+          call die('PARSE module: lists', 'Wrong starting position',    &
+               THIS_FILE, __LINE__)
         endif
         starting_pos = after
       else
@@ -1092,13 +1092,13 @@ MODULE parse
 
            ! We now have converted the list into a
            ! parseable line
-           
+
            ! Does the user request length?
            count = ni <= 0
            li = 0 ! counter for the number of items in the list
            ti = 1 ! the current token iterator
            is_del = .false.
-           do while ( ti < lpline%ntokens ) 
+           do while ( ti < lpline%ntokens )
 
               ! First we need to check whether we have a list delimiter next
               if (leqi(lpline%id(ti+1),'n')) then
@@ -1110,19 +1110,21 @@ MODULE parse
                  ! We have a range
 
                  if ( lpline%ntokens <= ti + 1 ) then
-                   call die('PARSE module: integerlists', &
-                       'Missing end range', THIS_FILE, __LINE__)
+                   call die('PARSE module: lists', 'Missing end range', &
+                        THIS_FILE, __LINE__)
                  end if
-                 if ( .not.leqi(lpline%id(ti),'i').or. &
+                 if ( .not.leqi(lpline%id(ti),'i') .or. &
                       .not.leqi(lpline%id(ti+2),'i') ) then
-                   call die('PARSE module: integerlists', &
-                       'Range is not well-defined', THIS_FILE, __LINE__)
+                   call die('PARSE module: lists', 'Range is not well-defined', &
+                        THIS_FILE, __LINE__)
                  end if
 
                  ! grab the seperator
                  sep = names(lpline,1,after=ti)
-                 if ( leqi(sep,'to') .or. leqi(sep,':') .or. &
-                      leqi(sep,'--') .or. leqi(sep,'---') ) then
+                 if ( leqi(sep,'to') .or. &
+                      leqi(sep,':') .or. &
+                      leqi(sep,'--') .or. &
+                      leqi(sep,'---') ) then
 
                     ! Sort the range
                     lR = integers(lpline,1,after=ti-1)
@@ -1141,11 +1143,11 @@ MODULE parse
                           end if
                        end if
                     end if
-                    
+
                     ! Correct sign of stepper
                     if ( lR <= uR ) sR = abs(sR)
                     if ( uR <  lR ) sR = -abs(sR)
-                    if ( sR == 0 ) call die('PARSE module: integerlists', &
+                    if ( sR == 0 ) call die('PARSE module: lists', &
                          'Stepping a list cannot be stepped by 0', &
                          THIS_FILE, __LINE__ )
                     do iR = lR , uR, sR
@@ -1155,18 +1157,19 @@ MODULE parse
                     ! jump across the range
                     ti = ti + 2
                  else
-                   call die('PARSE module: integerlists', &
-                       'Unknown token in list', THIS_FILE, __LINE__)
+                   call die('PARSE module: lists', 'Unknown token in list', &
+                        THIS_FILE, __LINE__)
                  end if
 
               elseif (leqi(lpline%id(ti),'i')) then
 
                  call add_exit(count,li,ni,integers(lpline,1,after=ti-1))
+
               end if
 
               ti = ti + 1
               if ( is_del ) then
-                 ti = ti + 1 
+                 ti = ti + 1
                  is_del = .false.
               end if
 
@@ -1181,40 +1184,33 @@ MODULE parse
 
            ! Clean-up parsed list-line
            call destroy(lpline)
-           
-           if ( count ) then
-             ! User explicitly asked for acount
-             ni = li
-           else if ( ni /= li ) then
-             ! Update the number of elements returned
-             ni = li
-           end if
+
+           if ( count ) ni = li
 
         endif
         i = i + 1
       enddo
 
       if (.not. found) then
-        call die('PARSE module: integerlists', &
-            'Not enough lists in line', THIS_FILE, __LINE__)
+        call die('PARSE module: lists', 'Not enough lists in line', &
+            THIS_FILE, __LINE__)
       end if
 
       RETURN
 !------------------------------------------------------------- END
 
     contains
-      
+
       subroutine add_exit(is_counting,idx,ni,val)
         logical, intent(in) :: is_counting
         integer, intent(inout) :: idx
         integer, intent(in) :: ni, val
         idx = idx + 1
-        if ( .not. is_counting ) then
-           if ( idx > ni ) then
-              found = .false.
-           else
-              list(idx) = val
-           end if
+        if ( is_counting ) return
+        if ( idx > ni ) then
+          found = .false.
+        else
+          list(idx) = val
         end if
       end subroutine add_exit
 
@@ -1242,7 +1238,7 @@ MODULE parse
 !----------------------------------------------------------- BEGIN
       if (PRESENT(after)) then
         if (after .lt. 0) then
-          call die('PARSE module: values', 'Wrong starting position', &
+          call die('PARSE module: values', 'Wrong starting position',   &
                    THIS_FILE, __LINE__,cline=characters(pline,1,-1))
         endif
         starting_pos = after
@@ -1264,7 +1260,7 @@ MODULE parse
       enddo
 
       if (.not. found) then
-        call die('PARSE module: values', 'Not enough values in line', &
+        call die('PARSE module: values', 'Not enough values in line',   &
                  THIS_FILE, __LINE__,cline=characters(pline,1,-1))
       endif
 
@@ -1294,7 +1290,7 @@ MODULE parse
 !----------------------------------------------------------- BEGIN
       if (PRESENT(after)) then
         if (after .lt. 0) then
-          call die('PARSE module: names', 'Wrong starting position', &
+          call die('PARSE module: names', 'Wrong starting position',    &
                    THIS_FILE, __LINE__,cline=characters(pline,1,-1))
         endif
         starting_pos = after
@@ -1435,16 +1431,16 @@ MODULE parse
 
 !----------------------------------------------------------- BEGIN
       if (PRESENT(after)) then
-        if ((after .lt. 0) .or. (after .ge. pline%ntokens)) &
-          call die('PARSE module: tokens', 'Wrong starting position', &
+        if ((after .lt. 0) .or. (after .ge. pline%ntokens))             &
+          call die('PARSE module: tokens', 'Wrong starting position',   &
                    THIS_FILE, __LINE__,cline=characters(pline,1,-1))
         starting_pos = after
       else
         starting_pos = 0
       endif
 
-      if (starting_pos+ind .gt. pline%ntokens) &
-        call die('PARSE module: tokens', 'Wrong starting position', &
+      if (starting_pos+ind .gt. pline%ntokens)                          &
+        call die('PARSE module: tokens', 'Wrong starting position',     &
                  THIS_FILE, __LINE__,cline=characters(pline,1,-1))
 
       loc = starting_pos+ind
@@ -1495,7 +1491,7 @@ MODULE parse
 
 !
 !   Return a piece of the input line, given specifying it by the sequence
-!   numbers of the initial and final tokens. 
+!   numbers of the initial and final tokens.
 !   A negative final index means that it is counted from the end, e.g.
 !   ind_final=-1 refers to the last token.
 !   It is also possible to make the sequence start after
@@ -1600,7 +1596,7 @@ MODULE parse
       implicit none
 !------------------------------------------------- Input Variables
       character(len=*)             :: line
-      
+
 !------------------------------------------------ Output Variables
       integer(ip)                  :: ntokens
       integer(ip)                  :: first(MAX_NTOKENS), last(MAX_NTOKENS)
@@ -1630,7 +1626,7 @@ MODULE parse
 
       is_tokch(i) = is_alnum(i) .or. is_extra(i)
 
-!     Comments are signaled by:  !  #  ; 
+!     Comments are signaled by:  !  #  ;
       is_comment(i) = (i .eq. 33) .or. (i .eq. 35) .or. (i .eq. 59)
 
 !     String delimiters: "  '  `
@@ -1658,7 +1654,7 @@ MODULE parse
 
       i = 1
       completed = .FALSE.
-      do while( i <= length .and. (.not. completed) )
+      do while((i <= length) .and. (.not. completed))
         c = ichar(line(i:i))
 
 !       Possible comment...
@@ -1767,7 +1763,7 @@ MODULE parse
     SUBROUTINE morphol(ntokens, line, first, last, token_id)
       implicit none
 !------------------------------------------------- Input Variables
-      character(len=*) :: line
+      character(len=*)          :: line
       integer(ip)               :: ntokens
       integer(ip)               :: first(MAX_NTOKENS), last(MAX_NTOKENS)
 
@@ -1800,7 +1796,6 @@ MODULE parse
 !             ichar(token(j:j)) .eq. 125 ) then
 ! if the token starts with { and ends with }, it will be a dictionary
 !           token_id(i) = 'd'
-          
         elseif (is_value(token)) then
 
 !         This read also serves to double check the token for
@@ -1861,8 +1856,8 @@ MODULE parse
       if ((token_id .ne. 'a') .and. (token_id .ne. 'c') .and. &
           (token_id .ne. 'l') .and. (token_id .ne. 'b') .and. &
           (token_id .ne. 'e') .and. (token_id .ne. 'i') .and. &
-          (token_id .ne. 'r') .and. (token_id .ne. 'n')) then        
-        write(msg,*) 'Morphology id = ''', token_id, &
+          (token_id .ne. 'r') .and. (token_id .ne. 'n')) then
+        write(msg,*) 'Morphology id = ''', token_id,                    &
                      ''' not valid for token = ''', tokens(pline, ntoken), ''''
         call die('PARSE module: setmorphol', msg, THIS_FILE, __LINE__)
       endif
@@ -2079,7 +2074,7 @@ MODULE parse
 !----------------------------------------------------------- BEGIN
       if (PRESENT(after)) then
         if (after .lt. 0) then
-          call die('PARSE module: match', 'Wrong starting position', &
+          call die('PARSE module: match', 'Wrong starting position',    &
                    THIS_FILE, __LINE__,cline=characters(pline,1,-1))
         endif
         shift = after
