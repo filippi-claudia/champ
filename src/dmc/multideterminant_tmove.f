@@ -11,7 +11,7 @@
       use dorb_m, only: iworbd
       use coefs, only: norb
       use ycompact, only: ymat
-      use multislater, only: detd, detu
+      use multislater, only: detiab
       use multidet, only: iactv, ivirt, kref
       use multimat, only: aa
 
@@ -52,7 +52,7 @@
         ish=nup
       endif
 
-      detratio=detu(kref)*detd(kref)/psid
+      detratio=detiab(kref,1)*detiab(kref,2)/psid
 
       jel=iel-ish
 
