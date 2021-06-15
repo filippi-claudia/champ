@@ -99,12 +99,13 @@ end subroutine header_printing
 subroutine read_molecule_file(file_molecule)
     ! This subroutine reads the .xyz molecule file.
     ! Ravindra
-
-    use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-    use ghostatom, 		only: newghostype, nghostcent
-    use inputflags, only: igeometry
-    use periodic_table, only: atom_t, element
-    use contrl_file,    only: ounit, errunit
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+    use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+    use ghostatom, 		    only: newghostype, nghostcent
+    use inputflags,         only: igeometry
+    use periodic_table,     only: atom_t, element
+    use contrl_file,        only: ounit, errunit
 
     implicit none
 
@@ -127,15 +128,18 @@ subroutine read_molecule_file(file_molecule)
     write(ounit,string_format)  " Reading molecular coordinates from the file :: ",  trim(file_molecule)
     write(ounit,*) '-----------------------------------------------------------------------'
 
-    inquire(file=file_molecule, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_molecule, iostat=iostat, action='read' )
-        if (iostat .ne. 0) stop "Problem in opening the molecule file"
-    else
-        call fatal_error (" molecule file "// trim(file_molecule) // " does not exist.")
-    endif
+    if (wid) then
+        inquire(file=file_molecule, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_molecule, iostat=iostat, action='read' )
+            if (iostat .ne. 0) stop "Problem in opening the molecule file"
+        else
+            call fatal_error (" molecule file "// trim(file_molecule) // " does not exist.")
+        endif
 
-    read(iunit,*) ncent
+        read(iunit,*) ncent
+    endif
+    call bcast(ncent)
     write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
     write(ounit,*)
 
@@ -144,13 +148,21 @@ subroutine read_molecule_file(file_molecule)
     if (.not. allocated(iwctype)) allocate(iwctype(ncent))
     if (.not. allocated(unique)) allocate(unique(ncent))
 
-    read(iunit,'(A)')  comment
+    if (wid) then
+        read(iunit,'(A)')  comment
+    endif
+    call bcast(comment)
     write(ounit,*) "Comment from the molecule file :: ", trim(comment)
     write(ounit,*)
 
-    do i = 1, ncent
-        read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
-    enddo
+    if (wid) then
+        do i = 1, ncent
+            read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
+        enddo
+    endif
+    call bcast(symbol)
+    call bcast(cent)
+
     close(iunit)
 
 
