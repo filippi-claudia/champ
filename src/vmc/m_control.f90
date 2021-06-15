@@ -212,7 +212,7 @@ contains
 ! The next line is commented as all mpi processes read this information. old style
 
         argcount = command_argument_count()
-        if ( .not. allocated(arg)) allocate(arg(argcount))
+        if ( .not. allocated(arg)) allocate(arg(10))
         do i = 1, argcount
             call get_command_argument(i, arg(i))
         end do

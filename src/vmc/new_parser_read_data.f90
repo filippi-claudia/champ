@@ -163,7 +163,9 @@ subroutine read_molecule_file(file_molecule)
     call bcast(symbol)
     call bcast(cent)
 
-    close(iunit)
+    if (wid) then
+        close(iunit)
+    endif
 
 
     ! Count unique type of elements
