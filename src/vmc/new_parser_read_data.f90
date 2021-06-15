@@ -97,8 +97,8 @@ end subroutine header_printing
 
 
 subroutine read_molecule_file(file_molecule)
-    ! This subroutine reads the .xyz molecule file.
-    ! Ravindra
+    !> This subroutine reads the .xyz molecule file.
+    !! @author Ravindra Shinde
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
     use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
@@ -138,8 +138,9 @@ subroutine read_molecule_file(file_molecule)
         endif
 
         read(iunit,*) ncent
+        call bcast(ncent)
     endif
-    call bcast(ncent)
+
     write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
     write(ounit,*)
 
@@ -150,8 +151,9 @@ subroutine read_molecule_file(file_molecule)
 
     if (wid) then
         read(iunit,'(A)')  comment
+        call bcast(comment)
     endif
-    call bcast(comment)
+
     write(ounit,*) "Comment from the molecule file :: ", trim(comment)
     write(ounit,*)
 
@@ -159,9 +161,9 @@ subroutine read_molecule_file(file_molecule)
         do i = 1, ncent
             read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
         enddo
+        call bcast(symbol)
+        call bcast(cent)
     endif
-    call bcast(symbol)
-    call bcast(cent)
 
     if (wid) then
         close(iunit)
@@ -224,9 +226,11 @@ end subroutine read_molecule_file
 
 
 subroutine read_determinants_file(file_determinants)
-    ! This subroutine reads the single state determinant file.
-    ! Ravindra
+    !> This subroutine reads the single state determinant file.
+    !! @author Ravindra Shinde
 
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
     use, intrinsic :: iso_fortran_env, only: iostat_eor
     use contrl_file,    only: ounit, errunit
     use dets,           only: cdet, ndet
@@ -257,12 +261,14 @@ subroutine read_determinants_file(file_determinants)
     write(ounit,string_format)  " Reading determinants from the file :: ",  trim(file_determinants)
     write(ounit,*) '------------------------------------------------------'
 
-    inquire(file=file_determinants, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
-        if (iostat .ne. 0) stop "Problem in opening the determinant file"
-    else
-        call fatal_error (" determinant file "// trim(file_determinants) // " does not exist.")
+    if (wid) then
+        inquire(file=file_determinants, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
+            if (iostat .ne. 0) stop "Problem in opening the determinant file"
+        else
+            call fatal_error (" determinant file "// trim(file_determinants) // " does not exist.")
+        endif
     endif
 
     ndn  = nelec - nup
@@ -275,21 +281,27 @@ subroutine read_determinants_file(file_determinants)
 
 
     ! to escape the comments before the "lcao nbasis norb" line
-    do while (skip)
-        read(iunit,*, iostat=iostat) temp1
-        temp1 = trim(temp1)
-        if (temp1 == "determinants") then
-            backspace(iunit)
-            skip = .false.
-        endif
-    enddo
+    if (wid) then
+        do while (skip)
+            read(iunit,*, iostat=iostat) temp1
+            temp1 = trim(temp1)
+            if (temp1 == "determinants") then
+                backspace(iunit)
+                skip = .false.
+            endif
+        enddo
+    endif
 
 !   Read the first main line
-    read(iunit, *, iostat=iostat)  temp2, ndet, nwftype
-    if (iostat == 0) then
-        if (trim(temp2) == "determinants") write(ounit,int_format) " Number of determinants ", ndet
-    else
-        call fatal_error ("Error in reading number of determinants / number of wavefunction types")
+    if (wid) then
+        read(iunit, *, iostat=iostat)  temp2, ndet, nwftype
+        if (iostat == 0) then
+            if (trim(temp2) == "determinants") write(ounit,int_format) " Number of determinants ", ndet
+        else
+            call fatal_error ("Error in reading number of determinants / number of wavefunction types")
+        endif
+        call bcast(ndet)
+        call bcast(nwftype)
     endif
 
     ! Note the hack here about capitalized variables. DEBUG
@@ -297,8 +309,11 @@ subroutine read_determinants_file(file_determinants)
 
     if (.not. allocated(cdet)) allocate(cdet(ndet,1,nwftype))
 
-    read(iunit,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
-    if (iostat /= 0) call fatal_error( "Error in determinant coefficients ")
+    if (wid) then
+        read(iunit,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
+        if (iostat /= 0) call fatal_error( "Error in determinant coefficients ")
+        call bcast(cdet)
+    endif
 
     write(ounit,*)
     write(ounit,*) " Determinant coefficients "
@@ -307,11 +322,13 @@ subroutine read_determinants_file(file_determinants)
 !       allocate the orbital mapping array
     if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
 
-    do i = 1, ndet
-        read(iunit,*, iostat=iostat) (iworbd(j,i), j=1,nelec)
-        if (iostat /= 0) call fatal_error("Error in reading orbital -- determinants mapping ")
-    enddo
-
+    if (wid) then
+        do i = 1, ndet
+            read(iunit,*, iostat=iostat) (iworbd(j,i), j=1,nelec)
+            if (iostat /= 0) call fatal_error("Error in reading orbital -- determinants mapping ")
+        enddo
+        call bcast(iworbd)
+    endif
     ! This part replaces a call to verify_orbitals
     !if(any(iworbd .gt. norb))  call fatal_error('INPUT: iworbd > norb')
 
@@ -322,16 +339,23 @@ subroutine read_determinants_file(file_determinants)
         write(ounit,'(<nelec>(i4, 1x))') (iworbd(j,i), j=1,nelec)
     enddo
 
-    read(iunit,*) temp1
-    if (temp1 == "end" ) write(ounit,*) " Single state determinant file read successfully "
-    ideterminants = ideterminants + 1
-    close(iunit)
+    if (wid) then
+        read(iunit,*) temp1
+        if (temp1 == "end" ) write(ounit,*) " Single state determinant file read successfully "
+        ideterminants = ideterminants + 1
+    endif
+    call bcast(ideterminants)
+
+    if (wid) close(iunit)
+
 end subroutine read_determinants_file
 
 subroutine read_multideterminants_file(file_multideterminants)
-    ! Ravindra
-    ! 'multideterminants' ndet_local
-    ! CI coefficients and occupation of determinants in wf
+    !> This subroutine reads the multideterminants file. The first line appears as 'multideterminants' ndet_local
+    !! CI coefficients and occupation of determinants in wf
+    !! @author Ravindra Shinde
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
     use contrl_file,    only: ounit, errunit
     use dets, only: ndet
     use const, only: nelec
@@ -355,40 +379,49 @@ subroutine read_multideterminants_file(file_multideterminants)
     write(ounit,string_format)  " Reading multideterminants from the file :: ",  trim(file_multideterminants)
     write(ounit,*) '------------------------------------------------------'
 
-    inquire(file=file_multideterminants, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_multideterminants, iostat=iostat, action='read' )
-        if (iostat .ne. 0) stop "Problem in opening the multideterminant file"
-    else
-        call fatal_error (" Multideterminant file "// trim(file_multideterminants) // " does not exist.")
+    if (wid) then
+        inquire(file=file_multideterminants, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_multideterminants, iostat=iostat, action='read' )
+            if (iostat .ne. 0) stop "Problem in opening the multideterminant file"
+        else
+            call fatal_error (" Multideterminant file "// trim(file_multideterminants) // " does not exist.")
+        endif
+
+        read (iunit, *, iostat=iostat) temp1, ndet_local
+        if (iostat /= 0) call fatal_error("Error in reading multideterminant file :: expecting 'multideterminants', ndet")
+
+        if (trim(temp1) /= "multideterminants") then
+            call fatal_error ("Error in reading multideterminant file :: expecting 'multideterminants'")
+        elseif (ndet_local .ne. ndet ) then
+            call fatal_error ('Error: ndet not matching with previous records')
+        endif
     endif
-
-    read (iunit, *, iostat=iostat) temp1, ndet_local
-    if (iostat /= 0) call fatal_error("Error in reading multideterminant file :: expecting 'multideterminants', ndet")
-
-
-    if (trim(temp1) /= "multideterminants") then
-        call fatal_error ("Error in reading multideterminant file :: expecting 'multideterminants'")
-    elseif (ndet_local .ne. ndet ) then
-        call fatal_error ('Error: ndet not matching with previous records')
-    endif
-
 
     if (.not. allocated(iwundet)) allocate(iwundet(ndet, 2))
     if (.not. allocated(numrep_det)) allocate(numrep_det(ndet, 2))
     if (.not. allocated(irepcol_det)) allocate(irepcol_det(nelec, ndet, 2))
     if (.not. allocated(ireporb_det)) allocate(ireporb_det(nelec, ndet, 2))
 
-
-    do k = 2, ndet_local
-        read (iunit, *, iostat=iostat) (numrep_det(k, iab), iab=1, 2)
-        do iab = 1, 2
-            do irep = 1, numrep_det(k, iab)
-                read (iunit, *, iostat=iostat) irepcol_det(irep, k, iab), ireporb_det(irep, k, iab)
+    if (wid) then
+        do k = 2, ndet_local
+            read (iunit, *, iostat=iostat) (numrep_det(k, iab), iab=1, 2)
+            do iab = 1, 2
+                do irep = 1, numrep_det(k, iab)
+                    read (iunit, *, iostat=iostat) irepcol_det(irep, k, iab), ireporb_det(irep, k, iab)
+                enddo
             enddo
         enddo
-    enddo
-    imultideterminants = imultideterminants + 1
+        call bcast(numrep_det)
+        call bcast(irepcol_det)
+        call bcast(ireporb_det)
+
+        imultideterminants = imultideterminants + 1
+        call bcast(imultideterminants)
+    endif
+
+    if (wid) close(iunit)
+
 end subroutine read_multideterminants_file
 
 
