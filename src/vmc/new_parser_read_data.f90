@@ -138,8 +138,8 @@ subroutine read_molecule_file(file_molecule)
         endif
 
         read(iunit,*) ncent
-        call bcast(ncent)
     endif
+    call bcast(ncent)
 
     write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
     write(ounit,*)
@@ -151,8 +151,8 @@ subroutine read_molecule_file(file_molecule)
 
     if (wid) then
         read(iunit,'(A)')  comment
-        call bcast(comment)
     endif
+    call bcast(comment)
 
     write(ounit,*) "Comment from the molecule file :: ", trim(comment)
     write(ounit,*)
@@ -161,9 +161,9 @@ subroutine read_molecule_file(file_molecule)
         do i = 1, ncent
             read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
         enddo
-        call bcast(symbol)
-        call bcast(cent)
     endif
+    call bcast(symbol)
+    call bcast(cent)
 
     if (wid) then
         close(iunit)
@@ -300,9 +300,9 @@ subroutine read_determinants_file(file_determinants)
         else
             call fatal_error ("Error in reading number of determinants / number of wavefunction types")
         endif
-        call bcast(ndet)
-        call bcast(nwftype)
     endif
+    call bcast(ndet)
+    call bcast(nwftype)
 
     ! Note the hack here about capitalized variables. DEBUG
     MDET = ndet
@@ -312,8 +312,8 @@ subroutine read_determinants_file(file_determinants)
     if (wid) then
         read(iunit,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
         if (iostat /= 0) call fatal_error( "Error in determinant coefficients ")
-        call bcast(cdet)
     endif
+    call bcast(cdet)
 
     write(ounit,*)
     write(ounit,*) " Determinant coefficients "
@@ -327,8 +327,8 @@ subroutine read_determinants_file(file_determinants)
             read(iunit,*, iostat=iostat) (iworbd(j,i), j=1,nelec)
             if (iostat /= 0) call fatal_error("Error in reading orbital -- determinants mapping ")
         enddo
-        call bcast(iworbd)
     endif
+    call bcast(iworbd)
     ! This part replaces a call to verify_orbitals
     !if(any(iworbd .gt. norb))  call fatal_error('INPUT: iworbd > norb')
 
@@ -412,13 +412,12 @@ subroutine read_multideterminants_file(file_multideterminants)
                 enddo
             enddo
         enddo
-        call bcast(numrep_det)
-        call bcast(irepcol_det)
-        call bcast(ireporb_det)
-
         imultideterminants = imultideterminants + 1
-        call bcast(imultideterminants)
     endif
+    call bcast(numrep_det)
+    call bcast(irepcol_det)
+    call bcast(ireporb_det)
+    call bcast(imultideterminants)
 
     if (wid) close(iunit)
 
@@ -430,6 +429,9 @@ end subroutine read_multideterminants_file
 subroutine read_jastrow_file(file_jastrow)
     ! This subroutine reads jastrow parameters from a file.
     ! Ravindra
+
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
     use, intrinsic :: iso_fortran_env, only: iostat_eor !, iostat_eof
     use contrl_file,    only: ounit, errunit
@@ -469,14 +471,15 @@ subroutine read_jastrow_file(file_jastrow)
     write(ounit,string_format)  " Reading jastrow parameters from the file :: ",  trim(file_jastrow)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_jastrow, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_jastrow, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error("Problem in opening the jastrow file")
-    else
-        call fatal_error (" Jastrow file "// trim(file_jastrow) // " does not exist.")
+    if (wid) then
+        inquire(file=file_jastrow, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_jastrow, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error("Problem in opening the jastrow file")
+        else
+            call fatal_error (" Jastrow file "// trim(file_jastrow) // " does not exist.")
+        endif
     endif
-
 
 
     if (ijas .lt. 4 .or. ijas .gt. 6) call fatal_error('JASTROW: only ijas=4,5,6 implemented')
@@ -498,22 +501,33 @@ subroutine read_jastrow_file(file_jastrow)
     endif
 
     ! read the first word of the file
-    read (iunit, *, iostat=iostat)  temp2, iwft
-    if (iostat == 0) then
-        if (trim(temp2) == "jastrow_parameter") &
-        write(ounit,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
-    else
-        call fatal_error ("Error in reading jastrow parameters / number of wavefunction types")
+    if (wid) then
+        read (iunit, *, iostat=iostat)  temp2, iwft
+        if (iostat == 0) then
+            if (trim(temp2) == "jastrow_parameter") &
+            write(ounit,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
+        else
+            call fatal_error ("Error in reading jastrow parameters / number of wavefunction types")
+        endif
     endif
+    call bcast(iwft)
 
     allocate (scalek(nwftype))
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
         if (ifock .gt. 0) call fatal_error('JASTROW: fock not yet implemented for ijas=4,5,6')
-        read (iunit, *) norda, nordb, nordc
+        if (wid) read (iunit, *) norda, nordb, nordc
+        call bcast(norda)
+        call bcast(nordb)
+        call bcast(nordc)
+
         write(ounit, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc
 
-        if (isc .ge. 2) read (iunit, *) scalek(iwft), a21
+        if (isc .ge. 2) then
+            if (wid) read (iunit, *) scalek(iwft), a21
+        endif
+        call bcast(scalek)
+        call bcast(a21)
         write(ounit, '(2(A,f12.6))') " scalek = ", scalek(iwft), "; a21 = ", a21
 
         mparmja = 2 + max(0, norda - 1)
@@ -525,43 +539,52 @@ subroutine read_jastrow_file(file_jastrow)
         write(ounit, '(A)') "Jastrow parameters :: "
         write(ounit, '(A)') "mparmja : "
         do it = 1, nctype
-            read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
+            if (wid) read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
             write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)
         enddo
+        call bcast(a4)
 
         allocate (b(mparmjb, 2, nwftype))
 
         write(ounit, '(A)') "mparmjb : "
         do isp = nspin1, nspin2b
-            read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
+            if (wid) read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
             write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)
         enddo
+        call bcast(b)
 
         allocate (c(mparmjc, nctype, nwftype))
 
         write(ounit, '(A)') "mparmjc : "
         do it = 1, nctype
-            read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+            if (wid) read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
             write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)
         enddo
+        call bcast(c)
 
     endif
 
     !Read cutoff for Jastrow4, 5, 6
     if (isc .eq. 6 .or. isc .eq. 7) then
-        read (iunit, *) cutjas
+        if (wid) read (iunit, *) cutjas
         write(iunit, '(A,2X,f12.8)') " cutjas = ", cutjas
     endif
+    call bcast(cutjas)
 
     ijastrow_parameter = ijastrow_parameter + 1
+    call bcast(ijastrow_parameter)
 
-    close(iunit)
-
+    if (wid) close(iunit)
+    stop "debug pit stop"
 end subroutine read_jastrow_file
 
 
 subroutine read_orbitals_file(file_orbitals)
     ! Ravindra
+
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
     use contrl_file,    only: ounit, errunit
     use coefs, only: coef, nbasis, norb
     use inputflags, only: ilcao
@@ -592,49 +615,62 @@ subroutine read_orbitals_file(file_orbitals)
     write(ounit,string_format)  " Reading LCAO orbitals from the file :: ",  trim(file_orbitals)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_orbitals, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_orbitals, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error("Problem in opening the LCAO orbitals file")
-    else
-        call fatal_error (" LCAO file "// trim(file_orbitals) // " does not exist.")
+    if (wid) then
+        inquire(file=file_orbitals, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_orbitals, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error("Problem in opening the LCAO orbitals file")
+        else
+            call fatal_error (" LCAO file "// trim(file_orbitals) // " does not exist.")
+        endif
     endif
 
     ! to escape the comments before the "lcao nbasis norb" line
-    do while (skip)
-        read(iunit,*, iostat=iostat) temp1
-        temp1 = trim(temp1)
-        if (temp1 == "lcao") then
-            backspace(iunit)
-            skip = .false.
-        endif
-    enddo
-
-    ! read the first line
-    read(iunit, *, iostat=iostat)  temp1, nbasis, norb, iwft
-
-    if (iostat == 0) then
-        if (trim(temp1) == "lcao") then
-            write(ounit,int_format) " Number of basis functions ", nbasis
-            write(ounit,int_format) " Number of lcao orbitals ", norb
-            write(ounit,int_format) " Type of wave functions ", iwft
-            ! Note the hack with capitalized variables DEBUG
-            MBASIS = nbasis
-            MORB = norb
-        endif
-    else
-        write(ounit, *) " Check ", temp1, nbasis, norb, iwft
-        call fatal_error ("Error in reading number of lcao orbitals / basis / number of wavefunction types")
+    if (wid) then
+        do while (skip)
+            read(iunit,*, iostat=iostat) temp1
+            temp1 = trim(temp1)
+            if (temp1 == "lcao") then
+                backspace(iunit)
+                skip = .false.
+            endif
+        enddo
     endif
+    ! read the first line
+    if (wid) read(iunit, *, iostat=iostat)  temp1, nbasis, norb, iwft
+    call bcast(nbasis)
+    call bcast(norb)
+    call bcast(iwft)
+
+    if (wid) then
+        if (iostat == 0) then
+            if (trim(temp1) == "lcao") then
+                write(ounit,int_format) " Number of basis functions ", nbasis
+                write(ounit,int_format) " Number of lcao orbitals ", norb
+                write(ounit,int_format) " Type of wave functions ", iwft
+                ! Note the hack with capitalized variables DEBUG
+                MBASIS = nbasis
+                MORB = norb
+            endif
+        else
+            write(ounit, *) " Check ", temp1, nbasis, norb, iwft
+            call fatal_error ("Error in reading number of lcao orbitals / basis / number of wavefunction types")
+        endif
+    endif
+    call bcast(MBASIS)
+    call bcast(MORB)
 
     if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
 
     if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
 
     do iorb = 1, norb
-        read (iunit, *, iostat=iostat) (coef(ibasis, iorb, iwft), ibasis=1, nbasis)
+        if (wid) then
+            read (iunit, *, iostat=iostat) (coef(ibasis, iorb, iwft), ibasis=1, nbasis)
+            if (iostat /= 0) call fatal_error( "Error in reading lcao orbitals ")
+        endif
     enddo
-    if (iostat /= 0) call fatal_error( "Error in reading lcao orbitals ")
+    call bcast(coef)
 
     write(ounit,*)
     write(ounit,*) " LCAO orbitals "
@@ -658,7 +694,10 @@ subroutine read_orbitals_file(file_orbitals)
         write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=counter, nbasis)
     enddo
     ilcao = ilcao + 1
-    close(iunit)
+
+    call bcast(ilcao)
+    if (wid) close(iunit)
+
     write(ounit,*) "----------------------------------------------------------"
 
 end subroutine read_orbitals_file
@@ -666,6 +705,9 @@ end subroutine read_orbitals_file
 subroutine read_csf_file(file_determinants)
     ! This subroutine reads the csf coefficients from the determinant file.
     ! Ravindra
+
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
     use, intrinsic :: iso_fortran_env!, only: is_iostat_end
     use contrl_file,    only: ounit, errunit
