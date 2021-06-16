@@ -65,6 +65,9 @@ module custom_broadcast
         module procedure bcast_double_3d
         module procedure bcast_real_3d
         module procedure bcast_integer_3d
+        module procedure bcast_double_4d
+        module procedure bcast_real_4d
+        module procedure bcast_integer_4d
     end interface bcast
 
     contains
@@ -279,6 +282,48 @@ module custom_broadcast
         call MPI_BCAST(array, nelements, MPI_Integer, 0, MPI_Comm_World, MPIerror)
         call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_integer_3d
+
+    subroutine bcast_double_4d(array)
+        !>  Broadcasts 4D double precision array from root processor
+        !!  to all other processors.
+            use mpi
+            implicit none
+            real(dp), dimension(:,:,:,:), intent(in)    :: array             ! array to be broadcast
+            integer                                     :: nelements
+
+            nelements = size(array)
+
+            call MPI_BCAST(array, nelements, MPI_Double_Precision, 0, MPI_Comm_World, MPIerror)
+            call MPI_BARRIER(MPI_Comm_World, MPIerror)
+        end subroutine bcast_double_4d
+
+        subroutine bcast_real_4d(array)
+        !>  Broadcasts 4D single precision array from root processor
+        !!  to all other processors.
+            use mpi
+            implicit none
+            real, dimension(:,:,:,:), intent(in)      :: array             ! array to be broadcast
+            integer                                   :: nelements
+
+            nelements = size(array)
+
+            call MPI_BCAST(array, nelements, MPI_Real, 0, MPI_Comm_World, MPIerror)
+            call MPI_BARRIER(MPI_Comm_World, MPIerror)
+        end subroutine bcast_real_4d
+
+        subroutine bcast_integer_4d(array)
+        !>  Broadcasts 4D integer array from root processor
+        !!  to all other processors.
+            use mpi
+            implicit none
+            integer, dimension(:,:,:,:), intent(in) :: array             ! array to be broadcast
+            integer                                 :: nelements
+
+            nelements = size(array)
+
+            call MPI_BCAST(array, nelements, MPI_Integer, 0, MPI_Comm_World, MPIerror)
+            call MPI_BARRIER(MPI_Comm_World, MPIerror)
+        end subroutine bcast_integer_4d
 
   end module custom_broadcast
 

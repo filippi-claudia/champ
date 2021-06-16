@@ -29,6 +29,7 @@ subroutine parser
   use optorb_mod,     	only: MXORBOP, MXREDUCED
   use optci,          	only: MXCITERM
   use mstates_mod,      only: MSTATES
+  use pcm, only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
   use vmc_mod, 			only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
@@ -203,6 +204,23 @@ subroutine parser
 
   call flaginit_new()
   !! Number of input variables found so far :: 171
+	call bcast(MCONF)
+  call bcast(MVEC)
+	! call bcast(MPS_QUAD)
+	! call bcast(MAXPROP)
+	! call bcast(MXORBOP)
+  ! call bcast(MXREDUCED)
+	! call bcast(MXCITERM)
+  ! call bcast(MSTATES)
+	! call bcast(MFORCE)
+  ! call bcast(MWF)
+  ! call bcast(MELEC)
+  ! call bcast(MORB)
+  ! call bcast(MBASIS)
+  ! call bcast(MCENT)
+  ! call bcast(MCTYPE)
+  ! call bcast(MCTYP3X)
+  ! call bcast(MWALK)
 
 
 ! %module general (complete)
@@ -754,6 +772,8 @@ subroutine parser
   endif
 
   ! allocation after determinants and basis
+  call bcast(MWALK)
+  call bcast(MCHS)
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
@@ -1778,6 +1798,9 @@ subroutine compute_mat_size_new()
   ! use vmc_mod, only: MMAT_DIM, MMAT_DIM2, MCTYP3X, MCENT3
   ! use const, only: nelec
   ! use atom, only: nctype_tot, ncent_tot
+  use custom_broadcast,   only: bcast
+  use mpiconf,            only: wid
+
   use sr_mod, only: MPARM, MOBS, MCONF
   use control_vmc, only: vmc_nstep, vmc_nblk
 
@@ -1792,6 +1815,9 @@ subroutine compute_mat_size_new()
   ! leads to circular dependecy of put in sr_mod ..
   MOBS = 10 + 6*MPARM
   MCONF = vmc_nstep * vmc_nblk
+
+  call bcast(MOBS)
+  call bcast(MCONF)
 
   call set_vmc_size
   call set_optci_size
