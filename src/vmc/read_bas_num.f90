@@ -241,8 +241,9 @@ subroutine readps_gauss
 
   character*80 label
 
-  if (wid) then
-    do ic=1,nctype
+
+  do ic=1,nctype
+    if (wid) then
       if (nctype.gt.100) call fatal_error('READPS_GAUSS: nctype>100')
       filename =  trim(pooldir) // trim(pp_id) // ".gauss_ecp.dat." // atomtyp(ic)
 
@@ -267,10 +268,11 @@ subroutine readps_gauss
         write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       endif
       write(ounit,'(a,i4,a,a80)') 'ECP for atom type ', ic, ' label = ', adjustl(label)
+    endif
+    ! max projector
+    if (.not. allocated(lpot)) allocate (lpot(nctype))
 
-
-  ! max projector
-      if (.not. allocated(lpot)) allocate (lpot(nctype))
+    if (wid) then
       read(iunit,*,iostat=iostat) lpot(ic)
       if (iostat .ne. 0) then
         write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: lpot"
@@ -279,48 +281,52 @@ subroutine readps_gauss
       write(ounit,'(a,i4,a,i4)') 'ECP for atom type ', ic, ' lpot = ', lpot(ic)
 
       if(lpot(ic).gt.MPS_L) call fatal_error('READPS_GAUSS: increase MPS_L')
-
+    endif
+    call bcast(lpot)
   ! read terms of local part and all non-local parts
   ! local part first in file, but stored at index lpot
   ! non-local l=0 at index 1 etc, up to lpot-1
 
     call allocate_gauss_ecp()
-
-    do l=1,lpot(ic)
-        if(l.eq.1)then
-          idx=lpot(ic)
-          else
-          idx=l-1
-        endif
-        read(iunit,*,iostat=iostat) necp_term(idx,ic)
-        if (iostat .ne. 0) then
-            write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: necp_term"
-            write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-        endif
-
-        if(necp_term(idx,ic).gt.MGAUSS) call fatal_error('READPS_GAUSS: increase MGAUSS')
-
-        write(ounit,'(a,2i6)') '    component, #terms ', l,necp_term(idx,ic)
-
-        do i=1,necp_term(idx,ic)
-          read(iunit,*,iostat=iostat) ecp_coef(i,idx,ic), necp_power(i,idx,ic),ecp_exponent(i,idx,ic)
-
+    if (wid) then
+      do l=1,lpot(ic)
+          if(l.eq.1)then
+            idx=lpot(ic)
+            else
+            idx=l-1
+          endif
+          read(iunit,*,iostat=iostat) necp_term(idx,ic)
           if (iostat .ne. 0) then
-          write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: ecp_coeff, power, ecp_exponents"
-          write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+              write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: necp_term"
+              write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
           endif
 
-          write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic),necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
-        enddo
-    enddo
-    call bcast(lpot)
-    call bcast(necp_term)
-    call bcast(ecp_coef)
-    call bcast(necp_power)
-    call bcast(ecp_exponent)
-    close(iunit)
-    enddo
-  endif
+          if(necp_term(idx,ic).gt.MGAUSS) call fatal_error('READPS_GAUSS: increase MGAUSS')
+
+          write(ounit,'(a,2i6)') '    component, #terms ', l,necp_term(idx,ic)
+
+          do i=1,necp_term(idx,ic)
+            read(iunit,*,iostat=iostat) ecp_coef(i,idx,ic), necp_power(i,idx,ic),ecp_exponent(i,idx,ic)
+
+            if (iostat .ne. 0) then
+            write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: ecp_coeff, power, ecp_exponents"
+            write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+            endif
+
+            write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic),necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
+          enddo
+      enddo
+
+      close(iunit)
+    endif
+  enddo
+
+  call bcast(lpot)
+  call bcast(necp_term)
+  call bcast(ecp_coef)
+  call bcast(necp_power)
+  call bcast(ecp_exponent)
+
 
   if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
   if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))

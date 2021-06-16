@@ -747,50 +747,49 @@ subroutine read_csf_file(file_determinants)
         endif
     endif
 
+    ! known bug in the following do loop. conficts with the mpi and allocation.
     do
-        if (wid) read(iunit,*, iostat=iostat) temp1
-        temp1 = trim(temp1)
-        if (is_iostat_end(iostat)) exit
+        if (wid) then
+            read(iunit,*, iostat=iostat) temp1
+            temp1 = trim(temp1)
+            if (is_iostat_end(iostat)) exit
 
-
-        if (temp1 == "csf") then
-            backspace(iunit)   ! go a line back
-            if (wid) then
-                read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
-                if (iostat == 0) then
-                    if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
-                    do i = 1, nstates
-                        read(iunit,*, iostat=iostat) (ccsf(j,i,1), j=1,ncsf)
-                    enddo
-                    if (iostat /= 0) call fatal_error( "Error in reading csf coefficients ")
-                else
-                    call fatal_error( "Error in reading number of csfs / number of states")
-                endif
+            if (temp1 == "csf") then
+                backspace(iunit)   ! go a line back
+                read(iunit, *)  temp2, ncsf, nstates
+                call bcast(ncsf)
+                call bcast(nstates)
+                print*, "debug nstates, ncsf after broadcast", nstates, ncsf
             endif
-            call bcast(ncsf)
-            call bcast(nstates)
-            call bcast(ccsf)
-
-            write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
-            write(ounit,int_format) " Number of states (nstates) ", nstates
-        else
-            ! No csf information present. One to one mapping cdet == ccsf
-            nstates = 1
-            if (ioptci .ne. 0) nciterm = nciprim
-            call bcast(nciterm)
-
-            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
-            do i = 1, nstates
-                do j = 1, ndet
-                    ccsf(j,i,nwftype) = cdet(j,i,nwftype)
-                enddo
-            enddo
-            call bcast(ccsf)
-            printed = .true.
         endif
 
-
+            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+            if (wid) then
+                print*, "debug nstates, ncsf", nstates, ncsf
+                do i = 1, nstates
+                    read(iunit,*) (ccsf(j,i,1), j=1,ncsf)
+                enddo
+            endif
+            call bcast(ccsf)
     enddo
+
+    if (temp1 /= "csf") then
+        ! No csf information present. One to one mapping cdet == ccsf
+        nstates = 1
+        if (ioptci .ne. 0) nciterm = nciprim
+        call bcast(nciterm)
+
+        if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+        do i = 1, nstates
+            do j = 1, ndet
+                ccsf(j,i,nwftype) = cdet(j,i,nwftype)
+            enddo
+        enddo
+        printed = .true.
+    endif
+
+    write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
+    write(ounit,int_format) " Number of states (nstates) ", nstates
 
     if (.not. printed) then
         write(ounit,*)
@@ -1604,7 +1603,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
         if (.not. ((trim(temp1) == "qmc_bf_info")  .or. (trim(temp1) == "basis"))) then
             call fatal_error( "Error in reading basis num info file :: expecting 'qmc_bf_info / basis'")
         endif
-
+    endif
 
         nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
 
@@ -1647,6 +1646,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
         allocate (iwlbas(nbasis, nctot))
         allocate (iwrwf(nbasis, nctot))
 
+    if (wid) then
         do i = 1, nctype + newghostype
             read (iunit, *, iostat=iostat) n1s(i), n2s(i), (n2p(j, i), j=1, 3), &
                 n3s(i), (n3p(j, i), j=1, 3), &

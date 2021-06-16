@@ -772,8 +772,8 @@ subroutine parser
   endif
 
   ! allocation after determinants and basis
-  call bcast(MWALK)
-  call bcast(MCHS)
+!  call bcast(MWALK)
+!  call bcast(MCHS)
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
