@@ -575,7 +575,7 @@ subroutine read_jastrow_file(file_jastrow)
     call bcast(ijastrow_parameter)
 
     if (wid) close(iunit)
-    stop "debug pit stop"
+
 end subroutine read_jastrow_file
 
 
@@ -737,44 +737,55 @@ subroutine read_csf_file(file_determinants)
     write(ounit,string_format)  " Reading csf from the file :: ",  trim(file_determinants)
     write(ounit,*) '------------------------------------------------------'
 
-    inquire(file=file_determinants, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
-        if (iostat .ne. 0) stop "Problem in opening the determinant file for reading csfs"
-    else
-        call fatal_error (" determinant file "// trim(file_determinants) // " does not exist.")
+    if (wid) then
+        inquire(file=file_determinants, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
+            if (iostat .ne. 0) stop "Problem in opening the determinant file for reading csfs"
+        else
+            call fatal_error (" determinant file "// trim(file_determinants) // " does not exist.")
+        endif
     endif
 
     do
-        read(iunit,*, iostat=iostat) temp1
+        if (wid) read(iunit,*, iostat=iostat) temp1
         temp1 = trim(temp1)
         if (is_iostat_end(iostat)) exit
 
 
         if (temp1 == "csf") then
             backspace(iunit)   ! go a line back
-            read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
-            if (iostat == 0) then
-                if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
-                do i = 1, nstates
-                    read(iunit,*, iostat=iostat) (ccsf(j,i,1), j=1,ncsf)
-                enddo
-                if (iostat /= 0) call fatal_error( "Error in reading csf coefficients ")
-            else
-                call fatal_error( "Error in reading number of csfs / number of states")
+            if (wid) then
+                read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
+                if (iostat == 0) then
+                    if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+                    do i = 1, nstates
+                        read(iunit,*, iostat=iostat) (ccsf(j,i,1), j=1,ncsf)
+                    enddo
+                    if (iostat /= 0) call fatal_error( "Error in reading csf coefficients ")
+                else
+                    call fatal_error( "Error in reading number of csfs / number of states")
+                endif
             endif
+            call bcast(ncsf)
+            call bcast(nstates)
+            call bcast(ccsf)
+
             write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
             write(ounit,int_format) " Number of states (nstates) ", nstates
         else
             ! No csf information present. One to one mapping cdet == ccsf
             nstates = 1
             if (ioptci .ne. 0) nciterm = nciprim
+            call bcast(nciterm)
+
             if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
             do i = 1, nstates
                 do j = 1, ndet
                     ccsf(j,i,nwftype) = cdet(j,i,nwftype)
                 enddo
             enddo
+            call bcast(ccsf)
             printed = .true.
         endif
 
@@ -796,13 +807,18 @@ subroutine read_csf_file(file_determinants)
         write(ounit,*)
     endif
     icsfs = 1
-    close(iunit)
+    call bcast(icsfs)
+
+    if (wid) close(iunit)
 
 end subroutine read_csf_file
 
 subroutine read_csfmap_file(file_determinants)
     ! This subroutine reads the csf coefficients from the determinant file.
     ! Ravindra
+
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
     use, intrinsic :: iso_fortran_env
     use contrl_file,    only: ounit, errunit
@@ -833,74 +849,85 @@ subroutine read_csfmap_file(file_determinants)
     write(ounit,string_format)  " Reading csfmap from the file :: ",  trim(file_determinants)
     write(ounit,*) '------------------------------------------------------'
 
-    inquire(file=file_determinants, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
-        if (iostat .ne. 0) stop "Problem in opening the determinant file for reading csfmap"
-    else
-        call fatal_error (" determinant file "// trim(file_determinants) // " does not exist.")
+    if (wid) then
+        inquire(file=file_determinants, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
+            if (iostat .ne. 0) stop "Problem in opening the determinant file for reading csfmap"
+        else
+            call fatal_error (" determinant file "// trim(file_determinants) // " does not exist.")
+        endif
     endif
 
     do
-        read(iunit,*, iostat=iostat) temp1
+        if (wid) read(iunit,*, iostat=iostat) temp1
         temp1 = trim(temp1)
         if (is_iostat_end(iostat)) exit
 
 
         if (temp1 == "csfmap") then
             backspace(iunit)   ! go a line back
-            read(iunit, *, iostat=iostat)  temp2, ncsf_check, ndet_check, nmap_check
+            if (wid) then
+                read(iunit, *, iostat=iostat)  temp2, ncsf_check, ndet_check, nmap_check
 
-            if (iostat == 0) then
+                if (iostat == 0) then
 
-                if (ndet_check .ne. ndet) call fatal_error('CSFMAP: wrong number of determinants')
-                if (ncsf_check .ne. ncsf) call fatal_error('CSFMAP: wrong number of csf')
-                if (nmap_check .gt. float(ndet)*ndet) call fatal_error('CSFMAP: too many determinants in map list')
+                    if (ndet_check .ne. ndet) call fatal_error('CSFMAP: wrong number of determinants')
+                    if (ncsf_check .ne. ncsf) call fatal_error('CSFMAP: wrong number of csf')
+                    if (nmap_check .gt. float(ndet)*ndet) call fatal_error('CSFMAP: too many determinants in map list')
 
-                if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
-                if (.not. allocated(iadet)) allocate (iadet(ndet))
-                if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-                if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))   ! why MDETCSFX
+                    call bcast(nmap)
 
-                write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
-                write(ounit,int_format) " Number of determinants (ndet) ", ndet
-                write(ounit,int_format) " Number of mappings (nmap) ", nmap
-                write(ounit,*)
+                    if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
+                    if (.not. allocated(iadet)) allocate (iadet(ndet))
+                    if (.not. allocated(ibdet)) allocate (ibdet(ndet))
+                    if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))   ! why MDETCSFX
 
-                nptr = 1
-                do i = 1, ncsf
-                    read (iunit, *) nterm
-                    iadet(i) = nptr
-                    ibdet(i) = nptr + nterm - 1
-                    do j = 1, nterm
-                        read (iunit, *) id, c
-                        icxdet(nptr) = id
-                        cxdet(nptr) = c
-                        nptr = nptr + 1
-                        if (nptr .gt. ndet*MDETCSFX) call fatal_error ('Error in CSFMAP:: problem with nmap')
-                    enddo
-                enddo
+                    write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
+                    write(ounit,int_format) " Number of determinants (ndet) ", ndet
+                    write(ounit,int_format) " Number of mappings (nmap) ", nmap
+                    write(ounit,*)
 
-                if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
-                nmap = nptr
-
-                if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
-
-                write(ounit, '(''Warning: det coef overwritten with csf'')')
-                do k = 1, nstates
-                    do j = 1, ndet
-                        cdet(j, k, 1) = 0
-                    enddo
-                    do icsf = 1, ncsf
-                        do j = iadet(icsf), ibdet(icsf)
-                            jx = icxdet(j)
-                            cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
+                    nptr = 1
+                    do i = 1, ncsf
+                        read (iunit, *) nterm
+                        iadet(i) = nptr
+                        ibdet(i) = nptr + nterm - 1
+                        do j = 1, nterm
+                            read (iunit, *) id, c
+                            icxdet(nptr) = id
+                            cxdet(nptr) = c
+                            nptr = nptr + 1
+                            if (nptr .gt. ndet*MDETCSFX) call fatal_error ('Error in CSFMAP:: problem with nmap')
                         enddo
                     enddo
-                enddo
+                    call bcast(icxdet)
+                    call bcast(cxdet)
+                    call bcast(iadet)
+                    call bcast(ibdet)
 
-            else
-                call fatal_error ("Error in reading number of csfs, number of determinants, or number of mappings")
+                    if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
+                    nmap = nptr
+
+                    if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
+
+                    write(ounit, '(''Warning: det coef overwritten with csf'')')
+                    do k = 1, nstates
+                        do j = 1, ndet
+                            cdet(j, k, 1) = 0
+                        enddo
+                        do icsf = 1, ncsf
+                            do j = iadet(icsf), ibdet(icsf)
+                                jx = icxdet(j)
+                                cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
+                            enddo
+                        enddo
+                    enddo
+                    call bcast(cdet)
+
+                else
+                    call fatal_error ("Error in reading number of csfs, number of determinants, or number of mappings")
+                endif
             endif
         else
             ! No csfmap information present. One to one mapping cdet == ccsf
@@ -916,13 +943,17 @@ subroutine read_csfmap_file(file_determinants)
                 icxdet(i) = i
                 cxdet(i) = 1.0d0
             enddo
-            ! default mapping loop ends here
+            call bcast(icxdet)
+            call bcast(cxdet)
+            call bcast(iadet)
+            call bcast(ibdet)
 
+            ! default mapping loop ends here
             printed = .true.
         endif
     enddo
 
-    close(iunit)
+    if (wid) close(iunit)
 
     if (.not. printed) then
         write(ounit,*)
@@ -952,11 +983,15 @@ end subroutine read_csfmap_file
 subroutine read_exponents_file(file_exponents)
     ! Read basis function exponents (only if no numerical basis)
     ! Ravindra
-    use contrl_file,    only: ounit, errunit
-    use coefs, only: nbasis
-    use basis, only: zex
-    use inputflags, only: iexponents
-    use wfsec, only: nwftype
+
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
+    use contrl_file,        only: ounit, errunit
+    use coefs,              only: nbasis
+    use basis,              only: zex
+    use inputflags,         only: iexponents
+    use wfsec,              only: nwftype
 
     implicit none
 
@@ -975,14 +1010,15 @@ subroutine read_exponents_file(file_exponents)
     write(ounit,string_format)  " Reading exponents from the file :: ",  trim(file_exponents)
     write(ounit,*) '------------------------------------------------------'
 
-    inquire(file=file_exponents, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_exponents, iostat=iostat, action='read' )
-        if (iostat .ne. 0) stop "Problem in opening the exponents file for reading csfs"
-    else
-        call fatal_error (" exponents file "// trim(file_exponents) // " does not exist.")
+    if (wid) then
+        inquire(file=file_exponents, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_exponents, iostat=iostat, action='read' )
+            if (iostat .ne. 0) stop "Problem in opening the exponents file for reading csfs"
+        else
+            call fatal_error (" exponents file "// trim(file_exponents) // " does not exist.")
+        endif
     endif
-
 
     write(ounit, *) 'nbasis', nbasis
     write(ounit, *) 'nwftype', nwftype
@@ -990,9 +1026,11 @@ subroutine read_exponents_file(file_exponents)
     if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
 
     do iwft = 1, nwftype
-        read(iunit,*, iostat=iostat)  (zex(i, iwft), i=1, nbasis)
+        if (wid) then
+            read(iunit,*, iostat=iostat)  (zex(i, iwft), i=1, nbasis)
 
-        if (iostat /= 0) call fatal_error( "Error in reading exponents from the exponent file ")
+            if (iostat /= 0) call fatal_error( "Error in reading exponents from the exponent file ")
+        endif
 
         write(ounit,*)
         write(ounit,*) " Basis set exponents "
@@ -1000,7 +1038,9 @@ subroutine read_exponents_file(file_exponents)
         write(ounit,'(10(1x, f11.8, 1x))') (zex(i, iwft), i=1, nbasis)
         write(ounit,*)
     enddo
-    close(iunit)
+    call bcast(zex)
+
+    if (wid) close(iunit)
 
 end subroutine read_exponents_file
 
@@ -1008,22 +1048,26 @@ end subroutine read_exponents_file
 subroutine read_jasderiv_file(file_jastrow_der)
     ! Read jastrow derivatives
     ! Ravindra
-    use contrl_file,    only: ounit, errunit
-    use optjas, only: MPARMJ
-    use atom, only: nctype
-    use jaspar, only: nspin1, is
-    use jaspar4, only: norda, nordb, nordc
-    use jaspointer, only: npoint, npointa
-    use numbas, only: numr
 
-    use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
-    use optwf_parms, only: nparmj
-    use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
-    use bparm, only: nspin2b
-    use contr2, only: ijas
-    use contr2, only: isc
-    use vmc_mod, only: MCTYP3X
-    use atom, only: nctype_tot
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
+    use contrl_file,        only: ounit, errunit
+    use optjas,             only: MPARMJ
+    use atom,               only: nctype
+    use jaspar,             only: nspin1, is
+    use jaspar4,            only: norda, nordb, nordc
+    use jaspointer,         only: npoint, npointa
+    use numbas,             only: numr
+
+    use optwf_nparmj,       only: nparma, nparmb, nparmc, nparmf
+    use optwf_parms,        only: nparmj
+    use optwf_wjas,         only: iwjasa, iwjasb, iwjasc, iwjasf
+    use bparm,              only: nspin2b
+    use contr2,             only: ijas
+    use contr2,             only: isc
+    use vmc_mod,            only: MCTYP3X
+    use atom,               only: nctype_tot
 
     implicit none
 
@@ -1044,19 +1088,19 @@ subroutine read_jasderiv_file(file_jastrow_der)
     write(ounit,string_format)  " Reading jastrow derivative parameters from the file :: ",  trim(file_jastrow_der)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_jastrow_der, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_jastrow_der, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the jastrow derivative file")
-    else
-        call fatal_error (" Jastrow derivative file "// trim(file_jastrow_der) // " does not exist.")
+    if (wid) then
+        inquire(file=file_jastrow_der, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_jastrow_der, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the jastrow derivative file")
+        else
+            call fatal_error (" Jastrow derivative file "// trim(file_jastrow_der) // " does not exist.")
+        endif
     endif
-
-
 
     na1 = 1
     na2 = nctype
-    MCTYP3X = max(3, nctype) !BUG nctype_tot
+    MCTYP3X = max(3, nctype) !BUG DEBUG nctype_tot
 
     if (.not. allocated(nparma)) allocate (nparma(MCTYP3X))
     if (.not. allocated(nparmb)) allocate (nparmb(3))
@@ -1072,134 +1116,148 @@ subroutine read_jasderiv_file(file_jastrow_der)
     if (.not. allocated(npointa)) allocate (npointa(3*MCTYP3X))
 
     ! to escape the comments before the "lcao nbasis norb" line
-    do while (skip)
-        read (iunit,*, iostat=iostat) temp1
-        temp1 = trim(temp1)
-        if (temp1 == "jasderiv") then
-            backspace(iunit)
-            skip = .false.
-        endif
-    enddo
-
-    ! read the first line
-    read(iunit, *, iostat=iostat)  temp1
-
-    if (iostat == 0) then
-        if (trim(temp1) == "jasderiv") then
-            ! begin reading everything
-            read (iunit, *) (nparma(ia), ia=na1, na2), &
-                (nparmb(isp), isp=nspin1, nspin2b), &
-                (nparmc(it), it=1, nctype), &
-                (nparmf(it), it=1, nctype)
-            write(ounit, '(A,10i4)') " nparma = ", (nparma(ia), ia=na1, na2)
-            write(ounit, '(A,10i4)') " nparmb = ", (nparmb(isp), isp=nspin1, nspin2b)
-            write(ounit, '(A,10i4)') " nparmc = ", (nparmc(it), it=1, nctype)
-            write(ounit, '(A,10i4)') " nparmf = ", (nparmf(it), it=1, nctype)
-
-
-            if (ijas .ge. 4 .and. ijas .le. 6) then
-                do it = 1, nctype
-                    if (numr .eq. 0) then
-                        ! All-electron with analytic slater basis
-                        if ((nparma(it) .gt. 0 .and. norda .eq. 0) .or. (nparma(it) .gt. norda + 1)) then
-                            write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
-                            call fatal_error( 'nparma too large for norda')
-                        endif
-                    else
-                        ! Pseudopotential with numerical basis: cannot vary a(1) or a(2)
-                        if (norda .eq. 1) call fatal_error( 'makes no sense to have norda=1 for numr>0')
-                        if ((norda .eq. 0 .and. nparma(it) .gt. 0) .or. (norda .gt. 0 .and. nparma(it) .gt. norda - 1)) then
-                            write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
-                            call fatal_error( 'nparma too large for norda')
-                        endif
-                    endif
-
-                    if (isc .le. 7 .and. &
-                        ((nordc .le. 2 .and. nparmc(it) .gt. 0) &
-                            .or. (nordc .eq. 3 .and. nparmc(it) .gt. 2) &
-                            .or. (nordc .eq. 4 .and. nparmc(it) .gt. 7) &
-                            .or. (nordc .eq. 5 .and. nparmc(it) .gt. 15) &
-                            .or. (nordc .eq. 6 .and. nparmc(it) .gt. 27) &
-                            .or. (nordc .eq. 7 .and. nparmc(it) .gt. 43))) then
-                        write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
-                        call fatal_error( 'nparmc too large for nordc in J_een with cusp conds')
-                    endif
-
-                    if (isc .gt. 7 .and. &
-                        ((nordc .le. 1 .and. nparmc(it) .gt. 0) &
-                            .or. (nordc .eq. 2 .and. nparmc(it) .gt. 2) &
-                            .or. (nordc .eq. 3 .and. nparmc(it) .gt. 6) &
-                            .or. (nordc .eq. 4 .and. nparmc(it) .gt. 13) &
-                            .or. (nordc .eq. 5 .and. nparmc(it) .gt. 23) &
-                            .or. (nordc .eq. 6 .and. nparmc(it) .gt. 37) &
-                            .or. (nordc .eq. 7 .and. nparmc(it) .gt. 55))) then
-                        write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
-                        call fatal_error( 'nparmc too large for nordc without cusp conds')
-                    endif
-
-                enddo
-
-                ! For the b coefs. we assume that b(1) is fixed by the cusp-cond.
-                do isp = 1, nspin1, nspin2b
-                    if (nparmb(isp) .gt. nordb) then
-                        write(ounit, '(''isp,nordb,nparmb(isp)'',3i5)') isp, nordb, nparmb(isp)
-                        call fatal_error( 'nparmb too large for nordb')
-                    endif
-                enddo
+    if (wid) then
+        do while (skip)
+            read (iunit,*, iostat=iostat) temp1
+            temp1 = trim(temp1)
+            if (temp1 == "jasderiv") then
+                backspace(iunit)
+                skip = .false.
             endif
-
-            ! compute nparmj
-            nparmj = 0
-            npointa(1) = 0
-            do ia = na1, na2
-                if (ia .gt. 1) npointa(ia) = npointa(ia - 1) + nparma(ia - 1)
-                nparmj = nparmj + nparma(ia)
-            enddo
-            do isp = nspin1, nspin2b
-                nparmj = nparmj + nparmb(isp)
-            enddo
-            npoint(1) = nparmj
-            do it = 1, nctype
-                if (it .gt. 1) npoint(it) = npoint(it - 1) + nparmc(it - 1)
-                nparmj = nparmj + nparmc(it) + nparmf(it)
-            enddo
-
-            if (nparmj .gt. MPARMJ) call fatal_error('JASDERIV: MPARMJ too small')
-
-            do it = 1, nctype
-                read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))
-                write(ounit, '(A,10i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))
-            enddo
-            do isp = nspin1, nspin2b
-                read (iunit, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
-                write(ounit, '(A,10i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))
-            enddo
-            do it = 1, nctype
-                read (iunit, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
-                write(ounit, '(A,10i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
-            enddo
-
-                ! end of reading the jasderiv file block
-        endif
-    else
-        call fatal_error ("Error in reading the first line of jastrow derivative file.")
+        enddo
     endif
 
-    close(iunit)
+    ! read the first line
+    if (wid) then
+        read(iunit, *, iostat=iostat)  temp1
+
+        if (iostat == 0) then
+            if (trim(temp1) == "jasderiv") then
+                ! begin reading everything
+                read (iunit, *) (nparma(ia), ia=na1, na2), &
+                    (nparmb(isp), isp=nspin1, nspin2b), &
+                    (nparmc(it), it=1, nctype), &
+                    (nparmf(it), it=1, nctype)
+                call bcast(nparma)
+                call bcast(nparmb)
+                call bcast(nparmc)
+                call bcast(nparmf)
+                write(ounit, '(A,10i4)') " nparma = ", (nparma(ia), ia=na1, na2)
+                write(ounit, '(A,10i4)') " nparmb = ", (nparmb(isp), isp=nspin1, nspin2b)
+                write(ounit, '(A,10i4)') " nparmc = ", (nparmc(it), it=1, nctype)
+                write(ounit, '(A,10i4)') " nparmf = ", (nparmf(it), it=1, nctype)
+
+
+                if (ijas .ge. 4 .and. ijas .le. 6) then
+                    do it = 1, nctype
+                        if (numr .eq. 0) then
+                            ! All-electron with analytic slater basis
+                            if ((nparma(it) .gt. 0 .and. norda .eq. 0) .or. (nparma(it) .gt. norda + 1)) then
+                                write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
+                                call fatal_error( 'nparma too large for norda')
+                            endif
+                        else
+                            ! Pseudopotential with numerical basis: cannot vary a(1) or a(2)
+                            if (norda .eq. 1) call fatal_error( 'makes no sense to have norda=1 for numr>0')
+                            if ((norda .eq. 0 .and. nparma(it) .gt. 0) .or. (norda .gt. 0 .and. nparma(it) .gt. norda - 1)) then
+                                write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
+                                call fatal_error( 'nparma too large for norda')
+                            endif
+                        endif
+
+                        if (isc .le. 7 .and. &
+                            ((nordc .le. 2 .and. nparmc(it) .gt. 0) &
+                                .or. (nordc .eq. 3 .and. nparmc(it) .gt. 2) &
+                                .or. (nordc .eq. 4 .and. nparmc(it) .gt. 7) &
+                                .or. (nordc .eq. 5 .and. nparmc(it) .gt. 15) &
+                                .or. (nordc .eq. 6 .and. nparmc(it) .gt. 27) &
+                                .or. (nordc .eq. 7 .and. nparmc(it) .gt. 43))) then
+                            write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
+                            call fatal_error( 'nparmc too large for nordc in J_een with cusp conds')
+                        endif
+
+                        if (isc .gt. 7 .and. &
+                            ((nordc .le. 1 .and. nparmc(it) .gt. 0) &
+                                .or. (nordc .eq. 2 .and. nparmc(it) .gt. 2) &
+                                .or. (nordc .eq. 3 .and. nparmc(it) .gt. 6) &
+                                .or. (nordc .eq. 4 .and. nparmc(it) .gt. 13) &
+                                .or. (nordc .eq. 5 .and. nparmc(it) .gt. 23) &
+                                .or. (nordc .eq. 6 .and. nparmc(it) .gt. 37) &
+                                .or. (nordc .eq. 7 .and. nparmc(it) .gt. 55))) then
+                            write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
+                            call fatal_error( 'nparmc too large for nordc without cusp conds')
+                        endif
+
+                    enddo
+
+                    ! For the b coefs. we assume that b(1) is fixed by the cusp-cond.
+                    do isp = 1, nspin1, nspin2b
+                        if (nparmb(isp) .gt. nordb) then
+                            write(ounit, '(''isp,nordb,nparmb(isp)'',3i5)') isp, nordb, nparmb(isp)
+                            call fatal_error( 'nparmb too large for nordb')
+                        endif
+                    enddo
+                endif
+
+                ! compute nparmj
+                nparmj = 0
+                npointa(1) = 0
+                do ia = na1, na2
+                    if (ia .gt. 1) npointa(ia) = npointa(ia - 1) + nparma(ia - 1)
+                    nparmj = nparmj + nparma(ia)
+                enddo
+                do isp = nspin1, nspin2b
+                    nparmj = nparmj + nparmb(isp)
+                enddo
+                npoint(1) = nparmj
+                do it = 1, nctype
+                    if (it .gt. 1) npoint(it) = npoint(it - 1) + nparmc(it - 1)
+                    nparmj = nparmj + nparmc(it) + nparmf(it)
+                enddo
+
+                call bcast(nparmj)
+                if (nparmj .gt. MPARMJ) call fatal_error('JASDERIV: MPARMJ too small')
+
+                do it = 1, nctype
+                    read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))
+                    write(ounit, '(A,10i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))
+                enddo
+                call bcast(iwjasa)
+                do isp = nspin1, nspin2b
+                    read (iunit, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+                    write(ounit, '(A,10i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+                enddo
+                call bcast(iwjasb)
+                do it = 1, nctype
+                    read (iunit, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
+                    write(ounit, '(A,10i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
+                enddo
+                call bcast(iwjasc)
+                    ! end of reading the jasderiv file block
+            endif
+        else
+            call fatal_error ("Error in reading the first line of jastrow derivative file.")
+        endif
+    endif
+
+    if (wid) close(iunit)
 end subroutine read_jasderiv_file
 
 
 subroutine read_forces_file(file_forces)
     !
     ! Ravindra
-    use atom,           only: symbol
-    use contrl_file,    only: ounit, errunit
-    use forcepar, only: nforce
-    use forcestr, only: delc
-    use wfsec, only: iwftype
-    use inputflags, only: iforces
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
-    use atom, only: ncent
+    use atom,               only: symbol
+    use contrl_file,        only: ounit, errunit
+    use forcepar,           only: nforce
+    use forcestr,           only: delc
+    use wfsec,              only: iwftype
+    use inputflags,         only: iforces
+
+    use atom,               only: ncent
 
     implicit none
 
@@ -1220,27 +1278,35 @@ subroutine read_forces_file(file_forces)
     write(ounit,string_format)  " Reading force displacements from the file :: ",  trim(file_forces)
     write(ounit,*) '-----------------------------------------------------------------------'
 
-    inquire(file=file_forces, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_forces, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the forces file")
-    else
-        call fatal_error (" Forces file "// trim(file_forces) // " does not exist.")
+    if (wid) then
+        inquire(file=file_forces, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_forces, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the forces file")
+        else
+            call fatal_error (" Forces file "// trim(file_forces) // " does not exist.")
+        endif
     endif
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
     if (.not. allocated(iwftype)) allocate (iwftype(nforce))
 
-    read (iunit, *, iostat=iostat) (iwftype(i), i=1, nforce)
-    if (iostat /= 0) call fatal_error( "Error in reading iwftype")
-    if (iwftype(1) .ne. 1) call fatal_error( 'INPUT: iwftype(1) ne 1')
+    if (wid) then
+        read (iunit, *, iostat=iostat) (iwftype(i), i=1, nforce)
+        if (iostat /= 0) call fatal_error( "Error in reading iwftype")
+        if (iwftype(1) .ne. 1) call fatal_error( 'INPUT: iwftype(1) ne 1')
+    endif
+    call bcast(iwftype)
 
     do i = 1, nforce
         do ic = 1, ncent
-            read (iunit, *, iostat=iostat) delc(1, ic, i), delc(2, ic, i), delc(3, ic, i)
-            if (iostat /= 0) call fatal_error( "Error in reading delc")
+            if (wid) then
+                read (iunit, *, iostat=iostat) delc(1, ic, i), delc(2, ic, i), delc(3, ic, i)
+                if (iostat /= 0) call fatal_error( "Error in reading delc")
+            endif
         enddo
     enddo
+    call bcast(delc)
 
 
     do i = 1, nforce
@@ -1255,15 +1321,21 @@ subroutine read_forces_file(file_forces)
     enddo
 
     iforces = 1
-    close(iunit)
+    call bcast(iforces)
+
+    if (wid) close(iunit)
 end subroutine read_forces_file
 
 subroutine read_symmetry_file(file_symmetry)
     ! Ravindra
-    use contrl_file,    only: ounit, errunit
-    use coefs, only: norb
-    use optorb, only: irrep
-    use vmc_mod, only: MORB
+
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
+    use contrl_file,        only: ounit, errunit
+    use coefs,              only: norb
+    use optorb,             only: irrep
+    use vmc_mod,            only: MORB
 
     implicit none
 
@@ -1284,18 +1356,22 @@ subroutine read_symmetry_file(file_symmetry)
     write(ounit,string_format)  " Reading orbital symmetries from the file :: ",  trim(file_symmetry)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_symmetry, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_symmetry, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the symmetry file")
-    else
-        call fatal_error (" Orbital symmetries file "// trim(file_symmetry) // " does not exist.")
+    if (wid) then
+        inquire(file=file_symmetry, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_symmetry, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the symmetry file")
+        else
+            call fatal_error (" Orbital symmetries file "// trim(file_symmetry) // " does not exist.")
+        endif
     endif
 
-
-    read (iunit, *, iostat=iostat) temp1, nsym, mo
-    if (iostat /= 0) call fatal_error( "Error in reading symmetry file :: expecting 'sym_labels', nsym, norb")
-
+    if (wid) then
+        read (iunit, *, iostat=iostat) temp1, nsym, mo
+        if (iostat /= 0) call fatal_error( "Error in reading symmetry file :: expecting 'sym_labels', nsym, norb")
+    endif
+    call bcast(nsym)
+    call bcast(mo)
 
     if (trim(temp1) == "sym_labels") then
         if (norb /= mo) call fatal_error( "Number of orbitals not consistent with previous records")
@@ -1305,29 +1381,35 @@ subroutine read_symmetry_file(file_symmetry)
 
 
     ! Ignore irrep text labels
-    read (iunit, '(a80)') temp2
+    if (wid) read (iunit, '(a80)') temp2
 
     ! safe allocate
     if (.not. allocated(irrep)) allocate (irrep(norb))
 
     ! read data
-    read (iunit, *, iostat=iostat) (irrep(io), io=1, norb)
-    if (iostat /= 0) call fatal_error( "Error in reading symmetry file :: expecting irrep correspondence for all norb orbitals")
+    if (wid) then
+        read (iunit, *, iostat=iostat) (irrep(io), io=1, norb)
+        if (iostat /= 0) call fatal_error( "Error in reading symmetry file :: expecting irrep correspondence for all norb orbitals")
+    endif
+    call bcast(irrep)
 
     write(ounit, *) "Irreducible representation correspondence for all norb orbitals"
     write(ounit, '(10(1x, i3))') (irrep(io), io=1, norb)
 
-    close(iunit)
+    if (wid) close(iunit)
 end subroutine read_symmetry_file
 
 
 subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     !
     ! Ravindra
-    use contrl_file,    only: ounit, errunit
-    use optorb_mix, only: iwmix_virt, norbopt, norbvirt
-    use coefs, only: norb
-    use inputflags, only: ioptorb_mixvirt
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
+    use contrl_file,        only: ounit, errunit
+    use optorb_mix,         only: iwmix_virt, norbopt, norbvirt
+    use coefs,              only: norb
+    use inputflags,         only: ioptorb_mixvirt
 
     implicit none
 
@@ -1348,18 +1430,18 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     write(ounit,string_format)  " Reading optorb_mixvirt from the file :: ",  trim(file_optorb_mixvirt)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_optorb_mixvirt, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_optorb_mixvirt, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the optorb_mixvirt file")
-    else
-        call fatal_error (" optorb_mixvirt file "// trim(file_optorb_mixvirt) // " does not exist.")
+    if (wid) then
+        inquire(file=file_optorb_mixvirt, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_optorb_mixvirt, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the optorb_mixvirt file")
+        else
+            call fatal_error (" optorb_mixvirt file "// trim(file_optorb_mixvirt) // " does not exist.")
+        endif
+
+        read (iunit, *, iostat=iostat) temp1, moopt, movirt
+        if (iostat /= 0) call fatal_error( "Error in reading optorb_mixvirt file :: expecting 'optorb_mixvirt', norbopt, norbvirt")
     endif
-
-
-    read (iunit, *, iostat=iostat) temp1, moopt, movirt
-    if (iostat /= 0) call fatal_error( "Error in reading optorb_mixvirt file :: expecting 'optorb_mixvirt', norbopt, norbvirt")
-
 
     if (trim(temp1) == "optorb_mixvirt") then
         if (moopt .gt. norb) call fatal_error( "Number of orbitals for optimization are greater than the total orbitals")
@@ -1370,31 +1452,42 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     norbopt     =   moopt
     norbvirt    =   movirt
 
+    call bcast(norbopt)
+    call bcast(norbvirt)
+
 
     if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norbopt, norbvirt))
 
     do io = 1, norbopt
-        read (iunit, *, iostat=iostat) (iwmix_virt(io, jo), jo=1, norbvirt)
-        if (iostat /= 0) call fatal_error( "Error in reading optorb_mixvirt file :: incomplete data")
+        if (wid) then
+            read (iunit, *, iostat=iostat) (iwmix_virt(io, jo), jo=1, norbvirt)
+            if (iostat /= 0) call fatal_error( "Error in reading optorb_mixvirt file :: incomplete data")
+        endif
     enddo
-
+    call bcast(iwmix_virt)
 
     write(ounit, *) "Printing which virtual orbitals are mixed with the occupied ones "
     do io = 1, norbopt
         write(ounit, '(10(1x, i5))') (iwmix_virt(io, jo), jo=1, norbvirt)
     enddo
+
     ioptorb_mixvirt = 1
-    close(iunit)
+    call bcast(ioptorb_mixvirt)
+
+    if (wid) close(iunit)
 end subroutine read_optorb_mixvirt_file
 
 
 
 subroutine read_eigenvalues_file(file_eigenvalues)
 
-    use contrl_file,    only: ounit, errunit
-    use coefs, only: norb
-    use vmc_mod, only: MORB
-    use optorb, only: orb_energy
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
+    use contrl_file,        only: ounit, errunit
+    use coefs,              only: norb
+    use vmc_mod,            only: MORB
+    use optorb,             only: orb_energy
 
     implicit none
 
@@ -1415,17 +1508,18 @@ subroutine read_eigenvalues_file(file_eigenvalues)
     write(ounit,string_format)  " Reading orbital eigenvalues from the file :: ",  trim(file_eigenvalues)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_eigenvalues, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_eigenvalues, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the eigenvalues file")
-    else
-        call fatal_error (" Orbital eigenvalues file "// trim(file_eigenvalues) // " does not exist.")
+    if (wid) then
+        inquire(file=file_eigenvalues, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_eigenvalues, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the eigenvalues file")
+        else
+            call fatal_error (" Orbital eigenvalues file "// trim(file_eigenvalues) // " does not exist.")
+        endif
+
+        read (iunit, *, iostat=iostat) temp1, mo
+        if (iostat /= 0) call fatal_error( "Error in reading eigenvalues file :: expecting 'eigenvalues / energies', norb")
     endif
-
-
-    read (iunit, *, iostat=iostat) temp1, mo
-    if (iostat /= 0) call fatal_error( "Error in reading eigenvalues file :: expecting 'eigenvalues / energies', norb")
 
 
     if ((trim(temp1) == "eigenvalues")  .or. (trim(temp1) == "energies")) then
@@ -1439,12 +1533,16 @@ subroutine read_eigenvalues_file(file_eigenvalues)
     if (.not. allocated(orb_energy)) allocate (orb_energy(norb))
 
     ! read data
-    read (iunit, *, iostat=iostat) (orb_energy(io), io=1, norb)
-    if (iostat /= 0) call fatal_error( "Error in reading eigenvalues file :: expecting eigenvalues of all norb orbitals")
+    if (wid) then
+        read (iunit, *, iostat=iostat) (orb_energy(io), io=1, norb)
+        if (iostat /= 0) call fatal_error( "Error in reading eigenvalues file :: expecting eigenvalues of all norb orbitals")
+    endif
+    call bcast(orb_energy)
 
     write(ounit, *) "Eigenvalues of all orbitals"
     write(ounit, '(10(1x, i3))') (orb_energy(io), io=1, norb)
-    close(iunit)
+
+    if (wid) close(iunit)
 end subroutine read_eigenvalues_file
 
 
@@ -1453,6 +1551,9 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     ! Ravindra
     ! Basis function types and pointers to radial parts tables
     ! alternative name for keyword basis because of GAMBLE inputword basis because of GAMBLE input
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
     use contrl_file,    only: ounit, errunit
     use numbas_mod, only: MRWF
     use vmc_mod, only: MCTYPE, MBASIS
@@ -1689,6 +1790,9 @@ subroutine read_dmatrix_file(file_dmatrix)
     ! Ravindra (no=ndetorb, ns=nweight)
     !INPUT dmatrix i i a=<input>
     !KEYDOC Read diagonal density matrix information.
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
     use contrl_file,    only: ounit, errunit
     use precision_kinds, only: dp
     use vmc_mod, only: MORB
@@ -1719,18 +1823,20 @@ subroutine read_dmatrix_file(file_dmatrix)
     write(ounit,string_format)  " Reading dmatrix the file :: ",  trim(file_dmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_dmatrix, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_dmatrix, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the dmatrix file")
-    else
-        call fatal_error (" dmatrix file "// trim(file_dmatrix) // " does not exist.")
+    if (wid) then
+        inquire(file=file_dmatrix, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_dmatrix, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the dmatrix file")
+        else
+            call fatal_error (" dmatrix file "// trim(file_dmatrix) // " does not exist.")
+        endif
+
+        read (iunit, *, iostat=iostat) temp1, ndetorb, nweight
+        if (iostat /= 0) call fatal_error( "Error in reading dmatrix file :: expecting 'dmatrix', ndetorb, nweight")
     endif
-
-
-    read (iunit, *, iostat=iostat) temp1, ndetorb, nweight
-    if (iostat /= 0) call fatal_error( "Error in reading dmatrix file :: expecting 'dmatrix', ndetorb, nweight")
-
+    call bcast(ndetorb)
+    call bcast(nweight)
 
     if (.not. (trim(temp1) == "dmatrix") ) then
         call fatal_error( "Error in reading dmatrix file :: expecting 'dmatrix'")
@@ -1745,11 +1851,10 @@ subroutine read_dmatrix_file(file_dmatrix)
     allocate (weights(nstates))
     allocate (iweight(nstates))
 
-    ! BUG ravindra: bring the get_weight subroutine
-    ! call get_weights_new('weights:', weights, iweight, nweight)
-    !if (ns .ne. nweight) call fatal('READ_DMATRIX: wrong number of dmatrices')
 
-    read (iunit, *) (iwdmat(i), i=1, nweight)
+    if (wid) read (iunit, *) (iwdmat(i), i=1, nweight)
+    call bcast(iwdmat)
+
     do iw = 1, nweight
         if (iwdmat(iw) .ne. iweight(iw)) call fatal_error('READ_DMATRIX: iwdmat')
     enddo
@@ -1757,13 +1862,13 @@ subroutine read_dmatrix_file(file_dmatrix)
     allocate (dmat_diag(norb))
     dmat_diag = 0.0d0
 
-
     do iw = 1, nweight
-        read (iunit, *, iostat=iostat) (dmat(j), j=1, ndetorb)
+        if (wid) read (iunit, *, iostat=iostat) (dmat(j), j=1, ndetorb)
         do j = 1, ndetorb
             dmat_diag(j) = dmat_diag(j) + weights(iw)*dmat(j)
         enddo
     enddo
+    call bcast(dmat_diag)
 
     !DEBUG why
     do i = 1, ndetorb
@@ -1777,71 +1882,20 @@ subroutine read_dmatrix_file(file_dmatrix)
 
     deallocate (dmat)
     deallocate (iwdmat)
-    close(iunit)
+    if (wid) close(iunit)
 
 end subroutine read_dmatrix_file
 
 
-subroutine get_weights_new(field, weights, iweight, nweight)
-
-    use contrl_file,    only: ounit, errunit
-    use precision_kinds, only: dp
-    use csfs, only: nstates
-    use mstates_mod, only: MSTATES
-
-    implicit real*8(a - h, o - z)
-
-    ! weights for state averaging
-    character(len=*), intent(in) :: field
-    real(dp), dimension(MSTATES), intent(inout) :: weights
-    integer, dimension(MSTATES), intent(inout) :: iweight
-    integer, intent(inout) :: nweight
-
-    ! dimension weights(MSTATES), iweight(MSTATES)
-    ! character field*(32)
-    character vname*(32)
-
-    wsum = 0.d0
-    nweight = 0
-
-    write (6, *) field, field(1:index(field, ' '))
-    print*, "length of fields in get_weight ", len(field), len(adjustl(field))
-    do i = 1, nstates
-        wdef = 0.d0
-        ! BUG:: Ravindra. Replce following two lines with appropriate ones
-        ! call append_number(field(1:index(field, ' ') - 1), i, vname, nv, 0)
-!        call p2gtfd(vname(1:nv), w, wdef, 0)
-        !VARDOC Input of weights for individual states.
-        w = dabs(w)
-        if (w .gt. 1d-6) then
-            nweight = nweight + 1
-            iweight(nweight) = i
-            weights(nweight) = w
-            wsum = wsum + w
-        endif
-    enddo
-
-    do i = 1, nweight
-        weights(i) = weights(i)/wsum
-    enddo
-
-    if (nweight .eq. 0) then
-        nweight = 1
-        iweight(1) = 1
-        weights(1) = 1.d0
-    endif
-
-    ! TEMPORARY
-    if (nweight .ne. nstates) call fatal_error( 'GET_WEIGHTS: problems with nweight')
-
-end subroutine get_weights_new
-
 subroutine read_cavity_spheres_file(file_cavity_spheres)
     ! Ravindra
     ! Read centers of cavity spheres and radii
-    use contrl_file,    only: ounit, errunit
-    use pcm_parms, only: nesph, re, re2
-    use pcm_parms, only: xe, ye, ze
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
+    use contrl_file,        only: ounit, errunit
+    use pcm_parms,          only: nesph, re, re2
+    use pcm_parms,          only: xe, ye, ze
 
     implicit none
 
@@ -1861,18 +1915,20 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
     write(ounit,string_format)  " Reading cavity spheres from the file :: ",  trim(file_cavity_spheres)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_cavity_spheres, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_cavity_spheres, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the cavity spheres file")
-    else
-        call fatal_error (" cavity spheres file "// trim(file_cavity_spheres) // " does not exist.")
+    if (wid) then
+        inquire(file=file_cavity_spheres, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_cavity_spheres, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the cavity spheres file")
+        else
+            call fatal_error (" cavity spheres file "// trim(file_cavity_spheres) // " does not exist.")
+        endif
+
+
+        read (iunit, *, iostat=iostat) key, nesph
+        if (iostat /= 0) call fatal_error( "Error in reading cavity spheres file :: expecting 'cavity_spheres', nspheres")
     endif
-
-
-    read (iunit, *, iostat=iostat) key, nesph
-    if (iostat /= 0) call fatal_error( "Error in reading cavity spheres file :: expecting 'cavity_spheres', nspheres")
-
+    call bcast(nesph)
 
     if (.not. (trim(key) == "cavity_spheres") ) then
         error stop "Error in reading cavity_spheres file :: expecting 'cavity_spheres'"
@@ -1885,11 +1941,16 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
     if (.not. allocated(ze)) allocate (ze(nesph))
 
     do i = 1, nesph
-        read (iunit, *) xe(i), ye(i), ze(i), re(i)
+        if (wid) read (iunit, *) xe(i), ye(i), ze(i), re(i)
         re2(i) = re(i)*re(i)
     enddo
+    call bcast(xe)
+    call bcast(ye)
+    call bcast(ze)
+    call bcast(re)
+    call bcast(re2)
 
-    close(iunit)
+    if (wid) close(iunit)
 end subroutine read_cavity_spheres_file
 
 
@@ -1900,17 +1961,20 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     !KEYDOC atoms energy gradients are to be calculated for.
 
     !     Originally written by Omar Valsson
-    use contrl_file,    only: ounit, errunit
-    use vmc_mod, only: MCENT
-    use forcepar, only: nforce
-    use force_mod, only: MFORCE
-    use forcestr, only: delc
-    use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
-    use grdntspar, only: delgrdxyz, igrdtype, ngradnts
-    use wfsec, only: iwftype
-    use inputflags, only: igradients
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
-    use atom, only: ncent
+    use contrl_file,        only: ounit, errunit
+    use vmc_mod,            only: MCENT
+    use forcepar,           only: nforce
+    use force_mod,          only: MFORCE
+    use forcestr,           only: delc
+    use grdntsmv,           only: igrdaidx, igrdcidx, igrdmv
+    use grdntspar,          only: delgrdxyz, igrdtype, ngradnts
+    use wfsec,              only: iwftype
+    use inputflags,         only: igradients
+
+    use atom,               only: ncent
 
     implicit none
 
@@ -1930,17 +1994,19 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     write(ounit,string_format)  " Reading gradients cartesian from the file :: ",  trim(file_gradients_cartesian)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_gradients_cartesian, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_gradients_cartesian, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the gradients_cartesian file")
-    else
-        call fatal_error ( " Gradients cartesian file "// trim(file_gradients_cartesian) // " does not exist.")
+    if (wid) then
+        inquire(file=file_gradients_cartesian, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_gradients_cartesian, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the gradients_cartesian file")
+        else
+            call fatal_error ( " Gradients cartesian file "// trim(file_gradients_cartesian) // " does not exist.")
+        endif
+
+
+        read (iunit, *, iostat=iostat) key
+        if (iostat /= 0) call fatal_error( "Error in reading gradients cartesian file :: expecting 'gradients_cartesian'")
     endif
-
-
-    read (iunit, *, iostat=iostat) key
-    if (iostat /= 0) call fatal_error( "Error in reading gradients cartesian file :: expecting 'gradients_cartesian'")
 
 
     if (.not. (trim(key) == "gradients_cartesian") ) then
@@ -1963,23 +2029,33 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     delc    = 0.0d0
 
     ia = 2
-    do ic = 1, ncent
-        read (iunit, *, iostat=iostat) (igrdmv(k, ic), k=1, 3)
-        do k = 1, 3
-            if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) then
-                call fatal_error('GRADIENTS_CARTESIAN: igrdmv \= 0,1')
-            endif
-            if (igrdmv(k, ic) .eq. 1) then
-                igrdaidx(ia/2) = ic
-                igrdcidx(ia/2) = k
-                delc(k, ic, ia) = delgrdxyz
-                delc(k, ic, ia + 1) = -delgrdxyz
-                ia = ia + 2
-            endif
+    if (wid) then
+        do ic = 1, ncent
+            read (iunit, *, iostat=iostat) (igrdmv(k, ic), k=1, 3)
+            do k = 1, 3
+                if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) then
+                    call fatal_error('GRADIENTS_CARTESIAN: igrdmv \= 0,1')
+                endif
+                if (igrdmv(k, ic) .eq. 1) then
+                    igrdaidx(ia/2) = ic
+                    igrdcidx(ia/2) = k
+                    delc(k, ic, ia) = delgrdxyz
+                    delc(k, ic, ia + 1) = -delgrdxyz
+                    ia = ia + 2
+                endif
+            enddo
         enddo
-    enddo
+    endif
+
+    call bcast(igrdmv)
+    call bcast(igrdaidx)
+    call bcast(igrdcidx)
+    call bcast(delc)
+
     igradients = 1
-    close(iunit)
+    call bcast(igradients)
+
+    if (wid) close(iunit)
 end subroutine read_gradients_cartesian_file
 
 subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
@@ -1988,6 +2064,9 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     ! atoms energy gradients are to be calculated for.
 
     ! Originally written by Omar Valsson.
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
     use contrl_file,    only: ounit, errunit
     use vmc_mod, only: MCENT
     use forcepar, only: nforce
@@ -2019,17 +2098,19 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     write(ounit,string_format)  " Reading gradients zmatrix from the file :: ",  trim(file_gradients_zmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_gradients_zmatrix, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_gradients_zmatrix, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the gradients_zmatrix file")
-    else
-        call fatal_error ( " Gradients zmatrix file "// trim(file_gradients_zmatrix) // " does not exist.")
+    if (wid) then
+        inquire(file=file_gradients_zmatrix, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_gradients_zmatrix, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the gradients_zmatrix file")
+        else
+            call fatal_error ( " Gradients zmatrix file "// trim(file_gradients_zmatrix) // " does not exist.")
+        endif
+
+
+        read (iunit, *, iostat=iostat) key
+        if (iostat /= 0) call fatal_error( "Error in reading gradients zmatrix file :: expecting 'gradients_zmatrix'")
     endif
-
-
-    read (iunit, *, iostat=iostat) key
-    if (iostat /= 0) call fatal_error( "Error in reading gradients zmatrix file :: expecting 'gradients_zmatrix'")
 
 
     if (.not. (trim(key) == "gradients_zmatrix") ) then
@@ -2053,22 +2134,30 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
 
 
     ia = 2
-    do ic = 1, ncent
-
-        read (iunit, *, iostat=iostat) (igrdmv(k, ic), k=1, 3)
-        do k = 1, 3
-            if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) call fatal_error('GRADIENTS_ZMATRIX: igrdmv \= 0,1')
-            if (igrdmv(k, ic) .eq. 1) then
-                igrdaidx(ia/2) = ic
-                igrdcidx(ia/2) = k
-                call grdzmat_displ(k, ic, ia, +1.0d0)
-                call grdzmat_displ(k, ic, ia + 1, -1.0d0)
-                ia = ia + 2
-            endif
+    if (wid) then
+        do ic = 1, ncent
+            read (iunit, *, iostat=iostat) (igrdmv(k, ic), k=1, 3)
+            do k = 1, 3
+                if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) call fatal_error('GRADIENTS_ZMATRIX: igrdmv \= 0,1')
+                if (igrdmv(k, ic) .eq. 1) then
+                    igrdaidx(ia/2) = ic
+                    igrdcidx(ia/2) = k
+                    call grdzmat_displ(k, ic, ia, +1.0d0)
+                    call grdzmat_displ(k, ic, ia + 1, -1.0d0)
+                    ia = ia + 2
+                endif
+            enddo
         enddo
-    enddo
+    endif
+    call bcast(igrdmv)
+    call bcast(igrdaidx)
+    call bcast(igrdcidx)
+    call bcast(delc)
+
     igradients = 1
-    close(iunit)
+    call bcast(igradients)
+
+    if (wid) close(iunit)
 
 end subroutine read_gradients_zmatrix_file
 
@@ -2077,11 +2166,14 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     !
     ! Read for which Z matrix (internal) coordiantes of
     ! atoms energy gradients are to be calculated for.
-    use contrl_file,    only: ounit, errunit
-    use grdntsmv, only: igrdmv
-    use inputflags, only: imodify_zmat
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
-    use atom, only: ncent
+    use contrl_file,        only: ounit, errunit
+    use grdntsmv,           only: igrdmv
+    use inputflags,         only: imodify_zmat
+
+    use atom,               only: ncent
 
     implicit none
 
@@ -2101,18 +2193,19 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     write(ounit,string_format)  " Reading modify zmatrix from the file :: ",  trim(file_modify_zmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_modify_zmatrix, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_modify_zmatrix, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the modify_zmatrix file")
-    else
-        call fatal_error (" modify zmatrix file "// trim(file_modify_zmatrix) // " does not exist.")
+    if (wid) then
+        inquire(file=file_modify_zmatrix, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_modify_zmatrix, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the modify_zmatrix file")
+        else
+            call fatal_error (" modify zmatrix file "// trim(file_modify_zmatrix) // " does not exist.")
+        endif
+
+
+        read (iunit, *, iostat=iostat) key
+        if (iostat /= 0) call fatal_error( "Error in reading modify zmatrix file")
     endif
-
-
-    read (iunit, *, iostat=iostat) key
-    if (iostat /= 0) call fatal_error( "Error in reading modify zmatrix file")
-
 
     if (.not. (trim(key) == "modify_zmatrix") ) then
         call fatal_error( "Error in reading modify zmatrix file :: expecting 'modify_zmatrix'")
@@ -2121,16 +2214,22 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
 
     if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
 
-    do ic = 1, ncent
-        read (iunit, *, iostat=iostat) (igrdmv(k, ic), k=1, 3)
-        do k = 1, 3
-            if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) then
-                call fatal_error('MODIFY_ZMATRIX: igrdmv \= 0,1')
-            endif
+    if (wid) then
+        do ic = 1, ncent
+            read (iunit, *, iostat=iostat) (igrdmv(k, ic), k=1, 3)
+            do k = 1, 3
+                if (igrdmv(k, ic) .lt. 0 .or. igrdmv(k, ic) .gt. 1) then
+                    call fatal_error('MODIFY_ZMATRIX: igrdmv \= 0,1')
+                endif
+            enddo
         enddo
-    enddo
+    endif
+    call bcast(igrdmv)
+
     imodify_zmat = 1
-    close(iunit)
+    call bcast(imodify_zmat)
+
+    if (wid) close(iunit)
 end subroutine read_modify_zmatrix_file
 
 subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
@@ -2138,11 +2237,13 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     !
     ! Read for which Z matrix (internal) coordiantes of
     ! atoms energy gradients are to be calculated for.
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
-    use contrl_file,    only: ounit, errunit
-    use grdnthes, only: hessian_zmat
-    use inputflags, only: ihessian_zmat
-    use atom, only: ncent
+    use contrl_file,        only: ounit, errunit
+    use grdnthes,           only: hessian_zmat
+    use inputflags,         only: ihessian_zmat
+    use atom,               only: ncent
 
     implicit none
 
@@ -2162,18 +2263,19 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     write(ounit,string_format)  " Reading hessian zmatrix from the file :: ",  trim(file_hessian_zmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_hessian_zmatrix, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_hessian_zmatrix, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the hessian_zmatrix file")
-    else
-        call fatal_error (" hessian zmatrix file "// trim(file_hessian_zmatrix) // " does not exist.")
+    if (wid) then
+        inquire(file=file_hessian_zmatrix, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_hessian_zmatrix, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the hessian_zmatrix file")
+        else
+            call fatal_error (" hessian zmatrix file "// trim(file_hessian_zmatrix) // " does not exist.")
+        endif
+
+
+        read (iunit, *, iostat=iostat) key
+        if (iostat /= 0) call fatal_error( "Error in reading hessian zmatrix file")
     endif
-
-
-    read (iunit, *, iostat=iostat) key
-    if (iostat /= 0) call fatal_error( "Error in reading hessian zmatrix file")
-
 
     if (.not. (trim(key) == "hessian_zmatrix") ) then
         call fatal_error( "Error in reading hessian zmatrix file :: expecting 'hessian_zmatrix'")
@@ -2183,16 +2285,23 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
 
     if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))
 
-    do ic = 1, ncent
-        read (iunit, *) (hessian_zmat(k, ic), k=1, 3)
-        do k = 1, 3
-            if (hessian_zmat(k, ic) .le. 0) then
-                call fatal_error('HESSIAN_ZMATRIX: hess <=  0')
-            endif
+    if (wid) then
+        do ic = 1, ncent
+            read (iunit, *) (hessian_zmat(k, ic), k=1, 3)
+            do k = 1, 3
+                if (hessian_zmat(k, ic) .le. 0) then
+                    call fatal_error('HESSIAN_ZMATRIX: hess <=  0')
+                endif
+            enddo
         enddo
-    enddo
+    endif
+
+    call bcast(hessian_zmat)
+
     ihessian_zmat = 1
-    close(iunit)
+    call bcast(ihessian_zmat)
+
+    if (wid) close(iunit)
 end subroutine read_hessian_zmatrix_file
 
 
@@ -2204,6 +2313,9 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     ! coordinates.
 
     ! Originally written by Omar Valsson
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
     use contrl_file,    only: ounit, errunit
     use atom, only: cent, ncent
     use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
@@ -2227,18 +2339,19 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     write(ounit,string_format)  " Reading zmatrix connection matrix from the file :: ",  trim(file_zmatrix_connection)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_zmatrix_connection, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_zmatrix_connection, iostat=iostat, action='read' )
-        if (iostat .ne. 0) call fatal_error( "Problem in opening the zmatrix connection matrix file")
-    else
-        call fatal_error (" zmatrix connection matrix file "// trim(file_zmatrix_connection) // " does not exist.")
+    if (wid) then
+        inquire(file=file_zmatrix_connection, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_zmatrix_connection, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error( "Problem in opening the zmatrix connection matrix file")
+        else
+            call fatal_error (" zmatrix connection matrix file "// trim(file_zmatrix_connection) // " does not exist.")
+        endif
+
+
+        read (iunit, *, iostat=iostat) key
+        if (iostat /= 0) call fatal_error( "Error in reading zmatrix connection matrix file")
     endif
-
-
-    read (iunit, *, iostat=iostat) key
-    if (iostat /= 0) call fatal_error( "Error in reading zmatrix connection matrix file")
-
 
     if (.not. (trim(key) == "zmatrix_connectionmatrix") ) then
         call fatal_error( "Error in reading zmatrix connection matrix file :: expecting 'zmatrix_connectionmatrix'")
@@ -2257,23 +2370,36 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     czint      = 0.0d0
     czcart     = cent
 
-
-    do ic = 1, ncent
-        read (iunit, *, iostat=iostat) (izcmat(k, ic), k=1, 3)
-        do k = 1, 3
-            if (izcmat(k, ic) .ge. ic) call fatal_error('ZMATRIX: Error in connection matrix')
+    if (wid) then
+        do ic = 1, ncent
+            read (iunit, *, iostat=iostat) (izcmat(k, ic), k=1, 3)
+            do k = 1, 3
+                if (izcmat(k, ic) .ge. ic) call fatal_error('ZMATRIX: Error in connection matrix')
+            enddo
         enddo
-    enddo
+    endif
+    call bcast(izcmat)
+
     call cart2zmat(ncent, czcart, izcmat, czint)
     call zmat2cart_rc(ncent, izcmat, czint, czcart, czcart_ref)
 
+    call bcast(czcart)
+    call bcast(czint)
+    call bcast(czcart_ref)
+
     izmatrix = 1
     izmatrix_check = 1
-    close(iunit)
+    call bcast(izmatrix)
+    call bcast(izmatrix_check)
+
+    if (wid) close(iunit)
 end subroutine read_zmatrix_connection_file
 
 subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     ! Ravindra
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
     use contrl_file,    only: ounit, errunit
     use efield_mod, only: MCHARGES
     use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
@@ -2298,18 +2424,19 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     write(ounit,string_format)  " Reading efield from the file :: ",  trim(file_efield)
     write(ounit,*) '---------------------------------------------------------------------------'
 
-    inquire(file=file_efield, exist=exist)
-    if (exist) then
-        open (newunit=iunit,file=file_efield, iostat=iostat, action='read' )
-        if (iostat .ne. 0) error stop "Problem in opening the efield file"
-    else
-        call fatal_error ( " efield file "// trim(file_efield) // " does not exist.")
+    if (wid) then
+        inquire(file=file_efield, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_efield, iostat=iostat, action='read' )
+            if (iostat .ne. 0) error stop "Problem in opening the efield file"
+        else
+            call fatal_error ( " efield file "// trim(file_efield) // " does not exist.")
+        endif
+
+
+        read (iunit, *, iostat=iostat) key, ncharges_tmp, iscreen_tmp
+        if (iostat /= 0) error stop "Error in reading efield file"
     endif
-
-
-    read (iunit, *, iostat=iostat) key, ncharges_tmp, iscreen_tmp
-    if (iostat /= 0) error stop "Error in reading efield file"
-
 
     if (.not. (trim(key) == "efield") ) then
         error stop "Error in reading efield file :: expecting 'efield'"
@@ -2330,12 +2457,22 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     if (.not. allocated(ycharge)) allocate (ycharge(ncharges))
     if (.not. allocated(zcharge)) allocate (zcharge(ncharges))
 
-    do i = 1, ncharges
-        read (iunit, *, iostat=iostat) xcharge(i), ycharge(i), zcharge(i), qcharge(i), ascreen(i), bscreen(i)
-    enddo
+    if (wid) then
+        do i = 1, ncharges
+            read (iunit, *, iostat=iostat) xcharge(i), ycharge(i), zcharge(i), qcharge(i), ascreen(i), bscreen(i)
+        enddo
+    endif
+    call bcast(xcharge)
+    call bcast(ycharge)
+    call bcast(zcharge)
+    call bcast(qcharge)
+    call bcast(ascreen)
+    call bcast(bscreen)
 
     icharge_efield = icharge_efield + 1
     write(ounit, *) 'icharge_efield=', icharge_efield
 
-    close(iunit)
+    call bcast(icharge_efield)
+
+    if (wid) close(iunit)
 end subroutine read_efield_file
