@@ -1340,7 +1340,7 @@ subroutine read_symmetry_file(file_symmetry)
 
     !   local use
     character(len=72), intent(in)   :: file_symmetry
-    character(len=40)               :: temp1, temp2
+    character(len=40)               :: temp1, temp2, label
     integer                         :: iunit, iostat
     integer                         :: io, nsym, mo
     logical                         :: exist, skip = .true.
@@ -1366,13 +1366,14 @@ subroutine read_symmetry_file(file_symmetry)
     endif
 
     if (wid) then
-        read (iunit, *, iostat=iostat) temp1, nsym, mo
+        read (iunit, *, iostat=iostat) label, nsym, mo
         if (iostat /= 0) call fatal_error( "Error in reading symmetry file :: expecting 'sym_labels', nsym, norb")
     endif
+    call bcast(label)
     call bcast(nsym)
     call bcast(mo)
 
-    if (trim(temp1) == "sym_labels") then
+    if (trim(label) == "sym_labels") then
         if (norb /= mo) call fatal_error( "Number of orbitals not consistent with previous records")
     else
         call fatal_error (" Orbital symmetries file "// trim(file_symmetry) // " is corrupt.")
@@ -1381,6 +1382,8 @@ subroutine read_symmetry_file(file_symmetry)
 
     ! Ignore irrep text labels
     if (wid) read (iunit, '(a80)') temp2
+    write(ounit, *) "Irreducible representation correspondence for all norb orbitals"
+    write(ounit, *) temp2
 
     ! safe allocate
     if (.not. allocated(irrep)) allocate (irrep(norb))
@@ -1392,7 +1395,6 @@ subroutine read_symmetry_file(file_symmetry)
     endif
     call bcast(irrep)
 
-    write(ounit, *) "Irreducible representation correspondence for all norb orbitals"
     write(ounit, '(10(1x, i3))') (irrep(io), io=1, norb)
 
     if (wid) close(iunit)
