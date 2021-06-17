@@ -1521,7 +1521,8 @@ subroutine read_eigenvalues_file(file_eigenvalues)
         read (iunit, *, iostat=iostat) temp1, mo
         if (iostat /= 0) call fatal_error( "Error in reading eigenvalues file :: expecting 'eigenvalues / energies', norb")
     endif
-
+    call bcast(temp1)
+    call bcast(mo)
 
     if ((trim(temp1) == "eigenvalues")  .or. (trim(temp1) == "energies")) then
         if (norb /= mo) call fatal_error( "Number of orbitals not consistent with previous records")

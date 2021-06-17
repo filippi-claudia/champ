@@ -54,11 +54,11 @@
       call allocate_numbas()
       call allocate_numexp()
 
-      if (wid) then
-        do 100 ic=1,nctype+newghostype
-          if (ic .gt. 999) call fatal_error('READ_BAS_NUM: atomtyp > 999')
-          filename =  trim(pooldir) //  trim(bas_id) // ".basis." // atomtyp(ic)
+      do 100 ic=1,nctype+newghostype
+        if (ic .gt. 999) call fatal_error('READ_BAS_NUM: atomtyp > 999')
+        filename =  trim(pooldir) //  trim(bas_id) // ".basis." // atomtyp(ic)
 
+        if (wid) then
           inquire(file=filename, exist=exist)
           if (exist) then
             open (newunit=iunit,file=filename, iostat=iostat, action='read', status='old')
@@ -66,31 +66,41 @@
           else
             call fatal_error( " Numerical Basis file "// filename // " does not exist.")
           endif
+        endif
 
-          write(ounit,*) '-----------------------------------------------------------------------'
-          write(ounit,'(4a)')  " Reading numerical basis for ", trim(atomtyp(ic))," from the file :: ", trim(filename)
-          write(ounit,*) '-----------------------------------------------------------------------'
+        write(ounit,*) '-----------------------------------------------------------------------'
+        write(ounit,'(4a)')  " Reading numerical basis for ", trim(atomtyp(ic))," from the file :: ", trim(filename)
+        write(ounit,*) '-----------------------------------------------------------------------'
 
-          read(iunit,*, iostat=iostat) nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
+        if (wid) read(iunit,*, iostat=iostat) nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
+        call bcast(nrbas)
+        call bcast(igrid)
+        call bcast(nr)
+        call bcast(arg)
+        call bcast(r0)
+        call bcast(icusp)
 
-          write(ounit,*) "reading the content ", nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
-          write(ounit,*) "(Reading basis grid file = [ ",  trim(filename), " ] )"
-          write(ounit,'(''center type '',i4,'' nrbas,igrid,nr,arg,r0 ='',2i4,i5,2f10.5)') &
-          ic,nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic)
+        write(ounit,*) "reading the content ", nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
+        write(ounit,*) "(Reading basis grid file = [ ",  trim(filename), " ] )"
+        write(ounit,'(''center type '',i4,'' nrbas,igrid,nr,arg,r0 ='',2i4,i5,2f10.5)') &
+        ic,nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic)
 
-          if(nrbas(ic).gt.MRWF) call fatal_error('READ_BAS_NUM: nrbas gt MRWF')
-          if(nr(ic).gt.MRWF_PTS) call fatal_error('READ_BAS_NUM: nr gt MRWF_PTS')
-          if(igrid(ic).ne.1.and.igrid(ic).ne.2.and.igrid(ic).ne.3) &
-          call fatal_error('READ_BAS_NUM: grid not implemented')
+        if(nrbas(ic).gt.MRWF) call fatal_error('READ_BAS_NUM: nrbas gt MRWF')
+        if(nr(ic).gt.MRWF_PTS) call fatal_error('READ_BAS_NUM: nr gt MRWF_PTS')
+        if(igrid(ic).ne.1.and.igrid(ic).ne.2.and.igrid(ic).ne.3) &
+        call fatal_error('READ_BAS_NUM: grid not implemented')
 
-          if(nloc.eq.0) read(iunit,*,iostat=iostat) (l(irb),irb=1,nrbas(ic))
-          if(nloc.eq.0) write(ounit,*) "nloc = 0 :: ", (l(irb),irb=1,nrbas(ic))
-
+        if(nloc.eq.0) then
+          if (wid) read(iunit,*,iostat=iostat) (l(irb),irb=1,nrbas(ic))
           if (iostat .ne. 0) then
             write(errunit,'(a)') "Error:: Problem in reading the numerical basis file"
             write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
           endif
+          call bcast(l)
+        endif
+        if(nloc.eq.0) write(ounit,*) "nloc = 0 :: ", (l(irb),irb=1,nrbas(ic))
 
+        if (wid) then
           do ir=1,nr(ic)
             read(iunit,*,iostat=iostat) x(ir),(rwf(ir,irb,ic,iwf),irb=1,nrbas(ic))
           enddo
@@ -98,111 +108,105 @@
             write(errunit,'(a)') "Error:: Problem in reading the numerical basis file"
             write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
           endif
+        endif
+        call bcast(x)
+        call bcast(rwf)
 
-          if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
-          if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)
-          call bcast(arg)
-          call bcast(r0)
+        if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
+        if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)
+        call bcast(arg)
+        call bcast(r0)
 
-          do 100 irb=1,nrbas(ic)
+        do 100 irb=1,nrbas(ic)
 
-          if(nloc.eq.0.and.l(irb).eq.0.and.icusp(ic).eq.1) then
+        if(nloc.eq.0.and.l(irb).eq.0.and.icusp(ic).eq.1) then
 
-  ! c small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4
-            do 15 ii=1,NCOEF-1
-    15        dmatr(ii)=1.d0-znuc(ic)*x(ii)
-            y(1)=rwf(1,irb,ic,iwf)
-            ll=NCOEF-1
-            do 16 jj=2,NCOEF-1
-              y(jj)=rwf(jj,irb,ic,iwf)
-              do 16 ii=2,NCOEF-1
-                ll=ll+1
-    16          dmatr(ll)=x(ii)**jj
+! c small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4
+          do 15 ii=1,NCOEF-1
+  15        dmatr(ii)=1.d0-znuc(ic)*x(ii)
+          y(1)=rwf(1,irb,ic,iwf)
+          ll=NCOEF-1
+          do 16 jj=2,NCOEF-1
+            y(jj)=rwf(jj,irb,ic,iwf)
+            do 16 ii=2,NCOEF-1
+              ll=ll+1
+  16          dmatr(ll)=x(ii)**jj
 
-            call dgesv(NCOEF-1,1,dmatr,NCOEF-1,ipiv,y,NCOEF,info)
-            ce(1,irb,ic,iwf)=y(1)
-            ce(2,irb,ic,iwf)=-znuc(ic)*ce(1,irb,ic,iwf)
-            ce(3,irb,ic,iwf)=y(2)
-            ce(4,irb,ic,iwf)=y(3)
-            ce(5,irb,ic,iwf)=y(4)
-          else
+          call dgesv(NCOEF-1,1,dmatr,NCOEF-1,ipiv,y,NCOEF,info)
+          ce(1,irb,ic,iwf)=y(1)
+          ce(2,irb,ic,iwf)=-znuc(ic)*ce(1,irb,ic,iwf)
+          ce(3,irb,ic,iwf)=y(2)
+          ce(4,irb,ic,iwf)=y(3)
+          ce(5,irb,ic,iwf)=y(4)
+        else
 
-  ! c small radii wf(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
-            ll=0
-            do 25 jj=1,NCOEF
-              y(jj)=rwf(jj,irb,ic,iwf)
-              do 25 ii=1,NCOEF
-                ll=ll+1
-    25          dmatr(ll)=x(ii)**(jj-1)
-            call dgesv(NCOEF,1,dmatr,NCOEF,ipiv,y,NCOEF,info)
+! c small radii wf(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
+          ll=0
+          do 25 jj=1,NCOEF
+            y(jj)=rwf(jj,irb,ic,iwf)
+            do 25 ii=1,NCOEF
+              ll=ll+1
+  25          dmatr(ll)=x(ii)**(jj-1)
+          call dgesv(NCOEF,1,dmatr,NCOEF,ipiv,y,NCOEF,info)
 
-            do 26 icoef=1,NCOEF
-    26        ce(icoef,irb,ic,iwf)=y(icoef)
-          endif
+          do 26 icoef=1,NCOEF
+  26        ce(icoef,irb,ic,iwf)=y(icoef)
+        endif
 
 
 
-  ! c       if(ipr.gt.1) then
-            write(ounit,'(''basis = '',i4)') irb
-            write(ounit,'(''check the small radius expansion'')')
-            write(ounit,'(''coefficients'',1p10e22.10)') &
-                      (ce(iff,irb,ic,iwf),iff=1,NCOEF)
-            write(ounit,'(''check the small radius expansion'')')
-            write(ounit,'(''irad, rad, extrapolated value, correct value'')')
-            do 30 ir=1,10
-              val=ce(1,irb,ic,iwf)
-              do 28 icoef=2,NCOEF
-    28        val=val+ce(icoef,irb,ic,iwf)*x(ir)**(icoef-1)
-    30        write(ounit,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
-  ! c       endif
+! c       if(ipr.gt.1) then
+          write(ounit,'(''basis = '',i4)') irb
+          write(ounit,'(''check the small radius expansion'')')
+          write(ounit,'(''coefficients'',1p10e22.10)') &
+                    (ce(iff,irb,ic,iwf),iff=1,NCOEF)
+          write(ounit,'(''check the small radius expansion'')')
+          write(ounit,'(''irad, rad, extrapolated value, correct value'')')
+          do 30 ir=1,10
+            val=ce(1,irb,ic,iwf)
+            do 28 icoef=2,NCOEF
+  28        val=val+ce(icoef,irb,ic,iwf)*x(ir)**(icoef-1)
+  30        write(ounit,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
+! c       endif
 
-          dwf1=0.d0
-          do 32 icoef=2,NCOEF
-    32      dwf1=dwf1+(icoef-1)*ce(icoef,irb,ic,iwf)*x(1)**(icoef-2)
+        dwf1=0.d0
+        do 32 icoef=2,NCOEF
+  32      dwf1=dwf1+(icoef-1)*ce(icoef,irb,ic,iwf)*x(1)**(icoef-2)
 
-  ! c large radii wf(r)=a0*exp(-ak*r)
-  ! c       xm=0.5d0*(x(nr(ic))+x(nr(ic)-1))
-          wfm=0.5d0*(rwf(nr(ic),irb,ic,iwf)+rwf(nr(ic)-1,irb,ic,iwf))
-          dwfm=(rwf(nr(ic),irb,ic,iwf)-rwf(nr(ic)-1,irb,ic,iwf))/  &
-          (x(nr(ic))-x(nr(ic)-1))
-          if(dabs(wfm).gt.1.d-99) then
-            ae(2,irb,ic,iwf)=-dwfm/wfm
-            ae(1,irb,ic,iwf)=rwf(nr(ic),irb,ic,iwf)*    &
-                            dexp(ae(2,irb,ic,iwf)*x(nr(ic)))
-            dwfn=-ae(2,irb,ic,iwf)*rwf(nr(ic),irb,ic,iwf)
-          else
-            ae(1,irb,ic,iwf)=0.d0
-            ae(2,irb,ic,iwf)=0.d0
-            dwfn=0.d0
-          endif
-  ! c       if(ipr.gt.1) then
-            write(ounit,'(''check the large radius expansion'')')
-            write(ounit,'(''a0,ak'',1p2e22.10)')     &
-                              ae(1,irb,ic,iwf),ae(2,irb,ic,iwf)
-            write(ounit,'(''irad, rad, extrapolated value, correct value'')')
-            do 40 ir=1,10
-              val=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
-    40        write(ounit,'(i2,1p3e22.14)')      &
-              ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf)
-            write(ounit,*) 'dwf1,dwfn',dwf1,dwfn
-  ! c       endif
-          if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
+! c large radii wf(r)=a0*exp(-ak*r)
+! c       xm=0.5d0*(x(nr(ic))+x(nr(ic)-1))
+        wfm=0.5d0*(rwf(nr(ic),irb,ic,iwf)+rwf(nr(ic)-1,irb,ic,iwf))
+        dwfm=(rwf(nr(ic),irb,ic,iwf)-rwf(nr(ic)-1,irb,ic,iwf))/  &
+        (x(nr(ic))-x(nr(ic)-1))
+        if(dabs(wfm).gt.1.d-99) then
+          ae(2,irb,ic,iwf)=-dwfm/wfm
+          ae(1,irb,ic,iwf)=rwf(nr(ic),irb,ic,iwf)*    &
+                          dexp(ae(2,irb,ic,iwf)*x(nr(ic)))
+          dwfn=-ae(2,irb,ic,iwf)*rwf(nr(ic),irb,ic,iwf)
+        else
+          ae(1,irb,ic,iwf)=0.d0
+          ae(2,irb,ic,iwf)=0.d0
+          dwfn=0.d0
+        endif
+! c       if(ipr.gt.1) then
+          write(ounit,'(''check the large radius expansion'')')
+          write(ounit,'(''a0,ak'',1p2e22.10)')     &
+                            ae(1,irb,ic,iwf),ae(2,irb,ic,iwf)
+          write(ounit,'(''irad, rad, extrapolated value, correct value'')')
+          do 40 ir=1,10
+            val=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
+  40        write(ounit,'(i2,1p3e22.14)')      &
+            ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf)
+          write(ounit,*) 'dwf1,dwfn',dwf1,dwfn
+! c       endif
+        if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
-          call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn,  &
-          d2rwf(1,irb,ic,iwf),work)
+        call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn,  &
+        d2rwf(1,irb,ic,iwf),work)
 
-        close(iunit)
+        if (wid) close(iunit)
   100  continue
-      endif
-      call bcast(nrbas)
-      call bcast(igrid)
-      call bcast(nr)
-      call bcast(arg)
-      call bcast(r0)
-      call bcast(icusp)
-      call bcast(rwf)
-      call bcast(ae)
-      call bcast(ce)
+
       return
       end subroutine read_bas_num
 
@@ -269,6 +273,7 @@ subroutine readps_gauss
       endif
       write(ounit,'(a,i4,a,a80)') 'ECP for atom type ', ic, ' label = ', adjustl(label)
     endif
+    call bcast(label)
     ! max projector
     if (.not. allocated(lpot)) allocate (lpot(nctype))
 
@@ -288,45 +293,43 @@ subroutine readps_gauss
   ! non-local l=0 at index 1 etc, up to lpot-1
 
     call allocate_gauss_ecp()
-    if (wid) then
-      do l=1,lpot(ic)
-          if(l.eq.1)then
-            idx=lpot(ic)
-            else
-            idx=l-1
-          endif
+    do l=1,lpot(ic)
+        if(l.eq.1)then
+          idx=lpot(ic)
+          else
+          idx=l-1
+        endif
+        if (wid) then
           read(iunit,*,iostat=iostat) necp_term(idx,ic)
           if (iostat .ne. 0) then
               write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: necp_term"
               write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
           endif
+        endif
+        call bcast(necp_term)
 
-          if(necp_term(idx,ic).gt.MGAUSS) call fatal_error('READPS_GAUSS: increase MGAUSS')
+        if(necp_term(idx,ic).gt.MGAUSS) call fatal_error('READPS_GAUSS: increase MGAUSS')
 
-          write(ounit,'(a,2i6)') '    component, #terms ', l,necp_term(idx,ic)
+        write(ounit,'(a,2i6)') '    component, #terms ', l,necp_term(idx,ic)
 
-          do i=1,necp_term(idx,ic)
+        do i=1,necp_term(idx,ic)
+          if (wid) then
             read(iunit,*,iostat=iostat) ecp_coef(i,idx,ic), necp_power(i,idx,ic),ecp_exponent(i,idx,ic)
 
             if (iostat .ne. 0) then
-            write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: ecp_coeff, power, ecp_exponents"
-            write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+              write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: ecp_coeff, power, ecp_exponents"
+              write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
             endif
-
             write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic),necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
-          enddo
-      enddo
+          endif
+        enddo
+        call bcast(ecp_coef)
+        call bcast(necp_power)
+        call bcast(ecp_exponent)
+    enddo
 
-      close(iunit)
-    endif
+    if (wid) close(iunit)
   enddo
-
-  call bcast(lpot)
-  call bcast(necp_term)
-  call bcast(ecp_coef)
-  call bcast(necp_power)
-  call bcast(ecp_exponent)
-
 
   if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
   if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
