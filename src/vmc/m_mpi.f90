@@ -35,6 +35,7 @@ module custom_broadcast
 !! commands. A generic procedure interface is used to simplify the
 !! broadcasting.
 !! @author Ravindra Shinde
+!! @date 16 June 2021
 
     use precision_kinds, only: dp
     use mpi

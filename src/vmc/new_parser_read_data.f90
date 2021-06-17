@@ -1,6 +1,9 @@
 
 subroutine header_printing()
-    ! Ravindra
+    !> This subroutine prints the header in each output file. It contains some
+    !! useful information about the compilers, version of the code, input and output file names.
+    !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+
     use mpi
     use mpiconf, only: idtask, nproc
     use, intrinsic :: iso_fortran_env, only: iostat_end
@@ -97,8 +100,11 @@ end subroutine header_printing
 
 
 subroutine read_molecule_file(file_molecule)
-    !> This subroutine reads the .xyz molecule file.
-    !! @author Ravindra Shinde
+    !> This subroutine reads the .xyz molecule file. It then computes the
+    !! number of types of atoms, nuclear charges (from the symbol), and
+    !! number of valence electrons if pseudopotential is provided.
+    !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+    !! @date
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
     use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
@@ -727,6 +733,7 @@ subroutine read_csf_file(file_determinants)
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iostat, i, j, iunit
     logical                         :: exist, printed
+    logical                         :: found = .false.
 
     !   Formatting
     character(len=100)              :: int_format     = '(A, T40, I8)'
@@ -747,51 +754,59 @@ subroutine read_csf_file(file_determinants)
         endif
     endif
 
-    ! known bug in the following do loop. conficts with the mpi and allocation.
-    do
-        if (wid) then
+    if (wid) then
+        do while (.not. found)
             read(iunit,*, iostat=iostat) temp1
-            temp1 = trim(temp1)
             if (is_iostat_end(iostat)) exit
-
+            temp1 = trim(temp1)
             if (temp1 == "csf") then
-                backspace(iunit)   ! go a line back
-                read(iunit, *)  temp2, ncsf, nstates
-                call bcast(ncsf)
-                call bcast(nstates)
-                print*, "debug nstates, ncsf after broadcast", nstates, ncsf
+                backspace(iunit)
+                found = .true.
             endif
-        endif
+        enddo
+    endif
+    call bcast(found)
 
-            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
-            if (wid) then
-                print*, "debug nstates, ncsf", nstates, ncsf
-                do i = 1, nstates
-                    read(iunit,*) (ccsf(j,i,1), j=1,ncsf)
-                enddo
-            endif
-            call bcast(ccsf)
-    enddo
-
-    if (temp1 /= "csf") then
+    ! if there is no mention of "csf" in the file
+    if (.not. found) then
         ! No csf information present. One to one mapping cdet == ccsf
         nstates = 1
+        ncsf = ndet
         if (ioptci .ne. 0) nciterm = nciprim
-        call bcast(nciterm)
-
+        printed = .true.
+        ! if there is no mention of "csf" in the file:: allocate and assign
         if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
         do i = 1, nstates
             do j = 1, ndet
                 ccsf(j,i,nwftype) = cdet(j,i,nwftype)
             enddo
         enddo
-        printed = .true.
-    endif
+        ! printing
+        write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
+        write(ounit,int_format) " Number of states (nstates) ", nstates
 
-    write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
-    write(ounit,int_format) " Number of states (nstates) ", nstates
+        write(ounit,*)
+        write(ounit,*) " CSF coefficients not present in the determinant file "
+        write(ounit,*) " CSF coefficients map one-to-one to determinant coefficients "
+        write(ounit,*)
 
-    if (.not. printed) then
+    else
+        ! read the same line again to get the ncsf and nstates
+        if (wid) read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
+        call bcast(ncsf)
+        call bcast(nstates)
+
+        if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+        if (wid) then
+            do i = 1, nstates
+                read(iunit,*) (ccsf(j,i,1), j=1,ncsf)
+            enddo
+        endif
+        call bcast(ccsf)
+
+        write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
+        write(ounit,int_format) " Number of states (nstates) ", nstates
+
         write(ounit,*)
         write(ounit,*) " CSF coefficients from an external file "
 
@@ -799,12 +814,8 @@ subroutine read_csf_file(file_determinants)
         do j = 1, ncsf
             write(ounit,'(10(1x, f12.8, 1x))') (ccsf(j,i,1), i=1,nstates)
         enddo
-    else
-        write(ounit,*)
-        write(ounit,*) " CSF coefficients not present in the determinant file "
-        write(ounit,*) " CSF coefficients map one-to-one to determinant coefficients "
-        write(ounit,*)
     endif
+
     icsfs = 1
     call bcast(icsfs)
 
@@ -838,6 +849,7 @@ subroutine read_csfmap_file(file_determinants)
     integer                         :: ncsf_check, ndet_check, nmap_check
     real(dp)                        :: c
     logical                         :: exist, printed
+    logical                         :: found = .false.
 
     !   Formatting
     character(len=100)              :: int_format     = '(A, T40, I8)'
@@ -858,121 +870,110 @@ subroutine read_csfmap_file(file_determinants)
         endif
     endif
 
-    do
-        if (wid) read(iunit,*, iostat=iostat) temp1
-        temp1 = trim(temp1)
-        if (is_iostat_end(iostat)) exit
-
-
-        if (temp1 == "csfmap") then
-            backspace(iunit)   ! go a line back
-            if (wid) then
-                read(iunit, *, iostat=iostat)  temp2, ncsf_check, ndet_check, nmap_check
-
-                if (iostat == 0) then
-
-                    if (ndet_check .ne. ndet) call fatal_error('CSFMAP: wrong number of determinants')
-                    if (ncsf_check .ne. ncsf) call fatal_error('CSFMAP: wrong number of csf')
-                    if (nmap_check .gt. float(ndet)*ndet) call fatal_error('CSFMAP: too many determinants in map list')
-
-                    call bcast(nmap)
-
-                    if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
-                    if (.not. allocated(iadet)) allocate (iadet(ndet))
-                    if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-                    if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))   ! why MDETCSFX
-
-                    write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
-                    write(ounit,int_format) " Number of determinants (ndet) ", ndet
-                    write(ounit,int_format) " Number of mappings (nmap) ", nmap
-                    write(ounit,*)
-
-                    nptr = 1
-                    do i = 1, ncsf
-                        read (iunit, *) nterm
-                        iadet(i) = nptr
-                        ibdet(i) = nptr + nterm - 1
-                        do j = 1, nterm
-                            read (iunit, *) id, c
-                            icxdet(nptr) = id
-                            cxdet(nptr) = c
-                            nptr = nptr + 1
-                            if (nptr .gt. ndet*MDETCSFX) call fatal_error ('Error in CSFMAP:: problem with nmap')
-                        enddo
-                    enddo
-                    call bcast(icxdet)
-                    call bcast(cxdet)
-                    call bcast(iadet)
-                    call bcast(ibdet)
-
-                    if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
-                    nmap = nptr
-
-                    if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
-
-                    write(ounit, '(''Warning: det coef overwritten with csf'')')
-                    do k = 1, nstates
-                        do j = 1, ndet
-                            cdet(j, k, 1) = 0
-                        enddo
-                        do icsf = 1, ncsf
-                            do j = iadet(icsf), ibdet(icsf)
-                                jx = icxdet(j)
-                                cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
-                            enddo
-                        enddo
-                    enddo
-                    call bcast(cdet)
-
-                else
-                    call fatal_error ("Error in reading number of csfs, number of determinants, or number of mappings")
-                endif
+    if (wid) then
+        do while (.not. found)
+            read(iunit,*, iostat=iostat) temp1
+            if (is_iostat_end(iostat)) exit
+            temp1 = trim(temp1)
+            if (temp1 == "csfmap") then
+                backspace(iunit)
+                found = .true.
             endif
-        else
-            ! No csfmap information present. One to one mapping cdet == ccsf
-            ! Check this part carefully
-            if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
-            if (.not. allocated(iadet)) allocate (iadet(ndet))
-            if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-            if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))   ! why MDETCSFX
+        enddo
+    endif
+    call bcast(found)
 
-            do i = 1, ncsf
-                iadet(i) = i
-                ibdet(i) = i
-                icxdet(i) = i
-                cxdet(i) = 1.0d0
-            enddo
-            call bcast(icxdet)
-            call bcast(cxdet)
-            call bcast(iadet)
-            call bcast(ibdet)
+    ! if there is no mention of "csfmap" in the file
+    if (.not. found) then
+        ! No csfmap information present. One to one mapping cdet == ccsf
+        ! Check this part carefully
+        if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
+        if (.not. allocated(iadet)) allocate (iadet(ndet))
+        if (.not. allocated(ibdet)) allocate (ibdet(ndet))
+        if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))   ! why MDETCSFX
 
-            ! default mapping loop ends here
-            printed = .true.
-        endif
-    enddo
+        do i = 1, ncsf
+            iadet(i) = i
+            ibdet(i) = i
+            icxdet(i) = i
+            cxdet(i) = 1.0d0
+        enddo
 
-    if (wid) close(iunit)
-
-    if (.not. printed) then
-        write(ounit,*)
-        write(ounit,*) " Determinant coefficients "
-        write(ounit,'(10(1x, f12.8, 1x))') (cdet(i,1,1), i=1,ndet)
+        write(ounit,*) " Determinant - CSF has one-to-one mapping  "
     else
+        ! read from the file.
+        if (wid) then
+            read(iunit, *, iostat=iostat)  temp2, ncsf_check, ndet_check, nmap_check
+            if (iostat == 0) then
+                if (ndet_check .ne. ndet) call fatal_error('CSFMAP: wrong number of determinants')
+                if (ncsf_check .ne. ncsf) call fatal_error('CSFMAP: wrong number of csf')
+                if (nmap_check .gt. float(ndet)*ndet) call fatal_error('CSFMAP: too many determinants in map list')
+            endif
+        endif
+        call bcast(ncsf_check)
+        call bcast(ndet_check)
+        call bcast(nmap_check)
+
+        if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
+        if (.not. allocated(iadet)) allocate (iadet(ndet))
+        if (.not. allocated(ibdet)) allocate (ibdet(ndet))
+        if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))   ! why MDETCSFX
+
+        nptr = 1
+        do i = 1, ncsf
+            if (wid) read (iunit, *) nterm
+            call bcast(nterm)
+            iadet(i) = nptr
+            ibdet(i) = nptr + nterm - 1
+            do j = 1, nterm
+                if (wid) read (iunit, *) id, c
+                call bcast(id)
+                call bcast(c)
+                icxdet(nptr) = id
+                cxdet(nptr) = c
+                nptr = nptr + 1
+                if (nptr .gt. ndet*MDETCSFX) call fatal_error ('Error in CSFMAP:: problem with nmap')
+            enddo
+        enddo
+        if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
+        nmap = nptr
+
+        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
+
+        write(ounit, '(''Warning: det coef overwritten with csf'')')
+
+        do k = 1, nstates
+            do j = 1, ndet
+                cdet(j, k, 1) = 0
+            enddo
+            do icsf = 1, ncsf
+                do j = iadet(icsf), ibdet(icsf)
+                    jx = icxdet(j)
+                    cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
+                enddo
+            enddo
+        enddo
+
+        write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
+        write(ounit,int_format) " Number of determinants (ndet) ", ndet
+        write(ounit,int_format) " Number of mappings (nmap) ", nmap
         write(ounit,*)
+
         write(ounit,*) " Determinant - CSF mapping  "
-! debug uncomment later
+
         do icsf = 1, ncsf
             write(ounit,'(i4)') icsf
             do j = iadet(icsf), ibdet(icsf)
                 jx = icxdet(j)
                 write(ounit,'(1(5x, i4, t12, f12.8, 1x))') icxdet(j), cxdet(j)
             enddo
-            !write(ounit,*)
         enddo
+        write(ounit,*)
     endif
-    write(ounit,*) '------------------------------------------------------'
 
+    if (wid) close(iunit)
+
+    write(ounit,*) '------------------------------------------------------'
 
 end subroutine read_csfmap_file
 
