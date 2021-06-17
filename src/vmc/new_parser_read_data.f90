@@ -1076,7 +1076,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iunit, iostat
     integer                         :: na1, na2, it, isp, iparm, ia
-    logical                         :: exist, skip = .true.
+    logical                         :: exist, found = .false.
     !real(dp)                        ::
 
     !   Formatting
@@ -1115,132 +1115,131 @@ subroutine read_jasderiv_file(file_jastrow_der)
     if (.not. allocated(npoint)) allocate (npoint(MCTYP3X))
     if (.not. allocated(npointa)) allocate (npointa(3*MCTYP3X))
 
-    ! to escape the comments before the "lcao nbasis norb" line
+    ! to escape the comments before the "jasderiv" line
     if (wid) then
-        do while (skip)
-            read (iunit,*, iostat=iostat) temp1
+        do while (.not. found)
+            read(iunit,*, iostat=iostat) temp1
+            if (is_iostat_end(iostat)) exit
             temp1 = trim(temp1)
             if (temp1 == "jasderiv") then
-                backspace(iunit)
-                skip = .false.
+                found = .true.
             endif
         enddo
     endif
+    call bcast(found)
 
-    ! read the first line
-    if (wid) then
-        read(iunit, *, iostat=iostat)  temp1
+    ! Read the file if jasderiv keyword is found
+    if (.not. found) then
+        call fatal_error ("Error in reading the first line of jastrow derivative file.")
+    else
+        if (wid) then
+            read (iunit, *, iostat=iostat) (nparma(ia), ia=na1, na2), &
+                            (nparmb(isp), isp=nspin1, nspin2b), &
+                            (nparmc(it), it=1, nctype), &
+                            (nparmf(it), it=1, nctype)
+            if (iostat /= 0 ) error stop "Problem reading jasderiv file"
+        endif
 
-        if (iostat == 0) then
-            if (trim(temp1) == "jasderiv") then
-                ! begin reading everything
-                read (iunit, *) (nparma(ia), ia=na1, na2), &
-                    (nparmb(isp), isp=nspin1, nspin2b), &
-                    (nparmc(it), it=1, nctype), &
-                    (nparmf(it), it=1, nctype)
-                call bcast(nparma)
-                call bcast(nparmb)
-                call bcast(nparmc)
-                call bcast(nparmf)
-                write(ounit, '(A,10i4)') " nparma = ", (nparma(ia), ia=na1, na2)
-                write(ounit, '(A,10i4)') " nparmb = ", (nparmb(isp), isp=nspin1, nspin2b)
-                write(ounit, '(A,10i4)') " nparmc = ", (nparmc(it), it=1, nctype)
-                write(ounit, '(A,10i4)') " nparmf = ", (nparmf(it), it=1, nctype)
+        call bcast(nparma)
+        call bcast(nparmb)
+        call bcast(nparmc)
+        call bcast(nparmf)
+        write(ounit, '(A,10i4)') " nparma = ", (nparma(ia), ia=na1, na2)
+        write(ounit, '(A,10i4)') " nparmb = ", (nparmb(isp), isp=nspin1, nspin2b)
+        write(ounit, '(A,10i4)') " nparmc = ", (nparmc(it), it=1, nctype)
+        write(ounit, '(A,10i4)') " nparmf = ", (nparmf(it), it=1, nctype)
 
-
-                if (ijas .ge. 4 .and. ijas .le. 6) then
-                    do it = 1, nctype
-                        if (numr .eq. 0) then
-                            ! All-electron with analytic slater basis
-                            if ((nparma(it) .gt. 0 .and. norda .eq. 0) .or. (nparma(it) .gt. norda + 1)) then
-                                write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
-                                call fatal_error( 'nparma too large for norda')
-                            endif
-                        else
-                            ! Pseudopotential with numerical basis: cannot vary a(1) or a(2)
-                            if (norda .eq. 1) call fatal_error( 'makes no sense to have norda=1 for numr>0')
-                            if ((norda .eq. 0 .and. nparma(it) .gt. 0) .or. (norda .gt. 0 .and. nparma(it) .gt. norda - 1)) then
-                                write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
-                                call fatal_error( 'nparma too large for norda')
-                            endif
-                        endif
-
-                        if (isc .le. 7 .and. &
-                            ((nordc .le. 2 .and. nparmc(it) .gt. 0) &
-                                .or. (nordc .eq. 3 .and. nparmc(it) .gt. 2) &
-                                .or. (nordc .eq. 4 .and. nparmc(it) .gt. 7) &
-                                .or. (nordc .eq. 5 .and. nparmc(it) .gt. 15) &
-                                .or. (nordc .eq. 6 .and. nparmc(it) .gt. 27) &
-                                .or. (nordc .eq. 7 .and. nparmc(it) .gt. 43))) then
-                            write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
-                            call fatal_error( 'nparmc too large for nordc in J_een with cusp conds')
-                        endif
-
-                        if (isc .gt. 7 .and. &
-                            ((nordc .le. 1 .and. nparmc(it) .gt. 0) &
-                                .or. (nordc .eq. 2 .and. nparmc(it) .gt. 2) &
-                                .or. (nordc .eq. 3 .and. nparmc(it) .gt. 6) &
-                                .or. (nordc .eq. 4 .and. nparmc(it) .gt. 13) &
-                                .or. (nordc .eq. 5 .and. nparmc(it) .gt. 23) &
-                                .or. (nordc .eq. 6 .and. nparmc(it) .gt. 37) &
-                                .or. (nordc .eq. 7 .and. nparmc(it) .gt. 55))) then
-                            write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
-                            call fatal_error( 'nparmc too large for nordc without cusp conds')
-                        endif
-
-                    enddo
-
-                    ! For the b coefs. we assume that b(1) is fixed by the cusp-cond.
-                    do isp = 1, nspin1, nspin2b
-                        if (nparmb(isp) .gt. nordb) then
-                            write(ounit, '(''isp,nordb,nparmb(isp)'',3i5)') isp, nordb, nparmb(isp)
-                            call fatal_error( 'nparmb too large for nordb')
-                        endif
-                    enddo
+        if (ijas .ge. 4 .and. ijas .le. 6) then
+            do it = 1, nctype
+                if (numr .eq. 0) then
+                    ! All-electron with analytic slater basis
+                    if ((nparma(it) .gt. 0 .and. norda .eq. 0) .or. (nparma(it) .gt. norda + 1)) then
+                        write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
+                        call fatal_error( 'nparma too large for norda')
+                    endif
+                else
+                    ! Pseudopotential with numerical basis: cannot vary a(1) or a(2)
+                    if (norda .eq. 1) call fatal_error( 'makes no sense to have norda=1 for numr>0')
+                    if ((norda .eq. 0 .and. nparma(it) .gt. 0) .or. (norda .gt. 0 .and. nparma(it) .gt. norda - 1)) then
+                        write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
+                        call fatal_error( 'nparma too large for norda')
+                    endif
                 endif
 
-                ! compute nparmj
-                nparmj = 0
-                npointa(1) = 0
-                do ia = na1, na2
-                    if (ia .gt. 1) npointa(ia) = npointa(ia - 1) + nparma(ia - 1)
-                    nparmj = nparmj + nparma(ia)
-                enddo
-                do isp = nspin1, nspin2b
-                    nparmj = nparmj + nparmb(isp)
-                enddo
-                npoint(1) = nparmj
-                do it = 1, nctype
-                    if (it .gt. 1) npoint(it) = npoint(it - 1) + nparmc(it - 1)
-                    nparmj = nparmj + nparmc(it) + nparmf(it)
-                enddo
+                if (isc .le. 7 .and. &
+                    ((nordc .le. 2 .and. nparmc(it) .gt. 0) &
+                        .or. (nordc .eq. 3 .and. nparmc(it) .gt. 2) &
+                        .or. (nordc .eq. 4 .and. nparmc(it) .gt. 7) &
+                        .or. (nordc .eq. 5 .and. nparmc(it) .gt. 15) &
+                        .or. (nordc .eq. 6 .and. nparmc(it) .gt. 27) &
+                        .or. (nordc .eq. 7 .and. nparmc(it) .gt. 43))) then
+                    write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
+                    call fatal_error( 'nparmc too large for nordc in J_een with cusp conds')
+                endif
 
-                call bcast(nparmj)
-                if (nparmj .gt. MPARMJ) call fatal_error('JASDERIV: MPARMJ too small')
+                if (isc .gt. 7 .and. &
+                    ((nordc .le. 1 .and. nparmc(it) .gt. 0) &
+                        .or. (nordc .eq. 2 .and. nparmc(it) .gt. 2) &
+                        .or. (nordc .eq. 3 .and. nparmc(it) .gt. 6) &
+                        .or. (nordc .eq. 4 .and. nparmc(it) .gt. 13) &
+                        .or. (nordc .eq. 5 .and. nparmc(it) .gt. 23) &
+                        .or. (nordc .eq. 6 .and. nparmc(it) .gt. 37) &
+                        .or. (nordc .eq. 7 .and. nparmc(it) .gt. 55))) then
+                    write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
+                    call fatal_error( 'nparmc too large for nordc without cusp conds')
+                endif
 
-                do it = 1, nctype
-                    read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))
-                    write(ounit, '(A,10i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))
-                enddo
-                call bcast(iwjasa)
-                do isp = nspin1, nspin2b
-                    read (iunit, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
-                    write(ounit, '(A,10i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))
-                enddo
-                call bcast(iwjasb)
-                do it = 1, nctype
-                    read (iunit, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
-                    write(ounit, '(A,10i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
-                enddo
-                call bcast(iwjasc)
-                    ! end of reading the jasderiv file block
-            endif
-        else
-            call fatal_error ("Error in reading the first line of jastrow derivative file.")
+            enddo
+
+            ! For the b coefs. we assume that b(1) is fixed by the cusp-cond.
+            do isp = 1, nspin1, nspin2b
+                if (nparmb(isp) .gt. nordb) then
+                    write(ounit, '(''isp,nordb,nparmb(isp)'',3i5)') isp, nordb, nparmb(isp)
+                    call fatal_error( 'nparmb too large for nordb')
+                endif
+            enddo
         endif
-    endif
+
+        ! compute nparmj
+        nparmj = 0
+        npointa(1) = 0
+        do ia = na1, na2
+            if (ia .gt. 1) npointa(ia) = npointa(ia - 1) + nparma(ia - 1)
+            nparmj = nparmj + nparma(ia)
+        enddo
+        do isp = nspin1, nspin2b
+            nparmj = nparmj + nparmb(isp)
+        enddo
+        npoint(1) = nparmj
+        do it = 1, nctype
+            if (it .gt. 1) npoint(it) = npoint(it - 1) + nparmc(it - 1)
+            nparmj = nparmj + nparmc(it) + nparmf(it)
+        enddo
+
+        call bcast(nparmj)
+        if (nparmj .gt. MPARMJ) call fatal_error('JASDERIV: MPARMJ too small')
+
+        do it = 1, nctype
+            if (wid) read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))
+            write(ounit, '(A,10i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))
+        enddo
+        call bcast(iwjasa)
+        do isp = nspin1, nspin2b
+            if (wid) read (iunit, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+            write(ounit, '(A,10i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+        enddo
+        call bcast(iwjasb)
+        do it = 1, nctype
+            if (wid) read (iunit, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
+            write(ounit, '(A,10i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
+        enddo
+        call bcast(iwjasc)
+            ! end of reading the jasderiv file block
+
+    endif ! if the file containing jasderiv exists
 
     if (wid) close(iunit)
+
 end subroutine read_jasderiv_file
 
 
@@ -1330,7 +1329,7 @@ subroutine read_symmetry_file(file_symmetry)
     ! Ravindra
 
     use custom_broadcast,   only: bcast
-    use mpiconf,            only: wid
+    use mpiconf,            only: wid, idtask
 
     use contrl_file,        only: ounit, errunit
     use coefs,              only: norb
