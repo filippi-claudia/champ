@@ -22,12 +22,32 @@ c job where it left off
       use qua, only: nquad, wq, xq, yq, zq
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
 
 
-      dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
-      dimension irn_tmp(4,0:NPROCX)
-      dimension ircounts(0:NPROCX),idispls(0:NPROCX)
+      integer :: i, id, idfrom, idget, ierr
+      integer :: ifr, istate, j, k
+      integer :: nelecx, nforcex, nlocx, nproco
+      integer :: nq_id, nqd_id, nqx, nscounts
+      integer, dimension(4,0:NPROCX) :: irn
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      integer, dimension(4,0:NPROCX) :: irn_tmp
+      integer, dimension(0:NPROCX) :: ircounts
+      integer, dimension(0:NPROCX) :: idispls
+      real(dp) :: rnd, wq_id, x_id, xq_id, yq_id
+      real(dp) :: zq_id
+
+
 
       rewind 10
 
@@ -90,7 +110,7 @@ c-----------------------------------------------------------------------
       rewind 10
       read(10) nproco
       if(nproco.ne.nproc) write(6,'(''Warning: different number of processors'',/
-     & ,9x,''old number of processors'',i3,/,9x,''continuing with'',i3,'' processors'')') 
+     & ,9x,''old number of processors'',i3,/,9x,''continuing with'',i3,'' processors'')')
      & nproco,nproc
       read(10) ((irn(i,j),i=1,4),j=0,nproco-1)
       if(idtask.le.nproco-1) call setrn(irn(1,idtask))
@@ -116,7 +136,7 @@ c-----------------------------------------------------------------------
         if(idtask.le.nproco-1) then
           do 60 idget=nproco,nproc-1
 c xold from idtask to idget
-   60       if(idtask.eq.mod(idget,nproco)) 
+   60       if(idtask.eq.mod(idget,nproco))
      &      call mpi_send(xold,3*nelec,mpi_double_precision,idget
      &      ,idget,MPI_COMM_WORLD,ierr)
 c    &      ,idget,MPI_COMM_WORLD,irequest,ierr)
