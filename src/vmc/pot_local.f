@@ -8,7 +8,11 @@
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use pseudo, only: nloc
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ic, ij, j
+      real(dp) :: pe, pe_ee, pe_en, x
 
 c  pe from nucleus-nucleus repulsion
       pe=pecent
