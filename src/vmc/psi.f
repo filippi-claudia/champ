@@ -16,7 +16,20 @@ c periodic systems.
       use jaspar6, only: cutjas
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: it, jp, k, l, l_hi
+      integer :: ll, m, n
+      real(dp) :: dabs, psi, ri, rij, rj
+      real(dp) :: rri, rrj, s, t
+      real(dp) :: u
+      real(dp), dimension(0:MORDJ) :: uu
+      real(dp), dimension(0:MORDJ) :: ss
+      real(dp), dimension(0:MORDJ) :: tt
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
 
 
 
@@ -29,13 +42,11 @@ c periodic systems.
 
 
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0)
 
 
 
 
 
-      dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ)
 
       psi=0
 
@@ -100,7 +111,14 @@ c-----------------------------------------------------------------------
       use jaspar6, only: cutjas
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, it
+      real(dp) :: ri, rri
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp) :: psia
 
 
 
@@ -108,8 +126,6 @@ c-----------------------------------------------------------------------
 
 
 
-
-      parameter(zero=0.d0,one=1.d0)
 
 
 
@@ -149,7 +165,14 @@ c-----------------------------------------------------------------------
       use jaspar6, only: cutjas
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ipar, isb
+      real(dp) :: rij, u
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp) :: psib
 
 
 
@@ -157,7 +180,6 @@ c-----------------------------------------------------------------------
 
 
 
-      parameter(zero=0.d0,one=1.d0)
 
 
 
