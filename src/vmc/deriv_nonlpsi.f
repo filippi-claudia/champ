@@ -17,16 +17,31 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use vardep, only: cdep, iwdepend, nvdepend
 
       use cuspmat4, only: d, iwc4, nterms
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: id, ideriv, iparm, it, jj
+      integer :: jp, jparm, k, l
+      integer :: l_hi, ll, m, n
+      real(dp) :: deriv_psinl, p, rri, rrj, rrri
+      real(dp) :: rrrj, u
+      real(dp), dimension(3) :: rshifti
+      real(dp), dimension(3) :: rshiftj
+      real(dp), dimension(*) :: gn
+      real(dp), dimension(0:MORDJ) :: uu
+      real(dp), dimension(0:MORDJ) :: ss
+      real(dp), dimension(0:MORDJ) :: tt
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: eps = 1.d-12
 
 
 
 
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
 
-      dimension rshifti(3),rshiftj(3),gn(*)
-      dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ)
 
       if(ijas.ge.4.and.ijas.le.6) then
 
@@ -115,15 +130,19 @@ c-----------------------------------------------------------------------
       use optwf_wjas, only: iwjasa
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iord, it, jparm
+      real(dp) :: bot, deriv_psianl, gen, rri, top
+      real(dp), dimension(*) :: gn
+      real(dp), parameter :: one = 1.d0
 
 
-      parameter(one=1.d0)
 
 
 
 
-      dimension gn(*)
 
 c Note: This routine is only called with iwf=1, but parts of it are
 c written for general iwf, whereas others (asymp_r) assume iwf=1.
@@ -177,7 +196,14 @@ c-----------------------------------------------------------------------
       use optwf_wjas, only: iwjasb
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iord, ipar, isb, jparm
+      real(dp) :: bot, deriv_psibnl, fee, gee, top
+      real(dp) :: u
+      real(dp), dimension(*) :: gn
+      real(dp), parameter :: one = 1.d0
 
 
 
@@ -188,12 +214,10 @@ c-----------------------------------------------------------------------
 
 
 
-      parameter(one=1.d0)
 
 
 
 
-      dimension gn(*)
 
 c Note: This routine is only called with iwf=1, but parts of it are
 c written for general iwf, whereas others (asymp_r) assume iwf=1.
