@@ -8,10 +8,14 @@
       use pcm_averages, only: qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_cum, enfpcm_cm2
       use mpi
-     
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
-      dimension collect(MCHS)
+      implicit none
+
+      integer :: i, ierr
+      real(dp) :: qopcm2collect, qopcmcollect, spcm2collect, spcmcollect, vpcm2collect
+      real(dp) :: vpcmcollect
+      real(dp), dimension(MCHS) :: collect
  
       if(ipcm.eq.0) return
 
@@ -88,11 +92,15 @@
       use pcm_parms, only: xpol
       use pcm_fdc, only: fs, qvol
       use mpi
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension nchv_proc(0:NPROCX),charge(NPROCX)
-      dimension icount(0:NPROCX),idispl(0:NPROCX)
+      integer :: i, ierr, nchv3
+      integer, dimension(0:NPROCX) :: nchv_proc
+      integer, dimension(0:NPROCX) :: icount
+      integer, dimension(0:NPROCX) :: idispl
+      real(dp), dimension(NPROCX) :: charge
  
       if(ipcm.eq.0) return
 
