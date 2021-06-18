@@ -204,24 +204,6 @@ subroutine parser
 
   call flaginit_new()
   !! Number of input variables found so far :: 171
-	call bcast(MCONF)
-  call bcast(MVEC)
-	! call bcast(MPS_QUAD)
-	! call bcast(MAXPROP)
-	! call bcast(MXORBOP)
-  ! call bcast(MXREDUCED)
-	! call bcast(MXCITERM)
-  ! call bcast(MSTATES)
-	! call bcast(MFORCE)
-  ! call bcast(MWF)
-  ! call bcast(MELEC)
-  ! call bcast(MORB)
-  ! call bcast(MBASIS)
-  ! call bcast(MCENT)
-  ! call bcast(MCTYPE)
-  ! call bcast(MCTYP3X)
-  ! call bcast(MWALK)
-
 
 ! %module general (complete)
   mode        = fdf_get('mode', 'vmc_one_mpi')
@@ -549,8 +531,6 @@ subroutine parser
 ! By this point all information about geometry and znuc should be present.
   iznuc     = 1
   igeometry = 1
-  call bcast(iznuc)
-  call bcast(igeometry)
 ! Molecular geometry section ends here
 
 ! Electrons
@@ -606,18 +586,15 @@ subroutine parser
 
     if (imetro.eq.1) then
       deltai= one/delta
-      call bcast(deltai)
       write(ounit,'(a,t36,f12.6)') " Step size = ",  delta
     else
       if(deltar .lt. one) then
         write(ounit,'(a)') '**Warning value of deltar reset to 2.'
         deltar = two
-        call bcast(deltar)
       endif
       if(deltat .lt. zero .or. deltat .gt. two) then
         write(ounit,'(a)') '**Warning value of deltat reset to 2.'
         deltat = two
-        call bcast(deltat)
       endif
       write(ounit,real_format)  " Radial step multiplier  ", deltar
       write(ounit,real_format)  " cos(theta) step size  ",   deltat
@@ -625,7 +602,6 @@ subroutine parser
 
     ! Truncate fbias so that fbias and the sampled quantity are never negative
     fbias=dmin1(two,dmax1(zero,fbias))
-    call bcast(fbias)
     write(ounit,real_format)  " Force bias  ",   fbias
 
     write(ounit,int_format) " Number of VMC steps/block  ", vmc_nstep
@@ -645,7 +621,6 @@ subroutine parser
     write(ounit,*)
 
     rttau=dsqrt(tau)
-    call bcast(rttau)
 
     write(ounit,int_format) " Version of DMC ",  idmc
     write(ounit,int_format) " nfprod ",  nfprod
@@ -671,23 +646,18 @@ subroutine parser
     if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
   else
     icasula=0
-    call bcast(icasula)
   endif
 
   ! Inizialized to zero for call to hpsi in vmc or dmc with no casula or/and in acuest
   i_vpsp=0
-  call bcast(i_vpsp)
 
   ! Reduce printing in case of a large calculation
 
   if(vmc_nstep*(vmc_nblk+2*vmc_nblkeq) .gt. 104000) ipr=-1
   if(vmc_irstar.eq.1) vmc_nblkeq=0
-  call bcast(vmc_nblkeq)
 
   if(dmc_nstep*(dmc_nblk+2*dmc_nblkeq) .gt. 104000) ipr=-1
   if(dmc_irstar.eq.1) dmc_nblkeq=0
-  call bcast(dmc_nblkeq)
-  call bcast(ipr)
 
   if( mode(1:3) == 'dmc' ) then
     write(ounit,int_format) " Number of DMC steps/block = ", dmc_nstep
@@ -772,8 +742,6 @@ subroutine parser
   endif
 
   ! allocation after determinants and basis
-!  call bcast(MWALK)
-!  call bcast(MCHS)
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
@@ -788,10 +756,7 @@ subroutine parser
     ! No csf present; set default values; This replaces inputcsf
     nstates = 1
     ncsf = 0
-    call bcast(nstates)
-    call bcast(ncsf)
     if (ioptci .ne. 0 .and. ici_def .eq. 1) nciterm = nciprim
-    call bcast(nciterm)
   endif
 
 ! (4) CSFMAP [#####]
@@ -899,18 +864,14 @@ subroutine parser
         write(ounit, '(a,f9.5,a,f9.5)')  "**Warning: input cutjas > half shortest sim. cell lattice vector;  cutjas reset from ", cutjas_tmp, " to ", cutjas
         else
         cutjas=cutjas_tmp
-        call bcast(cutjas)
         write(ounit,'(a, d12.5)' ) " input cutjas = ", cutjas_tmp
     endif
     if(cutjas.gt.0.d0) then
         cutjasi=1/cutjas
-        call bcast(cutjasi)
         else
         write(ounit, *) "cutjas reset to infinity"
         cutjas=1.d99
         cutjasi=0
-        call bcast(cutjas)
-        call bcast(cutjasi)
     endif
     call set_scale_dist(1)
   else
@@ -920,12 +881,6 @@ subroutine parser
     c1_jas6=1
     c2_jas6=0
     asymp_r=0
-    call bcast(cutjas)
-    call bcast(cutjasi)
-    call bcast(c1_jas6i)
-    call bcast(c1_jas6)
-    call bcast(c2_jas6)
-    call bcast(asymp_r)
     call allocate_jaspar6()  ! Needed for the following two arrays
     do i=1,nctype
         asymp_jasa(i)=0
@@ -933,8 +888,6 @@ subroutine parser
     do i=1,2
         asymp_jasb(i)=0
     enddo
-    call bcast(asymp_jasa)
-    call bcast(asymp_jasb)
   endif
   call set_scale_dist(1)
 
@@ -951,10 +904,8 @@ subroutine parser
   else
     allocate (zex(nbasis, nwftype))
     zex = 1   ! debug check condition about numr == 0
-    call bcast(zex)
   endif
   iexponents = iexponents + 1
-  call bcast(iexponents)
 
 
 ! (9) Symmetry information of orbitals (either block or from a file)
@@ -1013,8 +964,6 @@ subroutine parser
         if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
         ibas0(1)=1
         ibas1(1)=nbastyp(iwctype(1))
-        call bcast(ibas0)
-        call bcast(ibas1)
         do ic=2,ncent
           ibas0(ic)=ibas1(ic-1)+1
           ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
@@ -1068,12 +1017,10 @@ subroutine parser
               write(ounit, '(a)') " Orbitals on a grid: splines interpolation"
               call setup_3dlagorb
               i3dsplorb=0
-              call bcast(i3dsplorb)
              elseif(i3dsplorb.ge.1) then
               write(ounit, '(a)') " Orbitals on a grid: Lagrange interpolation"
               call setup_3dsplorb
               i3dlagorb=0
-              call bcast(i3dlagorb)
             endif
   endif
 
@@ -1097,8 +1044,6 @@ subroutine parser
     if(ioptorb_mixvirt.eq.0) then
       norbopt=0
       norbvirt=0
-      call bcast(norbopt)
-      call bcast(norbvirt)
     endif
     if(ioptorb_def.eq.0) then
       write(ounit,*) "INPUT: definition of orbital variations missing"
@@ -1143,7 +1088,6 @@ subroutine parser
       endif
     else
       nparmj=0
-      call bcast(nparmj)
     endif
 
 
@@ -1169,7 +1113,6 @@ subroutine parser
       write(ounit,int_format)  " CI printout flag = ", iciprt
       if( (ioptjas.eq.0) .and. (ioptorb.eq.0) .and. (method.eq.'hessian') ) then
         method='linear'
-        call bcast(method)
         write(ounit,'(a)' ) " Reset optimization method to linear"
       endif
   ! TMP due to changing kref -> also for ncsf=0, we need to have cxdet(i) carrying the phase
@@ -1183,8 +1126,6 @@ subroutine parser
       nciprim=0
       nciterm=0
     endif
-    call bcast(nciterm)
-    call bcast(nciprim)
 
     write(ounit,int_format)  " CI number of coefficients ", nciterm
     if((ncsf.eq.0) .and. (nciprim.gt.MXCITERM) ) call fatal_error('INPUT: nciprim gt MXCITERM')
@@ -1231,22 +1172,18 @@ subroutine parser
           iweight_g(1) = 1
           weights_g(1) = 1.d0
       endif
-      call bcast(nweight)
-      call bcast(iweight_g)
-      call bcast(weights_g)
     ! The above part should be moved to get_weights subroutine
     endif
 
     ! Efficiency for sampling states inputed in multiple_cistates
     if(iefficiency.gt.0) nstates_psig=nstates
-    call bcast(nstates_psig)
   else
-    ioptorb=0;    call bcast(ioptorb)
-    ioptci=0;     call bcast(ioptci)
-    ioptjas=0;    call bcast(ioptjas)
-    iefficiency=0;call bcast(iefficiency)
-    iguiding=0;   call bcast(iguiding)
-    nstates=1;    call bcast(nstates)
+    ioptorb=0
+    ioptci=0
+    ioptjas=0
+    iefficiency=0
+    iguiding=0
+    nstates=1
   endif ! if loop of condition of either vmc/dmc ends here
 
 
@@ -1270,7 +1207,6 @@ subroutine parser
 ! properties will be printed ipropprt
   if(iprop.ne.0) then
     nprop=MAXPROP
-    call bcast(nprop)
     write(ounit,'(a)' ) " Properties will be sampled "
     write(ounit,int_format ) " Properties printout flag = ", ipropprt
     call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
@@ -1346,9 +1282,6 @@ subroutine parser
       iweight(1) = 1
       weights(1) = 1.d0
   endif
-  call bcast(nweight)
-  call bcast(iweight)
-  call bcast(weights)
 
 ! The above part should be moved to get_weights subroutine
 
@@ -1551,7 +1484,6 @@ subroutine parser
 
 
     ncent_tot = ncent + nghostcent
-    call bcast(ncent_tot)
 
     ! Count unique type of elements
     nctype = 1
@@ -1562,8 +1494,6 @@ subroutine parser
         nctype = nctype + 1
         unique(nctype) = symbol(j)
     enddo
-    call bcast(nctype)
-    call bcast(unique)
 
     write(ounit,*) " Number of distinct types of elements (nctype) :: ", nctype
     write(ounit,*)
@@ -1577,13 +1507,11 @@ subroutine parser
             if (symbol(j) == unique(k))   iwctype(j) = k
         enddo
     enddo
-    call bcast(iwctype)
 
     ! Get the correspondence rule
     do k = 1, nctype
         atomtyp(k) = unique(k)
     enddo
-    call bcast(atomtyp)
     if (allocated(unique)) deallocate(unique)
 
     ! Get the znuc for each unique atom
@@ -1593,8 +1521,6 @@ subroutine parser
     enddo
 
     nctype_tot = nctype + newghostype
-    call bcast(znuc)
-    call bcast(nctype_tot)
 
     write(ounit,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
     write(ounit,*)
@@ -1629,7 +1555,6 @@ subroutine parser
         j = j + 1
       endif ! expect only three values in a line
     enddo ! parse entire file
-    call bcast(delc)
 
     write(ounit,*) 'Force displacements from the %block forces  '
     write(ounit,*)
@@ -1680,7 +1605,6 @@ subroutine parser
         j = j + 1
       endif
     enddo
-    call bcast(ccsf)
 
     write(ounit,*)
     write(ounit,*) " CSF coefficients from %block csf"
@@ -1798,8 +1722,6 @@ subroutine compute_mat_size_new()
   ! use vmc_mod, only: MMAT_DIM, MMAT_DIM2, MCTYP3X, MCENT3
   ! use const, only: nelec
   ! use atom, only: nctype_tot, ncent_tot
-  use custom_broadcast,   only: bcast
-  use mpiconf,            only: wid
 
   use sr_mod, only: MPARM, MOBS, MCONF
   use control_vmc, only: vmc_nstep, vmc_nblk
@@ -1815,9 +1737,6 @@ subroutine compute_mat_size_new()
   ! leads to circular dependecy of put in sr_mod ..
   MOBS = 10 + 6*MPARM
   MCONF = vmc_nstep * vmc_nblk
-
-  call bcast(MOBS)
-  call bcast(MCONF)
 
   call set_vmc_size
   call set_optci_size

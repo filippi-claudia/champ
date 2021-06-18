@@ -40,11 +40,8 @@ program main
     !call init_logfile()
     call initialize()
 
-
-    ! read the input
-!    if ( wid ) then
-        call parser()
-!    endif
+    ! read the input from input file and other data files
+    call parser()
 
     !> Initiaize log check.XXX files. It needs ipr flag value.
     call init_procfile()

@@ -155,9 +155,7 @@ subroutine read_molecule_file(file_molecule)
     if (.not. allocated(iwctype)) allocate(iwctype(ncent))
     if (.not. allocated(unique)) allocate(unique(ncent))
 
-    if (wid) then
-        read(iunit,'(A)')  comment
-    endif
+    if (wid) read(iunit,'(A)')  comment
     call bcast(comment)
 
     write(ounit,*) "Comment from the molecule file :: ", trim(comment)
@@ -171,9 +169,7 @@ subroutine read_molecule_file(file_molecule)
     call bcast(symbol)
     call bcast(cent)
 
-    if (wid) then
-        close(iunit)
-    endif
+    if (wid) close(iunit)
 
 
     ! Count unique type of elements
@@ -286,7 +282,7 @@ subroutine read_determinants_file(file_determinants)
     write(ounit,*)
 
 
-    ! to escape the comments before the "lcao nbasis norb" line
+    ! to escape the comments before the "determinants" line
     if (wid) then
         do while (skip)
             read(iunit,*, iostat=iostat) temp1
@@ -1443,6 +1439,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
         read (iunit, *, iostat=iostat) temp1, moopt, movirt
         if (iostat /= 0) call fatal_error( "Error in reading optorb_mixvirt file :: expecting 'optorb_mixvirt', norbopt, norbvirt")
     endif
+    call bcast(temp1)
 
     if (trim(temp1) == "optorb_mixvirt") then
         if (moopt .gt. norb) call fatal_error( "Number of orbitals for optimization are greater than the total orbitals")
@@ -1607,47 +1604,48 @@ subroutine read_basis_num_info_file(file_basis_num_info)
             call fatal_error( "Error in reading basis num info file :: expecting 'qmc_bf_info / basis'")
         endif
     endif
+    call bcast(numr)
 
-        nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
+    nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
 
-        allocate (nbastyp(nctot))
-        allocate (n1s(nctot))
-        allocate (n2s(nctot))
-        allocate (n2p(3, nctot))
-        allocate (n3s(nctot))
-        allocate (n3p(3, nctot))
-        allocate (n3dzr(nctot))
-        allocate (n3dx2(nctot))
-        allocate (n3dxy(nctot))
-        allocate (n3dxz(nctot))
-        allocate (n3dyz(nctot))
-        allocate (n4s(nctot))
-        allocate (n4p(3, nctot))
-        allocate (n4fxxx(nctot))
-        allocate (n4fyyy(nctot))
-        allocate (n4fzzz(nctot))
-        allocate (n4fxxy(nctot))
-        allocate (n4fxxz(nctot))
-        allocate (n4fyyx(nctot))
-        allocate (n4fyyz(nctot))
-        allocate (n4fzzx(nctot))
-        allocate (n4fzzy(nctot))
-        allocate (n4fxyz(nctot))
-        allocate (nsa(nctot))
-        allocate (npa(3, nctot))
-        allocate (ndzra(nctot))
-        allocate (ndz2a(nctot))
-        allocate (ndxya(nctot))
-        allocate (ndxza(nctot))
-        allocate (ndx2a(nctot))
-        allocate (ndyza(nctot))
+    allocate (nbastyp(nctot))
+    allocate (n1s(nctot))
+    allocate (n2s(nctot))
+    allocate (n2p(3, nctot))
+    allocate (n3s(nctot))
+    allocate (n3p(3, nctot))
+    allocate (n3dzr(nctot))
+    allocate (n3dx2(nctot))
+    allocate (n3dxy(nctot))
+    allocate (n3dxz(nctot))
+    allocate (n3dyz(nctot))
+    allocate (n4s(nctot))
+    allocate (n4p(3, nctot))
+    allocate (n4fxxx(nctot))
+    allocate (n4fyyy(nctot))
+    allocate (n4fzzz(nctot))
+    allocate (n4fxxy(nctot))
+    allocate (n4fxxz(nctot))
+    allocate (n4fyyx(nctot))
+    allocate (n4fyyz(nctot))
+    allocate (n4fzzx(nctot))
+    allocate (n4fzzy(nctot))
+    allocate (n4fxyz(nctot))
+    allocate (nsa(nctot))
+    allocate (npa(3, nctot))
+    allocate (ndzra(nctot))
+    allocate (ndz2a(nctot))
+    allocate (ndxya(nctot))
+    allocate (ndxza(nctot))
+    allocate (ndx2a(nctot))
+    allocate (ndyza(nctot))
 
-        if (nbasis .eq. 0) then
-            call fatal_error('Please Load LCAO before basis info in the input file')
-        endif
+    if (nbasis .eq. 0) then
+        call fatal_error('Please Load LCAO before basis info in the input file')
+    endif
 
-        allocate (iwlbas(nbasis, nctot))
-        allocate (iwrwf(nbasis, nctot))
+    allocate (iwlbas(nbasis, nctot))
+    allocate (iwrwf(nbasis, nctot))
 
     if (wid) then
         do i = 1, nctype + newghostype
@@ -1876,13 +1874,14 @@ subroutine read_dmatrix_file(file_dmatrix)
 
         read (iunit, *, iostat=iostat) temp1, ndetorb, nweight
         if (iostat /= 0) call fatal_error( "Error in reading dmatrix file :: expecting 'dmatrix', ndetorb, nweight")
+
+        if (.not. (trim(temp1) == "dmatrix") ) then
+            call fatal_error( "Error in reading dmatrix file :: expecting 'dmatrix'")
+        endif
     endif
+
     call bcast(ndetorb)
     call bcast(nweight)
-
-    if (.not. (trim(temp1) == "dmatrix") ) then
-        call fatal_error( "Error in reading dmatrix file :: expecting 'dmatrix'")
-    endif
 
 
     allocate (dmat(norb))
@@ -1906,6 +1905,7 @@ subroutine read_dmatrix_file(file_dmatrix)
 
     do iw = 1, nweight
         if (wid) read (iunit, *, iostat=iostat) (dmat(j), j=1, ndetorb)
+        call bcast(dmat)
         do j = 1, ndetorb
             dmat_diag(j) = dmat_diag(j) + weights(iw)*dmat(j)
         enddo
@@ -1969,12 +1969,13 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
 
         read (iunit, *, iostat=iostat) key, nesph
         if (iostat /= 0) call fatal_error( "Error in reading cavity spheres file :: expecting 'cavity_spheres', nspheres")
+
+        if (.not. (trim(key) == "cavity_spheres") ) then
+            error stop "Error in reading cavity_spheres file :: expecting 'cavity_spheres'"
+        endif
+
     endif
     call bcast(nesph)
-
-    if (.not. (trim(key) == "cavity_spheres") ) then
-        error stop "Error in reading cavity_spheres file :: expecting 'cavity_spheres'"
-    endif
 
     if (.not. allocated(re)) allocate (re(nesph))
     if (.not. allocated(re2)) allocate (re2(nesph))
@@ -2045,16 +2046,14 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
             call fatal_error ( " Gradients cartesian file "// trim(file_gradients_cartesian) // " does not exist.")
         endif
 
-
         read (iunit, *, iostat=iostat) key
         if (iostat /= 0) call fatal_error( "Error in reading gradients cartesian file :: expecting 'gradients_cartesian'")
+
+        if (.not. (trim(key) == "gradients_cartesian") ) then
+            error stop "Error in reading gradients cartesian file :: expecting 'gradients_cartesian'"
+        endif
+
     endif
-
-
-    if (.not. (trim(key) == "gradients_cartesian") ) then
-        error stop "Error in reading gradients cartesian file :: expecting 'gradients_cartesian'"
-    endif
-
 
     if (igrdtype .ne. 1) call fatal_error('GRADIENTS_CARTESIAN: igrdtype /= 1')
     if ((2*ngradnts + 1) .ne. nforce) call fatal_error('GRADIENTS_CARTESIAN: (2*ngradnts+1)  /=  nforce')
@@ -2149,14 +2148,12 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
             call fatal_error ( " Gradients zmatrix file "// trim(file_gradients_zmatrix) // " does not exist.")
         endif
 
-
         read (iunit, *, iostat=iostat) key
         if (iostat /= 0) call fatal_error( "Error in reading gradients zmatrix file :: expecting 'gradients_zmatrix'")
-    endif
 
-
-    if (.not. (trim(key) == "gradients_zmatrix") ) then
-        call fatal_error( "Error in reading gradients zmatrix file :: expecting 'gradients_zmatrix'")
+        if (.not. (trim(key) == "gradients_zmatrix") ) then
+            call fatal_error( "Error in reading gradients zmatrix file :: expecting 'gradients_zmatrix'")
+        endif
     endif
 
     if (igrdtype .ne. 2) call fatal_error('GRADIENTS_ZMATRIX: igrdtype /= 2')
@@ -2247,10 +2244,11 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
 
         read (iunit, *, iostat=iostat) key
         if (iostat /= 0) call fatal_error( "Error in reading modify zmatrix file")
-    endif
 
-    if (.not. (trim(key) == "modify_zmatrix") ) then
-        call fatal_error( "Error in reading modify zmatrix file :: expecting 'modify_zmatrix'")
+        if (.not. (trim(key) == "modify_zmatrix") ) then
+            call fatal_error( "Error in reading modify zmatrix file :: expecting 'modify_zmatrix'")
+        endif
+
     endif
 
 
@@ -2317,13 +2315,12 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
 
         read (iunit, *, iostat=iostat) key
         if (iostat /= 0) call fatal_error( "Error in reading hessian zmatrix file")
+
+        if (.not. (trim(key) == "hessian_zmatrix") ) then
+            call fatal_error( "Error in reading hessian zmatrix file :: expecting 'hessian_zmatrix'")
+        endif
+
     endif
-
-    if (.not. (trim(key) == "hessian_zmatrix") ) then
-        call fatal_error( "Error in reading hessian zmatrix file :: expecting 'hessian_zmatrix'")
-    endif
-
-
 
     if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))
 
@@ -2393,12 +2390,12 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
 
         read (iunit, *, iostat=iostat) key
         if (iostat /= 0) call fatal_error( "Error in reading zmatrix connection matrix file")
-    endif
 
-    if (.not. (trim(key) == "zmatrix_connectionmatrix") ) then
-        call fatal_error( "Error in reading zmatrix connection matrix file :: expecting 'zmatrix_connectionmatrix'")
-    endif
+        if (.not. (trim(key) == "zmatrix_connectionmatrix") ) then
+            call fatal_error( "Error in reading zmatrix connection matrix file :: expecting 'zmatrix_connectionmatrix'")
+        endif
 
+    endif
 
 
     if (.not. allocated(czcart)) allocate (czcart(3, ncent))
@@ -2478,12 +2475,12 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
 
         read (iunit, *, iostat=iostat) key, ncharges_tmp, iscreen_tmp
         if (iostat /= 0) error stop "Error in reading efield file"
-    endif
 
-    if (.not. (trim(key) == "efield") ) then
-        error stop "Error in reading efield file :: expecting 'efield'"
-    endif
+        if (.not. (trim(key) == "efield") ) then
+            error stop "Error in reading efield file :: expecting 'efield'"
+        endif
 
+    endif
 
 !    call file(iu, filename, 'old', 1, 0)  <-- whats is this?
     ncharges = ncharges_tmp
