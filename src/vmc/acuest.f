@@ -2,7 +2,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
-      use precision_kinds, only: dp 
+      use precision_kinds, only: dp
       use force_mod, only: MFORCE
       use vmc_mod, only: MELEC, MDET, MCENT
       use vmc_mod, only: nrad, MMAT_DIM2
@@ -28,27 +28,42 @@ c routine to accumulate estimators for energy etc.
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq
       use mstates_ctrl, only: iguiding
-      
+
       use optorb_cblock, only: ns_current
       use distance_mod, only: rshift, r_en, rvec_en
       use multislater, only: detiab
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use inputflags, only: node_cutoff, eps_node_cutoff
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      interface
+        function rnorm_nodes_num(distance_node, epsilon)
+            use precision_kinds, only: dp
+            real(dp), intent(in) :: distance_node
+            real(dp), intent(in) :: epsilon
+            real(dp) :: rnorm_nodes_num
+        end function rnorm_nodes_num
+      end interface
+
+      integer :: i, ic, ifr, istate, jel
+      integer :: k
+      real(dp) :: ajacob, dabs, distance_node, dlog10, penow
+      real(dp) :: psidg, r2now, rnorm_nodes, tjfnow
+      real(dp) :: tpbnow
+      real(dp), dimension(3,nelec) :: xstrech
+      real(dp), dimension(MSTATES) :: wtg
+      real(dp), parameter :: half = .5d0
 
 
-      parameter (half=.5d0)
 
-      dimension xstrech(3,nelec)
-      real(dp), dimension(:,:), allocatable :: enow 
+      real(dp), dimension(:,:), allocatable :: enow
 
 c xsum = sum of values of x from metrop
 c xnow = average of values of x from metrop
 c xcum = accumulated sums of xnow
 c xcm2 = accumulated sums of xnow**2
 
-      dimension wtg(MSTATES)
       allocate(enow(MSTATES, MFORCE))
 
 
@@ -56,7 +71,7 @@ c collect cumulative averages
 
       do 10 ifr=1,nforce
         do 10 istate=1,nstates
-     
+
         enow(istate,ifr)=esum(istate,ifr)/wsum(istate,ifr)
         wcum(istate,ifr)=wcum(istate,ifr)+wsum(istate,ifr)
         ecum(istate,ifr)=ecum(istate,ifr)+esum(istate,ifr)
@@ -110,7 +125,7 @@ c zero out xsum variables for metrop
       call pcm_init(1)
       call mmpol_init(1)
       call force_analy_init(1)
-      
+
 
       call acuest_reduce(enow)
       if(allocated(enow)) deallocate(enow)
@@ -123,10 +138,10 @@ c statistical fluctuations without blocking
         ecum1(istate)=ecum1(istate)+esum1(istate)*wtg(istate)
         ecm21(istate)=ecm21(istate)+esum1(istate)**2*wtg(istate)
         esum1(istate)=0
-        
+
         apsi(istate)=apsi(istate)+dabs(psido(istate))
   30  continue
-    
+
       aref=aref+dabs(detiab(kref,1)*detiab(kref,2))
 
       detref(1)=detref(1)+dlog10(dabs(detiab(kref,1)))
