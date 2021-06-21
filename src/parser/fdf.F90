@@ -149,7 +149,7 @@ MODULE fdf
   public :: fdf_integer, fdf_single, fdf_double
   public :: fdf_string, fdf_boolean
   public :: fdf_physical, fdf_convfac
-  public :: fdf_load_filename         ! Ravindra
+  public :: fdf_load_filename         !> @author Ravindra Shinde
 
   ! Lists
   public :: fdf_islist, fdf_islinteger, fdf_islreal
@@ -160,7 +160,7 @@ MODULE fdf
 
 ! Test if label is defined
   public :: fdf_defined, fdf_isphysical, fdf_isblock
-  public :: fdf_load_defined
+  public :: fdf_load_defined !> @author Ravindra Shinde
 
 ! Allow to overwrite things in the FDF
   public :: fdf_overwrite, fdf_removelabel, fdf_addline
@@ -187,7 +187,7 @@ MODULE fdf
 ! Main functions to build FDF structure (called in fdf_init)
   private :: fdf_initdata, fdf_addtoken, fdf_readline
   private :: fdf_read, fdf_readlabel, fdf_searchlabel
-  private :: fdf_read_xyz
+  private :: fdf_read_xyz !> @author Ravindra Shinde
   private :: fdf_open, fdf_close
 
 ! Input/Output configuration
@@ -215,7 +215,7 @@ MODULE fdf
 
 ! Finds a label in the FDF herarchy
   private :: fdf_locate
-  private :: fdf_load_locate
+  private :: fdf_load_locate  !> @author Ravindra Shinde
 
 ! Dump function (for blocks)
   private :: fdf_dump
@@ -770,7 +770,7 @@ endif ! (rank==0)
 !     and sends the serialized fdf_file data structure to the other nodes
 
     if (rank == reading_node) then
-      call fdf_read(filein)
+      call fdf_read_custom(filein)
     endif
     call broadcast_fdf_struct(reading_node)
 
@@ -1029,7 +1029,7 @@ endif ! (rank==0)
             nullify(pline) ! it is stored in line
             nlstart = file_in%nlines
             modulename = trim(line(8:))
-            write(msg,'(A,1x,i1,1x,A)') "Module #", counter , trim(line(8:))
+            if (fdf_output) write(fdf_out, '(A,1x,i1,1x,A)') "Module #", counter , modulename
             nullify(pline) ! it is stored in line
 !           No label found in %module directive
             if (ntok .eq. 1) then
