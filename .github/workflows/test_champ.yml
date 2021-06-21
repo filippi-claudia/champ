@@ -234,7 +234,7 @@ jobs:
            echo "- Running dmc.inp in serial:"
            $HOME/work/champ/champ/bin/dmc.mov1 < dmc.inp > dmc.out
            echo " total E vs reference:"
-           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -28.1361563
+           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -26.3320038
            echo ""
 
            # run and compare a dmc calculation MPI
