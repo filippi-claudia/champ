@@ -241,7 +241,7 @@ jobs:
            echo "- Running dmc.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/dmc.mov1 < dmc.inp > dmc.out
            echo " first eigenvalue vs reference:"
-           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -26.4010232
+           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -26.3187227
            echo ""
 
            #  restore the module files
