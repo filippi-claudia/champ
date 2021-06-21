@@ -112,7 +112,7 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   #endif()
 
   # debug
-  list(APPEND Fortran_FLAGS "-g" "-debug" "-traceback" "-check")
+  #list(APPEND Fortran_FLAGS "-g" "-O0" "-debug" "-traceback" "-check" "-fstack-protector-all")
 
 
 elseif(Fortran_COMPILER_ID MATCHES "PGI")

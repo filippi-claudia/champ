@@ -212,7 +212,7 @@ contains
 ! The next line is commented as all mpi processes read this information. old style
 
         argcount = command_argument_count()
-        if ( .not. allocated(arg)) allocate(arg(10))
+        if ( .not. allocated(arg)) allocate(arg(12))
         do i = 1, argcount
             call get_command_argument(i, arg(i))
         end do
@@ -241,7 +241,10 @@ contains
                         stop
                     endif
 !                        write(output_unit, fmt=string_format) ' input file      :: ', file_input
-                    open (newunit=iunit,file=file_input, iostat=iostat, action='read' )
+                    if (wid) then
+                        open (newunit=iunit,file=file_input, iostat=iostat, action='read' )
+                        if (iostat /= 0) error stop "error in opening input file"
+                    endif
 
                 case ('-o', '-ou', '-out', '-output', '--output')
                     if ((index(arg(i+1), ".out") /= 0) .or. (index(arg(i+1), ".log") /= 0) .or. &

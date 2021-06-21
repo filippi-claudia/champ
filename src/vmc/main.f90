@@ -46,6 +46,7 @@ program main
     !> Initiaize log check.XXX files. It needs ipr flag value.
     call init_procfile()
 
+    call MPI_BARRIER(MPI_Comm_World, ierr)
     ! ! run the the optimization
     call optwf()
 
