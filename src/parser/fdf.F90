@@ -3119,7 +3119,7 @@ endif ! (rank==0)
         if (fdf_output) write(fdf_out,'(a,t30,g20.10)') label, fdf_single
       else
         fdf_single = default
-        if (fdf_output) write(fdf_out,'(a,t30,g20.10,t60,a)') label, default, '# default value'
+        if (fdf_output) write(fdf_out,'(a,t30,g0,t60,a)') label, default, '# default value'
       endif
 
       if (PRESENT(line)) line = mark
@@ -3164,7 +3164,7 @@ endif ! (rank==0)
         if (fdf_output) write(fdf_out,'(a,t30,g20.10)') label, fdf_double
       else
         fdf_double = default
-        if (fdf_output) write(fdf_out,'(a,t30,g20.10,t60,a)') label, default, '# default value'
+        if (fdf_output) write(fdf_out,'(a,t30,g0,t60,a)') label, default, '# default value'
       endif
 
       if (PRESENT(line)) line = mark
@@ -3228,7 +3228,7 @@ endif ! (rank==0)
              '# above item originally: ', label, value, unitstr
       else
         fdf_physical = default
-        if (fdf_output) write(fdf_out,'(a,t30,g20.10,1x,a,t60,a)')                        &
+        if (fdf_output) write(fdf_out,'(a,t30,g0,1x,a,t60,a)')                        &
              label, default, defunit, '# default value'
       endif
 
