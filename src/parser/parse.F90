@@ -3,188 +3,191 @@
 #endif
 
 #define THIS_FILE "parse.F90"
-!=====================================================================
+!>
+!!=====================================================================
+!!
+!! This file is part of the FDF package.
+!!
+!! This module provides a simple yet powerful way to analyze the information
+!! in a string (such as an input line).
+!!
+!! Routine, 'digest' takes as input a string 'line' and returns a pointer
+!! to a derived type 'parsed_line':
+!!
+!!   Parsed line info (ntokens, token info and identification)
+!!   Note that the token characters are stored in a single "line",
+!!   and addressed using the starting and ending points.
+!!   This avoids the use of dynamic memory without loss of functionality.
+!!
+!!  type, public :: parsed_line
+!!    integer(ip)               :: ntokens
+!!    character(len=MAX_LENGTH) :: line
+!!    integer(ip)               :: first(MAX_NTOKENS)
+!!    integer(ip)               :: last(MAX_NTOKENS)
+!!    character(len=1)          :: id(MAX_NTOKENS)
+!!  end type parsed_line
+!!
+!! which holds a list of tokens and token tags (id). The
+!! parsing (split string into tokens) is done by a helper routine
+!! 'parses' which currently behaves according to the FDF standard.
+!! Each token is classified by helper routine 'morphol' and a token
+!! id is assigned in the following way:
+!!
+!! * Tokens that can be read as real numbers are assigned to class
+!! 'values' and given a token id 'v'. These are further classified as
+!! 'integers' (id 'i') or 'reals' (id 'r').
+!! * There are two list classes:
+!!    'a' == integer list
+!!    'c' == real list
+!!    'e' == real or integer list
+!! * All other tokens are tagged as 'names' (id 'n').
+!!
+!! The recommended usage follows the outline:
+!!
+!!     use parse
+!!     character(len=?) line
+!!     type(parsed_line), pointer :: p
+!!     ...
+!!     p=>digest(line)
+!!     (extract information from p)
+!!     call destroy(p)
+!!
+!! Note the pointer assignment and the explicit call to a destroyer
+!! routine that frees the storage associated to p.
+!!
+!! The information is extracted by module procedures that fall into three
+!! classes:
+!!
+!! a) Enquiry functions: 'search' and 'match'
+!!
+!! *  'search' determines whether a token in 'line' matches the given
+!!    string, optionally returning an index. The search is
+!!    case-insensitive by default, but this can be changed by supplying
+!!    an extra procedure argument 'eq_func' with interface:
+!!
+!!       interface
+!!         function eq_func(s1,s2)
+!!           logical eq_func
+!!           character(len=*), intent(in) :: s1,s2
+!!         end function eq_func
+!!       end interface
+!!
+!!    We have two different implementations of 'search' function,
+!!    through a wrapper (function overload):
+!!
+!!       interface search
+!!         module procedure search_fun
+!!         module procedure search_sub
+!!       end interface
+!!
+!!     1. %FUNCTION search_fun(string, pline_fun, after, eq_func)
+!!       New search implementation. 'search' function returns
+!!       the index of the token that matches with the string or
+!!       -1 if not found. Leaves 'pline_fun' structure pointing
+!!       to the token in the FDF structure.
+!!
+!!     2. %FUNCTION search_sub(pline_sub, string, ind, after, eq_func)
+!!       This is the old prototype for backward compatibility.
+!!       Returns .TRUE. if the string is found in the parsed line
+!!       else .FALSE. Moreover can return the index of the token
+!!       in the line if 'ind' is specified.
+!!
+!!    Example:  if (search('Mary', p) .ne. -1) ...
+!!    will return the index of the first token that matches
+!!    "Mary", or -1 if not found.
+!!
+!!    This function can take an optional keyword 'after=' (see below).
+!!
+!! *  'substring_search' does not match whole tokens, but substrings in
+!!    tokens. And it uses the *case sensitive* Fortran 'index' function.
 !
-! This file is part of the FDF package.
+!! *  'match' is probably the most powerful routine in the module. It
+!!    checks whether the token morphology of 'line' conforms to the
+!!    sequence of characters specified. For example,
+!!
+!!    if (match(p,'nii')) ...
+!!
+!!    returns .TRUE. if 'line' contains at least three tokens and they are
+!!    a 'name' and two 'integers'.
+!!    Apart from the 'primitive' one-character ids, there is the
+!!    possibility of using 'compound' virtual ids for generalized matchings:
+!!
+!!    - A 'v' ('value') is matched by both an 'integer' and a 'real'.
+!!    - A 'j' is matched by both an 'integer' and a 'name'.
+!!    - A 's' is matched by an 'integer', a 'real', and a 'name'.
+!!    - A 'x' is matched by any kind of token.
+!!    - A 'a' is matched by a list with integers
+!!    - A 'c' is matched by a list with reals
+!!    - A 'e' is matched by a list with integers or reals
+!!    - A 'd' is reserved for future dictionaries...
 !
-! This module provides a simple yet powerful way to analyze the information
-! in a string (such as an input line).
-!
-! Routine, 'digest' takes as input a string 'line' and returns a pointer
-! to a derived type 'parsed_line':
-!
-!   Parsed line info (ntokens, token info and identification)
-!   Note that the token characters are stored in a single "line",
-!   and addressed using the starting and ending points.
-!   This avoids the use of dynamic memory without loss of functionality.
-!
-!  type, public :: parsed_line
-!    integer(ip)               :: ntokens
-!    character(len=MAX_LENGTH) :: line
-!    integer(ip)               :: first(MAX_NTOKENS)
-!    integer(ip)               :: last(MAX_NTOKENS)
-!    character(len=1)          :: id(MAX_NTOKENS)
-!  end type parsed_line
-!
-! which holds a list of tokens and token tags (id). The
-! parsing (split string into tokens) is done by a helper routine
-! 'parses' which currently behaves according to the FDF standard.
-! Each token is classified by helper routine 'morphol' and a token
-! id is assigned in the following way:
-!
-! * Tokens that can be read as real numbers are assigned to class
-! 'values' and given a token id 'v'. These are further classified as
-! 'integers' (id 'i') or 'reals' (id 'r').
-! * There are two list classes:
-!    'a' == integer list
-!    'c' == real list
-!    'e' == real or integer list
-! * All other tokens are tagged as 'names' (id 'n').
-!
-! The recommended usage follows the outline:
-!
-!     use parse
-!     character(len=?) line
-!     type(parsed_line), pointer :: p
-!     ...
-!     p=>digest(line)
-!     (extract information from p)
-!     call destroy(p)
-!
-! Note the pointer assignment and the explicit call to a destroyer
-! routine that frees the storage associated to p.
-!
-! The information is extracted by module procedures that fall into three
-! classes:
-!
-! a) Enquiry functions: 'search' and 'match'
-!
-! *  'search' determines whether a token in 'line' matches the given
-!    string, optionally returning an index. The search is
-!    case-insensitive by default, but this can be changed by supplying
-!    an extra procedure argument 'eq_func' with interface:
-!
-!       interface
-!         function eq_func(s1,s2)
-!           logical eq_func
-!           character(len=*), intent(in) :: s1,s2
-!         end function eq_func
-!       end interface
-!
-!    We have two different implementations of 'search' function,
-!    through a wrapper (function overload):
-!
-!       interface search
-!         module procedure search_fun
-!         module procedure search_sub
-!       end interface
-!
-!     1. %FUNCTION search_fun(string, pline_fun, after, eq_func)
-!       New search implementation. 'search' function returns
-!       the index of the token that matches with the string or
-!       -1 if not found. Leaves 'pline_fun' structure pointing
-!       to the token in the FDF structure.
-!
-!     2. %FUNCTION search_sub(pline_sub, string, ind, after, eq_func)
-!       This is the old prototype for backward compatibility.
-!       Returns .TRUE. if the string is found in the parsed line
-!       else .FALSE. Moreover can return the index of the token
-!       in the line if 'ind' is specified.
-!
-!    Example:  if (search('Mary', p) .ne. -1) ...
-!    will return the index of the first token that matches
-!    "Mary", or -1 if not found.
-!
-!    This function can take an optional keyword 'after=' (see below).
-!
-! *  'substring_search' does not match whole tokens, but substrings in
-!    tokens. And it uses the *case sensitive* Fortran 'index' function.
-
-! *  'match' is probably the most powerful routine in the module. It
-!    checks whether the token morphology of 'line' conforms to the
-!    sequence of characters specified. For example,
-!
-!    if (match(p,'nii')) ...
-!
-!    returns .TRUE. if 'line' contains at least three tokens and they are
-!    a 'name' and two 'integers'.
-!    Apart from the 'primitive' one-character ids, there is the
-!    possibility of using 'compound' virtual ids for generalized matchings:
-!
-!    - A 'v' ('value') is matched by both an 'integer' and a 'real'.
-!    - A 'j' is matched by both an 'integer' and a 'name'.
-!    - A 's' is matched by an 'integer', a 'real', and a 'name'.
-!    - A 'x' is matched by any kind of token.
-!    - A 'a' is matched by a list with integers
-!    - A 'c' is matched by a list with reals
-!    - A 'e' is matched by a list with integers or reals
-!    - A 'd' is reserved for future dictionaries...
-
-!    This function can take an optional keyword 'after=' (see below).
-!
-! b) Number functions: ntokens ('n|i|r|b|e|l|a'), nnames ('n'), nreals ('r'),
-!                      nintegers ('i'), nvalues ('i|r'), nblocks ('b'),
-!                      nendblocks ('e'), nlabels ('l'), nlists('a|c'),
-!                      nintegerlists ('a'), nreallists('c')
-!
-!    These functions return the number of tokens of each kind in 'line':
-!
-!    number_of_energies = nreals(p)
-!
-!    These functions can take an optional keyword 'after=' (see below).
-!
-! c) Extraction functions: tokens ('n|i|r|b|e|l|a|c'), names ('n'), reals ('r'),
-!                          characters,
-!                          integers ('i'), values ('i|r'), blocks ('b'),
-!                          endblocks ('e'), labels ('l'),
-!                          integerlists('a') <- a subroutine
-!                          reallists('c') <- a subroutine
-!                          valuelists('a|c') <- a subroutine
-!
-!    These functions return a piece of data which corresponds to a token
-!    of the specified kind with sequence number matching the index
-!    provided. For example,
-!
-!    nlevels = integers(p,2)
-!
-!    assigns to variable 'nlevels' the second integer in 'line'.
-!    Execution stops in the assignment cannot be made. The user should
-!    call the corresponding 'number' routine to make sure there are
-!    enough tokens of the given kind.
-!
-!    Function 'characters' returns a string of characters spanning
-!    several tokens (with the original whitespace)
-!
-!    These functions can take an optional keyword 'after=' (see below).
-!
-!
-! By default, the routines in the module perform any indexing from the
-! beginning of 'line', in such a way that the first token is assigned the
-! index 1. It is possible to specify a given token as 'origin' by using
-! the 'after=' optional keyword. For example:
-!
-!     if (search(p, 'P', ind=jp)) then            # Old implementation
-!       if (match(p, 'i', after=jp) npol = integers(p, 1, after=jp)
-!     endif
-!
-! first checks whether 'P' is found in 'line'. If so, 'match' is used to
-! check whether it is followed by at least an 'integer'. If so, its
-! valued is assigned to variable 'npol'.
-!
-! If the 'after=' optional keyword is used in routine 'search', the
-! returned index is absolute, not relative. For example, to get the
-! real number coming right after the first 'Q' which appears to the
-! right of the 'P' found above:
-!
-!     if (search(p, 'Q', ind=jq, after=jp)) then  # Old implementation
-!       if (match(p, 'r', after=jq) energy = reals(p, 1, after=jq)
-!     endif
-!
-! Alberto Garcia, 1995-2007, original implementation
-! Raul de la Cruz, September 2007
-! Alberto Garcia, July 2008
-!
-!========================================================================
+!!    This function can take an optional keyword 'after=' (see below).
+!!
+!! b) Number functions: ntokens ('n|i|r|b|e|l|a'), nnames ('n'), nreals ('r'),
+!!                      nintegers ('i'), nvalues ('i|r'), nblocks ('b'),
+!!                      nendblocks ('e'), nlabels ('l'), nlists('a|c'),
+!!                      nintegerlists ('a'), nreallists('c')
+!!
+!!    These functions return the number of tokens of each kind in 'line':
+!!
+!!    number_of_energies = nreals(p)
+!!
+!!    These functions can take an optional keyword 'after=' (see below).
+!!
+!! c) Extraction functions: tokens ('n|i|r|b|e|l|a|c'), names ('n'), reals ('r'),
+!!                          characters,
+!!                          integers ('i'), values ('i|r'), blocks ('b'),
+!!                          endblocks ('e'), labels ('l'),
+!!                          integerlists('a') <- a subroutine
+!!                          reallists('c') <- a subroutine
+!!                          valuelists('a|c') <- a subroutine
+!!
+!!    These functions return a piece of data which corresponds to a token
+!!    of the specified kind with sequence number matching the index
+!!    provided. For example,
+!!
+!!    nlevels = integers(p,2)
+!!
+!!    assigns to variable 'nlevels' the second integer in 'line'.
+!!    Execution stops in the assignment cannot be made. The user should
+!!    call the corresponding 'number' routine to make sure there are
+!!    enough tokens of the given kind.
+!!
+!!    Function 'characters' returns a string of characters spanning
+!!    several tokens (with the original whitespace)
+!!
+!!    These functions can take an optional keyword 'after=' (see below).
+!!
+!!
+!! By default, the routines in the module perform any indexing from the
+!! beginning of 'line', in such a way that the first token is assigned the
+!! index 1. It is possible to specify a given token as 'origin' by using
+!! the 'after=' optional keyword. For example:
+!!
+!!     if (search(p, 'P', ind=jp)) then            # Old implementation
+!!       if (match(p, 'i', after=jp) npol = integers(p, 1, after=jp)
+!!     endif
+!!
+!! first checks whether 'P' is found in 'line'. If so, 'match' is used to
+!! check whether it is followed by at least an 'integer'. If so, its
+!! valued is assigned to variable 'npol'.
+!!
+!! If the 'after=' optional keyword is used in routine 'search', the
+!! returned index is absolute, not relative. For example, to get the
+!! real number coming right after the first 'Q' which appears to the
+!! right of the 'P' found above:
+!!
+!!     if (search(p, 'Q', ind=jq, after=jp)) then  # Old implementation
+!!       if (match(p, 'r', after=jq) energy = reals(p, 1, after=jq)
+!!     endif
+!!
+!! @authors Alberto Garcia, 1995-2007, original implementation
+!! @authors Raul de la Cruz, September 2007
+!! @authors Alberto Garcia, July 2008
+!! @remarks Modification made to libfdf by
+!! @authors Ravindra Shinde (r.l.shinde@utwente.nl)
+!! @date (2021)
+!!========================================================================
 
 #define ERROR_UNIT  0
 

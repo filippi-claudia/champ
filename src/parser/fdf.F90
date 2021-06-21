@@ -3,104 +3,105 @@
 #endif
 
 #define THIS_FILE "fdf.F90"
-!=====================================================================
-!
-! This file is part of the FDF package.
-!
-! This module implements an extended Fortran 90/95 interface
-! to the Flexible Data Format library of A. Garcia and J.M. Soler,
-! originally written in Fortran 77.
-!
-! FEATURES:
-!
-! a) Block pointers.
-!
-! Block content can be flexibly handled by means of a pointer
-! to a derived type 'block_fdf'. Typical usage:
-!
-!     use fdf
-!     type(block_fdf)            :: bfdf
-!     type(parsed_line), pointer :: pline
-!
-!     if (fdf_block('SomeBlock', bfdf)) then
-!       do while(fdf_bline(bfdf, pline))
-!         (process line 'integers|reals|values|names ...')
-!       enddo
-!       call fdf_bclose(bfdf)
-!     endif
-!
-! The subroutine 'fdf_block' returns in 'bfdf' a structure used
-! to read the contents of the block.
-!
-! Routine fdf_bline returns in 'pline' the next non-blank parsed
-! line, non-comment line from the block, unless there are no more
-! lines, in which case it returns .FALSE. and 'pline' is undefined.
-!
-! Routine fdf_bclose runs the remaining lines in the block and ensures
-! the log may be used as input in subsequent entries.
-!
-! Routine 'backspace' moves the internal pointer of 'block_fdf'
-! structure to the previous line returned.
-!
-! Routine 'rewind' moves the internal pointer of 'block_fdf' structure
-! to the beginning of the block.
-!
-! b) Generic interface to scalar routines.
-!
-! The generic function 'fdf_get' can be used instead of any of the
-! scalar routines. The specific names are also accepted.
-!
-! c) Architecture support: this FDF implementation supports the following
-!    architectures environments.
-!
-!    1) Thread-safe: The new implementation is thread-safe and will support
-!       calling it from several OMP-threads executing in the same node.
-!
-!       The implementation is as follows: fdf_init and fdf_shutdown are
-!       SINGLE/CRITICAL sections that only one thread must execute.
-!       On the other hand 'get'/'test' routines in FDF library are
-!       thread-safe because each thread keeps its relative information
-!       about the search/query that the caller program requests.
-!
-!    2) MPI-aware: For MPI executions, FDF library renames output/debugging
-!       or log files to prevent overlaps of these files in a
-!       shared/parallel filesystem.
-!
-!       This option is enabled with _MPI_ macro, and superseded by
-!       CLUSTER and BLOCKING macros.
-!
-!    3) Cluster filesystem: It is able to read the input FDF file from a
-!       non-shared filesystem and broadcast the information to the rest
-!       of the nodes in the execution.
-!
-!       The implementation is as follows: the first node in the MPI rank
-!       that is the owner of the input FDF file, process the file and
-!       send it to the rest of the nodes in the MPI communicator.
-!
-!       This option is enabled with CLUSTER macro. This option cannot be
-!       used if BLOCKING macro is enabled.
-!
-!    4) Blocking reading: For huge executions (> 1.000 nodes) this option
-!       is useful for shared/parallel filesystems where reading the same
-!       file by several nodes could be a problem (collapsing system).
-!
-!       The implementation is as follows: reading phase is done in blocking
-!       pattern of size BLOCKSIZE nodes (configurable at compile time).
-!       This means that the number of steps needed is STEPS = #NODES/BLOCKSIZE.
-!
-!       This option is enabled with BLOCKING macro. This option cannot be
-!       used if CLUSTER macro is enabled.
-!
-! Alberto Garcia, 1996-2007
-! Raul de la Cruz (BSC), September 2007
-!
-!
+!>
+!!=====================================================================
+!!
+!! This file is part of the FDF package.
+!!
+!! This module implements an extended Fortran 90/95 interface
+!! to the Flexible Data Format library of A. Garcia and J.M. Soler,
+!! originally written in Fortran 77.
+!!
+!! FEATURES:
+!!
+!! a) Block pointers.
+!!
+!! Block content can be flexibly handled by means of a pointer
+!! to a derived type 'block_fdf'. Typical usage:
+!!
+!!     use fdf
+!!     type(block_fdf)            :: bfdf
+!!     type(parsed_line), pointer :: pline
+!!
+!!     if (fdf_block('SomeBlock', bfdf)) then
+!!       do while(fdf_bline(bfdf, pline))
+!!         (process line 'integers|reals|values|names ...')
+!!       enddo
+!!       call fdf_bclose(bfdf)
+!!     endif
+!!
+!! The subroutine 'fdf_block' returns in 'bfdf' a structure used
+!! to read the contents of the block.
+!!
+!! Routine fdf_bline returns in 'pline' the next non-blank parsed
+!! line, non-comment line from the block, unless there are no more
+!! lines, in which case it returns .FALSE. and 'pline' is undefined.
+!!
+!! Routine fdf_bclose runs the remaining lines in the block and ensures
+!! the log may be used as input in subsequent entries.
+!!
+!! Routine 'backspace' moves the internal pointer of 'block_fdf'
+!! structure to the previous line returned.
+!!
+!! Routine 'rewind' moves the internal pointer of 'block_fdf' structure
+!! to the beginning of the block.
+!!
+!! b) Generic interface to scalar routines.
+!!
+!! The generic function 'fdf_get' can be used instead of any of the
+!! scalar routines. The specific names are also accepted.
+!!
+!! c) Architecture support: this FDF implementation supports the following
+!!    architectures environments.
+!!
+!!    1) Thread-safe: The new implementation is thread-safe and will support
+!!       calling it from several OMP-threads executing in the same node.
+!!
+!!       The implementation is as follows: fdf_init and fdf_shutdown are
+!!       SINGLE/CRITICAL sections that only one thread must execute.
+!!       On the other hand 'get'/'test' routines in FDF library are
+!!       thread-safe because each thread keeps its relative information
+!!       about the search/query that the caller program requests.
+!!
+!!    2) MPI-aware: For MPI executions, FDF library renames output/debugging
+!!       or log files to prevent overlaps of these files in a
+!!       shared/parallel filesystem.
+!!
+!!       This option is enabled with _MPI_ macro, and superseded by
+!!       CLUSTER and BLOCKING macros.
+!!
+!!    3) Cluster filesystem: It is able to read the input FDF file from a
+!!       non-shared filesystem and broadcast the information to the rest
+!!       of the nodes in the execution.
+!!
+!!       The implementation is as follows: the first node in the MPI rank
+!!       that is the owner of the input FDF file, process the file and
+!!       send it to the rest of the nodes in the MPI communicator.
+!!
+!!       This option is enabled with CLUSTER macro. This option cannot be
+!!       used if BLOCKING macro is enabled.
+!!
+!!    4) Blocking reading: For huge executions (> 1.000 nodes) this option
+!!       is useful for shared/parallel filesystems where reading the same
+!!       file by several nodes could be a problem (collapsing system).
+!!
+!!       The implementation is as follows: reading phase is done in blocking
+!!       pattern of size BLOCKSIZE nodes (configurable at compile time).
+!!       This means that the number of steps needed is STEPS = #NODES/BLOCKSIZE.
+!!
+!!       This option is enabled with BLOCKING macro. This option cannot be
+!!       used if CLUSTER macro is enabled.
+!!
+!! @authors Alberto Garcia, 1996-2007
+!! @authors Raul de la Cruz (BSC), September 2007
+!! @remarks Modifications to the original libfdf made by:
+!! @authors Ravindra Shinde (r.l.shinde@utwente.nl)
+!! @date (2021)
 !========================================================================
 
-! AG: If running under MPI (flagged by the MPI symbol, choose the CLUSTER
-!     mode of operation.
-!
-!
+!! AG: If running under MPI (flagged by the MPI symbol, choose the CLUSTER
+!!     mode of operation.
+
 #ifdef MPI
 # define _MPI_
 # define CLUSTER

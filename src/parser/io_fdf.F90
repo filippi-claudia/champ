@@ -3,23 +3,24 @@
 #endif
 
 #define THIS_FILE "io_fdf.F90"
-!=====================================================================
-! 
-! This file is part of the FDF package.
-!
-! This module implements an interface to the FORTRAN logical unit
-! system. Based on code by Richard Maine.
-!
-! Logical unit management. Units 0 to min_lun-1 are "reserved",
-! since most of the "typical" files (output, etc) use them.
-!
-! Logical units min_lun to min_max are managed by this module.
-!
-!
-! September 2007
-!
-!
-!=====================================================================
+!>
+!!=====================================================================
+!!
+!! This file is part of the FDF package.
+!!
+!! This module implements an interface to the FORTRAN logical unit
+!! system. Based on code by Richard Maine.
+!!
+!! Logical unit management. Units 0 to min_lun-1 are "reserved",
+!! since most of the "typical" files (output, etc) use them.
+!!
+!! Logical units min_lun to min_max are managed by this module.
+!!
+!!
+!! @date September 2007
+!!
+!!
+!!=====================================================================
 
 #define ERROR_UNIT  0
 #define OUTPUT_UNIT 6
@@ -124,7 +125,7 @@ MODULE io_fdf
 
           INQUIRE(unit=i, opened=used, iostat=iostat)
           if (iostat .ne. 0) used = .TRUE.
-          if (.not. used) then 
+          if (.not. used) then
             lun   = i
             found = .TRUE.
           endif

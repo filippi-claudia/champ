@@ -1,22 +1,22 @@
 #if defined HAVE_CONFIG_H
 #  include "config.h"
 #endif
-
-!=====================================================================
-!
-! This file is part of the FDF package.
-!
-! This module provides useful functions and subroutines for FDF library.
-! At this moment this module contains functions for:
-!
-!   a) String manipulation
-!   b) Warning, Die (Abort/Terminate) operations
-!
-!
-! September 2007
-!
-!
-!=====================================================================
+!>
+!!=====================================================================
+!!
+!! This file is part of the FDF package.
+!!
+!! This module provides useful functions and subroutines for FDF library.
+!! At this moment this module contains functions for:
+!!
+!!   a) String manipulation
+!!   b) Warning, Die (Abort/Terminate) operations
+!!
+!!
+!! September 2007
+!!
+!!
+!!=====================================================================
 
 #define ERROR_UNIT  0
 #define OUTPUT_UNIT 6
