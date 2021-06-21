@@ -139,6 +139,8 @@ MODULE fdf
   USE prec
   implicit none
 
+  character(len=40)  :: modulenames(10)
+  integer            :: number_of_modules = 0
 ! User callable routines in FDF library
 
 ! Start, stop and check parallelism in FDF system
@@ -181,6 +183,9 @@ MODULE fdf
   public :: fdf_bmatch, fdf_bsearch, fdf_substring_search
 
   public :: fdf_setoutput, fdf_setdebug
+
+  public :: modulenames
+  public :: number_of_modules
 
 ! Private functions, non-callable
 
@@ -1030,6 +1035,7 @@ endif ! (rank==0)
             nlstart = file_in%nlines
             modulename = trim(line(8:))
             if (fdf_output) write(fdf_out, '(A,1x,i1,1x,A)') "Module #", counter , modulename
+            modulenames(counter) = modulename
             nullify(pline) ! it is stored in line
 !           No label found in %module directive
             if (ntok .eq. 1) then
@@ -1132,6 +1138,7 @@ endif ! (rank==0)
           call destroy(pline)
         endif
       enddo
+      number_of_modules = counter
 
 !     Close one level of input file
       if ((.not. PRESENT(blocklabel)) .and. (label .ne. ' ')) then

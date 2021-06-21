@@ -1,6 +1,7 @@
 
 subroutine parser
   use fdf     ! modified libfdf
+  use fdf, only: modulenames, number_of_modules    ! modified libfdf
   use custom_broadcast,   only: bcast
   use mpiconf,            only: wid
   use, intrinsic :: iso_fortran_env, only : iostat_end
@@ -472,6 +473,11 @@ subroutine parser
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
 
+  write(ounit,*) " Modules present in the input file :: "
+  do i = 1, number_of_modules
+    write(ounit,'(a,i0,a,a)') '  (', i, ')', modulenames(i)
+  enddo
+  write(ounit,*)
 
   select case (mode)
   case ('vmc')
