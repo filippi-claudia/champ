@@ -43,9 +43,8 @@ c Open the standard output and the log file only on the master
 
 
 !      call read_input
-      if ( wid ) then
-        call parser()
-      endif
+      call parser()
+
 
 
 !      call p2gtid('optwf:ioptwf', ioptwf, 0, 1)

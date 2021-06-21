@@ -324,8 +324,6 @@ subroutine parser
   dmc_nblk_ci       = fdf_get('dmc_nblk_ci', dmc_nblk)
 
 
-
-
 !optimization flags vmc/dmc
   ioptwf        = fdf_get('ioptwf', 0)
   method        = fdf_get('method', 'linear')
@@ -744,7 +742,9 @@ subroutine parser
   ! allocation after determinants and basis
   call compute_mat_size_new()
   call allocate_vmc()
-  call allocate_dmc()
+  if(mode(1:3) == 'dmc') then
+    call allocate_dmc()
+  endif
 
 ! (3) CSF only
 
