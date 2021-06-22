@@ -37,7 +37,7 @@ program main
     !call init_control_mode('vmc_one_mpi ')           ! commented by ravindra. Not needed
 
     !> Initiaize output.log file.
-    !call init_logfile()
+    call init_logfile()
     call initialize()
 
     ! read the input from input file and other data files

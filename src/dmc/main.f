@@ -30,24 +30,14 @@ c Open the standard output and the log file only on the master
         open(45, file='trash.log')
       endif
 
-      if(idtask.le.9) then
-        write(filename, '(''problem.'',i1)') idtask
-       elseif(idtask.le.99) then
-        write(filename, '(''problem.'',i2)') idtask
-       elseif(idtask.le.999) then
-        write(filename, '(''problem.'',i3)') idtask
-       else
-        call fatal_error('MAIN: idtask ge 1000')
-      endif
+      write(filename, '(''problem.'',i0)') idtask
       open(18,file=filename, status='unknown')
 
 
-!      call read_input
+!     read the input from parser
       call parser()
+      call MPI_BARRIER(MPI_Comm_World, ierr)
 
-
-
-!      call p2gtid('optwf:ioptwf', ioptwf, 0, 1)
 
       if(mode.eq.'dmc_one_mpi2') then
         if(ioptwf.gt.0) call fatal_error('MAIN: no DMC optimization with global population')

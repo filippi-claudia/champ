@@ -1,7 +1,7 @@
 
 subroutine parser
   use fdf     ! modified libfdf
-  use fdf, only: modulenames, number_of_modules    ! modified libfdf
+!  use fdf, only: modulenames, number_of_modules    ! modified libfdf
   use custom_broadcast,   only: bcast
   use mpiconf,            only: wid
   use, intrinsic :: iso_fortran_env, only : iostat_end

@@ -806,9 +806,9 @@ subroutine read_csf_file(file_determinants)
         write(ounit,*)
         write(ounit,*) " CSF coefficients from an external file "
 
-        write(ounit,'(10(1x, a9, i3, 1x))') ((" State: ", i), i =1, nstates)
+        write(ounit,'(8x,10(1x, a9, i3, 1x))') ((" State: ", i), i =1, nstates)
         do j = 1, ncsf
-            write(ounit,'(10(1x, f12.8, 1x))') (ccsf(j,i,1), i=1,nstates)
+            write(ounit,'(a,i5,a,10(1x, f12.8, 1x))') "[", j, "] ", (ccsf(j,i,1), i=1,nstates)
         enddo
     endif
 

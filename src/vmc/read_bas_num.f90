@@ -80,9 +80,9 @@
         call bcast(r0)
         call bcast(icusp)
 
-        write(ounit,*) "reading the content ", nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
-        write(ounit,*) "(Reading basis grid file = [ ",  trim(filename), " ] )"
-        write(ounit,'(''center type '',i4,'' nrbas,igrid,nr,arg,r0 ='',2i4,i5,2f10.5)') &
+        write(45,*) "Reading the content ", nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
+        write(45,*) "(Reading basis grid file = [ ",  trim(filename), " ] )"
+        write(45,'(''center type '',i4,'' nrbas,igrid,nr,arg,r0 ='',2i4,i5,2f10.5)') &
         ic,nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic)
 
         if(nrbas(ic).gt.MRWF) call fatal_error('READ_BAS_NUM: nrbas gt MRWF')
@@ -156,17 +156,17 @@
 
 
 ! c       if(ipr.gt.1) then
-          write(ounit,'(''basis = '',i4)') irb
-          write(ounit,'(''check the small radius expansion'')')
-          write(ounit,'(''coefficients'',1p10e22.10)') &
+          write(45,'(''basis = '',i4)') irb
+          write(45,'(''check the small radius expansion'')')
+          write(45,'(''coefficients'',1p10e22.10)') &
                     (ce(iff,irb,ic,iwf),iff=1,NCOEF)
-          write(ounit,'(''check the small radius expansion'')')
-          write(ounit,'(''irad, rad, extrapolated value, correct value'')')
+          write(45,'(''check the small radius expansion'')')
+          write(45,'(''irad, rad, extrapolated value, correct value'')')
           do 30 ir=1,10
             val=ce(1,irb,ic,iwf)
             do 28 icoef=2,NCOEF
   28        val=val+ce(icoef,irb,ic,iwf)*x(ir)**(icoef-1)
-  30        write(ounit,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
+  30        write(45,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
 ! c       endif
 
         dwf1=0.d0
@@ -189,15 +189,15 @@
           dwfn=0.d0
         endif
 ! c       if(ipr.gt.1) then
-          write(ounit,'(''check the large radius expansion'')')
-          write(ounit,'(''a0,ak'',1p2e22.10)')     &
+          write(45,'(''check the large radius expansion'')')
+          write(45,'(''a0,ak'',1p2e22.10)')     &
                             ae(1,irb,ic,iwf),ae(2,irb,ic,iwf)
-          write(ounit,'(''irad, rad, extrapolated value, correct value'')')
+          write(45,'(''irad, rad, extrapolated value, correct value'')')
           do 40 ir=1,10
             val=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
-  40        write(ounit,'(i2,1p3e22.14)')      &
+  40        write(45,'(i2,1p3e22.14)')      &
             ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf)
-          write(ounit,*) 'dwf1,dwfn',dwf1,dwfn
+          write(45,*) 'dwf1,dwfn',dwf1,dwfn
 ! c       endif
         if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
