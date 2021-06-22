@@ -8,19 +8,32 @@
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, iwctype, ncent, ncent_tot
-
       use const, only: nelec
       use config, only: xnew, xold
       use mpiconf, only: idtask, nproc
       use contrl, only: irstar, isite, nconf_new, icharged_atom
       use mpi
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      interface
+        function rannyu(idum)
+           use precision_kinds, only: dp
+           implicit none
+           integer,intent(in) :: idum
+           real(dp) :: rannyu
+        end function rannyu
+      end interface
+
+      integer :: i, ic, icharge_system, id, ierr
+      integer :: index, k, l, ntotal_sites
+      integer, dimension(4) :: irn
+      integer, dimension(ncent_tot) :: nsite
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      integer, dimension(4) :: irn_temp
+      real(dp) :: err, rnd
       character*20 filename
-      dimension irn(4)
-      dimension nsite(ncent_tot)
-      dimension istatus(MPI_STATUS_SIZE)
-      dimension irn_temp(4)
 
 c set the random number seed differently on each processor
 c call to setrn must be in read_input since irn local there
