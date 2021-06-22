@@ -76,7 +76,11 @@ c----------------------------------------------------------------------
       use periodic, only: rkvec_shift, rlatt, rlatt_sim
       use inputflags, only: ilattice
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, itmp, iu, k
+      real(dp) :: alattice
 
 
 
@@ -117,14 +121,18 @@ c Presently not used.
       use pworbital, only: c_im, c_ip, c_rm, c_rp
 
       use coefs, only: norb
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, i3, ikvec, jorb, k
+      real(dp) :: 2i5
+      real(dp), dimension(3) :: rkvec_tmp
 
 
 
 
 
 
-      dimension rkvec_tmp(3)
 
       open(3,file='orbitals_pw')
       read(3,*) nkvec,ngvec
@@ -180,7 +188,21 @@ c However, that causes problems when running with mpi, so comment out that part.
       use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
 
       use coefs, only: norb
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, i1, i3, ib, iband
+      integer :: iband_tmp, ifound, ig, ig_min
+      integer :: igv, ikv, ikvec, in
+      integer :: isign, isign_min, j, jorb
+      integer :: k, nelec_sav, ng, nkvec_tmp
+      integer :: norm, nsum
+      real(dp) :: 2i4, 2i5, 2i6, eig, sum
+      real(dp) :: sum_abs, units
+      real(dp), dimension(3) :: r
+      real(dp), dimension(nelec,MORB) :: orb
+      real(dp), dimension(3,nelec,MORB) :: dorb
+      real(dp), dimension(nelec,MORB) :: ddorb
 
 
 
@@ -196,8 +218,6 @@ c    &,rkvec_tmp(3),rkvec_tmp2(3)
 c Warning: Temporary
 c Warning: why do I print out zeros if I dimension to MORB rather than IVOL_RATIO?
 c It should be MORB
-      dimension r(3)
-      dimension orb(nelec,MORB),dorb(3,nelec,MORB),ddorb(nelec,MORB)
 
 
 c Warning: For the moment we assume that orbitals_pw_tm contains only the bands we want to keep.
@@ -424,7 +444,18 @@ c This is the straightforward evaluation for checking purposes only.
       use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft
 
       use coefs, only: norb
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iband, ig, ig2, ikv
+      integer :: iorb, jorb, k, nelecc
+      real(dp) :: cos, dot, sin
+      real(dp), dimension(3) :: x
+      real(dp), dimension(nelec,*) :: orb
+      real(dp), dimension(3,nelec,*) :: dorb
+      real(dp), dimension(nelec,*) :: ddorb
+      real(dp), dimension(3,NGVEC_BIGX) :: gvec_dft
+      real(dp), dimension(NGVEC_BIGX) :: gnorm_dft
 
 
 
@@ -433,13 +464,11 @@ c This is the straightforward evaluation for checking purposes only.
 
 
 
-      dimension x(3),orb(nelec,*),dorb(3,nelec,*),ddorb(nelec,*)
 c     dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
 c    &,cos_g(nelec,NGVECX),sin_g(nelec,NGVECX),dcos_g(3,nelec,NGVECX),dsin_g(3,nelec,NGVECX)
 c    &,ddcos_g(nelec,NGVECX),ddsin_g(nelec,NGVECX)
 c    &,cos_k(nelec,IVOL_RATIO),sin_k(nelec,IVOL_RATIO),dcos_k(3,nelec,IVOL_RATIO),dsin_k(3,nelec,IVOL_RATIO)
 c    &,ddcos_k(nelec,IVOL_RATIO),ddsin_k(nelec,IVOL_RATIO)
-      dimension gvec_dft(3,NGVEC_BIGX),gnorm_dft(NGVEC_BIGX)
 
       write(6,'(''nelec,norb,nkvec in orbitals_pw'',9i5)') nelec,norb,nkvec
 
