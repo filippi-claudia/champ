@@ -28,11 +28,20 @@ c The prefered grid is 3.
       use grid3d_param, only: origin
       use general, only: filename, filenames_ps_champ
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, i2, i5, ict, ir
+      integer :: irmax_coul, irmax_nloc, j, nr
+      integer :: nrm1
+      integer, dimension(MPS_L) :: lpot_max
+      real(dp) :: dabs, dpot1, dpotn, err, h_ps
+      real(dp) :: r_asymp, while, zion
+      real(dp), dimension(MPS_GRID) :: r
+      real(dp), dimension(MPS_GRID) :: work
 
       character*80 title
 
-      dimension r(MPS_GRID),work(MPS_GRID),lpot_max(MPS_L)
 
       do 200 ict=1,nctype
 
@@ -240,7 +249,12 @@ c compute pseudopotential for electron iel
       use pseudo, only: lpot, vps
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ict, iel, l
+      real(dp) :: r, vpot
+      real(dp), dimension(nelec,ncent_tot) :: r_en
 
 
 
@@ -248,7 +262,6 @@ c compute pseudopotential for electron iel
 
 
 
-      dimension r_en(nelec,ncent_tot)
 
       do 10 ic=1,ncent
         ict=iwctype(ic)
@@ -292,7 +305,13 @@ c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
       use pseudo, only: lpot
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ict, jx, l
+      real(dp) :: aa, bb, cc, dd, delh
+      real(dp) :: h_ps, r, ref0, ref1
+      real(dp) :: vpot, xr
 
 
 
