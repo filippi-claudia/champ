@@ -8,29 +8,28 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c
-
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
-
-
-
-
-
-
-      parameter (one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
-
-
-
-
-      dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ),rshifti(3),rshiftj(3)
+      integer :: it, jp, k, l, l_hi
+      integer :: ll, m, n
+      real(dp) :: rri, rrj, rrri, rrrj, u
+      real(dp) :: uuu
+      real(dp) :: psinl
+      real(dp), dimension(0:MORDJ) :: uu
+      real(dp), dimension(0:MORDJ) :: ss
+      real(dp), dimension(0:MORDJ) :: tt
+      real(dp), dimension(3) :: rshifti
+      real(dp), dimension(3) :: rshiftj
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: eps = 1.d-12
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f
@@ -91,12 +90,12 @@ c-----------------------------------------------------------------------
       use jaspar6, only: asymp_jasa, asymp_r
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-
-
-
-
+      integer :: i, it
+      real(dp) :: rri
+      real(dp) :: psianl
 
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
@@ -113,6 +112,7 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       return
       end
 c-----------------------------------------------------------------------
+
       function psibnl(u,isb,ipar)
 
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
@@ -123,19 +123,16 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use jaspar, only: sspinn
       use jaspar3, only: a, b, c
-
       use jaspar4, only: nordb
       use jaspar6, only: asymp_jasb, asymp_r
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
-
-
+      integer :: i, ipar, isb
+      real(dp) :: fee, psibnl, u
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f
@@ -164,18 +161,17 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use jaspar3, only: a, c
-
       use jaspar4, only: a4, norda
       use jaspar6, only: asymp_r
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
-
+      integer :: i, it
+      real(dp) :: rri
+      real(dp) :: dpsianl 
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f
@@ -201,19 +197,18 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use jaspar, only: sspinn
       use jaspar3, only: a, b, c
-
       use jaspar4, only: nordb
       use jaspar6, only: asymp_r
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
-
-
+      integer :: i, isb, ipar
+      real(dp) :: bot, boti, dbot, dfee, dtop
+      real(dp) :: top, u
+      real(dp) :: dpsibnl 
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f
