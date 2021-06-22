@@ -15,8 +15,8 @@
       real(dp), dimension(*) :: deltap
       real(dp), dimension(*) :: parameters
       character*20 dl_alg
-      real(kind=8), dimension(1), allocatable :: parameters_old(:)
-      real(kind=8), dimension(1), allocatable :: parms_lbfgs(:)
+      real(dp), dimension(1), allocatable :: parameters_old(:)
+      real(dp), dimension(1), allocatable :: parms_lbfgs(:)
 
       allocate(parameters_old(nparm))
       allocate(parms_lbfgs(nparm))
@@ -36,6 +36,7 @@ c perform actual oLBFGS iteration
         call olbfgs_iteration(parms_lbfgs, -h_sr, sr_tau, iter)
 
         deltap(1:nparm) = parms_lbfgs - parameters_old
+        parameters(1:nparm) = parameters(1:nparm) + deltap(1:nparm)
       end if
 
 c Update parameter changes
