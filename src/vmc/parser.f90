@@ -1150,10 +1150,11 @@ subroutine parser
           .and. (.not. fdf_islinteger('weights_guiding')) ) then
         i = -1
         call fdf_list('weights_guiding',i,weights_g)
-        write(ounit,'(tr1,a,i0,a)') 'Guiding weights has ',i,' entries'
+        write(ounit,'(a)' )
+        write(ounit,'(tr1,a,i0,a)') ' Guiding weights has ',i,' entries'
         if ( i < 2 ) stop 1
         call fdf_list('weights_guiding',i,weights_g)
-        write(ounit, '(a,<MSTATES>(f12.6))') 'Weights_guiding : ', weights_g(1:i)
+        write(ounit, '(a,<MSTATES>(f12.6))') ' Weights_guiding : ', weights_g(1:i)
       else
         write(ounit,*)'guiding_weights keyword not recognized'
         stop 1
@@ -1229,7 +1230,7 @@ subroutine parser
     call fdf_read_forces_block(bfdf)
   else
     if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
-      write(ounit,*) "INPUT: block forces_displace or gradients_* missing: geometries set equal to primary"
+      write(errunit,*) "INPUT: block forces_displace or gradients_* missing: geometries set equal to primary"
       call inputforces()
     endif
   endif
@@ -1260,7 +1261,8 @@ subroutine parser
       .and. (.not. fdf_islinteger('weights')) ) then
     i = -1
     call fdf_list('weights',i,weights)
-    write(ounit,'(tr1,a,i0,a)') 'Weights has ',i,' entries'
+    write(ounit,'(a)' )
+    write(ounit,'(tr1,a,i0,a)') ' Weights has ',i,' entries'
     if ( i < 2 ) stop 1
     call fdf_list('weights',i,weights)
     write(ounit, '(a,<MSTATES>(f12.6))') 'weights : ', weights(1:i)

@@ -90,7 +90,7 @@ c positions of volume charges space warped
 c endif PCM
       endif
 
-      if(istrech_el.eq.0) then 
+      if(istrech_el.eq.0) then
         return
       endif
 
@@ -98,9 +98,9 @@ c endif PCM
         do 8 k=1,3
     8     xstrech(k,i)=x(k,i)
 
-      if(istrech.eq.0) then 
+      if(istrech.eq.0) then
         return
-      endif 
+      endif
 
       do 50 i=1,nelec
 
@@ -151,7 +151,7 @@ c end loop over electrons
 
       return
 
-c Set up n-n potential energy (and PCM related quantities) at displaced positions 
+c Set up n-n potential energy (and PCM related quantities) at displaced positions
       entry setup_force
 
       if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
@@ -182,7 +182,7 @@ c' PCM
           do 66 k=1,3
    66       xpolsav(k,j)=xpol(k,j)
 
-c Interatomic forces (and not wave function optimization) 
+c Interatomic forces (and not wave function optimization)
         if(ioptwf.eq.0) then
 
           open(54,file='field',status='old',form='formatted')
@@ -254,7 +254,7 @@ c check deviation of surface charges from charges of primary geometry
 c printout charges if deviation is  big
             if (delta_qs.gt.1.d-3) then
               do 85 i=1,nchs
-   85           write(6,'(''Warning: Large deviation in surface charges'',2d8.4)') q_strech(i),ch(i)
+   85           write(6,'(''Warning: Large deviation in surface charges'',2f16.8)') q_strech(i),ch(i)
             endif
 
             do 89 j=nchs+1,nch
@@ -299,7 +299,7 @@ c printout charges if deviation is  big
               pecentn(ifl)=pecentn(ifl)+delta_gpol_fc
 c endif PCM
           endif
-          
+
 c end loop forces
   200 continue
 

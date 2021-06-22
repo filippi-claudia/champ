@@ -120,7 +120,7 @@ c for omega functional
         do k=1,nparm
           if(s_ii_inv(k).gt.smax) smax=s_ii_inv(k)
         enddo
-        write(6,'(''max S diagonal element '',t41,d8.2)') smax
+        write(6,'(''max S diagonal element '',t41,f16.8)') smax
 
         kk=0
         do k=1,nparm
