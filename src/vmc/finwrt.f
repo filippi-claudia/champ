@@ -29,13 +29,27 @@ c routine to print out final results
       use ci000, only: iciprt
       use inputflags, only: iqmmm
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iciprt_sav, ifr, index, istate
+      integer :: j
+      real(dp) :: accept, dabs, delr, eerr, eerr1
+      real(dp) :: eerr1s, eerr_p, efin, efin_p
+      real(dp) :: err, err1, ferr, ffin
+      real(dp) :: passes, peerr, pefin, r2err
+      real(dp) :: r2fin, rtpass, sigma, sucsum
+      real(dp) :: tcsq, term, tjferr, tjffin
+      real(dp) :: tpberr, tpbfin, trysum, x
+      real(dp) :: x2
+      real(dp), dimension(MFORCE) :: ffin_grdnts
+      real(dp), dimension(MFORCE) :: ferr_grdnts
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = .5d0
 
 
 
-      parameter (one=1.d0,half=.5d0)
 
-      dimension ffin_grdnts(MFORCE),ferr_grdnts(MFORCE)
 
       err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
       err1(x,x2,j)=dsqrt(dabs(x2/wcum(j,1)-(x/wcum(j,1))**2)/passes)

@@ -4,14 +4,18 @@
 
       use mstates3, only: iweight_g, weights_g
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, istate
+      real(dp) :: psig
+      real(dp), dimension(*) :: psid
 
 
 
 
 
 
-      dimension psid(*)
 
       psig=0
       do 200 i=1,nstates

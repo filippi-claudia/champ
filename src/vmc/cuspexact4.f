@@ -10,7 +10,11 @@ c Written by Cyrus Umrigar
       use jaspar3, only: a, c
       use jaspar4, only: nordc
       use cuspmat4, only: d, iwc4, nterms
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iadiag, iprin, it, j
+      real(dp) :: sum
 
 
 

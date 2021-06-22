@@ -13,7 +13,11 @@ c-----------------------------------------------------------------------
       use multislatern, only: ddorbn, detn, dorbn, orbn
 
       use multislater, only: detiab
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iel, istate, k
+      real(dp) :: det, determ
 
 
 

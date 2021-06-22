@@ -17,11 +17,20 @@ c Modified by A. Scemama
 
       use multislater, only: detiab
       use atom, only: ncent_tot
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (one=1.d0,half=0.5d0)
+      integer :: i, iab, icheck, ii, ik
+      integer :: index, ipass, ish, j
+      integer :: jk, jorb, nel, newref
+      real(dp) :: ddot
+      real(dp), dimension(3, *) :: x
+      real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
+      real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = 0.5d0
 
-      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
+
 
 c compute orbitals
       call orbitals(x,rvec_en,r_en)
@@ -103,7 +112,11 @@ c-----------------------------------------------------------------------
       use coefs, only: norb
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use multislater, only: detiab
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iab, icheck, iflag, ipass
+      real(dp) :: dabs, dcheck, dlog10, dlogdet
 
       ! write(6, *) 'norb', norb
       ! write(6, *) 'nadorb', nadorb
@@ -154,11 +167,16 @@ c-----------------------------------------------------------------------
       use velocity_jastrow, only: vj
       use array_resize_utils, only: resize_matrix, resize_tensor
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ic, iorb, iparm, l
+
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = 0.5d0
 
 
 
-      parameter (one=1.d0,half=0.5d0)
       
       ! resize ddor and dorb if necessary
       ! call resize_matrix(ddorb, norb+nadorb, 2)

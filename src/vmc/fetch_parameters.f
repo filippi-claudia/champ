@@ -5,9 +5,13 @@ c-----------------------------------------------------------------------
       ! this is so confusng ... 
       use optwf_contrl, only: nparm
       
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension p(*)
+      integer :: ip, n
+
+      real(dp), dimension(*) :: p
+
       
 
       n=0
@@ -33,10 +37,14 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ict, iparm, n
+
+      real(dp), dimension(*) :: p
 
 
-      dimension p(*)
 
       if(ioptjas.eq.0) return
 
@@ -63,12 +71,16 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, n
+
+      real(dp), dimension(*) :: p
 
 
 
 
-      dimension p(*)
 
       if(ioptorb.eq.0) return
 
@@ -84,7 +96,13 @@ c-----------------------------------------------------------------------
 
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iadiag, icsf, idet, j
+      integer :: n
+      real(dp) :: c90
+      real(dp), dimension(*) :: p
 
 
 
@@ -92,7 +110,6 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension p(*)
 
       if(ioptci.eq.0) return
 

@@ -25,11 +25,22 @@
       use array_resize_utils, only: resize_matrix, resize_tensor
       use multislater, only: detiab
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iab, iel, index_det, iorb
+      integer :: irep, ish, istate, jorb
+      integer :: jrep, k, ndim, nel
+      real(dp) :: det, dum1, dum2, dum3
+      real(dp), dimension(MDET, 2) :: eloc_det
+      real(dp), dimension(3, nelec) :: vj
+      real(dp), dimension(*) :: vpsp_det
+      real(dp), dimension(nelec**2, 2) :: btemp
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = 0.5d0
 
 
 
-      parameter (one=1.d0,half=0.5d0)
 
 c note that the dimension of the slater matrices is assumed
 c to be given by MMAT_DIM = (MELEC/2)**2, that is there are
@@ -38,10 +49,7 @@ c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)
 
 
-      dimension eloc_det(MDET,2)
-      dimension vj(3,nelec),vpsp_det(*)
 
-      dimension btemp(nelec**2,2)
 
       ! call resize_matrix(b, norb+nadorb, 1)
       ! call resize_matrix(orb, norb+nadorb, 2)
@@ -251,15 +259,25 @@ c-----------------------------------------------------------------------
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iab, iorb, irep, istate
+      integer :: j, jorb, jrep, k
+      integer :: kk, ndim
+      real(dp) :: detall, detrefi
+      real(dp), dimension(MDET) :: detu
+      real(dp), dimension(MDET) :: detd
+      real(dp), dimension(MEXCIT**2, MDET) :: wfmat
+      real(dp), dimension(MORB, nelec) :: ymat
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = 0.5d0
 
 
 
 
-      parameter (one=1.d0,half=0.5d0)
 
 
-      dimension detu(MDET),detd(MDET),wfmat(MEXCIT**2,MDET),ymat(MORB,nelec)
 
       detrefi=1.d0/(detu(kref)*detd(kref))
 
@@ -326,10 +344,18 @@ c-----------------------------------------------------------------------
 
       use multimat, only: wfmat
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iab, iorb, irep, j
+      integer :: jj, jorb, jrep, kk
+      integer :: ll, lorb, lrep, ndim
+
+      real(dp), dimension(MORB, nelec) :: dymat
+      real(dp), dimension(MEXCIT*MEXCIT) :: dmat1
+      real(dp), dimension(MEXCIT*MEXCIT) :: dmat2
 
 
-      dimension dymat(MORB,nelec),dmat1(MEXCIT*MEXCIT),dmat2(MEXCIT*MEXCIT)
 
       do 10 i=1,nelec
         do 10 j=1,norb
@@ -393,10 +419,19 @@ c-----------------------------------------------------------------------
       use slater, only: d2dx2, ddx, fp, fpp, slmi
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension ymat(MORB,nelec,2),dymat(MORB,nelec,2)
-      dimension zmat(MORB,nelec,2),dzmat(MORB,nelec,2),emz(nelec,nelec,2),aaz(nelec,nelec,2)
+      integer :: iab, irep, ish, jrep, krep
+      integer :: nel
+
+      real(dp), dimension(MORB, nelec, 2) :: ymat
+      real(dp), dimension(MORB, nelec, 2) :: dymat
+      real(dp), dimension(MORB, nelec, 2) :: zmat
+      real(dp), dimension(MORB, nelec, 2) :: dzmat
+      real(dp), dimension(nelec, nelec, 2) :: emz
+      real(dp), dimension(nelec, nelec, 2) :: aaz
+
 
       do 100 iab=1,2
         if(iab.eq.2.and.ndn.eq.0) goto 100
@@ -455,7 +490,10 @@ c-----------------------------------------------------------------------
       use multimat, only: wfmat
 
       use multislater, only: detiab
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: iab, iel, istate
+
 
 
 
@@ -495,7 +533,11 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use multidet, only: irepcol_det, ireporb_det, numrep_det
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iab, j, k
+      integer :: idiff          ! added by Ravindra
+
 
       idiff=1
       if(numrep_det(i,iab).ne.numrep_det(j,iab))return

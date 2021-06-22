@@ -17,15 +17,35 @@ c vg -> value,gradient
       use basis, only: n4fzzx, n4fzzy, n4fxyz
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iabs, ic, ider, irb
+      integer :: j, ju, k, l
+      integer :: ll
+      real(dp) :: cd1, cd2, cf, cf2, cf3
+      real(dp) :: cp, cs, r, r2
+      real(dp) :: ri, ri2, ri3, rk
+      real(dp) :: rt3, rt3b2, term, wf1
+      real(dp) :: x2y, x2y2, x2z, xvec
+      real(dp) :: xvec3, xy, xyz, xz
+      real(dp) :: y2x, y2z, yvec, yvec3
+      real(dp) :: yz, z2x, z2y, zr
+      real(dp) :: zvec, zvec3
+      real(dp), dimension(4, MRWF) :: wfv
+      real(dp), dimension(3) :: xc
+      real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
+      real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: three = 3.d0
+      real(dp), parameter :: four = 4.d0
+      real(dp), parameter :: half = 0.5d0
 
 
-      parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0,half=0.5d0)
 
 
 
-      dimension wfv(4,MRWF)
-      dimension xc(3),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
 
       data rt3,rt3b2/1.732050808d0,0.866025404d0/
 c cs=1/sqrt(4*pi), cp=sqrt(3/(4*pi)), cd1=sqrt(5/(4*pi)), cd2=sqrt(15/(4*pi))

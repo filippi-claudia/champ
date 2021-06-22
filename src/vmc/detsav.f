@@ -26,7 +26,13 @@ c Written by Claudia Filippi
       use slater, only: d2dx2, ddx, fp, fpp, slmi
 
       use multislater, only: detiab
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iab, iel, iflag, ikel
+      integer :: iorb, ish, istate, j
+      integer :: k, kk, ndim, nel
+      real(dp) :: go
 
 
 

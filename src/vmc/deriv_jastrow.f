@@ -4,10 +4,16 @@ c Written by Claudia Filippi
       use vmc_mod, only: MELEC
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (zero=0.d0)
-      dimension x(3,*),v(3,*),div_vj(nelec)
+      integer :: i
+      real(dp) :: d2, value
+      real(dp), dimension(3, *) :: x
+      real(dp), dimension(3, *) :: v
+      real(dp), dimension(nelec) :: div_vj
+      real(dp), parameter :: zero = 0.d0
+
 
       do 10 i=1,nelec
         v(1,i)=zero

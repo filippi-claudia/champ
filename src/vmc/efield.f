@@ -10,11 +10,15 @@
 
       use efield, only: iscreen, ncharges
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j, nelec
+      real(dp) :: atmp, efield_pot, rij, rij2
+      real(dp), dimension(3, *) :: coord
 
 
 
-      dimension coord(3,*)
 
       atmp=0
       efield_pot=0
@@ -41,7 +45,11 @@ c-----------------------------------------------------------------------
 
       use efield, only: iscreen, ncharges
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j
+      real(dp) :: atmp, efield_extext, efield_nucext, rij, rij2
 
 
 

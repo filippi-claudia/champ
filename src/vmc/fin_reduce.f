@@ -20,12 +20,18 @@ c MPI version written by Claudia Filippi
       use method_opt, only: method
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, id, ierr, istate
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      real(dp) :: dble, efin, passes
+      real(dp), dimension(nrad) :: rprobt
+      real(dp), dimension(nrad) :: tryt
+      real(dp), dimension(nrad) :: suct
+      real(dp), dimension(MSTATES) :: collect
 
 
-      dimension rprobt(nrad),tryt(nrad),suct(nrad)
-      dimension collect(MSTATES)
-      dimension istatus(MPI_STATUS_SIZE)
 
 
       call mpi_reduce(ecum1,collect,nstates,mpi_double_precision
