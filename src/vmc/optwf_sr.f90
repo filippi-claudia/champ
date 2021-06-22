@@ -48,6 +48,7 @@ contains
         use force_analy, only: alfgeo
         use optwf_contrl, only: nparm
         use method_opt, only: method
+        use contrl_file,    only: ounit
 
         implicit real*8(a - h, o - z)
 
@@ -59,20 +60,20 @@ contains
 
         if (nparm .gt. MPARM) call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
-        write (6, '(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
+        write (ounit, '(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
 
         if (ifunc_omega .gt. 0) then
             if (n_omegaf + n_omegat .gt. nopt_iter) call fatal_error('SR_OPTWF: n_omegaf+n_omegat > nopt_iter')
             omega = omega0
-            write (6, '(/,''SR ifunc_omega: '',i3)') ifunc_omega
-            write (6, '(''SR omega: '',f10.5)') omega
-            write (6, '(''SR n_omegaf: '',i4)') n_omegaf
-            write (6, '(''SR n_omegat: '',i4)') n_omegat
+            write (ounit, '(/,''SR ifunc_omega: '',i3)') ifunc_omega
+            write (ounit, '(''SR omega: '',f10.5)') omega
+            write (ounit, '(''SR n_omegaf: '',i4)') n_omegaf
+            write (ounit, '(''SR n_omegat: '',i4)') n_omegat
         endif
 
-        write (6, '(/,''SR adiag: '',f10.5)') sr_adiag
-        write (6, '(''SR tau:   '',f10.5)') sr_tau
-        write (6, '(''SR eps:   '',f10.5)') sr_eps
+        write (ounit, '(/,''SR adiag: '',f10.5)') sr_adiag
+        write (ounit, '(''SR tau:   '',f10.5)') sr_tau
+        write (ounit, '(''SR eps:   '',f10.5)') sr_eps
 
 
         call save_params()
@@ -83,7 +84,7 @@ contains
 
         ! do iteration
         do iter = 1, nopt_iter
-            write (6, '(/,''Optimization iteration'',i5,'' of'',i5)') iter, nopt_iter
+            write (ounit, '(/,''Optimization iteration'',i5,'' of'',i5)') iter, nopt_iter
 
             iforce_analy = 0
 
@@ -98,19 +99,19 @@ contains
                     omega = energy_sav - sigma_sav
                     if (ifunc_omega .eq. 1 .or. ifunc_omega .eq. 2) omega = energy_sav
                 endif
-                write (6, '(''SR omega: '',f10.5)') omega
+                write (ounit, '(''SR omega: '',f10.5)') omega
             endif
 
             ! do micro_iteration
             do miter = 1, micro_iter_sr
 
-                if (micro_iter_sr .gt. 1) write (6, '(/,''Micro iteration'',i5,'' of'',i5)') miter, micro_iter_sr
+                if (micro_iter_sr .gt. 1) write (ounit, '(/,''Micro iteration'',i5,'' of'',i5)') miter, micro_iter_sr
 
                 if (miter .eq. micro_iter_sr) iforce_analy = iforce_analy_sav
 
                 call qmc
 
-                write (6, '(/,''Completed sampling'')')
+                write (ounit, '(/,''Completed sampling'')')
 
 6               continue
 
@@ -119,11 +120,11 @@ contains
 
                 adiag = sr_adiag
                 call test_solution_parm(nparm, deltap, dparm_norm, dparm_norm_min, adiag, iflag)
-                write (6, '(''Norm of parm variation '',d12.5)') dparm_norm
+                write (ounit, '(''Norm of parm variation '',d12.5)') dparm_norm
                 if (iflag .ne. 0) then
-                    write (6, '(''Warning: dparm_norm>1'')')
+                    write (ounit, '(''Warning: dparm_norm>1'')')
                     adiag = 10*adiag
-                    write (6, '(''adiag increased to '',f10.5)') adiag
+                    write (ounit, '(''adiag increased to '',f10.5)') adiag
 
                     sr_adiag = adiag
                     go to 6
@@ -154,8 +155,8 @@ contains
                 vmc_nblk = min(vmc_nblk, vmc_nblk_max)
 
             endif
-            write (6, '(''nblk = '',i6)') vmc_nblk
-            write (6, '(''alfgeo = '',f10.4)') alfgeo
+            write (ounit, '(''nblk = '',i6)') vmc_nblk
+            write (ounit, '(''alfgeo = '',f10.4)') alfgeo
 
             energy_sav = energy(1)
             energy_err_sav = energy_err(1)
@@ -163,7 +164,7 @@ contains
         enddo
         ! enddo iteration
 
-        write (6, '(/,''Check last iteration'')')
+        write (ounit, '(/,''Check last iteration'')')
 
         ioptjas = 0
         ioptorb = 0
@@ -193,6 +194,7 @@ contains
     subroutine sr(nparm, deltap, sr_adiag, sr_eps, i)
         ! solve S*deltap=h_sr (call in optwf)
         use sr_mat_n, only: h_sr
+        use contrl_file,    only: ounit
         implicit real*8(a - h, o - z)
 
         integer, intent(in) :: nparm
@@ -209,7 +211,7 @@ contains
             deltap(i) = 0.d0     ! initial guess of solution
         enddo
         call pcg(nparm, h_sr, deltap, i, imax, imod, sr_eps)
-        write (6, *) 'CG iter ', i
+        !write (ounit, *) 'CG iter ', i
 
         call sr_rescale_deltap(nparm, deltap)
         return
@@ -261,7 +263,7 @@ contains
         use optorb_cblock, only: norbterm
 
         use method_opt, only: method
-
+        use contrl_file,    only: ounit
         implicit real*8(a - h, o - z)
 
         real(dp), DIMENSION(:), allocatable :: obs_wtg
@@ -360,7 +362,7 @@ contains
             do k = 1, nparm
                 if (s_ii_inv(k) .gt. smax) smax = s_ii_inv(k)
             enddo
-            write (6, '(''max S diagonal element '',t41,f16.8)') smax
+            write (ounit, '(''max S diagonal element '',t41,f16.8)') smax
 
             kk = 0
             do k = 1, nparm
@@ -371,7 +373,7 @@ contains
                     s_ii_inv(k) = 0.d0
                 endif
             enddo
-            write (6, '(''nparm, non-zero S diag'',t41,2i5)') nparm, kk
+            write (ounit, '(''nparm, non-zero S diag'',t41,2i5)') nparm, kk
 
         endif
 

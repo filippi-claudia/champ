@@ -6,6 +6,7 @@ c Written by Cyrus Umrigar
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
+      use contrl_file,    only: ounit
       implicit real*8(a-h,o-z)
 
       parameter(half=0.5d0)
@@ -39,7 +40,7 @@ c sample position from exponentials around center
              site=-dlog(rannyu(0))
              site=sign(site,(rannyu(0)-half))
    10        x(ic,l)=sitsca*site+cent(ic,i)
-      write(6,'(''number of electrons placed ='',i5)') l
+      write(ounit,'(''number of electrons placed ='',i5)') l
       if (l.lt.nelec) call fatal_error('SITES: bad input')
       return
       end

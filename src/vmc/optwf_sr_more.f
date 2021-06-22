@@ -14,7 +14,7 @@ c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
       use optorb_cblock, only: norbterm
       use mstates_mod, only: MSTATES
       use method_opt, only: method
-
+      use contrl_file,    only: ounit
       implicit real*8(a-h,o-z)
 
 
@@ -120,7 +120,7 @@ c for omega functional
         do k=1,nparm
           if(s_ii_inv(k).gt.smax) smax=s_ii_inv(k)
         enddo
-        write(6,'(''max S diagonal element '',t41,f16.8)') smax
+        write(ounit,'(''max S diagonal element '',t41,f16.8)') smax
 
         kk=0
         do k=1,nparm
@@ -131,7 +131,7 @@ c for omega functional
             s_ii_inv(k)=0.d0
           endif
         enddo
-        write(6,'(''nparm, non-zero S diag'',t41,2i5)') nparm,kk
+        write(ounit,'(''nparm, non-zero S diag'',t41,2i5)') nparm,kk
 
       endif
 
@@ -211,7 +211,7 @@ c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.in
 
       use mpiconf, only: idtask
       use mpi
-
+      use contrl_file,    only: ounit
       implicit real*8(a-h,o-z)
 
       integer m_parm_opt
@@ -229,14 +229,14 @@ c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.in
        call dscal(n,-1.d0,r,1)           ! r=b-r
        call asolve(n,r,d)                ! d=M^{-1}r preconditioner
        delta_new=ddot(n,d,1,r,1)           ! \delta_new=r^T d
-       print*,'delta0 = ',delta_new
+       write(ounit,'(a12,f24.16)') 'delta0 = ',delta_new
       endif
       call MPI_BCAST(delta_new,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
       delta_0=delta_new*eps**2            ! convergence thr
       do i=0,imax-1
 c      write(*,*)i,idtask,'ECCO ',delta_0,delta_new
        if(delta_new.lt.delta_0)then
-        if(idtask.eq.0)print*,'CG iter ',i
+        if(idtask.eq.0) write(ounit,*) 'CG iter ',i
 c     write(*,*)'ECCO pcg esce ',idtask
         call MPI_BCAST(x,n,MPI_REAL8,0,MPI_COMM_WORLD,j)
         return
@@ -259,7 +259,7 @@ c     write(*,*)'ECCO pcg esce ',idtask
         call asolve(n,r,s)               ! s=M^{-1}r preconditioner
         delta_old=delta_new              ! \delta_old=\delta_new
         delta_new=ddot(n,r,1,s,1)        ! \delta_new=r^T s
-        print*,'delta_new ',delta_new
+        write(ounit,'(a12,f24.16)') 'delta_new ',delta_new
         beta=delta_new/delta_old         ! \beta=\delta_new/\delta_old
         call dscal(n,beta,d,1)           ! d=\beta d
         call daxpy(n,1.d0,s,1,d,1)       ! d=s+d
@@ -267,7 +267,7 @@ c     write(*,*)'ECCO pcg esce ',idtask
        call MPI_BCAST(delta_new,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
       enddo
 
-      if(idtask.eq.0)print*,'CG iter ',i
+      if(idtask.eq.0) write(ounit,*) 'CG iter ',i
       call MPI_BCAST(x,n,MPI_REAL8,0,MPI_COMM_WORLD,j)
       return
       end
