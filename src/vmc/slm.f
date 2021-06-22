@@ -5,10 +5,19 @@ c ------+-----------------------------------------------------------------------
 c   y   |   1  x  y  z  3z2-r2  x2-y2  xy   xz   yz  xxx yyy zzz xxy xxz yyx yyz zzx zzy xyz
 c
 
-      implicit real*8(a-h,o-z)
-      dimension rvec(3),dy(3),ddy(3,3),dlapy(3)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (half=0.5d0)
+      integer :: i, iforce_analy, j, l
+      real(dp) :: cd1, cd2, cf, cf2, cf3
+      real(dp) :: cp, cs, ddy_lap, go
+      real(dp) :: r2, y
+      real(dp), dimension(3) :: rvec
+      real(dp), dimension(3) :: dy
+      real(dp), dimension(3,3) :: ddy
+      real(dp), dimension(3) :: dlapy
+      real(dp), parameter :: half = 0.5d0
+
 c cs=1/sqrt(4*pi), cp=sqrt(3/(4*pi)), cd1=sqrt(5/(4*pi)), cd2=sqrt(15/(4*pi))
       data cs,cp,cd1,cd2/0.28209479d0,0.48860251d0,0.63078313d0,1.0925484d0/
 c cf=sqrt(7/(4*pi)),cf2=cf*sqrt(5),cf3=cf*sqrt(15)
