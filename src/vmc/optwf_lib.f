@@ -4,9 +4,16 @@ c chlsky: purpose: cholesky decomposition of a and determinant
 c in: matrix a of order n stored with physical dimension np
 c out: lower triangular matrix stored in lower portion of a
 c note: lower triangular portion of original a is overwritten
-      implicit real*8(a-h,o-z)
-      dimension a(np,np)
-      parameter (ZERO=0,ONE=1)
+      use precision_kinds, only: dp
+
+      implicit none
+
+      integer :: ierr, ip, j, jm1, k
+      integer :: n, np
+      real(dp) :: det, deta, diag_prod, s, sum
+      real(dp), dimension(np,np) :: a
+      real(dp), parameter :: ZERO = 0
+      real(dp), parameter :: ONE = 1
 
       diag_prod=1
       do j=1,n
@@ -57,8 +64,15 @@ c Golub and van Loan: algorithm 3.1.3
 c in:  a = matrix of order n with physical dimension np
 c      b = vector of order n
 c out: b = solution of eqs.; overwites original b
-      implicit real*8(a-h,o-z)
-      dimension a(np,np),b(np)
+
+      use precision_kinds, only: dp
+
+      implicit none
+
+      integer :: j, k, n, np
+      real(dp), dimension(np,np) :: a
+      real(dp), dimension(np) :: b
+
       do j=1,n-1
          b(j)=b(j)/a(j,j)
          do k=j+1,n
@@ -75,8 +89,15 @@ c Golub and van Loan: algorithm 3.1.4
 c in:  a = matrix of order n with physical dimension np
 c      b = vector of order n
 c out: b = solution of eqs.; overwites original b
-      implicit real*8(a-h,o-z)
-      dimension a(np,np),b(np)
+
+      use precision_kinds, only: dp
+
+      implicit none
+
+      integer :: j, k, n, np
+      real(dp), dimension(np,np) :: a
+      real(dp), dimension(np) :: b
+
       do j=n,2,-1
          b(j)=b(j)/a(j,j)
          do k=1,j-1
@@ -90,12 +111,17 @@ c-----------------------------------------------------------------------
       subroutine sort(n,arr,indx)
 C     index sort from numerical recepires
 C     sorts in ascending order
-      implicit real*8(a-h,o-z)
-      integer n,indx(n),m,nstack
-      real*8 arr(n)
-      parameter (m=7,nstack=50)
+
+      use precision_kinds, only: dp
+
+      implicit none
+
+      integer, parameter :: m = 7
+      integer, parameter :: nstack = 50
+      integer n, indx(n)
+      real(dp) :: a, arr(n)
       integer i,indxt,ir,itemp,j,jstack,k,l,istack(nstack)
-      real*8 a
+
       do 11 j=1,n
         indx(j)=j
 11    continue

@@ -14,13 +14,20 @@ c Modified by A. Scemama
       use atom, only: ncent_tot
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use array_resize_utils, only: resize_matrix, resize_tensor
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
+      integer :: i, ier, iorb, k, m
+      integer :: m0
 
+      real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
+      real(dp), dimension(nelec,ncent_tot) :: r_en
+      real(dp), dimension(nelec,nbasis) :: bhin
+      real(dp), dimension(3*nelec,nbasis) :: dbhin
+      real(dp), dimension(nelec,nbasis) :: d2bhin
 
-      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
-      dimension bhin(nelec,nbasis),dbhin(3*nelec,nbasis),d2bhin(nelec,nbasis)
 
       ! call resize_matrix(orb, norb+nadorb, 2)
       ! call resize_matrix(ddorb, norb+nadorb, 2)
@@ -156,15 +163,18 @@ c-------------------------------------------------------------------------------
       use phifun, only: phin
       use coefs, only: coef, nbasis, norb
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
+
+      integer :: i, iwf
+      real(dp) :: c25
+      real(dp), dimension(nelec,nbasis) :: bhin
+      real(dp), dimension(3,nelec,nbasis) :: dbhin
+      real(dp), dimension(nelec,nbasis) :: d2bhin
 
 c compute values of extra ('virtual') orbitals needed for optorb operators
 c assuming that basis function values in phin are up to date
-
-
-
-      dimension bhin(nelec,nbasis),dbhin(3,nelec,nbasis),d2bhin(nelec,nbasis)
 
       if (nadorb.eq.0.or.(ioptorb.eq.0.and.ioptci.eq.0)) return
 
@@ -206,25 +216,27 @@ c25   continue
       end
 c------------------------------------------------------------------------------------
       subroutine da_orbitals
+
       use vmc_mod, only: MELEC, MORB, MBASIS
       use atom, only: ncent
-
       use const, only: nelec
       use da_orbval, only: da_d2orb, da_dorb, da_orb
-
       use numbas2, only: ibas0, ibas1
       use phifun, only: d2phin_all, d3phin, dphin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: ibasis
-
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
+      integer :: i, ic, ielec, j, k
+      integer :: l, m, n
 
-
-      dimension tphin(3*nelec,nbasis),t2phin_all(3*3*nelec,nbasis),t3phin(3*nelec,nbasis)
+      real(dp), dimension(3*nelec,nbasis) :: tphin
+      real(dp), dimension(3*3*nelec,nbasis) :: t2phin_all
+      real(dp), dimension(3*nelec,nbasis) :: t3phin
 
       do ibasis=1,nbasis
        i=0
@@ -265,12 +277,16 @@ c-------------------------------------------------------------------------------
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use multislatern, only: ddorbn, detn, dorbn, orbn
       use const, only: nelec
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: iel, ier, iflag, iorb, m
+      integer :: m0
 
-      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
-
+      real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
+      real(dp), dimension(nelec,ncent_tot) :: r_en
 
       if(iperiodic.eq.0) then
 

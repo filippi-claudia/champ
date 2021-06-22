@@ -7,11 +7,16 @@ c get nuclear potential energy
       use atom, only: ncent_tot, nctype_tot
       use force_analy, only: iforce_analy
       use da_pseudo, only: da_nonloc, da_pecent, da_vps
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-      dimension znuc(nctype_tot),cent(3,ncent_tot),iwctype(ncent_tot)
+      integer :: i, j, j1, k, ncent
+      integer, dimension(ncent_tot) :: iwctype
+      real(dp) :: pecent, r, r2, ri, ri2
+      real(dp) :: term, zij
+      real(dp), dimension(nctype_tot) :: znuc
+      real(dp), dimension(3,ncent_tot) :: cent
 
 !
       if(iperiodic.eq.0) then

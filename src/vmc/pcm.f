@@ -15,10 +15,14 @@ c...........................................................
       use pcm_ameta, only: amdlg, eta
       use pcm_pot, only: penupol, penups, penupv
       use pcm_fdc, only: feps, fs, rcol, rcolt
-
       use pcm_inda, only: inda
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, j, k, npmax
+      real(dp) :: PI, fcol, rnp, rnp2
+      real(dp) :: xx, yy, zz
 
 
 
@@ -139,7 +143,11 @@ c Written by Amovilli-Floris
       use pcm_parms, only: nscv
 
       use pcm_fdc, only: fs, qvol
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: n
+      real(dp) :: tmp
 
 
 
@@ -166,24 +174,25 @@ C     ***************************************************************
       use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
-
       use pcm_ameta, only: amdlg, eta
       use pcm_ah, only: ahca, bh
       use pcm_fdc, only: feps, fs, qvol, rcol, rcolt
       use pcm_inda, only: inda
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, ij, j, k, l
+      real(dp) :: PI, cc, cc1, cc2, cc3
+      real(dp) :: cork, corr, enk, rkl2
+      real(dp) :: rkl3, rr2, rr3, s1
+      real(dp) :: s2, s3, ss, xx
+      real(dp) :: xx2, yy, yy2, zz
+      real(dp) :: zz2, det
+      real(dp), dimension(MCHS*MCHS) :: ah_vec
+      real(dp), dimension(MCHS) :: bhn
+      real(dp), dimension(MCHS,MCHS) :: ah
 
-
-
-
-      real*8 ah_vec,det
-C     
-C    
-      dimension ah_vec(MCHS*MCHS),bhn(MCHS),ah(MCHS,MCHS)
-
-c
       DATA PI/3.1415927D0/
 c............................................................
 c     The matrix ah is computed and inverted 
@@ -300,13 +309,21 @@ C     ***************************************************************
 
       use pcm_ameta, only: eta
       use pcm_fdc, only: fs, qvol, rcol, rcolt
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, in, iscv, j, k
+      integer :: nelec
+      real(dp) :: AV, GC, PI, cc, cc1
+      real(dp) :: cc2, cc3, eek, hatokc
+      real(dp) :: res2, rr1, rr2, xx
+      real(dp) :: yy, zz
+      real(dp), dimension(3,*) :: coord
+      real(dp), dimension(100) :: fac
 
 
 
 
-      dimension coord(3,*)
-      dimension fac(100)
 C     ***************************************************************
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
       data hatokc/627.509541d0/  
@@ -428,7 +445,10 @@ c............................................................
 
       use pcm_pot, only: penupol, penupv
       use pcm_fdc, only: qvol
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: iupdate, kn, ko, nsco
+
 
       iupdate=0
       if(ipcm.eq.0.or.ipcm.eq.3) return
@@ -470,7 +490,11 @@ c............................................................
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       use pcm_pot, only: penupv
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j
+      real(dp) :: rnp, rnp2, xx, yy, zz
 
 
        
@@ -501,7 +525,10 @@ c..............................................................
       use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: k, kn, ko, nchtmp
+
 
       open (52,file='chvol_new',form='formatted',status='unknown')
       rewind 52
@@ -531,12 +558,17 @@ c......................................................
 
       use pcm_pot, only: penups, penupv
       use pcm_grid3d_contrl, only: ipcm_3dgrid
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ier, nelec
+      real(dp) :: AV, GC, PI, hatokc, pepcms
+      real(dp) :: pepcmv, pepol_s, pepol_sv, pepol_v
+      real(dp), dimension(3,*) :: coord
 
 
 
 
-      dimension coord(3,*)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
       data hatokc/627.509541d0/
       icall=icall+1
@@ -592,11 +624,17 @@ c......................................................
       use pcm_parms, only: retk, surk, xe, xpol, ye, ze
 
       use pcm_fdc, only: rcol, rcolv
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: j
+      real(dp) :: AV, GC, PI, pepol_s, pepol_v
+      real(dp) :: r2, repol, xx, yy
+      real(dp) :: zz
+      real(dp), dimension(3) :: x
 
 
 
-      dimension x(3)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
 
       pepol_s=0.0d0
@@ -651,7 +689,10 @@ c......................................................
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iflag
+
 
 
 
@@ -695,7 +736,10 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_cum, enfpcm_cm2
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu
+
 
 
       if(ipcm.eq.0) return
@@ -722,7 +766,10 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_cum, enfpcm_cm2
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu
+
 
 
       if(ipcm.eq.0) return
@@ -751,13 +798,22 @@ c......................................................
 
       use pcm_inda, only: inda
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j, k
+      real(dp) :: bhe, qpol, rr, sqpol2, sqpol_sp
+      real(dp) :: xx, yy, zz
+      real(dp), dimension(MCHS) :: ch_new
+      real(dp), dimension(*) :: enfpcm_ave
+      real(dp), dimension(*) :: enfpcm_err
+      real(dp), dimension(MCHS) :: sch
+      real(dp), dimension(MCHS) :: sch2
+      real(dp), dimension(MSPHERE) :: qpolsp
+      real(dp), dimension(MSPHERE) :: sqpol2_sp
 
 
 
-      dimension ch_new(MCHS),enfpcm_ave(*),enfpcm_err(*)
-      dimension sch(MCHS),sch2(MCHS)
-      dimension qpolsp(MSPHERE),sqpol2_sp(MSPHERE)
 
 c...................................................................
 c     only for ground states
@@ -848,14 +904,20 @@ c................................................................
       use pcm_ameta, only: amdlg, eta
       use pcm_ah, only: ahca, bh
       use pcm_fdc, only: feps, qvol
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j, k, l
+      real(dp) :: bhe, cc, cc1, cc2, cc3
+      real(dp) :: enfpcm_ave, enfpcm_err, qpol, rr2
+      real(dp) :: rr3, xx, yy, zz
+      real(dp), dimension(MCHS) :: ch_new
+      real(dp), dimension(MCHS) :: env
 
 
 
 
 
-      dimension ch_new(MCHS)
-      dimension env(MCHS)
 
 c...................................................................
 c     computes normal component electric field due to qvol
@@ -924,21 +986,45 @@ C     ***************************************************************
       use pcm_parms, only: nch, nchs, nchs1, nchs2
       use pcm_parms, only: nesph, re
       use pcm_parms, only: surk, xe, xpol, ye, ze
-
       use pcm_ameta, only: amdlg, eta
       use pcm_inda, only: inda
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      interface
+        function rannyu(idum)
+          use precision_kinds, only: dp
+          implicit none
+          integer,intent(in) :: idum
+          real(dp) :: rannyu
+        end function rannyu
+      end interface
+
+      integer :: i, i1, i2, icheck_sphere, icount
+      integer :: icount2, ii, ij, imax
+      integer :: iold, ipair, ird, ith
+      integer :: j, k, kode, npmax
+      integer, dimension(2000000,2) :: ijpair
+      integer, dimension(5000) :: inda1
+      integer, dimension(5000) :: indat
+      integer, dimension(5000) :: itoro
+      real(dp) :: VERSION, area, cutoff, datan, dble
+      real(dp) :: deltaij, pi, prdm, qi
+      real(dp) :: rd, rij, rmax, rr
+      real(dp) :: uu, ux, uy, uz
+      real(dp) :: w, x, xx, y
+      real(dp) :: yy, z, zz
+      real(dp), dimension(2000000) :: dist
+      real(dp), dimension(3,5000) :: xpolt
+      real(dp), dimension(5000) :: amdlgt
+      real(dp), dimension(3,5000) :: etat
 
 
 
 c
 c....................................................................
 c....................................................................
-      dimension dist(2000000),ijpair(2000000,2)
-      dimension inda1(5000),xpolt(3,5000)
-      dimension indat(5000),itoro(5000)
-      dimension amdlgt(5000),etat(3,5000)
 c
 c............................TRIAL VERSION-------------------
       character*80 row1,row2
@@ -1186,15 +1272,44 @@ c..................................................
 
 
       subroutine prep
+
       use spc, only: nsf, num
       use spc1, only: csf, rsf
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+
+      implicit none
+
+      interface
+         function rannyu(idum)
+         use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
+
+      integer :: i, icount, imax, isf, j
+      integer :: k, maxit, ncyc, ncyc1
+      integer :: nf, np, np5
+      real(dp) :: a1, cos_theta, cutoff, dabs, datan
+      real(dp) :: dble, dd, dz, energy
+      real(dp) :: epsilon, f1, pi2, pi25
+      real(dp) :: pigreco, pol, qf, qm
+      real(dp) :: r0, rij, rrand, sin_theta
+      real(dp) :: ww, xi, yi, z1
+      real(dp) :: z2, zi, zz, e0
+      real(dp), dimension(1000) :: x
+      real(dp), dimension(1000) :: y
+      real(dp), dimension(1000) :: z
+      real(dp), dimension(1000) :: xm
+      real(dp), dimension(1000) :: ym
+      real(dp), dimension(1000) :: zm
+      real(dp), dimension(1000) :: el1
+      real(dp), dimension(1000) :: el2
+      real(dp), dimension(1000) :: elm1
+      real(dp), dimension(1000) :: elm2
 
 
-      dimension x(1000),y(1000),z(1000)
-      dimension xm(1000),ym(1000),zm(1000)
-      dimension el1(1000),el2(1000)
-      dimension elm1(1000),elm2(1000)
       maxit=100
       epsilon=0.d0
       pi2=8.d0*datan(1.d0)
@@ -1284,8 +1399,14 @@ c     f1=r0*dsin(theta)
       end
 
       subroutine rep (x,y,z,n,e)
-      implicit real*8 (a-h,o-z)
-      dimension x(1),y(1),z(1)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j, n
+      real(dp) :: e, rij
+      real(dp), dimension(1) :: x
+      real(dp), dimension(1) :: y
+      real(dp), dimension(1) :: z
       e=0.d0
       do i=1,n-1
       do j=i+1,n
@@ -1301,16 +1422,47 @@ c     f1=r0*dsin(theta)
       end
 
       subroutine prep1
+
       use pcm, only: MCHS
       use spc, only: nsf, num
       use spc1, only: csf, rsf
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+
+      implicit none
+
+      interface
+        function rannyu(idum)
+         use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+        end function rannyu
+      end interface
+
+      integer :: i, icount, imax, isf, j
+      integer :: k, maxit, ncyc, ncyc1
+      integer :: nf, np, np5
+      real(dp) :: amadelung, amdg, c1, c2, cutoff
+      real(dp) :: datan, dble, dd, dz
+      real(dp) :: energy, epsilon, erep, f1
+      real(dp) :: f2, ff1, pi2, pi25
+      real(dp) :: pigreco, pol, qf, r0
+      real(dp) :: rij, ro, s1, s2
+      real(dp) :: sumz, ww, xi, xx
+      real(dp) :: yi, yy, z1, z2
+      real(dp) :: zi, zz, e0
+      real(dp), dimension(1000) :: x
+      real(dp), dimension(1000) :: y
+      real(dp), dimension(1000) :: z
+      real(dp), dimension(1000) :: xm
+      real(dp), dimension(1000) :: ym
+      real(dp), dimension(1000) :: zm
+      real(dp), dimension(1000) :: el1
+      real(dp), dimension(1000) :: el2
+      real(dp), dimension(1000) :: elm1
+      real(dp), dimension(1000) :: elm2
 
 
-      dimension x(1000),y(1000),z(1000)
-      dimension xm(1000),ym(1000),zm(1000)
-      dimension el1(1000),el2(1000)
-      dimension elm1(1000),elm2(1000)
       maxit=300
       epsilon=0.d0
       pi2=8.d0*datan(1.d0)
@@ -1453,14 +1605,20 @@ c........................................................
 
       subroutine qpcm_matinv(a,nsub,determinant)
       use pcm, only: MCHS
-      implicit real*8 (a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, info, nsub
+      integer, dimension(MCHS) :: ipvt
+      real(dp) :: dabs, determinant, go, ten
+      real(dp), dimension(nsub,nsub) :: a
+      real(dp), dimension(MCHS) :: work
+      real(dp), dimension(2) :: det
 
 c routine to calculate inverse and determinant of matrix a
 c assumed to be dimensioned a(nsub,nsub).
 c the matrix a is replaced by its inverse.
 
-      dimension a(nsub,nsub)
-      dimension ipvt(MCHS),work(MCHS),det(2)
 
       call dgetrf(nsub,nsub,a,nsub,ipvt,info)
       if(info.gt.0) then
@@ -1511,15 +1669,24 @@ C     ***************************************************************
       use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
       use pcm_inda, only: inda
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ij, j, k, l
+      real(dp) :: PI, cork, corr, det, rkl2
+      real(dp) :: rkl3, s1, s2, s3
+      real(dp) :: ss, xx, xx2, yy
+      real(dp) :: yy2, zz, zz2
+      real(dp), dimension(MCHS*MCHS) :: ah_vec
+      real(dp), dimension(MCHS,MCHS) :: ah
+      real(dp), dimension(MCHS) :: q_strech
+      real(dp), dimension(MCHS) :: efield
 
 
 
 C     
 C    
 
-      dimension ah_vec(MCHS*MCHS),ah(MCHS,MCHS)
-      dimension q_strech(MCHS),efield(MCHS)
 
 c
       DATA PI/3.1415927D0/

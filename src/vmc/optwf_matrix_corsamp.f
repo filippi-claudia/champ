@@ -15,7 +15,17 @@ c written by Claudia Filippi
       use gradhess_all, only: grad, h, s
       use optwf_corsam, only: add_diag
       
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iadd_diag_loop1, iadiag, iflag, increase_nblk
+      integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iter
+      integer :: iwft, k, k_demax, k_demin
+      integer :: lwork, lwork_all_save, lwork_ci_save, nblk_sav
+      real(dp) :: add_diag_sav, de_worse1, de_worse2
+      real(dp) :: de_worse3, de_worse_err1, de_worse_err2, de_worse_err3
+      real(dp) :: denergy, denergy_err, denergy_max, denergy_min
+      real(dp) :: dparm_norm, energy_err_sav, energy_plus_err, energy_plus_err_best
+      real(dp) :: energy_sav, go
 
 
       ! parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
@@ -39,9 +49,6 @@ c written by Claudia Filippi
       allocate(s_sav(MPARMALL2))
       allocate(work(MWORK))
       allocate(work2(MPARMALL,MPARMALL))
-
-    
-      
 
 c No dump/restart if optimizing wave function
       irstar=0
@@ -499,7 +506,12 @@ c end of optimization loop
 c-----------------------------------------------------------------------
       subroutine check_length_run(iter,increase_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+
+      implicit none
+
+      integer :: increase_nblk, iter, nblk, nblk_max, nblk_new
+      real(dp) :: dabs, denergy, denergy_err, energy_err_sav, energy_tol
 
 c Increase nblk if near convergence to value needed to get desired statistical error
       increase_nblk=increase_nblk+1
@@ -550,14 +562,18 @@ c-----------------------------------------------------------------------
       subroutine quad_min
 
       use optwf_corsam, only: add_diag, energy, force, force_err
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-      parameter(MFUNC=3)
-
-
-      dimension add_diag_log(MFUNC),a(MFUNC,MFUNC),b(MFUNC)
+      integer :: i, ierr, iwadd_diag, j, k
+      integer :: k_min, nfunc, npts
+      integer, parameter :: MFUNC = 3
+      real(dp) :: add_diag_log_min, add_diag_min, dlog10, ee, energy_max
+      real(dp) :: energy_min, energy_var, eopt, rms
+      real(dp), dimension(MFUNC) :: add_diag_log
+      real(dp), dimension(MFUNC,MFUNC) :: a
+      real(dp), dimension(MFUNC) :: b
 
       npts=3
       nfunc=3
@@ -647,15 +663,14 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use gradhess_all, only: h, s
       use ci000, only: nciterm
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
+      integer :: i, i0, is, ishift, j
+      real(dp) :: go
         
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 

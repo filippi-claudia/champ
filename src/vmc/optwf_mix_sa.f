@@ -16,16 +16,27 @@
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
       use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, iflag, iforce_analy_sav, iguiding_sav, inc_nblk
+      integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iqmc_again
+      integer :: iqmc_check, istate, istate0, iter
+      integer :: miter, nblk_sav, nparmci, nstates_sav
+      integer, dimension(MSTATES) :: i_deltap
+      integer, dimension(5) :: index_min_energy
+      integer, dimension(5,MSTATES) :: index_more
+      real(dp) :: adiag, alin_adiag_sav, denergy, denergy_err, diffene
+      real(dp) :: dparm_norm, energy_err_sav, energy_sav, errdiff
+      real(dp) :: sigma, sigma_sav, sr_adiag_sav
+      real(dp), dimension(MPARM*MSTATES) :: deltap
+      real(dp), dimension(MPARM*MSTATES,5) :: deltap_more
+      real(dp), dimension(MSTATES) :: energy_old
+      real(dp), dimension(MSTATES) :: energy_err_old
+      real(dp), dimension(6,MSTATES) :: energy_davidson
+      real(dp), dimension(MPARM) :: deltap_new
       character*20 method_sav
-
-
-      dimension deltap(MPARM*MSTATES),deltap_more(MPARM*MSTATES,5)
-      dimension energy_old(MSTATES), energy_err_old(MSTATES), i_deltap(MSTATES), energy_davidson(6,MSTATES)
-      dimension index_min_energy(5), deltap_new(MPARM)
-      dimension index_more(5,MSTATES)
 
       save method_sav
 
@@ -255,15 +266,16 @@ c enddo iteration
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine change_ci(dparm_new,istate)
+
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf
 
       use dets, only: cdet, ndet
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-      dimension dparm_new(*)
+      integer :: icsf, idet, istate, j, jx
+      real(dp), dimension(*) :: dparm_new
 
 c      write(6,*) "COPUTING NEW CI, ccsf(1,state,1)", ccsf(1,istate,1), dparm_new(1)
 c update the ci coef
