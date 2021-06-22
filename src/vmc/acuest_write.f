@@ -17,6 +17,7 @@ c routine to write out estimators for energy etc.
       !use contrl, only: nstep
       use control_vmc, only:  vmc_nstep
       use precision_kinds, only: i2b
+      use contrl_file,    only: ounit, errunit
       implicit real*8(a-h,o-z)
 
       dimension enow(MSTATES,MFORCE)
@@ -29,7 +30,7 @@ c xerr = current error of x
 
 c write out header first time
 
-      if (iblk.eq.nproc) write(6,'(t5,''enow'',t15,''eave'',t21,''(eerr )''
+      if (iblk.eq.nproc) write(ounit,'(t5,''enow'',t15,''eave'',t21,''(eerr )''
      &,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr''
      &,t66,''tjfave'',t72,''(tjferr'',t83,''fave'',t97,''(ferr)''
      &,t108,''accept'',t119,''iter'')')
@@ -78,7 +79,7 @@ c write out current values of averages
 
           if(istate.eq.1) then
 
-            write(6,'(f10.5,4(f10.5,''('',i5,'')''),25x,f10.5,i10)')
+            write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),25x,f10.5,i10)')
      &      enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,accept,iblk*vmc_nstep
 
             call prop_prt(wcum(1,ifr),iblk,6)
@@ -88,7 +89,7 @@ c different meaning of last argument: 0 acuest, 1 finwrt
             call pcm_prt(wcum(1,ifr),iblk)
 
            else
-            write(6,'(f10.5,4(f10.5,''('',i5,'')''))')
+            write(ounit,'(f10.5,4(f10.5,''('',i5,'')''))')
      &      enow(istate,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer
           endif
 
@@ -97,7 +98,7 @@ c different meaning of last argument: 0 acuest, 1 finwrt
           fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))/deltot(ifr)
           ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)/abs(deltot(ifr))
           iferr=nint(1.0d9*ferr)
-          write(6,'(f10.5,f10.5,''('',i5,'')'',51x,f14.9,''('',i9,'')'')
+          write(ounit,'(f10.5,f10.5,''('',i5,'')'',51x,f14.9,''('',i9,'')'')
      &    ') enow(istate,ifr),eave,ieerr,fave,iferr
         endif
   25  continue

@@ -15,6 +15,7 @@
       !use contrl, only: irstar, isite, nconf_new, icharged_atom
       use control_vmc, only: vmc_irstar, vmc_isite, vmc_nconf_new, vmc_icharged_atom
       use mpi
+      use contrl_file,    only: ounit, errunit
 
       implicit real*8(a-h,o-z)
       character*20 filename
@@ -52,7 +53,7 @@ c check sites flag if one gets initial configuration from sites routine
         rewind 9
         do 10 id=0,idtask
    10     read(9,*,end=20,err=20) ((xold(k,i),k=1,3),i=1,nelec)
-        write(6,'(/,''initial configuration from unit 9'')')
+        write(ounit,'(/,''initial configuration from unit 9'')')
         goto 40
 
    20   continue
@@ -80,7 +81,7 @@ c check sites flag if one gets initial configuration from sites routine
         open(unit=9,file='mc_configs_start')
         rewind 9
 
-        write(6,'(/,''initial configuration from sites'')')
+        write(ounit,'(/,''initial configuration from sites'')')
    40   continue
 
 c If we are moving one electron at a time, then we need to initialize
