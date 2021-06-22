@@ -22,7 +22,7 @@ c routine to accumulate estimators for energy etc.
 !      use contrl, only: nstep
       use control_dmc, only: dmc_nstep
       use mpi
-
+      use contrl_file,    only: ounit
       implicit real*8(a-h,o-z)
 
       parameter (zero=0.d0,one=1.d0)
@@ -176,7 +176,7 @@ c xerr = current error of x
 c write out header first time
 
         if (iblk.eq.1.and.ifr.eq.1)
-     &  write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
+     &  write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
      &  ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
      &  ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t89,''(fgerr)'',
      &  t101,''npass'',t111,''wgsum'',t121,''ioldest'')')
@@ -189,7 +189,7 @@ c write out current values of averages etc.
         itjfer=nint(100000*tjferr)
 
         if(ifr.eq.1) then
-          write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)')
+          write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)')
      &    egsum(ifr)/wgsum(ifr),
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,
      &    nint(wgsum(ifr)),ioldest
@@ -198,7 +198,7 @@ c write out current values of averages etc.
           call pcm_prt(iblk,wgcum,wgcm2)
           call mmpol_prt(iblk,wgcum,wgcm2)
          else
-          write(6,'(f10.5,5(f10.5,''('',i5,'')''),f10.5,10x,i10)')
+          write(ounit,'(f10.5,5(f10.5,''('',i5,'')''),f10.5,10x,i10)')
      &    egsum(ifr)/wgsum(ifr),
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
      &    fgave,ifgerr,derivtotave,nint(wgsum(ifr))

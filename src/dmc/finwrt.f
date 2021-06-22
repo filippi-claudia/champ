@@ -33,7 +33,7 @@ c routine to print out final results
 !      use contrl, only: nblkeq, nconf, nstep
       use control_dmc, only: dmc_nblkeq, dmc_nconf, dmc_nstep
       use mpi
-
+      use contrl_file,    only: ounit
       implicit real*8(a-h,o-z)
 
 
@@ -89,7 +89,7 @@ c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
       rtevalf_eff1=dsqrt(evalf_eff-1)
       rtevalg_eff1=dsqrt(evalg_eff-1)
 
-      write(6,'(''passes,eval,pass_proc,eval_proc,eval_eff,
+      write(ounit,'(''passes,eval,pass_proc,eval_proc,eval_eff,
      &evalf_eff,evalg_eff'',19f9.0)')
      & passes,eval,pass_proc,eval_proc,eval_eff,evalf_eff,
      & evalg_eff
@@ -135,23 +135,23 @@ c Collect radial charge density for atoms
       endif
 
       if(idmc.ge.0) then
-        write(6,'(10i6)') (iage(i),i=1,nwalk)
+        write(ounit,'(10i6)') (iage(i),i=1,nwalk)
         do 10 i=1,nwalk
           if(iage(i).gt.50) then
-            write(6,'(i4,i6,f10.4,99f8.4)') i,iage(i),eold(i,1),
+            write(ounit,'(i4,i6,f10.4,99f8.4)') i,iage(i),eold(i,1),
      &      ((xold_dmc(k,j,i,1),k=1,3),j=1,nelec)
-            write(6,'(99f8.4)') ((vold_dmc(k,j,i,1),k=1,3),j=1,nelec)
+            write(ounit,'(99f8.4)') ((vold_dmc(k,j,i,1),k=1,3),j=1,nelec)
           endif
    10   continue
 
-        write(6,'(''age of oldest walker (this generation, any gen)='',
+        write(ounit,'(''age of oldest walker (this generation, any gen)='',
      &   3i9)') ioldest,ioldestmx
       endif
 
 c     write(6,'(''average of the squares of the accepted step-size='',
 c    & f10.5)') dr2ac/trymove
 
-      write(6,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),
+      write(ounit,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),
      & ifr=1,nforce)
 
       accav=acc/trymove
@@ -172,44 +172,44 @@ c    & f10.5)') dr2ac/trymove
       eferr1=errf1(efcum1,efcm21)
 
       if(mode.eq.'dmc_one_mpi1') then
-        write(6,'(''dmc_mov1_mpi '',2a10)') title
+        write(ounit,'(''dmc_mov1_mpi '',2a10)') title
        else
-        write(6,'(''dmc_mov1_mpi_globalpop '',2a10)') title
+        write(ounit,'(''dmc_mov1_mpi_globalpop '',2a10)') title
       endif
-      write(6,'(''No/frac. of node crossings,acceptance='',i9,3f10.6)')
+      write(ounit,'(''No/frac. of node crossings,acceptance='',i9,3f10.6)')
      &nodecr,dfloat(nodecr)/trymove,accav,accavn
       if(idmc.ge.0) then
-        write(6,'(''No. of walkers at end of run='',i5)') nwalk
+        write(ounit,'(''No. of walkers at end of run='',i5)') nwalk
 
-        write(6,'(''nwalk_eff/nwalk         ='',2f6.3)')
+        write(ounit,'(''nwalk_eff/nwalk         ='',2f6.3)')
      &   rn_eff(wcum1,wcm21)/pass_proc,rn_eff(wcum_dmc,wcm2)/iblk_proc
-        write(6,'(''nwalk_eff/nwalk with f  ='',2f6.3)')
+        write(ounit,'(''nwalk_eff/nwalk with f  ='',2f6.3)')
      &   rn_eff(wfcum1,wfcm21)/pass_proc,rn_eff(wfcum,wfcm2)/iblk_proc
-        write(6,'(''nwalk_eff/nwalk with fs ='',2f6.3)')
+        write(ounit,'(''nwalk_eff/nwalk with fs ='',2f6.3)')
      &   rn_eff(wgcum1(1),wgcm21(1))/pass_proc,rn_eff(wgcum(1),
      &   wgcm2(1))/iblk_proc
       endif
 
-      write(6,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq  nproc  tau    taueff'',
+      write(ounit,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq  nproc  tau    taueff'',
      &/,2f12.0,5i6,2f9.5)')
      &eval,passes,dmc_nconf,dmc_nstep,iblk,dmc_nblkeq,nproc,tau,taucum(1)/wgcum(1)
-      write(6,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
+      write(ounit,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
       if(idmc.ge.0) then
-        write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+        write(ounit,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  wave,werr,werr*rtpass1,werr1*rtpass1,(werr/werr1)**2
-        write(6,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+        write(ounit,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  wfave,wferr,wferr*rtpass1,wferr1*rtpass1,(wferr/wferr1)**2
         do 20 ifr=1,nforce
           wgave=wgcum(ifr)/pass_proc
           wgerr=errw(wgcum(ifr),wgcm2(ifr))
           wgerr1=errw1(wgcum1(ifr),wgcm21(ifr))
-          write(6,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+          write(ounit,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &    wgave,wgerr,wgerr*rtpass1,wgerr1*rtpass1,(wgerr/wgerr1)**2
   20    continue
-        write(6,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,
+        write(ounit,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,
      &  2f9.5,f8.2)') eave,eerr,eerr*rteval_eff1,eerr1*rteval_eff1,
      &  (eerr/eerr1)**2
-        write(6,'(''total energy (   1) ='',t24,f12.7,'' +-'',f11.7,
+        write(ounit,'(''total energy (   1) ='',t24,f12.7,'' +-'',f11.7,
      &  2f9.5,f8.2)') efave,eferr,eferr*rtevalf_eff1,eferr1*rtevalf_eff1,
      &  (eferr/eferr1)**2
       endif
@@ -217,7 +217,7 @@ c    & f10.5)') dr2ac/trymove
         egave=egcum(ifr)/wgcum(ifr)
         egerr=errg(egcum(ifr),egcm2(ifr),ifr)
         egerr1=errg1(egcum1(ifr),egcm21(ifr),ifr)
-        write(6,'(''total energy ('',i4,'') ='',t24,f12.7,'' +-'',
+        write(ounit,'(''total energy ('',i4,'') ='',t24,f12.7,'' +-'',
      &  f11.7,2f9.5,f8.2)') nfprod,egave,egerr,egerr*rtevalg_eff1,
      &  egerr1*rtevalg_eff1,(egerr/egerr1)**2
         energy(ifr)=egave
@@ -231,11 +231,11 @@ c    & f10.5)') dr2ac/trymove
         peerr=errg(pecum_dmc(ifr),pecm2_dmc(ifr),ifr)
         tpberr=errg(tpbcum_dmc(ifr),tpbcm2_dmc(ifr),ifr)
         tjferr=errg(tjfcum_dmc(ifr),tjfcm_dmc(ifr),ifr)
-        write(6,'(''potential energy ='',t24,f12.7,'' +-''
+        write(ounit,'(''potential energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
-        write(6,'(''jf kinetic energy ='',t24,f12.7,'' +-''
+        write(ounit,'(''jf kinetic energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') tjfave,tjferr,tjferr*rtevalg_eff1
-        write(6,'(''pb kinetic energy ='',t24,f12.7,'' +-''
+        write(ounit,'(''pb kinetic energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_eff1
   40  continue
       do 50 ifr=2,nforce
@@ -249,7 +249,7 @@ c Done by Omar Valsson 2008-12-01
         endif
         fgave=fgave/deltot(ifr)
         fgerr=fgerr/abs(deltot(ifr))
-        write(6,'(''force config'',i2,t24,e19.10
+        write(ounit,'(''force config'',i2,t24,e19.10
      &  ,'' +-'',e16.8,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_eff1
         force(ifr)=fgave
         force_err(ifr)=fgerr

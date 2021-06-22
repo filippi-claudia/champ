@@ -44,6 +44,7 @@ c job where it left off
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
       use mpi
+      use contrl_file,    only: ounit
 
       implicit real*8(a-h,o-z)
 
@@ -216,7 +217,7 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(10) ndet,nup,ndn
       write(10) cjas1(1),cjas2(1)
       close (unit=10)
-      write(6,'(1x,''successful dump to unit 10'')')
+      write(ounit,'(1x,''successful dump to unit 10'')')
 
       return
       end

@@ -23,7 +23,7 @@ c routine to accumulate estimators for energy etc.
       use force_mod, only: MFORCE
       use control_dmc, only: dmc_nstep
       use mpi
-
+      use contrl_file,    only: ounit
       implicit real*8(a-h,o-z)
 
       parameter (zero=0.d0,one=1.d0)
@@ -247,7 +247,7 @@ c xerr = current error of x
 c write out header first time
 
         if (iblk.eq.1.and.ifr.eq.1)
-     &  write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
+     &  write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
      &  ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
      &  ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t96,''(fgerr)'',
      &  t114,''fgave_n'',t131,''(fgerr_n)'',t146,''npass'',t156,''wgsum'',t164,''ioldest'')')
@@ -260,12 +260,12 @@ c write out current values of averages etc.
         itjfer=nint(100000*tjferr)
 
         if(ifr.eq.1) then
-          write(6,'(f10.5,4(f10.5,''('',i5,'')''),62x,3i10)')
+          write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),62x,3i10)')
      &    egcollect(ifr)/wgcollect(ifr),
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,
      &    nint(wgcollect(ifr)/nproc),ioldest
          else
-          write(6,'(f10.5,4(f10.5,''('',i5,'')''),f17.12,
+          write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),f17.12,
      &    ''('',i12,'')'',f17.12,''('',i12,'')'',10x,i10)')
      &    egcollect(ifr)/wgcollect(ifr),
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
