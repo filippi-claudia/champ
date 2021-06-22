@@ -5,7 +5,7 @@ from pytest import approx
 linecount = 0
 first_match = []
 
-with open('screen', 'r') as f:
+with open('vmc_only.out', 'r') as f:
     lines = (line.rstrip() for line in f)
     lines = list(line for line in lines if line)
 
