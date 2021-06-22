@@ -340,6 +340,8 @@ module pcm_parms
 
     real(dp), dimension(:), allocatable :: ch !(MCHV)
     real(dp) :: eps_solv
+    real(dp) :: fcol
+    integer :: npmax
     integer :: iscov
     integer :: nch
     integer :: nchs
@@ -360,7 +362,7 @@ module pcm_parms
     real(dp), dimension(:), allocatable :: ze !(MSPHERE)
 
     private
-    public :: re, nchv, nesph, ze, iscov, eps_solv, xpol
+    public :: re, nchv, nesph, ze, iscov, eps_solv, xpol, fcol, npmax
     public :: ch, xe, nvopcm, nch, re2, ncopcm, surk
     public :: retk, nscv, nchs, ye, nchs2, nchs1
     public :: allocate_pcm_parms, deallocate_pcm_parms
