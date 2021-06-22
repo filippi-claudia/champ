@@ -3,17 +3,16 @@
 !  From Numerical Recipes
       implicit none
 
-      integer :: I, K, N, P, QN
-      integer, parameter :: NMAX = 5001
-
-      real(dp) :: SIG
-      real(dp) :: UN
+, n, nmax
+      real(dp) :: I, K, N, P, QN
+      real(dp) :: SIG, SPLINE, SUBROUTINE, U
+      real(dp) :: UN, X, Y, Y2
       real(dp) :: YP1, YPN
       real(dp), dimension(N) :: X
       real(dp), dimension(N) :: Y
       real(dp), dimension(N) :: Y2
       real(dp), dimension(NMAX) :: U
-
+      real(dp), parameter :: NMAX = 5001
 
 !  Compilers that do not allow automatic arrays:
 !  Compilers that do allow automatic arrays:
@@ -63,14 +62,11 @@ c-----------------------------------------------------------------------
       implicit none
 
 
-      real(dp) :: A, B, H
-      integer :: KLO, N, K, KHI
-      real(dp) :: X, Y
-
-      real(dp), dimension(N) :: XA
-      real(dp), dimension(N) :: YA
-      real(dp), dimension(N) :: Y2A
-
+      real(dp) :: A, B, H, K, KHI
+      real(dp) :: KLO, N, SPLINT, SUBROUTINE
+      real(dp) :: X, XA, Y, Y2A
+      real(dp) :: YA
+      DIMENSION XA(N),YA(N),Y2A(N)
 
 !  Find right place in table by binary search
       KLO=1
