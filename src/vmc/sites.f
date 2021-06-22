@@ -6,14 +6,29 @@ c Written by Cyrus Umrigar
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter(half=0.5d0)
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
+
+      integer :: i, ic, ispin, j, ju
+      integer :: l, nelec
+      integer, dimension(*) :: nsite
+      real(dp) :: site, sitsca
+      real(dp), dimension(3,*) :: x
+      real(dp), parameter :: half = 0.5d0
+
 
 c routine to put electrons down around centers for an initial
 c configuration if nothing else is available
 
-      dimension x(3,*),nsite(*)
 
 c loop over spins and centers. If odd number of electrons on all
 c atoms then the up-spins have an additional electron.
