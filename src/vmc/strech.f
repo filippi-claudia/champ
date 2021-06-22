@@ -32,18 +32,37 @@ c rigidly with that nucleus
       use pcm_inda, only: inda
       use optwf_contrl, only: ioptwf
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0)
+      integer :: i, ic, icent, ifl, ifr
+      integer :: index, is, istrech_el, j
+      integer :: jc, js, k, l
+      real(dp) :: PCM, ajacob, cc, cc1, cc2
+      real(dp) :: cc3, dabs, delta_gpol_fc, delta_qs
+      real(dp) :: det, dist, dist2, enk
+      real(dp) :: env, penups_fc, penupv_fc, rcm
+      real(dp) :: rnp, rnp2, rr2, rr3
+      real(dp) :: rsq, rsq1, wtsm, wtsmi
+      real(dp) :: xi, xx, yi, yy
+      real(dp) :: zi, zz
+      real(dp), dimension(3,nelec) :: x
+      real(dp), dimension(3,nelec) :: xstrech
+      real(dp), dimension(ncent_tot) :: wt
+      real(dp), dimension(3,3) :: dvol
+      real(dp), dimension(3,ncent_tot) :: dwt
+      real(dp), dimension(3) :: dwtsm
+      real(dp), dimension(3,ncent_tot) :: cent_str
+      real(dp), dimension(MCHS) :: q_strech
+      real(dp), dimension(MCHS) :: efsol
+      real(dp), dimension(ncent_tot) :: wt_pcm
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+
 
       real(dp), ALLOCATABLE, save :: centsav(:,:)
       real(dp), ALLOCATABLE, save :: pecentn(:)
       real(dp), ALLOCATABLE, save :: xpolsav(:,:)
 
-      dimension x(3,nelec),xstrech(3,nelec)
-      dimension wt(ncent_tot),dvol(3,3),dwt(3,ncent_tot),dwtsm(3)
-      dimension cent_str(3,ncent_tot)
-      dimension q_strech(MCHS),efsol(MCHS),wt_pcm(ncent_tot)
 
       if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
       if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
