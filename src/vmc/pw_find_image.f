@@ -13,13 +13,18 @@ c Also return rlenmin to set cutr to 1/2 the shortest lattice vector.  I think t
 c good enough -- no need to use 1/2 the shortest perpendicular distance.
 
       use jaspar6, only: cutjas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, i1, i2, i3, imax
+      integer :: imin, isim_cell, k
+      real(dp) :: cutr, rlen, rlenmax, rlenmin
+      real(dp), dimension(3,3) :: rlatt
+      real(dp), parameter :: eps = 1.d-12
 
 
-      parameter (eps=1.d-12)
 
 
-      dimension rlatt(3,3)
 
       rlenmax=0
       rlenmin=9.d99
@@ -97,10 +102,17 @@ c r       = rlatt * r_basis
 c r_basis = rlatt_inv * r
 
       use grid3d_param, only: origin
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, k
+
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: r_basis
+      real(dp), dimension(3,3) :: rlatt
+      real(dp), dimension(3,3) :: rlatt_inv
 
 
-      dimension r(3),r_basis(3),rlatt(3,3),rlatt_inv(3,3)
 
 c Find vector in basis coordinates
       do 20 k=1,3
@@ -131,9 +143,16 @@ c rlatt   = lattice vectors
 c r       = rlatt * r_basis
 c r_basis = rlatt_inv * r
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension r(3),r_basis(3),i_basis(3),rlatt_inv(3,3)
+      integer :: i, k
+      integer, dimension(3) :: i_basis
+
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: r_basis
+      real(dp), dimension(3,3) :: rlatt_inv
+
 
 c Find vector in basis coordinates
       do 20 k=1,3
@@ -151,10 +170,21 @@ c Written by Cyrus Umrigar
 c For any vector (from one particle to another) it finds the
 c image that is closest.
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension r(3),r_basis(3),rlatt(3,3),rlatt_inv(3,3)
-     &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
+      integer :: i, i1, i2, i3, k
+      integer, dimension(3) :: i_sav
+      integer, dimension(3) :: isign
+      real(dp) :: r2, r_try2
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: r_basis
+      real(dp), dimension(3,3) :: rlatt
+      real(dp), dimension(3,3) :: rlatt_inv
+      real(dp), dimension(3) :: r1_try
+      real(dp), dimension(3) :: r2_try
+      real(dp), dimension(3) :: r3_try
+
 
 c Starting from a vector, which is a diff. of 2 vectors, each of which
 c have been reduced to the central lattice cell, calculate
@@ -216,11 +246,23 @@ c For any electron positions in lattice coordinates, it finds the
 c image that is closest.
 c Needs precomputed r_basis1,r_basis2,i_basis1,i_basis2.
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension r(3),rlatt(3,3)
-     &,r_basis1(3),r_basis2(3),i_basis1(3),i_basis2(3)
-     &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
+      integer :: i, i1, i2, i3, k
+      integer, dimension(3) :: i_basis1
+      integer, dimension(3) :: i_basis2
+      integer, dimension(3) :: i_sav
+      integer, dimension(3) :: isign
+      real(dp) :: r2, r_try2
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3,3) :: rlatt
+      real(dp), dimension(3) :: r_basis1
+      real(dp), dimension(3) :: r_basis2
+      real(dp), dimension(3) :: r1_try
+      real(dp), dimension(3) :: r2_try
+      real(dp), dimension(3) :: r3_try
+
 
 c Find length of original vector and sign along each of lattice directions
       r2=0
@@ -266,16 +308,25 @@ c For any vector r (from one particle to another) it replaces the vector
 c by its closest image and finds its norm
 
       use periodic, only: rlatt, rlatt_inv
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, i1, i2, i3, k
+      integer, dimension(3) :: i_sav
+      integer, dimension(3) :: isign
+      real(dp) :: r2, r_try2, rnorm
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: r_basis
+      real(dp), dimension(3) :: r1_try
+      real(dp), dimension(3) :: r2_try
+      real(dp), dimension(3) :: r3_try
+      real(dp), dimension(3) :: rsav
 
 
 
 
-      dimension r(3),r_basis(3)
-     &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
 
 c Warning: tempor
-      dimension rsav(3)
       do 5 k=1,3
     5   rsav(k)=r(k)
 
@@ -344,13 +395,23 @@ c For any vector r (from one particle to another) it replaces the vector
 c by its closest image and finds its norm and the shift needed.
 
       use periodic, only: rlatt, rlatt_inv
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, i1, i2, i3, k
+      integer, dimension(3) :: i_sav
+      integer, dimension(3) :: isign
+      real(dp) :: r2, r_try2, rnorm
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: r_basis
+      real(dp), dimension(3) :: rshift
+      real(dp), dimension(3) :: r1_try
+      real(dp), dimension(3) :: r2_try
+      real(dp), dimension(3) :: r3_try
 
 
 
 
-      dimension r(3),r_basis(3),rshift(3)
-     &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
 
 c a) reduce vector to central cell by expressing vector in lattice coordinates and
 c    removing nint of it in each direction
