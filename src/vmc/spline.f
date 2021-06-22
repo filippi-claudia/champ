@@ -14,7 +14,6 @@
       real(dp), dimension(N) :: Y2
       real(dp), dimension(NMAX) :: U
 
-
 !  Compilers that do not allow automatic arrays:
 !  Compilers that do allow automatic arrays:
 !      DIMENSION X(N),Y(N),Y2(N),U(N)
