@@ -12,7 +12,6 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use vmc_mod, only: delri
       use atom, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
-
       use const, only: pi, fbias, nelec, ipr
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
       use config, only: psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon
@@ -36,15 +35,81 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use multislatern, only: ddorbn, detn, dorbn, orbn
       use const, only: nelec
       use inputflags, only: node_cutoff, eps_node_cutoff
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+      interface
+      function rannyu(idum)
+         use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+      end function rannyu
+
+      function gammai(a, x, xae, iflag)
+        use precision_kinds, only: dp
+        implicit none
+        real(dp), intent(in) :: a, x, xae
+        integer, intent(in) :: iflag
+        real(dp) :: gammai
+      end function gammai
+
+      function rnorm_nodes_num(distance_node,epsilon)
+        use precision_kinds, only: dp
+        implicit none
+        real(dp), intent(in) :: distance_node
+        real(dp), intent(in) :: epsilon 
+        real(dp) :: rnorm_nodes_num
+      end function rnorm_nodes_num
+
+      end interface
+
+      integer :: i, iab, ic, iel, iflag_dn
+      integer :: iflag_up, iflagb, iflagt, iflagz
+      integer :: ifr, igeometrical, ii, ipass
+      integer :: irun, istate, itryn, itryo
+      integer :: j, jel, k, nearn
+      integer :: nearo
+      integer, dimension(nelec) :: idist
+      real(dp) :: ajacob, arean, areao, bot
+      real(dp) :: clim, co, cosphi, costht
+      real(dp) :: dabs, dacos, deltri, deltt
+      real(dp) :: dist, distance_node, dmin1, dot
+      real(dp) :: fmax, fmax2, fxnp, fxop
+      real(dp) :: g32dif, g32dif1, g32dif2, g52bot
+      real(dp) :: g52dif, g52dif1, g52dif2, g52top
+      real(dp) :: g52zer, p, phitry, phizer
+      real(dp) :: psidg, psig, psijn, q
+      real(dp) :: r, ratio, raver, ravern
+      real(dp) :: rbot, rmax1, rmax2, rnew
+      real(dp) :: rnorm, rnorm_nodes, rold, root
+      real(dp) :: rratio, rtest, rtest2, rtop
+      real(dp) :: rtry, rzero, sintht, term
+      real(dp) :: term2, thetamx, top, vnewp
+      real(dp) :: vnewr, voldp, voldr, wstro
+      real(dp) :: xprime, yprime, z, zcusp
+      real(dp) :: zebot, zeta, zetop, zezer
+      real(dp) :: zprime, zrbot, zrtop, zrzer
+      real(dp), dimension(3,nelec) :: xstrech
+      real(dp), dimension(3) :: xaxis
+      real(dp), dimension(3) :: yaxis
+      real(dp), dimension(3) :: zaxis
+      real(dp), dimension(3) :: ddx_ref
+      real(dp), dimension(MSTATES) :: psidn
+      real(dp), dimension(MSTATES) :: wtg
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: four = 4.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: d3b2 = 1.5d0
+      real(dp), parameter :: d5b2 = 2.5d0
+      real(dp), parameter :: d2b3 = .666666666666667d0
+      real(dp), parameter :: eps = 1.d-10
+      real(dp), parameter :: g5b2 = 1.329340388179137d0
 
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,half=0.5d0)
-      parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
-      parameter (eps=1.d-10)
 c     parameter (g3b2=.886226925452758d0)
-      parameter (g5b2=1.329340388179137d0)
 c g3b2, g5b2 are gamma3/2), gamma(5/2)
 
 
@@ -61,10 +126,6 @@ c    Last 2 are prob. best
 
  
 c TMP
-      dimension xstrech(3,nelec)
-      dimension xaxis(3),yaxis(3),zaxis(3),idist(nelec)
-      dimension ddx_ref(3)
-      dimension psidn(MSTATES) ,wtg(MSTATES)
       
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
