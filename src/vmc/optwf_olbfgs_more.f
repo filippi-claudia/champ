@@ -22,6 +22,7 @@
       allocate(parms_lbfgs(nparm))
 
       parms_lbfgs = parameters(1:nparm)
+      parameters_old = parms_lbfg
 
 
 c we only need h_sr = - grad_parm E
