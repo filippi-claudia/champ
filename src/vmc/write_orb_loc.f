@@ -13,10 +13,16 @@ c 2) a gaussian basis
       use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
       use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0)
-      parameter(nprime=10)
+      integer :: i, iabs, ic, imax, iu
+      integer :: j, k, l, ncheck
+      integer, parameter :: nprime = 10
+      real(dp) :: while
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+
 
 
 
