@@ -18,15 +18,29 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use pworbital, only: c_im, c_ip, c_rm, c_rp, isortg, isortk, ngorb
       use coefs, only: norb
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iband, iel, ig, ikvec, iorb
+      integer :: iv, jorb, k
+      real(dp) :: cos_ip, cos_rp, sin_im, sin_rm
+      real(dp), dimension(3) :: x
+      real(dp), dimension(*) :: orb
+      real(dp), dimension(NGVECX) :: cos_g
+      real(dp), dimension(NGVECX) :: sin_g
+      real(dp), dimension(3,NGVECX) :: dcos_g
+      real(dp), dimension(3,NGVECX) :: dsin_g
+      real(dp), dimension(NGVECX) :: ddcos_g
+      real(dp), dimension(NGVECX) :: ddsin_g
+      real(dp), dimension(IVOL_RATIO) :: cos_k
+      real(dp), dimension(IVOL_RATIO) :: sin_k
+      real(dp), dimension(3,IVOL_RATIO) :: dcos_k
+      real(dp), dimension(3,IVOL_RATIO) :: dsin_k
+      real(dp), dimension(IVOL_RATIO) :: ddcos_k
+      real(dp), dimension(IVOL_RATIO) :: ddsin_k
 
 
 
-      dimension x(3),orb(*)
-      dimension cos_g(NGVECX),sin_g(NGVECX),dcos_g(3,NGVECX),dsin_g(3,NGVECX)
-     &,ddcos_g(NGVECX),ddsin_g(NGVECX)
-     &,cos_k(IVOL_RATIO),sin_k(IVOL_RATIO),dcos_k(3,IVOL_RATIO),dsin_k(3,IVOL_RATIO)
-     &,ddcos_k(IVOL_RATIO),ddsin_k(IVOL_RATIO)
 
       do 5 iorb=1,norb
 c       do 5 iel=1,nelec
