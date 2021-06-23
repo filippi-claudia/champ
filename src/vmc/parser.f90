@@ -481,15 +481,17 @@ subroutine parser
 
   select case (mode)
   case ('vmc')
+    mode = 'vmc_one_mpi'
     write(ounit,'(a,a)') " Calculation mode :: Variational MC for ", title
   case ('vmc_one_mpi')
     write(ounit,'(a,a)') " Calculation mode :: Variational MC one-electron move mpi for ",  title
   case ('dmc')
+    mode = 'dmc_one_mpi1'
     write(ounit,'(a,a)') " Calculation mode :: Diffusion MC for ",  title
   case ('dmc_one_mpi1')
-    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC 1-electron move, mpi no global pop for ", title
+    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC one-electron move, mpi no global pop for ", title
   case ('dmc_one_mpi2')
-    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC 1-electron move, mpi global pop comm for ",  title
+    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC one-electron move, mpi global pop comm for ",  title
   end select
 
   write(ounit,*)
@@ -503,7 +505,7 @@ subroutine parser
   if (wid) read(cseed,'(4i4)') irn
   call bcast(irn)
 
-  write(ounit,'(a,t40,4i4)') " Random number seeds", irn
+  write(ounit,'(a20,t40,4i4)') " Random number seeds", irn
   call setrn(irn)
 
   write(ounit,*)

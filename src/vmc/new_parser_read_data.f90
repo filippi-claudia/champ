@@ -1378,6 +1378,7 @@ subroutine read_symmetry_file(file_symmetry)
 
     ! Ignore irrep text labels
     if (wid) read (iunit, '(a80)') temp2
+    call bcast(temp2)
     write(ounit, *) "Irreducible representation correspondence for all norb orbitals"
     write(ounit, *) temp2
 

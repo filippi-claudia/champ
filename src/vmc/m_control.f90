@@ -254,15 +254,12 @@ contains
                         write(error_unit,*) "output file should have an extention .log / .out / .dat"
                         stop
                     endif
-!                        write(output_unit, fmt=string_format) ' output file     :: ', file_output
-!                       debug lines. remove after checking
                     if (.not. wid ) then
                         file_output = '/dev/null'
                         close (6)
                         open (6, file='/dev/null')
                     endif
                     open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='unknown' )
-!                       open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='replace' )
                     if (iostat /= 0) error stop "error in opening output unit"
 
                 case ('-e', '-er', '-err', '-error', '--error')
@@ -274,7 +271,6 @@ contains
                                             an extention .e / .err to the filename"
                         stop
                     endif
-!                        write(output_unit, fmt=string_format) ' error file      :: ', file_error
                     open (newunit=errunit,file=file_error, iostat=iostat, action='write' )
 
                 case ('-h', '--help')
