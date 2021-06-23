@@ -161,7 +161,6 @@ subroutine parser
   character(len=100)         :: real_format    = '(A, T40, ":: ", T42, F25.16)'
   character(len=100)         :: int_format     = '(A, T40, ":: ", T50, I0)'
   character(len=100)         :: string_format  = '(A, T40, ":: ", T50, A)'
-!  character(len=100)         :: fmt32          = '(A, T32, A)'
 
 !------------------------------------------------------------------------- BEGIN
 ! debug purpose only
@@ -304,7 +303,6 @@ subroutine parser
   icut_e      = fdf_get('icut_e', 0)
   dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)
   dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)
-  nfprod      = fdf_get('nfprod', 1)
   tau         = fdf_get('tau', 1.)
   etrial      = fdf_get('etrial', 1.)
   nfprod      = fdf_get('nfprod', 100)
