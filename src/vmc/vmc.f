@@ -26,6 +26,8 @@ c and sa, pa, da asymptotic functions
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
       use control_vmc, only: vmc_nblkeq, vmc_nconf_new, vmc_nstep
       use pseudo, only: nloc
+      use mpitimer,    only: time, time_start, time_check1, time_check2
+      use contrl_file,    only: ounit
 
       implicit real*8(a-h,o-z)
 
@@ -113,8 +115,9 @@ c dumped data to restart
       endif
 
 c get initial value of cpu time
-
-      call my_second(0,'begin ')
+      time_start = time()     ! Reset start time
+!      call my_second(0,'begin ')
+      time_check1 = time()
 
 c if there are equilibrium steps to take, do them here
 c skip equilibrium steps if restart run
@@ -132,7 +135,11 @@ c imetro = 6 spherical-polar with slater T
         enddo
 
 c       Equilibration steps done. Zero out estimators again.
-        call my_second(2,'equilb')
+!        call my_second(2,'equilb')
+        ! Improved timers
+        time_check2 = time()
+        write(ounit, '(a,t40, f12.3, f12.3)') "END OF equilb CP, REAL TIME IS", time_check2 - time_start, time_check2 - time_check1
+        time_check1 = time_check2
 
         call zerest
       endif
@@ -159,7 +166,11 @@ c write out configuration for optimization/dmc/gfmc here
 
   440 call acuest
 
-      call my_second(2,'all   ')
+!      call my_second(2,'all   ')
+      ! Improved timers
+      time_check2 = time()
+      write(ounit, '(a, t40,f12.3, f12.3)') "END OF all CP, REAL TIME IS", time_check2 - time_start, time_check2 - time_check1
+      time_check1 = time_check2
 
 c write out last configuration to mc_configs_start
 c call fin_reduce to write out additional files for efpci, embedding etc.

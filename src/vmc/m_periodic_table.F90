@@ -1,10 +1,8 @@
-! Enter licence information here
-
-
-! Licence information ends here
-!
-! Note. The elemental data is taken from the NIST website (https://physics.nist.gov/PhysRefData/Handbook/periodictable_a.htm)
-!       The data tabulated in this file is only for the most abundant isotope only.
+    !> This module provides the periodic table data for elements upto Z=18
+    !! @author Ravindra Shinde
+    !! @date June 23 2021
+    !! @remarks The elemental data is taken from the NIST website (https://physics.nist.gov/PhysRefData/Handbook/periodictable_a.htm)
+    !! The data tabulated in this file is only for the most abundant isotope only.
 
 module periodic_table
     public :: element, atom_t

@@ -15,6 +15,8 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
 !      use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
       use control_dmc, only: dmc_idump, dmc_irstar, dmc_nblk, dmc_nblkeq
       use control_dmc, only: dmc_nconf, dmc_nstep
+      use mpitimer,    only: time, time_start, time_check1, time_check2
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -131,7 +133,10 @@ c read walker configurations
       call mc_configs
 
 c get initial value of cpu time
-  350 call my_second(0,'begin ')
+!  350 call my_second(0,'begin ')
+      time_start = time()     ! Reset start time
+!  350 call my_second(0,'begin ')
+      time_check1 = time()
 
 c initialize sums and averages
       call init_averages_index
@@ -145,7 +150,13 @@ c     call flush(6)
 c loops for dmc calculation
       do 360 i=1,dmc_nblk+2*dmc_nblkeq
         if((i.eq.dmc_nblkeq+1.or.i.eq.2*dmc_nblkeq+1).and.dmc_irstar.ne.1) then
-          call my_second(2,'equilb')
+!          call my_second(2,'equilb')
+          ! Improved timers
+          time_check2 = time()
+          write(ounit, '(a,t40, f12.3, f12.3)') "END OF equilb CP, REAL TIME IS",
+     &                  time_check2 - time_start, time_check2 - time_check1
+          time_check1 = time_check2
+
           call zerest
           call average(0)
         endif
@@ -173,7 +184,12 @@ c             call dmc_good
       call acues1_reduce
 
       call finwrt
-      call my_second(2,'all   ')
+!      call my_second(2,'all   ')
+      ! Improved timers
+      time_check2 = time()
+      write(ounit, '(a,t40, f12.3, f12.3)') "END OF all CP, REAL TIME IS",
+     &              time_check2 - time_start, time_check2 - time_check1
+      time_check1 = time_check2
 
       if (dmc_idump.eq.1) call dumper
       close (unit=9)

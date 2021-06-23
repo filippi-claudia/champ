@@ -21,15 +21,21 @@ program main
     use allocation_mod, only: deallocate_vmc
     use optwf_mod, only: optwf
     use mpiconf, only: wid      ! logical :: true only for mpirank=0
+    use precision_kinds,    only: dp
+    use contrl_file,    only: ounit
+    use mpitimer,    only: time, time_start, time_check1, time_final
 
     implicit None
     integer :: ierr
+
 
     !> Initialize MPI
     call mpi_init(ierr)
     call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
     call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
 
+
+    time_start = time()
     !> init our own mpi vars
     call mpiconf_init()
 
@@ -51,6 +57,10 @@ program main
     call optwf()
 
     ! call close_files()
+    time_final = time()
+
+    write(ounit,'(a,g16.6,a)') " Total time of computation ::  ", time_final - time_start, " seconds "
+
     call mpi_finalize(ierr)
     call deallocate_vmc()
 
