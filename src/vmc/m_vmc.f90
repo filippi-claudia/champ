@@ -27,7 +27,7 @@ module vmc_mod
     integer, parameter :: nrad = 3001
     real(dp), parameter :: delri = (nrad - 1)/radmax
 
-    integer, parameter :: MELEC = 50, MORB = 550, MBASIS = 550, MDET = 450, MCENT = 20
+    integer, parameter :: MELEC = 50, MORB = 550, MBASIS = 550, MDET = 4000, MCENT = 20
     integer, parameter :: MCTYPE = 3
     integer, parameter :: MCTYP3X = 5, NSPLIN = 1001, MORDJ = 7
 

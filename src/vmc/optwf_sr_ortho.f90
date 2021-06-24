@@ -229,6 +229,7 @@ contains
        do istate=1,nstates
           anormo(istate)=obs_tot(jwtg,istate)+obs_norm_tot(jwfj,istate)&
 		  +obs_norm_tot(jsqfj,istate)
+	  print *, "NORMS", istate, obs_tot(jwtg,istate)/passes, anormo(istate)/passes
        enddo
        anormo=anormo/passes
     endif

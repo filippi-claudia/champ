@@ -15,8 +15,8 @@ C ----------------------------------------------------------------------
       fmts(1)='*'
       keys(2)='lcao'
       keylen(2)=4
-      nargs(2)=4
-      fmts(2)='iiia'
+      nargs(2)=5
+      fmts(2)='iiiia'
       keys(3)='geometry'
       keylen(3)=8
       nargs(3)=0
@@ -35,8 +35,8 @@ C ----------------------------------------------------------------------
       fmts(6)='i'
       keys(7)='jastrow_parameter'
       keylen(7)=17
-      nargs(7)=1
-      fmts(7)='i'
+      nargs(7)=2
+      fmts(7)='ii'
       keys(8)='basis'
       keylen(8)=5
       nargs(8)=1
@@ -217,10 +217,10 @@ C ----------------------------------------------------------------------
         idefpp(j,i)=0
        enddo
       enddo
-      ideflt(2)=3
-      idefpp(3,2)=1
-      idefvv(1)=1
+      ideflt(2)=4
       idefpp(4,2)=1
+      idefvv(1)=1
+      idefpp(5,2)=1
       adefvv(1)='<input>'
       ideflt(4)=1
       idefpp(1,4)=2
@@ -231,9 +231,11 @@ C ----------------------------------------------------------------------
       ideflt(7)=1
       idefpp(1,7)=4
       idefvv(4)=1
-      ideflt(12)=2
-      idefpp(2,12)=5
+      idefpp(2,7)=5
       idefvv(5)=1
+      ideflt(12)=2
+      idefpp(2,12)=6
+      idefvv(6)=1
       idefpp(3,12)=2
       adefvv(2)='<input>'
       ideflt(13)=1
@@ -258,14 +260,14 @@ C ----------------------------------------------------------------------
       idefpp(3,26)=9
       adefvv(9)='<input>'
       ideflt(29)=2
-      idefpp(2,29)=6
-      idefvv(6)=1
-      ideflt(30)=2
-      idefpp(2,30)=7
+      idefpp(2,29)=7
       idefvv(7)=1
-      ideflt(31)=2
-      idefpp(2,31)=8
+      ideflt(30)=2
+      idefpp(2,30)=8
       idefvv(8)=1
+      ideflt(31)=2
+      idefpp(2,31)=9
+      idefvv(9)=1
       ideflt(32)=1
       idefpp(1,32)=10
       adefvv(10)='stdout'
@@ -273,11 +275,11 @@ C ----------------------------------------------------------------------
       idefpp(1,33)=11
       adefvv(11)='stdout'
       ideflt(34)=2
-      idefpp(2,34)=9
-      idefvv(9)=1
-      ideflt(36)=4
-      idefpp(4,36)=10
+      idefpp(2,34)=10
       idefvv(10)=1
+      ideflt(36)=4
+      idefpp(4,36)=11
+      idefvv(11)=1
       ideflt(41)=5
       idefpp(5,41)=1
       ddefvv(1)=0
@@ -285,30 +287,30 @@ C ----------------------------------------------------------------------
       idefpp(5,42)=2
       ddefvv(2)=0
       ideflt(43)=3
-      idefpp(3,43)=11
-      idefvv(11)=0
+      idefpp(3,43)=12
+      idefvv(12)=0
       idefpp(4,43)=12
       adefvv(12)='x'
-      idefpp(5,43)=12
-      idefvv(12)=0
-      ideflt(44)=3
-      idefpp(3,44)=13
+      idefpp(5,43)=13
       idefvv(13)=0
+      ideflt(44)=3
+      idefpp(3,44)=14
+      idefvv(14)=0
       idefpp(4,44)=13
       adefvv(13)='x'
-      idefpp(5,44)=14
-      idefvv(14)=0
+      idefpp(5,44)=15
+      idefvv(15)=0
       ideflt(45)=2
-      idefpp(2,45)=15
-      idefvv(15)=-1
+      idefpp(2,45)=16
+      idefvv(16)=-1
       ideflt(46)=1
-      idefpp(1,46)=16
-      idefvv(16)=0
+      idefpp(1,46)=17
+      idefvv(17)=0
       ideflt(48)=1
       idefpp(1,48)=14
       adefvv(14)='on'
-      idefpp(2,48)=17
-      idefvv(17)=0
+      idefpp(2,48)=18
+      idefvv(18)=0
       ideflt(49)=2
       idefpp(2,49)=15
       adefvv(15)='f'
@@ -333,7 +335,8 @@ C ----------------------------------------------------------------------
        call read_znuc(iu)
       goto 9999
  2    continue
-       call read_lcao(itmp(1),itmp(2),itmp(3),lne(is1(1):is2(1)))
+       call read_lcao(itmp(1),itmp(2),itmp(3),itmp(4),lne(is1(1):is2(1
+     $    )))
       goto 9999
  3    continue
        call read_geometry(iu)
@@ -348,7 +351,7 @@ C ----------------------------------------------------------------------
        call read_multideterminants(iu,itmp(1))
       goto 9999
  7    continue
-       call read_jastrow_parameter(iu,itmp(1))
+       call read_jastrow_parameter(iu,itmp(1),itmp(2))
       goto 9999
  8    continue
        call read_bas_num_info(iu,itmp(1))

@@ -1064,14 +1064,14 @@ CKEYDOC nuclear charge for each atom type and ghost type
       end
 
 c-----------------------------------------------------------------------
-      subroutine read_lcao(norb_tmp,nbasis_tmp,iwft,filename)
-C     $INPUT lcao i i i=1 a=<input> 
-C     KEYDOC Orbital coefficients wrt complete basis.
-C     KEYDOC Usage:  {\tt lcao  norb,nbasis,filename,norbv}
-C     KEYDOC norb: number of orbitals for trial wave function
-C     KEYDOC nbasis: number of basis functiobns
-C     KEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
-C     KEYDOC filename: file containing orbitals coefficients
+      subroutine read_lcao(norb_tmp,nbasis_tmp,nstates_read,iwft,filename)
+C$INPUT lcao i i i i=1 a=<input> 
+CKEYDOC Orbital coefficients wrt complete basis.
+CKEYDOC Usage:  {\tt lcao  norb,nbasis,filename,norbv}
+CKEYDOC norb: number of orbitals for trial wave function
+CKEYDOC nbasis: number of basis functiobns
+CKEYDOC iwft: wave function type (used when nforce>1 and wftype>1)
+CKEYDOC filename: file containing orbitals coefficients
 
       use vmc_mod, only: MORB, MBASIS
       use force_mod, only: MWF
@@ -1085,6 +1085,7 @@ c     was not in master but is needed
       implicit real*8(a-h,o-z)
 
       character filename*(*)
+      character(len=1000) :: string
 
       call file(iu,filename,'old',1,0)
 
@@ -1103,16 +1104,14 @@ c     was not in master but is needed
          call fatal_error('LCAO: wave function type > nwftype')
       endif
 
-      do i=1,nototal
+      do istate=1,nstates_read
          call incpos(iu,itmp,1)
-         read(iu,*) (coef(j,i,1,iwft),j=1,nbasis)
+         read(iu,'(A)') string
+         do i=1,nototal
+            call incpos(iu,itmp,1)
+            read(iu,*) (coef(j,i,istate,iwft),j=1,nbasis)
+         enddo
       enddo
-
-c TO COMPLETE when parser has been changed
-c     write(6,*) 'CHECK NSTATES READ_LCAO',nstates
-c     do istate=2,nstates
-c        coef(1:nbasis,1:nototal,istate,iwft)=coef(1:nbasis,1:nototal,1,iwft)
-c     enddo
 
       ilcao=ilcao+1
       if(filename.eq.'<input>') then
@@ -1230,8 +1229,8 @@ CKEYDOC CI coefficients and occupation of determinants in wf
       end subroutine
 
 c-----------------------------------------------------------------------
-      subroutine read_jastrow_parameter(iu,iwft)
-C$INPUT jastrow_parameter inp i=1
+      subroutine read_jastrow_parameter(iu,nstates_read,iwft)
+C$INPUT jastrow_parameter inp i=1 i=1
 CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
       use jaspar, only: nspin1, nspin2
       use elec, only: ndn
@@ -1279,7 +1278,7 @@ CKEYDOC Parameters of Jastrow factor (depends on value of ijas!)
         mparmja=2+max(0,norda-1)
         mparmjb=2+max(0,nordb-1)
         mparmjc=nterms4(nordc)
-	do istate=1,nstates
+	do istate=1,nstates_read
            do it=1,nctype
               read(iu,*) (a4(iparm,it,istate,iwft),iparm=1,mparmja)
               call incpos(iu,itmp,1)
