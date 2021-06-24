@@ -7,6 +7,8 @@ c Written by Claudia Filippi
       use contr3, only: mode
       use contrl_file, only: initialize
       use mpi
+      use contrl_file,    only: ounit
+      use mpitimer,    only: time, time_start, time_check1, time_final
 
       implicit none
 
@@ -17,6 +19,7 @@ c Written by Claudia Filippi
       call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
       call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
 
+      time_start = time()
       call mpiconf_init()
 
       call initialize()
@@ -56,6 +59,9 @@ c Open the standard output and the log file only on the master
       close(5)
       close(6)
       close(45)
+
+      time_final = time()
+      write(ounit,'(a,g16.6,a)') " Total time of computation ::  ", time_final - time_start, " seconds "
 
       call mpi_finalize(ierr)
       call deallocate_dmc()

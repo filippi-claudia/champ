@@ -21,7 +21,6 @@ subroutine parser
   use wfsec,          	only: nwftype
   use forcepar,       	only: nforce
   use force_mod,      	only: MFORCE
-  use method_opt,     	only: method
 
 ! variables from process input
   use sr_mod,         	only: MCONF, MVEC
@@ -208,7 +207,7 @@ subroutine parser
 ! %module general (complete)
   mode        = fdf_get('mode', 'vmc_one_mpi')
   title       = adjustl(fdf_get('title', 'Untitled'))
-  pooldir     = fdf_get('pool', '.')
+  pooldir     = fdf_get('pool', './')
   pp_id       = fdf_get('pseudopot', 'none')
   bas_id      = fdf_get('basis', 'none')
   nforce      = fdf_get('nforce', 1)
@@ -325,7 +324,7 @@ subroutine parser
 
 !optimization flags vmc/dmc
   ioptwf        = fdf_get('ioptwf', 0)
-  method        = fdf_get('method', 'linear')
+  method        = fdf_get('method', 'sr_n')
 
 ! %module optwf (can be moved somewhere else)
   if (fdf_defined("optwf")) then
@@ -493,6 +492,7 @@ subroutine parser
   end select
 
   write(ounit,*)
+  pooldir = trim(pooldir)
   write(ounit,'(a,a)') " Pool directory for common input files :: ",  pooldir
 
   !checks
@@ -826,11 +826,11 @@ subroutine parser
   !call fdf_read_jastrow_derivative_block(bfdf)
     write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
+    if( mode(1:3) == 'vmc' ) error stop
   else
     write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
+    if( mode(1:3) == 'vmc' ) error stop
   endif
 
 !printing some information and warnings and checks about Jastrow
@@ -922,11 +922,11 @@ subroutine parser
   ! call fdf_read_symmetry_block(bfdf)
     write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
+    if( mode(1:3) == 'vmc' ) error stop
   else
     write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
+    if( mode(1:3) == 'vmc' ) error stop
   endif
 
 ! (11) Eigenvalues information of orbitals (either block or from a file)

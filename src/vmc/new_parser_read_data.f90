@@ -112,6 +112,7 @@ subroutine read_molecule_file(file_molecule)
     use inputflags,         only: igeometry
     use periodic_table,     only: atom_t, element
     use contrl_file,        only: ounit, errunit
+    use general,            only: pooldir
 
     implicit none
 
@@ -131,16 +132,16 @@ subroutine read_molecule_file(file_molecule)
 
     !   External file reading
     write(ounit,*) '-----------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading molecular coordinates from the file :: ",  trim(file_molecule)
+    write(ounit,string_format)  " Reading molecular coordinates from the file :: ",  pooldir // trim(file_molecule)
     write(ounit,*) '-----------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_molecule, exist=exist)
+        inquire(file=pooldir//file_molecule, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_molecule, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir//file_molecule, iostat=iostat, action='read' )
             if (iostat .ne. 0) stop "Problem in opening the molecule file"
         else
-            call fatal_error (" molecule file "// trim(file_molecule) // " does not exist.")
+            call fatal_error (" molecule file "// pooldir // trim(file_molecule) // " does not exist.")
         endif
 
         read(iunit,*) ncent
@@ -242,7 +243,7 @@ subroutine read_determinants_file(file_determinants)
     use inputflags,     only: ideterminants
     use wfsec,          only: nwftype
     use csfs,           only: nstates
-
+    use general,        only: pooldir
     use elec,           only: ndn, nup
     use const,          only: nelec
 
@@ -260,16 +261,16 @@ subroutine read_determinants_file(file_determinants)
 
     !   External file reading
     write(ounit,*) '------------------------------------------------------'
-    write(ounit,string_format)  " Reading determinants from the file :: ",  trim(file_determinants)
+    write(ounit,string_format)  " Reading determinants from the file :: ",  pooldir // trim(file_determinants)
     write(ounit,*) '------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_determinants, exist=exist)
+        inquire(file=pooldir // file_determinants, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_determinants, iostat=iostat, action='read' )
             if (iostat .ne. 0) stop "Problem in opening the determinant file"
         else
-            call fatal_error (" determinant file "// trim(file_determinants) // " does not exist.")
+            call fatal_error (" determinant file "// pooldir // trim(file_determinants) // " does not exist.")
         endif
     endif
 
@@ -363,6 +364,7 @@ subroutine read_multideterminants_file(file_multideterminants)
     use const, only: nelec
     use multidet, only: irepcol_det, ireporb_det, numrep_det, iwundet
     use inputflags, only: imultideterminants
+    use general, only: pooldir
 
     implicit none
 
@@ -378,16 +380,16 @@ subroutine read_multideterminants_file(file_multideterminants)
 
     !   External file reading
     write(ounit,*) '------------------------------------------------------'
-    write(ounit,string_format)  " Reading multideterminants from the file :: ",  trim(file_multideterminants)
+    write(ounit,string_format)  " Reading multideterminants from the file :: ",  pooldir // trim(file_multideterminants)
     write(ounit,*) '------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_multideterminants, exist=exist)
+        inquire(file=pooldir // file_multideterminants, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_multideterminants, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_multideterminants, iostat=iostat, action='read' )
             if (iostat .ne. 0) stop "Problem in opening the multideterminant file"
         else
-            call fatal_error (" Multideterminant file "// trim(file_multideterminants) // " does not exist.")
+            call fatal_error (" Multideterminant file "// trim(pooldir // file_multideterminants) // " does not exist.")
         endif
 
         read (iunit, *, iostat=iostat) temp1, ndet_local
@@ -453,6 +455,7 @@ subroutine read_jastrow_file(file_jastrow)
     use precision_kinds,    only: dp
     use contrl_per, 		only: iperiodic
     use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
+    use general,            only: pooldir
     implicit none
 
     !   local use
@@ -470,16 +473,16 @@ subroutine read_jastrow_file(file_jastrow)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading jastrow parameters from the file :: ",  trim(file_jastrow)
+    write(ounit,string_format)  " Reading jastrow parameters from the file :: ",  pooldir // trim(file_jastrow)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_jastrow, exist=exist)
+        inquire(file=pooldir // file_jastrow, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_jastrow, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_jastrow, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error("Problem in opening the jastrow file")
         else
-            call fatal_error (" Jastrow file "// trim(file_jastrow) // " does not exist.")
+            call fatal_error (" Jastrow file "// pooldir // trim(file_jastrow) // " does not exist.")
         endif
     endif
 
@@ -595,6 +598,7 @@ subroutine read_orbitals_file(file_orbitals)
     use vmc_mod, only: MORB, MBASIS
     ! was not in master but is needed
     use wfsec, only: nwftype
+    use general, only: pooldir
 
     implicit none
 
@@ -614,16 +618,16 @@ subroutine read_orbitals_file(file_orbitals)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading LCAO orbitals from the file :: ",  trim(file_orbitals)
+    write(ounit,string_format)  " Reading LCAO orbitals from the file :: ",  pooldir // trim(file_orbitals)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_orbitals, exist=exist)
+        inquire(file=pooldir // file_orbitals, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_orbitals, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_orbitals, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error("Problem in opening the LCAO orbitals file")
         else
-            call fatal_error (" LCAO file "// trim(file_orbitals) // " does not exist.")
+            call fatal_error (" LCAO file "// pooldir // trim(file_orbitals) // " does not exist.")
         endif
     endif
 
@@ -722,6 +726,7 @@ subroutine read_csf_file(file_determinants)
 !   Not sure about the following two lines
     use ci000, only: nciprim, nciterm
     use optwf_contrl, only: ioptci
+    use general, only: pooldir
     implicit none
 
     !   local use
@@ -737,16 +742,16 @@ subroutine read_csf_file(file_determinants)
 
     !   External file reading
     write(ounit,*) '------------------------------------------------------'
-    write(ounit,string_format)  " Reading csf from the file :: ",  trim(file_determinants)
+    write(ounit,string_format)  " Reading csf from the file :: ",  pooldir // trim(file_determinants)
     write(ounit,*) '------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_determinants, exist=exist)
+        inquire(file=pooldir // file_determinants, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_determinants, iostat=iostat, action='read' )
             if (iostat .ne. 0) stop "Problem in opening the determinant file for reading csfs"
         else
-            call fatal_error (" determinant file "// trim(file_determinants) // " does not exist.")
+            call fatal_error (" determinant file "// pooldir // trim(file_determinants) // " does not exist.")
         endif
     endif
 
@@ -833,6 +838,7 @@ subroutine read_csfmap_file(file_determinants)
     use wfsec, only: nwftype
     use mstates_mod, only: MDETCSFX
     use precision_kinds,    only: dp
+    use general,            only: pooldir
 
     implicit none
 
@@ -853,16 +859,16 @@ subroutine read_csfmap_file(file_determinants)
 
     !   External file reading
     write(ounit,*) '------------------------------------------------------'
-    write(ounit,string_format)  " Reading csfmap from the file :: ",  trim(file_determinants)
+    write(ounit,string_format)  " Reading csfmap from the file :: ",  pooldir // trim(file_determinants)
     write(ounit,*) '------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_determinants, exist=exist)
+        inquire(file=pooldir // file_determinants, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_determinants, iostat=iostat, action='read' )
             if (iostat .ne. 0) stop "Problem in opening the determinant file for reading csfmap"
         else
-            call fatal_error (" determinant file "// trim(file_determinants) // " does not exist.")
+            call fatal_error (" determinant file "// pooldir // trim(file_determinants) // " does not exist.")
         endif
     endif
 
@@ -988,6 +994,7 @@ subroutine read_exponents_file(file_exponents)
     use basis,              only: zex
     use inputflags,         only: iexponents
     use wfsec,              only: nwftype
+    use general,            only: pooldir
 
     implicit none
 
@@ -1003,16 +1010,16 @@ subroutine read_exponents_file(file_exponents)
 
     !   External file reading
     write(ounit,*) '------------------------------------------------------'
-    write(ounit,string_format)  " Reading exponents from the file :: ",  trim(file_exponents)
+    write(ounit,string_format)  " Reading exponents from the file :: ", pooldir //  trim(file_exponents)
     write(ounit,*) '------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_exponents, exist=exist)
+        inquire(file=pooldir // file_exponents, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_exponents, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_exponents, iostat=iostat, action='read' )
             if (iostat .ne. 0) stop "Problem in opening the exponents file for reading csfs"
         else
-            call fatal_error (" exponents file "// trim(file_exponents) // " does not exist.")
+            call fatal_error (" exponents file "// pooldir // trim(file_exponents) // " does not exist.")
         endif
     endif
 
@@ -1064,6 +1071,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
     use contr2,             only: isc
     use vmc_mod,            only: MCTYP3X
     use atom,               only: nctype_tot
+    use general,            only: pooldir
 
     implicit none
 
@@ -1081,16 +1089,16 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading jastrow derivative parameters from the file :: ",  trim(file_jastrow_der)
+    write(ounit,string_format)  " Reading jastrow derivative parameters from the file :: ", pooldir // trim(file_jastrow_der)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_jastrow_der, exist=exist)
+        inquire(file=pooldir // file_jastrow_der, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_jastrow_der, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_jastrow_der, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the jastrow derivative file")
         else
-            call fatal_error (" Jastrow derivative file "// trim(file_jastrow_der) // " does not exist.")
+            call fatal_error (" Jastrow derivative file "// pooldir // trim(file_jastrow_der) // " does not exist.")
         endif
     endif
 
@@ -1251,7 +1259,7 @@ subroutine read_forces_file(file_forces)
     use forcestr,           only: delc
     use wfsec,              only: iwftype
     use inputflags,         only: iforces
-
+    use general,            only: pooldir
     use atom,               only: ncent
 
     implicit none
@@ -1270,16 +1278,16 @@ subroutine read_forces_file(file_forces)
 
     !   External file reading
     write(ounit,*) '-----------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading force displacements from the file :: ",  trim(file_forces)
+    write(ounit,string_format)  " Reading force displacements from the file :: ", pooldir // trim(file_forces)
     write(ounit,*) '-----------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_forces, exist=exist)
+        inquire(file=pooldir // file_forces, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_forces, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_forces, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the forces file")
         else
-            call fatal_error (" Forces file "// trim(file_forces) // " does not exist.")
+            call fatal_error (" Forces file "// pooldir // trim(file_forces) // " does not exist.")
         endif
     endif
 
@@ -1331,6 +1339,7 @@ subroutine read_symmetry_file(file_symmetry)
     use coefs,              only: norb
     use optorb,             only: irrep
     use vmc_mod,            only: MORB
+    use general,            only: pooldir
 
     implicit none
 
@@ -1348,16 +1357,16 @@ subroutine read_symmetry_file(file_symmetry)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading orbital symmetries from the file :: ",  trim(file_symmetry)
+    write(ounit,string_format)  " Reading orbital symmetries from the file :: ", pooldir // trim(file_symmetry)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_symmetry, exist=exist)
+        inquire(file=pooldir // file_symmetry, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_symmetry, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_symmetry, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the symmetry file")
         else
-            call fatal_error (" Orbital symmetries file "// trim(file_symmetry) // " does not exist.")
+            call fatal_error (" Orbital symmetries file "// pooldir // trim(file_symmetry) // " does not exist.")
         endif
     endif
 
@@ -1408,6 +1417,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     use optorb_mix,         only: iwmix_virt, norbopt, norbvirt
     use coefs,              only: norb
     use inputflags,         only: ioptorb_mixvirt
+    use general,            only: pooldir
 
     implicit none
 
@@ -1425,16 +1435,16 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading optorb_mixvirt from the file :: ",  trim(file_optorb_mixvirt)
+    write(ounit,string_format)  " Reading optorb_mixvirt from the file :: ", pooldir // trim(file_optorb_mixvirt)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_optorb_mixvirt, exist=exist)
+        inquire(file=pooldir // file_optorb_mixvirt, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_optorb_mixvirt, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_optorb_mixvirt, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the optorb_mixvirt file")
         else
-            call fatal_error (" optorb_mixvirt file "// trim(file_optorb_mixvirt) // " does not exist.")
+            call fatal_error (" optorb_mixvirt file "// pooldir // trim(file_optorb_mixvirt) // " does not exist.")
         endif
 
         read (iunit, *, iostat=iostat) temp1, moopt, movirt
@@ -1445,7 +1455,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     if (trim(temp1) == "optorb_mixvirt") then
         if (moopt .gt. norb) call fatal_error( "Number of orbitals for optimization are greater than the total orbitals")
     else
-        call fatal_error (" optorb_mixvirt file "// trim(file_optorb_mixvirt) // " is corrupt.")
+        call fatal_error (" optorb_mixvirt file "// pooldir // trim(file_optorb_mixvirt) // " is corrupt.")
     endif
 
     norbopt     =   moopt
@@ -1487,6 +1497,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
     use coefs,              only: norb
     use vmc_mod,            only: MORB
     use optorb,             only: orb_energy
+    use general,            only: pooldir
 
     implicit none
 
@@ -1504,16 +1515,16 @@ subroutine read_eigenvalues_file(file_eigenvalues)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading orbital eigenvalues from the file :: ",  trim(file_eigenvalues)
+    write(ounit,string_format)  " Reading orbital eigenvalues from the file :: ", pooldir // trim(file_eigenvalues)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_eigenvalues, exist=exist)
+        inquire(file=pooldir // file_eigenvalues, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_eigenvalues, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_eigenvalues, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the eigenvalues file")
         else
-            call fatal_error (" Orbital eigenvalues file "// trim(file_eigenvalues) // " does not exist.")
+            call fatal_error (" Orbital eigenvalues file "// pooldir // trim(file_eigenvalues) // " does not exist.")
         endif
 
         read (iunit, *, iostat=iostat) temp1, mo
@@ -1525,7 +1536,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
     if ((trim(temp1) == "eigenvalues")  .or. (trim(temp1) == "energies")) then
         if (norb /= mo) call fatal_error( "Number of orbitals not consistent with previous records")
     else
-        call fatal_error (" Orbital eigenvalues file "// trim(file_eigenvalues) // " is corrupt.")
+        call fatal_error (" Orbital eigenvalues file "//pooldir // trim(file_eigenvalues) // " is corrupt.")
     endif
 
 
@@ -1586,16 +1597,16 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,'(a)')  " Reading Basis function types and pointers to radial parts tables from the file :: ", &
-                          trim(file_basis_num_info)
+                        pooldir // trim(file_basis_num_info)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_basis_num_info, exist=exist)
+        inquire(file=pooldir // file_basis_num_info, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_basis_num_info, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_basis_num_info, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the basis num info file")
         else
-            call fatal_error (" Basis num info file "// trim(file_basis_num_info) // " does not exist.")
+            call fatal_error (" Basis num info file "// pooldir // trim(file_basis_num_info) // " does not exist.")
         endif
 
         read (iunit, *, iostat=iostat) temp1, numr
@@ -1842,6 +1853,7 @@ subroutine read_dmatrix_file(file_dmatrix)
     use mstates_mod, only: MSTATES
     use coefs, only: norb
     use optorb, only: dmat_diag
+    use general,    only: pooldir
 
     implicit none
 
@@ -1861,16 +1873,16 @@ subroutine read_dmatrix_file(file_dmatrix)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading dmatrix the file :: ",  trim(file_dmatrix)
+    write(ounit,string_format)  " Reading dmatrix the file :: ", pooldir //  trim(file_dmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_dmatrix, exist=exist)
+        inquire(file=pooldir // file_dmatrix, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_dmatrix, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_dmatrix, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the dmatrix file")
         else
-            call fatal_error (" dmatrix file "// trim(file_dmatrix) // " does not exist.")
+            call fatal_error (" dmatrix file "// pooldir // trim(file_dmatrix) // " does not exist.")
         endif
 
         read (iunit, *, iostat=iostat) temp1, ndetorb, nweight
@@ -1939,6 +1951,7 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
     use contrl_file,        only: ounit, errunit
     use pcm_parms,          only: nesph, re, re2
     use pcm_parms,          only: xe, ye, ze
+    use general,            only: pooldir
 
     implicit none
 
@@ -1955,16 +1968,16 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading cavity spheres from the file :: ",  trim(file_cavity_spheres)
+    write(ounit,string_format)  " Reading cavity spheres from the file :: ", pooldir // trim(file_cavity_spheres)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_cavity_spheres, exist=exist)
+        inquire(file=pooldir // file_cavity_spheres, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_cavity_spheres, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_cavity_spheres, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the cavity spheres file")
         else
-            call fatal_error (" cavity spheres file "// trim(file_cavity_spheres) // " does not exist.")
+            call fatal_error (" cavity spheres file "//pooldir // trim(file_cavity_spheres) // " does not exist.")
         endif
 
 
@@ -2017,7 +2030,7 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     use grdntspar,          only: delgrdxyz, igrdtype, ngradnts
     use wfsec,              only: iwftype
     use inputflags,         only: igradients
-
+    use general,            only: pooldir
     use atom,               only: ncent
 
     implicit none
@@ -2035,16 +2048,16 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading gradients cartesian from the file :: ",  trim(file_gradients_cartesian)
+    write(ounit,string_format)  " Reading gradients cartesian from the file :: ", pooldir // trim(file_gradients_cartesian)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_gradients_cartesian, exist=exist)
+        inquire(file=pooldir // file_gradients_cartesian, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_gradients_cartesian, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_gradients_cartesian, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the gradients_cartesian file")
         else
-            call fatal_error ( " Gradients cartesian file "// trim(file_gradients_cartesian) // " does not exist.")
+            call fatal_error ( " Gradients cartesian file "// pooldir // trim(file_gradients_cartesian) // " does not exist.")
         endif
 
         read (iunit, *, iostat=iostat) key
@@ -2119,7 +2132,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     use zmatrix, only: izmatrix
     use wfsec, only: iwftype
     use inputflags, only: igradients
-
+    use general, only:pooldir
     use atom, only: ncent
 
     implicit none
@@ -2137,16 +2150,16 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading gradients zmatrix from the file :: ",  trim(file_gradients_zmatrix)
+    write(ounit,string_format)  " Reading gradients zmatrix from the file :: ", pooldir // trim(file_gradients_zmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_gradients_zmatrix, exist=exist)
+        inquire(file=pooldir // file_gradients_zmatrix, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_gradients_zmatrix, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_gradients_zmatrix, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the gradients_zmatrix file")
         else
-            call fatal_error ( " Gradients zmatrix file "// trim(file_gradients_zmatrix) // " does not exist.")
+            call fatal_error ( " Gradients zmatrix file "// pooldir // trim(file_gradients_zmatrix) // " does not exist.")
         endif
 
         read (iunit, *, iostat=iostat) key
@@ -2212,7 +2225,7 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     use contrl_file,        only: ounit, errunit
     use grdntsmv,           only: igrdmv
     use inputflags,         only: imodify_zmat
-
+    use general,            only: pooldir
     use atom,               only: ncent
 
     implicit none
@@ -2230,16 +2243,16 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading modify zmatrix from the file :: ",  trim(file_modify_zmatrix)
+    write(ounit,string_format)  " Reading modify zmatrix from the file :: ", pooldir // trim(file_modify_zmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_modify_zmatrix, exist=exist)
+        inquire(file=pooldir // file_modify_zmatrix, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_modify_zmatrix, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_modify_zmatrix, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the modify_zmatrix file")
         else
-            call fatal_error (" modify zmatrix file "// trim(file_modify_zmatrix) // " does not exist.")
+            call fatal_error (" modify zmatrix file "// pooldir // trim(file_modify_zmatrix) // " does not exist.")
         endif
 
 
@@ -2280,7 +2293,7 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     ! atoms energy gradients are to be calculated for.
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
-
+    use general,            only: pooldir
     use contrl_file,        only: ounit, errunit
     use grdnthes,           only: hessian_zmat
     use inputflags,         only: ihessian_zmat
@@ -2301,16 +2314,16 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading hessian zmatrix from the file :: ",  trim(file_hessian_zmatrix)
+    write(ounit,string_format)  " Reading hessian zmatrix from the file :: ", pooldir // trim(file_hessian_zmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_hessian_zmatrix, exist=exist)
+        inquire(file=pooldir // file_hessian_zmatrix, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_hessian_zmatrix, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_hessian_zmatrix, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the hessian_zmatrix file")
         else
-            call fatal_error (" hessian zmatrix file "// trim(file_hessian_zmatrix) // " does not exist.")
+            call fatal_error (" hessian zmatrix file "// pooldir // trim(file_hessian_zmatrix) // " does not exist.")
         endif
 
 
@@ -2355,7 +2368,7 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     ! Originally written by Omar Valsson
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
-
+    use general,            only: pooldir
     use contrl_file,    only: ounit, errunit
     use atom, only: cent, ncent
     use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
@@ -2376,16 +2389,16 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading zmatrix connection matrix from the file :: ",  trim(file_zmatrix_connection)
+    write(ounit,string_format)  " Reading zmatrix connection matrix from the file :: ", pooldir // trim(file_zmatrix_connection)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_zmatrix_connection, exist=exist)
+        inquire(file=pooldir // file_zmatrix_connection, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_zmatrix_connection, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_zmatrix_connection, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the zmatrix connection matrix file")
         else
-            call fatal_error (" zmatrix connection matrix file "// trim(file_zmatrix_connection) // " does not exist.")
+            call fatal_error (" zmatrix connection matrix file "// pooldir // trim(file_zmatrix_connection) // " does not exist.")
         endif
 
 
@@ -2439,7 +2452,7 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     ! Ravindra
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
-
+    use general,            only: pooldir
     use contrl_file,    only: ounit, errunit
     use efield_mod, only: MCHARGES
     use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
@@ -2461,16 +2474,16 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading efield from the file :: ",  trim(file_efield)
+    write(ounit,string_format)  " Reading efield from the file :: ", pooldir // trim(file_efield)
     write(ounit,*) '---------------------------------------------------------------------------'
 
     if (wid) then
-        inquire(file=file_efield, exist=exist)
+        inquire(file=pooldir // file_efield, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=file_efield, iostat=iostat, action='read' )
+            open (newunit=iunit,file=pooldir // file_efield, iostat=iostat, action='read' )
             if (iostat .ne. 0) error stop "Problem in opening the efield file"
         else
-            call fatal_error ( " efield file "// trim(file_efield) // " does not exist.")
+            call fatal_error ( " efield file "// pooldir // trim(file_efield) // " does not exist.")
         endif
 
 
