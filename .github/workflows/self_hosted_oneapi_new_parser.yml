@@ -57,7 +57,7 @@ jobs:
         mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_single_core.out  -e dmc_single_core.error
 
         echo "Comparing the energy with the reference one (total energy (  100) = -26.3320038) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc.out "total energy (  100)" -26.3320038
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py dmc_single_core.out "total energy (  100)" -26.3320038
 
     - name: "Test 04 DMC multicore"
       run: |
@@ -68,5 +68,5 @@ jobs:
         mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_double_core.out  -e dmc_double_core.error
 
         echo "Comparing the energy with the reference one (total energy (  100) = -26.3187227) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc.out "total energy (  100)" -26.3187227
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py dmc_double_core.out "total energy (  100)" -26.3187227
 
