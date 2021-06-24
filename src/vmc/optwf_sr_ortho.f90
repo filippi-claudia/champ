@@ -350,6 +350,9 @@ contains
                 h_sr(k,istate)=h_sr(k,istate)&
        	        	-alambda*2.d0*(obs_tot(jfjsi+k-1,istate)-aux1*obs_tot(jfj+k-1,istate))
              enddo
+	     print *, "State", istate
+	     print *, "lambda SR ortho", alambda
+	     print *, "lambda*S", alambda * aux1
           endif
 
           smax=0.0d0

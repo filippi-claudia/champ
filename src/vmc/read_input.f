@@ -1709,10 +1709,10 @@ c Check that the required blocks are there in the input
       endif
 
 c TMP - RLPB
-      if(nstates.gt.1) then
-        call inputlcao(nwftype)
-        !call inputjastrow(2)
-      endif
+c     if(nstates.gt.1) then
+c       call inputlcao(nwftype)
+c       !call inputjastrow(2)
+c     endif
 
       if(nwftype.gt.1) then
         if(ijastrow_parameter.ne.nwftype) then
@@ -1811,13 +1811,13 @@ c     Set the lcao to be equal
 
 c TMP - RLPB
   
-      do istate=2,nstates
-         do i=1,norb+nadorb
-            do j=1,nbasis
-               coef(j,i,istate,1)=coef(j,i,1,1)
-            enddo
-         enddo
-      enddo
+c     do istate=2,nstates
+c        do i=1,norb+nadorb
+c           do j=1,nbasis
+c              coef(j,i,istate,1)=coef(j,i,1,1)
+c           enddo
+c        enddo
+c     enddo
 
       do iwft=2,nwftype
         do istate=1,nstates
