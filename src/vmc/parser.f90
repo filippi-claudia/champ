@@ -922,11 +922,11 @@ subroutine parser
   ! call fdf_read_symmetry_block(bfdf)
     write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    if( mode(1:3) == 'vmc' ) error stop
+!    if( mode(1:3) == 'vmc' ) error stop
   else
     write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    if( mode(1:3) == 'vmc' ) error stop
+!    if( mode(1:3) == 'vmc' ) error stop
   endif
 
 ! (11) Eigenvalues information of orbitals (either block or from a file)

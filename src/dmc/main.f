@@ -61,7 +61,7 @@ c Open the standard output and the log file only on the master
       close(45)
 
       time_final = time()
-      write(ounit,'(a,g16.6,a)') " Total time of computation ::  ", time_final - time_start, " seconds "
+      !write(ounit,'(a,g16.6,a)') " Total time of computation ::  ", time_final - time_start, " seconds "
 
       call mpi_finalize(ierr)
       call deallocate_dmc()
