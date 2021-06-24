@@ -10,7 +10,7 @@
 load molecule        butadiene.xyz
 load determinants    TZ_1M_500.det
 load orbitals        TZ_1M_15k.orb
-load basis_num_info ./pool/BFD-T.bfinfo
+load basis_num_info  BFD-T.bfinfo
 load jastrow         jastrow_optimal.0
 load jastrow_der     jastrow.der
 load symmetry        cas1010.sym
