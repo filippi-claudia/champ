@@ -19,7 +19,10 @@ c   energy gradients (cartesian).
 
       use grdntspar, only: delgrdxyz, ngradnts
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ig
+
 
 
 
@@ -47,6 +50,7 @@ c -----------------------------------------------------------------------
 c   Subroutine which at the start up prints out information about the 
 c   energy gradients (z matrix/internal).
       subroutine inpwrt_grdnts_zmat()
+
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
@@ -54,11 +58,13 @@ c   energy gradients (z matrix/internal).
       use vmc_mod, only: NEQSX, MTERMS
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use grdntsmv, only: igrdaidx, igrdcidx
-
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
       use zmatrix, only: izcmat
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ig, na, nb, nc, nd
+
 
 
 
@@ -104,13 +110,19 @@ c   calculated using correlated smapling.
 
       use grdntspar, only: delgrdxyz, ngradnts
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ig, k, if
+      real(dp) :: advance
+      real(dp), dimension(MFORCE) :: forces_ave
+      real(dp), dimension(MFORCE) :: forces_err
+      real(dp), dimension(MFORCE) :: grdnts_ave
+      real(dp), dimension(MFORCE) :: grdnts_err
 
 
 
 
-      dimension forces_ave(MFORCE),forces_err(MFORCE)
-      dimension grdnts_ave(MFORCE),grdnts_err(MFORCE)     
 
       do 5 if=1,nforce-2,2
         grdnts_ave((if+1)/2)=((-forces_ave(if)+forces_ave(if+1))/delgrdxyz)*0.5d0
@@ -171,11 +183,18 @@ c   calculated using correlated smapling.
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
       use zmatrix, only: izcmat
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ifr, ig, k, na
+      integer :: nb, nc, nd
+      real(dp) :: advance, delgrd_tmp
+      real(dp), dimension(MFORCE) :: forces_ave
+      real(dp), dimension(MFORCE) :: forces_err
+      real(dp), dimension(MFORCE) :: grdnts_ave
+      real(dp), dimension(MFORCE) :: grdnts_err
 
 
-      dimension forces_ave(MFORCE),forces_err(MFORCE)
-      dimension grdnts_ave(MFORCE),grdnts_err(MFORCE)     
 
 
 
@@ -325,12 +344,17 @@ c   using Z matrix (internal) coordinates
       use grdntspar, only: delgrdba, delgrdbl, delgrdda
       use zmatrix, only: czcart, czint, czcart_ref, izcmat
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ia_in, ic, ic_in, k, k_in
+      real(dp) :: delfactor, delgrd_tmp
+      real(dp), dimension(3,ncent_tot) :: czint_t1
+      real(dp), dimension(3,ncent_tot) :: czcart_t1
 
 
 
 
-      dimension czint_t1(3,ncent_tot),czcart_t1(3,ncent_tot)
 
 
       if(k_in.eq.1) then
@@ -370,7 +394,10 @@ c   information regarding the Z matrix.
       use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
       use zmatrix, only: czcart, czint, izcmat
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ic, k
+
 
       write(6,'(''---------- Z matrix information ----------'')')
       write(6,'(''Geometry in internal coordinates:'')')
@@ -414,14 +441,21 @@ c   from energy differences  calculated using correlated smapling.
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
       use zmatrix, only: izcmat
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ifr, ig, k, na
+      integer :: nb, nc, nd
+      real(dp) :: advance, delgrd_tmp
+      real(dp), dimension(MFORCE) :: forces_ave
+      real(dp), dimension(MFORCE) :: forces_err
+      real(dp), dimension(MFORCE) :: diaghess_ave
+      real(dp), dimension(MFORCE) :: diaghess_err
 
 
 
 
 
-      dimension forces_ave(MFORCE),forces_err(MFORCE)
-      dimension diaghess_ave(MFORCE),diaghess_err(MFORCE)     
 
 
 
@@ -566,16 +600,25 @@ c -----------------------------------------------------------------------
       use zmatrix, only: czcart, czint, czcart_ref, izcmat
       use force_analy, only: iuse_zmat
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ii, jc, jj, k
+      integer :: l, lc, ncent3, ncent_ind
+      real(dp) :: czint_sav
+      real(dp), dimension(3,ncent_tot) :: czcartp
+      real(dp), dimension(3,ncent_tot) :: czcartm
+      real(dp), dimension(MCENT3,MCENT3) :: bwilson
+      real(dp), dimension(MCENT3*MCENT3) :: gmat
+      real(dp), dimension(3,*) :: force_cart
+      real(dp), dimension(MCENT3) :: force_int
+      real(dp), parameter :: eps = 1.d-5
+      real(dp), parameter :: epsi = 0.5d0/eps
 
 
 
-      parameter (eps=1.d-5,epsi=0.5d0/eps)
 
 
-      dimension czcartp(3,ncent_tot),czcartm(3,ncent_tot)
-      dimension bwilson(MCENT3,MCENT3),gmat(MCENT3*MCENT3)
-      dimension force_cart(3,*),force_int(MCENT3)
 
       do 10 ic=1,3
         do 10 k=1,3

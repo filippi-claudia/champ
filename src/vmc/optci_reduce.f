@@ -14,7 +14,10 @@
       use method_opt, only: method
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, ierr, j, matdim
+      real(dp) :: MXMATDIM, MXORBTERM
 
 c     parameter(MXTMP=max(MXORBTERM,MXMATDIM))
 c     max does not work with g77

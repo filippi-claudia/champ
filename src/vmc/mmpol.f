@@ -14,14 +14,13 @@ c...........................................................
       use mmpol_parms, only: chmm, nchmm, x_mmpol
       use mmpol_dipol, only: alfa, dipo
       use mmpol_pot, only: penu_dp, penu_q, peq_dp, peqq, u_self
-
       use mmpol_inds, only: inds_pol
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-       
-
+      integer :: i, k
+      real(dp) :: PI, penu_mmpol
 
       data PI/3.1415927D0/
 
@@ -96,16 +95,13 @@ c............................................................
       use mmpol_pot, only: peqq
       use mmpol_fdc, only: a_cutoff, screen1, screen2
       use mmpol_inds, only: inds_pol
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
-
-
-       
-
+      integer :: i, j, k, l
+      real(dp) :: dist, r_cutoff, ratio, sixth
+      real(dp) :: xx, yy, zz
 
       if(immpol.eq.0) return
 
@@ -166,15 +162,13 @@ c............................................................
       use mmpol_pot, only: u_dd, u_self
       use mmpol_fdc, only: screen1, screen2
       use mmpol_inds, only: inds_pol
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
-
-
-       
+      integer :: i, j, k
+      real(dp) :: dipo_mod, qiki, qikk, riki, riki3
+      real(dp) :: riki5, sik
 
       if(immpol.eq.0) return
 
@@ -224,13 +218,13 @@ c............................................................
       use mmpol_parms, only: nchmm, x_mmpol
       use mmpol_dipol, only: dipo
       use mmpol_pot, only: penu_dp
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-       
-
+      integer :: i, j
+      real(dp) :: dpdr, rnp, rnp2, rnp3, xx
+      real(dp) :: yy, zz
 
       if(immpol.eq.0) return
 
@@ -261,12 +255,12 @@ c............................................................
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, x_mmpol
       use mmpol_pot, only: penu_q
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-       
-
+      integer :: i, j
+      real(dp) :: rnp, rnp2, xx, yy, zz
 
       if(immpol.eq.0) return
 
@@ -295,17 +289,18 @@ C     ***************************************************************
       use mmpol_ahpol, only: ah_pol
       use mmpol_fdc, only: screen1, screen2
       use mmpol_inds, only: inds_pol
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, ij, j, j1, j2
+      integer :: j3, k, ki, l
+      integer :: lj, nch3
+      real(dp) :: delta_ij
+      real(dp) :: det, dxx_kilj, tmat_kilj
+      real(dp), dimension(3*MCHMM*3*MCHMM) :: ahpol_vec
 
-
-
-
-C     
-       
 C    
-      dimension ahpol_vec(3*MCHMM*3*MCHMM)
 c............................................................
 c     The matrix ah_pol is computed and inverted 
 c     (3*nchmm)*(3*nchmm)
@@ -372,7 +367,11 @@ C     ***************************************************************
       use mmpol_dipol, only: dipo
       use mmpol_field, only: enk_pol
       use mmpol_pot, only: penu_dp
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, k, l
+      real(dp) :: rr2, rr3, xx, yy, zz
 
 
 
@@ -427,7 +426,11 @@ c............................................................
       use mmpol_fdc, only: screen1
       use mmpol_inds, only: inds_pol
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, k, l
+      real(dp) :: rr3, xx, yy, zz
 
 
 
@@ -478,14 +481,20 @@ C     ***************************************************************
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm, x_mmpol
       use mmpol_fdc, only: rcolm
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, k, nelec
+      real(dp) :: AV, GC, PI, hatokc, rcolm3
+      real(dp) :: rr1, rr2, rr3, rr3i
+      real(dp) :: xx, yy, zz
+      real(dp), dimension(3,*) :: coord
 
 
 
 
 
 
-      dimension coord(3,*)
 
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
       data hatokc/627.509541d0/  
@@ -535,12 +544,17 @@ c......................................................
       use mmpol_cntrl, only: icall_mm
       use mmpol_parms, only: nchmm
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, nelec
+      real(dp) :: AV, GC, PI, hatokc, peQMdp
+      real(dp) :: peQMq
+      real(dp), dimension(3,*) :: coord
 
 
 
 
-      dimension coord(3,*)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
       data hatokc/627.509541d0/
       icall_mm=icall_mm+1
@@ -577,13 +591,19 @@ c......................................................
       use mmpol_dipol, only: dipo
       use mmpol_pot, only: pepol_dp, pepol_q
       use mmpol_fdc, only: rcolm
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: j
+      real(dp) :: AV, GC, PI, dpdr, rcolm3
+      real(dp) :: repol, repol2, repol3, xx
+      real(dp) :: yy, zz
+      real(dp), dimension(3) :: x
 
 
 
 
 
-      dimension x(3)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
 
       rcolm3=rcolm**3
@@ -630,18 +650,16 @@ c-----------------------------------------------------------------------
       use mmpol_pot, only: u_dd, u_self
       use mmpol_inds, only: inds_pol
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-
-
-
-
-
-
-
-      dimension eek_ave(3,MCHMM),eek_err(3,MCHMM)
-      dimension dp(3*MCHMM)
-
+      integer :: i, j, k, k1, k2
+      integer :: k3, nch3
+      real(dp) :: efree1, efree2, efree3, efree_k1, efree_k2
+      real(dp) :: efree_k3, u_ef, u_pol
+      real(dp), dimension(3,MCHMM) :: eek_ave
+      real(dp), dimension(3,MCHMM) :: eek_err
+      real(dp), dimension(3*MCHMM) :: dp_array
 
       open (56,file='dipo_new',form='formatted',status='unknown')
       open (57,file='efield_electron',form='formatted',status='unknown')
@@ -682,9 +700,9 @@ c u_ef = -mu*E + U_self + U_dd
 
       nch3=3*nchmm
       do i=1,nch3
-        dp(i)=0.0d0
+        dp_array(i)=0.0d0
         do j=1,nch3
-          dp(i)=dp(i)+ah_pol(i,j)*bh_pol(j)
+          dp_array(i)=dp_array(i)+ah_pol(i,j)*bh_pol(j)
         enddo
       enddo
 c...................................................................
@@ -700,9 +718,9 @@ c...................................................................
         k3=3*k
         k2=k3-1
         k1=k3-2
-        dipo(1,k)=dp(k1)
-        dipo(2,k)=dp(k2)
-        dipo(3,k)=dp(k3)
+        dipo(1,k)=dp_array(k1)
+        dipo(2,k)=dp_array(k2)
+        dipo(3,k)=dp_array(k3)
         write(56,1001) inds_pol(k),(x_mmpol(i,k),i=1,3),chmm(k),alfa(k),(dipo(i,k),i=1,3)
         write(57,1000) (x_mmpol(i,k),i=1,3),(eek_ave(i,k),i=1,3),(eek_err(i,k),i=1,3)
 c Riccardo write E0
@@ -749,7 +767,10 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iflag
+
 
 
       if(immpol.eq.0) return
@@ -789,7 +810,10 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu
+
 
 
       if(immpol.eq.0) return
@@ -812,7 +836,10 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu
+
 
 
       if(immpol.eq.0) return
@@ -832,14 +859,20 @@ c     end AVERAGES subroutines
 c......................................................
       subroutine mmpol_matinv(a,nsub,determinant)
       use mmpol_mod, only: MCHMM
-      implicit real*8 (a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, info, nsub
+      integer, dimension(3*MCHMM) :: ipvt
+      real(dp) :: dabs, determinant, go, ten
+      real(dp), dimension(nsub,nsub) :: a
+      real(dp), dimension(3*MCHMM) :: work
+      real(dp), dimension(2) :: det
 
 c routine to calculate inverse and determinant of matrix a
 c assumed to be dimensioned a(nsub,nsub).
 c the matrix a is replaced by its inverse.
 
-      dimension a(nsub,nsub)
-      dimension ipvt(3*MCHMM),work(3*MCHMM),det(2)
 
       call dgetrf(nsub,nsub,a,nsub,ipvt,info)
       if(info.gt.0) then
