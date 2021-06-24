@@ -172,7 +172,7 @@ c     call flush(6)
       if(nforce.gt.1) then
         call setup_force
        else
-        nwprod=1
+        nwprod=800
         nwftype=1
         iwftype(1)=1
       endif

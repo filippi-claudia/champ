@@ -121,6 +121,10 @@ c and Anthony Scemema
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
+      common /derivanaly/ deriv_energy_sum(10,3,MCENT,10),deriv_energy_cum(10,3,MCENT,10),
+     &energy_snake(3,MCENT,MWALK,10),energy_hist(3,MCENT,MWALK,0:MFORCE_WT_PRD,10),
+     &deriv_energy_old(3,MCENT,MWALK),pathak_old(MWALK,10),eps_pathak(10),ipathak
+
       character*12 mode
       common /contr3/ mode
 
@@ -396,8 +400,7 @@ c Make sure that the printout is not huge
        endif
       write(6,*)
 
-c Analytical forces flags (vmc only)
-      if(index(mode,'vmc').ne.0) then
+c Analytical forces flags (now dmc and vmc)
         call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
         call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
         if(iforce_analy.gt.0) then
@@ -407,7 +410,6 @@ c Analytical forces flags (vmc only)
           if(iuse_zmat.gt.0) write(6,'(''use internal coordinates'')')
           write(6,'(''starting alfgeo ='',f10.4)') alfgeo
         endif
-      endif
 
 c Optimization flags (vmc/dmc only)
       if(index(mode,'vmc').ne.0.or.index(mode,'dmc').ne.0) then
@@ -1804,6 +1806,31 @@ c Ignore irrep text labels
 
       if(fn.eq.'<input>') then
        call p2chkend(iu, 'sym_labels')
+      endif
+      end
+c-----------------------------------------------------------------------
+      subroutine read_pathak(nph,fn)
+C$INPUT parm_pathak i a=<input>
+CKEYDOC Read pathak parameters 
+      implicit double precision(a-h,o-z)
+      include 'vmc.h'
+      include 'dmc.h'
+      include 'force.h'
+
+      common /derivanaly/ deriv_energy_sum(10,3,MCENT,PTH),deriv_energy_cum(10,3,MCENT,PTH),
+     &energy_snake(3,MCENT,MWALK,PTH),energy_hist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
+     &deriv_energy_old(3,MCENT,MWALK),pathak_old(MWALK,PTH),eps_pathak(PTH),ipathak
+
+      character fn*(*)
+
+      ipathak=nph
+      if(ipathak.gt.PTH) call fatal_error('READPATHAK: number of pth parms too large') 
+
+      call ptfile(iu,fn,'old')
+      read(iu,*) (eps_pathak(io),io=1,ipathak)
+
+      if(fn.eq.'<input>') then
+       call p2chkend(iu, 'parm_pathak')
       endif
       end
 c-----------------------------------------------------------------------

@@ -30,6 +30,12 @@ c routine to accumulate estimators for energy etc.
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
+      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
+      common /derivanaly/ deriv_energy_sum(10,3,MCENT,PTH),deriv_energy_cum(10,3,MCENT,PTH),
+     &energy_snake(3,MCENT,MWALK,PTH),energy_hist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
+     &deriv_energy_old(3,MCENT,MWALK),pathak_old(MWALK,PTH),eps_pathak(PTH),ipathak
+      common /force_analy/ iforce_analy
+
       character*12 mode
       common /contr3/ mode
 
@@ -85,6 +91,27 @@ c           call t_vpsp_sav(iw)
             call prop_save_dmc(iw)
             call pcm_save(iw)
             call mmpol_save(iw)
+            if(iforce_analy.eq.1) then
+              if(ipathak.gt.0) then
+                call nodes_distance(vold(1,1,iw,ifr),distance_node,1)
+                do 74 iph=1,ipathak
+                  call pathak(distance_node,pathak_old(iw,iph),eps_pathak(iph))
+                  do 74 ic=1,ncent
+                    do 74 k=1,3
+                      energy_snake(k,ic,iw,iph)=zero
+                      do 74 ip=0,nwprod-1
+   74                   energy_hist(k,ic,iw,ip,iph)=zero
+              else
+                do 76 ic=1,ncent
+                  do 76 k=1,3
+                    energy_snake(k,ic,iw,1)=zero
+                    do 76 ip=0,nwprod-1
+   76                 energy_hist(k,ic,iw,ip,1)=zero
+              endif
+              do 78 ic=1,ncent
+                do 78 k=1,3
+   78             deriv_energy_old(k,ic,iw)=da_energy(k,ic)
+            endif
           endif
           pwt(iw,ifr)=0
           do 72 ip=0,nwprod-1

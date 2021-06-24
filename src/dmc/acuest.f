@@ -29,12 +29,22 @@ c routine to accumulate estimators for energy etc.
      &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
      &tjfcm2(MFORCE),r2cm2,ricm2
       common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE)
-     &,derivcm2(MFORCE),derivtotave_num_old(MFORCE)
+     &,derivcm2(MFORCE),derivtotave_num_old(MFORCE),derivcm(MFORCE)
       common /age/ iage(MWALK),ioldest,ioldestmx
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /sigma_branch/ sigma
 
+      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
+     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
+     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+     &,iwctype(MCENT),nctype,ncent
+      common /derivanaly/ deriv_energy_sum(10,3,MCENT,PTH),deriv_energy_cum(10,3,MCENT,PTH),
+     &energy_snake(3,MCENT,MWALK,PTH),energy_hist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
+     &deriv_energy_old(3,MCENT,MWALK),pathak_old(MWALK,PTH),eps_pathak(PTH),ipathak
+      common /force_analy/ iforce_analy
+      
       character*12 mode
       common /contr3/ mode
 
@@ -47,7 +57,9 @@ c routine to accumulate estimators for energy etc.
      &pe2collect(MFORCE),tpb2collect(MFORCE),tjf2collect(MFORCE),fsum(MFORCE),
      &f2sum(MFORCE),eg2sum(MFORCE),wg2sum(MFORCE),pe2sum(MFORCE),tpb2sum(MFORCE),
      &tjf2sum(MFORCE),taucollect(MFORCE),fcollect(MFORCE),f2collect(MFORCE),
-     &derivcollect(10,MFORCE)
+     &derivcollect(10,MFORCE),derivsumave(MFORCE),derivsumave2(MFORCE),
+     &derivsumcollect(MFORCE),derivsum2collect(MFORCE),deriv_energy_col(10,3,MCENT,PTH),
+     &deriv_energy_ave(3,3,MCENT,PTH),deriv_energy_avetot(3,MCENT,PTH)
 
 c statement function for error calculation
       rn_eff(w,w2)=w**2/w2
@@ -113,6 +125,8 @@ c xerr = current error of x
         if(ifr.gt.1) then
           fsum(ifr)=wgsum(1)*(egnow-egsum(1)/wgsum(1))
           f2sum(ifr)=wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
+          derivsumave(ifr)=-(derivsum(1,ifr)-derivsum(1,1)+derivsum(2,ifr)-derivsum(2,1)-enow*(derivsum(3,ifr)-derivsum(3,1)))
+          derivsumave2(ifr)=(derivsumave(ifr))**2/wgsum(1)
         endif
   10  continue
 
@@ -152,6 +166,10 @@ c xerr = current error of x
       call mpi_reduce(f2sum,f2collect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
+      call mpi_reduce(derivsumave,derivsumcollect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(derivsumave2,derivsum2collect,MFORCE
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(derivsum,derivcollect,10*MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
@@ -173,6 +191,26 @@ c xerr = current error of x
       call mpi_reduce(wf2sum,wf2collect,1
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
+      if(iforce_analy.eq.1) then
+        call mpi_reduce(deriv_energy_sum,deriv_energy_col,10*3*MCENT*int(PTH)
+     &                 ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        if(ipathak.gt.0) then
+        do 101 iph=1,ipathak
+          do 101 j=1,3
+            do 101 ic=1,ncent
+              do 101 k=1,3
+              deriv_energy_cum(j,k,ic,iph)=deriv_energy_cum(j,k,ic,iph)+deriv_energy_col(j,k,ic,iph)
+101           deriv_energy_sum(j,k,ic,iph)=zero
+        else
+          do 102 j=1,3
+            do 102 ic=1,ncent
+              do 102 k=1,3
+              deriv_energy_cum(j,k,ic,1)=deriv_energy_cum(j,k,ic,1)+deriv_energy_col(j,k,ic,1)
+102           deriv_energy_sum(j,k,ic,1)=zero
+        endif
+      write(6,*) 'ANALYTICAL FORCE'
+c      write(6,*) 'ACCUM',0,deriv_energy_cum(2,3,2,1),deriv_energy_cum(3,3,2,1)
+      endif 
 
       call optjas_cum(wgsum(1),egnow)
       call optorb_cum(wgsum(1),egsum(1))
@@ -195,6 +233,30 @@ c xerr = current error of x
       wfcum=wfcum+wfcollect
       ecum=ecum+ecollect
       efcum=efcum+efcollect
+
+      if(iforce_analy.eq.1) then
+        if(ipathak.gt.0) then
+          do 202 iph=1,ipathak
+            do 201 j=1,3
+              do 201 ic=1,ncent
+                do 201 k=1,3
+                deriv_energy_ave(j,k,ic,iph)=-(deriv_energy_cum(j,k,ic,iph)/wgcum(1))
+                if(j.eq.3) deriv_energy_ave(j,k,ic,iph)=(egcum(1)/wgcum(1)*deriv_energy_cum(j,k,ic,iph)/wgcum(1))
+  201           deriv_energy_avetot(k,ic,iph)=-(deriv_energy_cum(1,k,ic,iph)+deriv_energy_cum(2,k,ic,iph)
+     &                                     -egcum(1)/wgcum(1)*deriv_energy_cum(3,k,ic,iph))/wgcum(1)
+  202     write(6,'(f6.4,4f18.10)') eps_pathak(iph),deriv_energy_ave(1,3,2,iph),deriv_energy_ave(2,3,2,iph),
+     &deriv_energy_ave(3,3,2,iph),deriv_energy_avetot(3,2,iph)   
+        else
+          do 203 j=1,3
+            do 203 ic=1,ncent
+              do 203 k=1,3
+              deriv_energy_ave(j,k,ic,1)=-(deriv_energy_cum(j,k,ic,1)/wgcum(1))
+              if(j.eq.3) deriv_energy_ave(j,k,ic,1)=(egcum(1)/wgcum(1)*deriv_energy_cum(j,k,ic,1)/wgcum(1))
+203           deriv_energy_avetot(k,ic,1)=-(deriv_energy_cum(1,k,ic,1)+deriv_energy_cum(2,k,ic,1)
+     &                                   -egcum(1)/wgcum(1)*deriv_energy_cum(3,k,ic,1))/wgcum(1)
+        endif
+      endif
+      
 
       do 15 ifr=1,nforce
         wgcm2(ifr)=wgcm2(ifr)+wg2collect(ifr)
@@ -240,17 +302,26 @@ c xerr = current error of x
             ifgerr=nint(1e12* fgerr)
           endif
           egave1=egcum(1)/wgcum(1)
-          if(iblk.eq.1) derivtotave_num_old(ifr)=0.d0
+c          if(iblk.eq.1) derivtotave_num_old(ifr)=0.d0
           derivtotave_num=-(derivcum(1,ifr)-derivcum(1,1)+derivcum(2,ifr)-derivcum(2,1)-egave1*(derivcum(3,ifr)-derivcum(3,1)))
           derivtotave=derivtotave_num/wgcum(1)
-          delta_derivtotave_num=derivtotave_num-derivtotave_num_old(ifr)
-          derivtotave_num_old(ifr)=derivtotave_num
-          derivcm2(ifr)=derivcm2(ifr)+delta_derivtotave_num**2/wgsum(1)
+c          open(90,file='force_numeric',form='formatted',status='unknown')
+c          write(90,'(i5,1p6e20.10)') iblk,derivtotave*1e5
+          write(6,*) 'NUMERICAL FORCE'
+          write(6,*) 'ACCUM',0,(derivcum(2,ifr)-derivcum(2,1))*1e5,(derivcum(3,ifr)-derivcum(3,1))* 1e5
+          write(6,*) 'FORCE',1,-(derivcum(1,ifr)-derivcum(1,1))/wgcum(1)*1e5
+          write(6,*) 'FORCE',2,-(derivcum(2,ifr)-derivcum(2,1))/wgcum(1)*1e5
+          write(6,*) 'FORCE',3,egave1*(derivcum(3,ifr)-derivcum(3,1))/wgcum(1)*1e5
+          write(6,*) 'TOTAL',0,derivtotave*1e5
+c          delta_derivtotave_num=derivtotave_num-derivtotave_num_old(ifr)
+c          derivtotave_num_old(ifr)=derivtotave_num
+          derivcm(ifr)=derivcm(ifr)+derivsumcollect(ifr)
+          derivcm2(ifr)=derivcm2(ifr)+derivsum2collect(ifr)
           if(iblk.eq.1) then
             derivgerr=0
             iderivgerr=0
            else
-            derivgerr=errg(derivtotave,derivcm2(ifr),1)
+            derivgerr=errg(derivcm(ifr),derivcm2(ifr),1)
             derivgerr=derivgerr/abs(deltot(ifr))
             iderivgerr=nint(1e12* derivgerr)
           endif
@@ -260,7 +331,6 @@ c xerr = current error of x
           call mmpol_prt(iblk,wgcum,wgcm2)
         endif
 
-c        call max_sigma
 
 c write out header first time
 

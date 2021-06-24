@@ -28,7 +28,7 @@ c routine to accumulate estimators for energy etc.
      &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),tpbcm2(MFORCE),
      &tjfcm2(MFORCE),r2cm2,ricm2
       common /derivest/ derivsum(10,MFORCE),derivcum(10,MFORCE),derivcm2(MFORCE),
-     &derivtotave_num_old(MFORCE)
+     &derivtotave_num_old(MFORCE),derivcm(MFORCE)
       common /step/try(nrad),suc(nrad),trunfb(nrad),rprob(nrad),
      &ekin(nrad),ekin2(nrad)
       common /denupdn/ rprobup(nrad),rprobdn(nrad)
@@ -40,6 +40,12 @@ c routine to accumulate estimators for energy etc.
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
 
       common /mpiblk/ iblk_proc
+
+      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+     &,iwctype(MCENT),nctype,ncent
+      common /derivanaly/ deriv_energy_sum(10,3,MCENT,PTH),deriv_energy_cum(10,3,MCENT,PTH),
+     &energy_snake(3,MCENT,MWALK,PTH),energy_hist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
+     &deriv_energy_old(3,MCENT,MWALK),pathak_old(MWALK,PTH),eps_pathak(PTH),ipathak
 
       iblk=0
       iblk_proc=0
@@ -91,6 +97,7 @@ c zero out estimators
       ei3sum=zero
       r2sum=zero
       risum=zero
+      deriv_energy_cum=zero
 
       do 85 ifr=1,nforce
         tausum(ifr)=zero
@@ -121,10 +128,28 @@ c zero out estimators
         fgcum(ifr)=zero
         fgcm2(ifr)=zero
         derivcm2(ifr)=zero
+        derivcm(ifr)=zero
         do 85 k=1,10
           derivsum(k,ifr)=zero
    85     derivcum(k,ifr)=zero
 
+        if(iforce_analy.eq.1) then
+          if(ipathak.gt.0) then
+            do 87 iph=1,ipathak
+              do 87 ic=1,ncent   
+                do 87 k=1,3
+                  do 87 j=1,3
+                    deriv_energy_cum(j,k,ic,iph)=zero
+   87               deriv_energy_sum(j,k,ic,iph)=zero
+          else
+            do 89 ic=1,ncent
+              do 89 k=1,3
+                do 89 j=1,3
+                  deriv_energy_cum(j,k,ic,1)=zero
+   89             deriv_energy_sum(j,k,ic,1)=zero
+          endif
+        endif
+     
       nbrnch=0
       trymove=0
       acc=0

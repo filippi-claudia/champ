@@ -86,6 +86,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       common /casula/ t_vpsp(MCENT,MPS_QUAD,MELEC),icasula,i_vpsp
       common /sigma_branch/ sigma
+      common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
+      common /derivanaly/ deriv_energy_sum(10,3,MCENT,PTH),deriv_energy_cum(10,3,MCENT,PTH),
+     &energy_snake(3,MCENT,MWALK,PTH),energy_hist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
+     &deriv_energy_old(3,MCENT,MWALK),pathak_old(MWALK,PTH),eps_pathak(PTH),ipathak
+      common /force_analy/ iforce_analy
 
       dimension xstrech(3,MELEC)
       dimension xnew(3),vnew(3,MELEC),xtmp(3,MELEC)
@@ -96,7 +101,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
-      dimension iacc_elec(MELEC), p_elec(nelec)
+      dimension iacc_elec(MELEC), p_elec(nelec), deriv_energy_new(3,MCENT)
 
       data ncall /0/
 
@@ -390,12 +395,14 @@ c Primary configuration
             if(nforce.gt.1)
      &      call strech(xold(1,1,iw,1),xold(1,1,iw,1),ajacob,1,0)
             call hpsi(xold(1,1,iw,1),psidn,psijn,enew,ipass,1)
+            deriv_energy_new=da_energy
             call walksav_det(iw)
             call walksav_jas(iw)
             if(icasula.lt.0) call multideterminant_tmove(psidn,0)
 c           call t_vpsp_sav(iw)
             call t_vpsp_sav
             i_vpsp=0
+c           This if-statement seems redundant? No variables have changed since the previous call to nodes_distance
             rnorm_nodes=1.d0
             if(node_cutoff.gt.0) then
               call nodes_distance(vold(1,1,iw,1),distance_node,1)
@@ -473,12 +480,14 @@ c Use more accurate formula for the drift and tau secondary in drift
            elseif(icut_e.eq.2) then
             deo=eest-eold(iw,ifr)
             den=eest-enew
-            ewto=etrial-eest+sign(1.d0,deo)*min(e_cutoff,dabs(deo))
-            ewtn=etrial-eest+sign(1.d0,den)*min(e_cutoff,dabs(den))
+            ecuto=min(e_cutoff,dabs(deo))
+            ecutn=min(e_cutoff,dabs(den))
+            ewto=etrial-eest+sign(1.d0,deo)*ecuto
+            ewtn=etrial-eest+sign(1.d0,den)*ecutn
           endif
 
           if(idmc.gt.0) then
-            expon=((1-p_av*half)*ewto+p_av*half*ewtn)*taunow
+            expon=(half*ewto+half*ewtn)*tau
             if(icut_br.le.0) then
               dwt=dexp(expon)
              else
@@ -558,9 +567,9 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
           psido(iw,ifr)=psidn
           psijo(iw,ifr)=psijn
           fratio(iw,ifr)=fration
-          do 275 i=1,nelec
-            do 275 k=1,3
-  275         xdrifted(k,i,iw,ifr)=xdriftedn(k,i)
+          do 273 i=1,nelec
+            do 273 k=1,3
+  273         xdrifted(k,i,iw,ifr)=xdriftedn(k,i)
           call prop_save_dmc(iw)
           call pcm_save(iw)
           call mmpol_save(iw)
@@ -588,6 +597,48 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
              else
               derivsum(2,ifr)=derivsum(2,ifr)+wtg*eold(iw,ifr)*(pwt(iw,ifr)+psi2savo)
               derivsum(3,ifr)=derivsum(3,ifr)+wtg*(pwt(iw,ifr)+psi2savo)
+            endif
+
+            if(iforce_analy.eq.1) then
+              if(ecutn.eq.e_cutoff) deriv_energy_new=zero
+              if(ecuto.eq.e_cutoff) then
+                do 275 ic=1,ncent
+                  do 275 k=1,3
+  275               deriv_energy_old(k,ic,iw)=zero
+              endif
+
+              if(ipathak.gt.0) then
+                call nodes_distance(vold(1,1,iw,ifr),distance_node,1)
+                do 276 iph=1,ipathak
+                  call pathak(distance_node,pathak_new,eps_pathak(iph))
+                  do 277 ic=1,ncent
+                    do 277 k=1,3
+                      energy_snake(k,ic,iw,iph)=energy_snake(k,ic,iw,iph)+deriv_energy_new(k,ic)*pathak_new
+     &                                     +deriv_energy_old(k,ic,iw)*pathak_old(iw,iph)-energy_hist(k,ic,iw,iwmod,iph)
+                      energy_hist(k,ic,iw,iwmod,iph)=deriv_energy_old(k,ic,iw)*pathak_old(iw,iph)+deriv_energy_new(k,ic)*pathak_new
+
+                      deriv_energy_sum(1,k,ic,iph)=deriv_energy_sum(1,k,ic,iph)+wtg*da_energy(k,ic)*pathak_new
+                      deriv_energy_sum(2,k,ic,iph)=deriv_energy_sum(2,k,ic,iph)+wtg*eold(iw,ifr)
+     &                                    *(2*da_psi(k,ic)*pathak_new-half*tau*energy_snake(k,ic,iw,iph))
+  277                 deriv_energy_sum(3,k,ic,iph)=deriv_energy_sum(3,k,ic,iph)+wtg
+     &                                    *(2*da_psi(k,ic)*pathak_new-half*tau*energy_snake(k,ic,iw,iph))
+  276             pathak_old(iw,iph)=pathak_new
+              else
+                do 278 ic=1,ncent
+                  do 278 k=1,3
+                    energy_snake(k,ic,iw,1)=energy_snake(k,ic,iw,1)+deriv_energy_new(k,ic)
+     &                                   +deriv_energy_old(k,ic,iw)-energy_hist(k,ic,iw,iwmod,1)
+                    energy_hist(k,ic,iw,iwmod,1)=deriv_energy_old(k,ic,iw)+deriv_energy_new(k,ic)
+  
+                    deriv_energy_sum(1,k,ic,1)=deriv_energy_sum(1,k,ic,1)+wtg*da_energy(k,ic)
+                    deriv_energy_sum(2,k,ic,1)=deriv_energy_sum(2,k,ic,1)+wtg*eold(iw,ifr)
+     &                                      *(2*da_psi(k,ic)-half*tau*energy_snake(k,ic,iw,1))
+  278               deriv_energy_sum(3,k,ic,1)=deriv_energy_sum(3,k,ic,1)+wtg
+     &                                      *(2*da_psi(k,ic)-half*tau*energy_snake(k,ic,iw,1))
+              endif
+              do 279 ic=1,ncent
+                do 279 k=1,3
+  279             deriv_energy_old(k,ic,iw)=deriv_energy_new(k,ic)
             endif
 
             call prop_sum_dmc(0.d0,wtg,iw)
