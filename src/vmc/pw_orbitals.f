@@ -18,7 +18,24 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use pworbital, only: c_im, c_ip, c_rm, c_rp, isortg, isortk, ngorb
 
       use coefs, only: norb
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iband, iel, ig, ik, ikvec
+      integer :: iorb, iv, jorb, k
+      real(dp) :: cos_g, cos_ip, cos_k, cos_rp, dcos_g
+      real(dp) :: dcos_k, ddcos_g, ddcos_ip, ddcos_k
+      real(dp) :: ddcos_rp, ddsin_g, ddsin_im, ddsin_k
+      real(dp) :: ddsin_rm, dsin_g, dsin_k, sin_g
+      real(dp) :: sin_im, sin_k, sin_rm
+      real(dp), dimension(3,nelec) :: x
+      real(dp), dimension(nelec,*) :: orb
+      real(dp), dimension(3,nelec,*) :: dorb
+      real(dp), dimension(nelec,*) :: ddorb
+      real(dp), dimension(3) :: dcos_rp
+      real(dp), dimension(3) :: dsin_rm
+      real(dp), dimension(3) :: dcos_ip
+      real(dp), dimension(3) :: dsin_im
 
 
 
@@ -26,8 +43,6 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
 
 
 
-      dimension x(3,nelec),orb(nelec,*),dorb(3,nelec,*),ddorb(nelec,*)
-      dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
 
      &,cos_g(NGVECX),sin_g(NGVECX),dcos_g(3,NGVECX),dsin_g(3,NGVECX)
      &,ddcos_g(NGVECX),ddsin_g(NGVECX)
@@ -200,7 +215,33 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use pworbital, only: c_im, c_ip, c_rm, c_rp, isortg, isortk, ngorb
 
       use coefs, only: norb
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iband, iel, ig, ikvec, iorb
+      integer :: iv, jorb, k
+      real(dp) :: cos_ip, cos_rp, ddcos_ip, ddcos_rp, ddsin_im
+      real(dp) :: ddsin_rm, sin_im, sin_rm
+      real(dp), dimension(3) :: x
+      real(dp), dimension(*) :: orb
+      real(dp), dimension(3,*) :: dorb
+      real(dp), dimension(*) :: ddorb
+      real(dp), dimension(3) :: dcos_rp
+      real(dp), dimension(3) :: dsin_rm
+      real(dp), dimension(3) :: dcos_ip
+      real(dp), dimension(3) :: dsin_im
+      real(dp), dimension(NGVECX) :: cos_g
+      real(dp), dimension(NGVECX) :: sin_g
+      real(dp), dimension(3,NGVECX) :: dcos_g
+      real(dp), dimension(3,NGVECX) :: dsin_g
+      real(dp), dimension(NGVECX) :: ddcos_g
+      real(dp), dimension(NGVECX) :: ddsin_g
+      real(dp), dimension(IVOL_RATIO) :: cos_k
+      real(dp), dimension(IVOL_RATIO) :: sin_k
+      real(dp), dimension(3,IVOL_RATIO) :: dcos_k
+      real(dp), dimension(3,IVOL_RATIO) :: dsin_k
+      real(dp), dimension(IVOL_RATIO) :: ddcos_k
+      real(dp), dimension(IVOL_RATIO) :: ddsin_k
 
 
 
@@ -208,12 +249,6 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
 
 
 
-      dimension x(3),orb(*),dorb(3,*),ddorb(*)
-      dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
-     &,cos_g(NGVECX),sin_g(NGVECX),dcos_g(3,NGVECX),dsin_g(3,NGVECX)
-     &,ddcos_g(NGVECX),ddsin_g(NGVECX)
-     &,cos_k(IVOL_RATIO),sin_k(IVOL_RATIO),dcos_k(3,IVOL_RATIO),dsin_k(3,IVOL_RATIO)
-     &,ddcos_k(IVOL_RATIO),ddsin_k(IVOL_RATIO)
 
       do 5 iorb=1,norb
 c       do 5 iel=1,nelec

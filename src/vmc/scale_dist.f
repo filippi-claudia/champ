@@ -17,7 +17,12 @@ c Written by Cyrus Umrigar
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
       use contr2, only: isc
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iord, ipr, isp, it
+      real(dp) :: val_cutjas
+      real(dp), parameter :: third = 1.d0/3.d0
 
 
 
@@ -25,7 +30,6 @@ c Written by Cyrus Umrigar
 
 
 
-      parameter (third=1.d0/3.d0)
 
 
 
@@ -132,14 +136,25 @@ c Scale interparticle distances.
       use wfsec, only: iwf
       use contr2, only: ijas
       use contr2, only: isc
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iflag
+      real(dp) :: deni, exprij, r, r_by_cut, r_by_cut2
+      real(dp) :: rr, rsc, rsc2, rsc3
+      real(dp) :: term
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: third = 1.d0/3.d0
+      real(dp), parameter :: d4b3 = 4.d0/3.d0
 
 
 
 
 
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
 
 c isc = 2,3 are exponential scalings
@@ -284,14 +299,25 @@ c gradient and laplacian.
       use wfsec, only: iwf
       use contr2, only: ijas
       use contr2, only: isc
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iflag
+      real(dp) :: dd1, deni, exprij, r, r_by_cut
+      real(dp) :: r_by_cut2, rr, rsc, rsc2
+      real(dp) :: rsc3, term, term2
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: third = 1.d0/3.d0
+      real(dp), parameter :: d4b3 = 4.d0/3.d0
 
 
 
 
 
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
 
 c isc = 2,3 are exponential scalings
@@ -469,7 +495,19 @@ c gradient and laplacian.
       use wfsec, only: iwf
       use contr2, only: ijas
       use contr2, only: isc
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iflag
+      real(dp) :: dd1, dd2, deni, exprij, r
+      real(dp) :: r_by_cut, r_by_cut2, rr, rsc
+      real(dp) :: rsc2, rsc3, term, term2
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: third = 1.d0/3.d0
+      real(dp), parameter :: d4b3 = 4.d0/3.d0
 
 
 
@@ -477,7 +515,6 @@ c gradient and laplacian.
 
 
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
 
 
@@ -677,7 +714,11 @@ c that appropriate for C terms, for dist.
 
       use jaspar6, only: c1_jas6
       use wfsec, only: iwf
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+
+      real(dp) :: rr
 
 
 
@@ -704,7 +745,11 @@ c that appropriate for C terms, for dist and 1st deriv.
 
       use jaspar6, only: c1_jas6
       use wfsec, only: iwf
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+
+      real(dp) :: dd1, rr
 
 
 
@@ -732,7 +777,11 @@ c that appropriate for C terms, for dist and 1st two derivs.
 
       use jaspar6, only: c1_jas6
       use wfsec, only: iwf
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+
+      real(dp) :: dd1, dd2, rr
 
 
 

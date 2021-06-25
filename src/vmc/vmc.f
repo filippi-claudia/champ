@@ -25,7 +25,12 @@ c and sa, pa, da asymptotic functions
       use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
       use pseudo, only: nloc
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ii, j, jj, l
+      integer :: ngfmc
+      real(dp) :: dabs, err
 
 
 

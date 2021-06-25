@@ -6,9 +6,14 @@
       use prp003, only: vprop_cm2, vprop_cum
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension vpcollect(MAXPROP),vp2collect(MAXPROP)
+      integer :: i, ierr
+
+      real(dp), dimension(MAXPROP) :: vpcollect
+      real(dp), dimension(MAXPROP) :: vp2collect
+
 
       if(iprop.eq.0) return
 

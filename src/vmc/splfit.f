@@ -7,14 +7,21 @@ c 1st and 2nd derivs also calculated if ider=1.
       use numbas, only: arg, d2rwf, igrid, nr, r0, rwf
 
       use numexp, only: ae, ce
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ider, ii, irb, iwf
+      integer :: jx
+      real(dp) :: aa, bb, cc, dd, delh
+      real(dp) :: delhi, dlogag, dlrad0, r
+      real(dp) :: ref0, ref1, xr
+      real(dp), dimension(4) :: wfv
+      real(dp), parameter :: sixth = 1.d0/6.d0
 
 
 
-      parameter(sixth=1.d0/6.d0)
 
 
-      dimension wfv(4)
 
       if(igrid(ic).eq.1)then
         xr=(r-r0(ic))/arg(ic)+1

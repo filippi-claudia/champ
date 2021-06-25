@@ -1,14 +1,24 @@
       SUBROUTINE SPLINE(X,Y,N,YP1,YPN,Y2)
-c From Numerical Recipes
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+!  From Numerical Recipes
+      implicit none
 
-c Compilers that do not allow automatic arrays:
-      PARAMETER (NMAX=5001)
-      DIMENSION X(N),Y(N),Y2(N),U(NMAX)
-c Compilers that do allow automatic arrays:
-c     DIMENSION X(N),Y(N),Y2(N),U(N)
+      integer :: I, K, N, P, QN
+      integer, parameter :: NMAX = 5001
 
-c Set lower boundary cond to be natural or to have specified 1st deriv
+      real(dp) :: SIG
+      real(dp) :: UN
+      real(dp) :: YP1, YPN
+      real(dp), dimension(N) :: X
+      real(dp), dimension(N) :: Y
+      real(dp), dimension(N) :: Y2
+      real(dp), dimension(NMAX) :: U
+
+!  Compilers that do not allow automatic arrays:
+!  Compilers that do allow automatic arrays:
+!      DIMENSION X(N),Y(N),Y2(N),U(N)
+
+!  Set lower boundary cond to be natural or to have specified 1st deriv
       IF (YP1.GT..99D30) THEN
         Y2(1)=0
         U(1)=0
@@ -17,7 +27,7 @@ c Set lower boundary cond to be natural or to have specified 1st deriv
         U(1)=(3.D0/(X(2)-X(1)))*((Y(2)-Y(1))/(X(2)-X(1))-YP1)
       ENDIF
 
-c Decomposition loop of tridiagonal algorithm
+!  Decomposition loop of tridiagonal algorithm
       DO 11 I=2,N-1
         SIG=(X(I)-X(I-1))/(X(I+1)-X(I-1))
         P=SIG*Y2(I-1)+2
@@ -26,7 +36,7 @@ c Decomposition loop of tridiagonal algorithm
      &  /(X(I)-X(I-1)))/(X(I+1)-X(I-1))-SIG*U(I-1))/P
    11 CONTINUE
 
-c Set upper boundary cond to be natural or to have specified 1st deriv
+!  Set upper boundary cond to be natural or to have specified 1st deriv
       IF (YPN.GT..99D30) THEN
         QN=0
         UN=0
@@ -35,7 +45,7 @@ c Set upper boundary cond to be natural or to have specified 1st deriv
         UN=(3/(X(N)-X(N-1)))*(YPN-(Y(N)-Y(N-1))/(X(N)-X(N-1)))
       ENDIF
 
-c Backsubstitution loop of tridiagonal algorithm
+!  Backsubstitution loop of tridiagonal algorithm
       Y2(N)=(UN-QN*U(N-1))/(QN*Y2(N-1)+1)
       DO 12 K=N-1,1,-1
         Y2(K)=Y2(K)*Y2(K+1)+U(K)
@@ -43,14 +53,25 @@ c Backsubstitution loop of tridiagonal algorithm
 
       RETURN
       END
+
 c-----------------------------------------------------------------------
 
       SUBROUTINE SPLINT(XA,YA,Y2A,N,X,Y)
-c From Numerical Recipes
-      implicit real*8(a-h,o-z)
-      DIMENSION XA(N),YA(N),Y2A(N)
+!  From Numerical Recipes
+      use precision_kinds, only: dp
+      implicit none
 
-c Find right place in table by binary search
+
+      real(dp) :: A, B, H
+      integer :: KLO, N, K, KHI
+      real(dp) :: X, Y
+
+      real(dp), dimension(N) :: XA
+      real(dp), dimension(N) :: YA
+      real(dp), dimension(N) :: Y2A
+
+
+!  Find right place in table by binary search
       KLO=1
       KHI=N
     1 IF (KHI-KLO.GT.1) THEN
@@ -72,3 +93,5 @@ c Find right place in table by binary search
 
       RETURN
       END
+
+

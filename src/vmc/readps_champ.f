@@ -28,11 +28,20 @@ c The prefered grid is 3.
       use grid3d_param, only: origin
       use general, only: filename, filenames_ps_champ
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, i2, i5, ict, ir
+      integer :: irmax_coul, irmax_nloc, j, nr
+      integer :: nrm1
+      integer, dimension(MPS_L) :: lpot_max
+      real(dp) :: dpot1, dpotn, h_ps
+      real(dp) :: r_asymp, zion
+      real(dp), dimension(MPS_GRID) :: r
+      real(dp), dimension(MPS_GRID) :: work
 
       character*80 title
 
-      dimension r(MPS_GRID),work(MPS_GRID),lpot_max(MPS_L)
 
       do 200 ict=1,nctype
 
@@ -126,7 +135,7 @@ c       endif
 
 c Find the point beyond which r*v differs from zion by no more than .5*d-6.
 c irmax_coul is used for the endpoint of the spline where it is assumed that
-c the derivative of the local component is zion/r(irmax_coul)**2 and that of 
+c the derivative of the local component is zion/r(irmax_coul)**2 and that of
 c the local component is 0.  Also, rmax_coul is used in splfit_champ when it is
 c called in a calculation of a periodic system.
         rmax_coul(ict)=0.d0
@@ -240,7 +249,12 @@ c compute pseudopotential for electron iel
       use pseudo, only: lpot, vps
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ict, iel, l
+      real(dp) :: r, vpot
+      real(dp), dimension(nelec,ncent_tot) :: r_en
 
 
 
@@ -248,7 +262,6 @@ c compute pseudopotential for electron iel
 
 
 
-      dimension r_en(nelec,ncent_tot)
 
       do 10 ic=1,ncent
         ict=iwctype(ic)
@@ -292,7 +305,13 @@ c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
       use pseudo, only: lpot
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ict, jx, l
+      real(dp) :: aa, bb, cc, dd, delh
+      real(dp) :: h_ps, r, ref0, ref1
+      real(dp) :: vpot, xr
 
 
 

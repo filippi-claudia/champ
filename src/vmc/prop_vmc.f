@@ -4,7 +4,10 @@ c-----------------------------------------------------------------------
       use prp001, only: vprop
       use prp002, only: vprop_old2
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i
+
 
 
       if(iprop.eq.0) return
@@ -20,7 +23,11 @@ c-----------------------------------------------------------------------
 
       use prp003, only: vprop_sum
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i
+      real(dp) :: p, q
 
 
 

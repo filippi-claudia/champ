@@ -3,7 +3,7 @@ c Written by Friedemann Schautz
 
       use contr3, only: mode
       use allocation_mod, only: allocate_vmc, allocate_dmc
-      implicit real*8(a-h,o-z)
+      implicit none
 
       ! call allocate_vmc()
       ! call allocate_dmc()
@@ -224,7 +224,7 @@ c and Anthony Scemema
       use ci000, only: iciprt, nciprim, nciterm
       use pcm_cntrl, only: ichpol, ipcm, ipcmprt, isurf
       use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
-      use pcm_parms, only: eps_solv, iscov
+      use pcm_parms, only: eps_solv, iscov, fcol, npmax
       use pcm_parms, only: ncopcm, nscv, nvopcm
       use prp000, only: iprop, ipropprt, nprop
       use pcm_fdc, only: qfree, rcolv
@@ -246,15 +246,40 @@ c and Anthony Scemema
       use optwf_corsam, only: add_diag
       use dmc_mod, only: MWALK
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
+      interface
+      function nterms4(nord)
+          integer, intent(in) :: nord
+          integer :: nterms4
+      end function nterms4
+      end interface
+
+      integer :: index, learning
+      integer, dimension(4) :: irn
+      real(dp) :: dmax1, dmin1, enode_cutoff, ratio
+      real(dp), dimension(3) :: cent_tmp
+      real(dp), dimension(nbasis) :: anorm
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: four = 4.d0
+
+      real(dp) :: cutjas_tmp ! NR Not initialized !
 
       character*20 fmt
       character*32 keyname
       character*10 eunit
       character*16 cseed
-      dimension irn(4),cent_tmp(3),anorm(nbasis)
+
+      integer :: i, j, k
+      integer :: iparm, it, iorb, ic
+      integer :: isavebl, isp, iwft
+      integer :: mparmja, mparmjb, mparmjc
+      integer :: nefpterm ! NR Not initialized
+      integer :: nstates_g ! NR not initialized
+      integer :: nstep2
 
 c Inputs:
 c  title      title
@@ -1143,7 +1168,8 @@ c Initialize flags used to identify presence/absence of blocks in input
       use inputflags, only: imultideterminants, imodify_zmat, izmatrix_check
       use inputflags, only: ihessian_zmat
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
 
       iznuc=0
       igeometry=0
@@ -1195,7 +1221,8 @@ c Check that the required blocks are there in the input
       use const, only: nelec
       use coefs, only: norb, next_max
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
 
       call p2gti('electrons:nelec',nelec,1)
       call p2gti('electrons:nup',nup,1)
@@ -1301,7 +1328,9 @@ c ### Set name files of gaussian pseudopotentials.
       use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
       use general, only: filenames_ps_gauss
       use atom, only: nctype
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ic
 c Allocation of the array storing the filenames of gaussian basis:
       allocate(filenames_ps_gauss(nctype))
       do ic=1,nctype
@@ -1332,7 +1361,8 @@ c ### Set name files of CHAMP-formatted pseudopotentials.
       use atom, only: nctype
       use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
       use general, only: filenames_ps_champ
-      implicit real*8(a-h,o-z)
+      implicit none
+      integer :: ict
 c Allocation of the array storing the filenames of gaussian basis:
       allocate(filenames_ps_champ(nctype))
 
@@ -1368,7 +1398,8 @@ c ### Set name files of Troullier-Martins pseudopotentials.
       use general, only: pooldir, pp_id, atomtyp, filename, atomsymbol
       use general, only: filenames_ps_tm
       use pseudo, only: nloc
-      implicit real*8(a-h,o-z)
+      implicit none
+      integer :: ic
 
       allocate(filenames_ps_tm(nctype))
       do ic=1,nctype
@@ -1411,7 +1442,9 @@ c ### Set numerical num. orbital filenames.
       use general, only: pooldir, pp_id, bas_id, atomtyp, filename, atomsymbol
       use general, only: filenames_bas_num, wforce
       use ghostatom, only: newghostype
-      implicit real*8(a-h,o-z)
+      implicit none
+      integer :: ic
+      integer :: iwf ! NR Not initialized
 c Allocation of the array storing the filenames of numerical basis:
       allocate(filenames_bas_num(nctype+newghostype))
 

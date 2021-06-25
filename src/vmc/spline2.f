@@ -34,11 +34,12 @@ c  work(n)=work space.
 c Output:
 c  y2(n)=spline fit array of y'' values.
 
+      use precision_kinds, only: dp
       implicit none
       integer n
-      real*8 x(n),y(n),y2(n),work(n),yp1,ypn
+      real(dp) x(n),y(n),y2(n),work(n),yp1,ypn
       integer i,k
-      real*8 sig,p,qn,workn
+      real(dp) sig,p,qn,workn
 
       if(yp1 .gt. 1.d+30) then
 c       lower boundary condition is either natural ...
