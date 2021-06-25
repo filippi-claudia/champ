@@ -569,7 +569,7 @@ c-----------------------------------------------------------------------
       integer :: i, ierr, iwadd_diag, j, k
       integer :: k_min, nfunc, npts
       integer, parameter :: MFUNC = 3
-      real(dp) :: add_diag_log_min, add_diag_min, dlog10, ee, energy_max
+      real(dp) :: add_diag_log_min, add_diag_min, ee, energy_max
       real(dp) :: energy_min, energy_var, eopt, rms
       real(dp), dimension(MFUNC) :: add_diag_log
       real(dp), dimension(MFUNC,MFUNC) :: a
