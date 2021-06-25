@@ -34,11 +34,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       integer :: ic, ict, iel, index
       integer :: iorb, iparm, iq, is
       integer :: jc, k, l
-      real(dp) :: added, as, cJF, costh, culprit
-      real(dp) :: dabs, det_ratio, gives, happens
-      real(dp) :: psij_ratio, ri, same, see
+      real(dp) :: costh
+      real(dp) :: det_ratio, gives
+      real(dp) :: psij_ratio, ri, see
       real(dp) :: term, term_radial, the, this
-      real(dp) :: what, yl0
+      real(dp) :: yl0
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rshift
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
@@ -486,9 +486,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       function dpsibnl(u,isb,ipar)
         use precision_kinds, only: dp
         implicit none
-        real(dp), intent(in) :: u 
-        integer, intent(in) :: isb 
-        integer, intent(in) :: ipar 
+        real(dp), intent(in) :: u
+        integer, intent(in) :: isb
+        integer, intent(in) :: ipar
         real(dp) :: dpsibnl
       end function
 
@@ -515,7 +515,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
         implicit none
         real(dp), intent(in) :: rri
         integer, intent(in) :: it
-        real(dp) :: psianl 
+        real(dp) :: psianl
       end function
 
       function dpsianl(rri, it)
@@ -523,7 +523,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
         implicit none
         real(dp), intent(in) :: rri
         integer, intent(in) :: it
-        real(dp) :: dpsianl 
+        real(dp) :: dpsianl
       end function
       end interface
 

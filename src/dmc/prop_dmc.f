@@ -17,7 +17,7 @@ C----------------------------------------------
       implicit none
 
       integer :: i, iblk, icount, ifinal, iperr
-      real(dp) :: dabs, dip, diperr, dipx, dipy
+      real(dp) :: dip, diperr, dipx, dipy
       real(dp) :: dipz, errg, error, evalg_eff
       real(dp) :: rn_eff, rtevalg_eff1, w, w2
       real(dp) :: x, x2

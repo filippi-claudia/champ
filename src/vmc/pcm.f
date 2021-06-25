@@ -1,6 +1,6 @@
 c......................................................
       subroutine pcm_extpot_read(fcol,npmax)
-c Written by Amovilli-Floris 
+c Written by Amovilli-Floris
 c...........................................................
 c     read data for pcm calculations
 c     comput nuclei-qpol interactions (penups,penupv)
@@ -117,7 +117,7 @@ c...............................................
       call pcm_compute_penupv
       penupol=penups+penupv
       if (ichpol.eq.1)call chnu
-c........................................................................      
+c........................................................................
       write(6,*)
       write(6,'(''pcm number of spheres ='',i5)') nesph
       write(6,'(''pcm cavity geometry'')')
@@ -129,12 +129,12 @@ c........................................................................
       write(6,'(''pcm epot nuclei-volume polarization charges ='',f12.6)') penupv
       write(6,'(''pcm epot nuclei-polarization charges ='',f12.6)') penupol
       write(6,*)
-c........................................................................      
+c........................................................................
  1000 format(I4,2x,3F12.5,2x,F12.5,2x,F12.5)
-c........................................................................      
+c........................................................................
       return
       end
-      
+
 c......................................................
       subroutine pcm_qvol(n)
 c Written by Amovilli-Floris
@@ -159,7 +159,7 @@ c Written by Amovilli-Floris
       return
       end
 
-      subroutine chnu 
+      subroutine chnu
 C     ***************************************************************
 C     contribution from nuclei to polarization charghes
 C     ***************************************************************
@@ -195,8 +195,8 @@ C     ***************************************************************
 
       DATA PI/3.1415927D0/
 c............................................................
-c     The matrix ah is computed and inverted 
-c     correzione distinta in base ad inda (modifica rispetto 
+c     The matrix ah is computed and inverted
+c     correzione distinta in base ad inda (modifica rispetto
 c     alla versione 5)
 c..............................................................
       do k=1,nchs
@@ -206,9 +206,9 @@ c     sum(k)=0.0d0
       if (l.eq.k)then
       ah(k,l)=1.0d0+0.5d0*(1.d0-eps_solv)/eps_solv
       else
-      xx=xpol(1,k)-xpol(1,l) 
-      yy=xpol(2,k)-xpol(2,l) 
-      zz=xpol(3,k)-xpol(3,l) 
+      xx=xpol(1,k)-xpol(1,l)
+      yy=xpol(2,k)-xpol(2,l)
+      zz=xpol(3,k)-xpol(3,l)
       s1=xx*eta(1,k)
       s2=yy*eta(2,k)
       s3=zz*eta(3,k)
@@ -250,15 +250,15 @@ c..............................................................
       do k=1,nchs
       enk=0.0d0
       do l=1,ncent
-      xx=xpol(1,k)-cent(1,l) 
-      yy=xpol(2,k)-cent(2,l) 
-      zz=xpol(3,k)-cent(3,l) 
+      xx=xpol(1,k)-cent(1,l)
+      yy=xpol(2,k)-cent(2,l)
+      zz=xpol(3,k)-cent(3,l)
       rr2=xx**2+yy**2+zz**2
       rr3=rr2**1.5d0
       cc1=xx*eta(1,k)
       cc2=yy*eta(2,k)
       cc3=zz*eta(3,k)
-      cc=cc1+cc2+cc3 
+      cc=cc1+cc2+cc3
       enk=enk+znuc(iwctype(l))*cc/rr3
       enddo
       bhn(k)=-feps*surk*enk
@@ -281,16 +281,16 @@ C     ***************************************************************
 c     1) electrons are classified with respect to the cavity
 c
 c    fac =1   e- is in the cavity
-c    fac=fs   e- is out of the cavity 
+c    fac=fs   e- is out of the cavity
 c
 c    quopcm= escaped electron charge out of the cavity
 c
 c     2) volume charges out of the cavity are sampled
-c       A volume point charge is associated to each escaped 
+c       A volume point charge is associated to each escaped
 c       electron
 c
-c     3) for the accepted configuration, the normal component 
-c        of the electron field  at the point on the surface is computed 
+c     3) for the accepted configuration, the normal component
+c        of the electron field  at the point on the surface is computed
 C     ***************************************************************
 
       use pcm, only: MCHS, MCHV, MSPHERE
@@ -326,9 +326,9 @@ C     ***************************************************************
 
 C     ***************************************************************
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
-      data hatokc/627.509541d0/  
+      data hatokc/627.509541d0/
 c............................................................
-     
+
       write (6,*) 'hello! hello! qpcm_efield called -------'
 
       ncopcm=ncopcm+1
@@ -341,9 +341,9 @@ c............................................................
         in=0
         fac(i)=1.0d0
         do j=1,nesph
-          xx=(coord(1,i)-xe(j))**2.0d0 
-          yy=(coord(2,i)-ye(j))**2.0d0 
-          zz=(coord(3,i)-ze(j))**2.0d0 
+          xx=(coord(1,i)-xe(j))**2.0d0
+          yy=(coord(2,i)-ye(j))**2.0d0
+          zz=(coord(3,i)-ze(j))**2.0d0
           res2=xx+yy+zz
           if(res2.le.re2(j)) in=in+1
         enddo
@@ -356,16 +356,16 @@ c ATTENZION modificato 30/3/2009
       if (ipcm.eq.3) return
 c..............................................................
 c    enfpcm(k) normal componenent of e- field on the point k of
-c            cavity surface 
+c            cavity surface
 c..............................................................
 c             (first set of points 1---->nchs1)
 c..............................................................
       do k=1,nchs1
         eek=0.0d0
         do i=1,nelec
-          xx=xpol(1,k)-coord(1,i) 
-          yy=xpol(2,k)-coord(2,i) 
-          zz=xpol(3,k)-coord(3,i) 
+          xx=xpol(1,k)-coord(1,i)
+          yy=xpol(2,k)-coord(2,i)
+          zz=xpol(3,k)-coord(3,i)
           rr2=xx**2+yy**2+zz**2
           rr1=dsqrt(rr2)
           cc1=xx*eta(1,k)
@@ -373,9 +373,9 @@ c..............................................................
           cc3=zz*eta(3,k)
           cc=(cc1+cc2+cc3)/rr1
 c..............................................................
-c  correction for collision between e- and polarization charges 
-c  n.b. the fields of e- which are out of the cavity 
-c       are scaled 
+c  correction for collision between e- and polarization charges
+c  n.b. the fields of e- which are out of the cavity
+c       are scaled
 c..............................................................
           if (rr1.lt.rcol) rr2=rcol**2.0d0
           eek=eek-cc*fac(i)/rr2
@@ -389,9 +389,9 @@ c     rcol=fcol*dsqrt(surk/pi)
       do k=nchs1+1,nchs
         eek=0.0d0
         do i=1,nelec
-          xx=xpol(1,k)-coord(1,i) 
-          yy=xpol(2,k)-coord(2,i) 
-          zz=xpol(3,k)-coord(3,i) 
+          xx=xpol(1,k)-coord(1,i)
+          yy=xpol(2,k)-coord(2,i)
+          zz=xpol(3,k)-coord(3,i)
           rr2=xx**2+yy**2+zz**2
           rr1=dsqrt(rr2)
           cc1=xx*eta(1,k)
@@ -405,9 +405,9 @@ c     rcol=fcol*dsqrt(surk/pi)
             endif
           endif
 c..............................................................
-c  correction for collision between e- and polarization charges 
-c  n.b. the fields of e- which are out of the cavity 
-c       are scaled 
+c  correction for collision between e- and polarization charges
+c  n.b. the fields of e- which are out of the cavity
+c       are scaled
 c..............................................................
           if (rr1.lt.rcol) rr2=rcol**2.0d0
           eek=eek-cc*fac(i)/rr2
@@ -455,7 +455,7 @@ c............................................................
 
       nsco=ncopcm/iscov
 c     write(6,*) 'HELLO',nsco,ncopcm
-      if(nsco.eq.nscv)then	
+      if(nsco.eq.nscv)then
          iupdate=1
 	 nchv=nvopcm
 	 nch=nchs+nchv
@@ -479,7 +479,7 @@ c..............................................................
 
       subroutine pcm_compute_penupv
 c............................................................
-c     compute penupv of volume charges 
+c     compute penupv of volume charges
 c............................................................
 
       use pcm, only: MCHS, MCHV, MSPHERE
@@ -497,7 +497,7 @@ c............................................................
       real(dp) :: rnp, rnp2, xx, yy, zz
 
 
-       
+
 
       if(ipcm.eq.0) return
 
@@ -545,7 +545,7 @@ c..............................................................
       end
 
       subroutine pcm_extpot_ene(coord,nelec,pepcms,pepcmv)
-c Written by Amovilli-Floris 
+c Written by Amovilli-Floris
 c......................................................
 c       Calculate e-qpol interactions (pcm)
 c       and adds nuclei-qpol interactions
@@ -600,7 +600,7 @@ c       write(6,*)
 c       write(6,*)'pepcms=',pepcms,'penups=',penups
 c       write(6,*)'pepcmv=',pepcmv,'penupv=',penupv
 c       if(ipcm_3dgrid.gt.0) then
-c     write(6,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms     
+c     write(6,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms
 c       write(6,*)
 c       else
 c     write(6,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms+pepcmv
@@ -817,7 +817,7 @@ c......................................................
 
 c...................................................................
 c     only for ground states
-c     We don't need to add qvol contribution to En because we have 
+c     We don't need to add qvol contribution to En because we have
 c     scaled contributions from e- out of the cavity
 c...................................................................
 c...................................................................
@@ -843,15 +843,15 @@ c...................................................................
            ch_new(i)=ch_new(i)+ahca(i,j)*bh(j)
            sch2(i)=sch2(i)+(ahca(i,j)*feps*surk*enfpcm_err(i))**2.0d0
            enddo
-      sch(i)=dsqrt(sch2(i)) 
+      sch(i)=dsqrt(sch2(i))
       qpol=qpol+ch_new(i)
       sqpol2=sqpol2+sch2(i)
       enddo
 c
-c    computes qpol for each portion of sphere 
+c    computes qpol for each portion of sphere
 c
       do k=1,nesph
-      qpolsp(k)=0.0D0                
+      qpolsp(k)=0.0D0
       sqpol2_sp(k)=0.0D0
       enddo
       do i=1,nchs
@@ -925,15 +925,15 @@ c...................................................................
       do k=1,nchs
       env(k)=0.0d0
       do l=nchs+1,nch
-      xx=xpol(1,k)-xpol(1,l) 
-      yy=xpol(2,k)-xpol(2,l) 
-      zz=xpol(3,k)-xpol(3,l) 
+      xx=xpol(1,k)-xpol(1,l)
+      yy=xpol(2,k)-xpol(2,l)
+      zz=xpol(3,k)-xpol(3,l)
       rr2=xx**2+yy**2+zz**2
       rr3=rr2**1.5d0
       cc1=xx*eta(1,k)
       cc2=yy*eta(2,k)
       cc3=zz*eta(3,k)
-      cc=cc1+cc2+cc3 
+      cc=cc1+cc2+cc3
       env(k)=env(k)+ch(l)*cc/rr3
       enddo
       enddo
@@ -955,7 +955,7 @@ c...................................................................
            enddo
       qpol=qpol+ch_new(i)
       enddo
-      
+
 c
 c     write in 'chsurf_new' the new charges
 c
@@ -970,12 +970,12 @@ c..................................................
       return
       end
 
-c      
+c
 C     ***************************************************************
       subroutine qpcm_surface (npmax)
 C     ***************************************************************
 C     ***************************************************************
-c     This subroutine computes the coordinates of point charges 
+c     This subroutine computes the coordinates of point charges
 c     on the cavity surface
 C     ***************************************************************
 
@@ -1291,7 +1291,7 @@ c..................................................
       integer :: i, icount, imax, isf, j
       integer :: k, maxit, ncyc, ncyc1
       integer :: nf, np, np5
-      real(dp) :: a1, cos_theta, cutoff, dabs, datan
+      real(dp) :: a1, cos_theta, cutoff
       real(dp) :: dble, dd, dz, energy
       real(dp) :: epsilon, f1, pi2, pi25
       real(dp) :: pigreco, pol, qf, qm
@@ -1610,7 +1610,7 @@ c........................................................
 
       integer :: i, info, nsub
       integer, dimension(MCHS) :: ipvt
-      real(dp) :: dabs, determinant, go, ten
+      real(dp) :: determinant, ten
       real(dp), dimension(nsub,nsub) :: a
       real(dp), dimension(MCHS) :: work
       real(dp), dimension(2) :: det
@@ -1684,8 +1684,8 @@ C     ***************************************************************
 
 
 
-C     
-C    
+C
+C
 
 
 c
@@ -1697,9 +1697,9 @@ c
           if (l.eq.k)then
            ah(k,l)=1.0d0+0.5d0*(1.d0-eps_solv)/eps_solv
           else
-           xx=xpol(1,k)-xpol(1,l) 
-           yy=xpol(2,k)-xpol(2,l) 
-           zz=xpol(3,k)-xpol(3,l) 
+           xx=xpol(1,k)-xpol(1,l)
+           yy=xpol(2,k)-xpol(2,l)
+           zz=xpol(3,k)-xpol(3,l)
            s1=xx*eta(1,k)
            s2=yy*eta(2,k)
            s3=zz*eta(3,k)
@@ -1733,7 +1733,7 @@ c     surface charges recomputed for the new stretched cavity
 
       do i=1,nchs
          q_strech(i)=0.d0
-         do j=1,nchs 
+         do j=1,nchs
            q_strech(i)=q_strech(i)-feps*surk*ah(i,j)*efield(j)
          enddo
       enddo

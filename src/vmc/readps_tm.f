@@ -25,7 +25,7 @@ c Modified by F. Schautz to use fancy file names
       integer :: jj, jmax, ll, npotd
       integer :: npotu, nr, nrm
       integer, dimension(NCOEF) :: ipiv
-      real(dp) :: dabs, dpot1, dpotn, val
+      real(dp) :: dpot1, dpotn, val
       real(dp) :: zion
       real(dp), dimension(MPS_GRID) :: r
       real(dp), dimension(NCOEF) :: y

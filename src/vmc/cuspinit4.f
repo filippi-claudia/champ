@@ -90,7 +90,7 @@ c-----------------------------------------------------------------------
 
       integer :: i, iprin, it, j, l
       integer :: neqs
-      real(dp) :: dabs, factor
+      real(dp) :: factor
 
 
 

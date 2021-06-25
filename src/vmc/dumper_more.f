@@ -76,7 +76,7 @@ c job where it left off
       integer, dimension(nctype_tot) :: ndxyax
       integer, dimension(nctype_tot) :: ndxzax
       integer, dimension(nctype_tot) :: ndyzax
-      real(dp) :: ajacob, cjas1x, cjas2x, dabs, deltarx
+      real(dp) :: ajacob, cjas1x, cjas2x, deltarx
       real(dp) :: deltatx, deltax, dist, distance_node
       real(dp) :: pecx, psidg, rnorm_nodes
       real(dp), dimension(nbasis,MORB) :: coefx

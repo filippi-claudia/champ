@@ -34,7 +34,7 @@ c routine to print out final results
 
       integer :: i, iciprt_sav, ifr, index, istate
       integer :: j
-      real(dp) :: accept, dabs, delr, eerr, eerr1
+      real(dp) :: accept, delr, eerr, eerr1
       real(dp) :: eerr1s, eerr_p, efin, efin_p
       real(dp) :: err, err1, ferr, ffin
       real(dp) :: passes, peerr, pefin, r2err

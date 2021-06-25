@@ -75,7 +75,7 @@
       integer, dimension(MCENT) :: ndxyax
       integer, dimension(MCENT) :: ndxzax
       integer, dimension(MCENT) :: ndyzax
-      real(dp) :: cjas1x, cjas2x, dabs, different, eest_id
+      real(dp) :: cjas1x, cjas2x, different, eest_id
       real(dp) :: eigv_id, ff_id, fmt, fprod_id
       real(dp) :: fratio_id, hbx, taux, wdsumo_id
       real(dp) :: wq_id, wt_id, xold_dmc_id, xq_id

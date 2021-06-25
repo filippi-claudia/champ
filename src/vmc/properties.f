@@ -165,7 +165,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: iblk, iu
-      real(dp) :: dabs, dble, dip, diperr, dipx
+      real(dp) :: dble, dip, diperr, dipx
       real(dp) :: dipy, dipz, w
       real(dp), dimension(MAXPROP) :: pav
       real(dp), dimension(MAXPROP) :: perr

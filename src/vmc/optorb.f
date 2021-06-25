@@ -31,7 +31,7 @@
 
       if(ioptorb.eq.0) return
 
-      
+
 c     ns_current=ns_current+1
 c     if(ns_current.ne.iorbsample) return
 c ns_current reset in optorb_sum
@@ -83,7 +83,7 @@ c ns_current reset in optorb_sum
         orbprim(iterm)=orbprim(iterm)+dorb_psi_ref
 
  200  continue
-          
+
       return
       end
 c-----------------------------------------------------------------------
@@ -110,7 +110,7 @@ c-----------------------------------------------------------------------
         call optorb_deriv(psid(istate),deloc(istate)
      &   ,zmat(1,1,1,istate),dzmat(1,1,1,istate),emz(1,1,1,istate),aaz(1,1,1,istate)
      &   ,orb_o(1,istate),orb_ho(1,istate))
-        
+
         do 20 i=1,norbterm
             orb_oe(i,istate)=orb_o(i,istate)*eloc(istate)
   20        orb_ho(i,istate)=orb_ho(i,istate)+eloc(istate)*orb_o(i,istate)
@@ -441,7 +441,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, istate, n
-      real(dp) :: dabs, dble, eave, errn, wcum
+      real(dp) :: dble, eave, errn, wcum
       real(dp) :: x, x2
       real(dp), dimension(*) :: oav
       real(dp), dimension(*) :: eoav
@@ -535,7 +535,7 @@ c-----------------------------------------------------------------------
 
 c nreduced has to be set since it will only be known for non-continuation runs
       nreduced=mreduced
-      matdim=nreduced*(nreduced+1)/2 
+      matdim=nreduced*(nreduced+1)/2
       if(iapprox.gt.0) matdim=nreduced
 
       read(iu) nefp_blocks,norb_f_bcum
@@ -630,7 +630,7 @@ c Linear method
 
         s(1,1)=1
         h(1,1)=h(1,1)+wts*eave
-c Exact Hamiltonian 
+c Exact Hamiltonian
         if(iuse_orbeigv.eq.0) then
 
 c Hamiltonian on semi-orthogonal basis
@@ -667,7 +667,7 @@ c         write(6,*) 'H',wts,eoav(i)-eave*oav(i),orb_ho_cum(i,istate)*passesi-ea
 
 c Perturbative method
        elseif(method.eq.'perturbative') then
-            
+
         if(iuse_orbeigv.eq.0) then
 c Formulas for exact orbital perturbative not implemented
           call fatal_error('OPTORB_FIN: formulas for exact perturbative not implemented')
@@ -842,14 +842,14 @@ c Number of external orbitals for orbital optimization
       ! write(6, *) 'ndet_orb', ndetorb
       ! write(6, *) 'next_max', next_max
       ! call fatal_error('optorb.f')
-      
+
       if(iprt.gt.0) then
        write(6,'(''Determinantal orbitals in orbital optimization: '',i4)') ndetorb
        write(6,'(''External orbitals in orbital optimization: '',i4)') nadorb
        write(6,'(''Total orbitals in orbital optimization: '',i4)') nadorb+ndetorb-ncore
       endif
       norb=ndetorb
-      
+
 
 c Omit doubly occupied in all input determinants
       do 5 i=1,ndetorb
@@ -864,7 +864,7 @@ c Omit doubly occupied in all input determinants
           endif
    3    continue
    5  continue
-      
+
 c Omit empty orbitals
 
       do 6 i=1,ndetorb
@@ -875,7 +875,7 @@ c Omit empty orbitals
       do 8 i=ndetorb+1,ndetorb+nadorb
        iflag(1,i)=1
    8   iflag(2,i)=0
-       
+
       if(norbopt.eq.0.or.norbvirt.eq.0) then
         do 9 io=1,ndetorb
          do 9 jo=ncore+1,ndetorb+nadorb
@@ -885,7 +885,7 @@ c Omit empty orbitals
        write(6,'(''OPTORB_DEFINE: noptvirt,nadorb'',2i6)') norbvirt,nadorb
        call fatal_error('OPTORB_DEFINE: Mixvirt block, inconsistent')
       endif
-      
+
 
 
 c Orbital variation io -> io+a*jo
@@ -942,7 +942,7 @@ c Include: io is occupied in some determinant and jo not
           if(iprt.gt.3) write(6,'(''no appropriate determinant for '',2i4)') io,jo
           goto 50
         endif
-        
+
 c Define new operator (new variation) and its terms
         noporb=noporb+1
         if(noporb.gt.MXORBOP) then

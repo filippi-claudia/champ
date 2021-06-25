@@ -72,7 +72,7 @@ C       enddo
           endif
           do jrep=ivirt(iab),norb
               do irep=1,nel
-  
+
                 dum2=0.d0
                 dum3=0.d0
                 do i=1,nel
@@ -117,7 +117,7 @@ C       enddo
 
             denergy_det(k,iab)=denergy_det(index_det,iab)
           endif
-          
+
           enddo
 
           deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref
@@ -226,7 +226,7 @@ c Written by Claudia Filippi
    15       continue
           endif
    20 continue
-            
+
       iparm0=npointa(nctype)+nparma(nctype)
       do 30 isb=1,nspin2b
         if(isb.eq.2) iparm0=iparm0+nparmb(1)
@@ -296,7 +296,7 @@ c Written by Claudia Filippi
    45       continue
           endif
    50 continue
-            
+
       iparm0=npointa(nctype)+nparma(nctype)
       do 60 isb=1,nspin2b
         if(isb.eq.2) iparm0=iparm0+nparmb(1)
@@ -357,7 +357,7 @@ c Written by Claudia Filippi
       do 10 i=1,nparmj
         dj_e_b(i)=dj_e(i,istate)-dj_e_save(i,istate)
   10    dj_b(i)=dj(i,istate)-dj_save(i,istate)
- 
+
       e_bsum(istate)=e_bsum(istate)+enow(istate)
       do 20 i=1,nparmj
         dj_e_bsum(i,istate)=dj_e_bsum(i,istate)+dj_e_b(i)/wsum
@@ -366,7 +366,7 @@ c Written by Claudia Filippi
       do 30 i=1,nparmj
          dj_e_save(i,istate)=dj_e(i,istate)
   30     dj_save(i,istate)=dj(i,istate)
-      
+
       if(nbj_current.eq.ngrad_jas_blocks)then
         eb=e_bsum(istate)/dble(ngrad_jas_blocks)
         e_bsum(istate)=0
@@ -559,7 +559,7 @@ c Written by Claudia Filippi
       implicit none
 
       integer :: i, istate, j, n
-      real(dp) :: botsum_j, dabs, dble, eave, errn
+      real(dp) :: botsum_j, dble, eave, errn
       real(dp) :: passes, ratio, topsum_j, x
       real(dp) :: x2
       real(dp), dimension(MPARMJ, MPARMJ) :: hess1
@@ -611,7 +611,7 @@ c Compute ratio for reweighted expression of the hessian
    40     topsum_j=topsum_j+hess2(i,j)
       ratio_j=(topsum_j+botsum_j)/botsum_j
 
-c Construct hessian 
+c Construct hessian
 c Hessian h = hess1 + hess2 + hess3 (ratio=1, ibeta=1)
 c Reduced fluctuation hessian = ratio*hess1 + hess3 (ratio, ibeta=-1)
       do 45 i=1,nparmj
@@ -626,7 +626,7 @@ c Reduced fluctuation hessian = ratio*hess1 + hess3 (ratio, ibeta=-1)
 
       elseif(method.eq.'linear') then
 
-c Compute <dj H dj>/<psi|psi> and <dj dj>/<psi|psi> 
+c Compute <dj H dj>/<psi|psi> and <dj dj>/<psi|psi>
 
 c Hamiltonian h = <dj H dj>/<psi|psi>
       h_jas(1,1)=h_jas(1,1)+weights(istate)*eave

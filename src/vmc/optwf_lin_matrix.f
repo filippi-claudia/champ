@@ -17,7 +17,7 @@
       integer :: lwork, mparmx, nparm
       integer, dimension(MPARMALL) :: isort
       real(dp) :: MWORK, add_diag, anorm_orth, anorm_orth_min, bot
-      real(dp) :: dabs, de_range, dmult, eig_min
+      real(dp) :: de_range, dmult, eig_min
       real(dp) :: emax, emin, go, scale
       real(dp), dimension(mparmx,*) :: h
       real(dp), dimension(mparmx,*) :: s
@@ -344,7 +344,7 @@ c-----------------------------------------------------------------------
       integer :: k, lwork, mparmx, no_real_found
       integer :: nparm
       integer, dimension(MPARMALL) :: isort
-      real(dp) :: add_diag, anorm_orth, anorm_orth_min, bot, dabs
+      real(dp) :: add_diag, anorm_orth, anorm_orth_min, bot
       real(dp) :: de_range, dmul, dmult, dnorm
       real(dp) :: dnorm_jj, emax, emin, energy_err_sav
       real(dp) :: energy_sav, go, scale, target_overlap
