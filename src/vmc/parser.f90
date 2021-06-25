@@ -748,9 +748,7 @@ subroutine parser
   ! allocation after determinants and basis
   call compute_mat_size_new()
   call allocate_vmc()
-  if(mode(1:3) == 'dmc') then
-    call allocate_dmc()
-  endif
+  call allocate_dmc()
 
 ! (3) CSF only
 
