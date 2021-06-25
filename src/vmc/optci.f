@@ -27,9 +27,9 @@
 
 
 
-      
-      if(ioptci.eq.0) return 
-      
+
+      if(ioptci.eq.0) return
+
       psidi=1.d0/psid
 
       do 1 k=1,nciprim
@@ -37,7 +37,7 @@
         cieprim(k)=(eloc_det(k,1)+eloc_det(k,2)+e_other)*ciprim(k)
    1  continue
 
-c Update <Oi>,<Ei>,<dEi>,<Oi*Ej> 
+c Update <Oi>,<Ei>,<dEi>,<Oi*Ej>
 c Correlation matrix <Oi*Oj> is computed in ci_sum
 
       if(ncsf.eq.0) then
@@ -341,7 +341,7 @@ c-----------------------------------------------------------------------
 
       read(iu) (ci_o_cum(i),i=1,nciterm)
       read(iu) ((ci_oe_cum(i,j),ci_oe_cm2(i,j),i=1,nciterm),j=1,nciterm)
-      matdim=nciterm*(nciterm+1)/2 
+      matdim=nciterm*(nciterm+1)/2
       read(iu) (ci_oo_cum(i),ci_oo_cm2(i),i=1,matdim)
       read(iu) (ci_ooe_cum(i),i=1,matdim)
 
@@ -435,7 +435,7 @@ c-----------------------------------------------------------------------
       iciprt=-1
       call optci_avrg(passes,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
       iciprt=iciprt_sav
-     
+
       if(ncsf.eq.0) then
         do 20 i=1,nciterm
           ci_oav(i)=oav(i)
@@ -535,7 +535,7 @@ c-----------------------------------------------------------------------
       integer :: i, iblk, idx, iu, j
       integer :: jmax, k
       integer, dimension(5) :: itemp_print
-      real(dp) :: w, while
+      real(dp) :: w
       real(dp), dimension(MXCITERM) :: deav
       real(dp), dimension(MXCITERM, MXCIREDUCED) :: oeav
       real(dp), dimension(MXCITERM, MXCIREDUCED) :: oeerr
@@ -568,14 +568,14 @@ c        -1 force printout
       call optci_avrg(w,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
 
 c     print the Ok
-      write (45,*) 
+      write (45,*)
       write (45,'(''CI Operators'')')
       write (45,'(''------------'')')
-      write (45,*) 
+      write (45,*)
 
 c     print the OkOl
       write (45,'(''Overlap'')')
-      write (45,*) 
+      write (45,*)
       idx=0
       do k=1,nciterm
        write (45,*)
@@ -597,7 +597,7 @@ c     print the OkOl
       enddo
 
 c     print the OkEL
-      write (45,*) 
+      write (45,*)
       write (45,'(''Hamiltonian'')')
       do k=1,nciterm
        write (45,*)
