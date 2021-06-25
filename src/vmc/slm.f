@@ -10,7 +10,7 @@ c
 
       integer :: i, iforce_analy, j, l
       real(dp) :: cd1, cd2, cf, cf2, cf3
-      real(dp) :: cp, cs, ddy_lap, go
+      real(dp) :: cp, cs, ddy_lap
       real(dp) :: r2, y
       real(dp), dimension(3) :: rvec
       real(dp), dimension(3) :: dy
@@ -37,10 +37,10 @@ c cf=sqrt(7/(4*pi)),cf2=cf*sqrt(5),cf3=cf*sqrt(15)
 
       stop 'ylm: l.gt.19'
 
-c s 
+c s
  101  y=cs
       return
-      
+
 c p
  102  y=cp*rvec(1)
       dy(1)=cp
@@ -146,7 +146,7 @@ c There are 10 f functions as in GAMESS
 
  201  y=cs
       return
-      
+
  202  y=cp*rvec(1)
       dy(1)=cp
       return

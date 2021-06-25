@@ -25,7 +25,7 @@ c written by Claudia Filippi
       real(dp) :: de_worse3, de_worse_err1, de_worse_err2, de_worse_err3
       real(dp) :: denergy, denergy_err, denergy_max, denergy_min
       real(dp) :: dparm_norm, energy_err_sav, energy_plus_err, energy_plus_err_best
-      real(dp) :: energy_sav, go
+      real(dp) :: energy_sav
 
 
       ! parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
@@ -670,7 +670,6 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, i0, is, ishift, j
-      real(dp) :: go
 
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 

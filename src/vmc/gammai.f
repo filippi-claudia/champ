@@ -54,7 +54,7 @@ c          -gammac, iflag=-1,   x >= a+4 even though it is called gammai
       real(dp) :: cc, ci, d3b2, d5b2
       real(dp) :: del, eps, fac, g
       real(dp) :: g3b2, g5b2, gamm, gammai, gammcf
-      real(dp) :: go, gold, sum, too
+      real(dp) :: gold, sum
       real(dp) :: x, xae
 
 c     parameter (itmax=100,eps=1.d-14, d3b2=1.5d0,d5b2=2.5d0,

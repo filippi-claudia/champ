@@ -10,7 +10,7 @@
 
       integer :: i, info, nsub
       integer, dimension(nelec) :: ipvt
-      real(dp) :: aux, determinant, deti, go
+      real(dp) :: aux, determinant, deti
       real(dp) :: ten
       real(dp), dimension(nsub, nsub) :: a
       real(dp), dimension(nelec) :: work

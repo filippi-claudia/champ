@@ -143,7 +143,7 @@ c-----------------------------------------------------------------------
 
       integer :: i, idiag_only, idx, ie, iflag
       integer :: istate, j, je
-      real(dp) :: go, p, q
+      real(dp) :: p, q
       real(dp), dimension(*) :: wtg_new
       real(dp), dimension(*) :: wtg_old
       real(dp), dimension(*) :: enew

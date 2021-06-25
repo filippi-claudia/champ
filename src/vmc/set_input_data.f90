@@ -91,7 +91,7 @@ subroutine multideterminants_define(iflag, icheck)
       integer :: ndet_dist, nel
       integer, dimension(nelec) :: iswapped
       integer, dimension(MDET) :: itotphase
-      real(dp) :: go
+
 
 
     save kref_old
