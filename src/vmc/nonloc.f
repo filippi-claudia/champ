@@ -37,7 +37,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp) :: costh
       real(dp) :: det_ratio, gives
       real(dp) :: psij_ratio, ri, see
-      real(dp) :: term, term_radial, the, this
+      real(dp) :: term, term_radial
       real(dp) :: yl0
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rshift
