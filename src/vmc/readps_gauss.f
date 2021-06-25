@@ -24,9 +24,6 @@ c
 
       integer :: i, ic, identify, idx, index
       integer :: l, names
-      real(dp) :: CVARDOC, String, be, err, fancy
-      real(dp) :: files, for, pseudopotential, set
-      real(dp) :: the, will
 
       character*80 label
 

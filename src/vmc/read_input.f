@@ -258,12 +258,7 @@ c and Anthony Scemema
 
       integer :: index, learning
       integer, dimension(4) :: irn
-      ! real(dp) :: #, CI, CVARDOC, Deep, Jastrow
-      ! real(dp) :: PT, algorithm, be, datan
-      ! real(dp) :: derivatives,
       real(dp) :: dmax1, dmin1, enode_cutoff, ratio
-      ! real(dp) :: flag, oLBFGS, optimization, ratio
-      ! real(dp) :: sampled, used, wil, will
       real(dp), dimension(3) :: cent_tmp
       real(dp), dimension(nbasis) :: anorm
       real(dp), parameter :: zero = 0.d0

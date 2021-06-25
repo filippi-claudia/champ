@@ -125,7 +125,6 @@ c Presently not used.
       implicit none
 
       integer :: i, i3, ikvec, jorb, k
-      real(dp) :: 2i5
       real(dp), dimension(3) :: rkvec_tmp
 
 
@@ -197,7 +196,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       integer :: isign, isign_min, j, jorb
       integer :: k, nelec_sav, ng, nkvec_tmp
       integer :: norm, nsum
-      real(dp) :: 2i4, 2i5, 2i6, eig, sum
+      real(dp) :: eig, sum
       real(dp) :: sum_abs, units
       real(dp), dimension(3) :: r
       real(dp), dimension(nelec,MORB) :: orb

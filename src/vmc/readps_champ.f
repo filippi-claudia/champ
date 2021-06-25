@@ -35,8 +35,8 @@ c The prefered grid is 3.
       integer :: irmax_coul, irmax_nloc, j, nr
       integer :: nrm1
       integer, dimension(MPS_L) :: lpot_max
-      real(dp) :: dabs, dpot1, dpotn, err, h_ps
-      real(dp) :: r_asymp, while, zion
+      real(dp) :: dpot1, dpotn, h_ps
+      real(dp) :: r_asymp, zion
       real(dp), dimension(MPS_GRID) :: r
       real(dp), dimension(MPS_GRID) :: work
 
@@ -135,7 +135,7 @@ c       endif
 
 c Find the point beyond which r*v differs from zion by no more than .5*d-6.
 c irmax_coul is used for the endpoint of the spline where it is assumed that
-c the derivative of the local component is zion/r(irmax_coul)**2 and that of 
+c the derivative of the local component is zion/r(irmax_coul)**2 and that of
 c the local component is 0.  Also, rmax_coul is used in splfit_champ when it is
 c called in a calculation of a periodic system.
         rmax_coul(ict)=0.d0

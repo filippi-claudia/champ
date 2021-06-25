@@ -19,7 +19,6 @@ c 2) a gaussian basis
       integer :: i, iabs, ic, imax, iu
       integer :: j, k, l, ncheck
       integer, parameter :: nprime = 10
-      real(dp) :: while
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
@@ -165,7 +164,7 @@ c the printout of coefficients and screening constants.
 C      write (iu, 212) TODO : print out the symmetry
 
        j=1
-       do ic=1,ncent 
+       do ic=1,ncent
 
         do k=1,abs(n1s(iwctype(ic)))
          write (iu, 213) j, iwctype(ic), ic, '1s', (coef(j,l,1), l=i, imax)
@@ -359,7 +358,7 @@ C      write (iu, 212) TODO : print out the symmetry
        enddo
 
        i=i+5
-       write (iu, *) 
+       write (iu, *)
       enddo ! do while (i.le.norb)
 
   211 format (5X,8X,5(1X,I10))

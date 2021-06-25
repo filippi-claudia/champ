@@ -30,16 +30,15 @@ c Written by Cyrus Umrigar
       integer :: i, ict, ifcon, ig, in
       integer :: ir, j, k, lowest_pow
       integer :: npts
-      real(dp) :: TM, Z, alpha, arg, as
+      real(dp) :: alpha, arg, as
       real(dp) :: b0, b_jas, b_psp, because
-      real(dp) :: cc, ccFourier, ccSubtract, chisq
-      real(dp) :: coefs, components, const, dabs
+      real(dp) :: chisq
+      real(dp) :: coefs, components, const
       real(dp) :: datan, derf, det, det1
       real(dp) :: det_sim, discontinuity, dist_min, dpot1
       real(dp) :: dpotn, dx, ewa, ewald_pot
-      real(dp) :: ewald_pot_psp, fourier, g2, g2a
-      real(dp) :: g^2, g^5, gdistmin, gdistmin_sim
-      real(dp) :: go, of, or, out
+      real(dp) :: ewald_pot_psp, g2, g2a
+      real(dp) :: gdistmin, gdistmin_sim
       real(dp) :: psp, r0, rmax, rms
       real(dp) :: rr, sum, test, test_s
       real(dp) :: those, true, true_s, vgcell
@@ -1023,7 +1022,7 @@ c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
       integer :: ig, ir, ngnorm_big, nr
       real(dp) :: anorm, arg, dx, r0, rlogarg
-      real(dp) :: sin, vcell
+      real(dp) :: vcell
       real(dp), dimension(*) :: r
       real(dp), dimension(*) :: vps_short
       real(dp), dimension(*) :: gnorm
@@ -2053,7 +2052,7 @@ c Written by Cyrus Umrigar
       use periodic, only: znuc_sum
       use pseudo, only: lpot, nloc
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      
+
       use precision_kinds, only: dp
       implicit none
 
@@ -2069,7 +2068,7 @@ c Written by Cyrus Umrigar
 
 
 
-      
+
 
 
 c short-range sum
@@ -2573,7 +2572,7 @@ c Calculate cos_sum and sin_sum for pseudopotentials
       integer, dimension(3,*) :: igvec
       integer, dimension(*) :: igmult
       integer, dimension(3) :: ng1d
-      real(dp) :: cos, cos_tmp, dot, sin, sin_tmp
+      real(dp) :: cos_tmp, dot, sin_tmp
       real(dp), dimension(NGNORMX,nctype_tot) :: y_psp
       real(dp), dimension(3,3) :: glatt
       real(dp), dimension(3,*) :: r
