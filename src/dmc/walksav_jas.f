@@ -27,7 +27,7 @@ c Written by Claudia Filippi
       if(.not.allocated(fijow)) allocate(fijow(3, nelec, nelec, MWALK))
       if(.not.allocated(fsumow)) allocate(fsumow(MWALK))
       if(.not.allocated(fjow)) allocate(fjow(3, nelec, MWALK))
-      if(.not.allocated(vjw)) allocate(fjow(3, nelec, MWALK))
+      if(.not.allocated(vjw)) allocate(vjw(3, nelec, MWALK))
 
       ! real(dp), dimension(nelec, nelec, MWALK) :: fsow
       ! real(dp), dimension(3, nelec, nelec, MWALK) :: fijow
