@@ -237,8 +237,8 @@ subroutine parser
   nghostcent  = fdf_get('nghostcent', 0)
 
 ! %module jastrow (complete)
-  ijas        = fdf_get('ijas', 1)
-  isc         = fdf_get('isc', 1)
+  ijas        = fdf_get('ijas', 4)
+  isc         = fdf_get('isc', 2)
   nspin1      = fdf_get('nspin1', 1)
   nspin2      = fdf_get('nspin2', 1)
   ifock       = fdf_get('ifock', 0)
