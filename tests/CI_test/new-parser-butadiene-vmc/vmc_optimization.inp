@@ -21,11 +21,6 @@ load symmetry        cas1010.sym
     nelec         22
 %endmodule
 
-%module jastrow
-    ijas           4
-    isc            2
-%endmodule
-
 %module optwf
     ioptwf        1
     ioptci        1
@@ -50,18 +45,19 @@ load symmetry        cas1010.sym
     vmc_nblk      20
     vmc_nblkeq    1
     vmc_nconf_new 0
+    vmc_isite     0
 %endmodule
 
-%module blocking_dmc
-    dmc_nstep     250
-    dmc_nblk      50
-    dmc_nblkeq    1
-    dmc_nconf     100
-    dmc_nconf_new 0
-%endmodule
+# %module blocking_dmc
+#     dmc_nstep     250
+#     dmc_nblk      50
+#     dmc_nblkeq    1
+#     dmc_nconf     100
+#     dmc_nconf_new 0
+# %endmodule
 
-%module dmc
-    tau           0.05
-    etrial      -10.0d0
-    icasula      -1
-%endmodule
+# %module dmc
+#     tau           0.05
+#     etrial      -10.0d0
+#     icasula      -1
+# %endmodule
