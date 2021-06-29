@@ -138,9 +138,9 @@ c       write(6,*) 'moved A',iw,iel,(x(kk),kk=1,3)
 c-----------------------------------------------------------------------
       subroutine t_vpsp_sav
 
-      use vmc_mod, only: MCENT
+
       use const, only: nelec
-      use atom, only: ncent
+      use atom, only: ncent. ncent_tot
       use qua, only: nquad
       use pseudo_mod, only: MPS_QUAD
 
@@ -150,7 +150,7 @@ c-----------------------------------------------------------------------
 
       integer :: i, ic, iq
 
-      real(dp), dimension(MCENT, MPS_QUAD, nelec) :: t_vpsp_save
+      real(dp), dimension(ncent_tot, MPS_QUAD, nelec) :: t_vpsp_save
 
 
 
