@@ -29,7 +29,8 @@ module vmc_mod
     real(dp), parameter :: delri = (nrad - 1)/radmax
 
     ! integer, parameter :: MELEC = 32, MORB = 500, MBASIS = 500, MDET = 1000, MCENT = 20
-    integer, parameter :: MELEC = 32, MBASIS = 500
+    integer, parameter :: MELEC = 32
+    integer :: MBASIS
     integer :: MCENT
     integer :: MCTYPE
     integer :: MORB
