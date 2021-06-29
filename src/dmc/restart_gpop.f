@@ -1,6 +1,6 @@
       subroutine startr_gpop
 
-      use vmc_mod, only: MORB, MBASIS, MDET, MCENT
+      use vmc_mod, only: MORB, MDET, MCENT
       use vmc_mod, only: nrad
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
@@ -76,8 +76,8 @@
       real(dp) :: fratio_id, hbx, taux, wq_id
       real(dp) :: wt_id, xold_dmc_id, xq_id, yq_id
       real(dp) :: zq_id
-      real(dp), dimension(MBASIS, MORB) :: coefx
-      real(dp), dimension(MBASIS) :: zexx
+      real(dp), dimension(nbasis, MORB) :: coefx
+      real(dp), dimension(nbasis) :: zexx
       real(dp), dimension(3, MCENT) :: centx
       real(dp), dimension(MCENT) :: znucx
       real(dp), dimension(MDET) :: cdetx

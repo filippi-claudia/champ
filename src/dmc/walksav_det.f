@@ -8,7 +8,7 @@ c Written by Claudia Filippi
       use dmc_mod, only: MWALK
 
       use const, only: nelec
-      use vmc_mod, only: MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+      use vmc_mod, only: MORB, MDET, MCENT, MCTYPE, MCTYP3X
       use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
       use vmc_mod, only: radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
