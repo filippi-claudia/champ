@@ -1,11 +1,11 @@
-#%module general
+%module general
     title        'butadiene'
     pool         'pool/'
     pseudopot    BFD
     basis        BFD-T-normf0
     mode         vmc
     weights      [ 1.0d0,  1.0d0 , 1.0d0]
-#%endmodule
+%endmodule
 
 load molecule        butadiene.xyz
 load determinants    TZ_1M_500.det
@@ -16,21 +16,17 @@ load jastrow_der     jastrow.der
 load symmetry        cas1010.sym
 
 
-#%module electrons
+%module electrons
     nup           11
     nelec         22
-#%endmodule
+%endmodule
 
-#%module jastrow
-    ianalyt_lap    1
+%module jastrow
     ijas           4
     isc            2
-    nspin1         1
-    nspin2         1
-    ifock          0
-#%endmodule
+%endmodule
 
-#%module optwf
+%module optwf
     ioptwf        1
     ioptci        1
     ioptjas       1
@@ -47,25 +43,25 @@ load symmetry        cas1010.sym
     sr_adiag      0.01
     isample_cmat  0
     energy_tol    0.0
-#%endmodule
+%endmodule
 
-#%module blocking_vmc
+%module blocking_vmc
     vmc_nstep     20
-    vmc_nblk      200
+    vmc_nblk      20
     vmc_nblkeq    1
     vmc_nconf_new 0
-#%endmodule
+%endmodule
 
-#%module blocking_dmc
+%module blocking_dmc
     dmc_nstep     250
     dmc_nblk      50
     dmc_nblkeq    1
     dmc_nconf     100
     dmc_nconf_new 0
-#%endmodule
+%endmodule
 
-#%module dmc
+%module dmc
     tau           0.05
     etrial      -10.0d0
     icasula      -1
-#%endmodule
+%endmodule

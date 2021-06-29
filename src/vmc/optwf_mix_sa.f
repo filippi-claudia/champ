@@ -226,7 +226,7 @@ c enddo micro_iteration
           denergy_err=sqrt(energy_err(1)**2+energy_err_sav**2)
 c         call check_length_run_sr(iter,inc_nblk,vmc_nblk,vmc_nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
           vmc_nblk=vmc_nblk*1.2
-          nblk=min(vmc_nblk,vmc_nblk_max)
+          vmc_nblk=min(vmc_nblk,vmc_nblk_max)
 c         if(-denergy.gt.3*denergy_err) alfgeo=alfgeo/1.2
         endif
         write(ounit,'(''nblk = '',i6)') vmc_nblk

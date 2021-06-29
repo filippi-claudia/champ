@@ -1,17 +1,17 @@
  INPUT: multideterminant bloc MISSING
 Error:: No information about eigenvalues provided in the block.
-Stats for nerds :: in file parser.f90 at line    943
+Stats for nerds :: in file parser.f90 at line    941
  INPUT: block forces_displace or gradients_* missing: geometries set equal to pr
  imary
 Error:: No information about dmatrix provided in the input.
-Stats for nerds :: in file parser.f90 at line   1249
+Stats for nerds :: in file parser.f90 at line   1247
 Error:: No information about optorb_mixvirt provided in the block.
-Stats for nerds :: in file parser.f90 at line   1313
+Stats for nerds :: in file parser.f90 at line   1311
 Error:: No information about gradients_zmatrix provided in the block.
-Stats for nerds :: in file parser.f90 at line   1345
+Stats for nerds :: in file parser.f90 at line   1343
 Error:: No information about gradients_cartesian provided in the block.
-Stats for nerds :: in file parser.f90 at line   1360
+Stats for nerds :: in file parser.f90 at line   1358
 Error:: No information about zmatrix_connection provided in the block.
-Stats for nerds :: in file parser.f90 at line   1404
+Stats for nerds :: in file parser.f90 at line   1402
 Error:: No information about efield provided in the block.
-Stats for nerds :: in file parser.f90 at line   1429
+Stats for nerds :: in file parser.f90 at line   1427
