@@ -16,18 +16,28 @@ c Written by Claudia Filippi
       integer :: kk
       integer, dimension(MPI_STATUS_SIZE) :: istatus
 
-      real(dp), dimension(nelec, nelec, MWALK) :: fsow
-      real(dp), dimension(3, nelec, nelec, MWALK) :: fijow
-      real(dp), dimension(MWALK) :: fsumow
-      real(dp), dimension(3, nelec, MWALK) :: fjow
-      real(dp), dimension(3, nelec, MWALK) :: vjw
+
+      real(dp), allocatable, save :: fsow(:, :, :)
+      real(dp), allocatable, save :: fijow(:, :, :, :)
+      real(dp), allocatable, save :: fsumow(:)
+      real(dp), allocatable, save :: fjow(:, :, :)
+      real(dp), allocatable, save :: vjw(:, :, :)
+
+      if(.not.allocated(fsow)) allocate(fsow(nelec, nelec, MWALK))
+      if(.not.allocated(fijow)) allocate(fijow(3, nelec, nelec, MWALK))
+      if(.not.allocated(fsumow)) allocate(fsumow(MWALK))
+      if(.not.allocated(fjow)) allocate(fjow(3, nelec, MWALK))
+      if(.not.allocated(vjw)) allocate(fjow(3, nelec, MWALK))
+
+      ! real(dp), dimension(nelec, nelec, MWALK) :: fsow
+      ! real(dp), dimension(3, nelec, nelec, MWALK) :: fijow
+      ! real(dp), dimension(MWALK) :: fsumow
+      ! real(dp), dimension(3, nelec, MWALK) :: fjow
+      ! real(dp), dimension(3, nelec, MWALK) :: vjw
 
 
-
-
-      save fsow,fijow,fsumow,fjow
-
-      save vjw
+      ! save fsow,fijow,fsumow,fjow
+      ! save vjw
 
       fsumow(iw)=fsumo
 
