@@ -39,7 +39,7 @@ c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      use vmc_mod, only: MELEC
+
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
       use dmc_mod, only: MWALK
@@ -90,9 +90,9 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       integer :: imove, ipmod, ipmod2, iw
       integer :: iwmod, j, jel, k
       integer :: ncall, ncount_casula, nmove_casula, node_cutoff
-      integer, dimension(MELEC) :: itryo
-      integer, dimension(MELEC) :: itryn
-      integer, dimension(MELEC) :: iacc_elec
+      integer, dimension(nelec) :: itryo
+      integer, dimension(nelec) :: itryn
+      integer, dimension(nelec) :: iacc_elec
       real(dp) :: d2n, den, deo, dfus
       real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
       real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
@@ -109,12 +109,12 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: v2sumn, v2sumo, vav2sumn, vav2sumo
       real(dp) :: vavvn, vavvo, vavvt, wtg
       real(dp) :: wtg_derivsum1, wtnow
-      real(dp), dimension(3, MELEC) :: xstrech
+      real(dp), dimension(3, nelec) :: xstrech
       real(dp), dimension(3) :: xnew
-      real(dp), dimension(3, MELEC) :: vnew
+      real(dp), dimension(3, nelec) :: vnew
       real(dp), dimension(3) :: xbac
-      real(dp), dimension(3, MELEC) :: xdriftedn
-      real(dp), dimension(MELEC) :: unacp
+      real(dp), dimension(3, nelec) :: xdriftedn
+      real(dp), dimension(nelec) :: unacp
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0

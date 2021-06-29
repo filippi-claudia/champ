@@ -1,7 +1,6 @@
       subroutine walksav_jas(iw)
 c Written by Claudia Filippi
 
-      use vmc_mod, only: MELEC
       use dmc_mod, only: MWALK
       use const, only: nelec
       use branch, only: nwalk
@@ -17,11 +16,11 @@ c Written by Claudia Filippi
       integer :: kk
       integer, dimension(MPI_STATUS_SIZE) :: istatus
 
-      real(dp), dimension(MELEC, MELEC, MWALK) :: fsow
-      real(dp), dimension(3, MELEC, MELEC, MWALK) :: fijow
+      real(dp), dimension(nelec, nelec, MWALK) :: fsow
+      real(dp), dimension(3, nelec, nelec, MWALK) :: fijow
       real(dp), dimension(MWALK) :: fsumow
-      real(dp), dimension(3, MELEC, MWALK) :: fjow
-      real(dp), dimension(3, MELEC, MWALK) :: vjw
+      real(dp), dimension(3, nelec, MWALK) :: fjow
+      real(dp), dimension(3, nelec, MWALK) :: vjw
 
 
 
@@ -56,7 +55,7 @@ c Written by Claudia Filippi
       do 26 i=1,nelec
         do 26 kk=1,3
   26      vjw(kk,i,iw)=vj(kk,i)
-    
+
       return
 
       entry walkstrjas(iw)
@@ -87,7 +86,7 @@ c Written by Claudia Filippi
       do 46 i=1,nelec
         do 46 kk=1,3
   46      vj(kk,i)=vjw(kk,i,iw)
-    
+
       return
 
       entry splitjjas(iw,iw2)
@@ -118,7 +117,7 @@ c Written by Claudia Filippi
       do 66 i=1,nelec
         do 66 kk=1,3
   66      vjw(kk,i,iw2)=vjw(kk,i,iw)
-    
+
       return
 
       entry send_jas(irecv)
@@ -128,9 +127,9 @@ c Written by Claudia Filippi
      &,itag+1,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(fjow(1,1,nwalk),3*nelec,mpi_double_precision,irecv
      &,itag+2,MPI_COMM_WORLD,irequest,ierr)
-      call mpi_isend(fsow(1,1,nwalk),MELEC*nelec,mpi_double_precision
+      call mpi_isend(fsow(1,1,nwalk),nelec*nelec,mpi_double_precision
      &,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
-      call mpi_isend(fijow(1,1,1,nwalk),3*MELEC*nelec
+      call mpi_isend(fijow(1,1,1,nwalk),3*nelec*nelec
      &,mpi_double_precision,irecv,itag+4,MPI_COMM_WORLD,irequest,ierr)
 
       call mpi_isend(vjw(1,1,nwalk),3*nelec,mpi_double_precision,irecv
@@ -145,9 +144,9 @@ c Written by Claudia Filippi
      &,itag+1,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(fjow(1,1,nwalk),3*nelec,mpi_double_precision,isend
      &,itag+2,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(fsow(1,1,nwalk),MELEC*nelec,mpi_double_precision
+      call mpi_recv(fsow(1,1,nwalk),nelec*nelec,mpi_double_precision
      &,isend,itag+3,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(fijow(1,1,1,nwalk),3*MELEC*nelec
+      call mpi_recv(fijow(1,1,1,nwalk),3*nelec*nelec
      &,mpi_double_precision,isend,itag+4,MPI_COMM_WORLD,istatus,ierr)
 
       call mpi_recv(vjw(1,1,nwalk),3*nelec,mpi_double_precision,isend

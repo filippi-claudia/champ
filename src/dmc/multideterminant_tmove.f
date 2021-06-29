@@ -1,6 +1,6 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
-      use vmc_mod, only: MELEC, MORB
+      use vmc_mod, only: MORB
       use const, only: nelec
       use atom, only: ncent
       use qua, only: nquad
@@ -22,7 +22,7 @@
       integer :: iel_move, iq, irep, ish
       integer :: j, jel, jrep, nel
       real(dp) :: detratio, dum, psid
-      real(dp), dimension(MELEC, MORB) :: gmat
+      real(dp), dimension(nelec, MORB) :: gmat
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
 
@@ -39,7 +39,7 @@
       do iel=i1,i2
 
       do ic=1,ncent
-        
+
       if(iskip(iel,ic).eq.0) then
 
       if(iel.le.nup) then
