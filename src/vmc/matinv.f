@@ -10,7 +10,7 @@
 
       integer :: i, info, nsub
       integer, dimension(nelec) :: ipvt
-      real(dp) :: aux, dabs, determinant, deti, go
+      real(dp) :: aux, determinant, deti
       real(dp) :: ten
       real(dp), dimension(nsub, nsub) :: a
       real(dp), dimension(nelec) :: work
@@ -64,7 +64,7 @@ c       a(3,3)= (work2(1)*work2(5)-work2(2)*work2(4))*deti
           write(6,'(''MATINV: u(k,k)=0 with k= '',i5)') info
           call fatal_error('MATINV: info ne 0 in dgetrf')
         endif
-  
+
         det(1) = 1.0d0
         det(2) = 0.0d0
         ten = 10.0d0

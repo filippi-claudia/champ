@@ -93,7 +93,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       integer, dimension(MELEC) :: itryo
       integer, dimension(MELEC) :: itryn
       integer, dimension(MELEC) :: iacc_elec
-      real(dp) :: d2n, dabs, den, deo, dfus
+      real(dp) :: d2n, den, deo, dfus
       real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
       real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
       real(dp) :: drifdifr, drifdifs, drift, dwt
@@ -593,7 +593,7 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
             tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg*half*hb*d2o(iw,ifr)
 
             derivsum(1,ifr)=derivsum(1,ifr)+wtg*eold(iw,ifr)
- 
+
             if(idrifdifgfunc.gt.0) then
               derivsum(2,ifr)=derivsum(2,ifr)+wtg*eold(iw,ifr)*pwt(iw,ifr)
               derivsum(3,ifr)=derivsum(3,ifr)+wtg*pwt(iw,ifr)
@@ -634,7 +634,7 @@ c            else
 c             wtg=wt(iw)*fprod
 c             wtg_derivsum1=wtg/rnorm_nodes**2
 c           endif
-            
+
             derivsum(1,ifr)=derivsum(1,ifr)+wtg_derivsum1*eold(iw,ifr)
 
             if(idrifdifgfunc.gt.0) then

@@ -32,7 +32,7 @@ c Written by Claudia Filippi
       integer :: i, iab, iel, iflag, ikel
       integer :: iorb, ish, istate, j
       integer :: k, kk, ndim, nel
-      real(dp) :: go
+
 
 
 
@@ -55,7 +55,7 @@ c Written by Claudia Filippi
    15   slmi(j,iab)=slmin(j)
       do 30 j=ivirt(iab),norb
         do 30 i=1,nel
-          do 20 istate=1,nstates   
+          do 20 istate=1,nstates
    20       ymat(j,i,iab,istate)=ymatn(j,i,istate)
    30   aa(i,j,iab)=aan(i,j)
 

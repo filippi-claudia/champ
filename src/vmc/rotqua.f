@@ -348,7 +348,7 @@ c Written by Lubos Mitas
 
 
       integer :: iq
-      real(dp) :: cfi, dabs, dacos, sfi
+      real(dp) :: cfi, sfi
       real(dp) :: sthet, theta, u1, u2
       real(dp) :: usum, uu, x1, x2
       real(dp) :: x3, xsum, xsum2, y1

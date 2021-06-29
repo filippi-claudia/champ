@@ -116,11 +116,8 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: iab, icheck, iflag, ipass
-      real(dp) :: dabs, dcheck, dlog10, dlogdet
+      real(dp) :: dcheck, dlogdet
 
-      ! write(6, *) 'norb', norb
-      ! write(6, *) 'nadorb', nadorb
-      ! call fatal_error('determinant.f')
 
       iflag=0
       if(ipass.le.2) return
@@ -145,7 +142,7 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
           call optorb_define
         endif
       endif
-    
+
       return
       end
 c-----------------------------------------------------------------------
@@ -177,7 +174,7 @@ c-----------------------------------------------------------------------
 
 
 
-      
+
       ! resize ddor and dorb if necessary
       ! call resize_matrix(ddorb, norb+nadorb, 2)
       ! call resize_matrix(b, norb+nadorb, 1)

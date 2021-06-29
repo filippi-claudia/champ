@@ -28,7 +28,7 @@ c Reads in localized orbitals on a radial grid
       integer, dimension(NCOEF) :: ipiv
       integer, dimension(nbasis) :: l
       integer, dimension(nctype_tot) :: icusp
-      real(dp) :: c110, c120, c130, dabs, dwf1
+      real(dp) :: c110, c120, c130, dwf1
       real(dp) :: dwfm, dwfn, val, wfm
       real(dp), dimension(MRWF_PTS) :: x
       real(dp), dimension(MRWF_PTS) :: work
@@ -48,7 +48,7 @@ c         3 shifted exponential r(i+1)=r0*(arg**(i-1)-1)
 
         read(21,*) nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
         write(45,'(''Reading basis grid file = ['',a,'']'')') filename(1:index(filename,' ')-1)
-        write(45,'(''center type '',i4,'' nrbas,igrid,nr,arg,r0 ='',2i4,i5,2f10.5)') 
+        write(45,'(''center type '',i4,'' nrbas,igrid,nr,arg,r0 ='',2i4,i5,2f10.5)')
      &  ic,nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic)
 
         if(nrbas(ic).gt.MRWF) call fatal_error('READ_BAS_NUM: nrbas gt MRWF')

@@ -1,7 +1,7 @@
-      subroutine mmpol_extpot_read                            
+      subroutine mmpol_extpot_read
 
 c Written by Amovilli-Floris
-c Modified by Riccardo and Claudia 
+c Modified by Riccardo and Claudia
 c...........................................................
 c     read data for MM-POL calculations
 c     computes nuclei-charges  interactions (penu_q)
@@ -34,7 +34,7 @@ c Read site positions, fixed charges, and polarizabilities
         open (55,file=mmpolfile_sites,form='formatted',status='unknown')
         rewind 55
         read(55,*)
-        read(55,*) nchmm         
+        read(55,*) nchmm
         read(55,*)
 
         do i=1,nchmm
@@ -66,7 +66,7 @@ c Compute charge electric field and charge-dipole interaction
       call mmpol_field_q
 
 c Compute Ainv of mu= Ainv E and electric field due to nuclei and MM charges
-      if (ich_mmpol.eq.1) then 
+      if (ich_mmpol.eq.1) then
          call mmpol_Ainv
       endif
 
@@ -87,7 +87,7 @@ c-----------------------------------------------------------------------
       subroutine mmpol_compute_peq_q
 c............................................................
 c     compute distances and screening between sites and
-c     peqq  (charges-charges interaction) 
+c     peqq  (charges-charges interaction)
 c............................................................
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
@@ -154,7 +154,7 @@ c Compute charge-charge interaction
 c-----------------------------------------------------------------------
       subroutine mmpol_compute_pedp_dp
 c............................................................
-c     compute u_self and u_dd (self and dipole-dipole interaction) 
+c     compute u_self and u_dd (self and dipole-dipole interaction)
 c............................................................
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm, rqq, x_mmpol
@@ -211,7 +211,7 @@ c Riccardo
 c-----------------------------------------------------------------------
       subroutine mmpol_compute_penu_dp
 c............................................................
-c     compute penu_dp (nuclei-induced dipoles on MM sites interaction) 
+c     compute penu_dp (nuclei-induced dipoles on MM sites interaction)
 c............................................................
       use atom, only: znuc, cent, iwctype, ncent
       use mmpol_cntrl, only: immpol
@@ -249,7 +249,7 @@ c............................................................
 c-----------------------------------------------------------------------
       subroutine mmpol_compute_penu_q
 c............................................................
-c     compute penu_q  (nuclei-charges interaction) 
+c     compute penu_q  (nuclei-charges interaction)
 c............................................................
       use atom, only: znuc, cent, iwctype, ncent
       use mmpol_cntrl, only: immpol
@@ -300,9 +300,9 @@ C     ***************************************************************
       real(dp) :: det, dxx_kilj, tmat_kilj
       real(dp), dimension(3*MCHMM*3*MCHMM) :: ahpol_vec
 
-C    
+C
 c............................................................
-c     The matrix ah_pol is computed and inverted 
+c     The matrix ah_pol is computed and inverted
 c     (3*nchmm)*(3*nchmm)
 c............................................................
 
@@ -318,7 +318,7 @@ c............................................................
                  if (i.eq.j) delta_ij=1.d0
                  dxx_kilj=(x_mmpol(i,k)-x_mmpol(i,l))*(x_mmpol(j,k)-x_mmpol(j,l))
                  tmat_kilj=3.d0*screen2(k,l)*dxx_kilj/rqq(k,l)**5-delta_ij*screen1(k,l)/rqq(k,l)**3
-                 ah_pol(ki,lj)=-alfa(k)*tmat_kilj 
+                 ah_pol(ki,lj)=-alfa(k)*tmat_kilj
               endif
             enddo
           enddo
@@ -348,9 +348,9 @@ c............................................................
           j3=3*J
           J2=J3-1
           J1=J3-2
-          ah_pol(i,j1)=ah_pol(i,j1)*alfa(j) 
-          ah_pol(i,j2)=ah_pol(i,j2)*alfa(j) 
-          ah_pol(i,j3)=ah_pol(i,j3)*alfa(j) 
+          ah_pol(i,j1)=ah_pol(i,j1)*alfa(j)
+          ah_pol(i,j2)=ah_pol(i,j2)*alfa(j)
+          ah_pol(i,j3)=ah_pol(i,j3)*alfa(j)
         enddo
       enddo
 
@@ -378,9 +378,9 @@ C     ***************************************************************
 
 
       real*8 ah_vec,det
-C     
-       
-C    
+C
+
+C
 c
       if(immpol.eq.0) return
 c..............................................................
@@ -391,9 +391,9 @@ c..............................................................
         enk_pol(2,k)=0.0d0
         enk_pol(3,k)=0.0d0
         do l=1,ncent
-          xx=x_mmpol(1,k)-cent(1,l) 
-          yy=x_mmpol(2,k)-cent(2,l) 
-          zz=x_mmpol(3,k)-cent(3,l) 
+          xx=x_mmpol(1,k)-cent(1,l)
+          yy=x_mmpol(2,k)-cent(2,l)
+          zz=x_mmpol(3,k)-cent(3,l)
           rr2=xx**2+yy**2+zz**2
           rr3=rr2**1.5d0
           enk_pol(1,k)=enk_pol(1,k)+znuc(iwctype(l))*xx/rr3
@@ -416,7 +416,7 @@ c-----------------------------------------------------------------------
       subroutine mmpol_field_q
 c............................................................
 c    computes electric field due to fixed MM charges on MM sites
-c    and potential interaction MM charges-dipoles (peq_dp) 
+c    and potential interaction MM charges-dipoles (peq_dp)
 c............................................................
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
@@ -438,7 +438,7 @@ c............................................................
 
 
 
-       
+
 
       if(immpol.eq.0) return
 
@@ -449,9 +449,9 @@ c Compute MM charge electric field
         eqk_pol(3,k)=0.0d0
         do l=1,nchmm
           if(inds_pol(k).ne.inds_pol(l)) then
-            xx=x_mmpol(1,k)-x_mmpol(1,l) 
-            yy=x_mmpol(2,k)-x_mmpol(2,l) 
-            zz=x_mmpol(3,k)-x_mmpol(3,l) 
+            xx=x_mmpol(1,k)-x_mmpol(1,l)
+            yy=x_mmpol(2,k)-x_mmpol(2,l)
+            zz=x_mmpol(3,k)-x_mmpol(3,l)
             rr3=rqq(k,l)**3
             eqk_pol(1,k)=eqk_pol(1,k)+screen1(k,l)*chmm(l)*xx/rr3
             eqk_pol(2,k)=eqk_pol(2,k)+screen1(k,l)*chmm(l)*yy/rr3
@@ -474,7 +474,7 @@ c Compute MM charge-dipole interaction
 c-----------------------------------------------------------------------
       subroutine mmpol_efield(nelec,coord)
 C     ***************************************************************
-c     For the accepted configuration, the electronic field is computed 
+c     For the accepted configuration, the electronic field is computed
 c     on MM sites  eek_pol(1,k),eek_pol(2,k),eek_pol(3,k)
 C     ***************************************************************
       use mmpol_hpsi, only: eek_pol
@@ -497,7 +497,7 @@ C     ***************************************************************
 
 
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
-      data hatokc/627.509541d0/  
+      data hatokc/627.509541d0/
 
       if (immpol.eq.3) return
 
@@ -507,14 +507,14 @@ C     ***************************************************************
         eek_pol(2,k)=0
         eek_pol(3,k)=0
         do i=1,nelec
-          xx=x_mmpol(1,k)-coord(1,i) 
-          yy=x_mmpol(2,k)-coord(2,i) 
-          zz=x_mmpol(3,k)-coord(3,i) 
+          xx=x_mmpol(1,k)-coord(1,i)
+          yy=x_mmpol(2,k)-coord(2,i)
+          zz=x_mmpol(3,k)-coord(3,i)
           rr2=xx**2+yy**2+zz**2
           rr1=dsqrt(rr2)
           rr3=rr1*rr2
 c..............................................................
-c  correction for collision between e- and fixed charges 
+c  correction for collision between e- and fixed charges
 c..............................................................
           if (rr1.lt.rcolm) rr3=rcolm3
           rr3i=1.d0/rr3
@@ -529,7 +529,7 @@ c..............................................................
 c-----------------------------------------------------------------------
       subroutine mmpol_extpot_ene(coord,nelec,peQMdp,peQMq)
 
-c Written by Amovilli-Floris 
+c Written by Amovilli-Floris
 c Modified by Riccardo
 c......................................................
 c       Calculate e-/dipoles interactions (MM_POL)
@@ -571,10 +571,10 @@ c......................................................
         write(6,*)
         write(6,*)'nchmm=',nchmm
         write(6,*)'u_self= ',u_self
-        write(6,*)'u_dd = ',u_dd  
+        write(6,*)'u_dd = ',u_dd
         write(6,'(''QM-MM epot  ='',f12.6)') peQMdp+peQMq
-        write(6,'(''QM-MM e-/dipoles  ='',f12.6)') pepol_dp        
-        write(6,'(''QM-MM e-/charges  ='',f12.6)') pepol_q         
+        write(6,'(''QM-MM e-/dipoles  ='',f12.6)') pepol_dp
+        write(6,'(''QM-MM e-/charges  ='',f12.6)') pepol_q
         write(6,*)
       endif
 
@@ -585,7 +585,7 @@ c-----------------------------------------------------------------------
 
 c Written by Amovilli-Floris
 c......................................................
-c       Calculate e-/dipoles interactions 
+c       Calculate e-/dipoles interactions
 c......................................................
       use mmpol_parms, only: chmm, nchmm, x_mmpol
       use mmpol_dipol, only: dipo
@@ -628,7 +628,7 @@ c......................................................
         endif
 
 c......................................................
-c     interaction with dipoles 
+c     interaction with dipoles
 c......................................................
         pepol_dp=pepol_dp+dpdr/repol3
 
@@ -679,16 +679,16 @@ c Riccardo
         efree_k2=enk_pol(2,k)+eqk_pol(2,k)+eek_ave(2,k)
         efree_k3=enk_pol(3,k)+eqk_pol(3,k)+eek_ave(3,k)
 
-        bh_pol(k1)=efree_k1       
-        bh_pol(k2)=efree_k2        
-        bh_pol(k3)=efree_k3           
+        bh_pol(k1)=efree_k1
+        bh_pol(k2)=efree_k2
+        bh_pol(k3)=efree_k3
 
         u_ef=u_ef-efree_k1*dipo(1,k)-efree_k2*dipo(2,k)-efree_k3*dipo(3,k)
       enddo
 
-      write (6,*) 
+      write (6,*)
       write (6,*) 'INITIAL DIPOLES'
-      write (6,*) 
+      write (6,*)
 c u_ef = -mu*E + U_self + U_dd
       u_pol=u_dd+u_self+u_ef
       write (6,*) 'MMpol:  -mu*E    = ',u_ef
@@ -696,7 +696,7 @@ c u_ef = -mu*E + U_self + U_dd
       write (6,*) 'MMpol:  U_dd     = ',u_dd
       write (6,*) 'MMpol:  U_pol    = ',u_pol
       write (6,*) 'MMpol: -0.5mu*E  = ',u_ef/2.d0
-      write (6,*) 
+      write (6,*)
 
       nch3=3*nchmm
       do i=1,nch3
@@ -706,7 +706,7 @@ c u_ef = -mu*E + U_self + U_dd
         enddo
       enddo
 c...................................................................
-c     write in 'efield' the average of solute electrons field 
+c     write in 'efield' the average of solute electrons field
 c     write in 'E0' the total static field
 c     overwrite dipoles
 c...................................................................
@@ -729,7 +729,7 @@ c Riccardo
       enddo
 
       write (6,*) 'FINAL DIPOLES'
-      write (6,*) 
+      write (6,*)
 
       call mmpol_compute_pedp_dp
 
@@ -864,7 +864,7 @@ c......................................................
 
       integer :: i, info, nsub
       integer, dimension(3*MCHMM) :: ipvt
-      real(dp) :: dabs, determinant, go, ten
+      real(dp) :: determinant, ten
       real(dp), dimension(nsub,nsub) :: a
       real(dp), dimension(3*MCHMM) :: work
       real(dp), dimension(2) :: det

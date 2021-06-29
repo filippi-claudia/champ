@@ -48,7 +48,7 @@ c routine to accumulate estimators for energy etc.
 
       integer :: i, ic, ifr, istate, jel
       integer :: k
-      real(dp) :: ajacob, dabs, distance_node, dlog10, penow
+      real(dp) :: ajacob, distance_node, penow
       real(dp) :: psidg, r2now, rnorm_nodes, tjfnow
       real(dp) :: tpbnow
       real(dp), dimension(3,nelec) :: xstrech

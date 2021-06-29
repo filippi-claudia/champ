@@ -21,7 +21,7 @@ c periodic systems.
 
       integer :: it, jp, k, l, l_hi
       integer :: ll, m, n
-      real(dp) :: dabs, psi, ri, rij, rj
+      real(dp) :: psi, ri, rij, rj
       real(dp) :: rri, rrj, s, t
       real(dp) :: u
       real(dp), dimension(0:MORDJ) :: uu

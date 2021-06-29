@@ -933,11 +933,10 @@ subroutine read_dmatrix(no, ns, fn)
     use mstates_mod, only: MSTATES
     use coefs, only: norb
     use optorb, only: dmat_diag
-      implicit none
+    implicit none
 
-      integer :: i, ipr, iu, iw, j
-      integer :: ndetorb, no, ns
-      real(dp) :: dabs
+    integer :: i, ipr, iu, iw, j
+    integer :: ndetorb, no, ns
 
     character fn*(*)
     real(dp), DIMENSION(:), ALLOCATABLE :: dmat

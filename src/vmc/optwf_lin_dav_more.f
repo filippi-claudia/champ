@@ -892,12 +892,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       integer :: i0, iconf, ier, istate, ivec
       integer :: ndim, nvec
-      real(dp) :: dabs, ddot, den, dum, ratio
+      real(dp) :: den, dum, ratio
       real(dp), dimension(MPARM,*) :: psi
       real(dp), dimension(nvecx,*) :: overlap_psi
       real(dp), dimension(*) :: anorm
       real(dp), dimension(nvecx,MSTATES) :: overlap_psiloc
       real(dp), dimension(nvecx) :: anorm_loc
+      real(dp) : :ddot
 
       i0=1
       if(ioptjas+ioptorb.eq.0) i0=0

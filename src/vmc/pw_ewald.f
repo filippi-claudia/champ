@@ -1223,7 +1223,7 @@ c output coefficients c
 
       integer :: i, j, k, lowest_pow, n
       integer :: np, npts
-      real(dp) :: anorm, dabs, dcmplx, dx, g
+      real(dp) :: anorm,  dcmplx, dx, g
       real(dp) :: gi, sin, ti,et,em, x
       real(dp), dimension(*) :: c
       real(dp), dimension(NPTS) :: y
@@ -1299,7 +1299,7 @@ c output coefficients c
 
       integer :: i, ig, j, k, lowest_pow
       integer :: n, np, npts
-      real(dp) :: anorm, dabs, dcmplx, dx, g
+      real(dp) :: anorm, dcmplx, dx, g
       real(dp) :: gi, sin, ti,et,em, x
       real(dp), dimension(*) :: c
       real(dp), dimension(NPTS) :: y
@@ -1381,7 +1381,7 @@ c output coefficients c
 
       integer :: i, ig, j, lowest_pow, n
       integer :: np, npts
-      real(dp) :: anorm, choose, dabs, dcmplx, dx
+      real(dp) :: anorm, choose, dcmplx, dx
       real(dp) :: g, gi, sin, ti,et,em
       real(dp) :: x
       real(dp), dimension(*) :: c
@@ -1467,7 +1467,7 @@ c output coefficients c
 
       integer :: i, ig, j, lowest_pow, n
       integer :: np, npts
-      real(dp) :: anorm, choose, dabs, dcmplx, dx
+      real(dp) :: anorm, choose, dcmplx, dx
       real(dp) :: g, gi, sin, ti,et,em
       real(dp) :: x
       real(dp), dimension(*) :: c

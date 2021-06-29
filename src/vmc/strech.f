@@ -37,8 +37,8 @@ c rigidly with that nucleus
       integer :: i, ic, icent, ifl, ifr
       integer :: index, is, istrech_el, j
       integer :: jc, js, k, l
-      real(dp) :: PCM, ajacob, cc, cc1, cc2
-      real(dp) :: cc3, dabs, delta_gpol_fc, delta_qs
+      real(dp) :: ajacob, cc, cc1, cc2
+      real(dp) :: cc3, delta_gpol_fc, delta_qs
       real(dp) :: det, dist, dist2, enk
       real(dp) :: env, penups_fc, penupv_fc, rcm
       real(dp) :: rnp, rnp2, rr2, rr3
@@ -109,7 +109,7 @@ c positions of volume charges space warped
 c endif PCM
       endif
 
-      if(istrech_el.eq.0) then 
+      if(istrech_el.eq.0) then
         return
       endif
 
@@ -117,9 +117,9 @@ c endif PCM
         do 8 k=1,3
     8     xstrech(k,i)=x(k,i)
 
-      if(istrech.eq.0) then 
+      if(istrech.eq.0) then
         return
-      endif 
+      endif
 
       do 50 i=1,nelec
 
@@ -170,7 +170,7 @@ c end loop over electrons
 
       return
 
-c Set up n-n potential energy (and PCM related quantities) at displaced positions 
+c Set up n-n potential energy (and PCM related quantities) at displaced positions
       entry setup_force
 
       if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
@@ -201,7 +201,7 @@ c' PCM
           do 66 k=1,3
    66       xpolsav(k,j)=xpol(k,j)
 
-c Interatomic forces (and not wave function optimization) 
+c Interatomic forces (and not wave function optimization)
         if(ioptwf.eq.0) then
 
           open(54,file='field',status='old',form='formatted')
@@ -318,7 +318,7 @@ c printout charges if deviation is  big
               pecentn(ifl)=pecentn(ifl)+delta_gpol_fc
 c endif PCM
           endif
-          
+
 c end loop forces
   200 continue
 
