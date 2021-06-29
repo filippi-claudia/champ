@@ -26,13 +26,13 @@ jobs:
     - name: Building_code_for_h2
       run: |
 
-           # save the module file
-           cp src/vmc/m_vmc.f90 ./m_vmc_save
-           cp src/vmc/m_optci.f90 ./m_optci_save
-           cp src/vmc/m_optorb.f90 ./m_optorb_save
+          #  # save the module file
+          #  cp src/vmc/m_vmc.f90 ./m_vmc_save
+          #  cp src/vmc/m_optci.f90 ./m_optci_save
+          #  cp src/vmc/m_optorb.f90 ./m_optorb_save
 
-           # copy module file
-           cp tests/CI_test/h2/module/*.f90 src/vmc
+          #  # copy module file
+          #  cp tests/CI_test/h2/module/*.f90 src/vmc
 
            # compile
            cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DENABLE_TEST=ON
