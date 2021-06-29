@@ -1,7 +1,7 @@
       subroutine psiedmc(iel,iw,coord,psid,psij,iflag)
 c Written by Claudia Filippi
 
-      use vmc_mod, only: MELEC
+
       use const, only: nelec
       use config, only: xold_dmc
 
@@ -12,7 +12,7 @@ c Written by Claudia Filippi
       integer :: iw
       real(dp) :: psid, psij
       real(dp), dimension(3) :: coord
-      real(dp), dimension(3, MELEC) :: x
+      real(dp), dimension(3, nelec) :: x
 
 
       do 10 ic=1,3
