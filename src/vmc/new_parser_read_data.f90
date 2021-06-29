@@ -119,7 +119,7 @@ subroutine read_molecule_file(file_molecule)
     !   local use
     character(len=72), intent(in)   :: file_molecule
     character(len=40)               :: temp1, temp2, temp3, temp4
-    character(len=80)               :: comment
+    character(len=80)               :: comment, file_molecule_path
     integer                         :: iostat, i, j, k, iunit
     logical                         :: exist
     type(atom_t)                    :: atoms
@@ -135,10 +135,16 @@ subroutine read_molecule_file(file_molecule)
     write(ounit,string_format)  " Reading molecular coordinates from the file :: ",  pooldir // trim(file_molecule)
     write(ounit,*) '-----------------------------------------------------------------------'
 
+    if((file_molecule(1:6) == '$pool/') .or. (file_molecule(1:6) == '$POOL/')) then
+        file_molecule_path = pooldir // file_molecule(7:)
+    else
+        file_molecule_path = file_molecule
+    endif
+
     if (wid) then
-        inquire(file=pooldir//file_molecule, exist=exist)
+        inquire(file=file_molecule_path, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=pooldir//file_molecule, iostat=iostat, action='read' )
+            open (newunit=iunit,file=file_molecule_path, iostat=iostat, action='read' )
             if (iostat .ne. 0) stop "Problem in opening the molecule file"
         else
             call fatal_error (" molecule file "// pooldir // trim(file_molecule) // " does not exist.")
@@ -1585,6 +1591,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     !   local use
     character(len=72), intent(in)   :: file_basis_num_info
     character(len=40)               :: temp1, temp2
+    character(len=72)               :: file_path
     integer                         :: iunit, iostat
     integer                         :: i,j, jj, ib, nctot
     logical                         :: exist, skip = .true.
@@ -1600,10 +1607,16 @@ subroutine read_basis_num_info_file(file_basis_num_info)
                         pooldir // trim(file_basis_num_info)
     write(ounit,*) '---------------------------------------------------------------------------'
 
+    if((file_basis_num_info(1:6) == '$pool/') .or. (file_basis_num_info(1:6) == '$POOL/')) then
+        file_path = pooldir // file_basis_num_info(7:)
+    else
+        file_path = file_basis_num_info
+    endif
+
     if (wid) then
-        inquire(file=pooldir // file_basis_num_info, exist=exist)
+        inquire(file=file_path, exist=exist)
         if (exist) then
-            open (newunit=iunit,file=pooldir // file_basis_num_info, iostat=iostat, action='read' )
+            open (newunit=iunit,file=file_path, iostat=iostat, action='read' )
             if (iostat .ne. 0) call fatal_error( "Problem in opening the basis num info file")
         else
             call fatal_error (" Basis num info file "// pooldir // trim(file_basis_num_info) // " does not exist.")
