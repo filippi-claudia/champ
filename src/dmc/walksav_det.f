@@ -14,7 +14,7 @@ c Written by Claudia Filippi
       use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
       use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
       use forcepar, only: deltot, istrech, nforce
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use force_mod, only: MFORCE, MFORCE_WT_PRD
       use mstates_mod, only: MSTATES, MDETCSFX
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo
       use branch, only: wgdsumo, wt, wtgen, wthist

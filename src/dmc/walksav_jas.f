@@ -35,7 +35,6 @@ c Written by Claudia Filippi
       ! real(dp), dimension(3, nelec, MWALK) :: fjow
       ! real(dp), dimension(3, nelec, MWALK) :: vjw
 
-
       ! save fsow,fijow,fsumow,fjow
       ! save vjw
 
