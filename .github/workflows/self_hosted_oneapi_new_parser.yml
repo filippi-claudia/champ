@@ -48,7 +48,7 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -26.2023287) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_only.out "total E" -26.2023287
 
-    - name: "Test 03 (Butadiene) VMC optimization all using sr_n (500 determinants) on single processor"
+    - name: "Test 03 (Butadiene) VMC optimization all using sr_n (500 determinants) on 1 processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-butadiene-vmc
@@ -98,7 +98,7 @@ jobs:
         echo "Comparing the energy with the reference one (total energy (  100) = -26.3187227) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py dmc_double_core.out "total energy (  100)" -26.3187227
 
-    - name: "Test 07 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on single processor"
+    - name: "Test 07 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 1 processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi500_T_optWF
@@ -120,7 +120,7 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -26.2032228) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.2032228
 
-    - name: "Test 09 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on single processor"
+    - name: "Test 09 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 1 processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi5k_T_optWF
@@ -129,7 +129,7 @@ jobs:
         mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000.out  -e error_vmc_optimization_5000
 
         echo "Comparing the energy with the reference one (total E = -26.1991674) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.1991674
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.1991674
 
     - name: "Test 10 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 2 processors"
       run: |
@@ -141,5 +141,27 @@ jobs:
 
         echo "Comparing the energy with the reference one (total E = -26.2166306) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.2166306
+
+    - name: "Test 11 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 1 processor"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
+
+        echo "Comparing the energy with the reference one (total E = -26.2406578) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2406578
+
+    - name: "Test 12 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 2 processors"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
+
+        echo "Comparing the energy with the reference one (total E = -26.2371252) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2371252
 
 

@@ -6,7 +6,7 @@ module optorb_mod
     ! integer, parameter :: MXMATDIM = MXREDUCED*(MXREDUCED + 1)
     ! integer, parameter :: MXMATDIM2 = MXMATDIM/2
 
-    integer, parameter :: MXORBOP = 8000
+    integer :: MXORBOP = 10000
     integer :: MXREDUCED
     integer :: MXMATDIM
     integer :: MXMATDIM2
