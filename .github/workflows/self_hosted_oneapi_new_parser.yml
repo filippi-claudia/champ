@@ -101,7 +101,7 @@ jobs:
     - name: "Test 07 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on single processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
-        tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi500_T_optWF
+        cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi500_T_optWF
 
         echo "Running the optimization calculation"
         mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500.out  -e error_vmc_optimization_500
@@ -112,7 +112,7 @@ jobs:
     - name: "Test 08 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 2 processors"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
-        tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi500_T_optWF
+        cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi500_T_optWF
 
         echo "Running the optimization calculation"
         mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500.out  -e error_vmc_optimization_500
@@ -123,7 +123,7 @@ jobs:
     - name: "Test 09 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on single processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
-        tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi5k_T_optWF
+        cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi5k_T_optWF
 
         echo "Running the optimization calculation"
         mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000.out  -e error_vmc_optimization_5000
@@ -134,7 +134,7 @@ jobs:
     - name: "Test 10 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 2 processors"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
-        tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi5k_T_optWF
+        cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi5k_T_optWF
 
         echo "Running the optimization calculation"
         mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000.out  -e error_vmc_optimization_5000
