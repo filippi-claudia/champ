@@ -1132,6 +1132,8 @@ subroutine parser
     endif
 
     write(ounit,int_format)  " CI number of coefficients ", nciterm
+    write(ounit,int_format)  " nciprim ", nciprim
+    MXCITERM = nciprim  ! validate this change debug ravindra
     if((ncsf.eq.0) .and. (nciprim.gt.MXCITERM) ) call fatal_error('INPUT: nciprim gt MXCITERM')
     if(nciterm.gt.MXCITERM) call fatal_error('INPUT: nciterm gt MXCITERM')
 
