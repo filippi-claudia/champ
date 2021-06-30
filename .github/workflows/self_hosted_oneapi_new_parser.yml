@@ -164,4 +164,25 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -26.2371252) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2371252
 
+    - name: "Test 13 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 1 processor"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF_3body
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
+
+        echo "Comparing the energy with the reference one (total E = -26.2212718) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2212718
+
+    - name: "Test 14 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 2 processors"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF_3body
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
+
+        echo "Comparing the energy with the reference one (total E = -26.2166595) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2166595
 
