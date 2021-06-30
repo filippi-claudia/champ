@@ -16,11 +16,11 @@ jobs:
     - name: Compile
       run: |
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-        cmake --build build -- -j1
-        echo "Build is sucessfull"
+        cmake --build build -- -j2
+        echo "Build using Intel oneAPI compilers is sucessfull"
 
 
-    - name: "Test 01 VMC only"
+    - name: "Test 01 (Butadiene) VMC only on 1 processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-butadiene-vmc
@@ -29,12 +29,26 @@ jobs:
         cp -v mc_configs_start_save mc_configs_start
 
         echo "Running the calculation"
-        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only > screen
+        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only
 
-        echo "Comparing the initial energy with the reference one"
-        python comparison.py
+        echo "Comparing the energy with the reference one (total E = -26.2099365) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py dmc_single_core.out "total E" -26.2099365
 
-    - name: "Test 02 VMC optimization all"
+    - name: "Test 02 (Butadiene) VMC only on 2 processors"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-butadiene-vmc
+
+        echo "Copy an initial mc configuration for reference"
+        cp -v mc_configs_start_save mc_configs_start
+
+        echo "Running the calculation"
+        mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only
+
+        echo "Comparing the energy with the reference one (total E = -26.2023287) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py dmc_single_core.out "total E" -26.2023287
+
+    - name: "Test 03 (Butadiene) VMC optimization all using sr_n (500 determinants) on single processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-butadiene-vmc
@@ -48,7 +62,21 @@ jobs:
         echo "Comparing the initial energy with the reference one"
         python comparison.py
 
-    - name: "Test 03 DMC Single Core"
+    - name: "Test 04 (Butadiene) VMC optimization all using sr_n (500 determinants) on 2 processors"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-butadiene-vmc
+
+        echo "Copy an initial mc configuration for reference"
+        cp -v mc_configs_start_save mc_configs_start
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
+
+        echo "Comparing the initial energy with the reference one"
+        python comparison.py
+
+    - name: "Test 05 (Butadiene) DMC on 1 processor"
       run: |
         echo "Running the DMC tests using the new parser. Butadiene DMC single core"
         cd tests/CI_test/new-parser-butadiene-dmc
@@ -59,7 +87,7 @@ jobs:
         echo "Comparing the energy with the reference one (total energy (  100) = -26.3320038) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py dmc_single_core.out "total energy (  100)" -26.3320038
 
-    - name: "Test 04 DMC multicore"
+    - name: "Test 06 (Butadiene) DMC on 2 processors"
       run: |
         echo "Running the DMC tests using the new parser. Butadiene DMC two cores"
         cd tests/CI_test/new-parser-butadiene-dmc
