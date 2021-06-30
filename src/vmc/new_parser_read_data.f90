@@ -944,7 +944,7 @@ subroutine read_csfmap_file(file_determinants)
             enddo
         enddo
         if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
-        nmap = nptr
+        nmap = nptr - 1
 
         if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
 
