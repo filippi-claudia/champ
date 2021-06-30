@@ -1,4 +1,4 @@
-name: Self-hosted Intel OneAPI build
+name: Self-hosted Intel OneAPI compilation and run tests
 
 on:
   push:
@@ -236,3 +236,26 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -26.2166595) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2166595
 
+# Tests about psb3
+
+    - name: "Test 19 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 1 processor"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-psb3
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_single.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -41.6178534) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_sr_n_single.out "total E" -41.6178534
+
+    # - name: "Test 20 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 2 processors"
+    #   run: |
+    #     echo "Running the tests using the new parser. Butadiene VMC "
+    #     cd tests/CI_test/new-parser-psb3
+
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_double.out -e error
+
+    #     echo "Comparing the energy with the reference one (total E = -41.6788575) "
+    #     /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_sr_n_double.out "total E" -41.6788575

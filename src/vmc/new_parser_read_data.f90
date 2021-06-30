@@ -131,15 +131,16 @@ subroutine read_molecule_file(file_molecule)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
-    write(ounit,*) '-----------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading molecular coordinates from the file :: ",  pooldir // trim(file_molecule)
-    write(ounit,*) '-----------------------------------------------------------------------'
 
     if((file_molecule(1:6) == '$pool/') .or. (file_molecule(1:6) == '$POOL/')) then
         file_molecule_path = pooldir // file_molecule(7:)
     else
         file_molecule_path = file_molecule
     endif
+
+    write(ounit,*) '-----------------------------------------------------------------------'
+    write(ounit,string_format)  " Reading molecular coordinates from the file :: ",  file_molecule_path
+    write(ounit,*) '-----------------------------------------------------------------------'
 
     if (wid) then
         inquire(file=file_molecule_path, exist=exist)
@@ -948,19 +949,20 @@ subroutine read_csfmap_file(file_determinants)
 
         if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
 
-        write(ounit, '(''Warning: det coef overwritten with csf'')')
+        !       This part looks unnecessary to me. cdet is anyway read before this
+        ! write(ounit, '(''Warning: det coef overwritten with csf'')')
 
-        do k = 1, nstates
-            do j = 1, ndet
-                cdet(j, k, 1) = 0
-            enddo
-            do icsf = 1, ncsf
-                do j = iadet(icsf), ibdet(icsf)
-                    jx = icxdet(j)
-                    cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
-                enddo
-            enddo
-        enddo
+        ! do k = 1, nstates
+        !     do j = 1, ndet
+        !         cdet(j, k, 1) = 0
+        !     enddo
+        !     do icsf = 1, ncsf
+        !         do j = iadet(icsf), ibdet(icsf)
+        !             jx = icxdet(j)
+        !             cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
+        !         enddo
+        !     enddo
+        ! enddo
 
         write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
         write(ounit,int_format) " Number of determinants (ndet) ", ndet
