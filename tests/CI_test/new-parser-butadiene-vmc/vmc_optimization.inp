@@ -43,9 +43,8 @@ load symmetry        cas1010.sym
 
 %module blocking_vmc
     vmc_nstep     20
-    vmc_nblk      20
+    vmc_nblk      50
     vmc_nblkeq    1
     vmc_nconf_new 0
     vmc_isite     0
 %endmodule
-
