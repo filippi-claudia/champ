@@ -1,0 +1,35 @@
+%module general
+    title        'butadiene'
+    pseudopot    BFD
+    basis        BFD-T-normf0
+    pool         './pool/'
+    weights      [ 1.0d0,  1.0d0 , 1.0d0]
+    mode         'dmc_one_mpi1'
+%endmodule
+
+load molecule           $pool/butadiene.xyz
+load basis_num_info     $pool/BFD-T.bfinfo
+
+load determinants       TZ_1M_500.det
+load orbitals           TZ_1M_15k.orb
+load jastrow            jastrow_good_b3lyp.0
+
+%module electrons
+    nup           11
+    nelec         22
+%endmodule
+
+%module blocking_dmc
+    dmc_nstep     10
+    dmc_nblk      10
+    dmc_nblkeq    1
+    dmc_nconf     20
+    dmc_nconf_new 0
+%endmodule
+
+%module dmc
+    tau           0.05
+    etrial      -26.3d0
+    icasula      -1
+%endmodule
+

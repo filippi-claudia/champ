@@ -79,7 +79,7 @@ jobs:
     - name: "Test 05 (Butadiene) DMC on 1 processor"
       run: |
         echo "Running the DMC tests using the new parser. Butadiene DMC single core"
-        cd tests/CI_test/new-parser-butadiene-dmc
+        cd tests/CI_test/new-parser-workload/new-parser-workload-dmc/butadiene_500_DMC_pablo
 
         echo "Running the dmc.mov1 on one processor"
         mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_single_core.out  -e dmc_single_core.error
@@ -90,7 +90,7 @@ jobs:
     - name: "Test 06 (Butadiene) DMC on 2 processors"
       run: |
         echo "Running the DMC tests using the new parser. Butadiene DMC two cores"
-        cd tests/CI_test/new-parser-butadiene-dmc
+        cd tests/CI_test/new-parser-workload/new-parser-workload-dmc/butadiene_500_DMC_pablo
 
         echo "Running the dmc.mov1 on two processors"
         mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_double_core.out  -e dmc_double_core.error
@@ -98,7 +98,29 @@ jobs:
         echo "Comparing the energy with the reference one (total energy (  100) = -26.3187227) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py dmc_double_core.out "total energy (  100)" -26.3187227
 
-    - name: "Test 07 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 1 processor"
+    - name: "Test 07 (Butadiene) Workload DMC on 1 processor"
+      run: |
+        echo "Running the DMC tests using the new parser. Butadiene DMC from workload single core"
+        cd tests/CI_test/new-parser-workload/new-parser-workload-dmc/butadiene_cipsi500_T_DMC
+
+        echo "Running the dmc.mov1 on one processor"
+        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_single.out  -e dmc_single_core.error
+
+        echo "Comparing the energy with the reference one (total energy (  100) = -26.2963582) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py dmc_workload_single.out "total energy (  100)" -26.2963582
+
+    - name: "Test 08 (Butadiene) Workload DMC on 2 processors"
+      run: |
+        echo "Running the DMC tests using the new parser. Butadiene DMC  from workload two cores"
+        cd tests/CI_test/new-parser-workload/new-parser-workload-dmc/butadiene_cipsi500_T_DMC
+
+        echo "Running the dmc.mov1 on two processors"
+        mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_double.out  -e dmc_double_core.error
+
+        echo "Comparing the energy with the reference one (total energy (  100) = -26.2894638) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py dmc_workload_double.out "total energy (  100)" -26.2894638
+
+    - name: "Test 09 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 1 processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi500_T_optWF
@@ -109,7 +131,7 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -26.2048171) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.2048171
 
-    - name: "Test 08 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 2 processors"
+    - name: "Test 10 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 2 processors"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi500_T_optWF
@@ -120,7 +142,7 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -26.2032228) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.2032228
 
-    - name: "Test 09 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 1 processor"
+    - name: "Test 11 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 1 processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi5k_T_optWF
@@ -131,7 +153,7 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -26.1991674) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.1991674
 
-    - name: "Test 10 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 2 processors"
+    - name: "Test 12 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 2 processors"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi5k_T_optWF
@@ -142,7 +164,7 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -26.2166306) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.2166306
 
-    - name: "Test 11 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 1 processor"
+    - name: "Test 13 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 1 processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF
@@ -153,7 +175,7 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -26.2406578) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2406578
 
-    - name: "Test 12 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 2 processors"
+    - name: "Test 14 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 2 processors"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF
@@ -164,7 +186,7 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -26.2371252) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2371252
 
-    - name: "Test 13 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 1 processor"
+    - name: "Test 15 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 1 processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF_3body
@@ -175,7 +197,7 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -26.2212718) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2212718
 
-    - name: "Test 14 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 2 processors"
+    - name: "Test 16 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 2 processors"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF_3body
