@@ -141,8 +141,7 @@ c           do 26 m=1,nbasis
         call orbitals_pw(x,orb,dorb,ddorb)
       endif
 
-      ! if(ipr.ge.0) then
-      if(0.eq.0) then
+      if(ipr.ge.0) then
         do 260 iorb=1,norb+nadorb
   260     write(6,'(''iorb,orb='',i4,1000f15.11)') iorb,(orb(i,iorb),i=1,nelec)
          do 270 iorb=1,norb+nadorb
