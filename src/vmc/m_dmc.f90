@@ -17,7 +17,7 @@ end module  dmc_mod
 module age
   !> Arguments: iage, ioldest, ioldestmx
   use precision_kinds, only: dp
-  use dmc_mod, only: MWALK 
+  use dmc_mod, only: MWALK
 
   implicit none
 
@@ -91,7 +91,7 @@ contains
    end subroutine deallocate_branch
 end module branch
 
-module c_averages 
+module c_averages
   !> Arguments: mprop, prop, wprop, cum_av, cum_av2, cum_w
    use precision_kinds, only: dp
 
@@ -125,20 +125,20 @@ contains
       if (allocated(cum_av2)) deallocate(cum_av2)
       if (allocated(cum_w)) deallocate(cum_w)
    end subroutine deallocate_c_averages
-end module c_averages 
+end module c_averages
 
-module c_averages_index 
-   !> Arguments: jeloc, jderiv 
+module c_averages_index
+   !> Arguments: jeloc, jderiv
    use force_mod, only: MFORCE
 
    implicit none
 
    integer :: jeloc
-   integer, dimension(:,:), allocatable :: jderiv !(3,MFORCE) 
+   integer, dimension(:,:), allocatable :: jderiv !(3,MFORCE)
 
    private
-   public :: jeloc, jderiv  
-   public :: allocate_c_averages_index, deallocate_c_averages_index 
+   public :: jeloc, jderiv
+   public :: allocate_c_averages_index, deallocate_c_averages_index
    save
 
 contains
@@ -149,7 +149,7 @@ contains
    subroutine deallocate_c_averages_index()
       if (allocated(jderiv)) deallocate(jderiv)
    end subroutine deallocate_c_averages_index
-end module c_averages_index 
+end module c_averages_index
 
 module jacobsave
    !> Arguments: ajacob, ajacold
@@ -192,13 +192,18 @@ module velratio
 
    private
    public :: fratio, xdrifted
-   public :: allocate_velratio, deallocate_velratio 
+   public :: allocate_velratio, deallocate_velratio
    save
 
 contains
    subroutine allocate_velratio()
+      use precision_kinds, only: dp
+      use dmc_mod, only: MWALK
+      use force_mod, only: MFORCE
+      use vmc_mod, only: MELEC
+      use const, only: nelec
       if (.not. allocated(fratio)) allocate(fratio(MWALK, MFORCE))
-      if (.not. allocated(xdrifted)) allocate(xdrifted(3, MELEC, MWALK, MFORCE))
+      if (.not. allocated(xdrifted)) allocate(xdrifted(3, nelec, MWALK, MFORCE))
    end subroutine allocate_velratio
 
    subroutine deallocate_velratio()

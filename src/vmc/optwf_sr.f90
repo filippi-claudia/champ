@@ -17,7 +17,7 @@ module optwf_sr_mod
     use force_analy, only: iforce_analy
     use contrl, only: nblk_max
     use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
-    use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+    use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
 
     real(dp) :: omega0
     integer :: n_omegaf, n_omegat
@@ -47,8 +47,8 @@ contains
         use method_opt, only: method
 
 !        implicit real*8(a - h, o - z)
-        implicit none 
-        
+        implicit none
+
         real(dp) :: adiag, denergy, alpha_omega, denergy_err, dparm_norm
         real(dp) :: energy_sav, energy_err_sav, omega, sigma, sigma_sav
         integer :: i, iflag, iter, miter
@@ -75,7 +75,7 @@ contains
         write (6, '(/,''SR adiag: '',f10.5)') sr_adiag
         write (6, '(''SR tau:   '',f10.5)') sr_tau
         write (6, '(''SR eps:   '',f10.5)') sr_eps
-    
+
 
         call save_params()
 
@@ -199,7 +199,7 @@ contains
         ! solve S*deltap=h_sr (call in optwf)
         use sr_mat_n, only: h_sr
 
-        implicit none 
+        implicit none
 
         integer, intent(in) :: nparm
         real(dp), dimension(:), intent(inout) :: deltap
@@ -226,10 +226,10 @@ contains
 
     subroutine check_length_run_sr(iter, increase_nblk, nblk, nblk_max, denergy, denergy_err, energy_err_sav, energy_tol)
 
-        implicit none 
+        implicit none
 
         integer :: iter, increase_nblk, nblk, nblk_max, nblk_new, nbkl
-        real(dp) :: energy_err_sav, denergy, denergy_err, energy_tol 
+        real(dp) :: energy_err_sav, denergy, denergy_err, energy_tol
 
         ! Increase nblk if near convergence to value needed to get desired statistical error
         increase_nblk = increase_nblk + 1
@@ -272,7 +272,7 @@ contains
         use optorb_cblock, only: norbterm
         use method_opt, only: method
 
-        implicit none 
+        implicit none
 
         real(dp), DIMENSION(:), allocatable :: obs_wtg
         real(dp), DIMENSION(:), allocatable :: obs_wtg_tot
@@ -469,11 +469,11 @@ contains
         use sr_mat_n, only: obs_tot
         use sr_index, only: jelo, jelo2, jelohfj !< are they needed ?
 
-        implicit none 
+        implicit none
 
         integer, intent(in)                     :: nparm
         real(dp), dimension(:), intent(inout)   :: deltap
-        integer :: i, j, jfifj, jwtg, jfhfj, n_obs 
+        integer :: i, j, jfifj, jwtg, jfhfj, n_obs
 
         if (i_sr_rescale .eq. 0) return
 
@@ -522,7 +522,7 @@ contains
         use sr_mat_n, only: sr_o, wtg
         use sr_index, only: jelo
 
-        implicit none 
+        implicit none
 
         integer, parameter :: MTEST = 1500
         real(dp), dimension(:, :), allocatable :: cloc
@@ -533,7 +533,7 @@ contains
         real(dp), dimension(:), allocatable :: tmp
         real(dp), dimension(:), allocatable :: work
         integer, dimension(:), allocatable :: ipvt
-        integer :: nparm, i, j, k, jfhfj, ia, icent, iparm, ish, n_obs, l, info 
+        integer :: nparm, i, j, k, jfhfj, ia, icent, iparm, ish, n_obs, l, info
         integer :: jparm, jwtg, jfifj
         real(dp) :: dum, energy_tot, force_tmp, wtoti
 
@@ -597,6 +597,7 @@ contains
 
             call dgetrf(nparm, nparm, c, MTEST, ipvt, info)
             if (info .gt. 0) then
+                write(6,'(''optwf_sr.f'')')
                 write (6, '(''MATINV: u(k,k)=0 with k= '',i5)') info
                 call fatal_error('MATINV: info ne 0 in dgetrf')
             endif

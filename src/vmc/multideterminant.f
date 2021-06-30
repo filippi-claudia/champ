@@ -73,7 +73,7 @@ c dimensioned at least max(nup**2,ndn**2)
 c     write(6,*) 'eloc_ref',eloc_det(kref,1),eloc_det(kref,2)
 
       if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) call bxmatrix(kref,xmat(1,1),xmat(1,2),b)
-     
+
       if(ndet.eq.1.and.ioptorb.eq.0) return
 
       nel=nup
@@ -173,6 +173,7 @@ c           endif
 
 c           write(6,*) 'B HELLO',k,ndim,(irepcol_det(irep,k,iab),irep=1,ndim),(ireporb_det(jrep,k,iab),jrep=1,ndim)
             call matinv(wfmat(1,k,iab),ndim,det)
+
 c           write(6,*) 'A HELLO',k,det
             detiab(k,iab)=det
 
@@ -523,7 +524,7 @@ c     enddo
       end
 
 c-----------------------------------------------------------------------
- 
+
 c-----------------------------------------------------------------------
       function idiff(j,i,iab)
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
@@ -548,5 +549,5 @@ c-----------------------------------------------------------------------
       idiff=0
       return
       end
-           
+
 c-----------------------------------------------------------------------

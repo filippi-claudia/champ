@@ -10,7 +10,7 @@
       use multidet, only: kref
       use slatn, only: slmin
       use dorb_m, only: iworbd
-      use multislatern, only: ddorbn, detn, dorbn, orbn 
+      use multislatern, only: ddorbn, detn, dorbn, orbn
       use const, only: nelec
 
       use slater, only: d2dx2, ddx, fp, fpp, slmi
@@ -33,9 +33,9 @@
 
 
 
-      
+
       call orbitalse(iel,x,rvec_en,r_en,iflag)
-      
+
       if(iel.le.nup) then
         iab=1
         nel=nup
@@ -74,7 +74,7 @@
       end
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
-      
+
       use precision_kinds, only:dp
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
@@ -94,7 +94,7 @@ c-----------------------------------------------------------------------
       use velocity_jastrow, only: vj, vjn
       use mstates_ctrl, only: iguiding
       use mstates3, only: iweight_g, weights_g
-      use multislatern, only: ddorbn, detn, dorbn, orbn 
+      use multislatern, only: ddorbn, detn, dorbn, orbn
 
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
@@ -111,21 +111,15 @@ c-----------------------------------------------------------------------
       real(dp), dimension(3) :: vref
       real(dp), dimension(3) :: vd_s
       real(dp), dimension(3, MORB) :: dorb_tmp
-      real(dp), dimension(MORB, nelec) :: ymat_tmp
 
+      ! NR : ymat_tmp was not saved ....
+      ! it has the save keywoprd in the dev branch ...
+      ! real(dp), dimension(MORB, nelec) :: ymat_tmp
 
-
-
-
-
-
-
-
-
-      ! real(dp), allocatable, save :: ymat(:,:)
-      ! if (.not. allocated(ymat)) then 
-      !   allocate(ymat_tmp(norb,MELEC))
-      ! endif
+      real(dp), allocatable, save :: ymat_tmp(:,:)
+      if (.not. allocated(ymat_tmp)) then
+        allocate(ymat_tmp(norb,nelec))
+      endif
 
       ! save ymat_tmp
 
@@ -183,9 +177,9 @@ c       write(6,*) 'VD',(vd(kk),kk=1,3)
         vd(2)=vj(2,iel)+vd(2)
         vd(3)=vj(3,iel)+vd(3)
 
-c Within single-electron move - quantities of electron iel not saved 
+c Within single-electron move - quantities of electron iel not saved
        elseif(iflag_move.eq.0) then
-       
+
         call determinante_ref_grad(iel,slmin,dorbn,vref)
 
         if(iguiding.eq.0) then
@@ -235,7 +229,7 @@ c       write(6,*) 'VD',(vd(kk),kk=1,3)
 
        else
 
-c Within single-electron move - iel not equal to electron moved - quantities of electron iel not saved 
+c Within single-electron move - iel not equal to electron moved - quantities of electron iel not saved
         do kk=1,3
           do iorb=1,norb
             dorb_tmp(kk,iorb)=dorb(kk,iel,iorb)
@@ -279,7 +273,7 @@ c iel has different spin than the electron moved
       endif
 
 
-      return 
+      return
       end
 c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)

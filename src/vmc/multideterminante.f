@@ -52,7 +52,7 @@
         ish=nup
       endif
 
-c temporarely copy orbn to orb 
+c temporarely copy orbn to orb
       do iorb=1,norb
         orb_sav(iorb)=orb(iel,iorb)
         orb(iel,iorb)=orbn(iorb)
@@ -70,7 +70,7 @@ c temporarely copy orbn to orb
         enddo
       enddo
 
-c compute wave function 
+c compute wave function
       do 200 k=1,ndet
 
         if(k.ne.kref) then
@@ -89,6 +89,7 @@ c compute wave function
               wfmatn(jj,k)=aan(iorb,jorb)
             enddo
           enddo
+
 
           call matinv(wfmatn(1,k),ndim,det)
 

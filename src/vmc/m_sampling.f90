@@ -37,7 +37,7 @@ module config
     real(dp), dimension(:, :), allocatable :: vold !(3, MELEC)
     real(dp), dimension(:, :), allocatable :: xnew !(3, MELEC)
     real(dp), dimension(:, :), allocatable :: xold !(3, MELEC)
-    !> DMC variables: 
+    !> DMC variables:
     real(dp), dimension(:,:), allocatable :: d2o        ! (MWALK,MFORCE)
     real(dp), dimension(:,:), allocatable :: peo_dmc    ! (MWALK,MFORCE)
     real(dp), dimension(:,:), allocatable :: psido_dmc  ! (MWALK,MFORCE)
@@ -62,6 +62,7 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC
         use mstates_mod, only: MSTATES
+        implicit none
         if (.not. allocated(delttn)) allocate (delttn(nelec))
         if (.not. allocated(enew)) allocate (enew(MFORCE))
         if (.not. allocated(eold)) allocate (eold(MSTATES, MFORCE))
@@ -112,14 +113,24 @@ contains
     end subroutine deallocate_config
 
     subroutine allocate_config_dmc()
+      use const, only: nelec
+      use csfs, only: nstates
+      use force_mod, only: MFORCE
+      use precision_kinds, only: dp
+      use vmc_mod, only: MELEC
+      use mstates_mod, only: MSTATES
+      use dmc_mod, only: MWALK
+
+      implicit none
+
       if (.not. allocated(d2o)) allocate(d2o(MWALK,MFORCE))
       if (.not. allocated(peo_dmc)) allocate(peo_dmc(MWALK,MFORCE))
       if (.not. allocated(psido_dmc)) allocate(psido_dmc(MWALK,MFORCE))
       if (.not. allocated(psijo_dmc)) allocate(psijo_dmc(MWALK,MFORCE))
-      if (.not. allocated(vold_dmc)) allocate(vold_dmc(3,MELEC,MWALK,MFORCE))
-      if (.not. allocated(xold_dmc)) allocate(xold_dmc(3,MELEC,MWALK,MFORCE))
+      if (.not. allocated(vold_dmc)) allocate(vold_dmc(3,nelec,MWALK,MFORCE))
+      if (.not. allocated(xold_dmc)) allocate(xold_dmc(3,nelec,MWALK,MFORCE))
     end subroutine allocate_config_dmc
-  
+
     subroutine deallocate_config_dmc()
       if (allocated(d2o)) deallocate(d2o)
       if (allocated(peo_dmc)) deallocate(peo_dmc)

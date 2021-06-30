@@ -88,7 +88,7 @@ end module Bloc
 module bparm
     !> Arguments: nocuspb, nspin2b
 
-    implicit none 
+    implicit none
 
     integer :: nocuspb
     integer :: nspin2b
@@ -104,7 +104,7 @@ module casula
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MCENT
 
-    implicit none 
+    implicit none
 
     integer :: i_vpsp
     integer :: icasula
@@ -135,7 +135,7 @@ module chck
     !> Arguments: bot
     use precision_kinds, only: dp
 
-    implicit none 
+    implicit none
 
     real(dp) :: bot
 
@@ -150,7 +150,7 @@ module cuspmat
     use precision_kinds, only: dp
     use vmc_mod, only: NEQSX
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: cm !(NEQSX,NEQSX)
     integer :: ishe
@@ -181,7 +181,7 @@ module cuspmat4
     use vmc_mod, only: NEQSX, MTERMS
     use precision_kinds, only: dp
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: d !(NEQSX,MTERMS)
     integer, dimension(:), allocatable :: iwc4 !(NEQSX)
@@ -210,7 +210,7 @@ module distance_mod
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MCENT, MMAT_DIM2
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:, :, :), allocatable :: rshift !(3, MELEC, MCENT)
     real(dp), dimension(:, :), allocatable :: r_en !(MELEC, MCENT)
@@ -254,7 +254,7 @@ module distances_sav
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MCENT
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:), allocatable :: r_ee_sav !(MELEC)
     real(dp), dimension(:), allocatable :: r_en_sav !(MCENT)
@@ -292,7 +292,7 @@ end module distances_sav
 module elec
     !> Arguments: ndn, nup
 
-    implicit none 
+    implicit none
 
     integer :: ndn
     integer :: nup
@@ -305,7 +305,7 @@ end module elec
 module embed
     !> Never called
 
-    implicit none 
+    implicit none
 
     ! tables for hartree and exchange potentials
     ! max interpolation order
@@ -332,7 +332,7 @@ module gauss_ecp
     use precision_kinds, only: dp
     use vmc_mod, only: MCTYPE
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:, :, :), allocatable :: ecp_coef !(MGAUSS,MPS_L,MCTYPE)
     real(dp), dimension(:, :, :), allocatable :: ecp_exponent !(MGAUSS,MPS_L,MCTYPE)
@@ -367,7 +367,7 @@ end module gauss_ecp
 module gradjerrb
     !> Arguments: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
 
-    implicit none 
+    implicit none
 
     integer :: nbj_current
     integer :: ngrad_jas_bcum
@@ -383,7 +383,7 @@ module insout
     !> something to do with grid ...
     !> Arguments: inout, inside
 
-    implicit none 
+    implicit none
 
     integer :: inout
     integer :: inside
@@ -399,7 +399,7 @@ module jd_scratch
     use sr_mod, only: MPARM
     use precision_kinds, only: dp
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:), allocatable :: qr !(MPARM)
     real(dp), dimension(:), allocatable :: rr !(MPARM)
@@ -428,7 +428,7 @@ module linear_norm
     use optci, only: MXCITERM
     use precision_kinds, only: dp
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:), allocatable :: oav !(MXCITERM)
     real(dp), dimension(:), allocatable :: ci_oav !(MXCITERM)
@@ -455,7 +455,7 @@ end module linear_norm
 module multidet
     !> Arguments: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
 
-    implicit none 
+    implicit none
 
     integer, dimension(:), allocatable :: iactv !(2)
     integer, dimension(:, :, :), allocatable :: irepcol_det !(MELEC,MDET,2)
@@ -497,7 +497,7 @@ module multimat
     !> Arguments: aa, wfmat
     use precision_kinds, only: dp
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:, :, :), allocatable :: aa !(MELEC,MORB,2)
     real(dp), dimension(:, :, :), allocatable :: wfmat !(MEXCIT**2,MDET,2)
@@ -529,7 +529,7 @@ module multimatn
     !> Arguments: aan, wfmatn
     use precision_kinds, only: dp
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: aan !(MELEC,MORB)
     real(dp), dimension(:, :), allocatable :: wfmatn !(MEXCIT**2,MDET)
@@ -562,7 +562,7 @@ module multislater
     use precision_kinds, only: dp
     use vmc_mod, only: MDET
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: detiab !(MDET,2)
     !> DMC variables:
@@ -597,7 +597,7 @@ module multislatern
     use precision_kinds, only: dp
     use vmc_mod, only: MORB, MDET
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:), allocatable :: ddorbn !(MORB)
     real(dp), dimension(:), allocatable :: detn !(MDET)
@@ -632,7 +632,7 @@ end module multislatern
 module m_icount
     !> Arguments: icount_ci, icount_orb, icount_prop
 
-    implicit none 
+    implicit none
 
     integer :: icount_ci = 1
     integer :: icount_orb = 1
@@ -647,7 +647,7 @@ module ncusp
     !> Never called !
     !> Arguments: ncnstr, ncuspc, nfock, nfockc, norbc
 
-    implicit none 
+    implicit none
 
     integer :: ncnstr
     integer :: ncuspc
@@ -665,7 +665,7 @@ module orbval
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MORB
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: ddorb !(MELEC,MORB)
     real(dp), dimension(:, :, :), allocatable :: dorb !(3,MELEC,MORB)
@@ -701,7 +701,7 @@ module phifun
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MBASIS
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: d2phin !(MBASIS,MELEC)
     real(dp), dimension(:, :, :, :), allocatable :: d2phin_all !(3,3,MBASIS,MELEC)
@@ -750,7 +750,7 @@ module qua
     use pseudo_mod, only: MPS_QUAD
     use precision_kinds, only: dp
 
-    implicit none 
+    implicit none
 
     integer :: nquad
     real(dp), dimension(:), allocatable :: wq !(MPS_QUAD)
@@ -796,7 +796,7 @@ module rlobxy
     use precision_kinds, only: dp
     use vmc_mod, only: NSPLIN
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:), allocatable :: rlobx !(NSPLIN)
     real(dp), dimension(:), allocatable :: rloby !(NSPLIN)
@@ -827,7 +827,7 @@ module scale_more
     !> Arguments: dd3
     use precision_kinds, only: dp
 
-    implicit none 
+    implicit none
 
     real(dp) :: dd3
 
@@ -841,7 +841,7 @@ module scratch
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MORB, MDET
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: denergy_det !(MDET,2)
     real(dp), dimension(:, :, :), allocatable :: dtildem !(MELEC,MORB,2)
@@ -874,7 +874,7 @@ module slater
     use precision_kinds, only: dp
     use vmc_mod, only: MELEC, MMAT_DIM
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:), allocatable :: d2dx2 !(MELEC)
     real(dp), dimension(:, :), allocatable :: ddx !(3,MELEC)
@@ -934,7 +934,7 @@ module slatn
     use precision_kinds, only: dp
     use vmc_mod, only: MMAT_DIM
 
-    implicit none 
+    implicit none
 
     real(dp), dimension(:), allocatable :: slmin !(MMAT_DIM)
 
@@ -959,7 +959,7 @@ module svd_mod
     ! Not used anywhere !
     !> Arguments:
 
-    implicit none 
+    implicit none
 
     integer, parameter :: MBUF = 10000
     integer, parameter :: MXDIM = 3000

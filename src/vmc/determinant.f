@@ -32,6 +32,7 @@ c Modified by A. Scemama
 
 
 
+
 c compute orbitals
       call orbitals(x,rvec_en,r_en)
 
@@ -53,8 +54,10 @@ c compute orbitals
       jk=-nel
       do j=1,nel
         jorb=iworbd(j+ish,kref)
+
         jk=jk+nel
-        call dcopy(nel,orb   (1+ish,jorb),1,slmi(1+jk,iab),1)
+
+        call dcopy(nel,orb(1+ish,jorb),1,slmi(1+jk,iab),1)
         call dcopy(nel,dorb(1,1+ish,jorb),3,fp(1,j,iab),nel*3)
         call dcopy(nel,dorb(2,1+ish,jorb),3,fp(2,j,iab),nel*3)
         call dcopy(nel,dorb(3,1+ish,jorb),3,fp(3,j,iab),nel*3)
