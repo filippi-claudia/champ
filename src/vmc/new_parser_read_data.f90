@@ -949,20 +949,20 @@ subroutine read_csfmap_file(file_determinants)
 
         if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
 
-        !       This part looks unnecessary to me. cdet is anyway read before this
-        ! write(ounit, '(''Warning: det coef overwritten with csf'')')
+!              This part looks unnecessary to me. cdet is anyway read before this
+        write(ounit, '(''Warning: det coef overwritten with csf'')')
 
-        ! do k = 1, nstates
-        !     do j = 1, ndet
-        !         cdet(j, k, 1) = 0
-        !     enddo
-        !     do icsf = 1, ncsf
-        !         do j = iadet(icsf), ibdet(icsf)
-        !             jx = icxdet(j)
-        !             cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
-        !         enddo
-        !     enddo
-        ! enddo
+        do k = 1, nstates
+            do j = 1, ndet
+                cdet(j, k, 1) = 0
+            enddo
+            do icsf = 1, ncsf
+                do j = iadet(icsf), ibdet(icsf)
+                    jx = icxdet(j)
+                    cdet(jx, k, 1) = cdet(jx, k, 1) + ccsf(icsf, k, 1)*cxdet(j)
+                enddo
+            enddo
+        enddo
 
         write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
         write(ounit,int_format) " Number of determinants (ndet) ", ndet
