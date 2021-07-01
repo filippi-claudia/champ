@@ -8,18 +8,15 @@ c Written by Claudia Filippi
       use dmc_mod, only: MWALK
 
       use const, only: nelec
-      use vmc_mod, only: MORB, MDET, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use forcepar, only: deltot, istrech, nforce
-      use force_mod, only: MFORCE, MFORCE_WT_PRD
-      use mstates_mod, only: MSTATES, MDETCSFX
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo
-      use branch, only: wgdsumo, wt, wtgen, wthist
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
-      use dets, only: cdet, ndet
+      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MEXCIT
+      use dmc_mod, only: MWALK
+      use const, only: nelec
+      use mstates_mod, only: MSTATES
+      use branch, only: nwalk
+      use slater, only: ddx, fp, slmi
+      use dets, only: ndet
       use elec, only: ndn, nup
       use orbval, only: dorb, orb
       use coefs, only: norb
