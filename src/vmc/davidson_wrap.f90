@@ -15,6 +15,7 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
     use davidson, only: davidson_parameters
     use array_utils, only: eye, write_matrix, write_vector
     use mpi
+    use contrl_file,    only: ounit, errunit
 
     IMPLICIT NONE
 
@@ -84,7 +85,7 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
 
     call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
     call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
-    write (6, '(''DAV: idtask      : '', I10)') idtask
+    write (ounit, '(''DAV: idtask      : '', I10)') idtask
     notcnv = 0 !Not used in davidson_wrap
 
     ! Allocate variables
@@ -94,7 +95,7 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
 
     if (idtask == 0) then
         do i = 1, size(eigenvalues)
-            print *, "eigenvalue ", i, " : ", eigenvalues(i)
+            write(ounit,*) "(DAV) Eigenvalue ", i, " : ", eigenvalues(i)
         end do
     endif
 

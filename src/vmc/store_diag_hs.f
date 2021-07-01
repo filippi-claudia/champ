@@ -8,13 +8,13 @@
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot
       use mpi
-
+      use contrl_file,    only: ounit, errunit
       implicit real*8(a-h,o-z)
 
       ! dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
       dimension hii(MPARM),sii(MPARM)
 
-      write(6,*) 'nparm_p1,nparm',nparm_p1,nparm
+      write(ounit,*) 'nparm_p1,nparm',nparm_p1,nparm
 
       jwtg=1
       jelo=2
