@@ -50,7 +50,6 @@ contains
     subroutine allocate_orb_mat_001()
 
         use optorb_mod, only: MXORBOP
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(orb_ho)) allocate (orb_ho(MXORBOP, MSTATES))
         if (.not. allocated(orb_o)) allocate (orb_o(MXORBOP, MSTATES))
@@ -83,7 +82,6 @@ contains
     subroutine allocate_orb_mat_002()
 
         use optorb_mod, only: MXORBOP
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(orb_ho_old)) allocate (orb_ho_old(MXORBOP, MSTATES))
         if (.not. allocated(orb_o_old)) allocate (orb_o_old(MXORBOP, MSTATES))
@@ -115,7 +113,6 @@ contains
     subroutine allocate_orb_mat_003()
 
         use optorb_mod, only: MXORBOP
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(orb_o_cum)) allocate (orb_o_cum(MXORBOP, MSTATES))
         if (.not. allocated(orb_o_sum)) allocate (orb_o_sum(MXORBOP, MSTATES))
@@ -143,9 +140,7 @@ module orb_mat_004
     save
 contains
     subroutine allocate_orb_mat_004()
-        use csfs, only: nstates
         use optorb_mod, only: MXORBOP
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(orb_oe_cum)) allocate (orb_oe_cum(MXORBOP, MSTATES))
         if (.not. allocated(orb_oe_sum)) allocate (orb_oe_sum(MXORBOP, MSTATES))
@@ -174,7 +169,6 @@ contains
     subroutine allocate_orb_mat_005()
 
         use optorb_mod, only: MXORBOP
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(orb_ho_cum)) allocate (orb_ho_cum(MXORBOP, MSTATES))
     end subroutine allocate_orb_mat_005
@@ -201,7 +195,6 @@ contains
     subroutine allocate_orb_mat_006()
 
         use optorb_mod, only: MXMATDIM2
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(orb_oo_cum)) allocate (orb_oo_cum(MXMATDIM2, MSTATES))
     end subroutine allocate_orb_mat_006
@@ -228,7 +221,6 @@ contains
     subroutine allocate_orb_mat_007()
 
         use optorb_mod, only: MXMATDIM
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(orb_oho_cum)) allocate (orb_oho_cum(MXMATDIM, MSTATES))
     end subroutine allocate_orb_mat_007
@@ -282,7 +274,6 @@ contains
     subroutine allocate_orb_mat_024()
 
         use optorb_mod, only: MXORBOP
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(orb_e_bsum)) allocate (orb_e_bsum(MSTATES))
         if (.not. allocated(orb_f_bcm2)) allocate (orb_f_bcm2(MXORBOP, MSTATES))
@@ -318,7 +309,6 @@ module orb_mat_030
 contains
     subroutine allocate_orb_mat_030()
 
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(orb_ecum)) allocate (orb_ecum(MSTATES))
         if (.not. allocated(orb_wcum)) allocate (orb_wcum(MSTATES))
@@ -374,8 +364,6 @@ module optorb
     save
 contains
     subroutine allocate_optorb()
-        use coefs, only: norb
-        use precision_kinds, only: dp
         use vmc_mod, only: MORB
         if (.not. allocated(dmat_diag)) allocate (dmat_diag(MORB))
         ! if (.not. allocated(irrep)) allocate (irrep(MORB))
@@ -443,7 +431,6 @@ module optorb_mix
     save
 contains
     subroutine allocate_optorb_mix()
-        use coefs, only: norb
         use vmc_mod, only: MORB
         if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(MORB, MORB))
     end subroutine allocate_optorb_mix
