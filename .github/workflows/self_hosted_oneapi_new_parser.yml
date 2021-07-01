@@ -73,8 +73,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
-        echo "Comparing the energy with the reference one (total E = -26.2374041) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.2374041
+        echo "Comparing the energy with the reference one (total E = -26.1636431) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.1636431
 
     - name: "Test 05 (Butadiene) VMC optimization including geometry and csfmap using sr_n (500 determinants) on 1 processor"
       run: |
