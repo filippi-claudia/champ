@@ -281,6 +281,27 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -1.0569553) "
         /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0569553
 
+    - name: "Test 23 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-h2
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0652911) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0652911
+
+    - name: "Test 24 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-h2
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0598502) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0598502
 
 
     # Tests about psb3
