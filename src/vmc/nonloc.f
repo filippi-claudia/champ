@@ -2,8 +2,7 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use pseudo_mod, only: MPS_QUAD
       use optjas, only: MPARMJ
-      use vmc_mod, only: MELEC, MORB, MDET, MCENT
-      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MORB
       use atom, only: iwctype, ncent, ncent_tot
       use const, only: nelec, ipr
       use elec, only: nup
@@ -23,8 +22,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use b_tmove, only: b_t, iskip
       use qua, only: nquad, wq, xq, yq, zq
 
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use orbval, only: nadorb
+      use slater, only: slmi
       use multislater, only: detiab
 
       use precision_kinds, only: dp
@@ -262,7 +261,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: cent, ncent, ncent_tot
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
@@ -327,16 +325,15 @@ c-----------------------------------------------------------------------
       subroutine orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
-      use vmc_mod, only: MELEC, MORB, MCENT
       use atom, only: iwctype, ncent, ncent_tot
       use const, only: nelec
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: coef, norb
       use contrl_per, only: iperiodic
       use grid3dflag, only: i3dlagorb, i3dsplorb
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: ddorb, nadorb
       use precision_kinds, only: dp
       implicit none
 
@@ -466,10 +463,9 @@ c-----------------------------------------------------------------------
       subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent, ncent_tot
 
-      use jaspar, only: sspinn, is
+      use jaspar, only: sspinn
       use const, only: nelec
       use da_jastrow4val, only: da_j
       use elec, only: nup
@@ -642,7 +638,7 @@ c-----------------------------------------------------------------------
       subroutine compute_da_bnl(i,ic,ict,iq,r_en_sav,rvec_en_sav,costh,
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
-      use vmc_mod, only: MORB, MCENT
+      use vmc_mod, only: MORB
       use atom, only: ncent, ncent_tot
       use Bloc, only: db
       use coefs, only: norb

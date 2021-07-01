@@ -1,13 +1,8 @@
       function psinl(u,rshifti,rshiftj,rri,rrj,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c
+      use vmc_mod, only: MORDJ
+      use jaspar3, only: c
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
       use wfsec, only: iwf
@@ -78,13 +73,6 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function psianl(rri,it)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c
 
       use jaspar4, only: a4, norda
       use jaspar6, only: asymp_jasa, asymp_r
@@ -115,14 +103,8 @@ c-----------------------------------------------------------------------
 
       function psibnl(u,isb,ipar)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use jaspar, only: sspinn
-      use jaspar3, only: a, b, c
+      use jaspar3, only: b
       use jaspar4, only: nordb
       use jaspar6, only: asymp_jasb, asymp_r
       use wfsec, only: iwf
@@ -154,13 +136,6 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsianl(rri,it)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c
       use jaspar4, only: a4, norda
       use jaspar6, only: asymp_r
       use wfsec, only: iwf
@@ -189,14 +164,8 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsibnl(u,isb,ipar)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use jaspar, only: sspinn
-      use jaspar3, only: a, b, c
+      use jaspar3, only: b
       use jaspar4, only: nordb
       use jaspar6, only: asymp_r
       use wfsec, only: iwf
