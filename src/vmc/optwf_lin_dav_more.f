@@ -7,7 +7,7 @@
       use csfs, only: nstates
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, lin_jdav
-      use optwf_corsam, only: energy, force
+      use optwf_corsam, only: energy
       use optwf_parms, only: nparmd, nparmj
       use sr_mat_n, only: jfj
       use sr_mat_n, only: obs_tot
@@ -664,7 +664,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
-      use optwf_func, only: ifunc_omega, omega
+      use optwf_func, only: ifunc_omega
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp

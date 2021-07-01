@@ -117,12 +117,10 @@ c tmp
 c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
 
-      use vmc_mod, only: MELEC, MORB, MBASIS
       use numbas, only: numr
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use array_resize_utils, only: resize_tensor
+      use orbval, only: nadorb
       use inputflags, only: scalecoef
       use precision_kinds, only: dp
 
@@ -274,12 +272,10 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow
 
       use precision_kinds, only: dp
-      use force_mod, only: MWF
-      use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
       use atom, only: nctype, nctype_tot
       use wfsec, only: nwftype
-      use jaspar3, only: a, b, c
+      use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
 
       implicit none
@@ -348,8 +344,7 @@ c-----------------------------------------------------------------------
       subroutine save_lcao
 
       use precision_kinds, only: dp
-      use force_mod, only: MWF
-      use vmc_mod, only: MORB, MBASIS
+      use vmc_mod, only: MORB
       use coefs, only: coef, nbasis, norb
       use wfsec, only: nwftype
 
@@ -442,7 +437,7 @@ c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
 
       use atom, only: nctype
-      use jaspar3, only: a, b, c, scalek
+      use jaspar3, only: b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
 
       implicit none
@@ -478,9 +473,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
 
-      use vmc_mod, only: MELEC, MORB
       use coefs, only: coef, nbasis, norb
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: nadorb
 
       implicit none
 
@@ -531,12 +525,10 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
       use precision_kinds, only: dp
-      use force_mod, only: MWF
-      use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
       use atom, only: nctype, nctype_tot
-      use wfsec, only : nwftype
-      use jaspar3, only: a, b, c
+      use wfsec, only: nwftype
+      use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
 
       implicit none
@@ -602,9 +594,7 @@ c-----------------------------------------------------------------------
       subroutine save_lcao_best
 
       use precision_kinds, only: dp
-      use force_mod, only: MWF
-      use vmc_mod, only: MORB, MBASIS
-      use optwf_contrl, only: ioptorb
+      use vmc_mod, only: MORB
       use coefs, only: coef, nbasis, norb
       use wfsec, only: nwftype
 
@@ -642,7 +632,6 @@ c-----------------------------------------------------------------------
       use csfs, only: cxdet, iadet, ibdet, icxdet
       use mstates_mod, only: MSTATES
       use dets, only: cdet, ndet
-      use optwf_contrl, only: ioptci
 
       implicit none
 
@@ -721,7 +710,7 @@ c-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
 
       use atom, only: nctype
-      use jaspar3, only: a, b, c, scalek
+      use jaspar3, only: b, c
       use jaspar4, only: a4
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
@@ -761,7 +750,7 @@ c Check parameters a2 and b2 > -scalek
 c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
 
-      use vmc_mod, only: MORB, MBASIS
+      use vmc_mod, only: MORB
       use optwf_contrl, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
       use coefs, only: coef, nbasis, norb
@@ -859,7 +848,7 @@ c-----------------------------------------------------------------------
       subroutine check_parms_jas(iflag)
 
       use atom, only: nctype
-      use jaspar3, only: a, b, scalek
+      use jaspar3, only: b, scalek
       use jaspar4, only: a4
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
