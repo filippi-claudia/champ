@@ -359,7 +359,7 @@ subroutine parser
   n_omegaf      = fdf_get('n_omegaf', nopt_iter)
   n_omegat      = fdf_get('n_omegat', 0)
   nvec          = fdf_get('lin_nvec', 5)
-  nvecx         = fdf_get('lin_nvecx', MVEC)
+  nvecx         = fdf_get('lin_nvecx', 160)
   alin_adiag    = fdf_get('lin_adiag', 0.01)
   alin_eps      = fdf_get('lin_eps', 0.001)
   lin_jdav      = fdf_get('lin_jdav',0)

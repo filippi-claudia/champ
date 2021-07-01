@@ -1,11 +1,11 @@
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c     additional properties 
+c     additional properties
 c     Friedemann Schautz
-c     
+c
 c
 c     properties so far:
-c     1   2   3   4      5      6  
-c     <x> <y> <z> <x**2> <y**2> <z**2> 
+c     1   2   3   4      5      6
+c     <x> <y> <z> <x**2> <y**2> <z**2>
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine prop_compute(coord)
       use const, only: nelec
@@ -24,7 +24,7 @@ c     electron coordinates
  5    enddo
 
       do 10 i=1,nelec
-       do 20 m=1,3      
+       do 20 m=1,3
         vprop(m)  = vprop(m)+coord(m,i)
         vprop(3+m)= vprop(3+m) + coord(m,i)**2
  20    enddo
@@ -116,14 +116,15 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine prop_fin(passes,iblk,efin,eerr)
       use prp000, only: iprop, ipropprt
+      use contrl_file,    only: ounit
       implicit real*8(a-h,o-z)
 
 
       if(iprop.eq.0) return
-      write(6,'(''--- additional properties ---'')')
+      write(ounit,'(''--- additional properties ---'')')
       ipropprt_sav=ipropprt
       ipropprt=-1
-      call prop_prt(passes,iblk,6)
+      call prop_prt(passes,iblk,ounit)
       ipropprt=ipropprt_sav
 
       end
@@ -158,7 +159,7 @@ c         -1 force printout
       icount_prop=1
 
       call prop_avrg(w,iblk,pav(1),perr(1))
-      
+
 
       write(iu,10)
       write(iu,20) 'X  ',pav(1),perr(1),pav(1)/dble(nelec),perr(1)
@@ -182,8 +183,8 @@ c....dipole
       dipz=cc_nuc(3)*nelec*2.5417 - pav(3) *2.5417
       dip=dsqrt(dipx**2+dipy**2+dipz**2)
       diperr=dabs (perr(1)*2.5417 * dipx / dip) +
-     $       dabs (perr(2)*2.5417 * dipy / dip) + 
-     $       dabs (perr(3)*2.5417 * dipz / dip) 
+     $       dabs (perr(2)*2.5417 * dipy / dip) +
+     $       dabs (perr(3)*2.5417 * dipz / dip)
       write(iu,40) 'Dip X ',dipx,perr(1)*2.5417
       write(iu,40) 'Dip Y ',dipy,perr(2)*2.5417
       write(iu,40) 'Dip Z ',dipz,perr(3)*2.5417
@@ -200,7 +201,7 @@ c....dipole
       end
 
 !*********************************************************************
-        subroutine prop_cc_nuc(znuc,cent,iwctype,mctype,mcent, 
+        subroutine prop_cc_nuc(znuc,cent,iwctype,mctype,mcent,
      &  ncent,cc_nuc)
 !*********************************************************************
 
