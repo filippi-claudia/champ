@@ -4,8 +4,7 @@ c routine to accumulate estimators for energy etc.
 
       use precision_kinds, only: dp
       use force_mod, only: MFORCE
-      use vmc_mod, only: MELEC, MDET, MCENT
-      use vmc_mod, only: nrad, MMAT_DIM2
+      use vmc_mod, only: nrad
       use atom, only: znuc, cent, pecent, iwctype, ncent
       use mstates_mod, only: MSTATES
       use const, only: nelec, ipr
@@ -32,7 +31,7 @@ c routine to accumulate estimators for energy etc.
       use optorb_cblock, only: ns_current
       use distance_mod, only: rshift, r_en, rvec_en
       use multislater, only: detiab
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: rshift, r_en, rvec_en
       use inputflags, only: node_cutoff, eps_node_cutoff
 
       implicit none
