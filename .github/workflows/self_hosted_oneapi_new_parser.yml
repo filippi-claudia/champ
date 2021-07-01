@@ -246,16 +246,16 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -41.6178534) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_sr_n_single.out "total E" -41.6178534
+        echo "Comparing the energy with the reference one (total E = -42.5485250) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_sr_n_single.out "total E" -42.5485250
 
-    # - name: "Test 20 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 2 processors"
-    #   run: |
-    #     echo "Running the tests using the new parser. Butadiene VMC "
-    #     cd tests/CI_test/new-parser-psb3
+    - name: "Test 20 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 2 processors"
+      run: |
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/new-parser-psb3
 
-    #     echo "Running the optimization calculation"
-    #     mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_double.out -e error
+        echo "Running the optimization calculation"
+        mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_double.out -e error
 
-    #     echo "Comparing the energy with the reference one (total E = -41.6788575) "
-    #     /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_sr_n_double.out "total E" -41.6788575
+        echo "Comparing the energy with the reference one (total E = -42.6209550) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_sr_n_double.out "total E" -42.6209550

@@ -250,6 +250,7 @@ subroutine read_determinants_file(file_determinants)
     use inputflags,     only: ideterminants
     use wfsec,          only: nwftype
     use csfs,           only: nstates
+    use mstates_mod,    only: MSTATES
     use general,        only: pooldir
     use elec,           only: ndn, nup
     use const,          only: nelec
@@ -945,16 +946,16 @@ subroutine read_csfmap_file(file_determinants)
             enddo
         enddo
         if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
-        nmap = nptr - 1
+        nmap = nptr
 
+        if (allocated(cdet)) deallocate (cdet)
         if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
 
-!              This part looks unnecessary to me. cdet is anyway read before this
         write(ounit, '(''Warning: det coef overwritten with csf'')')
 
         do k = 1, nstates
             do j = 1, ndet
-                cdet(j, k, 1) = 0
+                cdet(j, k, 1) = 0.0d0
             enddo
             do icsf = 1, ncsf
                 do j = iadet(icsf), ibdet(icsf)
