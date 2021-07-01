@@ -318,7 +318,7 @@ subroutine read_determinants_file(file_determinants)
     ! Note the hack here about capitalized variables. DEBUG
     MDET = ndet
 
-    if (.not. allocated(cdet)) allocate(cdet(ndet,1,nwftype))
+    if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,nwftype))
 
     if (wid) then
         read(iunit,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
@@ -948,8 +948,8 @@ subroutine read_csfmap_file(file_determinants)
         if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
         nmap = nptr
 
-        if (allocated(cdet)) deallocate (cdet)
-        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
+!        if (allocated(cdet)) deallocate (cdet)
+!        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
 
         write(ounit, '(''Warning: det coef overwritten with csf'')')
 

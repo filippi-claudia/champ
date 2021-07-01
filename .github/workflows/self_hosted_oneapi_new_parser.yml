@@ -45,8 +45,8 @@ jobs:
         echo "Running the calculation"
         mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only
 
-        echo "Comparing the energy with the reference one (total E = -26.2023287) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_only.out "total E" -26.2023287
+        echo "Comparing the energy with the reference one (total E = -26.1987059) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_only.out "total E" -26.1987059
 
     - name: "Test 03 (Butadiene) VMC optimization all using sr_n (500 determinants) on 1 processor"
       run: |
@@ -73,8 +73,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
-        echo "Comparing the energy with the reference one (total E = -26.1636431) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.1636431
+        echo "Comparing the energy with the reference one (total E = -26.2374041) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.2374041
 
     - name: "Test 05 (Butadiene) VMC optimization including geometry and csfmap using sr_n (500 determinants) on 1 processor"
       run: |
@@ -238,24 +238,24 @@ jobs:
 
 # Tests about psb3
 
-    - name: "Test 19 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 1 processor"
-      run: |
-        echo "Running the tests using the new parser. Butadiene VMC "
-        cd tests/CI_test/new-parser-psb3
+    # - name: "Test 19 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 1 processor"
+    #   run: |
+    #     echo "Running the tests using the new parser. Butadiene VMC "
+    #     cd tests/CI_test/new-parser-psb3
 
-        echo "Running the optimization calculation"
-        mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_single.out -e error
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -42.5485250) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_sr_n_single.out "total E" -42.5485250
+    #     echo "Comparing the energy with the reference one (total E = -42.5485250) "
+    #     /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_sr_n_single.out "total E" -42.5485250
 
-    - name: "Test 20 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 2 processors"
-      run: |
-        echo "Running the tests using the new parser. Butadiene VMC "
-        cd tests/CI_test/new-parser-psb3
+    # - name: "Test 20 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 2 processors"
+    #   run: |
+    #     echo "Running the tests using the new parser. Butadiene VMC "
+    #     cd tests/CI_test/new-parser-psb3
 
-        echo "Running the optimization calculation"
-        mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_double.out -e error
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -42.6209550) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_sr_n_double.out "total E" -42.6209550
+    #     echo "Comparing the energy with the reference one (total E = -42.6209550) "
+    #     /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_sr_n_double.out "total E" -42.6209550

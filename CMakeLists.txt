@@ -97,7 +97,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
 
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-	list(APPEND Fortran_FLAGS "-fpp" "-O0" "-mcmodel=large" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
+	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=large" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   list(APPEND Fortran_FLAGS "-DCOMPILER=\"${CMAKE_Fortran_COMPILER}\"")
   list(APPEND Fortran_FLAGS "-DCOMPILER_VERSION=\"${CMAKE_Fortran_COMPILER_VERSION}\"")
   list(APPEND Fortran_FLAGS "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
