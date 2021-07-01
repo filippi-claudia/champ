@@ -45,8 +45,8 @@ jobs:
         echo "Running the calculation"
         mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only
 
-        echo "Comparing the energy with the reference one (total E = -26.1987059) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_only.out "total E" -26.1987059
+        echo "Comparing the energy with the reference one (total E = -26.2023287) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py vmc_only.out "total E" -26.2023287
 
     - name: "Test 03 (Butadiene) VMC optimization all using sr_n (500 determinants) on 1 processor"
       run: |
