@@ -16,8 +16,8 @@ module optwf_sr_mod
     use optwf_contrl, only: ioptci, ioptjas, ioptorb
     use force_analy, only: iforce_analy
     use contrl, only: nblk_max
-    use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
-    use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
+    use optwf_contrl, only: nopt_iter, micro_iter_sr, dparm_norm_min
+    use optwf_contrl, only: sr_tau, sr_adiag, sr_eps
 
     real(dp) :: omega0
     integer :: n_omegaf, n_omegat
@@ -39,7 +39,7 @@ contains
         use sr_mod, only: MPARM
         use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
         use mstates_mod, only: MSTATES
-        use optwf_corsam, only: energy, energy_err, force
+        use optwf_corsam, only: energy, energy_err
         use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
         use contrl, only: nblk
         use force_analy, only: alfgeo
@@ -467,7 +467,7 @@ contains
         use mpiconf, only: idtask
         use sr_mat_n, only: jefj, jfj, jhfj
         use sr_mat_n, only: obs_tot
-        use sr_index, only: jelo, jelo2, jelohfj !< are they needed ?
+        use sr_index, only: jelo, jelo2, jelohfj
 
         implicit none
 
