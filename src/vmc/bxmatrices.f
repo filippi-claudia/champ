@@ -1,11 +1,9 @@
       subroutine bxmatrix(kref,xmatu,xmatd,b)
 
-      use vmc_mod, only: MELEC, MORB
-      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MORB
       use elec, only: ndn, nup
       use dorb_m, only: iworbd
-      use coefs, only: norb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use slater, only: slmi
       use const, only: nelec
 
       use precision_kinds, only: dp
