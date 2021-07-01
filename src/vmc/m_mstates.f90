@@ -62,8 +62,6 @@ module csfs
 contains
     subroutine allocate_csfs()
         use wfsec, only: nwftype
-        use dets, only: ndet
-        use precision_kinds, only: dp
         use mstates_mod, only: MDETCSFX
         use mstates_mod, only: MSTATES
         use vmc_mod, only: MDET
@@ -99,8 +97,6 @@ module mstates2
     save
 contains
     subroutine allocate_mstates2()
-        use csfs, only: nstates
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(effcm2)) allocate (effcm2(MSTATES))
         if (.not. allocated(effcum)) allocate (effcum(MSTATES))
@@ -126,7 +122,6 @@ module mstates3
     save
 contains
     subroutine allocate_mstates3()
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(iweight_g)) allocate (iweight_g(MSTATES))
         if (.not. allocated(weights_g)) allocate (weights_g(MSTATES))
