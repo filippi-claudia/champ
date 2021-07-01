@@ -91,7 +91,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_fin(passes,eave)
 
-      use optorb_mod, only: MXORBOP, MXMATDIM
       use optci, only: MXCITERM
       use csfs, only: ccsf, ncsf
       use dets, only: cdet
@@ -104,7 +103,7 @@ c-----------------------------------------------------------------------
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
-      use gradhess_all, only: grad, h
+      use gradhess_all, only: grad
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum
       use ci006_blk, only: ci_de_cum
