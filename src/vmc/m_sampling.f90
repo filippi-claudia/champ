@@ -7,9 +7,7 @@ module config
 
     use force_mod, only: MFORCE
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC
     use mstates_mod, only: MSTATES
-    use dmc_mod, only: MWALK
 
     real(dp), dimension(:), allocatable :: delttn !(MELEC)
     real(dp), dimension(:), allocatable :: enew !(MFORCE)
@@ -57,10 +55,7 @@ module config
 contains
     subroutine allocate_config()
         use const, only: nelec
-        use csfs, only: nstates
         use force_mod, only: MFORCE
-        use precision_kinds, only: dp
-        use vmc_mod, only: MELEC
         use mstates_mod, only: MSTATES
         implicit none
         if (.not. allocated(delttn)) allocate (delttn(nelec))
@@ -114,11 +109,7 @@ contains
 
     subroutine allocate_config_dmc()
       use const, only: nelec
-      use csfs, only: nstates
       use force_mod, only: MFORCE
-      use precision_kinds, only: dp
-      use vmc_mod, only: MELEC
-      use mstates_mod, only: MSTATES
       use dmc_mod, only: MWALK
 
       implicit none
@@ -199,7 +190,6 @@ module step
     save
 contains
     subroutine allocate_step()
-        use precision_kinds, only: dp
         use vmc_mod, only: nrad
         if (.not. allocated(ekin)) allocate (ekin(nrad))
         if (.not. allocated(ekin2)) allocate (ekin2(nrad))
@@ -237,7 +227,6 @@ module kinet
     !> only used in metropolis
     !> Arguments: dtdx2n, dtdx2o
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC
 
     real(dp), dimension(:), allocatable :: dtdx2n !(MELEC)
     real(dp), dimension(:), allocatable :: dtdx2o !(MELEC)
@@ -249,8 +238,6 @@ module kinet
 contains
     subroutine allocate_kinet()
         use const, only: nelec
-        use precision_kinds, only: dp
-        use vmc_mod, only: MELEC
         if (.not. allocated(dtdx2n)) allocate (dtdx2n(nelec))
         if (.not. allocated(dtdx2o)) allocate (dtdx2o(nelec))
     end subroutine allocate_kinet
