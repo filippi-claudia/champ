@@ -88,9 +88,9 @@
       use pcm_xv_new, only: xv_new
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, nch, nchs
-      use pcm_parms, only: nchv, nscv
+      use pcm_parms, only: nchv
       use pcm_parms, only: xpol
-      use pcm_fdc, only: fs, qvol
+      use pcm_fdc, only: qvol
       use mpi
       use precision_kinds, only: dp
 
