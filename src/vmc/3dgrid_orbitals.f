@@ -3,25 +3,20 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       subroutine setup_3dsplorb
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use grid_spline_mod, only: MORB_OCC
       use grid_spline_mod, only: orb_num_spl
       use grid_mod, only: MXNSTEP, MXNSTEP3
       use grid_mod, only: cart_from_int
-      use vmc_mod, only: MELEC, MCENT
-      use vmc_mod, only: MORB
-      use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, ncent
       use const, only: nelec
-      use ghostatom, only: newghostype, nghostcent
+      use ghostatom, only: nghostcent
       use phifun, only: d2phin, dphin
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: irstar
       use phifun, only: d2phin, dphin, phin
       use grid3d_param, only: endpt, nstep3d, origin
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, rvec_en
       use precision_kinds, only: dp
       implicit none
 
@@ -314,7 +309,7 @@ c----------------------------------------------------------------------
 
       interface
       function int_from_cart(value, iaxis)
-        use precision_kinds, only:dp
+        use precision_kinds, only: dp
         real(dp), intent(in) :: value
         integer, intent(in) :: iaxis
         integer :: int_from_cart
@@ -412,23 +407,20 @@ c Lagrange interpolation routines
 
       subroutine setup_3dlagorb
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use grid_lagrange_mod, only: LAGSTART, LAGEND, MORB_OCC
+      use grid_lagrange_mod, only: LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc_mod, only: MELEC, MORB, MCENT
+      use grid_mod, only: cart_from_int
       use vmc_mod, only: MORB
-      use vmc_mod, only: MMAT_DIM2
+      use vmc_mod, only: MORB
       use atom, only: cent, ncent
       use wfsec, only: iwf
       use grid3d_param, only: nstep3d, endpt, origin
       use orbital_num_lag, only: denom
-      use const, only: nelec
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: nghostcent
       use contrl, only: irstar
       use phifun, only: phin, dphin, d2phin
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, rvec_en
       use precision_kinds, only: dp
       implicit none
 
@@ -620,11 +612,10 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use vmc_mod, only: MELEC, MORB
+      use vmc_mod, only: MORB
       use insout, only: inout, inside
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
@@ -637,7 +628,7 @@ c
 
       interface
       function int_from_cart(value, iaxis)
-        use precision_kinds, only:dp
+        use precision_kinds, only: dp
         real(dp), intent(in) :: value
         integer, intent(in) :: iaxis
         integer :: int_from_cart
@@ -720,11 +711,10 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use vmc_mod, only: MELEC, MORB
+      use vmc_mod, only: MORB
       use insout, only: inout, inside
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
@@ -736,7 +726,7 @@ c
 
       interface
       function int_from_cart(value, iaxis)
-        use precision_kinds, only:dp
+        use precision_kinds, only: dp
         real(dp), intent(in) :: value
         integer, intent(in) :: iaxis
         integer :: int_from_cart
@@ -821,7 +811,6 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
@@ -836,7 +825,7 @@ c
 
       interface
       function int_from_cart(value, iaxis)
-        use precision_kinds, only:dp
+        use precision_kinds, only: dp
         real(dp), intent(in) :: value
         integer, intent(in) :: iaxis
         integer :: int_from_cart
@@ -920,7 +909,6 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
@@ -935,7 +923,7 @@ c
 
       interface
       function int_from_cart(value, iaxis)
-        use precision_kinds, only:dp
+        use precision_kinds, only: dp
         real(dp), intent(in) :: value
         integer, intent(in) :: iaxis
         integer :: int_from_cart
@@ -1010,7 +998,6 @@ c Compute displacements
       end
 c-----------------------------------------------------------------------
       subroutine orb3d_dump(iu)
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_mod, only: cart_from_int
       use coefs, only: norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
@@ -1041,7 +1028,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine orb3d_rstrt(iu)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_mod, only: cart_from_int
       use coefs, only: norb
 
@@ -1071,7 +1057,6 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_dump(iu)
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_spline_mod, only: orb_num_spl
       use coefs, only: norb
       use grid3d_param, only: nstep3d
@@ -1093,7 +1078,6 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_rstrt(iu)
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_spline_mod, only: orb_num_spl
       use coefs, only: norb
       use grid3d_param, only: nstep3d
@@ -1115,7 +1099,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_dump(iu)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: orb_num_lag
       use coefs, only: norb
       use grid3d_param, only: nstep3d
@@ -1139,7 +1122,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_rstrt(iu)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: orb_num_lag
       use coefs, only: norb
       use grid3d_param, only: nstep3d

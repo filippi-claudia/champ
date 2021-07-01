@@ -2,8 +2,6 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use vmc_mod, only: MELEC, MORB, MDET, MCENT
-      use vmc_mod, only: MMAT_DIM
       use const, only: ipr
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -11,7 +9,7 @@ c Modified by A. Scemama
       use dorb_m, only: iworbd
       use contr3, only: mode
 
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: ddorb, dorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
       use const, only: nelec
 
@@ -106,14 +104,13 @@ c for dmc must be implemented: for each iw, must save not only kref,kref_old but
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
-      use vmc_mod, only: MELEC, MORB, MDET
       use const, only: ipr
       use estpsi, only: detref
       use multidet, only: kref
 
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: nadorb
       use multislater, only: detiab
       use precision_kinds, only: dp
       implicit none
@@ -151,7 +148,6 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
-      use vmc_mod, only: MELEC, MORB
       use atom, only: ncent
       use const, only: hb, nelec
       use da_jastrow4val, only: da_vj
@@ -165,8 +161,7 @@ c-----------------------------------------------------------------------
       use Bloc, only: b
       use force_analy, only: iforce_analy
       use velocity_jastrow, only: vj
-      use array_resize_utils, only: resize_matrix, resize_tensor
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: ddorb, dorb, nadorb
       use precision_kinds, only: dp
       implicit none
 

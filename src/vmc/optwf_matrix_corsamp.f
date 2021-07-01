@@ -653,7 +653,6 @@ c Solve linear equations
 c-----------------------------------------------------------------------
       subroutine combine_derivatives
 
-      use optorb_mod, only: MXORBOP, MXMATDIM
       use gradhess_ci, only: h_ci, s_ci
       use gradhess_jas, only: h_jas, s_jas
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
@@ -665,7 +664,6 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
       use method_opt, only: method
       use optorb_cblock, only: nreduced
-      use precision_kinds, only: dp
 
       implicit none
 

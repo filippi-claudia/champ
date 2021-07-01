@@ -32,7 +32,6 @@ module prp001
 contains
     subroutine allocate_prp001()
         use properties, only: MAXPROP
-        use precision_kinds, only: dp
         if (.not. allocated(vprop)) allocate (vprop(MAXPROP))
     end subroutine allocate_prp001
 
@@ -44,7 +43,7 @@ end module prp001
 
 module prp002
     !> Arguments: vprop_old
-    use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
+    use dmc_mod, only: MWALK
     use properties, only: MAXPROP
     use precision_kinds, only: dp
 
@@ -58,7 +57,6 @@ module prp002
 contains
     subroutine allocate_prp002()
         use properties, only: MAXPROP
-        use precision_kinds, only: dp
         if (.not. allocated(vprop_old)) allocate (vprop_old(MAXPROP, MWALK))
         if (.not. allocated(vprop_old2)) allocate (vprop_old2(MAXPROP))
     end subroutine allocate_prp002
@@ -87,7 +85,6 @@ module prp003
 contains
     subroutine allocate_prp003()
         use properties, only: MAXPROP
-        use precision_kinds, only: dp
         if (.not. allocated(cc_nuc)) allocate (cc_nuc(3))
         if (.not. allocated(vprop_cm2)) allocate (vprop_cm2(MAXPROP))
         if (.not. allocated(vprop_cum)) allocate (vprop_cum(MAXPROP))

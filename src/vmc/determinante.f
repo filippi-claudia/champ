@@ -1,19 +1,13 @@
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use elec, only: ndn, nup
       use multidet, only: kref
       use slatn, only: slmin
       use dorb_m, only: iworbd
-      use multislatern, only: ddorbn, detn, dorbn, orbn
+      use multislatern, only: detn, orbn
       use const, only: nelec
 
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use slater, only: slmi
 
       use multislater, only: detiab
 
@@ -75,13 +69,8 @@
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
-      use precision_kinds, only:dp
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use precision_kinds, only: dp
+      use vmc_mod, only: MORB
       use csfs, only: nstates
       use elec, only: nup
       use multidet, only: kref
@@ -94,10 +83,10 @@ c-----------------------------------------------------------------------
       use velocity_jastrow, only: vj, vjn
       use mstates_ctrl, only: iguiding
       use mstates3, only: iweight_g, weights_g
-      use multislatern, only: ddorbn, detn, dorbn, orbn
+      use multislatern, only: detn, dorbn
 
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use orbval, only: dorb
+      use slater, only: slmi
       use const, only: nelec
       use multislater, only: detiab
 
@@ -279,16 +268,11 @@ c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
       use precision_kinds, only: dp
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MORB
+      use vmc_mod, only: MMAT_DIM
       use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
-      use coefs, only: norb
 
       implicit none
 

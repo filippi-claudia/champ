@@ -30,7 +30,6 @@ module force_mod
 contains
     subroutine allocate_forcepar()
         use force_mod, only: MFORCE
-        use precision_kinds, only: dp
         if (.not. allocated(deltot)) allocate (deltot(MFORCE))
     end subroutine allocate_forcepar
 
@@ -74,7 +73,6 @@ end module forcepar
  contains
      subroutine allocate_forcest()
          use force_mod, only: MFORCE
-         use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
          if (.not. allocated(fcm2)) allocate (fcm2(MSTATES, MFORCE))
          if (.not. allocated(fcum)) allocate (fcum(MSTATES, MFORCE))
@@ -95,9 +93,7 @@ end module forcepar
 
  module forcestr
      !> Arguments: delc
-     use force_mod, only: MFORCE
      use precision_kinds, only: dp
-     use vmc_mod, only: MCENT
 
      implicit none
 
@@ -140,7 +136,6 @@ end module forcepar
  contains
      subroutine allocate_forcewt()
          use force_mod, only: MFORCE
-         use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
          if (.not. allocated(wcum)) allocate (wcum(MSTATES, MFORCE))
          if (.not. allocated(wsum)) allocate (wsum(MSTATES, MFORCE))
@@ -169,7 +164,6 @@ end module forcepar
  module force_fin
      !> Arguments: da_energy_ave, da_energy_err
      use precision_kinds, only: dp
-     use vmc_mod, only: MCENT
 
      implicit none
 
@@ -182,7 +176,6 @@ end module forcepar
      save
  contains
      subroutine allocate_force_fin()
-         use precision_kinds, only: dp
          use atom, only: ncent_tot
          if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot))
          if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))
@@ -200,7 +193,6 @@ end module forcepar
 
      use sr_mod, only: MCONF
      use precision_kinds, only: dp
-     use vmc_mod, only: MCENT
 
      implicit none
 
@@ -213,7 +205,6 @@ end module forcepar
  contains
      subroutine allocate_force_mat_n()
          use sr_mod, only: MCONF
-         use precision_kinds, only: dp
          use atom, only: ncent_tot
          if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, MCONF))
      end subroutine allocate_force_mat_n

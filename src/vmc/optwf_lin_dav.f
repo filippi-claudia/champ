@@ -1,18 +1,12 @@
       subroutine optwf_lin_d
 
-      use sr_mod, only: MPARM, MOBS, MCONF
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use sr_mod, only: MPARM
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
-      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
+      use optwf_contrl, only: dparm_norm_min, nopt_iter, micro_iter_sr
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: energy, energy_err, force
+      use optwf_corsam, only: energy, energy_err
       use optwf_func, only: ifunc_omega, omega, omega0, n_omegaf, n_omegat
       use contrl, only: nblk, nblk_max
       use force_analy, only: iforce_analy, alfgeo
@@ -174,7 +168,7 @@ c enddo iteration
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_lin_d(ndim,nvec,psi,hpsi)
 
-      use sr_mod, only: MPARM, MOBS, MCONF
+      use sr_mod, only: MPARM
       use optwf_func, only: ifunc_omega
       use precision_kinds, only: dp
 
@@ -198,7 +192,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_lin_d(ndim,nvec,psi,spsi)
 
-      use sr_mod, only: MPARM, MOBS, MCONF
+      use sr_mod, only: MPARM
       use optwf_func, only: ifunc_omega
       use precision_kinds, only: dp
 
@@ -219,12 +213,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine select_ci_root(iroot)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: ccsf, ncsf
       use dets, only: cdet, ndet
 

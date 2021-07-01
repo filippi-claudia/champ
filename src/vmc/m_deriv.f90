@@ -1,7 +1,6 @@
 module da_energy_sumcum
     !> Arguments: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
     use precision_kinds, only: dp
-    use vmc_mod, only: MCENT
 
     implicit none
 
@@ -18,8 +17,6 @@ module da_energy_sumcum
 contains
     subroutine allocate_da_energy_sumcum()
         use atom, only: ncent_tot
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCENT
         if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, ncent_tot))
         if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, ncent_tot))
         if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, ncent_tot))
@@ -40,7 +37,6 @@ end module da_energy_sumcum
 module da_jastrow4val
     !> Arguments: da_d2j, da_j, da_vj
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC, MCENT
 
     implicit none
 
@@ -56,8 +52,6 @@ contains
     subroutine allocate_da_jastrow4val()
         use const, only: nelec
         use atom, only: ncent_tot
-        use precision_kinds, only: dp
-        use vmc_mod, only: MELEC, MCENT
         if (.not. allocated(da_d2j)) allocate (da_d2j(3, nelec, ncent_tot))
         if (.not. allocated(da_j)) allocate (da_j(3, nelec, ncent_tot))
         if (.not. allocated(da_vj)) allocate (da_vj(3, 3, nelec, ncent_tot))
@@ -74,7 +68,7 @@ end module da_jastrow4val
 module da_orbval
     !> Arguments: da_d2orb, da_dorb, da_orb
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC, MORB, MCENT
+    use vmc_mod, only: MORB
 
     implicit none
 
@@ -89,10 +83,8 @@ module da_orbval
 contains
     subroutine allocate_da_orbval()
         use const, only: nelec
-        use coefs, only: norb
         use atom, only: ncent_tot
-        use precision_kinds, only: dp
-        use vmc_mod, only: MELEC, MORB, MCENT
+        use vmc_mod, only: MORB
         if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, MORB, ncent_tot))
         if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, MORB, ncent_tot))
         if (.not. allocated(da_orb)) allocate (da_orb(3, nelec, MORB, ncent_tot))
@@ -111,7 +103,6 @@ module da_pseudo
 
     use pseudo_mod, only: MPS_L
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC, MCENT
 
     implicit none
 
@@ -128,8 +119,6 @@ contains
         use const, only: nelec
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_L
-        use precision_kinds, only: dp
-        use vmc_mod, only: MELEC, MCENT
         if (.not. allocated(da_pecent)) allocate (da_pecent(3, ncent_tot))
         if (.not. allocated(da_vps)) allocate (da_vps(3, nelec, ncent_tot, MPS_L))
         if (.not. allocated(da_nonloc)) allocate (da_nonloc(3, ncent_tot))
@@ -149,7 +138,6 @@ end module da_pseudo
 module da_energy_now
     !> Arguments: da_energy, da_psi
     use precision_kinds, only: dp
-    use vmc_mod, only: MCENT
 
     implicit none
 
@@ -163,8 +151,6 @@ module da_energy_now
 contains
     subroutine allocate_da_energy_now()
         use atom, only: ncent_tot
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCENT
         if (.not. allocated(da_energy)) allocate (da_energy(3, ncent_tot))
         if (.not. allocated(da_psi)) allocate (da_psi(3, ncent_tot))
     end subroutine allocate_da_energy_now
@@ -192,9 +178,7 @@ module deloc_dj_m
     save
 contains
     subroutine allocate_deloc_dj_m()
-        use csfs, only: nstates
         use optjas, only: MPARMJ
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(denergy)) allocate (denergy(MPARMJ, MSTATES))
     end subroutine allocate_deloc_dj_m
@@ -220,8 +204,6 @@ module denergy_det_m
     save
 contains
     subroutine allocate_denergy_det_m()
-        use dets, only: ndet
-        use precision_kinds, only: dp
         use vmc_mod, only: MDET
         if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2))
     end subroutine allocate_denergy_det_m
@@ -248,7 +230,6 @@ module denupdn
     save
 contains
     subroutine allocate_denupdn()
-        use precision_kinds, only: dp
         use vmc_mod, only: nrad
         if (.not. allocated(rprobdn)) allocate (rprobdn(nrad))
         if (.not. allocated(rprobup)) allocate (rprobup(nrad))
@@ -265,7 +246,6 @@ module derivjas
     !> Arguments: d2g, g, go, gvalue
     use optjas, only: MPARMJ
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC
 
     implicit none
 
@@ -282,8 +262,6 @@ contains
     subroutine allocate_derivjas()
         use const, only: nelec
         use optjas, only: MPARMJ
-        use precision_kinds, only: dp
-        use vmc_mod, only: MELEC
         if (.not. allocated(d2g)) allocate (d2g(MPARMJ))
         if (.not. allocated(g)) allocate (g(3, nelec, MPARMJ))
         if (.not. allocated(go)) allocate (go(nelec, nelec, MPARMJ))
@@ -301,9 +279,8 @@ end module derivjas
 
 module dorb_m
     !> Arguments: iworbd
-    use vmc_mod, only: MELEC, MDET
+    use vmc_mod, only: MDET
     use const, only: nelec
-    use dets, only: ndet
 
     implicit none
 
@@ -331,7 +308,6 @@ end module dorb_m
 module ijasnonlin
     !> Arguments: d1d2a, d1d2b, d2d2a, d2d2b
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
 
     implicit none
 
@@ -347,8 +323,6 @@ module ijasnonlin
 contains
     subroutine allocate_ijasnonlin()
         use atom, only: nctype_tot
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCTYPE
         if (.not. allocated(d1d2a)) allocate (d1d2a(nctype_tot))
         if (.not. allocated(d1d2b)) allocate (d1d2b(2))
         if (.not. allocated(d2d2a)) allocate (d2d2a(nctype_tot))

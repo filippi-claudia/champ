@@ -12,7 +12,6 @@ module sa_check
      save
  contains
      subroutine allocate_sa_check()
-         use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
          if (.not. allocated(energy_all)) allocate (energy_all(MSTATES))
          if (.not. allocated(energy_err_all)) allocate (energy_err_all(MSTATES))
@@ -40,7 +39,6 @@ module sa_check
      save
  contains
      subroutine allocate_sa_weights()
-         use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
          if (.not. allocated(iweight)) allocate (iweight(MSTATES))
          if (.not. allocated(weights)) allocate (weights(MSTATES))

@@ -43,7 +43,6 @@ module efield_mod
      save
  contains
      subroutine allocate_efield_blk()
-         use precision_kinds, only: dp
          use efield_mod, only: MCHARGES
          if (.not. allocated(ascreen)) allocate (ascreen(MCHARGES))
          if (.not. allocated(bscreen)) allocate (bscreen(MCHARGES))

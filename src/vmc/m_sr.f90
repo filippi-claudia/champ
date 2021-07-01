@@ -48,7 +48,6 @@ module sr_mat_n
 contains
     subroutine allocate_sr_mat_n()
         use sr_mod, only: MPARM, MOBS, MCONF
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(elocal)) allocate (elocal(MCONF, MSTATES))
         if (.not. allocated(h_sr)) allocate (h_sr(MPARM))

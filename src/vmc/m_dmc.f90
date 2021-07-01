@@ -16,7 +16,6 @@ end module  dmc_mod
 
 module age
   !> Arguments: iage, ioldest, ioldestmx
-  use precision_kinds, only: dp
   use dmc_mod, only: MWALK
 
   implicit none
@@ -183,7 +182,6 @@ module velratio
    use precision_kinds, only: dp
    use dmc_mod, only: MWALK
    use force_mod, only: MFORCE
-   use vmc_mod, only: MELEC
 
    implicit none
 
@@ -197,10 +195,8 @@ module velratio
 
 contains
    subroutine allocate_velratio()
-      use precision_kinds, only: dp
       use dmc_mod, only: MWALK
       use force_mod, only: MFORCE
-      use vmc_mod, only: MELEC
       use const, only: nelec
       if (.not. allocated(fratio)) allocate(fratio(MWALK, MFORCE))
       if (.not. allocated(xdrifted)) allocate(xdrifted(3, nelec, MWALK, MFORCE))

@@ -1,6 +1,5 @@
       subroutine compute_force(psid,denergy)
 
-      use vmc_mod, only: MCENT
       use atom, only: ncent
       use const, only: nelec
       use da_jastrow4val, only: da_j
@@ -31,10 +30,9 @@ c     write(6,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
 
-      use vmc_mod, only: MELEC, MORB, MDET, MCENT
-      use vmc_mod, only: MMAT_DIM
-      use atom, only: ncent,ncent_tot
-      use const, only: nelec, ipr
+      use vmc_mod, only: MORB
+      use atom, only: ncent, ncent_tot
+      use const, only: nelec
       use da_energy_now, only: da_psi
       use da_jastrow4val, only: da_j
       use da_orbval, only: da_orb
@@ -43,8 +41,7 @@ c-----------------------------------------------------------------------
       use zcompact, only: aaz, zmat
       use coefs, only: norb
       use dorb_m, only: iworbd
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use slater, only: slmi
       use multislater, only: detiab
       use precision_kinds, only: dp
 
@@ -125,8 +122,6 @@ c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
 c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
 
-      use vmc_mod, only: MELEC, MORB, MDET, MCENT
-      use vmc_mod, only: MMAT_DIM
       use atom, only: iwctype, ncent, ncent_tot
       use const, only: hb, nelec
       use da_energy_now, only: da_energy, da_psi
@@ -142,8 +137,7 @@ c-----------------------------------------------------------------------
       use pseudo, only: lpot
       use da_pseudo, only: da_pecent, da_vps
       use velocity_jastrow, only: vj
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use slater, only: slmi
       use multislater, only: detiab
       use precision_kinds, only: dp
 

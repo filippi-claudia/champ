@@ -44,7 +44,6 @@ c This requires changing all the metrop routines that call gammai.
 c Returns   gammai, iflag=1,    x <  a+4
 c          -gammac, iflag=-1,   x >= a+4 even though it is called gammai
 
-      use pcm_parms, only: re
       use precision_kinds, only: dp
       implicit none
 

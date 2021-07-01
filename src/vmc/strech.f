@@ -14,7 +14,6 @@ c rigidly with that nucleus
       use pcm, only: MCHS, MCHV
       use force_mod, only: MFORCE, MFORCE_WT_PRD
       use forcepar, only: istrech, alfstr
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: znuc, cent, pecent, iwctype, ncent, ncent_tot
       use const, only: nelec
       use force_dmc, only: itausec, nwprod

@@ -1,8 +1,6 @@
       subroutine deriv_jastrow4(x,v,d2,value)
 c Written by Cyrus Umrigar and Claudia Filippi
-      use vmc_mod, only: MELEC, MCENT
-      use vmc_mod, only: MORDJ, MMAT_DIM2
-      use vmc_mod, only: NEQSX, MTERMS
+      use vmc_mod, only: MORDJ
       use atom, only: iwctype, nctype, ncent
       use const, only: nelec
       use derivjas, only: d2g, g, go, gvalue
@@ -10,7 +8,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
       use jaspar, only: sspinn
-      use jaspar3, only: a, b, c
+      use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r
       use jaspar6, only: cutjas
@@ -27,7 +25,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use vardep, only: cdep, iwdepend, nvdepend
       use distance_mod, only: rshift, r_en, rvec_en
       use force_analy, only: iforce_analy
-      use cuspmat4, only: d, iwc4, nterms
+      use cuspmat4, only: d, iwc4
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
       implicit none

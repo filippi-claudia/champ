@@ -7,7 +7,6 @@ c    C.J. Umrigar, in "Quantum Monte Carlo Methods in Physics and Chemistry",
 c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
-      use vmc_mod, only: MELEC, MORB, MDET
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
       use atom, only: znuc, cent, iwctype, ncent
@@ -31,8 +30,6 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use mmpol_cntrl, only: ich_mmpol
       use mstates_ctrl, only: iguiding
       use pcm_cntrl, only: ichpol
-      use method_opt, only: method
-      use multislatern, only: ddorbn, detn, dorbn, orbn
       use const, only: nelec
       use inputflags, only: node_cutoff, eps_node_cutoff
       use precision_kinds, only: dp

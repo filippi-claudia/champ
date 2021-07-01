@@ -1,8 +1,6 @@
       subroutine psie(iel,coord,psid,psij,ipass,iflag)
 c Written by Claudia Filippi by modifying hpsi
 
-      use vmc_mod, only: MELEC, MORB, MDET, MCENT
-      use vmc_mod, only: MMAT_DIM2
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use estpsi, only: apsi, aref
@@ -10,8 +8,8 @@ c Written by Claudia Filippi by modifying hpsi
       use wfsec, only: iwf, iwftype
       use contr2, only: ianalyt_lap
       use velocity_jastrow, only: vjn
-      use multislatern, only: ddorbn, detn, dorbn, orbn
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use multislatern, only: detn
+      use distance_mod, only: r_en, rvec_en
       use const, only: nelec
       use precision_kinds, only: dp
 

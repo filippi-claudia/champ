@@ -1,7 +1,6 @@
       subroutine jastrow(x,v,d2,value,ifr)
 c Written by Cyrus Umrigar
 
-      use vmc_mod, only: MELEC
       use const, only: nelec
       use optwf_contrl, only: ioptjas
       use precision_kinds, only: dp
