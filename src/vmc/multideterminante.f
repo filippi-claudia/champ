@@ -1,11 +1,7 @@
       subroutine multideterminante(iel)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MORB
+      use vmc_mod, only: MEXCIT
       use csfs, only: nstates
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -14,9 +10,9 @@
       use ycompactn, only: ymatn
       use coefs, only: norb
       use multimatn, only: aan, wfmatn
-      use multislatern, only: ddorbn, detn, dorbn, orbn
+      use multislatern, only: detn, orbn
       use const, only: nelec
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: orb
       use multislater, only: detiab
       use precision_kinds, only: dp
       implicit none
@@ -127,12 +123,9 @@ c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
       use precision_kinds, only: dp
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MEXCIT
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, ivirt, kref
