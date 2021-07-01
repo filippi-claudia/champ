@@ -42,7 +42,6 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use dmc_mod, only: MWALK
       use const, only: etrial, hb, ipr, nelec
       use forcepar, only: istrech, nforce
       use age, only: iage, ioldest, ioldestmx
