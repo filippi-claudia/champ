@@ -289,8 +289,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -1.0652911) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0652911
+        echo "Comparing the energy with the reference one (total E = -1.0549647) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0549647
 
     - name: "Test 24 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
       run: |
