@@ -30,6 +30,8 @@ jobs:
     - name: Compile
       run: |
         source /opt/intel/oneapi/setvars.sh
+        which mpiifort
+        which mpirun
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
         cmake --build build -- -j1
 
@@ -42,7 +44,7 @@ jobs:
         cp -v mc_configs_start_save mc_configs_start
 
         echo "Running the calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only
 
         echo "Comparing the energy with the reference one (total E = -26.2099365) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_only.out "total E" -26.2099365
@@ -56,7 +58,7 @@ jobs:
         cp -v mc_configs_start_save mc_configs_start
 
         echo "Running the calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only
 
         echo "Comparing the energy with the reference one (total E = -26.2023287) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_only.out "total E" -26.2023287
@@ -70,7 +72,7 @@ jobs:
         cp -v mc_configs_start_save mc_configs_start
 
         echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
         echo "Comparing the energy with the reference one (total E = -26.1992624) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.1992624
@@ -84,7 +86,7 @@ jobs:
         cp -v mc_configs_start_save mc_configs_start
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
         echo "Comparing the energy with the reference one (total E = -26.1636431) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.1636431
@@ -98,7 +100,7 @@ jobs:
         cp -v mc_configs_start_save mc_configs_start
 
         echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
         echo "Comparing the energy with the reference one (total E = -25.6158039) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.6158039
@@ -112,7 +114,7 @@ jobs:
         cp -v mc_configs_start_save mc_configs_start
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
         echo "Comparing the energy with the reference one (total E = -25.2472141) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.2472141
@@ -123,7 +125,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-dmc/butadiene_500_DMC_pablo
 
         echo "Running the dmc.mov1 on one processor"
-        mpirun -np 1  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_single_core.out  -e dmc_single_core.error
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_single_core.out  -e dmc_single_core.error
 
         echo "Comparing the energy with the reference one (total energy (  100) = -26.3320038) "
         $HOME/work/champ/champ/tools/compare_value.py dmc_single_core.out "total energy (  100)" -26.3320038
@@ -134,7 +136,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-dmc/butadiene_500_DMC_pablo
 
         echo "Running the dmc.mov1 on two processors"
-        mpirun -np 2  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_double_core.out  -e dmc_double_core.error
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_double_core.out  -e dmc_double_core.error
 
         echo "Comparing the energy with the reference one (total energy (  100) = -26.3187227) "
         $HOME/work/champ/champ/tools/compare_value.py dmc_double_core.out "total energy (  100)" -26.3187227
@@ -145,7 +147,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-dmc/butadiene_cipsi500_T_DMC
 
         echo "Running the dmc.mov1 on one processor"
-        mpirun -np 1  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_single.out  -e dmc_single_core.error
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_single.out  -e dmc_single_core.error
 
         echo "Comparing the energy with the reference one (total energy (  100) = -26.2963582) "
         $HOME/work/champ/champ/tools/compare_value.py dmc_workload_single.out "total energy (  100)" -26.2963582
@@ -156,7 +158,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-dmc/butadiene_cipsi500_T_DMC
 
         echo "Running the dmc.mov1 on two processors"
-        mpirun -np 2  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_double.out  -e dmc_double_core.error
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_double.out  -e dmc_double_core.error
 
         echo "Comparing the energy with the reference one (total energy (  100) = -26.2894638) "
         $HOME/work/champ/champ/tools/compare_value.py dmc_workload_double.out "total energy (  100)" -26.2894638
@@ -167,7 +169,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi500_T_optWF
 
         echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500.out  -e error_vmc_optimization_500
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500.out  -e error_vmc_optimization_500
 
         echo "Comparing the energy with the reference one (total E = -26.2048171) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.2048171
@@ -178,7 +180,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi500_T_optWF
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500.out  -e error_vmc_optimization_500
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500.out  -e error_vmc_optimization_500
 
         echo "Comparing the energy with the reference one (total E = -26.2032228) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.2032228
@@ -189,7 +191,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi5k_T_optWF
 
         echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000.out  -e error_vmc_optimization_5000
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000.out  -e error_vmc_optimization_5000
 
         echo "Comparing the energy with the reference one (total E = -26.1991674) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.1991674
@@ -200,7 +202,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi5k_T_optWF
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000.out  -e error_vmc_optimization_5000
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000.out  -e error_vmc_optimization_5000
 
         echo "Comparing the energy with the reference one (total E = -26.2166306) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.2166306
@@ -211,7 +213,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF
 
         echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
 
         echo "Comparing the energy with the reference one (total E = -26.2406578) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2406578
@@ -222,7 +224,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
 
         echo "Comparing the energy with the reference one (total E = -26.2371252) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2371252
@@ -233,7 +235,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF_3body
 
         echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
 
         echo "Comparing the energy with the reference one (total E = -26.2212718) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2212718
@@ -244,7 +246,7 @@ jobs:
         cd tests/CI_test/new-parser-workload/new-parser-workload-vmc/butadiene_cipsi15k_T_optWF_3body
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
 
         echo "Comparing the energy with the reference one (total E = -26.2166595) "
         $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2166595
@@ -256,7 +258,7 @@ jobs:
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0084981) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_single.out "total E" -1.0084981
@@ -267,7 +269,7 @@ jobs:
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0093392) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_double.out "total E" -1.0093392
@@ -278,7 +280,7 @@ jobs:
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0549647) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0549647
@@ -289,7 +291,7 @@ jobs:
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0569553) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0569553
@@ -300,7 +302,7 @@ jobs:
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0549647) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0549647
@@ -311,7 +313,7 @@ jobs:
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
+        /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0569553) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0569553
@@ -325,7 +327,7 @@ jobs:
     #     cd tests/CI_test/new-parser-psb3
 
     #     echo "Running the optimization calculation"
-    #     mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_single.out -e error
+    #     /opt/intel/oneapi/mpi/latest/bin/mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_single.out -e error
 
     #     echo "Comparing the energy with the reference one (total E = -42.5485250) "
     #     $HOME/work/champ/champ/tools/compare_value.py revised_sr_n_single.out "total E" -42.5485250
@@ -336,7 +338,7 @@ jobs:
     #     cd tests/CI_test/new-parser-psb3
 
     #     echo "Running the optimization calculation"
-    #     mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_double.out -e error
+    #     /opt/intel/oneapi/mpi/latest/bin/mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_double.out -e error
 
     #     echo "Comparing the energy with the reference one (total E = -42.6209550) "
     #     $HOME/work/champ/champ/tools/compare_value.py revised_sr_n_double.out "total E" -42.6209550
