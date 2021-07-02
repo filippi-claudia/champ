@@ -1,6 +1,6 @@
 module sr_mod
     !> Arguments:
-    integer, parameter :: MPARM = 15100
+    integer, parameter :: MPARM = 26000
     integer :: MOBS
     integer :: MCONF
     ! integer, parameter :: MVEC = 160 ! never  used anymore

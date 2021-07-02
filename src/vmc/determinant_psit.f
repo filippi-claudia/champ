@@ -12,11 +12,8 @@
       use multislater, only: detiab
       implicit real*8(a-h,o-z)
 
-      print*, "determ, istate", determ, istate
-      print*, shape(detiab)
-      print*, shape(cdet)
 
-      determ=0
+      determ=0.0d0
       do 110 k=1,ndet
   110   determ=determ+detiab(k,1)*detiab(k,2)*cdet(k,istate,iwf)
 

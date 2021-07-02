@@ -23,12 +23,11 @@ c  pe from nucleus-nucleus repulsion
           do 50 j=1,i-1
             ij=ij+1
    50       pe=pe+1/r_ee(ij)
-       else 
+       else
         call pot_en_ewald(x,pe_en)
         call pot_ee_ewald(x,pe_ee)
         pe=pe+pe_en+pe_ee
-      endif 
+      endif
       if(ipr.ge.3) write(6,'(''pe,pe_en(loc),pe_ee'',9f9.5)') pe,pe_en,pe_ee
-        
       return
-      end 
+      end

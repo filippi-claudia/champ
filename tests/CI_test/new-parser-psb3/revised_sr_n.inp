@@ -1,0 +1,54 @@
+%module general
+    title           'psb3_cas66'
+    pool            './pool/'
+    pseudopot       BFD
+    basis           BFD-Da
+    weights         [ 1.0d0,  1.0d0 , 1.0d0]
+    weights_guiding [ 1.0d0,  1.0d0 , 1.0d0]
+    mode            'vmc_one_mpi1'
+#    ipr 4
+%endmodule
+
+%module mstates
+    iguiding        2
+    iefficiency     1
+%endmodule
+
+load molecule        $pool/psb3_PBE0_cc-pVQZ.xyz
+load basis_num_info  $pool/BFD-Da.bfinfo
+
+load determinants    det_optjci
+load orbitals        ci66_BFD-Da_sa2.lcao
+load jastrow         jastrow_optjci
+load jastrow_der     jastrow.der
+load symmetry        ci66_BFD-Da_sa2.sym
+
+
+%module electrons
+    nup           16
+    nelec         32
+%endmodule
+
+%module optwf
+    ioptwf        1
+    ioptci        1
+    ioptjas       0
+    ioptorb       0
+    method        'sr_n'
+    multiple_adiag 0
+    ncore         0
+    nextorb       600
+    nblk_max      300
+    no_active     1
+    nopt_iter     1
+    isample_cmat  0
+    energy_tol    0.0
+%endmodule
+
+%module blocking_vmc
+    vmc_nstep     20
+    vmc_nblk      50
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+    vmc_isite     0
+%endmodule

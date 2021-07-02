@@ -1,7 +1,9 @@
 
 subroutine parser
   use fdf     ! modified libfdf
-
+!  use fdf, only: modulenames, number_of_modules    ! modified libfdf
+  use custom_broadcast,   only: bcast
+  use mpiconf,            only: wid
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
 ! CHAMP modules
@@ -15,11 +17,10 @@ subroutine parser
   use elec,           	only: ndn, nup
   use const,          	only: nelec
   use atom,           	only: nctype, ncent
-  use contrl,         	only: nstep, nblk, nblk_max
+!  use contrl,         	only: nstep, nblk, nblk_max
   use wfsec,          	only: nwftype
   use forcepar,       	only: nforce
   use force_mod,      	only: MFORCE
-  use method_opt,     	only: method
 
 ! variables from process input
   use sr_mod,         	only: MCONF, MVEC
@@ -27,6 +28,8 @@ subroutine parser
   use properties,     	only: MAXPROP
   use optorb_mod,     	only: MXORBOP, MXREDUCED
   use optci,          	only: MXCITERM
+  use mstates_mod,      only: MSTATES
+  use pcm, only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
   use vmc_mod, 			only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
@@ -47,7 +50,7 @@ subroutine parser
   use jaspar3, 			only: a, b, c, nord, scalek
   use jaspar4, 			only: a4, norda, nordb, nordc
   use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
-  use jaspar6, 			only: cutjas, cutjasi
+  use jaspar6, 			only: cutjas, cutjasi, allocate_jaspar6
   use numbas, 			only: numr
   use numbas1, 			only: nbastyp
   use numbas2, 			only: ibas0, ibas1
@@ -65,7 +68,7 @@ subroutine parser
   use zmatrix, 			only: izmatrix
   use bparm, 			only: nocuspb, nspin2b
   use casula, 			only: i_vpsp, icasula
-  use coefs, 			only: coef, nbasis, norb
+  use coefs, 			only: coef, nbasis, norb, next_max
   use const2, 			only: deltar, deltat
   use contr2, 			only: ianalyt_lap, ijas
   use contr2, 			only: isc
@@ -131,7 +134,7 @@ subroutine parser
   use inputflags, 		only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
   use inputflags, 		only: ici_def, iforces, icsfs, icharge_efield
   use inputflags, 		only: imultideterminants, imodify_zmat, izmatrix_check
-  use inputflags, 		only: ihessian_zmat
+  use inputflags,     only: ioptorb_mixvirt, ihessian_zmat, igradients
   use basis,          only: zex
 
   use precision_kinds,    only: dp
@@ -147,14 +150,16 @@ subroutine parser
   character(len=72)          :: fname, key
   character(len=20)          :: temp1, temp2, temp3, temp4, temp5
   integer                    :: ifock , ratio, isavebl
+  real(dp)                   :: cutjas_tmp
+
+  real(dp)                   :: wsum
 
   type(block_fdf)            :: bfdf
   type(parsed_line), pointer :: pline
 
-  character(len=100)         :: real_format    = '(A, T40, F14.8)'
-  character(len=100)         :: int_format     = '(A, T40, I8)'
-  character(len=100)         :: string_format  = '(A, T40, A)'
-  character(len=100)         :: fmt32          = '(A, T32, A)'
+  character(len=100)         :: real_format    = '(A, T40, ":: ", T42, F25.16)'
+  character(len=100)         :: int_format     = '(A, T40, ":: ", T50, I0)'
+  character(len=100)         :: string_format  = '(A, T40, ":: ", T50, A)'
 
 !------------------------------------------------------------------------- BEGIN
 ! debug purpose only
@@ -199,11 +204,10 @@ subroutine parser
   call flaginit_new()
   !! Number of input variables found so far :: 171
 
-
 ! %module general (complete)
   mode        = fdf_get('mode', 'vmc_one_mpi')
   title       = adjustl(fdf_get('title', 'Untitled'))
-  pooldir     = fdf_get('pool', '.')
+  pooldir     = fdf_get('pool', './')
   pp_id       = fdf_get('pseudopot', 'none')
   bas_id      = fdf_get('basis', 'none')
   nforce      = fdf_get('nforce', 1)
@@ -227,14 +231,14 @@ subroutine parser
   ndn         = nelec-nup
 
 ! %module atoms (complete)
-!  nctype      = fdf_get('nctype', 1)
-!  ncent       = fdf_get('natom', 1)
+!  nctype      = fdf_get('nctype', 1)  ! These are computed
+!  ncent       = fdf_get('natom', 1)   ! These are computed
   newghostype = fdf_get('newghostype', 0)
   nghostcent  = fdf_get('nghostcent', 0)
 
 ! %module jastrow (complete)
-  ijas        = fdf_get('ijas', 1)
-  isc         = fdf_get('isc', 1)
+  ijas        = fdf_get('ijas', 4)
+  isc         = fdf_get('isc', 2)
   nspin1      = fdf_get('nspin1', 1)
   nspin2      = fdf_get('nspin2', 1)
   ifock       = fdf_get('ifock', 0)
@@ -268,16 +272,16 @@ subroutine parser
   imetro      = fdf_get('imetro', 6)
   node_cutoff = fdf_get('node_cutoff', 0)
   eps_node_cutoff = fdf_get('enode_cutoff', 1.0d-7)
-  delta       = fdf_get('delta', 1.)
-  deltar      = fdf_get('deltar', 1.)
-  deltat      = fdf_get('deltat', 1.)
+  delta       = fdf_get('delta', 1.0d0)
+  deltar      = fdf_get('deltar', 5.0d0)
+  deltat      = fdf_get('deltat', 1.0d0)
   fbias       = fdf_get('fbias', 1.0d0)
 
 ! %module vmc / blocking_vmc (complete)
   vmc_nstep     = fdf_get('vmc_nstep', 1)
   vmc_nblk      = fdf_get('vmc_nblk', 1)
   vmc_nblkeq    = fdf_get('vmc_nblkeq', 2)
-  vmc_nblk_max  = fdf_get('vmc_nblk_max', 1)
+  vmc_nblk_max  = fdf_get('vmc_nblk_max', vmc_nblk)
   vmc_nconf     = fdf_get('vmc_nconf', 1)
   vmc_nconf_new = fdf_get('vmc_nconf_new', 1)
   vmc_idump     = fdf_get('vmc_idump', 1)
@@ -298,10 +302,9 @@ subroutine parser
   icut_e      = fdf_get('icut_e', 0)
   dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)
   dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)
-  nfprod      = fdf_get('nfprod', 1)
   tau         = fdf_get('tau', 1.)
   etrial      = fdf_get('etrial', 1.)
-  nfprod      = fdf_get('nfprod', 200)
+  nfprod      = fdf_get('nfprod', 100)
   itausec     = fdf_get('itausec', 1)
   icasula     = fdf_get('icasula', 0)
 
@@ -309,7 +312,7 @@ subroutine parser
   dmc_nstep     = fdf_get('dmc_nstep', 1)
   dmc_nblk      = fdf_get('dmc_nblk', 1)
   dmc_nblkeq    = fdf_get('dmc_nblkeq', 2)
-  dmc_nblk_max  = fdf_get('dmc_nblk_max', 1)
+  dmc_nblk_max  = fdf_get('dmc_nblk_max', dmc_nblk)
   dmc_nconf     = fdf_get('dmc_nconf', 1)
   dmc_nconf_new = fdf_get('dmc_nconf_new', 1)
   dmc_idump     = fdf_get('dmc_idump', 1)
@@ -319,11 +322,17 @@ subroutine parser
   dmc_nblk_ci       = fdf_get('dmc_nblk_ci', dmc_nblk)
 
 
-
-
 !optimization flags vmc/dmc
   ioptwf        = fdf_get('ioptwf', 0)
-  method        = fdf_get('method', 'linear')
+  method        = fdf_get('method', 'sr_n')
+
+! %module optwf (can be moved somewhere else)
+  if (fdf_defined("optwf")) then
+    if ( method .eq. 'linear' ) then
+      nwftype = 3; MFORCE = 3
+    endif
+  endif
+
   idl_flag      = fdf_get('idl_flag', 0)
   ilbfgs_flag   = fdf_get('ilbfgs_flag', 0)
   ilbfgs_m      = fdf_get('ilbfgs_m', 5)
@@ -339,7 +348,10 @@ subroutine parser
   no_active     = fdf_get('no_active', 0)
   energy_tol    = fdf_get('energy_tol', 1.d-3)
   dparm_norm_min = fdf_get('dparm_norm_min', 1.0d0)
-!  add_diag(1)   = fdf_get('add_diag',1.d-6)
+! attention needed here.
+  if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
+  add_diag(1)   = fdf_get('add_diag',1.d-6)
+
   nopt_iter     = fdf_get('nopt_iter',6)
   micro_iter_sr = fdf_get('micro_iter_sr', 1)
   ifunc_omega   = fdf_get('func_omega', 0)
@@ -347,7 +359,7 @@ subroutine parser
   n_omegaf      = fdf_get('n_omegaf', nopt_iter)
   n_omegat      = fdf_get('n_omegat', 0)
   nvec          = fdf_get('lin_nvec', 5)
-  nvecx         = fdf_get('lin_nvecx', MVEC)
+  nvecx         = fdf_get('lin_nvecx', 160)
   alin_adiag    = fdf_get('lin_adiag', 0.01)
   alin_eps      = fdf_get('lin_eps', 0.001)
   lin_jdav      = fdf_get('lin_jdav',0)
@@ -363,8 +375,6 @@ subroutine parser
   isavebl       = fdf_get('save_blocks', 0)
   nefp_blocks   = fdf_get('force_blocks',1)
   iorbsample    = fdf_get('iorbsample',1)
-! attention please
-!  nadorb        = fdf_get('nextorb', next_max)
 
 
 
@@ -374,53 +384,55 @@ subroutine parser
 
 !%module pcm (complete)
 
-  ipcm          = fdf_get('ipcm',0)
-  ipcmprt       = fdf_get('ipcmprt',0)
-  pcmfile_cavity = fdf_get('file_cavity','pcm000.dat')
-  pcmfile_chs   = fdf_get('file_chs','chsurf_old')
-  pcmfile_chv   = fdf_get('file_chv','chvol_old')
-!  nscv          = fdf_get('nblk_chv',nblk)   ! attention
-!  iscov         = fdf_get('nstep_chv',nstep2) ! attention
-  eps_solv      = fdf_get('eps_solv',1)
-!  fcol          = fdf_get('fcol',1.d0)
-  rcolv         = fdf_get('rcolv',0.04d0)
+!   ipcm          = fdf_get('ipcm',0)
+!   ipcmprt       = fdf_get('ipcmprt',0)
+!   pcmfile_cavity = fdf_get('file_cavity','pcm000.dat')
+!   pcmfile_chs   = fdf_get('file_chs','chsurf_old')
+!   pcmfile_chv   = fdf_get('file_chv','chvol_old')
+! !  nscv          = fdf_get('nblk_chv',nblk)   ! attention
+! !  iscov         = fdf_get('nstep_chv',nstep2) ! attention
+!   eps_solv      = fdf_get('eps_solv',1)
+! !  fcol          = fdf_get('fcol',1.d0)
+!   rcolv         = fdf_get('rcolv',0.04d0)
 !  npmax         = fdf_get('npmax',1)
 
 
-  call allocate_pcm_grid3d_param()
-  ipcm_3dgrid   = fdf_get('ipcm_3dgrid',0)
-  ipcm_nstep3d(1) 	= fdf_get('nx_pcm',PCM_IUNDEFINED)
-  ipcm_nstep3d(2) 	= fdf_get('ny_pcm',PCM_IUNDEFINED)
-  ipcm_nstep3d(3) 	= fdf_get('nz_pcm',PCM_IUNDEFINED)
-  pcm_step3d(1) 	= fdf_get('dx_pcm',PCM_UNDEFINED)
-  pcm_step3d(2) 	= fdf_get('dy_pcm',PCM_UNDEFINED)
-  pcm_step3d(3) 	= fdf_get('dz_pcm',PCM_UNDEFINED)
-  pcm_origin(1) 	= fdf_get('x0_pcm',PCM_UNDEFINED)
-  pcm_origin(2) 	= fdf_get('y0_pcm',PCM_UNDEFINED)
-  pcm_origin(3) 	= fdf_get('z0_pcm',PCM_UNDEFINED)
-  pcm_endpt(1)  	= fdf_get('xn_pcm',PCM_UNDEFINED)
-  pcm_endpt(2)  	= fdf_get('yn_pcm',PCM_UNDEFINED)
-  pcm_endpt(3)  	= fdf_get('zn_pcm',PCM_UNDEFINED)
-  PCM_SHIFT     	= fdf_get('shift',4.d0)
+  ! call allocate_pcm_grid3d_param()
+  ! ipcm_3dgrid   = fdf_get('ipcm_3dgrid',0)
+  ! ipcm_nstep3d(1) 	= fdf_get('nx_pcm',PCM_IUNDEFINED)
+  ! ipcm_nstep3d(2) 	= fdf_get('ny_pcm',PCM_IUNDEFINED)
+  ! ipcm_nstep3d(3) 	= fdf_get('nz_pcm',PCM_IUNDEFINED)
+  ! pcm_step3d(1) 	= fdf_get('dx_pcm',PCM_UNDEFINED)
+  ! pcm_step3d(2) 	= fdf_get('dy_pcm',PCM_UNDEFINED)
+  ! pcm_step3d(3) 	= fdf_get('dz_pcm',PCM_UNDEFINED)
+  ! pcm_origin(1) 	= fdf_get('x0_pcm',PCM_UNDEFINED)
+  ! pcm_origin(2) 	= fdf_get('y0_pcm',PCM_UNDEFINED)
+  ! pcm_origin(3) 	= fdf_get('z0_pcm',PCM_UNDEFINED)
+  ! pcm_endpt(1)  	= fdf_get('xn_pcm',PCM_UNDEFINED)
+  ! pcm_endpt(2)  	= fdf_get('yn_pcm',PCM_UNDEFINED)
+  ! pcm_endpt(3)  	= fdf_get('zn_pcm',PCM_UNDEFINED)
+  ! PCM_SHIFT     	= fdf_get('shift',4.d0)
 
 ! %module mmpol (complete)
-  immpol        = fdf_get('immpol',0)
-  immpolprt     = fdf_get('immpolprt',0)
-  mmpolfile_sites = fdf_get('file_sites','mmpol000.dat')
-  mmpolfile_chmm = fdf_get('file_mmdipo','mmdipo_old')
-  a_cutoff      = fdf_get('a_cutoff',2.5874d0)
-  rcolm         = fdf_get('rcolm',0.04d0)
+  ! immpol        = fdf_get('immpol',0)
+  ! immpolprt     = fdf_get('immpolprt',0)
+  ! mmpolfile_sites = fdf_get('file_sites','mmpol000.dat')
+  ! mmpolfile_chmm = fdf_get('file_mmdipo','mmdipo_old')
+  ! a_cutoff      = fdf_get('a_cutoff',2.5874d0)
+  ! rcolm         = fdf_get('rcolm',0.04d0)
 
 ! %module properties (complete)
   iprop         = fdf_get('sample',0)
   ipropprt      = fdf_get('print',0)
-  nquad         = fdf_get('nquad',6)
 
 ! %module pseudo (complete)
   nloc          = fdf_get('nloc',4)  ! for pseudo in Gauss format
-
+  nquad         = fdf_get('nquad',6)
 ! %module qmmm (complete)
 !  iqmm          = fdf_get('iqmm',0)
+
+! attention please. The following line moved here because next_max was not defined yet.
+  nadorb        = fdf_get('nextorb', -1)  ! the default should be next_max
 
 
   ! Filenames parsing
@@ -458,32 +470,51 @@ subroutine parser
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
 
+  write(ounit,*) " Modules present in the input file :: "
+  do i = 1, number_of_modules
+    write(ounit,'(a,i0,a,a)') '  (', i, ')', modulenames(i)
+  enddo
+  write(ounit,*)
 
   select case (mode)
   case ('vmc')
+    mode = 'vmc_one_mpi'
     write(ounit,'(a,a)') " Calculation mode :: Variational MC for ", title
   case ('vmc_one_mpi')
     write(ounit,'(a,a)') " Calculation mode :: Variational MC one-electron move mpi for ",  title
   case ('dmc')
+    mode = 'dmc_one_mpi1'
     write(ounit,'(a,a)') " Calculation mode :: Diffusion MC for ",  title
   case ('dmc_one_mpi1')
-    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC 1-electron move, mpi no global pop for ", title
+    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC one-electron move, mpi no global pop for ", title
   case ('dmc_one_mpi2')
-    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC 1-electron move, mpi global pop comm for ",  title
+    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC one-electron move, mpi global pop comm for ",  title
   end select
 
   write(ounit,*)
-  read(cseed,'(4i4)') irn
-  write(ounit,'(a,t40,4i4)') " Random number seeds", irn
+  pooldir = trim(pooldir)
+  write(ounit,'(a,a)') " Pool directory for common input files :: ",  pooldir
+
+  !checks
+  if( (mode(1:3) == 'vmc') .and. iperiodic.gt.0) &
+    call fatal_error('INPUT: VMC for periodic system -> run dmc/dmc.mov1 with idmc < 0')
+
+  write(ounit,*)
+  if (wid) read(cseed,'(4i4)') irn
+  call bcast(irn)
+
+  write(ounit,'(a20,t40,4i4)') " Random number seeds", irn
   call setrn(irn)
 
   write(ounit,*)
-  write(ounit,'(a,t40,a)') " All energies are in units of ", eunit
-  write(ounit,'(a,t36,f12.6)') " hbar**2/(2.*m) = ",  hb
-  write(ounit, int_format) " Number of geometries = ", nforce
-  write(ounit, int_format) " Number of wave functions = ", nwftype
+  write(ounit, string_format) " All energies are in units of ", eunit
+  write(ounit, real_format) " hbar**2/(2.*m) ",  hb
+  write(ounit, int_format) " Number of geometries ", nforce
+  write(ounit, int_format) " Number of wave functions ", nwftype
   if(nwftype.gt.nforce) call fatal_error('INPUT: nwftype gt nforce')
   write(ounit,*)
+! Printing header information and common calculation parameters ends here
+
 
 ! Molecular geometry file in .xyz format [#####]
   write(ounit,*)
@@ -501,24 +532,30 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif
+! By this point all information about geometry and znuc should be present.
+  iznuc     = 1
+  igeometry = 1
+! Molecular geometry section ends here
 
-  ! Electrons
+! Electrons
   write(ounit,*)
   write(ounit,'(a)') " System Information :: Electrons : "
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
 
+  !checks
+  if(nup.gt.nelec/2) call fatal_error('INPUT: nup exceeds nelec/2')
 
   write(ounit,*)
   write(ounit,int_format) " Number of total electrons = ", nelec
   write(ounit,int_format) " Number of alpha electrons = ", nup
   write(ounit,int_format) " Number of beta  electrons = ", ndn
   write(ounit,*)
+! Electrons section ends here
 
 
-
-  ! Pseudopotential section:
-  ! Pseudopotential information (either block or from a file)
+! Pseudopotential section:
+! Pseudopotential information (either block or from a file)
 
   write(ounit,*)
   write(ounit,'(a)') " Calculation Parameters :: Pseudopotential / All Electron : "
@@ -537,6 +574,8 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
   endif
   write(ounit,*)
+! Pseudopotential section ends here
+
 
 
 ! More about calculation parameters :: VMC / DMC settings
@@ -550,7 +589,7 @@ subroutine parser
     write(ounit,int_format)  " Version of Metropolis = ", imetro
 
     if (imetro.eq.1) then
-      deltai= one /delta
+      deltai= one/delta
       write(ounit,'(a,t36,f12.6)') " Step size = ",  delta
     else
       if(deltar .lt. one) then
@@ -561,23 +600,24 @@ subroutine parser
         write(ounit,'(a)') '**Warning value of deltat reset to 2.'
         deltat = two
       endif
-      write(ounit,'(a,t36,f12.6)')  " Radial step multiplier = ", deltar
-      write(ounit,'(a,t36,f12.6)')  " cos(theta) step size = ",   deltat
+      write(ounit,real_format)  " Radial step multiplier  ", deltar
+      write(ounit,real_format)  " cos(theta) step size  ",   deltat
     endif
 
     ! Truncate fbias so that fbias and the sampled quantity are never negative
     fbias=dmin1(two,dmax1(zero,fbias))
-    write(ounit,'(a,t36,f12.6)')  " Force bias = ",   fbias
+    write(ounit,real_format)  " Force bias  ",   fbias
 
-    if(vmc_nstep*(vmc_nblk+2*vmc_nblkeq) .gt. 104000) ipr=-1
-    if(vmc_irstar.eq.1) vmc_nblkeq=0
-
-    write(ounit,int_format) " Number of steps/block = ", vmc_nstep
-    write(ounit,int_format) " Number of blocks after eq. = ", vmc_nblk
-    write(ounit,int_format) " Number of blocks before eq. = ", vmc_nblkeq
-    write(ounit,int_format) " Number of configurations saved = ", vmc_nconf_new
+    write(ounit,int_format) " Number of VMC steps/block  ", vmc_nstep
+    write(ounit,int_format) " Number of VMC blocks after eq.  ", vmc_nblk
+    write(ounit,int_format) " Number of VMC blocks before eq.  ", vmc_nblkeq
+    write(ounit,int_format) " Number of VMC configurations saved  ", vmc_nconf_new
   endif
 
+  !checks
+  if(index(mode,'mov1').ne.0 .and. imetro.eq.1) call fatal_error('INPUT: metrop_mov1 not updated')
+
+  ! DMC
   if( mode(1:3) == 'dmc' ) then
     write(ounit,*)
     write(ounit,'(a)') " Calculation Parameters :: DMC : "
@@ -586,24 +626,24 @@ subroutine parser
 
     rttau=dsqrt(tau)
 
-    write(ounit,int_format) " Version of DMC = ",  idmc
-    write(ounit,int_format) " nfprod = ",  nfprod
-    write(ounit,'(a,t36,f12.6)') " tau = ", tau
+    write(ounit,int_format) " Version of DMC ",  idmc
+    write(ounit,int_format) " nfprod ",  nfprod
+    write(ounit,real_format) " tau ", tau
 
-    write(ounit,int_format) " ipq = ", ipq
-    write(ounit,int_format) " itau_eff = ", itau_eff
-    write(ounit,int_format) " iacc_rej = ", iacc_rej
-    write(ounit,int_format) " icross = ", icross
-    write(ounit,int_format) " icuspg = ", icuspg
-    write(ounit,int_format) " idiv_v = ", idiv_v
-    write(ounit,int_format) " icut_br = ", icut_br
-    write(ounit,int_format) " icut_e = ", icut_e
-    write(ounit,int_format) " ipq = ", ipq
-    write(ounit,'(a,t36,f12.6)') " etrial ", etrial
+    write(ounit,int_format) " ipq ", ipq
+    write(ounit,int_format) " itau_eff ", itau_eff
+    write(ounit,int_format) " iacc_rej ", iacc_rej
+    write(ounit,int_format) " icross ", icross
+    write(ounit,int_format) " icuspg ", icuspg
+    write(ounit,int_format) " idiv_v ", idiv_v
+    write(ounit,int_format) " icut_br ", icut_br
+    write(ounit,int_format) " icut_e ", icut_e
+    write(ounit,int_format) " ipq ", ipq
+    write(ounit,real_format) " etrial ", etrial
     write(ounit,int_format)  " casula ",  icasula
-    write(ounit,int_format) " node_cutoff = ", dmc_node_cutoff
+    write(ounit,int_format) " node_cutoff ", dmc_node_cutoff
 
-    if (dmc_node_cutoff.gt.0) write(ounit,'(a,t36,f12.6)') " enode cutoff = ", dmc_eps_node_cutoff
+    if (dmc_node_cutoff.gt.0) write(ounit,real_format) " enode cutoff = ", dmc_eps_node_cutoff
 
     if (idmc.ne.2) call fatal_error('INPUT: only idmc=2 supported')
 
@@ -615,25 +655,26 @@ subroutine parser
   ! Inizialized to zero for call to hpsi in vmc or dmc with no casula or/and in acuest
   i_vpsp=0
 
-! Common parameters to be printed
+  ! Reduce printing in case of a large calculation
 
   if(vmc_nstep*(vmc_nblk+2*vmc_nblkeq) .gt. 104000) ipr=-1
   if(vmc_irstar.eq.1) vmc_nblkeq=0
 
-  ! These two lines are additional : Debug Ravindra
   if(dmc_nstep*(dmc_nblk+2*dmc_nblkeq) .gt. 104000) ipr=-1
   if(dmc_irstar.eq.1) dmc_nblkeq=0
 
   if( mode(1:3) == 'dmc' ) then
-    write(ounit,int_format) " Number of steps/block = ", dmc_nstep
-    write(ounit,int_format) " Number of blocks after eq. = ", dmc_nblk
-    write(ounit,int_format) " Number of blocks before eq. = ", dmc_nblkeq
+    write(ounit,int_format) " Number of DMC steps/block = ", dmc_nstep
+    write(ounit,int_format) " Number of DMC blocks after eq. = ", dmc_nblk
+    write(ounit,int_format) " Number of DMC blocks before eq. = ", dmc_nblkeq
 
     write(ounit,int_format) " Target walker population = ", dmc_nconf
     if(dmc_nconf .le. 0) call fatal_error('INPUT: target population <= 0')
     if(dmc_nconf .gt. MWALK) call fatal_error('INPUT: target population > MWALK')
     write(ounit,int_format) " Number of configurations saved = ", dmc_nconf_new
   endif
+! VMC/DMC calculation parameters settings ends here.
+
 
 ! LCAO orbitals (must be loaded before reading basis )
 
@@ -650,7 +691,13 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    call inputlcao()
+    if(nwftype.gt.1) then
+      if(iperiodic.eq.0.and.ilcao.ne.nwftype) then
+        write(ounit,*) "Warning INPUT: block lcao missing for one wave function"
+        write(ounit,*) "Warning INPUT: lcao blocks equal for all wave functions"
+        call inputlcao(nwftype)
+      endif
+    endif
   endif
 
 ! Basis num information (either block or from a file)
@@ -689,8 +736,19 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    call inputdet()
+    if(nwftype.gt.1) then
+      if(ideterminants.ne.nwftype) then
+        write(ounit,*) "Warning INPUT: block determinants missing for one wave function"
+        write(ounit,*) "Warning INPUT: determinants blocks equal for all wave functions"
+        call inputdet(nwftype)
+      endif
+    endif
   endif
+
+  ! allocation after determinants and basis
+  call compute_mat_size_new()
+  call allocate_vmc()
+  call allocate_dmc()
 
 ! (3) CSF only
 
@@ -699,9 +757,10 @@ subroutine parser
   elseif (fdf_block('csf', bfdf)) then
     call fdf_read_csf_block(bfdf)
   else
-    ! No csf present; set default values (in replacement of inputcsf)
-    nstates = 1 ; ncsf = 0
-    if (ioptci .ne. 0) nciterm = nciprim
+    ! No csf present; set default values; This replaces inputcsf
+    nstates = 1
+    ncsf = 0
+    if (ioptci .ne. 0 .and. ici_def .eq. 1) nciterm = nciprim
   endif
 
 ! (4) CSFMAP [#####]
@@ -715,6 +774,9 @@ subroutine parser
     error stop
   endif
 
+
+
+
 ! (17) multideterminants information (either block or from a file)
 
   if ( fdf_load_defined('multideterminants') ) then
@@ -725,12 +787,15 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    call multideterminants_define(0,0)
+    if(imultideterminants.eq.0) then
+      write(errunit,*) "INPUT: multideterminant bloc MISSING"
+      call multideterminants_define(0,0)
+    endif
   endif
 
 
 
-! (5) Jastrow Parameters (either block or from a file)
+! Jastrow Parameters (either block or from a file)
 
   if ( fdf_load_defined('jastrow') ) then
       call read_jastrow_file(file_jastrow)
@@ -740,12 +805,18 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    ! no information about jastrow present. Set some values
-    call inputjastrow()
+    ! no information about jastrow present.
+    if(nwftype.gt.1) then
+      if(ijastrow_parameter.ne.nwftype) then
+        write(ounit,*) "INPUT: block jastrow_parameter missing for one wave function"
+        write(ounit,*) "INPUT: jastrow_parameter blocks equal for all wave functions"
+        call inputjastrow(nwftype)
+      endif
+    endif
   endif
 
 
-! (8) Jastrow derivative Parameters (either block or from a file)
+! Jastrow derivative Parameters (either block or from a file)
 
   if ( fdf_load_defined('jastrow_der') ) then
     call read_jasderiv_file(file_jastrow_der)
@@ -753,18 +824,20 @@ subroutine parser
   !call fdf_read_jastrow_derivative_block(bfdf)
     write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
+    if( mode(1:3) == 'vmc' ) error stop
   else
     write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
+    if( mode(1:3) == 'vmc' ) error stop
   endif
 
-  !printing some information and warnings about jastrow
+!printing some information and warnings and checks about Jastrow
   write(ounit, * )
   write(ounit, int_format) " Analytical laplacian (ianalyt_lap) = ",  ianalyt_lap
   if(ianalyt_lap.eq.0) then
     if(nloc.gt.0) call fatal_error('No numerical jastrow derivatives with pseudopotentials')
+    if(iperiodic.gt.0) &
+      call fatal_error('No numerical jastrow derivatives with periodic system: distances in jastrow_num not correct')
     if(ioptjas.gt.0) call fatal_error('No numerical jastrow derivatives and parms derivatives')
   endif
 
@@ -773,17 +846,54 @@ subroutine parser
   write(ounit, int_format ) " nspin1 = ", nspin1
   write(ounit, int_format ) " nspin2 = ", nspin2
 
+  if(ijas.ne.4 .and. iperiodic.gt.0) &
+    call fatal_error('Only ijas=4 implemented for periodic systems')
 
-   if(ijas.eq.4) write(ounit,'(a)') " new transferable standard form 4"
-   if(ijas.eq.5) write(ounit,'(a)') " new transferable standard form 5"
-   if(ijas.eq.6) write(ounit,'(a)') " new transferable standard form 6"
+  if(ijas.eq.4) write(ounit,'(a)') " new transferable standard form 4"
+  if(ijas.eq.5) write(ounit,'(a)') " new transferable standard form 5"
+  if(ijas.eq.6) write(ounit,'(a)') " new transferable standard form 6"
 
-   if(isc.eq.2) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r))/scalek"
-   if(isc.eq.3) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r-(scalek*r)**2/2))/scalek"
-   if(isc.eq.4) write(ounit,'(a)') " dist scaled r=r/(1+scalek*r)"
-   if(isc.eq.5) write(ounit,'(a)') " dist scaled r=r/(1+(scalek*r)**2)**.5"
+  if(isc.eq.2) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r))/scalek"
+  if(isc.eq.3) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r-(scalek*r)**2/2))/scalek"
+  if(isc.eq.4) write(ounit,'(a)') " dist scaled r=r/(1+scalek*r)"
+  if(isc.eq.5) write(ounit,'(a)') " dist scaled r=r/(1+(scalek*r)**2)**.5"
 
-
+  ! Call set_scale_dist to evaluate constants that need to be reset if
+  ! scalek is being varied. If cutjas=0, then reset cutjas to infinity
+  ! Warning: At present we are assuming that the same scalek is used for
+  ! primary and secondary wavefns.  Otherwise c1_jas6i,c1_jas6,c2_jas6
+  ! should be dimensioned to MWF
+  if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
+    if(iperiodic.ne.0 .and. cutjas_tmp.gt.cutjas) then
+        write(ounit, '(a,f9.5,a,f9.5)')  "**Warning: input cutjas > half shortest sim. cell lattice vector;  cutjas reset from ", cutjas_tmp, " to ", cutjas
+        else
+        cutjas=cutjas_tmp
+        write(ounit,'(a, d12.5)' ) " input cutjas = ", cutjas_tmp
+    endif
+    if(cutjas.gt.0.d0) then
+        cutjasi=1/cutjas
+        else
+        write(ounit, *) "cutjas reset to infinity"
+        cutjas=1.d99
+        cutjasi=0
+    endif
+    call set_scale_dist(1)
+  else
+    cutjas=1.d99
+    cutjasi=0
+    c1_jas6i=1
+    c1_jas6=1
+    c2_jas6=0
+    asymp_r=0
+    call allocate_jaspar6()  ! Needed for the following two arrays
+    do i=1,nctype
+        asymp_jasa(i)=0
+    enddo
+    do i=1,2
+        asymp_jasb(i)=0
+    enddo
+  endif
+  call set_scale_dist(1)
 
 
 ! (7) exponents
@@ -796,9 +906,10 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
+    allocate (zex(nbasis, nwftype))
     zex = 1   ! debug check condition about numr == 0
   endif
-
+  iexponents = iexponents + 1
 
 
 ! (9) Symmetry information of orbitals (either block or from a file)
@@ -809,11 +920,11 @@ subroutine parser
   ! call fdf_read_symmetry_block(bfdf)
     write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
+!    if( mode(1:3) == 'vmc' ) error stop
   else
     write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
+!    if( mode(1:3) == 'vmc' ) error stop
   endif
 
 ! (11) Eigenvalues information of orbitals (either block or from a file)
@@ -838,6 +949,9 @@ subroutine parser
   write(ounit,'(a)') " Calculation Parameters :: Basis : "
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
+
+  if(ibasis.eq.2) write(ounit,'(a)') " PW orbitals "
+  if(numr.gt.0)   write(ounit,'(a)') " Numerical basis used"
 
   if(ibasis.eq.1) then
     write(ounit,'(a)') " Orbitals on localized basis "
@@ -864,30 +978,35 @@ subroutine parser
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     endif
-endif
+  elseif (ibasis.eq.2) then
+    call read_orb_pw_tm
+  endif
+! Basis information section ends here
 
 ! get normalization for basis functions
-      if(numr.eq.0) then
-        do iwft=1,nwftype
-          call basis_norm(iwft,anorm,0)
-        enddo
-      endif
+  if(numr.eq.0) then
+    do iwft=1,nwftype
+      call basis_norm(iwft,anorm,0)
+    enddo
+  endif
 
 ! check if the orbitals coefficients are to be multiplied by a constant parameter
-      if(scalecoef.ne.1.0d0) then
-        do  iwft=1,nwftype
-          do  i=1,norb+nadorb
-	          do  j=1,nbasis
-               coef(j,i,iwft)=coef(j,i,iwft)*scalecoef
-            enddo
-          enddo
+  if(scalecoef.ne.1.0d0) then
+    do  iwft=1,nwftype
+      do  i=1,norb+nadorb
+        do  j=1,nbasis
+            coef(j,i,iwft)=coef(j,i,iwft)*scalecoef
         enddo
-        write(ounit, real_format) " Orbital coefficients scaled by a constant parameter = ",  scalecoef
-	      write(ounit,*)
-      endif
+      enddo
+    enddo
+    write(ounit, real_format) " Orbital coefficients scaled by a constant parameter = ",  scalecoef
+    write(ounit,*)
+  endif
 
 ! verify number of orbitals and setup optorb
-      call verify_orbitals
+! verification already handeled in read_data file.
+
+
 
 !! Grid information
 
@@ -911,9 +1030,6 @@ endif
 
 
 
-
-
-
   ! Analytical forces flags (vmc only)
   if( mode(1:3) == 'vmc' ) then
     if(iforce_analy.gt.0) then
@@ -925,10 +1041,26 @@ endif
   endif
 
 
+! Contents from flagcheck. Moved here because ndet and norb should be defined by now
 
 
+  if(ioptorb.ne.0) then
+    if(ioptorb_mixvirt.eq.0) then
+      norbopt=0
+      norbvirt=0
+    endif
+    if(ioptorb_def.eq.0) then
+      write(ounit,*) "INPUT: definition of orbital variations missing"
+      call optorb_define
+    endif
+  endif
+  if(ioptci.ne.0.and.ici_def.eq.0) then
+    write(ounit,*) "INPUT: definition of OPTCI operators missing"
+    call optci_define
+  endif
 
-  ! Optimization flags (vmc/dmc only)
+
+! Optimization flags WF (vmc/dmc only)
   if( (mode(1:3) == 'vmc') .or. (mode(1:3) == 'dmc') ) then
 
     write(ounit,*)
@@ -943,9 +1075,12 @@ endif
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
     endif
 
+    if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
+      if(method.eq.'linear' .and. MXREDUCED.ne.MXORBOP )  &
+          call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')
+    endif
 
-
-    ! Jastrow optimization flag (vmc/dmc only)
+! Optimization flag Jastrow  (vmc/dmc only)
     write(ounit,*)
     if(ioptjas.gt.0) then
       write(ounit,'(a)' ) " Jastrow derivatives are sampled "
@@ -960,22 +1095,23 @@ endif
     endif
 
 
-
-    ! ORB optimization flags (vmc/dmc only)
+! ORB optimization flags (vmc/dmc only)
     if(ioptorb.ne.0) then
       write(ounit,'(a)' ) " Orbital derivatives are sampled"
       write(ounit,int_format)  " ORB-PT blocks in force average = ", nefp_blocks
       if(isavebl.ne.0)then
         write(ounit,'(a)' ) " ORB-PT block averages will be saved "
-        idump_blockav=43
-        open(unit=idump_blockav,file='efpci_blockav.dat',status='unknown',form='unformatted')
-        write(idump_blockav) nefpterm
+        if (wid) then
+          idump_blockav=43
+          open(unit=idump_blockav,file='efpci_blockav.dat',status='unknown',form='unformatted')
+          write(idump_blockav) nefpterm
+        endif
       endif
     endif
 
 
 
-    ! CI optimization
+! CI optimization flags
     if(ioptci.ne.0) then
       write(ounit,'(a)' ) " CI is sampled "
       write(ounit,int_format)  " CI printout flag = ", iciprt
@@ -994,18 +1130,56 @@ endif
       nciprim=0
       nciterm=0
     endif
+
     write(ounit,int_format)  " CI number of coefficients ", nciterm
+    write(ounit,int_format)  " nciprim ", nciprim
+    MXCITERM = nciprim  ! validate this change debug ravindra
     if((ncsf.eq.0) .and. (nciprim.gt.MXCITERM) ) call fatal_error('INPUT: nciprim gt MXCITERM')
     if(nciterm.gt.MXCITERM) call fatal_error('INPUT: nciterm gt MXCITERM')
 
-    ! Multiple states/efficiency/guiding flags
-
-
+! Multiple states/efficiency/guiding flags
     ! Use guiding wave function constructed from mstates
     if(iguiding.gt.0) then
-      write(6,'(''Guiding function: square root of sum of squares'')')
-      keyname='weights_guiding:'
-      call get_weights_new(keyname,weights_g,iweight_g,nstates_g)
+      write(ounit, *) "Guiding function: square root of sum of squares"
+
+      ! Part which handles the guiding weights
+      if (.not. allocated(weights_g)) allocate (weights_g(MSTATES))
+      if (.not. allocated(iweight_g)) allocate (iweight_g(MSTATES))
+
+      if ( fdf_islreal('weights_guiding') .and. fdf_islist('weights_guiding') &
+          .and. (.not. fdf_islinteger('weights_guiding')) ) then
+        i = -1
+        call fdf_list('weights_guiding',i,weights_g)
+        write(ounit,'(a)' )
+        write(ounit,'(tr1,a,i0,a)') ' Guiding weights has ',i,' entries'
+        if ( i < 2 ) stop 1
+        call fdf_list('weights_guiding',i,weights_g)
+        write(ounit, '(a,<MSTATES>(f12.6))') ' Weights_guiding : ', weights_g(1:i)
+      else
+        write(ounit,*)'guiding_weights keyword not recognized'
+        stop 1
+      end if
+
+      wsum = 0.d0
+      nweight = 0
+      do i = 1, nstates_g
+        if (weights_g(i) .gt. 1d-6) then
+            nweight = nweight + 1
+            iweight_g(nweight) = i
+            wsum = wsum + weights_g(i)
+        endif
+      enddo
+
+      do i = 1, nweight
+        weights_g(i) = weights_g(i)/wsum
+      enddo
+
+      if (nweight .eq. 0) then
+          nweight = 1
+          iweight_g(1) = 1
+          weights_g(1) = 1.d0
+      endif
+    ! The above part should be moved to get_weights subroutine
     endif
 
     ! Efficiency for sampling states inputed in multiple_cistates
@@ -1017,99 +1191,35 @@ endif
     iefficiency=0
     iguiding=0
     nstates=1
-  endif ! Condition of either vmc/dmc
+  endif ! if loop of condition of either vmc/dmc ends here
 
-  ! QMMM classical potential
-  if(iqmmm.gt.0) then
-    write(ounit,'(a)' ) "QMMM external potential "
-    call qmmm_extpot_read
-  endif
+
+! QMMM classical potential
+  ! if(iqmmm.gt.0) then
+  !   write(ounit,'(a)' ) "QMMM external potential "
+  !   call qmmm_extpot_read
+  ! endif
 
 ! Read in point charges
-
   if(iefield.gt.0) then
 ! External charges fetched in read_efield
     write(ounit,'(a,i4,a)')  " Read in ", ncharges, " external charges"
     call efield_compute_extint
   endif
 
-  !  PCM polarization charges
-  !  ipcm=1 computes only the cavity (no qmc calculations)
-  !  ipcm=2 runs qmc and creates/updates polarization charges
-  !  ipcm=3 runs qmc with fixed polarization charges
 
-  ! isurf=0
-  ! ncopcm=0
-  ! nvopcm=0
-  ! ichpol=0
-  ! if(ipcm.ne.0) then
-  !   if(ipcm.eq.2) ichpol=1
-  !   if(ipcm.eq.1) isurf=1
 
-  !   nstep2=nstep/2
-  !   if(iscov.eq.0) call fatal_error('READ_INPUT: iscov eq 0')
-
-  !   qfree=-nelec
-  !   do i=1,ncent
-  !     qfree=qfree+znuc(iwctype(i))
-  !   enddo
-
-  !   write(6,'(''PCM polarization charges '')')
-  !   write(6,'(''pcm ipcm   =  '',t30,i3)') ipcm
-  !   write(6,'(''pcm ichpol =  '',t30,i3)') ichpol
-  !   write(6,'(''pcm isurf  =  '',t30,i3)') isurf
-  !   write(6,'(''pcm file (cavity) ='',t30,a20)') pcmfile_cavity
-  !   write(6,'(''pcm file (chs)    ='',t30,a20)') pcmfile_chs
-  !   write(6,'(''pcm file (chv)    ='',t30,a20)') pcmfile_chv
-  !   write(6,'(''pcm nconf sampled for chv ='',t30,i10)') nscv
-  !   write(6,'(''pcm frequency for chv ='',t30,i10)') iscov
-  !   write(6,'(''pcm epsilon_solvent ='',t30,f7.3)') eps_solv
-  !   write(6,'(''pcm rcolv ='',t30,f7.3)') rcolv
-  !   write(6,'(''pcm fcol  ='',t30,f7.3)') fcol
-  !   write(6,'(''pcm npmax ='',t30,i10)') npmax
-
-  !   call pcm_extpot_read(fcol,npmax)
-
-  !   !  We use the UNDEFINED, IUNDEFINED from grid_mod (that are the same as pcm_3dgrid)
-
-  !   if(ipcm_3dgrid.gt.0) then
-  !     if(ipcm.ne.3) call fatal('READ_INPUT:ipcm_3dgrid gt 0 & ipcm ne 3')
-  !     call pcm_setup_grid
-  !     call pcm_setup_3dspl
-  !   endif
-  ! endif
-
-  ! QM-MMPOL  (fxed charges)
-  !  immpol=1 runs qmc (QM-MM)  and creates the first set of induced dipoles on MM sites
-  !  immpol=2 runs qmc (QM-MMPOL) and updates the set of induced dipoles on MM sites
-  !  immpol=3 runs qmc  (QM-MMPOL) with fixed induced dipoles
-
-  ! isites_mmpol=0
-  ! ich_mmpol=0
-  ! if(immpol.ne.0) then
-  !   if(immpol.eq.2) ich_mmpol=1
-
-  !   write(6,'(''QM-MMPOL fixed charges and induced dipoles '')')
-  !   write(6,'(''mmpol immpol   =  '',t30,i3)') immpol
-  !   write(6,'(''mmpol ich_mmpol =  '',t30,i3)') ich_mmpol
-  !   write(6,'(''mmpol isites  =  '',t30,i3)') isites_mmpol
-  !   write(6,'(''mmpol file (sites)    ='',t30,a20)') mmpolfile_sites
-  !   write(6,'(''mmpol file (chmm)    ='',t30,a20)') mmpolfile_chmm
-  !   write(6,'(''mmpol a_cutoff ='',t30,f7.3)') a_cutoff
-  !   write(6,'(''mmpol rcolm ='',t30,f7.3)') rcolm
-
-  !   call mmpol_extpot_read
-  ! endif
-
-  ! properties will be sampled iprop
-  ! properties will be printed ipropprt
-
+! Additional Properties
+! properties will be sampled iprop
+! properties will be printed ipropprt
   if(iprop.ne.0) then
     nprop=MAXPROP
     write(ounit,'(a)' ) " Properties will be sampled "
     write(ounit,int_format ) " Properties printout flag = ", ipropprt
     call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
   endif
+
+
 
 
 ! (13) Forces information (either block or from a file) [#####]
@@ -1119,7 +1229,10 @@ endif
   elseif (fdf_block('forces', bfdf)) then
     call fdf_read_forces_block(bfdf)
   else
-    call inputforces()
+    if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
+      write(errunit,*) "INPUT: block forces_displace or gradients_* missing: geometries set equal to primary"
+      call inputforces()
+    endif
   endif
 
 ! (14) Dmatrix information (either block or from a file)
@@ -1138,8 +1251,47 @@ endif
   endif
 
 
+! Part which handles the weights. needs modifications for guiding
+
+  if (.not. allocated(weights)) allocate (weights(MSTATES))
+  if (.not. allocated(iweight)) allocate (iweight(MSTATES))
 
 
+  if ( fdf_islreal('weights') .and. fdf_islist('weights') &
+      .and. (.not. fdf_islinteger('weights')) ) then
+    i = -1
+    call fdf_list('weights',i,weights)
+    write(ounit,'(a)' )
+    write(ounit,'(tr1,a,i0,a)') ' Weights has ',i,' entries'
+    if ( i < 2 ) stop 1
+    call fdf_list('weights',i,weights)
+    write(ounit, '(a,<MSTATES>(f12.6))') 'weights : ', weights(1:i)
+  else
+    write(ounit,*)'weights was not recognized'
+    stop 1
+  end if
+
+  wsum = 0.d0
+  nweight = 0
+  do i = 1, nstates
+    if (weights(i) .gt. 1d-6) then
+        nweight = nweight + 1
+        iweight(nweight) = i
+        wsum = wsum + weights(i)
+    endif
+  enddo
+
+  do i = 1, nweight
+    weights(i) = weights(i)/wsum
+  enddo
+
+  if (nweight .eq. 0) then
+      nweight = 1
+      iweight(1) = 1
+      weights(1) = 1.d0
+  endif
+
+! The above part should be moved to get_weights subroutine
 
 
 ! Processing of data read from the parsed files or setting them with defaults
@@ -1149,45 +1301,37 @@ endif
 
 ! (10) optorb_mixvirt information of orbitals (either block or from a file)
 
-  if(ioptorb .ne. 0) then   ! read next file only if orb optimization is requested
-    if ( fdf_load_defined('optorb_mixvirt') ) then
-      call read_optorb_mixvirt_file(file_optorb_mixvirt)
-    elseif ( fdf_block('optorb_mixvirt', bfdf)) then
-    ! call fdf_read_optorb_mixvirt_block(bfdf)
-      write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
-      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-      error stop
-    else
-      !use optorb_mix, only: norbopt, norbvirt
-      norbopt   = 0
-      norbvirt  = 0
-    endif
-
-    if(ioptorb_def.eq.0) then
-      write(6,'(''INPUT: definition of orbital variations missing'')')
-      call optorb_define
-    endif
+  if ( fdf_load_defined('optorb_mixvirt') ) then
+    call read_optorb_mixvirt_file(file_optorb_mixvirt)
+  elseif ( fdf_block('optorb_mixvirt', bfdf)) then
+  ! call fdf_read_optorb_mixvirt_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
   endif
-
-
 
 
 ! (18) cavity_spheres information (either block or from a file)
 
-  if ( fdf_load_defined('cavity_spheres') ) then
-    call read_cavity_spheres_file(file_cavity_spheres)
-  elseif ( fdf_block('cavity_spheres', bfdf)) then
-  ! call fdf_read_cavity_spheres_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop
-  endif
+!   if ( fdf_load_defined('cavity_spheres') ) then
+!     call read_cavity_spheres_file(file_cavity_spheres)
+!   elseif ( fdf_block('cavity_spheres', bfdf)) then
+!   ! call fdf_read_cavity_spheres_block(bfdf)
+!     write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
+!     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!     error stop
+!   else
+!     write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
+!     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+! !    error stop
+!   endif
 
-! (19) gradients_zmatrix information (either block or from a file)
+
+! ZMATRIX begins here
+! gradients_zmatrix information (either block or from a file)
 
   if ( fdf_load_defined('gradients_zmatrix') ) then
     call read_gradients_zmatrix_file(file_gradients_zmatrix)
@@ -1202,7 +1346,7 @@ endif
 !    error stop
   endif
 
-! (20) gradients_cartesian information (either block or from a file)
+! gradients_cartesian information (either block or from a file)
 
   if ( fdf_load_defined('gradients_cartesian') ) then
     call read_gradients_cartesian_file(file_gradients_cartesian)
@@ -1217,7 +1361,7 @@ endif
 !    error stop
   endif
 
-! (21) modify_zmatrix information (either block or from a file)
+! modify_zmatrix information (either block or from a file)
 
   if(iforce_analy.gt.0) then
     if ( fdf_load_defined('modify_zmatrix') ) then
@@ -1228,11 +1372,11 @@ endif
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     else
-      call modify_zmat_define
+      if(imodify_zmat.eq.0) call modify_zmat_define
     endif
   endif
 
-! (22) hessian_zmatrix information (either block or from a file)
+! hessian_zmatrix information (either block or from a file)
   if(iforce_analy.gt.0) then
     if ( fdf_load_defined('hessian_zmatrix') ) then
       call read_hessian_zmatrix_file(file_hessian_zmatrix)
@@ -1242,11 +1386,11 @@ endif
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     else
-      call hessian_zmat_define
+      if(ihessian_zmat.eq.0) call hessian_zmat_define
     endif
   endif
 
-! (23) zmatrix_connection information (either block or from a file)
+! zmatrix_connection information (either block or from a file)
 
   if ( fdf_load_defined('zmatrix_connection') ) then
     call read_zmatrix_connection_file(file_zmatrix_connection)
@@ -1258,8 +1402,18 @@ endif
   else
     write(errunit,'(a)') "Error:: No information about zmatrix_connection provided in the block."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    error stop
+    if(iuse_zmat.gt.0.and.izmatrix_check.eq.0) call fatal_error('INPUT: block connectionzmatrix missing')
   endif
+
+! Some checks on Z Matrixs.
+! Write out information about calculation of energy gradients and Z matrix
+  write(ounit,*)
+  if(ngradnts.gt.0 .and. igrdtype.eq.1) call inpwrt_grdnts_cart()
+  if(ngradnts.gt.0 .and. igrdtype.eq.2) call inpwrt_grdnts_zmat()
+  if(izmatrix.eq.1) call inpwrt_zmatrix()
+  write(ounit,*)
+
+! ZMATRIX section ends here
 
 ! (24) efield information (either block or from a file)
 
@@ -1278,19 +1432,20 @@ endif
 
 ! Done reading all the files
 
-! ISSUE: DEBUG: see if the following commented block is really intended
-! %module optwf
-  ! if (fdf_defined("optwf")) then
-  !   nwftype = 3; MFORCE = 3
-  ! endif
+  ! Not sure if this line should be here or not.
+  call pot_nn(cent,znuc,iwctype,ncent,pecent)
 
+! Make sure that all the blocks are read. Use inputflags here to check
+  call verify_orbitals()
 
+  if(iznuc.eq.0) call fatal_error('INPUT: block znuc missing')
+  if(igeometry.eq.0) call fatal_error('INPUT: block geometry missing')
+  if(ijastrow_parameter.eq.0) call fatal_error('INPUT: block jastrow_parameter missing')
+  if(iefield.gt.0.and.icharge_efield.eq.0) call fatal_error('INPUT: block efield missing')
 
-  call compute_mat_size_new()
-  call allocate_vmc()
-  call allocate_dmc()
 
   call fdf_shutdown()
+
 
   ! The following portion can be shifted to another subroutine.
   ! It does the processing of the input read so far and initializes some
@@ -1575,8 +1730,9 @@ subroutine compute_mat_size_new()
   ! use vmc_mod, only: MMAT_DIM, MMAT_DIM2, MCTYP3X, MCENT3
   ! use const, only: nelec
   ! use atom, only: nctype_tot, ncent_tot
+
   use sr_mod, only: MPARM, MOBS, MCONF
-  use contrl, only: nstep, nblk_max
+  use control_vmc, only: vmc_nstep, vmc_nblk
 
   use vmc_mod, only: set_vmc_size
   use optci, only: set_optci_size
@@ -1588,7 +1744,7 @@ subroutine compute_mat_size_new()
 
   ! leads to circular dependecy of put in sr_mod ..
   MOBS = 10 + 6*MPARM
-  MCONF = nstep * nblk_max
+  MCONF = vmc_nstep * vmc_nblk
 
   call set_vmc_size
   call set_optci_size

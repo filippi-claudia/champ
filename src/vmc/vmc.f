@@ -26,6 +26,8 @@ c and sa, pa, da asymptotic functions
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
       use control_vmc, only: vmc_nblkeq, vmc_nconf_new, vmc_nstep
       use pseudo, only: nloc
+      use mpitimer,    only: time, time_start, time_check1, time_check2
+      use contrl_file,    only: ounit
 
       implicit real*8(a-h,o-z)
 
@@ -97,13 +99,7 @@ c initialize the walker configuration
       endif
 
 c zero out estimators and averages
-      print*, "debug: before entering zerest printing vmc parameters"
-      print*, "vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk"
-      print*, vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
-      print*, "vmc_nblkeq, vmc_nconf_new, vmc_nstep"
-      print*, vmc_nblkeq, vmc_nconf_new, vmc_nstep
 
-!      debug note: acuest is not called yet
       if (vmc_irstar.ne.1) call zerest
 
 c check if restart flag is on. If so then read input from
@@ -119,9 +115,10 @@ c dumped data to restart
       endif
 
 c get initial value of cpu time
+      time_start = time()     ! Reset start time
+!      call my_second(0,'begin ')
+      time_check1 = time()
 
-      call my_second(0,'begin ')
-      print*, "debug: timings begin"
 c if there are equilibrium steps to take, do them here
 c skip equilibrium steps if restart run
 c imetro = 6 spherical-polar with slater T
@@ -136,13 +133,16 @@ c imetro = 6 spherical-polar with slater T
 
          call acuest
         enddo
-        print*, "debug: after metrop6 and acuest"
+
 c       Equilibration steps done. Zero out estimators again.
-        call my_second(2,'equilb')
-        print*, "debug: timings after"
+!        call my_second(2,'equilb')
+        ! Improved timers
+        time_check2 = time()
+        write(ounit, '(a,t40, f12.3, f12.3)') "END OF equilb CP, REAL TIME IS", time_check2 - time_start, time_check2 - time_check1
+        time_check1 = time_check2
+
         call zerest
       endif
-      stop "after going through metrop6 and zerest"
 c now do averaging steps
 
       l=0
@@ -166,7 +166,11 @@ c write out configuration for optimization/dmc/gfmc here
 
   440 call acuest
 
-      call my_second(2,'all   ')
+!      call my_second(2,'all   ')
+      ! Improved timers
+      time_check2 = time()
+      write(ounit, '(a, t40,f12.3, f12.3)') "END OF all CP, REAL TIME IS", time_check2 - time_start, time_check2 - time_check1
+      time_check1 = time_check2
 
 c write out last configuration to mc_configs_start
 c call fin_reduce to write out additional files for efpci, embedding etc.
@@ -174,8 +178,6 @@ c collected over all the run and to reduce cum1 in mpi version
       call mc_configs_write
 
 c print out final results
-      print*, "DEBUG, stop before calling finwrt"
-      stop
       call finwrt
 
 c if dump flag is on then dump out data for a restart

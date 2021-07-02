@@ -468,6 +468,7 @@ contains
     subroutine allocate_pcmo()
         use pcm, only: MCHS
         use precision_kinds, only: dp
+        use dmc_mod, only: MWALK
         if (.not. allocated(enfpcmo)) allocate(enfpcmo(MCHS))
         if (.not. allocated(enfpcmo_dmc)) allocate(enfpcmo_dmc(MWALK, MCHS))
         if (.not. allocated(qopcmo_dmc)) allocate(qopcmo_dmc(MWALK))

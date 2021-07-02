@@ -36,7 +36,7 @@ c job where it left off
       use basis, only: nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
       use mstates_ctrl, only: iguiding
       use inputflags, only: node_cutoff, eps_node_cutoff
-
+      use contrl_file,    only: ounit, errunit
       ! I'm 50% sure it's needed
       ! it was in master as part of the include optorb.h
       use optorb_cblock, only: ns_current
@@ -115,7 +115,7 @@ c job where it left off
 
       rewind 10
 
-      write(6,'(1x,''successful dump to unit 10'')')
+      write(ounit,'(1x,''successful dump to unit 10'')')
 
       return
 

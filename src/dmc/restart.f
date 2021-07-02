@@ -42,7 +42,8 @@
       use ghostatom, only: nghostcent
       use jaspar1, only: cjas1, cjas2
       use velratio, only: fratio
-      use contrl, only: nconf
+!      use contrl, only: nconf
+      use control_dmc, only: dmc_nconf
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -108,7 +109,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       call setrn(irn(1,idtask))
       read(10) hbx
       read(10) taux,rttau,idmc
-      read(10) nelecx,nconf
+      read(10) nelecx,dmc_nconf
       if (dabs(hbx-hb).gt.small) call fatal_error('STARTR: hb')
       if (dabs(taux-tau).gt.small) call fatal_error('STARTR: tau')
       if (nelecx.ne.nelec) call fatal_error('STARTR: nelec')

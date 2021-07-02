@@ -9,7 +9,7 @@ subroutine inputzex
     use contrl_per, only: iperiodic
     use wfsec, only: nwftype
 
-    implicit none 
+    implicit none
 
 
     if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
@@ -17,7 +17,7 @@ subroutine inputzex
     if (numr .eq. 0 .and. iperiodic .eq. 0) &
         call fatal_error('ZEX: numr=0 and iperiodic=0 but no zex are inputed')
 
-    zex = 1    
+    zex = 1
     return
 end subroutine inputzex
 
@@ -202,6 +202,7 @@ subroutine multideterminants_define(iflag, icheck)
 8       continue
     enddo
 
+    write (ounit, *) ' Multideterminants :: '
     write (ounit, *) 'norb  =', norb
     write (ounit, *) 'iactv =', (iactv(iab), iab=1, 2)
     write (ounit, *) 'ivirt =', (ivirt(iab), iab=1, 2)
@@ -263,7 +264,7 @@ subroutine inputforces
 
     use atom, only: ncent
 
-    implicit none 
+    implicit none
     integer             :: i
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
@@ -292,7 +293,7 @@ subroutine inputdet()
 !    use mstates_mod, only: MSTATES
     use wfsec, only: nwftype
 
-    implicit none 
+    implicit none
     integer             :: iwft, k
 
     if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
@@ -338,7 +339,7 @@ subroutine inputjastrow()
     use wfsec, only: nwftype
     use atom, only: ncent, nctype
 
-    implicit none 
+    implicit none
     integer         :: iwft, it, iparm, isp
     integer         :: mparmja, mparmjb, mparmjc, nterms4
 

@@ -19,7 +19,7 @@
       use control_vmc, only: vmc_nblk, vmc_nblk_max
       use force_analy, only: iforce_analy, alfgeo
       use method_opt, only: method
-
+      use contrl_file,    only: ounit
       implicit real*8(a-h,o-z)
 
       character*20 method_sav
@@ -32,23 +32,23 @@
 
       if(nparm.gt.MPARM)call fatal_error('OPTWF_LIN_D: nparmtot gt MPARM')
 
-      write(6,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
+      write(ounit,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
 
       if(ifunc_omega.gt.0) then
        if(n_omegaf+n_omegat.gt.nopt_iter) call fatal_error('OPTWF_LIN_D: n_omegaf+n_omegat > nopt_iter')
        omega=omega0
-       write(6,'(/,''LIN_D ifunc_omega: '',i3)') ifunc_omega
-       write(6,'(''LIN_D omega: '',f10.5)') omega
-       write(6,'(''LIN_D n_omegaf: '',i4)') n_omegaf
-       write(6,'(''LIN_D n_omegat: '',i4)') n_omegat
+       write(ounit,'(/,''LIN_D ifunc_omega: '',i3)') ifunc_omega
+       write(ounit,'(''LIN_D omega: '',f10.5)') omega
+       write(ounit,'(''LIN_D n_omegaf: '',i4)') n_omegaf
+       write(ounit,'(''LIN_D n_omegat: '',i4)') n_omegat
       endif
 
       ! if(nvecx.gt.MVEC) call fatal_error('SR_OPTWF: nvecx > MVEC')
 
-      write(6,'(/,''LIN_D adiag: '',f10.5)') alin_adiag
-      write(6,'(''LIN_D ethr:  '',f10.5)') alin_eps
-      write(6,'(''LIN_D nvec:  '',i4)') nvec
-      write(6,'(''LIN_D nvecx: '',i4)') nvecx
+      write(ounit,'(/,''LIN_D adiag: '',f10.5)') alin_adiag
+      write(ounit,'(''LIN_D ethr:  '',f10.5)') alin_eps
+      write(ounit,'(''LIN_D nvec:  '',i4)') nvec
+      write(ounit,'(''LIN_D nvecx: '',i4)') nvecx
 
       if(nstates.gt.1.and.nvec.lt.nstates) call fatal_error('OPTWF_LIN_D: nvec < nstates')
 
@@ -68,7 +68,7 @@
 
 c do iteration
       do iter=1,nopt_iter
-        write(6,'(/,''Optimization iteration'',i5,'' of'',i5)')iter,nopt_iter
+        write(ounit,'(/,''Optimization iteration'',i5,'' of'',i5)')iter,nopt_iter
 
         iforce_analy=0
 
@@ -82,13 +82,13 @@ c do iteration
             omega=energy_sav-sigma_sav
             if(ifunc_omega.eq.2) omega=energy_sav
           endif
-          write(6,'(''LIN_D omega: '',f10.5)') omega
+          write(ounit,'(''LIN_D omega: '',f10.5)') omega
         endif
 
 c do micro_iteration
         do miter=1,micro_iter_sr
 
-          if(micro_iter_sr.gt.1) write(6,'(/,''Micro iteration'',i5,'' of'',i5)')miter,micro_iter_sr
+          if(micro_iter_sr.gt.1) write(ounit,'(/,''Micro iteration'',i5,'' of'',i5)')miter,micro_iter_sr
 
           if(miter.eq.micro_iter_sr) iforce_analy=iforce_analy_sav
 
@@ -96,7 +96,7 @@ c        efin_old = efin define efin_old as the energy before
 
           call qmc
 
-          write(6,'(/,''Completed sampling'')')
+          write(ounit,'(/,''Completed sampling'')')
 
    6      continue
 
@@ -106,11 +106,11 @@ c        efin_old = efin define efin_old as the energy before
           if(method.eq.'lin_d'.and.ioptorb+ioptjas.gt.0) then
             adiag=alin_adiag
             call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,adiag,iflag)
-            write(6,'(''Norm of parm variation '',g12.5)') dparm_norm
+            write(ounit,'(''Norm of parm variation '',g12.5)') dparm_norm
             if(iflag.ne.0) then
-              write(6,'(''Warning: dparm_norm>1'')')
+              write(ounit,'(''Warning: dparm_norm>1'')')
               adiag=10*adiag
-              write(6,'(''adiag increased to '',f10.5)') adiag
+              write(ounit,'(''adiag increased to '',f10.5)') adiag
 
               alin_adiag=adiag
               go to 6
@@ -142,8 +142,8 @@ c         call check_length_run_sr(iter,inc_nblk,vmc_nblk,vmc_nblk_max,denergy,d
           vmc_nblk=min(vmc_nblk,vmc_nblk_max)
 c         if(-denergy.gt.3*denergy_err) alfgeo=alfgeo/1.2
         endif
-        write(6,'(''vmc_nblk = '',i6)') vmc_nblk
-        write(6,'(''alfgeo = '',f10.4)') alfgeo
+        write(ounit,'(''vmc_nblk = '',i6)') vmc_nblk
+        write(ounit,'(''alfgeo = '',f10.4)') alfgeo
 
         energy_sav=energy(1)
         energy_err_sav=energy_err(1)
@@ -151,7 +151,7 @@ c         if(-denergy.gt.3*denergy_err) alfgeo=alfgeo/1.2
       enddo
 c enddo iteration
 
-      write(6,'(/,''Check last iteration'')')
+      write(ounit,'(/,''Check last iteration'')')
 
       ioptjas=0
       ioptorb=0

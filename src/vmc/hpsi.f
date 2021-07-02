@@ -115,9 +115,7 @@ c nonloc_pot must be called after determinant because slater matrices are needed
       do 10 i=1,nelec
    10   e_other=e_other-hb*(vj(1,i)**2+vj(2,i)**2+vj(3,i)**2)
 
-      error stop "stopping just before calling det.._psit(); what is psid"
       do 30 istate=1,nstates
-
 c combine determinantal quantities to obtain trial wave function
         call determinant_psit(psid(istate),istate)
 c compute energy using Ymat

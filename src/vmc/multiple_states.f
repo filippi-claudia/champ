@@ -40,6 +40,7 @@ c----------------------------------------------------------------------
       subroutine efficiency_prt(passes)
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
+      use contrl_file,    only: ounit, errunit
       implicit real*8(a-h,o-z)
 
 
@@ -47,12 +48,12 @@ c----------------------------------------------------------------------
 
       if(iefficiency.eq.0) return
 
-      write(6,*)
-      write(6,'(''efficiency for multiple states'')')
+      write(ounit,*)
+      write(ounit,'(''efficiency for multiple states'')')
       do 200 j=1,nstates_psig
         efficiency=effcum(j)*effcum(j)/effcm2(j)/passes
 c       write(6,*) effcum(j)*effcum(j)/passes,effcm2(j)
-  200   write(6,'(''efficiency state '',i4,f8.3)') j,efficiency
+  200   write(ounit,'(''efficiency state '',i4,f8.3)') j,efficiency
 
       end
 c----------------------------------------------------------------------
@@ -74,9 +75,9 @@ c-----------------------------------------------------------------------
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
 
-      ! nstates below is undefined and 
+      ! nstates below is undefined and
       ! it' also the case in the master branch
-      ! one replacement is 
+      ! one replacement is
       ! use csfs, only: nstates
       ! no idea if that would be correct
       implicit real*8(a-h,o-z)

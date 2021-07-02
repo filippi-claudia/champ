@@ -17,7 +17,8 @@ c routine to accumulate estimators for energy etc.
       use casula, only: i_vpsp, icasula
       use jacobsave, only: ajacob, ajacold
       use pseudo, only: nloc
-      use contrl, only: nconf
+!      use contrl, only: nconf
+      use control_dmc, only: dmc_nconf
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -37,10 +38,10 @@ c get nuclear potential energy
 
       eigv=one
       eest=etrial
-      nwalk=nconf
+      nwalk=dmc_nconf
       fprod=one
 
-      do 80 iw=1,nconf
+      do 80 iw=1,dmc_nconf
         wt(iw)=one
         if(istrech.eq.0) then
           do 71 ifr=2,nforce
@@ -79,11 +80,11 @@ c           call t_vpsp_sav(iw)
    72       wthist(iw,ip,ifr)=0
    80 continue
 
-      if(mode.eq.'dmc_one_mpi2') nconf=nconf*nproc
-      wdsumo=nconf
-      wgdsumo=nconf
+      if(mode.eq.'dmc_one_mpi2') dmc_nconf=dmc_nconf*nproc
+      wdsumo=dmc_nconf
+      wgdsumo=dmc_nconf
       do 70 i=0,MFPRD1
-        wtgen(i)=nconf
+        wtgen(i)=dmc_nconf
    70   ff(i)=one
 
       call zerest

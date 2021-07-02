@@ -61,12 +61,12 @@ contains
         use precision_kinds, only: dp
         use vmc_mod, only: MELEC, MORB, MCENT
         use optjas, only: MPARMJ
-        if (.not. allocated(b)) allocate (b(MORB, nelec))
+        if (.not. allocated(b)) allocate (b(norb, nelec))
         if (.not. allocated(tildem)) allocate (tildem(nelec, norb, 2))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
-        if (.not. allocated(b_da)) allocate (b_da(3, nelec, MORB, ncent_tot))
-        if (.not. allocated(db)) allocate (db(3, nelec, MORB, ncent_tot))
-        if (.not. allocated(b_dj)) allocate (b_dj(MORB, nelec, MPARMJ))
+        if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb, ncent_tot))
+        if (.not. allocated(db)) allocate (db(3, nelec, norb, ncent_tot))
+        if (.not. allocated(b_dj)) allocate (b_dj(norb, nelec, MPARMJ))
     end subroutine allocate_Bloc
 
     subroutine deallocate_Bloc()
@@ -479,7 +479,7 @@ contains
         use vmc_mod, only: MELEC, MORB, MDET
         use vmc_mod, only: MEXCIT
         if (.not. allocated(aa)) allocate (aa(nelec, norb, 2))
-        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, MDET, 2))
+        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, ndet, 2))
     end subroutine allocate_multimat
 
     subroutine deallocate_multimat()

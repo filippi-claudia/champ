@@ -4,7 +4,9 @@
       use config, only: psido_dmc, psijo_dmc, xold_dmc
       use mpiconf, only: idtask, nproc
       use branch, only: eold, nwalk
-      use contrl, only: irstar, nblk, nblkeq, nconf, nconf_new, nstep
+!      use contrl, only: irstar, nblk, nblkeq, nconf, nconf_new, nstep
+      use control_dmc, only: dmc_irstar, dmc_nblk, dmc_nblkeq
+      use control_dmc, only: dmc_nconf, dmc_nconf_new, dmc_nstep
       use mpi
 
       implicit real*8(a-h,o-z)
@@ -28,7 +30,7 @@
       endif
 
 c set the random number seed, setrn already called in read_input
-      if(irstar.ne.1) then
+      if(dmc_irstar.ne.1) then
         if(nproc.gt.1) then
           do 5 id=1,(3*nelec)*idtask
     5       rnd=rannyu(0)
@@ -39,7 +41,7 @@ c set the random number seed, setrn already called in read_input
         endif
       endif
 
-      if (irstar.eq.1) then
+      if (dmc_irstar.eq.1) then
         open(unit=10,status='old',form='unformatted',file='restart_dmc')
         rewind 10
         call startr
@@ -48,7 +50,7 @@ c set the random number seed, setrn already called in read_input
         open(unit=1,status='old',form='formatted',file='mc_configs')
         rewind 1
         do 330 id=0,idtask
-          do 330 i=1,nconf
+          do 330 i=1,dmc_nconf
             read(1,fmt=*,end=340) ((xold_dmc(ic,j,i,1),ic=1,3),j=1,nelec)
   330   continue
         goto 345
@@ -58,17 +60,17 @@ c set the random number seed, setrn already called in read_input
           open(11,file=filename)
           rewind 11
           write(11,'(i3,'' nblkeq to be added to nblock at file end'')')
-     &    nblkeq
+     &    dmc_nblkeq
         endif
       endif
 
-c If nconf_new > 0, dump configurations for a future optimization or dmc calculation. 
-c Figure out frequency of configuration writing to produce nconf_new configurations. 
+c If nconf_new > 0, dump configurations for a future optimization or dmc calculation.
+c Figure out frequency of configuration writing to produce nconf_new configurations.
 c If nconf_new = 0, then no configurations are written.
-      if (nconf_new.eq.0) then
-        ngfmc=2*nstep*nblk
+      if (dmc_nconf_new.eq.0) then
+        ngfmc=2*dmc_nstep*dmc_nblk
        else
-        ngfmc=(nstep*nblk+nconf_new-1)*nconf/nconf_new
+        ngfmc=(dmc_nstep*dmc_nblk+dmc_nconf_new-1)*dmc_nconf/dmc_nconf_new
         if(idtask.lt.10) then
           write(filename,'(i1)') idtask
          elseif(idtask.lt.100) then
@@ -89,7 +91,7 @@ c-----------------------------------------------------------------------
       entry mc_configs_write(iblk,ipass)
 
 c Write out configuration for optimization/dmc/gfmc here
-          if (iblk.gt.2*nblkeq .and. (mod(ipass,ngfmc).eq.1 .or.  ngfmc.eq.1)) then
+          if (iblk.gt.2*dmc_nblkeq .and. (mod(ipass,ngfmc).eq.1 .or.  ngfmc.eq.1)) then
             if(3*nelec.lt.100) then
               write(fmt,'(a1,i2,a21)')'(',3*nelec,'f14.8,i3,d12.4,f12.5)'
              else
