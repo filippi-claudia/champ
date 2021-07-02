@@ -1,7 +1,6 @@
       subroutine deriv_jastrow(x,v,d2,div_vj,value)
 c Written by Claudia Filippi
 
-      use vmc_mod, only: MELEC
       use const, only: nelec
 
       use precision_kinds, only: dp

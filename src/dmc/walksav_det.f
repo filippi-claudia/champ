@@ -2,24 +2,21 @@
 c Written by Claudia Filippi
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MELEC, MORB, MDET
+      use vmc_mod, only: MORB, MDET
       use vmc_mod, only: MMAT_DIM
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: MWALK
 
       use const, only: nelec
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use forcepar, only: deltot, istrech, nforce
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use mstates_mod, only: MSTATES, MDETCSFX
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo
-      use branch, only: wgdsumo, wt, wtgen, wthist
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
-      use dets, only: cdet, ndet
+      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MEXCIT
+      use dmc_mod, only: MWALK
+      use const, only: nelec
+      use mstates_mod, only: MSTATES
+      use branch, only: nwalk
+      use slater, only: ddx, fp, slmi
+      use dets, only: ndet
       use elec, only: ndn, nup
       use orbval, only: dorb, orb
       use coefs, only: norb
@@ -38,18 +35,6 @@ c Written by Claudia Filippi
       integer :: j, k, kk
       integer :: ndim, nel
 
-
-    !   dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK),slmdiw(MMAT_DIM,MWALK)
-    !  &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)
-    !  &,fppuw(MMAT_DIM,MWALK),fppdw(MMAT_DIM,MWALK)
-    !  &,ddxw(3,MELEC,MWALK),d2dx2w(MELEC,MWALK)
-    !  &,detuw(MDET,MWALK),detdw(MDET,MWALK)
-
-
-    !   dimension aaw(MELEC,MORB,MWALK,2),wfmatw(MEXCIT**2,MDET,MWALK,2),ymatw(MORB,MELEC,MWALK,2,MSTATES)
-    !   dimension orbw(MELEC,MORB,MWALK),dorbw(3,MELEC,MORB,MWALK)
-      ! save krefw,slmuiw,slmdiw,fpuw,fpdw,fppuw,fppdw,detuw,detdw,ddxw,d2dx2w
-      ! save aaw,wfmatw,ymatw,orbw,dorbw
 
       integer, allocatable, save :: krefw(:)
       real(dp), allocatable, save :: slmuiw(:, :)
@@ -73,9 +58,9 @@ c Written by Claudia Filippi
 
       if(.not.allocated(aaw)) allocate(aaw(nelec,MORB,MWALK,2))
       if(.not.allocated(wfmatw)) allocate(wfmatw(MEXCIT**2,MDET,MWALK,2))
-      if(.not.allocated(ymatw)) allocate(ymatw(MORB,MELEC,MWALK,2,MSTATES))
-      if(.not.allocated(orbw)) allocate(orbw(MELEC,MORB,MWALK))
-      if(.not.allocated(dorbw)) allocate(dorbw(3,MELEC,MORB,MWALK))
+      if(.not.allocated(ymatw)) allocate(ymatw(MORB,nelec,MWALK,2,MSTATES))
+      if(.not.allocated(orbw)) allocate(orbw(nelec,MORB,MWALK))
+      if(.not.allocated(dorbw)) allocate(dorbw(3,nelec,MORB,MWALK))
 
       if(.not.allocated(krefw)) allocate(krefw(MWALK))
       if(.not.allocated(slmuiw)) allocate(slmuiw(MMAT_DIM,MWALK))
@@ -250,9 +235,9 @@ c Written by Claudia Filippi
      &  ,irecv,itag+6,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+6
 
-      call mpi_isend(aaw(1,1,nwalk,1),MELEC*norb,mpi_double_precision
+      call mpi_isend(aaw(1,1,nwalk,1),nelec*norb,mpi_double_precision
      & ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
-      call mpi_isend(aaw(1,1,nwalk,2),MELEC*norb,mpi_double_precision
+      call mpi_isend(aaw(1,1,nwalk,2),nelec*norb,mpi_double_precision
      & ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+2
 
@@ -272,9 +257,9 @@ c Written by Claudia Filippi
           endif
  160  continue
 
-      call mpi_isend(orbw(1,1,nwalk),MELEC*norb,mpi_double_precision
+      call mpi_isend(orbw(1,1,nwalk),nelec*norb,mpi_double_precision
      &  ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
-      call mpi_isend(dorbw(1,1,1,nwalk),3*MELEC*norb,mpi_double_precision
+      call mpi_isend(dorbw(1,1,1,nwalk),3*nelec*norb,mpi_double_precision
      &  ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+2
 
@@ -303,9 +288,9 @@ c Written by Claudia Filippi
      &  ,isend,itag+6,MPI_COMM_WORLD,irequest_array,ierr)
       itag=itag+6
 
-      call mpi_recv(aaw(1,1,nwalk,1),MELEC*norb,mpi_double_precision
+      call mpi_recv(aaw(1,1,nwalk,1),nelec*norb,mpi_double_precision
      & ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(aaw(1,1,nwalk,2),MELEC*norb,mpi_double_precision
+      call mpi_recv(aaw(1,1,nwalk,2),nelec*norb,mpi_double_precision
      & ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       itag=itag+2
 
@@ -325,9 +310,9 @@ c Written by Claudia Filippi
         endif
  260  continue
 
-      call mpi_recv(orbw(1,1,nwalk),MELEC*morb,mpi_double_precision
+      call mpi_recv(orbw(1,1,nwalk),nelec*morb,mpi_double_precision
      &  ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(dorbw(1,1,1,nwalk),3*MELEC*morb,mpi_double_precision
+      call mpi_recv(dorbw(1,1,1,nwalk),3*nelec*morb,mpi_double_precision
      &  ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       itag=itag+2
 

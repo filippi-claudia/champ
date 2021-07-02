@@ -1,8 +1,6 @@
       subroutine distances(iel,x)
 c Written by Cyrus Umrigar
 c calculate interparticle distances
-      use vmc_mod, only: MELEC, MCENT
-      use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, ncent
       use ghostatom, only: nghostcent
       use const, only: nelec
@@ -102,8 +100,6 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c restore interparticle distances (called if move rejected)
 
-      use vmc_mod, only: MELEC, MCENT
-      use vmc_mod, only: MMAT_DIM2
       use atom, only: ncent
       use ghostatom, only: nghostcent
       use const, only: nelec

@@ -3,7 +3,7 @@
       use sr_mod, only: MPARM
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
-      use optwf_corsam, only: energy, energy_err, force
+      use optwf_corsam, only: energy, energy_err
       use sa_check, only: energy_all, energy_err_all
       use contrl, only: nblk, nblk_max, nblk_ci
       use force_analy, only: iforce_analy, alfgeo
@@ -13,8 +13,8 @@
       use force_analy, only: iforce_analy
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_contrl, only: iroot_geo
-      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
-      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
+      use optwf_contrl, only: dparm_norm_min, nopt_iter, micro_iter_sr
+      use optwf_contrl, only: sr_tau, sr_adiag, sr_eps
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
       use precision_kinds, only: dp
 

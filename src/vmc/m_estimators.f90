@@ -59,7 +59,6 @@ module estcum
  contains
      subroutine allocate_estcum()
          use force_mod, only: MFORCE
-         use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
          if (.not. allocated(ecum)) allocate (ecum(MSTATES, MFORCE))
          if (.not. allocated(ecum1)) allocate (ecum1(MSTATES))
@@ -117,7 +116,6 @@ module estcum
      save
  contains
      subroutine allocate_estsig()
-         use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
          if (.not. allocated(ecm21s)) allocate (ecm21s(MSTATES))
          if (.not. allocated(ecum1s)) allocate (ecum1s(MSTATES))
@@ -252,7 +250,6 @@ module estcum
      save
  contains
      subroutine allocate_estpsi()
-         use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
          if (.not. allocated(apsi)) allocate (apsi(MSTATES))
          if (.not. allocated(detref)) allocate (detref(2))
@@ -322,7 +319,6 @@ module estcum
  contains
      subroutine allocate_est2cm()
          use force_mod, only: MFORCE
-         use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
          if (.not. allocated(ecm2))   allocate(ecm2(MSTATES, MFORCE))
          if (.not. allocated(ecm21))  allocate(ecm21(MSTATES))

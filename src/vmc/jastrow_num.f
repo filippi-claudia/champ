@@ -5,22 +5,17 @@ c **Warning** This routine needs to be upgraded to calculate distances
 c correctly for periodic systems if we add in capability to use
 c numerical Laplacian for periodic systems.
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, iwctype, ncent, ncent_tot
       use jaspar, only: nspin2, sspin, sspinn, is
       use const, only: nelec
       use elec, only: nup
-      use jaspar3, only: a, c, scalek
+      use jaspar3, only: scalek
       use jaspar6, only: c1_jas6
       use wfsec, only: iwf
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, r_ee
       use precision_kinds, only: dp
 
       implicit none

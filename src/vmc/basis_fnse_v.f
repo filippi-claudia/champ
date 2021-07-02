@@ -2,7 +2,6 @@
 c Written by Claudia Filippi by modifying basis_fns
 c routine to calculate basis functions for electron k
       use numbas_mod, only: MRWF
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent, ncent_tot
       use ghostatom, only: nghostcent
       use numbas, only: iwrwf, nrbas, numr

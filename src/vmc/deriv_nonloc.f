@@ -1,13 +1,12 @@
       subroutine deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,value,gn,vjn,da_ratio_jn)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, nctype, ncent, ncent_tot
 
       use jaspar, only: nspin2, sspinn, is
       use const, only: nelec
       use da_jastrow4val, only: da_j
-      use derivjas, only: go, gvalue
+      use derivjas, only: go
       use elec, only: nup
       use jaso, only: fso
       use jaspointer, only: npoint, npointa

@@ -1,28 +1,21 @@
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MDET
       use const, only: hb, nelec
       use csfs, only: nstates
       use dets, only: ndet
       use elec, only: ndn, nup
-      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det
       use optwf_contrl, only: ioptorb
       use ycompact, only: dymat, ymat
       use zcompact, only: aaz, dzmat, emz, zmat
       use coefs, only: norb
       use Bloc, only: b, tildem, xmat
       use denergy_det_m, only: denergy_det
-      use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
       use force_analy, only: iforce_analy
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
-      use array_resize_utils, only: resize_matrix, resize_tensor
+      use orbval, only: nadorb, orb
+      use slater, only: d2dx2, ddx, slmi
       use multislater, only: detiab
 
       use precision_kinds, only: dp
@@ -73,7 +66,7 @@ c dimensioned at least max(nup**2,ndn**2)
 c     write(6,*) 'eloc_ref',eloc_det(kref,1),eloc_det(kref,2)
 
       if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) call bxmatrix(kref,xmat(1,1),xmat(1,2),b)
-     
+
       if(ndet.eq.1.and.ioptorb.eq.0) return
 
       nel=nup
@@ -173,6 +166,7 @@ c           endif
 
 c           write(6,*) 'B HELLO',k,ndim,(irepcol_det(irep,k,iab),irep=1,ndim),(ireporb_det(jrep,k,iab),jrep=1,ndim)
             call matinv(wfmat(1,k,iab),ndim,det)
+
 c           write(6,*) 'A HELLO',k,det
             detiab(k,iab)=det
 
@@ -242,12 +236,8 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MEXCIT
       use const, only: nelec
       use dets, only: cdet, ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
@@ -256,8 +246,6 @@ c-----------------------------------------------------------------------
       use coefs, only: norb
       use denergy_det_m, only: denergy_det
 
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
 
       use precision_kinds, only: dp
       implicit none
@@ -329,12 +317,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MORB
+      use vmc_mod, only: MEXCIT
       use const, only: nelec
       use dets, only: ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
@@ -405,18 +389,13 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MORB
       use elec, only: ndn, nup
       use multidet, only: iactv, ivirt
       use coefs, only: norb
       use Bloc, only: tildem, xmat
       use multimat, only: aa
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use slater, only: slmi
       use const, only: nelec
 
       use precision_kinds, only: dp
@@ -477,12 +456,6 @@ c           do krep=ivirt(iab),norb+nadorb
 c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
       use csfs, only: nstates
       use elec, only: ndn, nup
@@ -523,14 +496,9 @@ c     enddo
       end
 
 c-----------------------------------------------------------------------
- 
+
 c-----------------------------------------------------------------------
       function idiff(j,i,iab)
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use multidet, only: irepcol_det, ireporb_det, numrep_det
 
       implicit none
@@ -548,5 +516,5 @@ c-----------------------------------------------------------------------
       idiff=0
       return
       end
-           
+
 c-----------------------------------------------------------------------

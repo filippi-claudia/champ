@@ -2,11 +2,11 @@
       use sr_mod, only: MPARM
       use olbfgs, only: initialize_olbfgs
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: energy, energy_err, force
+      use optwf_corsam, only: energy, energy_err
       use contrl, only: nblk, nblk_max
       use optwf_contrl, only: idl_flag, ilbfgs_flag
-      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
-      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter
+      use optwf_contrl, only: sr_tau, sr_adiag, sr_eps
+      use optwf_contrl, only: dparm_norm_min, nopt_iter
       use method_opt, only: method
 
       use precision_kinds, only: dp

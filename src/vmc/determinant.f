@@ -2,8 +2,6 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use vmc_mod, only: MELEC, MORB, MDET, MCENT
-      use vmc_mod, only: MMAT_DIM
       use const, only: ipr
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -11,7 +9,7 @@ c Modified by A. Scemama
       use dorb_m, only: iworbd
       use contr3, only: mode
 
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: ddorb, dorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
       use const, only: nelec
 
@@ -29,6 +27,7 @@ c Modified by A. Scemama
       real(dp), dimension(nelec, ncent_tot) :: r_en
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
+
 
 
 
@@ -53,8 +52,10 @@ c compute orbitals
       jk=-nel
       do j=1,nel
         jorb=iworbd(j+ish,kref)
+
         jk=jk+nel
-        call dcopy(nel,orb   (1+ish,jorb),1,slmi(1+jk,iab),1)
+
+        call dcopy(nel,orb(1+ish,jorb),1,slmi(1+jk,iab),1)
         call dcopy(nel,dorb(1,1+ish,jorb),3,fp(1,j,iab),nel*3)
         call dcopy(nel,dorb(2,1+ish,jorb),3,fp(2,j,iab),nel*3)
         call dcopy(nel,dorb(3,1+ish,jorb),3,fp(3,j,iab),nel*3)
@@ -103,14 +104,13 @@ c for dmc must be implemented: for each iw, must save not only kref,kref_old but
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
-      use vmc_mod, only: MELEC, MORB, MDET
       use const, only: ipr
       use estpsi, only: detref
       use multidet, only: kref
 
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: nadorb
       use multislater, only: detiab
       use precision_kinds, only: dp
       implicit none
@@ -148,7 +148,6 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
-      use vmc_mod, only: MELEC, MORB
       use atom, only: ncent
       use const, only: hb, nelec
       use da_jastrow4val, only: da_vj
@@ -162,8 +161,7 @@ c-----------------------------------------------------------------------
       use Bloc, only: b
       use force_analy, only: iforce_analy
       use velocity_jastrow, only: vj
-      use array_resize_utils, only: resize_matrix, resize_tensor
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: ddorb, dorb, nadorb
       use precision_kinds, only: dp
       implicit none
 

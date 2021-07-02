@@ -17,7 +17,6 @@ module atom
     save
 contains
     subroutine allocate_atom()
-        use precision_kinds, only: dp
 
         if (.not. allocated(cent)) allocate (cent(3, ncent_tot))
         if (.not. allocated(znuc)) allocate (znuc(nctype_tot))

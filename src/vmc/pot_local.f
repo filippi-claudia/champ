@@ -1,11 +1,9 @@
       subroutine pot_local(pe)
-      use vmc_mod, only: MELEC, MCENT
-      use vmc_mod, only: MMAT_DIM2
       use atom, only: znuc, pecent, iwctype, ncent
       use ghostatom, only: nghostcent
       use const, only: nelec, ipr
       use contrl_per, only: iperiodic
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, r_ee
       use pseudo, only: nloc
 
       use precision_kinds, only: dp

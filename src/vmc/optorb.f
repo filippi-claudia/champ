@@ -1,8 +1,7 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
-      use vmc_mod, only: MELEC, MORB, MDET
+      use vmc_mod, only: MORB
       use elec, only: ndn, nup
-      use coefs, only: norb
       use multidet, only: ivirt, kref
       use optwf_contrl, only: ioptorb
       use Bloc, only: b, tildem
@@ -10,7 +9,7 @@
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_ref, irepcol_ref
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: orb
       use multislater, only: detiab
       use const, only: nelec
       use precision_kinds, only: dp
@@ -246,7 +245,7 @@ c-----------------------------------------------------------------------
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
       use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
-      use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
+      use optorb_cblock, only: nb_current, nefp_blocks, norb_f_bcum
       use precision_kinds, only: dp
 
       implicit none
@@ -313,7 +312,7 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
       use orb_mat_030, only: orb_ecum, orb_wcum
-      use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
+      use optorb_cblock, only: isample_cmat, nreduced, nb_current, norb_f_bcum
 
       implicit none
 
@@ -435,7 +434,7 @@ c-----------------------------------------------------------------------
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
-      use optorb_cblock, only:  norb_f_bcum
+      use optorb_cblock, only: norb_f_bcum
       use precision_kinds, only: dp
 
       implicit none
@@ -474,7 +473,7 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
-      use optorb_cblock, only: isample_cmat, nreduced, nb_current, nefp_blocks, norb_f_bcum
+      use optorb_cblock, only: nreduced, nefp_blocks, norb_f_bcum
 
       implicit none
 
@@ -562,7 +561,6 @@ c-----------------------------------------------------------------------
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
-      use orb_mat_030, only: orb_ecum, orb_wcum
       use gradhess_all, only: grad, h, s
       use ci000, only: nciterm
       use method_opt, only: method
@@ -779,7 +777,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_define
 
       use optorb_mod, only: MXORBOP, MXREDUCED
-      use vmc_mod, only: MELEC, MORB, MDET
+      use vmc_mod, only: MORB, MDET
       use const, only: nelec
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -793,7 +791,7 @@ c-----------------------------------------------------------------------
       use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
       use method_opt, only: method
       use optorb_cblock, only: nreduced
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: nadorb, ndetorb, orb
       use optwf_contrl, only: ncore, no_active
 
       implicit none
@@ -997,8 +995,7 @@ c-----------------------------------------------------------------------
       subroutine check_orbitals
 
 c Do not compute virtual orbitals during single-electron move
-      use vmc_mod, only: MELEC, MORB
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: nadorb
 
       implicit none
 

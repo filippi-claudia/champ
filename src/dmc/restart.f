@@ -1,6 +1,6 @@
       subroutine startr
 
-      use vmc_mod, only: MORB, MBASIS, MDET, MCENT
+      use vmc_mod, only: MORB, MDET
       use vmc_mod, only: nrad
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
@@ -12,6 +12,7 @@
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use atom, only: ncent_tot
       use estcum, only: iblk, ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
@@ -56,34 +57,34 @@
       integer :: nghostcentx, nprock, nq_id, num
       integer :: nupx, nwalk_id
       integer, dimension(4, 0:NPROCX) :: irn
-      integer, dimension(MCENT) :: n1sx
-      integer, dimension(MCENT) :: n2sx
-      integer, dimension(3, MCENT) :: n2px
-      integer, dimension(MCENT) :: n3sx
-      integer, dimension(3, MCENT) :: n3px
-      integer, dimension(MCENT) :: n3dzrx
-      integer, dimension(MCENT) :: n3dx2x
-      integer, dimension(MCENT) :: n3dxyx
-      integer, dimension(MCENT) :: n3dxzx
-      integer, dimension(MCENT) :: n3dyzx
-      integer, dimension(MCENT) :: n4sx
-      integer, dimension(3, MCENT) :: n4px
-      integer, dimension(MCENT) :: nsax
-      integer, dimension(3, MCENT) :: npax
-      integer, dimension(MCENT) :: ndzrax
-      integer, dimension(MCENT) :: ndx2ax
-      integer, dimension(MCENT) :: ndxyax
-      integer, dimension(MCENT) :: ndxzax
-      integer, dimension(MCENT) :: ndyzax
+      integer, dimension(ncent_tot) :: n1sx
+      integer, dimension(ncent_tot) :: n2sx
+      integer, dimension(3, ncent_tot) :: n2px
+      integer, dimension(ncent_tot) :: n3sx
+      integer, dimension(3, ncent_tot) :: n3px
+      integer, dimension(ncent_tot) :: n3dzrx
+      integer, dimension(ncent_tot) :: n3dx2x
+      integer, dimension(ncent_tot) :: n3dxyx
+      integer, dimension(ncent_tot) :: n3dxzx
+      integer, dimension(ncent_tot) :: n3dyzx
+      integer, dimension(ncent_tot) :: n4sx
+      integer, dimension(3, ncent_tot) :: n4px
+      integer, dimension(ncent_tot) :: nsax
+      integer, dimension(3, ncent_tot) :: npax
+      integer, dimension(ncent_tot) :: ndzrax
+      integer, dimension(ncent_tot) :: ndx2ax
+      integer, dimension(ncent_tot) :: ndxyax
+      integer, dimension(ncent_tot) :: ndxzax
+      integer, dimension(ncent_tot) :: ndyzax
       real(dp) :: cjas1x, cjas2x, different, eest_id
       real(dp) :: eigv_id, ff_id, fmt, fprod_id
       real(dp) :: fratio_id, hbx, taux, wdsumo_id
       real(dp) :: wq_id, wt_id, xold_dmc_id, xq_id
       real(dp) :: yq_id, zq_id
-      real(dp), dimension(MBASIS, MORB) :: coefx
-      real(dp), dimension(MBASIS) :: zexx
-      real(dp), dimension(3, MCENT) :: centx
-      real(dp), dimension(MCENT) :: znucx
+      real(dp), dimension(nbasis, MORB) :: coefx
+      real(dp), dimension(nbasis) :: zexx
+      real(dp), dimension(3, ncent_tot) :: centx
+      real(dp), dimension(ncent_tot) :: znucx
       real(dp), dimension(MDET) :: cdetx
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0

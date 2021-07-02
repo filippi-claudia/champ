@@ -25,7 +25,6 @@ module grid_mod
 
 contains
     subroutine allocate_grid_mod()
-        use precision_kinds, only: dp, sp
         if (.not. allocated(grid3d)) allocate (grid3d(MXNSTEP, MXNSTEP, MXNSTEP))
         if (.not. allocated(cart_from_int)) allocate (cart_from_int(MXNSTEP, 3))
     end subroutine allocate_grid_mod
@@ -40,7 +39,6 @@ end module grid_mod
 module grid_spline_mod
     !> Arguments
     use precision_kinds, only: sp
-    use vmc_mod, only: MELEC
     use const, only: nelec
     use grid_mod, only: MXNSTEP
 
@@ -72,7 +70,6 @@ module grid_lagrange_mod
     !> argument
     use precision_kinds, only: sp
     use grid_mod, only: MXNSTEP
-    use vmc_mod, only: MELEC
     use const, only: nelec
 
     implicit none
@@ -122,7 +119,6 @@ module grid3d_param
     save
 contains
     subroutine allocate_grid3d_param()
-        use precision_kinds, only: dp
         if (.not. allocated(endpt)) allocate (endpt(3))
         if (.not. allocated(nstep3d)) allocate (nstep3d(3))
         if (.not. allocated(origin)) allocate (origin(3))
@@ -169,7 +165,6 @@ module orbital_num_lag
     save
 contains
     subroutine allocate_orbital_num_lag()
-        use precision_kinds, only: dp
         use grid_lagrange_mod, only: LAGSTART, LAGEND
         if (.not. allocated(denom)) allocate (denom(LAGSTART:LAGEND, 3))
         if (.not. allocated(step_inv)) allocate (step_inv(3, 3))

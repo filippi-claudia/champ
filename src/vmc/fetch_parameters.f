@@ -31,7 +31,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine fetch_jastrow(p,n)
       use atom, only: nctype
-      use jaspar3, only: a, b, c
+      use jaspar3, only: b, c
 
       use jaspar4, only: a4
       use optwf_contrl, only: ioptjas
@@ -92,7 +92,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_ci(p,n)
-      use csfs, only: ccsf, ncsf, nstates
+      use csfs, only: ccsf, ncsf
 
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci

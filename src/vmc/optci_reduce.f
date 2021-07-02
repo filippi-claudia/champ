@@ -1,7 +1,7 @@
       subroutine optci_reduce
 
       use precision_kinds, only: dp
-      use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+      use optci, only: MXCITERM, MXCIREDUCED
       use optwf_contrl, only: ioptci
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum

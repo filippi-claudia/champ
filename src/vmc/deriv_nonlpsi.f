@@ -1,13 +1,8 @@
       function deriv_psinl(u,rshifti,rshiftj,rri,rrj,gn,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c
+      use vmc_mod, only: MORDJ
+      use jaspar3, only: c
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
       use optwf_wjas, only: iwjasc
@@ -16,7 +11,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use vardep, only: cdep, iwdepend, nvdepend
 
-      use cuspmat4, only: d, iwc4, nterms
+      use cuspmat4, only: d, iwc4
       use precision_kinds, only: dp
       implicit none
 
@@ -116,13 +111,6 @@ c                 jj=jj+1
 c-----------------------------------------------------------------------
       function deriv_psianl(rri,gn,it)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c
 
       use jaspar4, only: a4, norda
       use jaspar6, only: asymp_jasa, asymp_r
@@ -181,14 +169,8 @@ c written for general iwf, whereas others (asymp_r) assume iwf=1.
 c-----------------------------------------------------------------------
       function deriv_psibnl(u,gn,isb,ipar)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar, only: sspinn, is
-      use jaspar3, only: a, b, c
+      use jaspar, only: sspinn
+      use jaspar3, only: b
 
       use jaspar4, only: nordb
       use jaspar6, only: asymp_jasb, asymp_r

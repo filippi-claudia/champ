@@ -876,6 +876,7 @@ c the matrix a is replaced by its inverse.
 
       call dgetrf(nsub,nsub,a,nsub,ipvt,info)
       if(info.gt.0) then
+            write(6,'(''mmpol.f'')')
         write(6,'(''MATINV: u(k,k)=0 with k= '',i5)') info
         call fatal_error('MATINV: info ne 0 in dgetrf')
       endif

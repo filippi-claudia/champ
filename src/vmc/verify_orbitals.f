@@ -1,12 +1,11 @@
       subroutine verify_orbitals
 
-      use vmc_mod, only: MELEC, MORB
       use const, only: nelec
       use dets, only: ndet
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
       use dorb_m, only: iworbd
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: nadorb, ndetorb, orb
 
       implicit none
 

@@ -1,8 +1,6 @@
 module basis
     !> Arguments: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz, n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz, n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
-    use force_mod, only: MWF
     use precision_kinds, only: dp
-    use vmc_mod, only: MBASIS, MCTYPE
 
     implicit none
 
@@ -66,12 +64,6 @@ module basis
     save
 contains
     subroutine allocate_basis()
-        use wfsec, only: nwftype
-        use coefs, only: nbasis
-        use atom, only: nctype_tot
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MBASIS, MCTYPE
 
         ! if (.not. allocated(zex)) allocate (zex(MBASIS, MWF))
         ! if (.not. allocated(n1s)) allocate (n1s(MCTYPE))
@@ -161,7 +153,6 @@ module numexp
     use numbas_mod, only: MRWF
     use force_mod, only: MFORCE
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
     use vmc_mod, only: NCOEF
 
     implicit none
@@ -178,8 +169,6 @@ contains
         use atom, only: nctype_tot
         use numbas_mod, only: MRWF
         use force_mod, only: MFORCE
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCTYPE
         use vmc_mod, only: NCOEF
         if (.not. allocated(ae)) allocate (ae(2, MRWF, nctype_tot, MFORCE))
         if (.not. allocated(ce)) allocate (ce(NCOEF, MRWF, nctype_tot, MFORCE))
@@ -196,9 +185,7 @@ module numbas
     !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
     use numbas_mod, only: MRWF, MRWF_PTS
-    use force_mod, only: MWF
     use precision_kinds, only: dp
-    use vmc_mod, only: MBASIS, MCTYPE
 
     implicit none
 
@@ -222,9 +209,6 @@ contains
         use coefs, only: nbasis
         use atom, only: nctype_tot
         use numbas_mod, only: MRWF, MRWF_PTS
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MBASIS, MCTYPE
         if (.not. allocated(arg)) allocate (arg(nctype_tot))
         if (.not. allocated(d2rwf)) allocate (d2rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
         if (.not. allocated(igrid)) allocate (igrid(nctype_tot))
@@ -250,7 +234,6 @@ end module numbas
 
 module numbas1
     !> Arguments: iwlbas, nbastyp
-    use vmc_mod, only: MBASIS, MCTYPE
 
     implicit none
 
@@ -265,7 +248,6 @@ contains
     subroutine allocate_numbas1()
         use coefs, only: nbasis
         use atom, only: nctype_tot
-        use vmc_mod, only: MBASIS, MCTYPE
         if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot))
         ! if (.not. allocated(nbastyp)) allocate (nbastyp(MCTYPE))
     end subroutine allocate_numbas1
@@ -279,7 +261,6 @@ end module numbas1
 
 module numbas2
     !> Arguments: ibas0, ibas1
-    use vmc_mod, only: MCENT
 
     implicit none
 
@@ -293,7 +274,6 @@ module numbas2
 contains
     subroutine allocate_numbas2()
         use atom, only: ncent_tot
-        use vmc_mod, only: MCENT
         if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
         if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
     end subroutine allocate_numbas2

@@ -41,7 +41,6 @@ module ewald_mod
      save
  contains
      subroutine allocate_ewald()
-         use precision_kinds, only: dp
          use ewald_mod, only: NCOEFX, NGNORMX, NGNORM_SIMX
          if (.not. allocated(b_coul)) allocate (b_coul(NCOEFX))
          if (.not. allocated(b_coul_sim)) allocate (b_coul_sim(NCOEFX))
@@ -73,7 +72,6 @@ module ewald_mod
      save
  contains
      subroutine allocate_ewald_basis()
-         use precision_kinds, only: dp
          use ewald_mod, only: NGNORM_BIGX
          if (.not. allocated(vps_basis_fourier)) allocate (vps_basis_fourier(NGNORM_BIGX))
      end subroutine allocate_ewald_basis
@@ -158,7 +156,6 @@ module ewald_mod
          use ewald_mod, only: IVOL_RATIO
          use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
          use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
-         use precision_kinds, only: dp
          use vmc_mod, only: MORB
          if (.not. allocated(glatt)) allocate (glatt(3, 3))
          if (.not. allocated(glatt_inv)) allocate (glatt_inv(3, 3))
@@ -241,7 +238,6 @@ module ewald_mod
      subroutine allocate_pworbital()
          use ewald_mod, only: IVOL_RATIO
          use ewald_mod, only: NGVECX
-         use precision_kinds, only: dp
          use vmc_mod, only: MORB
          if (.not. allocated(c_im)) allocate (c_im(NGVECX, MORB))
          if (.not. allocated(c_ip)) allocate (c_ip(NGVECX, MORB))
@@ -285,7 +281,6 @@ module ewald_mod
      subroutine allocate_test()
          use ewald_mod, only: NGNORM_BIGX
          use ewald_mod, only: NGNORM_SIM_BIGX
-         use precision_kinds, only: dp
          if (.not. allocated(vbare_coul)) allocate (vbare_coul(NGNORM_SIM_BIGX))
          if (.not. allocated(vbare_jas)) allocate (vbare_jas(NGNORM_SIM_BIGX))
          if (.not. allocated(vbare_psp)) allocate (vbare_psp(NGNORM_BIGX))
@@ -337,7 +332,6 @@ module ewald_mod
      subroutine allocate_tempor_test()
          use ewald_mod, only: IVOL_RATIO
          use ewald_mod, only: NGVEC_BIGX
-         use precision_kinds, only: dp
          if (.not. allocated(c_imag)) allocate (c_imag(NGVEC_BIGX))
          if (.not. allocated(c_real)) allocate (c_real(NGVEC_BIGX))
          if (.not. allocated(igvec_dft)) allocate (igvec_dft(3, NGVEC_BIGX))

@@ -16,7 +16,6 @@ module mix_jas_ci
  contains
      subroutine allocate_mix_jas_ci()
          use optjas, only: MPARMJ
-         use precision_kinds, only: dp
          use vmc_mod, only: MDET
          if (.not. allocated(de_o_ci)) allocate (de_o_ci(MPARMJ, MDET))
          if (.not. allocated(dj_de_ci)) allocate (dj_de_ci(MPARMJ, MDET))
@@ -53,7 +52,6 @@ module mix_jas_ci
      subroutine allocate_mix_jas_orb()
          use optorb_mod, only: MXREDUCED
          use optjas, only: MPARMJ
-         use precision_kinds, only: dp
          use mstates_mod, only: MSTATES
          if (.not. allocated(de_o)) allocate (de_o(MPARMJ, MXREDUCED, MSTATES))
          if (.not. allocated(dj_ho)) allocate (dj_ho(MPARMJ, MXREDUCED, MSTATES))
@@ -89,7 +87,6 @@ module mix_jas_ci
      subroutine allocate_mix_orb_ci()
          use optorb_mod, only: MXREDUCED
          use optci, only: MXCITERM
-         use precision_kinds, only: dp
          if (.not. allocated(ci_de_o)) allocate (ci_de_o(MXCITERM, MXREDUCED))
          if (.not. allocated(ci_o_ho)) allocate (ci_o_ho(MXCITERM, MXREDUCED))
          if (.not. allocated(ci_o_o)) allocate (ci_o_o(MXCITERM, MXREDUCED))

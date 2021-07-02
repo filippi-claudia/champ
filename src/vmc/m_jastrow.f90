@@ -1,7 +1,6 @@
 module jasn
     !> Arguments: d2ijn, d2n, fijn, fjn, fsn, fsumn
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC
 
     implicit none
 
@@ -19,8 +18,6 @@ module jasn
 contains
     subroutine allocate_jasn()
         use const, only: nelec
-        use precision_kinds, only: dp
-        use vmc_mod, only: MELEC
         if (.not. allocated(d2ijn)) allocate (d2ijn(nelec, nelec))
         if (.not. allocated(fijn)) allocate (fijn(3, nelec, nelec))
         if (.not. allocated(fjn)) allocate (fjn(3, nelec))
@@ -39,7 +36,6 @@ end module jasn
 module jaso
     !> Arguments: d2ijo, d2o, fijo, fjo, fso, fsumo
     use precision_kinds, only: dp
-    use vmc_mod, only: MELEC
 
     implicit none
 
@@ -59,8 +55,6 @@ module jaso
 contains
     subroutine allocate_jaso()
         use const, only: nelec
-        use precision_kinds, only: dp
-        use vmc_mod, only: MELEC
         if (.not. allocated(d2ijo)) allocate (d2ijo(nelec, nelec))
         if (.not. allocated(fijo)) allocate (fijo(3, nelec, nelec))
         if (.not. allocated(fjo)) allocate (fjo(3, nelec))
@@ -95,7 +89,6 @@ end module jaspar
 
 module jaspar1
     !> Arguments: cjas1, cjas2
-    use force_mod, only: MWF
     use precision_kinds, only: dp
 
     implicit none
@@ -110,8 +103,6 @@ module jaspar1
 contains
     subroutine allocate_jaspar1()
         use wfsec, only: nwftype
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
         if (.not. allocated(cjas1)) allocate (cjas1(nwftype))
         if (.not. allocated(cjas2)) allocate (cjas2(nwftype))
     end subroutine allocate_jaspar1
@@ -125,7 +116,6 @@ end module jaspar1
 
 module jaspar2
     !> Arguments: a1, a2
-    use force_mod, only: MWF
     use precision_kinds, only: dp
 
     implicit none
@@ -140,8 +130,6 @@ module jaspar2
 contains
     subroutine allocate_jaspar2()
         use wfsec, only: nwftype
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
         if (.not. allocated(a1)) allocate (a1(83, 3, nwftype))
         if (.not. allocated(a2)) allocate (a2(83, 3, nwftype))
     end subroutine allocate_jaspar2
@@ -155,9 +143,7 @@ end module jaspar2
 
 module jaspar3
     !> Arguments: a, b, c, fck, nord, scalek
-    use force_mod, only: MWF
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
     use vmc_mod, only: MORDJ1
 
     implicit none
@@ -177,9 +163,6 @@ contains
     subroutine allocate_jaspar3()
         use wfsec, only: nwftype
         use atom, only: nctype_tot
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCTYPE
         use vmc_mod, only: MORDJ1
         if (.not. allocated(a)) allocate (a(MORDJ1, nwftype))
         ! if (.not. allocated(b)) allocate (b(MORDJ1, 2, MWF))
@@ -200,10 +183,7 @@ end module jaspar3
 
 module jaspar4
     !> Arguments: a4, norda, nordb, nordc
-    use force_mod, only: MWF
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
-    use vmc_mod, only: MORDJ1
 
     implicit none
 
@@ -235,7 +215,6 @@ end module jaspar4
 module jaspar6
     !> Arguments: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
 
     implicit none
 
@@ -255,8 +234,6 @@ module jaspar6
 contains
     subroutine allocate_jaspar6()
         use atom, only: nctype_tot
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCTYPE
         if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(nctype_tot))
         if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2))
     end subroutine allocate_jaspar6

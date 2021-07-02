@@ -32,7 +32,6 @@ contains
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_L
         use force_mod, only: MFORCE
-        use precision_kinds, only: dp
 
         if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
         if (.not. allocated(vps)) allocate (vps(nelec, ncent_tot, MPS_L))
@@ -63,7 +62,6 @@ module pseudo_champ
 contains
     subroutine allocate_pseudo_champ()
         use atom, only: nctype_tot
-        use precision_kinds, only: dp
 
         if (.not. allocated(igrid_ps)) allocate (igrid_ps(nctype_tot))
         if (.not. allocated(rmax_coul)) allocate (rmax_coul(nctype_tot))
@@ -100,7 +98,6 @@ contains
     subroutine allocate_pseudo_fahy()
         use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MPS_GRID
-        use precision_kinds, only: dp
 
         if (.not. allocated(drad)) allocate (drad(nctype_tot))
         if (.not. allocated(dradl)) allocate (dradl(nctype_tot))
@@ -147,7 +144,6 @@ contains
     subroutine allocate_pseudo_tm()
         use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MPS_GRID
-        use precision_kinds, only: dp
 
         if (.not. allocated(arg)) allocate (arg(nctype_tot))
         if (.not. allocated(arg_ps)) allocate (arg_ps(nctype_tot))

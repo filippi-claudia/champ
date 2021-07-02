@@ -18,7 +18,7 @@ subroutine read_znuc(iu)
 
     call p2gti('atoms:nctype', nctype, 1)
     call p2gtid('atoms:addghostype', newghostype, 0, 1)
-    if (nctype + newghostype .gt. MCTYPE) call fatal_error('INPUT: nctype+newghostype > MCTYPE')
+    !if (nctype + newghostype .gt. MCTYPE) call fatal_error('INPUT: nctype+newghostype > MCTYPE')
     nctype_tot = nctype + newghostype
 
     allocate (znuc(nctype_tot))
@@ -177,7 +177,7 @@ subroutine read_determinants(iu, nd, iwft)
     endif
 
     call p2gti('electrons:nelec', nelec, 1)
-    if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
+    ! if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
     call incpos(iu, itmp, 1)
 
     allocate (cdet(MDET, MSTATES, nwftype))
@@ -357,7 +357,7 @@ subroutine read_bas_num_info(iu, numeric)
 
     call p2gti('atoms:nctype', nctype, 1)
     call p2gtid('atoms:addghostype', newghostype, 0, 1)
-    if (nctype + newghostype .gt. MCTYPE) call fatal_error('ATOMS: nctype+newghostype > MCTYPE')
+    !if (nctype + newghostype .gt. MCTYPE) call fatal_error('ATOMS: nctype+newghostype > MCTYPE')
 
     nctot = nctype + newghostype
     allocate (nbastyp(nctot))

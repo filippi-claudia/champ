@@ -10,19 +10,14 @@ c Currently this program contains
 c 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater basis states.
 c and sa, pa, da asymptotic functions
 
-      use jaspar, only: is
-      use const, only: pi, hb, delta, deltai, fbias, nelec, imetro
-      use config, only: enew, eold, pen, peo, psi2n, psi2o
-      use config, only: psido, psijo, tjfn, tjfo
-      use config, only: vnew, vold, xnew, xold
-      use jaspar1, only: cjas1, cjas2
-      use elec, only: ndn, nup
+      use const, only: nelec
+      use config, only: eold
+      use config, only: psido, psijo
+      use config, only: xold
       use forcepar, only: nforce
       use jaspar2, only: a1
-      use jaspar3, only: a, c
       use wfsec, only: iwftype, nwftype
-      use coefs, only: coef, nbasis
-      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: idump, irstar, nblk, nblkeq, nconf_new, nstep
       use pseudo, only: nloc
 
       use precision_kinds, only: dp

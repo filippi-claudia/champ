@@ -18,7 +18,6 @@ c----------------------------------------------------------------------
       use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
       use grid_mod, only: grid3d, cart_from_int
       use atom, only: cent, ncent
-      use contrl, only: irstar
       use grid3d_param, only: endpt, nstep3d, origin, step3d
 
       implicit none
@@ -161,7 +160,6 @@ c----------------------------------------------------------------------
       use ghostatom, only: nghostcent
       use grid3d_param, only: nstep3d, origin, step3d
 
-      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iu2, ix, iy, iz

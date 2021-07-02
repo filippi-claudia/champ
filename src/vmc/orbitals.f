@@ -2,7 +2,6 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MCENT
       use const, only: nelec, ipr
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
@@ -12,8 +11,7 @@ c Modified by A. Scemama
       use force_analy, only: iforce_analy
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use atom, only: ncent_tot
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use array_resize_utils, only: resize_matrix, resize_tensor
+      use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
 
       implicit none
@@ -141,10 +139,10 @@ c           do 26 m=1,nbasis
         call orbitals_pw(x,orb,dorb,ddorb)
       endif
 
-      if(ipr.ge.4) then
+      if(ipr.ge.0) then
         do 260 iorb=1,norb+nadorb
   260     write(6,'(''iorb,orb='',i4,1000f15.11)') iorb,(orb(i,iorb),i=1,nelec)
-        do 270 iorb=1,norb+nadorb
+         do 270 iorb=1,norb+nadorb
   270     write(6,'(''iorb,d2orb='',i4,1000f15.11)') iorb,(ddorb(i,iorb),i=1,nelec)
         do 280 k=1,3
           do 280 iorb=1,norb+nadorb
@@ -156,13 +154,12 @@ c           do 26 m=1,nbasis
 c------------------------------------------------------------------------------------
       subroutine virtual_orbitals
 
-      use vmc_mod, only: MELEC, MORB, MBASIS
       use const, only: nelec
       use optwf_contrl, only: ioptci, ioptorb
       use phifun, only: d2phin, dphin
       use phifun, only: phin
       use coefs, only: coef, nbasis, norb
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
 
       implicit none
@@ -217,7 +214,6 @@ c25   continue
 c------------------------------------------------------------------------------------
       subroutine da_orbitals
 
-      use vmc_mod, only: MELEC, MORB, MBASIS
       use atom, only: ncent
       use const, only: nelec
       use da_orbval, only: da_d2orb, da_dorb, da_orb
@@ -226,7 +222,6 @@ c-------------------------------------------------------------------------------
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: ibasis
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use precision_kinds, only: dp
 
       implicit none
@@ -267,15 +262,14 @@ c-------------------------------------------------------------------------------
 c------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
-      use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: coef, norb
       use contrl_per, only: iperiodic
       use atom, only: ncent_tot
       use grid3dflag, only: i3dlagorb, i3dsplorb
-      use multislatern, only: ddorbn, detn, dorbn, orbn
+      use multislatern, only: ddorbn, dorbn, orbn
       use const, only: nelec
       use precision_kinds, only: dp
 

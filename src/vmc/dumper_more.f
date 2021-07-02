@@ -2,9 +2,9 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE
+      use vmc_mod, only: MORB
       use vmc_mod, only: nrad
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent,ncent_tot, nctype_tot
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
       use ghostatom, only: newghostype, nghostcent
       use const, only: hb, delta, nelec

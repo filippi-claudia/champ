@@ -31,14 +31,14 @@ contains
     subroutine optwf_dl()
 
         use precision_kinds, only: dp
-        use sr_mod, only: MPARM
+use sr_mod, only: MPARM
         use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-        use optwf_contrl, only: idl_flag, dl_mom, dl_alg
-        use optwf_corsam, only: energy, energy_err, force
+use optwf_contrl, only: idl_flag
+        use optwf_corsam, only: energy, energy_err
         use optwf_contrl, only: dparm_norm_min, nopt_iter
-        use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+        use optwf_contrl, only: sr_adiag
         use contrl, only: nblk, nblk_max
-        use method_opt, only: method
+use method_opt, only: method
 
         implicit None
 
@@ -162,11 +162,11 @@ contains
     subroutine optimization_step(iter)
         !> do 1 optimization step
         use mpi
-        use precision_kinds, only: dp
+use precision_kinds, only: dp
         use mpiconf, only: idtask
         use optwf_sr_mod, only: sr_hs
         use optwf_contrl, only: nparm
-        use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
+        use optwf_contrl, only: sr_tau, sr_adiag
 
         ! in/out variable
         integer, intent(in) :: iter
@@ -190,7 +190,7 @@ contains
         use sr_mat_n, only: h_sr
         use optwf_contrl, only: nparm
         use optwf_contrl, only: dl_alg, dl_mom
-        use optwf_contrl, only: sr_tau !, sr_adiag, sr_eps 
+        use optwf_contrl, only: sr_tau
 
         integer, intent(in) :: iter
 
