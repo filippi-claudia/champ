@@ -300,8 +300,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  /home/ravindra/actions-runner/_work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -1.0598502) "
-        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0598502
+        echo "Comparing the energy with the reference one (total E = -1.0569553) "
+        /home/ravindra/actions-runner/_work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0569553
 
 
     # Tests about psb3
