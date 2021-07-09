@@ -45,6 +45,11 @@ module inputflags
     real(dp) :: eps_node_cutoff
     real(dp) :: scalecoef
     integer :: iqmmm
+ ! dmc specifics:   
+    real(dp) :: enode_cutoff
+    integer :: icircular
+    integer :: idrifdifgfunc
+    integer :: ibranch_elec 
 
     private
     public :: iznuc, igeometry, ibasis_num, ilcao, iexponents
@@ -53,6 +58,7 @@ module inputflags
     public :: imultideterminants, ioptorb_mixvirt, imodify_zmat, izmatrix_check
     public :: ihessian_zmat
     public :: node_cutoff, eps_node_cutoff, scalecoef
+    public :: enode_cutoff, icircular, idrifdifgfunc, ibranch_elec
     public :: iqmmm
     save
 end module inputflags
