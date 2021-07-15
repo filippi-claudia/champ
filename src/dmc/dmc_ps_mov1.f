@@ -63,6 +63,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use elec, only: nup
       use velratio, only: fratio, xdrifted
       use contrl, only: irstar, nconf
+      use inputflags, only: node_cutoff, eps_node_cutoff, icircular, idrifdifgfunc
       use precision_kinds, only: dp
 
       implicit none
@@ -84,11 +85,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
          end function gauss
       end interface
 
-      integer :: i, iaccept, icircular, idrifdifgfunc, iel
+      integer :: i, iaccept, iel
       integer :: iflag_dn, iflag_up, ifr, ii
       integer :: imove, ipmod, ipmod2, iw
       integer :: iwmod, j, jel, k
-      integer :: ncall, ncount_casula, nmove_casula, node_cutoff
+      integer :: ncall, ncount_casula, nmove_casula
       integer, dimension(nelec) :: itryo
       integer, dimension(nelec) :: itryn
       integer, dimension(nelec) :: iacc_elec
@@ -96,7 +97,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
       real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
       real(dp) :: drifdifr, drifdifs, drift, dwt
-      real(dp) :: dx, e_cutoff, enew, eps_node_cutoff
+      real(dp) :: dx, e_cutoff, enew
       real(dp) :: ewtn, ewto, expon, ffi
       real(dp) :: ffn, fration, ginv
       real(dp) :: p, pen, pp, psi2savo
@@ -126,12 +127,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 c     term=(sqrt(two*pi*tau))**3/pi
 
-      call p2gtid('dmc:node_cutoff',node_cutoff,0,1)
-      call p2gtfd('dmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
       eps_node_cutoff=eps_node_cutoff*sqrt(tau)
-      call p2gtid('dmc:icircular',icircular,0,1)
-      call p2gtid('dmc:idrifdifgfunc',idrifdifgfunc,0,1)
-
       e_cutoff=0.2d0*sqrt(nelec/tau)
 
       if(idmc.lt.0) then

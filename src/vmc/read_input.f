@@ -238,6 +238,7 @@ c and Anthony Scemema
       use array_resize_utils, only: resize_tensor
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       use inputflags, only: node_cutoff, eps_node_cutoff, iqmmm, scalecoef
+      use inputflags, only: enode_cutoff, icircular, idrifdifgfunc, ibranch_elec 
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
       use optwf_contrl, only: ilastvmc, iroot_geo
@@ -258,7 +259,7 @@ c and Anthony Scemema
 
       integer :: index, learning
       integer, dimension(4) :: irn
-      real(dp) :: dmax1, dmin1, enode_cutoff, ratio
+      real(dp) :: dmax1, dmin1, ratio
       real(dp), dimension(3) :: cent_tmp
       real(dp), dimension(nbasis) :: anorm
       real(dp), parameter :: zero = 0.d0
@@ -486,6 +487,13 @@ c DMC parameters
 
         call p2gtid('dmc:node_cutoff',node_cutoff,0,1)
         call p2gtfd('dmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
+        call p2gtid('dmc:icircular',icircular,0,1)
+        call p2gtid('dmc:idrifdifgfunc',idrifdifgfunc,0,1)
+        if(mode.eq.'dmc_one_mpi2') then
+          if(ioptwf.gt.0) call fatal_error('MAIN: no DMC optimization with global population')
+          call p2gtid('dmc:ibranch_elec', ibranch_elec, 0, 1)
+          if(ibranch_elec.gt.0) call fatal_error('MAIN: no DMC single-branch with global population')
+        endif
 
         call p2gti('dmc:nfprod',nfprod,1)
         call p2gtf('dmc:tau',tau,1)
