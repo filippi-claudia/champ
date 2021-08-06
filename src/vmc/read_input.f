@@ -121,10 +121,6 @@ c and Anthony Scemema
 
       common /force_analy/ iforce_analy,iuse_zmat,alfgeo
 
-      common /derivanaly/ deriv_energy_sum(10,3,MCENT,10),deriv_energy_cum(10,3,MCENT,10),
-     &energy_snake(3,MCENT,MWALK,10),energy_hist(3,MCENT,MWALK,0:MFORCE_WT_PRD,10),
-     &deriv_energy_old(3,MCENT,MWALK),pathak_old(MWALK,10),eps_pathak(10),ipathak
-
       character*12 mode
       common /contr3/ mode
 
@@ -1817,9 +1813,10 @@ CKEYDOC Read pathak parameters
       include 'dmc.h'
       include 'force.h'
 
-      common /derivanaly/ deriv_energy_sum(10,3,MCENT,PTH),deriv_energy_cum(10,3,MCENT,PTH),
-     &energy_snake(3,MCENT,MWALK,PTH),energy_hist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
-     &deriv_energy_old(3,MCENT,MWALK),pathak_old(MWALK,PTH),eps_pathak(PTH),ipathak
+      common /derivanaly/ deriv_esum(10,3,MCENT,PTH),deriv_ecum(10,3,MCENT,PTH),
+     &esnake(3,MCENT,MWALK,PTH),ehist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
+     &deriv_eold(3,MCENT,MWALK),pold(MWALK,PTH),deriv_cm(3,MCENT,PTH),
+     &deriv_cm2(3,MCENT,PTH),eps_pathak(PTH),ipathak
 
       character fn*(*)
 

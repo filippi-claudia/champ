@@ -43,9 +43,11 @@ c routine to accumulate estimators for energy etc.
 
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
-      common /derivanaly/ deriv_energy_sum(10,3,MCENT,PTH),deriv_energy_cum(10,3,MCENT,PTH),
-     &energy_snake(3,MCENT,MWALK,PTH),energy_hist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
-     &deriv_energy_old(3,MCENT,MWALK),pathak_old(MWALK,PTH),eps_pathak(PTH),ipathak
+      common /derivanaly/ deriv_esum(10,3,MCENT,PTH),deriv_ecum(10,3,MCENT,PTH),
+     &esnake(3,MCENT,MWALK,PTH),ehist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
+     &deriv_eold(3,MCENT,MWALK),pold(MWALK,PTH),deriv_cm(3,MCENT,PTH),
+     &deriv_cm2(3,MCENT,PTH),eps_pathak(PTH),ipathak
+      common /force_analy/ iforce_analy
 
       iblk=0
       iblk_proc=0
@@ -97,7 +99,6 @@ c zero out estimators
       ei3sum=zero
       r2sum=zero
       risum=zero
-      deriv_energy_cum=zero
 
       do 85 ifr=1,nforce
         tausum(ifr)=zero
@@ -138,15 +139,19 @@ c zero out estimators
             do 87 iph=1,ipathak
               do 87 ic=1,ncent   
                 do 87 k=1,3
+                  deriv_cm(k,ic,iph)=zero
+                  deriv_cm2(k,ic,iph)=zero
                   do 87 j=1,3
-                    deriv_energy_cum(j,k,ic,iph)=zero
-   87               deriv_energy_sum(j,k,ic,iph)=zero
+                    deriv_ecum(j,k,ic,iph)=zero
+   87               deriv_esum(j,k,ic,iph)=zero
           else
             do 89 ic=1,ncent
               do 89 k=1,3
+                deriv_cm(k,ic,1)=zero
+                deriv_cm2(k,ic,1)=zero
                 do 89 j=1,3
-                  deriv_energy_cum(j,k,ic,1)=zero
-   89             deriv_energy_sum(j,k,ic,1)=zero
+                  deriv_ecum(j,k,ic,1)=zero
+   89             deriv_esum(j,k,ic,1)=zero
           endif
         endif
      

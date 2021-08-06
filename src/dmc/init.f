@@ -31,9 +31,10 @@ c routine to accumulate estimators for energy etc.
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
       common /da_energy_now/ da_energy(3,MCENT),da_psi(3,MCENT)
-      common /derivanaly/ deriv_energy_sum(10,3,MCENT,PTH),deriv_energy_cum(10,3,MCENT,PTH),
-     &energy_snake(3,MCENT,MWALK,PTH),energy_hist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
-     &deriv_energy_old(3,MCENT,MWALK),pathak_old(MWALK,PTH),eps_pathak(PTH),ipathak
+      common /derivanaly/ deriv_esum(10,3,MCENT,PTH),deriv_ecum(10,3,MCENT,PTH),
+     &esnake(3,MCENT,MWALK,PTH),ehist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
+     &deriv_eold(3,MCENT,MWALK),pold(MWALK,PTH),deriv_cm(3,MCENT,PTH),
+     &deriv_cm2(3,MCENT,PTH),eps_pathak(PTH),ipathak
       common /force_analy/ iforce_analy
 
       character*12 mode
@@ -95,22 +96,22 @@ c           call t_vpsp_sav(iw)
               if(ipathak.gt.0) then
                 call nodes_distance(vold(1,1,iw,ifr),distance_node,1)
                 do 74 iph=1,ipathak
-                  call pathak(distance_node,pathak_old(iw,iph),eps_pathak(iph))
+                  call pathak(distance_node,pold(iw,iph),eps_pathak(iph))
                   do 74 ic=1,ncent
                     do 74 k=1,3
-                      energy_snake(k,ic,iw,iph)=zero
+                      esnake(k,ic,iw,iph)=zero
                       do 74 ip=0,nwprod-1
-   74                   energy_hist(k,ic,iw,ip,iph)=zero
+   74                   ehist(k,ic,iw,ip,iph)=zero
               else
                 do 76 ic=1,ncent
                   do 76 k=1,3
-                    energy_snake(k,ic,iw,1)=zero
+                    esnake(k,ic,iw,1)=zero
                     do 76 ip=0,nwprod-1
-   76                 energy_hist(k,ic,iw,ip,1)=zero
+   76                 ehist(k,ic,iw,ip,1)=zero
               endif
               do 78 ic=1,ncent
                 do 78 k=1,3
-   78             deriv_energy_old(k,ic,iw)=da_energy(k,ic)
+   78             deriv_eold(k,ic,iw)=da_energy(k,ic)
             endif
           endif
           pwt(iw,ifr)=0

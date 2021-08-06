@@ -22,9 +22,10 @@ c Written by Cyrus Umrigar
 
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
-      common /derivanaly/ deriv_energy_sum(10,3,MCENT,PTH),deriv_energy_cum(10,3,MCENT,PTH),
-     &energy_snake(3,MCENT,MWALK,PTH),energy_hist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
-     &deriv_energy_old(3,MCENT,MWALK),pathak_old(MWALK,PTH),eps_pathak(PTH),ipathak
+      common /derivanaly/ deriv_esum(10,3,MCENT,PTH),deriv_ecum(10,3,MCENT,PTH),
+     &esnake(3,MCENT,MWALK,PTH),ehist(3,MCENT,MWALK,0:MFORCE_WT_PRD,PTH),
+     &deriv_eold(3,MCENT,MWALK),pold(MWALK,PTH),deriv_cm(3,MCENT,PTH),
+     &deriv_cm2(3,MCENT,PTH),eps_pathak(PTH),ipathak
       common /force_analy/ iforce_analy
 
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
@@ -86,22 +87,22 @@ c         call t_vpsp_splitj(iw,iw2)
           if(iforce_analy.eq.1) then
             if(ipathak.gt.0) then
               do 101 iph=1,ipathak
-                pathak_old(iw2,iph)=pathak_old(iw,iph)
+                pold(iw2,iph)=pold(iw,iph)
                 do 101 ic=1,ncent
                   do 101 k=1,3
-                    energy_snake(k,ic,iw2,iph)=energy_snake(k,ic,iw,iph)
+                    esnake(k,ic,iw2,iph)=esnake(k,ic,iw,iph)
                     do 101 ip=0,nwprod-1
-  101                 energy_hist(k,ic,iw2,ip,iph)=energy_hist(k,ic,iw,ip,iph)
+  101                 ehist(k,ic,iw2,ip,iph)=ehist(k,ic,iw,ip,iph)
             else
               do 102 ic=1,ncent
                 do 102 k=1,3
-                  energy_snake(k,ic,iw2,1)=energy_snake(k,ic,iw,1)
+                  esnake(k,ic,iw2,1)=esnake(k,ic,iw,1)
                   do 102 ip=0,nwprod-1
-  102               energy_hist(k,ic,iw2,ip,1)=energy_hist(k,ic,iw,ip,1)
+  102               ehist(k,ic,iw2,ip,1)=ehist(k,ic,iw,ip,1)
             endif
             do 103 ic=1,ncent
               do 103 k=1,3
-  103           deriv_energy_old(k,ic,iw2)=deriv_energy_old(k,ic,iw)
+  103           deriv_eold(k,ic,iw2)=deriv_eold(k,ic,iw)
           endif
           do 15 ifr=1,nforce
             ajacold(iw2,ifr)=ajacold(iw,ifr)
@@ -137,22 +138,22 @@ c       call t_vpsp_splitj(iw,iw2)
         if(iforce_analy.eq.1) then
           if(ipathak.gt.0) then
             do 201 iph=1,ipathak
-              pathak_old(iw2,iph)=pathak_old(iw,iph)
+              pold(iw2,iph)=pold(iw,iph)
               do 201 ic=1,ncent
                 do 201 k=1,3
-                  energy_snake(k,ic,iw2,iph)=energy_snake(k,ic,iw,iph)
+                  esnake(k,ic,iw2,iph)=esnake(k,ic,iw,iph)
                   do 201 ip=0,nwprod-1
-201                 energy_hist(k,ic,iw2,ip,iph)=energy_hist(k,ic,iw,ip,iph)
+201                 ehist(k,ic,iw2,ip,iph)=ehist(k,ic,iw,ip,iph)
           else
             do 202 ic=1,ncent
               do 202 k=1,3
-                energy_snake(k,ic,iw2,1)=energy_snake(k,ic,iw,1)
+                esnake(k,ic,iw2,1)=esnake(k,ic,iw,1)
                 do 202 ip=0,nwprod-1
-202               energy_hist(k,ic,iw2,ip,1)=energy_hist(k,ic,iw,ip,1)
+202               ehist(k,ic,iw2,ip,1)=ehist(k,ic,iw,ip,1)
           endif
           do 203 ic=1,ncent
             do 203 k=1,3
-203           deriv_energy_old(k,ic,iw2)=deriv_energy_old(k,ic,iw)
+203           deriv_eold(k,ic,iw2)=deriv_eold(k,ic,iw)
         endif
         do 30 ifr=1,nforce
           ajacold(iw2,ifr)=ajacold(iw,ifr)
