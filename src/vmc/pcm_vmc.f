@@ -49,7 +49,8 @@ c-----------------------------------------------------------------------
       subroutine pcm_fin(wcum,iblk)
 
       use pcm, only: MCHS
-      use contrl, only: nblk, nstep
+      !use contrl, only: nblk, nstep
+      use control_vmc, only: vmc_nblk, vmc_nstep
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: iscov, nch, nchs
       use pcm_parms, only: nscv
@@ -73,7 +74,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(MCHS) :: enfpcm_ave
       real(dp), dimension(MCHS) :: enfpcm_err
 
-    
+
 
       data hatokc/627.509541d0/
 
@@ -122,9 +123,9 @@ c-----------------------------------------------------------------------
         sdqpol=dsqrt(sqpol2+sqtheo2)
         qtheov=-(fs-1.0d0)*qopcm_ave
 	qv=(nch-nchs)*qvol
-        sqv=sqtheo*dsqrt(0.5d0+nblk*nstep/dble(nscv*iscov))
+        sqv=sqtheo*dsqrt(0.5d0+vmc_nblk*vmc_nstep/dble(nscv*iscov))
         write(6,'(''pcm        qout ='',f12.7,'' +-'',f11.7,f9.5)') qopcm_ave,qopcm_err,qopcm_err*rtpass
-        write(6,'(''pcm        qpol ='',f12.7'' +-'',f11.7)') qpol,sqpol 
+        write(6,'(''pcm        qpol ='',f12.7'' +-'',f11.7)') qpol,sqpol
         write(6,'(''pcm      qtheos ='',f12.7'' +-'',f11.7)') qtheo,sqtheo
         write(6,'(''pcm qpol-qtheos ='',f12.7'' +-'',f11.7)') dqpol,sdqpol
         write(6,'(''pcm       qpolv ='',f12.7'' +-'',f11.7)') qv,sqv

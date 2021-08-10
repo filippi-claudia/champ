@@ -37,21 +37,22 @@ use optwf_contrl, only: idl_flag
         use optwf_corsam, only: energy, energy_err
         use optwf_contrl, only: dparm_norm_min, nopt_iter
         use optwf_contrl, only: sr_adiag
-        use contrl, only: nblk, nblk_max
-use method_opt, only: method
-
+!        use contrl, only: nblk, nblk_max
+        use control_vmc, only: vmc_nblk, vmc_nblk_max
+        use method_opt, only: method
+        use contrl_file,    only: ounit
         implicit None
 
         integer :: iter, iflag
         real(dp) :: dparm_norm
         real(dp) :: denergy, energy_sav, denergy_err, energy_err_sav
 
-        write (6, '(''Started dl optimization'')')
+        write (ounit, '(''Started dl optimization'')')
 
         call set_nparms_tot
 
         call sanity_check()
-        write (6, '(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
+        write (ounit, '(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
 
         call init_arrays()
 
@@ -61,11 +62,11 @@ use method_opt, only: method
 
         ! do iteration
         do iter = 1, nopt_iter
-            write (6, '(/,''DL Optimization iteration'',i5,'' of'',i5)') iter, nopt_iter
+            write (ounit, '(/,''DL Optimization iteration'',i5,'' of'',i5)') iter, nopt_iter
 
             call vmc()
 
-            write (6, '(/,''Completed sampling'')')
+            write (ounit, '(/,''Completed sampling'')')
 
             call optimization_step(iter)
 
@@ -75,10 +76,10 @@ use method_opt, only: method
 
             call test_solution_parm(nparm, deltap, dparm_norm, &
                                     dparm_norm_min, sr_adiag, iflag)
-            write (6, '(''Norm of parm variation '',g12.5)') dparm_norm
+            write (ounit, '(''Norm of parm variation '',g12.5)') dparm_norm
 
             if (iflag .ne. 0) then
-                write (6, '(''Warning: dparm_norm>1'')')
+                write (ounit, '(''Warning: dparm_norm>1'')')
                 stop
             endif
 
@@ -89,17 +90,17 @@ use method_opt, only: method
             if (iter .ge. 2) then
                 denergy = energy(1) - energy_sav
                 denergy_err = sqrt(energy_err(1)**2 + energy_err_sav**2)
-                nblk = nblk*1.2
-                nblk = min(nblk, nblk_max)
+                vmc_nblk = vmc_nblk*1.2
+                vmc_nblk = min(vmc_nblk, vmc_nblk_max)
             endif
-            write (6, '(''nblk = '',i6)') nblk
+            write (ounit, '(''vmc_nblk = '',i6)') vmc_nblk
 
             energy_sav = energy(1)
             energy_err_sav = energy_err(1)
         enddo
         ! enddo iteration
 
-        write (6, '(/,''Check last iteration'')')
+        write (ounit, '(/,''Check last iteration'')')
 
         ! Why ??!!
         ioptjas = 0

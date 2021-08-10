@@ -272,7 +272,7 @@ c check deviation of surface charges from charges of primary geometry
 c printout charges if deviation is  big
             if (delta_qs.gt.1.d-3) then
               do 85 i=1,nchs
-   85           write(6,'(''Warning: Large deviation in surface charges'',2d8.4)') q_strech(i),ch(i)
+   85           write(6,'(''Warning: Large deviation in surface charges'',2f16.8)') q_strech(i),ch(i)
             endif
 
             do 89 j=nchs+1,nch

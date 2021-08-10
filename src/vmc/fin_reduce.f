@@ -11,7 +11,8 @@ c MPI version written by Claudia Filippi
       use forcewt, only: wcum
       use mpiconf, only: nproc, wid
       use step, only: rprob, suc, try
-      use contrl, only: nstep
+      !use contrl, only: nstep
+      use control_vmc, only: vmc_nstep
       use method_opt, only: method
       use mpi
 
@@ -90,7 +91,7 @@ c    &    ,2,MPI_COMM_WORLD,irequest,ierr)
      &  ,2,MPI_COMM_WORLD,istatus,ierr)
       endif
 
-      passes=dble(iblk)*dble(nstep)
+      passes=dble(iblk)*dble(vmc_nstep)
       efin=ecum1(1)/wcum(1,1)
 
       call optjas_fin(wcum(1,1),ecum1)

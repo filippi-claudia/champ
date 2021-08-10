@@ -18,6 +18,8 @@ c----------------------------------------------------------------------
       use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
       use grid_mod, only: grid3d, cart_from_int
       use atom, only: cent, ncent
+!      use contrl, only: irstar
+      use control_vmc, only: vmc_irstar
       use grid3d_param, only: endpt, nstep3d, origin, step3d
 
       implicit none

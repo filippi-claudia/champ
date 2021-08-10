@@ -17,8 +17,13 @@ c and sa, pa, da asymptotic functions
       use forcepar, only: nforce
       use jaspar2, only: a1
       use wfsec, only: iwftype, nwftype
-      use contrl, only: idump, irstar, nblk, nblkeq, nconf_new, nstep
+      use coefs, only: coef, nbasis
+!      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
+      use control_vmc, only: vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
+      use control_vmc, only: vmc_nblkeq, vmc_nconf_new, vmc_nstep
       use pseudo, only: nloc
+      use mpitimer,    only: time, time_start, time_check1, time_check2
+      use contrl_file,    only: ounit
 
       use precision_kinds, only: dp
       implicit none
@@ -88,20 +93,20 @@ c force parameters
 
 c initialize the walker configuration
       call mc_configs_start
-
-      if (nconf_new.eq.0) then
-        ngfmc=2*nstep*nblk
+      if (vmc_nconf_new.eq.0) then
+        ngfmc=2*vmc_nstep*vmc_nblk
        else
-        ngfmc=(nstep*nblk+nconf_new-1)/nconf_new
+        ngfmc=(vmc_nstep*vmc_nblk+vmc_nconf_new-1)/vmc_nconf_new
       endif
 
 c zero out estimators and averages
-      if (irstar.ne.1) call zerest
+
+      if (vmc_irstar.ne.1) call zerest
 
 c check if restart flag is on. If so then read input from
 c dumped data to restart
 
-      if (irstar.eq.1) then
+      if (vmc_irstar.eq.1) then
         open(10,err=401,form='unformatted',file='restart_vmc')
         goto 402
   401   call fatal_error('VMC: restart_vmc empty, not able to restart')
@@ -111,15 +116,17 @@ c dumped data to restart
       endif
 
 c get initial value of cpu time
-      call my_second(0,'begin ')
+      time_start = time()     ! Reset start time
+!      call my_second(0,'begin ')
+      time_check1 = time()
 
 c if there are equilibrium steps to take, do them here
 c skip equilibrium steps if restart run
 c imetro = 6 spherical-polar with slater T
-      if (nblkeq.ge.1.and.irstar.ne.1) then
+      if (vmc_nblkeq.ge.1.and.vmc_irstar.ne.1) then
         l=0
-        do i=1,nblkeq
-          do j=1,nstep
+        do i=1,vmc_nblkeq
+          do j=1,vmc_nstep
             l=l+1
             if (nloc.gt.0) call rotqua
             call metrop6(l,0)
@@ -129,15 +136,19 @@ c imetro = 6 spherical-polar with slater T
         enddo
 
 c       Equilibration steps done. Zero out estimators again.
-        call my_second(2,'equilb')
+!        call my_second(2,'equilb')
+        ! Improved timers
+        time_check2 = time()
+        write(ounit, '(a,t40, f12.3, f12.3)') "END OF equilb CP, REAL TIME IS", time_check2 - time_start, time_check2 - time_check1
+        time_check1 = time_check2
+
         call zerest
       endif
-
 c now do averaging steps
 
       l=0
-      do 440 i=1,nblk
-        do 430 j=1,nstep
+      do 440 i=1,vmc_nblk
+        do 430 j=1,vmc_nstep
         l=l+1
       !   write(6, *) i, nblk, j, nstep
         if (nloc.gt.0) call rotqua
@@ -156,7 +167,11 @@ c write out configuration for optimization/dmc/gfmc here
 
   440 call acuest
 
-      call my_second(2,'all   ')
+!      call my_second(2,'all   ')
+      ! Improved timers
+      time_check2 = time()
+      write(ounit, '(a, t40,f12.3, f12.3)') "END OF all CP, REAL TIME IS", time_check2 - time_start, time_check2 - time_check1
+      time_check1 = time_check2
 
 c write out last configuration to mc_configs_start
 c call fin_reduce to write out additional files for efpci, embedding etc.
@@ -167,13 +182,13 @@ c print out final results
       call finwrt
 
 c if dump flag is on then dump out data for a restart
-      if (idump.eq.1) then
+      if (vmc_idump.eq.1) then
         open(10,form='unformatted',file='restart_vmc')
         rewind 10
         call dumper
         close(10)
       endif
-      if(nconf_new.ne.0) close(7)
+      if(vmc_nconf_new.ne.0) close(7)
 
       return
       end

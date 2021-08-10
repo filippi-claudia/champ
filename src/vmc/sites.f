@@ -1,6 +1,7 @@
       subroutine sites(x,nelec,nsite)
 c Written by Cyrus Umrigar
       use atom, only: znuc, cent, iwctype, ncent
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -49,7 +50,7 @@ c sample position from exponentials around center
              site=-dlog(rannyu(0))
              site=sign(site,(rannyu(0)-half))
    10        x(ic,l)=sitsca*site+cent(ic,i)
-      write(6,'(''number of electrons placed ='',i5)') l
+      write(ounit,'(''number of electrons placed ='',i5)') l
       if (l.lt.nelec) call fatal_error('SITES: bad input')
       return
       end

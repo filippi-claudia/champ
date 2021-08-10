@@ -83,6 +83,11 @@ c zero out estimators
       r2sum=zero
       risum=zero
 
+      ! debug
+      iage=0
+      ioldest=0
+      ioldestmx=0
+
       do 85 ifr=1,nforce
         tausum(ifr)=zero
         taucum(ifr)=zero

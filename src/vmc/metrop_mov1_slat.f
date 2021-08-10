@@ -135,7 +135,6 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
       deltri=one/deltar
 
       call check_orbitals
-
       do 300 i=1,nelec
 
         if(i.le.nup) then
@@ -746,6 +745,5 @@ c rewrite psi2o for next metropolis step if you are sampling guiding
       if(node_cutoff.gt.0) then
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)
       endif
-
       return
       end

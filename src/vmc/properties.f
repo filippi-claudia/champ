@@ -138,6 +138,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine prop_fin(passes,iblk,efin,eerr)
       use prp000, only: iprop, ipropprt
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -146,10 +147,10 @@ c-----------------------------------------------------------------------
 
 
       if(iprop.eq.0) return
-      write(6,'(''--- additional properties ---'')')
+      write(ounit,'(''--- additional properties ---'')')
       ipropprt_sav=ipropprt
       ipropprt=-1
-      call prop_prt(passes,iblk,6)
+      call prop_prt(passes,iblk,ounit)
       ipropprt=ipropprt_sav
 
       end

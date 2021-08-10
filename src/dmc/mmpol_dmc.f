@@ -1,7 +1,8 @@
       subroutine mmpol_prt(iblk,wgcum,wgcm2)
 
       use force_mod, only: MFORCE
-      use contrl, only: nconf, nstep
+!      use contrl, only: nconf, nstep
+      use control_dmc, only: dmc_nconf, dmc_nstep
       use mmpol_cntrl, only: immpol, immpolprt
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2
       use mmpol_averages, only: dmmpol_cum, dmmpol_cm2
@@ -17,7 +18,7 @@
       real(dp) :: x, x2
       real(dp), dimension(MFORCE) :: wgcum
       real(dp), dimension(MFORCE) :: wgcm2
- 
+
       data hatokc/627.509541d0/
 
 c Statement functions for error calculation, it might be reaplaced in the near future:
@@ -41,7 +42,7 @@ c Statement functions for error calculation, it might be reaplaced in the near f
         icmmpol_err=nint(100000*cmmpol_err)
       endif
 
-      evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
+      evalg_eff=dmc_nconf*dmc_nstep*rn_eff(wgcum(1),wgcm2(1))
       rtevalg_eff1=dsqrt(evalg_eff-1)
 
       dmmpol_kcal=dmmpol_ave*hatokc
@@ -77,7 +78,7 @@ c-----------------------------------------------------------------------
 
 
       if(immpol.eq.0) return
-    
+
       immpolprt_sav=immpolprt
       immpolprt=1
       call mmpol_prt(iblk,wgcum(1),wgcm2(1))
@@ -127,7 +128,7 @@ c-----------------------------------------------------------------------
 
       integer :: i, iw
       real(dp) :: QMdp, QMq, p, q
- 
+
       if(immpol.eq.0) return
 
       dmmpol_sum=dmmpol_sum+p*QMdp+q*dmmpolo_dmc(iw)
@@ -153,7 +154,7 @@ c-----------------------------------------------------------------------
       integer :: i, immpol, nchmm
       real(dp) :: cmmpolnow, dmmpolnow, eek_now1, eek_now2, eek_now3
       real(dp) :: wsum_dmc
- 
+
       if(immpol.eq.0) return
 
       dmmpolnow=dmmpol_sum/wsum_dmc

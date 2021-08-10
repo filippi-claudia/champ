@@ -62,7 +62,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use jacobsave, only: ajacob, ajacold
       use elec, only: nup
       use velratio, only: fratio, xdrifted
-      use contrl, only: irstar, nconf
+      use control_dmc, only: dmc_irstar, dmc_nconf
       use inputflags, only: node_cutoff, eps_node_cutoff, icircular, idrifdifgfunc
       use precision_kinds, only: dp
 
@@ -138,7 +138,7 @@ c Undo products
       ipmod=mod(ipass,nfprod)
       ipmod2=mod(ipass+1,nfprod)
       ginv=min(1.d0,tau)
-      ffn=eigv*(wdsumo/nconf)**ginv
+      ffn=eigv*(wdsumo/dmc_nconf)**ginv
       ffi=one/ffn
       fprod=fprod*ffn/ff(ipmod)
       ff(ipmod)=ffn
@@ -147,7 +147,7 @@ c Undo weights
       iwmod=mod(ipass,nwprod)
 
 c Store (well behaved velocity/velocity)
-      if(ncall.eq.0.and.irstar.eq.0) then
+      if(ncall.eq.0.and.dmc_irstar.eq.0) then
         do 5 iw=1,nwalk
           do 5 ifr=1,nforce
 
@@ -700,7 +700,7 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
       call average(1)
   300 continue
 
-      if(wsum1(1).gt.1.1d0*nconf) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
+      if(wsum1(1).gt.1.1d0*dmc_nconf) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
      &fprod/ff(ipmod2),wsum1(1),wgdsumo
 
       if(idmc.gt.0.or.iacc_rej.eq.0) then

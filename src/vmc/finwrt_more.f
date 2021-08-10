@@ -6,11 +6,12 @@ c written by Claudia Filippi
       use estpsi, only: apsi, aref, detref
       use mpiconf, only: nproc
       use optwf_corsam, only: energy, energy_err, force, force_err
-      use contrl, only: nstep
+!      use contrl, only: nstep
+      use control_vmc, only: vmc_nstep
       use sa_check, only: energy_all, energy_err_all
       use mpi
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit, errunit
       implicit none
 
       integer :: iab, ierr, istate
@@ -19,9 +20,9 @@ c written by Claudia Filippi
 
 c     dimension istatus(MPI_STATUS_SIZE)
 
-      passes=dfloat(iblk*nstep)
-      write(6,'(''average psid, det_ref '',2d12.5)') (apsi(istate)*nproc/passes,istate=1,nstates),aref*nproc/passes
-      write(6,'(''log detref '',2d12.5)') (detref(iab)*nproc/passes,iab=1,2)
+      passes=dfloat(iblk*vmc_nstep)
+      write(ounit,'(''average psid, det_ref '',2d12.5)') (apsi(istate)*nproc/passes,istate=1,nstates),aref*nproc/passes
+      write(ounit,'(''log detref '',2d12.5)') (detref(iab)*nproc/passes,iab=1,2)
 
 c     if(wid) then
 c       do 20 id=1,nproc-1

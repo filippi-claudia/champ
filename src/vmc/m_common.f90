@@ -61,13 +61,12 @@ contains
         use atom, only: ncent_tot
         use vmc_mod, only: MORB
         use optjas, only: MPARMJ
-
-        if (.not. allocated(b)) allocate (b(MORB, nelec))
-        if (.not. allocated(tildem)) allocate (tildem(nelec, MORB, 2))
+        if (.not. allocated(b)) allocate (b(norb, nelec))
+        if (.not. allocated(tildem)) allocate (tildem(nelec, norb, 2))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
-        if (.not. allocated(b_da)) allocate (b_da(3, nelec, MORB, ncent_tot))
-        if (.not. allocated(db)) allocate (db(3, nelec, MORB, ncent_tot))
-        if (.not. allocated(b_dj)) allocate (b_dj(MORB, nelec, MPARMJ))
+        if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb, ncent_tot))
+        if (.not. allocated(db)) allocate (db(3, nelec, norb, ncent_tot))
+        if (.not. allocated(b_dj)) allocate (b_dj(norb, nelec, MPARMJ))
     end subroutine allocate_Bloc
 
     subroutine deallocate_Bloc()
@@ -492,8 +491,8 @@ contains
         use const, only: nelec
         use vmc_mod, only: MORB, MDET
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aa)) allocate (aa(nelec, MORB, 2))
-        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, MDET, 2))
+        if (.not. allocated(aa)) allocate (aa(nelec, norb, 2))
+        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, ndet, 2))
     end subroutine allocate_multimat
 
     subroutine deallocate_multimat()
@@ -552,7 +551,7 @@ module multislater
 contains
     subroutine allocate_multislater()
         use vmc_mod, only: MDET
-        if (.not. allocated(detiab)) allocate(detiab(MDET, 2))
+        if (.not. allocated(detiab)) allocate(detiab(ndet, 2))
         if (.not. allocated(detu)) allocate(detu(MDET))
         if (.not. allocated(detd)) allocate(detd(MDET))
     end subroutine allocate_multislater
@@ -650,10 +649,11 @@ module orbval
 contains
     subroutine allocate_orbval()
         use const, only: nelec
-        use vmc_mod, only: MORB
-        if (.not. allocated(ddorb)) allocate (ddorb(nelec, MORB))
-        if (.not. allocated(dorb)) allocate (dorb(3, nelec, MORB))
-        if (.not. allocated(orb)) allocate (orb(nelec, MORB))
+        use coefs, only: norb
+        use precision_kinds, only: dp
+        if (.not. allocated(ddorb)) allocate (ddorb(nelec, norb))
+        if (.not. allocated(dorb)) allocate (dorb(3, nelec, norb))
+        if (.not. allocated(orb)) allocate (orb(nelec, norb))
     end subroutine allocate_orbval
 
     subroutine deallocate_orbval()
@@ -1129,7 +1129,7 @@ module zmatrix_grad
 contains
     subroutine allocate_zmatrix_grad()
         use vmc_mod, only: MCENT3
-        
+
         if (.not. allocated(transform_grd)) allocate (transform_grd(MCENT3, MCENT3))
     end subroutine allocate_zmatrix_grad
 

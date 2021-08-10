@@ -36,6 +36,13 @@ c Written by Claudia Filippi
       integer :: ndim, nel
 
 
+      integer :: i, iab, ierr, iorb, irecv
+      integer :: irequest, irequest_array, isend, istate
+      integer :: istatus, itag, iw, iw2
+      integer :: j, k, kk
+      integer :: ndim, nel
+
+
       integer, allocatable, save :: krefw(:)
       real(dp), allocatable, save :: slmuiw(:, :)
       real(dp), allocatable, save :: slmdiw(:, :)

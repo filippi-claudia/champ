@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 # Project's name
-project(champ LANGUAGES Fortran CXX)
+project(CHAMP LANGUAGES Fortran CXX)
 
 set(CMAKE_VERBOSE_MAKEFILE off)
 
@@ -13,12 +13,16 @@ set(CMAKE_VERBOSE_MAKEFILE off)
 # Cmake modules/macros are in a subdirectory to keep this file cleaner
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
+# useful info
+message(STATUS "Compiling                :: " ${CMAKE_PROJECT_NAME})
+message(STATUS "Fortran compiler         :: " ${CMAKE_Fortran_COMPILER} )
+message(STATUS "Fortran compiler version :: " ${CMAKE_Fortran_COMPILER_VERSION} )
+
 
 # Set folder variables:
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_VMC_DIR ${CMAKE_SOURCE_DIR}/src/vmc)
 set(CMAKE_DMC_DIR ${CMAKE_SOURCE_DIR}/src/dmc)
-#set(CMAKE_INPUT_DIR ${CMAKE_SOURCE_DIR}/src/input)
 set(CMAKE_PARSER_DIR ${CMAKE_SOURCE_DIR}/src/parser)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -28,7 +32,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 # documentation
 option(BUILD_DOC "build_doc" off)
 
-# MPI 
+# MPI
 option(ENABLE_MPI "enable_mpi" on)
 
 # QMMM option
@@ -46,9 +50,15 @@ if (MKL_FOUND)
   include_directories(${MKL_INCLUDE_DIRS})
   set(MKL_INCLUDE ${MKL_INCLUDE_DIRS}/intel64/ilp64)
   set(LINEAR_ALGEBRA ${MKL_LIBRARIES} pthread m dl)
+  message("")
   message(STATUS "Using MKL for the linear algebra calculations!")
-  message(STATUS "MKL_INCLUDE_DIRS: " ${MKL_INCLUDE_DIRS})
-  message(STATUS "MKL_LIBRARIES: " ${MKL_LIBRARIES})
+  message(STATUS "MKL INCLUDE DIRS         :: " ${MKL_INCLUDE_DIRS})
+# message(STATUS "MKL_LIBRARIES            :: " ${MKL_LIBRARIES})
+  # Printing individual libraries in the list
+  message(STATUS "MKL_LIBRARIES            : ")
+  foreach(lib ${MKL_LIBRARIES})
+    message("                            :: " ${lib})
+  endforeach(lib)
 else()
   # search for lapack
   find_package(LAPACK COMPONENTS Fortran REQUIRED)
@@ -76,8 +86,6 @@ execute_process(COMMAND git rev-parse --abbrev-ref HEAD  OUTPUT_VARIABLE GIT_BRA
 execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
 #
 
-
-
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-g" "-O2" "-mcmodel=large")
@@ -85,26 +93,42 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   if (MKL_FOUND)
     #list(APPEND Fortran_FLAGS "-fdefault-integer-8")
     list(APPEND Fortran_FLAGS "-m64")
-  endif()  
+  endif()
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
-  
+
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-	list(APPEND Fortran_FLAGS "-O2" "-fpp" "-mcmodel=large" "-shared-intel" "-DGIT_BRANCH='${GIT_BRANCH}'" "-DGIT_HASH='${GIT_HASH}'" 
-    "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
+	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
+  list(APPEND Fortran_FLAGS "-DCOMPILER=\"${CMAKE_Fortran_COMPILER}\"")
+  list(APPEND Fortran_FLAGS "-DCOMPILER_VERSION=\"${CMAKE_Fortran_COMPILER_VERSION}\"")
+  list(APPEND Fortran_FLAGS "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
+  list(APPEND Fortran_FLAGS "-DGIT_HASH=\"${GIT_HASH}\"")
+  list(APPEND Fortran_FLAGS "-D_MPI_")
+  list(APPEND Fortran_FLAGS "-DCLUSTER")
+
+
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
   #    list(APPEND Fortran_FLAGS "-i8")
-  #endif()  
-  
+  #endif()
+
+  # debug
+  #list(APPEND Fortran_FLAGS "-g" "-O0" "-debug" "-traceback")
+
+
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
 endif()
-message(STATUS "compiler flags are: " ${Fortran_FLAGS})
+
+message("")
+message(STATUS "Fortran compiler flags   : " )
+foreach(flag ${Fortran_FLAGS})
+  message("                            :: " ${flag})
+endforeach(flag)
+
 
 
 ## Subdirectories
 # Include the following subdirectories
-# add_subdirectory(src/input)
 add_subdirectory(src/parser)
 add_subdirectory(tools/interface)
 add_subdirectory(lib/cyrus)

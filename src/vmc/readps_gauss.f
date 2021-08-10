@@ -1,3 +1,4 @@
+<<<<<<< HEAD
       subroutine readps_gauss
 c read 'Quantum-chemist' gauss pseudopotentials
 c file format: one text file with basename gauss_ecp.dat
@@ -94,6 +95,9 @@ c non-local l=0 at index 1 etc, up to lpot-1
 
       return
       end
+=======
+
+>>>>>>> new-parser
 c-----------------------------------------------------------------------
 
 c compute gauss-pseudopotential for electron iel

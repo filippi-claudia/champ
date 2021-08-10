@@ -177,6 +177,7 @@ c TMP to fix
         enddo
       enddo
 
+
       do 50 kk=1,3
 
         do jrep=ivirt(iab),norb

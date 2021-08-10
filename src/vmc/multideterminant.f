@@ -11,7 +11,7 @@
       use zcompact, only: aaz, dzmat, emz, zmat
       use coefs, only: norb
       use Bloc, only: b, tildem, xmat
-      use denergy_det_m, only: denergy_det
+      use denergy_det_m, only: denergy_det, allocate_denergy_det_m
       use multimat, only: aa, wfmat
       use force_analy, only: iforce_analy
       use orbval, only: nadorb, orb
@@ -124,6 +124,7 @@ c         write(6,'(''AA-2 '',15f7.2)') (aa(irep,jrep,2),jrep=1,15)
 c       enddo
 c     endif
 
+      call allocate_denergy_det_m()
       denergy_det(kref,1)=0
       denergy_det(kref,2)=0
 

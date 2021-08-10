@@ -13,7 +13,9 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
-      use contrl, only: irstar
+!      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite, vmc_nconf
+      use control_vmc, only: vmc_nblk, vmc_nblkeq, vmc_nconf_new, vmc_nstep
       use phifun, only: d2phin, dphin, phin
       use grid3d_param, only: endpt, nstep3d, origin
       use distance_mod, only: r_en, rvec_en
@@ -74,7 +76,7 @@ c     Evaluate the energy needed for the calculation
       write (45,*) 'Allocated memory for the 3D spline fits of the LCAO:',
      & memory, 'Mb'
 
-      if ( irstar.ne.1 ) then
+      if ( vmc_irstar.ne.1 ) then
 
 c      ----------------------------------------------------------------
 c      Compute the orbitals values and gradients on the boundary points
@@ -418,7 +420,7 @@ c Lagrange interpolation routines
       use orbital_num_lag, only: denom
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: nghostcent
-      use contrl, only: irstar
+      use control_vmc, only: vmc_irstar
       use phifun, only: phin, dphin, d2phin
       use distance_mod, only: r_en, rvec_en
       use precision_kinds, only: dp
@@ -452,7 +454,7 @@ c     Evaluate the memory needed for the calculation
       write (45,*) 'Allocated memory for the 3D Lagrange fits of the LCAO:',
      & memory, 'Mb'
 
-      if ( irstar.ne.1 ) then
+      if ( vmc_irstar.ne.1 ) then
 
 c      ----------------------------------------------------------------
 c      Compute the orbitals values, gradients and laplacians

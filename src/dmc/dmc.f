@@ -12,9 +12,13 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use force_dmc, only: nwprod
       use pseudo, only: nloc
       use wfsec, only: iwftype, nwftype
-      use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
+!      use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
+      use control_dmc, only: dmc_idump, dmc_irstar, dmc_nblk, dmc_nblkeq
+      use control_dmc, only: dmc_nconf, dmc_nstep
+      use mpitimer,    only: time, time_start, time_check1, time_check2
+      use contrl_file,    only: ounit
 
-      implicit none 
+      implicit none
 
       integer :: i, j
       real(dp), parameter :: one = 1.d0
@@ -118,6 +122,8 @@ c     call flush(6)
       if(nforce.gt.1) then
         call setup_force
        else
+        ! debug line. ravindra
+        if (.not. allocated(iwftype)) allocate (iwftype(nforce))
         nwprod=1
         nwftype=1
         iwftype(1)=1
@@ -127,25 +133,34 @@ c read walker configurations
       call mc_configs
 
 c get initial value of cpu time
-  350 call my_second(0,'begin ')
+!  350 call my_second(0,'begin ')
+      time_start = time()     ! Reset start time
+!  350 call my_second(0,'begin ')
+      time_check1 = time()
 
 c initialize sums and averages
       call init_averages_index
-      if(irstar.ne.1) call init
-      if(irstar.ne.1) call average(0)
+      if(dmc_irstar.ne.1) call init
+      if(dmc_irstar.ne.1) call average(0)
 
 c forces implemented only for certain dmc control options
       if(nforce.gt.1) write(6,'(''Possible Warning: force implemented for certain dmc control options'')')
 
 c     call flush(6)
 c loops for dmc calculation
-      do 360 i=1,nblk+2*nblkeq
-        if((i.eq.nblkeq+1.or.i.eq.2*nblkeq+1).and.irstar.ne.1) then
-          call my_second(2,'equilb')
+      do 360 i=1,dmc_nblk+2*dmc_nblkeq
+        if((i.eq.dmc_nblkeq+1.or.i.eq.2*dmc_nblkeq+1).and.dmc_irstar.ne.1) then
+!          call my_second(2,'equilb')
+          ! Improved timers
+          time_check2 = time()
+          write(ounit, '(a,t40, f12.3, f12.3)') "END OF equilb CP, REAL TIME IS",
+     &                  time_check2 - time_start, time_check2 - time_check1
+          time_check1 = time_check2
+
           call zerest
           call average(0)
         endif
-        do 355 j=1,nstep
+        do 355 j=1,dmc_nstep
           ipass=ipass+1
           if (nloc.gt.0) call rotqua
           if(iabs(idmc).eq.1) then
@@ -169,10 +184,15 @@ c             call dmc_good
       call acues1_reduce
 
       call finwrt
-      call my_second(2,'all   ')
+!      call my_second(2,'all   ')
+      ! Improved timers
+      time_check2 = time()
+      write(ounit, '(a,t40, f12.3, f12.3)') "END OF all CP, REAL TIME IS",
+     &              time_check2 - time_start, time_check2 - time_check1
+      time_check1 = time_check2
 
-      if (idump.eq.1) call dumper
+      if (dmc_idump.eq.1) call dumper
       close (unit=9)
-      if (nconf.ne.0) close (unit=7)
+      if (dmc_nconf.ne.0) close (unit=7)
 
       end

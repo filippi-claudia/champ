@@ -1,0 +1,51 @@
+%module general
+    title        'H2'
+    pool         './pool/'
+    basis        sto_cvb1
+    weights      [ 1.0d0,  1.0d0 , 1.0d0]
+    mode         'vmc_one_mpi1'
+    nloc        0
+%endmodule
+
+load molecule        $pool/h2.xyz
+load basis_num_info  $pool/sto_cvb1.bfinfo
+
+load determinants    rhf.det
+load orbitals        rhf.sto_cvb1.lcao
+load jastrow         jastrow.0
+load jastrow_der     jastrow.der
+
+
+%module electrons
+    nup           1
+    nelec         2
+%endmodule
+
+%module optwf
+    ioptwf        1
+    ioptci        0
+    ioptjas       1
+    ioptorb       0
+    method        'lin_d'
+    multiple_adiag 0
+    ncore         0
+    nextorb       280
+    nblk_max      200
+    no_active     1
+    nopt_iter     20
+    lin_eps     0.1
+    lin_adiag   0.01
+    lin_jdav    1
+    lin_nvec    2
+    lin_nvecx   10
+    isample_cmat  0
+    energy_tol    0.0
+%endmodule
+
+%module blocking_vmc
+    vmc_nstep     50
+    vmc_nblk      200
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+%endmodule
+

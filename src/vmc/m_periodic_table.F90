@@ -1,10 +1,8 @@
-! Enter licence information here
-
-
-! Licence information ends here
-!
-! Note. The elemental data is taken from the NIST website (https://physics.nist.gov/PhysRefData/Handbook/periodictable_a.htm)
-!       The data tabulated in this file is only for the most abundant isotope only.
+    !> This module provides the periodic table data for elements upto Z=18
+    !! @author Ravindra Shinde
+    !! @date June 23 2021
+    !! @remarks The elemental data is taken from the NIST website (https://physics.nist.gov/PhysRefData/Handbook/periodictable_a.htm)
+    !! The data tabulated in this file is only for the most abundant isotope only.
 
 module periodic_table
     public :: element, atom_t
@@ -16,26 +14,30 @@ module periodic_table
     type :: atom_t
         real(kind=sp)        :: atomic_mass  ! in amu
         character(len=20)    :: name
-        character(len=3)     :: symbol        
+        character(len=3)     :: symbol
         integer(kind=i1)     :: znuclear
         integer(kind=i1)     :: core
         integer(kind=i1)     :: nvalence
         integer(kind=i1)     :: isotope = 1  ! currently supports only the most abundant
 !   future plans
-!                               covalent_radii        
+!                               covalent_radii
 !                               ground state term symbol
 !                               total spin
-!                               magnetic moment        
+!                               magnetic moment
 
     end type atom_t
 
-    contains 
+    contains
 
     type(atom_t) function element(sym) result(atom)
 
     character(len=*) :: sym
 
     select case(sym)
+        case("ghost", "Ghost Atom", "X", "0")
+
+            atom = atom_t(name="ghost",  symbol="X",     atomic_mass=0.0,   znuclear=0, core=0, nvalence=0)
+
         case("hydrogen", "Hydrogen", "H", "1")
 
             atom = atom_t(name="hydrogen",  symbol="H",     atomic_mass=1.007825,   znuclear=1, core=0, nvalence=1)
@@ -107,11 +109,11 @@ module periodic_table
         case("argon", "Argon", "Ar", "18")
 
             atom = atom_t(name="argon",     symbol="Ar",    atomic_mass=39.962384,  znuclear=18, core=10, nvalence=8)
-                
+
         case default
                 error stop "Unknown element's atomic number or symbol"
     end select
-    return 
-    end function      
+    return
+    end function
 
 end module

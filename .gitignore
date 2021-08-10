@@ -5,6 +5,7 @@ settings.make
 *.o
 *.mod
 *.a
+*.i90
 *.log
 *.i90
 local_test.sh
@@ -40,3 +41,9 @@ slurm*
 *~
 # local scripts
 compile_mac.zsh
+
+tests/CI_test/*/*.sh
+tests/CI_test/*/*/*.sh
+
+#local testing of workflow
+.github/workflows/test_locally.yml

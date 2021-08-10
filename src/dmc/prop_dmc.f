@@ -11,8 +11,9 @@ C----------------------------------------------
       use const, only: nelec
       use force_mod, only: MFORCE
       use properties, only: MAXPROP
-      use contrl, only: nconf, nstep
+!      use contrl, only: nconf, nstep
       use precision_kinds, only: dp
+      use control_dmc, only: dmc_nconf, dmc_nstep
 
       implicit none
 
@@ -61,7 +62,7 @@ c         >1 after ipropprt iterations reduced printout
         if(ifinal.eq.0) then
           write(6,'(a3,25x,f10.5,''  ('',i5,'')'')') pnames(i),pav(i),iperr
          else
-          evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
+          evalg_eff=dmc_nconf*dmc_nstep*rn_eff(wgcum(1),wgcm2(1))
           rtevalg_eff1=dsqrt(evalg_eff-1)
           write(6,'(''property '',a3,t17,f12.7,'' +-''
      &       ,f11.7,f9.5)') pnames(i),pav(i),perr(i),perr(i)*rtevalg_eff1

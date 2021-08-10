@@ -1,7 +1,8 @@
       subroutine pcm_prt(iblk,wgcum,wgcm2)
 
       use force_mod, only: MFORCE
-      use contrl, only: nconf, nstep
+!      use contrl, only: nconf, nstep
+      use control_dmc, only: dmc_nconf, dmc_nstep
       use pcm_cntrl, only: ipcm, ipcmprt
       use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_cum, qopcm_cm2
@@ -17,7 +18,7 @@
       real(dp) :: w2, x, x2
       real(dp), dimension(MFORCE) :: wgcum
       real(dp), dimension(MFORCE) :: wgcm2
- 
+
       data hatokc/627.509541d0/
 
 c Statement functions for error calculation, it might be reaplaced in the near future:
@@ -45,18 +46,18 @@ c Statement functions for error calculation, it might be reaplaced in the near f
         iqopcm_err=nint(100000*qopcm_err)
       endif
 
-      evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
+      evalg_eff=dmc_nconf*dmc_nstep*rn_eff(wgcum(1),wgcm2(1))
       rtevalg_eff1=dsqrt(evalg_eff-1)
 
       spcmkcal=spcmave*hatokc
       vpcmkcal=vpcmave*hatokc
       sepcmkcal=spcmerr*hatokc
       vepcmkcal=vpcmerr*hatokc
-      write(6,'(''pcm dG(surf) ='',t17,f12.7,'' +-'',f11.7,f9.5,2x,f12.7,'' +-'',f11.7)') 
+      write(6,'(''pcm dG(surf) ='',t17,f12.7,'' +-'',f11.7,f9.5,2x,f12.7,'' +-'',f11.7)')
      & spcmave,spcmerr,spcmerr*rtevalg_eff1,spcmkcal,sepcmkcal
-      write(6,'(''pcm dG(vol)  ='',t17,f12.7,'' +-'',f11.7,f9.5,2x,f12.7,''+-'',f11.7)') 
+      write(6,'(''pcm dG(vol)  ='',t17,f12.7,'' +-'',f11.7,f9.5,2x,f12.7,''+-'',f11.7)')
      & vpcmave,vpcmerr,vpcmerr*rtevalg_eff1,vpcmkcal,vepcmkcal
-c     write(6,'(''pcm qout     ='',t17,f12.7,'' +-'',f11.7,f9.5)') 
+c     write(6,'(''pcm qout     ='',t17,f12.7,'' +-'',f11.7,f9.5)')
 c    & qopcm_ave,qopcm_err,qopcm_err*rtevalg_eff1
 
 c     gpcmkcal=spcmkcal+vpcmkcal
@@ -80,7 +81,7 @@ c-----------------------------------------------------------------------
 
 
       if(ipcm.eq.0) return
-    
+
       ipcmprt_sav=ipcmprt
       ipcmprt=1
       call pcm_prt(iblk,wgcum(1),wgcm2(1))
@@ -157,7 +158,7 @@ c-----------------------------------------------------------------------
 
       integer :: i
       real(dp) :: enfpcm_now, qopcm_now, spcmnow, vpcmnow, wsum_dmc
- 
+
       if(ipcm.eq.0) return
 
       spcmnow=spcmsum/wsum_dmc

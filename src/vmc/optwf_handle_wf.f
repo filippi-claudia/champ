@@ -57,11 +57,11 @@ c-----------------------------------------------------------------------
       implicit none
 
       interface
-        function nterms4(nord) 
+        function nterms4(nord)
             implicit none
             integer, intent(in) :: nord
-            integer :: nterms4 
-        end function nterms4 
+            integer :: nterms4
+        end function nterms4
       end interface
 
       integer :: i, ict, index, iwf_fit, mparmja
@@ -281,11 +281,11 @@ c-----------------------------------------------------------------------
       implicit none
 
       interface
-        function nterms4(nord) 
+        function nterms4(nord)
             implicit none
             integer, intent(in) :: nord
-            integer :: nterms4 
-        end function nterms4 
+            integer :: nterms4
+        end function nterms4
       end interface
 
       integer :: i, iadiag, ict, mparmja, mparmjb
@@ -443,11 +443,11 @@ c-----------------------------------------------------------------------
       implicit none
 
       interface
-        function nterms4(nord) 
+        function nterms4(nord)
             implicit none
             integer, intent(in) :: nord
-            integer :: nterms4 
-        end function nterms4 
+            integer :: nterms4
+        end function nterms4
       end interface
 
       integer :: i, iadiag, ict, mparmja, mparmjb
@@ -534,11 +534,11 @@ c-----------------------------------------------------------------------
       implicit none
 
       interface
-        function nterms4(nord) 
+        function nterms4(nord)
             implicit none
             integer, intent(in) :: nord
-            integer :: nterms4 
-        end function nterms4 
+            integer :: nterms4
+        end function nterms4
       end interface
 
       integer :: i, ict, mparmja, mparmjb, mparmjc
@@ -882,7 +882,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine test_solution_parm(nparm,dparm,
      &              dparm_norm,dparm_norm_min,add_diag,iflag)
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
 
       implicit none
@@ -900,7 +900,7 @@ c Calculate rms change in parameters
   30    dparm_norm=dparm_norm+dparm(i)**2
       dparm_norm=sqrt(dparm_norm/nparm)
 
-      write(6,'(''dparm_norm,adiag ='',3g12.5)')
+      write(ounit,'(''dparm_norm,adiag ='',3g12.5)')
      &dparm_norm,add_diag
 
       if(dparm_norm.gt.dparm_norm_min) iflag=1
@@ -914,7 +914,7 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm, nreduced
       use ci000, only: nciterm
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav
@@ -928,7 +928,7 @@ c-----------------------------------------------------------------------
       nparmd=max(nciterm-1,0)
       nparmd_sav=nparmd
 
-      write(6,'(''Saved max number of parameters, nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
+      write(ounit,'(''Saved max number of parameters, nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
       return
 
       entry set_nparms
@@ -949,7 +949,7 @@ c-----------------------------------------------------------------------
         nparmd=0
       endif
 
-      write(6,'(''Max number of parameters set to nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
+      write(ounit,'(''Max number of parameters set to nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
       call set_nparms_tot
 
       return
@@ -962,7 +962,7 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use ci000, only: nciterm
       use method_opt, only: method
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i0
@@ -985,7 +985,7 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
 
       endif
 
-      write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)')
+      write(ounit,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)')
      & nparm,nparmj,nciterm,norbterm
 
       return

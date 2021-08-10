@@ -1,25 +1,27 @@
 #if defined HAVE_CONFIG_H
 #  include "config.h"
 #endif
+!>
+!!=====================================================================
+!!
+!! This file is part of the FDF package.
+!!
+!! This module provides useful functions and subroutines for FDF library.
+!! At this moment this module contains functions for:
+!!
+!!   a) String manipulation
+!!   b) Warning, Die (Abort/Terminate) operations
+!!
+!!
+!! September 2007
+!!
+!!
+!!=====================================================================
 
-!=====================================================================
-!
-! This file is part of the FDF package.
-!
-! This module provides useful functions and subroutines for FDF library.
-! At this moment this module contains functions for:
-!
-!   a) String manipulation
-!   b) Warning, Die (Abort/Terminate) operations
-!
-!
-! September 2007
-!
-!
-!=====================================================================
+#define ERROR_UNIT  0
+#define OUTPUT_UNIT 6
 
 MODULE utils
-  USE, INTRINSIC :: iso_fortran_env
   USE prec
   implicit none
 
@@ -206,7 +208,7 @@ MODULE utils
 !
 !   CHRLEN accepts a STRING of NCHAR characters and returns LCHAR,
 !   the length of the string up to the last NONBLANK, NONNULL.
-!     
+!
     SUBROUTINE chrlen(string, nchar, lchar)
       implicit none
 !--------------------------------------------------------------- Input Variables
@@ -311,7 +313,7 @@ MODULE utils
     subroutine convert_string_to_array_of_chars(str,arr)
     character(len=*), intent(in) :: str
     character, dimension(:), intent(out) :: arr
-    
+
     integer :: n, i
 
     n = len(str)
@@ -326,7 +328,7 @@ MODULE utils
     subroutine convert_array_of_chars_to_string(arr,str)
     character, dimension(:), intent(in) :: arr
     character(len=*), intent(out) :: str
-    
+
     integer :: n, i
 
     n = size(arr)
@@ -409,9 +411,13 @@ MODULE utils
 
 !
 !   Die routine (Abort/Terminate program)
+!   MPI-awareness (MPI_Abort)
 !
     SUBROUTINE die(routine, msg, file, line, unit, rc, cline)
-
+#if defined(CLUSTER) || defined(BLOCKING)
+      !use mpi_siesta
+      use mpi
+#endif
       implicit none
 !--------------------------------------------------------------- Input Variables
       character(len=*), intent(in)           :: routine, msg
@@ -420,6 +426,10 @@ MODULE utils
 
 !--------------------------------------------------------------- Local Variables
       integer(ip)                            :: die_unit
+#if defined(CLUSTER) || defined(BLOCKING)
+      integer(ip)                            :: ierr, rc2
+#endif
+
 !------------------------------------------------------------------------- BEGIN
       if (PRESENT(unit)) then
         die_unit = unit
@@ -441,8 +451,17 @@ MODULE utils
         write(die_unit,'(a)') 'Stopping Program'
       endif
 
-      ! Replace this by a call to a proper handler
+#if defined(CLUSTER) || defined(BLOCKING)
+      if (.not. PRESENT(rc)) then
+        rc2 = 0
+      else
+        rc2 = rc
+      endif
+
+      call MPI_Abort(MPI_COMM_WORLD, rc2, ierr)
+#else
       STOP 'Stopping Program'
+#endif
 !--------------------------------------------------------------------------- END
     END SUBROUTINE die
 
