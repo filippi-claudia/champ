@@ -374,7 +374,7 @@ subroutine inputjastrow()
       end interface
 
       integer :: iparm, isp, it, iwft, mparmja
-      integer :: mparmjb, mparmjc, nwftype
+      integer :: mparmjb, mparmjc
 
 
     if (.not. allocated(scalek)) allocate (scalek(nwftype))

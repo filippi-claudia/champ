@@ -101,7 +101,7 @@ c do micro_iteration
             ioptci=ioptci_sav
 
             vmc_nblk=vmc_nblk_ci
-            write(ounit,'(''NBLOCK changed from '',i7, '' to '',i7)') nblk_sav,nblk
+            write(ounit,'(''NBLOCK changed from '',i7, '' to '',i7)') nblk_sav,vmc_nblk
 
             ioptorb=0
             ioptjas=0

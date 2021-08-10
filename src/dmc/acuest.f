@@ -23,7 +23,7 @@ c routine to accumulate estimators for energy etc.
       use force_mod, only: MFORCE
       use control_dmc, only: dmc_nstep
       use mpi
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 

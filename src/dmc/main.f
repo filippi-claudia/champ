@@ -12,7 +12,7 @@ c Written by Claudia Filippi
 
       implicit none
 
-      integer :: ierr
+      integer :: ierr, ibranch_elec
       character*40 :: filename
 
       call mpi_init(ierr)

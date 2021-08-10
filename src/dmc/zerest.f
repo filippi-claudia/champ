@@ -22,6 +22,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use mpiblk, only: iblk_proc
 
       use precision_kinds, only: dp
+      use age, only: iage, ioldest, ioldestmx
       implicit none
 
       integer :: i, ifr, k

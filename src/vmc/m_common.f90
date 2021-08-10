@@ -58,6 +58,7 @@ module Bloc
 contains
     subroutine allocate_Bloc()
         use const, only: nelec
+        use coefs, only: norb
         use atom, only: ncent_tot
         use vmc_mod, only: MORB
         use optjas, only: MPARMJ
@@ -489,6 +490,8 @@ module multimat
 contains
     subroutine allocate_multimat()
         use const, only: nelec
+        use dets, only: ndet
+        use coefs, only: norb
         use vmc_mod, only: MORB, MDET
         use vmc_mod, only: MEXCIT
         if (.not. allocated(aa)) allocate (aa(nelec, norb, 2))
@@ -550,6 +553,7 @@ module multislater
     save
 contains
     subroutine allocate_multislater()
+        use dets, only: ndet
         use vmc_mod, only: MDET
         if (.not. allocated(detiab)) allocate(detiab(ndet, 2))
         if (.not. allocated(detu)) allocate(detu(MDET))
@@ -582,6 +586,8 @@ module multislatern
     save
 contains
     subroutine allocate_multislatern()
+        use dets, only: ndet
+        use coefs, only: norb
         use vmc_mod, only: MORB, MDET
         if (.not. allocated(ddorbn)) allocate (ddorbn(MORB))
         if (.not. allocated(detn)) allocate (detn(MDET))

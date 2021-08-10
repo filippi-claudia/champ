@@ -206,7 +206,6 @@ c    & f10.5)') dr2ac/trymove
         write(ounit,'(''nwalk_eff/nwalk with fs ='',2f6.3)')
      &   rn_eff(wgcum1(1),wgcm21(1))/pass_proc,rn_eff(wgcum(1),
      &   wgcm2(1))/iblk_proc
-        endif
       endif
 
       write(ounit,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq  nproc  tau    taueff'',
@@ -274,7 +273,6 @@ c Done by Omar Valsson 2008-12-01
         force(ifr)=fgave
         force_err(ifr)=fgerr
   50  continue
-      endif
 
       call prop_prt_dmc(iblk,1,wgcum,wgcm2)
       call pcm_fin(iblk,wgcum,wgcm2)

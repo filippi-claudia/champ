@@ -23,7 +23,7 @@ subroutine parser
   use force_mod,      	only: MFORCE
 
 ! variables from process input
-  use sr_mod,         	only: MCONF, MVEC
+  use sr_mod,         	only: MCONF
   use pseudo_mod,     	only: MPS_QUAD
   use properties,     	only: MAXPROP
   use optorb_mod,     	only: MXORBOP, MXREDUCED

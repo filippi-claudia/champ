@@ -204,6 +204,7 @@ module denergy_det_m
     save
 contains
     subroutine allocate_denergy_det_m()
+        use dets, only: ndet
         use vmc_mod, only: MDET
         if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
     end subroutine allocate_denergy_det_m
