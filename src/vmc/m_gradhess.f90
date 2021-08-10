@@ -5,6 +5,8 @@ module gradhess_all
     ! use optci, only: MXCIREDUCED
     use precision_kinds, only: dp
 
+    implicit none
+
     ! integer, parameter :: MPARMALL = MPARMJ + MXCIREDUCED + MXREDUCED
     integer :: MPARMALL
     real(dp), dimension(:), allocatable :: grad !(MPARMALL)
@@ -25,10 +27,6 @@ contains
     end subroutine set_gradhess_all_size
 
     subroutine allocate_gradhess_all()
-        use optorb_mod, only: MXREDUCED
-        use optjas, only: MPARMJ
-        use optci, only: MXCIREDUCED
-        use precision_kinds, only: dp
         if (.not. allocated(grad)) allocate (grad(MPARMALL))
         if (.not. allocated(h)) allocate (h(MPARMALL, MPARMALL))
         if (.not. allocated(s)) allocate (s(MPARMALL, MPARMALL))
@@ -47,6 +45,8 @@ module gradhessj
     use optjas, only: MPARMJ
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
+
+    implicit none
 
     real(dp), dimension(:, :, :), allocatable :: d2j !(MPARMJ,MPARMJ,MSTATES)
     real(dp), dimension(:, :, :), allocatable :: d2j_e !(MPARMJ,MPARMJ,MSTATES)
@@ -67,9 +67,7 @@ module gradhessj
     save
 contains
     subroutine allocate_gradhessj()
-        use csfs, only: nstates
         use optjas, only: MPARMJ
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(d2j)) allocate (d2j(MPARMJ, MPARMJ, MSTATES))
         if (.not. allocated(d2j_e)) allocate (d2j_e(MPARMJ, MPARMJ, MSTATES))
@@ -106,8 +104,9 @@ module gradhessjo
     !> Arguments: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
     use optjas, only: MPARMJ
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
     use mstates_mod, only: MSTATES
+
+    implicit none
 
     real(dp), dimension(:), allocatable :: d1d2a_old !(MCTYPE)
     real(dp), dimension(:), allocatable :: d1d2b_old !(2)
@@ -122,11 +121,8 @@ module gradhessjo
     save
 contains
     subroutine allocate_gradhessjo()
-        use csfs, only: nstates
         use atom, only: nctype_tot
         use optjas, only: MPARMJ
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCTYPE
         use mstates_mod, only: MSTATES
         if (.not. allocated(d1d2a_old)) allocate (d1d2a_old(nctype_tot))
         if (.not. allocated(d1d2b_old)) allocate (d1d2b_old(2))
@@ -152,6 +148,8 @@ module gradhess_ci
     use optci, only: MXCITERM, MXCIREDUCED
     use precision_kinds, only: dp
 
+    implicit none
+
     real(dp), dimension(:), allocatable :: grad_ci !(MXCITERM)
     real(dp), dimension(:, :), allocatable :: h_ci !(MXCITERM,MXCIREDUCED)
     real(dp), dimension(:, :), allocatable :: s_ci !(MXCITERM,MXCIREDUCED)
@@ -163,7 +161,6 @@ module gradhess_ci
 contains
     subroutine allocate_gradhess_ci()
         use optci, only: MXCITERM, MXCIREDUCED
-        use precision_kinds, only: dp
         if (.not. allocated(grad_ci)) allocate (grad_ci(MXCITERM))
         if (.not. allocated(h_ci)) allocate (h_ci(MXCITERM, MXCIREDUCED))
         if (.not. allocated(s_ci)) allocate (s_ci(MXCITERM, MXCIREDUCED))
@@ -182,6 +179,8 @@ module gradhess_jas
     use optjas, only: MPARMJ
     use precision_kinds, only: dp
 
+    implicit none
+
     real(dp), dimension(:), allocatable :: grad_jas !(MPARMJ)
     real(dp), dimension(:, :), allocatable :: h_jas !(MPARMJ,MPARMJ)
     real(dp), dimension(:, :), allocatable :: s_jas !(MPARMJ,MPARMJ)
@@ -193,7 +192,6 @@ module gradhess_jas
 contains
     subroutine allocate_gradhess_jas()
         use optjas, only: MPARMJ
-        use precision_kinds, only: dp
         if (.not. allocated(grad_jas)) allocate (grad_jas(MPARMJ))
         if (.not. allocated(h_jas)) allocate (h_jas(MPARMJ, MPARMJ))
         if (.not. allocated(s_jas)) allocate (s_jas(MPARMJ, MPARMJ))
@@ -213,6 +211,8 @@ module gradhess_mix_jas_ci
     use optci, only: MXCITERM
     use precision_kinds, only: dp
 
+    implicit none
+
     real(dp), dimension(:, :), allocatable :: h_mix_jas_ci !(2*MPARMJ,MXCITERM)
     real(dp), dimension(:, :), allocatable :: s_mix_jas_ci !(MPARMJ,MXCITERM)
 
@@ -224,7 +224,6 @@ contains
     subroutine allocate_gradhess_mix_jas_ci()
         use optjas, only: MPARMJ
         use optci, only: MXCITERM
-        use precision_kinds, only: dp
         if (.not. allocated(h_mix_jas_ci)) allocate (h_mix_jas_ci(2*MPARMJ, MXCITERM))
         if (.not. allocated(s_mix_jas_ci)) allocate (s_mix_jas_ci(MPARMJ, MXCITERM))
     end subroutine allocate_gradhess_mix_jas_ci
@@ -242,6 +241,8 @@ module gradhess_mix_jas_orb
     use optjas, only: MPARMJ
     use precision_kinds, only: dp
 
+    implicit none
+
     real(dp), dimension(:, :), allocatable :: h_mix_jas_orb !(2*MPARMJ,MXREDUCED)
     real(dp), dimension(:, :), allocatable :: s_mix_jas_orb !(MPARMJ,MXREDUCED)
 
@@ -253,7 +254,6 @@ contains
     subroutine allocate_gradhess_mix_jas_orb()
         use optorb_mod, only: MXREDUCED
         use optjas, only: MPARMJ
-        use precision_kinds, only: dp
         if (.not. allocated(h_mix_jas_orb)) allocate (h_mix_jas_orb(2*MPARMJ, MXREDUCED))
         if (.not. allocated(s_mix_jas_orb)) allocate (s_mix_jas_orb(MPARMJ, MXREDUCED))
     end subroutine allocate_gradhess_mix_jas_orb
@@ -271,6 +271,8 @@ module gradhess_mix_orb_ci
     use optci, only: MXCITERM
     use precision_kinds, only: dp
 
+    implicit none
+
     real(dp), dimension(:, :), allocatable :: h_mix_ci_orb !(2*MXCITERM,MXREDUCED)
     real(dp), dimension(:, :), allocatable :: s_mix_ci_orb !(MXCITERM,MXREDUCED)
 
@@ -282,7 +284,6 @@ contains
     subroutine allocate_gradhess_mix_orb_ci()
         use optorb_mod, only: MXREDUCED
         use optci, only: MXCITERM
-        use precision_kinds, only: dp
         if (.not. allocated(h_mix_ci_orb)) allocate (h_mix_ci_orb(2*MXCITERM, MXREDUCED))
         if (.not. allocated(s_mix_ci_orb)) allocate (s_mix_ci_orb(MXCITERM, MXREDUCED))
     end subroutine allocate_gradhess_mix_orb_ci
@@ -300,6 +301,8 @@ module gradjerr
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
+    implicit none
+
     real(dp), dimension(:, :), allocatable :: dj_bsum !(MPARMJ,MSTATES)
     real(dp), dimension(:, :), allocatable :: dj_e_bsum !(MPARMJ,MSTATES)
     real(dp), dimension(:, :), allocatable :: dj_e_save !(MPARMJ,MSTATES)
@@ -314,9 +317,7 @@ module gradjerr
     save
 contains
     subroutine allocate_gradjerr()
-        use csfs, only: nstates
         use optjas, only: MPARMJ
-        use precision_kinds, only: dp
         use mstates_mod, only: MSTATES
         if (.not. allocated(dj_bsum)) allocate (dj_bsum(MPARMJ, MSTATES))
         if (.not. allocated(dj_e_bsum)) allocate (dj_e_bsum(MPARMJ, MSTATES))
@@ -350,6 +351,8 @@ subroutine allocate_m_gradhess()
     use gradhess_mix_orb_ci, only: allocate_gradhess_mix_orb_ci
     use gradjerr, only: allocate_gradjerr
 
+    implicit none
+
     call allocate_gradhess_all()
     call allocate_gradhessj()
     call allocate_gradhessjo()
@@ -371,6 +374,8 @@ subroutine deallocate_m_gradhess()
     use gradhess_mix_jas_orb, only: deallocate_gradhess_mix_jas_orb
     use gradhess_mix_orb_ci, only: deallocate_gradhess_mix_orb_ci
     use gradjerr, only: deallocate_gradjerr
+
+    implicit none
 
     call deallocate_gradhess_all()
     call deallocate_gradhessj()

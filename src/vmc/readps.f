@@ -10,7 +10,11 @@ c Written by Claudia Filippi
 
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, ic, index, l, nlang
+      integer :: nzion
+
 
 
       character*20 filename,atomtyp
@@ -93,13 +97,17 @@ c Written by Claudia Filippi
 
       use pseudo, only: lpot, vps
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ict, iel, ir, l
+      real(dp) :: r, ri
+      real(dp), dimension(nelec,ncent_tot) :: rad
 
 
 
 
 
-      dimension rad(nelec,ncent_tot)
 
       do 10 ic=1,ncent
         ict=iwctype(ic)

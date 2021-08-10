@@ -1,11 +1,7 @@
       subroutine multideterminante(iel)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MORB
+      use vmc_mod, only: MEXCIT
       use csfs, only: nstates
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -14,22 +10,32 @@
       use ycompactn, only: ymatn
       use coefs, only: norb
       use multimatn, only: aan, wfmatn
-      use multislatern, only: ddorbn, detn, dorbn, orbn
+      use multislatern, only: detn, orbn
       use const, only: nelec
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: orb
       use multislater, only: detiab
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iab, iel, index_det, iorb
+      integer :: irep, ish, istate, jj
+      integer :: jorb, jrep, k, ndim
+      integer :: nel
+      real(dp) :: det, dum1
+      real(dp), dimension(nelec, MORB, 3) :: gmat
+      real(dp), dimension(MEXCIT**2, 3) :: gmatn
+      real(dp), dimension(MORB, 3) :: b
+      real(dp), dimension(3) :: ddx_mdet
+      real(dp), dimension(MORB) :: orb_sav
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = 0.5d0
 
 
 
 
 
-      parameter (one=1.d0,half=0.5d0)
 
 
-      dimension gmat(nelec,MORB,3),gmatn(MEXCIT**2,3)
-      dimension b(MORB,3),ddx_mdet(3)
-      dimension orb_sav(MORB)
 
       if(ndet.eq.1) return
 
@@ -42,7 +48,7 @@
         ish=nup
       endif
 
-c temporarely copy orbn to orb 
+c temporarely copy orbn to orb
       do iorb=1,norb
         orb_sav(iorb)=orb(iel,iorb)
         orb(iel,iorb)=orbn(iorb)
@@ -60,7 +66,7 @@ c temporarely copy orbn to orb
         enddo
       enddo
 
-c compute wave function 
+c compute wave function
       do 200 k=1,ndet
 
         if(k.ne.kref) then
@@ -79,6 +85,7 @@ c compute wave function
               wfmatn(jj,k)=aan(iorb,jorb)
             enddo
           enddo
+
 
           call matinv(wfmatn(1,k),ndim,det)
 
@@ -116,12 +123,9 @@ c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
       use precision_kinds, only: dp
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MEXCIT
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: iactv, ivirt, kref
@@ -129,16 +133,25 @@ c-----------------------------------------------------------------------
       use dorb_m, only: iworbd
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      parameter (one=1.d0,half=0.5d0)
+      integer :: iab, iel, iorb, irep, ish
+      integer :: j, jel, jrep, k
+      integer :: kk, nel
+      real(dp) :: detratio, dum
+      real(dp), dimension(nelec, MORB) :: aa
+      real(dp), dimension(MEXCIT**2, MDET) :: wfmat
+      real(dp), dimension(MORB, nelec) :: ymat
+      real(dp), dimension(MORB, 3) :: b
+      real(dp), dimension(3, MORB) :: dorb
+      real(dp), dimension(nelec, MORB, 3) :: gmat
+      real(dp), dimension(3) :: velocity
+      real(dp), dimension(MMAT_DIM) :: slmi
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = 0.5d0
 
-      dimension aa(nelec,MORB),wfmat(MEXCIT**2,MDET),ymat(MORB,nelec)
-      dimension b(MORB,3),dorb(3,MORB)
-      dimension gmat(nelec,MORB,3)
-      dimension velocity(3)
 
-      dimension slmi(MMAT_DIM)
+
 
       do k=1,3
         velocity(k)=0.d0

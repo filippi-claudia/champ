@@ -5,14 +5,22 @@
       use mmpol_cntrl, only: immpol, immpolprt
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2
       use mmpol_averages, only: dmmpol_cum, dmmpol_cm2
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iblk, icmmpol_err, idmmpol_err
+      real(dp) :: cekcal, cmmpol_ave, cmmpol_err, cmmpol_kcal, dckcal
+      real(dp) :: dekcal, dmmpol_ave, dmmpol_err, dmmpol_kcal
+      real(dp) :: errg, error, evalg_eff, hatokc
+      real(dp) :: rn_eff, rtevalg_eff1, w, w2
+      real(dp) :: x, x2
+      real(dp), dimension(MFORCE) :: wgcum
+      real(dp), dimension(MFORCE) :: wgcm2
  
       data hatokc/627.509541d0/
 
-      dimension wgcum(MFORCE),wgcm2(MFORCE)
-
-
+c Statement functions for error calculation, it might be reaplaced in the near future:
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
@@ -57,10 +65,15 @@ c-----------------------------------------------------------------------
       use mmpol_cntrl, only: immpol, immpolprt
       use force_mod, only: MFORCE
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iblk, immpolprt_sav
+
+      real(dp), dimension(MFORCE) :: wgcum
+      real(dp), dimension(MFORCE) :: wgcm2
 
 
-      dimension wgcum(MFORCE),wgcm2(MFORCE)
 
 
       if(immpol.eq.0) return
@@ -80,7 +93,11 @@ c-----------------------------------------------------------------------
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iw
+      real(dp) :: QMdp, QMq
 
       if(immpol.eq.0) return
 
@@ -105,7 +122,11 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: dmmpol_sum
       use mmpol_averages, only: eek_sum, cmmpol_sum
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iw
+      real(dp) :: QMdp, QMq, p, q
  
       if(immpol.eq.0) return
 
@@ -126,7 +147,12 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, immpol, nchmm
+      real(dp) :: cmmpolnow, dmmpolnow, eek_now1, eek_now2, eek_now3
+      real(dp) :: wsum_dmc
  
       if(immpol.eq.0) return
 
@@ -162,7 +188,10 @@ c-----------------------------------------------------------------------
       use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
 
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iw, iw2, nchmm
+
 
       dmmpolo_dmc(iw2)=dmmpolo_dmc(iw)
       cmmpolo_dmc(iw2)=cmmpolo_dmc(iw)

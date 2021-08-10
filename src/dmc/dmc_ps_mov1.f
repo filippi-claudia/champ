@@ -39,10 +39,9 @@ c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      use vmc_mod, only: MELEC
+
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use dmc_mod, only: MWALK
       use const, only: etrial, hb, ipr, nelec
       use forcepar, only: istrech, nforce
       use age, only: iage, ioldest, ioldestmx
@@ -64,28 +63,71 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use elec, only: nup
       use velratio, only: fratio, xdrifted
       use contrl, only: irstar, nconf
+      use inputflags, only: node_cutoff, eps_node_cutoff, icircular, idrifdifgfunc
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
-      parameter (adrift=0.5d0)
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
 
-      dimension xstrech(3,MELEC)
-      dimension xnew(3),vnew(3,MELEC)
-      dimension xbac(3),xdriftedn(3,MELEC)
-      dimension itryo(MELEC),itryn(MELEC),unacp(MELEC)
-      dimension iacc_elec(MELEC)
+      interface
+         function gauss()
+          use precision_kinds, only: dp
+         implicit none
+         real(dp) :: gauss
+         end function gauss
+      end interface
+
+      integer :: i, iaccept, iel
+      integer :: iflag_dn, iflag_up, ifr, ii
+      integer :: imove, ipmod, ipmod2, iw
+      integer :: iwmod, j, jel, k
+      integer :: ncall, ncount_casula, nmove_casula
+      integer, dimension(nelec) :: itryo
+      integer, dimension(nelec) :: itryn
+      integer, dimension(nelec) :: iacc_elec
+      real(dp) :: d2n, den, deo, dfus
+      real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
+      real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
+      real(dp) :: drifdifr, drifdifs, drift, dwt
+      real(dp) :: dx, e_cutoff, enew
+      real(dp) :: ewtn, ewto, expon, ffi
+      real(dp) :: ffn, fration, ginv
+      real(dp) :: p, pen, pp, psi2savo
+      real(dp) :: psidn, psijn, q, r2n
+      real(dp) :: r2o, r2sume, risume
+      real(dp) :: rminn, rmino, rnorm_nodes, rnorm_nodes_new
+      real(dp) :: rnorm_nodes_num, rnorm_nodes_old, ro, taunow
+      real(dp) :: tauprim, tratio, v2new, v2old
+      real(dp) :: v2sumn, v2sumo, vav2sumn, vav2sumo
+      real(dp) :: vavvn, vavvo, vavvt, wtg
+      real(dp) :: wtg_derivsum1, wtnow
+      real(dp), dimension(3, nelec) :: xstrech
+      real(dp), dimension(3) :: xnew
+      real(dp), dimension(3, nelec) :: vnew
+      real(dp), dimension(3) :: xbac
+      real(dp), dimension(3, nelec) :: xdriftedn
+      real(dp), dimension(nelec) :: unacp
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: adrift = 0.5d0
+
+
 
       data ncall /0/
 
 c     term=(sqrt(two*pi*tau))**3/pi
 
-!      call p2gtid('dmc:node_cutoff',node_cutoff,0,1)
-!      call p2gtfd('dmc:enode_cutoff',eps_node_cutoff,1.d-7,1)
       eps_node_cutoff=eps_node_cutoff*sqrt(tau)
-!      call p2gtid('dmc:icircular',icircular,0,1)
-!      call p2gtid('dmc:idrifdifgfunc',idrifdifgfunc,0,1)
-
       e_cutoff=0.2d0*sqrt(nelec/tau)
 
       if(idmc.lt.0) then
@@ -546,7 +588,7 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
             tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg*half*hb*d2o(iw,ifr)
 
             derivsum(1,ifr)=derivsum(1,ifr)+wtg*eold(iw,ifr)
- 
+
             if(idrifdifgfunc.gt.0) then
               derivsum(2,ifr)=derivsum(2,ifr)+wtg*eold(iw,ifr)*pwt(iw,ifr)
               derivsum(3,ifr)=derivsum(3,ifr)+wtg*pwt(iw,ifr)
@@ -587,7 +629,7 @@ c            else
 c             wtg=wt(iw)*fprod
 c             wtg_derivsum1=wtg/rnorm_nodes**2
 c           endif
-            
+
             derivsum(1,ifr)=derivsum(1,ifr)+wtg_derivsum1*eold(iw,ifr)
 
             if(idrifdifgfunc.gt.0) then

@@ -11,11 +11,14 @@ subroutine read_znuc(iu)
     use ghostatom, only: newghostype
     use inputflags, only: iznuc
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, itmp, iu
+
 
     call p2gti('atoms:nctype', nctype, 1)
     call p2gtid('atoms:addghostype', newghostype, 0, 1)
-    if (nctype + newghostype .gt. MCTYPE) call fatal_error('INPUT: nctype+newghostype > MCTYPE')
+    !if (nctype + newghostype .gt. MCTYPE) call fatal_error('INPUT: nctype+newghostype > MCTYPE')
     nctype_tot = nctype + newghostype
 
     allocate (znuc(nctype_tot))
@@ -44,7 +47,11 @@ subroutine read_lcao(norb_tmp, nbasis_tmp, iwft, filename)
     ! was not in master but is needed
     use wfsec, only: nwftype
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, itmp, iu, iwft, j
+      integer :: nbasis_tmp, norb_tmp, nototal
+
 
     ! fs NOTE: additional variable norbv for efp orbitals removed
 
@@ -87,7 +94,10 @@ subroutine read_geometry(iu)
     use ghostatom, only: nghostcent
     use inputflags, only: igeometry
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, itmp, iu, k
+
 
     call p2gti('atoms:natom', ncent, 1)
     call p2gtid('atoms:nghostcent', nghostcent, 0, 1)
@@ -114,7 +124,10 @@ subroutine read_exponents(iu, iwft)
     use inputflags, only: iexponents
     use wfsec, only: nwftype
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, itmp, iu, iwft
+
 
     call p2gtid('general:nwftype', nwftype, 1, 1)
     write (6, *) 'nbasis', nbasis
@@ -141,7 +154,11 @@ subroutine read_determinants(iu, nd, iwft)
 
     ! not sure if needed but it's called
     use const, only: nelec
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, itmp, iu, iwft, j
+      integer :: nd
+
 
     call p2gtid('general:nwftype', nwftype, 1, 1)
 
@@ -160,7 +177,7 @@ subroutine read_determinants(iu, nd, iwft)
     endif
 
     call p2gti('electrons:nelec', nelec, 1)
-    if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
+    ! if (nelec .gt. MELEC) call fatal_error('INPUT: nelec exceeds MELEC')
     call incpos(iu, itmp, 1)
 
     allocate (cdet(MDET, MSTATES, nwftype))
@@ -186,14 +203,18 @@ subroutine read_multideterminants(iu, nd)
     use multidet, only: irepcol_det, ireporb_det, numrep_det, iwundet
     use inputflags, only: imultideterminants
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: iab, irep, itmp, iu, k
+      integer :: nd
+
 
     if (nd .ne. ndet - 1) call fatal_error('INPUT: problem in multidet')
 
-    allocate (iwundet(MDET, 2))
-    allocate (numrep_det(MDET, 2))
-    allocate (irepcol_det(nelec, MDET, 2))
-    allocate (ireporb_det(nelec, MDET, 2))
+    allocate (iwundet(ndet, 2))
+    allocate (numrep_det(ndet, 2))
+    allocate (irepcol_det(nelec, ndet, 2))
+    allocate (ireporb_det(nelec, ndet, 2))
 
     call incpos(iu, itmp, 1)
     do k = 2, nd + 1
@@ -225,7 +246,21 @@ subroutine read_jastrow_parameter(iu, iwft)
     use wfsec, only: nwftype
     use atom, only: ncent, nctype
 
-    implicit real*8(a - h, o - z)
+      use precision_kinds, only: dp
+      implicit none
+
+    interface
+    function nterms4(nord)
+        integer, intent(in) :: nord
+        integer :: nterms4
+    end function nterms4
+    end interface
+
+
+    integer :: iabs, iparm, isp, it, itmp
+    integer :: iu, iwft, mparmja, mparmjb
+    integer :: mparmjc
+    real(dp) :: a21
 
     call p2gti('jastrow:ijas', ijas, 1)
     call p2gti('jastrow:isc', isc, 1)
@@ -314,11 +349,15 @@ subroutine read_bas_num_info(iu, numeric)
     use atom, only: nctype
     use ghostatom, only: newghostype
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, iabs, ib, itmp, iu
+      integer :: j, jj, nctot, numeric
+
 
     call p2gti('atoms:nctype', nctype, 1)
     call p2gtid('atoms:addghostype', newghostype, 0, 1)
-    if (nctype + newghostype .gt. MCTYPE) call fatal_error('ATOMS: nctype+newghostype > MCTYPE')
+    !if (nctype + newghostype .gt. MCTYPE) call fatal_error('ATOMS: nctype+newghostype > MCTYPE')
 
     nctot = nctype + newghostype
     allocate (nbastyp(nctot))
@@ -492,7 +531,10 @@ end subroutine read_bas_num_info
 subroutine read_lattice(iu)
 !INPUT lattice inp
 !KEYDOC Lattice vectors of primitive and simulation cell
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: iu
+
     call do_read_lattice(iu)
 end subroutine read_lattice
 
@@ -509,7 +551,10 @@ subroutine read_forces(iu)
 
     use atom, only: ncent
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, ic, itmp, iu, k
+
 
     call p2gti('atoms:natom', ncent, 1)
     ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
@@ -546,7 +591,10 @@ subroutine read_csf(ncsf_read, nstates_read, fn)
     use inputflags, only: icsfs
     use wfsec, only: nwftype
     use dets, only: ndet
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, iu, j, ncsf_read, nstates_read
+
 
     character fn*(*)
     call p2gtid('general:nwftype', nwftype, 1, 1)
@@ -583,7 +631,13 @@ subroutine read_csfmap(fn)
     use dets, only: cdet, ndet
     use wfsec, only: nwftype
 
-    implicit real*8(a - h, o - z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, icsf, id, iu, j
+      integer :: jx, k, ncsf_check, ndet_check
+      integer :: nmap, nmap_check, nptr, nterm
+      real(dp) :: c
 
     character fn*(*)
 
@@ -657,7 +711,11 @@ subroutine read_jasderiv(iu)
     use contr2, only: isc
     use vmc_mod, only: MCTYP3X
     use atom, only: nctype_tot
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: ia, iparm, isp, it, iu
+      integer :: na1, na2
+
 
     na1 = 1
     na2 = nctype
@@ -769,7 +827,10 @@ subroutine read_sym(nsym, mo, fn)
     use coefs, only: norb
     use optorb, only: irrep
     use vmc_mod, only: MORB
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: io, iu, mo, nirrep, nsym
+
 
     character fn*(*)
     character atmp*80
@@ -805,7 +866,10 @@ subroutine read_optorb_mixvirt(moopt, movirt, fn)
     use coefs, only: norb
     use inputflags, only: ioptorb_mixvirt
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: io, iu, jo, moopt, movirt
+
     character fn*(*)
     character atmp*80
 
@@ -837,7 +901,10 @@ subroutine read_energies(mo, fn)
     use coefs, only: norb
     use vmc_mod, only: MORB
     use optorb, only: orb_energy
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: io, iu, mo
+
 
     character fn*(*)
 
@@ -866,7 +933,10 @@ subroutine read_dmatrix(no, ns, fn)
     use mstates_mod, only: MSTATES
     use coefs, only: norb
     use optorb, only: dmat_diag
-    implicit real*8(a - h, o - z)
+    implicit none
+
+    integer :: i, ipr, iu, iw, j
+    integer :: ndetorb, no, ns
 
     character fn*(*)
     real(dp), DIMENSION(:), ALLOCATABLE :: dmat
@@ -929,17 +999,21 @@ subroutine get_weights(field, weights, iweight, nweight)
     use csfs, only: nstates
     use mstates_mod, only: MSTATES
 
-    implicit real*8(a - h, o - z)
+    ! implicit real*8(a - h, o - z)
+    implicit none
 
     ! weights for state averaging
     character(len=*), intent(in) :: field
     real(dp), dimension(MSTATES), intent(inout) :: weights
     integer, dimension(MSTATES), intent(inout) :: iweight
     integer, intent(inout) :: nweight
-
-    ! dimension weights(MSTATES), iweight(MSTATES)
-    ! character field*(32)
     character vname*(32)
+
+    integer :: i
+    integer :: nv ! NR : Not initialized and used below !
+    real(dp) :: wdef
+    real(dp) :: w
+    real(dp) :: wsum
 
     wsum = 0.d0
     nweight = 0
@@ -979,7 +1053,10 @@ subroutine read_cavity_spheres(iu, nspheres)
 !KEYDOC Read centers of cavity spheres and radii
     use pcm_parms, only: nesph, re, re2
     use pcm_parms, only: xe, ye, ze
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, itmp, iu, nspheres
+
 
     nesph = nspheres
 
@@ -1017,7 +1094,11 @@ subroutine read_gradnts_cart(iu)
 
     use atom, only: ncent
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, ia, ic, itmp, iu
+      integer :: k
+
 
     call p2gti('atoms:natom', ncent, 1)
     if (ncent .gt. MCENT) call fatal_error('GRADIENTS_CARTESIAN: ncent > MCENT')
@@ -1090,7 +1171,11 @@ subroutine read_gradnts_zmat(iu)
 
     use atom, only: ncent
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, ia, ic, itmp, iu
+      integer :: k
+
 
     call p2gti('atoms:natom', ncent, 1)
     if (ncent .gt. MCENT) call fatal_error('GRADIENTS_ZMATRIX: ncent > MCENT')
@@ -1158,7 +1243,10 @@ subroutine read_modify_zmat(iu)
 
     use atom, only: ncent
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: ic, itmp, iu, k
+
 
     call p2gti('atoms:natom', ncent, 1)
     ! if (ncent .gt. MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
@@ -1191,7 +1279,10 @@ subroutine read_hessian_zmat(iu)
     use inputflags, only: ihessian_zmat
     use atom, only: ncent
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: ic, itmp, iu, k
+
 
     call p2gti('atoms:natom', ncent, 1)
     ! if (ncent .gt. MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
@@ -1227,7 +1318,10 @@ subroutine read_zmat_conn(iu)
     use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
     use inputflags, only: izmatrix_check
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: ic, itmp, iu, k
+
 
     call p2gti('atoms:natom', ncent, 1)
 
@@ -1276,7 +1370,10 @@ subroutine read_efield(ncharges_tmp, iscreen_tmp, filename)
     use efield, only: iscreen, ncharges
     use inputflags, only: icharge_efield
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, iscreen_tmp, itmp, iu, ncharges_tmp
+
 
     character filename*(*)
 

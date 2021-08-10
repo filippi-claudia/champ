@@ -3,7 +3,13 @@
       use mmpol_cntrl, only: immpol, immpolprt
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iblk, icmmpol_err, idmmpol_err
+      real(dp) :: cmmpol_ave, cmmpol_err, cmmpol_merr, dmmpol_ave, dmmpol_err
+      real(dp) :: err, qmmpol_ave, qmmpol_err, rtpass
+      real(dp) :: wcum, x, x2
 
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
@@ -48,16 +54,28 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iblk, icmmpol_err, idmmpol_err
+      real(dp) :: cekcal, cmmpol_ave, cmmpol_err, cmmpol_kcal, cmmpol_merr
+      real(dp) :: dckcal, dekcal, dmmpol_ave, dmmpol_err
+      real(dp) :: dmmpol_kcal, err, hatokc, qmmpol_ave
+      real(dp) :: qmmpol_err, rtpass, wcum, x
+      real(dp) :: x2
+      real(dp), dimension(MCHMM) :: eek1_ave
+      real(dp), dimension(MCHMM) :: eek1_err
+      real(dp), dimension(MCHMM) :: eek2_ave
+      real(dp), dimension(MCHMM) :: eek2_err
+      real(dp), dimension(MCHMM) :: eek3_ave
+      real(dp), dimension(MCHMM) :: eek3_err
+      real(dp), dimension(3, MCHMM) :: eek_ave
+      real(dp), dimension(3, MCHMM) :: eek_err
 
     
 
       data hatokc/627.509541d0/
 
-      dimension eek1_ave(MCHMM),eek1_err(MCHMM)
-      dimension eek2_ave(MCHMM),eek2_err(MCHMM)
-      dimension eek3_ave(MCHMM),eek3_err(MCHMM)
-      dimension eek_ave(3,MCHMM),eek_err(3,MCHMM)
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
@@ -128,7 +146,11 @@ c-----------------------------------------------------------------------
       use mmpolo, only: cmmpolo, dmmpolo, eeko
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i
+      real(dp) :: QMdp, QMq
 
 
 
@@ -157,7 +179,11 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_sum, dmmpol_sum
       use mmpol_averages, only: eek_sum
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i
+      real(dp) :: QMdp, QMq, p, q
 
 
       if(immpol.eq.0) return
@@ -180,7 +206,12 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i
+      real(dp) :: cmmpolnow, dmmpolnow, eek_now1, eek_now2, eek_now3
+      real(dp) :: wsum
 
 
       if(immpol.eq.0) return

@@ -1,12 +1,6 @@
       subroutine basis_norm(iwf,anorm,iflag)
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt routine
 c Set normalization of basis fns.
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: iwctype, ncent
 
       use ghostatom, only: nghostcent
@@ -14,18 +8,28 @@ c Set normalization of basis fns.
       use coefs, only: coef, nbasis, norb
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: nadorb
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iabs, ic, iflag, iorb
+      integer :: iwf, j, ju, k
+      integer :: l
+
+      real(dp), dimension(*) :: anorm
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: three = 3.d0
+      real(dp), parameter :: five = 5.d0
+      real(dp), parameter :: six = 6.d0
+      real(dp), parameter :: seven = 7.d0
+      real(dp), parameter :: third = 1.d0/3.d0
 
 
 
-      parameter (one=1.d0,two=2.d0,three=3.d0)
-      parameter (five=5.d0,six=6.d0,seven=7.d0)
-      parameter (third=1.d0/3.d0)
 
 
-      dimension anorm(*)
 
       do 5 j=1,nbasis
     5   anorm(j)=one

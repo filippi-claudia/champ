@@ -1,6 +1,9 @@
 module dmc_mod
     !> Arguments: MWALK, MFPROD, MFPRD1, MPATH
     !> MWALK: Maximum number of walkers
+
+    implicit none
+
     integer, parameter :: MWALK = 600
     integer, parameter :: MFPROD=3201
     integer, parameter :: MFPRD1=MFPROD-1
@@ -13,8 +16,9 @@ end module  dmc_mod
 
 module age
   !> Arguments: iage, ioldest, ioldestmx
-  use precision_kinds, only: dp
-  use dmc_mod, only: MWALK 
+  use dmc_mod, only: MWALK
+
+  implicit none
 
   integer, dimension(:), allocatable:: iage
   integer  :: ioldest
@@ -41,6 +45,8 @@ module branch
    use precision_kinds, only: dp
    use force_mod, only: MFORCE, MFORCE_WT_PRD
    use dmc_mod, only: MWALK, MFPRD1
+
+  implicit none
 
    real(dp) :: eest
    real(dp) :: eigv
@@ -84,9 +90,11 @@ contains
    end subroutine deallocate_branch
 end module branch
 
-module c_averages 
+module c_averages
   !> Arguments: mprop, prop, wprop, cum_av, cum_av2, cum_w
    use precision_kinds, only: dp
+
+   implicit none
 
    integer, parameter :: mprop = 100
    real(dp), dimension(:), allocatable :: prop !(mprop)
@@ -116,18 +124,20 @@ contains
       if (allocated(cum_av2)) deallocate(cum_av2)
       if (allocated(cum_w)) deallocate(cum_w)
    end subroutine deallocate_c_averages
-end module c_averages 
+end module c_averages
 
-module c_averages_index 
-   !> Arguments: jeloc, jderiv 
+module c_averages_index
+   !> Arguments: jeloc, jderiv
    use force_mod, only: MFORCE
 
+   implicit none
+
    integer :: jeloc
-   integer, dimension(:,:), allocatable :: jderiv !(3,MFORCE) 
+   integer, dimension(:,:), allocatable :: jderiv !(3,MFORCE)
 
    private
-   public :: jeloc, jderiv  
-   public :: allocate_c_averages_index, deallocate_c_averages_index 
+   public :: jeloc, jderiv
+   public :: allocate_c_averages_index, deallocate_c_averages_index
    save
 
 contains
@@ -138,13 +148,15 @@ contains
    subroutine deallocate_c_averages_index()
       if (allocated(jderiv)) deallocate(jderiv)
    end subroutine deallocate_c_averages_index
-end module c_averages_index 
+end module c_averages_index
 
 module jacobsave
    !> Arguments: ajacob, ajacold
    use dmc_mod, only: MWALK
    use force_mod, only: MFORCE
    use precision_kinds, only: dp
+
+   implicit none
 
     real(dp) :: ajacob
     real(dp), dimension(:,:), allocatable :: ajacold
@@ -170,20 +182,24 @@ module velratio
    use precision_kinds, only: dp
    use dmc_mod, only: MWALK
    use force_mod, only: MFORCE
-   use vmc_mod, only: MELEC
+
+   implicit none
 
    real(dp), dimension(:,:), allocatable :: fratio !(MWALK,MFORCE)
    real(dp), dimension(:,:,:,:), allocatable :: xdrifted !(3,MELEC,MWALK,MFORCE)
 
    private
    public :: fratio, xdrifted
-   public :: allocate_velratio, deallocate_velratio 
+   public :: allocate_velratio, deallocate_velratio
    save
 
 contains
    subroutine allocate_velratio()
+      use dmc_mod, only: MWALK
+      use force_mod, only: MFORCE
+      use const, only: nelec
       if (.not. allocated(fratio)) allocate(fratio(MWALK, MFORCE))
-      if (.not. allocated(xdrifted)) allocate(xdrifted(3, MELEC, MWALK, MFORCE))
+      if (.not. allocated(xdrifted)) allocate(xdrifted(3, nelec, MWALK, MFORCE))
    end subroutine allocate_velratio
 
    subroutine deallocate_velratio()
@@ -191,4 +207,3 @@ contains
       if (allocated(xdrifted)) deallocate(xdrifted)
    end subroutine deallocate_velratio
  end module velratio
-

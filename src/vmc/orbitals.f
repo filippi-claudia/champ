@@ -2,7 +2,6 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MCENT
       use const, only: nelec, ipr
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
@@ -12,15 +11,21 @@ c Modified by A. Scemama
       use force_analy, only: iforce_analy
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use atom, only: ncent_tot
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use array_resize_utils, only: resize_matrix, resize_tensor
-      implicit real*8(a-h,o-z)
+      use orbval, only: ddorb, dorb, nadorb, orb
+      use precision_kinds, only: dp
 
+      implicit none
 
+      integer :: i, ier, iorb, k, m
+      integer :: m0
 
+      real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
+      real(dp), dimension(nelec,ncent_tot) :: r_en
+      real(dp), dimension(nelec,nbasis) :: bhin
+      real(dp), dimension(3*nelec,nbasis) :: dbhin
+      real(dp), dimension(nelec,nbasis) :: d2bhin
 
-      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
-      dimension bhin(nelec,nbasis),dbhin(3*nelec,nbasis),d2bhin(nelec,nbasis)
 
       ! call resize_matrix(orb, norb+nadorb, 2)
       ! call resize_matrix(ddorb, norb+nadorb, 2)
@@ -134,10 +139,10 @@ c           do 26 m=1,nbasis
         call orbitals_pw(x,orb,dorb,ddorb)
       endif
 
-      if(ipr.ge.4) then
+      if(ipr.ge.0) then
         do 260 iorb=1,norb+nadorb
   260     write(6,'(''iorb,orb='',i4,1000f15.11)') iorb,(orb(i,iorb),i=1,nelec)
-        do 270 iorb=1,norb+nadorb
+         do 270 iorb=1,norb+nadorb
   270     write(6,'(''iorb,d2orb='',i4,1000f15.11)') iorb,(ddorb(i,iorb),i=1,nelec)
         do 280 k=1,3
           do 280 iorb=1,norb+nadorb
@@ -149,22 +154,24 @@ c           do 26 m=1,nbasis
 c------------------------------------------------------------------------------------
       subroutine virtual_orbitals
 
-      use vmc_mod, only: MELEC, MORB, MBASIS
       use const, only: nelec
       use optwf_contrl, only: ioptci, ioptorb
       use phifun, only: d2phin, dphin
       use phifun, only: phin
       use coefs, only: coef, nbasis, norb
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      implicit real*8(a-h,o-z)
+      use orbval, only: ddorb, dorb, nadorb, orb
+      use precision_kinds, only: dp
 
+      implicit none
+
+      integer :: i, iwf
+      real(dp) :: c25
+      real(dp), dimension(nelec,nbasis) :: bhin
+      real(dp), dimension(3,nelec,nbasis) :: dbhin
+      real(dp), dimension(nelec,nbasis) :: d2bhin
 
 c compute values of extra ('virtual') orbitals needed for optorb operators
 c assuming that basis function values in phin are up to date
-
-
-
-      dimension bhin(nelec,nbasis),dbhin(3,nelec,nbasis),d2bhin(nelec,nbasis)
 
       if (nadorb.eq.0.or.(ioptorb.eq.0.and.ioptci.eq.0)) return
 
@@ -206,25 +213,25 @@ c25   continue
       end
 c------------------------------------------------------------------------------------
       subroutine da_orbitals
-      use vmc_mod, only: MELEC, MORB, MBASIS
-      use atom, only: ncent
 
+      use atom, only: ncent
       use const, only: nelec
       use da_orbval, only: da_d2orb, da_dorb, da_orb
-
       use numbas2, only: ibas0, ibas1
       use phifun, only: d2phin_all, d3phin, dphin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: ibasis
+      use precision_kinds, only: dp
 
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, ic, ielec, j, k
+      integer :: l, m, n
 
-
-
-      dimension tphin(3*nelec,nbasis),t2phin_all(3*3*nelec,nbasis),t3phin(3*nelec,nbasis)
+      real(dp), dimension(3*nelec,nbasis) :: tphin
+      real(dp), dimension(3*3*nelec,nbasis) :: t2phin_all
+      real(dp), dimension(3*nelec,nbasis) :: t3phin
 
       do ibasis=1,nbasis
        i=0
@@ -255,22 +262,25 @@ c-------------------------------------------------------------------------------
 c------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
-      use vmc_mod, only: MELEC, MORB, MDET, MCENT
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: coef, norb
       use contrl_per, only: iperiodic
       use atom, only: ncent_tot
       use grid3dflag, only: i3dlagorb, i3dsplorb
-      use multislatern, only: ddorbn, detn, dorbn, orbn
+      use multislatern, only: ddorbn, dorbn, orbn
       use const, only: nelec
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: iel, ier, iflag, iorb, m
+      integer :: m0
 
-      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
-
+      real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
+      real(dp), dimension(nelec,ncent_tot) :: r_en
 
       if(iperiodic.eq.0) then
 

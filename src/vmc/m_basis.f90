@@ -1,8 +1,8 @@
 module basis
     !> Arguments: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz, n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz, n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
-    use force_mod, only: MWF
     use precision_kinds, only: dp
-    use vmc_mod, only: MBASIS, MCTYPE
+
+    implicit none
 
     !  ncent  = number of centers
     !  zex    = screening constants for each basis function
@@ -64,12 +64,7 @@ module basis
     save
 contains
     subroutine allocate_basis()
-        use wfsec, only: nwftype
-        use coefs, only: nbasis
-        use atom, only: nctype_tot
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MBASIS, MCTYPE
+
         ! if (.not. allocated(zex)) allocate (zex(MBASIS, MWF))
         ! if (.not. allocated(n1s)) allocate (n1s(MCTYPE))
         ! if (.not. allocated(n2s)) allocate (n2s(MCTYPE))
@@ -141,20 +136,26 @@ end module basis
 
 module numbas_mod
     !> Arguments: MRWF_PTS, MRWF
+
+    implicit none
+
     integer, parameter :: MRWF_PTS = 4000
     integer, parameter :: MRWF = 200
     private
     public :: MRWF, MRWF_PTS
     save
+
 end module numbas_mod
 
 module numexp
     !> Arguments: ae, ce
+
     use numbas_mod, only: MRWF
     use force_mod, only: MFORCE
     use precision_kinds, only: dp
-    use vmc_mod, only: MCTYPE
     use vmc_mod, only: NCOEF
+
+    implicit none
 
     real(dp), dimension(:, :, :, :), allocatable :: ae !(2,MRWF,MCTYPE,MFORCE)
     real(dp), dimension(:, :, :, :), allocatable :: ce !(NCOEF,MRWF,MCTYPE,MFORCE)
@@ -168,8 +169,6 @@ contains
         use atom, only: nctype_tot
         use numbas_mod, only: MRWF
         use force_mod, only: MFORCE
-        use precision_kinds, only: dp
-        use vmc_mod, only: MCTYPE
         use vmc_mod, only: NCOEF
         if (.not. allocated(ae)) allocate (ae(2, MRWF, nctype_tot, MFORCE))
         if (.not. allocated(ce)) allocate (ce(NCOEF, MRWF, nctype_tot, MFORCE))
@@ -184,10 +183,11 @@ end module numexp
 
 module numbas
     !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+
     use numbas_mod, only: MRWF, MRWF_PTS
-    use force_mod, only: MWF
     use precision_kinds, only: dp
-    use vmc_mod, only: MBASIS, MCTYPE
+
+    implicit none
 
     real(dp), dimension(:), allocatable :: arg !(MCTYPE)
     real(dp), dimension(:, :, :, :), allocatable :: d2rwf !(MRWF_PTS,MRWF,MCTYPE,MWF)
@@ -209,9 +209,6 @@ contains
         use coefs, only: nbasis
         use atom, only: nctype_tot
         use numbas_mod, only: MRWF, MRWF_PTS
-        use force_mod, only: MWF
-        use precision_kinds, only: dp
-        use vmc_mod, only: MBASIS, MCTYPE
         if (.not. allocated(arg)) allocate (arg(nctype_tot))
         if (.not. allocated(d2rwf)) allocate (d2rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
         if (.not. allocated(igrid)) allocate (igrid(nctype_tot))
@@ -237,7 +234,8 @@ end module numbas
 
 module numbas1
     !> Arguments: iwlbas, nbastyp
-    use vmc_mod, only: MBASIS, MCTYPE
+
+    implicit none
 
     integer, dimension(:, :), allocatable :: iwlbas !(MBASIS,MCTYPE)
     integer, dimension(:), allocatable :: nbastyp !(MCTYPE)
@@ -250,7 +248,6 @@ contains
     subroutine allocate_numbas1()
         use coefs, only: nbasis
         use atom, only: nctype_tot
-        use vmc_mod, only: MBASIS, MCTYPE
         if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot))
         ! if (.not. allocated(nbastyp)) allocate (nbastyp(MCTYPE))
     end subroutine allocate_numbas1
@@ -264,7 +261,8 @@ end module numbas1
 
 module numbas2
     !> Arguments: ibas0, ibas1
-    use vmc_mod, only: MCENT
+
+    implicit none
 
     integer, dimension(:), allocatable :: ibas0 !(MCENT)
     integer, dimension(:), allocatable :: ibas1 !(MCENT)
@@ -276,7 +274,6 @@ module numbas2
 contains
     subroutine allocate_numbas2()
         use atom, only: ncent_tot
-        use vmc_mod, only: MCENT
         if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
         if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
     end subroutine allocate_numbas2
@@ -295,6 +292,8 @@ subroutine allocate_m_basis()
     use numbas1, only: allocate_numbas1
     use numbas2, only: allocate_numbas2
 
+    implicit none
+
     ! call allocate_basis()
     call allocate_numexp()
     call allocate_numbas()
@@ -308,6 +307,8 @@ subroutine deallocate_m_basis()
     use numbas, only: deallocate_numbas
     use numbas1, only: deallocate_numbas1
     use numbas2, only: deallocate_numbas2
+
+    implicit none
 
     call deallocate_basis()
     call deallocate_numexp()

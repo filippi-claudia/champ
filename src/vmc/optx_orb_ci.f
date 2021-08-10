@@ -8,15 +8,14 @@
       use ci001_blk, only: ci_o
       use ci002_blk, only: ci_o_old
       use ci004_blk, only: ci_de, ci_de_old
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
+      integer :: i, j
+      real(dp) :: p, q
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -34,20 +33,13 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-
       use ci000, only: nciterm
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
-
-
+      integer :: i, j
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -65,20 +57,13 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-
       use ci000, only: nciterm
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
-
-
+      integer :: i, iu, j
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
       write(iu) ((ci_o_o(i,j),ci_o_oe(i,j),ci_o_ho(i,j),ci_de_o(i,j),i=1,nciterm),j=1,nreduced)
@@ -90,20 +75,13 @@ c-----------------------------------------------------------------------
 
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-
       use ci000, only: nciterm
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
-
-
+      integer :: i, iu, j
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
       write(iu) ((ci_o_o(i,j),ci_o_oe(i,j),ci_o_ho(i,j),ci_de_o(i,j),i=1,nciterm),j=1,nreduced)
@@ -113,7 +91,6 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_fin(passes,eave)
 
-      use optorb_mod, only: MXORBOP, MXMATDIM
       use optci, only: MXCITERM
       use csfs, only: ccsf, ncsf
       use dets, only: cdet
@@ -126,25 +103,25 @@ c-----------------------------------------------------------------------
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
-      use gradhess_all, only: grad, h
+      use gradhess_all, only: grad
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum
       use ci006_blk, only: ci_de_cum
       use ci008_blk, only: ci_oe_cum
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
+      use precision_kinds, only: dp
 
-      
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
+      integer :: i, ishift, j
+      real(dp) :: eave, h1, h2, passes
+      real(dp), dimension(MXCITERM) :: oelocav
+      real(dp), dimension(MXCITERM) :: eav
 
 
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
-      dimension oelocav(MXCITERM),eav(MXCITERM)
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 

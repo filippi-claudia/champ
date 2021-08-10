@@ -5,7 +5,7 @@ c reads in r*v in ryd.
 c does 3 conversions: a) ryd -> Har, b) r*v -> v and
 c c) subtracts out local part from all except highest l component.
 c Also eval pot. at 0 and initializes quadrature pts.
-c 
+c
 c Modified by F. Schautz to use fancy file names
       use pseudo_mod, only: MPS_GRID
       use vmc_mod, only: NCOEF
@@ -17,15 +17,27 @@ c Modified by F. Schautz to use fancy file names
       use general, only: pooldir, pp_id
       use general, only: filename, filenames_ps_tm
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ic, icoef, ii, index
+      integer :: info, ipot_io, ir, j
+      integer :: jj, jmax, ll, npotd
+      integer :: npotu, nr, nrm
+      integer, dimension(NCOEF) :: ipiv
+      real(dp) :: dpot1, dpotn, val
+      real(dp) :: zion
+      real(dp), dimension(MPS_GRID) :: r
+      real(dp), dimension(NCOEF) :: y
+      real(dp), dimension(NCOEF) :: ce
+      real(dp), dimension(NCOEF*NCOEF) :: dmatr
+      real(dp), dimension(MPS_GRID) :: work
 
       character*2 icorr,nameat
       character*3 irel
       character*4 nicore
       character*10 ititle(7),iray(6)
 
-      dimension r(MPS_GRID),y(NCOEF),ce(NCOEF),dmatr(NCOEF*NCOEF),ipiv(NCOEF)
-      dimension work(MPS_GRID)
 
       do 200 ic=1,nctype
 
@@ -189,13 +201,17 @@ c compute tm-pseudopotential for electron iel
       use const, only: nelec
       use pseudo, only: lpot, vps
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ict, iel, l
+      real(dp) :: r, vpot
+      real(dp), dimension(nelec,ncent_tot) :: r_en
 
 
 
 
 
-      dimension r_en(nelec,ncent_tot)
 
       do 10 ic=1,ncent
         ict=iwctype(ic)
@@ -229,7 +245,13 @@ c stored on shifted exponential grid
       use pseudo_mod, only: MPS_GRID
       use pseudo_tm, only: arg, d2pot, r0, vpseudo
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, jx, l
+      real(dp) :: aa, bb, cc, dd, delh
+      real(dp) :: dlogag, r, ref0, ref1
+      real(dp) :: vpot, xr
 
 
 

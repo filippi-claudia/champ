@@ -20,9 +20,15 @@ c routine to accumulate estimators for energy etc.
       use contrl, only: nconf
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0)
+      integer :: i, ie, ifr, ip, iw
+      integer :: k
+
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+
 
 c Initialize various quantities at beginning of run
 c the initial values of energy psi etc. are calculated here

@@ -1,7 +1,9 @@
 module header
     !> Arguments: date, title
 
-    character*80 title
+    implicit none
+
+    character*20 title
     character*24 date
 
     private
@@ -16,6 +18,8 @@ module inputflags
     !             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
     !             ihessian_zmat, node_cutoff, eps_node_cutoff, scalecoef, iqmmm
     use precision_kinds, only: dp
+
+    implicit none
 
     integer :: iznuc
     integer :: igeometry
@@ -41,6 +45,11 @@ module inputflags
     real(dp) :: eps_node_cutoff, dmc_eps_node_cutoff
     real(dp) :: scalecoef
     integer :: iqmmm
+ ! dmc specifics:
+    real(dp) :: enode_cutoff
+    integer :: icircular
+    integer :: idrifdifgfunc
+    integer :: ibranch_elec
 
     private
     public :: iznuc, igeometry, ibasis_num, ilcao, iexponents
@@ -49,6 +58,7 @@ module inputflags
     public :: imultideterminants, ioptorb_mixvirt, imodify_zmat, izmatrix_check
     public :: ihessian_zmat
     public :: node_cutoff, dmc_node_cutoff, eps_node_cutoff, dmc_eps_node_cutoff, scalecoef
+    public :: enode_cutoff, icircular, idrifdifgfunc, ibranch_elec
     public :: iqmmm
     save
 end module inputflags
@@ -57,6 +67,9 @@ module general
     !> Arguments: pooldir, pp_id, bas_id, filename, filenames_bas_num,
     !>            filenames_ps_gauss, filenames_ps_tm, atomtyp,
     !>            atomsymbol, wforce
+
+    implicit none
+
     character*256 :: pooldir
     character*256 :: pp_id
     character*256 :: bas_id
@@ -80,6 +93,8 @@ module method_opt
     !> should be in the input somehow no ?
     !> Arguments: method
 
+    implicit none
+
     character*20 :: method
 
     private
@@ -92,6 +107,8 @@ module pars
     !> more are called in dmc
     !> Arguments: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma, xms
     use precision_kinds, only: dp
+
+    implicit none
 
     real(dp) :: Z
     real(dp) :: a00

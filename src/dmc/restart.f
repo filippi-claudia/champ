@@ -1,6 +1,6 @@
       subroutine startr
 
-      use vmc_mod, only: MORB, MBASIS, MDET, MCENT
+      use vmc_mod, only: MORB, MDET
       use vmc_mod, only: nrad
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
@@ -12,6 +12,7 @@
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
       use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use atom, only: ncent_tot
       use estcum, only: iblk, ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
@@ -45,25 +46,57 @@
       use contrl, only: nconf
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0)
-      parameter (small=1.e-6)
+      integer :: i, iage_id, ib, ic, id
+      integer :: ie, ifr, ioldest_id, ioldestmx_id
+      integer :: iw, j, k, n1_id
+      integer :: n2_id, nbasx, ncentx, nctypex
+      integer :: ndetx, ndnx, nelecx, newghostypex
+      integer :: nghostcentx, nprock, nq_id, num
+      integer :: nupx, nwalk_id
+      integer, dimension(4, 0:NPROCX) :: irn
+      integer, dimension(ncent_tot) :: n1sx
+      integer, dimension(ncent_tot) :: n2sx
+      integer, dimension(3, ncent_tot) :: n2px
+      integer, dimension(ncent_tot) :: n3sx
+      integer, dimension(3, ncent_tot) :: n3px
+      integer, dimension(ncent_tot) :: n3dzrx
+      integer, dimension(ncent_tot) :: n3dx2x
+      integer, dimension(ncent_tot) :: n3dxyx
+      integer, dimension(ncent_tot) :: n3dxzx
+      integer, dimension(ncent_tot) :: n3dyzx
+      integer, dimension(ncent_tot) :: n4sx
+      integer, dimension(3, ncent_tot) :: n4px
+      integer, dimension(ncent_tot) :: nsax
+      integer, dimension(3, ncent_tot) :: npax
+      integer, dimension(ncent_tot) :: ndzrax
+      integer, dimension(ncent_tot) :: ndx2ax
+      integer, dimension(ncent_tot) :: ndxyax
+      integer, dimension(ncent_tot) :: ndxzax
+      integer, dimension(ncent_tot) :: ndyzax
+      real(dp) :: cjas1x, cjas2x, different, eest_id
+      real(dp) :: eigv_id, ff_id, fmt, fprod_id
+      real(dp) :: fratio_id, hbx, taux, wdsumo_id
+      real(dp) :: wq_id, wt_id, xold_dmc_id, xq_id
+      real(dp) :: yq_id, zq_id
+      real(dp), dimension(nbasis, MORB) :: coefx
+      real(dp), dimension(nbasis) :: zexx
+      real(dp), dimension(3, ncent_tot) :: centx
+      real(dp), dimension(ncent_tot) :: znucx
+      real(dp), dimension(MDET) :: cdetx
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: small = 1.e-6
+
 
 
 
 
       character*13 filename
 
-      dimension irn(4,0:NPROCX)
 
-      dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT)
-     &,znucx(MCENT),n1sx(MCENT),n2sx(MCENT),n2px(3,MCENT)
-     &,n3sx(MCENT),n3px(3,MCENT),n3dzrx(MCENT),n3dx2x(MCENT)
-     &,n3dxyx(MCENT),n3dxzx(MCENT),n3dyzx(MCENT),n4sx(MCENT)
-     &,n4px(3,MCENT),nsax(MCENT),npax(3,MCENT),ndzrax(MCENT)
-     &,ndx2ax(MCENT),ndxyax(MCENT),ndxzax(MCENT),ndyzax(MCENT)
-     &,cdetx(MDET)
 
       if(mode.eq.'dmc_one_mpi2') then
         call startr_gpop

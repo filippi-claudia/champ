@@ -1,7 +1,8 @@
 module grdnthes
      !> Arguments: hessian_zmat
      use precision_kinds, only: dp
-     use vmc_mod, only: MCENT
+
+     implicit none
 
      real(dp), dimension(:, :), allocatable :: hessian_zmat !(3,MCENT)
 
@@ -12,8 +13,6 @@ module grdnthes
  contains
      subroutine allocate_grdnthes()
         use atom, only: ncent_tot
-         use precision_kinds, only: dp
-         use vmc_mod, only: MCENT
          if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent_tot))
      end subroutine allocate_grdnthes
 
@@ -26,7 +25,8 @@ module grdnthes
  module grdntsmv
      !> Arguments: igrdaidx, igrdcidx, igrdmv
      use force_mod, only: MFORCE
-     use vmc_mod, only: MCENT
+
+     implicit none
 
      integer, dimension(:), allocatable :: igrdaidx !(MFORCE)
      integer, dimension(:), allocatable :: igrdcidx !(MFORCE)
@@ -40,7 +40,6 @@ module grdnthes
      subroutine allocate_grdntsmv()
         use atom, only: ncent_tot
          use force_mod, only: MFORCE
-         use vmc_mod, only: MCENT
          if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
          if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
          if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent_tot))
@@ -58,6 +57,8 @@ module grdnthes
      !> Arguments: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
      use precision_kinds, only: dp
 
+     implicit none
+
      real(dp) :: delgrdba
      real(dp) :: delgrdbl
      real(dp) :: delgrdda
@@ -74,6 +75,8 @@ module grdnthes
      use grdnthes, only: allocate_grdnthes
      use grdntsmv, only: allocate_grdntsmv
 
+     implicit none
+
      call allocate_grdnthes()
      call allocate_grdntsmv()
  end subroutine allocate_m_grdnt
@@ -81,6 +84,8 @@ module grdnthes
  subroutine deallocate_m_grdnt()
      use grdnthes, only: deallocate_grdnthes
      use grdntsmv, only: deallocate_grdntsmv
+
+     implicit none
 
      call deallocate_grdnthes()
      call deallocate_grdntsmv()

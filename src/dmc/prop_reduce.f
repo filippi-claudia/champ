@@ -7,10 +7,16 @@
       use properties, only: MAXPROP
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ierr
+      real(dp) :: vpnow, wgsum
+      real(dp), dimension(MAXPROP) :: vp2sum
+      real(dp), dimension(MAXPROP) :: vpcollect
+      real(dp), dimension(MAXPROP) :: vp2collect
 
 
-      dimension vp2sum(MAXPROP), vpcollect(MAXPROP), vp2collect(MAXPROP)
 
       if(iprop.eq.0) return
 
@@ -55,10 +61,14 @@
       use branch, only: nwalk
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ierr, irecv, irequest, isend, itag_r
+      integer :: itag_s
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
 
-      dimension istatus(MPI_STATUS_SIZE)
+
 
       if(iprop.eq.0) return
 

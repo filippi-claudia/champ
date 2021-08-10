@@ -8,9 +8,15 @@
       use sr_mat_n, only: obs_tot
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension hii(MPARM),sii(MPARM)
+      integer :: i, ish, jfhfj, jfifj, jwtg
+      integer :: n_obs, nparm_p1
+
+      real(dp), dimension(MPARM) :: hii
+      real(dp), dimension(MPARM) :: sii
+
 
       write(6,*) 'nparm_p1,nparm',nparm_p1,nparm
 

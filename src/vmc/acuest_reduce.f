@@ -21,14 +21,18 @@ c Written by Claudia Filippi
       ! is commented in optorb.h !
       use optorb_cblock, only: iorbprt, iorbprt_sav
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iab, ierr, ifr, istate
+      integer :: jo, jo_tot
+      real(dp) :: acollect
+      real(dp), dimension(MSTATES, MFORCE) :: enow
 
 
       integer MOBS
       integer iupdate
       character*20 filename
 
-      dimension enow(MSTATES,MFORCE)
       !real, dimension(MSTATES, MFORCE), INTENT(INOUT) :: enow
 
       real(dp), dimension(:), allocatable  :: local_obs

@@ -1,22 +1,20 @@
       subroutine finwrt_more
 c written by Claudia Filippi
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
       use estcum, only: iblk
       use estpsi, only: apsi, aref, detref
-      use mpiconf, only: nproc, wid
+      use mpiconf, only: nproc
       use optwf_corsam, only: energy, energy_err, force, force_err
       use contrl, only: nstep
       use sa_check, only: energy_all, energy_err_all
       use mpi
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: iab, ierr, istate
+      real(dp) :: passes, sigma
 
 
 c     dimension istatus(MPI_STATUS_SIZE)

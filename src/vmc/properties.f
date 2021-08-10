@@ -1,22 +1,26 @@
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-c     additional properties 
+c     additional properties
 c     Friedemann Schautz
-c     
+c
 c
 c     properties so far:
-c     1   2   3   4      5      6  
-c     <x> <y> <z> <x**2> <y**2> <z**2> 
+c     1   2   3   4      5      6
+c     <x> <y> <z> <x**2> <y**2> <z**2>
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine prop_compute(coord)
       use const, only: nelec
       use prp000, only: iprop, nprop
       use prp001, only: vprop
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, m
+
+      real(dp), dimension(3,*) :: coord
 
 
 
 c     electron coordinates
-      dimension coord(3,*)
 
       if(iprop.eq.0) return
       do 5 i=1,nprop
@@ -24,7 +28,7 @@ c     electron coordinates
  5    enddo
 
       do 10 i=1,nelec
-       do 20 m=1,3      
+       do 20 m=1,3
         vprop(m)  = vprop(m)+coord(m,i)
         vprop(3+m)= vprop(3+m) + coord(m,i)**2
  20    enddo
@@ -36,7 +40,10 @@ c-----------------------------------------------------------------------
       use prp000, only: iprop, nprop
       use prp003, only: vprop_cm2, vprop_cum, vprop_sum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iflg
+
 
 
 
@@ -59,7 +66,11 @@ c-----------------------------------------------------------------------
       use prp000, only: iprop, nprop
       use prp003, only: vprop_cm2, vprop_cum, vprop_sum
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i
+      real(dp) :: vprop_now, w
 
 
 
@@ -77,10 +88,15 @@ c-----------------------------------------------------------------------
       use prp000, only: iprop, nprop
       use prp003, only: vprop_cm2, vprop_cum
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iblk
+      real(dp) :: err, wcum, x, x2
+      real(dp), dimension(MAXPROP) :: pav
+      real(dp), dimension(MAXPROP) :: perr
 
 
-      dimension pav(MAXPROP),perr(MAXPROP)
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
@@ -95,7 +111,10 @@ c-----------------------------------------------------------------------
       use prp000, only: iprop, nprop
       use prp003, only: vprop_cm2, vprop_cum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu
+
 
 
       if(iprop.eq.0) return
@@ -106,7 +125,10 @@ c-----------------------------------------------------------------------
       use prp000, only: iprop, nprop
       use prp003, only: vprop_cm2, vprop_cum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu
+
 
 
       if(iprop.eq.0) return
@@ -116,7 +138,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine prop_fin(passes,iblk,efin,eerr)
       use prp000, only: iprop, ipropprt
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iblk, ipropprt_sav
+      real(dp) :: eerr, efin, passes
 
 
       if(iprop.eq.0) return
@@ -135,12 +161,18 @@ c-----------------------------------------------------------------------
       use prp003, only: cc_nuc
       use m_icount, only: icount_prop
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iblk, iu
+      real(dp) :: dble, dip, diperr, dipx
+      real(dp) :: dipy, dipz, w
+      real(dp), dimension(MAXPROP) :: pav
+      real(dp), dimension(MAXPROP) :: perr
 
 
 
 c compute averages and print then out
-      dimension pav(MAXPROP),perr(MAXPROP)
 
 
 c ipropprt 0 no printout
@@ -158,7 +190,7 @@ c         -1 force printout
       icount_prop=1
 
       call prop_avrg(w,iblk,pav(1),perr(1))
-      
+
 
       write(iu,10)
       write(iu,20) 'X  ',pav(1),perr(1),pav(1)/dble(nelec),perr(1)
@@ -182,8 +214,8 @@ c....dipole
       dipz=cc_nuc(3)*nelec*2.5417 - pav(3) *2.5417
       dip=dsqrt(dipx**2+dipy**2+dipz**2)
       diperr=dabs (perr(1)*2.5417 * dipx / dip) +
-     $       dabs (perr(2)*2.5417 * dipy / dip) + 
-     $       dabs (perr(3)*2.5417 * dipz / dip) 
+     $       dabs (perr(2)*2.5417 * dipy / dip) +
+     $       dabs (perr(3)*2.5417 * dipz / dip)
       write(iu,40) 'Dip X ',dipx,perr(1)*2.5417
       write(iu,40) 'Dip Y ',dipy,perr(2)*2.5417
       write(iu,40) 'Dip Z ',dipz,perr(3)*2.5417
@@ -200,11 +232,12 @@ c....dipole
       end
 
 !*********************************************************************
-        subroutine prop_cc_nuc(znuc,cent,iwctype,mctype,mcent, 
+        subroutine prop_cc_nuc(znuc,cent,iwctype,mctype,mcent,
      &  ncent,cc_nuc)
 !*********************************************************************
 
-        implicit none
+
+      implicit none
 
         integer  mctype,mcent,ncent
         integer  iwctype(mcent)

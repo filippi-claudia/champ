@@ -12,16 +12,26 @@ C----------------------------------------------
       use force_mod, only: MFORCE
       use properties, only: MAXPROP
       use contrl, only: nconf, nstep
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension wgcum(MFORCE),wgcm2(MFORCE)
-      dimension perr(MAXPROP),pav(MAXPROP)
+      integer :: i, iblk, icount, ifinal, iperr
+      real(dp) :: dip, diperr, dipx, dipy
+      real(dp) :: dipz, errg, error, evalg_eff
+      real(dp) :: rn_eff, rtevalg_eff1, w, w2
+      real(dp) :: x, x2
+      real(dp), dimension(MFORCE) :: wgcum
+      real(dp), dimension(MFORCE) :: wgcm2
+      real(dp), dimension(MAXPROP) :: perr
+      real(dp), dimension(MAXPROP) :: pav
+
       character *3 pnames(MAXPROP)
       data pnames /'X  ','Y  ','Z  ','XX ','YY ','ZZ '/
       data icount /1/
       save icount
 
+c Statement functions for error calculation, it might be reaplaced in the near future:
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
@@ -86,7 +96,10 @@ c----------------------------------------------------------------------
       use prp001, only: vprop
       use prp002, only: vprop_old
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iw
+
 
       if(iprop.eq.0) return
       do i=1,nprop
@@ -101,7 +114,11 @@ c----------------------------------------------------------------------
       use prp002, only: vprop_old
       use prp003, only: vprop_sum
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iw
+      real(dp) :: p, q
 
       if(iprop.eq.0) return
 
@@ -115,7 +132,10 @@ c----------------------------------------------------------------------
       use prp000, only: nprop
       use prp002, only: vprop_old
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iw, iw2
+
 
       do i=1,nprop
        vprop_old(i,iw2)=vprop_old(i,iw)

@@ -12,11 +12,30 @@
       use wfsec, only: iwf, iwftype
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
+
+      integer :: i, i1, i2, ic, ic_good
+      integer :: iel, iel_good, ii, imove
+      integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iq
+      integer :: iq_good, iw
+      real(dp) :: costh, one, p, pe, psid
+      real(dp) :: psidi, ri, t_cum
+      real(dp) :: t_norm, t_normi, tauprim
+      real(dp), dimension(2) :: vpsp_det
+      real(dp), dimension(MPARMJ) :: dvpsp_dj
+      real(dp), dimension(*) :: x
 
 c here vpsp_det and dvpsp_det are dummy
-      dimension vpsp_det(2),dvpsp_dj(MPARMJ)
-      dimension x(*)
 
       iwf=iwftype(1)
 
@@ -119,20 +138,24 @@ c       write(6,*) 'moved A',iw,iel,(x(kk),kk=1,3)
 c-----------------------------------------------------------------------
       subroutine t_vpsp_sav
 
-      use vmc_mod, only: MELEC, MCENT
+
       use const, only: nelec
-      use atom, only: ncent
+      use atom, only: ncent, ncent_tot
       use qua, only: nquad
       use pseudo_mod, only: MPS_QUAD
 
       use casula, only: t_vpsp
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
+      integer :: i, ic, iq
 
+      real(dp), allocatable, save :: t_vpsp_save(:, :, :)
 
-      dimension t_vpsp_save(MCENT,MPS_QUAD,MELEC)
+      if (.not.allocated(t_vpsp_save)) allocate(t_vpsp_save(ncent_tot, MPS_QUAD, nelec))
 
-      save t_vpsp_save
+      ! real(dp), dimension(ncent_tot, MPS_QUAD, nelec) :: t_vpsp_save
+      ! save t_vpsp_save
 
       do 10 i=1,nelec
         do 10 iq=1,nquad

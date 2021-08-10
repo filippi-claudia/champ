@@ -7,12 +7,10 @@ c    C.J. Umrigar, in "Quantum Monte Carlo Methods in Physics and Chemistry",
 c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
-      use vmc_mod, only: MELEC, MORB, MDET
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
       use atom, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
-
       use const, only: pi, fbias, nelec, ipr
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
       use config, only: psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon
@@ -32,19 +30,83 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use mmpol_cntrl, only: ich_mmpol
       use mstates_ctrl, only: iguiding
       use pcm_cntrl, only: ichpol
-      use method_opt, only: method
-      use multislatern, only: ddorbn, detn, dorbn, orbn
       use const, only: nelec
       use inputflags, only: node_cutoff, eps_node_cutoff
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+      interface
+      function rannyu(idum)
+         use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+      end function rannyu
+
+      function gammai(a, x, xae, iflag)
+        use precision_kinds, only: dp
+        implicit none
+        real(dp), intent(in) :: a, x, xae
+        integer, intent(in) :: iflag
+        real(dp) :: gammai
+      end function gammai
+
+      function rnorm_nodes_num(distance_node,epsilon)
+        use precision_kinds, only: dp
+        implicit none
+        real(dp), intent(in) :: distance_node
+        real(dp), intent(in) :: epsilon
+        real(dp) :: rnorm_nodes_num
+      end function rnorm_nodes_num
+
+      end interface
+
+      integer :: i, iab, ic, iel, iflag_dn
+      integer :: iflag_up, iflagb, iflagt, iflagz
+      integer :: ifr, igeometrical, ii, ipass
+      integer :: irun, istate, itryn, itryo
+      integer :: j, jel, k, nearn
+      integer :: nearo
+      integer, dimension(nelec) :: idist
+      real(dp) :: ajacob, arean, areao, bot
+      real(dp) :: clim, co, cosphi, costht
+      real(dp) :: deltri, deltt
+      real(dp) :: dist, distance_node, dmin1, dot
+      real(dp) :: fmax, fmax2, fxnp, fxop
+      real(dp) :: g32dif, g32dif1, g32dif2, g52bot
+      real(dp) :: g52dif, g52dif1, g52dif2, g52top
+      real(dp) :: g52zer, p, phitry, phizer
+      real(dp) :: psidg, psig, psijn, q
+      real(dp) :: r, ratio, raver, ravern
+      real(dp) :: rbot, rmax1, rmax2, rnew
+      real(dp) :: rnorm, rnorm_nodes, rold, root
+      real(dp) :: rratio, rtest, rtest2, rtop
+      real(dp) :: rtry, rzero, sintht, term
+      real(dp) :: term2, thetamx, top, vnewp
+      real(dp) :: vnewr, voldp, voldr, wstro
+      real(dp) :: xprime, yprime, z, zcusp
+      real(dp) :: zebot, zeta, zetop, zezer
+      real(dp) :: zprime, zrbot, zrtop, zrzer
+      real(dp), dimension(3,nelec) :: xstrech
+      real(dp), dimension(3) :: xaxis
+      real(dp), dimension(3) :: yaxis
+      real(dp), dimension(3) :: zaxis
+      real(dp), dimension(3) :: ddx_ref
+      real(dp), dimension(MSTATES) :: psidn
+      real(dp), dimension(MSTATES) :: wtg
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: four = 4.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: d3b2 = 1.5d0
+      real(dp), parameter :: d5b2 = 2.5d0
+      real(dp), parameter :: d2b3 = .666666666666667d0
+      real(dp), parameter :: eps = 1.d-10
+      real(dp), parameter :: g5b2 = 1.329340388179137d0
 
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,half=0.5d0)
-      parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
-      parameter (eps=1.d-10)
 c     parameter (g3b2=.886226925452758d0)
-      parameter (g5b2=1.329340388179137d0)
 c g3b2, g5b2 are gamma3/2), gamma(5/2)
 
 
@@ -59,13 +121,9 @@ c The foll. still need to be tried:
 c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best
 
- 
+
 c TMP
-      dimension xstrech(3,nelec)
-      dimension xaxis(3),yaxis(3),zaxis(3),idist(nelec)
-      dimension ddx_ref(3)
-      dimension psidn(MSTATES) ,wtg(MSTATES)
-      
+
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
 c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
@@ -77,7 +135,7 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
       deltri=one/deltar
 
       call check_orbitals
-      
+
       do 300 i=1,nelec
 
         if(i.le.nup) then
@@ -114,7 +172,7 @@ c Calculate magnitude of the velocity in the radial direction
         voldr=zero
         do 10 ic=1,3
    10     voldr=voldr+vold(ic,i)*rvmino(ic,i)
-        
+
         voldr=voldr/rmino(i)
 
 c Place x-axis along direction of angular change and
@@ -330,7 +388,7 @@ c rratio^2 is needed for the density of the angular moves
 
 c calculate psi at new configuration
       iel=i
-  
+
       call psie(iel,xnew,psidn,psijn,ipass,0)
       if(iguiding.eq.0) then
 
@@ -585,7 +643,7 @@ c Note when one electron moves the velocity on all electrons change.
       call update_ymat(i)
 
   300 continue
-      
+
 
 c loop over secondary configurations
       do 350 ifr=2,nforce
@@ -594,9 +652,9 @@ c loop over secondary configurations
         do 350 istate=1,nstates
   350     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
 
-      
+
       call check_orbitals_reset
-      
+
 c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido(1),psijo,eold(1,1),ipass,1)
@@ -612,7 +670,7 @@ c primary configuration
       if(ipr.gt.1) then
         write(6,'(''psid,psig ='',2d12.4)') psido(1),psidg
       endif
-      
+
 
       rnorm_nodes=1.d0
       if(node_cutoff.gt.0) then
@@ -632,7 +690,7 @@ c primary configuration
       do 360 istate=1,nstates
         wtg(istate)=psido(istate)/psidg
         wtg(istate)=wtg(istate)*wtg(istate)
-     
+
 c form expected values of e, pe, etc.
         esum1(istate)=eold(istate,1)
         wsum(istate,1)=wsum(istate,1)+wtg(istate)
@@ -647,8 +705,8 @@ c normal component efield on cavity surface to compute a new set of polarization
       if(ichpol.eq.1) call qpcm_efield(nelec,xold)
 c efield dovuto agli elettroni sui siti dei dipoli
       if(ich_mmpol.eq.1) call mmpol_efield(nelec,xold)
-      
-c use 'new' not 'old' value  
+
+c use 'new' not 'old' value
       call pcm_sum(wtg,0.d0)
       call mmpol_sum(wtg,0.d0)
       call prop_sum(wtg,0.d0)
@@ -682,12 +740,12 @@ c use 'new' not 'old' value
         ekin(idist(i))=ekin(idist(i))+dtdx2o(i)*wtg(1)
   390   ekin2(idist(i))=ekin2(idist(i))+dtdx2o(i)**2*wtg(1)
 
-c rewrite psi2o for next metropolis step if you are sampling guiding 
+c rewrite psi2o for next metropolis step if you are sampling guiding
       if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
 
       if(node_cutoff.gt.0) then
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)
       endif
-      
+
       return
       end

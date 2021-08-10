@@ -24,19 +24,45 @@ c Written by Cyrus Umrigar
       use pseudo, only: lpot, nloc, vps
 
       use grid3d_param, only: origin
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ict, ifcon, ig, in
+      integer :: ir, j, k, lowest_pow
+      integer :: npts
+      real(dp) :: alpha, arg, as
+      real(dp) :: b0, b_jas, b_psp, because
+      real(dp) :: chisq
+      real(dp) :: coefs, components, const
+      real(dp) :: datan, derf, det, det1
+      real(dp) :: det_sim, discontinuity, dist_min, dpot1
+      real(dp) :: dpotn, dx, ewa, ewald_pot
+      real(dp) :: ewald_pot_psp, g2, g2a
+      real(dp) :: gdistmin, gdistmin_sim
+      real(dp) :: psp, r0, rmax, rms
+      real(dp) :: rr, sum, test, test_s
+      real(dp) :: those, true, true_s, vgcell
+      real(dp) :: vgcell_sim, vl, vlrange_old, vpot
+      real(dp) :: vs, vsrange, vsrange1, vsrange2
+      real(dp) :: vsrange3, wt, y_jas, y_psp
+      real(dp), dimension(MPS_GRID) :: r
+      real(dp), dimension(MPS_GRID) :: vps_short
+      real(dp), dimension(MPS_GRID) :: work
+      real(dp), dimension(3) :: rdist
+      real(dp), dimension(3) :: gdist
+      real(dp), dimension(3) :: rdist_sim
+      real(dp), dimension(3) :: gdist_sim
+      real(dp), dimension(3) :: rkvec_shift_tmp
+      real(dp), dimension(3) :: r_tmp
+      real(dp), parameter :: eps = 1.d-12
 
 
 
 
-      parameter (eps=1.d-12)
 
 
-      dimension r(MPS_GRID),vps_short(MPS_GRID),work(MPS_GRID)
-      dimension rdist(3),gdist(3),rdist_sim(3),gdist_sim(3),rkvec_shift_tmp(3)
 
 c Temporary
-      dimension r_tmp(3)
 
       pi=4.d0*datan(1.d0)
       twopi=2*pi
@@ -633,8 +659,16 @@ c By choosing the range of the short-range part of the Ewald sums to be
 c <= half the shortest perpendicular distance we ensure that the short-range
 c part has zero or one terms.
 
-      implicit real*8(a-h,o-z)
-      dimension vector(3,3),v1(3),v2(3),v3(3),distcell(3)
+      use precision_kinds, only: dp
+      implicit none
+
+
+      real(dp) :: dist_min, vlen, volume
+      real(dp), dimension(3,3) :: vector
+      real(dp), dimension(3) :: v1
+      real(dp), dimension(3) :: v2
+      real(dp), dimension(3) :: v3
+      real(dp), dimension(3) :: distcell
 
       v1(1)=vector(1,2)
       v1(2)=vector(2,2)
@@ -682,9 +716,9 @@ c-----------------------------------------------------------------------
       subroutine cross(v1,v2,v3)
 c evaluates the cross-product of v1 and v2 and puts it in v3
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension v1(3),v2(3),v3(3)
+
 
       v3(1) = v1(2) * v2(3) - v1(3) * v2(2)
       v3(2) = v1(3) * v2(1) - v1(1) * v2(3)
@@ -702,11 +736,23 @@ c Written by Cyrus Umrigar
 c icell = 0  primitive cell
 c         1  simulation cell
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i1, i2, i2min, i3, i3min
+      integer :: icell, k, ngnorm_big, ngvec_big
+      integer, dimension(3,*) :: igvec
+      integer, dimension(*) :: igmult
+      integer, dimension(*) :: ng1d
+      real(dp) :: cutg, cutg2, glen2, gx, gy
+      real(dp) :: gz
+      real(dp), dimension(3,*) :: glatt
+      real(dp), dimension(3) :: gdist
+      real(dp), dimension(3,*) :: gvec
+      real(dp), dimension(*) :: gnorm
+      real(dp), dimension(NGVEC_SIM_BIGX) :: gnorm_tmp
 
 
-      dimension glatt(3,*),gdist(3),igvec(3,*),gvec(3,*),gnorm(*),igmult(*),ng1d(*)
-      dimension gnorm_tmp(NGVEC_SIM_BIGX)
 
       do 1 k=1,3
     1   ng1d(k)=int(cutg/gdist(k))
@@ -767,11 +813,21 @@ c-----------------------------------------------------------------------
       use ewald_mod, only: NGNORM_SIM_BIGX
 c Written by Cyrus Umrigar
 
-      implicit real*8(a-h,o-z)
-      parameter(eps=1.d-12)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, icell, icheck, icount, it
+      integer :: j, k, l, lognb2
+      integer :: m, ngnorm_big, ngvec_big, nn
+      integer, dimension(3,*) :: igvec
+      integer, dimension(*) :: igmult
+      real(dp) :: t
+      real(dp), dimension(3,*) :: gvec
+      real(dp), dimension(*) :: gnorm_tmp
+      real(dp), dimension(*) :: gnorm
+      real(dp), parameter :: eps = 1.d-12
 
 
-      dimension igvec(3,*),gvec(3,*),gnorm_tmp(*),gnorm(*),igmult(*)
 
       lognb2=int(dlog(dfloat(ngvec_big))/dlog(2.d0)+1.d-14)
       m=ngvec_big
@@ -849,13 +905,19 @@ c a symmetry one could use later on.
       use periodic, only: ngvec, ngvec_sim, nkvec
       use periodic, only: rknorm, rkvec, rkvec_shift, vcell
       use periodic, only: vcell_sim
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ikv, j, k, l
+      integer :: nkvec_tot
+      real(dp) :: rnorm
+      real(dp), dimension(3) :: rkvec_try
+      real(dp), dimension(3) :: rkvec_latt
+      real(dp), parameter :: eps = 1.d-6
 
 
-      parameter (eps=1.d-6)
 
 
-      dimension rkvec_try(3),rkvec_latt(3)
 
       k_inv(1)=1
       do 10 k=1,3
@@ -955,12 +1017,21 @@ c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
       use pseudo_mod, only: MPS_GRID
       use ewald_mod, only: NGNORM_BIGX
       use constant, only: twopi
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ig, ir, ngnorm_big, nr
+      real(dp) :: anorm, arg, dx, r0, rlogarg
+      real(dp) :: vcell
+      real(dp), dimension(*) :: r
+      real(dp), dimension(*) :: vps_short
+      real(dp), dimension(*) :: gnorm
+      real(dp), dimension(MPS_GRID) :: y
+      real(dp), dimension(NGNORM_BIGX) :: vbare_psp
 
 
 
 
-      dimension r(*),vps_short(*),gnorm(*),y(MPS_GRID),vbare_psp(NGNORM_BIGX)
 
       anorm=2*twopi/vcell
 
@@ -993,15 +1064,30 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
       use ewald_mod, only: NCOEFX, NPX
       use constant, only: twopi
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, i0, ifcon, ig, info
+      integer :: isrange, j, k, lowest_pow
+      integer :: ncoef_per, nfree, ngnorm, ngnorm_big
+      integer :: np
+      integer, dimension(*) :: igmult
+      real(dp) :: anorm, b0, beta1, beta2, chisq
+      real(dp) :: cutr, gr, rcond, vcell
+      real(dp) :: vk
+      real(dp), dimension(NCOEFX,NCOEFX) :: a
+      real(dp), dimension(NCOEFX+NPX) :: c
+      real(dp), dimension(NCOEFX) :: work
+      real(dp), dimension(*) :: v
+      real(dp), dimension(*) :: b
+      real(dp), dimension(*) :: y
+      real(dp), dimension(*) :: gnorm
 
 
 c     parameter(NPX=6)
 
 
 
-      dimension a(NCOEFX,NCOEFX),c(NCOEFX+NPX),work(NCOEFX)
-      dimension v(*),b(*),y(*),igmult(*),gnorm(*)
 
       if(ncoef_per+np.gt.NCOEFX+NPX) call fatal_error ('ncoef_per+np > NCOEFX+NPX in separate')
 
@@ -1132,11 +1218,18 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j, k, lowest_pow, n
+      integer :: np, npts
+      real(dp) :: anorm,  dcmplx, dx, g
+      real(dp) :: gi, sin, ti,et,em, x
+      real(dp), dimension(*) :: c
+      real(dp), dimension(NPTS) :: y
+      real(dp), parameter :: NPTS = 1001
       complex*16 ti,et,em
 
-      parameter(NPTS=1001)
-      dimension c(*),y(NPTS)
 
 c integrates sin(g*x)*x**i for i=lowest_pow+1 to n+np+lowest_pow and x from 0 to 1
       if(dabs(g).gt.1.d-10) then
@@ -1201,13 +1294,20 @@ c x = r/cutr
 c output coefficients c
 
       use ewald_basis, only: vps_basis_fourier
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ig, j, k, lowest_pow
+      integer :: n, np, npts
+      real(dp) :: anorm, dcmplx, dx, g
+      real(dp) :: gi, sin, ti,et,em, x
+      real(dp), dimension(*) :: c
+      real(dp), dimension(NPTS) :: y
+      real(dp), parameter :: NPTS = 1001
 
       complex*16 ti,et,em
 
-      parameter(NPTS=1001)
 
-      dimension c(*),y(NPTS)
 
 c integrates sin(g*x)*x**i for i=lowest_pow+1 to n+np+lowest_pow and x from 0 to 1
       if(dabs(g).gt.1.d-10) then
@@ -1276,13 +1376,22 @@ c output coefficients c
 
       use ewald_mod, only: NCOEFX, NPX
       use ewald_basis, only: vps_basis_fourier
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ig, j, lowest_pow, n
+      integer :: np, npts
+      real(dp) :: anorm, choose, dcmplx, dx
+      real(dp) :: g, gi, sin, ti,et,em
+      real(dp) :: x
+      real(dp), dimension(*) :: c
+      real(dp), dimension(NPX*(NCOEFX+1)) :: d
+      real(dp), dimension(NPTS) :: y
+      real(dp), parameter :: NPTS = 1001
 
       complex*16 ti,et,em
 
-      parameter(NPTS=1001)
 
-      dimension c(*),d(NPX*(NCOEFX+1)),y(NPTS)
 
 c integral of sin(g*x)*x**i for i=1 to np*(n+1)+1 and x from 0 to 1
       if(dabs(g).gt.1.d-10) then
@@ -1353,13 +1462,22 @@ c output coefficients c
 
       use ewald_mod, only: NCOEFX, NPX
       use ewald_basis, only: vps_basis_fourier
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ig, j, lowest_pow, n
+      integer :: np, npts
+      real(dp) :: anorm, choose, dcmplx, dx
+      real(dp) :: g, gi, sin, ti,et,em
+      real(dp) :: x
+      real(dp), dimension(*) :: c
+      real(dp), dimension(NPX*(NCOEFX+1)) :: d
+      real(dp), dimension(NPTS) :: y
+      real(dp), parameter :: NPTS = 1001
 
       complex*16 ti,et,em
 
-      parameter(NPTS=1001)
 
-      dimension c(*),d(NPX*(NCOEFX+1)),y(NPTS)
 
 c integral of sin(g*x)*x**i for i=1 to np*(n+1)+1 and x from 0 to 1
       if(dabs(g).gt.1.d-10) then
@@ -1423,7 +1541,11 @@ c-----------------------------------------------------------------------
       function choose(n,m)
 c Written by Cyrus Umrigar
 c Binomial coefficients ^nC_m
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, m, n
+      real(dp) :: choose
 
       choose=1
       do 10 i=1,m
@@ -1436,10 +1558,14 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar and Claudia Filippi
 c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, lowest_pow, ncoef_per, np
+      real(dp) :: cutr, r, vsrange, x
+      real(dp), dimension(*) :: b
 
 
-      dimension b(*)
 
       x=r/cutr
 
@@ -1461,10 +1587,14 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ict, l, ncoef_per, np
+      real(dp) :: cutr, r, vpot, vsrange1, x
+      real(dp), dimension(*) :: b
 
 
-      dimension b(*)
 
       x=r/cutr
 
@@ -1492,10 +1622,15 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^np)^{i+1}, x=r/cutr
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ict, l, ncoef_per, np
+      real(dp) :: cutr, r, term, vpot, vsrange2
+      real(dp) :: x
+      real(dp), dimension(*) :: b
 
 
-      dimension b(*)
 
       x=r/cutr
 
@@ -1524,10 +1659,14 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^{i+1})^np, x=r/cutr
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ict, l, ncoef_per, np
+      real(dp) :: cutr, r, vpot, vsrange3, x
+      real(dp), dimension(*) :: b
 
 
-      dimension b(*)
 
       x=r/cutr
 
@@ -1552,11 +1691,20 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use const, only: pi
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: im, ivec, k, ngnorm
+      integer, dimension(*) :: igmult
+      real(dp) :: cos, cutr, derfc, ewald_pot, expon
+      real(dp) :: gaus_exp, product, rr, vcell
+      real(dp), dimension(3) :: rvec
+      real(dp), dimension(3,*) :: gvec
+      real(dp), dimension(*) :: gnorm
+      real(dp), dimension(*) :: y
 
 
 
-      dimension rvec(3),gvec(3,*),gnorm(*),igmult(*),y(*)
 
       gaus_exp=5/cutr
       ivec=1
@@ -1581,11 +1729,22 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use const, only: pi
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ict, im, ivec, k, l
+      integer :: ngnorm
+      integer, dimension(*) :: igmult
+      real(dp) :: cos, cutr, ewald_pot_psp, expon, gaus_exp
+      real(dp) :: product, rr, vcell, vpot
+      real(dp) :: z
+      real(dp), dimension(3) :: rvec
+      real(dp), dimension(3,*) :: gvec
+      real(dp), dimension(*) :: gnorm
+      real(dp), dimension(*) :: y
 
 
 
-      dimension rvec(3),gvec(3,*),gnorm(*),igmult(*),y(*)
 
       gaus_exp=5/cutr
       ivec=1
@@ -1611,10 +1770,17 @@ c-----------------------------------------------------------------------
       use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
 c Written by Cyrus Umrigar
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: im, ivec, k, ngnorm
+      integer, dimension(*) :: igmult
+      real(dp) :: cos, product, vlrange, vlrange_old
+      real(dp), dimension(3) :: rvec
+      real(dp), dimension(3,*) :: gvec
+      real(dp), dimension(*) :: y
 
 
-      dimension rvec(3),gvec(3,*),igmult(*),y(*)
 c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_SIM_BIGX)
 
       ivec=1
@@ -1637,10 +1803,20 @@ c-----------------------------------------------------------------------
       use const, only: nelec
 c Written by Cyrus Umrigar
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, im, ivec, k, ncent
+      integer :: ngnorm
+      integer, dimension(*) :: iwctype
+      integer, dimension(*) :: igmult
+      real(dp) :: cos_sum, sin_sum, vl, vlrange_nn_old2, znuci
+      real(dp), dimension(*) :: znuc
+      real(dp), dimension(nelec,*) :: cos_g
+      real(dp), dimension(nelec,*) :: sin_g
+      real(dp), dimension(*) :: y
 
 
-      dimension znuc(*),iwctype(*),igmult(*),cos_g(nelec,*),sin_g(nelec,*),y(*)
 
       ivec=1
       vl=0
@@ -1665,10 +1841,17 @@ c-----------------------------------------------------------------------
       use const, only: nelec
 c Written by Cyrus Umrigar
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, im, ivec, k, ngnorm
+      integer, dimension(*) :: igmult
+      real(dp) :: cos_sum, sin_sum, vl, vlrange_ee_old2
+      real(dp), dimension(nelec,*) :: cos_g
+      real(dp), dimension(nelec,*) :: sin_g
+      real(dp), dimension(*) :: y
 
 
-      dimension igmult(*),cos_g(nelec,*),sin_g(nelec,*),y(*)
 
       ivec=1
       vl=0
@@ -1690,10 +1873,19 @@ c-----------------------------------------------------------------------
       function vlrange(ngnorm,igmult,cos1_sum,cos2_sum,sin1_sum,sin2_sum,y)
 c Written by Cyrus Umrigar
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: im, ivec, k, ngnorm
+      integer, dimension(*) :: igmult
+      real(dp) :: vl, vlrange
+      real(dp), dimension(*) :: cos1_sum
+      real(dp), dimension(*) :: cos2_sum
+      real(dp), dimension(*) :: sin1_sum
+      real(dp), dimension(*) :: sin2_sum
+      real(dp), dimension(*) :: y
 
 
-      dimension igmult(*),cos1_sum(*),cos2_sum(*),sin1_sum(*),sin2_sum(*),y(*)
 
       ivec=1
       vl=0.5d0*y(1)*(cos1_sum(1)*cos2_sum(1)+sin1_sum(1)*sin2_sum(1))
@@ -1710,10 +1902,18 @@ c-----------------------------------------------------------------------
       function vlrange_p(ngnorm,igmult,cos1_sum,cos2_sum,sin1_sum,sin2_sum)
 c Written by Cyrus Umrigar
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: im, ivec, k, ngnorm
+      integer, dimension(*) :: igmult
+      real(dp) :: vl, vlrange_p
+      real(dp), dimension(*) :: cos1_sum
+      real(dp), dimension(*) :: cos2_sum
+      real(dp), dimension(*) :: sin1_sum
+      real(dp), dimension(*) :: sin2_sum
 
 
-      dimension igmult(*),cos1_sum(*),cos2_sum(*),sin1_sum(*),sin2_sum(*)
 
       ivec=1
       vl=0.5d0*(cos1_sum(1)*cos2_sum(1)+sin1_sum(1)*sin2_sum(1))
@@ -1739,13 +1939,18 @@ c Written by Cyrus Umrigar
       use periodic, only: ncoef_per, ngnorm
       use periodic, only: np, vcell
       use periodic, only: vcell_sim, znuc2_sum
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j, k, lowest_pow
+      real(dp) :: c0, rnorm, vl, vlr, vlrange_old
+      real(dp) :: vs, vsrange, zprod
+      real(dp), dimension(3) :: r
 
 
 
 
 
-      dimension r(3)
 
       lowest_pow=-1
       c0=(b_coul(2)-np*b_coul(1))/2
@@ -1786,13 +1991,18 @@ c Written by Cyrus Umrigar
       use periodic, only: ngvec
       use periodic, only: np, vcell
       use periodic, only: vcell_sim, znuc2_sum, znuc_sum
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j, k, lowest_pow
+      real(dp) :: c0, cos_n_sum, rnorm, sin_n_sum, vl
+      real(dp) :: vlrange, vs, vsrange, zprod
+      real(dp), dimension(3) :: r
 
 
 
 
 
-      dimension r(3)
 
 c short-range sum
       lowest_pow=-1
@@ -1842,17 +2052,24 @@ c Written by Cyrus Umrigar
       use periodic, only: znuc_sum
       use pseudo, only: lpot, nloc
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      
-      implicit real*8(a-h,o-z)
+
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ict, j, k, lowest_pow
+      real(dp) :: b_psp, cos_e_sum, cos_n_sum, cos_p_sum, pe_en
+      real(dp) :: sin_e_sum, sin_n_sum, sin_p_sum, vl
+      real(dp) :: vlrange, vlrange_p, vs, vsrange
+      real(dp) :: vsrange1, vsrange2, vsrange3, y_psp
+      real(dp), dimension(3,*) :: x
 
 
 
 
 
 
-      
 
-      dimension x(3,*)
+
 
 c short-range sum
 c Warning: I need to call the appropriate vsrange
@@ -1916,10 +2133,15 @@ c Written by Cyrus Umrigar
       use periodic, only: ngnorm_sim, ngvec_sim
       use periodic, only: np
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ij, j, k, lowest_pow
+      real(dp) :: c0, cos_e_sum_sim, pe_ee, sin_e_sum_sim, vl
+      real(dp) :: vlrange, vs, vsrange
+      real(dp), dimension(3,*) :: x
 
 
-      dimension x(3,*)
 
 c short-range sum
       lowest_pow=-1
@@ -1958,12 +2180,22 @@ c-----------------------------------------------------------------------
       use const, only: nelec
 c Written by Cyrus Umrigar
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ir, k, n, ngvec
+      integer :: nr
+      integer, dimension(3,*) :: igvec
+      integer, dimension(3) :: ng1d
+      real(dp) :: cos, cos_tmp, dot, sin, sin_tmp
+      real(dp), dimension(3,3) :: glatt
+      real(dp), dimension(3,*) :: r
+      real(dp), dimension(nelec,*) :: cos_g
+      real(dp), dimension(nelec,*) :: sin_g
+      real(dp), dimension(-NG1DX:NG1DX,3) :: cos_gr
+      real(dp), dimension(-NG1DX:NG1DX,3) :: sin_gr
 
 
-      dimension glatt(3,3),igvec(3,*),r(3,*),cos_g(nelec,*),sin_g(nelec,*)
-     &,ng1d(3)
-      dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 30 ir=1,nr
@@ -2010,14 +2242,30 @@ c       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positio
 c Needed for orbitals and their Laplacian.
 c Presently using cossin_psi_g and cossin_psi_k instead.
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iflag, ir, k, n
+      integer :: ngvec, nr
+      integer, dimension(3,*) :: igvec
+      integer, dimension(3) :: ng1d
+      real(dp) :: cos, cos_tmp0, cos_tmp1, cos_tmp2, dot
+      real(dp) :: sin, sin_tmp0, sin_tmp1, sin_tmp2
+      real(dp), dimension(3,3) :: glatt
+      real(dp), dimension(*) :: gnorm
+      real(dp), dimension(3,*) :: gvec
+      real(dp), dimension(3,*) :: r
+      real(dp), dimension(nelec,*) :: cos_g
+      real(dp), dimension(nelec,*) :: sin_g
+      real(dp), dimension(3,nelec,*) :: dcos_g
+      real(dp), dimension(3,nelec,*) :: dsin_g
+      real(dp), dimension(nelec,*) :: ddcos_g
+      real(dp), dimension(nelec,*) :: ddsin_g
+      real(dp), dimension(*) :: g_shift
+      real(dp), dimension(-NG1DX:NG1DX,3) :: cos_gr
+      real(dp), dimension(-NG1DX:NG1DX,3) :: sin_gr
 
 
-      dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
-     &,cos_g(nelec,*),sin_g(nelec,*)
-     &,dcos_g(3,nelec,*),dsin_g(3,nelec,*)
-     &,ddcos_g(nelec,*),ddsin_g(nelec,*),g_shift(*)
-      dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
 
 c Calculate cosines and sines for recip. lattice vectors along axes first.
       do 30 ir=1,nr
@@ -2086,18 +2334,34 @@ c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c Needed for orbitals and their Laplacian.
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, im, in, ir, k
+      integer :: n, ngnorm, ngvec
+      integer, dimension(*) :: igmult
+      integer, dimension(3,*) :: igvec
+      integer, dimension(3) :: ng1d
+      real(dp) :: cos, cos_tmp, dot, sin, sin_tmp
+      real(dp), dimension(3,3) :: glatt
+      real(dp), dimension(*) :: gnorm
+      real(dp), dimension(3,*) :: gvec
+      real(dp), dimension(3) :: r
+      real(dp), dimension(*) :: cos_g
+      real(dp), dimension(*) :: sin_g
+      real(dp), dimension(3,*) :: dcos_g
+      real(dp), dimension(3,*) :: dsin_g
+      real(dp), dimension(*) :: ddcos_g
+      real(dp), dimension(*) :: ddsin_g
+      real(dp), dimension(*) :: g_shift
+      real(dp), dimension(-NG1DX:NG1DX,3) :: cos_gr
+      real(dp), dimension(-NG1DX:NG1DX,3) :: sin_gr
 
 
 c     dimension glatt(3,3),gnorm(*),igmult(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
 c    &,cos_g(nelec,*),sin_g(nelec,*)
 c    &,dcos_g(3,nelec,*),dsin_g(3,nelec,*)
 c    &,ddcos_g(nelec,*),ddsin_g(nelec,*),g_shift(*)
-      dimension glatt(3,3),gnorm(*),igmult(*),gvec(3,*),igvec(3,*),r(3),ng1d(3)
-     &,cos_g(*),sin_g(*)
-     &,dcos_g(3,*),dsin_g(3,*)
-     &,ddcos_g(*),ddsin_g(*),g_shift(*)
-      dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
 
 c Calculate cosines and sines for recip. lattice vectors along axes first.
 c     do 30 ir=1,nr
@@ -2180,17 +2444,30 @@ c Written by Cyrus Umrigar
 c Needed for orbitals and their Laplacian.
 c For the k-vectors do it straightforwardly since there are few of them
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ir, k, ngvec
+      integer, dimension(3,*) :: igvec
+      integer, dimension(3) :: ng1d
+      real(dp) :: cos, dot, sin
+      real(dp), dimension(3,3) :: glatt
+      real(dp), dimension(*) :: gnorm
+      real(dp), dimension(3,*) :: gvec
+      real(dp), dimension(3) :: r
+      real(dp), dimension(*) :: cos_g
+      real(dp), dimension(*) :: sin_g
+      real(dp), dimension(3,*) :: dcos_g
+      real(dp), dimension(3,*) :: dsin_g
+      real(dp), dimension(*) :: ddcos_g
+      real(dp), dimension(*) :: ddsin_g
+      real(dp), dimension(*) :: g_shift
 
 
 c     dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
 c    &,cos_g(nelec,*),sin_g(nelec,*)
 c    &,dcos_g(3,nelec,*),dsin_g(3,nelec,*)
 c    &,ddcos_g(nelec,*),ddsin_g(nelec,*),g_shift(*)
-      dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3),ng1d(3)
-     &,cos_g(*),sin_g(*)
-     &,dcos_g(3,*),dsin_g(3,*)
-     &,ddcos_g(*),ddsin_g(*),g_shift(*)
 
 c     do 30 ir=1,nr
       do 30 i=1,ngvec
@@ -2223,11 +2500,24 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for nuclei
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ir, k, n, ngvec
+      integer :: nr
+      integer, dimension(*) :: iwctype
+      integer, dimension(3,*) :: igvec
+      integer, dimension(3) :: ng1d
+      real(dp) :: cos, cos_tmp, dot, sin, sin_tmp
+      real(dp), dimension(*) :: znuc
+      real(dp), dimension(3,3) :: glatt
+      real(dp), dimension(3,*) :: r
+      real(dp), dimension(*) :: cos_sum
+      real(dp), dimension(*) :: sin_sum
+      real(dp), dimension(-NG1DX:NG1DX,3,ncent_tot) :: cos_gr
+      real(dp), dimension(-NG1DX:NG1DX,3,ncent_tot) :: sin_gr
 
 
-      dimension znuc(*),iwctype(*),glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
-      dimension cos_gr(-NG1DX:NG1DX,3,ncent_tot),sin_gr(-NG1DX:NG1DX,3,ncent_tot)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr
@@ -2273,12 +2563,25 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, im, ir, k, n
+      integer :: ngnorm, nr
+      integer, dimension(*) :: iwctype
+      integer, dimension(3,*) :: igvec
+      integer, dimension(*) :: igmult
+      integer, dimension(3) :: ng1d
+      real(dp) :: cos_tmp, dot, sin_tmp
+      real(dp), dimension(NGNORMX,nctype_tot) :: y_psp
+      real(dp), dimension(3,3) :: glatt
+      real(dp), dimension(3,*) :: r
+      real(dp), dimension(*) :: cos_sum
+      real(dp), dimension(*) :: sin_sum
+      real(dp), dimension(-NG1DX:NG1DX,3,ncent_tot) :: cos_gr
+      real(dp), dimension(-NG1DX:NG1DX,3,ncent_tot) :: sin_gr
 
 
-      dimension y_psp(NGNORMX,nctype_tot),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
-     &,ng1d(3),cos_sum(*),sin_sum(*)
-      dimension cos_gr(-NG1DX:NG1DX,3,ncent_tot),sin_gr(-NG1DX:NG1DX,3,ncent_tot)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr
@@ -2327,11 +2630,22 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ir, k, n, ngvec
+      integer :: nr
+      integer, dimension(3,*) :: igvec
+      integer, dimension(3) :: ng1d
+      real(dp) :: cos, cos_tmp, dot, sin, sin_tmp
+      real(dp), dimension(3,3) :: glatt
+      real(dp), dimension(3,*) :: r
+      real(dp), dimension(*) :: cos_sum
+      real(dp), dimension(*) :: sin_sum
+      real(dp), dimension(-NG1DX:NG1DX,3,nelec) :: cos_gr
+      real(dp), dimension(-NG1DX:NG1DX,3,nelec) :: sin_gr
 
 
-      dimension glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
-      dimension cos_gr(-NG1DX:NG1DX,3,nelec),sin_gr(-NG1DX:NG1DX,3,nelec)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr

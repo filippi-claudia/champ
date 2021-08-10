@@ -1,7 +1,7 @@
-      subroutine mmpol_extpot_read                            
+      subroutine mmpol_extpot_read
 
 c Written by Amovilli-Floris
-c Modified by Riccardo and Claudia 
+c Modified by Riccardo and Claudia
 c...........................................................
 c     read data for MM-POL calculations
 c     computes nuclei-charges  interactions (penu_q)
@@ -14,14 +14,13 @@ c...........................................................
       use mmpol_parms, only: chmm, nchmm, x_mmpol
       use mmpol_dipol, only: alfa, dipo
       use mmpol_pot, only: penu_dp, penu_q, peq_dp, peqq, u_self
-
       use mmpol_inds, only: inds_pol
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-       
-
+      integer :: i, k
+      real(dp) :: PI, penu_mmpol
 
       data PI/3.1415927D0/
 
@@ -35,7 +34,7 @@ c Read site positions, fixed charges, and polarizabilities
         open (55,file=mmpolfile_sites,form='formatted',status='unknown')
         rewind 55
         read(55,*)
-        read(55,*) nchmm         
+        read(55,*) nchmm
         read(55,*)
 
         do i=1,nchmm
@@ -67,7 +66,7 @@ c Compute charge electric field and charge-dipole interaction
       call mmpol_field_q
 
 c Compute Ainv of mu= Ainv E and electric field due to nuclei and MM charges
-      if (ich_mmpol.eq.1) then 
+      if (ich_mmpol.eq.1) then
          call mmpol_Ainv
       endif
 
@@ -88,7 +87,7 @@ c-----------------------------------------------------------------------
       subroutine mmpol_compute_peq_q
 c............................................................
 c     compute distances and screening between sites and
-c     peqq  (charges-charges interaction) 
+c     peqq  (charges-charges interaction)
 c............................................................
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
@@ -96,16 +95,13 @@ c............................................................
       use mmpol_pot, only: peqq
       use mmpol_fdc, only: a_cutoff, screen1, screen2
       use mmpol_inds, only: inds_pol
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
-
-
-       
-
+      integer :: i, j, k, l
+      real(dp) :: dist, r_cutoff, ratio, sixth
+      real(dp) :: xx, yy, zz
 
       if(immpol.eq.0) return
 
@@ -158,7 +154,7 @@ c Compute charge-charge interaction
 c-----------------------------------------------------------------------
       subroutine mmpol_compute_pedp_dp
 c............................................................
-c     compute u_self and u_dd (self and dipole-dipole interaction) 
+c     compute u_self and u_dd (self and dipole-dipole interaction)
 c............................................................
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm, rqq, x_mmpol
@@ -166,15 +162,13 @@ c............................................................
       use mmpol_pot, only: u_dd, u_self
       use mmpol_fdc, only: screen1, screen2
       use mmpol_inds, only: inds_pol
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
-
-
-       
+      integer :: i, j, k
+      real(dp) :: dipo_mod, qiki, qikk, riki, riki3
+      real(dp) :: riki5, sik
 
       if(immpol.eq.0) return
 
@@ -217,20 +211,20 @@ c Riccardo
 c-----------------------------------------------------------------------
       subroutine mmpol_compute_penu_dp
 c............................................................
-c     compute penu_dp (nuclei-induced dipoles on MM sites interaction) 
+c     compute penu_dp (nuclei-induced dipoles on MM sites interaction)
 c............................................................
       use atom, only: znuc, cent, iwctype, ncent
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm, x_mmpol
       use mmpol_dipol, only: dipo
       use mmpol_pot, only: penu_dp
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-       
-
+      integer :: i, j
+      real(dp) :: dpdr, rnp, rnp2, rnp3, xx
+      real(dp) :: yy, zz
 
       if(immpol.eq.0) return
 
@@ -255,18 +249,18 @@ c............................................................
 c-----------------------------------------------------------------------
       subroutine mmpol_compute_penu_q
 c............................................................
-c     compute penu_q  (nuclei-charges interaction) 
+c     compute penu_q  (nuclei-charges interaction)
 c............................................................
       use atom, only: znuc, cent, iwctype, ncent
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, x_mmpol
       use mmpol_pot, only: penu_q
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-       
-
+      integer :: i, j
+      real(dp) :: rnp, rnp2, xx, yy, zz
 
       if(immpol.eq.0) return
 
@@ -295,19 +289,20 @@ C     ***************************************************************
       use mmpol_ahpol, only: ah_pol
       use mmpol_fdc, only: screen1, screen2
       use mmpol_inds, only: inds_pol
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, ij, j, j1, j2
+      integer :: j3, k, ki, l
+      integer :: lj, nch3
+      real(dp) :: delta_ij
+      real(dp) :: det, dxx_kilj, tmat_kilj
+      real(dp), dimension(3*MCHMM*3*MCHMM) :: ahpol_vec
 
-
-
-
-C     
-       
-C    
-      dimension ahpol_vec(3*MCHMM*3*MCHMM)
+C
 c............................................................
-c     The matrix ah_pol is computed and inverted 
+c     The matrix ah_pol is computed and inverted
 c     (3*nchmm)*(3*nchmm)
 c............................................................
 
@@ -323,7 +318,7 @@ c............................................................
                  if (i.eq.j) delta_ij=1.d0
                  dxx_kilj=(x_mmpol(i,k)-x_mmpol(i,l))*(x_mmpol(j,k)-x_mmpol(j,l))
                  tmat_kilj=3.d0*screen2(k,l)*dxx_kilj/rqq(k,l)**5-delta_ij*screen1(k,l)/rqq(k,l)**3
-                 ah_pol(ki,lj)=-alfa(k)*tmat_kilj 
+                 ah_pol(ki,lj)=-alfa(k)*tmat_kilj
               endif
             enddo
           enddo
@@ -353,9 +348,9 @@ c............................................................
           j3=3*J
           J2=J3-1
           J1=J3-2
-          ah_pol(i,j1)=ah_pol(i,j1)*alfa(j) 
-          ah_pol(i,j2)=ah_pol(i,j2)*alfa(j) 
-          ah_pol(i,j3)=ah_pol(i,j3)*alfa(j) 
+          ah_pol(i,j1)=ah_pol(i,j1)*alfa(j)
+          ah_pol(i,j2)=ah_pol(i,j2)*alfa(j)
+          ah_pol(i,j3)=ah_pol(i,j3)*alfa(j)
         enddo
       enddo
 
@@ -372,16 +367,20 @@ C     ***************************************************************
       use mmpol_dipol, only: dipo
       use mmpol_field, only: enk_pol
       use mmpol_pot, only: penu_dp
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, k, l
+      real(dp) :: rr2, rr3, xx, yy, zz
 
 
 
 
 
       real*8 ah_vec,det
-C     
-       
-C    
+C
+
+C
 c
       if(immpol.eq.0) return
 c..............................................................
@@ -392,9 +391,9 @@ c..............................................................
         enk_pol(2,k)=0.0d0
         enk_pol(3,k)=0.0d0
         do l=1,ncent
-          xx=x_mmpol(1,k)-cent(1,l) 
-          yy=x_mmpol(2,k)-cent(2,l) 
-          zz=x_mmpol(3,k)-cent(3,l) 
+          xx=x_mmpol(1,k)-cent(1,l)
+          yy=x_mmpol(2,k)-cent(2,l)
+          zz=x_mmpol(3,k)-cent(3,l)
           rr2=xx**2+yy**2+zz**2
           rr3=rr2**1.5d0
           enk_pol(1,k)=enk_pol(1,k)+znuc(iwctype(l))*xx/rr3
@@ -417,7 +416,7 @@ c-----------------------------------------------------------------------
       subroutine mmpol_field_q
 c............................................................
 c    computes electric field due to fixed MM charges on MM sites
-c    and potential interaction MM charges-dipoles (peq_dp) 
+c    and potential interaction MM charges-dipoles (peq_dp)
 c............................................................
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, rqq, x_mmpol
@@ -427,7 +426,11 @@ c............................................................
       use mmpol_fdc, only: screen1
       use mmpol_inds, only: inds_pol
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, k, l
+      real(dp) :: rr3, xx, yy, zz
 
 
 
@@ -435,7 +438,7 @@ c............................................................
 
 
 
-       
+
 
       if(immpol.eq.0) return
 
@@ -446,9 +449,9 @@ c Compute MM charge electric field
         eqk_pol(3,k)=0.0d0
         do l=1,nchmm
           if(inds_pol(k).ne.inds_pol(l)) then
-            xx=x_mmpol(1,k)-x_mmpol(1,l) 
-            yy=x_mmpol(2,k)-x_mmpol(2,l) 
-            zz=x_mmpol(3,k)-x_mmpol(3,l) 
+            xx=x_mmpol(1,k)-x_mmpol(1,l)
+            yy=x_mmpol(2,k)-x_mmpol(2,l)
+            zz=x_mmpol(3,k)-x_mmpol(3,l)
             rr3=rqq(k,l)**3
             eqk_pol(1,k)=eqk_pol(1,k)+screen1(k,l)*chmm(l)*xx/rr3
             eqk_pol(2,k)=eqk_pol(2,k)+screen1(k,l)*chmm(l)*yy/rr3
@@ -471,24 +474,30 @@ c Compute MM charge-dipole interaction
 c-----------------------------------------------------------------------
       subroutine mmpol_efield(nelec,coord)
 C     ***************************************************************
-c     For the accepted configuration, the electronic field is computed 
+c     For the accepted configuration, the electronic field is computed
 c     on MM sites  eek_pol(1,k),eek_pol(2,k),eek_pol(3,k)
 C     ***************************************************************
       use mmpol_hpsi, only: eek_pol
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm, x_mmpol
       use mmpol_fdc, only: rcolm
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, k, nelec
+      real(dp) :: AV, GC, PI, hatokc, rcolm3
+      real(dp) :: rr1, rr2, rr3, rr3i
+      real(dp) :: xx, yy, zz
+      real(dp), dimension(3,*) :: coord
 
 
 
 
 
 
-      dimension coord(3,*)
 
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
-      data hatokc/627.509541d0/  
+      data hatokc/627.509541d0/
 
       if (immpol.eq.3) return
 
@@ -498,14 +507,14 @@ C     ***************************************************************
         eek_pol(2,k)=0
         eek_pol(3,k)=0
         do i=1,nelec
-          xx=x_mmpol(1,k)-coord(1,i) 
-          yy=x_mmpol(2,k)-coord(2,i) 
-          zz=x_mmpol(3,k)-coord(3,i) 
+          xx=x_mmpol(1,k)-coord(1,i)
+          yy=x_mmpol(2,k)-coord(2,i)
+          zz=x_mmpol(3,k)-coord(3,i)
           rr2=xx**2+yy**2+zz**2
           rr1=dsqrt(rr2)
           rr3=rr1*rr2
 c..............................................................
-c  correction for collision between e- and fixed charges 
+c  correction for collision between e- and fixed charges
 c..............................................................
           if (rr1.lt.rcolm) rr3=rcolm3
           rr3i=1.d0/rr3
@@ -520,7 +529,7 @@ c..............................................................
 c-----------------------------------------------------------------------
       subroutine mmpol_extpot_ene(coord,nelec,peQMdp,peQMq)
 
-c Written by Amovilli-Floris 
+c Written by Amovilli-Floris
 c Modified by Riccardo
 c......................................................
 c       Calculate e-/dipoles interactions (MM_POL)
@@ -535,12 +544,17 @@ c......................................................
       use mmpol_cntrl, only: icall_mm
       use mmpol_parms, only: nchmm
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, nelec
+      real(dp) :: AV, GC, PI, hatokc, peQMdp
+      real(dp) :: peQMq
+      real(dp), dimension(3,*) :: coord
 
 
 
 
-      dimension coord(3,*)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
       data hatokc/627.509541d0/
       icall_mm=icall_mm+1
@@ -557,10 +571,10 @@ c......................................................
         write(6,*)
         write(6,*)'nchmm=',nchmm
         write(6,*)'u_self= ',u_self
-        write(6,*)'u_dd = ',u_dd  
+        write(6,*)'u_dd = ',u_dd
         write(6,'(''QM-MM epot  ='',f12.6)') peQMdp+peQMq
-        write(6,'(''QM-MM e-/dipoles  ='',f12.6)') pepol_dp        
-        write(6,'(''QM-MM e-/charges  ='',f12.6)') pepol_q         
+        write(6,'(''QM-MM e-/dipoles  ='',f12.6)') pepol_dp
+        write(6,'(''QM-MM e-/charges  ='',f12.6)') pepol_q
         write(6,*)
       endif
 
@@ -571,19 +585,25 @@ c-----------------------------------------------------------------------
 
 c Written by Amovilli-Floris
 c......................................................
-c       Calculate e-/dipoles interactions 
+c       Calculate e-/dipoles interactions
 c......................................................
       use mmpol_parms, only: chmm, nchmm, x_mmpol
       use mmpol_dipol, only: dipo
       use mmpol_pot, only: pepol_dp, pepol_q
       use mmpol_fdc, only: rcolm
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: j
+      real(dp) :: AV, GC, PI, dpdr, rcolm3
+      real(dp) :: repol, repol2, repol3, xx
+      real(dp) :: yy, zz
+      real(dp), dimension(3) :: x
 
 
 
 
 
-      dimension x(3)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
 
       rcolm3=rcolm**3
@@ -608,7 +628,7 @@ c......................................................
         endif
 
 c......................................................
-c     interaction with dipoles 
+c     interaction with dipoles
 c......................................................
         pepol_dp=pepol_dp+dpdr/repol3
 
@@ -630,18 +650,16 @@ c-----------------------------------------------------------------------
       use mmpol_pot, only: u_dd, u_self
       use mmpol_inds, only: inds_pol
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-
-
-
-
-
-
-
-      dimension eek_ave(3,MCHMM),eek_err(3,MCHMM)
-      dimension dp(3*MCHMM)
-
+      integer :: i, j, k, k1, k2
+      integer :: k3, nch3
+      real(dp) :: efree1, efree2, efree3, efree_k1, efree_k2
+      real(dp) :: efree_k3, u_ef, u_pol
+      real(dp), dimension(3,MCHMM) :: eek_ave
+      real(dp), dimension(3,MCHMM) :: eek_err
+      real(dp), dimension(3*MCHMM) :: dp_array
 
       open (56,file='dipo_new',form='formatted',status='unknown')
       open (57,file='efield_electron',form='formatted',status='unknown')
@@ -661,16 +679,16 @@ c Riccardo
         efree_k2=enk_pol(2,k)+eqk_pol(2,k)+eek_ave(2,k)
         efree_k3=enk_pol(3,k)+eqk_pol(3,k)+eek_ave(3,k)
 
-        bh_pol(k1)=efree_k1       
-        bh_pol(k2)=efree_k2        
-        bh_pol(k3)=efree_k3           
+        bh_pol(k1)=efree_k1
+        bh_pol(k2)=efree_k2
+        bh_pol(k3)=efree_k3
 
         u_ef=u_ef-efree_k1*dipo(1,k)-efree_k2*dipo(2,k)-efree_k3*dipo(3,k)
       enddo
 
-      write (6,*) 
+      write (6,*)
       write (6,*) 'INITIAL DIPOLES'
-      write (6,*) 
+      write (6,*)
 c u_ef = -mu*E + U_self + U_dd
       u_pol=u_dd+u_self+u_ef
       write (6,*) 'MMpol:  -mu*E    = ',u_ef
@@ -678,17 +696,17 @@ c u_ef = -mu*E + U_self + U_dd
       write (6,*) 'MMpol:  U_dd     = ',u_dd
       write (6,*) 'MMpol:  U_pol    = ',u_pol
       write (6,*) 'MMpol: -0.5mu*E  = ',u_ef/2.d0
-      write (6,*) 
+      write (6,*)
 
       nch3=3*nchmm
       do i=1,nch3
-        dp(i)=0.0d0
+        dp_array(i)=0.0d0
         do j=1,nch3
-          dp(i)=dp(i)+ah_pol(i,j)*bh_pol(j)
+          dp_array(i)=dp_array(i)+ah_pol(i,j)*bh_pol(j)
         enddo
       enddo
 c...................................................................
-c     write in 'efield' the average of solute electrons field 
+c     write in 'efield' the average of solute electrons field
 c     write in 'E0' the total static field
 c     overwrite dipoles
 c...................................................................
@@ -700,9 +718,9 @@ c...................................................................
         k3=3*k
         k2=k3-1
         k1=k3-2
-        dipo(1,k)=dp(k1)
-        dipo(2,k)=dp(k2)
-        dipo(3,k)=dp(k3)
+        dipo(1,k)=dp_array(k1)
+        dipo(2,k)=dp_array(k2)
+        dipo(3,k)=dp_array(k3)
         write(56,1001) inds_pol(k),(x_mmpol(i,k),i=1,3),chmm(k),alfa(k),(dipo(i,k),i=1,3)
         write(57,1000) (x_mmpol(i,k),i=1,3),(eek_ave(i,k),i=1,3),(eek_err(i,k),i=1,3)
 c Riccardo write E0
@@ -711,7 +729,7 @@ c Riccardo
       enddo
 
       write (6,*) 'FINAL DIPOLES'
-      write (6,*) 
+      write (6,*)
 
       call mmpol_compute_pedp_dp
 
@@ -749,7 +767,10 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, cmmpol_sum, dmmpol_cm2, dmmpol_cum, dmmpol_sum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum, eek_sum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iflag
+
 
 
       if(immpol.eq.0) return
@@ -789,7 +810,10 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu
+
 
 
       if(immpol.eq.0) return
@@ -812,7 +836,10 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu
+
 
 
       if(immpol.eq.0) return
@@ -832,17 +859,24 @@ c     end AVERAGES subroutines
 c......................................................
       subroutine mmpol_matinv(a,nsub,determinant)
       use mmpol_mod, only: MCHMM
-      implicit real*8 (a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, info, nsub
+      integer, dimension(3*MCHMM) :: ipvt
+      real(dp) :: determinant, ten
+      real(dp), dimension(nsub,nsub) :: a
+      real(dp), dimension(3*MCHMM) :: work
+      real(dp), dimension(2) :: det
 
 c routine to calculate inverse and determinant of matrix a
 c assumed to be dimensioned a(nsub,nsub).
 c the matrix a is replaced by its inverse.
 
-      dimension a(nsub,nsub)
-      dimension ipvt(3*MCHMM),work(3*MCHMM),det(2)
 
       call dgetrf(nsub,nsub,a,nsub,ipvt,info)
       if(info.gt.0) then
+            write(6,'(''mmpol.f'')')
         write(6,'(''MATINV: u(k,k)=0 with k= '',i5)') info
         call fatal_error('MATINV: info ne 0 in dgetrf')
       endif

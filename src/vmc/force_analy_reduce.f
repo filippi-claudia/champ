@@ -1,9 +1,4 @@
       subroutine force_analy_reduce
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent, ncent_tot
 
       use mpiconf, only: wid
@@ -11,10 +6,14 @@
       use force_analy, only: iforce_analy
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ierr, ii, k
+
+      real(dp), dimension(3*ncent_tot) :: collect
 
 
-      dimension collect(3*ncent_tot)
 
       if(iforce_analy.eq.0) return
 

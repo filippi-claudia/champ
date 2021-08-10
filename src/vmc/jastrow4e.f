@@ -2,21 +2,13 @@
 c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: MORDJ
       use atom, only: iwctype, ncent
-
       use jaspar, only: sspinn
       use const, only: nelec
       use elec, only: nup
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-
-      use jaspar3, only: a, b, c
-
+      use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb
       use jaspar6, only: cutjas
@@ -26,31 +18,33 @@ c Jastrow 6   must be used with one of isc=6,7
       use contr2, only: isc
       use jasn, only: d2ijn, d2n, fijn, fjn, fsn, fsumn
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      parameter (half=.5d0,eps=1.d-12)
-
-      dimension x(3,*),v(3,*)
-      
-      dimension uu(-2:MORDJ),ss(-2:MORDJ),tt(-2:MORDJ),rri(-2:MORDJ)
-     &,rrj(-2:MORDJ)
+      integer :: i, ic, iel, iflag, ij
+      integer :: iord, ipar, isb, it
+      integer :: j, jj, k, l
+      integer :: l_hi, ll, m, n
+      real(dp) :: bot, bot2, boti, botii, botu
+      real(dp) :: botuu, d2, dd1, dd10
+      real(dp) :: dd2, dd7, dd8, dd9
+      real(dp) :: fc, fee, feeu, feeuu
+      real(dp) :: fen, feni, fenii, fi
+      real(dp) :: fii, fj, fjj, fu
+      real(dp) :: fui, fuj, fuu, ri
+      real(dp) :: rij, rj, s, t
+      real(dp) :: top, topi, topii, topu
+      real(dp) :: topuu, u2mst, u2pst, value
+      real(dp), dimension(3, *) :: x
+      real(dp), dimension(3, *) :: v
+      real(dp), dimension(-2:MORDJ) :: uu
+      real(dp), dimension(-2:MORDJ) :: ss
+      real(dp), dimension(-2:MORDJ) :: tt
+      real(dp), dimension(-2:MORDJ) :: rri
+      real(dp), dimension(-2:MORDJ) :: rrj
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: eps = 1.d-12
 
       do 5 i=-2,-1
         uu(i)=0

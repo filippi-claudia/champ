@@ -1,15 +1,9 @@
       subroutine set_scale_dist(ipr)
 c Written by Cyrus Umrigar
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: nctype
 
-      use jaspar, only: sspinn, is
-      use jaspar3, only: a, b, c, scalek
+      use jaspar, only: sspinn
+      use jaspar3, only: b, scalek
 
       use jaspar4, only: a4, norda, nordb
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
@@ -17,7 +11,12 @@ c Written by Cyrus Umrigar
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
       use contr2, only: isc
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iord, ipr, isp, it
+      real(dp) :: val_cutjas
+      real(dp), parameter :: third = 1.d0/3.d0
 
 
 
@@ -25,7 +24,6 @@ c Written by Cyrus Umrigar
 
 
 
-      parameter (third=1.d0/3.d0)
 
 
 
@@ -119,27 +117,32 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Scale interparticle distances.
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c, scalek
+      use jaspar3, only: scalek
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
       use wfsec, only: iwf
       use contr2, only: ijas
       use contr2, only: isc
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iflag
+      real(dp) :: deni, exprij, r, r_by_cut, r_by_cut2
+      real(dp) :: rr, rsc, rsc2, rsc3
+      real(dp) :: term
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: third = 1.d0/3.d0
+      real(dp), parameter :: d4b3 = 4.d0/3.d0
 
 
 
 
 
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
 
 c isc = 2,3 are exponential scalings
@@ -271,27 +274,32 @@ c Scale interparticle distances and calculate the 1st derivative
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c, scalek
+      use jaspar3, only: scalek
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
       use wfsec, only: iwf
       use contr2, only: ijas
       use contr2, only: isc
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iflag
+      real(dp) :: dd1, deni, exprij, r, r_by_cut
+      real(dp) :: r_by_cut2, rr, rsc, rsc2
+      real(dp) :: rsc3, term, term2
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: third = 1.d0/3.d0
+      real(dp), parameter :: d4b3 = 4.d0/3.d0
 
 
 
 
 
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
 
 c isc = 2,3 are exponential scalings
@@ -455,13 +463,7 @@ c Scale interparticle distances and calculate the 1st and 2nd derivs
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c, scalek
+      use jaspar3, only: scalek
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
@@ -469,7 +471,19 @@ c gradient and laplacian.
       use wfsec, only: iwf
       use contr2, only: ijas
       use contr2, only: isc
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iflag
+      real(dp) :: dd1, dd2, deni, exprij, r
+      real(dp) :: r_by_cut, r_by_cut2, rr, rsc
+      real(dp) :: rsc2, rsc3, term, term2
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: third = 1.d0/3.d0
+      real(dp), parameter :: d4b3 = 4.d0/3.d0
 
 
 
@@ -477,7 +491,6 @@ c gradient and laplacian.
 
 
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
 
 
@@ -667,17 +680,15 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist.
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c, scalek
+      use jaspar3, only: scalek
 
       use jaspar6, only: c1_jas6
       use wfsec, only: iwf
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+
+      real(dp) :: rr
 
 
 
@@ -694,17 +705,15 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st deriv.
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c, scalek
+      use jaspar3, only: scalek
 
       use jaspar6, only: c1_jas6
       use wfsec, only: iwf
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+
+      real(dp) :: dd1, rr
 
 
 
@@ -722,17 +731,15 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st two derivs.
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c, scalek
+      use jaspar3, only: scalek
 
       use jaspar6, only: c1_jas6
       use wfsec, only: iwf
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+
+      real(dp) :: dd1, dd2, rr
 
 
 

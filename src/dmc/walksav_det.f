@@ -1,47 +1,42 @@
       subroutine walksav_det(iw)
 c Written by Claudia Filippi
+
       use precision_kinds, only: dp
+      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MEXCIT
+      use dmc_mod, only: MWALK
+
       use const, only: nelec
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri, NEQSX, MTERMS, MCENT3, NCOEF, MEXCIT
-      use dmc_mod, only: MWALK, MFPROD, MFPRD1, MPATH
-      use const, only: delta, deltai, etrial, fbias, hb, imetro, ipr, nelec, pi
-      use forcepar, only: deltot, istrech, nforce
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use mstates_mod, only: MSTATES, MDETCSFX
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo
-      use branch, only: wgdsumo, wt, wtgen, wthist
-      use slater, only: d2dx2, ddx, fpd, fppd, fppu, fpu, slmi, slmui, slmdi
-      use dets, only: cdet, ndet
+      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MEXCIT
+      use dmc_mod, only: MWALK
+      use const, only: nelec
+      use mstates_mod, only: MSTATES
+      use branch, only: nwalk
+      use slater, only: ddx, fp, slmi
+      use dets, only: ndet
       use elec, only: ndn, nup
       use orbval, only: dorb, orb
       use coefs, only: norb
       use csfs, only: nstates
       use ycompact, only: ymat
-      use multislater, only: detd, detu
+      use multislater, only: detiab
       use multidet, only: ivirt, kref, numrep_det
       use multimat, only: aa, wfmat
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension istatus(MPI_STATUS_SIZE)
-      dimension irequest_array(MPI_STATUS_SIZE)
-
-    !   dimension krefw(MWALK),slmuiw(MMAT_DIM,MWALK),slmdiw(MMAT_DIM,MWALK)
-    !  &,fpuw(3,MMAT_DIM,MWALK),fpdw(3,MMAT_DIM,MWALK)
-    !  &,fppuw(MMAT_DIM,MWALK),fppdw(MMAT_DIM,MWALK)
-    !  &,ddxw(3,MELEC,MWALK),d2dx2w(MELEC,MWALK)
-    !  &,detuw(MDET,MWALK),detdw(MDET,MWALK)
+      integer :: i, iab, ierr, iorb, irecv
+      integer :: irequest, irequest_array, isend, istate
+      integer :: istatus, itag, iw, iw2
+      integer :: j, k, kk
+      integer :: ndim, nel
 
 
-    !   dimension aaw(MELEC,MORB,MWALK,2),wfmatw(MEXCIT**2,MDET,MWALK,2),ymatw(MORB,MELEC,MWALK,2,MSTATES)
-    !   dimension orbw(MELEC,MORB,MWALK),dorbw(3,MELEC,MORB,MWALK)
-      ! save krefw,slmuiw,slmdiw,fpuw,fpdw,fppuw,fppdw,detuw,detdw,ddxw,d2dx2w
-      ! save aaw,wfmatw,ymatw,orbw,dorbw
-
-      real(dp), allocatable, save :: krefw(:)
+      integer, allocatable, save :: krefw(:)
       real(dp), allocatable, save :: slmuiw(:, :)
       real(dp), allocatable, save :: slmdiw(:, :)
       real(dp), allocatable, save :: fpuw(:, :, :)
@@ -52,18 +47,20 @@ c Written by Claudia Filippi
       real(dp), allocatable, save :: d2dx2w(:, :)
       real(dp), allocatable, save :: detuw(:, :)
       real(dp), allocatable, save :: detdw(:, :)
-
       real(dp), allocatable, save :: aaw(:,:,:,:)
       real(dp), allocatable, save :: wfmatw(:,:,:,:)
       real(dp), allocatable, save :: ymatw(:,:,:,:,:)
       real(dp), allocatable, save :: orbw(:,:,:)
       real(dp), allocatable, save :: dorbw(:,:,:,:)
 
+      dimension istatus(MPI_STATUS_SIZE)
+      dimension irequest_array(MPI_STATUS_SIZE)
+
       if(.not.allocated(aaw)) allocate(aaw(nelec,MORB,MWALK,2))
       if(.not.allocated(wfmatw)) allocate(wfmatw(MEXCIT**2,MDET,MWALK,2))
-      if(.not.allocated(ymatw)) allocate(ymatw(MORB,MELEC,MWALK,2,MSTATES))
-      if(.not.allocated(orbw)) allocate(orbw(MELEC,MORB,MWALK))
-      if(.not.allocated(dorbw)) allocate(dorbw(3,MELEC,MORB,MWALK))
+      if(.not.allocated(ymatw)) allocate(ymatw(MORB,nelec,MWALK,2,MSTATES))
+      if(.not.allocated(orbw)) allocate(orbw(nelec,MORB,MWALK))
+      if(.not.allocated(dorbw)) allocate(dorbw(3,nelec,MORB,MWALK))
 
       if(.not.allocated(krefw)) allocate(krefw(MWALK))
       if(.not.allocated(slmuiw)) allocate(slmuiw(MMAT_DIM,MWALK))
@@ -80,20 +77,20 @@ c Written by Claudia Filippi
 
 
        do 20 k=1,ndet
-         detuw(k,iw)=detu(k)
-   20    detdw(k,iw)=detd(k)
+         detuw(k,iw)=detiab(k,1)
+   20    detdw(k,iw)=detiab(k,2)
 
        krefw(iw)=kref
        do 40 j=1,nup*nup
-         slmuiw(j,iw)=slmui(j)
-         fpuw(1,j,iw)=fpu(1,j)
-         fpuw(2,j,iw)=fpu(2,j)
-   40    fpuw(3,j,iw)=fpu(3,j)
+         slmuiw(j,iw)=slmi(j,1)
+         fpuw(1,j,iw)=fp(1,j,1)
+         fpuw(2,j,iw)=fp(2,j,1)
+   40    fpuw(3,j,iw)=fp(3,j,1)
        do 50 j=1,ndn*ndn
-         slmdiw(j,iw)=slmdi(j)
-         fpdw(1,j,iw)=fpd(1,j)
-         fpdw(2,j,iw)=fpd(2,j)
-   50    fpdw(3,j,iw)=fpd(3,j)
+         slmdiw(j,iw)=slmi(j,2)
+         fpdw(1,j,iw)=fp(1,j,2)
+         fpdw(2,j,iw)=fp(2,j,2)
+   50    fpdw(3,j,iw)=fp(3,j,2)
        do 55 i=1,nelec
          ddxw(1,i,iw)=ddx(1,i)
          ddxw(2,i,iw)=ddx(2,i)
@@ -126,20 +123,20 @@ c Written by Claudia Filippi
       entry walkstrdet(iw)
 
       do 70 k=1,ndet
-        detu(k)=detuw(k,iw)
-   70   detd(k)=detdw(k,iw)
+        detiab(k,1)=detuw(k,iw)
+   70   detiab(k,2)=detdw(k,iw)
 
       kref=krefw(iw)
       do 80 j=1,nup*nup
-        slmui(j)=slmuiw(j,iw)
-        fpu(1,j)=fpuw(1,j,iw)
-        fpu(2,j)=fpuw(2,j,iw)
-   80   fpu(3,j)=fpuw(3,j,iw)
+        slmi(j,1)=slmuiw(j,iw)
+        fp(1,j,1)=fpuw(1,j,iw)
+        fp(2,j,1)=fpuw(2,j,iw)
+   80   fp(3,j,1)=fpuw(3,j,iw)
       do 90 j=1,ndn*ndn
-        slmdi(j)=slmdiw(j,iw)
-        fpd(1,j)=fpdw(1,j,iw)
-        fpd(2,j)=fpdw(2,j,iw)
-   90   fpd(3,j)=fpdw(3,j,iw)
+        slmi(j,2)=slmdiw(j,iw)
+        fp(1,j,2)=fpdw(1,j,iw)
+        fp(2,j,2)=fpdw(2,j,iw)
+   90   fp(3,j,2)=fpdw(3,j,iw)
       do 95 i=1,nelec
         ddx(1,i)=ddxw(1,i,iw)
         ddx(2,i)=ddxw(2,i,iw)
@@ -238,9 +235,9 @@ c Written by Claudia Filippi
      &  ,irecv,itag+6,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+6
 
-      call mpi_isend(aaw(1,1,nwalk,1),MELEC*norb,mpi_double_precision
+      call mpi_isend(aaw(1,1,nwalk,1),nelec*norb,mpi_double_precision
      & ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
-      call mpi_isend(aaw(1,1,nwalk,2),MELEC*norb,mpi_double_precision
+      call mpi_isend(aaw(1,1,nwalk,2),nelec*norb,mpi_double_precision
      & ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+2
 
@@ -260,9 +257,9 @@ c Written by Claudia Filippi
           endif
  160  continue
 
-      call mpi_isend(orbw(1,1,nwalk),MELEC*norb,mpi_double_precision
+      call mpi_isend(orbw(1,1,nwalk),nelec*norb,mpi_double_precision
      &  ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
-      call mpi_isend(dorbw(1,1,1,nwalk),3*MELEC*norb,mpi_double_precision
+      call mpi_isend(dorbw(1,1,1,nwalk),3*nelec*norb,mpi_double_precision
      &  ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+2
 
@@ -291,9 +288,9 @@ c Written by Claudia Filippi
      &  ,isend,itag+6,MPI_COMM_WORLD,irequest_array,ierr)
       itag=itag+6
 
-      call mpi_recv(aaw(1,1,nwalk,1),MELEC*norb,mpi_double_precision
+      call mpi_recv(aaw(1,1,nwalk,1),nelec*norb,mpi_double_precision
      & ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(aaw(1,1,nwalk,2),MELEC*norb,mpi_double_precision
+      call mpi_recv(aaw(1,1,nwalk,2),nelec*norb,mpi_double_precision
      & ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       itag=itag+2
 
@@ -313,9 +310,9 @@ c Written by Claudia Filippi
         endif
  260  continue
 
-      call mpi_recv(orbw(1,1,nwalk),MELEC*morb,mpi_double_precision
+      call mpi_recv(orbw(1,1,nwalk),nelec*morb,mpi_double_precision
      &  ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(dorbw(1,1,1,nwalk),3*MELEC*morb,mpi_double_precision
+      call mpi_recv(dorbw(1,1,1,nwalk),3*nelec*morb,mpi_double_precision
      &  ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       itag=itag+2
 

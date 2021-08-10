@@ -2,11 +2,9 @@
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt routine
 c routine to calculate the values of the basis functions and their derivatives
       use numbas_mod, only: MRWF
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent, ncent_tot
 
       use ghostatom, only: nghostcent
-      use const, only: pi
       use numbas, only: iwrwf, nrbas, numr
 
       use phifun, only: d2phin, dphin, n0_nbasis
@@ -17,13 +15,44 @@ c routine to calculate the values of the basis functions and their derivatives
       use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iabs, ic, ider, irb
+      integer :: j, ju, k, l
+      integer :: ll
+      real(dp) :: b1, b1b2, b2, b2b3, bb1
+      real(dp) :: beta, cd1, cd2, cf
+      real(dp) :: cf2, cf3, cp, cs
+      real(dp) :: ex, fb2, fz, r
+      real(dp) :: r1, r1i, r2, ri
+      real(dp) :: ri2, ri3, ri4, ri5
+      real(dp) :: rk, rt3, rt3b2, tb1
+      real(dp) :: tb1z, tb2z, term, tz
+      real(dp) :: tzb, wf1, wf2, x1
+      real(dp) :: x2, x2y, x2y2, x2z
+      real(dp) :: xa, xvec, xvec3, xy
+      real(dp) :: xyz, xz, y2x, y2z
+      real(dp) :: yvec, yvec3, yz, z2
+      real(dp) :: z2x, z2y, zr, zvec
+      real(dp) :: zvec3
+      real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
+      real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), dimension(4, nelec, MRWF) :: wfv
+      real(dp), dimension(3) :: xc
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: three = 3.d0
+      real(dp), parameter :: four = 4.d0
+      real(dp), parameter :: five = 5.d0
+      real(dp), parameter :: six = 6.d0
+      real(dp), parameter :: seven = 7.d0
+      real(dp), parameter :: eight = 8.d0
+      real(dp), parameter :: ten = 10.d0
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: twelve = 12.d0
 
 
-      parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0)
-      parameter (five=5.d0,six=6.d0,seven=7.d0,eight=8.d0)
-      parameter (ten=10.d0,half=.5d0)
-      parameter (twelve=12.d0)
 
 c positive n1s,n2s,... Slater orbitals; positive nsa, npa, nda asymptotic orbitals
 c n1s < 0   exp(-a*r^2)
@@ -33,9 +62,7 @@ c nda < 0   (zr,x2y2...)*exp(-a*r^2)
 
 
 
-      dimension rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
 
-      dimension wfv(4,nelec,MRWF),xc(3)
 
       data rt3,rt3b2/1.732050808d0,0.866025404d0/
 c cs=1/sqrt(4*pi), cp=sqrt(3/(4*pi)), cd1=sqrt(5/(4*pi)), cd2=sqrt(15/(4*pi))

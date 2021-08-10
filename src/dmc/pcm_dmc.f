@@ -5,14 +5,22 @@
       use pcm_cntrl, only: ipcm, ipcmprt
       use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_cum, qopcm_cm2
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iblk, iqopcm_err, ispcmerr, ivpcmerr
+      real(dp) :: errg, error, evalg_eff, hatokc, qopcm_ave
+      real(dp) :: qopcm_err, rn_eff, rtevalg_eff1, sepcmkcal
+      real(dp) :: spcmave, spcmerr, spcmkcal, vepcmkcal
+      real(dp) :: vpcmave, vpcmerr, vpcmkcal, w
+      real(dp) :: w2, x, x2
+      real(dp), dimension(MFORCE) :: wgcum
+      real(dp), dimension(MFORCE) :: wgcm2
  
       data hatokc/627.509541d0/
 
-      dimension wgcum(MFORCE),wgcm2(MFORCE)
-
-
+c Statement functions for error calculation, it might be reaplaced in the near future:
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
@@ -61,9 +69,14 @@ c-----------------------------------------------------------------------
       use force_mod, only: MFORCE
       use pcm_cntrl, only: ipcm, ipcmprt
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension wgcum(MFORCE),wgcm2(MFORCE)
+      integer :: iblk, ipcmprt_sav
+
+      real(dp), dimension(MFORCE) :: wgcum
+      real(dp), dimension(MFORCE) :: wgcm2
+
 
 
       if(ipcm.eq.0) return
@@ -83,7 +96,10 @@ c-----------------------------------------------------------------------
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: nchs
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iw
+
 
       if(ipcm.eq.0) return
 
@@ -108,7 +124,11 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: spcmsum, vpcmsum
       use pcm_averages, only: qopcm_sum, enfpcm_sum
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iw
+      real(dp) :: p, q
 
       if(ipcm.eq.0) return
 
@@ -132,7 +152,11 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2, enfpcm_sum, enfpcm_cum, enfpcm_cm2
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i
+      real(dp) :: enfpcm_now, qopcm_now, spcmnow, vpcmnow, wsum_dmc
  
       if(ipcm.eq.0) return
 
@@ -163,7 +187,10 @@ c-----------------------------------------------------------------------
       use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
       use pcm_parms, only: nchs
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iw, iw2
+
 
       spcmo_dmc(iw2)=spcmo_dmc(iw)
       vpcmo_dmc(iw2)=vpcmo_dmc(iw)

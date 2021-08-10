@@ -2,8 +2,7 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use pseudo_mod, only: MPS_QUAD
       use optjas, only: MPARMJ
-      use vmc_mod, only: MELEC, MORB, MDET, MCENT
-      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MORB
       use atom, only: iwctype, ncent, ncent_tot
       use const, only: nelec, ipr
       use elec, only: nup
@@ -23,29 +22,47 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use b_tmove, only: b_t, iskip
       use qua, only: nquad, wq, xq, yq, zq
 
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use orbval, only: nadorb
+      use slater, only: slmi
       use multislater, only: detiab
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-
-
-
-
-      parameter (one=1.d0)
-
-
-
-      dimension x(3,*),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
-      dimension rr_en(nelec,ncent_tot),rr_en2(nelec,ncent_tot),rr_en_sav(ncent_tot),rr_en2_sav(ncent_tot)
-     &,xsav(3),rshift_sav(3,ncent_tot),rvec_en_sav(3,ncent_tot),r_en_sav(ncent_tot)
-
-      dimension vpsp_det(*),dvpsp_dj(*),t_vpsp(ncent_tot,MPS_QUAD,*)
-      dimension dpsij_ratio(MPARMJ)
-
-      dimension orbn(MORB),dorbn(3,MORB),da_orbn(3,ncent_tot,MORB),term_radial_da_vps(3)
-      dimension vjn(3),da_ratio_jn(3,ncent_tot),dd1(nelec,ncent_tot),dd1_sav(ncent_tot)
+      integer :: i, i1, i2, i_vpsp, iab
+      integer :: ic, ict, iel, index
+      integer :: iorb, iparm, iq, is
+      integer :: jc, k, l
+      real(dp) :: costh
+      real(dp) :: det_ratio, gives
+      real(dp) :: psij_ratio, ri, see
+      real(dp) :: term, term_radial
+      real(dp) :: yl0
+      real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,nelec,ncent_tot) :: rshift
+      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
+      real(dp), dimension(nelec,ncent_tot) :: r_en
+      real(dp), dimension(nelec,ncent_tot) :: rr_en
+      real(dp), dimension(nelec,ncent_tot) :: rr_en2
+      real(dp), dimension(ncent_tot) :: rr_en_sav
+      real(dp), dimension(ncent_tot) :: rr_en2_sav
+      real(dp), dimension(3) :: xsav
+      real(dp), dimension(3,ncent_tot) :: rshift_sav
+      real(dp), dimension(3,ncent_tot) :: rvec_en_sav
+      real(dp), dimension(ncent_tot) :: r_en_sav
+      real(dp), dimension(*) :: vpsp_det
+      real(dp), dimension(*) :: dvpsp_dj
+      real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
+      real(dp), dimension(MPARMJ) :: dpsij_ratio
+      real(dp), dimension(MORB) :: orbn
+      real(dp), dimension(3,MORB) :: dorbn
+      real(dp), dimension(3,ncent_tot,MORB) :: da_orbn
+      real(dp), dimension(3) :: term_radial_da_vps
+      real(dp), dimension(3) :: vjn
+      real(dp), dimension(3,ncent_tot) :: da_ratio_jn
+      real(dp), dimension(nelec,ncent_tot) :: dd1
+      real(dp), dimension(ncent_tot) :: dd1_sav
+      real(dp), parameter :: one = 1.d0
 
       ! call resize_matrix(b, norb+nadorb, 1)
 
@@ -200,7 +217,11 @@ c end loop nelec, ncent
 c-----------------------------------------------------------------------
       function yl0(l,costh)
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: l
+      real(dp) :: costh, yl0
 
       if(l.eq.1) then
         yl0=1.d0
@@ -218,7 +239,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 
       function dyl0(l,costh)
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: l
+      real(dp) :: costh, dyl0
 
       if(l.eq.1) then
         dyl0=0.d0
@@ -236,21 +261,28 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: cent, ncent, ncent_tot
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use qua, only: xq, yq, zq
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (one=1.d0)
+      integer :: i, ic, iq, jc, k
+
+      real(dp), dimension(3) :: x
+      real(dp), dimension(3,nelec,ncent_tot) :: rshift
+      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
+      real(dp), dimension(nelec,ncent_tot) :: r_en
+      real(dp), dimension(nelec,ncent_tot) :: rr_en
+      real(dp), dimension(nelec,ncent_tot) :: rr_en2
+      real(dp), dimension(nelec,ncent_tot) :: dd1
+      real(dp), parameter :: one = 1.d0
 
 
-      dimension x(3),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
-      dimension rr_en(nelec,ncent_tot),rr_en2(nelec,ncent_tot)
-      dimension dd1(nelec,ncent_tot)
+
 
       if(iperiodic.eq.0) then
         x(1)=r_en(i,ic)*xq(iq)+cent(1,ic)
@@ -293,24 +325,33 @@ c-----------------------------------------------------------------------
       subroutine orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
-      use vmc_mod, only: MELEC, MORB, MCENT
       use atom, only: iwctype, ncent, ncent_tot
       use const, only: nelec
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: coef, norb
       use contrl_per, only: iperiodic
       use grid3dflag, only: i3dlagorb, i3dsplorb
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      implicit real*8(a-h,o-z)
+      use orbval, only: ddorb, nadorb
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, iel, ier, iforce_analy, ii
+      integer :: iorb, k, m, m0
+
+      real(dp), dimension(3) :: x
+      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
+      real(dp), dimension(nelec,ncent_tot) :: r_en
+      real(dp), dimension(*) :: orbn
+      real(dp), dimension(3,*) :: dorbn
+      real(dp), dimension(3,ncent_tot,*) :: da_orbn
+      real(dp), dimension(3) :: dtmp
 
 
 
 
 
-      dimension x(3),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
-      dimension orbn(*),dorbn(3,*),da_orbn(3,ncent_tot,*),dtmp(3)
 
 
       ! call resize_tensor(coef, norb+nadorb, 2)
@@ -384,12 +425,19 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use dorb_m, only: iworbd
       use vmc_mod, only: MMAT_DIM
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: iel, ikel, j
+      real(dp) :: ratio
+      real(dp), dimension(3) :: x
+      real(dp), dimension(*) :: detu
+      real(dp), dimension(*) :: detd
+      real(dp), dimension(MMAT_DIM) :: slmui
+      real(dp), dimension(MMAT_DIM) :: slmdi
+      real(dp), dimension(*) :: orb
+      real(dp), dimension(3) :: dorb
 
 
-      dimension x(3)
-      dimension detu(*),detd(*),slmui(MMAT_DIM),slmdi(MMAT_DIM)
-      dimension orb(*),dorb(3)
 
       if(iel.le.nup) then
 
@@ -415,10 +463,9 @@ c-----------------------------------------------------------------------
       subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent, ncent_tot
 
-      use jaspar, only: sspinn, is
+      use jaspar, only: sspinn
       use const, only: nelec
       use da_jastrow4val, only: da_j
       use elec, only: nup
@@ -427,17 +474,77 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contrl_per, only: iperiodic
       use const, only: nelec
       use force_analy, only: iforce_analy
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+
+      implicit none
+
+      interface
+      function dpsibnl(u,isb,ipar)
+        use precision_kinds, only: dp
+        implicit none
+        real(dp), intent(in) :: u
+        integer, intent(in) :: isb
+        integer, intent(in) :: ipar
+        real(dp) :: dpsibnl
+      end function
+
+      function psibnl(u,isb,ipar)
+        use precision_kinds, only: dp
+        implicit none
+        real(dp), intent(in) :: u
+        integer, intent(in) :: isb
+        integer, intent(in) :: ipar
+        real(dp) :: psibnl
+      end function
+
+      function psinl(u,rshifti,rshiftj,rri,rrj,it)
+        use precision_kinds, only: dp
+        implicit none
+        real(dp), intent(in) :: u
+        real(dp), intent(in) :: rshifti, rshiftj, rri, rrj
+        integer, intent(in) :: it
+        real(dp) :: psinl
+      end function
+
+      function psianl(rri, it)
+        use precision_kinds, only: dp
+        implicit none
+        real(dp), intent(in) :: rri
+        integer, intent(in) :: it
+        real(dp) :: psianl
+      end function
+
+      function dpsianl(rri, it)
+        use precision_kinds, only: dp
+        implicit none
+        real(dp), intent(in) :: rri
+        integer, intent(in) :: it
+        real(dp) :: dpsianl
+      end function
+      end interface
+
+      integer :: i, ic, iel, ipar, isb
+      integer :: it, j, jj, k
+      real(dp) :: dd1u, dum, dumk, fsumn
+      real(dp) :: ratio_jn, rij, u
+      real(dp), dimension(nelec,*) :: fso
+      real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,nelec,ncent_tot) :: rshift
+      real(dp), dimension(3,nelec,*) :: rvec_en
+      real(dp), dimension(nelec,ncent_tot) :: r_en
+      real(dp), dimension(nelec,ncent_tot) :: rr_en
+      real(dp), dimension(nelec,ncent_tot) :: rr_en2
+      real(dp), dimension(nelec,nelec) :: fsn
+      real(dp), dimension(3) :: dx
+      real(dp), dimension(nelec,ncent_tot) :: dd1
+      real(dp), dimension(3) :: vjn
+      real(dp), dimension(3,ncent_tot) :: da_ratio_jn
+      real(dp), parameter :: half = .5d0
 
 
 
-      parameter (half=.5d0)
 
 
-      dimension fso(nelec,*)
-      dimension x(3,*),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,*)
-      dimension r_en(nelec,ncent_tot),rr_en(nelec,ncent_tot),rr_en2(nelec,ncent_tot)
-     &,fsn(nelec,nelec),dx(3),dd1(nelec,ncent_tot),vjn(3),da_ratio_jn(3,ncent_tot)
 
       fsumn=0
 
@@ -531,7 +638,7 @@ c-----------------------------------------------------------------------
       subroutine compute_da_bnl(i,ic,ict,iq,r_en_sav,rvec_en_sav,costh,
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
-      use vmc_mod, only: MORB, MCENT
+      use vmc_mod, only: MORB
       use atom, only: ncent, ncent_tot
       use Bloc, only: db
       use coefs, only: norb
@@ -540,15 +647,26 @@ c-----------------------------------------------------------------------
       use da_pseudo, only: da_vps
       use qua, only: wq, xq, yq, zq
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (one=1.d0)
+      integer :: i, ic, ict, iel, iorb
+      integer :: iq, jc, k, l
+      real(dp) :: costh, da_term_radial, db_tmp1, db_tmp2, db_tmp3
+      real(dp) :: dum, dyl0, psij_ratio, r_en_savi
+      real(dp) :: r_en_savi2, sav_db, term_radial, yl0
+      real(dp), dimension(3,ncent_tot) :: rvec_en_sav
+      real(dp), dimension(ncent_tot) :: r_en_sav
+      real(dp), dimension(MORB) :: orbn
+      real(dp), dimension(3,MORB) :: dorbn
+      real(dp), dimension(3) :: vjn
+      real(dp), dimension(3,ncent_tot,MORB) :: da_orbn
+      real(dp), dimension(3,ncent_tot) :: da_ratio_jn
+      real(dp), dimension(3) :: term_radial_da_vps
+      real(dp), parameter :: one = 1.d0
 
 
-      dimension rvec_en_sav(3,ncent_tot),r_en_sav(ncent_tot)
-      dimension orbn(MORB),dorbn(3,MORB),vjn(3)
-      dimension da_orbn(3,ncent_tot,MORB),da_ratio_jn(3,ncent_tot)
-      dimension term_radial_da_vps(3)
+
 
       if(iforce_analy.eq.0) return
 

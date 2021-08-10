@@ -1,13 +1,12 @@
       subroutine deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,value,gn,vjn,da_ratio_jn)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, nctype, ncent, ncent_tot
 
       use jaspar, only: nspin2, sspinn, is
       use const, only: nelec
       use da_jastrow4val, only: da_j
-      use derivjas, only: go, gvalue
+      use derivjas, only: go
       use elec, only: nup
       use jaso, only: fso
       use jaspointer, only: npoint, npointa
@@ -19,14 +18,49 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      interface
+      function dpsibnl(u,isb,ipar)
+        use precision_kinds, only: dp
+        real(dp), intent(in) :: u
+        integer, intent(in) :: isb
+        integer, intent(in) :: ipar
+        real(dp) :: dpsibnl
+      endfunction dpsibnl
+
+      function dpsianl(rr,it)
+        use precision_kinds, only: dp
+        real(dp), intent(in) :: rr
+        integer, intent(in) :: it
+        real(dp) :: dpsianl
+      endfunction dpsianl
+
+      end interface
+
+      integer :: i, ic, iel, ipar, ipara
+      integer :: iparm, iparm0, isb, it
+      integer :: j, jj, jparm, k
+      real(dp) :: dd1u, deriv_psianl, deriv_psibnl, deriv_psinl, dum
+      real(dp) :: dumk, fsumn, rij, u
+      real(dp) :: value
+      real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,nelec,ncent_tot) :: rshift
+      real(dp), dimension(3,nelec,*) :: rvec_en
+      real(dp), dimension(nelec,ncent_tot) :: r_en
+      real(dp), dimension(nelec,ncent_tot) :: rr_en
+      real(dp), dimension(nelec,ncent_tot) :: rr_en2
+      real(dp), dimension(*) :: gn
+      real(dp), dimension(nelec,nelec) :: fsn
+      real(dp), dimension(3) :: dx
+      real(dp), dimension(nelec,ncent_tot) :: dd1
+      real(dp), dimension(3) :: vjn
+      real(dp), dimension(3,ncent_tot) :: da_ratio_jn
+      real(dp), parameter :: half = .5d0
 
 
-      parameter (half=.5d0)
 
-      dimension x(3,*),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,*)
-      dimension r_en(nelec,ncent_tot),rr_en(nelec,ncent_tot),rr_en2(nelec,ncent_tot)
-     &,gn(*),fsn(nelec,nelec),dx(3),dd1(nelec,ncent_tot),vjn(3),da_ratio_jn(3,ncent_tot)
 
       fsumn=0
 

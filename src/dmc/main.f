@@ -1,7 +1,7 @@
       program maindmc
 c Written by Claudia Filippi
-      use mpiconf, only: idtask, nproc, wid, NPROCX
-      use mpiconf, only: mpiconf_init 
+      use mpiconf, only: idtask, nproc, wid
+      use mpiconf, only: mpiconf_init
       use allocation_mod, only: deallocate_dmc
       use optwf_contrl, only: ioptwf
       use contr3, only: mode
@@ -9,7 +9,7 @@ c Written by Claudia Filippi
 
       implicit none
 
-      integer :: ierr, ibranch_elec
+      integer :: ierr
       character*40 :: filename
 
       call mpi_init(ierr)
@@ -41,15 +41,6 @@ c Open the standard output and the log file only on the master
 
 !      BUG:: Ravindra. Following line needs a replacement
 !      call read_input
-
-!      call p2gtid('optwf:ioptwf', ioptwf, 0, 1)
-
-      if(mode.eq.'dmc_one_mpi2') then
-        if(ioptwf.gt.0) call fatal_error('MAIN: no DMC optimization with global population')
-
-!        call p2gtid('dmc:ibranch_elec', ibranch_elec, 0, 1)
-        if(ibranch_elec.gt.0) call fatal_error('MAIN: no DMC single-branch with global population')
-      endif
 
       if(ioptwf.gt.0) then
        call optwf_matrix_corsamp

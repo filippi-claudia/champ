@@ -5,9 +5,13 @@ c-----------------------------------------------------------------------
       ! this is so confusng ... 
       use optwf_contrl, only: nparm
       
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension p(*)
+      integer :: ip, n
+
+      real(dp), dimension(*) :: p
+
       
 
       n=0
@@ -27,16 +31,20 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine fetch_jastrow(p,n)
       use atom, only: nctype
-      use jaspar3, only: a, b, c
+      use jaspar3, only: b, c
 
       use jaspar4, only: a4
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ict, iparm, n
+
+      real(dp), dimension(*) :: p
 
 
-      dimension p(*)
 
       if(ioptjas.eq.0) return
 
@@ -63,12 +71,16 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, n
+
+      real(dp), dimension(*) :: p
 
 
 
 
-      dimension p(*)
 
       if(ioptorb.eq.0) return
 
@@ -80,11 +92,17 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_ci(p,n)
-      use csfs, only: ccsf, ncsf, nstates
+      use csfs, only: ccsf, ncsf
 
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iadiag, icsf, idet, j
+      integer :: n
+      real(dp) :: c90
+      real(dp), dimension(*) :: p
 
 
 
@@ -92,7 +110,6 @@ c-----------------------------------------------------------------------
 
 
 
-      dimension p(*)
 
       if(ioptci.eq.0) return
 

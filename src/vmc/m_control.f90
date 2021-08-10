@@ -2,6 +2,8 @@ module contrl
     !> Arguments: idump, irstar, isite, nconf, nblk, nblk_max, nblkeq, nconf_new, nstep,
     !> icharged_atom, nblk_ci
 
+    implicit none
+
     integer :: idump
     integer :: irstar
     integer :: isite
@@ -70,6 +72,8 @@ end module control_dmc
 module contr2
     !> Arguments: i3body, ianalyt_lap, iaver, icusp, icusp2, ifock, ijas, irewgt, isc, istrch
 
+    implicit none
+
     integer :: i3body
     integer :: ianalyt_lap
     integer :: iaver
@@ -89,6 +93,8 @@ end module contr2
 module contr3
     !> Arguments: mode
 
+    implicit none
+
     character*12 :: mode
 
     private
@@ -107,6 +113,8 @@ end module contr3
 module contrl_per
     !> Arguments: iperiodic, ibasis
 
+    implicit none
+
     integer :: iperiodic, ibasis
 
     private
@@ -118,6 +126,8 @@ module contrldmc
     !> Arguments: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot
     use force_mod, only: MFORCE
     use precision_kinds, only: dp
+
+    implicit none
 
     integer :: iacc_rej
     integer :: icross
@@ -141,7 +151,6 @@ module contrldmc
 contains
     subroutine allocate_contrldmc()
         use force_mod, only: MFORCE
-        use precision_kinds, only: dp
         if (.not. allocated(taueff)) allocate (taueff(MFORCE))
     end subroutine allocate_contrldmc
 
@@ -153,7 +162,8 @@ end module contrldmc
 
 module contrl_file
 
-    implicit None
+    implicit none
+
     character(20) :: log_filename
     character(20) :: proc_filename
     character(80) :: file_input, file_output, file_error 
@@ -316,10 +326,18 @@ end module contrl_file
 
 subroutine allocate_m_control()
     use contrldmc, only: allocate_contrldmc
+
+    implicit none
+
     call allocate_contrldmc()
+
 end subroutine allocate_m_control
 
 subroutine deallocate_m_control()
     use contrldmc, only: deallocate_contrldmc
+
+    implicit none
+
     call deallocate_contrldmc()
+
 end subroutine deallocate_m_control

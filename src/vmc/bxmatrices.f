@@ -1,19 +1,26 @@
       subroutine bxmatrix(kref,xmatu,xmatd,b)
 
-      use vmc_mod, only: MELEC, MORB
-      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: MORB
       use elec, only: ndn, nup
       use dorb_m, only: iworbd
-      use coefs, only: norb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use slater, only: slmi
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iab, iel, ish, j
+      integer :: kref, nel
+
+      real(dp), dimension(MORB, nelec) :: b
+      real(dp), dimension(nelec**2, 2) :: btemp
+      real(dp), dimension(nelec**2) :: xmatu
+      real(dp), dimension(nelec**2) :: xmatd
+      real(dp), dimension(nelec) :: work
 
 
 
 
-      dimension b(MORB,nelec),btemp(nelec**2,2),xmatu(nelec**2),xmatd(nelec**2),work(nelec)
 
       do 110 iab=1,2
         if(iab.eq.1) then

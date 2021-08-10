@@ -1,6 +1,6 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
-      use vmc_mod, only: MELEC, MORB
+      use vmc_mod, only: MORB
       use const, only: nelec
       use atom, only: ncent
       use qua, only: nquad
@@ -11,15 +11,22 @@
       use dorb_m, only: iworbd
       use coefs, only: norb
       use ycompact, only: ymat
-      use multislater, only: detd, detu
+      use multislater, only: detiab
       use multidet, only: iactv, ivirt, kref
       use multimat, only: aa
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (one=1.d0,half=0.5d0)
+      integer :: i1, i2, iab, ic, iel
+      integer :: iel_move, iq, irep, ish
+      integer :: j, jel, jrep, nel
+      real(dp) :: detratio, dum, psid
+      real(dp), dimension(nelec, MORB) :: gmat
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: half = 0.5d0
 
-      dimension gmat(MELEC,MORB)
+
 
       if(icasula.gt.0)then
         i1=iel_move
@@ -32,7 +39,7 @@
       do iel=i1,i2
 
       do ic=1,ncent
-        
+
       if(iskip(iel,ic).eq.0) then
 
       if(iel.le.nup) then
@@ -45,7 +52,7 @@
         ish=nup
       endif
 
-      detratio=detu(kref)*detd(kref)/psid
+      detratio=detiab(kref,1)*detiab(kref,2)/psid
 
       jel=iel-ish
 

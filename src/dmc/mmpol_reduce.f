@@ -7,7 +7,12 @@
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ierr
+      real(dp) :: cmmpol2_collect, cmmpol2_sum, cmmpol_collect, cmmpol_now, dmmpol2_collect
+      real(dp) :: dmmpol2_sum, dmmpol_collect, dmmpol_now, wgsum
 
 
       if(immpol.eq.0) return
@@ -65,9 +70,13 @@
       use mmpol_cntrl, only: immpol
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-      dimension istatus(MPI_STATUS_SIZE)
+      integer :: ierr, irecv, irequest, isend, itag_r
+      integer :: itag_s
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
+
+
 
       if(immpol.eq.0) return
 

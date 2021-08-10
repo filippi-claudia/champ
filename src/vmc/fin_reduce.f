@@ -1,12 +1,7 @@
       subroutine fin_reduce
 c MPI version written by Claudia Filippi
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use vmc_mod, only: nrad
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use est2cm, only: ecm21
@@ -20,12 +15,18 @@ c MPI version written by Claudia Filippi
       use method_opt, only: method
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, id, ierr, istate
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      real(dp) :: dble, efin, passes
+      real(dp), dimension(nrad) :: rprobt
+      real(dp), dimension(nrad) :: tryt
+      real(dp), dimension(nrad) :: suct
+      real(dp), dimension(MSTATES) :: collect
 
 
-      dimension rprobt(nrad),tryt(nrad),suct(nrad)
-      dimension collect(MSTATES)
-      dimension istatus(MPI_STATUS_SIZE)
 
 
       call mpi_reduce(ecum1,collect,nstates,mpi_double_precision

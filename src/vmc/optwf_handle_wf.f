@@ -4,8 +4,9 @@ c-----------------------------------------------------------------------
       use mpiconf, only: idtask
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: index, iter, iwf_fit
       character*40 filetype,wf,itn
 
       if(idtask.ne.0) return
@@ -32,13 +33,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine write_wf_best
-      implicit real*8(a-h,o-z)
-
+      implicit none
 
       call restore_jastrow_best
       call restore_lcao_best
       call restore_ci_best
-
       call write_wf(1,-1)
 
       return
@@ -53,9 +52,21 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use contr2, only: ianalyt_lap, ijas, ifock, isc
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      interface
+        function nterms4(nord) 
+            implicit none
+            integer, intent(in) :: nord
+            integer :: nterms4 
+        end function nterms4 
+      end interface
+
+      integer :: i, ict, index, iwf_fit, mparmja
+      integer :: mparmjb, mparmjc
+      real(dp) :: a21
       character*50 fmt
       character*40 filename,filetype
 
@@ -106,19 +117,18 @@ c tmp
 c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
 
-      use vmc_mod, only: MELEC, MORB, MBASIS
       use numbas, only: numr
       use optwf_contrl, only: ioptorb
       use coefs, only: coef, nbasis, norb
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use array_resize_utils, only: resize_tensor
+      use orbval, only: nadorb
       use inputflags, only: scalecoef
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, index, iwf_fit, j
+      real(dp), dimension(nbasis) :: anorm
       character*40 filename,filetype
-
-      dimension anorm(nbasis)
 
       ! call resize_tensor(coef, norb+nadorb, 2)
 
@@ -153,8 +163,10 @@ c-----------------------------------------------------------------------
       use elec, only: nup
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, index, istate, iwf_fit, j
+      integer :: k, nmap, nptr, nterm
       character*40 filename,filetype
 
       if(ioptci.eq.0) return
@@ -203,7 +215,10 @@ c
       end
 c-----------------------------------------------------------------------
       subroutine setup_wf
-      implicit real*8(a-h,o-z)
+
+      implicit none
+
+      integer :: k
 
       do 10 k=2,3
         call copy_jastrow(k)
@@ -214,10 +229,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_wf
+
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
-      implicit real*8(a-h,o-z)
 
-
+      implicit none
 
       if(ioptjas.ne.0) call save_jastrow
       if(ioptorb.ne.0) call save_lcao
@@ -227,10 +242,12 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine restore_wf(iadiag)
+
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
+      integer :: iadiag
 
       if(ioptjas.ne.0) call restore_jastrow(iadiag)
       if(ioptorb.ne.0) call restore_lcao(iadiag)
@@ -240,7 +257,10 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_wf_best(ioptjas,ioptorb,ioptci)
-      implicit real*8(a-h,o-z)
+
+      implicit none
+
+      integer :: ioptci, ioptjas, ioptorb
 
       if(ioptjas.ne.0) call save_jastrow_best
       if(ioptorb.ne.0) call save_lcao_best
@@ -250,19 +270,26 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_jastrow
+
       use precision_kinds, only: dp
-      use force_mod, only: MWF
-      use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
       use atom, only: nctype, nctype_tot
       use wfsec, only: nwftype
-      use jaspar3, only: a, b, c
-
+      use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
+      interface
+        function nterms4(nord) 
+            implicit none
+            integer, intent(in) :: nord
+            integer :: nterms4 
+        end function nterms4 
+      end interface
 
+      integer :: i, iadiag, ict, mparmja, mparmjb
+      integer :: mparmjc
       real(dp), allocatable, save :: a4_save(:,:,:)
       real(dp), allocatable, save :: b_save(:,:,:)
       real(dp), allocatable, save :: c_save(:,:,:)
@@ -292,11 +319,10 @@ c Save parameters corresponding to run generating hessian
         do 70 i=1,mparmjc
    70     c_save(i,ict,1)=c(i,ict,1)
 
-
-
       return
 
       entry restore_jastrow(iadiag)
+
       if(.not.allocated(a4_save)) allocate(a4_save(MORDJ1,nctype_tot,nwftype))
       if(.not.allocated(b_save)) allocate(b_save(MORDJ1,2,nwftype))
       if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
@@ -316,15 +342,17 @@ c Restore parameters corresponding to run generating hessian
 
 c-----------------------------------------------------------------------
       subroutine save_lcao
+
       use precision_kinds, only: dp
-      use force_mod, only: MWF
-      use vmc_mod, only: MORB, MBASIS
+      use vmc_mod, only: MORB
       use coefs, only: coef, nbasis, norb
       use wfsec, only: nwftype
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
+      integer :: i, iadiag, j
       real(dp), allocatable, save :: coef_save(:,:,:)
+
       if (.not. allocated(coef_save)) allocate(coef_save(nbasis, MORB, nwftype))
       ! dimension coef_save(nbasis,norb,MWF)
       ! save coef_save
@@ -346,16 +374,17 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine save_ci
+
       use precision_kinds, only: dp
       use vmc_mod, only: MDET
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
-
       use dets, only: cdet, ndet
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
-
+      integer :: i, iadiag, icsf, j, k
+      integer :: kx
       real(dp), ALLOCATABLE, save :: cdet_save(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_save(:,:)
 
@@ -408,12 +437,21 @@ c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
 
       use atom, only: nctype
-
-      use jaspar3, only: a, b, c, scalek
-
+      use jaspar3, only: b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
-      implicit real*8(a-h,o-z)
 
+      implicit none
+
+      interface
+        function nterms4(nord) 
+            implicit none
+            integer, intent(in) :: nord
+            integer :: nterms4 
+        end function nterms4 
+      end interface
+
+      integer :: i, iadiag, ict, mparmja, mparmjb
+      integer :: mparmjc
 
       mparmja=2+max(0,norda-1)
       mparmjb=2+max(0,nordb-1)
@@ -434,13 +472,13 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
-      use vmc_mod, only: MELEC, MORB
+
       use coefs, only: coef, nbasis, norb
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      implicit real*8(a-h,o-z)
+      use orbval, only: nadorb
 
+      implicit none
 
-
+      integer :: i, iadiag, j
 
       do 20 i=1,norb+nadorb
        do 20 j=1,nbasis
@@ -450,13 +488,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine copy_ci(iadiag)
+
       use csfs, only: ccsf, ncsf, nstates
-
       use dets, only: cdet, ndet
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
-
+      integer :: i, iadiag, icsf, j
 
       do 30 j=1,nstates
         do 30 i=1,ndet
@@ -474,9 +512,9 @@ c-----------------------------------------------------------------------
       use coefs, only: nbasis
       use basis, only: zex
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
+      integer :: i, iadiag
 
       do 20 i=1,nbasis
    20   zex(i,iadiag)=zex(i,1)
@@ -487,19 +525,23 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
       use precision_kinds, only: dp
-      use force_mod, only: MWF
-      use vmc_mod, only: MCTYPE
       use vmc_mod, only: MORDJ1
       use atom, only: nctype, nctype_tot
-      use wfsec, only : nwftype
-      use jaspar3, only: a, b, c
-
+      use wfsec, only: nwftype
+      use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
+      interface
+        function nterms4(nord) 
+            implicit none
+            integer, intent(in) :: nord
+            integer :: nterms4 
+        end function nterms4 
+      end interface
 
-
+      integer :: i, ict, mparmja, mparmjb, mparmjc
       real(dp), allocatable, save :: a4_best(:,:,:)
       real(dp), allocatable, save :: b_best(:,:,:)
       real(dp), allocatable, save :: c_best(:,:,:)
@@ -550,18 +592,17 @@ c Restore parameters corresponding to run generating hessian
       end
 c-----------------------------------------------------------------------
       subroutine save_lcao_best
+
       use precision_kinds, only: dp
-      use force_mod, only: MWF
-      use vmc_mod, only: MORB, MBASIS
-      use optwf_contrl, only: ioptorb
+      use vmc_mod, only: MORB
       use coefs, only: coef, nbasis, norb
       use wfsec, only: nwftype
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
-
-
+      integer :: i, j
       real(dp), allocatable, save :: coef_best(:,:,:)
+
       if (.not. allocated(coef_best)) allocate(coef_best(nbasis, MORB, nwftype))
       ! dimension coef_best(nbasis,norb,MWF)
       ! save coef_best
@@ -584,17 +625,17 @@ c     if(ioptorb.eq.0) return
       end
 c-----------------------------------------------------------------------
       subroutine save_ci_best
+
       use precision_kinds, only: dp
       use vmc_mod, only: MDET
       use csfs, only: ccsf, ncsf, nstates
       use csfs, only: cxdet, iadet, ibdet, icxdet
       use mstates_mod, only: MSTATES
-
       use dets, only: cdet, ndet
-      use optwf_contrl, only: ioptci
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
+      integer :: i, icsf, j, k, kx
       real(dp), ALLOCATABLE, save :: cdet_best(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_best(:,:)
 
@@ -647,9 +688,13 @@ c reset kref=1
       end
 c-----------------------------------------------------------------------
       subroutine compute_parameters(dparm,iflag,iadiag)
-      implicit real*8(a-h,o-z)
 
-      dimension dparm(*)
+      use precision_kinds, only: dp
+
+      implicit none
+
+      integer :: iadiag, iflag
+      real(dp), dimension(*) :: dparm
 
       iflag=0
       call compute_jastrow(dparm,iflag,iadiag)
@@ -657,7 +702,6 @@ c-----------------------------------------------------------------------
       if(iflag.ne.0) return
 
       call compute_lcao(dparm,iadiag)
-
       call compute_ci(dparm,iadiag)
 
       return
@@ -666,16 +710,17 @@ c-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
 
       use atom, only: nctype
-      use jaspar3, only: a, b, c, scalek
+      use jaspar3, only: b, c
       use jaspar4, only: a4
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-      dimension dparm(*)
+      integer :: i, iadiag, ict, iflag, iparm
+      real(dp), dimension(*) :: dparm
 
       if(ioptjas.eq.0) return
 
@@ -704,19 +749,20 @@ c Check parameters a2 and b2 > -scalek
       end
 c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
-      use vmc_mod, only: MORB, MBASIS
+
+      use vmc_mod, only: MORB
       use optwf_contrl, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
       use coefs, only: coef, nbasis, norb
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
-      dimension acoef(nbasis,MORB),dparm(*)
+      integer :: i, iadiag, io, j, jo
+      real(dp), dimension(nbasis, MORB) :: acoef
+      real(dp), dimension(*) :: dparm
 
       if(ioptorb.eq.0) return
 
@@ -739,18 +785,20 @@ c Update the orbitals
       end
 c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
 
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use method_opt, only: method
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-      dimension dparm(*)
+      integer :: i, iadiag, icsf, idet, j
+      integer :: jx, k
+      real(dp) :: c90
+      real(dp), dimension(*) :: dparm
 
       if(ioptci.eq.0) return
 
@@ -800,22 +848,16 @@ c-----------------------------------------------------------------------
       subroutine check_parms_jas(iflag)
 
       use atom, only: nctype
-
-      use jaspar3, only: a, b, scalek
-
+      use jaspar3, only: b, scalek
       use jaspar4, only: a4
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-
-
-
-
-
+      integer :: i, ict, iflag, iflaga, iflagb
+      real(dp) :: scalem
 
       iflag=0
       iflaga=0
@@ -840,10 +882,14 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine test_solution_parm(nparm,dparm,
      &              dparm_norm,dparm_norm_min,add_diag,iflag)
-      implicit real*8(a-h,o-z)
 
+      use precision_kinds, only: dp
 
-      dimension dparm(*)
+      implicit none
+
+      integer :: i, iflag, nparm
+      real(dp) :: add_diag, dparm_norm, dparm_norm_min
+      real(dp), dimension(*) :: dparm
 
       iflag=0
       if(add_diag.le.0.d0) return
@@ -867,14 +913,11 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm, nreduced
-
       use ci000, only: nciterm
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
+      integer :: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav
 
       save nparmj_sav,norbterm_sav,nciterm_sav,nparmd_sav,nreduced_sav
 
@@ -918,11 +961,11 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
       use ci000, only: nciterm
-
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i0
 
 c Note: we do not vary the first (i0) CI coefficient unless a run where we only optimize the CI coefs
 
@@ -969,13 +1012,16 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use ci003_blk, only: ci_e
       use method_opt, only: method
       use optwf_sr_mod, only: izvzb, i_sr_rescale
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-      dimension tmp_ho(MPARMJ),wt(*),psid(*),energy(*)
-
+      integer :: i0, ii, ijasci, istate, j
+      integer :: l, ntmp
+      real(dp), dimension(MPARMJ) :: tmp_ho
+      real(dp), dimension(*) :: wt
+      real(dp), dimension(*) :: psid
+      real(dp), dimension(*) :: energy
 
       if(iforce_analy.gt.0.and.izvzb.eq.1) call force_store(l)
 

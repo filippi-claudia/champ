@@ -4,9 +4,17 @@
       use c_averages, only: prop, wprop
       use c_averages_index, only: jderiv
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension eold(mwalk,*),pwt(mwalk,*),ajac(mwalk,*),psij(mwalk,*),psid(mwalk,*)
+      integer :: idrifdifgfunc, ifr, iw, mwalk
+      real(dp) :: ro, wtg
+      real(dp), dimension(mwalk, *) :: eold
+      real(dp), dimension(mwalk, *) :: pwt
+      real(dp), dimension(mwalk, *) :: ajac
+      real(dp), dimension(mwalk, *) :: psij
+      real(dp), dimension(mwalk, *) :: psid
+
 
       do ifr=1,nforce
         if(idrifdifgfunc.gt.0) then
@@ -31,7 +39,10 @@
       use c_averages_index, only: jeloc, jderiv
       use prp000, only: nprop
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ifr, j, k
+
 
       nprop=0
 c elocal
@@ -55,9 +66,14 @@ c deriv
       use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
       use prp000, only: nprop
 
-      implicit real*8 (a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension sum_av(mprop),sum_w(mprop)
+      integer :: i, ido
+
+      real(dp), dimension(mprop) :: sum_av
+      real(dp), dimension(mprop) :: sum_w
+
       if(ido.eq.0)then
        do i=1,nprop
         cum_av(i)=0
@@ -89,7 +105,11 @@ c deriv
       use c_averages, only: cum_av, cum_w
       use c_averages_index, only: jderiv
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ifr
+      real(dp) :: derivtotave, egave
 
       egave=cum_av(jderiv(1,1))/cum_w(jderiv(1,1))
       do ifr=2,nforce

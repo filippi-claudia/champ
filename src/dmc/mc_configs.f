@@ -7,12 +7,27 @@
       use contrl, only: irstar, nblk, nblkeq, nconf, nconf_new, nstep
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
+
+      integer :: i, iblk, ic, id, ii
+      integer :: index, ipass, iwalk, j
+      integer :: jj, ngfmc
+      integer, dimension(4) :: irn
+      real(dp) :: rnd
 
       character*25 fmt
       character*20 filename
 
-      dimension irn(4)
       save ngfmc
 
       if(ipr.gt.-2) then
@@ -62,8 +77,8 @@ c set the random number seed, setrn already called in read_input
         endif
       endif
 
-c If nconf_new > 0, dump configurations for a future optimization or dmc calculation. 
-c Figure out frequency of configuration writing to produce nconf_new configurations. 
+c If nconf_new > 0, dump configurations for a future optimization or dmc calculation.
+c Figure out frequency of configuration writing to produce nconf_new configurations.
 c If nconf_new = 0, then no configurations are written.
       if (nconf_new.eq.0) then
         ngfmc=2*nstep*nblk

@@ -1,14 +1,14 @@
       subroutine readps_gauss
 c read 'Quantum-chemist' gauss pseudopotentials
 c file format: one text file with basename gauss_ecp.dat
-c              for each atom type 
+c              for each atom type
 c first line : arbitrary label (written to log-file)
 c second line: number of projectors + 1 (i.e. total number of components)
 c remaining lines: components in the order (local,L=0,L=1 ...)
 c     repeated for each component
-c        number terms 
-c        repeated for each term in this component 
-c          coefficient power exponent 
+c        number terms
+c        repeated for each term in this component
+c          coefficient power exponent
 c
 c NOTE: as usual power n means r**(n-2)
 c
@@ -19,23 +19,27 @@ c
       use qua, only: nquad, wq, xq0, yq0, zq0
       use general, only: filename, filenames_ps_gauss
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ic, identify, idx, index
+      integer :: l, names
 
       character*80 label
 
-CVARDOC String to identify pseudopotential. If set, fancy names for 
-CVARDOC the pseudopotential files will be used.  
+CVARDOC String to identify pseudopotential. If set, fancy names for
+CVARDOC the pseudopotential files will be used.
 
       do 300 ic=1,nctype
         if (nctype.gt.100) call fatal_error('READPS_GAUSS: nctype>100')
 
         filename = filenames_ps_gauss(ic)
         open(1,file=filename(1:index(filename,' ')),status='old')
- 
+
         write(45,'(''Reading pseudopotential file '',a)')
      &      filename(1:index(filename,' '))
 
-c label 
+c label
         read(1,100,err=999,end=1000)   label
         write(45,101) ic,label
 
@@ -48,7 +52,7 @@ c max projector
 
 c read terms of local part and all non-local parts
 c local part first in file, but stored at index lpot
-c non-local l=0 at index 1 etc, up to lpot-1 
+c non-local l=0 at index 1 etc, up to lpot-1
 
         do 200 l=1,lpot(ic)
           if(l.eq.1)then
@@ -58,7 +62,7 @@ c non-local l=0 at index 1 etc, up to lpot-1
           endif
           read(1,*,err=999,end=1000) necp_term(idx,ic)
 
-          if(necp_term(idx,ic).gt.MGAUSS) 
+          if(necp_term(idx,ic).gt.MGAUSS)
      &     call fatal_error('READPS_GAUSS: increase MGAUSS')
           write(45,112) l,necp_term(idx,ic)
           do 200 i=1,necp_term(idx,ic)
@@ -102,13 +106,19 @@ c compute gauss-pseudopotential for electron iel
 
       use da_pseudo, only: da_vps
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: ic, ict, iel, k, l
+      real(dp) :: dvpot, r, reni, ri, ri2
+      real(dp) :: vpot
+      real(dp), dimension(nelec,ncent_tot) :: r_en
+      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
 
 
 
 
 
-      dimension r_en(nelec,ncent_tot),rvec_en(3,nelec,ncent_tot)
 
       do 10 ic=1,ncent
         ict=iwctype(ic)
@@ -145,7 +155,12 @@ c-----------------------------------------------------------------------
       subroutine gauss_pot(r,l,ict,vpot,dvpot)
       use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ict, l
+      real(dp) :: dp_val, dv, dvpot, e, p
+      real(dp) :: r, rsq, v, vpot
 
 
       v = 0.d0
@@ -155,14 +170,18 @@ c-----------------------------------------------------------------------
       do i=1, necp_term(l,ict)
        if(necp_power(i,l,ict).ne.2)then
         p = r**(necp_power(i,l,ict)-2)
-        dp = (necp_power(i,l,ict)-2)*p/r
+        dp_val = (necp_power(i,l,ict)-2)*p/r
        else
         p = 1.d0
-        dp= 0.d0
+        dp_val= 0.d0
        endif
-       e = ecp_coef(i,l,ict)*exp(-ecp_exponent(i,l,ict)*rsq)
+       if (ecp_exponent(i,l,ict)*rsq.gt.7.0D2) then
+          e = 0.0d0
+       else
+          e = ecp_coef(i,l,ict)*exp(-ecp_exponent(i,l,ict)*rsq)
+       endif
        v = v + p*e
-       dv = dv + (dp -2*p*ecp_exponent(i,l,ict)*r)*e
+       dv = dv + (dp_val -2*p*ecp_exponent(i,l,ict)*r)*e
       enddo
 
       vpot=v

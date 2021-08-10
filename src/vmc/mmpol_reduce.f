@@ -8,11 +8,18 @@
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension eek1_collect(MCHMM),eek1cm2_collect(MCHMM)
-      dimension eek2_collect(MCHMM),eek2cm2_collect(MCHMM)
-      dimension eek3_collect(MCHMM),eek3cm2_collect(MCHMM)
+      integer :: i, ierr
+      real(dp) :: cmmpol_collect, cpcm2_collect, dmmpol_collect, dpcm2_collect
+      real(dp), dimension(MCHMM) :: eek1_collect
+      real(dp), dimension(MCHMM) :: eek1cm2_collect
+      real(dp), dimension(MCHMM) :: eek2_collect
+      real(dp), dimension(MCHMM) :: eek2cm2_collect
+      real(dp), dimension(MCHMM) :: eek3_collect
+      real(dp), dimension(MCHMM) :: eek3cm2_collect
+
  
       if(immpol.eq.0) return
 

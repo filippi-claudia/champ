@@ -4,10 +4,9 @@ c routine to calculate the values of the basis functions and their derivatives
 c vgl -> value, gradient, laplacian
 
       use numbas_mod, only: MRWF
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent, ncent_tot
       use ghostatom, only: nghostcent
-      use const, only: pi, nelec
+      use const, only: nelec
       use numbas, only: iwrwf, nrbas, numr
       use numbas1, only: iwlbas, nbastyp
       use phifun, only: d2phin, d2phin_all, d3phin, dphin, n0_nbasis
@@ -17,24 +16,48 @@ c vgl -> value, gradient, laplacian
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iabs, ic, ider, irb
+      integer :: iwlbas0, j, ju, k
+      integer :: k0, l, l0, ll
+      real(dp) :: cd1, cd2, cf, cf2, cf3
+      real(dp) :: cp, cs, ddy_lap, ex
+      real(dp) :: rk, rt3, rt3b2, x1
+      real(dp) :: x2, y
+      real(dp), dimension(3, *) :: x
+      real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
+      real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), dimension(3) :: dy
+      real(dp), dimension(3, 3) :: ddy
+      real(dp), dimension(3) :: dlapy
+      real(dp), dimension(4, nelec, MRWF) :: wfv
+      real(dp), dimension(3, nelec) :: xc
+      real(dp), dimension(nelec) :: r
+      real(dp), dimension(nelec) :: ri
+      real(dp), dimension(nelec) :: ri2
+      real(dp), dimension(nelec) :: ri3
+      real(dp), dimension(nelec) :: r2
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: three = 3.d0
+      real(dp), parameter :: four = 4.d0
+      real(dp), parameter :: five = 5.d0
+      real(dp), parameter :: six = 6.d0
+      real(dp), parameter :: seven = 7.d0
+      real(dp), parameter :: eight = 8.d0
+      real(dp), parameter :: ten = 10.d0
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: twelve = 12.d0
 
 
-      parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0)
-      parameter (five=5.d0,six=6.d0,seven=7.d0,eight=8.d0)
-      parameter (ten=10.d0,half=.5d0)
-      parameter (twelve=12.d0)
 
 
 
 
 
-      dimension x(3,*),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
-      dimension dy(3),ddy(3,3),dlapy(3)
 
-      dimension wfv(4,nelec,MRWF)
-      dimension xc(3,nelec),r(nelec),ri(nelec),ri2(nelec)
-      dimension ri3(nelec),r2(nelec)
       data rt3,rt3b2/1.732050808d0,0.866025404d0/
 c cs=1/sqrt(4*pi), cp=sqrt(3/(4*pi)), cd1=sqrt(5/(4*pi)), cd2=sqrt(15/(4*pi))
       data cs,cp,cd1,cd2/0.28209479d0,0.48860251d0,
@@ -400,10 +423,29 @@ c end of numerical orbitals
       end
 c-------------------------------------------------------------------
       subroutine phi_combine(l,xc,ri,ri2,wfv,y,dy,ddy,ddy_lap,dlapy,phi,dphi,d2phi,d2phi_all,d3phi,iforce_analy)
-      implicit real*8 (a-h,o-z)
-      dimension xc(3),xcri(3),wfv(4),wfvn(4),dy(3),ddy(3,3),dphi(3),d2phi_all(3,3),d3phi(3),dlapy(3)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (two=2.d0,three=3.d0,four=4.d0,five=5.d0,six=6.d0)
+      integer :: iforce_analy, ii, jj, l
+      real(dp) :: d2phi, ddy_lap, dum, dum1, phi
+      real(dp) :: prod, ri, ri2, ri3
+      real(dp) :: y
+      real(dp), dimension(3) :: xc
+      real(dp), dimension(3) :: xcri
+      real(dp), dimension(4) :: wfv
+      real(dp), dimension(4) :: wfvn
+      real(dp), dimension(3) :: dy
+      real(dp), dimension(3, 3) :: ddy
+      real(dp), dimension(3) :: dphi
+      real(dp), dimension(3, 3) :: d2phi_all
+      real(dp), dimension(3) :: d3phi
+      real(dp), dimension(3) :: dlapy
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: three = 3.d0
+      real(dp), parameter :: four = 4.d0
+      real(dp), parameter :: five = 5.d0
+      real(dp), parameter :: six = 6.d0
+
 
       xcri(1)=xc(1)*ri
       xcri(2)=xc(2)*ri
@@ -473,9 +515,17 @@ c-------------------------------------------------------------------
       end
 c-------------------------------------------------------------------
       subroutine phie_combine(l,ri,ri2,wfv,y,phi)
-      implicit real*8 (a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (two=2.d0,three=3.d0,five=5.d0,six=6.d0)
+      integer :: l
+      real(dp) :: phi, ri, ri2, ri3, wfv
+      real(dp) :: wfvn, y
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: three = 3.d0
+      real(dp), parameter :: five = 5.d0
+      real(dp), parameter :: six = 6.d0
+
 
       ri3=ri*ri2
       if(l.eq.1) then
@@ -499,7 +549,10 @@ c-------------------------------------------------------------------
 
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: ic, k, l
+
 
 
 

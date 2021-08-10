@@ -1,7 +1,30 @@
 	subroutine gesqua(nq,xq,yq,zq,wq)
 c Written by Lubos Mitas
 
-        implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i20, i24, i86, iabs, ic
+      integer :: icase, icasem, icosa, ii
+      integer :: iocta, ip, iq, itetr
+      integer :: j, jj, jmax, k
+      integer :: k0, kk, kk1, kk2
+      integer :: kk3, kk4, l, lp
+      integer :: lq, m, mindif, ncase
+      integer :: newmin, npoint, nq, ntypa
+      integer :: ntype, ntypm
+      real(dp) :: cf, cp, crk2, crk21
+      real(dp) :: csth1, csth2, cstha, den
+      real(dp) :: fi, fi0, hold, p
+      real(dp) :: pi, pp, q, qq
+      real(dp) :: r, rk2, rk21, rl1
+      real(dp) :: rl2, s, s5, sf
+      real(dp) :: si, sj, sk, sm1
+      real(dp) :: sm2, snth1, snth2, sntha
+      real(dp) :: sp, srk2, srk21, u
+      real(dp) :: v, w, wq, ww
+      real(dp) :: x, xq, y, yq
+      real(dp) :: z, zq
 
 	parameter (ncase=10,npoint=86,ntype=4,ntypm=6)
 
@@ -114,7 +137,7 @@ c       octahedron symmetry quadrature
   	  zq(4+ii)=si
   	  if (nq.gt.6) then
   	    sj=-1.d0
-  	    do 35 jj=1,2	
+  	    do 35 jj=1,2
   	      sj=-sj
   	      ip=ip+1
   	      xq(6+ip)=si*p
@@ -172,7 +195,7 @@ c       icosahedron symmetry quadrature
 	    yq(j+2)=sntha*srk2
 	    zq(j+2)=cstha
 	  endif
-	  rk21=rk2+1.d0	
+	  rk21=rk2+1.d0
 	  crk21=dcos(rk21*fi0)
 	  srk21=dsin(rk21*fi0)
 	  if (nq.ne.20)	then
@@ -189,7 +212,7 @@ c       icosahedron symmetry quadrature
 	    kk4=j+k0+15
 	    xq(kk1)=snth1*crk21
 	    yq(kk1)=snth1*srk21
-	    zq(kk1)=csth1	
+	    zq(kk1)=csth1
 	    xq(kk2)=snth2*crk21
 	    yq(kk2)=snth2*srk21
 	    zq(kk2)=csth2
@@ -206,12 +229,12 @@ c       icosahedron symmetry quadrature
  230	continue
 	lq=0
 	do 300 l=1,3
-	  if (l.eq.1) then	
+	  if (l.eq.1) then
 	    x=.8662468181078d0
 	    y=.4225186537611d0
   	    z=.2666354015167d0
 	  endif
-	  if (l.eq.2) then	
+	  if (l.eq.2) then
 	    hold=y
 	    y=x
 	    x=z
@@ -260,7 +283,7 @@ c       icosahedron symmetry quadrature
 	  yq(2+ii)=si
 	  zq(4+ii)=si
 	  sj=-1.d0
-	  do 435 jj=1,2	
+	  do 435 jj=1,2
 	    sj=-sj
 	    ip=ip+1
 	    xq(62+ip)=si*pp
@@ -310,14 +333,34 @@ c-----------------------------------------------------------------------
 
 	subroutine rotqua
 c Written by Lubos Mitas
-        use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-        implicit real*8(a-h,o-z)
+      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use precision_kinds, only: dp
+      implicit none
+
+	  interface
+		function rannyu(idum)
+		use precision_kinds, only: dp
+		implicit none
+		integer,intent(in) :: idum
+		real(dp) :: rannyu
+		end function rannyu
+      end interface
+
+
+      integer :: iq
+      real(dp) :: cfi, sfi
+      real(dp) :: sthet, theta, u1, u2
+      real(dp) :: usum, uu, x1, x2
+      real(dp) :: x3, xsum, xsum2, y1
+      real(dp) :: y2, y3, yy1, yy2
+      real(dp) :: yy3, z1, z2, z3
+      real(dp) :: zz1, zz2, zz3
 
 
  2	x1=1.d0-2.d0*rannyu(0)
 	x2=1.d0-2.d0*rannyu(0)
 	xsum=x1*x1+x2*x2
-	if (xsum.ge.1.d0) goto 2	
+	if (xsum.ge.1.d0) goto 2
 	xsum2=2.d0*dsqrt(dabs(1.d0-xsum))
 	x1=x1*xsum2
 	x2=x2*xsum2

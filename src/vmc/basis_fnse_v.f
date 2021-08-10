@@ -2,7 +2,6 @@
 c Written by Claudia Filippi by modifying basis_fns
 c routine to calculate basis functions for electron k
       use numbas_mod, only: MRWF
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent, ncent_tot
       use ghostatom, only: nghostcent
       use numbas, only: iwrwf, nrbas, numr
@@ -13,14 +12,28 @@ c routine to calculate basis functions for electron k
       use force_analy, only: iforce_analy
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ic, irb, iwlbas0, j
+      integer :: k, l, ll
+      real(dp) :: cd1, cd2, cf, cf2, cf3
+      real(dp) :: cp, cs, ddy_lap, r
+      real(dp) :: r2, ri, ri2, ri3
+      real(dp) :: rt3, rt3b2, y
+      real(dp), dimension(4, MRWF) :: wfv
+      real(dp), dimension(3) :: xc
+      real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
+      real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), dimension(3) :: dy
+      real(dp), dimension(3, 3) :: ddy
+      real(dp), dimension(3) :: dlapy
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: three = 3.d0
+      real(dp), parameter :: half = 0.5d0
 
 
-      parameter (one=1.d0,three=3.d0,half=0.5d0)
 
-      dimension wfv(4,MRWF)
-      dimension xc(3),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
-      dimension dy(3),ddy(3,3),dlapy(3)
 
       data rt3,rt3b2/1.732050808d0,0.866025404d0/
 c cs=1/sqrt(4*pi), cp=sqrt(3/(4*pi)), cd1=sqrt(5/(4*pi)), cd2=sqrt(15/(4*pi))

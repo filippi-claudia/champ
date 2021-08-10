@@ -1,20 +1,18 @@
       subroutine efield_extpot_ene(coord,nelec,efield_pot)
 
-      use efield_mod, only: MCHARGES
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
       use efield, only: iscreen, ncharges
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j, nelec
+      real(dp) :: atmp, efield_pot, rij, rij2
+      real(dp), dimension(3, *) :: coord
 
 
 
-      dimension coord(3,*)
 
       atmp=0
       efield_pot=0
@@ -30,18 +28,16 @@
 c-----------------------------------------------------------------------
       subroutine efield_compute_extint
 
-      use efield_mod, only: MCHARGES
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: znuc, cent, iwctype, ncent
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
       use efield, only: iscreen, ncharges
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j
+      real(dp) :: atmp, efield_extext, efield_nucext, rij, rij2
 
 
 

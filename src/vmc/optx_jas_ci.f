@@ -10,9 +10,12 @@
       use ci001_blk, only: ci_o
       use ci002_blk, only: ci_o_old
       use ci004_blk, only: ci_de, ci_de_old
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, j
+      real(dp) :: enew, eold, p, q
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
@@ -33,8 +36,9 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, j
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
@@ -55,8 +59,9 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, iu, j
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
       write(iu) ((dj_o_ci(i,j),dj_oe_ci(i,j),dj_de_ci(i,j),de_o_ci(i,j),i=1,nparmj),j=1,nciterm)
@@ -71,8 +76,9 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, iu, j
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
       read(iu) ((dj_o_ci(i,j),dj_oe_ci(i,j),dj_de_ci(i,j),de_o_ci(i,j),i=1,nparmj),j=1,nciterm)
@@ -96,15 +102,15 @@ c-----------------------------------------------------------------------
       use ci005_blk, only: ci_o_cum
       use ci006_blk, only: ci_de_cum
       use ci008_blk, only: ci_oe_cum
-
       use method_opt, only: method
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
-
-      dimension oelocav(MXCITERM),eav(MXCITERM)
+      integer :: i, j
+      real(dp) :: eave, h1, h2, passes
+      real(dp), dimension(MXCITERM) :: oelocav
+      real(dp), dimension(MXCITERM) :: eav
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 

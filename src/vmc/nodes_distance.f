@@ -1,26 +1,24 @@
       subroutine nodes_distance(v,distance_node,iflag)
 c Written by Claudia Filippi
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
       use velocity_jastrow, only: vj, vjn
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iflag, k
+      real(dp) :: distance_node
+      real(dp), dimension(3, *) :: v
+      real(dp), dimension(3, nelec) :: vdonly
 
 
 
 
 
 
-      parameter(one=1.d0)
 
 
 
-      dimension v(3,*),vdonly(3,nelec)
 
       if(iflag.eq.0) then
         do 10 k=1,3
@@ -43,7 +41,11 @@ c Written by Claudia Filippi
 
       function rnorm_nodes_num(distance_node,epsilon)
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+
+      real(dp) :: distance_node, dum, epsilon, rnorm_nodes_num
 
       if(distance_node.ge.epsilon) then
         rnorm_nodes_num=distance_node

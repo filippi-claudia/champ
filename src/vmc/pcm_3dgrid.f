@@ -14,12 +14,20 @@ c----------------------------------------------------------------------
       use pcm_3dgrid, only: MGRID_PCM
       use pcm_3dgrid, only: UNDEFINED, IUNDEFINED, PCM_SHIFT
       use atom, only: cent, ncent
-      use contrl, only: irstar
       use grid3d_param, only: origin
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iaxis, ibcxmax, ibcxmin, ibcymax
+      integer :: ibcymin, ibczmax, ibczmin, ilinx
+      integer :: iliny, ilinz, input_ok, iok
+      integer :: ipcm_grid, ipcm_int_from_cart, iu, iy
+      integer :: iz, j, memory, nwk
+      real(dp) :: pepol_s, pepol_v, value
+      real(dp), dimension(3) :: r
 
 c Test if the input is consistent
        input_ok=1
@@ -106,12 +114,17 @@ c----------------------------------------------------------------------
 
       use pcm_3dgrid, only: IUNDEFINED
       use pcm_grid3d_param, only: pcm_endpt, pcm_origin, pcm_step3d
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-      implicit real*8(a-h,o-z)
-
-
+      integer :: i, iaxis, ibcxmax, ibcxmin, ibcymax
+      integer :: ibcymin, ibczmax, ibczmin, ilinx
+      integer :: iliny, ilinz, iok, ipcm_grid
+      integer :: ipcm_int_from_cart, irstar, iu, iy
+      integer :: iz, j, memory, nwk
+      real(dp) :: pepol_s, pepol_v, value
+      real(dp), dimension(3) :: r
 
       
       if (value.lt.pcm_origin(iaxis).or.value.ge.pcm_endpt(iaxis)) then
@@ -129,8 +142,18 @@ c PCM on a 3d grid with spline fit
       use pcm_grid3d_param, only: ipcm_nstep3d
       use pcm_grid3d_array, only: pcm_cart_from_int
       use m_pcm_num_spl, only: pcm_num_spl
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, ibcxmax, ibcxmin, ibcymax, ibcymin
+      integer :: ibczmax, ibczmin, ilinx, iliny
+      integer :: ilinz, iok, ipcm_grid, ipcm_int_from_cart
+      integer :: irstar, iu, iy, iz
+      integer :: j, k, l, memory
+      integer :: nwk, ier, ix
+      real(dp) :: pepol_s, pepol_v
+      real(dp), dimension(3) :: r
 
 
 c     Note:
@@ -146,7 +169,6 @@ c     xz_max = 1+3+3 = 7
 c     yz_max = 2+3+3 = 8
       real*8  bc(MGRID_PCM,MGRID_PCM,3:8), wk(80*MGRID_PCM3)
 
-      dimension r(3)
 
       iok=1
 c We have no info on the derivatives, so use "not a knot" in the creation of the fit
@@ -217,9 +239,12 @@ c----------------------------------------------------------------------
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
       use insout, only: inout, inside
+      use m_pcm_num_spl, only: pcm_num_spl
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, ipcm_grid, ipcm_int_from_cart, iu, j
+      integer :: k, l
 
 c     Input:
       real*8    r(3)    ! Cartesian coordinates
@@ -281,7 +306,9 @@ c-----------------------------------------------------------------------
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: iu, i, j, ipcm_grid
 
       if (ipcm.eq.0.or.ipcm_grid.eq.0) return
 
@@ -296,14 +323,14 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_3dgrid_rstrt(iu)
+
       use pcm_cntrl, only: ipcm
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
-
+      integer :: iu, i, j, ipcm_grid
 
       if (ipcm.eq.0.or.ipcm_grid.eq.0) return
 
@@ -321,8 +348,9 @@ c-----------------------------------------------------------------------
       use pcm_grid3d_param, only: ipcm_nstep3d
       use m_pcm_num_spl, only: pcm_num_spl
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: iu, i, j, k, l
  
       do i=1,8
         write(iu)(((pcm_num_spl(i,j,k,l),j=1,ipcm_nstep3d(1)),k=1,ipcm_nstep3d(2)), l=1,ipcm_nstep3d(3))
@@ -334,9 +362,9 @@ c-----------------------------------------------------------------------
       use pcm_grid3d_param, only: ipcm_nstep3d
       use m_pcm_num_spl, only: pcm_num_spl
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
-
+      integer :: iu, i, j, k, l
 
       do i=1,8
         read(iu)(((pcm_num_spl(i,j,k,l),j=1,ipcm_nstep3d(1)),k=1,ipcm_nstep3d(2)),l=1,ipcm_nstep3d(3))

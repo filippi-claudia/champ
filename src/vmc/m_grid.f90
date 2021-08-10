@@ -3,6 +3,8 @@ module grid_mod
     ! flags and dimensions for the 3d grid objects
     use precision_kinds, only: dp, sp
 
+    implicit none
+
     integer, parameter :: MXNSTEP = 1
     ! integer, parameter :: MXNSTEP = 50
     integer, parameter :: MXNSTEP2 = MXNSTEP*MXNSTEP
@@ -23,7 +25,6 @@ module grid_mod
 
 contains
     subroutine allocate_grid_mod()
-        use precision_kinds, only: dp, sp
         if (.not. allocated(grid3d)) allocate (grid3d(MXNSTEP, MXNSTEP, MXNSTEP))
         if (.not. allocated(cart_from_int)) allocate (cart_from_int(MXNSTEP, 3))
     end subroutine allocate_grid_mod
@@ -38,9 +39,10 @@ end module grid_mod
 module grid_spline_mod
     !> Arguments
     use precision_kinds, only: sp
-    use vmc_mod, only: MELEC
     use const, only: nelec
     use grid_mod, only: MXNSTEP
+
+    implicit none
 
     integer :: MORB_OCC
     real(sp), dimension(:, :, :, :, :), allocatable :: orb_num_spl !(8, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC)
@@ -68,8 +70,10 @@ module grid_lagrange_mod
     !> argument
     use precision_kinds, only: sp
     use grid_mod, only: MXNSTEP
-    use vmc_mod, only: MELEC
     use const, only: nelec
+
+    implicit none
+
     ! Number of Lagrange interpolation points/axis
     integer, parameter :: LAGMAX = 4
     integer, parameter :: LAGSTART = -LAGMAX/2, LAGEND = LAGSTART + LAGMAX - 1
@@ -102,6 +106,8 @@ module grid3d_param
     !> Arguments: nstep3d, endpt, origin, step3d
     use precision_kinds, only: dp
 
+    implicit none
+
     real(dp), dimension(:), allocatable :: endpt !(3)
     integer, dimension(:), allocatable :: nstep3d !(3)
     real(dp), dimension(:), allocatable :: origin !(3)
@@ -113,7 +119,6 @@ module grid3d_param
     save
 contains
     subroutine allocate_grid3d_param()
-        use precision_kinds, only: dp
         if (.not. allocated(endpt)) allocate (endpt(3))
         if (.not. allocated(nstep3d)) allocate (nstep3d(3))
         if (.not. allocated(origin)) allocate (origin(3))
@@ -132,6 +137,8 @@ end module grid3d_param
 module grid3dflag
     !> Arguments: i3dsplorb, i3dlagorb, i3dgrid, i3ddensity
 
+    implicit none
+
     integer :: i3ddensity
     integer :: i3dgrid
     integer :: i3dlagorb
@@ -147,6 +154,8 @@ module orbital_num_lag
     use precision_kinds, only: dp
     use grid_lagrange_mod, only: LAGSTART, LAGEND
 
+    implicit none
+
     real(dp), dimension(:, :), allocatable :: denom !(LAGSTART:LAGEND, 3)
     real(dp), dimension(:, :), allocatable :: step_inv !(3, 3)
 
@@ -156,7 +165,6 @@ module orbital_num_lag
     save
 contains
     subroutine allocate_orbital_num_lag()
-        use precision_kinds, only: dp
         use grid_lagrange_mod, only: LAGSTART, LAGEND
         if (.not. allocated(denom)) allocate (denom(LAGSTART:LAGEND, 3))
         if (.not. allocated(step_inv)) allocate (step_inv(3, 3))
@@ -176,6 +184,8 @@ subroutine allocate_m_grid()
     use grid3d_param, only: allocate_grid3d_param
     use orbital_num_lag, only: allocate_orbital_num_lag
 
+    implicit none
+
     call allocate_grid_mod()
     call allocate_grid_spline_mod()
     call allocate_grid_lagrange_mod()
@@ -189,6 +199,8 @@ subroutine deallocate_m_grid()
     use grid_lagrange_mod, only: deallocate_grid_lagrange_mod
     use grid3d_param, only: deallocate_grid3d_param
     use orbital_num_lag, only: deallocate_orbital_num_lag
+
+    implicit none
 
     call deallocate_grid_mod()
     call deallocate_grid_spline_mod()

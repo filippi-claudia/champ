@@ -53,7 +53,6 @@ module ci001_blk
 contains
     subroutine allocate_ci001_blk()
         use optci, only: MXCITERM, MXCIREDUCED
-        use precision_kinds, only: dp
         if (.not. allocated(ci_o)) allocate (ci_o(MXCITERM))
         if (.not. allocated(ci_oe)) allocate (ci_oe(MXCITERM, MXCIREDUCED))
     end subroutine allocate_ci001_blk
@@ -80,7 +79,6 @@ module ci002_blk
 contains
     subroutine allocate_ci002_blk()
         use optci, only: MXCITERM, MXCIREDUCED
-        use precision_kinds, only: dp
         if (.not. allocated(ci_o_old)) allocate (ci_o_old(MXCITERM))
         if (.not. allocated(ci_oe_old)) allocate (ci_oe_old(MXCITERM, MXCIREDUCED))
     end subroutine allocate_ci002_blk
@@ -107,7 +105,6 @@ module ci003_blk
 contains
     subroutine allocate_ci003_blk()
         use optci, only: MXCITERM
-        use precision_kinds, only: dp
         if (.not. allocated(ci_e)) allocate (ci_e(MXCITERM))
         if (.not. allocated(ci_e_old)) allocate (ci_e_old(MXCITERM))
     end subroutine allocate_ci003_blk
@@ -134,7 +131,6 @@ module ci004_blk
 contains
     subroutine allocate_ci004_blk()
         use optci, only: MXCITERM
-        use precision_kinds, only: dp
         if (.not. allocated(ci_de)) allocate (ci_de(MXCITERM))
         if (.not. allocated(ci_de_old)) allocate (ci_de_old(MXCITERM))
     end subroutine allocate_ci004_blk
@@ -161,7 +157,6 @@ module ci005_blk
 contains
     subroutine allocate_ci005_blk()
         use optci, only: MXCITERM
-        use precision_kinds, only: dp
         if (.not. allocated(ci_o_cum)) allocate (ci_o_cum(MXCITERM))
         if (.not. allocated(ci_o_sum)) allocate (ci_o_sum(MXCITERM))
     end subroutine allocate_ci005_blk
@@ -188,7 +183,6 @@ module ci006_blk
 contains
     subroutine allocate_ci006_blk()
         use optci, only: MXCITERM
-        use precision_kinds, only: dp
         if (.not. allocated(ci_de_cum)) allocate (ci_de_cum(MXCITERM))
         if (.not. allocated(ci_de_sum)) allocate (ci_de_sum(MXCITERM))
     end subroutine allocate_ci006_blk
@@ -216,7 +210,6 @@ module ci008_blk
 contains
     subroutine allocate_ci008_blk()
         use optci, only: MXCITERM, MXCIREDUCED
-        use precision_kinds, only: dp
         if (.not. allocated(ci_oe_cm2)) allocate (ci_oe_cm2(MXCITERM, MXCIREDUCED))
         if (.not. allocated(ci_oe_cum)) allocate (ci_oe_cum(MXCITERM, MXCIREDUCED))
         if (.not. allocated(ci_oe_sum)) allocate (ci_oe_sum(MXCITERM, MXCIREDUCED))
@@ -246,7 +239,6 @@ module ci009_blk
 contains
     subroutine allocate_ci009_blk()
         use optci, only: MXCIMATDIM
-        use precision_kinds, only: dp
         if (.not. allocated(ci_oo_cm2)) allocate (ci_oo_cm2(MXCIMATDIM))
         if (.not. allocated(ci_oo_cum)) allocate (ci_oo_cum(MXCIMATDIM))
         if (.not. allocated(ci_oo_sum)) allocate (ci_oo_sum(MXCIMATDIM))
@@ -275,7 +267,6 @@ module ci010_blk
 contains
     subroutine allocate_ci010_blk()
         use optci, only: MXCIMATDIM
-        use precision_kinds, only: dp
         if (.not. allocated(ci_ooe_cum)) allocate (ci_ooe_cum(MXCIMATDIM))
         if (.not. allocated(ci_ooe_sum)) allocate (ci_ooe_sum(MXCIMATDIM))
     end subroutine allocate_ci010_blk

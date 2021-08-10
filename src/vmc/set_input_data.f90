@@ -9,7 +9,10 @@ subroutine inputzex
     use contrl_per, only: iperiodic
     use wfsec, only: nwftype
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, iwft
+
 
     allocate (zex(nbasis, nwftype))
 
@@ -37,7 +40,8 @@ subroutine inputcsf
 
     ! are they needed ??!!
     use optwf_contrl, only: ioptci
-    implicit real*8(a - h, o - z)
+      implicit none
+
 
     nstates = 1
     ncsf = 0
@@ -66,9 +70,29 @@ subroutine multideterminants_define(iflag, icheck)
     ! not sure about that one either ....
     use wfsec, only: nwftype
 
-    implicit real*8(a - h, o - z)
+      use precision_kinds, only: dp
+      implicit none
 
-    dimension iswapped(nelec), itotphase(MDET)
+
+    interface
+    function idiff(j, i, iab)
+        integer, intent(in) :: j
+        integer, intent(in) :: i
+        integer, intent(in) :: iab
+        integer :: idiff
+    endfunction
+    end interface
+
+      integer :: i, iab, icheck, icsf, idist
+      integer :: iflag, in, iphase, iref
+      integer :: irep, isav, ish, istate
+      integer :: isub, iw, iwf, iwref
+      integer :: j, k, kref_old, l
+      integer :: ndet_dist, nel
+      integer, dimension(nelec) :: iswapped
+      integer, dimension(MDET) :: itotphase
+
+
 
     save kref_old
 
@@ -267,7 +291,10 @@ subroutine inputforces
 
     use atom, only: ncent
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i
+
 
     !call p2gti('atoms:natom', ncent, 1)
     ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
@@ -303,7 +330,10 @@ subroutine inputdet(nwftype)
     use vmc_mod, only: MORB, MDET
     use mstates_mod, only: MSTATES
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: iwft, k, nwftype
+
 
     allocate (cdet(MDET, MSTATES, nwftype))
 
@@ -320,7 +350,10 @@ subroutine inputlcao(nwftype)
     use coefs, only: coef, nbasis, norb
     use vmc_mod, only: MORB
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, iwft, j, nwftype
+
 
     allocate (coef(nbasis, MORB, nwftype))
 
@@ -346,7 +379,18 @@ subroutine inputjastrow(nwftype)
 
     use atom, only: ncent, nctype
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      interface
+      function nterms4(nord)
+          integer, intent(in) :: nord
+          integer :: nterms4
+      end function nterms4
+      end interface
+
+      integer :: iparm, isp, it, iwft, mparmja
+      integer :: mparmjb, mparmjc, nwftype
+
 
     !call p2gti('jastrow:ijas', ijas, 1)
     !call p2gti('jastrow:isc', isc, 1)
@@ -402,7 +446,10 @@ subroutine set_displace_zero(nforce_tmp)
 
     use atom, only: ncent
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: i, ic, j, k, nforce_tmp
+
 
     !call p2gti('atoms:natom', ncent, 1)
     ! if (ncent .gt. MCENT) call fatal_error('FORCES: ncent > MCENT')
@@ -435,7 +482,10 @@ subroutine modify_zmat_define
     use vmc_mod, only: MCENT
     use grdntsmv, only: igrdmv
     use atom, only: ncent
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: ic, k
+
 
     !call p2gti('atoms:natom', ncent, 1)
     ! if (ncent .gt. MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
@@ -457,7 +507,10 @@ subroutine hessian_zmat_define
     use grdnthes, only: hessian_zmat
     use atom, only: ncent
 
-    implicit real*8(a - h, o - z)
+      implicit none
+
+      integer :: ic, k
+
 
     !call p2gti('atoms:natom', ncent, 1)
     ! if (ncent .gt. MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')

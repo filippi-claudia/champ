@@ -1,12 +1,6 @@
       subroutine detsav(iel,iflag)
 c Written by Claudia Filippi
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use csfs, only: nstates
 
       use dets, only: ndet
@@ -20,13 +14,18 @@ c Written by Claudia Filippi
       use dorb_m, only: iworbd
       use multimat, only: aa, wfmat
       use multimatn, only: aan, wfmatn
-      use multislatern, only: ddorbn, detn, dorbn, orbn
+      use multislatern, only: detn, dorbn, orbn
 
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
+      use orbval, only: dorb, orb
+      use slater, only: fp, slmi
 
       use multislater, only: detiab
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iab, iel, iflag, ikel
+      integer :: iorb, ish, istate, j
+      integer :: k, kk, ndim, nel
+
 
 
 
@@ -49,7 +48,7 @@ c Written by Claudia Filippi
    15   slmi(j,iab)=slmin(j)
       do 30 j=ivirt(iab),norb
         do 30 i=1,nel
-          do 20 istate=1,nstates   
+          do 20 istate=1,nstates
    20       ymat(j,i,iab,istate)=ymatn(j,i,istate)
    30   aa(i,j,iab)=aan(i,j)
 

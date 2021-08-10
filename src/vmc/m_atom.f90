@@ -2,6 +2,7 @@ module atom
     !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
     use precision_kinds, only: dp
 
+    implicit none
 
     real(dp), dimension(:, :), allocatable :: cent
     real(dp), dimension(:), allocatable :: znuc
@@ -18,7 +19,6 @@ module atom
     save
 contains
     subroutine allocate_atom()
-        use precision_kinds, only: dp
 
         if (.not. allocated(cent)) allocate (cent(3, ncent_tot))
         if (.not. allocated(znuc)) allocate (znuc(nctype_tot))
@@ -36,6 +36,8 @@ end module atom
 
 module ghostatom
     !> Arguments: newghostype, nghostcent
+
+    implicit none
 
     integer :: newghostype
     integer :: nghostcent

@@ -4,18 +4,27 @@ c Calculates the local and nonlocal components of the pseudopotential
 c Calculates non-local potential derivatives
 c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
       use pseudo_mod, only: MPS_QUAD
-      use vmc_mod, only: MELEC, MCENT
       use atom, only: iwctype, ncent, ncent_tot
       use const, only: nelec
       use contrl_per, only: iperiodic
 
       use pseudo, only: lpot, nloc, vps
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, i1, i2, i_vpsp, ic
+      integer :: ifr
+      real(dp) :: pe
+      real(dp), dimension(3, *) :: x
+      real(dp), dimension(3, nelec, ncent_tot) :: rshift
+      real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
+      real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), dimension(*) :: vpsp_det
+      real(dp), dimension(*) :: dvpsp_dj
+      real(dp), dimension(ncent_tot, MPS_QUAD, *) :: t_vpsp
 
 
-      dimension x(3,*),rshift(3,nelec,ncent_tot),rvec_en(3,nelec,ncent_tot),r_en(nelec,ncent_tot)
-     &,vpsp_det(*),dvpsp_dj(*),t_vpsp(ncent_tot,MPS_QUAD,*)
 
       if(i_vpsp.gt.0)then
         i1=i_vpsp

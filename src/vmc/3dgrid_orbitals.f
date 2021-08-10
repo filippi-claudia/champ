@@ -3,26 +3,33 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       subroutine setup_3dsplorb
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use grid_spline_mod, only: MORB_OCC
       use grid_spline_mod, only: orb_num_spl
       use grid_mod, only: MXNSTEP, MXNSTEP3
       use grid_mod, only: cart_from_int
-      use vmc_mod, only: MELEC, MCENT
-      use vmc_mod, only: MORB
-      use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, ncent
       use const, only: nelec
-      use ghostatom, only: newghostype, nghostcent
+      use ghostatom, only: nghostcent
       use phifun, only: d2phin, dphin
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
-      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use contrl, only: irstar
       use phifun, only: d2phin, dphin, phin
       use grid3d_param, only: endpt, nstep3d, origin
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      implicit real*8(a-h,o-z)
+      use distance_mod, only: r_en, rvec_en
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ibcxmax, ibcxmin, ibcymax, ibcymin
+      integer :: ibczmax, ibczmin, ic, ier
+      integer :: ilinx, iliny, ilinz, iok
+      integer :: iorb, ix, iy, iz
+      integer :: m, memory, nwk
+      integer, dimension(4) :: iaxis
+      integer, dimension(3) :: ixyz
+      real(dp) :: ddf, f, value
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: df
 
 
 
@@ -42,14 +49,12 @@ c     xz_max = 1+3+3 = 7
 c     yz_max = 2+3+3 = 8
 
 
-      dimension r(3), iaxis(4), ixyz(3)
 
-      dimension df(3)
       iwf=1
       iok=1
 
 c     Check the sizes
-c      if (norb.gt.MORB_OCC) 
+c      if (norb.gt.MORB_OCC)
 c     >  call fatal_error ('MORB_OCC too small. Recompile.')
 
 c     We have no info on the derivatives, so use "not a knot" in the creation
@@ -65,7 +70,7 @@ c     Evaluate the energy needed for the calculation
       memory=dfloat((norb+10)*4)
       memory=memory*dfloat(nstep3d(1)*nstep3d(2)*nstep3d(3))
       memory=memory*8.d-6
-     
+
       write (45,*) 'Allocated memory for the 3D spline fits of the LCAO:',
      & memory, 'Mb'
 
@@ -88,7 +93,7 @@ c      depending on the value of iaxis, in the purpose to use the values
 c      ixyz(...) in the access to orb_num_spl.
 
 c      write (45,*) 'Computation of the boundary...'
-c      do icount=1,3 
+c      do icount=1,3
 
 c       prepare for the computation of the minimum boundary
 c       r(iaxis(3)) = origin(iaxis(3))
@@ -119,7 +124,7 @@ c           enddo
 c           r_en(1,ic)=dsqrt(r_en(1,ic))
 c          enddo
 c
-c          Calculate the value and the gradient of the orbital 
+c          Calculate the value and the gradient of the orbital
 c          call basis_fnse(1,rvec_en,r_en)
 c
 c          do iorb=1,norb
@@ -136,7 +141,7 @@ c            Gradient:
 c            bc(ixyz(iaxis(1)),ixyz(iaxis(2)),iaxis(1)+iaxis(2)+ii,iorb)=
 c    >        bc(ixyz(iaxis(1)),ixyz(iaxis(2)),iaxis(1)+iaxis(2)+ii,iorb)
 c    >          +coef(m,iorb,iwf)*dphin(iaxis(3),m,1)
-c           enddo 
+c           enddo
 
 c          enddo !iorb
 
@@ -183,7 +188,7 @@ c      ----------------------------------------------------------------
          do iz=1, nstep3d(3)
           r(3) = cart_from_int (iz,3)
 
-         
+
 c         Calculate e-N inter-particle distances
           iok=1
           do ic=1,ncent+nghostcent
@@ -214,7 +219,7 @@ c         Check that no atom is exactly on a grid point
             call fatal_error('aborted')
           endif
 
-c         Calculate the value of the orbital 
+c         Calculate the value of the orbital
           call basis_fnse_v(1,rvec_en,r_en)
 
           do iorb=1,norb
@@ -248,7 +253,7 @@ c       call r8mktricubw(cart_from_int(1,1),nstep3d(1),
      >                  ibczmin,bc(1,1,1+2,iorb),
      >                  ibczmax,bc(1,1,1+2+3,iorb),MXNSTEP,
      >                  wk,nwk,ilinx,iliny,ilinz,ier)
-        if (ier.eq.1) 
+        if (ier.eq.1)
      >   call fatal_error ('Error in r8mktricubw')
         write (45,*) 'orbital ', iorb, 'splined'
        enddo
@@ -300,7 +305,20 @@ c----------------------------------------------------------------------
       use grid_mod, only: cart_from_int
       use insout, only: inout, inside
       use grid3d_param, only: nstep3d, step3d
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      interface
+      function int_from_cart(value, iaxis)
+        use precision_kinds, only: dp
+        real(dp), intent(in) :: value
+        integer, intent(in) :: iaxis
+        integer :: int_from_cart
+      end function int_from_cart
+      end interface
+
+
+      integer :: i
+
 
 c     Input:
       integer   iorb    ! Index of the MO to spline
@@ -371,15 +389,15 @@ c       call r8fvtricub(ict,1,1,fval,
      >                  step3d(3),inv_step3d(3),
      >                  orb_num_spl(1,1,1,1,iorb),
      >                  MXNSTEP,MXNSTEP,nstep3d(3))
-      
+
         f     = fval(1)
         df(1) = fval(2)
         df(2) = fval(3)
         df(3) = fval(4)
         ddf   = fval(5) + fval(6) + fval(7)
-     
-      endif 
-      
+
+      endif
+
       end ! subroutine spline_mo
 
 
@@ -389,37 +407,40 @@ c Lagrange interpolation routines
 
       subroutine setup_3dlagorb
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use grid_lagrange_mod, only: LAGSTART, LAGEND, MORB_OCC
+      use grid_lagrange_mod, only: LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
-      use grid_mod, only: grid3d, cart_from_int
-      use vmc_mod, only: MELEC, MORB, MCENT
+      use grid_mod, only: cart_from_int
       use vmc_mod, only: MORB
-      use vmc_mod, only: MMAT_DIM2
+      use vmc_mod, only: MORB
       use atom, only: cent, ncent
       use wfsec, only: iwf
       use grid3d_param, only: nstep3d, endpt, origin
       use orbital_num_lag, only: denom
-      use const, only: nelec
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: nghostcent
       use contrl, only: irstar
       use phifun, only: phin, dphin, d2phin
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      implicit real*8(a-h,o-z)
+      use distance_mod, only: r_en, rvec_en
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ic, idenom, ier, iok
+      integer :: iorb, ix, iy, iz
+      integer :: j, m, memory
+      real(dp) :: value, value2
+      real(dp), dimension(3) :: r
+      real(dp), dimension(MORB) :: f
 
 
 
 
       character*(32) filename
       integer a,b,c
-      dimension r(3)
 
-      dimension f(MORB)
       iwf=1
 
 c     Check the sizes
-c      if (norb.gt.MORB_OCC) 
+c      if (norb.gt.MORB_OCC)
 c     >  call fatal_error ('MORB_OCC too small. Recompile.')
 
 
@@ -427,14 +448,14 @@ c     Evaluate the memory needed for the calculation
       memory=dfloat(norb)*5.d0
       memory=memory*dfloat(nstep3d(1)*nstep3d(2)*nstep3d(3))
       memory=memory*4.d-6
-     
+
       write (45,*) 'Allocated memory for the 3D Lagrange fits of the LCAO:',
      & memory, 'Mb'
 
       if ( irstar.ne.1 ) then
 
 c      ----------------------------------------------------------------
-c      Compute the orbitals values, gradients and laplacians 
+c      Compute the orbitals values, gradients and laplacians
 c      ----------------------------------------------------------------
 
        write (45,*) 'Computation of the grid points...'
@@ -476,7 +497,7 @@ c         Check that no atom is exactly on a grid point
             write(6,*) ''
             call fatal_error('aborted')
           endif
-         
+
 c         Calculate the grids
           call basis_fnse_vgl(1,rvec_en,r_en)
 
@@ -504,7 +525,7 @@ c         Calculate the grids
          enddo
         enddo
        enddo
-      endif 
+      endif
 c DEBUG
 c      do igrid=1,5
 c       do iorb=1,norb
@@ -560,7 +581,7 @@ c DEBUG
           do j=1,norb
            value2=0.
            do m=1,nbasis
-            value2=value2 + 
+            value2=value2 +
      &        coef(m,j,iwf)*phin(m,1)
            enddo
            value = value + value2
@@ -585,29 +606,46 @@ c-----------------------------------------------------------------------
 
       subroutine lagrange_mos(igrid,r,orb,iel,ier)
 c Written by A Scemama
-c Evaluate orbitals by a Lagrange interpolation (LAGMAX mesh pts) 
+c Evaluate orbitals by a Lagrange interpolation (LAGMAX mesh pts)
 c on an equally-spaced 3D grid.
 c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use vmc_mod, only: MELEC, MORB
+      use vmc_mod, only: MORB
       use insout, only: inout, inside
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+
+      interface
+      function int_from_cart(value, iaxis)
+        use precision_kinds, only: dp
+        real(dp), intent(in) :: value
+        integer, intent(in) :: iaxis
+        integer :: int_from_cart
+      end function int_from_cart
+      end interface
+
+      integer :: i, i1, i2, i3, iel
+      integer :: ier, igrid, iorb, j
+      integer, dimension(3) :: ix
+      real(dp) :: orb1, orb2
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: dr
+      real(dp), dimension(nelec,MORB) :: orb
+      real(dp), dimension(LAGSTART:LAGEND) :: xi
 
 
 
-      dimension r(3),dr(3),orb(nelec,MORB),ix(3)
-      dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 
       inout   = inout  +1.d0
@@ -642,7 +680,7 @@ c Compute displacements
            enddo
          enddo
        enddo
-  
+
        do iorb=1,norb
          orb(iel,iorb) = 0.d0
          do i3=LAGSTART, LAGEND !z interpolation
@@ -667,28 +705,45 @@ c----------------------------------------------------------------------
 
       subroutine lagrange_mos_grad(igrid,r,orb,iel,ier)
 c Written by A Scemama
-c Evaluate orbitals by a Lagrange interpolation (LAGMAX mesh pts) 
+c Evaluate orbitals by a Lagrange interpolation (LAGMAX mesh pts)
 c on an equally-spaced 3D grid.
 c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use vmc_mod, only: MELEC, MORB
+      use vmc_mod, only: MORB
       use insout, only: inout, inside
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
       use const, only: nelec
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      interface
+      function int_from_cart(value, iaxis)
+        use precision_kinds, only: dp
+        real(dp), intent(in) :: value
+        integer, intent(in) :: iaxis
+        integer :: int_from_cart
+      end function int_from_cart
+      end interface
+
+      integer :: i, i1, i2, i3, iaxis
+      integer :: iel, ier, igrid, iorb
+      integer :: j
+      integer, dimension(3) :: ix
+      real(dp) :: orb1, orb2
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: dr
+      real(dp), dimension(3,nelec,MORB) :: orb
+      real(dp), dimension(LAGSTART:LAGEND) :: xi
 
 
-      dimension r(3),dr(3),orb(3,nelec,MORB),ix(3)
-      dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 
       inout   = inout  +1.d0
@@ -724,7 +779,7 @@ c Compute displacements
            enddo
          enddo
        enddo
-  
+
        iaxis = igrid-1
        do iorb=1,norb
          orb(iaxis,iel,iorb) = 0.d0
@@ -750,13 +805,12 @@ c-----------------------------------------------------------------------
 
       subroutine lagrange_mose(igrid,r,orb,ier)
 c Written by A Scemama
-c Evaluate orbitals by a Lagrange interpolation (LAGMAX mesh pts) 
+c Evaluate orbitals by a Lagrange interpolation (LAGMAX mesh pts)
 c on an equally-spaced 3D grid.
 c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
@@ -766,12 +820,30 @@ c
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      interface
+      function int_from_cart(value, iaxis)
+        use precision_kinds, only: dp
+        real(dp), intent(in) :: value
+        integer, intent(in) :: iaxis
+        integer :: int_from_cart
+      end function int_from_cart
+      end interface
+
+
+      integer :: i, i1, i2, i3, ier
+      integer :: igrid, iorb, j
+      integer, dimension(3) :: ix
+      real(dp) :: orb1, orb2
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: dr
+      real(dp), dimension(MORB) :: orb
+      real(dp), dimension(LAGSTART:LAGEND) :: xi
 
 
 
-      dimension r(3),dr(3),orb(MORB),ix(3)
-      dimension xi(LAGSTART:LAGEND)
       real*8    num(LAGSTART:LAGEND,3)
 
       inout   = inout  +1.d0
@@ -806,7 +878,7 @@ c Compute displacements
            enddo
          enddo
        enddo
-  
+
        do iorb=1,norb
          orb(iorb) = 0.d0
          do i3=LAGSTART, LAGEND !z interpolation
@@ -831,13 +903,12 @@ c----------------------------------------------------------------------
 
       subroutine lagrange_mos_grade(igrid,r,orb,ier)
 c Written by A Scemama
-c Evaluate orbitals by a Lagrange interpolation (LAGMAX mesh pts) 
+c Evaluate orbitals by a Lagrange interpolation (LAGMAX mesh pts)
 c on an equally-spaced 3D grid.
 c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
@@ -847,11 +918,29 @@ c
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      interface
+      function int_from_cart(value, iaxis)
+        use precision_kinds, only: dp
+        real(dp), intent(in) :: value
+        integer, intent(in) :: iaxis
+        integer :: int_from_cart
+      end function int_from_cart
+      end interface
 
 
-      dimension r(3),dr(3),orb(3,MORB),ix(3)
-      dimension xi(LAGSTART:LAGEND)
+      integer :: i, i1, i2, i3, iaxis
+      integer :: ier, igrid, iorb, j
+      integer, dimension(3) :: ix
+      real(dp) :: orb1, orb2
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: dr
+      real(dp), dimension(3,MORB) :: orb
+      real(dp), dimension(LAGSTART:LAGEND) :: xi
+
+
       real*8    num(LAGSTART:LAGEND,3)
 
       inout   = inout  +1.d0
@@ -887,7 +976,7 @@ c Compute displacements
            enddo
          enddo
        enddo
-  
+
        do iorb=1,norb
          orb(iaxis,iorb) = 0.d0
          do i3=LAGSTART, LAGEND !z interpolation
@@ -909,13 +998,15 @@ c Compute displacements
       end
 c-----------------------------------------------------------------------
       subroutine orb3d_dump(iu)
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_mod, only: cart_from_int
       use coefs, only: norb
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       use grid3dflag, only: i3dgrid, i3dlagorb, i3dsplorb
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu, j
+
 
 
 
@@ -937,14 +1028,16 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine orb3d_rstrt(iu)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_mod, only: cart_from_int
       use coefs, only: norb
 
       use grid3d_param, only: endpt, nstep3d, origin, step3d
       use grid3dflag, only: i3dgrid, i3dlagorb, i3dsplorb
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu, j
+
 
 
 
@@ -958,20 +1051,23 @@ c-----------------------------------------------------------------------
       read (iu) (nstep3d(i), i=1,3)
       read (iu) (step3d(i), i=1,3)
       read (iu) ((cart_from_int(i,j), i=1,nstep3d(j)),j=1,3)
-      
+
       if (i3dsplorb.ge.1) call splorb_rstrt(iu)
       if (i3dlagorb.ge.1) call lagorb_rstrt(iu)
       end
 c-----------------------------------------------------------------------
       subroutine splorb_dump(iu)
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_spline_mod, only: orb_num_spl
       use coefs, only: norb
       use grid3d_param, only: nstep3d
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu, j, k, l
+      integer :: m
 
 
- 
+
+
       do i=1,8
        do m=1,norb
         write (iu) (((orb_num_spl(i,j,k,l,m), j=1,nstep3d(1)),
@@ -982,11 +1078,14 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_rstrt(iu)
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_spline_mod, only: orb_num_spl
       use coefs, only: norb
       use grid3d_param, only: nstep3d
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu, j, k, l
+      integer :: m
+
 
 
 
@@ -1000,15 +1099,18 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_dump(iu)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: orb_num_lag
       use coefs, only: norb
       use grid3d_param, only: nstep3d
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu, j, k, l
+      integer :: m
 
 
- 
+
+
       do i=1,5
        do m=1,norb
         write (iu) (((orb_num_lag(i,j,k,l,m), j=1,nstep3d(1)),
@@ -1020,12 +1122,15 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_rstrt(iu)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use grid_lagrange_mod, only: orb_num_lag
       use coefs, only: norb
       use grid3d_param, only: nstep3d
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu, j, k, l
+      integer :: m
+
 
 
 

@@ -2,7 +2,7 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
-      use vmc_mod, only: MELEC
+
       use vmc_mod, only: nrad
       use dmc_mod, only: MWALK
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
@@ -42,12 +42,20 @@ c job where it left off
       use contrl, only: nconf
       use mpi
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      parameter (zero=0.d0,one=1.d0)
+      integer :: i, ib, ic, id, ierr
+      integer :: ifr, irequest, iw, j
+      integer :: k, nscounts
+      integer, dimension(4, 0:NPROCX) :: irn
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      integer, dimension(4, 0:NPROCX) :: irn_tmp
 
-      dimension irn(4,0:NPROCX),istatus(MPI_STATUS_SIZE)
-      dimension irn_tmp(4,0:NPROCX)
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+
+
 
       if(nforce.gt.1) call strech(xold_dmc,xold_dmc,ajacob,1,0)
 
@@ -60,7 +68,7 @@ c job where it left off
       if(.not.wid) then
         call mpi_isend(nwalk,1,mpi_integer,0
      &  ,1,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(xold_dmc,3*MELEC*nwalk,mpi_double_precision,0
+        call mpi_isend(xold_dmc,3*nelec*nwalk,mpi_double_precision,0
      &  ,2,MPI_COMM_WORLD,irequest,ierr)
         call mpi_isend(wt,nwalk,mpi_double_precision,0
      &  ,3,MPI_COMM_WORLD,irequest,ierr)
@@ -91,7 +99,7 @@ c    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
         do 450 id=1,nproc-1
           call mpi_recv(nwalk,1,mpi_integer,id
      &    ,1,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(xold_dmc,3*MELEC*nwalk,mpi_double_precision,id
+          call mpi_recv(xold_dmc,3*nelec*nwalk,mpi_double_precision,id
      &    ,2,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(wt,nwalk,mpi_double_precision,id
      &    ,3,MPI_COMM_WORLD,istatus,ierr)

@@ -1,14 +1,16 @@
       subroutine verify_orbitals
 
-      use vmc_mod, only: MELEC, MORB
       use const, only: nelec
       use dets, only: ndet
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
       use dorb_m, only: iworbd
-      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use orbval, only: nadorb, ndetorb, orb
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, j
+
 
 c orbital indices in determinants of trial wave function
       ndetorb=0

@@ -1,19 +1,22 @@
       subroutine matinv(a,nsub,determinant)
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use const, only: nelec
-      implicit real*8 (a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
+      integer :: i, info, nsub
+      integer, dimension(nsub) :: ipvt
+      real(dp) :: aux, determinant, deti
+      real(dp) :: ten
+      real(dp), dimension(nsub, nsub) :: a
+      real(dp), dimension(nsub) :: work
+
+      real(dp), dimension(2) :: det
+      real(dp), parameter :: eps = 10.d0**(-40)
+      integer :: ii,jj
 c routine to calculate inverse and determinant of matrix a
 c assumed to be dimensioned a(nsub,nsub).
 c the matrix a is replaced by its inverse.
 
-      parameter (eps=10.d0**(-40))
-      dimension a(nsub,nsub)
-      dimension ipvt(nelec),work(nelec),work2(9),det(2)
 
       if(nsub.eq.1) then
         determinant=a(1,1)
@@ -26,37 +29,16 @@ c the matrix a is replaced by its inverse.
         a(2,2)= aux   *deti
         a(2,1)=-a(2,1)*deti
         a(1,2)=-a(1,2)*deti
-c      elseif(nsub.eq.3) then
-c       work2(1)=a(1,1)
-c       work2(2)=a(2,1)
-c       work2(3)=a(3,1)
-c       work2(4)=a(1,2)
-c       work2(5)=a(2,2)
-c       work2(6)=a(3,2)
-c       work2(7)=a(1,3)
-c       work2(8)=a(2,3)
-c       work2(9)=a(3,3)
-c       determinant= work2(1)*(work2(5)*work2(9)-work2(6)*work2(8))
-c    &              -work2(2)*(work2(4)*work2(9)-work2(6)*work2(7))
-c    &              +work2(3)*(work2(4)*work2(8)-work2(5)*work2(7))
-c       if(dabs(determinant).lt.eps) call fatal_error('MATINV: ndim eq 3')
-c       deti=1.d0/determinant
-c       a(1,1)= (work2(5)*work2(9)-work2(6)*work2(8))*deti
-c       a(2,1)=-(work2(2)*work2(9)-work2(3)*work2(8))*deti
-c       a(3,1)= (work2(2)*work2(6)-work2(5)*work2(3))*deti
-c       a(1,2)=-(work2(4)*work2(9)-work2(6)*work2(7))*deti
-c       a(2,2)= (work2(1)*work2(9)-work2(3)*work2(7))*deti
-c       a(3,2)=-(work2(1)*work2(6)-work2(3)*work2(4))*deti
-c       a(1,3)= (work2(4)*work2(8)-work2(5)*work2(7))*deti
-c       a(2,3)=-(work2(1)*work2(8)-work2(2)*work2(7))*deti
-c       a(3,3)= (work2(1)*work2(5)-work2(2)*work2(4))*deti
        else
+
         call dgetrf(nsub,nsub,a,nsub,ipvt,info)
+
         if(info.gt.0) then
           write(6,'(''MATINV: u(k,k)=0 with k= '',i5)') info
           call fatal_error('MATINV: info ne 0 in dgetrf')
+
         endif
-  
+
         det(1) = 1.0d0
         det(2) = 0.0d0
         ten = 10.0d0

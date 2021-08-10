@@ -1,6 +1,7 @@
 module allocation_mod
 !> Contains subroutines to allocate/deallocate VMC and DMC calculations.
 
+implicit none
 public
 contains
   !> Subroutines to allocate/deallocate memory of specific VMC-related
@@ -69,9 +70,9 @@ contains
   !> Deallocation will ocurr before ending of dmc/main.f.
   subroutine allocate_dmc()
     use age, only: allocate_iage
-    use contrldmc, only: allocate_contrldmc 
-    use config, only: allocate_config_dmc 
-    use estsum, only: allocate_estsum_dmc 
+    use contrldmc, only: allocate_contrldmc
+    use config, only: allocate_config_dmc
+    use estsum, only: allocate_estsum_dmc
     use estcum, only: allocate_estcum_dmc
     use est2cm, only: allocate_est2cm_dmc
     use derivest, only: allocate_derivest
@@ -80,6 +81,8 @@ contains
     use c_averages_index, only: allocate_c_averages_index
     use jacobsave, only: allocate_jacobsave
     use velratio, only: allocate_velratio
+
+    implicit none
   
     !> Allocate dmc-related arrays:
   
@@ -100,18 +103,18 @@ contains
   
   subroutine deallocate_dmc()
     use age, only: deallocate_iage
-    use contrldmc, only: deallocate_contrldmc 
-    use config, only: deallocate_config_dmc 
-    use estsum, only: deallocate_estsum_dmc 
+    use contrldmc, only: deallocate_contrldmc
+    use config, only: deallocate_config_dmc
+    use estsum, only: deallocate_estsum_dmc
     use estcum, only: deallocate_estcum_dmc
-    use est2cm, only: deallocate_est2cm_dmc 
+    use est2cm, only: deallocate_est2cm_dmc
     use derivest, only: deallocate_derivest
     use branch, only: deallocate_branch
     use c_averages, only: deallocate_c_averages
     use c_averages_index, only: deallocate_c_averages_index
     use jacobsave, only: deallocate_jacobsave
     use velratio, only: deallocate_velratio
-  
+
     !> Deallocate dmc-related arrays:
   
     call deallocate_iage()

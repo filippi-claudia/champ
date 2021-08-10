@@ -6,6 +6,7 @@ settings.make
 *.mod
 *.a
 *.log
+*.i90
 local_test.sh
 
 # binaries

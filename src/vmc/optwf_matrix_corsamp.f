@@ -14,8 +14,18 @@ c written by Claudia Filippi
       ! I think that's needed
       use gradhess_all, only: grad, h, s
       use optwf_corsam, only: add_diag
-      
-      implicit real*8(a-h,o-z)
+
+      implicit none
+
+      integer :: i, iadd_diag_loop1, iadiag, iflag, increase_nblk
+      integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iter
+      integer :: iwft, k, k_demax, k_demin
+      integer :: lwork, lwork_all_save, lwork_ci_save, nblk_sav
+      real(dp) :: add_diag_sav, de_worse1, de_worse2
+      real(dp) :: de_worse3, de_worse_err1, de_worse_err2, de_worse_err3
+      real(dp) :: denergy, denergy_err, denergy_max, denergy_min
+      real(dp) :: dparm_norm, energy_err_sav, energy_plus_err, energy_plus_err_best
+      real(dp) :: energy_sav
 
 
       ! parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
@@ -40,9 +50,6 @@ c written by Claudia Filippi
       allocate(work(MWORK))
       allocate(work2(MPARMALL,MPARMALL))
 
-    
-      
-
 c No dump/restart if optimizing wave function
       irstar=0
       idump=0
@@ -58,7 +65,7 @@ c Set up basis functions for test run
    3      call copy_zex(iwft)
       endif
       call set_displace_zero(3)
-      
+
 
 c Number of iterations
       write(6,'(/,''Number of iterations'',i3)') nopt_iter
@@ -72,7 +79,7 @@ c Compute multiple adiag
       write(6,'(/,''Perform test run with multiple adiag'',i2)') multiple_adiag
 c Tolerance on energy
       write(6,'(/,''Energy tolerance'',d12.2)') energy_tol
-  
+
       if(ioptjas.eq.0.and.ioptorb.eq.0) add_diag(1)=-1
 
 c Set dparm_norm_min
@@ -88,7 +95,7 @@ c Set dparm_norm_min
 
 c CI step for state average of multiple states (optimal CI for input Jastrow and LCAO)
       if(ioptci.ne.0.and.nstates.gt.1.and.(ioptorb+ioptjas.gt.0)) then
-        write(6,'(/,''Perform CI run for SA calculation'')') 
+        write(6,'(/,''Perform CI run for SA calculation'')')
         ioptjas=0
         ioptorb=0
         add_diag_sav=add_diag(1)
@@ -106,7 +113,7 @@ c CI step for state average of multiple states (optimal CI for input Jastrow and
         call save_wf
 
         call setup_optimization(nparm,MPARMALL,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
-        
+
         write(6,'(/,''Compute CI parameters'',/)')
         call compute_dparm(nparm,MPARMALL,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy(1),energy_err(1))
@@ -121,7 +128,7 @@ c CI step for state average of multiple states (optimal CI for input Jastrow and
 c Iterate optimization
       do 900 iter=1,nopt_iter
 
-      
+
       write(6,'(/,''Optimization iteration'',i2)') iter
       iadd_diag_loop1=0
 
@@ -190,7 +197,7 @@ c Compute corrections to parameters
     6 write(6,'(/,''Compute parameters 1'',/)')
       call compute_dparm(nparm,MPARMALL,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy_sav,energy_err_sav)
- 
+
       call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,add_diag(1),iflag)
       if(iflag.ne.0) then
        write(6,'(''Warning: add_diag_1 has dparm_norm>1'')')
@@ -243,7 +250,7 @@ c       write(6,'(''-x='',9f15.9)') (-grad(i),i=1,nparm)
 
        write(6,'(/,''adiag1,adiag2,adiag3'',1p3g15.8,/)') (add_diag(i),i=1,3)
        write(6,'(/,''Correlated sampling test run for adiag'',/)')
- 
+
        ioptjas=0
        ioptorb=0
        ioptci=0
@@ -277,7 +284,7 @@ c Check if something is very wrong in correlated sampling run
        enddo
        if(denergy_max/denergy_min.gt.10) then
          write(6,'(/,''Problem with correlated sampling run'')')
-         write(6,'(''e,demin,e,demax'',2(f12.5,'' +- '',f12.5))') 
+         write(6,'(''e,demin,e,demax'',2(f12.5,'' +- '',f12.5))')
      &   energy(k_demin),denergy_min,energy(k_demax),denergy_max
 
          if(k_demax.eq.1) then
@@ -320,7 +327,7 @@ c      if(de_worse2.gt.3*de_worse_err2.or.de_worse3.gt.3*de_worse_err3) then
        if(de_worse3.gt.3*de_worse_err3) then
 c        write(6,'(/,''energy_adiag2_3 is much worse than old energy'')')
          write(6,'(/,''energy_adiag3 is much worse than old energy'')')
- 
+
          add_diag(1)=add_diag(1)*200
          write(6,'(''adiag_1 increased to '',g12.5)') add_diag(1)
          write(6,'(''generate again parameters for correlated sampling'')')
@@ -329,7 +336,7 @@ c        write(6,'(/,''energy_adiag2_3 is much worse than old energy'')')
 c In case starting config is very bad, reset configuration by calling sites
          isite=1
          call reset_configs_start
- 
+
          energy(1)=energy_sav
          go to 6
        endif
@@ -398,7 +405,7 @@ c CI step for state average of multiple states
         nblk=nblk_ci
         call qmc
         nblk=nblk_sav
-        
+
         call combine_derivatives
 
         if(iter.ge.1) then
@@ -417,7 +424,7 @@ c           add_diag(1)=20*add_diag_sav
             write(6,'(''new energy'',2f12.5)') energy(1),energy_err(1)
             write(6,'(/,''Energy is worse, increase adiag to '',1pd11.4)') add_diag(1)
 
-c Jastrow and orbital parameters give worse energy 
+c Jastrow and orbital parameters give worse energy
             ioptjas=ioptjas_sav
             ioptorb=ioptorb_sav
             ioptci=0
@@ -450,7 +457,7 @@ c save CI coefficients
         call save_wf
         call write_wf(1,iter)
 
-c save orb and jastrow 
+c save orb and jastrow
         ioptjas=ioptjas_sav
         ioptorb=ioptorb_sav
         ioptci=0
@@ -499,7 +506,12 @@ c end of optimization loop
 c-----------------------------------------------------------------------
       subroutine check_length_run(iter,increase_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+
+      implicit none
+
+      integer :: increase_nblk, iter, nblk, nblk_max, nblk_new
+      real(dp) :: denergy, denergy_err, energy_err_sav, energy_tol
 
 c Increase nblk if near convergence to value needed to get desired statistical error
       increase_nblk=increase_nblk+1
@@ -550,14 +562,18 @@ c-----------------------------------------------------------------------
       subroutine quad_min
 
       use optwf_corsam, only: add_diag, energy, force, force_err
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-      parameter(MFUNC=3)
-
-
-      dimension add_diag_log(MFUNC),a(MFUNC,MFUNC),b(MFUNC)
+      integer :: i, ierr, iwadd_diag, j, k
+      integer :: k_min, nfunc, npts
+      integer, parameter :: MFUNC = 3
+      real(dp) :: add_diag_log_min, add_diag_min, ee, energy_max
+      real(dp) :: energy_min, energy_var, eopt, rms
+      real(dp), dimension(MFUNC) :: add_diag_log
+      real(dp), dimension(MFUNC,MFUNC) :: a
+      real(dp), dimension(MFUNC) :: b
 
       npts=3
       nfunc=3
@@ -637,7 +653,6 @@ c Solve linear equations
 c-----------------------------------------------------------------------
       subroutine combine_derivatives
 
-      use optorb_mod, only: MXORBOP, MXMATDIM
       use gradhess_ci, only: h_ci, s_ci
       use gradhess_jas, only: h_jas, s_jas
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
@@ -647,33 +662,30 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use gradhess_all, only: h, s
       use ci000, only: nciterm
-
       use method_opt, only: method
-
       use optorb_cblock, only: nreduced
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, i0, is, ishift, j
 
-
-        
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
 c Note: we do not vary the first (i0) CI coefficient unless full CI
 
       if(method.eq.'linear') then
-        
+
        is=1
        i0=0
        ishift=1
-       if(ioptjas.eq.0) go to 115 
+       if(ioptjas.eq.0) go to 115
 
 c Jastrow Hamiltonian
        do 110 j=1,nparmj+is
          do 110 i=1,nparmj+is
            h(i,j)=h_jas(i,j)
   110      s(i,j)=s_jas(i,j)
-        
+
 c      do 111 i=1,nparmj+1
 c 111    write(6,'(''h1= '',1000d12.5)') (h(i,j),j=1,nparmj+1)
 c      do 112 i=1,nparmj+1
@@ -762,7 +774,7 @@ c ORB-CI Hamiltonian
 
   175  nparm=nparmj+nciterm+nreduced-i0
 
-       write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)') 
+       write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)')
      & nparm,nparmj,nciterm,nreduced
 
 c      do 180 i=1,nparm+1

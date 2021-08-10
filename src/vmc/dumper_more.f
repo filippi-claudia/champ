@@ -2,9 +2,9 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE
+      use vmc_mod, only: MORB
       use vmc_mod, only: nrad
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent,ncent_tot, nctype_tot
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
       use ghostatom, only: newghostype, nghostcent
       use const, only: hb, delta, nelec
@@ -37,23 +37,61 @@ c job where it left off
       use inputflags, only: node_cutoff, eps_node_cutoff
 
       ! I'm 50% sure it's needed
-      ! it was in master as part of the include optorb.h 
+      ! it was in master as part of the include optorb.h
       use optorb_cblock, only: ns_current
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      interface
+        function rnorm_nodes_num(distance_node, epsilon)
+            use precision_kinds, only: dp
+            real(dp), intent(in) :: distance_node
+            real(dp), intent(in) :: epsilon
+            real(dp) :: rnorm_nodes_num
+        end function rnorm_nodes_num
+      end interface
+
+
+      integer :: i, ib, ic, ifr, istate
+      integer :: j, jel, k, nbasx
+      integer :: ncentx, nctypex, ndetx, ndnx
+      integer :: newghostypex, nghostcentx, norbx, nstepx
+      integer :: nupx
+      integer, dimension(nctype_tot) :: n1sx
+      integer, dimension(nctype_tot) :: n2sx
+      integer, dimension(3,nctype_tot) :: n2px
+      integer, dimension(nctype_tot) :: n3sx
+      integer, dimension(3,nctype_tot) :: n3px
+      integer, dimension(nctype_tot) :: n3dzrx
+      integer, dimension(nctype_tot) :: n3dx2x
+      integer, dimension(nctype_tot) :: n3dxyx
+      integer, dimension(nctype_tot) :: n3dxzx
+      integer, dimension(nctype_tot) :: n3dyzx
+      integer, dimension(nctype_tot) :: n4sx
+      integer, dimension(3,nctype_tot) :: n4px
+      integer, dimension(nctype_tot) :: nsax
+      integer, dimension(3,nctype_tot) :: npax
+      integer, dimension(nctype_tot) :: ndzrax
+      integer, dimension(nctype_tot) :: ndx2ax
+      integer, dimension(nctype_tot) :: ndxyax
+      integer, dimension(nctype_tot) :: ndxzax
+      integer, dimension(nctype_tot) :: ndyzax
+      real(dp) :: ajacob, cjas1x, cjas2x, deltarx
+      real(dp) :: deltatx, deltax, dist, distance_node
+      real(dp) :: pecx, psidg, rnorm_nodes
+      real(dp), dimension(nbasis,MORB) :: coefx
+      real(dp), dimension(nbasis) :: zexx
+      real(dp), dimension(3,ncent_tot) :: centx
+      real(dp), dimension(nctype_tot) :: znucx
+      real(dp), dimension(ndet) :: cdetx
+      real(dp), dimension(3,nelec) :: xstrech
+      real(dp), dimension(MSTATES) :: d2
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: small = 1.d-6
 
 
 
-      parameter(half=0.5d0,small=1.d-6)
 
-      dimension coefx(nbasis,MORB),zexx(nbasis),centx(3,ncent_tot)
-     &,znucx(nctype_tot),n1sx(nctype_tot),n2sx(nctype_tot),n2px(3,nctype_tot)
-     &,n3sx(nctype_tot),n3px(3,nctype_tot),n3dzrx(nctype_tot),n3dx2x(nctype_tot)
-     &,n3dxyx(nctype_tot),n3dxzx(nctype_tot),n3dyzx(nctype_tot),n4sx(nctype_tot)
-     &,n4px(3,nctype_tot),nsax(nctype_tot),npax(3,nctype_tot),ndzrax(nctype_tot)
-     &,ndx2ax(nctype_tot),ndxyax(nctype_tot),ndxzax(nctype_tot),ndyzax(nctype_tot)
-     &,cdetx(ndet)
-      dimension xstrech(3,nelec)
-      dimension d2(MSTATES)
 
       write(10) delta,deltar,deltat
 

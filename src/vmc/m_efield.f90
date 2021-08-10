@@ -1,5 +1,8 @@
 module efield_mod
      !> Arguments: MCHARGES
+
+     implicit none
+
      integer, parameter :: MCHARGES = 100
      private
      public :: MCHARGES
@@ -8,6 +11,8 @@ module efield_mod
 
  module efield
      !> Arguments: iscreen, ncharges, iefield
+
+     implicit none
 
      integer :: iefield
      integer :: iscreen
@@ -23,6 +28,8 @@ module efield_mod
      use precision_kinds, only: dp
      use efield_mod, only: MCHARGES
 
+     implicit none
+
      real(dp), dimension(:), allocatable :: ascreen !(MCHARGES)
      real(dp), dimension(:), allocatable :: bscreen !(MCHARGES)
      real(dp), dimension(:), allocatable :: qcharge !(MCHARGES)
@@ -36,7 +43,6 @@ module efield_mod
      save
  contains
      subroutine allocate_efield_blk()
-         use precision_kinds, only: dp
          use efield_mod, only: MCHARGES
          if (.not. allocated(ascreen)) allocate (ascreen(MCHARGES))
          if (.not. allocated(bscreen)) allocate (bscreen(MCHARGES))
@@ -60,11 +66,15 @@ module efield_mod
  subroutine allocate_m_efield()
      use efield_blk, only: allocate_efield_blk
 
+     implicit none
+
      call allocate_efield_blk()
  end subroutine allocate_m_efield
 
  subroutine deallocate_m_efield()
      use efield_blk, only: deallocate_efield_blk
+
+     implicit none
 
      call deallocate_efield_blk()
  end subroutine deallocate_m_efield

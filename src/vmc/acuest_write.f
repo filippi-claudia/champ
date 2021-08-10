@@ -16,9 +16,18 @@ c routine to write out estimators for energy etc.
       use contr3, only: mode
       use contrl, only: nstep
       use precision_kinds, only: i2b
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension enow(MSTATES,MFORCE)
+      integer :: i, ieerr, iferr, ifr, index
+      integer :: ipeerr, istate, itjfer, itpber
+      integer :: j, nproc
+      real(dp) :: acc_denom, accept, eave, eerr, err
+      real(dp) :: fave, ferr, peave, peerr
+      real(dp) :: tjfave, tjferr, tpbave, tpberr
+      real(dp) :: x, x2
+      real(dp), dimension(MSTATES, MFORCE) :: enow
+
 
 c statement function for error calculation
       err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)

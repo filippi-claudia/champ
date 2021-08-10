@@ -3,7 +3,13 @@
       use pcm_cntrl, only: ipcm, ipcmprt
       use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iblk, ispcmerr, ivpcmerr
+      real(dp) :: err, rtpass, spcmave, spcmerr, svpcmave
+      real(dp) :: svpcmerr, vpcmave, vpcmerr, wcum
+      real(dp) :: x, x2
 
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
@@ -52,13 +58,25 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_cum, enfpcm_cm2
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iblk, iqopcm_err, ispcmerr, ivpcmerr
+      real(dp) :: dble, dqpol, err, gpcmkcal, hatokc
+      real(dp) :: qopcm_ave, qopcm_err, qpol, qtheo
+      real(dp) :: qtheov, qv, rtpass, sdqpol
+      real(dp) :: sepcmkcal, spcmave, spcmerr, spcmkcal
+      real(dp) :: sqpol, sqpol2, sqtheo, sqtheo2
+      real(dp) :: sqv, svpcmave, svpcmerr, vepcmkcal
+      real(dp) :: vpcmave, vpcmerr, vpcmkcal, wcum
+      real(dp) :: x, x2
+      real(dp), dimension(MCHS) :: enfpcm_ave
+      real(dp), dimension(MCHS) :: enfpcm_err
 
     
 
       data hatokc/627.509541d0/
 
-      dimension enfpcm_ave(MCHS),enfpcm_err(MCHS)
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
@@ -137,7 +155,11 @@ c-----------------------------------------------------------------------
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: nchs
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i
+      real(dp) :: pcms, pcmv
 
 
       if(ipcm.eq.0) return
@@ -161,7 +183,11 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: qopcm_sum
       use pcm_averages, only: enfpcm_sum
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i
+      real(dp) :: p, pcms, pcmv, q
 
 
       if(ipcm.eq.0) return
@@ -184,7 +210,11 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i
+      real(dp) :: enfpcm_now, qopcm_now, spcmnow, vpcmnow, wsum
 
 
       if(ipcm.eq.0) return

@@ -2,19 +2,24 @@
       use sr_mod, only: MPARM
       use olbfgs, only: initialize_olbfgs
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: energy, energy_err, force
+      use optwf_corsam, only: energy, energy_err
       use contrl, only: nblk, nblk_max
       use optwf_contrl, only: idl_flag, ilbfgs_flag
-      use optwf_contrl, only: sr_tau , sr_adiag, sr_eps 
-      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter
+      use optwf_contrl, only: sr_tau, sr_adiag, sr_eps
+      use optwf_contrl, only: dparm_norm_min, nopt_iter
       use method_opt, only: method
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, iflag, ilbfgs_m, inc_nblk, iter
+      real(dp) :: denergy, denergy_err, dparm_norm, energy_err_sav, energy_sav
+      real(dp), dimension(MPARM) :: deltap
+      real(dp), dimension(MPARM) :: parameters
 
       character*20 dl_alg
 
 c vector of wave function parameters
-      dimension deltap(MPARM), parameters(MPARM)
 
 
       if(method.ne.'sr_n'.or.ilbfgs_flag.eq.0)return
@@ -36,7 +41,6 @@ c vector of wave function parameters
       inc_nblk=0
 c Initialize DL vectors to zero
       do i=1,nparm
-        parameters(i) = 0.d0
       enddo
 
       call save_nparms

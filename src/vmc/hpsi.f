@@ -4,12 +4,10 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use optjas, only: MPARMJ
-      use vmc_mod, only: MELEC, MDET, MCENT
-      use vmc_mod, only: MMAT_DIM, MMAT_DIM2
+      use vmc_mod, only: MDET
       use const, only: hb, nelec, ipr
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
-      use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use mmpol_hpsi, only: peQMdp, peQMq
       use multidet, only: iactv, ivirt, kref
@@ -24,20 +22,29 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use pseudo, only: nloc
       use velocity_jastrow, only: vj
       use mmpol_cntrl, only: immpol
-
       use efield, only: iefield
       use pcm_cntrl, only: ipcm
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: rshift, r_en, rvec_en
       use multislater, only: detiab
       use inputflags, only: iqmmm
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iab, ifr, ii, ipass
+      integer :: irep, istate, jrep, nel
+      real(dp) :: d2j, e_other, ext_pot, peQM, pe_local
+      real(dp) :: pepcm, psij
+      real(dp), dimension(3, *) :: coord
+      real(dp), dimension(*) :: psid
+      real(dp), dimension(*) :: energy
+      real(dp), dimension(MSTATES) :: denergy
+      real(dp), dimension(MDET, 2) :: eloc_det
+      real(dp), dimension(2) :: vpsp_det
+      real(dp), dimension(MPARMJ) :: dvpsp_dj
 
 c Calculates energy
 
-      dimension coord(3,*),psid(*),energy(*)
-      dimension denergy(MSTATES),eloc_det(MDET,2),vpsp_det(2),dvpsp_dj(MPARMJ)
 
       iwf=iwftype(ifr)
 

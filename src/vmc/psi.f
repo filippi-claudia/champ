@@ -4,19 +4,27 @@ c **Warning** This routine needs to be upgraded to check rshifts
 c if we add in the capability to use numerical Laplacian for
 c periodic systems.
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a, c
+      use vmc_mod, only: MORDJ
+      use jaspar3, only: c
 
       use jaspar4, only: nordc
       use jaspar6, only: cutjas
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: it, jp, k, l, l_hi
+      integer :: ll, m, n
+      real(dp) :: psi, ri, rij, rj
+      real(dp) :: rri, rrj, s, t
+      real(dp) :: u
+      real(dp), dimension(0:MORDJ) :: uu
+      real(dp), dimension(0:MORDJ) :: ss
+      real(dp), dimension(0:MORDJ) :: tt
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
 
 
 
@@ -29,13 +37,11 @@ c periodic systems.
 
 
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0)
 
 
 
 
 
-      dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ)
 
       psi=0
 
@@ -87,20 +93,20 @@ c periodic systems.
 c-----------------------------------------------------------------------
       function psia(ri,it)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use jaspar3, only: a
 
       use jaspar4, only: a4, norda
       use jaspar6, only: asymp_jasa
       use jaspar6, only: cutjas
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, it
+      real(dp) :: ri, rri
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp) :: psia
 
 
 
@@ -108,8 +114,6 @@ c-----------------------------------------------------------------------
 
 
 
-
-      parameter(zero=0.d0,one=1.d0)
 
 
 
@@ -135,21 +139,22 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       function psib(rij,isb,ipar)
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use jaspar, only: sspinn
-      use jaspar3, only: a, b
+      use jaspar3, only: b
 
       use jaspar4, only: nordb
       use jaspar6, only: asymp_jasb
       use jaspar6, only: cutjas
       use wfsec, only: iwf
       use contr2, only: ijas
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ipar, isb
+      real(dp) :: rij, u
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp) :: psib
 
 
 
@@ -157,7 +162,6 @@ c-----------------------------------------------------------------------
 
 
 
-      parameter(zero=0.d0,one=1.d0)
 
 
 

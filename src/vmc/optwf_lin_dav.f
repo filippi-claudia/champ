@@ -1,29 +1,29 @@
       subroutine optwf_lin_d
 
-
-      use sr_mod, only: MPARM, MOBS, MCONF
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use sr_mod, only: MPARM
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
-      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
+      use optwf_contrl, only: dparm_norm_min, nopt_iter, micro_iter_sr
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: energy, energy_err, force
+      use optwf_corsam, only: energy, energy_err
       use optwf_func, only: ifunc_omega, omega, omega0, n_omegaf, n_omegat
       use contrl, only: nblk, nblk_max
       use force_analy, only: iforce_analy, alfgeo
       use method_opt, only: method
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: iflag, iforce_analy_sav, inc_nblk, ioptci_sav, ioptjas_sav
+      integer :: ioptorb_sav, iter, miter, nstates_sav
+      integer, dimension(5,MSTATES) :: index_more
+      real(dp) :: adiag, alin_adiag_sav, alpha_omega, denergy, denergy_err
+      real(dp) :: dparm_norm, energy_err_sav, energy_sav, sigma
+      real(dp) :: sigma_sav
+      real(dp), dimension(MPARM*MSTATES) :: grad
+      real(dp), dimension(MPARM*MSTATES,5) :: grad_more
       character*20 method_sav
-
-      dimension grad(MPARM*MSTATES),grad_more(MPARM*MSTATES,5),index_more(5,MSTATES)
 
       if(method .ne.'lin_d')return
 
@@ -41,8 +41,6 @@
        write(6,'(''LIN_D n_omegaf: '',i4)') n_omegaf
        write(6,'(''LIN_D n_omegat: '',i4)') n_omegat
       endif
-
-
 
       write(6,'(/,''LIN_D adiag: '',f10.5)') alin_adiag
       write(6,'(''LIN_D ethr:  '',f10.5)') alin_eps
@@ -168,37 +166,41 @@ c enddo iteration
       end
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine h_psi_lin_d(ndim,nvec,psi,hpsi )
-      use sr_mod, only: MPARM, MOBS, MCONF
+      subroutine h_psi_lin_d(ndim,nvec,psi,hpsi)
+
+      use sr_mod, only: MPARM
       use optwf_func, only: ifunc_omega
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-      dimension psi(MPARM,*),hpsi(MPARM,*)
+      integer :: ndim, nvec
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: hpsi
 
       if(ifunc_omega.eq.0) then
-        call h_psi_energymin(ndim,nvec,psi,hpsi )
+        call h_psi_energymin(ndim,nvec,psi,hpsi)
        elseif(ifunc_omega.le.2) then
-        call h_psi_varmin(ndim,nvec,psi,hpsi )
+        call h_psi_varmin(ndim,nvec,psi,hpsi)
        else
-        call h_psi_omegamin(ndim,nvec,psi,hpsi )
+        call h_psi_omegamin(ndim,nvec,psi,hpsi)
       endif
 
       return
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      subroutine s_psi_lin_d(ndim,nvec,psi,spsi )
-      use sr_mod, only: MPARM, MOBS, MCONF
+      subroutine s_psi_lin_d(ndim,nvec,psi,spsi)
+
+      use sr_mod, only: MPARM
       use optwf_func, only: ifunc_omega
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
 
-
-
-      dimension psi(MPARM,*),spsi(MPARM,*)
+      integer :: ndim, nvec
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: spsi
 
       if(ifunc_omega.le.2) then
         call s_psi_energymin(ndim,nvec,psi,spsi )
@@ -210,18 +212,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine select_ci_root(iroot)
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+
       use csfs, only: ccsf, ncsf
-
       use dets, only: cdet, ndet
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
+      integer :: i, iadiag, icsf, iroot
 
 
       do 30 i=1,ndet

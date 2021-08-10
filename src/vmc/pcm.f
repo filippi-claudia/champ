@@ -1,6 +1,6 @@
 c......................................................
       subroutine pcm_extpot_read(fcol,npmax)
-c Written by Amovilli-Floris 
+c Written by Amovilli-Floris
 c...........................................................
 c     read data for pcm calculations
 c     comput nuclei-qpol interactions (penups,penupv)
@@ -15,10 +15,14 @@ c...........................................................
       use pcm_ameta, only: amdlg, eta
       use pcm_pot, only: penupol, penups, penupv
       use pcm_fdc, only: feps, fs, rcol, rcolt
-
       use pcm_inda, only: inda
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, j, k, npmax
+      real(dp) :: PI, fcol, rnp, rnp2
+      real(dp) :: xx, yy, zz
 
 
 
@@ -113,7 +117,7 @@ c...............................................
       call pcm_compute_penupv
       penupol=penups+penupv
       if (ichpol.eq.1)call chnu
-c........................................................................      
+c........................................................................
       write(6,*)
       write(6,'(''pcm number of spheres ='',i5)') nesph
       write(6,'(''pcm cavity geometry'')')
@@ -125,12 +129,12 @@ c........................................................................
       write(6,'(''pcm epot nuclei-volume polarization charges ='',f12.6)') penupv
       write(6,'(''pcm epot nuclei-polarization charges ='',f12.6)') penupol
       write(6,*)
-c........................................................................      
+c........................................................................
  1000 format(I4,2x,3F12.5,2x,F12.5,2x,F12.5)
-c........................................................................      
+c........................................................................
       return
       end
-      
+
 c......................................................
       subroutine pcm_qvol(n)
 c Written by Amovilli-Floris
@@ -139,7 +143,11 @@ c Written by Amovilli-Floris
       use pcm_parms, only: nscv
 
       use pcm_fdc, only: fs, qvol
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: n
+      real(dp) :: tmp
 
 
 
@@ -151,43 +159,38 @@ c Written by Amovilli-Floris
       return
       end
 
-      subroutine chnu 
+      subroutine chnu
 C     ***************************************************************
 C     contribution from nuclei to polarization charghes
 C     ***************************************************************
 
-      use pcm, only: MCHS, MCHV, MSPHERE
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+      use pcm, only: MCHS
       use atom, only: znuc, cent, iwctype, ncent
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
-
+      use pcm_parms, only: eps_solv, nchs
+      use pcm_parms, only: surk, xpol
       use pcm_ameta, only: amdlg, eta
       use pcm_ah, only: ahca, bh
-      use pcm_fdc, only: feps, fs, qvol, rcol, rcolt
+      use pcm_fdc, only: feps
       use pcm_inda, only: inda
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, ij, j, k, l
+      real(dp) :: PI, cc, cc1, cc2, cc3
+      real(dp) :: cork, corr, enk, rkl2
+      real(dp) :: rkl3, rr2, rr3, s1
+      real(dp) :: s2, s3, ss, xx
+      real(dp) :: xx2, yy, yy2, zz
+      real(dp) :: zz2, det
+      real(dp), dimension(MCHS*MCHS) :: ah_vec
+      real(dp), dimension(MCHS) :: bhn
+      real(dp), dimension(MCHS,MCHS) :: ah
 
-
-
-
-      real*8 ah_vec,det
-C     
-C    
-      dimension ah_vec(MCHS*MCHS),bhn(MCHS),ah(MCHS,MCHS)
-
-c
       DATA PI/3.1415927D0/
 c............................................................
-c     The matrix ah is computed and inverted 
-c     correzione distinta in base ad inda (modifica rispetto 
+c     The matrix ah is computed and inverted
+c     correzione distinta in base ad inda (modifica rispetto
 c     alla versione 5)
 c..............................................................
       do k=1,nchs
@@ -197,9 +200,9 @@ c     sum(k)=0.0d0
       if (l.eq.k)then
       ah(k,l)=1.0d0+0.5d0*(1.d0-eps_solv)/eps_solv
       else
-      xx=xpol(1,k)-xpol(1,l) 
-      yy=xpol(2,k)-xpol(2,l) 
-      zz=xpol(3,k)-xpol(3,l) 
+      xx=xpol(1,k)-xpol(1,l)
+      yy=xpol(2,k)-xpol(2,l)
+      zz=xpol(3,k)-xpol(3,l)
       s1=xx*eta(1,k)
       s2=yy*eta(2,k)
       s3=zz*eta(3,k)
@@ -241,15 +244,15 @@ c..............................................................
       do k=1,nchs
       enk=0.0d0
       do l=1,ncent
-      xx=xpol(1,k)-cent(1,l) 
-      yy=xpol(2,k)-cent(2,l) 
-      zz=xpol(3,k)-cent(3,l) 
+      xx=xpol(1,k)-cent(1,l)
+      yy=xpol(2,k)-cent(2,l)
+      zz=xpol(3,k)-cent(3,l)
       rr2=xx**2+yy**2+zz**2
       rr3=rr2**1.5d0
       cc1=xx*eta(1,k)
       cc2=yy*eta(2,k)
       cc3=zz*eta(3,k)
-      cc=cc1+cc2+cc3 
+      cc=cc1+cc2+cc3
       enk=enk+znuc(iwctype(l))*cc/rr3
       enddo
       bhn(k)=-feps*surk*enk
@@ -272,46 +275,47 @@ C     ***************************************************************
 c     1) electrons are classified with respect to the cavity
 c
 c    fac =1   e- is in the cavity
-c    fac=fs   e- is out of the cavity 
+c    fac=fs   e- is out of the cavity
 c
 c    quopcm= escaped electron charge out of the cavity
 c
 c     2) volume charges out of the cavity are sampled
-c       A volume point charge is associated to each escaped 
+c       A volume point charge is associated to each escaped
 c       electron
 c
-c     3) for the accepted configuration, the normal component 
-c        of the electron field  at the point on the surface is computed 
+c     3) for the accepted configuration, the normal component
+c        of the electron field  at the point on the surface is computed
 C     ***************************************************************
 
-      use pcm, only: MCHS, MCHV, MSPHERE
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
-      use atom, only: znuc, cent, iwctype, ncent
       use pcm_hpsi, only: enfpcm, qopcm
       use pcm_xv_new, only: xv_new
       use pcm_cntrl, only: ipcm
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: iscov, nchs, nchs1
+      use pcm_parms, only: ncopcm, nesph, nvopcm, re2
+      use pcm_parms, only: xe, xpol, ye, ze
 
       use pcm_ameta, only: eta
-      use pcm_fdc, only: fs, qvol, rcol, rcolt
-      implicit real*8(a-h,o-z)
+      use pcm_fdc, only: fs, rcol, rcolt
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, in, iscv, j, k
+      integer :: nelec
+      real(dp) :: AV, GC, PI, cc, cc1
+      real(dp) :: cc2, cc3, eek, hatokc
+      real(dp) :: res2, rr1, rr2, xx
+      real(dp) :: yy, zz
+      real(dp), dimension(3,*) :: coord
+      real(dp), dimension(100) :: fac
 
 
 
 
-      dimension coord(3,*)
-      dimension fac(100)
 C     ***************************************************************
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
-      data hatokc/627.509541d0/  
+      data hatokc/627.509541d0/
 c............................................................
-     
+
       write (6,*) 'hello! hello! qpcm_efield called -------'
 
       ncopcm=ncopcm+1
@@ -324,9 +328,9 @@ c............................................................
         in=0
         fac(i)=1.0d0
         do j=1,nesph
-          xx=(coord(1,i)-xe(j))**2.0d0 
-          yy=(coord(2,i)-ye(j))**2.0d0 
-          zz=(coord(3,i)-ze(j))**2.0d0 
+          xx=(coord(1,i)-xe(j))**2.0d0
+          yy=(coord(2,i)-ye(j))**2.0d0
+          zz=(coord(3,i)-ze(j))**2.0d0
           res2=xx+yy+zz
           if(res2.le.re2(j)) in=in+1
         enddo
@@ -339,16 +343,16 @@ c ATTENZION modificato 30/3/2009
       if (ipcm.eq.3) return
 c..............................................................
 c    enfpcm(k) normal componenent of e- field on the point k of
-c            cavity surface 
+c            cavity surface
 c..............................................................
 c             (first set of points 1---->nchs1)
 c..............................................................
       do k=1,nchs1
         eek=0.0d0
         do i=1,nelec
-          xx=xpol(1,k)-coord(1,i) 
-          yy=xpol(2,k)-coord(2,i) 
-          zz=xpol(3,k)-coord(3,i) 
+          xx=xpol(1,k)-coord(1,i)
+          yy=xpol(2,k)-coord(2,i)
+          zz=xpol(3,k)-coord(3,i)
           rr2=xx**2+yy**2+zz**2
           rr1=dsqrt(rr2)
           cc1=xx*eta(1,k)
@@ -356,9 +360,9 @@ c..............................................................
           cc3=zz*eta(3,k)
           cc=(cc1+cc2+cc3)/rr1
 c..............................................................
-c  correction for collision between e- and polarization charges 
-c  n.b. the fields of e- which are out of the cavity 
-c       are scaled 
+c  correction for collision between e- and polarization charges
+c  n.b. the fields of e- which are out of the cavity
+c       are scaled
 c..............................................................
           if (rr1.lt.rcol) rr2=rcol**2.0d0
           eek=eek-cc*fac(i)/rr2
@@ -372,9 +376,9 @@ c     rcol=fcol*dsqrt(surk/pi)
       do k=nchs1+1,nchs
         eek=0.0d0
         do i=1,nelec
-          xx=xpol(1,k)-coord(1,i) 
-          yy=xpol(2,k)-coord(2,i) 
-          zz=xpol(3,k)-coord(3,i) 
+          xx=xpol(1,k)-coord(1,i)
+          yy=xpol(2,k)-coord(2,i)
+          zz=xpol(3,k)-coord(3,i)
           rr2=xx**2+yy**2+zz**2
           rr1=dsqrt(rr2)
           cc1=xx*eta(1,k)
@@ -388,9 +392,9 @@ c     rcol=fcol*dsqrt(surk/pi)
             endif
           endif
 c..............................................................
-c  correction for collision between e- and polarization charges 
-c  n.b. the fields of e- which are out of the cavity 
-c       are scaled 
+c  correction for collision between e- and polarization charges
+c  n.b. the fields of e- which are out of the cavity
+c       are scaled
 c..............................................................
           if (rr1.lt.rcol) rr2=rcol**2.0d0
           eek=eek-cc*fac(i)/rr2
@@ -418,24 +422,24 @@ c............................................................
 c      update of volume charges and penupol
 c............................................................
 
-      use pcm, only: MCHS, MCHV, MSPHERE
-      use atom, only: znuc, cent, iwctype, ncent
       use pcm_xv_new, only: xv_new
       use pcm_cntrl, only: ipcm
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: ch, iscov, nch, nchs
+      use pcm_parms, only: nchv, ncopcm, nscv, nvopcm
+      use pcm_parms, only: xpol
 
-      use pcm_pot, only: penupol, penupv
       use pcm_fdc, only: qvol
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: iupdate, kn, ko, nsco
+
 
       iupdate=0
       if(ipcm.eq.0.or.ipcm.eq.3) return
 
       nsco=ncopcm/iscov
 c     write(6,*) 'HELLO',nsco,ncopcm
-      if(nsco.eq.nscv)then	
+      if(nsco.eq.nscv)then
          iupdate=1
 	 nchv=nvopcm
 	 nch=nchs+nchv
@@ -459,21 +463,23 @@ c..............................................................
 
       subroutine pcm_compute_penupv
 c............................................................
-c     compute penupv of volume charges 
+c     compute penupv of volume charges
 c............................................................
 
-      use pcm, only: MCHS, MCHV, MSPHERE
       use atom, only: znuc, cent, iwctype, ncent
       use pcm_cntrl, only: ipcm
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: ch, nch, nchs
+      use pcm_parms, only: xpol
 
       use pcm_pot, only: penupv
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j
+      real(dp) :: rnp, rnp2, xx, yy, zz
 
 
-       
+
 
       if(ipcm.eq.0) return
 
@@ -494,14 +500,13 @@ c..............................................................
 
       subroutine pcm_write_chvol
 
-      use pcm_3dgrid, only: MGRID_PCM, MGRID_PCM2, MGRID_PCM3
-      use pcm_3dgrid, only: UNDEFINED, IUNDEFINED
-      use pcm, only: MCHS, MCHV, MSPHERE
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: ch, nch, nchs
+      use pcm_parms, only: xpol
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: k, kn, ko, nchtmp
+
 
       open (52,file='chvol_new',form='formatted',status='unknown')
       rewind 52
@@ -518,25 +523,27 @@ c..............................................................
       end
 
       subroutine pcm_extpot_ene(coord,nelec,pepcms,pepcmv)
-c Written by Amovilli-Floris 
+c Written by Amovilli-Floris
 c......................................................
 c       Calculate e-qpol interactions (pcm)
 c       and adds nuclei-qpol interactions
 c......................................................
-      use pcm, only: MCHS, MCHV, MSPHERE
       use pcm_cntrl, only: icall
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: ch, nch, nchs
 
       use pcm_pot, only: penups, penupv
       use pcm_grid3d_contrl, only: ipcm_3dgrid
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ier, nelec
+      real(dp) :: AV, GC, PI, hatokc, pepcms
+      real(dp) :: pepcmv, pepol_s, pepol_sv, pepol_v
+      real(dp), dimension(3,*) :: coord
 
 
 
 
-      dimension coord(3,*)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
       data hatokc/627.509541d0/
       icall=icall+1
@@ -568,7 +575,7 @@ c       write(6,*)
 c       write(6,*)'pepcms=',pepcms,'penups=',penups
 c       write(6,*)'pepcmv=',pepcmv,'penupv=',penupv
 c       if(ipcm_3dgrid.gt.0) then
-c     write(6,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms     
+c     write(6,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms
 c       write(6,*)
 c       else
 c     write(6,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms+pepcmv
@@ -586,17 +593,21 @@ c       Calculate e-qpol interactions (pcm)
 c       and adds nuclei-qpol interactions
 c......................................................
 
-      use pcm, only: MCHS, MCHV, MSPHERE
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: ch, nch, nchs
+      use pcm_parms, only: xpol
 
       use pcm_fdc, only: rcol, rcolv
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: j
+      real(dp) :: AV, GC, PI, pepol_s, pepol_v
+      real(dp) :: r2, repol, xx, yy
+      real(dp) :: zz
+      real(dp), dimension(3) :: x
 
 
 
-      dimension x(3)
       DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
 
       pepol_s=0.0d0
@@ -642,16 +653,17 @@ c......................................................
 
       subroutine pcm_init(iflag)
 
-      use pcm, only: MCHS, MCHV, MSPHERE
       use pcm_cntrl, only: ipcm
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: nchs
+      use pcm_parms, only: ncopcm
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iflag
+
 
 
 
@@ -686,16 +698,16 @@ c......................................................
 c-----------------------------------------------------------------------
       subroutine pcm_dump(iu)
 
-      use pcm, only: MCHS, MCHV, MSPHERE
       use pcm_cntrl, only: ipcm
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: nchs
       use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_cum, enfpcm_cm2
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu
+
 
 
       if(ipcm.eq.0) return
@@ -713,16 +725,16 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_rstrt(iu)
 
-      use pcm, only: MCHS, MCHV, MSPHERE
       use pcm_cntrl, only: ipcm
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: nchs
       use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_cum, enfpcm_cm2
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, iu
+
 
 
       if(ipcm.eq.0) return
@@ -742,26 +754,35 @@ c......................................................
 
       subroutine qpcm_charges(enfpcm_ave,enfpcm_err,qpol,sqpol2)
 
-      use pcm, only: MCHS, MCHV, MSPHERE
-      use pcm_parms, only: ch, nch, nchs, nchs1, nchs2
+      use pcm, only: MCHS, MSPHERE
+      use pcm_parms, only: nchs
       use pcm_parms, only: nesph, re
       use pcm_parms, only: surk, xe, xpol, ye, ze
       use pcm_ah, only: ahca, bh
-      use pcm_fdc, only: feps, qvol
+      use pcm_fdc, only: feps
 
       use pcm_inda, only: inda
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j, k
+      real(dp) :: bhe, qpol, rr, sqpol2, sqpol_sp
+      real(dp) :: xx, yy, zz
+      real(dp), dimension(MCHS) :: ch_new
+      real(dp), dimension(*) :: enfpcm_ave
+      real(dp), dimension(*) :: enfpcm_err
+      real(dp), dimension(MCHS) :: sch
+      real(dp), dimension(MCHS) :: sch2
+      real(dp), dimension(MSPHERE) :: qpolsp
+      real(dp), dimension(MSPHERE) :: sqpol2_sp
 
 
 
-      dimension ch_new(MCHS),enfpcm_ave(*),enfpcm_err(*)
-      dimension sch(MCHS),sch2(MCHS)
-      dimension qpolsp(MSPHERE),sqpol2_sp(MSPHERE)
 
 c...................................................................
 c     only for ground states
-c     We don't need to add qvol contribution to En because we have 
+c     We don't need to add qvol contribution to En because we have
 c     scaled contributions from e- out of the cavity
 c...................................................................
 c...................................................................
@@ -787,15 +808,15 @@ c...................................................................
            ch_new(i)=ch_new(i)+ahca(i,j)*bh(j)
            sch2(i)=sch2(i)+(ahca(i,j)*feps*surk*enfpcm_err(i))**2.0d0
            enddo
-      sch(i)=dsqrt(sch2(i)) 
+      sch(i)=dsqrt(sch2(i))
       qpol=qpol+ch_new(i)
       sqpol2=sqpol2+sch2(i)
       enddo
 c
-c    computes qpol for each portion of sphere 
+c    computes qpol for each portion of sphere
 c
       do k=1,nesph
-      qpolsp(k)=0.0D0                
+      qpolsp(k)=0.0D0
       sqpol2_sp(k)=0.0D0
       enddo
       do i=1,nchs
@@ -841,21 +862,26 @@ c................................................................
       subroutine qpcm_charges2(enfpcm_ave,enfpcm_err,qpol)
 
       use pcm, only: MCHS
-      use pcm_parms, only: ch, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nesph, re
-      use pcm_parms, only: surk, xe, xpol, ye, ze
+      use pcm_parms, only: ch, nch, nchs
+      use pcm_parms, only: surk, xpol
 
-      use pcm_ameta, only: amdlg, eta
+      use pcm_ameta, only: eta
       use pcm_ah, only: ahca, bh
-      use pcm_fdc, only: feps, qvol
-      implicit real*8(a-h,o-z)
+      use pcm_fdc, only: feps
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j, k, l
+      real(dp) :: bhe, cc, cc1, cc2, cc3
+      real(dp) :: enfpcm_ave, enfpcm_err, qpol, rr2
+      real(dp) :: rr3, xx, yy, zz
+      real(dp), dimension(MCHS) :: ch_new
+      real(dp), dimension(MCHS) :: env
 
 
 
 
 
-      dimension ch_new(MCHS)
-      dimension env(MCHS)
 
 c...................................................................
 c     computes normal component electric field due to qvol
@@ -863,15 +889,15 @@ c...................................................................
       do k=1,nchs
       env(k)=0.0d0
       do l=nchs+1,nch
-      xx=xpol(1,k)-xpol(1,l) 
-      yy=xpol(2,k)-xpol(2,l) 
-      zz=xpol(3,k)-xpol(3,l) 
+      xx=xpol(1,k)-xpol(1,l)
+      yy=xpol(2,k)-xpol(2,l)
+      zz=xpol(3,k)-xpol(3,l)
       rr2=xx**2+yy**2+zz**2
       rr3=rr2**1.5d0
       cc1=xx*eta(1,k)
       cc2=yy*eta(2,k)
       cc3=zz*eta(3,k)
-      cc=cc1+cc2+cc3 
+      cc=cc1+cc2+cc3
       env(k)=env(k)+ch(l)*cc/rr3
       enddo
       enddo
@@ -893,7 +919,7 @@ c...................................................................
            enddo
       qpol=qpol+ch_new(i)
       enddo
-      
+
 c
 c     write in 'chsurf_new' the new charges
 c
@@ -908,12 +934,12 @@ c..................................................
       return
       end
 
-c      
+c
 C     ***************************************************************
       subroutine qpcm_surface (npmax)
 C     ***************************************************************
 C     ***************************************************************
-c     This subroutine computes the coordinates of point charges 
+c     This subroutine computes the coordinates of point charges
 c     on the cavity surface
 C     ***************************************************************
 
@@ -924,21 +950,45 @@ C     ***************************************************************
       use pcm_parms, only: nch, nchs, nchs1, nchs2
       use pcm_parms, only: nesph, re
       use pcm_parms, only: surk, xe, xpol, ye, ze
-
       use pcm_ameta, only: amdlg, eta
       use pcm_inda, only: inda
+      use precision_kinds, only: dp
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      interface
+        function rannyu(idum)
+          use precision_kinds, only: dp
+          implicit none
+          integer,intent(in) :: idum
+          real(dp) :: rannyu
+        end function rannyu
+      end interface
+
+      integer :: i, i1, i2, icheck_sphere, icount
+      integer :: icount2, ii, ij, imax
+      integer :: iold, ipair, ird, ith
+      integer :: j, k, kode, npmax
+      integer, dimension(2000000,2) :: ijpair
+      integer, dimension(5000) :: inda1
+      integer, dimension(5000) :: indat
+      integer, dimension(5000) :: itoro
+      real(dp) :: VERSION, area, cutoff, datan, dble
+      real(dp) :: deltaij, pi, prdm, qi
+      real(dp) :: rd, rij, rmax, rr
+      real(dp) :: uu, ux, uy, uz
+      real(dp) :: w, x, xx, y
+      real(dp) :: yy, z, zz
+      real(dp), dimension(2000000) :: dist
+      real(dp), dimension(3,5000) :: xpolt
+      real(dp), dimension(5000) :: amdlgt
+      real(dp), dimension(3,5000) :: etat
 
 
 
 c
 c....................................................................
 c....................................................................
-      dimension dist(2000000),ijpair(2000000,2)
-      dimension inda1(5000),xpolt(3,5000)
-      dimension indat(5000),itoro(5000)
-      dimension amdlgt(5000),etat(3,5000)
 c
 c............................TRIAL VERSION-------------------
       character*80 row1,row2
@@ -1186,15 +1236,44 @@ c..................................................
 
 
       subroutine prep
+
       use spc, only: nsf, num
       use spc1, only: csf, rsf
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+
+      implicit none
+
+      interface
+         function rannyu(idum)
+         use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
+
+      integer :: i, icount, imax, isf, j
+      integer :: k, maxit, ncyc, ncyc1
+      integer :: nf, np, np5
+      real(dp) :: a1, cos_theta, cutoff
+      real(dp) :: dble, dd, dz, energy
+      real(dp) :: epsilon, f1, pi2, pi25
+      real(dp) :: pigreco, pol, qf, qm
+      real(dp) :: r0, rij, rrand, sin_theta
+      real(dp) :: ww, xi, yi, z1
+      real(dp) :: z2, zi, zz, e0
+      real(dp), dimension(1000) :: x
+      real(dp), dimension(1000) :: y
+      real(dp), dimension(1000) :: z
+      real(dp), dimension(1000) :: xm
+      real(dp), dimension(1000) :: ym
+      real(dp), dimension(1000) :: zm
+      real(dp), dimension(1000) :: el1
+      real(dp), dimension(1000) :: el2
+      real(dp), dimension(1000) :: elm1
+      real(dp), dimension(1000) :: elm2
 
 
-      dimension x(1000),y(1000),z(1000)
-      dimension xm(1000),ym(1000),zm(1000)
-      dimension el1(1000),el2(1000)
-      dimension elm1(1000),elm2(1000)
       maxit=100
       epsilon=0.d0
       pi2=8.d0*datan(1.d0)
@@ -1284,8 +1363,14 @@ c     f1=r0*dsin(theta)
       end
 
       subroutine rep (x,y,z,n,e)
-      implicit real*8 (a-h,o-z)
-      dimension x(1),y(1),z(1)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, j, n
+      real(dp) :: e, rij
+      real(dp), dimension(1) :: x
+      real(dp), dimension(1) :: y
+      real(dp), dimension(1) :: z
       e=0.d0
       do i=1,n-1
       do j=i+1,n
@@ -1301,16 +1386,46 @@ c     f1=r0*dsin(theta)
       end
 
       subroutine prep1
-      use pcm, only: MCHS
+
       use spc, only: nsf, num
       use spc1, only: csf, rsf
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+
+      implicit none
+
+      interface
+        function rannyu(idum)
+         use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+        end function rannyu
+      end interface
+
+      integer :: i, icount, imax, isf, j
+      integer :: k, maxit, ncyc, ncyc1
+      integer :: nf, np, np5
+      real(dp) :: amadelung, amdg, c1, c2, cutoff
+      real(dp) :: datan, dble, dd, dz
+      real(dp) :: energy, epsilon, erep, f1
+      real(dp) :: f2, ff1, pi2, pi25
+      real(dp) :: pigreco, pol, qf, r0
+      real(dp) :: rij, ro, s1, s2
+      real(dp) :: sumz, ww, xi, xx
+      real(dp) :: yi, yy, z1, z2
+      real(dp) :: zi, zz, e0
+      real(dp), dimension(1000) :: x
+      real(dp), dimension(1000) :: y
+      real(dp), dimension(1000) :: z
+      real(dp), dimension(1000) :: xm
+      real(dp), dimension(1000) :: ym
+      real(dp), dimension(1000) :: zm
+      real(dp), dimension(1000) :: el1
+      real(dp), dimension(1000) :: el2
+      real(dp), dimension(1000) :: elm1
+      real(dp), dimension(1000) :: elm2
 
 
-      dimension x(1000),y(1000),z(1000)
-      dimension xm(1000),ym(1000),zm(1000)
-      dimension el1(1000),el2(1000)
-      dimension elm1(1000),elm2(1000)
       maxit=300
       epsilon=0.d0
       pi2=8.d0*datan(1.d0)
@@ -1453,14 +1568,20 @@ c........................................................
 
       subroutine qpcm_matinv(a,nsub,determinant)
       use pcm, only: MCHS
-      implicit real*8 (a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, info, nsub
+      integer, dimension(MCHS) :: ipvt
+      real(dp) :: determinant, ten
+      real(dp), dimension(nsub,nsub) :: a
+      real(dp), dimension(MCHS) :: work
+      real(dp), dimension(2) :: det
 
 c routine to calculate inverse and determinant of matrix a
 c assumed to be dimensioned a(nsub,nsub).
 c the matrix a is replaced by its inverse.
 
-      dimension a(nsub,nsub)
-      dimension ipvt(MCHS),work(MCHS),det(2)
 
       call dgetrf(nsub,nsub,a,nsub,ipvt,info)
       if(info.gt.0) then
@@ -1502,24 +1623,31 @@ C     ***************************************************************
 C     march/2014: compute surface charges for a stretched cavity
 C     ***************************************************************
       use pcm, only: MCHS
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent
-      use pcm_parms, only: ch, eps_solv, iscov, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, ncopcm, nesph, nscv, nvopcm, re, re2
-      use pcm_parms, only: retk, surk, xe, xpol, ye, ze
+      use pcm_parms, only: eps_solv, nchs
+      use pcm_parms, only: surk, xpol
 
       use pcm_ameta, only: amdlg, eta
-      use pcm_fdc, only: feps, fs, qfree, qvol, rcol, rcolt, rcolv
+      use pcm_fdc, only: feps
       use pcm_inda, only: inda
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ij, j, k, l
+      real(dp) :: PI, cork, corr, det, rkl2
+      real(dp) :: rkl3, s1, s2, s3
+      real(dp) :: ss, xx, xx2, yy
+      real(dp) :: yy2, zz, zz2
+      real(dp), dimension(MCHS*MCHS) :: ah_vec
+      real(dp), dimension(MCHS,MCHS) :: ah
+      real(dp), dimension(MCHS) :: q_strech
+      real(dp), dimension(MCHS) :: efield
 
 
 
-C     
-C    
+C
+C
 
-      dimension ah_vec(MCHS*MCHS),ah(MCHS,MCHS)
-      dimension q_strech(MCHS),efield(MCHS)
 
 c
       DATA PI/3.1415927D0/
@@ -1530,9 +1658,9 @@ c
           if (l.eq.k)then
            ah(k,l)=1.0d0+0.5d0*(1.d0-eps_solv)/eps_solv
           else
-           xx=xpol(1,k)-xpol(1,l) 
-           yy=xpol(2,k)-xpol(2,l) 
-           zz=xpol(3,k)-xpol(3,l) 
+           xx=xpol(1,k)-xpol(1,l)
+           yy=xpol(2,k)-xpol(2,l)
+           zz=xpol(3,k)-xpol(3,l)
            s1=xx*eta(1,k)
            s2=yy*eta(2,k)
            s3=zz*eta(3,k)
@@ -1566,7 +1694,7 @@ c     surface charges recomputed for the new stretched cavity
 
       do i=1,nchs
          q_strech(i)=0.d0
-         do j=1,nchs 
+         do j=1,nchs
            q_strech(i)=q_strech(i)-feps*surk*ah(i,j)*efield(j)
          enddo
       enddo

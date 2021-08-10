@@ -6,6 +6,8 @@ jobs:
   build:
 
     runs-on: ubuntu-18.04
+    # Time limit for running all sets of tests
+    timeout-minutes: 30
 
     steps:
     - uses: actions/checkout@v1
@@ -232,14 +234,14 @@ jobs:
            echo "- Running dmc.inp in serial:"
            $HOME/work/champ/champ/bin/dmc.mov1 < dmc.inp > dmc.out
            echo " total E vs reference:"
-           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -28.1361563
+           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -26.3320038
            echo ""
 
            # run and compare a dmc calculation MPI
            echo "- Running dmc.inp in parallel:"
            mpirun --stdin all -n 2 $HOME/work/champ/champ/bin/dmc.mov1 < dmc.inp > dmc.out
            echo " first eigenvalue vs reference:"
-           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -26.4010232
+           $HOME/work/champ/champ/tools/compare_value.py dmc.out "total energy (  100)" -26.3187227
            echo ""
 
            #  restore the module files

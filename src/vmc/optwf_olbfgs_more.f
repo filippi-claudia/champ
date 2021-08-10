@@ -4,18 +4,19 @@
       use sr_mat_n, only: h_sr
       use optwf_sr_mod, only: sr_hs
       use mpiconf, only: idtask
-      use optwf_contrl, only: sr_tau , sr_adiag
+      use optwf_contrl, only: sr_tau, sr_adiag
       use mpi
-      
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
 
+      implicit none
+
+      integer :: ier, iter, nparm
+
+      real(dp), dimension(*) :: deltap
+      real(dp), dimension(*) :: parameters
       character*20 dl_alg
-
-
-      dimension deltap(*), parameters(*)
-
-      real(kind=8), dimension(1), allocatable :: parameters_old(:)
-      real(kind=8), dimension(1), allocatable :: parms_lbfgs(:)
+      real(dp), dimension(1), allocatable :: parameters_old(:)
+      real(dp), dimension(1), allocatable :: parms_lbfgs(:)
 
       allocate(parameters_old(nparm))
       allocate(parms_lbfgs(nparm))

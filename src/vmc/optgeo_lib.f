@@ -1,14 +1,10 @@
       subroutine write_geometry(iter)
 
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: cent, iwctype, nctype, ncent
 
-      implicit real*8(a-h,o-z)
+      implicit none
 
+      integer :: i, index, iter, k
       character*40 filename,itn
 
       if(iter.lt.0) then
@@ -41,20 +37,15 @@
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine compute_positions
 
-        use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-        use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-        use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-        use vmc_mod, only: radmax, delri
-        use vmc_mod, only: NEQSX, MTERMS
-        use vmc_mod, only: MCENT3, NCOEF, MEXCIT
         use coords_int
         use atom, only: cent, ncent
         use force_fin, only: da_energy_ave
         use zmatrix, only: czint, izcmat
         use force_analy, only: iforce_analy, iuse_zmat, alfgeo
-        implicit real*8(a-h,o-z)
 
+      implicit none
 
+      integer :: ic, k
 
         if (iforce_analy.eq.0) return
 
@@ -96,7 +87,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use force_analy, only: iforce_analy
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i
 
       if(iforce_analy.eq.0)return
 
@@ -110,22 +103,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine force_store(l)
 
-      use sr_mod, only: MPARM, MOBS, MCONF
-      use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
-      use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
-      use vmc_mod, only: radmax, delri
-      use vmc_mod, only: NEQSX, MTERMS
-      use vmc_mod, only: MCENT3, NCOEF, MEXCIT
       use atom, only: ncent
-
       use da_energy_now, only: da_energy, da_psi
       use force_mat_n, only: force_o
-      implicit real*8(a-h,o-z)
 
+      implicit none
 
-
-
-
+      integer :: i, ii, k, l
 
       ii=0
       do 10 i=1,ncent

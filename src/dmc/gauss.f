@@ -8,8 +8,19 @@ c Could generate 2 numbers for almost the same price, but for
 c backward compatibility generate just 1.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use const, only: pi
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
+      interface
+         function rannyu(idum)
+          use precision_kinds, only: dp
+         implicit none
+         integer,intent(in) :: idum
+         real(dp) :: rannyu
+         end function rannyu
+      end interface
+
+      real(dp) :: gauss
 
       gauss=dcos(2*pi*rannyu(0))
       gauss=gauss*sqrt(-2*dlog(rannyu(0)))

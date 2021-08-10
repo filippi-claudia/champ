@@ -1,8 +1,6 @@
       subroutine distances(iel,x)
 c Written by Cyrus Umrigar
 c calculate interparticle distances
-      use vmc_mod, only: MELEC, MCENT
-      use vmc_mod, only: MMAT_DIM2
       use atom, only: cent, ncent
       use ghostatom, only: nghostcent
       use const, only: nelec
@@ -10,9 +8,15 @@ c calculate interparticle distances
       use contrl_per, only: iperiodic
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
 
-      dimension x(3,*)
+      integer :: i, i1, i2, ic, iel
+      integer :: ii, ij, j, jj
+      integer :: m
+
+      real(dp), dimension(3, *) :: x
+
 
       if(iel.eq.0) then
         i1=1
@@ -96,15 +100,17 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c restore interparticle distances (called if move rejected)
 
-      use vmc_mod, only: MELEC, MCENT
-      use vmc_mod, only: MMAT_DIM2
       use atom, only: ncent
       use ghostatom, only: nghostcent
       use const, only: nelec
       use distance_mod, only: rshift, r_en, rvec_en
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, ic, iel, ij, j
+      integer :: jj, m
+
 
 c Calculate e-N inter-particle distances
       do 25 ic=1,ncent+nghostcent

@@ -1,7 +1,7 @@
       subroutine optci_reduce
 
       use precision_kinds, only: dp
-      use optci, only: MXCITERM, MXCIREDUCED, MXCIMATDIM
+      use optci, only: MXCITERM, MXCIREDUCED
       use optwf_contrl, only: ioptci
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
@@ -14,7 +14,10 @@
       use method_opt, only: method
       use mpi
 
-      implicit real*8(a-h,o-z)
+      implicit none
+
+      integer :: i, ierr, j, matdim
+      real(dp) :: MXMATDIM, MXORBTERM
 
 c     parameter(MXTMP=max(MXORBTERM,MXMATDIM))
 c     max does not work with g77

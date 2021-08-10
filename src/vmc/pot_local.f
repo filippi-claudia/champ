@@ -1,14 +1,16 @@
       subroutine pot_local(pe)
-      use vmc_mod, only: MELEC, MCENT
-      use vmc_mod, only: MMAT_DIM2
       use atom, only: znuc, pecent, iwctype, ncent
       use ghostatom, only: nghostcent
       use const, only: nelec, ipr
       use contrl_per, only: iperiodic
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, r_ee
       use pseudo, only: nloc
 
-      implicit real*8(a-h,o-z)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ic, ij, j
+      real(dp) :: pe, pe_ee, pe_en, x
 
 c  pe from nucleus-nucleus repulsion
       pe=pecent
