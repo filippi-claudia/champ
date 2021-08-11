@@ -95,11 +95,16 @@ find_library(MKL_LAPACK_LIBRARY
                    $ENV{MKLROOT}/lib/intel64
                    $ENV{INTEL}/mkl/lib/intel64
              NO_DEFAULT_PATH)
-	   
+
 
 set(MKL_INCLUDE_DIRS ${MKL_INCLUDE_DIR})
 set(MKL_LIBRARIES ${MKL_BLAS_LIBRARY} ${MKL_LAPACK_LIBRARY}
  "-Wl,--start-group ${MKL_INTERFACE_LIBRARY} ${MKL_SEQUENTIAL_LAYER_LIBRARY} ${MKL_CORE_LIBRARY} -Wl,--end-group")
+
+message(STATUS "Checking MKL ROOT         :: "  $ENV{MKLROOT})
+message(STATUS "Checking MKL LIBRARIES    :: " ${MKL_LIBRARIES})
+message(STATUS "Checking MKL INCLUDE DIRS :: " ${MKL_INCLUDE_DIRS})
+message(STATUS "MKL Found?                :: " ${MKL_FOUND})
 
 if (MKL_INCLUDE_DIR AND
     MKL_INTERFACE_LIBRARY AND
