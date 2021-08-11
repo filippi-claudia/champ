@@ -7,8 +7,10 @@ on:
     branches: [new-parser, merging-parser, refac-problematic]
 
 jobs:
-  build_intel_champ_fparser:
+  build_champ:
+    name: Build CHAMP with Intel OneAPI
     runs-on: ubuntu-20.04
+    timeout-minutes: 60
     defaults:
       run:
         shell: bash --noprofile --norc {0}
