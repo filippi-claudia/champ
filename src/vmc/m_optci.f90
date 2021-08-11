@@ -2,7 +2,7 @@ module optci
     !> Arguments:
     !     flags and dimensions for generalized CI expectation values
     !     maximal number of terms, max dim of reduced matrices
-    integer :: MXCITERM = 16000
+    integer :: MXCITERM = 15000
 
     integer :: MXCIREDUCED
     integer :: MXCIMATDIM

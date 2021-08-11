@@ -52,7 +52,7 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
 
     interface
         function fun_mtx_gemv(parameters, input_vect) result(output_vect)
-            !> rief Function to compute the action of the hamiltonian on the fly
+            !> Brief Function to compute the action of the hamiltonian on the fly
             !> \param[in] dimension of the arrays to compute the action of the hamiltonian
             !> \param[in] input_vec Array to project
             !> return Projected matrix
@@ -66,7 +66,7 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
         end function fun_mtx_gemv
 
         function fun_stx_gemv(parameters, input_vect) result(output_vect)
-            !> rief Function to compute the action of the overlap on the fly
+            !> Brief Function to compute the action of the overlap on the fly
             !> \param[in] dimension of the arrays to compute the action of the hamiltonian
             !> \param[in] input_vec Array to project
             !> return Projected matrix
@@ -105,7 +105,7 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
 END SUBROUTINE davidson_wrap
 
 function fun_mtx_gemv(parameters, input_vect) result(output_vect)
-    !> rief Function to compute the action of the hamiltonian on the fly
+    !> Brief Function to compute the action of the hamiltonian on the fly
     !> \param[in] dimension of the arrays to compute the action of the hamiltonian
     !> \param[in] input_vec Array to project
     !> return Projected matrix
@@ -132,7 +132,7 @@ function fun_mtx_gemv(parameters, input_vect) result(output_vect)
 end function fun_mtx_gemv
 
 function fun_stx_gemv(parameters, input_vect) result(output_vect)
-    !> rief Fucntion to compute the optional stx matrix on the fly
+    !> Brief Fucntion to compute the optional stx matrix on the fly
     !> \param[in] dimension of the arrays to compute the action of the hamiltonian
     !> \param[in] input_vec Array to project
     !> return Projected matrix

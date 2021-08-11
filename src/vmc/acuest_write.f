@@ -6,7 +6,6 @@ c routine to write out estimators for energy etc.
       use const, only: nelec
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
-
       use est2cm, only: ecm2, pecm2, tjfcm2, tpbcm2
       use estcum, only: ecum, iblk, pecum, tjfcum, tpbcum
       use estsum, only: acc
@@ -91,8 +90,8 @@ c write out current values of averages
             write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),25x,f10.5,i10)')
      &      enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,accept,iblk*vmc_nstep
 
-            call prop_prt(wcum(1,ifr),iblk,6)
-            call optci_prt(wcum(1,ifr),iblk,6)
+            call prop_prt(wcum(1,ifr),iblk,ounit)
+            call optci_prt(wcum(1,ifr),iblk,ounit)
 c           call optorb_prt(wcum(1,ifr),eave,6)
 c different meaning of last argument: 0 acuest, 1 finwrt
             call pcm_prt(wcum(1,ifr),iblk)

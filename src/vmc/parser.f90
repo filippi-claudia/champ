@@ -329,7 +329,8 @@ subroutine parser
 ! %module optwf (can be moved somewhere else)
   if (fdf_defined("optwf")) then
     if ( method .eq. 'linear' ) then
-      nwftype = 3; MFORCE = 3
+      ! nwftype = 3;
+      MFORCE = 3
     endif
   endif
 
