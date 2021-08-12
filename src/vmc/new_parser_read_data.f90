@@ -346,8 +346,10 @@ subroutine read_determinants_file(file_determinants)
 
     write(ounit,*)
     write(ounit,*) " Orbitals <--> Determinants mapping :: which orbitals enter in which dets"
+    write(temp3, '(a,i0,a)') '(', nelec, '(i4, 1x))'
     do i = 1, ndet
-        write(ounit,'(<nelec>(i4, 1x))') (iworbd(j,i), j=1,nelec)
+        !write(ounit,'(<nelec>(i4, 1x))') (iworbd(j,i), j=1,nelec)  !Intel Version
+        write(ounit,temp3) (iworbd(j,i), j=1,nelec)                 !GNU version
     enddo
 
     if (wid) then
@@ -551,27 +553,33 @@ subroutine read_jastrow_file(file_jastrow)
 
         write(ounit, '(A)') "Jastrow parameters :: "
         write(ounit, '(A)') "mparmja : "
+        write(temp3, '(a,i0,a)') '(', mparmja, '(2X, f12.8))'
         do it = 1, nctype
             if (wid) read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
-            write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)
+            !write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)  !Intel Version
+            write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja)                     !GNU version
         enddo
         call bcast(a4)
 
         allocate (b(mparmjb, 2, nwftype))
 
         write(ounit, '(A)') "mparmjb : "
+        write(temp3, '(a,i0,a)') '(', mparmjb, '(2X, f12.8))'
         do isp = nspin1, nspin2b
             if (wid) read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
-            write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)
+            !write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)  !Intel Version
+            write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb)                     !GNU version
         enddo
         call bcast(b)
 
         allocate (c(mparmjc, nctype, nwftype))
 
         write(ounit, '(A)') "mparmjc : "
+        write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
         do it = 1, nctype
             if (wid) read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
-            write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)
+            !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
+            write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
         enddo
         call bcast(c)
 
@@ -819,7 +827,7 @@ subroutine read_csf_file(file_determinants)
         write(ounit,*)
         write(ounit,*) " CSF coefficients from an external file "
 
-        write(ounit,'(8x,10(1x, a9, i3, 1x))') ((" State: ", i), i =1, nstates)
+        write(ounit,'(8x,10(1x, a9, i3, 1x))') (" State: ", i, i =1, nstates)
         do j = 1, ncsf
             write(ounit,'(a,i5,a,10(1x, f12.8, 1x))') "[", j, "] ", (ccsf(j,i,1), i=1,nstates)
         enddo

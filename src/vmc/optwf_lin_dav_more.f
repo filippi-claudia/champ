@@ -12,7 +12,6 @@
       use sr_mat_n, only: jfj
       use sr_mat_n, only: obs_tot
       use optwf_sr_mod, only: sr_hs
-      use mpiconf
       use precision_kinds, only: dp
       use contrl_file,    only: ounit, errunit
       implicit none
