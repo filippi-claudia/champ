@@ -1121,7 +1121,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
     na1 = 1
     na2 = nctype
-    MCTYP3X = max(3, nctype) !BUG DEBUG nctype_tot
+    MCTYP3X = max(3, nctype_tot)
 
     if (.not. allocated(nparma)) allocate (nparma(MCTYP3X))
     if (.not. allocated(nparmb)) allocate (nparmb(3))

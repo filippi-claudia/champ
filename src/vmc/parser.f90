@@ -1,9 +1,15 @@
 
 subroutine parser
-  use fdf     ! modified libfdf
-!  use fdf, only: modulenames, number_of_modules    ! modified libfdf
-  use custom_broadcast,   only: bcast
-  use mpiconf,            only: wid
+  !> This subroutine parses the input file using the modified libfdf parser
+  !> and assigns the values to variables and arrays of different modules.
+  !> @author Ravindra Shinde
+  !> @email  r.l.shinde@utwente.nl
+  !> @date   11-08-2021
+  !> @version 1.0
+
+  use fdf               ! modified libfdf
+  use custom_broadcast, only: bcast
+  use mpiconf,          only: wid
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
 ! CHAMP modules
@@ -17,7 +23,6 @@ subroutine parser
   use elec,           	only: ndn, nup
   use const,          	only: nelec
   use atom,           	only: nctype, ncent
-!  use contrl,         	only: nstep, nblk, nblk_max
   use wfsec,          	only: nwftype
   use forcepar,       	only: nforce
   use force_mod,      	only: MFORCE
@@ -29,115 +34,115 @@ subroutine parser
   use optorb_mod,     	only: MXORBOP, MXREDUCED
   use optci,          	only: MXCITERM
   use mstates_mod,      only: MSTATES
-  use pcm, only: MCHS
+  use pcm,              only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
-  use vmc_mod, 			only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
-  use atom, 			only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-  use jaspar, 			only: nspin1, nspin2, is
-  use ghostatom, 		only: newghostype, nghostcent
-  use const, 			only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-  use jaspar1, 			only: cjas1, cjas2
-  use general, 			only: pooldir, pp_id, bas_id
-  use general, 			only: filenames_bas_num, wforce
-  use csfs, 			only: cxdet, ncsf, nstates
-  use dets, 			only: cdet, ndet
-  use elec, 			only: ndn, nup
-  use forcepar, 		only: nforce
-  use grdntspar, 		only: igrdtype, ngradnts
-  use header, 			only: title
-  use jaspar2, 			only: a1, a2
-  use jaspar3, 			only: a, b, c, nord, scalek
-  use jaspar4, 			only: a4, norda, nordb, nordc
-  use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
-  use jaspar6, 			only: cutjas, cutjasi, allocate_jaspar6
-  use numbas, 			only: numr
-  use numbas1, 			only: nbastyp
-  use numbas2, 			only: ibas0, ibas1
-  use optwf_contrl, 	only: ioptci, ioptjas, ioptorb, ioptwf
-  use optwf_contrl, 	only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
-  use optwf_contrl, 	only: ibeta, ratio_j, iapprox, ncore
-  use optwf_contrl, 	only: iuse_orbeigv
-  use optwf_contrl, 	only: no_active
-  use optwf_parms, 		only: nparmj
-  use optwf_sr_mod, 	only: i_sr_rescale, izvzb
-  use pars, 			only: Z, a20, a21
-  use rlobxy, 			only: rlobx
-  use sa_weights, 		only: iweight, nweight, weights
-  use wfsec, 			only: nwftype
-  use zmatrix, 			only: izmatrix
-  use bparm, 			only: nocuspb, nspin2b
-  use casula, 			only: i_vpsp, icasula
-  use coefs, 			only: coef, nbasis, norb, next_max
-  use const2, 			only: deltar, deltat
-  use contr2, 			only: ianalyt_lap, ijas
-  use contr2, 			only: isc
-  use contrldmc, 		only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
-  use contrldmc, 		only: itau_eff, nfprod, rttau, tau
+  use vmc_mod, 			    only: MELEC, MORB, MBASIS, MCENT, MCTYPE, MCTYP3X
+  use atom, 			      only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+  use jaspar, 			    only: nspin1, nspin2, is
+  use ghostatom, 		    only: newghostype, nghostcent
+  use const, 			      only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+  use jaspar1, 			    only: cjas1, cjas2
+  use general, 			    only: pooldir, pp_id, bas_id
+  use general, 			    only: filenames_bas_num, wforce
+  use csfs, 			      only: cxdet, ncsf, nstates
+  use dets, 			      only: cdet, ndet
+  use elec, 			      only: ndn, nup
+  use forcepar, 		    only: nforce
+  use grdntspar, 		    only: igrdtype, ngradnts
+  use header, 			    only: title
+  use jaspar2, 			    only: a1, a2
+  use jaspar3, 			    only: a, b, c, nord, scalek
+  use jaspar4, 			    only: a4, norda, nordb, nordc
+  use jaspar6, 			    only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
+  use jaspar6, 			    only: cutjas, cutjasi, allocate_jaspar6
+  use numbas, 			    only: numr
+  use numbas1, 			    only: nbastyp
+  use numbas2, 			    only: ibas0, ibas1
+  use optwf_contrl, 	  only: ioptci, ioptjas, ioptorb, ioptwf
+  use optwf_contrl, 	  only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
+  use optwf_contrl, 	  only: ibeta, ratio_j, iapprox, ncore
+  use optwf_contrl, 	  only: iuse_orbeigv
+  use optwf_contrl, 	  only: no_active
+  use optwf_parms, 		  only: nparmj
+  use optwf_sr_mod, 	  only: i_sr_rescale, izvzb
+  use pars, 			      only: Z, a20, a21
+  use rlobxy, 			    only: rlobx
+  use sa_weights, 		  only: iweight, nweight, weights
+  use wfsec, 			      only: nwftype
+  use zmatrix, 			    only: izmatrix
+  use bparm, 			      only: nocuspb, nspin2b
+  use casula, 			    only: i_vpsp, icasula
+  use coefs, 			      only: coef, nbasis, norb, next_max
+  use const2, 			    only: deltar, deltat
+  use contr2, 			    only: ianalyt_lap, ijas
+  use contr2, 			    only: isc
+  use contrldmc, 		    only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
+  use contrldmc, 		    only: itau_eff, nfprod, rttau, tau
 
 ! Note the additions: Ravindra
-  use control_vmc, 		only: vmc_idump,  vmc_irstar, vmc_isite, vmc_nconf, vmc_nblk, vmc_nblk_max
-  use control_vmc, 		only: vmc_nblkeq, vmc_nconf_new, vmc_nstep, vmc_icharged_atom, vmc_nblk_ci
+  use control_vmc, 		  only: vmc_idump,  vmc_irstar, vmc_isite, vmc_nconf, vmc_nblk, vmc_nblk_max
+  use control_vmc, 		  only: vmc_nblkeq, vmc_nconf_new, vmc_nstep, vmc_icharged_atom, vmc_nblk_ci
 ! Note the additions: Ravindra
-  use control_dmc, 		only: dmc_idump, dmc_irstar, dmc_isite, dmc_nconf, dmc_nblk, dmc_nblk_max
-  use control_dmc, 		only: dmc_nblkeq, dmc_nconf_new, dmc_nstep, dmc_icharged_atom, dmc_nblk_ci
+  use control_dmc, 		  only: dmc_idump, dmc_irstar, dmc_isite, dmc_nconf, dmc_nblk, dmc_nblk_max
+  use control_dmc, 		  only: dmc_nblkeq, dmc_nconf_new, dmc_nstep, dmc_icharged_atom, dmc_nblk_ci
 
-  use dorb_m, 			only: iworbd
-  use contrl_per, 		only: iperiodic, ibasis
-  use force_analy, 		only: iforce_analy, iuse_zmat, alfgeo
-  use force_dmc, 		only: itausec, nwprod
-  use forcestr,     only: delc
-  use wfsec, only: iwftype
-  use pseudo, 			only: nloc
-  use optorb_cblock, 	only: idump_blockav
-  use gradjerrb, 		only: ngrad_jas_blocks
-  use qua, 				only: nquad, wq, xq, yq, zq
-  use mmpol_cntrl, 		only: ich_mmpol, immpol, immpolprt, isites_mmpol
-  use mmpol_parms, 		only: chmm
-  use mmpol_fdc, 		only: a_cutoff, rcolm
-  use grid3dflag, 		only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
-  use grid_mod, 		only: UNDEFINED, IUNDEFINED
-  use efield, 			only: iefield, ncharges
-  use mstates_ctrl, 	only: iefficiency, iguiding, nstates_psig
-  use mstates3, 		only: iweight_g, weights_g
-  use ci000, 			only: iciprt, nciprim, nciterm
-  use pcm_cntrl, 		only: ichpol, ipcm, ipcmprt, isurf
-  use pcm_unit, 		only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
-  use pcm_parms, 		only: eps_solv, iscov
-  use pcm_parms, 		only: ncopcm, nscv, nvopcm
-  use prp000, 			only: iprop, ipropprt, nprop
-  use pcm_fdc, 			only: qfree, rcolv
+  use dorb_m, 			    only: iworbd
+  use contrl_per, 		  only: iperiodic, ibasis
+  use force_analy, 		  only: iforce_analy, iuse_zmat, alfgeo
+  use force_dmc, 		    only: itausec, nwprod
+  use forcestr,         only: delc
+  use wfsec,            only: iwftype
+  use pseudo, 			    only: nloc
+  use optorb_cblock, 	  only: idump_blockav
+  use gradjerrb, 		    only: ngrad_jas_blocks
+  use qua, 				      only: nquad, wq, xq, yq, zq
+  use mmpol_cntrl, 		  only: ich_mmpol, immpol, immpolprt, isites_mmpol
+  use mmpol_parms, 		  only: chmm
+  use mmpol_fdc, 		    only: a_cutoff, rcolm
+  use grid3dflag, 		  only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+  use grid_mod, 		    only: UNDEFINED, IUNDEFINED
+  use efield, 			    only: iefield, ncharges
+  use mstates_ctrl, 	  only: iefficiency, iguiding, nstates_psig
+  use mstates3, 		    only: iweight_g, weights_g
+  use ci000, 			      only: iciprt, nciprim, nciterm
+  use pcm_cntrl, 		    only: ichpol, ipcm, ipcmprt, isurf
+  use pcm_unit, 		    only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
+  use pcm_parms, 		    only: eps_solv, iscov
+  use pcm_parms, 		    only: ncopcm, nscv, nvopcm
+  use prp000, 			    only: iprop, ipropprt, nprop
+  use pcm_fdc, 			    only: qfree, rcolv
   use pcm_grid3d_contrl,only: ipcm_3dgrid
   use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d, pcm_origin, pcm_endpt, allocate_pcm_grid3d_param
-  use pcm_3dgrid, 		only: PCM_SHIFT, PCM_UNDEFINED, PCM_IUNDEFINED
-  use prp003, 			only: cc_nuc
-  use method_opt, 		only: method
-  use optorb_cblock, 	only: nefp_blocks, isample_cmat, iorbsample
-  use orbval, 			only: ddorb, dorb, nadorb, ndetorb, orb
+  use pcm_3dgrid, 		  only: PCM_SHIFT, PCM_UNDEFINED, PCM_IUNDEFINED
+  use prp003, 			    only: cc_nuc
+  use method_opt, 		  only: method
+  use optorb_cblock, 	  only: nefp_blocks, isample_cmat, iorbsample
+  use orbval, 			    only: ddorb, dorb, nadorb, ndetorb, orb
   use array_resize_utils, only: resize_tensor
-  use grid3d_param, 	only: endpt, nstep3d, origin, step3d
-  use inputflags, 		only: node_cutoff, eps_node_cutoff, dmc_node_cutoff, dmc_eps_node_cutoff, iqmmm, scalecoef
-  use optwf_contrl, 	only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
-  use optwf_contrl, 	only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
-  use optwf_contrl, 	only: ilastvmc, iroot_geo
-  use optwf_contrl, 	only: sr_tau , sr_adiag, sr_eps
-  use optwf_func, 		only: ifunc_omega, omega0, n_omegaf, n_omegat
-  use optwf_corsam, 	only: add_diag
-  use dmc_mod, 			only: MWALK
+  use grid3d_param, 	  only: endpt, nstep3d, origin, step3d
+  use inputflags, 		  only: node_cutoff, eps_node_cutoff, dmc_node_cutoff, dmc_eps_node_cutoff, iqmmm, scalecoef
+  use optwf_contrl, 	  only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
+  use optwf_contrl, 	  only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
+  use optwf_contrl, 	  only: ilastvmc, iroot_geo
+  use optwf_contrl, 	  only: sr_tau , sr_adiag, sr_eps
+  use optwf_func, 		  only: ifunc_omega, omega0, n_omegaf, n_omegat
+  use optwf_corsam, 	  only: add_diag
+  use dmc_mod, 			    only: MWALK
 
-  use optorb_mix,   only: norbopt, norbvirt
+  use optorb_mix,       only: norbopt, norbvirt
 
-  use grdntspar, 		only: delgrdxyz, igrdtype, ngradnts
-  use grdntspar, 		only: delgrdba, delgrdbl, delgrdda, ngradnts
+  use grdntspar, 		    only: delgrdxyz, igrdtype, ngradnts
+  use grdntspar, 		    only: delgrdba, delgrdbl, delgrdda, ngradnts
 
-  use inputflags, 		only: iznuc, igeometry, ibasis_num, ilcao, iexponents
-  use inputflags, 		only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
-  use inputflags, 		only: ici_def, iforces, icsfs, icharge_efield
-  use inputflags, 		only: imultideterminants, imodify_zmat, izmatrix_check
-  use inputflags,     only: ioptorb_mixvirt, ihessian_zmat, igradients
-  use basis,          only: zex
+  use inputflags, 		  only: iznuc, igeometry, ibasis_num, ilcao, iexponents
+  use inputflags, 		  only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
+  use inputflags, 		  only: ici_def, iforces, icsfs, icharge_efield
+  use inputflags, 		  only: imultideterminants, imodify_zmat, izmatrix_check
+  use inputflags,       only: ioptorb_mixvirt, ihessian_zmat, igradients
+  use basis,            only: zex
 
-  use precision_kinds,    only: dp
+  use precision_kinds,  only: dp
 ! Note the following modules are new additions
 
 
@@ -164,17 +169,18 @@ subroutine parser
 !------------------------------------------------------------------------- BEGIN
 ! debug purpose only
   character(len=72)          :: optwf, blocking_vmc, blocking_dmc
-  character(len=72)          :: file_basis, 			file_molecule
-  character(len=72)          ::	file_determinants, 		file_symmetry
+  character(len=72)          :: file_basis, 			  file_molecule
+  character(len=72)          ::	file_determinants, 	file_symmetry
   character(len=72)          :: file_jastrow, 			file_jastrow_der
   character(len=72)          ::	file_orbitals, 			file_pseudo
   character(len=72)          :: file_exponents, 		file_optorb_mixvirt
-  character(len=72)          ::	file_multideterminants, file_forces
-  character(len=72)          :: file_eigenvalues, 		file_basis_num_info
-  character(len=72)          :: file_dmatrix,			file_cavity_spheres
+  character(len=72)          :: file_efield,			  file_zmatrix_connection
+  character(len=72)          :: file_eigenvalues, 	file_basis_num_info
+  character(len=72)          :: file_dmatrix,			  file_cavity_spheres
+  character(len=72)          :: file_modify_zmatrix,file_hessian_zmatrix
   character(len=72)          :: file_gradients_zmatrix, file_gradients_cartesian
-  character(len=72)          :: file_modify_zmatrix,	file_hessian_zmatrix
-  character(len=72)          :: file_efield,			file_zmatrix_connection
+  character(len=72)          ::	file_multideterminants, file_forces
+
 
 
 ! from process input subroutine
@@ -192,9 +198,9 @@ subroutine parser
   type(atom_t)               :: atoms
   character(len=2), allocatable   :: unique(:)
 
-  real(dp), parameter :: zero = 0.d0
-  real(dp), parameter :: one  = 1.d0
-  real(dp), parameter :: two  = 2.d0
+  real(dp), parameter        :: zero = 0.d0
+  real(dp), parameter        :: one  = 1.d0
+  real(dp), parameter        :: two  = 2.d0
 
 
 ! Initialize # get the filenames from the commandline arguments
@@ -231,8 +237,6 @@ subroutine parser
   ndn         = nelec-nup
 
 ! %module atoms (complete)
-!  nctype      = fdf_get('nctype', 1)  ! These are computed
-!  ncent       = fdf_get('natom', 1)   ! These are computed
   newghostype = fdf_get('newghostype', 0)
   nghostcent  = fdf_get('nghostcent', 0)
 
@@ -262,8 +266,8 @@ subroutine parser
   ngradnts    = fdf_get('ngradnts', 0)
 
 ! %module iguiding (complete)
-  iguiding      = fdf_get('iguiding',0)
-  iefficiency   = fdf_get('iefficiency',0)
+  iguiding    = fdf_get('iguiding',0)
+  iefficiency = fdf_get('iefficiency',0)
 
 ! %module efield (complete)
   iefield     = fdf_get('iefield', 0)
@@ -380,7 +384,7 @@ subroutine parser
 
 
 ! %module ci (complete)
-  iciprt        = fdf_get('ci:iciprt',0)
+  iciprt        = fdf_get('iciprt',0)
 
 
 !%module pcm (complete)
