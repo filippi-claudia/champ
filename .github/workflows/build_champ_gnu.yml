@@ -22,9 +22,15 @@ jobs:
 
     - name: Install GNU compilers and libraries
       run: |
-           sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev # valgrind libmkl-full-dev
+           sudo apt install -y gfortran
+           sudo apt install -y openmpi-bin
+           sudo apt install -y libopenmpi-dev
+           sudo apt install -y gawk
+           sudo apt install -y libblacs-mpi-dev
+           sudo apt install -y liblapack-dev
            gawk --version
            mpirun --version
+           gfortran --version
            conda install -c conda-forge numpy
            conda install -c conda-forge scipy
 
@@ -32,10 +38,11 @@ jobs:
       run: |
         printenv >> $GITHUB_ENV
         which mpifort
+        which mpif90
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
         cmake --build build -- -j2
 
     - name: "Test 01 (Butadiene) VMC only on 1 processor"
