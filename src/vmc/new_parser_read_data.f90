@@ -557,7 +557,7 @@ subroutine read_jastrow_file(file_jastrow)
         do it = 1, nctype
             if (wid) read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
             !write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)  !Intel Version
-            write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja)                     !GNU version
+            if (mparmja .ne. 0) write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja)                     !GNU version
         enddo
         call bcast(a4)
 
@@ -568,7 +568,7 @@ subroutine read_jastrow_file(file_jastrow)
         do isp = nspin1, nspin2b
             if (wid) read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
             !write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)  !Intel Version
-            write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb)                     !GNU version
+            if (mparmjb .ne. 0) write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb)                     !GNU version
         enddo
         call bcast(b)
 
@@ -579,7 +579,7 @@ subroutine read_jastrow_file(file_jastrow)
         do it = 1, nctype
             if (wid) read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
             !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
-            write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
+            if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
         enddo
         call bcast(c)
 

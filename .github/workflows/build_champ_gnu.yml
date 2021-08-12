@@ -1,4 +1,4 @@
-name: Intel OneAPI Build and Testing
+name: GNU Compiler Build and Testing
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_champ:
-    name: Build CHAMP with Intel OneAPI
+    name: Build CHAMP with GNU compiler
     runs-on: ubuntu-20.04
     timeout-minutes: 60
     defaults:
@@ -16,30 +16,27 @@ jobs:
         shell: bash --noprofile --norc {0}
     steps:
     - uses: actions/checkout@v2
-    - name: setup repo
+    - uses: s-weigand/setup-conda@v1
+
+    - run: conda --version
+
+    - name: Install GNU compilers and libraries
       run: |
-        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-        sudo apt-get update
-    - name: install Intel oneapi components
-      run: |
-        sudo apt-get install -y intel-oneapi-common-vars
-        sudo apt-get install -y intel-oneapi-compiler-fortran
-        sudo apt-get install -y intel-oneapi-mkl
-        sudo apt-get install -y intel-oneapi-mpi
-        sudo apt-get install -y intel-oneapi-mpi-devel
+           sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev # valgrind libmkl-full-dev
+           gawk --version
+           mpirun --version
+           conda install -c conda-forge numpy
+           conda install -c conda-forge scipy
+
     - name: Compile
       run: |
-        source /opt/intel/oneapi/setvars.sh
         printenv >> $GITHUB_ENV
-        which mpiifort
+        which mpifort
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-        cmake --build build -- -j1
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort
+        cmake --build build -- -j2
 
     - name: "Test 01 (Butadiene) VMC only on 1 processor"
       run: |
