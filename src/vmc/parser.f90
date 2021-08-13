@@ -1169,7 +1169,7 @@ subroutine parser
 
       wsum = 0.d0
       nweight = 0
-      do i = 1, nstates_g
+      do i = 1, nstates
         if (weights_g(i) .gt. 1d-6) then
             nweight = nweight + 1
             iweight_g(nweight) = i
