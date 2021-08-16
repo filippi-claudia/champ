@@ -911,7 +911,11 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    allocate (zex(nbasis, nwftype))
+    if( (method(1:3) == 'lin')) then
+      if (.not. allocated(zex)) allocate (zex(nbasis, 3))
+    else
+      if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
+    endif
     zex = 1   ! debug check condition about numr == 0
   endif
   iexponents = iexponents + 1
@@ -1610,7 +1614,12 @@ subroutine parser
 !     First get the two numbers required for allocations
     ncsf    = fdf_bintegers(bfdf%mark%pline, 1) ! 1st integer in the line
     nstates = fdf_bintegers(bfdf%mark%pline, 2) ! 2nd integer in the line
-    if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
+
+    if( (method(1:3) == 'lin')) then
+      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, 3))
+    else
+      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
+    endif
 
     j = 1
     do while((fdf_bline(bfdf, pline)))
@@ -1652,8 +1661,11 @@ subroutine parser
 !   %endblock
 
 
-    allocate (scalek(nwftype))
-
+    if( (method(1:3) == 'lin')) then
+      allocate (scalek(3))
+    else
+      allocate (scalek(nwftype))
+    endif
 
     j = 1
     do while((fdf_bline(bfdf, pline)))

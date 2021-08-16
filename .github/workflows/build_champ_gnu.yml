@@ -44,6 +44,7 @@ jobs:
         cmake --version
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
         cmake --build build -- -j2
+        ulimit -s unlimited
 
     - name: "Test 01 (Butadiene) VMC only on 1 processor"
       run: |
@@ -380,7 +381,7 @@ jobs:
 
     - name: "Test 19 (H2) sto basis optimize jastrow sr_n method on 1 processor"
       run: |
-        echo "Running the tests using the new parser. Butadiene VMC "
+        echo "Running the tests using the new parser. H2 "
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
@@ -397,7 +398,7 @@ jobs:
 
     - name: "Test 20 (H2) sto basis optimize jastrow sr_n method on 2 processors"
       run: |
-        echo "Running the tests using the new parser. Butadiene VMC "
+        echo "Running the tests using the new parser. H2 "
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
@@ -414,7 +415,7 @@ jobs:
 
     - name: "Test 21 (H2) sto basis optimize wf+jastrow using lin_d method on 1 processor"
       run: |
-        echo "Running the tests using the new parser. Butadiene VMC "
+        echo "Running the tests using the new parser. H2 "
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
@@ -431,7 +432,7 @@ jobs:
 
     - name: "Test 22 (H2) sto basis optimize wf+jastrow using lin_d method on 2 processors"
       run: |
-        echo "Running the tests using the new parser. Butadiene VMC "
+        echo "Running the tests using the new parser. H2 "
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
@@ -448,7 +449,7 @@ jobs:
 
     - name: "Test 23 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
       run: |
-        echo "Running the tests using the new parser. Butadiene VMC "
+        echo "Running the tests using the new parser. H2 "
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
@@ -465,7 +466,7 @@ jobs:
 
     - name: "Test 24 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
       run: |
-        echo "Running the tests using the new parser. Butadiene VMC "
+        echo "Running the tests using the new parser. H2 "
         cd tests/CI_test/new-parser-h2
 
         echo "Running the optimization calculation"
@@ -482,7 +483,7 @@ jobs:
 
     - name: "Test 25 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 1 processor"
       run: |
-        echo "Running the tests using the new parser. Butadiene VMC "
+        echo "Running the tests using the new parser. PSB3 "
         cd tests/CI_test/new-parser-psb3
 
         echo "Running the optimization calculation"
@@ -500,7 +501,7 @@ jobs:
 
     - name: "Test 26 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 2 processors"
       run: |
-        echo "Running the tests using the new parser. Butadiene VMC "
+        echo "Running the tests using the new parser. PSB3 "
         cd tests/CI_test/new-parser-psb3
 
         echo "Running the optimization calculation"
@@ -516,6 +517,115 @@ jobs:
         path: tests/CI_test/new-parser-psb3/revised_sr_n_double.out
         retention-days: 3
 
+    - name: "Test 27 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 1 processor"
+      run: |
+        echo "Running the tests using the new parser. PSB3 "
+        cd tests/CI_test/new-parser-psb3
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_single.out -e error
+
+        echo "Comparing the energy with the reference one (total E of second state = -41.4910248 ) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_single.out "total E" -41.4910248 --no_assert
+
+    - name: "Upload results of test 27"
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-27
+        path: tests/CI_test/new-parser-psb3/revised_regterg_single.out
+        retention-days: 3
+
+    - name: "Test 28 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 2 processors"
+      run: |
+        echo "Running the tests using the new parser. PSB3 "
+        cd tests/CI_test/new-parser-psb3
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_double.out -e error
+
+        echo "Comparing the energy with the reference one (total E of second state = -41.3989435 ) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_double.out "total E" -41.3989435 --no_assert
+
+    - name: "Upload results of test 28"
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-28
+        path: tests/CI_test/new-parser-psb3/revised_regterg_double.out
+        retention-days: 3
+
+    - name: "Test 29 (psb3) optimize wavefunction and ci using lin_d method Davidson Calculation (400 determinants, 2 states, csfmap) on 1 processor"
+      run: |
+        echo "Running the tests using the new parser. PSB3 "
+        cd tests/CI_test/new-parser-psb3
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_free.inp -o revised_free_single.out -e error
+
+        echo "Comparing the energy with the reference one (eigenvalue[1] = -44.148262860328295) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_free_single.out "eigenvalue            1" -44.148262860328295 --no_assert
+
+    - name: "Upload results of test 29"
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-29
+        path: tests/CI_test/new-parser-psb3/revised_free_single.out
+        retention-days: 3
+
+    - name: "Test 30 (psb3) optimize wavefunction and ci using lin_d method Davidson Calculation (400 determinants, 2 states, csfmap) on 2 processors"
+      run: |
+        echo "Running the tests using the new parser. PSB3 "
+        cd tests/CI_test/new-parser-psb3
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_free.inp -o revised_free_double.out -e error
+
+        echo "Comparing the energy with the reference one (eigenvalue[1] = -50.815236723338842) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_free_double.out "eigenvalue            1" -50.815236723338842 --no_assert
+
+    - name: "Upload results of test 30"
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-30
+        path: tests/CI_test/new-parser-psb3/revised_free_double.out
+        retention-days: 3
+
+    - name: "Test 31 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"
+      run: |
+        echo "Running the tests using the new parser. PSB2 "
+        cd tests/CI_test/new-parser-psb2
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_single.out -e error
+
+        echo "Comparing the energy with the reference one ("total E" -29.7665740) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.7665740 --no_assert
+
+    - name: "Upload results of test 31"
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-31
+        path: tests/CI_test/new-parser-psb2/revised_psb2_mix_n_single.out
+        retention-days: 3
+
+    - name: "Test 32 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 2 processor"
+      run: |
+        echo "Running the tests using the new parser. PSB2 "
+        cd tests/CI_test/new-parser-psb2
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_double.out -e error
+
+        echo "Comparing the energy with the reference one ("total E" -29.9287659) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.9287659 --no_assert
+
+    - name: "Upload results of test 32"
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-32
+        path: tests/CI_test/new-parser-psb2/revised_psb2_mix_n_double.out
+        retention-days: 3
+
+
     - name: "Zip the test reults"
       run: |
         echo "Compressing the test results from workflow"
@@ -528,3 +638,6 @@ jobs:
         name: results-workflow-actions
         path: tests/workflow_artifacts.tar.gz
         retention-days: 3
+
+
+

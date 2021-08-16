@@ -254,6 +254,7 @@ subroutine read_determinants_file(file_determinants)
     use general,        only: pooldir
     use elec,           only: ndn, nup
     use const,          only: nelec
+    use method_opt,     only: method
 
     implicit none
 
@@ -318,7 +319,11 @@ subroutine read_determinants_file(file_determinants)
     ! Note the hack here about capitalized variables. DEBUG
     MDET = ndet
 
-    if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,nwftype))
+    if( (method(1:3) == 'lin')) then
+        if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,3))
+    else
+        if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,nwftype))
+    endif
 
     if (wid) then
         read(iunit,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
@@ -466,6 +471,7 @@ subroutine read_jastrow_file(file_jastrow)
     use contrl_per, 		only: iperiodic
     use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
     use general,            only: pooldir
+    use method_opt,         only: method
     implicit none
 
     !   local use
@@ -527,7 +533,11 @@ subroutine read_jastrow_file(file_jastrow)
     endif
     call bcast(iwft)
 
-    allocate (scalek(nwftype))
+    if( (method(1:3) == 'lin')) then
+        allocate (scalek(3))
+    else
+        allocate (scalek(nwftype))
+    endif
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
         if (ifock .gt. 0) call fatal_error('JASTROW: fock not yet implemented for ijas=4,5,6')
@@ -549,7 +559,11 @@ subroutine read_jastrow_file(file_jastrow)
         mparmjb = 2 + max(0, nordb - 1)
         mparmjc = nterms4(nordc)
 
-        allocate (a4(mparmja, nctype, nwftype))
+        if( (method(1:3) == 'lin')) then
+            allocate (a4(mparmja, nctype, 3))
+        else
+            allocate (a4(mparmja, nctype, nwftype))
+        endif
 
         write(ounit, '(A)') "Jastrow parameters :: "
         write(ounit, '(A)') "mparmja : "
@@ -561,7 +575,11 @@ subroutine read_jastrow_file(file_jastrow)
         enddo
         call bcast(a4)
 
-        allocate (b(mparmjb, 2, nwftype))
+        if( (method(1:3) == 'lin')) then
+            allocate (b(mparmjb, 2, 3))
+        else
+            allocate (b(mparmjb, 2, nwftype))
+        endif
 
         write(ounit, '(A)') "mparmjb : "
         write(temp3, '(a,i0,a)') '(', mparmjb, '(2X, f12.8))'
@@ -572,7 +590,11 @@ subroutine read_jastrow_file(file_jastrow)
         enddo
         call bcast(b)
 
-        allocate (c(mparmjc, nctype, nwftype))
+        if( (method(1:3) == 'lin')) then
+            allocate (c(mparmjc, nctype, 3))
+        else
+            allocate (c(mparmjc, nctype, nwftype))
+        endif
 
         write(ounit, '(A)') "mparmjc : "
         write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
@@ -615,6 +637,7 @@ subroutine read_orbitals_file(file_orbitals)
     ! was not in master but is needed
     use wfsec, only: nwftype
     use general, only: pooldir
+    use method_opt, only: method
 
     implicit none
 
@@ -684,7 +707,12 @@ subroutine read_orbitals_file(file_orbitals)
 
     if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
 
-    if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
+    if( (method(1:3) == 'lin')) then
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb, 3))
+    else
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
+    endif
+
 
     do iorb = 1, norb
         if (wid) then
@@ -743,6 +771,7 @@ subroutine read_csf_file(file_determinants)
     use ci000, only: nciprim, nciterm
     use optwf_contrl, only: ioptci
     use general, only: pooldir
+    use method_opt, only: method
     implicit none
 
     !   local use
@@ -792,7 +821,13 @@ subroutine read_csf_file(file_determinants)
         if (ioptci .ne. 0) nciterm = nciprim
         printed = .true.
         ! if there is no mention of "csf" in the file:: allocate and assign
-        if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+        if( (method(1:3) == 'lin')) then
+            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, 3))
+        else
+            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+        endif
+
+
         do i = 1, nstates
             do j = 1, ndet
                 ccsf(j,i,nwftype) = cdet(j,i,nwftype)
@@ -813,7 +848,12 @@ subroutine read_csf_file(file_determinants)
         call bcast(ncsf)
         call bcast(nstates)
 
-        if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+        if( (method(1:3) == 'lin')) then
+            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, 3))
+        else
+            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+        endif
+
         if (wid) then
             do i = 1, nstates
                 read(iunit,*) (ccsf(j,i,1), j=1,ncsf)
@@ -989,9 +1029,7 @@ subroutine read_csfmap_file(file_determinants)
         enddo
         write(ounit,*)
     endif
-
     if (wid) close(iunit)
-
     write(ounit,*) '------------------------------------------------------'
 
 end subroutine read_csfmap_file
@@ -1012,7 +1050,7 @@ subroutine read_exponents_file(file_exponents)
     use inputflags,         only: iexponents
     use wfsec,              only: nwftype
     use general,            only: pooldir
-
+    use method_opt,         only: method
     implicit none
 
     !   local use
@@ -1043,7 +1081,11 @@ subroutine read_exponents_file(file_exponents)
     write(ounit, *) 'nbasis', nbasis
     write(ounit, *) 'nwftype', nwftype
 
-    if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
+    if( (method(1:3) == 'lin')) then
+        if (.not. allocated(zex)) allocate (zex(nbasis, 3))
+    else
+        if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
+    endif
 
     do iwft = 1, nwftype
         if (wid) then

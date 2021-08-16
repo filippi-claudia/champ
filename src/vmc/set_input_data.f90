@@ -8,14 +8,18 @@ subroutine inputzex
     ! are they needed ??!!
     use contrl_per, only: iperiodic
     use wfsec, only: nwftype
-
+    use method_opt, only: method
       implicit none
 
       integer :: i, iwft
 
 
 
-    if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
+    if( (method(1:3) == 'lin')) then
+        if (.not. allocated(zex)) allocate (zex(nbasis, 3))
+    else
+        if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
+    endif
 
     if (numr .eq. 0 .and. iperiodic .eq. 0) &
         call fatal_error('ZEX: numr=0 and iperiodic=0 but no zex are inputed')
@@ -317,11 +321,16 @@ subroutine inputdet()
 !    use vmc_mod, only: MORB
 !    use mstates_mod, only: MSTATES
     use wfsec, only: nwftype
+    use method_opt, only: method
 
     implicit none
     integer             :: iwft, k
 
-    if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
+    if( (method(1:3) == 'lin')) then
+        if (.not. allocated(cdet)) allocate(cdet(ndet,nstates,3))
+    else
+        if (.not. allocated(cdet)) allocate(cdet(ndet,nstates,nwftype))
+    endif
 
     do iwft = 2, nwftype
         do k = 1, ndet
@@ -335,12 +344,17 @@ subroutine inputlcao()
     ! Set the lcao to be equal
     use coefs, only: coef, nbasis, norb
     use wfsec, only: nwftype
+    use method_opt, only: method
 
     implicit none
     integer             :: iwft, i,j
 
 
-    if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
+    if( (method(1:3) == 'lin')) then
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb, 3))
+    else
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
+    endif
 
     do iwft = 2, nwftype
         do i = 1, norb
