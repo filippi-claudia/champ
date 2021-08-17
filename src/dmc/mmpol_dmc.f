@@ -7,7 +7,7 @@
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2
       use mmpol_averages, only: dmmpol_cum, dmmpol_cm2
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iblk, icmmpol_err, idmmpol_err
@@ -51,11 +51,11 @@ c Statement functions for error calculation, it might be reaplaced in the near f
       cekcal=cmmpol_err*hatokc
       dckcal=dmmpol_kcal+cmmpol_kcal
 
-      write(6,*)'    <H(QM/MM)/dipoles/charges/tot +- err (kcal/mol) '
-      write(6,1000) dmmpol_kcal,dekcal,cmmpol_kcal,cekcal,dckcal
-      write(6,*)'    <H(QM/MM)/dipoles/charges/tot +- err (hartree) '
-      write(6,1000) dmmpol_ave,dmmpol_err,cmmpol_ave,cmmpol_err,dckcal/hatokc
-      write(6,*)
+      write(ounit,*)'    <H(QM/MM)/dipoles/charges/tot +- err (kcal/mol) '
+      write(ounit,1000) dmmpol_kcal,dekcal,cmmpol_kcal,cekcal,dckcal
+      write(ounit,*)'    <H(QM/MM)/dipoles/charges/tot +- err (hartree) '
+      write(ounit,1000) dmmpol_ave,dmmpol_err,cmmpol_ave,cmmpol_err,dckcal/hatokc
+      write(ounit,*)
  1000 format (f15.7,' +- ',2f15.7,' +- ',f15.7,' --> ',f15.7)
 
       return

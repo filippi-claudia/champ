@@ -5,7 +5,7 @@
 c
 c     Programmer: Diederik R. Fokkema
 c     Modified         : M. van Gijzen
-c     Modified 05-24-96: M. Kooper: ra and rb, the Schur matrices of A and B, 
+c     Modified 05-24-96: M. Kooper: ra and rb, the Schur matrices of A and B,
 c              added, as well as the vectors sa and sb, which contain the
 c              innerproducts of ra with Z and rb with Z. This is added to be
 c              enable to compute the eigenvectors in EIVEC
@@ -13,6 +13,7 @@ c     Modification 08-27-96: Different computation of eigenvectors, MvG
 c
 c     .. Parameters ..
 c
+      use contrl_file,    only: ounit
       implicit none
       integer gmres, cgstab
       parameter ( gmres = 1, cgstab = 2 )
@@ -129,7 +130,7 @@ c
       loop = (k.lt.kmax.and.step.lt.maxstep)
       if (loop) then
 	 step = step+1
-         write(6,'(''iteration : '',i4)') step
+         write(ounit,'(''iteration : '',i4)') step
 
 	 solvestep = solvestep+1
 	 if (j.eq.0) then
@@ -169,7 +170,7 @@ c
 	 call zmgs (n, k, work(1,q), work(1,v+j-1), 1 )
 
 	 if (testspace.eq.1) then
- 	    call jdqzmv (n, work(1,v+j-1), work(1,w+j-1), work(1,tp), 
+ 	    call jdqzmv (n, work(1,v+j-1), work(1,w+j-1), work(1,tp),
      $           -dconjg(shiftb), dconjg(shifta))
 	 elseif (testspace.eq.2) then
  	    call jdqzmv (n, work(1,v+j-1), work(1,w+j-1), work(1,tp),
@@ -235,8 +236,8 @@ c
 
             rnrm = dznrm2 (n, work(1,d), 1)/dble(evcond)
 
-        write(6,'(''mxmv : '',i4)') mxmv
-        write(6,'(''lambda('',i2,''): ('',1p,e11.4,'','',e11.4,'' )'')') k,zalpha/zbeta
+        write(ounit,'(''mxmv : '',i4)') mxmv
+        write(ounit,'(''lambda('',i2,''): ('',1p,e11.4,'','',e11.4,'' )'')') k,zalpha/zbeta
 
             if (rnrm.lt.lock.and.ok) then
                targeta = zalpha
@@ -323,7 +324,7 @@ c              --- store the eigenvalue
          goto 100
       endif
 
-      write(6,'(''number of steps : '',i4)') step
+      write(ounit,'(''number of steps : '',i4)') step
 c
 c...     Did enough eigenpairs converge?
       kmax = k
@@ -332,17 +333,17 @@ c...     Did enough eigenpairs converge?
 c...        Compute the Schur matrices if the eigenvectors are
 c...        wanted, work(1,tp) is used for temporary storage
 c...        Compute RA:
-         call zlaset ('l', k, k, zero, zero, ra, ldvs)    
+         call zlaset ('l', k, k, zero, zero, ra, ldvs)
          do i = 1, k
             call amul( n, work(1,q+i-1), work(1,tp) )
-            call zgemv( 'c', n, i, one, work(1,z), n, work(1,tp), 1, 
+            call zgemv( 'c', n, i, one, work(1,z), n, work(1,tp), 1,
      $                  zero, ra(1,i), 1 )
          end do
 c...        Compute RB:
-         call zlaset ('l', k, k, zero, zero, rb, ldvs)    
+         call zlaset ('l', k, k, zero, zero, rb, ldvs)
          do i = 1, k
             call bmul( n, work(1,q+i-1), work(1,tp) )
-            call zgemv( 'c', n, i, one, work(1,z), n, work(1,tp), 1, 
+            call zgemv( 'c', n, i, one, work(1,z), n, work(1,tp), 1,
      $                  zero, rb(1,i), 1 )
          end do
 
@@ -374,7 +375,7 @@ c     .. Parameters ..
 c
       implicit none
       integer n
-      double complex alpha, beta, x(*), y(*), work(*) 
+      double complex alpha, beta, x(*), y(*), work(*)
 c
 c     .. Local ..
 c
@@ -573,7 +574,7 @@ c
             bpnorm = rnrm
          endif
       endif
-         
+
       if (nmv.lt.mxmv .and. rnrm.gt.eps1) goto 1000
 
       call zaxpy (n, one, work(1,xp), 1, x, 1)
@@ -587,7 +588,7 @@ c
       end
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine zgmres (n, x, r, mxm, eps, mxmv, 
+      subroutine zgmres (n, x, r, mxm, eps, mxmv,
      $     alpha, beta, k, kz, q, invqkz, ldqkz, ipiv, f, v, tp)
 c
 c     Programmer: Diederik R. Fokkema
@@ -602,32 +603,32 @@ c
       double complex x(*), r(*), kz(n,*), q(n,*), v(n,*),
      $     alpha, beta, invqkz(ldqkz,*), f(*), tp(*)
 
-ctex@ \begin{manpage}{ZGMRES} 
+ctex@ \begin{manpage}{ZGMRES}
 ctex@
-ctex@ \subtitle{ZGMRES} 
+ctex@ \subtitle{ZGMRES}
 ctex@    ZGMRES -- Generalized Minimal Residual
 ctex@    iterative method for solving linear systems $\beta A-\alpha B = -r$.
 ctex@    This subroutine in specilized for use in JDQZ.
-ctex@ 
+ctex@
 ctex@ \subtitle{Declaration}
 ctex@ \function{subroutine zgmres (n, x, r, mxm, eps, mxmv, a, ka, b, kb,
 ctex@   alpha, beta, k, kz, mqkz, zmqkz, ldvs, q,
 ctex@   lu, klu, dlu, v)}
 ctex@
 ctex@ \subtitle{Parameters}
-ctex@    \variable{integer n} 
+ctex@    \variable{integer n}
 ctex@       On entry, n specifies the dimension of the matrix A.
-ctex@       
-ctex@    \variable{x} 
-ctex@       double complex array of size n. 
+ctex@
+ctex@    \variable{x}
+ctex@       double complex array of size n.
 ctex@       On exit, x is overwritten by the approximate solution.
 ctex@
 ctex@    \variable{r}
-ctex@       double complex array of size n. Before entry, the array r 
-ctex@       must contain the righthandside of the linear problem Ax=r. 
+ctex@       double complex array of size n. Before entry, the array r
+ctex@       must contain the righthandside of the linear problem Ax=r.
 ctex@       Changed on exit.
-ctex@ 
-ctex@    \variable{integer mxm} 
+ctex@
+ctex@    \variable{integer mxm}
 ctex@       On entry, mxm specifies the degree of the Minimal Residual
 ctex@       polynomial.
 ctex@
@@ -636,16 +637,16 @@ ctex@       On entry, eps specifies the stop tolerance. On exit, eps contains
 ctex@       the relative norm of the last residual.
 ctex@
 ctex@    \variable{integer mxmv}
-ctex@       On Entry, mxmv specifies the maximum number of matrix 
+ctex@       On Entry, mxmv specifies the maximum number of matrix
 ctex@       multiplications. On exit, mxmv contains the number of matrix
 ctex@       multiplications performed by the method.
 ctex@
 ctex@    \variable{{double complex} zalpha}
 ctex@       On entry, zalpha specifies $\alpha$. Unchanged on exit.
-ctex@ 
+ctex@
 ctex@    \variable{{double complex} zbeta}
 ctex@       On entry, zbeta specifies $\beta$. Unchanged on exit.
-ctex@ 
+ctex@
 ctex@    \variable{integer k}
 ctex@       On entry, k specifies the number of columns of the arrays
 ctex@       kz and q.
@@ -655,7 +656,7 @@ ctex@       double complex array z, of size (n,k). On entry the array z
 ctex@       must contain the preconditioned matrix Z.
 ctex@
 ctex@    \variable{mqkz}
-ctex@       double complex array mqkz, of size (ldvs,k). On entry the array 
+ctex@       double complex array mqkz, of size (ldvs,k). On entry the array
 ctex@       mqkz must contain the matrix Q'*KZ.
 ctex@
 ctex@    \variable{zmqkz}
@@ -677,7 +678,7 @@ ctex@    ***
 ctex@
 ctex@ \subtitle{References}
 ctex@    ***
-ctex@ 
+ctex@
 ctex@ \subtitle{Bugs}
 ctex@    ***
 ctex@
@@ -726,7 +727,7 @@ c
       nmv = 0
 
       call zcopy (n, r, 1, v(1,1), 1)
-c         
+c
 c     --- outer loop
 c
  1000 restrt = ( nmv .lt. mxmv .and. rnrm .gt. eps1 )
@@ -745,7 +746,7 @@ c
             call jdqzmv (n, v(1,m), v(1,m1), tp, alpha, beta)
             call psolve (n, v(1,m1), k, q, kz, invqkz,
      $           ldqkz, ipiv, f)
-            nmv = nmv+1 
+            nmv = nmv+1
             do i = 1,m
                ztmp = zdotc (n, v(1,i), 1, v(1,m1), 1)
                hh(i,m) = ztmp

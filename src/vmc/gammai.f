@@ -44,6 +44,7 @@ c This requires changing all the metrop routines that call gammai.
 c Returns   gammai, iflag=1,    x <  a+4
 c          -gammac, iflag=-1,   x >= a+4 even though it is called gammai
 
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -60,7 +61,7 @@ c     parameter (itmax=100,eps=1.d-14, d3b2=1.5d0,d5b2=2.5d0,
 c    & g3b2=.886226925452758d0,g5b2=1.329340388179137d0)
 
       if(x.lt.a+4)then
-c       write(6,*)'series'
+c       write(ounit,*)'series'
         iflag=1
         ap=a
         sum=1/a
@@ -77,7 +78,7 @@ ci      call fatal_error ('a too large, itmax too small')
 ci 20   gammai=sum*dexp(-x+a*dlog(x))
         gammai=sum*xae
        else
-c       write(6,*) 'contin frac'
+c       write(ounit,*) 'contin frac'
         iflag=-1
 c       gold=0
         a0=1
@@ -113,7 +114,7 @@ cc       else
 cc        gammai=gamm(a)-gammcf
 cc      endif
       endif
-c     write(6,*) xae,dexp(-x+a*dlog(x))
+c     write(ounit,*) xae,dexp(-x+a*dlog(x))
       return
       end
 c-----------------------------------------------------------------------

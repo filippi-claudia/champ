@@ -16,7 +16,7 @@ c----------------------------------------------------------------------
       if(iefficiency.eq.0) return
 
       determ_psigi=1.d0/determ_psig
-c     write(6,*) ((determ_s(j)*determ_psigi)**2,j=1,nstates_psig)
+c     write(ounit,*) ((determ_s(j)*determ_psigi)**2,j=1,nstates_psig)
 
       do 100 j=1,nstates_psig
         ratio=determ_s(j)*determ_psigi
@@ -63,7 +63,7 @@ c----------------------------------------------------------------------
       write(ounit,'(''efficiency for multiple states'')')
       do 200 j=1,nstates_psig
         efficiency=effcum(j)*effcum(j)/effcm2(j)/passes
-c       write(6,*) effcum(j)*effcum(j)/passes,effcm2(j)
+c       write(ounit,*) effcum(j)*effcum(j)/passes,effcm2(j)
   200   write(ounit,'(''efficiency state '',i4,f8.3)') j,efficiency
 
       end

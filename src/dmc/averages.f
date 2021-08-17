@@ -117,7 +117,7 @@ c deriv
      &              +cum_av(jderiv(2,ifr))-cum_av(jderiv(2,1))
      &              -egave*(cum_av(jderiv(3,ifr))-cum_av(jderiv(3,1))))
        derivtotave=derivtotave/cum_w(jderiv(1,1))
-c      write(6,*)'test deriv ',ifr,derivtotave
+c      write(ounit,*)'test deriv ',ifr,derivtotave
       enddo
       return
       end

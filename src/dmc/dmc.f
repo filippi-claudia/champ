@@ -144,7 +144,7 @@ c initialize sums and averages
       if(dmc_irstar.ne.1) call average(0)
 
 c forces implemented only for certain dmc control options
-      if(nforce.gt.1) write(6,'(''Possible Warning: force implemented for certain dmc control options'')')
+      if(nforce.gt.1) write(ounit,'(''Possible Warning: force implemented for certain dmc control options'')')
 
 c     call flush(6)
 c loops for dmc calculation

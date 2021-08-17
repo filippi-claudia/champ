@@ -51,7 +51,7 @@ c non-local pseudopotential
    10 continue
 
 c     do ic=1,ncent
-c       write(6,*) 'HELLO_GAUSS',da_vps(1,iel,ic,lpot(iwctype(ic)))
+c       write(ounit,*) 'HELLO_GAUSS',da_vps(1,iel,ic,lpot(iwctype(ic)))
 c     enddo
       return
       end

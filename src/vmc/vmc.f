@@ -150,7 +150,7 @@ c now do averaging steps
       do 440 i=1,vmc_nblk
         do 430 j=1,vmc_nstep
         l=l+1
-      !   write(6, *) i, nblk, j, nstep
+      !   write(ounit, *) i, nblk, j, nstep
         if (nloc.gt.0) call rotqua
         call metrop6(l,1)
 c write out configuration for optimization/dmc/gfmc here

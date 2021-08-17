@@ -46,7 +46,7 @@
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
       use mpi
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -104,7 +104,7 @@
         return
       endif
 
-      write(6,'(1x,''attempting restart from unit 10'')')
+      write(ounit,'(1x,''attempting restart from unit 10'')')
       rewind 10
       read(10) nprock
       if(nprock.ne.nproc) call fatal_error('STARTR: different num procs')
@@ -246,8 +246,8 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) cjas1x,cjas2x
       if (dabs(cjas1x-cjas1(1)).gt.small) call fatal_error('STARTR: cjas1')
       if (dabs(cjas2x-cjas2(1)).gt.small) call fatal_error('STARTR: cjas2')
-      write(6,'(1x,''succesful read from unit 10'')')
-      write(6,'(t5,''egnow'',t15,''egave'',t21
+      write(ounit,'(1x,''succesful read from unit 10'')')
+      write(ounit,'(t5,''egnow'',t15,''egave'',t21
      &,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55
      &,''(tpberr)'' ,t66,''tjfave'',t72,''(tjferr)'',t83,''npass'',t93
      &,''wgsum'',t103 ,''ioldest'')')

@@ -16,6 +16,7 @@ c...........................................................
       use mmpol_pot, only: penu_dp, penu_q, peq_dp, peqq, u_self
       use mmpol_inds, only: inds_pol
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -30,7 +31,7 @@ c isites_mmpol is always set to zero in read_input
       if(isites_mmpol.eq.0) then
 
 c Read site positions, fixed charges, and polarizabilities
-        write(6,'(''mmpol open file'',a20)') mmpolfile_sites
+        write(ounit,'(''mmpol open file'',a20)') mmpolfile_sites
         open (55,file=mmpolfile_sites,form='formatted',status='unknown')
         rewind 55
         read(55,*)
@@ -45,7 +46,7 @@ c endif isites_mmpol
       endif
 
       icall_mm=0
-      write(6,'(''mmpol nchmm ='',i10)') nchmm
+      write(ounit,'(''mmpol nchmm ='',i10)') nchmm
 
 c Compute site-site distances and screening functions, and charge-charge interaction
       call mmpol_compute_peq_q
@@ -71,14 +72,14 @@ c Compute Ainv of mu= Ainv E and electric field due to nuclei and MM charges
       endif
 
       penu_mmpol=penu_dp+penu_q
-      write(6,*)
-      write(6,'(''mmpol epot nuclei-sites dipoles ='',f12.6)') penu_dp
-      write(6,'(''mmpol epot nuclei-sites charges ='',f12.6)') penu_q
-      write(6,'(''mmpol epot nuclei-sites ='',f12.6)') penu_mmpol
-      write(6,'(''mmpol epot charges-charges ='',f12.6)') peqq
-      write(6,'(''mmpol epot charges-dipoles ='',f12.6)') peq_dp
-      write(6,'(''mmpol self energy          ='',f12.6)') u_self
-      write(6,*)
+      write(ounit,*)
+      write(ounit,'(''mmpol epot nuclei-sites dipoles ='',f12.6)') penu_dp
+      write(ounit,'(''mmpol epot nuclei-sites charges ='',f12.6)') penu_q
+      write(ounit,'(''mmpol epot nuclei-sites ='',f12.6)') penu_mmpol
+      write(ounit,'(''mmpol epot charges-charges ='',f12.6)') peqq
+      write(ounit,'(''mmpol epot charges-dipoles ='',f12.6)') peq_dp
+      write(ounit,'(''mmpol self energy          ='',f12.6)') u_self
+      write(ounit,*)
 
  1000 format(I4,2x,3F12.5,2x,F12.5,2x,F12.5)
       return
@@ -219,7 +220,7 @@ c............................................................
       use mmpol_dipol, only: dipo
       use mmpol_pot, only: penu_dp
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, j
@@ -242,7 +243,7 @@ c............................................................
         enddo
       enddo
 
-      write(6,*) 'Compute dipoles penu_dp =' ,penu_dp
+      write(ounit,*) 'Compute dipoles penu_dp =' ,penu_dp
 
       return
       end
@@ -425,7 +426,7 @@ c............................................................
       use mmpol_pot, only: peq_dp
       use mmpol_fdc, only: screen1
       use mmpol_inds, only: inds_pol
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -467,7 +468,7 @@ c Compute MM charge-dipole interaction
           peq_dp=peq_dp-dipo(i,k)*eqk_pol(i,k)
         enddo
       enddo
-      write(6,*) '(charges-dipoles)=',peq_dp
+      write(ounit,*) '(charges-dipoles)=',peq_dp
 
       return
       end
@@ -545,6 +546,7 @@ c......................................................
       use mmpol_parms, only: nchmm
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, nelec
@@ -568,14 +570,14 @@ c......................................................
   200 continue
 
       if (icall_mm.eq.1)then
-        write(6,*)
-        write(6,*)'nchmm=',nchmm
-        write(6,*)'u_self= ',u_self
-        write(6,*)'u_dd = ',u_dd
-        write(6,'(''QM-MM epot  ='',f12.6)') peQMdp+peQMq
-        write(6,'(''QM-MM e-/dipoles  ='',f12.6)') pepol_dp
-        write(6,'(''QM-MM e-/charges  ='',f12.6)') pepol_q
-        write(6,*)
+        write(ounit,*)
+        write(ounit,*)'nchmm=',nchmm
+        write(ounit,*)'u_self= ',u_self
+        write(ounit,*)'u_dd = ',u_dd
+        write(ounit,'(''QM-MM epot  ='',f12.6)') peQMdp+peQMq
+        write(ounit,'(''QM-MM e-/dipoles  ='',f12.6)') pepol_dp
+        write(ounit,'(''QM-MM e-/charges  ='',f12.6)') pepol_q
+        write(ounit,*)
       endif
 
       return
@@ -860,6 +862,7 @@ c......................................................
       subroutine mmpol_matinv(a,nsub,determinant)
       use mmpol_mod, only: MCHMM
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, info, nsub
@@ -876,8 +879,8 @@ c the matrix a is replaced by its inverse.
 
       call dgetrf(nsub,nsub,a,nsub,ipvt,info)
       if(info.gt.0) then
-            write(6,'(''mmpol.f'')')
-        write(6,'(''MATINV: u(k,k)=0 with k= '',i5)') info
+            write(ounit,'(''mmpol.f'')')
+        write(ounit,'(''MATINV: u(k,k)=0 with k= '',i5)') info
         call fatal_error('MATINV: info ne 0 in dgetrf')
       endif
 

@@ -19,8 +19,8 @@ c routine to accumulate estimators for energy etc.
       use est2cm, only: wfcm21, wgcm21
       use contr3, only: mode
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
-
-      implicit none 
+      use contrl_file,    only: ounit
+      implicit none
 
       integer :: ifr, ipmod, nfpro
       real(dp) :: wgdsum1, eisum
@@ -73,7 +73,7 @@ c Estimate eigenvalue of G from the energy
         eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
         eigv=dexp((etrial-eest)*(taucum(1)+tausum(1))/
      &                          (wgcum(1)+wgsum(1)))
-        if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv,eest,
+        if(ipr.ge.1) write(ounit,'(''eigv'',9f14.6)') eigv,eest,
      &  egcum(1),egsum(1),wgcum(1),wgsum(1),fprod
       endif
 

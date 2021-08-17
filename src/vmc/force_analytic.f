@@ -6,7 +6,7 @@
       use da_energy_now, only: da_psi
       use atom, only: ncent_tot
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, ic, k
@@ -22,8 +22,8 @@
           do 800 i=1,nelec
  800        da_psi(k,ic)=da_psi(k,ic)+da_j(k,i,ic)
 
-c     write(6,*)'da_ref',((da_psi_ref(l,ic),l=1,3),ic=1,ncent)
-c     write(6,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
+c     write(ounit,*)'da_ref',((da_psi_ref(l,ic),l=1,3),ic=1,ncent)
+c     write(ounit,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
 
       return
       end
@@ -82,7 +82,7 @@ c-----------------------------------------------------------------------
               ii=ii+nel
               do 110 j=1,nel
   110           b_kref(j+ii)=b_a(iworbd(j+ish,kref),i+ish)
-          
+
 c compute force for reference determinant
             do 120 i=1,nel
               do 120 j=1,nel
@@ -114,8 +114,8 @@ c         da_psi(k,ic)=da_psi(k,ic)+da_psi_ref(k,ic)
 c         do 800 i=1,nelec
 c800        da_psi(k,ic)=da_psi(k,ic)+da_j(k,i,ic)
 
-c     if(ipr.gt.3) write(6,*)'da_ref',((da_psi_ref(l,ic),l=1,3),ic=1,ncent)
-c     if(ipr.gt.3) write(6,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
+c     if(ipr.gt.3) write(ounit,*)'da_ref',((da_psi_ref(l,ic),l=1,3),ic=1,ncent)
+c     if(ipr.gt.3) write(ounit,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
 
       return
       end
@@ -172,7 +172,7 @@ c compute force for reference determinant
      &                                                 -da_orb(k,i+ish,jorb,ic)*xmat(i+(j-1)*nel,iab)
             do jrep=ivirt(iab),norb
               do irep=1,nel
-                trace=trace+zmat(jrep,irep,iab,1)*b_da(k,irep+ish,jrep,ic) 
+                trace=trace+zmat(jrep,irep,iab,1)*b_da(k,irep+ish,jrep,ic)
      &                     +dzmat(jrep,irep,iab,1)*da_orb(k,irep+ish,jrep,ic)
               enddo
             enddo
@@ -194,7 +194,7 @@ c enddo iab
         ict=iwctype(ic)
 
         do 800 k=1,3
-       
+
           da_other_kin=0.d0
           da_other_pot=da_pecent(k,ic)
           do 410 i=1,nelec
@@ -208,7 +208,7 @@ c enddo iab
 c complete da_psi
   800 continue
 
-c     write(6,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
+c     write(ounit,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
 
       return
       end

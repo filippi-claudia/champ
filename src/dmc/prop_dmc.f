@@ -14,7 +14,7 @@ C----------------------------------------------
 !      use contrl, only: nconf, nstep
       use precision_kinds, only: dp
       use control_dmc, only: dmc_nconf, dmc_nstep
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iblk, icount, ifinal, iperr
@@ -60,17 +60,17 @@ c         >1 after ipropprt iterations reduced printout
         endif
 
         if(ifinal.eq.0) then
-          write(6,'(a3,25x,f10.5,''  ('',i5,'')'')') pnames(i),pav(i),iperr
+          write(ounit,'(a3,25x,f10.5,''  ('',i5,'')'')') pnames(i),pav(i),iperr
          else
           evalg_eff=dmc_nconf*dmc_nstep*rn_eff(wgcum(1),wgcm2(1))
           rtevalg_eff1=dsqrt(evalg_eff-1)
-          write(6,'(''property '',a3,t17,f12.7,'' +-''
+          write(ounit,'(''property '',a3,t17,f12.7,'' +-''
      &       ,f11.7,f9.5)') pnames(i),pav(i),perr(i),perr(i)*rtevalg_eff1
         endif
  10   enddo
 c....dipole
-      write(6,50) 'center of nuclear charge: ',cc_nuc
-      write(6,30)
+      write(ounit,50) 'center of nuclear charge: ',cc_nuc
+      write(ounit,30)
       dipx=cc_nuc(1)*nelec*2.5417 - pav(1) *2.5417
       dipy=cc_nuc(2)*nelec*2.5417 - pav(2) *2.5417
       dipz=cc_nuc(3)*nelec*2.5417 - pav(3) *2.5417
@@ -78,10 +78,10 @@ c....dipole
       diperr=dabs (perr(1)*2.5417 * dipx / dip) +
      $       dabs (perr(2)*2.5417 * dipy / dip) +
      $       dabs (perr(3)*2.5417 * dipz / dip)
-      write(6,40) 'Dip X ',dipx,perr(1)*2.5417
-      write(6,40) 'Dip Y ',dipy,perr(2)*2.5417
-      write(6,40) 'Dip Z ',dipz,perr(3)*2.5417
-      write(6,40) 'Dip   ',dip,diperr
+      write(ounit,40) 'Dip X ',dipx,perr(1)*2.5417
+      write(ounit,40) 'Dip Y ',dipy,perr(2)*2.5417
+      write(ounit,40) 'Dip Z ',dipz,perr(3)*2.5417
+      write(ounit,40) 'Dip   ',dip,diperr
 
 
  30   format('-------- dipole operator averages  ----------')

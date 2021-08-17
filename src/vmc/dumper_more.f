@@ -268,8 +268,8 @@ c-----------------------------------------------------------------------
       call optx_jas_ci_rstrt(10)
       call optx_orb_ci_rstrt(10)
 
-      write(6,'(1x,''succesful read from unit 10'')')
-      write(6,'(t5,''enow'',t15,''eave'',t25,''eerr'',t35,''peave'',
+      write(ounit,'(1x,''succesful read from unit 10'')')
+      write(ounit,'(t5,''enow'',t15,''eave'',t25,''eerr'',t35,''peave'',
      &t45,''peerr'',t55,''tpbave'',t65,''tpberr'',t75,''tjfave'',
      &t85,''tjferr'',t95,''accept'',t105,''iter'')')
 

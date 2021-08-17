@@ -15,6 +15,7 @@
       use orbval, only: orb
       use multislater, only: detiab
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
@@ -194,7 +195,7 @@ c TMP to fix
 
  50   continue
 
-c     if(iab.eq.2) write(6,*) 'gmat ',(((gmat(irep,jrep,kk),irep=iactv(iab),nel),jrep=ivirt(iab),norb),kk=1,3)
+c     if(iab.eq.2) write(ounit,*) 'gmat ',(((gmat(irep,jrep,kk),irep=iactv(iab),nel),jrep=ivirt(iab),norb),kk=1,3)
 
       do kk=1,3
         dum=0
@@ -206,7 +207,7 @@ c     if(iab.eq.2) write(6,*) 'gmat ',(((gmat(irep,jrep,kk),irep=iactv(iab),nel)
         velocity(kk)=dum*detratio
       enddo
 
-c     if(iab.eq.2) write(6,*) 'ymat ',((ymat(jrep,irep),irep=iactv(iab),nel),jrep=ivirt(iab),norb)
+c     if(iab.eq.2) write(ounit,*) 'ymat ',((ymat(jrep,irep),irep=iactv(iab),nel),jrep=ivirt(iab),norb)
       return
       end
 c-----------------------------------------------------------------------

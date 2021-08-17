@@ -308,7 +308,7 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      !
      CALL rdiaghg( nbase, nvec, hr, sr, nvecx, ew, vr )
      !
-     ! write(6,'(''LIN_D: EIG '',100e15.6)') (ew(j),j=1,nvec)
+     ! write(ounit,'(''LIN_D: EIG '',100e15.6)') (ew(j),j=1,nvec)
      IF(ipr.gt.1) then
        do i=1,nbase
          write(ounit,'(''REG VEC'',100e10.3)') (vr(i,j),j=1,nvec)
@@ -400,7 +400,7 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
         !
         IF(idtask.eq.0) then
         !
-!       if(ipr.gt.1) write(6,'(''Refresh, notcnv,nvec,nbase '',3i4)') notcnv,nvec,nbase
+!       if(ipr.gt.1) write(ounit,'(''Refresh, notcnv,nvec,nbase '',3i4)') notcnv,nvec,nbase
         write(ounit,'(''Refresh, notcnv,nvec,nbase '',3i4)') notcnv,nvec,nbase
         !
         ! ... refresh psi, H*psi and S*psi

@@ -14,6 +14,7 @@ c good enough -- no need to use 1/2 the shortest perpendicular distance.
 
       use jaspar6, only: cutjas
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, i1, i2, i3, imax
@@ -47,20 +48,20 @@ c good enough -- no need to use 1/2 the shortest perpendicular distance.
 
 c Warning: setting cutjas=rlenmin/2 for sim cell is OK for B terms, but not for A and C.
       if(isim_cell.eq.0) then
-        write(6,'(''primitive  cell lattice vector'',i3,'' is longest ; length='',f8.3)')
+        write(ounit,'(''primitive  cell lattice vector'',i3,'' is longest ; length='',f8.3)')
      &  imax,rlenmax
-        write(6,'(''primitive  cell lattice vector'',i3,'' is shortest; length='',f8.3)')
+        write(ounit,'(''primitive  cell lattice vector'',i3,'' is shortest; length='',f8.3)')
      &  imin,rlenmin
        else
-        write(6,'(''simulation cell lattice vector'',i3,'' is longest ; length='',f8.3)')
+        write(ounit,'(''simulation cell lattice vector'',i3,'' is longest ; length='',f8.3)')
      &  imax,rlenmax
-        write(6,'(''simulation cell lattice vector'',i3,'' is shortest; length='',f8.3)')
+        write(ounit,'(''simulation cell lattice vector'',i3,'' is shortest; length='',f8.3)')
      &  imin,rlenmin
         cutjas=rlenmin/2
       endif
 
 c     if(cutjas.gt.rlenmin/2) then
-c       write(6,'(''Warning: input cutjas > half shortest lattice vector;
+c       write(ounit,'(''Warning: input cutjas > half shortest lattice vector;
 c    &  cutjas reset from'',f9.5,'' to'',f9.5)') cutjas,rlenmin/2
 c       cutjas=rlenmin/2
 c     endif
@@ -76,9 +77,9 @@ c     cutjas=rlenmin/2
    30           rlen=rlen+(i1*rlatt(k,1)+i2*rlatt(k,2)+i3*rlatt(k,3))**2
               rlen=sqrt(rlen)
               if (rlen.lt.rlenmax-eps) then
-                write(6,*) 'found shorter lattice vector'
-                write(6,'(''i1,i2,i3,rlen='',3i3,f8.3)') i1,i2,i3,rlen
-                write(6,'(''new rlatt='',3f8.3)')
+                write(ounit,*) 'found shorter lattice vector'
+                write(ounit,'(''i1,i2,i3,rlen='',3i3,f8.3)') i1,i2,i3,rlen
+                write(ounit,'(''new rlatt='',3f8.3)')
      &          i1*rlatt(1,1)+i2*rlatt(1,2)+i3*rlatt(1,3),
      &          i1*rlatt(2,1)+i2*rlatt(2,2)+i3*rlatt(2,3),
      &          i1*rlatt(3,1)+i2*rlatt(3,2)+i3*rlatt(3,3)
@@ -121,7 +122,7 @@ c Find vector in basis coordinates
    10     r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
    20   r_basis(k)=r_basis(k)-nint(r_basis(k))
 
-c     write(6,'(''r_basis'',9f9.4)') r_basis
+c     write(ounit,'(''r_basis'',9f9.4)') r_basis
 
 c Convert back to cartesian coodinates
       do 30 k=1,3
@@ -169,7 +170,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c For any vector (from one particle to another) it finds the
 c image that is closest.
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -197,7 +198,7 @@ c b) sign along each of lattice directions
         r_basis(k)=0
         do 10 i=1,3
    10     r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
-        if(abs(r_basis(k)).gt.1.d0) write(6,'(''**Warning, abs(r_basis)>1'')')
+        if(abs(r_basis(k)).gt.1.d0) write(ounit,'(''**Warning, abs(r_basis)>1'')')
    20   isign(k)=nint(sign(1.d0,r_basis(k)))
 
       do 25 k=1,3
@@ -228,13 +229,13 @@ c Replace r by its shortest image
         do 70 k=1,3
    70     r(k)=r(k)-i_sav(i)*rlatt(k,i)
 
-c     write(6,'(''rnew'',9f10.5)') (r(k),k=1,3),sqrt(r2)
+c     write(ounit,'(''rnew'',9f10.5)') (r(k),k=1,3),sqrt(r2)
 
 c debug
 c     r2_tmp=0
 c     do 80 k=1,3
 c  80  r2_tmp=r2_tmp+r(k)**2
-c     if(r2_tmp.ne.r2) write(6,'(''r2,r2_tmp'',3d12.4)') r2,r2_tmp,r2-r2_tmp
+c     if(r2_tmp.ne.r2) write(ounit,'(''r2,r2_tmp'',3d12.4)') r2,r2_tmp,r2-r2_tmp
 
       return
       end
@@ -382,7 +383,7 @@ c Replace r by its shortest image
    80   rnorm=rnorm+r(k)**2
       rnorm=sqrt(rnorm)
 
-c     if(rnorm.gt.5.d0) write(6,'(''long'',6i2,10f8.4)')
+c     if(rnorm.gt.5.d0) write(ounit,'(''long'',6i2,10f8.4)')
 c    &(isign(k),k=1,3),(i_sav(k),k=1,3),rnorm,(r(k),k=1,3),(rsav(k),k=1,3),(r_basis(k),k=1,3)
 
       return

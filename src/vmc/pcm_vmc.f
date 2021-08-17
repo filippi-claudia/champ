@@ -2,7 +2,7 @@
 
       use pcm_cntrl, only: ipcm, ipcmprt
       use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -33,13 +33,13 @@
 
       rtpass=dsqrt(wcum)
       if(ipcm.eq.2)then
-      write(6,'(''pcm dG (surf.) ='',t17,f12.7,'' +-'',f11.7,f9.5)') spcmave,spcmerr,spcmerr*rtpass
-      write(6,'(''pcm dG (vol.)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') vpcmave,vpcmerr,vpcmerr*rtpass
+      write(ounit,'(''pcm dG (surf.) ='',t17,f12.7,'' +-'',f11.7,f9.5)') spcmave,spcmerr,spcmerr*rtpass
+      write(ounit,'(''pcm dG (vol.)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') vpcmave,vpcmerr,vpcmerr*rtpass
       endif
       if(ipcm.eq.3)then
       svpcmave=spcmave+vpcmave
       svpcmerr=sqrt(spcmerr**2.0d0+vpcmerr**2.0d0)
-      write(6,'(''pcm dG (surf.+vol) ='',t17,f12.7,'' +-'',f11.7,f9.5)') svpcmave,svpcmerr,svpcmerr*rtpass
+      write(ounit,'(''pcm dG (surf.+vol) ='',t17,f12.7,'' +-'',f11.7,f9.5)') svpcmave,svpcmerr,svpcmerr*rtpass
       endif
 
       return
@@ -58,7 +58,7 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_cum, qopcm_cm2
       use pcm_averages, only: enfpcm_cum, enfpcm_cm2
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -98,15 +98,15 @@ c-----------------------------------------------------------------------
       iqopcm_err=nint(100000*qopcm_err)
 
       if(ipcm.eq.2)then
-      write(6,*)
-      write(6,'(''pcm dG (surf.) ='',t17,f12.7,'' +-'',f11.7,f9.5)') spcmave,spcmerr,spcmerr*rtpass
-      write(6,'(''pcm dG (vol.)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') vpcmave,vpcmerr,vpcmerr*rtpass
+      write(ounit,*)
+      write(ounit,'(''pcm dG (surf.) ='',t17,f12.7,'' +-'',f11.7,f9.5)') spcmave,spcmerr,spcmerr*rtpass
+      write(ounit,'(''pcm dG (vol.)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') vpcmave,vpcmerr,vpcmerr*rtpass
       endif
 
       if(ipcm.eq.3)then
       svpcmave=spcmave+vpcmave
       svpcmerr=sqrt(spcmerr**2.0d0+vpcmerr**2.0d0)
-      write(6,'(''pcm dG (surf.+vol) ='',t17,f12.7,'' +-'',f11.7,f9.5)') svpcmave,svpcmerr,svpcmerr*rtpass
+      write(ounit,'(''pcm dG (surf.+vol) ='',t17,f12.7,'' +-'',f11.7,f9.5)') svpcmave,svpcmerr,svpcmerr*rtpass
       endif
 
       if(ipcm.ne.3)then
@@ -124,22 +124,22 @@ c-----------------------------------------------------------------------
         qtheov=-(fs-1.0d0)*qopcm_ave
 	qv=(nch-nchs)*qvol
         sqv=sqtheo*dsqrt(0.5d0+vmc_nblk*vmc_nstep/dble(nscv*iscov))
-        write(6,'(''pcm        qout ='',f12.7,'' +-'',f11.7,f9.5)') qopcm_ave,qopcm_err,qopcm_err*rtpass
-        write(6,'(''pcm        qpol ='',f12.7'' +-'',f11.7)') qpol,sqpol
-        write(6,'(''pcm      qtheos ='',f12.7'' +-'',f11.7)') qtheo,sqtheo
-        write(6,'(''pcm qpol-qtheos ='',f12.7'' +-'',f11.7)') dqpol,sdqpol
-        write(6,'(''pcm       qpolv ='',f12.7'' +-'',f11.7)') qv,sqv
-        write(6,'(''pcm      qtheov ='',f12.7'' +-'',f11.7)') qtheov,sqtheo
+        write(ounit,'(''pcm        qout ='',f12.7,'' +-'',f11.7,f9.5)') qopcm_ave,qopcm_err,qopcm_err*rtpass
+        write(ounit,'(''pcm        qpol ='',f12.7'' +-'',f11.7)') qpol,sqpol
+        write(ounit,'(''pcm      qtheos ='',f12.7'' +-'',f11.7)') qtheo,sqtheo
+        write(ounit,'(''pcm qpol-qtheos ='',f12.7'' +-'',f11.7)') dqpol,sdqpol
+        write(ounit,'(''pcm       qpolv ='',f12.7'' +-'',f11.7)') qv,sqv
+        write(ounit,'(''pcm      qtheov ='',f12.7'' +-'',f11.7)') qtheov,sqtheo
 	spcmkcal=spcmave*hatokc
 	vpcmkcal=vpcmave*hatokc
 	sepcmkcal=spcmerr*hatokc
 	vepcmkcal=vpcmerr*hatokc
 	gpcmkcal=spcmkcal+vpcmkcal
-	write(6,*)'    qout       qpol        qtheo      DG_surf/vol/tot +- err (kcal/mol) '
-	write(6,1000)qopcm_ave,qpol,qtheo,spcmkcal,sepcmkcal,vpcmkcal,vepcmkcal,gpcmkcal
-        write(6,*)
+	write(ounit,*)'    qout       qpol        qtheo      DG_surf/vol/tot +- err (kcal/mol) '
+	write(ounit,1000)qopcm_ave,qpol,qtheo,spcmkcal,sepcmkcal,vpcmkcal,vepcmkcal,gpcmkcal
+        write(ounit,*)
        else
-        write(6,'(''pcm        qout ='',f12.7,'' +-'',f11.7,f9.5)') qopcm_ave,qopcm_err,qopcm_err*rtpass
+        write(ounit,'(''pcm        qout ='',f12.7,'' +-'',f11.7,f9.5)') qopcm_ave,qopcm_err,qopcm_err*rtpass
       endif
 
       call pcm_write_chvol

@@ -21,7 +21,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
       use contr2, only: isc
-
+      use contrl_file,    only: ounit
       use vardep, only: cdep, iwdepend, nvdepend
       use distance_mod, only: rshift, r_en, rvec_en
       use force_analy, only: iforce_analy
@@ -449,7 +449,7 @@ c                 jj=jj+1
         fijo(1,j,i)=fijo(1,j,i) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
         fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
         fijo(3,j,i)=fijo(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
-c       write(6,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
+c       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
 
         d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
      &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
@@ -518,7 +518,7 @@ c e-n terms
           fijo(1,i,i)=fijo(1,i,i) + feni*rvec_en(1,i,ic)
           fijo(2,i,i)=fijo(2,i,i) + feni*rvec_en(2,i,ic)
           fijo(3,i,i)=fijo(3,i,i) + feni*rvec_en(3,i,ic)
-c         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
+c         write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
 
           d2ijo(i,i) = d2ijo(i,i) + fenii + 2*feni
 
@@ -569,7 +569,7 @@ c         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
               genii=iord*(iord-1)*rri(iord-2)
 
             endif
-c           write(6,*) 'CIAO',iord,rri(iord),genii,d77,geni,dd9
+c           write(ounit,*) 'CIAO',iord,rri(iord),genii,d77,geni,dd9
 
             genii=genii*dd7*dd7+geni*dd9
             geni=geni*dd7/r_en(i,ic)
@@ -588,7 +588,7 @@ c           write(6,*) 'CIAO',iord,rri(iord),genii,d77,geni,dd9
         v(1,i)=v(1,i)+fijo(1,i,i)
         v(2,i)=v(2,i)+fijo(2,i,i)
         v(3,i)=v(3,i)+fijo(3,i,i)
-c       write(6,'(''v='',9d12.4)') (v(k,i),k=1,3)
+c       write(ounit,'(''v='',9d12.4)') (v(k,i),k=1,3)
 c       div_vj(i)=div_vj(i)+d2ijo(i,i)
         d2=d2+d2ijo(i,i)
    90 continue
@@ -601,10 +601,10 @@ c       div_vj(i)=div_vj(i)+d2ijo(i,i)
   110   fjo(3,i)=v(3,i)
 
       value=fsum
-c     write(6,*) (d2g(iparm),iparm=1,nparmj)
+c     write(ounit,*) (d2g(iparm),iparm=1,nparmj)
 
-c     write(6,*) 'd2d2',nspin2b,d2d2b(1),d2d2b(2),asymp_r
-c     write(6,*) 'asym',asymp_r,asymp_jasa(1),asymp_jasb(1)
+c     write(ounit,*) 'd2d2',nspin2b,d2d2b(1),d2d2b(2),asymp_r
+c     write(ounit,*) 'asym',asymp_r,asymp_jasa(1),asymp_jasb(1)
 
       return
       end

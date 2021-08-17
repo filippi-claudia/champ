@@ -11,7 +11,7 @@
       use distance_mod, only: r_en, rshift, rvec_en
       use wfsec, only: iwf, iwftype
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -68,7 +68,7 @@ c here vpsp_det and dvpsp_det are dummy
       imove=0
 
 c     do i=i1,i2
-c     write(6,'(''t_vpsp before = '',100e10.2)') ((t_vpsp(ic,iq,i),ic=1,ncent),iq=1,nquad)
+c     write(ounit,'(''t_vpsp before = '',100e10.2)') ((t_vpsp(ic,iq,i),ic=1,ncent),iq=1,nquad)
 c     enddo
 
       t_norm=0.d0
@@ -84,9 +84,9 @@ c     enddo
  10         t_norm=t_norm-t_vpsp(ic,iq,i)
       t_norm=1.d0+t_norm*tauprim
       t_normi=1.d0/t_norm
-c     write(6,*) 'tnormi=',t_normi
+c     write(ounit,*) 'tnormi=',t_normi
 c     do i=i1,i2
-c     write(6,'(''t_vpsp after = '',100f14.6)') ((-tauprim*t_vpsp(ic,iq,i)*t_normi,ic=1,ncent),iq=1,nquad)
+c     write(ounit,'(''t_vpsp after = '',100f14.6)') ((-tauprim*t_vpsp(ic,iq,i)*t_normi,ic=1,ncent),iq=1,nquad)
 c     enddo
 
       if(t_norm.eq.1.d0) return
@@ -129,8 +129,8 @@ c     enddo
           x(2)=r_en(iel,ic)*yq(iq)+cent(2,ic)+rshift(2,iel,ic)
           x(3)=r_en(iel,ic)*zq(iq)+cent(3,ic)+rshift(3,iel,ic)
         endif
-c       write(6,*) 'moved B',iw,iel,(xold_dmc(kk,iel,iw,1),kk=1,3)
-c       write(6,*) 'moved A',iw,iel,(x(kk),kk=1,3)
+c       write(ounit,*) 'moved B',iw,iel,(xold_dmc(kk,iel,iw,1),kk=1,3)
+c       write(ounit,*) 'moved A',iw,iel,(x(kk),kk=1,3)
       endif
 
       return

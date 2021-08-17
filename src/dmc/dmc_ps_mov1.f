@@ -65,7 +65,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use control_dmc, only: dmc_irstar, dmc_nconf
       use inputflags, only: node_cutoff, eps_node_cutoff, icircular, idrifdifgfunc
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       interface
@@ -261,10 +261,10 @@ c Tau primary -> tratio=one
    80       xnew(k)=xold_dmc(k,i,iw,1)+dx
 
           if(ipr.ge.1) then
-            write(6,'(''xold_dmc'',2i4,9f8.5)') iw,i,(xold_dmc(k,i,iw,1),k=1,3)
-            write(6,'(''vold_dmc'',2i4,9f8.5)') iw,i,(vold_dmc(k,i,iw,1),k=1,3)
-            write(6,'(''psido_dmc'',2i4,9f8.5)') iw,i,psido_dmc(iw,1)
-            write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,3)
+            write(ounit,'(''xold_dmc'',2i4,9f8.5)') iw,i,(xold_dmc(k,i,iw,1),k=1,3)
+            write(ounit,'(''vold_dmc'',2i4,9f8.5)') iw,i,(vold_dmc(k,i,iw,1),k=1,3)
+            write(ounit,'(''psido_dmc'',2i4,9f8.5)') iw,i,psido_dmc(iw,1)
+            write(ounit,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,3)
           endif
 
 c calculate psi and velocity at new configuration
@@ -310,16 +310,16 @@ c Calculate Green function for the reverse move
   150       dfus2n=dfus2n+dfus**2
 
           if(ipr.ge.1) then
-            write(6,'(''xold_dmc'',9f10.6)')(xold_dmc(k,i,iw,1),k=1,3),
+            write(ounit,'(''xold_dmc'',9f10.6)')(xold_dmc(k,i,iw,1),k=1,3),
      &      (xnew(k),k=1,3), (xbac(k),k=1,3)
-            write(6,'(''dfus2o'',9f10.6)')dfus2o,dfus2n,
+            write(ounit,'(''dfus2o'',9f10.6)')dfus2o,dfus2n,
      &      psido_dmc(iw,1),psidn,psijo_dmc(iw,1),psijn
           endif
 
           p=(psidn/psido_dmc(iw,1))**2*exp(2*(psijn-psijo_dmc(iw,1)))*
      &    exp((dfus2o-dfus2n)/(two*tau))*distance_node_ratio2
 
-          if(ipr.ge.1) write(6,'(''p'',11f10.6)')
+          if(ipr.ge.1) write(ounit,'(''p'',11f10.6)')
      &    p,(psidn/psido_dmc(iw,1))**2*exp(2*(psijn-psijo_dmc(iw,1))),
      &    exp((dfus2o-dfus2n)/(two*tau)),psidn,psido_dmc(iw,1),
      &    psijn,psijo_dmc(iw,1),dfus2o,dfus2n
@@ -472,7 +472,7 @@ c Use more accurate formula for the drift and tau secondary in drift
 
           taunow=tauprim*drifdifr
 
-          if(ipr.ge.1)write(6,'(''wt'',9f10.5)') wt(iw),etrial,eest
+          if(ipr.ge.1)write(ounit,'(''wt'',9f10.5)') wt(iw),etrial,eest
 
           if(icut_e.eq.0) then
             ewto=eest-(eest-eold(iw,ifr))*fratio(iw,ifr)
@@ -533,7 +533,7 @@ c Set weights and product of weights over last nwprod steps
           wtnow=wtnow/rnorm_nodes**2
 c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
 
-          if(ipr.ge.1)write(6,'(''eold,enew,wt'',9f10.5)')
+          if(ipr.ge.1)write(ounit,'(''eold,enew,wt'',9f10.5)')
      &    eold(iw,ifr),enew,wtnow
 
           if(idmc.gt.0) then
@@ -610,7 +610,7 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
             call optx_orb_ci_sum(wtg,0.d0)
 
            else
-c           write(6,*) 'IN DMC',ajacold(iw,ifr)
+c           write(ounit,*) 'IN DMC',ajacold(iw,ifr)
             ro=1.d0
             if(idrifdifgfunc.eq.0) ro=ajacold(iw,ifr)*psido_dmc(iw,ifr)**2*exp(2*psijo_dmc(iw,ifr)-psi2savo)
 
@@ -643,7 +643,7 @@ c           endif
           endif
 
   280   continue
-c       write(6,*) 'IN DMC',ajacold(iw,2)
+c       write(ounit,*) 'IN DMC',ajacold(iw,2)
 
 c       wtg=wt(iw)*fprod/rnorm_nodes**2
 c       write(*,*)'prima ',wtg,eold(iw,2),pwt(iw,2),ajacold(iw,2),psido_dmc(iw,2),psijo_dmc(iw,2),idrifdifgfunc

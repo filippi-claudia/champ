@@ -18,7 +18,7 @@ c----------------------------------------------------------------------
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iaxis, ibcxmax, ibcxmin, ibcymax
@@ -33,11 +33,11 @@ c Test if the input is consistent
        input_ok=1
        do i=1,3
         if(ipcm_nstep3d(i).eq.IUNDEFINED.and.pcm_step3d(i).eq.UNDEFINED) then
-          write(6,*) 'ipcm_nstep3d(',i,') and pcm_step3d(',i,') are undefined'
+          write(ounit,*) 'ipcm_nstep3d(',i,') and pcm_step3d(',i,') are undefined'
           input_ok=0
         endif
         if(pcm_origin(i).gt.pcm_endpt(i)) then
-         write (6,*) 'The pcm_origin coordinates have to be smaller than the end points'
+         write(ounit,*) 'The pcm_origin coordinates have to be smaller than the end points'
          input_ok=0
         endif
        enddo
@@ -53,7 +53,7 @@ c Origin and end of the grid. If not in input, compute it from the atomic coordi
           enddo
           pcm_origin(i)=pcm_origin(i)-PCM_SHIFT
         endif
- 
+
         if(pcm_endpt(i).eq.UNDEFINED) then
           pcm_endpt(i)=cent(i,1)
           do j=2,ncent
@@ -62,7 +62,7 @@ c Origin and end of the grid. If not in input, compute it from the atomic coordi
           pcm_endpt(i)=pcm_endpt(i)+PCM_SHIFT
         endif
        enddo
- 
+
 c If the step is undefined, use the value in ipcm_nstep3d to compute it.
 c Else, compute the value of ipcm_nstep3d
        do i=1, 3
@@ -73,7 +73,7 @@ c Else, compute the value of ipcm_nstep3d
         endif
 
         if (ipcm_nstep3d(i).gt.MGRID_PCM) then
-         write(6,*) 'Warning: using ipcm_nstep3d(',i,') = ',MGRID_PCM
+         write(ounit,*) 'Warning: using ipcm_nstep3d(',i,') = ',MGRID_PCM
          ipcm_nstep3d(i)=MGRID_PCM
          pcm_endpt(i)=MGRID_PCM*pcm_step3d(i)+pcm_origin(i)
         endif
@@ -84,9 +84,9 @@ c Prepare the integer->cartesian array
         do j=1,ipcm_nstep3d(i)
          pcm_cart_from_int(j,i)=pcm_origin(i)+(j-1)*pcm_step3d(i)
         enddo
-       enddo     
+       enddo
 
-c Update the end point 
+c Update the end point
        do i=1,3
          pcm_endpt(i)=pcm_cart_from_int(ipcm_nstep3d(i),i)
        enddo
@@ -96,18 +96,18 @@ c     endif
 
 c     Print the parameters to the output file
 
-      write(6,*) 
-      write(6,'(''pcm 3D grid parameters'')')
-      write(6,*) 
-      write(6,'(''pcm origin and end points'')')
-      write(6,'(3(F10.6, 3X))') ( pcm_origin(i), i=1,3 )
-      write(6,'(3(F10.6, 3X))') ( pcm_endpt (i), i=1,3 )
-      write(6,'(''pcm number of steps'')')
-      write(6,'(3(I5, 3X))') ( ipcm_nstep3d(i), i=1,3 )
-      write(6,'(''pcm step sizes'')')
-      write(6,'(3(F10.6, 3X))') ( pcm_step3d (i), i=1,3 )
-      write(6,*) 
-      
+      write(ounit,*)
+      write(ounit,'(''pcm 3D grid parameters'')')
+      write(ounit,*)
+      write(ounit,'(''pcm origin and end points'')')
+      write(ounit,'(3(F10.6, 3X))') ( pcm_origin(i), i=1,3 )
+      write(ounit,'(3(F10.6, 3X))') ( pcm_endpt (i), i=1,3 )
+      write(ounit,'(''pcm number of steps'')')
+      write(ounit,'(3(I5, 3X))') ( ipcm_nstep3d(i), i=1,3 )
+      write(ounit,'(''pcm step sizes'')')
+      write(ounit,'(3(F10.6, 3X))') ( pcm_step3d (i), i=1,3 )
+      write(ounit,*)
+
       end ! subroutine pcm_setup_grid
 c----------------------------------------------------------------------
       function ipcm_int_from_cart(value,iaxis)
@@ -126,10 +126,10 @@ c----------------------------------------------------------------------
       real(dp) :: pepol_s, pepol_v, value
       real(dp), dimension(3) :: r
 
-      
+
       if (value.lt.pcm_origin(iaxis).or.value.ge.pcm_endpt(iaxis)) then
         ipcm_int_from_cart = IUNDEFINED
-       else 
+       else
         ipcm_int_from_cart=int((value-pcm_origin(iaxis))/pcm_step3d(iaxis)+1.0)
       endif
 
@@ -195,7 +195,7 @@ c Evaluate the energy needed for the calculation
 
             do 10 iz=1,ipcm_nstep3d(3)
               r(3) =pcm_cart_from_int(iz,3)
-         
+
 c Calculate the value of the pcm potential on the position [r(1),r(2),r(3)]
               call pcm_extpot_ene_elec(r,pepol_s,pepol_v)
   10          pcm_num_spl(1,ix,iy,iz)=pepol_s+pepol_v
@@ -223,10 +223,10 @@ c         do 30 iy=1,ipcm_nstep3d(2)
 c           r(2)=pcm_cart_from_int(iy,2)
 c           do 30 iz=1,ipcm_nstep3d(3)
 c             r(3) =pcm_cart_from_int(iz,3)
-c         
+c
 c             call pcm_extpot_ene_elec(r,pepol_s,pepol_v)
 c             call spline_pcm(r,value,ier)
-c  30         write(6,*) 'DEBUG',pepol_s+pepol_v, value
+c  30         write(ounit,*) 'DEBUG',pepol_s+pepol_v, value
 c      stop
 
       end ! subroutine pcm_setup_3dspl
@@ -293,15 +293,15 @@ c     Work:
      &                  pcm_step3d(3),inv_step3d(3),
      &                  pcm_num_spl,
      &                  MGRID_PCM,MGRID_PCM,ipcm_nstep3d(3))
-      
+
         f=fval(1)
-      endif 
-      
+      endif
+
       end ! subroutine spline_pcm
 
 c-----------------------------------------------------------------------
       subroutine pcm_3dgrid_dump(iu)
-            
+
       use pcm_cntrl, only: ipcm
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
@@ -339,7 +339,7 @@ c-----------------------------------------------------------------------
       read (iu) (ipcm_nstep3d(i), i=1,3)
       read (iu) (pcm_step3d(i), i=1,3)
       read (iu) ((pcm_cart_from_int(i,j), i=1,ipcm_nstep3d(j)),j=1,3)
-      
+
       call splpcm_rstrt(iu)
       end
 c-----------------------------------------------------------------------
@@ -351,7 +351,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: iu, i, j, k, l
- 
+
       do i=1,8
         write(iu)(((pcm_num_spl(i,j,k,l),j=1,ipcm_nstep3d(1)),k=1,ipcm_nstep3d(2)), l=1,ipcm_nstep3d(3))
       enddo

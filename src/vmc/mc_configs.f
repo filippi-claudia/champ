@@ -38,10 +38,10 @@ c call to setrn must be in read_input since irn local there
 c         if(idtask.ne.0) then
 c          call mpi_isend(irn,4,mpi_integer,0,1,MPI_COMM_WORLD,irequest,ierr)
 c         else
-c          write(6,*) 0, irn
+c          write(ounit,*) 0, irn
 c          do 1 id=1,nproc-1
 c            call mpi_recv(irn_temp,4,mpi_integer,id,1,MPI_COMM_WORLD,istatus,ierr)
-c            write(6,*) id, irn_temp
+c            write(ounit,*) id, irn_temp
 c   1      continue
 c         endif
 

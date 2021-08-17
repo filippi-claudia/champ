@@ -121,7 +121,7 @@ contains
 !
 
     use qmmm_numeric
-
+    use contrl_file,    only: ounit
     implicit none
 
     integer, intent(in) :: nx, kxord
@@ -139,14 +139,14 @@ contains
     if (first) then
        first=.false.
        eps = epsilon(1.0_dbl)
-       write(6,*) "subroutine dbsnak: "
-       write(6,*) "eps = ",eps
+       write(ounit,*) "subroutine dbsnak: "
+       write(ounit,*) "eps = ",eps
     endif
 
     if((kxord .lt. 0) .or. (kxord .gt. nx)) then
-       write(6,*) "subroutine dbsnak: error"
-       write(6,*) "0 <= kxord <= nx is required."
-       write(6,*) "kxord = ", kxord, " and nx = ", nx,  " is given."
+       write(ounit,*) "subroutine dbsnak: error"
+       write(ounit,*) "0 <= kxord <= nx is required."
+       write(ounit,*) "kxord = ", kxord, " and nx = ", nx,  " is given."
        stop
     endif
 
@@ -193,7 +193,7 @@ contains
 !   bscoef - array of length ndata containing the B-spline
 !            coefficients.  (output)
 !
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none
@@ -240,8 +240,8 @@ contains
     call banfac(work,kx+kxm1,nx,kxm1,kxm1,iflag)
 
     if (iflag .ne. 1) then
-       write(6,*) "subroutine dbsint: error"
-       write(6,*) "no solution of linear equation system !!!"
+       write(ounit,*) "subroutine dbsint: error"
+       write(ounit,*) "no solution of linear equation system !!!"
        stop
     end if
 
@@ -253,9 +253,9 @@ contains
 
     return
 
-998 write(6,*) "subroutine dbsint:"
-    write(6,*) "xknot(ix) <= xknot(ix+1) required."
-    write(6,*) ix,xknot(ix),xknot(ix+1)
+998 write(ounit,*) "subroutine dbsint:"
+    write(ounit,*) "xknot(ix) <= xknot(ix+1) required."
+    write(ounit,*) ix,xknot(ix),xknot(ix+1)
 
     stop
 
@@ -282,7 +282,7 @@ contains
 !
 
     use qmmm_numeric
-
+    use contrl_file,    only: ounit
     implicit none
 
     integer, intent(in)                          :: nx, kx
@@ -304,18 +304,18 @@ contains
 
     do ix = 1,nx+kx-1
        if (xknot(ix) .gt. xknot(ix+1)) then
-          write(6,*) "subroutine dbsval:"
-          write(6,*) "xknot(ix) <= xknot(ix+1) required."
-          write(6,*) ix,xknot(ix),xknot(ix+1)
+          write(ounit,*) "subroutine dbsval:"
+          write(ounit,*) "xknot(ix) <= xknot(ix+1) required."
+          write(ounit,*) ix,xknot(ix),xknot(ix+1)
           stop
        endif
        if((xknot(ix) .le. x) .and. (x .lt. xknot(ix+1))) leftx = ix
     end do
 
     if(leftx .eq. 0) then
-       write(6,*) "subroutine dbsval:"
-       write(6,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
-       write(6,*) "x = ", x
+       write(ounit,*) "subroutine dbsval:"
+       write(ounit,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
+       write(ounit,*) "x = ", x
        stop
     endif
 
@@ -366,7 +366,7 @@ contains
 !   dbsder - value of the iderx-th derivative of the spline at x.
 !            (output)
 !
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none
@@ -389,19 +389,19 @@ contains
     leftx = 0
     do ix = 1,nx+kx-1
        if (xknot(ix) .gt. xknot(ix+1)) then
-          write(6,*) "subroutine dbsder:"
-          write(6,*) "xknot(ix) <= xknot(ix+1) required."
+          write(ounit,*) "subroutine dbsder:"
+          write(ounit,*) "xknot(ix) <= xknot(ix+1) required."
           stop
        endif
        if ((xknot(ix) .le. x) .and. (x .lt. xknot(ix+1))) leftx = ix
     end do
 
     if (leftx .eq. 0) then
-       write(6,*) "subroutine dbsder:"
-       write(6,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
-       write(6,*) "xknot(1)     = ", xknot(1)
-       write(6,*) "xknot(nx+kx) = ", xknot(nx+kx)
-       write(6,*) "         x   = ", x
+       write(ounit,*) "subroutine dbsder:"
+       write(ounit,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
+       write(ounit,*) "xknot(1)     = ", xknot(1)
+       write(ounit,*) "xknot(nx+kx) = ", xknot(nx+kx)
+       write(ounit,*) "         x   = ", x
        stop
     endif
 
@@ -502,7 +502,7 @@ contains
 !            iderx-th derivative of the spline at the points in
 !            xvec.  (output)
 !
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none
@@ -541,20 +541,20 @@ contains
 
     do ix = 1, nx+kx-1
        if (xknot(ix) .gt. xknot(ix+1)) then
-          write(6,*) "subroutine dbs1gd:"
-          write(6,*) "xknot(ix) <= xknot(ix+1) required."
-          write(6,*) ix, xknot(ix), xknot(ix+1)
-          write(6,*)
-          write(6,*) xknot
+          write(ounit,*) "subroutine dbs1gd:"
+          write(ounit,*) "xknot(ix) <= xknot(ix+1) required."
+          write(ounit,*) ix, xknot(ix), xknot(ix+1)
+          write(ounit,*)
+          write(ounit,*) xknot
           stop
        endif
     end do
 
     do ix = 1, nxvec
        if ((xvec(ix).lt.xknot(1)).or.(xvec(ix).gt.xknot(nx+kx))) then
-          write(6,*) "subroutine dbs1gd:"
-          write(6,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
-          write(6,*) "x = ", xvec(ix)
+          write(ounit,*) "subroutine dbs1gd:"
+          write(ounit,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
+          write(ounit,*) "x = ", xvec(ix)
           stop
        endif
     end do
@@ -681,7 +681,7 @@ contains
 !   dbsdca - value of the ideriv-th derivative of the spline at x.
 !            (output)
 !
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none
@@ -835,7 +835,7 @@ contains
   subroutine spli2d(xyvec,ld,xydata,xyknot,n,k,m,work2,work3,bcoef)
 
     use qmmm_numeric
-
+    use contrl_file,    only: ounit
     implicit none
 
 
@@ -883,8 +883,8 @@ contains
     call banfac(work3,k+km1,n,km1,km1,iflag )
 
     if (iflag .ne. 1) then
-       write(6,*) "subroutine dbs2in: error"
-       write(6,*) "no solution of linear equation system !!!"
+       write(ounit,*) "subroutine dbs2in: error"
+       write(ounit,*) "no solution of linear equation system !!!"
        stop
     end if
 
@@ -902,11 +902,11 @@ contains
 
     return
 
-998 write(6,*) "subroutine db2in:"
-    write(6,*) "i with knot(i) <= x/y < knot(i+1) required."
-    write(6,*) "knot(1)   = ", xyknot(1)
-    write(6,*) "knot(n+k) = ", xyknot(n+k)
-    write(6,*) "      x/y = ", xyveci
+998 write(ounit,*) "subroutine db2in:"
+    write(ounit,*) "i with knot(i) <= x/y < knot(i+1) required."
+    write(ounit,*) "knot(1)   = ", xyknot(1)
+    write(ounit,*) "knot(n+k) = ", xyknot(n+k)
+    write(ounit,*) "      x/y = ", xyveci
 
     stop
 
@@ -944,7 +944,7 @@ contains
 !            by ny.
 !   dbs2vl - value of the spline at (x,y).  (output)
 !
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none
@@ -968,22 +968,22 @@ contains
 
     do ix = 1, nx+kx-1
        if (xknot(ix) .gt. xknot(ix+1)) then
-          write(6,*) "subroutine dbs2vl:"
-          write(6,*) "xknot(ix) <= xknot(ix+1) required."
-          write(6,*) ix, xknot(ix), xknot(ix+1)
-          write(6,*)
-          write(6,*) xknot
+          write(ounit,*) "subroutine dbs2vl:"
+          write(ounit,*) "xknot(ix) <= xknot(ix+1) required."
+          write(ounit,*) ix, xknot(ix), xknot(ix+1)
+          write(ounit,*)
+          write(ounit,*) xknot
           stop
        endif
        if((xknot(ix) .le. x) .and. (x .lt. xknot(ix+1))) leftx = ix
     end do
 
     if(leftx .eq. 0) then
-       write(6,*) "subroutine dbs2vl:"
-       write(6,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
-       write(6,*) "x = ", x
-       write(6,*)
-       write(6,*) xknot
+       write(ounit,*) "subroutine dbs2vl:"
+       write(ounit,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
+       write(ounit,*) "x = ", x
+       write(ounit,*)
+       write(ounit,*) xknot
        stop
     endif
 
@@ -991,20 +991,20 @@ contains
 
     do iy = 1, ny+ky-1
        if (yknot(iy) .gt. yknot(iy+1)) then
-          write(6,*) "subroutine dbs2vl:"
-          write(6,*) "yknot(iy) <= yknot(iy+1) required."
-          write(6,*) iy, yknot(iy), yknot(iy+1)
+          write(ounit,*) "subroutine dbs2vl:"
+          write(ounit,*) "yknot(iy) <= yknot(iy+1) required."
+          write(ounit,*) iy, yknot(iy), yknot(iy+1)
           stop
        endif
        if((yknot(iy) .le. y) .and. (y .lt. yknot(iy+1))) lefty = iy
     end do
 
     if(lefty .eq. 0) then
-       write(6,*) "subroutine dbs2vl:"
-       write(6,*) "iy with yknot(iy) <= y < yknot(iy+1) required."
-       write(6,*) "yknot(iy)   = ", yknot(iy)
-       write(6,*) "  y         = ", y
-       write(6,*) "yknot(iy+1) = ", yknot(iy+1)
+       write(ounit,*) "subroutine dbs2vl:"
+       write(ounit,*) "iy with yknot(iy) <= y < yknot(iy+1) required."
+       write(ounit,*) "yknot(iy)   = ", yknot(iy)
+       write(ounit,*) "  y         = ", y
+       write(ounit,*) "yknot(iy+1) = ", yknot(iy+1)
        stop
     endif
 
@@ -1051,7 +1051,7 @@ contains
 !   dbs2dr  - value of the (iderx,idery) derivative of the spline at
 !            (x,y).  (output)
 !
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none
@@ -1076,18 +1076,18 @@ contains
 
     do ix = 1, nx+kx-1
        if (xknot(ix) .gt. xknot(ix+1)) then
-          write(6,*) "subroutine dbs2dr:"
-          write(6,*) "xknot(ix) <= xknot(ix+1) required."
-          write(6,*) ix, xknot(ix), xknot(ix+1)
+          write(ounit,*) "subroutine dbs2dr:"
+          write(ounit,*) "xknot(ix) <= xknot(ix+1) required."
+          write(ounit,*) ix, xknot(ix), xknot(ix+1)
           stop
        endif
        if((xknot(ix) .le. x) .and. (x .lt. xknot(ix+1))) nintx = ix
     end do
 
     if(nintx .eq. 0) then
-       write(6,*) "subroutine dbs2dr:"
-       write(6,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
-       write(6,*) "x = ", x
+       write(ounit,*) "subroutine dbs2dr:"
+       write(ounit,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
+       write(ounit,*) "x = ", x
        stop
     endif
 
@@ -1095,18 +1095,18 @@ contains
 
     do iy = 1, ny+ky-1
        if (yknot(iy) .gt. yknot(iy+1)) then
-          write(6,*) "subroutine dbs2dr:"
-          write(6,*) "yknot(iy) <= yknot(iy+1) required."
-          write(6,*) iy, yknot(iy), yknot(iy+1)
+          write(ounit,*) "subroutine dbs2dr:"
+          write(ounit,*) "yknot(iy) <= yknot(iy+1) required."
+          write(ounit,*) iy, yknot(iy), yknot(iy+1)
           stop
        endif
        if ((yknot(iy) .le. y) .and. (y .lt. yknot(iy+1))) ninty = iy
     end do
 
     if(ninty .eq. 0) then
-       write(6,*) "subroutine dbs2dr:"
-       write(6,*) "iy with yknot(iy) <= y < yknot(iy+1) required."
-       write(6,*) "y = ", y
+       write(ounit,*) "subroutine dbs2dr:"
+       write(ounit,*) "iy with yknot(iy) <= y < yknot(iy+1) required."
+       write(ounit,*) "y = ", y
        stop
     endif
 
@@ -1162,7 +1162,7 @@ contains
 !   ldf     - leading dimension of value exactly as specified in the
 !             dimension statement of the calling program.  (input)
 !
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none
@@ -1211,20 +1211,20 @@ contains
 
     do i = 1, nx+kx-1
        if (xknot(i) .gt. xknot(i+1)) then
-          write(6,*) "subroutine dbs2gd:"
-          write(6,*) "xknot(i) <= xknot(i+1) required."
-          write(6,*) i, xknot(i), xknot(i+1)
-          write(6,*)
-          write(6,*) xknot
+          write(ounit,*) "subroutine dbs2gd:"
+          write(ounit,*) "xknot(i) <= xknot(i+1) required."
+          write(ounit,*) i, xknot(i), xknot(i+1)
+          write(ounit,*)
+          write(ounit,*) xknot
           stop
        endif
     end do
 
     do i = 1, nxvec
        if ((xvec(i).lt.xknot(1)).or.(xvec(i).gt.xknot(nx+kx))) then
-          write(6,*) "subroutine dbs2gd:"
-          write(6,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
-          write(6,*) "x = ", xvec(i)
+          write(ounit,*) "subroutine dbs2gd:"
+          write(ounit,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
+          write(ounit,*) "x = ", xvec(i)
           stop
        endif
     end do
@@ -1247,20 +1247,20 @@ contains
 
     do i = 1, ny+ky-1
        if (yknot(i) .gt. yknot(i+1)) then
-          write(6,*) "subroutine dbs2gd:"
-          write(6,*) "yknot(i) <= yknot(i+1) required."
-          write(6,*) i, yknot(i), yknot(i+1)
-          write(6,*)
-          write(6,*) yknot
+          write(ounit,*) "subroutine dbs2gd:"
+          write(ounit,*) "yknot(i) <= yknot(i+1) required."
+          write(ounit,*) i, yknot(i), yknot(i+1)
+          write(ounit,*)
+          write(ounit,*) yknot
           stop
        endif
     end do
 
     do i = 1, nyvec
        if ((yvec(i).lt.yknot(1)).or.(yvec(i).gt.yknot(ny+ky))) then
-          write(6,*) "subroutine dbs2gd:"
-          write(6,*) "iy with yknot(iy) <= y < yknot(iy+1) required."
-          write(6,*) "y = ", yvec(i)
+          write(ounit,*) "subroutine dbs2gd:"
+          write(ounit,*) "iy with yknot(iy) <= y < yknot(iy+1) required."
+          write(ounit,*) "y = ", yvec(i)
           stop
        endif
     end do
@@ -1462,7 +1462,7 @@ contains
 
   subroutine spli3d(xyzvec,ldf,mdf,xyzdata,xyzknot,n,k,m,l,work2,work3,       &
        & bcoef,nx,ny,nz)
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none
@@ -1511,8 +1511,8 @@ contains
     call banfac(work3,k+km1,n,km1,km1,iflag)
 
     if (iflag .ne. 1) then
-       write(6,*) "subroutine dbs3in: error"
-       write(6,*) "no solution of linear equation system !!!"
+       write(ounit,*) "subroutine dbs3in: error"
+       write(ounit,*) "no solution of linear equation system !!!"
        stop
     end if
 
@@ -1533,11 +1533,11 @@ contains
 
     return
 
-998 write(6,*) "subroutine db3in:"
-    write(6,*) "i with knot(i) <= x/y/z < knot(i+1) required."
-    write(6,*) "knot(1)   = ", xyzknot(1)
-    write(6,*) "knot(n+k) = ", xyzknot(n+k)
-    write(6,*) "    x/y/z = ", xyzveci
+998 write(ounit,*) "subroutine db3in:"
+    write(ounit,*) "i with knot(i) <= x/y/z < knot(i+1) required."
+    write(ounit,*) "knot(1)   = ", xyzknot(1)
+    write(ounit,*) "knot(n+k) = ", xyzknot(n+k)
+    write(ounit,*) "    x/y/z = ", xyzveci
 
     stop
 
@@ -1583,7 +1583,7 @@ contains
 !            by ny by nz.
 !   dbs3vl - value of the spline at (x,y,z).  (output)
 !
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none
@@ -1608,20 +1608,20 @@ contains
 
     do iz = 1, nz+kz-1
        if (zknot(iz) .gt. zknot(iz + 1)) then
-          write(6,*) "subroutine dbs3vl:"
-          write(6,*) "zknot(iz) <= zknot(iz+1) required."
-          write(6,*) iz, zknot(iz), zknot(iz+1)
+          write(ounit,*) "subroutine dbs3vl:"
+          write(ounit,*) "zknot(iz) <= zknot(iz+1) required."
+          write(ounit,*) iz, zknot(iz), zknot(iz+1)
           stop
        endif
        if((zknot(iz) .le. z) .and. (z .lt. zknot(iz + 1))) nintz = iz
     end do
 
     if(nintz .eq. 0) then
-       write(6,*) "subroutine dbs3vl:"
-       write(6,*) "iz with zknot(iz) <= z < zknot(iz+1) required."
-       write(6,*) "zknot(iz)   = ", zknot(iz)
-       write(6,*) "  z         = ", z
-       write(6,*) "zknot(iz+1) = ", zknot(iz+1)
+       write(ounit,*) "subroutine dbs3vl:"
+       write(ounit,*) "iz with zknot(iz) <= z < zknot(iz+1) required."
+       write(ounit,*) "zknot(iz)   = ", zknot(iz)
+       write(ounit,*) "  z         = ", z
+       write(ounit,*) "zknot(iz+1) = ", zknot(iz+1)
        stop
     endif
 
@@ -1678,7 +1678,7 @@ contains
 !   dbs3dr - value of the (iderx,idery,iderz) derivative of the
 !            spline at (x,y,z).  (output)
 !
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none
@@ -1704,20 +1704,20 @@ contains
 
     do iz = 1, nz+kz-1
        if (zknot(iz) .gt. zknot(iz + 1)) then
-          write(6,*) "subroutine dbs3vl:"
-          write(6,*) "zknot(iz) <= zknot(iz+1) required."
-          write(6,*) iz, zknot(iz), zknot(iz+1)
+          write(ounit,*) "subroutine dbs3vl:"
+          write(ounit,*) "zknot(iz) <= zknot(iz+1) required."
+          write(ounit,*) iz, zknot(iz), zknot(iz+1)
           stop
        endif
        if((zknot(iz) .le. z) .and. (z .lt. zknot(iz + 1))) nintz = iz
     end do
 
     if(nintz .eq. 0) then
-       write(6,*) "subroutine dbs3dr:"
-       write(6,*) "iz with zknot(iz) <= z < zknot(iz+1) required."
-       write(6,*) "zknot(iz)   = ", zknot(iz)
-       write(6,*) "  z         = ", z
-       write(6,*) "zknot(iz+1) = ", zknot(iz+1)
+       write(ounit,*) "subroutine dbs3dr:"
+       write(ounit,*) "iz with zknot(iz) <= z < zknot(iz+1) required."
+       write(ounit,*) "zknot(iz)   = ", zknot(iz)
+       write(ounit,*) "  z         = ", z
+       write(ounit,*) "zknot(iz+1) = ", zknot(iz+1)
        stop
     endif
 
@@ -1788,7 +1788,7 @@ contains
 !   mdf    - middle dimension of value exactly as specified in the
 !            dimension statement of the calling program.  (input)
 !
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none
@@ -1824,20 +1824,20 @@ contains
 
     do i = 1, nx+kx-1
        if (xknot(i) .gt. xknot(i+1)) then
-          write(6,*) "subroutine dbs3gd:"
-          write(6,*) "xknot(i) <= xknot(i+1) required."
-          write(6,*) i, xknot(i), xknot(i+1)
-          write(6,*)
-          write(6,*) xknot
+          write(ounit,*) "subroutine dbs3gd:"
+          write(ounit,*) "xknot(i) <= xknot(i+1) required."
+          write(ounit,*) i, xknot(i), xknot(i+1)
+          write(ounit,*)
+          write(ounit,*) xknot
           stop
        endif
     end do
 
     do i = 1, nxvec
        if ((xvec(i).lt.xknot(1)).or.(xvec(i).gt.xknot(nx+kx))) then
-          write(6,*) "subroutine dbs3gd:"
-          write(6,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
-          write(6,*) "x = ", xvec(i)
+          write(ounit,*) "subroutine dbs3gd:"
+          write(ounit,*) "ix with xknot(ix) <= x < xknot(ix+1) required."
+          write(ounit,*) "x = ", xvec(i)
           stop
        endif
     end do
@@ -1860,20 +1860,20 @@ contains
 
     do i = 1, ny+ky-1
        if (yknot(i) .gt. yknot(i+1)) then
-          write(6,*) "subroutine dbs3gd:"
-          write(6,*) "yknot(i) <= yknot(i+1) required."
-          write(6,*) i, yknot(i), yknot(i+1)
-          write(6,*)
-          write(6,*) yknot
+          write(ounit,*) "subroutine dbs3gd:"
+          write(ounit,*) "yknot(i) <= yknot(i+1) required."
+          write(ounit,*) i, yknot(i), yknot(i+1)
+          write(ounit,*)
+          write(ounit,*) yknot
           stop
        endif
     end do
 
     do i = 1, nyvec
        if ((yvec(i).lt.yknot(1)).or.(yvec(i).gt.yknot(ny+ky))) then
-          write(6,*) "subroutine dbs3gd:"
-          write(6,*) "iy with yknot(iy) <= y < yknot(iy+1) required."
-          write(6,*) "y = ", yvec(i)
+          write(ounit,*) "subroutine dbs3gd:"
+          write(ounit,*) "iy with yknot(iy) <= y < yknot(iy+1) required."
+          write(ounit,*) "y = ", yvec(i)
           stop
        endif
     end do
@@ -1896,20 +1896,20 @@ contains
 
     do i = 1,nz+kz-1
        if (zknot(i) .gt. zknot(i+1)) then
-          write(6,*) "subroutine dbs3gd:"
-          write(6,*) "zknot(i) <= zknot(i+1) required."
-          write(6,*) i, zknot(i), zknot(i+1)
-          write(6,*)
-          write(6,*) zknot
+          write(ounit,*) "subroutine dbs3gd:"
+          write(ounit,*) "zknot(i) <= zknot(i+1) required."
+          write(ounit,*) i, zknot(i), zknot(i+1)
+          write(ounit,*)
+          write(ounit,*) zknot
           stop
        endif
     end do
 
     do i = 1, nzvec
        if ((zvec(i).lt.zknot(1)).or.(zvec(i).gt.zknot(nz+kz))) then
-          write(6,*) "subroutine dbs3gd:"
-          write(6,*) "iz with zknot(iz) <= z < zknot(iz+1) required."
-          write(6,*) "z = ", zvec(i)
+          write(ounit,*) "subroutine dbs3gd:"
+          write(ounit,*) "iz with zknot(iz) <= z < zknot(iz+1) required."
+          write(ounit,*) "z = ", zvec(i)
           stop
        endif
     end do
@@ -2051,7 +2051,7 @@ contains
 
 
   subroutine bsplvb(t,n,jhigh,index,x,left,biatx)
-
+    use contrl_file,    only: ounit
     use qmmm_numeric
 
     implicit none

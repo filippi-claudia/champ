@@ -7,7 +7,7 @@
       use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_cum, qopcm_cm2
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iblk, iqopcm_err, ispcmerr, ivpcmerr
@@ -53,11 +53,11 @@ c Statement functions for error calculation, it might be reaplaced in the near f
       vpcmkcal=vpcmave*hatokc
       sepcmkcal=spcmerr*hatokc
       vepcmkcal=vpcmerr*hatokc
-      write(6,'(''pcm dG(surf) ='',t17,f12.7,'' +-'',f11.7,f9.5,2x,f12.7,'' +-'',f11.7)')
+      write(ounit,'(''pcm dG(surf) ='',t17,f12.7,'' +-'',f11.7,f9.5,2x,f12.7,'' +-'',f11.7)')
      & spcmave,spcmerr,spcmerr*rtevalg_eff1,spcmkcal,sepcmkcal
-      write(6,'(''pcm dG(vol)  ='',t17,f12.7,'' +-'',f11.7,f9.5,2x,f12.7,''+-'',f11.7)')
+      write(ounit,'(''pcm dG(vol)  ='',t17,f12.7,'' +-'',f11.7,f9.5,2x,f12.7,''+-'',f11.7)')
      & vpcmave,vpcmerr,vpcmerr*rtevalg_eff1,vpcmkcal,vepcmkcal
-c     write(6,'(''pcm qout     ='',t17,f12.7,'' +-'',f11.7,f9.5)')
+c     write(ounit,'(''pcm qout     ='',t17,f12.7,'' +-'',f11.7,f9.5)')
 c    & qopcm_ave,qopcm_err,qopcm_err*rtevalg_eff1
 
 c     gpcmkcal=spcmkcal+vpcmkcal
@@ -108,7 +108,7 @@ c-----------------------------------------------------------------------
       vpcmo_dmc(iw)=pcmv
       qopcmo_dmc(iw)=qopcm
 
-c     write(6,*) 'CIAO',qopcm,qopcmo_dmc(iw),iw,spcmo_dmc(iw),vpcmo_dmc(iw)
+c     write(ounit,*) 'CIAO',qopcm,qopcmo_dmc(iw),iw,spcmo_dmc(iw),vpcmo_dmc(iw)
       do i=1,nchs
       enfpcmo_dmc(iw,i)=enfpcm(i)
       enddo
@@ -137,7 +137,7 @@ c-----------------------------------------------------------------------
       vpcmsum=vpcmsum+p*pcmv+q*vpcmo_dmc(iw)
       qopcm_sum=qopcm_sum+p*qopcm+q*qopcmo_dmc(iw)
 
-c     write(6,*) 'HELLO',qopcm,qopcmo_dmc(iw),iw
+c     write(ounit,*) 'HELLO',qopcm,qopcmo_dmc(iw),iw
 
       do i=1,nchs
       enfpcm_sum(i)= enfpcm_sum(i)+p*enfpcm(i)+q*enfpcmo_dmc(iw,i)

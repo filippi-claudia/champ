@@ -9,6 +9,7 @@ c Written by Claudia Filippi
       use pseudo, only: lpot
 
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -39,7 +40,7 @@ c dradl = spacing of uniform mesh for local potential
       open(3,file=filename,status='old',form='formatted')
 
       read(3,*) nquad
-      write(6,'(''quadrature points'',i4)') nquad
+      write(ounit,'(''quadrature points'',i4)') nquad
 
       read(3,*) nlang,rcmax(ic)
       lpot(ic)=nlang+1
@@ -61,7 +62,7 @@ c non-local potential
       if(nlrad(ic).gt.MPS_GRID) call fatal_error('READPS: nrad gt MPS_GRID')
 
       if(drad(ic)*(nlrad(ic)-1).le.rcmax(ic)) then
-        write(6,'(''non-local table max radius = '',
+        write(ounit,'(''non-local table max radius = '',
      &  f10.5,'' too small for cut-off = '',f10.5)')
      &  drad(ic)*(nlrad(ic)-1),rcmax(ic)
         call fatal_error('READPS')
@@ -80,9 +81,9 @@ c non-local potential
       call gesqua (nquad,xq0,yq0,zq0,wq)
 c     call gesqua (nquad,xq,yq,zq,wq)
 
-      write(6,'(''quadrature points'')')
+      write(ounit,'(''quadrature points'')')
       do 30 i=1,nquad
- 30     write(6,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
+ 30     write(ounit,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
 
       return
       end

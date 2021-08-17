@@ -20,7 +20,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use force_analy, only: iforce_analy
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, ic, ij, im1, iord
@@ -92,7 +92,7 @@ c e-e and e-e-n terms
       rij=r_ee(ij)
 
       call scale_dist2(rij,uu(1),dd1,dd2,1)
-c     write(6,'(''rij,u in ee'',2f9.5)') rij,uu(1)
+c     write(ounit,'(''rij,u in ee'',2f9.5)') rij,uu(1)
 
 c Check rij after scaling because uu(1) used in e-e-n terms too
       if(rij.gt.cutjas) goto 22
@@ -147,7 +147,7 @@ c There are no C terms to order 1.
         do 25 iord=2,nordc
    25     uu(iord)=uu(1)*uu(iord-1)
       endif
-c     write(6,'(''rij,u in een'',2f12.9)') rij,uu(1)
+c     write(ounit,'(''rij,u in een'',2f12.9)') rij,uu(1)
 
       do 50 ic=1,ncent
         it=iwctype(ic)
@@ -166,7 +166,7 @@ c     write(6,'(''rij,u in een'',2f12.9)') rij,uu(1)
           call switch_scale2(rri(1),dd7,dd9)
           call switch_scale2(rrj(1),dd8,dd10)
         endif
-c     write(6,'(''ri,rri in een'',2f12.9)') ri,rri(1)
+c     write(ounit,'(''ri,rri in een'',2f12.9)') ri,rri(1)
 
         s=ri+rj
         t=ri-rj
@@ -221,7 +221,7 @@ c       s2mt2=s*s-t*t
                 fuj=fuj+c(ll,it,iwf)*k*uu(k-1)
      &          *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
               endif
-c     write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
+c     write(ounit,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
    40   continue
 
         fuu=fuu*dd1*dd1+fu*dd2
@@ -243,7 +243,7 @@ c     write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
         fijo(1,j,i)=fijo(1,j,i) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
         fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
         fijo(3,j,i)=fijo(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
-c       write(6,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
+c       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
 
         d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
      &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
@@ -277,7 +277,7 @@ c e-n terms
           if(ri.gt.cutjas) goto 80
 
           call scale_dist2(ri,rri(1),dd7,dd9,1)
-c     write(6,'(''ri,rri in en'',2f9.5)') ri,rri(1)
+c     write(ounit,'(''ri,rri in en'',2f9.5)') ri,rri(1)
 
           top=a4(1,it,iwf)*rri(1)
           topi=a4(1,it,iwf)
@@ -314,7 +314,7 @@ c     write(6,'(''ri,rri in en'',2f9.5)') ri,rri(1)
           fijo(1,i,i)=fijo(1,i,i) + feni*rvec_en(1,i,ic)
           fijo(2,i,i)=fijo(2,i,i) + feni*rvec_en(2,i,ic)
           fijo(3,i,i)=fijo(3,i,i) + feni*rvec_en(3,i,ic)
-c         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
+c         write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
 
           d2ijo(i,i) = d2ijo(i,i) + fenii + 2*feni
 
@@ -325,7 +325,7 @@ c         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
         v(1,i)=v(1,i)+fijo(1,i,i)
         v(2,i)=v(2,i)+fijo(2,i,i)
         v(3,i)=v(3,i)+fijo(3,i,i)
-c       write(6,'(''v='',9d12.4)') (v(k,i),k=1,3)
+c       write(ounit,'(''v='',9d12.4)') (v(k,i),k=1,3)
         div_vj(i)=div_vj(i)+d2ijo(i,i)
    90   d2=d2+d2ijo(i,i)
 
@@ -379,7 +379,7 @@ c Written by Cyrus Umrigar
             endif
    20 continue
       nterms4=i
-c     write(6,'(''nterms4='',i5)') nterms4
+c     write(ounit,'(''nterms4='',i5)') nterms4
       return
       end
 c-----------------------------------------------------------------------

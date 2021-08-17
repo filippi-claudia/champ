@@ -42,16 +42,16 @@ c$$$      call p2gtf('periodic:cutg',cutg,1)
 c$$$      call p2gtf('periodic:cutg_sim',cutg_sim,1)
 c$$$      call p2gtf('periodic:cutg_big',cutg_big,1)
 c$$$      call p2gtf('periodic:cutg_sim_big',cutg_sim_big,1)
-c$$$      write(6,'(/,''Npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big'',2i4,9f8.2)')
+c$$$      write(ounit,'(/,''Npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big'',2i4,9f8.2)')
 c$$$     & npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
 c$$$
 c$$$c Lattice vectors fetched in read_lattice
-c$$$      write(6,'(/,''Lattice basis vectors'',3(/,3f10.6))')
+c$$$      write(ounit,'(/,''Lattice basis vectors'',3(/,3f10.6))')
 c$$$     & ((rlatt(k,j),k=1,3),j=1,3)
-c$$$      write(6,'(/,''Simulation lattice basis vectors'',3(/,3f10.6))')
+c$$$      write(ounit,'(/,''Simulation lattice basis vectors'',3(/,3f10.6))')
 c$$$     & ((rlatt_sim(k,j),k=1,3),j=1,3)
 c$$$
-c$$$      write(6,'(/,''center positions in primitive lattice vector units '',
+c$$$      write(ounit,'(/,''center positions in primitive lattice vector units '',
 c$$$     &  ''and in cartesian coordinates'')')
 c$$$c Convert center positions from primitive lattice vector units to cartesian coordinates
 c$$$      do 5 ic=1,ncent
@@ -61,7 +61,7 @@ c$$$        do 4 k=1,3
 c$$$          cent(k,ic)=0
 c$$$          do 4 i=1,3
 c$$$    4       cent(k,ic)=cent(k,ic)+cent_tmp(i)*rlatt(k,i)
-c$$$    5   write(6,'(''center'',i4,1x,''('',3f9.5,'')'',1x,''('',3f9.5,'')'')')
+c$$$    5   write(ounit,'(''center'',i4,1x,''('',3f9.5,'')'',1x,''('',3f9.5,'')'')')
 c$$$     &  ic,(cent_tmp(k),k=1,3),(cent(k,ic),k=1,3)
 c$$$
 c$$$c cutjas already fetched by read_jastrow_parameter, set_ewald would overwrite cutjas
@@ -75,7 +75,7 @@ c----------------------------------------------------------------------
 
       use periodic, only: rkvec_shift, rlatt, rlatt_sim
       use inputflags, only: ilattice
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -119,7 +119,7 @@ c Presently not used.
       use periodic, only: ngvec, nkvec
       use periodic, only: rkvec
       use pworbital, only: c_im, c_ip, c_rm, c_rp
-
+      use contrl_file,    only: ounit
       use coefs, only: norb
       use precision_kinds, only: dp
       implicit none
@@ -147,9 +147,9 @@ c Presently not used.
           read(3,*) ikvec,ib,eig
    50     read(3,*) (c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb),igv=1,ngvec)
 
-      write(6,'(i3,'' orbitals read in from file orbitals_pw'')') jorb
+      write(ounit,'(i3,'' orbitals read in from file orbitals_pw'')') jorb
       if(jorb.lt.norb) then
-        write(6,'(''jorb,norb='',2i5)') jorb,norb
+        write(ounit,'(''jorb,norb='',2i5)') jorb,norb
         call fatal_error ('jorb < norb in read_orb_pw')
       endif
       close(3)
@@ -185,7 +185,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx
 
       use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
-
+      use contrl_file,    only: ounit
       use coefs, only: norb
       use precision_kinds, only: dp
       implicit none
@@ -234,11 +234,11 @@ c     open(2,file='gvectors')
       do 20 i=1,ngvec_dft
    20   read(30,*) (igvec_dft(k,i),k=1,3)
 c  20   read(30,*) junk,junk,(igvec_dft(k,i),k=1,3)
-c  20   write(6,*) (igvec_dft(k,i),k=1,3)
+c  20   write(ounit,*) (igvec_dft(k,i),k=1,3)
 
       read(30,*) nkvec_tmp
       if(nkvec_tmp.ne.nkvec) then
-        write(6,'(''nkvec_tmp,nkvec='',9i5)') nkvec_tmp,nkvec
+        write(ounit,'(''nkvec_tmp,nkvec='',9i5)') nkvec_tmp,nkvec
         call fatal_error ('nkvec_tmp != nkvec in read_orb_pw_tm')
       endif
 
@@ -260,13 +260,13 @@ c       write(3,'(2i4,3f9.5'' ikvec, nband, rkvec(in cartesian units)'')') ikv,n
           rkvec_tmp(k)=0
           do 23 i=1,3
    23       rkvec_tmp(k)=rkvec_tmp(k)+rkvec_tmp2(i)*glatt(k,i)
-        write(6,'(/,''rkvec_tmp in recip. lat. vec. units'',9f9.4)') (rkvec_tmp2(k),k=1,3)
-        write(6,'(''rkvec_tmp in cartesian coodinates'',9f9.4)') (rkvec_tmp(k),k=1,3)
+        write(ounit,'(/,''rkvec_tmp in recip. lat. vec. units'',9f9.4)') (rkvec_tmp2(k),k=1,3)
+        write(ounit,'(''rkvec_tmp in cartesian coodinates'',9f9.4)') (rkvec_tmp(k),k=1,3)
         do 24 k=1,3
 c Warning: tmp commented out
 c         if(abs(rkvec_tmp(k)-rkvec(k,ikv)).gt.1.d-5) then
-c           write(6,'(''kvec='',9f9.6)') (kvec(kk,ikv)+rkvec_shift(kk),kk=1,3)
-c           write(6,'(''rkvec_tmp,rkvec='',9f9.6)') (rkvec_tmp(kk),kk=1,3),(rkvec(kk,ikv),kk=1,3)
+c           write(ounit,'(''kvec='',9f9.6)') (kvec(kk,ikv)+rkvec_shift(kk),kk=1,3)
+c           write(ounit,'(''rkvec_tmp,rkvec='',9f9.6)') (rkvec_tmp(kk),kk=1,3),(rkvec(kk,ikv),kk=1,3)
 c           call fatal_error ('rkvec_tmp != rkvec in read_orb_pw')
 c         endif
    24   continue
@@ -302,7 +302,7 @@ c determine if that state is real or imaginary.
              else
               ireal_imag(jorb)=2
             endif
-            write(6,'(''ikv,iband,ireal_imag,sum,sum_abs='',3i4,9d12.4)')
+            write(ounit,'(''ikv,iband,ireal_imag,sum,sum_abs='',3i4,9d12.4)')
      &      ikv,iband,ireal_imag(jorb),sum,sum_abs
            else
             ireal_imag(jorb)=0
@@ -322,7 +322,7 @@ c determine if that state is real or imaginary.
             do 40 ig=1,ng
               do 40 isign=1,isign_min,-2
                 norm=0
-c               write(6,*) (igvec_dft(k,iwgvec(ig)),k=1,3),(igvec(k,igv),k=1,3)
+c               write(ounit,*) (igvec_dft(k,iwgvec(ig)),k=1,3),(igvec(k,igv),k=1,3)
                 do 30 k=1,3
    30             norm=norm+(igvec_dft(k,iwgvec(ig))-isign*igvec(k,igv))**2
                 if(norm.eq.0) then
@@ -336,7 +336,7 @@ c               write(6,*) (igvec_dft(k,iwgvec(ig)),k=1,3),(igvec(k,igv),k=1,3)
    40     continue
           if(ifound.ne.ng) then
             write(3,'(''ng,ifound='',2i5)') ng,ifound
-            write(6,'(''ng,ifound='',2i5)') ng,ifound
+            write(ounit,'(''ng,ifound='',2i5)') ng,ifound
             if(ifound.lt.ng) call fatal_error ('probably need to generate more g-vectors')
             call fatal_error ('ifound != ng in read__orb_pw_tm')
           endif
@@ -355,24 +355,24 @@ c Test to see if orbitals and derivs. calculated correctly
           if(k_inv(ikv).eq.1) then
             if(abs(orb(1,jorb)/orb(1,jorb+1)).gt.1.d0) then
               ireal_imag(jorb)=1
-              write(6,'(''ireal_imag,orb2_sim='',i1,5d15.8)') ireal_imag(jorb),orb(1,jorb),ddorb(1,jorb),(dorb(k,1,jorb),k=1,3)
+              write(ounit,'(''ireal_imag,orb2_sim='',i1,5d15.8)') ireal_imag(jorb),orb(1,jorb),ddorb(1,jorb),(dorb(k,1,jorb),k=1,3)
              else
               ireal_imag(jorb)=2
-              write(6,'(''ireal_imag,orb2_sim='',i1,5d15.8)')
+              write(ounit,'(''ireal_imag,orb2_sim='',i1,5d15.8)')
      &        ireal_imag(jorb),orb(1,jorb+1),ddorb(1,jorb+1),(dorb(k,1,jorb+1),k=1,3)
             endif
            else
             ireal_imag(jorb)=0
-            write(6,'(''ireal_imag,orb2_sim='',i1,5d15.8)') ireal_imag(jorb),orb(1,jorb),ddorb(1,jorb),(dorb(k,1,jorb),k=1,3)
-            write(6,'(''ireal_imag,orb2_sim='',i1,5d15.8)')
+            write(ounit,'(''ireal_imag,orb2_sim='',i1,5d15.8)') ireal_imag(jorb),orb(1,jorb),ddorb(1,jorb),(dorb(k,1,jorb),k=1,3)
+            write(ounit,'(''ireal_imag,orb2_sim='',i1,5d15.8)')
      &      ireal_imag(jorb),orb(1,jorb+1),ddorb(1,jorb+1),(dorb(k,1,jorb+1),k=1,3)
           endif
 
    50 continue
 
-      write(6,'(i3,'' orbitals read in from file orbitals_pw'')') jorb
+      write(ounit,'(i3,'' orbitals read in from file orbitals_pw'')') jorb
       if(jorb.lt.norb) then
-        write(6,'(''jorb,norb='',2i5)') jorb,norb
+        write(ounit,'(''jorb,norb='',2i5)') jorb,norb
         call fatal_error ('jorb < norb in read_orb_pw_tm')
       endif
 
@@ -386,13 +386,13 @@ c Test to see if orbitals and derivs. calculated correctly
           goto 70
         endif
    60 continue
-   70 write(6,'(''ngnorm_orb,ngvec_orb='',9i6)') ngnorm_orb,ngvec_orb
+   70 write(ounit,'(''ngnorm_orb,ngvec_orb='',9i6)') ngnorm_orb,ngvec_orb
 
 c Test to see if orbitals and derivs. calculated correctly by comparing to above
       nelec_sav=nelec
       nelec=1
       call orbitals_pw(r,orb,dorb,ddorb)
-      write(6,'(''orb2_com='',5d15.8)') (orb(1,ib),ddorb(1,ib),(dorb(k,1,ib),k=1,3),ib=1,4)
+      write(ounit,'(''orb2_com='',5d15.8)') (orb(1,ib),ddorb(1,ib),(dorb(k,1,ib),k=1,3),ib=1,4)
       nelec=nelec_sav
 
 c Write file for subsequent read-in, though at present I am not using it.
@@ -441,7 +441,7 @@ c This is the straightforward evaluation for checking purposes only.
       use periodic, only: nkvec
       use periodic, only: rkvec
       use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft
-
+      use contrl_file,    only: ounit
       use coefs, only: norb
       use precision_kinds, only: dp
       implicit none
@@ -469,15 +469,15 @@ c    &,ddcos_g(nelec,NGVECX),ddsin_g(nelec,NGVECX)
 c    &,cos_k(nelec,IVOL_RATIO),sin_k(nelec,IVOL_RATIO),dcos_k(3,nelec,IVOL_RATIO),dsin_k(3,nelec,IVOL_RATIO)
 c    &,ddcos_k(nelec,IVOL_RATIO),ddsin_k(nelec,IVOL_RATIO)
 
-      write(6,'(''nelec,norb,nkvec in orbitals_pw'',9i5)') nelec,norb,nkvec
+      write(ounit,'(''nelec,norb,nkvec in orbitals_pw'',9i5)') nelec,norb,nkvec
 
       do 26 ig=1,ngvec_dft
         do 23 k=1,3
           gvec_dft(k,ig)=0
           do 23 i=1,3
    23       gvec_dft(k,ig)=gvec_dft(k,ig)+igvec_dft(i,ig)*glatt(k,i)
-c       write(6,'(/,''igvec_dft in recip. lat. vec. units'',9i4)') (igvec_dft(i,ig),i=1,3)
-c  26   write(6,'(''gvec_dft in cartesian coodinates'',9f9.4)') (gvec_dft(k,ig),k=1,3)
+c       write(ounit,'(/,''igvec_dft in recip. lat. vec. units'',9i4)') (igvec_dft(i,ig),i=1,3)
+c  26   write(ounit,'(''gvec_dft in cartesian coodinates'',9f9.4)') (gvec_dft(k,ig),k=1,3)
    26 continue
 
 c Warning: c_real and c_imag are only stored for particular k-vector and band
@@ -504,14 +504,14 @@ c       iorb=iorb+1
             gnorm_dft(ig2)=gnorm_dft(ig2)+(rkvec(k,ikv)+gvec_dft(k,ig2))**2
    30       dot=dot+(rkvec(k,ikv)+gvec_dft(k,ig2))*x(k)
           orb(i,iorb)=orb(i,iorb)+c_real(ig)*cos(dot)-c_imag(ig)*sin(dot)
-          if(ipr.ge.4 .and. ig.le.22) write(6,'(''rkvec+gvec'',2i4,7f9.4,f18.12)')
+          if(ipr.ge.4 .and. ig.le.22) write(ounit,'(''rkvec+gvec'',2i4,7f9.4,f18.12)')
      &    ig,ig2,(rkvec(k,ikv)+gvec_dft(k,ig2),k=1,3),c_real(ig),dot,cos(dot),sin(dot),orb(i,iorb)
           do 35 k=1,3
    35       dorb(k,i,iorb)=dorb(k,i,iorb)+(rkvec(k,ikv)+gvec_dft(k,ig2))*(-c_real(ig)*sin(dot)-c_imag(ig)*cos(dot))
    40     ddorb(i,iorb)=ddorb(i,iorb)-gnorm_dft(ig2)*(c_real(ig)*cos(dot)-c_imag(ig)*sin(dot))
 
-        write(6,'(''ikv,iband,nband(ikv),k_inv(ikv)'',9i5)') ikv,iband,nband(ikv),k_inv(ikv)
-        write(6,'(''real orb='',i5,9d12.4)') iorb,orb(i,iorb)
+        write(ounit,'(''ikv,iband,nband(ikv),k_inv(ikv)'',9i5)') ikv,iband,nband(ikv),k_inv(ikv)
+        write(ounit,'(''real orb='',i5,9d12.4)') iorb,orb(i,iorb)
 
 c       if(k_inv(ikv).eq.1) goto 80
         iorb=iorb+1
@@ -532,17 +532,17 @@ c       if(ireal_imag(iorb).eq.0 .or. ireal_imag(iorb).eq.2) then
             gnorm_dft(ig2)=gnorm_dft(ig2)+(rkvec(k,ikv)+gvec_dft(k,ig2))**2
    60       dot=dot+(rkvec(k,ikv)+gvec_dft(k,ig2))*x(k)
           orb(i,iorb)=orb(i,iorb)+c_real(ig)*sin(dot)+c_imag(ig)*cos(dot)
-c         if(ipr.ge.4 .and. ig.le.22) write(6,'(''rkvec+gvec'',2i4,7f9.4,f18.12)')
+c         if(ipr.ge.4 .and. ig.le.22) write(ounit,'(''rkvec+gvec'',2i4,7f9.4,f18.12)')
 c    &    ig,ig2,(rkvec(k,ikv)+gvec_dft(k,ig2),k=1,3),c_real(ig),dot,cos(dot),sin(dot),orb(i,iorb)
-          if(ipr.ge.4 .and. ig.le.22) write(6,'(''rkvec,gvec'',8f9.4)') (rkvec(k,ikv),gvec_dft(k,ig2),k=1,3)
-          if(ipr.ge.4 .and. ig.le.22) write(6,'(''rkvec+gvec'',2i4,8f9.4,f18.12)')
+          if(ipr.ge.4 .and. ig.le.22) write(ounit,'(''rkvec,gvec'',8f9.4)') (rkvec(k,ikv),gvec_dft(k,ig2),k=1,3)
+          if(ipr.ge.4 .and. ig.le.22) write(ounit,'(''rkvec+gvec'',2i4,8f9.4,f18.12)')
      &    ig,ig2,(rkvec(k,ikv)+gvec_dft(k,ig2),k=1,3),c_real(ig),x(1),dot,cos(dot),sin(dot),orb(i,iorb)
           do 65 k=1,3
    65       dorb(k,i,iorb)=dorb(k,i,iorb)+(rkvec(k,ikv)+gvec_dft(k,ig2))*(c_real(ig)*cos(dot)-c_imag(ig)*sin(dot))
    70     ddorb(i,iorb)=ddorb(i,iorb)-gnorm_dft(ig2)*(c_real(ig)*sin(dot)+c_imag(ig)*cos(dot))
 
-        write(6,'(''ikv,iband,nband(ikv),k_inv(ikv)'',9i5)') ikv,iband,nband(ikv),k_inv(ikv)
-        write(6,'(''imag orb='',i5,9d12.4)') iorb,orb(i,iorb)
+        write(ounit,'(''ikv,iband,nband(ikv),k_inv(ikv)'',9i5)') ikv,iband,nband(ikv),k_inv(ikv)
+        write(ounit,'(''imag orb='',i5,9d12.4)') iorb,orb(i,iorb)
 
 c       endif
 c       endif
