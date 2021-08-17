@@ -7,7 +7,7 @@
     weights      [ 1.0d0,  1.0d0 , 1.0d0]
 %endmodule
 
-load molecule        $pool/butadiene.xyz
+#load molecule        $pool/butadiene.xyz
 load basis_num_info  $pool/BFD-T.bfinfo
 
 load determinants    TZ_1M_500.det
@@ -15,6 +15,22 @@ load orbitals        TZ_1M_15k.orb
 load jastrow         jastrow_optimal.0
 load jastrow_der     jastrow.der
 load symmetry        cas1010.sym
+
+# optionally parse coordinates directly from the input file
+%block molecule
+10
+Butadiene C2h some
+C   -1.157935 -0.733652  0
+C    1.157935  0.733652  0
+C   -3.466419  0.298187  0
+C    3.466419 -0.298187  0
+H   -3.706633  2.326423  0
+H    3.706633 -2.326423  0
+H   -0.963193 -2.772181  0
+H    0.963193  2.772181  0
+H   -5.146950 -0.855551  0
+H    5.146950  0.855551  0
+%endblock
 
 
 %module electrons

@@ -538,6 +538,7 @@ jobs:
     - name: "Test 28 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 2 processors"
       run: |
         echo "Running the tests using the new parser. PSB3 "
+        ulimit -s unlimited
         cd tests/CI_test/new-parser-psb3
 
         echo "Running the optimization calculation"
@@ -556,6 +557,7 @@ jobs:
     - name: "Test 29 (psb3) optimize wavefunction and ci using lin_d method Davidson Calculation (400 determinants, 2 states, csfmap) on 1 processor"
       run: |
         echo "Running the tests using the new parser. PSB3 "
+        ulimit -s unlimited
         cd tests/CI_test/new-parser-psb3
 
         echo "Running the optimization calculation"
@@ -574,6 +576,7 @@ jobs:
     - name: "Test 30 (psb3) optimize wavefunction and ci using lin_d method Davidson Calculation (400 determinants, 2 states, csfmap) on 2 processors"
       run: |
         echo "Running the tests using the new parser. PSB3 "
+        ulimit -s unlimited
         cd tests/CI_test/new-parser-psb3
 
         echo "Running the optimization calculation"

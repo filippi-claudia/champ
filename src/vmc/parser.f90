@@ -528,10 +528,10 @@ subroutine parser
   write(ounit,*)
 
   write(ounit,*)
-  if ( fdf_load_defined('molecule') ) then
-    call read_molecule_file(file_molecule)
-  elseif (fdf_block('molecule', bfdf)) then
+  if (fdf_block('molecule', bfdf)) then
     call fdf_read_molecule_block(bfdf)
+  elseif ( fdf_load_defined('molecule') ) then
+    call read_molecule_file(file_molecule)
   else
     write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
@@ -1467,12 +1467,30 @@ subroutine parser
   contains
 
   !! Here all the subroutines that handle the block data are written
+  !! Quick Tutorial about FDF syntax
+  !!   'v' ('value') is matched by both an 'integer' and a 'real'.
+  !!   'j' is matched by both an 'integer' and a 'name'.
+  !!   's' is matched by an 'integer', a 'real', and a 'name'.
+  !!   'x' is matched by any kind of token.
+  !!   'a' is matched by a list with integers
+  !!   'c' is matched by a list with reals
+  !!   'e' is matched by a list with integers or reals
+  !!   'd' is reserved for future dictionaries...
 
   subroutine fdf_read_molecule_block(bfdf)
     implicit none
 
     type(block_fdf)            :: bfdf
     type(parsed_line), pointer :: pline
+
+    ! %block molecule
+    ! 4
+    ! some comment
+    ! C   -3.466419  0.298187  0
+    ! C    3.466419 -0.298187  0
+    ! H   -3.706633  2.326423  0
+    ! H    3.706633 -2.326423  0
+    ! %endblock
 
     write(ounit,*) ' Molecular Coordinates from molecule block '
 
@@ -1489,17 +1507,15 @@ subroutine parser
       if (.not. allocated(iwctype)) allocate(iwctype(ncent))
       if (.not. allocated(unique)) allocate(unique(ncent))
 
-      if (pline%ntokens .ne. 4) then  ! check if it is the only integer present in a line
-        write(ounit,*) " Comment from the file ::  ", trim(pline%line)
-      endif
-
-
-      if (pline%ntokens == 4) then
+      ! get the coordinates: 4 tokens per line; first char (n) and three (r)reals or (i)ints.
+      if ((pline%ntokens==4).and.((pline%id(1).eq."n").and.((any(pline%id(2:4).eq."r")) .or. (any(pline%id(2:4).eq.("i"))) ))) then
         symbol(j) = fdf_bnames(pline, 1)
         do i= 1, 3
           cent(i,j) = fdf_bvalues(pline, i)
         enddo
         j = j + 1
+      elseif (pline%ntokens .ne. 1 ) then ! remaining line is a comment line
+        write(ounit,*) " Comment from the file ::  ", trim(pline%line)
       endif
     enddo
 
