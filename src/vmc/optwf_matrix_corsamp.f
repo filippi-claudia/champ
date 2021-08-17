@@ -512,7 +512,7 @@ c-----------------------------------------------------------------------
       subroutine check_length_run(iter,increase_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
 
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: increase_nblk, iter, nblk, nblk_max, nblk_new
@@ -528,7 +528,7 @@ c     do 5 k=1,3
 c       energy_min=min(energy_min,energy(k))
 c   5   energy_max=max(energy_max,energy(k))
 c     e_diff=energy_max-energy_min
-c     write(6,'(''iter,e_diff='',i4,d12.4)') iter,e_diff
+c     write(ounit,'(''iter,e_diff='',i4,d12.4)') iter,e_diff
 c
 c     dforce2=force_err(2)-energy_tol
 c     dforce3=force_err(2)-energy_tol
@@ -538,9 +538,9 @@ c       nblk_new=min(nblk_new,nblk_max)
 c       if(nblk_new.gt.nblk) then
 c         increase_nblk=0
 c         nblk=nblk_new
-c         write(6,'(''nblk reset to'',i8,9d12.4)') nblk,energy_err(1),energy_tol
+c         write(ounit,'(''nblk reset to'',i8,9d12.4)') nblk,energy_err(1),energy_tol
 c       endif
-c       write(6,'(''energy differences for different add_diag converged to'',d12.4)') energy_tol
+c       write(ounit,'(''energy differences for different add_diag converged to'',d12.4)') energy_tol
 c       goto 950
 c     endif
 
@@ -551,14 +551,14 @@ c Increase if subsequent energies are within errorbar
         if(nblk_new.gt.nblk) then
           increase_nblk=0
           nblk=nblk_new
-          write(6,'(''nblk reset to'',i8,9d12.4)') nblk,dabs(denergy),energy_tol
+          write(ounit,'(''nblk reset to'',i8,9d12.4)') nblk,dabs(denergy),energy_tol
         endif
       endif
 c Always increase nblk by a factor of 2 every other iteration
       if(increase_nblk.eq.2.and.nblk.lt.nblk_max) then
         increase_nblk=0
         nblk=min(2*nblk,nblk_max)
-        write(6,'(''nblk reset to'',i8,9d12.4)') nblk
+        write(ounit,'(''nblk reset to'',i8,9d12.4)') nblk
       endif
 
       return
@@ -568,7 +568,7 @@ c-----------------------------------------------------------------------
 
       use optwf_corsam, only: add_diag, energy, force, force_err
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, ierr, iwadd_diag, j, k
@@ -610,13 +610,13 @@ c Solve linear equations
       call lxb(a,nfunc,MFUNC,b)
       call uxb(a,nfunc,MFUNC,b)
 
-      write(6,'(''polinomial coeffcients b1+b2*adiag+b3*adiag^2'',f12.5,1p2e12.4)') (b(i),i=1,nfunc)
+      write(ounit,'(''polinomial coeffcients b1+b2*adiag+b3*adiag^2'',f12.5,1p2e12.4)') (b(i),i=1,nfunc)
       energy_min= 1.d99
       energy_max=-1.d99
       rms=0
       do 50 k=1,npts
         ee=b(1)+b(2)*add_diag_log(k)+b(3)*add_diag_log(k)**2
-        write(6,'(''fit log(adiag),e_fit,e '',3f12.5)') add_diag_log(k),ee,energy(k)
+        write(ounit,'(''fit log(adiag),e_fit,e '',3f12.5)') add_diag_log(k),ee,energy(k)
         if(energy(k).lt.energy_min) then
           k_min=k
           energy_min=energy(k)
@@ -624,16 +624,16 @@ c Solve linear equations
         energy_max=max(energy_max,energy(k))
    50   rms=rms+(ee-energy(k))**2
       rms=dsqrt(rms/npts)
-      write(6,'(''rms error in fit of energy to get optimal add_diag is'',d12.4)') rms
+      write(ounit,'(''rms error in fit of energy to get optimal add_diag is'',d12.4)') rms
 
       energy_var=energy_max-energy_min
       if(b(3).gt.0.and.abs(force(2)).gt.3*force_err(2).and.abs(force(3)).gt.3*force_err(3)) then
         iwadd_diag=0
         add_diag_log_min=-0.5d0*b(2)/b(3)
         add_diag_log_min=min(max(add_diag_log_min,add_diag_log(1)-1),add_diag_log(1)+3)
-        write(6,'(/,''computed optimal adiag '',g12.4)') 10**add_diag_log_min
+        write(ounit,'(/,''computed optimal adiag '',g12.4)') 10**add_diag_log_min
         eopt=b(1)+b(2)*add_diag_log_min+b(3)*add_diag_log_min**2
-        write(6,'(/,''computed optimal energy'',f12.5)') eopt
+        write(ounit,'(/,''computed optimal energy'',f12.5)') eopt
        elseif(energy(1).lt.energy(2)+force_err(2).and.energy_var.lt.1.d-3*abs(energy_max)) then
         iwadd_diag=1
         add_diag_log_min=add_diag_log(1)
@@ -643,13 +643,13 @@ c Solve linear equations
         add_diag_log_min=add_diag_log(2)
        else
         iwadd_diag=k_min
-        write(6,'(/,''b3 < 0 or error on one force too large'')')
+        write(ounit,'(/,''b3 < 0 or error on one force too large'')')
         add_diag_log_min=add_diag_log(k_min)
         if(k_min.eq.1.and.energy(1).lt.energy(2).and.add_diag_log_min.ge.0.d0) add_diag_log_min=add_diag_log_min-1.d0
       endif
       add_diag_log_min=max(add_diag_log_min,-6*1.d0)
       add_diag_min=10**add_diag_log_min
-      write(6,'(/,''optimal adiag '',i2,g12.4,/)') iwadd_diag,add_diag_min
+      write(ounit,'(/,''optimal adiag '',i2,g12.4,/)') iwadd_diag,add_diag_min
 
       add_diag(1)=add_diag_min
 
@@ -670,7 +670,7 @@ c-----------------------------------------------------------------------
       use contrl_file,    only: ounit
       use method_opt, only: method
       use optorb_cblock, only: nreduced
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, i0, is, ishift, j
@@ -693,9 +693,9 @@ c Jastrow Hamiltonian
   110      s(i,j)=s_jas(i,j)
 
 c      do 111 i=1,nparmj+1
-c 111    write(6,'(''h1= '',1000d12.5)') (h(i,j),j=1,nparmj+1)
+c 111    write(ounit,'(''h1= '',1000d12.5)') (h(i,j),j=1,nparmj+1)
 c      do 112 i=1,nparmj+1
-c 112    write(6,'(''h1= '',1000d12.5)') (s(i,j),j=1,nparmj+1)
+c 112    write(ounit,'(''h1= '',1000d12.5)') (s(i,j),j=1,nparmj+1)
 
        ishift=nparmj+is
 
@@ -724,9 +724,9 @@ c CI Hamiltonian
            h(ishift+i,ishift+j)=h_ci(i+i0+is,j+i0+is)
   120      s(ishift+i,ishift+j)=s_ci(i+i0+is,j+i0+is)
 
-c      write(6,'(''h2 shift ='',i4)') ishift
+c      write(ounit,'(''h2 shift ='',i4)') ishift
 c      do 121 i=1,nciterm-i0
-c 121    write(6,'(''h2= '',1000f12.5)') (h_ci(i+i0+is,j+i0+is),j=1,nciterm-i0)
+c 121    write(ounit,'(''h2= '',1000f12.5)') (h_ci(i+i0+is,j+i0+is),j=1,nciterm-i0)
 
 c Jastrow-CI Hamiltonian
        do 130 j=1,nciterm-i0
@@ -737,8 +737,8 @@ c Jastrow-CI Hamiltonian
   130      s(j+ishift,i+1)=s_mix_jas_ci(i,j+i0)
 
 c      do 131 i=1,nparmj
-c        write(6,'(''h3= '',1000f12.5)') (h_mix_jas_ci(i,j+i0),j=1,nciterm-i0)
-c 131    write(6,'(''h3= '',1000f12.5)') (h_mix_jas_ci(i+nparmj,j+i0),j=1,nciterm-i0)
+c        write(ounit,'(''h3= '',1000f12.5)') (h_mix_jas_ci(i,j+i0),j=1,nciterm-i0)
+c 131    write(ounit,'(''h3= '',1000f12.5)') (h_mix_jas_ci(i+nparmj,j+i0),j=1,nciterm-i0)
 
        ishift=ishift+nciterm-i0
 
@@ -784,9 +784,9 @@ c ORB-CI Hamiltonian
      & nparm,nparmj,nciterm,nreduced
 
 c      do 180 i=1,nparm+1
-c 180    write(6,'(''h= '',1000d12.5)') (h(i,j),j=1,nparm+1)
+c 180    write(ounit,'(''h= '',1000d12.5)') (h(i,j),j=1,nparm+1)
 c      do 185 i=1,nparm+1
-c 185    write(6,'(''s= '',1000d12.5)') (s(i,j),j=1,nparm+1)
+c 185    write(ounit,'(''s= '',1000d12.5)') (s(i,j),j=1,nparm+1)
 
       endif
 

@@ -476,6 +476,7 @@ SUBROUTINE rdiaghg( n, m, h, s, ldh, e, v )
   !
   ! ... LAPACK version - uses both DSYGV and DSYGVX
   !
+  use contrl_file,    only: ounit
   IMPLICIT NONE
   !
   INTEGER, INTENT(IN) :: n, m, ldh
@@ -579,7 +580,7 @@ SUBROUTINE rdiaghg( n, m, h, s, ldh, e, v )
   !
   IF ( info > n ) THEN
 !    CALL fatal_error( 'rdiaghg: S matrix not positive definite' )
-     write(6,*) 'rdiaghg: S matrix not positive definite'
+     write(ounit,*) 'rdiaghg: S matrix not positive definite'
   ELSE IF ( info > 0 ) THEN
      CALL fatal_error( 'rdiaghg: eigenvectors failed to converge' )
   ELSE IF ( info < 0 ) THEN

@@ -19,6 +19,7 @@
       use slater, only: ddx, slmi
       use multislater, only: detiab
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -145,7 +146,7 @@ c d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
 
       if(ipr.gt.3) then
         do istate=1,nstates
-          write(6,*) 'derivatives of local energy: ',(denergy(iparm,istate),iparm=1,nparmj)
+          write(ounit,*) 'derivatives of local energy: ',(denergy(iparm,istate),iparm=1,nparmj)
         enddo
       endif
 
@@ -322,7 +323,7 @@ c Written by Claudia Filippi
 
   200 continue
 
-c     write(6,*) 'HELLO',enew,p,eold,q,(dj_dj_e(nparmj,i),i=1,nparmj)
+c     write(ounit,*) 'HELLO',enew,p,eold,q,(dj_dj_e(nparmj,i),i=1,nparmj)
 
       return
       end

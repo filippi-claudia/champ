@@ -5,7 +5,7 @@
       use contrl_per, only: iperiodic
       use distance_mod, only: r_en, r_ee
       use pseudo, only: nloc
-
+      use contrl_file, only:ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -30,6 +30,6 @@ c  pe from nucleus-nucleus repulsion
         call pot_ee_ewald(x,pe_ee)
         pe=pe+pe_en+pe_ee
       endif
-      if(ipr.ge.3) write(6,'(''pe,pe_en(loc),pe_ee'',9f9.5)') pe,pe_en,pe_ee
+      if(ipr.ge.3) write(ounit,'(''pe,pe_en(loc),pe_ee'',9f9.5)') pe,pe_en,pe_ee
       return
       end

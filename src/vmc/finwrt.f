@@ -193,7 +193,7 @@ c 250   force_err(ifr)=sqrt(force_err(ifr))
 
       iciprt_sav=iciprt
       iciprt=-1
-      call optci_prt(wcum(1,1),iblk,6)
+      call optci_prt(wcum(1,1),iblk,ounit)
       iciprt=iciprt_sav
 
       call efficiency_prt(passes)

@@ -840,7 +840,7 @@ c Update the ci coef
       endif
 
 c     do 90 j=1,nstates
-c90     write(6,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
+c90     write(ounit,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
 
       return
       end
@@ -853,6 +853,7 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -869,11 +870,11 @@ c-----------------------------------------------------------------------
    50     if(iwjasa(i,ict).eq.2.and.a4(2,ict,1).le.scalem) iflaga=1
       if(iflaga.eq.1) then
         do 55 ict=1,nctype
-   55     write(6,'(''a2 < -scalek'',f10.5)') a4(2,ict,1)
+   55     write(ounit,'(''a2 < -scalek'',f10.5)') a4(2,ict,1)
       endif
       do 60 i=1,nparmb(1)
    60   if(iwjasb(i,1).eq.2.and.b(2,1,1).le.scalem) iflagb=1
-      if(iflagb.eq.1) write(6,'(''b2 < -scalek'',f10.5)') b(2,1,1)
+      if(iflagb.eq.1) write(ounit,'(''b2 < -scalek'',f10.5)') b(2,1,1)
 
       if(iflaga.eq.1.or.iflagb.eq.1) iflag=1
 
@@ -884,6 +885,7 @@ c-----------------------------------------------------------------------
      &              dparm_norm,dparm_norm_min,add_diag,iflag)
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 

@@ -19,6 +19,7 @@ module optwf_sr_mod
     use control_vmc, only: vmc_nblk_max
     use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
     use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
+    use contrl_file,    only: ounit
 
     real(dp) :: omega0
     integer :: n_omegaf, n_omegat
@@ -228,7 +229,7 @@ contains
     end subroutine sr
 
     subroutine check_length_run_sr(iter, increase_nblk, nblk, nblk_max, denergy, denergy_err, energy_err_sav, energy_tol)
-
+        use contrl_file,    only: ounit
         implicit none
 
         integer :: iter, increase_nblk, nblk, nblk_max, nblk_new, nbkl
@@ -244,7 +245,7 @@ contains
             if (nblk_new .gt. nblk) then
                 increase_nblk = 0
                 nblk = nblk_new
-                write (6, '(''nblk reset to'',i8,9d12.4)') nblk, dabs(denergy), energy_tol
+                write(ounit, '(''nblk reset to'',i8,9d12.4)') nblk, dabs(denergy), energy_tol
             endif
         endif
 
@@ -253,7 +254,7 @@ contains
             increase_nblk = 0
             nbkl = 1.2*nblk
             nblk = min(nblk, nblk_max)
-            write (6, '(''nblk reset to'',i8,9d12.4)') nblk
+            write(ounit, '(''nblk reset to'',i8,9d12.4)') nblk
         endif
 
         return
@@ -471,6 +472,7 @@ contains
         use sr_mat_n, only: jefj, jfj, jhfj
         use sr_mat_n, only: obs_tot
         use sr_index, only: jelo, jelo2, jelohfj
+        use contrl_file,    only: ounit
 
         implicit none
 
@@ -502,7 +504,7 @@ contains
 
         if (idtask .eq. 0) then
         do i = 1, nparm
-            write (6, *) 'CIAO', obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1), obs_tot(jelo, 1), &
+            write(ounit, *) 'CIAO', obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1), obs_tot(jelo, 1), &
                 obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1)
             deltap(i) = deltap(i)/(obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1))
         enddo
@@ -524,6 +526,7 @@ contains
         use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs, sr_ho
         use sr_mat_n, only: sr_o, wtg
         use sr_index, only: jelo
+        use contrl_file,    only: ounit
 
         implicit none
 
@@ -600,8 +603,8 @@ contains
 
             call dgetrf(nparm, nparm, c, MTEST, ipvt, info)
             if (info .gt. 0) then
-                write(6,'(''optwf_sr.f'')')
-                write (6, '(''MATINV: u(k,k)=0 with k= '',i5)') info
+                write(ounit,'(''optwf_sr.f'')')
+                write(ounit, '(''MATINV: u(k,k)=0 with k= '',i5)') info
                 call fatal_error('MATINV: info ne 0 in dgetrf')
             endif
             call dgetri(nparm, c, MTEST, ipvt, work, MTEST, info)
@@ -619,7 +622,7 @@ contains
         ia = 0
         ish = 3*ncent
         do icent = 1, ncent
-            write (6, '(''FORCE before'',i4,3e15.7)') icent, (da_energy_ave(k, icent), k=1, 3)
+            write(ounit, '(''FORCE before'',i4,3e15.7)') icent, (da_energy_ave(k, icent), k=1, 3)
             do k = 1, 3
                 ia = ia + 1
 
@@ -655,7 +658,7 @@ contains
 
                 endif
             enddo
-            write (6, '(''FORCE after '',i4,3e15.7)') icent, (da_energy_ave(k, icent), k=1, 3)
+            write(ounit, '(''FORCE after '',i4,3e15.7)') icent, (da_energy_ave(k, icent), k=1, 3)
         enddo
 
         return

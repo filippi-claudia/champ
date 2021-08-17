@@ -33,6 +33,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const, only: nelec
       use inputflags, only: node_cutoff, eps_node_cutoff
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
       interface
@@ -220,7 +221,7 @@ c       voldr=voldr*fbias
         endif
         co=(zeta+voldr)/(one-(zeta+voldr)*rmino(i))
 
-c       write(6,'(''rmino(i),voldr,zeta,co='',9f10.5)')
+c       write(ounit,'(''rmino(i),voldr,zeta,co='',9f10.5)')
 c    &  rmino(i),voldr,zeta,co,(co-zeta-co*zeta*rmino(i))/
 c    &  (one+co*rmino(i))
 
@@ -359,7 +360,7 @@ c Do geometrical rejections for molecules
         igeometrical=0
         if(rminon(i).gt.rminn(i)*deltar .or. dot.lt.one-delttn(i))then
           igeometrical=1
-          if(ipr.gt.3) write(6,*) 'igeo',i,igeometrical
+          if(ipr.gt.3) write(ounit,*) 'igeo',i,igeometrical
           p=zero
           q=one
           goto 208
@@ -371,18 +372,18 @@ c rratio^2 is needed for the density of the angular moves
         if(ipr.ge.1) then
           rtest=dsqrt(rvminn(1,i)**2+rvminn(2,i)**2+rvminn(3,i)**2)
           rtest2=dsqrt(xprime**2+yprime**2+zprime**2)
-          write(6,'(''ELECTRON'',i6)') i
-          write(6,'(''rtest,rtest2,rtry'',9d14.6)')rtest,rtest2,rtry,
+          write(ounit,'(''ELECTRON'',i6)') i
+          write(ounit,'(''rtest,rtest2,rtry'',9d14.6)')rtest,rtest2,rtry,
      &    rtest-rtry,rtest2-rtry
-          write(6,'(''psido='',9d12.4)') psido(1)
-          write(6,'(''vold='',9d12.4)') (vold(ic,i),ic=1,3)
-          write(6,'(''voldr,voldp='',9d12.4)') voldr,voldp
-          write(6,'(''axes='',(3f8.4,3x))') xaxis,yaxis,zaxis
-          write(6,'(''rmino(i),rmax1,rmax2,rzero'',9f9.4)')
+          write(ounit,'(''psido='',9d12.4)') psido(1)
+          write(ounit,'(''vold='',9d12.4)') (vold(ic,i),ic=1,3)
+          write(ounit,'(''voldr,voldp='',9d12.4)') voldr,voldp
+          write(ounit,'(''axes='',(3f8.4,3x))') xaxis,yaxis,zaxis
+          write(ounit,'(''rmino(i),rmax1,rmax2,rzero'',9f9.4)')
      &    rmino(i),rmax1,rmax2,rzero
-          write(6,'(''rtry,costht,sintht,phitry'',9f9.4)') rtry,costht,
+          write(ounit,'(''rtry,costht,sintht,phitry'',9f9.4)') rtry,costht,
      &    sintht,phitry
-          write(6,'(''fxop'',9f12.4)') fxop
+          write(ounit,'(''fxop'',9f12.4)') fxop
         endif
 
 c calculate psi at new configuration
@@ -405,7 +406,7 @@ c calculate psi at new configuration
       call compute_determinante_grad(iel,psig,psidn,vnew(1,iel),0)
 
       if(ipr.gt.1) then
-        write(6,'(''psidn,psig ='',2d12.4)') psidn(1),psig
+        write(ounit,'(''psidn,psig ='',2d12.4)') psidn(1),psig
       endif
 
       psi2n(1)=2*(dlog(dabs(psig))+psijn)
@@ -423,9 +424,9 @@ c calculate psi at new configuration
         psi2n(1)=psi2n(1)+2*dlog(rnorm_nodes)
 
         if(ipr.gt.1) then
-          write(6,'(''distance_node='',d12.4)') distance_node
-          write(6,'(''rnorm_nodes='',d12.4)') rnorm_nodes
-          write(6,'(''psid2n_ncut='',f9.4)') psi2n(1)
+          write(ounit,'(''distance_node='',d12.4)') distance_node
+          write(ounit,'(''rnorm_nodes='',d12.4)') rnorm_nodes
+          write(ounit,'(''psid2n_ncut='',f9.4)') psi2n(1)
         endif
       endif
 
@@ -558,24 +559,24 @@ c p is the probability of accepting new move
       p=rratio**2*exp(psi2n(1)-psi2o(1,1))*dabs((fxnp*areao)/(fxop*arean))
 
         if(ipr.ge.1) then
-          write(6,'(''rminn,rvminn,vnew,vnewr'',9f10.4)')
+          write(ounit,'(''rminn,rvminn,vnew,vnewr'',9f10.4)')
      &    rminn(i),(rvminn(ic,i),ic=1,3),(vnew(ic,i),ic=1,3),vnewr
-          write(6,'(''vnew='',9d12.4)') (vnew(ic,i),ic=1,3)
-          write(6,'(''vnewr,vnewp='',9d12.4)') vnewr,vnewp
-          write(6,'(''axes='',(3f8.4,3x))') xaxis,yaxis,zaxis
-          write(6,'(''rminn(i),rmax1,rmax2,rzero'',9f9.4)')
+          write(ounit,'(''vnew='',9d12.4)') (vnew(ic,i),ic=1,3)
+          write(ounit,'(''vnewr,vnewp='',9d12.4)') vnewr,vnewp
+          write(ounit,'(''axes='',(3f8.4,3x))') xaxis,yaxis,zaxis
+          write(ounit,'(''rminn(i),rmax1,rmax2,rzero'',9f9.4)')
      &    rminn(i),rmax1,rmax2,rzero
-          write(6,'(''rtry,costht,sintht,phitry,cosphi'',9f9.4)') rtry,
+          write(ounit,'(''rtry,costht,sintht,phitry,cosphi'',9f9.4)') rtry,
      &    costht,sintht,phitry,cosphi
-          write(6,'(''fxop,fxnp,areao,arean,psi2n,psi2o,p'',9f9.4)')
+          write(ounit,'(''fxop,fxnp,areao,arean,psi2n,psi2o,p'',9f9.4)')
      &                  fxop,fxnp,areao,arean,psi2n(1),psi2o(1,1),p
           if(dabs(vnew(1,i))+dabs(vnew(1,i))+dabs(vnew(1,i)).gt.10d+8) then
             do ii=1,i-1
-              write(6,*) (xold(k,ii),k=1,3)
+              write(ounit,*) (xold(k,ii),k=1,3)
             enddo
-            write(6,*) (xnew(k,i),k=1,3)
+            write(ounit,*) (xnew(k,i),k=1,3)
             do ii=i+1,nelec
-              write(6,*) (xold(k,ii),k=1,3)
+              write(ounit,*) (xold(k,ii),k=1,3)
             enddo
           endif
         endif
@@ -595,13 +596,13 @@ c and q times old, and keep track of which bin the old was in
       itryn=min(int(delri*rnew)+1,nrad)
       try(itryo)=try(itryo)+1
       suc(itryo)=suc(itryo)+p
-      if(try(itryo).lt.0.) write(6,'(''itryo,try'',i5,d13.5)')itryo,
+      if(try(itryo).lt.0.) write(ounit,'(''itryo,try'',i5,d13.5)')itryo,
      &try(itryo)
-      if(suc(itryo).lt.0.) write(6,'(''itryo,suc'',i5,d13.5)')itryo,
+      if(suc(itryo).lt.0.) write(ounit,'(''itryo,suc'',i5,d13.5)')itryo,
      &suc(itryo)
       if(voldp*raver*sintht.gt.one) trunfb(itryo)=trunfb(itryo)+1
 
-      ! write(6, *) 'xnew', xnew(1,i), xnew(2, i), xnew(3,i)
+      ! write(ounit, *) 'xnew', xnew(1,i), xnew(2, i), xnew(3,i)
 
       rprob(itryo)=rprob(itryo)+q
       rprob(itryn)=rprob(itryn)+p
@@ -630,9 +631,9 @@ c Note when one electron moves the velocity on all electrons change.
         acc=acc+one
         call jassav(i,0)
         call detsav(i,0)
-        if(ipr.ge.1) write(6,*)'METROP ACCEPT'
+        if(ipr.ge.1) write(ounit,*)'METROP ACCEPT'
        else
-        if(ipr.ge.1) write(6,*)'METROP REJECT'
+        if(ipr.ge.1) write(ounit,*)'METROP REJECT'
         idist(i)=itryo
         do 250 ic=1,3
   250     xnew(ic,i)=xold(ic,i)
@@ -667,7 +668,7 @@ c primary configuration
       endif
 
       if(ipr.gt.1) then
-        write(6,'(''psid,psig ='',2d12.4)') psido(1),psidg
+        write(ounit,'(''psid,psig ='',2d12.4)') psido(1),psidg
       endif
 
 
@@ -679,9 +680,9 @@ c primary configuration
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
         psidg=psido(1)*rnorm_nodes
         if(ipr.gt.1) then
-          write(6,'(''distance_node='',d12.4)') distance_node
-          write(6,'(''rnorm_nodes='',d12.4)') rnorm_nodes
-          write(6,'(''psig_ncut='',d12.4)') psidg
+          write(ounit,'(''distance_node='',d12.4)') distance_node
+          write(ounit,'(''rnorm_nodes='',d12.4)') rnorm_nodes
+          write(ounit,'(''psig_ncut='',d12.4)') psidg
         endif
         distance_node_sum=distance_node_sum+distance_node
       endif
@@ -698,7 +699,7 @@ c form expected values of e, pe, etc.
         tpbsum(istate)=tpbsum(istate)+(eold(istate,1)-peo(istate))*wtg(istate)
   360   tjfsum(istate)=tjfsum(istate)+tjfoo*wtg(istate)
 
-      if(ipr.gt.1) write(6,'(''energy reweighted '',d12.4)') eold(1,1)*wtg(1)
+      if(ipr.gt.1) write(ounit,'(''energy reweighted '',d12.4)') eold(1,1)*wtg(1)
 
 c normal component efield on cavity surface to compute a new set of polarization charges
       if(ichpol.eq.1) call qpcm_efield(nelec,xold)

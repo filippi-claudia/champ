@@ -25,7 +25,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use orbval, only: nadorb
       use slater, only: slmi
       use multislater, only: detiab
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -209,7 +209,7 @@ c endif iskip
 c end loop nelec, ncent
   100 continue
 
-      if(ipr.ge.4) write(6,'(''vpsp_det,det,r_en(1)='',100d12.4)')
+      if(ipr.ge.4) write(ounit,'(''vpsp_det,det,r_en(1)='',100d12.4)')
      &,(vpsp_det(iab),detiab(1,iab),iab=1,2),r_en(1,1)
 
       return

@@ -12,6 +12,7 @@ c Written by Cyrus Umrigar
       use contr2, only: ijas
       use contr2, only: isc
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iord, ipr, isp, it
@@ -60,7 +61,7 @@ c used for J_en and J_ee when isc=16,17.
       c1_jas6i=1-val_cutjas
       c1_jas6=1/c1_jas6i
       c2_jas6=val_cutjas*c1_jas6
-      if(ipr.gt.1) write(6,'(''cutjas,c1_jas6,c2_jas6='',9d12.5)')
+      if(ipr.gt.1) write(ounit,'(''cutjas,c1_jas6,c2_jas6='',9d12.5)')
      &cutjas,c1_jas6,c2_jas6
 
 c Calculate asymptotic value of A and B terms
@@ -105,9 +106,9 @@ c Calculate asymptotic value of A and B terms
    35     asymp_jasb(i)=sspinn*asymp_jasb(i)
       endif
       if((ijas.eq.4.or.ijas.eq.5).and.ipr.gt.1) then
-        write(6,'(''asymp_r='',f10.6)') asymp_r
-        write(6,'(''asympa='',10f10.6)') (asymp_jasa(it),it=1,nctype)
-        write(6,'(''asympb='',10f10.6)') (asymp_jasb(i),i=1,2)
+        write(ounit,'(''asymp_r='',f10.6)') asymp_r
+        write(ounit,'(''asympa='',10f10.6)') (asymp_jasa(it),it=1,nctype)
+        write(ounit,'(''asympb='',10f10.6)') (asymp_jasb(i),i=1,2)
       endif
 
       return
@@ -164,7 +165,7 @@ c       This is used to scale r_ee in J_een for solids.
       if(scalek(iwf).ne.zero) then
         if(isc.eq.2 .or. (isc.eq.12.and.iflag.eq.1)) then
           rr=(one-dexp(-scalek(iwf)*r))/scalek(iwf)
-c     write(6,'(''r,rr='',9d12.4)') r,rr,scalek(iwf)
+c     write(ounit,'(''r,rr='',9d12.4)') r,rr,scalek(iwf)
 	 elseif(isc.eq.3) then
 	  rsc=scalek(iwf)*r
           rsc2=rsc*rsc
@@ -322,7 +323,7 @@ c       This is used to scale r_ee in J_een for solids.
         if(isc.eq.2 .or. (isc.eq.12.and.iflag.eq.1)) then
           rr=(one-dexp(-scalek(iwf)*r))/scalek(iwf)
           dd1=one-scalek(iwf)*rr
-c     write(6,'(''r,rr='',9d12.4)') r,rr,dd1,scalek(iwf)
+c     write(ounit,'(''r,rr='',9d12.4)') r,rr,dd1,scalek(iwf)
 	 elseif(isc.eq.3) then
 	  rsc=scalek(iwf)*r
           rsc2=rsc*rsc
@@ -516,7 +517,7 @@ c       This is used to scale r_ee in J_een for solids.
           dd1=one-scalek(iwf)*rr
           dd2=-scalek(iwf)*dd1
           dd3=-scalek(iwf)*dd2
-c     write(6,'(''r,rr='',9d12.4)') r,rr,dd1,dd2,scalek(iwf)
+c     write(ounit,'(''r,rr='',9d12.4)') r,rr,dd1,dd2,scalek(iwf)
 	 elseif(isc.eq.3) then
 	  rsc=scalek(iwf)*r
           rsc2=rsc*rsc

@@ -272,13 +272,14 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use dets, only: cdet, ndet
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
       integer :: icsf, idet, istate, j, jx
       real(dp), dimension(*) :: dparm_new
 
-c      write(6,*) "COPUTING NEW CI, ccsf(1,state,1)", ccsf(1,istate,1), dparm_new(1)
+c      write(ounit,*) "COPUTING NEW CI, ccsf(1,state,1)", ccsf(1,istate,1), dparm_new(1)
 c update the ci coef
 
        if(ncsf.eq.0) then
@@ -297,7 +298,7 @@ c update the ci coef
            ccsf(icsf,istate,1)=dparm_new(icsf)
          enddo
        endif
-c      write(6,*) "COPUTING NEW CI, ccsf(1,istate,1)", ccsf(1,istate,1), dparm_new(1)
+c      write(ounit,*) "COPUTING NEW CI, ccsf(1,istate,1)", ccsf(1,istate,1), dparm_new(1)
 
       return
       end

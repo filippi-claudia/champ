@@ -16,6 +16,8 @@ c Modified by A. Scemama
       use multislater, only: detiab, allocate_multislater
       use atom, only: ncent_tot
       use precision_kinds, only: dp
+      use contrl_file, only: ounit
+
       implicit none
 
       integer :: i, iab, icheck, ii, ik
@@ -82,12 +84,12 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
           ik=-nel
           do i=1,nel
             ik=ik+nel
-            write(6,*) 'slmi',iab,'M',(slmi(ii+ik,iab),ii=1,nel)
+            write(ounit,*) 'slmi',iab,'M',(slmi(ii+ik,iab),ii=1,nel)
           enddo
         endif
  400  continue
 
-      if(ipr.ge.4) write(6,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
+      if(ipr.ge.4) write(ounit,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
 
 c for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
       if(index(mode,'dmc').eq.0) then
@@ -114,6 +116,7 @@ c-----------------------------------------------------------------------
       use orbval, only: nadorb
       use multislater, only: detiab, allocate_multislater
       use precision_kinds, only: dp
+      use contrl_file, only: ounit
       implicit none
 
       integer :: iab, icheck, iflag, ipass
@@ -132,15 +135,15 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
         dcheck=detref(iab)/ipass-dlogdet
         if(iab.eq.1.and.dcheck.gt.6) iflag=1
         if(iab.eq.2.and.dcheck.gt.6) iflag=2
-        if(ipr.ge.2) write(6,*) 'check',dlogdet,detref(iab)/ipass
+        if(ipr.ge.2) write(ounit,*) 'check',dlogdet,detref(iab)/ipass
       enddo
 
-      if(ipr.ge.2) write(6,*) 'check detref',iflag
+      if(ipr.ge.2) write(ounit,*) 'check detref',iflag
       if(iflag.gt.0) then
         call multideterminants_define(iflag,icheck)
         if (ioptorb.ne.0) then
           norb=norb+nadorb
-          write(6, *) norb
+          write(ounit, *) norb
           call optorb_define
         endif
       endif

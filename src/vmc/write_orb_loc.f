@@ -149,7 +149,7 @@ c the printout of coefficients and screening constants.
 
   210 continue
 
-      iu=6
+      iu=ounit
       if(nbasis.gt.15) then
         iu=45
         write(iu,'(/,''Orbitals'')')

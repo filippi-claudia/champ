@@ -2,7 +2,7 @@
 !!
 !! Subroutines related to transforming coordinates and gradients
 !! between cartesian and internal coordinate systems.
-!! 
+!!
 !! Useful reference: J. Chem. Phys, 117, 2002
 !!       (I think there is an error in the angle contribution to B in the paper)
 !!
@@ -32,7 +32,7 @@ module coords_int
   logical, parameter :: recalculate = .false.
 
   logical :: initialized = .false.
-  
+
   private
 
   public :: coords_init
@@ -55,6 +55,7 @@ module coords_int
   !! @param connectivities connectivities in z-Matrix format
   !!
   subroutine coords_init (ncent, cart_coords, connectivities)
+    use contrl_file,    only: ounit
     use optgeo_hessian
 
     integer, intent(in) :: ncent
@@ -69,7 +70,7 @@ module coords_int
 
     num_centers = ncent
     if (num_centers.eq.1) then
-      write (6, *) 'Found geometry optimization with a single atom!'
+      write(ounit, *) 'Found geometry optimization with a single atom!'
       stop
     endif
 
@@ -84,10 +85,10 @@ module coords_int
     num_angles = max (0, num_centers - 2)
     num_dihedrals = max (0, num_centers - 3)
 
-    write (6, *) 'total', num_int
-    write (6, *) 'bonds', num_bonds
-    write (6, *) 'angles', num_angles
-    write (6, *) 'dihedral angles', num_dihedrals
+    write(ounit, *) 'total', num_int
+    write(ounit, *) 'bonds', num_bonds
+    write(ounit, *) 'angles', num_angles
+    write(ounit, *) 'dihedral angles', num_dihedrals
 
 !    do i = 3, num_centers ! first row in z Matrix with angle
 !
@@ -123,7 +124,7 @@ module coords_int
     call optgeo_diagonal_scaled (h, num_centers, 2 * num_centers - 2)
 
     initialized = .true.
-    
+
   end subroutine coords_init
 
 
@@ -136,11 +137,12 @@ module coords_int
   !! @param connectivities connectivities as specified in a z-Matrix
   !!
   subroutine coords_compute_wilson (cart_coords, connectivities)
+    use contrl_file,    only: ounit
     use misc_bond_func, only: cross_product
 
     real(kind=8), dimension(:,:), intent(in) :: cart_coords
     integer, dimension(:,:), intent(in) :: connectivities
-    
+
     real(kind=8) :: uvec(3), vvec(3), wvec(3)
     real(kind=8) :: v(3), px(3), py(3), pz(3), t(3,3), bmte(3)
     real(kind=8) :: pxn, pyn, pzn
@@ -213,7 +215,7 @@ module coords_int
           do j = 1, 3
             if (pz(j) / pzn.lt.0) then
               t(j,j) = -1d0
-            else 
+            else
               t(j,j) =  1d0
             endif
           enddo
@@ -281,7 +283,7 @@ module coords_int
 
       ! checks for linearity of the involved angles
       if (cu.lt.-0.98d0.or.cv.lt.-0.98d0) then ! around 180 +/- 12.5 degrees
-        write (6, *) 'Found linearity in dihedral angle. Reducing number of internal coordinates.'
+        write(ounit, *) 'Found linearity in dihedral angle. Reducing number of internal coordinates.'
         num_int = num_int - 1
       else
 
@@ -313,6 +315,7 @@ module coords_int
   !! @param cart_gradient2d gradients of the cartesian coordinates (3,MCENT)
   !!
   subroutine coords_transform_gradients (cart_gradients2d)
+    use contrl_file,    only: ounit
 
     real(kind=8), dimension(:,:), intent(in) :: cart_gradients2d
 
@@ -352,9 +355,9 @@ module coords_int
     ! queries for work space size
     call dgelsd (num_int, num_cart, num_int, a, num_int, u, num_cart, s, rcond, irank, work, lwork, iwork, info)
     if (info.ne.0) then
-      write (6,*) 'transform_gradients: dgelsd() query for workspace failed.'
+      write(ounit,*) 'transform_gradients: dgelsd() query for workspace failed.'
       stop
-    end if  
+    end if
 
     ! allocates optimal work and iwork
     lwork = int (work(1))
@@ -368,9 +371,9 @@ module coords_int
     call dgelsd (num_int, num_cart, num_int, a, num_int, u, num_cart, s, rcond, irank, work, lwork, iwork, info)
 
     if (info.gt.0) then
-      write (6,*) 'transform_gradients: dgelsd() did not converge.'
+      write(ounit,*) 'transform_gradients: dgelsd() did not converge.'
       stop
-    end if  
+    end if
 
     ! extracts pseudo-inverse
     allocate (btinv(num_int, num_cart))
@@ -380,8 +383,8 @@ module coords_int
     ! transforms the gradients
     int_gradients = matmul (btinv, cart_gradients)
 
-    write (6,*) 'int_gradients'
-    write (6, '(6f10.5)') int_gradients
+    write(ounit,*) 'int_gradients'
+    write(ounit, '(6f10.5)') int_gradients
 
     if (project) then ! computes projector P = BB^+
       p = matmul (b, binv)
@@ -400,7 +403,7 @@ module coords_int
   !! @param alpha scales the gradient and determines the length of the step
   !!
   subroutine coords_compute_step (alpha)
-
+    use contrl_file,    only: ounit
     real(kind=8), intent (in) :: alpha
     integer :: i
 
@@ -411,8 +414,8 @@ module coords_int
       h = matmul (p, h)
     endif
 
-    write (6,*) 'H', shape(H)
-    write (6,*) h
+    write(ounit,*) 'H', shape(H)
+    write(ounit,*) h
 
     ! divide by the diagonal elements of the Hessian matrix !TODO for now only works for this diagonal one
     do i = 1, num_int
@@ -432,7 +435,7 @@ module coords_int
   !!
   !!
   subroutine coords_transform_step (int_coords2d, cart_coords2d, connectivities)
-
+    use contrl_file,    only: ounit
     real(kind=8), dimension(:,:), intent(inout) :: cart_coords2d
     real(kind=8), dimension(:,:), intent(inout) :: int_coords2d
     integer, dimension(:,:), intent(in) :: connectivities
@@ -447,9 +450,9 @@ module coords_int
     integer :: ic, it
     integer :: i, j
 
-    write (6,*) 
-    write (6,*) "--- Do step ---"
-    write (6,*) 
+    write(ounit,*)
+    write(ounit,*) "--- Do step ---"
+    write(ounit,*)
 
     iint = 1
 
@@ -471,36 +474,36 @@ module coords_int
       iint = iint + 1
     enddo
 
-    write (6,*) "Internal reference"
-    write (6,'(f10.5)') (int_coords(iint),iint=1,num_int)
+    write(ounit,*) "Internal reference"
+    write(ounit,'(f10.5)') (int_coords(iint),iint=1,num_int)
 
     ! computes new geometry in cartesian coordinates (x1, eq. 13)
     cart_coords  = reshape (cart_coords2d, shape (cart_coords)) ! 2d->1d
     cart_coords = cart_coords + matmul (binv, int_step)
 
-    write (6,*) 
-    write (6,*) "old cart"
-    write (6,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
+    write(ounit,*)
+    write(ounit,*) "old cart"
+    write(ounit,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
     ! updates 2D cartesian coordinates
     do i=1,num_centers
       do j = 1,3
         cart_coords2d(j, i) = cart_coords(3*(i-1)+j)
       enddo
     enddo
-    write (6,*) 
-    write (6,*) "new cart"
-    write (6,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
+    write(ounit,*)
+    write(ounit,*) "new cart"
+    write(ounit,'(12f10.5)') cart_coords2d(1:3,1:num_centers)
 
     ! transforms back to internal coordinates (q1)
     call cart2zmat(num_centers, cart_coords2d, connectivities, int_coords2d)
 
     call fix_dihedrals (int_coords, int_coords2d)
 
-    write (6,*) 
-    write (6,*)  'internal new'
-    write (6,'(1f10.5)') int_coords2d(1,2)
-    write (6,'(2f10.5)') int_coords2d(1:2,3)
-    write (6,'(3f10.5)') int_coords2d(1:3,4)
+    write(ounit,*)
+    write(ounit,*)  'internal new'
+    write(ounit,'(1f10.5)') int_coords2d(1,2)
+    write(ounit,'(2f10.5)') int_coords2d(1:2,3)
+    write(ounit,'(3f10.5)') int_coords2d(1:3,4)
 
     ! computes the guess step in internal coordinates (q1-q0)
     iint = 1
@@ -521,25 +524,25 @@ module coords_int
       iint = iint + 1
     enddo
 
-    write (6,*) 
-    write (6,*) "int_step"
-    write (6,'(6f10.5)') int_step
-    write (6,*) "int_dnew"
-    write (6,'(6f10.5)') int_dnew
+    write(ounit,*)
+    write(ounit,*) "int_step"
+    write(ounit,'(6f10.5)') int_step
+    write(ounit,*) "int_dnew"
+    write(ounit,'(6f10.5)') int_dnew
 
     ! computes difference between the reference and guess step (delta_q1, eq. 14)
     int_dnew = int_step - int_dnew
-    write (6,*) "delta_int"
-    write (6,'(6f10.5)') int_dnew
+    write(ounit,*) "delta_int"
+    write(ounit,'(6f10.5)') int_dnew
     cart_d = matmul (binv, int_dnew)
     delta = sqrt(sum(cart_d**2) / num_cart)
 
-    write (6,*)  "Delta", delta
+    write(ounit,*)  "Delta", delta
 
     it = 0
     do while (delta.gt.1d-6.and.it.lt.maxit)
-      write (6,*) 
-      write (6,*) "Iteration", it
+      write(ounit,*)
+      write(ounit,*) "Iteration", it
 
       if (recalculate) then
         call coords_compute_wilson (cart_coords2d, connectivities)
@@ -579,27 +582,27 @@ module coords_int
         iint = iint + 1
       enddo
 
-      write (6,*) 
-      write (6,*) "int_step"
-      write (6,'(6f10.5)') int_step
-      write (6,*) "int_dnew"
-      write (6,'(6f10.5)') int_dnew
+      write(ounit,*)
+      write(ounit,*) "int_step"
+      write(ounit,'(6f10.5)') int_step
+      write(ounit,*) "int_dnew"
+      write(ounit,'(6f10.5)') int_dnew
 
       ! computes difference between the reference and guess step
       int_dnew = int_step - int_dnew
-      write (6,*) "delta_int"
-      write (6,'(6f10.5)') int_dnew
+      write(ounit,*) "delta_int"
+      write(ounit,'(6f10.5)') int_dnew
       cart_d = matmul (binv, int_dnew)
       delta = sqrt(sum(cart_d**2) / num_cart)
 
-      write (6,*)  "Delta", delta
+      write(ounit,*)  "Delta", delta
 
       it = it + 1
     enddo
 
 
     if (delta.gt.1d-6) then
-      write (6,*) 'do_step: backtransformation did not converge'
+      write(ounit,*) 'do_step: backtransformation did not converge'
       stop
     endif
 
@@ -621,7 +624,7 @@ module coords_int
   !! @param int_coords2d new internal coordinates in 2D z-Matrix format
   !!
   subroutine fix_dihedrals (int_reference, int_coords2d)
-
+    use contrl_file,    only: ounit
     real(kind=8), intent(in) :: int_reference(:)
     real(kind=8), intent(inout) :: int_coords2d(:,:)
     integer :: iint, ic
@@ -632,17 +635,17 @@ module coords_int
     iint = num_bonds + num_angles + 1
     do ic = 4, num_centers ! loop over dihedrals
 
-      write (6,*) 'ref new', int_reference(iint), int_coords2d(3,ic)
+      write(ounit,*) 'ref new', int_reference(iint), int_coords2d(3,ic)
       if (int_reference(iint).gt.PIH.or.int_reference(iint).lt.-PIH) then
 
         if (int_reference(iint).lt.0d0.and.int_coords2d(3,ic).gt.0d0) then
           int_coords2d(3, ic) = int_coords2d(3, ic) - PI2
-          write (6,*) 'FIX Flip of the dihedral detected. - to +.'
+          write(ounit,*) 'FIX Flip of the dihedral detected. - to +.'
         endif
 
         if (int_reference(iint).gt.0d0.and.int_coords2d(3,ic).lt.0d0) then
           int_coords2d(3, ic) = int_coords2d(3, ic) + PI2
-          write (6,*) 'FIX Flip of the dihedral detected. + to -.'
+          write(ounit,*) 'FIX Flip of the dihedral detected. + to -.'
         endif
 
       endif

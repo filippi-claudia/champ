@@ -682,7 +682,7 @@ subroutine read_orbitals_file(file_orbitals)
         enddo
     endif
     ! read the first line
-    if (wid) read(iunit, *, iostat=iostat)  temp1, nbasis, norb, iwft
+    if (wid) read(iunit, *, iostat=iostat)  temp1, norb, nbasis, iwft
     call bcast(nbasis)
     call bcast(norb)
     call bcast(iwft)
@@ -698,7 +698,7 @@ subroutine read_orbitals_file(file_orbitals)
                 MORB = norb
             endif
         else
-            write(ounit, *) " Check ", temp1, nbasis, norb, iwft
+            write(ounit, *) " Check ", temp1, norb, nbasis, iwft
             call fatal_error ("Error in reading number of lcao orbitals / basis / number of wavefunction types")
         endif
     endif

@@ -13,6 +13,7 @@
       use multislater, only: detiab
       use const, only: nelec
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -94,7 +95,7 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, istate
@@ -115,8 +116,8 @@ c-----------------------------------------------------------------------
   20        orb_ho(i,istate)=orb_ho(i,istate)+eloc(istate)*orb_o(i,istate)
 
 c     do iterm=1,norbterm
-c        write(6,*) 'HELLO 1',iterm,orb_o(iterm,1),orb_ho(iterm,1),orb_oe(iterm,1)
-c        write(6,*) 'HELLO 2',iterm,orb_o(iterm,2),orb_ho(iterm,2),orb_oe(iterm,2)
+c        write(ounit,*) 'HELLO 1',iterm,orb_o(iterm,1),orb_ho(iterm,1),orb_oe(iterm,1)
+c        write(ounit,*) 'HELLO 2',iterm,orb_o(iterm,2),orb_ho(iterm,2),orb_oe(iterm,2)
 c     enddo
 
       return
@@ -436,6 +437,7 @@ c-----------------------------------------------------------------------
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use optorb_cblock, only: norb_f_bcum
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -457,7 +459,7 @@ c-----------------------------------------------------------------------
         fo(i)=eoav(i)-eave*oav(i)
    30   foerr(i)=errn(orb_f_bcum(i,istate),orb_f_bcm2(i,istate),norb_f_bcum)
 
-      write(6,'(''ORB-PT: forces collected'',i4)') norb_f_bcum
+      write(ounit,'(''ORB-PT: forces collected'',i4)') norb_f_bcum
 
       end
 c-----------------------------------------------------------------------
@@ -512,6 +514,7 @@ c-----------------------------------------------------------------------
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
       use optorb_cblock, only: nreduced, nefp_blocks, norb_f_bcum
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -522,13 +525,13 @@ c-----------------------------------------------------------------------
       if(ioptorb.eq.0) return
       read(iu) morbprim,morbterm,mreduced
       if(morbprim.ne.norbprim) then
-       write (6,*) 'wrong number of primitive orb terms!'
-       write (6,*) 'old ',morbprim,' new ',norbprim
+       write(ounit,*) 'wrong number of primitive orb terms!'
+       write(ounit,*) 'old ',morbprim,' new ',norbprim
        call fatal_error('OPTORB_RSTRT: Restart, inconsistent ORB information')
       endif
       if(morbterm.ne.norbterm) then
-       write (6,*) 'wrong number of orb terms!'
-       write (6,*) 'old ',morbterm,' new ',norbterm
+       write(ounit,*) 'wrong number of orb terms!'
+       write(ounit,*) 'old ',morbterm,' new ',norbterm
        call fatal_error('OPTORB_RSTRT: Restart, inconsistent ORB information')
       endif
 
@@ -638,7 +641,7 @@ c Hamiltonian on semi-orthogonal basis
           s(1,i+ish)=0
           h(i+ish,1)=h(i+ish,1)+wts*(eoav(i)-eave*oav(i))
           h(1,i+ish)=h(1,i+ish)+wts*(orb_ho_cum(i,istate)*passesi-eave*oav(i))
-c         write(6,*) 'H',wts,eoav(i)-eave*oav(i),orb_ho_cum(i,istate)*passesi-eave*oav(i)
+c         write(ounit,*) 'H',wts,eoav(i)-eave*oav(i),orb_ho_cum(i,istate)*passesi-eave*oav(i)
           i0=1
           if(iapprox.gt.0) i0=i
           do 30 j=i0,i
