@@ -754,7 +754,8 @@ subroutine parser
   ! allocation after determinants and basis
   if (fdf_defined("optwf")) then
     if ( method .eq. 'linear' ) then
-      nwftype = 3;
+      nwftype = 3
+      nforce = 3
     endif
   endif
 
@@ -1168,7 +1169,6 @@ subroutine parser
         call fdf_list('weights_guiding',i,weights_g)
         write(ounit,'(a)' )
         write(ounit,'(tr1,a,i0,a)') ' Guiding weights has ',i,' entries'
-        if ( i < 2 ) stop "Guiding weights has less than 2 entries; use default"
         call fdf_list('weights_guiding',i,weights_g)
         write(temp5, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
         !write(ounit, '(a,<MSTATES>(f12.6))') ' Weights_guiding : ', weights_g(1:i) ! Intel version
@@ -1281,7 +1281,6 @@ subroutine parser
     call fdf_list('weights',i,weights)
     write(ounit,'(a)' )
     write(ounit,'(tr1,a,i0,a)') ' Weights has ',i,' entries'
-    if ( i < 2 ) stop "Weights has less than 2 entries; use default"
     call fdf_list('weights',i,weights)
     write(temp5, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
     !write(ounit, '(a,<MSTATES>(f12.6))') 'weights : ', weights(1:i)  ! Intel version
