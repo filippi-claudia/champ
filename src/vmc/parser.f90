@@ -592,6 +592,7 @@ subroutine parser
     write(ounit,*)
 
     write(ounit,int_format)  " Version of Metropolis = ", imetro
+    if(node_cutoff.gt.0) write(ounit,real_format) " VMC eps node cutoff   = ", eps_node_cutoff
 
     if (imetro.eq.1) then
       deltai= one/delta
@@ -632,6 +633,7 @@ subroutine parser
     rttau=dsqrt(tau)
 
     write(ounit,int_format) " Version of DMC ",  idmc
+    if(dmc_node_cutoff.gt.0)write(ounit,real_format)" DMC eps node cutoff   = ", dmc_eps_node_cutoff
     write(ounit,int_format) " nfprod ",  nfprod
     write(ounit,real_format) " tau ", tau
 
@@ -1161,14 +1163,14 @@ subroutine parser
         call fdf_list('weights_guiding',i,weights_g)
         write(ounit,'(a)' )
         write(ounit,'(tr1,a,i0,a)') ' Guiding weights has ',i,' entries'
-        if ( i < 2 ) stop 1
+        if ( i < 2 ) stop "Guiding weights has less than 2 entries; use default"
         call fdf_list('weights_guiding',i,weights_g)
         write(temp5, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
         !write(ounit, '(a,<MSTATES>(f12.6))') ' Weights_guiding : ', weights_g(1:i) ! Intel version
         write(ounit, temp5) ' Weights_guiding : ', weights_g(1:i)                   ! GNU version
       else
-        write(ounit,*)'guiding_weights keyword not recognized'
-        stop 1
+        weights_g(1:nstates) = 1.0d0
+        write(ounit,'(a,t40, 10f12.6)') 'Default weights_guiding ', weights_g(1:nstates)
       end if
 
       wsum = 0.d0
@@ -1274,14 +1276,14 @@ subroutine parser
     call fdf_list('weights',i,weights)
     write(ounit,'(a)' )
     write(ounit,'(tr1,a,i0,a)') ' Weights has ',i,' entries'
-    if ( i < 2 ) stop 1
+    if ( i < 2 ) stop "Weights has less than 2 entries; use default"
     call fdf_list('weights',i,weights)
     write(temp5, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
     !write(ounit, '(a,<MSTATES>(f12.6))') 'weights : ', weights(1:i)  ! Intel version
     write(ounit, temp5) 'weights : ', weights(1:i)                    ! GNU version
   else
-    write(ounit,*)'weights was not recognized'
-    stop 1
+    weights(1:nstates) = 1.0d0
+    write(ounit,'(a,t40, 10f12.6)') 'Default weights ', weights(1:nstates)
   end if
 
   wsum = 0.d0
