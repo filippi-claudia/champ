@@ -333,8 +333,7 @@ subroutine parser
 ! %module optwf (can be moved somewhere else)
   if (fdf_defined("optwf")) then
     if ( method .eq. 'linear' ) then
-      ! nwftype = 3;
-      MFORCE = 3
+      MFORCE = 3  ! Only set MFORCE here. nwftype=3 is set just before the allocation
     endif
   endif
 
@@ -592,7 +591,7 @@ subroutine parser
     write(ounit,*)
 
     write(ounit,int_format)  " Version of Metropolis = ", imetro
-    if(node_cutoff.gt.0) write(ounit,real_format) " VMC eps node cutoff   = ", eps_node_cutoff
+    write(ounit,real_format) " VMC eps node cutoff   = ", eps_node_cutoff
 
     if (imetro.eq.1) then
       deltai= one/delta
@@ -633,7 +632,7 @@ subroutine parser
     rttau=dsqrt(tau)
 
     write(ounit,int_format) " Version of DMC ",  idmc
-    if(dmc_node_cutoff.gt.0)write(ounit,real_format)" DMC eps node cutoff   = ", dmc_eps_node_cutoff
+    write(ounit,real_format)" DMC eps node cutoff   = ", dmc_eps_node_cutoff
     write(ounit,int_format) " nfprod ",  nfprod
     write(ounit,real_format) " tau ", tau
 
@@ -753,6 +752,12 @@ subroutine parser
   endif
 
   ! allocation after determinants and basis
+  if (fdf_defined("optwf")) then
+    if ( method .eq. 'linear' ) then
+      nwftype = 3;
+    endif
+  endif
+
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
@@ -1561,7 +1566,11 @@ subroutine parser
 
     nctype_tot = nctype + newghostype
 
-    write(ounit,*) 'Atomic symbol, coordinates, and iwctype from the molecule coordinates file '
+    write(ounit,*) '-----------------------------------------------------------------------'
+    write(ounit,'(a, t15, a, t27, a, t39, a, t45, a)') 'Symbol', 'x', 'y', 'z', 'Type'
+    write(ounit,'(t14, a, t26, a, t38, a )') '(bohr)', '(bohr)', '(bohr)'
+    write(ounit,*) '-----------------------------------------------------------------------'
+
     write(ounit,*)
     do j= 1, ncent
         write(ounit,'(A4, 2x, 3F12.6, 2x, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)

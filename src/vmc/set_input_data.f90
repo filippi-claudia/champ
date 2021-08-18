@@ -290,7 +290,7 @@ subroutine inputforces
     use forcepar, only: nforce
     use forcestr, only: delc
     use wfsec, only: iwftype, nwftype
-
+    use contrl_file, only: errunit
     use atom, only: ncent
 
     implicit none

@@ -220,7 +220,7 @@ subroutine read_molecule_file(file_molecule)
 
     write(ounit,*) '-----------------------------------------------------------------------'
     write(ounit,'(a, t15, a, t27, a, t39, a, t45, a)') 'Symbol', 'x', 'y', 'z', 'Type'
-    write(ounit,'(t14, a, t26, a, t38, a )') '(A)', '(A)', '(A)'
+    write(ounit,'(t14, a, t26, a, t38, a )') '(bohr)', '(bohr)', '(bohr)'
     write(ounit,*) '-----------------------------------------------------------------------'
 
     do j= 1, ncent
