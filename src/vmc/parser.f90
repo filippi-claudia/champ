@@ -252,7 +252,9 @@ subroutine parser
   iforce_analy= fdf_get('iforce_analy', 0)
   iuse_zmat   = fdf_get('iuse_zmat', 0)
   izvzb       = fdf_get('izvzb', 0)
-  alfgeo      = fdf_get('alfgeo', 1.0d0)
+  if (iforce_analy .gt. 0) then
+    alfgeo      = fdf_get('alfgeo', 1.0d0)
+  endif
   iroot_geo   = fdf_get('iroot_geo', 0)
 
 ! %module gradients
@@ -285,7 +287,7 @@ subroutine parser
   vmc_nstep     = fdf_get('vmc_nstep', 1)
   vmc_nblk      = fdf_get('vmc_nblk', 1)
   vmc_nblkeq    = fdf_get('vmc_nblkeq', 2)
-  vmc_nblk_max  = fdf_get('vmc_nblk_max', vmc_nblk)
+  vmc_nblk_max  = fdf_get('nblk_max', vmc_nblk)
   vmc_nconf     = fdf_get('vmc_nconf', 1)
   vmc_nconf_new = fdf_get('vmc_nconf_new', 1)
   vmc_idump     = fdf_get('vmc_idump', 1)
@@ -1779,7 +1781,7 @@ subroutine compute_mat_size_new()
   ! use atom, only: nctype_tot, ncent_tot
 
   use sr_mod, only: MPARM, MOBS, MCONF
-  use control_vmc, only: vmc_nstep, vmc_nblk
+  use control_vmc, only: vmc_nstep, vmc_nblk_max
 
   use vmc_mod, only: set_vmc_size
   use optci, only: set_optci_size
@@ -1791,7 +1793,7 @@ subroutine compute_mat_size_new()
 
   ! leads to circular dependecy of put in sr_mod ..
   MOBS = 10 + 6*MPARM
-  MCONF = vmc_nstep * vmc_nblk
+  MCONF = vmc_nstep * vmc_nblk_max
 
   call set_vmc_size
   call set_optci_size

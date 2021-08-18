@@ -10,9 +10,9 @@
 load molecule        $pool/butadiene.xyz
 load basis_num_info  $pool/BFD-T.bfinfo
 
-load determinants    TZ_1M_500.det
-load orbitals        TZ_1M_15k.orb
-load jastrow         jastrow_optimal.0
+load determinants    TZ_1M_128.det
+load orbitals        TZ_1M_128.orb
+load jastrow         jastrow_optimal
 load jastrow_der     jastrow.der
 load symmetry        cas1010.sym
 
@@ -33,8 +33,8 @@ load symmetry        cas1010.sym
     nextorb       280
     nblk_max      200
     no_active     0
-    nopt_iter     2
-    sr_tau        0.025
+    nopt_iter     3
+    sr_tau        0.05
     sr_eps        0.001
     sr_adiag      0.01
     isample_cmat  0
@@ -43,8 +43,8 @@ load symmetry        cas1010.sym
 
 %module blocking_vmc
     vmc_nstep     20
-    vmc_nblk      50
+    vmc_nblk      100
     vmc_nblkeq    1
     vmc_nconf_new 0
-    vmc_isite     0
+#    vmc_isite     0
 %endmodule

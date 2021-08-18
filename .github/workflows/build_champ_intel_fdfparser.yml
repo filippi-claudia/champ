@@ -88,7 +88,7 @@ jobs:
     - name: "Test 03 (Butadiene) VMC optimization all using sr_n (500 determinants) on 1 processor"
       run: |
         ulimit -s unlimited
-        echo "Running the tests using the new parser. Butadiene VMC "
+        echo "Running the tests using the new parser. Butadiene VMC (Pablo butadiene optall)"
         cd tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb
 
         echo "Copy an initial mc configuration for reference"
@@ -97,8 +97,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
-        echo "Comparing the energy with the reference one (total E = -26.1992624) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.1992624 --no_assert
+        echo "Comparing the energy with the reference one (total E = -22.9926662) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -22.9926662 --no_assert
     - name: "Upload results of test 03"
       uses: actions/upload-artifact@v2
       with:
@@ -110,7 +110,7 @@ jobs:
     - name: "Test 04 (Butadiene) VMC optimization all using sr_n (500 determinants) on 2 processors"
       run: |
         ulimit -s unlimited
-        echo "Running the tests using the new parser. Butadiene VMC "
+        echo "Running the tests using the new parser. Butadiene VMC (Pablo butadiene optall)"
         cd tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb
 
         echo "Copy an initial mc configuration for reference"
@@ -119,8 +119,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
-        echo "Comparing the energy with the reference one (total E = -26.1636431) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.1636431 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.1768822) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.1768822 --no_assert
     - name: "Upload results of test 04"
       uses: actions/upload-artifact@v2
       with:
@@ -666,10 +666,10 @@ jobs:
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
 
         echo "Comparing the energy with the reference one (Current energy = -1.0584905) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy =" -1.0584905 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0584905 --no_assert
 
         echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0559"
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error =" -1.0559 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0559 --no_assert
     - name: "Upload results of test 33"
       uses: actions/upload-artifact@v2
       with:
@@ -687,10 +687,10 @@ jobs:
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
 
         echo "Comparing the energy with the reference one (Current energy = -1.0610512) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy =" -1.0610512 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0610512 --no_assert
 
         echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0574"
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error =" -1.0574 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0574 --no_assert
     - name: "Upload results of test 34"
       uses: actions/upload-artifact@v2
       with:
