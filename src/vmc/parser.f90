@@ -1169,7 +1169,7 @@ subroutine parser
         !write(ounit, '(a,<MSTATES>(f12.6))') ' Weights_guiding : ', weights_g(1:i) ! Intel version
         write(ounit, temp5) ' Weights_guiding : ', weights_g(1:i)                   ! GNU version
       else
-        weights_g(1:nstates) = 1.0d0
+        weights_g = 1.0d0
         write(ounit,'(a,t40, 10f12.6)') 'Default weights_guiding ', weights_g(1:nstates)
       end if
 
@@ -1282,7 +1282,7 @@ subroutine parser
     !write(ounit, '(a,<MSTATES>(f12.6))') 'weights : ', weights(1:i)  ! Intel version
     write(ounit, temp5) 'weights : ', weights(1:i)                    ! GNU version
   else
-    weights(1:nstates) = 1.0d0
+    weights = 1.0d0
     write(ounit,'(a,t40, 10f12.6)') 'Default weights ', weights(1:nstates)
   end if
 
