@@ -91,9 +91,6 @@ jobs:
         echo "Running the tests using the new parser. Butadiene VMC (Pablo butadiene optall)"
         cd tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb
 
-        echo "Copy an initial mc configuration for reference"
-        cp -v mc_configs_start_save mc_configs_start
-
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
@@ -112,9 +109,6 @@ jobs:
         ulimit -s unlimited
         echo "Running the tests using the new parser. Butadiene VMC (Pablo butadiene optall)"
         cd tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb
-
-        echo "Copy an initial mc configuration for reference"
-        cp -v mc_configs_start_save mc_configs_start
 
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
@@ -135,9 +129,6 @@ jobs:
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb_and_geometry
 
-        echo "Copy an initial mc configuration for reference"
-        cp -v mc_configs_start_save mc_configs_start
-
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
@@ -155,9 +146,6 @@ jobs:
         ulimit -s unlimited
         echo "Running the tests using the new parser. Butadiene VMC "
         cd tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb_and_geometry
-
-        echo "Copy an initial mc configuration for reference"
-        cp -v mc_configs_start_save mc_configs_start
 
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
