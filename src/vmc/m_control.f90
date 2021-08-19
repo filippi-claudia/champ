@@ -291,6 +291,8 @@ contains
                     extensions(1) = ".in"  ; extensions(2) = ".inp" ; extensions(3) = ".dat" ; extensions(4) = ".out" ;
                     extensions(5) = ".log" ; extensions(6) = ".err" ; extensions(7) = ".e"   ; extensions(8) = "error"
 
+                    ! default error file if not mentioned.
+                    open (newunit=errunit,file="error", iostat=iostat, action='write' )
                     do j = 1, 8
                         if (index(arg(i+1), extensions(j)) /= 0) then
                             write(output_unit, '(2a)') 'unrecognised command-line option: ', arg(i)
