@@ -807,7 +807,7 @@ subroutine parser
       call multideterminants_define(0,0)
     endif
   endif
-
+  imultideterminants = 1
 
 
 ! Jastrow Parameters (either block or from a file)

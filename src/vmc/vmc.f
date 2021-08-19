@@ -116,7 +116,6 @@ c dumped data to restart
       endif
 
 c get initial value of cpu time
-      time_start = time()     ! Reset start time
 !      call my_second(0,'begin ')
       time_check1 = time()
 
