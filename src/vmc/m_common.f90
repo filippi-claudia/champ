@@ -19,7 +19,8 @@ contains
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
         use vmc_mod, only: MORB
-        if (.not. allocated(b_t)) allocate (b_t(MORB, MPS_QUAD, ncent_tot, nelec))
+        use coefs, only: norb
+        if (.not. allocated(b_t)) allocate (b_t(norb, MPS_QUAD, ncent_tot, nelec))
         if (.not. allocated(iskip)) allocate (iskip(nelec, ncent_tot))
     end subroutine allocate_b_tmove
 
@@ -523,8 +524,10 @@ contains
         use const, only: nelec
         use vmc_mod, only: MORB, MDET
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aan)) allocate (aan(nelec, MORB))
-        if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, MDET))
+        use coefs, only: norb
+        use dets, only: ndet
+        if (.not. allocated(aan)) allocate (aan(nelec, norb))
+        if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, ndet))
     end subroutine allocate_multimatn
 
     subroutine deallocate_multimatn()
@@ -556,8 +559,8 @@ contains
         use dets, only: ndet
         use vmc_mod, only: MDET
         if (.not. allocated(detiab)) allocate(detiab(ndet, 2))
-        if (.not. allocated(detu)) allocate(detu(MDET))
-        if (.not. allocated(detd)) allocate(detd(MDET))
+        if (.not. allocated(detu)) allocate(detu(ndet))
+        if (.not. allocated(detd)) allocate(detd(ndet))
     end subroutine allocate_multislater
 
     subroutine deallocate_multislater()
@@ -589,10 +592,10 @@ contains
         use dets, only: ndet
         use coefs, only: norb
         use vmc_mod, only: MORB, MDET
-        if (.not. allocated(ddorbn)) allocate (ddorbn(MORB))
-        if (.not. allocated(detn)) allocate (detn(MDET))
-        if (.not. allocated(dorbn)) allocate (dorbn(3, MORB))
-        if (.not. allocated(orbn)) allocate (orbn(MORB))
+        if (.not. allocated(ddorbn)) allocate (ddorbn(norb))
+        if (.not. allocated(detn)) allocate (detn(ndet))
+        if (.not. allocated(dorbn)) allocate (dorbn(3, norb))
+        if (.not. allocated(orbn)) allocate (orbn(norb))
     end subroutine allocate_multislatern
 
     subroutine deallocate_multislatern()
@@ -823,8 +826,10 @@ contains
     subroutine allocate_scratch()
         use const, only: nelec
         use vmc_mod, only: MORB, MDET
-        if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2))
-        if (.not. allocated(dtildem)) allocate (dtildem(nelec, MORB, 2))
+        use dets, only: ndet
+        use coefs, only: norb
+        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
+        if (.not. allocated(dtildem)) allocate (dtildem(nelec, norb, 2))
     end subroutine allocate_scratch
 
     subroutine deallocate_scratch()
@@ -1007,9 +1012,10 @@ contains
     subroutine allocate_ycompact()
         use const, only: nelec
         use vmc_mod, only: MORB
+        use coefs, only: norb
         use mstates_mod, only: MSTATES
-        if (.not. allocated(dymat)) allocate (dymat(MORB, nelec, 2, MSTATES))
-        if (.not. allocated(ymat)) allocate (ymat(MORB, nelec, 2, MSTATES))
+        if (.not. allocated(dymat)) allocate (dymat(norb, nelec, 2, MSTATES))
+        if (.not. allocated(ymat)) allocate (ymat(norb, nelec, 2, MSTATES))
     end subroutine allocate_ycompact
 
     subroutine deallocate_ycompact()
@@ -1037,8 +1043,9 @@ contains
     subroutine allocate_ycompactn()
         use const, only: nelec
         use vmc_mod, only: MORB
+        use coefs, only: norb
         use mstates_mod, only: MSTATES
-        if (.not. allocated(ymatn)) allocate (ymatn(MORB, nelec, MSTATES))
+        if (.not. allocated(ymatn)) allocate (ymatn(norb, nelec, MSTATES))
     end subroutine allocate_ycompactn
 
     subroutine deallocate_ycompactn()
@@ -1068,11 +1075,12 @@ contains
     subroutine allocate_zcompact()
         use const, only: nelec
         use vmc_mod, only: MORB
+        use coefs, only: norb
         use mstates_mod, only: MSTATES
         if (.not. allocated(aaz)) allocate (aaz(nelec, nelec, 2, MSTATES))
-        if (.not. allocated(dzmat)) allocate (dzmat(MORB, nelec, 2, MSTATES))
+        if (.not. allocated(dzmat)) allocate (dzmat(norb, nelec, 2, MSTATES))
         if (.not. allocated(emz)) allocate (emz(nelec, nelec, 2, MSTATES))
-        if (.not. allocated(zmat)) allocate (zmat(MORB, nelec, 2, MSTATES))
+        if (.not. allocated(zmat)) allocate (zmat(norb, nelec, 2, MSTATES))
     end subroutine allocate_zcompact
 
     subroutine deallocate_zcompact()

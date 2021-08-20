@@ -695,7 +695,7 @@ subroutine read_orbitals_file(file_orbitals)
                 write(ounit,int_format) " Type of wave functions ", iwft
                 ! Note the hack with capitalized variables DEBUG
                 MBASIS = nbasis
-                MORB = norb
+!                MORB = norb
             endif
         else
             write(ounit, *) " Check ", temp1, norb, nbasis, iwft
@@ -703,7 +703,7 @@ subroutine read_orbitals_file(file_orbitals)
         endif
     endif
     call bcast(MBASIS)
-    call bcast(MORB)
+!    call bcast(MORB)
 
     if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
 

@@ -353,7 +353,7 @@ c-----------------------------------------------------------------------
       integer :: i, iadiag, j
       real(dp), allocatable, save :: coef_save(:,:,:)
 
-      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, MORB, nwftype))
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb, nwftype))
       ! dimension coef_save(nbasis,norb,MWF)
       ! save coef_save
 
@@ -364,7 +364,7 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_lcao(iadiag)
-      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, MORB, nwftype))
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb, nwftype))
 
       do 20 i=1,norb
        do 20 j=1,nbasis
@@ -603,7 +603,7 @@ c-----------------------------------------------------------------------
       integer :: i, j
       real(dp), allocatable, save :: coef_best(:,:,:)
 
-      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, MORB, nwftype))
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb, nwftype))
       ! dimension coef_best(nbasis,norb,MWF)
       ! save coef_best
 
@@ -616,7 +616,7 @@ c-----------------------------------------------------------------------
       entry restore_lcao_best
 
 c     if(ioptorb.eq.0) return
-      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, MORB, nwftype))
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb, nwftype))
       do 20 i=1,norb
        do 20 j=1,nbasis
    20   coef(j,i,1)=coef_best(j,i,1)
