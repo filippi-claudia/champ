@@ -5,6 +5,7 @@
       use dorb_m, only: iworbd
       use slater, only: slmi
       use const, only: nelec
+      use coefs, only: norb
 
       use precision_kinds, only: dp
       implicit none
@@ -12,7 +13,7 @@
       integer :: i, iab, iel, ish, j
       integer :: kref, nel
 
-      real(dp), dimension(MORB, nelec) :: b
+      real(dp), dimension(norb, nelec) :: b
       real(dp), dimension(nelec**2, 2) :: btemp
       real(dp), dimension(nelec**2) :: xmatu
       real(dp), dimension(nelec**2) :: xmatd

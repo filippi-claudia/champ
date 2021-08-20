@@ -54,9 +54,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(*) :: dvpsp_dj
       real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
       real(dp), dimension(MPARMJ) :: dpsij_ratio
-      real(dp), dimension(MORB) :: orbn
-      real(dp), dimension(3,MORB) :: dorbn
-      real(dp), dimension(3,ncent_tot,MORB) :: da_orbn
+      real(dp), dimension(norb) :: orbn
+      real(dp), dimension(3,norb) :: dorbn
+      real(dp), dimension(3,ncent_tot,norb) :: da_orbn
       real(dp), dimension(3) :: term_radial_da_vps
       real(dp), dimension(3) :: vjn
       real(dp), dimension(3,ncent_tot) :: da_ratio_jn
@@ -657,10 +657,10 @@ c-----------------------------------------------------------------------
       real(dp) :: r_en_savi2, sav_db, term_radial, yl0
       real(dp), dimension(3,ncent_tot) :: rvec_en_sav
       real(dp), dimension(ncent_tot) :: r_en_sav
-      real(dp), dimension(MORB) :: orbn
-      real(dp), dimension(3,MORB) :: dorbn
+      real(dp), dimension(norb) :: orbn
+      real(dp), dimension(3,norb) :: dorbn
       real(dp), dimension(3) :: vjn
-      real(dp), dimension(3,ncent_tot,MORB) :: da_orbn
+      real(dp), dimension(3,ncent_tot,norb) :: da_orbn
       real(dp), dimension(3,ncent_tot) :: da_ratio_jn
       real(dp), dimension(3) :: term_radial_da_vps
       real(dp), parameter :: one = 1.d0

@@ -761,7 +761,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, iadiag, io, j, jo
-      real(dp), dimension(nbasis, MORB) :: acoef
+      real(dp), dimension(nbasis, norb) :: acoef
       real(dp), dimension(*) :: dparm
 
       if(ioptorb.eq.0) return

@@ -78,11 +78,11 @@
       real(dp) :: fratio_id, hbx, taux, wq_id
       real(dp) :: wt_id, xold_dmc_id, xq_id, yq_id
       real(dp) :: zq_id
-      real(dp), dimension(nbasis, MORB) :: coefx
+      real(dp), dimension(nbasis, norb) :: coefx
       real(dp), dimension(nbasis) :: zexx
       real(dp), dimension(3, ncent_tot) :: centx
       real(dp), dimension(ncent_tot) :: znucx
-      real(dp), dimension(MDET) :: cdetx
+      real(dp), dimension(ndet) :: cdetx
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: small = 1.e-6

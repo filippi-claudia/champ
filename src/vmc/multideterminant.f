@@ -25,7 +25,7 @@
       integer :: irep, ish, istate, jorb
       integer :: jrep, k, ndim, nel
       real(dp) :: det, dum1, dum2, dum3
-      real(dp), dimension(MDET, 2) :: eloc_det
+      real(dp), dimension(ndet, 2) :: eloc_det
       real(dp), dimension(3, nelec) :: vj
       real(dp), dimension(*) :: vpsp_det
       real(dp), dimension(nelec**2, 2) :: btemp
@@ -255,10 +255,10 @@ c-----------------------------------------------------------------------
       integer :: j, jorb, jrep, k
       integer :: kk, ndim
       real(dp) :: detall, detrefi
-      real(dp), dimension(MDET) :: detu
-      real(dp), dimension(MDET) :: detd
-      real(dp), dimension(MEXCIT**2, MDET) :: wfmat
-      real(dp), dimension(MORB, nelec) :: ymat
+      real(dp), dimension(ndet) :: detu
+      real(dp), dimension(ndet) :: detd
+      real(dp), dimension(MEXCIT**2, ndet) :: wfmat
+      real(dp), dimension(norb, nelec) :: ymat
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
 
@@ -336,7 +336,7 @@ c-----------------------------------------------------------------------
       integer :: jj, jorb, jrep, kk
       integer :: ll, lorb, lrep, ndim
 
-      real(dp), dimension(MORB, nelec) :: dymat
+      real(dp), dimension(norb, nelec) :: dymat
       real(dp), dimension(MEXCIT*MEXCIT) :: dmat1
       real(dp), dimension(MEXCIT*MEXCIT) :: dmat2
 
@@ -405,10 +405,10 @@ c-----------------------------------------------------------------------
       integer :: iab, irep, ish, jrep, krep
       integer :: nel
 
-      real(dp), dimension(MORB, nelec, 2) :: ymat
-      real(dp), dimension(MORB, nelec, 2) :: dymat
-      real(dp), dimension(MORB, nelec, 2) :: zmat
-      real(dp), dimension(MORB, nelec, 2) :: dzmat
+      real(dp), dimension(norb, nelec, 2) :: ymat
+      real(dp), dimension(norb, nelec, 2) :: dymat
+      real(dp), dimension(norb, nelec, 2) :: zmat
+      real(dp), dimension(norb, nelec, 2) :: dzmat
       real(dp), dimension(nelec, nelec, 2) :: emz
       real(dp), dimension(nelec, nelec, 2) :: aaz
 

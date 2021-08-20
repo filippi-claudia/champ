@@ -23,11 +23,11 @@
       integer :: jorb, jrep, k, ndim
       integer :: nel
       real(dp) :: det, dum1
-      real(dp), dimension(nelec, MORB, 3) :: gmat
+      real(dp), dimension(nelec, norb, 3) :: gmat
       real(dp), dimension(MEXCIT**2, 3) :: gmatn
-      real(dp), dimension(MORB, 3) :: b
+      real(dp), dimension(norb, 3) :: b
       real(dp), dimension(3) :: ddx_mdet
-      real(dp), dimension(MORB) :: orb_sav
+      real(dp), dimension(norb) :: orb_sav
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
 
@@ -140,12 +140,12 @@ c-----------------------------------------------------------------------
       integer :: j, jel, jrep, k
       integer :: kk, nel
       real(dp) :: detratio, dum
-      real(dp), dimension(nelec, MORB) :: aa
-      real(dp), dimension(MEXCIT**2, MDET) :: wfmat
-      real(dp), dimension(MORB, nelec) :: ymat
-      real(dp), dimension(MORB, 3) :: b
-      real(dp), dimension(3, MORB) :: dorb
-      real(dp), dimension(nelec, MORB, 3) :: gmat
+      real(dp), dimension(nelec, norb) :: aa
+      real(dp), dimension(MEXCIT**2, ndet) :: wfmat
+      real(dp), dimension(norb, nelec) :: ymat
+      real(dp), dimension(norb, 3) :: b
+      real(dp), dimension(3, norb) :: dorb
+      real(dp), dimension(nelec, norb, 3) :: gmat
       real(dp), dimension(3) :: velocity
       real(dp), dimension(MMAT_DIM) :: slmi
       real(dp), parameter :: one = 1.d0

@@ -414,7 +414,6 @@ c Lagrange interpolation routines
       use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
       use vmc_mod, only: MORB
-      use vmc_mod, only: MORB
       use atom, only: cent, ncent
       use wfsec, only: iwf
       use grid3d_param, only: nstep3d, endpt, origin
@@ -433,7 +432,7 @@ c Lagrange interpolation routines
       integer :: j, m, memory
       real(dp) :: value, value2
       real(dp), dimension(3) :: r
-      real(dp), dimension(MORB) :: f
+      real(dp), dimension(norb) :: f
 
 
 
@@ -645,7 +644,7 @@ c
       real(dp) :: orb1, orb2
       real(dp), dimension(3) :: r
       real(dp), dimension(3) :: dr
-      real(dp), dimension(nelec,MORB) :: orb
+      real(dp), dimension(nelec,norb) :: orb
       real(dp), dimension(LAGSTART:LAGEND) :: xi
 
 
@@ -744,7 +743,7 @@ c
       real(dp) :: orb1, orb2
       real(dp), dimension(3) :: r
       real(dp), dimension(3) :: dr
-      real(dp), dimension(3,nelec,MORB) :: orb
+      real(dp), dimension(3,nelec,norb) :: orb
       real(dp), dimension(LAGSTART:LAGEND) :: xi
 
 
@@ -843,7 +842,7 @@ c
       real(dp) :: orb1, orb2
       real(dp), dimension(3) :: r
       real(dp), dimension(3) :: dr
-      real(dp), dimension(MORB) :: orb
+      real(dp), dimension(norb) :: orb
       real(dp), dimension(LAGSTART:LAGEND) :: xi
 
 
@@ -941,7 +940,7 @@ c
       real(dp) :: orb1, orb2
       real(dp), dimension(3) :: r
       real(dp), dimension(3) :: dr
-      real(dp), dimension(3,MORB) :: orb
+      real(dp), dimension(3,norb) :: orb
       real(dp), dimension(LAGSTART:LAGEND) :: xi
 
 
