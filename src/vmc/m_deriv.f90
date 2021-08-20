@@ -297,8 +297,9 @@ contains
 
     subroutine allocate_dorb_m()
         use vmc_mod, only: MDET
+        use dets, only: ndet
         use const, only: nelec
-        if (.not. allocated(iworbd)) allocate (iworbd(nelec, MDET))
+        if (.not. allocated(iworbd)) allocate (iworbd(nelec, ndet))
     end subroutine allocate_dorb_m
 
     subroutine deallocate_dorb_m()

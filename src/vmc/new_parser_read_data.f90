@@ -317,7 +317,7 @@ subroutine read_determinants_file(file_determinants)
     call bcast(nwftype)
 
     ! Note the hack here about capitalized variables. DEBUG
-    MDET = ndet
+    ! MDET = ndet
 
     if( (method(1:3) == 'lin')) then
         if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,3))
