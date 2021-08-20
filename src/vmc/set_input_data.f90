@@ -89,7 +89,7 @@ subroutine multideterminants_define(iflag, icheck)
       integer :: j, k, kref_old, l
       integer :: ndet_dist, nel
       integer, dimension(nelec) :: iswapped
-      integer, dimension(MDET) :: itotphase
+      integer, dimension(ndet) :: itotphase
 
 
 

@@ -1,6 +1,7 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
       use vmc_mod, only: MDET
+      use dets, only: ndet
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
       use optwf_contrl, only: ioptci
       use ci000, only: nciprim
@@ -20,9 +21,9 @@
       integer :: jcsf, k
       real(dp) :: ci_e_csf, ci_o_csf, e_other, energy, psid
       real(dp) :: psidi
-      real(dp), dimension(MDET) :: ciprim
-      real(dp), dimension(MDET) :: cieprim
-      real(dp), dimension(MDET, 2) :: eloc_det
+      real(dp), dimension(ndet) :: ciprim
+      real(dp), dimension(ndet) :: cieprim
+      real(dp), dimension(ndet, 2) :: eloc_det
 
 
 
