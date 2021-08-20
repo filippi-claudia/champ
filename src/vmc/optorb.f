@@ -14,7 +14,6 @@
       use const, only: nelec
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
-      use coefs, only: norb
 
       implicit none
 
@@ -22,8 +21,8 @@
       integer :: iterm, jo, nel
       real(dp) :: denergy, detratio, dorb_energy, dorb_energy_ref, dorb_psi
       real(dp) :: dorb_psi_ref, psid
-      real(dp), dimension(norb, nelec, 2) :: zmat
-      real(dp), dimension(norb, nelec, 2) :: dzmat
+      real(dp), dimension(MORB, nelec, 2) :: zmat
+      real(dp), dimension(MORB, nelec, 2) :: dzmat
       real(dp), dimension(nelec, nelec, 2) :: emz
       real(dp), dimension(nelec, nelec, 2) :: aaz
       real(dp), dimension(*) :: orbprim
@@ -805,9 +804,9 @@ c-----------------------------------------------------------------------
       integer :: io, iocc, iprt, iterm
       integer :: j, jo, k, n0
       integer :: n1, noporb
-      integer, dimension(2, ndet) :: iodet
-      integer, dimension(2, ndet) :: iopos
-      integer, dimension(2, norb) :: iflag
+      integer, dimension(2, MDET) :: iodet
+      integer, dimension(2, MDET) :: iopos
+      integer, dimension(2, MORB) :: iflag
       integer, dimension(2) :: ne
       integer, dimension(2) :: m
 

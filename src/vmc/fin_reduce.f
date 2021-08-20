@@ -15,7 +15,6 @@ c MPI version written by Claudia Filippi
       use control_vmc, only: vmc_nstep
       use method_opt, only: method
       use mpi
-      use custom_broadcast,   only: bcast
 
       use precision_kinds, only: dp
       implicit none
@@ -77,10 +76,20 @@ c MPI version written by Claudia Filippi
         call optx_orb_ci_reduce
       endif
 
-      ! broadcast the ecum1 and wcum data using custom-made broadcaster
-      call bcast(ecum1)
-      call bcast(wcum)
-
+      if(wid) then
+        do 60 id=1,nproc-1
+          call mpi_send(ecum1,nstates,mpi_double_precision,id
+     &    ,1,MPI_COMM_WORLD,ierr)
+c    &    ,1,MPI_COMM_WORLD,irequest,ierr)
+   60     call mpi_send(wcum,nstates*nforce,mpi_double_precision,id
+     &    ,2,MPI_COMM_WORLD,ierr)
+c    &    ,2,MPI_COMM_WORLD,irequest,ierr)
+       else
+        call mpi_recv(ecum1,nstates,mpi_double_precision,0
+     &  ,1,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(wcum,nstates*nforce,mpi_double_precision,0
+     &  ,2,MPI_COMM_WORLD,istatus,ierr)
+      endif
 
       passes=dble(iblk)*dble(vmc_nstep)
       efin=ecum1(1)/wcum(1,1)

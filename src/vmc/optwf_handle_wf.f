@@ -353,7 +353,7 @@ c-----------------------------------------------------------------------
       integer :: i, iadiag, j
       real(dp), allocatable, save :: coef_save(:,:,:)
 
-      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb, nwftype))
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, MORB, nwftype))
       ! dimension coef_save(nbasis,norb,MWF)
       ! save coef_save
 
@@ -364,7 +364,7 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_lcao(iadiag)
-      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb, nwftype))
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, MORB, nwftype))
 
       do 20 i=1,norb
        do 20 j=1,nbasis
@@ -388,8 +388,8 @@ c-----------------------------------------------------------------------
       real(dp), ALLOCATABLE, save :: cdet_save(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_save(:,:)
 
-      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
-      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
+      if(.not. allocated(cdet_save)) allocate(cdet_save(MDET,MSTATES))
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(MDET,MSTATES))
 
       ! dimension cdet_save(ndet,nstates),ccsf_save(ndet,nstates)
       ! save cdet_save,ccsf_save
@@ -405,8 +405,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci(iadiag)
-      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
-      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
+      if(.not. allocated(cdet_save)) allocate(cdet_save(MDET,MSTATES))
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(MDET,MSTATES))
 
       do 30 j=1,nstates
         do 30 i=1,ndet
@@ -603,7 +603,7 @@ c-----------------------------------------------------------------------
       integer :: i, j
       real(dp), allocatable, save :: coef_best(:,:,:)
 
-      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb, nwftype))
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, MORB, nwftype))
       ! dimension coef_best(nbasis,norb,MWF)
       ! save coef_best
 
@@ -616,7 +616,7 @@ c-----------------------------------------------------------------------
       entry restore_lcao_best
 
 c     if(ioptorb.eq.0) return
-      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb, nwftype))
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, MORB, nwftype))
       do 20 i=1,norb
        do 20 j=1,nbasis
    20   coef(j,i,1)=coef_best(j,i,1)
@@ -639,8 +639,8 @@ c-----------------------------------------------------------------------
       real(dp), ALLOCATABLE, save :: cdet_best(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_best(:,:)
 
-      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
-      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
+      if(.not. allocated(cdet_best)) allocate(cdet_best(MDET,MSTATES))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(MDET,MSTATES))
 
       ! dimension cdet_best(ndet,nstates),ccsf_best(ndet,nstates)
       ! save cdet_best,ccsf_best
@@ -656,8 +656,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci_best
-      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
-      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
+      if(.not. allocated(cdet_best)) allocate(cdet_best(MDET,MSTATES))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(MDET,MSTATES))
 
 c     if(ioptci.eq.0) return
 
@@ -761,7 +761,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, iadiag, io, j, jo
-      real(dp), dimension(nbasis, norb) :: acoef
+      real(dp), dimension(nbasis, MORB) :: acoef
       real(dp), dimension(*) :: dparm
 
       if(ioptorb.eq.0) return

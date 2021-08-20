@@ -51,9 +51,9 @@ c-----------------------------------------------------------------------
       integer :: irep, ish, j, jorb
       integer :: jrep, k, nel
       real(dp) :: c800, psid, trace
-      real(dp), dimension(norb, nelec) :: b_a
+      real(dp), dimension(MORB, nelec) :: b_a
       real(dp), dimension(nelec*nelec) :: b_kref
-      real(dp), dimension(nelec, norb) :: tildem_a
+      real(dp), dimension(nelec, MORB) :: tildem_a
       real(dp), dimension(3, ncent_tot) :: da_psi_ref
 
       do 400 ic=1,ncent

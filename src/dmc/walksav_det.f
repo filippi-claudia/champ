@@ -55,11 +55,11 @@ c Written by Claudia Filippi
       dimension istatus(MPI_STATUS_SIZE)
       dimension irequest_array(MPI_STATUS_SIZE)
 
-      if(.not.allocated(aaw)) allocate(aaw(nelec,norb,MWALK,2))
-      if(.not.allocated(wfmatw)) allocate(wfmatw(MEXCIT**2,ndet,MWALK,2))
-      if(.not.allocated(ymatw)) allocate(ymatw(morb,nelec,MWALK,2,MSTATES))
-      if(.not.allocated(orbw)) allocate(orbw(nelec,norb,MWALK))
-      if(.not.allocated(dorbw)) allocate(dorbw(3,nelec,norb,MWALK))
+      if(.not.allocated(aaw)) allocate(aaw(nelec,MORB,MWALK,2))
+      if(.not.allocated(wfmatw)) allocate(wfmatw(MEXCIT**2,MDET,MWALK,2))
+      if(.not.allocated(ymatw)) allocate(ymatw(MORB,nelec,MWALK,2,MSTATES))
+      if(.not.allocated(orbw)) allocate(orbw(nelec,MORB,MWALK))
+      if(.not.allocated(dorbw)) allocate(dorbw(3,nelec,MORB,MWALK))
 
       if(.not.allocated(krefw)) allocate(krefw(MWALK))
       if(.not.allocated(slmuiw)) allocate(slmuiw(MMAT_DIM,MWALK))
@@ -70,8 +70,8 @@ c Written by Claudia Filippi
       if(.not.allocated(fppdw)) allocate(fppdw(MMAT_DIM,MWALK))
       if(.not.allocated(ddxw)) allocate(ddxw(3, nelec,MWALK))
       if(.not.allocated(d2dx2w)) allocate(d2dx2w(nelec,MWALK))
-      if(.not.allocated(detuw)) allocate(detuw(ndet,MWALK))
-      if(.not.allocated(detdw)) allocate(detdw(ndet,MWALK))
+      if(.not.allocated(detuw)) allocate(detuw(MDET,MWALK))
+      if(.not.allocated(detdw)) allocate(detdw(MDET,MWALK))
 
 
 

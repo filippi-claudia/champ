@@ -99,7 +99,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(3) :: vd
       real(dp), dimension(3) :: vref
       real(dp), dimension(3) :: vd_s
-      real(dp), dimension(3, norb) :: dorb_tmp
+      real(dp), dimension(3, MORB) :: dorb_tmp
 
       ! NR : ymat_tmp was not saved ....
       ! it has the save keywoprd in the dev branch ...
@@ -273,7 +273,6 @@ c-----------------------------------------------------------------------
       use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
-      use coefs, only: norb
 
       implicit none
 
@@ -281,7 +280,7 @@ c-----------------------------------------------------------------------
       integer :: nel
 
       real(dp), dimension(MMAT_DIM) :: slmi
-      real(dp), dimension(3, norb) :: dorb
+      real(dp), dimension(3, MORB) :: dorb
       real(dp), dimension(3) :: ddx_ref
 
 

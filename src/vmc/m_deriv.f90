@@ -84,11 +84,10 @@ contains
     subroutine allocate_da_orbval()
         use const, only: nelec
         use atom, only: ncent_tot
-        use coefs, only: norb
         use vmc_mod, only: MORB
-        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, norb, ncent_tot))
-        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, norb, ncent_tot))
-        if (.not. allocated(da_orb)) allocate (da_orb(3, nelec, norb, ncent_tot))
+        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, MORB, ncent_tot))
+        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, MORB, ncent_tot))
+        if (.not. allocated(da_orb)) allocate (da_orb(3, nelec, MORB, ncent_tot))
     end subroutine allocate_da_orbval
 
     subroutine deallocate_da_orbval()
@@ -297,9 +296,8 @@ contains
 
     subroutine allocate_dorb_m()
         use vmc_mod, only: MDET
-        use dets, only: ndet
         use const, only: nelec
-        if (.not. allocated(iworbd)) allocate (iworbd(nelec, ndet))
+        if (.not. allocated(iworbd)) allocate (iworbd(nelec, MDET))
     end subroutine allocate_dorb_m
 
     subroutine deallocate_dorb_m()

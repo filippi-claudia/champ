@@ -365,8 +365,7 @@ module optorb
 contains
     subroutine allocate_optorb()
         use vmc_mod, only: MORB
-        use coefs, only: norb
-        if (.not. allocated(dmat_diag)) allocate (dmat_diag(norb))
+        if (.not. allocated(dmat_diag)) allocate (dmat_diag(MORB))
         ! if (.not. allocated(irrep)) allocate (irrep(MORB))
         ! if (.not. allocated(orb_energy)) allocate (orb_energy(MORB))
     end subroutine allocate_optorb
@@ -433,8 +432,7 @@ module optorb_mix
 contains
     subroutine allocate_optorb_mix()
         use vmc_mod, only: MORB
-        use coefs, only: norb
-        if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norb, norb))
+        if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(MORB, MORB))
     end subroutine allocate_optorb_mix
 
     subroutine deallocate_optorb_mix()

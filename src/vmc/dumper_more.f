@@ -80,7 +80,7 @@ c job where it left off
       real(dp) :: ajacob, cjas1x, cjas2x, deltarx
       real(dp) :: deltatx, deltax, dist, distance_node
       real(dp) :: pecx, psidg, rnorm_nodes
-      real(dp), dimension(nbasis,norb) :: coefx
+      real(dp), dimension(nbasis,MORB) :: coefx
       real(dp), dimension(nbasis) :: zexx
       real(dp), dimension(3,ncent_tot) :: centx
       real(dp), dimension(nctype_tot) :: znucx

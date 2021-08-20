@@ -22,7 +22,7 @@
       integer :: iel_move, iq, irep, ish
       integer :: j, jel, jrep, nel
       real(dp) :: detratio, dum, psid
-      real(dp), dimension(nelec, norb) :: gmat
+      real(dp), dimension(nelec, MORB) :: gmat
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
 
