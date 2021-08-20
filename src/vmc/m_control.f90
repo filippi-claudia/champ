@@ -292,7 +292,8 @@ contains
                     extensions(5) = ".log" ; extensions(6) = ".err" ; extensions(7) = ".e"   ; extensions(8) = "error"
 
                     ! default error file if not mentioned.
-                    open (newunit=errunit,file="error", iostat=iostat, action='write' )
+                    file_error = "error"
+                    open (newunit=errunit,file=file_error, iostat=iostat, action='write' )
                     do j = 1, 8
                         if (index(arg(i+1), extensions(j)) /= 0) then
                             write(output_unit, '(2a)') 'unrecognised command-line option: ', arg(i)
