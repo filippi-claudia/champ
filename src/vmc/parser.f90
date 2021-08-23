@@ -1061,9 +1061,10 @@ subroutine parser
 
 
 ! Contents from flagcheck. Moved here because ndet and norb should be defined by now
-
-
-  if(ioptorb.ne.0) then
+! CF: norb is set to max # occupied orb in WF in optorb_define/verify_orbitals
+  if(ioptorb.eq.0) then
+    call verify_orbitals()
+   else
     if(ioptorb_mixvirt.eq.0) then
       norbopt=0
       norbvirt=0
@@ -1457,16 +1458,13 @@ subroutine parser
   call pot_nn(cent,znuc,iwctype,ncent,pecent)
 
 ! Make sure that all the blocks are read. Use inputflags here to check
-  call verify_orbitals()
 
   if(iznuc.eq.0) call fatal_error('INPUT: block znuc missing')
   if(igeometry.eq.0) call fatal_error('INPUT: block geometry missing')
   if(ijastrow_parameter.eq.0) call fatal_error('INPUT: block jastrow_parameter missing')
   if(iefield.gt.0.and.icharge_efield.eq.0) call fatal_error('INPUT: block efield missing')
 
-
   call fdf_shutdown()
-
 
   ! The following portion can be shifted to another subroutine.
   ! It does the processing of the input read so far and initializes some
