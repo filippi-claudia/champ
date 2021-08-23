@@ -62,12 +62,12 @@ contains
         use atom, only: ncent_tot
         use vmc_mod, only: MORB
         use optjas, only: MPARMJ
-        if (.not. allocated(b)) allocate (b(norb, nelec))
-        if (.not. allocated(tildem)) allocate (tildem(nelec, norb, 2))
+        if (.not. allocated(b)) allocate (b(MORB, nelec))
+        if (.not. allocated(tildem)) allocate (tildem(nelec, MORB, 2))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
-        if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb, ncent_tot))
-        if (.not. allocated(db)) allocate (db(3, nelec, norb, ncent_tot))
-        if (.not. allocated(b_dj)) allocate (b_dj(norb, nelec, MPARMJ))
+        if (.not. allocated(b_da)) allocate (b_da(3, nelec, MORB, ncent_tot))
+        if (.not. allocated(db)) allocate (db(3, nelec, MORB, ncent_tot))
+        if (.not. allocated(b_dj)) allocate (b_dj(MORB, nelec, MPARMJ))
     end subroutine allocate_Bloc
 
     subroutine deallocate_Bloc()
@@ -494,7 +494,7 @@ contains
         use coefs, only: norb
         use vmc_mod, only: MORB, MDET
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aa)) allocate (aa(nelec, norb, 2))
+        if (.not. allocated(aa)) allocate (aa(nelec, MORB, 2))
         if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, ndet, 2))
     end subroutine allocate_multimat
 
@@ -657,9 +657,9 @@ contains
         use const, only: nelec
         use coefs, only: norb
         use precision_kinds, only: dp
-        if (.not. allocated(ddorb)) allocate (ddorb(nelec, norb))
-        if (.not. allocated(dorb)) allocate (dorb(3, nelec, norb))
-        if (.not. allocated(orb)) allocate (orb(nelec, norb))
+        if (.not. allocated(ddorb)) allocate (ddorb(nelec, MORB))
+        if (.not. allocated(dorb)) allocate (dorb(3, nelec, MORB))
+        if (.not. allocated(orb)) allocate (orb(nelec, MORB))
     end subroutine allocate_orbval
 
     subroutine deallocate_orbval()
