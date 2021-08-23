@@ -708,9 +708,9 @@ subroutine read_orbitals_file(file_orbitals)
     if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb, 3))
+        if (.not. allocated(coef)) allocate (coef(nbasis, MORB, 3))
     else
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
+        if (.not. allocated(coef)) allocate (coef(nbasis, MORB, nwftype))
     endif
 
 
@@ -1451,7 +1451,7 @@ subroutine read_symmetry_file(file_symmetry)
     write(ounit, *) temp2
 
     ! safe allocate
-    if (.not. allocated(irrep)) allocate (irrep(norb))
+    if (.not. allocated(irrep)) allocate (irrep(MORB))
 
     ! read data
     if (wid) then
@@ -1600,7 +1600,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
 
 
     ! safe allocate
-    if (.not. allocated(orb_energy)) allocate (orb_energy(norb))
+    if (.not. allocated(orb_energy)) allocate (orb_energy(MORB))
 
     ! read data
     if (wid) then
@@ -1963,7 +1963,7 @@ subroutine read_dmatrix_file(file_dmatrix)
     call bcast(nweight)
 
 
-    allocate (dmat(norb))
+    allocate (dmat(MORB))
     allocate (iwdmat(nstates))
 
     if (ndetorb .gt. norb) call fatal_error( 'READ_DMATRIX: wrong number of orbitals')
@@ -1979,7 +1979,7 @@ subroutine read_dmatrix_file(file_dmatrix)
         if (iwdmat(iw) .ne. iweight(iw)) call fatal_error('READ_DMATRIX: iwdmat')
     enddo
 
-    allocate (dmat_diag(norb))
+    allocate (dmat_diag(MORB))
     dmat_diag = 0.0d0
 
     do iw = 1, nweight

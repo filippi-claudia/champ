@@ -342,6 +342,7 @@ end subroutine inputdet
 
 subroutine inputlcao()
     ! Set the lcao to be equal
+    use vmc_mod, only: MORB
     use coefs, only: coef, nbasis, norb
     use wfsec, only: nwftype
     use method_opt, only: method
@@ -351,9 +352,9 @@ subroutine inputlcao()
 
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb, 3))
+        if (.not. allocated(coef)) allocate (coef(nbasis, MORB, 3))
     else
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
+        if (.not. allocated(coef)) allocate (coef(nbasis, MORB, nwftype))
     endif
 
     do iwft = 2, nwftype
