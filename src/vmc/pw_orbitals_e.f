@@ -8,7 +8,6 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
-      use vmc_mod, only: MELEC
       use const, only: nelec, ipr
       use periodic, only: glatt
       use periodic, only: glatt_sim, gnorm, gvec, igmult, igvec

@@ -28,7 +28,7 @@ module vmc_mod
     integer, parameter :: nrad = 3001
     real(dp), parameter :: delri = (nrad - 1)/radmax
 
-    integer :: MELEC, MCENT, MCTYPE
+    integer :: MCENT, MCTYPE
     integer :: MORB
     integer :: MDET
     integer :: MCTYP3X
@@ -44,7 +44,7 @@ module vmc_mod
     integer, parameter :: MEXCIT = 10
 
     private
-    public :: MELEC, MORB, MDET, MCENT, MCTYPE, MCTYP3X
+    public :: MORB, MDET, MCENT, MCTYPE, MCTYP3X
     public :: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
     public :: radmax, delri
 

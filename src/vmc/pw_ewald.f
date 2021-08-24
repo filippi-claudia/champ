@@ -1801,7 +1801,6 @@ c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_
 c-----------------------------------------------------------------------
 
       function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 
@@ -1839,7 +1838,6 @@ c Written by Cyrus Umrigar
 c-----------------------------------------------------------------------
 
       function vlrange_ee_old2(nelec,ngnorm,igmult,cos_g,sin_g,y)
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 
@@ -2039,7 +2037,7 @@ c-----------------------------------------------------------------------
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
-      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MCENT
       use vmc_mod, only: MMAT_DIM2
       use atom, only: znuc, cent, iwctype, ncent
 
@@ -2124,7 +2122,7 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
-      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MCENT
       use vmc_mod, only: MMAT_DIM2
       use const, only: nelec, ipr
       use ewald, only: b_coul_sim, y_coul_sim
@@ -2178,7 +2176,6 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
       use ewald_mod, only: NG1DX
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 
@@ -2236,7 +2233,6 @@ c-----------------------------------------------------------------------
       subroutine cossin_psi(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift,iflag)
       use ewald_mod, only: NG1DX
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 c iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
@@ -2330,7 +2326,6 @@ c     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng
       subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
       use ewald_mod, only: NG1DX
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
@@ -2440,7 +2435,6 @@ c-----------------------------------------------------------------------
 c     subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 c Needed for orbitals and their Laplacian.
@@ -2627,7 +2621,6 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons

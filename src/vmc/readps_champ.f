@@ -242,7 +242,7 @@ c-----------------------------------------------------------------------
       subroutine getvps_champ(r_en,iel)
 c compute pseudopotential for electron iel
 
-      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MCENT
       use atom, only: znuc, iwctype, ncent
       use pseudo_champ, only: rmax_coul, rmax_nloc
       use atom, only: ncent_tot

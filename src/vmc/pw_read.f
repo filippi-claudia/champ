@@ -175,7 +175,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
       use ewald_mod, only: NGVEC_BIGX
-      use vmc_mod, only: MELEC, MORB
+      use vmc_mod, only: MORB
       use const, only: nelec
       use periodic, only: glatt
       use periodic, only: igmult, igvec
@@ -433,7 +433,6 @@ c This is the straightforward evaluation for checking purposes only.
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
       use ewald_mod, only: NGVEC_BIGX
-      use vmc_mod, only: MELEC
       use const, only: nelec, ipr
       use periodic, only: glatt
       use periodic, only: gvec
