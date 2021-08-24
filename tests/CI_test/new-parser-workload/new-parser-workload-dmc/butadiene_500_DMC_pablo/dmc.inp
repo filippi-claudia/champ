@@ -3,7 +3,6 @@
     pseudopot    BFD
     basis        BFD-T-normf0
     pool         './pool/'
-    weights      [ 1.0d0,  1.0d0 , 1.0d0]
     mode         'dmc_one_mpi1'
 %endmodule
 

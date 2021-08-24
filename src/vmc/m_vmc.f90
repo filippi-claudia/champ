@@ -30,7 +30,6 @@ module vmc_mod
 
     integer :: MCENT, MCTYPE
     integer :: MORB
-    integer :: MDET
     integer :: MCTYP3X
     integer, parameter :: NSPLIN = 1001, MORDJ = 7
 
@@ -44,7 +43,7 @@ module vmc_mod
     integer, parameter :: MEXCIT = 10
 
     private
-    public :: MORB, MDET, MCENT, MCTYPE, MCTYP3X
+    public :: MORB, MCENT, MCTYPE, MCTYP3X
     public :: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
     public :: radmax, delri
 

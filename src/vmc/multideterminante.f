@@ -124,7 +124,7 @@ c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MORB
       use vmc_mod, only: MMAT_DIM
       use vmc_mod, only: MEXCIT
       use dets, only: ndet
@@ -141,7 +141,7 @@ c-----------------------------------------------------------------------
       integer :: kk, nel
       real(dp) :: detratio, dum
       real(dp), dimension(nelec, MORB) :: aa
-      real(dp), dimension(MEXCIT**2, MDET) :: wfmat
+      real(dp), dimension(MEXCIT**2, ndet) :: wfmat
       real(dp), dimension(MORB, nelec) :: ymat
       real(dp), dimension(MORB, 3) :: b
       real(dp), dimension(3, MORB) :: dorb

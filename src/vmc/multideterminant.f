@@ -1,6 +1,5 @@
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
-      use vmc_mod, only: MDET
       use const, only: hb, nelec
       use csfs, only: nstates
       use dets, only: ndet
@@ -25,7 +24,7 @@
       integer :: irep, ish, istate, jorb
       integer :: jrep, k, ndim, nel
       real(dp) :: det, dum1, dum2, dum3
-      real(dp), dimension(MDET, 2) :: eloc_det
+      real(dp), dimension(ndet, 2) :: eloc_det
       real(dp), dimension(3, nelec) :: vj
       real(dp), dimension(*) :: vpsp_det
       real(dp), dimension(nelec**2, 2) :: btemp
@@ -237,7 +236,7 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
-      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MORB
       use vmc_mod, only: MEXCIT
       use const, only: nelec
       use dets, only: cdet, ndet
@@ -255,9 +254,9 @@ c-----------------------------------------------------------------------
       integer :: j, jorb, jrep, k
       integer :: kk, ndim
       real(dp) :: detall, detrefi
-      real(dp), dimension(MDET) :: detu
-      real(dp), dimension(MDET) :: detd
-      real(dp), dimension(MEXCIT**2, MDET) :: wfmat
+      real(dp), dimension(ndet) :: detu
+      real(dp), dimension(ndet) :: detd
+      real(dp), dimension(MEXCIT**2, ndet) :: wfmat
       real(dp), dimension(MORB, nelec) :: ymat
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0

@@ -1,6 +1,6 @@
       subroutine startr_gpop
 
-      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MORB
       use vmc_mod, only: nrad
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
@@ -82,7 +82,7 @@
       real(dp), dimension(nbasis) :: zexx
       real(dp), dimension(3, ncent_tot) :: centx
       real(dp), dimension(ncent_tot) :: znucx
-      real(dp), dimension(MDET) :: cdetx
+      real(dp), dimension(ndet) :: cdetx
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: small = 1.e-6

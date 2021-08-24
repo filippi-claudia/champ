@@ -2,13 +2,11 @@
 c Written by Claudia Filippi
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MORB, MDET
       use vmc_mod, only: MMAT_DIM
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: MWALK
-
       use const, only: nelec
-      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MORB
       use vmc_mod, only: MMAT_DIM
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: MWALK
@@ -56,7 +54,7 @@ c Written by Claudia Filippi
       dimension irequest_array(MPI_STATUS_SIZE)
 
       if(.not.allocated(aaw)) allocate(aaw(nelec,MORB,MWALK,2))
-      if(.not.allocated(wfmatw)) allocate(wfmatw(MEXCIT**2,MDET,MWALK,2))
+      if(.not.allocated(wfmatw)) allocate(wfmatw(MEXCIT**2,ndet,MWALK,2))
       if(.not.allocated(ymatw)) allocate(ymatw(MORB,nelec,MWALK,2,MSTATES))
       if(.not.allocated(orbw)) allocate(orbw(nelec,MORB,MWALK))
       if(.not.allocated(dorbw)) allocate(dorbw(3,nelec,MORB,MWALK))
@@ -70,8 +68,8 @@ c Written by Claudia Filippi
       if(.not.allocated(fppdw)) allocate(fppdw(MMAT_DIM,MWALK))
       if(.not.allocated(ddxw)) allocate(ddxw(3, nelec,MWALK))
       if(.not.allocated(d2dx2w)) allocate(d2dx2w(nelec,MWALK))
-      if(.not.allocated(detuw)) allocate(detuw(MDET,MWALK))
-      if(.not.allocated(detdw)) allocate(detdw(MDET,MWALK))
+      if(.not.allocated(detuw)) allocate(detuw(ndet,MWALK))
+      if(.not.allocated(detdw)) allocate(detdw(ndet,MWALK))
 
 
 

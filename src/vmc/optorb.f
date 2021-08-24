@@ -780,7 +780,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_define
 
       use optorb_mod, only: MXORBOP, MXREDUCED
-      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MORB
       use const, only: nelec
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -804,8 +804,8 @@ c-----------------------------------------------------------------------
       integer :: io, iocc, iprt, iterm
       integer :: j, jo, k, n0
       integer :: n1, noporb
-      integer, dimension(2, MDET) :: iodet
-      integer, dimension(2, MDET) :: iopos
+      integer, dimension(2, ndet) :: iodet
+      integer, dimension(2, ndet) :: iopos
       integer, dimension(2, MORB) :: iflag
       integer, dimension(2) :: ne
       integer, dimension(2) :: m

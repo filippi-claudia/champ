@@ -376,7 +376,6 @@ c-----------------------------------------------------------------------
       subroutine save_ci
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MDET
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
       use dets, only: cdet, ndet
@@ -388,8 +387,8 @@ c-----------------------------------------------------------------------
       real(dp), ALLOCATABLE, save :: cdet_save(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_save(:,:)
 
-      if(.not. allocated(cdet_save)) allocate(cdet_save(MDET,MSTATES))
-      if(.not. allocated(ccsf_save)) allocate(ccsf_save(MDET,MSTATES))
+      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
 
       ! dimension cdet_save(ndet,nstates),ccsf_save(ndet,nstates)
       ! save cdet_save,ccsf_save
@@ -405,8 +404,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci(iadiag)
-      if(.not. allocated(cdet_save)) allocate(cdet_save(MDET,MSTATES))
-      if(.not. allocated(ccsf_save)) allocate(ccsf_save(MDET,MSTATES))
+      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
 
       do 30 j=1,nstates
         do 30 i=1,ndet
@@ -627,7 +626,6 @@ c-----------------------------------------------------------------------
       subroutine save_ci_best
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MDET
       use csfs, only: ccsf, ncsf, nstates
       use csfs, only: cxdet, iadet, ibdet, icxdet
       use mstates_mod, only: MSTATES
@@ -639,8 +637,8 @@ c-----------------------------------------------------------------------
       real(dp), ALLOCATABLE, save :: cdet_best(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_best(:,:)
 
-      if(.not. allocated(cdet_best)) allocate(cdet_best(MDET,MSTATES))
-      if(.not. allocated(ccsf_best)) allocate(ccsf_best(MDET,MSTATES))
+      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
 
       ! dimension cdet_best(ndet,nstates),ccsf_best(ndet,nstates)
       ! save cdet_best,ccsf_best
@@ -656,8 +654,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci_best
-      if(.not. allocated(cdet_best)) allocate(cdet_best(MDET,MSTATES))
-      if(.not. allocated(ccsf_best)) allocate(ccsf_best(MDET,MSTATES))
+      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
 
 c     if(ioptci.eq.0) return
 

@@ -51,7 +51,7 @@ end subroutine inputcsf
 subroutine multideterminants_define(iflag, icheck)
 
     use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-    use vmc_mod, only: MORB, MDET, MCENT, MCTYPE, MCTYP3X
+    use vmc_mod, only: MORB, MCENT, MCTYPE, MCTYP3X
     use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
     use vmc_mod, only: radmax, delri
     use vmc_mod, only: NEQSX, MTERMS
@@ -89,7 +89,7 @@ subroutine multideterminants_define(iflag, icheck)
       integer :: j, k, kref_old, l
       integer :: ndet_dist, nel
       integer, dimension(nelec) :: iswapped
-      integer, dimension(MDET) :: itotphase
+      integer, dimension(ndet) :: itotphase
 
 
 

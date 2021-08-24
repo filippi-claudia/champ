@@ -192,7 +192,6 @@ end module deloc_dj_m
 module denergy_det_m
     !> Arguments: denergy_det
     use precision_kinds, only: dp
-    use vmc_mod, only: MDET
 
     implicit none
 
@@ -205,7 +204,6 @@ module denergy_det_m
 contains
     subroutine allocate_denergy_det_m()
         use dets, only: ndet
-        use vmc_mod, only: MDET
         if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
     end subroutine allocate_denergy_det_m
 
@@ -280,7 +278,6 @@ end module derivjas
 
 module dorb_m
     !> Arguments: iworbd
-    use vmc_mod, only: MDET
     use const, only: nelec
 
     implicit none
@@ -295,9 +292,9 @@ module dorb_m
 contains
 
     subroutine allocate_dorb_m()
-        use vmc_mod, only: MDET
+        use dets, only: ndet
         use const, only: nelec
-        if (.not. allocated(iworbd)) allocate (iworbd(nelec, MDET))
+        if (.not. allocated(iworbd)) allocate (iworbd(nelec, ndet))
     end subroutine allocate_dorb_m
 
     subroutine deallocate_dorb_m()

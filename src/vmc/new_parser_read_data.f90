@@ -244,7 +244,6 @@ subroutine read_determinants_file(file_determinants)
     use, intrinsic :: iso_fortran_env, only: iostat_eor
     use contrl_file,    only: ounit, errunit
     use dets,           only: cdet, ndet
-    use vmc_mod,        only: MDET
     use dorb_m,         only: iworbd
     use coefs,          only: norb
     use inputflags,     only: ideterminants
@@ -316,8 +315,6 @@ subroutine read_determinants_file(file_determinants)
     call bcast(ndet)
     call bcast(nwftype)
 
-    ! Note the hack here about capitalized variables. DEBUG
-    MDET = ndet
 
     if( (method(1:3) == 'lin')) then
         if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,3))
@@ -758,7 +755,6 @@ subroutine read_csf_file(file_determinants)
 
     use, intrinsic :: iso_fortran_env!, only: is_iostat_end
     use contrl_file,    only: ounit, errunit
-    use vmc_mod, only: MDET
     use csfs, only: ccsf, ncsf, nstates
     use mstates_mod, only: MSTATES
     use inputflags, only: icsfs
