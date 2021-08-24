@@ -633,7 +633,7 @@ subroutine read_orbitals_file(file_orbitals)
     use inputflags, only: ilcao
     use orbval, only: nadorb
     use pcm_fdc, only: fs
-    use vmc_mod, only: MORB, MBASIS
+    use vmc_mod, only: MORB
     ! was not in master but is needed
     use wfsec, only: nwftype
     use general, only: pooldir
@@ -693,8 +693,6 @@ subroutine read_orbitals_file(file_orbitals)
                 write(ounit,int_format) " Number of basis functions ", nbasis
                 write(ounit,int_format) " Number of lcao orbitals ", norb
                 write(ounit,int_format) " Type of wave functions ", iwft
-                ! Note the hack with capitalized variables DEBUG
-                MBASIS = nbasis
                 MORB = norb
             endif
         else
@@ -702,7 +700,6 @@ subroutine read_orbitals_file(file_orbitals)
             call fatal_error ("Error in reading number of lcao orbitals / basis / number of wavefunction types")
         endif
     endif
-    call bcast(MBASIS)
     call bcast(MORB)
 
     if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
@@ -1626,7 +1623,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     use contrl_file,    only: ounit, errunit
     use numbas_mod, only: MRWF
-    use vmc_mod, only: MCTYPE, MBASIS
+    use vmc_mod, only: MCTYPE
     use numbas, only: iwrwf, numr
     use numbas1, only: iwlbas, nbastyp
     use basis, only: n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz

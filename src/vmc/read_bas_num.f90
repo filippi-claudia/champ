@@ -4,7 +4,7 @@
       use mpiconf,            only: wid
 
       use numbas_mod, only: MRWF, MRWF_PTS
-      use vmc_mod, only: MBASIS, MCTYPE
+      use vmc_mod, only: MCTYPE
       use vmc_mod, only: NCOEF
       use atom, only: znuc, nctype, nctype_tot
 ! c Written by Claudia Filippi
@@ -12,7 +12,6 @@
 ! c Reads in localized orbitals on a radial grid
 
       use numbas_mod, only: MRWF, MRWF_PTS
-      use vmc_mod, only: MBASIS, MCTYPE
       use vmc_mod, only: NCOEF
       use atom, only: znuc, nctype
       use ghostatom, only: newghostype
