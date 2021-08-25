@@ -1776,7 +1776,7 @@ end subroutine flaginit_new
 
 subroutine compute_mat_size_new()
   !> compute various size that are derived from the input
-  ! use vmc_mod, only: MMAT_DIM, MMAT_DIM2
+  ! use vmc_mod, only: nmat_dim, nmat_dim2
   ! use const, only: nelec
   ! use atom, only: nctype_tot, ncent_tot
 

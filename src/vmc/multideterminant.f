@@ -35,7 +35,7 @@
 
 
 c note that the dimension of the slater matrices is assumed
-c to be given by MMAT_DIM = (MELEC/2)**2, that is there are
+c to be given by nmat_dim = (MELEC/2)**2, that is there are
 c as many ups as downs. If this is not true then be careful if
 c nelec is close to MELEC. The Slater matrices must be
 c dimensioned at least max(nup**2,ndn**2)

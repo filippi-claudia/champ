@@ -125,7 +125,7 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use vmc_mod, only: MORB
-      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: nmat_dim
       use vmc_mod, only: MEXCIT
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -147,7 +147,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(3, MORB) :: dorb
       real(dp), dimension(nelec, MORB, 3) :: gmat
       real(dp), dimension(3) :: velocity
-      real(dp), dimension(MMAT_DIM) :: slmi
+      real(dp), dimension(nmat_dim) :: slmi
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
 

@@ -423,7 +423,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
-      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: nmat_dim
 
       implicit none
 
@@ -432,8 +432,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(3) :: x
       real(dp), dimension(*) :: detu
       real(dp), dimension(*) :: detd
-      real(dp), dimension(MMAT_DIM) :: slmui
-      real(dp), dimension(MMAT_DIM) :: slmdi
+      real(dp), dimension(nmat_dim) :: slmui
+      real(dp), dimension(nmat_dim) :: slmdi
       real(dp), dimension(*) :: orb
       real(dp), dimension(3) :: dorb
 

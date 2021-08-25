@@ -5,7 +5,7 @@ c **Warning** This routine needs to be upgraded to calculate distances
 c correctly for periodic systems if we add in capability to use
 c numerical Laplacian for periodic systems.
 
-      use vmc_mod, only: MMAT_DIM2
+      use vmc_mod, only: nmat_dim2
       use atom, only: cent, iwctype, ncent, ncent_tot
       use jaspar, only: nspin2, sspin, sspinn, is
       use const, only: nelec
@@ -24,7 +24,7 @@ c numerical Laplacian for periodic systems.
         function psi(rij,ri,rj,it)
             use precision_kinds, only: dp
             implicit none
-            integer, intent(in) ::it 
+            integer, intent(in) ::it
             real(dp), intent(in) :: rij, ri, rj
             real(dp) :: psi
         end function psi
@@ -32,18 +32,18 @@ c numerical Laplacian for periodic systems.
         function psia(ri, it)
             use precision_kinds, only: dp
             implicit none
-            integer, intent(in) ::it 
+            integer, intent(in) ::it
             real(dp), intent(in) :: ri
-            real(dp) :: psia 
-        end function psia 
+            real(dp) :: psia
+        end function psia
 
         function psib(rij, isb, ipar)
             use precision_kinds, only: dp
             implicit none
-            integer, intent(in) :: isb, ipar 
-            real(dp), intent(in) :: rij 
-            real(dp) :: psib 
-        end function psib 
+            integer, intent(in) :: isb, ipar
+            real(dp), intent(in) :: rij
+            real(dp) :: psib
+        end function psib
       end interface
 
       integer :: i, ic, ij, im1, ipar
@@ -62,10 +62,10 @@ c numerical Laplacian for periodic systems.
       real(dp), dimension(3, nelec, ncent_tot) :: rm
       real(dp), dimension(3, nelec, ncent_tot) :: rp2
       real(dp), dimension(3, nelec, ncent_tot) :: rm2
-      real(dp), dimension(3, MMAT_DIM2) :: rrp
-      real(dp), dimension(3, MMAT_DIM2) :: rrm
-      real(dp), dimension(3, MMAT_DIM2) :: rrp2
-      real(dp), dimension(3, MMAT_DIM2) :: rrm2
+      real(dp), dimension(3, nmat_dim2) :: rrp
+      real(dp), dimension(3, nmat_dim2) :: rrm
+      real(dp), dimension(3, nmat_dim2) :: rrp2
+      real(dp), dimension(3, nmat_dim2) :: rrm2
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0

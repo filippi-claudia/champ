@@ -2,12 +2,12 @@
 c Written by Claudia Filippi
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: nmat_dim
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: MWALK
       use const, only: nelec
       use vmc_mod, only: MORB
-      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: nmat_dim
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: MWALK
       use const, only: nelec
@@ -60,12 +60,12 @@ c Written by Claudia Filippi
       if(.not.allocated(dorbw)) allocate(dorbw(3,nelec,MORB,MWALK))
 
       if(.not.allocated(krefw)) allocate(krefw(MWALK))
-      if(.not.allocated(slmuiw)) allocate(slmuiw(MMAT_DIM,MWALK))
-      if(.not.allocated(slmdiw)) allocate(slmdiw(MMAT_DIM,MWALK))
-      if(.not.allocated(fpuw)) allocate(fpuw(3, MMAT_DIM,MWALK))
-      if(.not.allocated(fpdw)) allocate(fpdw(3, MMAT_DIM,MWALK))
-      if(.not.allocated(fppuw)) allocate(fppuw(MMAT_DIM,MWALK))
-      if(.not.allocated(fppdw)) allocate(fppdw(MMAT_DIM,MWALK))
+      if(.not.allocated(slmuiw)) allocate(slmuiw(nmat_dim,MWALK))
+      if(.not.allocated(slmdiw)) allocate(slmdiw(nmat_dim,MWALK))
+      if(.not.allocated(fpuw)) allocate(fpuw(3, nmat_dim,MWALK))
+      if(.not.allocated(fpdw)) allocate(fpdw(3, nmat_dim,MWALK))
+      if(.not.allocated(fppuw)) allocate(fppuw(nmat_dim,MWALK))
+      if(.not.allocated(fppdw)) allocate(fppdw(nmat_dim,MWALK))
       if(.not.allocated(ddxw)) allocate(ddxw(3, nelec,MWALK))
       if(.not.allocated(d2dx2w)) allocate(d2dx2w(nelec,MWALK))
       if(.not.allocated(detuw)) allocate(detuw(ndet,MWALK))

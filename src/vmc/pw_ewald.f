@@ -2036,7 +2036,7 @@ c-----------------------------------------------------------------------
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
-      use vmc_mod, only: MMAT_DIM2
+      use vmc_mod, only: nmat_dim2
       use atom, only: znuc, cent, iwctype, ncent
 
       use const, only: nelec, ipr
@@ -2120,7 +2120,7 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
-      use vmc_mod, only: MMAT_DIM2
+      use vmc_mod, only: nmat_dim2
       use const, only: nelec, ipr
       use ewald, only: b_coul_sim, y_coul_sim
 

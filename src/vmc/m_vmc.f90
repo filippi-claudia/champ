@@ -22,7 +22,6 @@ module vmc_mod
     !  Jastrow3 for reasons I do not understand."
     !     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
 
-    integer :: MMAT_DIM20 ! never used ??!!
 
     real(dp), parameter :: radmax = 10.d0
     integer, parameter :: nrad = 3001
@@ -32,7 +31,7 @@ module vmc_mod
     integer :: nctyp3x
     integer, parameter :: NSPLIN = 1001, MORDJ = 7
 
-    integer :: MMAT_DIM, MMAT_DIM2
+    integer :: nmat_dim, nmat_dim2
     integer, parameter :: MORDJ1 = MORDJ + 1
 
     integer, parameter :: NEQSX = 6*MORDJ, MTERMS = 55
@@ -43,7 +42,7 @@ module vmc_mod
 
     private
     public :: MORB, nctyp3x
-    public :: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+    public :: NSPLIN, nrad, MORDJ, MORDJ1, nmat_dim, nmat_dim2
     public :: radmax, delri
 
     public :: NEQSX, MTERMS
@@ -56,8 +55,8 @@ contains
     subroutine set_vmc_size
         use const, only: nelec
         use atom, only: nctype_tot, ncent_tot
-        MMAT_DIM = nelec*nelec/4
-        MMAT_DIM2 = nelec*(nelec - 1)/2
+        nmat_dim = nelec*nelec/4
+        nmat_dim2 = nelec*(nelec - 1)/2
         nctyp3x = max(3, nctype_tot)
         ncent3 = 3*ncent_tot
 

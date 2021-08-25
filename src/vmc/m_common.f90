@@ -199,15 +199,15 @@ end module cuspmat4
 
 module distance_mod
     use precision_kinds, only: dp
-    use vmc_mod, only: MMAT_DIM2
+    use vmc_mod, only: nmat_dim2
 
     implicit none
 
     real(dp), dimension(:, :, :), allocatable :: rshift !(3, MELEC, MCENT)
     real(dp), dimension(:, :), allocatable :: r_en !(MELEC, MCENT)
     real(dp), dimension(:, :, :), allocatable :: rvec_en !(3, MELEC, MCENT)
-    real(dp), dimension(:), allocatable :: r_ee !(MMAT_DIM2)
-    real(dp), dimension(:, :), allocatable :: rvec_ee !(3, MMAT_DIM2)
+    real(dp), dimension(:), allocatable :: r_ee !(nmat_dim2)
+    real(dp), dimension(:, :), allocatable :: rvec_ee !(3, nmat_dim2)
 
     private
     public :: rshift
@@ -221,11 +221,11 @@ contains
     subroutine allocate_distance_mod()
         use const, only: nelec
         use atom, only: ncent_tot
-        use vmc_mod, only: MMAT_DIM2
+        use vmc_mod, only: nmat_dim2
         if (.not. allocated(r_en)) allocate (r_en(nelec, ncent_tot))
         if (.not. allocated(rvec_en)) allocate (rvec_en(3, nelec, ncent_tot))
-        if (.not. allocated(r_ee)) allocate (r_ee(MMAT_DIM2))
-        if (.not. allocated(rvec_ee)) allocate (rvec_ee(3, MMAT_DIM2))
+        if (.not. allocated(r_ee)) allocate (r_ee(nmat_dim2))
+        if (.not. allocated(rvec_ee)) allocate (rvec_ee(3, nmat_dim2))
         if (.not. allocated(rshift)) allocate (rshift(3, nelec, ncent_tot))
     end subroutine allocate_distance_mod
 
@@ -838,22 +838,22 @@ module slater
     !> Arguments: d2dx2, ddx, fp, fpp, slmi
 
     use precision_kinds, only: dp
-    use vmc_mod, only: MMAT_DIM
+    use vmc_mod, only: nmat_dim
 
     implicit none
 
     real(dp), dimension(:), allocatable :: d2dx2 !(MELEC)
     real(dp), dimension(:, :), allocatable :: ddx !(3,MELEC)
-    real(dp), dimension(:, :, :), allocatable :: fp !(3,MMAT_DIM,2)
-    real(dp), dimension(:, :), allocatable :: fpp !(MMAT_DIM,2)
-    real(dp), dimension(:, :), allocatable :: slmi !(MMAT_DIM,2)
+    real(dp), dimension(:, :, :), allocatable :: fp !(3,nmat_dim,2)
+    real(dp), dimension(:, :), allocatable :: fpp !(nmat_dim,2)
+    real(dp), dimension(:, :), allocatable :: slmi !(nmat_dim,2)
     !> DMC extra variables:
-    real(dp), dimension(:,:), allocatable :: fpd !(3,MMAT_DIM)
-    real(dp), dimension(:), allocatable :: fppd !(MMAT_DIM)
-    real(dp), dimension(:), allocatable :: fppu !(MMAT_DIM)
-    real(dp), dimension(:,:), allocatable :: fpu !(3,MMAT_DIM)
-    real(dp), dimension(:), allocatable :: slmui !(MMAT_DIM)
-    real(dp), dimension(:), allocatable :: slmdi !(MMAT_DIM)
+    real(dp), dimension(:,:), allocatable :: fpd !(3,nmat_dim)
+    real(dp), dimension(:), allocatable :: fppd !(nmat_dim)
+    real(dp), dimension(:), allocatable :: fppu !(nmat_dim)
+    real(dp), dimension(:,:), allocatable :: fpu !(3,nmat_dim)
+    real(dp), dimension(:), allocatable :: slmui !(nmat_dim)
+    real(dp), dimension(:), allocatable :: slmdi !(nmat_dim)
 
     private
     public :: d2dx2, ddx, fp, fpp, slmi
@@ -864,18 +864,18 @@ module slater
 contains
     subroutine allocate_slater()
         use const, only: nelec
-        use vmc_mod, only: MMAT_DIM
+        use vmc_mod, only: nmat_dim
         if (.not. allocated(d2dx2)) allocate(d2dx2(nelec))
         if (.not. allocated(ddx)) allocate(ddx(3, nelec))
-        if (.not. allocated(fp)) allocate(fp(3, MMAT_DIM, 2))
-        if (.not. allocated(fpp)) allocate(fpp(MMAT_DIM, 2))
-        if (.not. allocated(slmi)) allocate(slmi(MMAT_DIM, 2))
-        if (.not. allocated(fpd))  allocate(fpd(3,MMAT_DIM))
-        if (.not. allocated(fppd)) allocate(fppd(MMAT_DIM))
-        if (.not. allocated(fppu)) allocate(fppu(MMAT_DIM))
-        if (.not. allocated(fpu))  allocate(fpu(3,MMAT_DIM))
-        if (.not. allocated(slmui)) allocate(slmui(MMAT_DIM))
-        if (.not. allocated(slmdi)) allocate(slmdi(MMAT_DIM))
+        if (.not. allocated(fp)) allocate(fp(3, nmat_dim, 2))
+        if (.not. allocated(fpp)) allocate(fpp(nmat_dim, 2))
+        if (.not. allocated(slmi)) allocate(slmi(nmat_dim, 2))
+        if (.not. allocated(fpd))  allocate(fpd(3,nmat_dim))
+        if (.not. allocated(fppd)) allocate(fppd(nmat_dim))
+        if (.not. allocated(fppu)) allocate(fppu(nmat_dim))
+        if (.not. allocated(fpu))  allocate(fpu(3,nmat_dim))
+        if (.not. allocated(slmui)) allocate(slmui(nmat_dim))
+        if (.not. allocated(slmdi)) allocate(slmdi(nmat_dim))
     end subroutine allocate_slater
 
     subroutine deallocate_slater()
@@ -897,11 +897,11 @@ end module slater
 module slatn
     !> Arguments: slmin
     use precision_kinds, only: dp
-    use vmc_mod, only: MMAT_DIM
+    use vmc_mod, only: nmat_dim
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: slmin !(MMAT_DIM)
+    real(dp), dimension(:), allocatable :: slmin !(nmat_dim)
 
     private
     public :: slmin
@@ -909,8 +909,8 @@ module slatn
     save
 contains
     subroutine allocate_slatn()
-        use vmc_mod, only: MMAT_DIM
-        if (.not. allocated(slmin)) allocate (slmin(MMAT_DIM))
+        use vmc_mod, only: nmat_dim
+        if (.not. allocated(slmin)) allocate (slmin(nmat_dim))
     end subroutine allocate_slatn
 
     subroutine deallocate_slatn()

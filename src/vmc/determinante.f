@@ -270,7 +270,7 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use vmc_mod, only: MORB
-      use vmc_mod, only: MMAT_DIM
+      use vmc_mod, only: nmat_dim
       use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
@@ -280,7 +280,7 @@ c-----------------------------------------------------------------------
       integer :: iel, ik, ish, j, jel
       integer :: nel
 
-      real(dp), dimension(MMAT_DIM) :: slmi
+      real(dp), dimension(nmat_dim) :: slmi
       real(dp), dimension(3, MORB) :: dorb
       real(dp), dimension(3) :: ddx_ref
 
