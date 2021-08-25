@@ -246,12 +246,11 @@ end module jaspar6
 
 module jaspointer
     !> Arguments: npoint, npointa
-    use vmc_mod, only: MCTYP3X
 
     implicit none
 
-    integer, dimension(:), allocatable :: npoint !(MCTYP3X)
-    integer, dimension(:), allocatable :: npointa !(3*MCTYP3X)
+    integer, dimension(:), allocatable :: npoint
+    integer, dimension(:), allocatable :: npointa
 
     private
     public :: npoint, npointa
@@ -259,9 +258,9 @@ module jaspointer
     save
 contains
     subroutine allocate_jaspointer()
-        use vmc_mod, only: MCTYP3X
-        if (.not. allocated(npoint)) allocate (npoint(MCTYP3X))
-        if (.not. allocated(npointa)) allocate (npointa(3*MCTYP3X))
+        use vmc_mod, only: nctyp3x
+        if (.not. allocated(npoint)) allocate (npoint(nctyp3x))
+        if (.not. allocated(npointa)) allocate (npointa(3*nctyp3x))
     end subroutine allocate_jaspointer
 
     subroutine deallocate_jaspointer()

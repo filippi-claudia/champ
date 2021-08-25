@@ -37,7 +37,7 @@ subroutine parser
   use pcm,              only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
-  use vmc_mod, 			    only: MORB, MCTYP3X
+  use vmc_mod, 			    only: MORB
   use atom, 			      only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 			    only: nspin1, nspin2, is
   use ghostatom, 		    only: newghostype, nghostcent
@@ -1776,7 +1776,7 @@ end subroutine flaginit_new
 
 subroutine compute_mat_size_new()
   !> compute various size that are derived from the input
-  ! use vmc_mod, only: MMAT_DIM, MMAT_DIM2, MCTYP3X
+  ! use vmc_mod, only: MMAT_DIM, MMAT_DIM2
   ! use const, only: nelec
   ! use atom, only: nctype_tot, ncent_tot
 

@@ -1121,7 +1121,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
     use bparm,              only: nspin2b
     use contr2,             only: ijas
     use contr2,             only: isc
-    use vmc_mod,            only: MCTYP3X
+    use vmc_mod,            only: nctyp3x
     use atom,               only: nctype_tot
     use general,            only: pooldir
 
@@ -1156,20 +1156,20 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
     na1 = 1
     na2 = nctype
-    MCTYP3X = max(3, nctype_tot)
+    nctyp3x = max(3, nctype_tot)
 
-    if (.not. allocated(nparma)) allocate (nparma(MCTYP3X))
+    if (.not. allocated(nparma)) allocate (nparma(nctyp3x))
     if (.not. allocated(nparmb)) allocate (nparmb(3))
     if (.not. allocated(nparmc)) allocate (nparmc(nctype))
     if (.not. allocated(nparmf)) allocate (nparmf(nctype))
 
-    if (.not. allocated(iwjasa)) allocate (iwjasa(83, MCTYP3X))
+    if (.not. allocated(iwjasa)) allocate (iwjasa(83, nctyp3x))
     if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3))
     if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype))
     if (.not. allocated(iwjasf)) allocate (iwjasf(15, nctype))
 
-    if (.not. allocated(npoint)) allocate (npoint(MCTYP3X))
-    if (.not. allocated(npointa)) allocate (npointa(3*MCTYP3X))
+    if (.not. allocated(npoint)) allocate (npoint(nctyp3x))
+    if (.not. allocated(npointa)) allocate (npointa(3*nctyp3x))
 
     ! to escape the comments before the "jasderiv" line
     if (wid) then

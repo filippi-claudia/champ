@@ -8,7 +8,7 @@ module vmc_mod
     ! ndet   >= number of determinants
     ! ncent_tot  >= number of centers
     ! nctype >= number of center types
-    ! MCTYP3X=max(3,MCTYPE)
+    ! nctyp3x = max(3,MCTYPE)
 
     ! Slater matrices are dimensioned (MELEC/2)**2 assuming
     ! equal numbers of up and down spins. MELEC has to be
@@ -29,7 +29,7 @@ module vmc_mod
     real(dp), parameter :: delri = (nrad - 1)/radmax
 
     integer :: MORB
-    integer :: MCTYP3X
+    integer :: nctyp3x
     integer, parameter :: NSPLIN = 1001, MORDJ = 7
 
     integer :: MMAT_DIM, MMAT_DIM2
@@ -42,7 +42,7 @@ module vmc_mod
     integer, parameter :: MEXCIT = 10
 
     private
-    public :: MORB, MCTYP3X
+    public :: MORB, nctyp3x
     public :: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
     public :: radmax, delri
 
@@ -58,7 +58,7 @@ contains
         use atom, only: nctype_tot, ncent_tot
         MMAT_DIM = nelec*nelec/4
         MMAT_DIM2 = nelec*(nelec - 1)/2
-        MCTYP3X = max(3, nctype_tot)
+        nctyp3x = max(3, nctype_tot)
         ncent3 = 3*ncent_tot
 
     end subroutine set_vmc_size
