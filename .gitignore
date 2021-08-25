@@ -5,7 +5,9 @@ settings.make
 *.o
 *.mod
 *.a
+*.i90
 *.log
+*.i90
 local_test.sh
 
 # binaries
@@ -39,3 +41,19 @@ slurm*
 *~
 # local scripts
 compile_mac.zsh
+
+#tests/CI_test/*/*.sh
+#tests/CI_test/*/*/*.sh
+
+error*
+problem*
+restart*
+mc_configs_start
+geo_optimal_final
+force_analytic
+check.*
+tape8
+walkalize.*
+
+#local testing of workflow
+.github/workflows/test_locally.yml

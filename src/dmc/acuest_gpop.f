@@ -19,10 +19,12 @@ c routine to accumulate estimators for energy etc.
       use derivest, only: derivcum, derivsum
       use mpiconf, only: wid
       use force_mod, only: MFORCE
-      use contrl, only: nstep
+!      use contrl, only: nstep
+      use control_dmc, only: dmc_nstep
       use mpi
 
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iegerr, ierr, ifgerr, ifr
@@ -59,7 +61,7 @@ c xerr = current error of x
 
       iblk=iblk+1
 
-      npass=iblk*nstep
+      npass=iblk*dmc_nstep
 
       call mpi_reduce(pesum_dmc,pecollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -88,8 +90,8 @@ c xerr = current error of x
 
       if(.not.wid) goto 17
 
-      wnow=wsum_dmc/nstep
-      wfnow=wfsum/nstep
+      wnow=wsum_dmc/dmc_nstep
+      wfnow=wfsum/dmc_nstep
       enow=esum_dmc/wsum_dmc
       efnow=efsum/wfsum
       ei1now=wfsum/wdsum
@@ -128,7 +130,7 @@ c xerr = current error of x
         do 13 k=1,3
   13      derivsum(k,ifr)=derivcollect(k,ifr)
 
-        wgnow=wgsum(ifr)/nstep
+        wgnow=wgsum(ifr)/dmc_nstep
         egnow=egsum(ifr)/wgsum(ifr)
         penow=pesum_dmc(ifr)/wgsum(ifr)
         tpbnow=tpbsum_dmc(ifr)/wgsum(ifr)
@@ -190,7 +192,7 @@ c xerr = current error of x
 c write out header first time
 
         if (iblk.eq.1.and.ifr.eq.1)
-     &  write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
+     &  write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
      &  ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
      &  ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t89,''(fgerr)'',
      &  t101,''npass'',t111,''wgsum'',t121,''ioldest'')')
@@ -203,7 +205,7 @@ c write out current values of averages etc.
         itjfer=nint(100000*tjferr)
 
         if(ifr.eq.1) then
-          write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)')
+          write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)')
      &    egsum(ifr)/wgsum(ifr),
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,
      &    nint(wgsum(ifr)),ioldest
@@ -212,7 +214,7 @@ c write out current values of averages etc.
           call pcm_prt(iblk,wgcum,wgcm2)
           call mmpol_prt(iblk,wgcum,wgcm2)
          else
-          write(6,'(f10.5,5(f10.5,''('',i5,'')''),f10.5,10x,i10)')
+          write(ounit,'(f10.5,5(f10.5,''('',i5,'')''),f10.5,10x,i10)')
      &    egsum(ifr)/wgsum(ifr),
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
      &    fgave,ifgerr,derivtotave,nint(wgsum(ifr))
@@ -247,6 +249,6 @@ c zero out xsum variables for metrop
       call prop_init(1)
       call pcm_init(1)
       call mmpol_init(1)
-      
+
       return
       end

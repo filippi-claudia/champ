@@ -10,10 +10,12 @@ module atom
     integer, dimension(:), allocatable :: iwctype
     integer :: nctype, ncent
     integer :: nctype_tot, ncent_tot
+    character(len=2), dimension(:), allocatable :: symbol
+    character(len=2), dimension(:), allocatable :: atomtyp
 
     private
-    public   :: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
-    public :: allocate_atom, deallocate_atom
+    public   :: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+    public   :: allocate_atom, deallocate_atom
     save
 contains
     subroutine allocate_atom()
@@ -21,6 +23,7 @@ contains
         if (.not. allocated(cent)) allocate (cent(3, ncent_tot))
         if (.not. allocated(znuc)) allocate (znuc(nctype_tot))
         if (.not. allocated(iwctype)) allocate (iwctype(nctype_tot))
+        if (.not. allocated(symbol)) allocate (symbol(ncent_tot))
     end subroutine allocate_atom
 
     subroutine deallocate_atom()

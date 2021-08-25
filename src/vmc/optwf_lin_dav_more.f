@@ -12,9 +12,8 @@
       use sr_mat_n, only: jfj
       use sr_mat_n, only: obs_tot
       use optwf_sr_mod, only: sr_hs
-      use mpiconf
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit, errunit
       implicit none
 
       integer :: i, i0, i_ortho_min, i_overlap_max, idav_iter
@@ -35,7 +34,7 @@
       ! include 'mpif.h'
 
 
-      write(6,*) 'LIN_D NPARM',nparm
+      write(ounit,*) 'LIN_D NPARM',nparm
 
       call sr_hs(nparm,adiag)
 
@@ -53,20 +52,20 @@
 
       ! regterg
       if(lin_jdav.eq.0) then
-       write(6,*) "USING OLD REGTERG"
+       write(ounit,*) "USING OLD REGTERG"
 
         call regterg( nparm_p1, MPARM, nvec, nvecx, evc, ethr,
      &                e, itype, notcnv, idav_iter, ipr, idtask )
 
        ! Davidson DPR
        elseif(lin_jdav.eq.1) then
-        write(6,*) "USING DPR DAVIDSON"
+        write(ounit,*) "USING DPR DAVIDSON"
         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, nvecx, evc,
      &       ethr, e, itype, notcnv, idav_iter, ipr, "DPR")
 
        ! Davidson JOCC
        elseif(lin_jdav.eq.2) then
-        write(6,*) "USING GJD DAVIDSON"
+        write(ounit,*) "USING GJD DAVIDSON"
          call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, nvecx, evc,
      &       ethr, e, itype, notcnv, idav_iter, ipr, "GJD")
 
@@ -75,8 +74,8 @@
 
       endif
 
-      write(6,'(''LIN_D: no. iterations'',i4)') idav_iter
-      write(6,'(''LIN_D: no. not converged roots '',i4)') notcnv
+      write(ounit,'(''LIN_D: no. iterations'',i4)') idav_iter
+      write(ounit,'(''LIN_D: no. not converged roots '',i4)') notcnv
 
       call my_second(2,'david ')
 
@@ -87,7 +86,7 @@ c idtask.eq.0
 
         do istate=1,nstates
           do ivec=1,nvec
-            write(6,'(''LIN_D: state, vec, energy'',2i4,2f12.5)') istate,ivec,e(ivec),overlap_psi(ivec,istate)
+            write(ounit,'(''LIN_D: state, vec, energy'',2i4,2f12.5)') istate,ivec,e(ivec),overlap_psi(ivec,istate)
           enddo
         enddo
 
@@ -99,7 +98,7 @@ c idtask.eq.0
               i_ortho_min=ivec
             endif
           enddo
-          write(6,'(''LIN_D: max overlap ivec'',i4)') i_ortho_min
+          write(ounit,'(''LIN_D: max overlap ivec'',i4)') i_ortho_min
 
           do i=1,nparm
             deltap(i)=evc(i+1,i_ortho_min)/evc(1,i_ortho_min)
@@ -120,7 +119,7 @@ c elseif I do not optimize jastrow and or orbitals
           do istate=1,nstates
             call sort(nvec,overlap_psi(1,istate),index_overlap)
             i_overlap_max=index_overlap(nvec)
-            write(6,'(''LIN_D: state, max overlap ivec'',2i4)') istate,i_overlap_max
+            write(ounit,'(''LIN_D: state, max overlap ivec'',2i4)') istate,i_overlap_max
             do i=1,nparm
               deltap(i+nparm*(istate-1))=evc(i,i_overlap_max)/anorm(i_overlap_max)
             enddo
@@ -233,7 +232,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-
+      use contrl_file,    only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -253,7 +252,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
       nparm=ndim-i0
 
-c     write(6,*) 'HPSI_LIN',ndim,nvec
+c     write(ounit,*) 'HPSI_LIN',ndim,nvec
 
       jwtg=1
       jelo=2
@@ -318,7 +317,7 @@ c end loop vec
       enddo
 
 c     do i=1,nparm+1
-c       write(6,'(''HPSI_LIN'',100e12.3)')(hpsi(i,ivec),ivec=1,nvec)
+c       write(ounit,'(''HPSI_LIN'',100e12.3)')(hpsi(i,ivec),ivec=1,nvec)
 c     enddo
 
       return
@@ -336,7 +335,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-
+      use contrl_file,    only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -401,7 +400,7 @@ c end loop vec
       enddo
 
 c     do i=1,nparm+1
-c       write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
+c       write(ounit,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
 c     enddo
 c     STOP
 
@@ -421,7 +420,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-
+      use contrl_file,    only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -442,10 +441,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       nparm=ndim-i0
 
 c     do i=1,nparm+i0
-c       write(6,'(''PSI NEW'',100e12.3)')(psi(i,ivec),ivec=1,nvec)
+c       write(ounit,'(''PSI NEW'',100e12.3)')(psi(i,ivec),ivec=1,nvec)
 c     enddo
 
-c     write(6,*) 'HPSI_LIN',ndim,nvec
+c     write(ounit,*) 'HPSI_LIN',ndim,nvec
 
       jwtg=1
       jelo=2
@@ -471,7 +470,7 @@ c loop vec
       enddo
 
 c     do i=1,nparm+1
-c       write(6,*) 'H1 ',hpsi(i,ivec)
+c       write(ounit,*) 'H1 ',hpsi(i,ivec)
 c     enddo
 
       do iconf=1,nconf_n
@@ -485,7 +484,7 @@ c     enddo
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
 
 c     do i=1,nparm+1
-c       write(6,*) 'H2 ',hpsi(i,ivec)
+c       write(ounit,*) 'H2 ',hpsi(i,ivec)
 c     enddo
 
       if(idtask.eq.0) then
@@ -521,7 +520,7 @@ c end loop vec
       enddo
 
 c     do i=1,nparm+i0
-c       write(6,'(''HPSI_LIN'',100e12.3)')(hpsi(i,ivec),ivec=1,nvec)
+c       write(ounit,'(''HPSI_LIN'',100e12.3)')(hpsi(i,ivec),ivec=1,nvec)
 c     enddo
 
       return
@@ -540,7 +539,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-
+      use contrl_file,    only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -651,7 +650,7 @@ c end loop vec
       enddo
 
 c     do i=1,nparm+i0
-c       write(6,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
+c       write(ounit,'(''SPSI_LIN'',100e12.3)')(spsi(i,ivec),ivec=1,nvec)
 c     enddo
 
       return
@@ -669,7 +668,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-
+      use contrl_file,    only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -695,10 +694,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       nparm=ndim-i0
 
 c     do i=1,nparm+i0
-c       write(6,'(''PSI NEW'',100e12.3)')(psi(i,ivec),ivec=1,nvec)
+c       write(ounit,'(''PSI NEW'',100e12.3)')(psi(i,ivec),ivec=1,nvec)
 c     enddo
 
-c     write(6,*) 'HPSI_LIN',ndim,nvec
+c     write(ounit,*) 'HPSI_LIN',ndim,nvec
 
       jwtg=1
       jelo=2
@@ -788,7 +787,7 @@ c end loop vec
       enddo
 
       do i=1,nparm+i0
-        write(6,'(''HPSI_LIN'',100e12.3)')(hpsi(i,ivec),ivec=1,nvec)
+        write(ounit,'(''HPSI_LIN'',100e12.3)')(hpsi(i,ivec),ivec=1,nvec)
       enddo
 
       return

@@ -57,11 +57,11 @@ c-----------------------------------------------------------------------
       implicit none
 
       interface
-        function nterms4(nord) 
+        function nterms4(nord)
             implicit none
             integer, intent(in) :: nord
-            integer :: nterms4 
-        end function nterms4 
+            integer :: nterms4
+        end function nterms4
       end interface
 
       integer :: i, ict, index, iwf_fit, mparmja
@@ -281,11 +281,11 @@ c-----------------------------------------------------------------------
       implicit none
 
       interface
-        function nterms4(nord) 
+        function nterms4(nord)
             implicit none
             integer, intent(in) :: nord
-            integer :: nterms4 
-        end function nterms4 
+            integer :: nterms4
+        end function nterms4
       end interface
 
       integer :: i, iadiag, ict, mparmja, mparmjb
@@ -376,7 +376,6 @@ c-----------------------------------------------------------------------
       subroutine save_ci
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MDET
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
       use dets, only: cdet, ndet
@@ -388,8 +387,8 @@ c-----------------------------------------------------------------------
       real(dp), ALLOCATABLE, save :: cdet_save(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_save(:,:)
 
-      if(.not. allocated(cdet_save)) allocate(cdet_save(MDET,MSTATES))
-      if(.not. allocated(ccsf_save)) allocate(ccsf_save(MDET,MSTATES))
+      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
 
       ! dimension cdet_save(ndet,nstates),ccsf_save(ndet,nstates)
       ! save cdet_save,ccsf_save
@@ -405,8 +404,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci(iadiag)
-      if(.not. allocated(cdet_save)) allocate(cdet_save(MDET,MSTATES))
-      if(.not. allocated(ccsf_save)) allocate(ccsf_save(MDET,MSTATES))
+      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
 
       do 30 j=1,nstates
         do 30 i=1,ndet
@@ -443,11 +442,11 @@ c-----------------------------------------------------------------------
       implicit none
 
       interface
-        function nterms4(nord) 
+        function nterms4(nord)
             implicit none
             integer, intent(in) :: nord
-            integer :: nterms4 
-        end function nterms4 
+            integer :: nterms4
+        end function nterms4
       end interface
 
       integer :: i, iadiag, ict, mparmja, mparmjb
@@ -534,11 +533,11 @@ c-----------------------------------------------------------------------
       implicit none
 
       interface
-        function nterms4(nord) 
+        function nterms4(nord)
             implicit none
             integer, intent(in) :: nord
-            integer :: nterms4 
-        end function nterms4 
+            integer :: nterms4
+        end function nterms4
       end interface
 
       integer :: i, ict, mparmja, mparmjb, mparmjc
@@ -627,7 +626,6 @@ c-----------------------------------------------------------------------
       subroutine save_ci_best
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MDET
       use csfs, only: ccsf, ncsf, nstates
       use csfs, only: cxdet, iadet, ibdet, icxdet
       use mstates_mod, only: MSTATES
@@ -639,8 +637,8 @@ c-----------------------------------------------------------------------
       real(dp), ALLOCATABLE, save :: cdet_best(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_best(:,:)
 
-      if(.not. allocated(cdet_best)) allocate(cdet_best(MDET,MSTATES))
-      if(.not. allocated(ccsf_best)) allocate(ccsf_best(MDET,MSTATES))
+      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
 
       ! dimension cdet_best(ndet,nstates),ccsf_best(ndet,nstates)
       ! save cdet_best,ccsf_best
@@ -656,8 +654,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci_best
-      if(.not. allocated(cdet_best)) allocate(cdet_best(MDET,MSTATES))
-      if(.not. allocated(ccsf_best)) allocate(ccsf_best(MDET,MSTATES))
+      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
 
 c     if(ioptci.eq.0) return
 
@@ -840,7 +838,7 @@ c Update the ci coef
       endif
 
 c     do 90 j=1,nstates
-c90     write(6,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
+c90     write(ounit,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
 
       return
       end
@@ -853,6 +851,7 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -869,11 +868,11 @@ c-----------------------------------------------------------------------
    50     if(iwjasa(i,ict).eq.2.and.a4(2,ict,1).le.scalem) iflaga=1
       if(iflaga.eq.1) then
         do 55 ict=1,nctype
-   55     write(6,'(''a2 < -scalek'',f10.5)') a4(2,ict,1)
+   55     write(ounit,'(''a2 < -scalek'',f10.5)') a4(2,ict,1)
       endif
       do 60 i=1,nparmb(1)
    60   if(iwjasb(i,1).eq.2.and.b(2,1,1).le.scalem) iflagb=1
-      if(iflagb.eq.1) write(6,'(''b2 < -scalek'',f10.5)') b(2,1,1)
+      if(iflagb.eq.1) write(ounit,'(''b2 < -scalek'',f10.5)') b(2,1,1)
 
       if(iflaga.eq.1.or.iflagb.eq.1) iflag=1
 
@@ -882,8 +881,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine test_solution_parm(nparm,dparm,
      &              dparm_norm,dparm_norm_min,add_diag,iflag)
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -900,7 +900,7 @@ c Calculate rms change in parameters
   30    dparm_norm=dparm_norm+dparm(i)**2
       dparm_norm=sqrt(dparm_norm/nparm)
 
-      write(6,'(''dparm_norm,adiag ='',3g12.5)')
+      write(ounit,'(''dparm_norm,adiag ='',3g12.5)')
      &dparm_norm,add_diag
 
       if(dparm_norm.gt.dparm_norm_min) iflag=1
@@ -914,7 +914,7 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm, nreduced
       use ci000, only: nciterm
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav
@@ -928,7 +928,7 @@ c-----------------------------------------------------------------------
       nparmd=max(nciterm-1,0)
       nparmd_sav=nparmd
 
-      write(6,'(''Saved max number of parameters, nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
+      write(ounit,'(''Saved max number of parameters, nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
       return
 
       entry set_nparms
@@ -949,7 +949,7 @@ c-----------------------------------------------------------------------
         nparmd=0
       endif
 
-      write(6,'(''Max number of parameters set to nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
+      write(ounit,'(''Max number of parameters set to nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
       call set_nparms_tot
 
       return
@@ -962,7 +962,7 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use ci000, only: nciterm
       use method_opt, only: method
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i0
@@ -985,7 +985,7 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
 
       endif
 
-      write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)')
+      write(ounit,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)')
      & nparm,nparmj,nciterm,norbterm
 
       return

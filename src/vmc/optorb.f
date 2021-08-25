@@ -13,6 +13,7 @@
       use multislater, only: detiab
       use const, only: nelec
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -94,7 +95,7 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, istate
@@ -115,8 +116,8 @@ c-----------------------------------------------------------------------
   20        orb_ho(i,istate)=orb_ho(i,istate)+eloc(istate)*orb_o(i,istate)
 
 c     do iterm=1,norbterm
-c        write(6,*) 'HELLO 1',iterm,orb_o(iterm,1),orb_ho(iterm,1),orb_oe(iterm,1)
-c        write(6,*) 'HELLO 2',iterm,orb_o(iterm,2),orb_ho(iterm,2),orb_oe(iterm,2)
+c        write(ounit,*) 'HELLO 1',iterm,orb_o(iterm,1),orb_ho(iterm,1),orb_oe(iterm,1)
+c        write(ounit,*) 'HELLO 2',iterm,orb_o(iterm,2),orb_ho(iterm,2),orb_oe(iterm,2)
 c     enddo
 
       return
@@ -436,6 +437,7 @@ c-----------------------------------------------------------------------
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use optorb_cblock, only: norb_f_bcum
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -457,7 +459,7 @@ c-----------------------------------------------------------------------
         fo(i)=eoav(i)-eave*oav(i)
    30   foerr(i)=errn(orb_f_bcum(i,istate),orb_f_bcm2(i,istate),norb_f_bcum)
 
-      write(6,'(''ORB-PT: forces collected'',i4)') norb_f_bcum
+      write(ounit,'(''ORB-PT: forces collected'',i4)') norb_f_bcum
 
       end
 c-----------------------------------------------------------------------
@@ -512,6 +514,7 @@ c-----------------------------------------------------------------------
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
       use optorb_cblock, only: nreduced, nefp_blocks, norb_f_bcum
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -522,13 +525,13 @@ c-----------------------------------------------------------------------
       if(ioptorb.eq.0) return
       read(iu) morbprim,morbterm,mreduced
       if(morbprim.ne.norbprim) then
-       write (6,*) 'wrong number of primitive orb terms!'
-       write (6,*) 'old ',morbprim,' new ',norbprim
+       write(ounit,*) 'wrong number of primitive orb terms!'
+       write(ounit,*) 'old ',morbprim,' new ',norbprim
        call fatal_error('OPTORB_RSTRT: Restart, inconsistent ORB information')
       endif
       if(morbterm.ne.norbterm) then
-       write (6,*) 'wrong number of orb terms!'
-       write (6,*) 'old ',morbterm,' new ',norbterm
+       write(ounit,*) 'wrong number of orb terms!'
+       write(ounit,*) 'old ',morbterm,' new ',norbterm
        call fatal_error('OPTORB_RSTRT: Restart, inconsistent ORB information')
       endif
 
@@ -638,7 +641,7 @@ c Hamiltonian on semi-orthogonal basis
           s(1,i+ish)=0
           h(i+ish,1)=h(i+ish,1)+wts*(eoav(i)-eave*oav(i))
           h(1,i+ish)=h(1,i+ish)+wts*(orb_ho_cum(i,istate)*passesi-eave*oav(i))
-c         write(6,*) 'H',wts,eoav(i)-eave*oav(i),orb_ho_cum(i,istate)*passesi-eave*oav(i)
+c         write(ounit,*) 'H',wts,eoav(i)-eave*oav(i),orb_ho_cum(i,istate)*passesi-eave*oav(i)
           i0=1
           if(iapprox.gt.0) i0=i
           do 30 j=i0,i
@@ -777,7 +780,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_define
 
       use optorb_mod, only: MXORBOP, MXREDUCED
-      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MORB
       use const, only: nelec
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -793,6 +796,7 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: nreduced
       use orbval, only: nadorb, ndetorb, orb
       use optwf_contrl, only: ncore, no_active
+      use contrl_file,    only: ounit, errunit
 
       implicit none
 
@@ -800,8 +804,8 @@ c-----------------------------------------------------------------------
       integer :: io, iocc, iprt, iterm
       integer :: j, jo, k, n0
       integer :: n1, noporb
-      integer, dimension(2, MDET) :: iodet
-      integer, dimension(2, MDET) :: iopos
+      integer, dimension(2, ndet) :: iodet
+      integer, dimension(2, ndet) :: iopos
       integer, dimension(2, MORB) :: iflag
       integer, dimension(2) :: ne
       integer, dimension(2) :: m
@@ -822,7 +826,7 @@ c orbital indices in determinants of trial wave function
       do i=1,ndet
        do j=1,nelec
         if(iworbd(j,i).gt.norb) then
-         write(6,1) i,j,iworbd(j,i),norb
+         write(ounit,1) i,j,iworbd(j,i),norb
          call fatal_error('VERIFY: orbital index out of range')
         endif
         if(iworbd(j,i).gt.ndetorb) then
@@ -835,16 +839,16 @@ c orbital indices in determinants of trial wave function
 c Number of external orbitals for orbital optimization
       next_max=norb-ndetorb
       if(nadorb.gt.next_max) nadorb=next_max
-      ! write(6, *) 'norb', norb
-      ! write(6, *) 'nadorb', nadorb
-      ! write(6, *) 'ndet_orb', ndetorb
-      ! write(6, *) 'next_max', next_max
+       write(ounit, '(a, t40, i0)' ) 'norb', norb
+       write(ounit, '(a, t40, i0)') 'nadorb', nadorb
+       write(ounit, '(a, t40, i0)') 'ndet_orb', ndetorb
+       write(ounit, '(a, t40, i0)') 'next_max', next_max
       ! call fatal_error('optorb.f')
 
       if(iprt.gt.0) then
-       write(6,'(''Determinantal orbitals in orbital optimization: '',i4)') ndetorb
-       write(6,'(''External orbitals in orbital optimization: '',i4)') nadorb
-       write(6,'(''Total orbitals in orbital optimization: '',i4)') nadorb+ndetorb-ncore
+       write(ounit,'(''Determinantal orbitals in orbital optimization: '',i0)') ndetorb
+       write(ounit,'(''External orbitals in orbital optimization:      '',i0)') nadorb
+       write(ounit,'(''Total orbitals in orbital optimization:         '',i0)') nadorb+ndetorb-ncore
       endif
       norb=ndetorb
 
@@ -879,8 +883,8 @@ c Omit empty orbitals
          do 9 jo=ncore+1,ndetorb+nadorb
    9      iwmix_virt(io,jo)=jo
       elseif(norbopt.ne.ndetorb.or.norbvirt.lt.nadorb) then
-       write(6,'(''OPTORB_DEFINE: norbopt,ndetorb'',2i6)') norbopt,ndetorb
-       write(6,'(''OPTORB_DEFINE: noptvirt,nadorb'',2i6)') norbvirt,nadorb
+       write(ounit,'(''OPTORB_DEFINE: norbopt,ndetorb'',2i6)') norbopt,ndetorb
+       write(ounit,'(''OPTORB_DEFINE: noptvirt,nadorb'',2i6)') norbvirt,nadorb
        call fatal_error('OPTORB_DEFINE: Mixvirt block, inconsistent')
       endif
 
@@ -894,7 +898,7 @@ c omitted if not same symmetry, or io empty, or both doubly occupied
       iterm=0
 
       if(iprt.gt.2) then
-       write(6,*) '(''=========== orbital pair list =========='')'
+       write(ounit,*) '(''=========== orbital pair list =========='')'
       endif
 
       do 60 io=ncore+1,ndetorb
@@ -937,14 +941,14 @@ c Include: io is occupied in some determinant and jo not
  30       continue
  40     continue
         if(m(1)+m(2).eq.0) then
-          if(iprt.gt.3) write(6,'(''no appropriate determinant for '',2i4)') io,jo
+          if(iprt.gt.3) write(ounit,'(''no appropriate determinant for '',2i4)') io,jo
           goto 50
         endif
 
 c Define new operator (new variation) and its terms
         noporb=noporb+1
         if(noporb.gt.MXORBOP) then
-          write(6,'(''noporb,max_orb'',2i5)') noporb,MXORBOP
+          write(ounit,'(''noporb,max_orb'',2i5)') noporb,MXORBOP
           call fatal_error('ORB_DEFINE: too many terms, increase MXORBOP')
         endif
 
@@ -969,13 +973,13 @@ c Define new operator (new variation) and its terms
             endif
           enddo
         enddo
-        if(iprt.gt.2) write(6,'(a16,i4,a8,i4,i5,a15,i4)') 'new variation: ',noporb,' pair ',io,jo,' spin ',ideriv_iab(noporb)
+        if(iprt.gt.2) write(ounit,'(a16,i4,a8,i4,i5,a15,i4)') 'new variation: ',noporb,' pair ',io,jo,' spin ',ideriv_iab(noporb)
 
  50    continue
  60   continue
 
       norbterm=noporb
-      write(6,'(''number of orbital variations: '',2i8)') norbterm
+      write(ounit,'(''number of orbital variations: '',2i8)') norbterm
 
 c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
       if(method.eq.'linear') then
@@ -988,7 +992,7 @@ c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
 
       icount_orbdef=icount_orbdef+1
 
-      write(6,'(''Done with  optorb_define'')')
+      write(ounit,'(''Done with  optorb_define'')')
       return
       end
 c-----------------------------------------------------------------------

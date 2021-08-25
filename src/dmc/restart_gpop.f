@@ -1,6 +1,6 @@
       subroutine startr_gpop
 
-      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MORB
       use vmc_mod, only: nrad
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
@@ -41,9 +41,10 @@
       use ghostatom, only: nghostcent
       use jaspar1, only: cjas1, cjas2
       use velratio, only: fratio
-      use contrl, only: nconf
+!      use contrl, only: nconf
+      use control_dmc, only: dmc_nconf
       use mpi
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -81,7 +82,7 @@
       real(dp), dimension(nbasis) :: zexx
       real(dp), dimension(3, ncent_tot) :: centx
       real(dp), dimension(ncent_tot) :: znucx
-      real(dp), dimension(MDET) :: cdetx
+      real(dp), dimension(ndet) :: cdetx
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: small = 1.e-6
@@ -93,7 +94,7 @@
 
 
 
-      write(6,'(1x,''attempting restart from unit 10'')')
+      write(ounit,'(1x,''attempting restart from unit 10'')')
       rewind 10
       read(10) nprock
       read(10) nfprod,(ff(i),i=0,nfprod),fprod,eigv,eest,wdsumo
@@ -123,7 +124,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       call setrn(irn(1,idtask))
       read(10) hbx
       read(10) taux,rttau,idmc
-      read(10) nelecx,nconf
+      read(10) nelecx,dmc_nconf
       if (dabs(hbx-hb).gt.small) call fatal_error('STARTR: hb')
       if (dabs(taux-tau).gt.small) call fatal_error('STARTR: tau')
       if (nelecx.ne.nelec) call fatal_error('STARTR: nelec')
@@ -224,8 +225,8 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) cjas1x,cjas2x
       if (dabs(cjas1x-cjas1(1)).gt.small) call fatal_error('STARTR: cjas1')
       if (dabs(cjas2x-cjas2(1)).gt.small) call fatal_error('STARTR: cjas2')
-      write(6,'(1x,''succesful read from unit 10'')')
-      write(6,'(t5,''egnow'',t15,''egave'',t21
+      write(ounit,'(1x,''succesful read from unit 10'')')
+      write(ounit,'(t5,''egnow'',t15,''egave'',t21
      &,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55
      &,''(tpberr)'' ,t66,''tjfave'',t72,''(tjferr)'',t83,''npass'',t93
      &,''wgsum'',t103 ,''ioldest'')')

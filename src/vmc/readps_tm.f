@@ -16,7 +16,7 @@ c Modified by F. Schautz to use fancy file names
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
       use general, only: pooldir, pp_id
       use general, only: filename, filenames_ps_tm
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -66,11 +66,11 @@ c
       nr_ps(ic)=nr
 
       if(znuc(ic).ne.zion) then
-        write(6,'(''znuc(ic) != zion in readps_tm'',2f6.1)') znuc(ic),zion
+        write(ounit,'(''znuc(ic) != zion in readps_tm'',2f6.1)') znuc(ic),zion
         call fatal_error('READPS_TM: znuc(ic) != zion')
       endif
       if(nr.gt.MPS_GRID) then
-        write(6,'(''nr > MPS_GRID'',2i6)') nr,MPS_GRID
+        write(ounit,'(''nr > MPS_GRID'',2i6)') nr,MPS_GRID
         call fatal_error('READPS_TM: nr > MPS_GRID')
       endif
 
@@ -91,7 +91,7 @@ c
         endif
         vpseudo(1,ic,i)=0.d0
         do 50 j=nr,1,-1
-c         write(6,'(''vps'',f8.4,f12.6,d12.4)') r(j),vpseudo(j,ic,i)/2,vpseudo(j,ic,i)/2+zion
+c         write(ounit,'(''vps'',f8.4,f12.6,d12.4)') r(j),vpseudo(j,ic,i)/2,vpseudo(j,ic,i)/2+zion
           if(dabs(vpseudo(j,ic,i)+2.d0*zion).gt.1.d-6) then
             rmax(ic)=max(rmax(ic),r(j))
             jmax=max(jmax,j)
@@ -195,7 +195,7 @@ c-----------------------------------------------------------------------
 c compute tm-pseudopotential for electron iel
       subroutine getvps_tm(r_en,iel)
 
-      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MCENT
       use atom, only: znuc, iwctype, ncent, ncent_tot
       use pseudo_tm, only: rmax
       use const, only: nelec

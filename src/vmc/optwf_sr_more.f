@@ -1,5 +1,209 @@
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+      subroutine sr_hs(nparm,sr_adiag)
+c <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
+
+      use sr_mod, only: MOBS
+      use csfs, only: nstates
+      use mpiconf, only: idtask
+      use optwf_func, only: ifunc_omega, omega
+      use sa_weights, only: weights
+      use sr_index, only: jelo, jelo2, jelohfj
+      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
+      use sr_mat_n, only: sr_o, wtg, obs_tot
+      use optorb_cblock, only: norbterm
+      use mstates_mod, only: MSTATES
+      use method_opt, only: method
+      use contrl_file,    only: ounit
+      implicit real*8(a-h,o-z)
+
+
+      include 'mpif.h'
+
+
+
+
+
+      dimension obs_wtg(MSTATES),obs_wtg_tot(MSTATES)
+
+!      call p2gtid('optgeo:izvzb',izvzb,0,1)
+!      call p2gtid('optwf:sr_rescale',i_sr_rescale,0,1)
+
+      nstates_eff=nstates
+      if(method.eq.'lin_d') nstates_eff=1
+
+      jwtg=1
+      jelo=2
+      n_obs=2
+      jfj=n_obs+1
+      n_obs=n_obs+nparm
+      jefj=n_obs+1
+      n_obs=n_obs+nparm
+      jfifj=n_obs+1
+      n_obs=n_obs+nparm
+
+
+      jhfj=n_obs+1
+      n_obs=n_obs+nparm
+      jfhfj=n_obs+1
+      n_obs=n_obs+nparm
+
+c for omega functional
+      jelo2=n_obs+1
+      n_obs=n_obs+1
+      jelohfj=n_obs+1
+      n_obs=n_obs+nparm
+
+      if(n_obs.gt.MOBS) call fatal_error('SR_HS LIN: n_obs > MOBS)')
+
+      do k=1,nparm
+        h_sr(k)=0.d0
+        s_ii_inv(k)=0.d0
+      enddo
+
+      nparm_jasci=max(nparm-norbterm,0)
+
+      do istate=1,nstates
+        obs(jwtg,istate)=0.d0
+        do iconf=1,nconf_n
+          obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
+        enddo
+        obs_wtg(istate)=obs(jwtg,istate)
+      enddo
+
+      call MPI_REDUCE(obs_wtg,obs_wtg_tot,nstates,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
+      do istate=1,nstates
+        obs_tot(jwtg,istate)=obs_wtg_tot(istate)
+      enddo
+
+      do istate=1,nstates_eff
+        do i=2,n_obs
+         obs(i,istate)=0.d0
+        enddo
+
+        ish=(istate-1)*norbterm
+        do iconf=1,nconf_n
+          obs(jelo,istate)=obs(jelo,istate)+elocal(iconf,istate)*wtg(iconf,istate)
+          do i=1,nparm_jasci
+            obs(jfj +i-1,istate)=obs(jfj +i-1,istate)+sr_o(i,iconf)*wtg(iconf,istate)
+            obs(jefj+i-1,istate)=obs(jefj+i-1,istate)+elocal(iconf,istate)*sr_o(i,iconf)*wtg(iconf,istate)
+            obs(jfifj+i-1,istate)=obs(jfifj+i-1,istate)+sr_o(i,iconf)*sr_o(i,iconf)*wtg(iconf,istate)
+          enddo
+          do i=nparm_jasci+1,nparm
+            obs(jfj +i-1,istate)=obs(jfj +i-1,istate)+sr_o(ish+i,iconf)*wtg(iconf,istate)
+            obs(jefj+i-1,istate)=obs(jefj+i-1,istate)+elocal(iconf,istate)*sr_o(ish+i,iconf)*wtg(iconf,istate)
+            obs(jfifj+i-1,istate)=obs(jfifj+i-1,istate)+sr_o(ish+i,iconf)*sr_o(ish+i,iconf)*wtg(iconf,istate)
+          enddo
+        enddo
+
+        call MPI_REDUCE(obs(1,istate),obs_tot(1,istate),n_obs,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
+      enddo
+
+      if(idtask.eq.0) then
+        do istate=1,nstates_eff
+          wts=weights(istate)
+          if(method.eq.'lin_d') wts=1.d0
+
+          do i=2,n_obs
+            obs_tot(i,istate)=obs_tot(i,istate)/obs_tot(1,istate)
+          enddo
+
+          do k=1,nparm
+            aux=obs_tot(jfifj+k-1,istate)-obs_tot(jfj+k-1,istate)*obs_tot(jfj+k-1,istate)
+            s_diag(k,istate)=aux*sr_adiag
+            s_ii_inv(k)=s_ii_inv(k)+wts*(aux+s_diag(k,istate))
+            h_sr(k)=h_sr(k)-2*wts*(obs_tot(jefj+k-1,istate)-obs_tot(jfj +k-1,istate)*obs_tot(jelo,istate))
+          enddo
+        enddo
+
+        smax=0.d0
+        do k=1,nparm
+          if(s_ii_inv(k).gt.smax) smax=s_ii_inv(k)
+        enddo
+        write(ounit,'(''max S diagonal element '',t41,f16.8)') smax
+
+        kk=0
+        do k=1,nparm
+          if(s_ii_inv(k)/smax.gt.eps_eigval) then
+            kk=kk+1
+            s_ii_inv(k)=1.d0/s_ii_inv(k)
+           else
+            s_ii_inv(k)=0.d0
+          endif
+        enddo
+        write(ounit,'(''nparm, non-zero S diag'',t41,2i5)') nparm,kk
+
+      endif
+
+      if(method.eq.'sr_n'.and.i_sr_rescale.eq.0.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
+
+      if(method.ne.'sr_n') then
+        s_diag(1,1)=sr_adiag !!!
+
+        do k=1,nparm
+         h_sr(k)=-0.5d0*h_sr(k)
+        enddo
+      elseif(ifunc_omega.ne.0) then
+        s_diag(1,1)=sr_adiag !!!
+      endif
+
+      if(n_obs.gt.MOBS) call fatal_error('SR_HS LIN: n_obs > MOBS)')
+
+      do i=jhfj,n_obs
+       obs(i,1)=0.d0
+      enddo
+      do iconf=1,nconf_n
+       obs(jelo2,1)=obs(jelo2,1)+elocal(iconf,1)*elocal(iconf,1)*wtg(iconf,1)
+       do i=1,nparm
+         obs(jhfj+i-1,1)=obs(jhfj+i-1,1)+sr_ho(i,iconf)*wtg(iconf,1)
+         obs(jfhfj+i-1,1)=obs(jfhfj+i-1,1)+sr_o(i,iconf)*sr_ho(i,iconf)*wtg(iconf,1)
+         obs(jelohfj+i-1,1)=obs(jelohfj+i-1,1)+elocal(iconf,1)*sr_ho(i,iconf)*wtg(iconf,1)
+       enddo
+      enddo
+
+      nreduce=n_obs-jhfj+1
+      call MPI_REDUCE(obs(jhfj,1),obs_tot(jhfj,1),nreduce,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,j)
+
+      if(idtask.eq.0)then
+        do i=jhfj,n_obs
+         obs_tot(i,1)=obs_tot(i,1)/obs_tot(1,1)
+        enddo
+
+        if(ifunc_omega.eq.1) then
+c variance
+          var=obs_tot(jelo2,1)-obs_tot(jelo,1)**2
+          do k=1,nparm
+           h_sr(k)=-2*(obs_tot(jelohfj+k-1,1)-(obs_tot(jhfj+k-1,1)-obs_tot(jefj+k-1,1))*obs_tot(jelo,1)
+     &             -obs_tot(jfj+k-1,1)*obs_tot(jelo2,1)
+     &             -2*obs_tot(jelo,1)*(obs_tot(jefj+k-1,1)-obs_tot(jfj+k-1,1)*obs_tot(jelo,1)))
+          enddo
+        elseif(ifunc_omega.eq.2) then
+c variance with fixed average energy (omega)
+          var=omega*omega+obs_tot(jelo2,1)-2*omega*obs_tot(jelo,1)
+          dum1=-2
+          do k=1,nparm
+           h_sr(k)=dum1*(omega*omega*obs_tot(jfj+k-1,1)+obs_tot(jelohfj+k-1,1)-omega*(obs_tot(jhfj+k-1,1)+obs_tot(jefj+k-1,1))
+     &     -var*obs_tot(jfj+k-1,1))
+c adding a term which intergrates to zero
+c    &     -(obs_tot(jelo,1)-omega)*(obs_tot(jhfj+k-1,1)-obs_tot(jefj+k-1,1)))
+          enddo
+
+        elseif(ifunc_omega.eq.3.and.method.eq.'sr_n') then
+c Neuscamman's functional
+          den=omega*omega+obs_tot(jelo2,1)-2*omega*obs_tot(jelo,1)
+          dum1=-2/den
+          dum2=(omega-obs_tot(jelo,1))/den
+          do k=1,nparm
+           h_sr(k)=dum1*(omega*obs_tot(jfj+k-1,1)-obs_tot(jefj+k-1,1)
+     &     -dum2*(omega*omega*obs_tot(jfj+k-1,1)+obs_tot(jelohfj+k-1,1)-omega*(obs_tot(jhfj+k-1,1)+obs_tot(jefj+k-1,1))))
+          enddo
+        endif
+
+      endif
+
+      return
+      end
+
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine pcg(n,b,x,i,imax,imod,eps)
@@ -7,7 +211,7 @@ c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.in
 
       use mpiconf, only: idtask
       use mpi
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer, parameter :: m_parm_opt = 59000
@@ -24,14 +228,14 @@ c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.in
        call dscal(n,-1.d0,r,1)           ! r=b-r
        call asolve(n,r,d)                ! d=M^{-1}r preconditioner
        delta_new=ddot(n,d,1,r,1)           ! \delta_new=r^T d
-       print*,'delta0 = ',delta_new
+       write(ounit,'(a12,f24.16)') 'delta0 = ',delta_new
       endif
       call MPI_BCAST(delta_new,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
       delta_0=delta_new*eps**2            ! convergence thr
       do i=0,imax-1
 c      write(*,*)i,idtask,'ECCO ',delta_0,delta_new
        if(delta_new.lt.delta_0)then
-        if(idtask.eq.0)print*,'CG iter ',i
+        if(idtask.eq.0) write(ounit,*) 'CG iter ',i
 c     write(*,*)'ECCO pcg esce ',idtask
         call MPI_BCAST(x,n,MPI_REAL8,0,MPI_COMM_WORLD,j)
         return
@@ -54,7 +258,7 @@ c     write(*,*)'ECCO pcg esce ',idtask
         call asolve(n,r,s)               ! s=M^{-1}r preconditioner
         delta_old=delta_new              ! \delta_old=\delta_new
         delta_new=ddot(n,r,1,s,1)        ! \delta_new=r^T s
-        print*,'delta_new ',delta_new
+        write(ounit,'(a12,f24.16)') 'delta_new ',delta_new
         beta=delta_new/delta_old         ! \beta=\delta_new/\delta_old
         call dscal(n,beta,d,1)           ! d=\beta d
         call daxpy(n,1.d0,s,1,d,1)       ! d=s+d
@@ -62,7 +266,7 @@ c     write(*,*)'ECCO pcg esce ',idtask
        call MPI_BCAST(delta_new,1,MPI_REAL8,0,MPI_COMM_WORLD,j)
       enddo
 
-      if(idtask.eq.0)print*,'CG iter ',i
+      if(idtask.eq.0) write(ounit,*) 'CG iter ',i
       call MPI_BCAST(x,n,MPI_REAL8,0,MPI_COMM_WORLD,j)
       return
       end
@@ -161,7 +365,7 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
         i0 = nparm_jasci + 1 +(istate-1)*norbterm
         i1 = nparm_jasci + 1
-        call dgemv('N', n - nmparm_jasci, nconf_n, 1.0d0, sr_o(i0,1), MPARM, aux(1), 1, 0.0d0, rloc(i1), 1)
+        call dgemv('N', n - nparm_jasci, nconf_n, 1.0d0, sr_o(i0,1), MPARM, aux(1), 1, 0.0d0, rloc(i1), 1)
 
         call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 

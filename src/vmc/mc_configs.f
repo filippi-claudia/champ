@@ -5,8 +5,10 @@
       use const, only: nelec
       use config, only: xnew, xold
       use mpiconf, only: idtask, nproc
-      use contrl, only: irstar, isite, nconf_new, icharged_atom
+      !use contrl, only: irstar, isite, nconf_new, icharged_atom
+      use control_vmc, only: vmc_irstar, vmc_isite, vmc_nconf_new, vmc_icharged_atom
       use mpi
+      use contrl_file,    only: ounit, errunit
       use precision_kinds, only: dp
 
       implicit none
@@ -31,15 +33,15 @@
 
 c set the random number seed differently on each processor
 c call to setrn must be in read_input since irn local there
-      if(irstar.ne.1) then
+      if(vmc_irstar.ne.1) then
 
 c         if(idtask.ne.0) then
 c          call mpi_isend(irn,4,mpi_integer,0,1,MPI_COMM_WORLD,irequest,ierr)
 c         else
-c          write(6,*) 0, irn
+c          write(ounit,*) 0, irn
 c          do 1 id=1,nproc-1
 c            call mpi_recv(irn_temp,4,mpi_integer,id,1,MPI_COMM_WORLD,istatus,ierr)
-c            write(6,*) id, irn_temp
+c            write(ounit,*) id, irn_temp
 c   1      continue
 c         endif
 
@@ -53,12 +55,12 @@ c         endif
         endif
 
 c check sites flag if one gets initial configuration from sites routine
-        if (isite.eq.1) goto 20
+        if (vmc_isite.eq.1) goto 20
         open(unit=9,err=20,file='mc_configs_start')
         rewind 9
         do 10 id=0,idtask
    10     read(9,*,end=20,err=20) ((xold(k,i),k=1,3),i=1,nelec)
-        write(6,'(/,''initial configuration from unit 9'')')
+        write(ounit,'(/,''initial configuration from unit 9'')')
         goto 40
 
    20   continue
@@ -70,7 +72,7 @@ c check sites flag if one gets initial configuration from sites routine
         l=0
         do 30 i=1,ncent
           nsite(i)=int(znuc(iwctype(i))+0.5d0)
-          if (icharged_atom.eq.i) then
+          if (vmc_icharged_atom.eq.i) then
             nsite(i)=int(znuc(iwctype(i))+0.5d0)-icharge_system
 	    if (nsite(i).lt.0) call fatal_error('MC_CONFIG: error in icharged_atom')
 	  endif
@@ -86,7 +88,7 @@ c check sites flag if one gets initial configuration from sites routine
         open(unit=9,file='mc_configs_start')
         rewind 9
 
-        write(6,'(/,''initial configuration from sites'')')
+        write(ounit,'(/,''initial configuration from sites'')')
    40   continue
 
 c If we are moving one electron at a time, then we need to initialize
@@ -100,7 +102,7 @@ c If nconf_new > 0 then we want to dump configurations for a future
 c optimization or dmc calculation. So figure out how often we need to write a
 c configuration to produce nconf_new configurations. If nconf_new = 0
 c then set up so no configurations are written.
-      if (nconf_new.gt.0) then
+      if (vmc_nconf_new.gt.0) then
         if(idtask.lt.10) then
           write(filename,'(i1)') idtask
          elseif(idtask.lt.100) then
@@ -115,7 +117,6 @@ c then set up so no configurations are written.
         rewind 7
       endif
       call pcm_qvol(nproc)
-
       return
 
 c-----------------------------------------------------------------------

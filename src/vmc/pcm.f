@@ -17,6 +17,7 @@ c...........................................................
       use pcm_fdc, only: feps, fs, rcol, rcolt
       use pcm_inda, only: inda
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -61,7 +62,7 @@ c Read volume charges
 
        else
         call qpcm_surface(npmax)
-        write (6,'(''pcm: a new solute cavity has been created'')')
+        write(ounit,'(''pcm: a new solute cavity has been created'')')
 
 c write geometrical properties of cavity
         open (50,file=pcmfile_cavity,form='formatted',status='unknown')
@@ -99,9 +100,9 @@ c...............................................
       rcol=fcol*dsqrt(surk/pi)
       rcolt=dsqrt(surk/pi)
 c...............................................
-      write(6,'(''pcm nchs ='',i10)') nchs
-      write(6,'(''pcm nchv ='',i10)') nchv
-      write(6,'(''pcm surk ='',f12.6)') surk
+      write(ounit,'(''pcm nchs ='',i10)') nchs
+      write(ounit,'(''pcm nchv ='',i10)') nchv
+      write(ounit,'(''pcm surk ='',f12.6)') surk
 c...............................................
       penups=0.0d0
       do i=1,ncent
@@ -118,17 +119,17 @@ c...............................................
       penupol=penups+penupv
       if (ichpol.eq.1)call chnu
 c........................................................................
-      write(6,*)
-      write(6,'(''pcm number of spheres ='',i5)') nesph
-      write(6,'(''pcm cavity geometry'')')
+      write(ounit,*)
+      write(ounit,'(''pcm number of spheres ='',i5)') nesph
+      write(ounit,'(''pcm cavity geometry'')')
       do i=1,nesph
-      write(6,1000)i,xe(i),ye(i),ze(i),re(i)
+      write(ounit,1000)i,xe(i),ye(i),ze(i),re(i)
       enddo
-      write(6,*)
-      write(6,'(''pcm epot nuclei-surface polarization charges ='',f12.6)') penups
-      write(6,'(''pcm epot nuclei-volume polarization charges ='',f12.6)') penupv
-      write(6,'(''pcm epot nuclei-polarization charges ='',f12.6)') penupol
-      write(6,*)
+      write(ounit,*)
+      write(ounit,'(''pcm epot nuclei-surface polarization charges ='',f12.6)') penups
+      write(ounit,'(''pcm epot nuclei-volume polarization charges ='',f12.6)') penupv
+      write(ounit,'(''pcm epot nuclei-polarization charges ='',f12.6)') penupol
+      write(ounit,*)
 c........................................................................
  1000 format(I4,2x,3F12.5,2x,F12.5,2x,F12.5)
 c........................................................................
@@ -221,7 +222,7 @@ c      ah(k,l)=feps*surk*ss/rkl3
       endif
       enddo
 c     ah(k,l)=ah(k,l)*2.0d0*pi/sum(k)
-c     write(6,*)k,'sum =',sum(k)
+c     write(ounit,*)k,'sum =',sum(k)
       enddo
       do i=1,nchs
         do j=1,nchs
@@ -293,7 +294,7 @@ C     ***************************************************************
       use pcm_parms, only: iscov, nchs, nchs1
       use pcm_parms, only: ncopcm, nesph, nvopcm, re2
       use pcm_parms, only: xe, xpol, ye, ze
-
+      use contrl_file,    only: ounit
       use pcm_ameta, only: eta
       use pcm_fdc, only: fs, rcol, rcolt
       use precision_kinds, only: dp
@@ -316,7 +317,7 @@ C     ***************************************************************
       data hatokc/627.509541d0/
 c............................................................
 
-      write (6,*) 'hello! hello! qpcm_efield called -------'
+      write(ounit,*) 'hello! hello! qpcm_efield called -------'
 
       ncopcm=ncopcm+1
       iscv=mod(ncopcm,iscov)
@@ -438,7 +439,7 @@ c............................................................
       if(ipcm.eq.0.or.ipcm.eq.3) return
 
       nsco=ncopcm/iscov
-c     write(6,*) 'HELLO',nsco,ncopcm
+c     write(ounit,*) 'HELLO',nsco,ncopcm
       if(nsco.eq.nscv)then
          iupdate=1
 	 nchv=nvopcm
@@ -451,9 +452,9 @@ c     write(6,*) 'HELLO',nsco,ncopcm
            ch(kn)=qvol
 	 enddo
 
-c        write(6,*)
-c        write(6,*)'update of volume charges: nchv =',nchv,'nscv =',nscv
-c        write(6,*)
+c        write(ounit,*)
+c        write(ounit,*)'update of volume charges: nchv =',nchv,'nscv =',nscv
+c        write(ounit,*)
          ncopcm=0
          nvopcm=0
       endif
@@ -530,7 +531,7 @@ c       and adds nuclei-qpol interactions
 c......................................................
       use pcm_cntrl, only: icall
       use pcm_parms, only: ch, nch, nchs
-
+      use contrl_file,    only: ounit
       use pcm_pot, only: penups, penupv
       use pcm_grid3d_contrl, only: ipcm_3dgrid
       use precision_kinds, only: dp
@@ -567,19 +568,19 @@ c......................................................
   200 continue
 
       if (icall.eq.1)then
-        write(6,*)
-        write(6,'(''nchs='',i6,'' nch='',i6,'' ch(nch)='',1p1d12.4)') nchs,nch,ch(nch)
-        write(6,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms+pepcmv
-        write(6,*)
-c       write(6,*)
-c       write(6,*)'pepcms=',pepcms,'penups=',penups
-c       write(6,*)'pepcmv=',pepcmv,'penupv=',penupv
+        write(ounit,*)
+        write(ounit,'(''nchs='',i6,'' nch='',i6,'' ch(nch)='',1p1d12.4)') nchs,nch,ch(nch)
+        write(ounit,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms+pepcmv
+        write(ounit,*)
+c       write(ounit,*)
+c       write(ounit,*)'pepcms=',pepcms,'penups=',penups
+c       write(ounit,*)'pepcmv=',pepcmv,'penupv=',penupv
 c       if(ipcm_3dgrid.gt.0) then
-c     write(6,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms
-c       write(6,*)
+c     write(ounit,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms
+c       write(ounit,*)
 c       else
-c     write(6,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms+pepcmv
-c       write(6,*)
+c     write(ounit,'(''pcm epot solute-polarization charges ='',f12.6)') pepcms+pepcmv
+c       write(ounit,*)
 c       endif
       endif
  1000 format(6F15.8)
@@ -762,7 +763,7 @@ c......................................................
       use pcm_fdc, only: feps
 
       use pcm_inda, only: inda
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -833,13 +834,13 @@ c
       endif
       enddo
       enddo
-      write(6,*)
-      write(6,*) 'pol. charges on spheres'
+      write(ounit,*)
+      write(ounit,*) 'pol. charges on spheres'
       do i=1,nesph
       sqpol_sp=dsqrt(sqpol2_sp(i))
-      write(6,1200)i,xe(i),ye(i),ze(i),re(i),qpolsp(i),sqpol_sp
+      write(ounit,1200)i,xe(i),ye(i),ze(i),re(i),qpolsp(i),sqpol_sp
       enddo
-      write(6,*)
+      write(ounit,*)
 c
 c     write in 'chsurf_new' the new charges
 c
@@ -953,6 +954,7 @@ C     ***************************************************************
       use pcm_ameta, only: amdlg, eta
       use pcm_inda, only: inda
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -1039,8 +1041,8 @@ c---------------storage of info from prep1------------------------
       else
 
           if (ncent.ne.nsf) then
-             write (6,*) 'FATAL: ncent not equal to nsf'
-             write (6,*) 'not allowed in geometry optimization '
+             write(ounit,*) 'FATAL: ncent not equal to nsf'
+             write(ounit,*) 'not allowed in geometry optimization '
              stop
           endif
 c---------------prep and prep1 bypassed---------------------------
@@ -1519,13 +1521,13 @@ c     write (3,*) isf,ncyc,amadelung
       endif
       enddo
       amdg=amdg*r0/dble(2*np)
-c     write (6,100) xm(i),ym(i),zm(i)
+c     write(ounit,100) xm(i),ym(i),zm(i)
       csf(i,1,isf)=xm(i)
       csf(i,2,isf)=ym(i)
       csf(i,3,isf)=zm(i)
       csf(i,4,isf)=amdg
       enddo
-c     write (6,*) 'energy',energy
+c     write(ounit,*) 'energy',energy
       enddo
       return
       end
@@ -1550,7 +1552,7 @@ c     dimension ipvt(1000000),work(1000000),dt(2)
 c
 c     call dgefa(a,nsub,nsub,ipvt,info)
 c     if(info.gt.0) then
-c       write(6,'(''qpcm_MATINV: u(k,k)=0 with k= '',i5)') info
+c       write(ounit,'(''qpcm_MATINV: u(k,k)=0 with k= '',i5)') info
 c       call fatal_error('MATINV: info ne 0 in dgefa')
 c     endif
 c     call dgedi(a,nsub,nsub,ipvt,dt,work,11)
@@ -1569,6 +1571,7 @@ c........................................................
       subroutine qpcm_matinv(a,nsub,determinant)
       use pcm, only: MCHS
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, info, nsub
@@ -1585,7 +1588,7 @@ c the matrix a is replaced by its inverse.
 
       call dgetrf(nsub,nsub,a,nsub,ipvt,info)
       if(info.gt.0) then
-        write(6,'(''MATINV: u(k,k)=0 with k= '',i5)') info
+        write(ounit,'(''MATINV: u(k,k)=0 with k= '',i5)') info
         call fatal_error('MATINV: info ne 0 in dgetrf')
       endif
 

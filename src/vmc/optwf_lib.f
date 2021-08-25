@@ -5,7 +5,7 @@ c in: matrix a of order n stored with physical dimension np
 c out: lower triangular matrix stored in lower portion of a
 c note: lower triangular portion of original a is overwritten
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: ierr, ip, j, jm1, k
@@ -37,7 +37,7 @@ c        diag_prod=diag_prod*a(j,j)
 
          det=det*a(j,j)
          if(a(j,j).le.ZERO) then
-           write(6,'(''Warning: '',i2,'' element of a is <0'',d9.2)') j,a(j,j)
+           write(ounit,'(''Warning: '',i2,'' element of a is <0'',d9.2)') j,a(j,j)
            ierr=j
            return
          endif
@@ -53,7 +53,7 @@ c        diag_prod=diag_prod*a(j,j)
          deta=deta*a(j,j)**2
       enddo
 
-c     write(6,'(''diag_prod,det,deta='',9d12.4)') diag_prod,det,deta
+c     write(ounit,'(''diag_prod,det,deta='',9d12.4)') diag_prod,det,deta
 
       return
       end

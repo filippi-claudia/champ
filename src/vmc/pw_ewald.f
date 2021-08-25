@@ -22,7 +22,7 @@ c Written by Cyrus Umrigar
       use contrl_per, only: iperiodic
 
       use pseudo, only: lpot, nloc, vps
-
+      use contrl_file,    only: ounit
       use grid3d_param, only: origin
       use precision_kinds, only: dp
       implicit none
@@ -74,7 +74,7 @@ c which is used to set the range of the real-space Ewald sums so that only one i
 c of a nucleus or an electron is present within cutr and cutr_sim respectively.
       call check_lattice(rlatt,cutr,0)
       call check_lattice(rlatt_sim,cutr_sim,1)
-      write(6,'(''cutr,cutr_sim ='',9f9.5)') cutr,cutr_sim
+      write(ounit,'(''cutr,cutr_sim ='',9f9.5)') cutr,cutr_sim
 
 c Calculate inverse transformations (from lattice coordinates to real coordinates)
 c and cell volumes
@@ -104,11 +104,11 @@ c    &   -rlatt(2,1)*rlatt(1,2)*rlatt(3,3)
       glatt(2,3)=det1*(rlatt(3,1)*rlatt(1,2)-rlatt(3,2)*rlatt(1,1))
       glatt(3,3)=det1*(rlatt(1,1)*rlatt(2,2)-rlatt(1,2)*rlatt(2,1))
 
-      write(6,'(/,''Reciprocal lattice basis vectors'',3(/,3f10.6))')
+      write(ounit,'(/,''Reciprocal lattice basis vectors'',3(/,3f10.6))')
      & ((glatt(k,j),k=1,3),j=1,3)
 
       vcell=dabs(det)
-      write(6,'(/,''Cell volume'',f14.8)') vcell
+      write(ounit,'(/,''Cell volume'',f14.8)') vcell
 
 c Simulation cell volume and reciprocal lattice
 c     det=rlatt_sim(1,1)*rlatt_sim(2,2)*rlatt_sim(3,3)
@@ -128,13 +128,13 @@ c    &   -rlatt_sim(2,1)*rlatt_sim(1,2)*rlatt_sim(3,3)
       glatt_sim(2,3)=det1*(rlatt_sim(3,1)*rlatt_sim(1,2)-rlatt_sim(3,2)*rlatt_sim(1,1))
       glatt_sim(3,3)=det1*(rlatt_sim(1,1)*rlatt_sim(2,2)-rlatt_sim(1,2)*rlatt_sim(2,1))
 
-      write(6,'(/,''Simulation cell reciprocal lattice basis vectors'',3(/,3f10.6))')
+      write(ounit,'(/,''Simulation cell reciprocal lattice basis vectors'',3(/,3f10.6))')
      & ((glatt_sim(k,j),k=1,3),j=1,3)
 
       vcell_sim=dabs(det_sim)
-      write(6,'(/,''Simulation cell volume'',f14.8)') vcell_sim
+      write(ounit,'(/,''Simulation cell volume'',f14.8)') vcell_sim
       if((vcell_sim/vcell)-nint(vcell_sim/vcell).gt.1.d-9) then
-        write(6,'(''Warning: vcell_sim/vcell='',f9.5, '' not an integer'')') vcell_sim/vcell
+        write(ounit,'(''Warning: vcell_sim/vcell='',f9.5, '' not an integer'')') vcell_sim/vcell
         call fatal_error ('Simulation cell volume is not a multiple of the primitive cell volume')
       endif
 
@@ -151,23 +151,23 @@ c primitive cell
       call short_distance(rlatt,vcell,dist_min,rdist)
 c     cutr=0.5d0*dist_min
 c     cutr=min(rmax(ict),cutr)
-      write(6,'(/,''Shortest distance to cell boundary'',f14.8)') dist_min/2
+      write(ounit,'(/,''Shortest distance to cell boundary'',f14.8)') dist_min/2
 
 c simulation cell
       call short_distance(rlatt_sim,vcell_sim,dist_min,rdist_sim)
 c     cutr_sim=0.5d0*dist_min
-      write(6,'(/,''Shortest distance to sim. cell boundary'',f14.8)') dist_min/2
+      write(ounit,'(/,''Shortest distance to sim. cell boundary'',f14.8)') dist_min/2
 
 c reciprocal-space distances
 c primitive cell
       vgcell=twopi**3/vcell
       call short_distance(glatt,vgcell,gdistmin,gdist)
-      write(6,'(/,''Shortest distance to recip. cell boundary'',f14.8)') gdistmin
+      write(ounit,'(/,''Shortest distance to recip. cell boundary'',f14.8)') gdistmin
 
 c simulation cell
       vgcell_sim=twopi**3/vcell_sim
       call short_distance(glatt_sim,vgcell_sim,gdistmin_sim,gdist_sim)
-      write(6,'(/,''Shortest distance to sim. recip. cell boundary'',f14.8)') gdistmin_sim
+      write(ounit,'(/,''Shortest distance to sim. recip. cell boundary'',f14.8)') gdistmin_sim
 
 
 c generate shells of primitive cell g-vectors
@@ -184,20 +184,20 @@ c generate shells of primitive cell g-vectors
         ngvec=ngvec+igmult(k)
    10 continue
 
-   20 write(6,'(/,''Shells within cutg_big,cutg'',2i8)') ngnorm_big,ngnorm
-      write(6,'(/,''Vects. within cutg_big,cutg'',2i8)') ngvec_big,ngvec
-      write(6,'(/,''ng1d for primitive cell'',3i4)') (ng1d(k),k=1,3)
+   20 write(ounit,'(/,''Shells within cutg_big,cutg'',2i8)') ngnorm_big,ngnorm
+      write(ounit,'(/,''Vects. within cutg_big,cutg'',2i8)') ngvec_big,ngvec
+      write(ounit,'(/,''ng1d for primitive cell'',3i4)') (ng1d(k),k=1,3)
       if(ngvec.gt.NGVECX) then
-        write(6,'(''ngvec,NGVECX='',2i8)') ngvec,NGVECX
+        write(ounit,'(''ngvec,NGVECX='',2i8)') ngvec,NGVECX
         call fatal_error ('ngvec>NGVECX in set_ewald')
       endif
       if(ngnorm.gt.NGNORMX) then
-        write(6,'(''ngnorm,NGNORMX='',2i8)') ngnorm,NGNORMX
+        write(ounit,'(''ngnorm,NGNORMX='',2i8)') ngnorm,NGNORMX
         call fatal_error ('ngnorm>NGNORMX in set_ewald')
       endif
       do 30 k=1,3
         if(ng1d(k).gt.NG1DX) then
-          write(6,'(''k,ng1d(k),NG1DX='',i1,2i8)') k,ng1d(k),NG1DX
+          write(ounit,'(''k,ng1d(k),NG1DX='',i1,2i8)') k,ng1d(k),NG1DX
           call fatal_error ('ng1d(k)>NG1DX in set_ewald')
         endif
    30 continue
@@ -221,9 +221,9 @@ c generate shells of simulation cell g-vectors
         ngvec_sim=ngvec_sim+igmult_sim(k)
    40 continue
 
-   50 write(6,'(/,''Shells within cutg_sim_big,cutg_sim'',2i8)') ngnorm_sim_big,ngnorm_sim
-      write(6,'(/,''Vects. within cutg_sim_big,cutg_sim'',2i8)') ngvec_sim_big,ngvec_sim
-      write(6,'(/,''ng1d for simulation cell'',3i4)') (ng1d_sim(k),k=1,3)
+   50 write(ounit,'(/,''Shells within cutg_sim_big,cutg_sim'',2i8)') ngnorm_sim_big,ngnorm_sim
+      write(ounit,'(/,''Vects. within cutg_sim_big,cutg_sim'',2i8)') ngvec_sim_big,ngvec_sim
+      write(ounit,'(/,''ng1d for simulation cell'',3i4)') (ng1d_sim(k),k=1,3)
       if(ngvec_sim.gt.NGVEC_SIMX) call fatal_error ('ngvec_sim>NGVEC_SIMX in set_ewald')
       if(ngnorm_sim.gt.NGNORM_SIMX) call fatal_error ('ngnorm_sim>NGNORM_SIMX in set_ewald')
       do 60 k=1,3
@@ -236,8 +236,8 @@ c Convert k-vector shift from simulation-cell recip. lattice vector units to car
         rkvec_shift(k)=0
         do 65 i=1,3
    65     rkvec_shift(k)=rkvec_shift(k)+rkvec_shift_tmp(i)*glatt_sim(k,i)
-      write(6,'(/,''rkvec_shift in sim-cell recip. lat. vec. units'',9f9.4)') (rkvec_shift_tmp(k),k=1,3)
-      write(6,'(''rkvec_shift in cartesian coodinates'',9f9.4)') (rkvec_shift(k),k=1,3)
+      write(ounit,'(/,''rkvec_shift in sim-cell recip. lat. vec. units'',9f9.4)') (rkvec_shift_tmp(k),k=1,3)
+      write(ounit,'(''rkvec_shift in cartesian coodinates'',9f9.4)') (rkvec_shift(k),k=1,3)
 
 c Generate k-vectors, i.e. simulation-cell recip. lattice vectors shifted by rkvec_shift that are
 c not related by a primitive-cell recip. lattice vector.
@@ -261,21 +261,21 @@ c Fourier transfom of 1/r
      &,cutr,vcell,ncoef_per,np,b_coul,y_coul,chisq,ifcon,isrange)
 
       if(chisq.gt.0) then
-        write(6,'(''Rms error in 1/r separation in primitive cell'',d12.5)') dsqrt(chisq)
+        write(ounit,'(''Rms error in 1/r separation in primitive cell'',d12.5)') dsqrt(chisq)
        else
-        write(6,'(''Warning: Rms error missing, chisq negative in 1/r primitive separate'',d12.4)') chisq
+        write(ounit,'(''Warning: Rms error missing, chisq negative in 1/r primitive separate'',d12.4)') chisq
         if(chisq.lt.0.d0) call fatal_error ('chisq<0 in separate')
       endif
 
-      if(ipr.ge.0) write(6,'(/,''Separation of Coulomb interaction in primitive cell'')')
-      if(ipr.eq.1) write(6,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm)
-      if(ipr.ge.2) write(6,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm_big)
-      if(ipr.ge.0) write(6,'(''y_coul = '',20d12.4)') (y_coul(k),k=1,ngnorm)
-      if(ipr.ge.0) write(6,'(''b_coul = '',20d12.4)') (b_coul(k),k=1,ncoef_per)
+      if(ipr.ge.0) write(ounit,'(/,''Separation of Coulomb interaction in primitive cell'')')
+      if(ipr.eq.1) write(ounit,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm)
+      if(ipr.ge.2) write(ounit,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm_big)
+      if(ipr.ge.0) write(ounit,'(''y_coul = '',20d12.4)') (y_coul(k),k=1,ngnorm)
+      if(ipr.ge.0) write(ounit,'(''b_coul = '',20d12.4)') (b_coul(k),k=1,ncoef_per)
 
 c debug n-n interaction (primitive cell)
       if(ipr.ge.0) then
-        write(6,'(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')
+        write(ounit,'(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')
         lowest_pow=-1
         npts=101
         dx=cutr/(npts-1)
@@ -290,7 +290,7 @@ c debug n-n interaction (primitive cell)
           endif
    74     sum=sum+wt*rr**2*vsrange(rr,cutr,lowest_pow,ncoef_per,np,b_coul)
         const=2*twopi*sum*dx/vcell
-        write(6,'(''const='',9f12.8)') const
+        write(ounit,'(''const='',9f12.8)') const
 
         rms=0
         do 75 i=1,npts
@@ -306,16 +306,16 @@ c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_coul)
           ewa=ewald_pot(r_tmp,rr,gvec,gnorm,ngnorm,igmult,vbare_coul,cutr,vcell)
           if(i.ne.1) rms=rms+(true-test)**2
           if(i.eq.1) then
-            write(6,'(''1/r'',f8.4,4f12.6,30x,2f12.6)') rr,true,ewa,test,test-true,vs,vl
+            write(ounit,'(''1/r'',f8.4,4f12.6,30x,2f12.6)') rr,true,ewa,test,test-true,vs,vl
            else
-            write(6,'(''1/r'',f8.4,5f12.6,2f9.3,2f12.6)') rr,true,ewa,test,test-true
+            write(ounit,'(''1/r'',f8.4,5f12.6,2f9.3,2f12.6)') rr,true,ewa,test,test-true
      &      ,1/rr,(true-true_s)/dx,(test-test_s)/dx,vs,vl
           endif
           true_s=true
    75   test_s=test
         rms=sqrt(rms/(npts-1))
-        write(6,'(''Rms error of 1/r (prim cell) fit ='',d12.4)') rms
-        if(rms.gt.1.d-3) write(6,'(''Warning: rms error of 1/r (prim cell) fit too large'',d12.4)') rms
+        write(ounit,'(''Rms error of 1/r (prim cell) fit ='',d12.4)') rms
+        if(rms.gt.1.d-3) write(ounit,'(''Warning: rms error of 1/r (prim cell) fit too large'',d12.4)') rms
       endif
 
 
@@ -333,24 +333,24 @@ c Fourier transform of -1/r*(1-exp(-r/f)) for Jastrow
      &,cutr_sim,vcell_sim,ncoef_per,np,b_coul_sim,y_coul_sim,chisq,ifcon,isrange)
 
       if(chisq.gt.0) then
-        write(6,'(''Rms error in 1/r separation in simulation cell'',d12.5)') dsqrt(chisq)
+        write(ounit,'(''Rms error in 1/r separation in simulation cell'',d12.5)') dsqrt(chisq)
        else
-        write(6,'(''Warning: Rms error missing, chisq negative in 1/r simulation separate'',d12.4)') chisq
+        write(ounit,'(''Warning: Rms error missing, chisq negative in 1/r simulation separate'',d12.4)') chisq
         if(chisq.lt.0.d0) call fatal_error ('chisq<0 in separate')
       endif
 
-      if(ipr.ge.0) write(6,'(/,''Separation of Coulomb interaction in simulation cell'')')
-      if(ipr.eq.1) write(6,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm_sim)
-      if(ipr.ge.2) write(6,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm_sim_big)
-      if(ipr.ge.0) write(6,'(''y_coul_sim = '',20d12.4)') (y_coul_sim(k),k=1,ngnorm_sim)
-      if(ipr.ge.0) write(6,'(''b_coul_sim = '',20d12.4)') (b_coul_sim(k),k=1,ncoef_per)
+      if(ipr.ge.0) write(ounit,'(/,''Separation of Coulomb interaction in simulation cell'')')
+      if(ipr.eq.1) write(ounit,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm_sim)
+      if(ipr.ge.2) write(ounit,'(''vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm_sim_big)
+      if(ipr.ge.0) write(ounit,'(''y_coul_sim = '',20d12.4)') (y_coul_sim(k),k=1,ngnorm_sim)
+      if(ipr.ge.0) write(ounit,'(''b_coul_sim = '',20d12.4)') (b_coul_sim(k),k=1,ncoef_per)
 
 c debug e-e interaction (simulation cell)
 c Note vbare_coul is used both for primitive and simulation cells
 c Since Jastrow has singlularity at 0, cannot match there, so evaluate
 c rms error only for latter 3/4 of interval
       if(ipr.ge.0) then
-        write(6,'(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')
+        write(ounit,'(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')
         lowest_pow=-1
         npts=101
         dx=cutr_sim/(npts-1)
@@ -365,7 +365,7 @@ c rms error only for latter 3/4 of interval
           endif
    84     sum=sum+wt*rr**2*vsrange(rr,cutr_sim,lowest_pow,ncoef_per,np,b_coul_sim)
         const=2*twopi*sum*dx/vcell_sim
-        write(6,'(''const='',9f12.8)') const
+        write(ounit,'(''const='',9f12.8)') const
 
         rms=0
         do 85 i=1,npts
@@ -381,16 +381,16 @@ c         true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_coul)
           ewa=ewald_pot(r_tmp,rr,gvec_sim,gnorm_sim,ngnorm_sim,igmult_sim,vbare_coul,cutr_sim,vcell_sim)
           if(i.ne.1) rms=rms+(true-test)**2
           if(i.eq.1) then
-            write(6,'(''1/r'',f8.4,4f12.6,30x,2f12.6)') rr,true,ewa,test,test-true,vs,vl
+            write(ounit,'(''1/r'',f8.4,4f12.6,30x,2f12.6)') rr,true,ewa,test,test-true,vs,vl
            else
-            write(6,'(''1/r'',f8.4,5f12.6,2f9.3,2f12.6)') rr,true,ewa,test,test-true
+            write(ounit,'(''1/r'',f8.4,5f12.6,2f9.3,2f12.6)') rr,true,ewa,test,test-true
      &      ,1/rr,(true-true_s)/dx,(test-test_s)/dx,vs,vl
           endif
           true_s=true
    85   test_s=test
         rms=sqrt(rms/(npts-1))
-        write(6,'(''Rms error of 1/r fit (sim cell) ='',d12.4)') rms
-        if(rms.gt.1.d-3) write(6,'(''Warning: rms error of 1/r (sim cell) fit too large'',d12.4)') rms
+        write(ounit,'(''Rms error of 1/r fit (sim cell) ='',d12.4)') rms
+        if(rms.gt.1.d-3) write(ounit,'(''Warning: rms error of 1/r (sim cell) fit too large'',d12.4)') rms
       endif
 
 c e-e Jastrow
@@ -404,23 +404,23 @@ c e-e Jastrow
      &,cutr_sim,vcell_sim,ncoef_per,np,b_jas,y_jas,chisq,ifcon,isrange)
 
       if(chisq.gt.0) then
-        write(6,'(''Rms error in Jastrow separation'',d12.5)') dsqrt(chisq)
+        write(ounit,'(''Rms error in Jastrow separation'',d12.5)') dsqrt(chisq)
        else
-        write(6,'(''Warning: Rms error missing, chisq negative in Jastrow separate'',d12.4)') chisq
+        write(ounit,'(''Warning: Rms error missing, chisq negative in Jastrow separate'',d12.4)') chisq
         if(chisq.lt.0.d0) call fatal_error ('chisq<0 in separate')
       endif
 
-      if(ipr.ge.0) write(6,'(/,''Separation of Jastrow in simulation cell'')')
-      if(ipr.eq.1) write(6,'(''vbare_jas = '',20d12.4)') (vbare_jas(k),k=1,ngnorm_sim)
-      if(ipr.ge.2) write(6,'(''vbare_jas = '',20d12.4)') (vbare_jas(k),k=1,ngnorm_sim_big)
-      if(ipr.ge.0) write(6,'(''y_jas = '',20d12.4)') (y_jas(k),k=1,ngnorm_sim)
-      if(ipr.ge.0) write(6,'(''b_jas = '',20d12.4)') (b_jas(k),k=1,ncoef_per)
+      if(ipr.ge.0) write(ounit,'(/,''Separation of Jastrow in simulation cell'')')
+      if(ipr.eq.1) write(ounit,'(''vbare_jas = '',20d12.4)') (vbare_jas(k),k=1,ngnorm_sim)
+      if(ipr.ge.2) write(ounit,'(''vbare_jas = '',20d12.4)') (vbare_jas(k),k=1,ngnorm_sim_big)
+      if(ipr.ge.0) write(ounit,'(''y_jas = '',20d12.4)') (y_jas(k),k=1,ngnorm_sim)
+      if(ipr.ge.0) write(ounit,'(''b_jas = '',20d12.4)') (b_jas(k),k=1,ncoef_per)
 
 c debug e-e Jastrow
 c Since Jastrow has singlularity at 0, cannot match there, so evaluate
 c rms error only for latter 3/4 of interval
       if(ipr.ge.0) then
-        write(6,'(''      r       "true"       test      test-true -1/r*(1-exp(-r/f) d_true d_test'')')
+        write(ounit,'(''      r       "true"       test      test-true -1/r*(1-exp(-r/f) d_true d_test'')')
         lowest_pow=0
         npts=101
         dx=cutr_sim/(npts-1)
@@ -435,16 +435,16 @@ c rms error only for latter 3/4 of interval
           true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_jas)
           if(4*i.ge.npts) rms=rms+(true-test)**2
           if(i.eq.1) then
-            write(6,'(''jas'',f8.4,4f12.6,2f8.3)') rr,true,test,test-true
+            write(ounit,'(''jas'',f8.4,4f12.6,2f8.3)') rr,true,test,test-true
            else
-            write(6,'(''jas'',f8.4,4f12.6,2f8.3)') rr,true,test,test-true
+            write(ounit,'(''jas'',f8.4,4f12.6,2f8.3)') rr,true,test,test-true
      &      ,-1/rr*(1-exp(-rr/f)),(true-true_s)/dx,(test-test_s)/dx
           endif
           true_s=true
    86   test_s=test
         rms=sqrt(4*rms/(3*npts))
-        write(6,'(''Rms error of jas fit on larger 3/4 interval='',d12.4)') rms
-        if(rms.gt.1.d-3) write(6,'(''Warning: rms error of jas fit too large'',d12.4)') rms
+        write(ounit,'(''Rms error of jas fit on larger 3/4 interval='',d12.4)') rms
+        if(rms.gt.1.d-3) write(ounit,'(''Warning: rms error of jas fit too large'',d12.4)') rms
       endif
 
 
@@ -468,11 +468,11 @@ c     r0=rmax/(arg**(nr-1)-1)
       r(1)=1.d-10
       vps_short(1)=vpseudo(1,ict,lpot(ict))+znuc(ict)*2*alpha/sqrt(pi)
       vpseudo(1,ict,lpot(ict))=vps_short(1)
-      write(6,'(''alpha'',9d12.4)') alpha,rmax(ict),arg(ict)
+      write(ounit,'(''alpha'',9d12.4)') alpha,rmax(ict),arg(ict)
       do 90 ir=2,nr_ps(ict)
         r(ir)=r0(ict)*(arg(ict)**(ir-1)-1.d0)
         vps_short(ir)=vpseudo(ir,ict,lpot(ict))+znuc(ict)*derf(alpha*r(ir))/r(ir)
-c       write(6,'(''r,vpseudo,z*derf/r,z/r'',9d12.4)') r(ir),vpseudo(ir,ict,lpot(ict))+znuc(ict)/r(ir),
+c       write(ounit,'(''r,vpseudo,z*derf/r,z/r'',9d12.4)') r(ir),vpseudo(ir,ict,lpot(ict))+znuc(ict)/r(ir),
 c    & -znuc(ict)*derf(alpha*r(ir))/r(ir)+znuc(ict)/r(ir),vpseudo(ir,ict,lpot(ict))+znuc(ict)*derf(alpha*r(ir))/r(ir)
 
    90   vpseudo(ir,ict,lpot(ict))=vps_short(ir)
@@ -484,16 +484,16 @@ c Derivative at origin 0 because of nature of psp, and at last pt 0 because we s
 
       do 100 ir=1,nr_ps(ict),50
         call splfit_tm(r(ir),lpot(ict),ict,vpot)
-c 100   write(6,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vps_short(ir)
-  100   write(6,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vpseudo(ir,ict,lpot(ict)),vpot
+c 100   write(ounit,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vps_short(ir)
+  100   write(ounit,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vpseudo(ir,ict,lpot(ict)),vpot
 
-      write(6,'(/,''Grid parameters, r0,rmax,arg  '',d10.4,2f10.5)')
+      write(ounit,'(/,''Grid parameters, r0,rmax,arg  '',d10.4,2f10.5)')
      & r0(ict),r(nr_ps(ict)),arg(ict)
 
       if(gnorm(ngnorm_big).gt.twopi/(100*(r(nr_ps(ict)-1)+r0(ict))*(arg(ict)-1))) then
-        write(6,'(''**Warning: not enough grid pts in psp to do accurate numerical FT;
+        write(ounit,'(''**Warning: not enough grid pts in psp to do accurate numerical FT;
      &  using a non-uniform grid only makes it worse'')')
-        write(6,'(''gnorm(ngnorm_big)>twopi/(100*(r(nr_ps(ict)-1)+r0(ict))*(arg(ict)-1))'',9f9.4)')
+        write(ounit,'(''gnorm(ngnorm_big)>twopi/(100*(r(nr_ps(ict)-1)+r0(ict))*(arg(ict)-1))'',9f9.4)')
      &  gnorm(ngnorm_big),twopi/(100*(r(nr_ps(ict)-1)+r0(ict))*(arg(ict)-1))
      &  ,twopi/(100*r(nr_ps(ict))*(arg(ict)-1))
       endif
@@ -504,8 +504,8 @@ c    & vbare_psp)
      & vps_basis_fourier)
 
       do 110 ig=1,ngnorm_big,10
-c 110   write(6,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vbare_psp(ig)
-  110   write(6,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vps_basis_fourier(ig)
+c 110   write(ounit,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vbare_psp(ig)
+  110   write(ounit,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vps_basis_fourier(ig)
 
 c Add in (4*pi*Z/V) Integ d^3r (1-erf(alpha*r))/r to get correct background contribution
 c     vbare_psp(1)=vbare_psp(1)+pi*znuc(ict)/(vcell*alpha**2)
@@ -513,12 +513,12 @@ c     vbare_psp(1)=vbare_psp(1)+pi*znuc(ict)/(vcell*alpha**2)
       do 120 ig=2,ngnorm_big
         g2=gnorm(ig)**2
         g2a=0.25d0*g2/alpha**2
-c       write(6,*) ig,twopi,znuc(ict),exp(-g2a),(vcell*g2)
+c       write(ounit,*) ig,twopi,znuc(ict),exp(-g2a),(vcell*g2)
 c 120   vbare_psp(ig)=vbare_psp(ig)-2*twopi*znuc(ict)*exp(-g2a)/(vcell*g2)
   120   vbare_psp(ig)=vps_basis_fourier(ig)-2*twopi*znuc(ict)*exp(-g2a)/(vcell*g2)
 
       do 130 ig=1,ngnorm_big,10
-  130   write(6,'(''CHECK FT2'',i5,g12.5,9d12.4)') ig,gnorm(ig),vbare_psp(ig),vps_basis_fourier(ig)
+  130   write(ounit,'(''CHECK FT2'',i5,g12.5,9d12.4)') ig,gnorm(ig),vbare_psp(ig),vps_basis_fourier(ig)
 
 c One cannot numerically fourier transform a function with a long 1/r
 c tail.  So, add Z/r potential to cancel -Z/r tail and subtract out the
@@ -532,17 +532,17 @@ c       if(ir.eq.1) r(ir)=1.d-10
 c 140   vps_short(ir)=vpseudo(ir,ict,lpot(ict))+znuc(ict)/r(ir)
 
 c     do 150 ir=1,nr_ps(ict),50
-c 150   write(6,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vpseudo(ir,ict,lpot(ict)),vps_short(ir)
+c 150   write(ounit,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vpseudo(ir,ict,lpot(ict)),vps_short(ir)
 
-c     write(6,'(''ict='',9i5)') ict
-c     write(6,'(''ict,nr_ps(ict)='',9i5)') ict,nr_ps(ict)
-c     write(6,'(/,''Grid parameters, r0,rmax,arg  '',d10.4,2f10.5)')
+c     write(ounit,'(''ict='',9i5)') ict
+c     write(ounit,'(''ict,nr_ps(ict)='',9i5)') ict,nr_ps(ict)
+c     write(ounit,'(/,''Grid parameters, r0,rmax,arg  '',d10.4,2f10.5)')
 c    & r0(ict),r(nr_ps(ict)),arg(ict)
 
 cc    if(gnorm(ngnorm_big).gt.twopi/(100*(r(nr_ps(ict)-1)+r0(ict))*(arg(ict)-1))) then
-cc      write(6,'(''**Warning: not enough grid pts in psp to do accurate numerical FT;
+cc      write(ounit,'(''**Warning: not enough grid pts in psp to do accurate numerical FT;
 cc   &  using a non-uniform grid only makes it worse'')')
-cc      write(6,'(''gnorm(ngnorm_big)>twopi/(100*(r(nr_ps(ict)-1)+r0(ict))*(arg(ict)-1))'',9f9.4)')
+cc      write(ounit,'(''gnorm(ngnorm_big)>twopi/(100*(r(nr_ps(ict)-1)+r0(ict))*(arg(ict)-1))'',9f9.4)')
 cc   &  gnorm(ngnorm_big),twopi/(100*(r(nr_ps(ict)-1)+r0(ict))*(arg(ict)-1))
 cc   &  ,twopi/(100*r(nr_ps(ict))*(arg(ict)-1))
 cc    endif
@@ -551,7 +551,7 @@ c     call fourier_transform(r,arg(ict),r0(ict),nr_ps(ict),vps_short,vcell,gnorm
 c    & vbare_psp)
 
 c     do 160 ig=1,ngnorm_big,10
-c 160   write(6,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vbare_psp(ig)
+c 160   write(ounit,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vbare_psp(ig)
 
 ccSubtract out fourier components of Z/r
 ccFourier coefs of Z/r or psp+Z/r go as 1/g^2, those of psp go as 1/g^5 because of deriv. discontinuity in TM psp
@@ -559,7 +559,7 @@ c     do 170 ig=2,ngnorm_big
 c 170   vbare_psp(ig)=vbare_psp(ig)-2*twopi*znuc(ict)/(vcell*gnorm(ig)**2)
 
 c     do 180 ig=1,ngnorm_big,10
-c 180   write(6,'(''CHECK FT2'',i5,g12.5,d12.4)') ig,gnorm(ig),vbare_psp(ig)
+c 180   write(ounit,'(''CHECK FT2'',i5,g12.5,d12.4)') ig,gnorm(ig),vbare_psp(ig)
 
 c If isrange=0,1 set ifcon=1, if isrange=2,3 set ifcon=0
       lowest_pow=0
@@ -571,17 +571,17 @@ c If isrange=0,1 set ifcon=1, if isrange=2,3 set ifcon=0
      &,cutr,vcell,ncoef_per,np,b_psp(1,ict),y_psp(1,ict),chisq,ifcon,isrange)
 
       if(chisq.gt.0) then
-        write(6,'(''Rms error in pseudopotential separation'',d12.5)') dsqrt(chisq)
+        write(ounit,'(''Rms error in pseudopotential separation'',d12.5)') dsqrt(chisq)
        else
-        write(6,'(''Warning: Rms error missing, chisq negative in pseudopotential separate'',d12.4)') chisq
+        write(ounit,'(''Warning: Rms error missing, chisq negative in pseudopotential separate'',d12.4)') chisq
         if(chisq.lt.0.d0) call fatal_error ('chisq<0 in separate')
       endif
 
-      if(ipr.ge.0) write(6,'(/,''Separation of pseudopotential in primitive cell'')')
-      if(ipr.eq.1) write(6,'(''vbare_psp = '',20d12.4)') (vbare_psp(k),k=1,ngnorm)
-      if(ipr.ge.2) write(6,'(''vbare_psp = '',20d12.4)') (vbare_psp(k),k=1,ngnorm_big)
-      if(ipr.ge.0) write(6,'(''y_psp = '',20d12.4)') (y_psp(k,ict),k=1,ngnorm)
-      if(ipr.ge.0) write(6,'(''b_psp = '',20d12.4)') (b_psp(k,ict),k=1,ncoef_per)
+      if(ipr.ge.0) write(ounit,'(/,''Separation of pseudopotential in primitive cell'')')
+      if(ipr.eq.1) write(ounit,'(''vbare_psp = '',20d12.4)') (vbare_psp(k),k=1,ngnorm)
+      if(ipr.ge.2) write(ounit,'(''vbare_psp = '',20d12.4)') (vbare_psp(k),k=1,ngnorm_big)
+      if(ipr.ge.0) write(ounit,'(''y_psp = '',20d12.4)') (y_psp(k,ict),k=1,ngnorm)
+      if(ipr.ge.0) write(ounit,'(''b_psp = '',20d12.4)') (b_psp(k,ict),k=1,ncoef_per)
 
 c If sim cell is not primitive cell, vbare_coul has been overwritten, so restore it
 c n-n, e-n interactions (primitive cell)
@@ -597,7 +597,7 @@ c Note that 1/r and Jastrow have singlularities at r=0 and so at short r we cann
 c the separation into short-range and long-range parts by just summing the
 c bare long-range parts.  The psp does not have a singularity so we can test it everywhere.
       if(ipr.ge.0) then
-        write(6,'(''      r       "true"      ewald       test        test-true   d_true  d_test   vsrange  vlrange'')')
+        write(ounit,'(''      r       "true"      ewald       test        test-true   d_true  d_test   vsrange  vlrange'')')
         npts=101
         dx=cutr/(npts-1)
         rms=0
@@ -617,16 +617,16 @@ c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_psp)
           ewa=ewald_pot_psp(r_tmp,rr,gvec,gnorm,ngnorm,igmult,vbare_coul,cutr,vcell,ict,lpot(ict),znuc(ict))
           rms=rms+(true-test)**2
           if(i.eq.1) then
-            write(6,'(''vps'',f8.4,4f12.6,16x,9f12.6)') rr,true,ewa,test,test-true,vs,vl
+            write(ounit,'(''vps'',f8.4,4f12.6,16x,9f12.6)') rr,true,ewa,test,test-true,vs,vl
            else
-            write(6,'(''vps'',f8.4,4f12.6,2f8.3,9f12.6)') rr,true,ewa,test,test-true
+            write(ounit,'(''vps'',f8.4,4f12.6,2f8.3,9f12.6)') rr,true,ewa,test,test-true
      &      ,(true-true_s)/dx,(test-test_s)/dx,vs,vl
           endif
           true_s=true
   191   test_s=test
         rms=sqrt(rms/npts)
-        write(6,'(''Rms error of psp fit='',d12.4)') rms
-        if(rms.gt.1.d-3) write(6,'(''Warning: rms error of psp fit too large'',d12.4)') rms
+        write(ounit,'(''Rms error of psp fit='',d12.4)') rms
+        if(rms.gt.1.d-3) write(ounit,'(''Warning: rms error of psp fit too large'',d12.4)') rms
       endif
   195 continue
 
@@ -638,13 +638,13 @@ c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_psp)
 
 c     call pot_nn_ewald_old
 c     c_madelung=pecent*dist_nn/(znuc(1)*znuc(2)*ncent/2)
-c     write(6,'(''pecent (old)='',f10.6)') pecent
-c     write(6,'(''c_madelung_o='',f10.6)') c_madelung
+c     write(ounit,'(''pecent (old)='',f10.6)') pecent
+c     write(ounit,'(''c_madelung_o='',f10.6)') c_madelung
 
       call pot_nn_ewald
 c     c_madelung=pecent*dist_nn/(znuc(1)*znuc(2)*ncent/2)
-      write(6,'(''pecent='',f12.6)') pecent
-c     write(6,'(''c_madelung='',f10.6)') c_madelung
+      write(ounit,'(''pecent='',f12.6)') pecent
+c     write(ounit,'(''c_madelung='',f10.6)') c_madelung
 
       return
       end
@@ -658,7 +658,7 @@ c dist_min is the shortest of these three.
 c By choosing the range of the short-range part of the Ewald sums to be
 c <= half the shortest perpendicular distance we ensure that the short-range
 c part has zero or one terms.
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -812,7 +812,7 @@ c-----------------------------------------------------------------------
       use ewald_mod, only: NGNORM_BIGX
       use ewald_mod, only: NGNORM_SIM_BIGX
 c Written by Cyrus Umrigar
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -860,10 +860,10 @@ c figure out the multiplicities and convert gnorm from being ngvec_big long to b
           gnorm(ngnorm_big)=gnorm_tmp(i-1)
           ngnorm_big=ngnorm_big+1
           if(icell.eq.0 .and. ngnorm_big.gt.NGNORM_BIGX) then
-            write(6,'(''ngnorm_big='',i8)') ngnorm_big
+            write(ounit,'(''ngnorm_big='',i8)') ngnorm_big
             call fatal_error ('ngnorm_big > NGNORM_BIGX in sort')
            elseif(icell.eq.1 .and. ngnorm_big.gt.NGNORM_SIM_BIGX) then
-            write(6,'(''ngnorm_sim_big='',i8)') ngnorm_big
+            write(ounit,'(''ngnorm_sim_big='',i8)') ngnorm_big
             call fatal_error ('ngnorm_big > NGNORM_SIM_BIGX in sort')
           endif
           icount=0
@@ -881,9 +881,9 @@ c     j=0
 c     do 100 i=1,ngnorm_big
 c       do 100 im=1,igmult(i)
 c         j=j+1
-c 100     write(6,'(''CHECK '',2i4,9f10.4)')
+c 100     write(ounit,'(''CHECK '',2i4,9f10.4)')
 c    &    i,igmult(i),gnorm(i),(gvec(k,j),k=1,3)
-c     write(6,*)
+c     write(ounit,*)
 
       return
       end
@@ -906,6 +906,7 @@ c a symmetry one could use later on.
       use periodic, only: rknorm, rkvec, rkvec_shift, vcell
       use periodic, only: vcell_sim
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, ikv, j, k, l
@@ -923,7 +924,7 @@ c a symmetry one could use later on.
       do 10 k=1,3
         kvec(k,1)=0
    10   rkvec(k,1)=rkvec_shift(k)
-c     write(6,'(''k-vec( 1)='',3i5,3f9.4)') (kvec(k,1),k=1,3),(rkvec(k,1),k=1,3)
+c     write(ounit,'(''k-vec( 1)='',3i5,3f9.4)') (kvec(k,1),k=1,3),(rkvec(k,1),k=1,3)
 
       nkvec=0
 c Warning: Need to think more about do loop limit
@@ -972,31 +973,31 @@ c Voila, found a new one
           rkvec(k,nkvec)=rkvec_try(k)
   110     rknorm(nkvec)=rknorm(nkvec)+rkvec_try(k)**2
         rknorm(nkvec)=sqrt(rknorm(nkvec))
-c       write(6,'(''k-vec('',i2,'')='',3i5,3f9.4,f11.6)') nkvec,(kvec(k,nkvec),k=1,3),(rkvec(k,nkvec),k=1,3),rknorm(nkvec)
+c       write(ounit,'(''k-vec('',i2,'')='',3i5,3f9.4,f11.6)') nkvec,(kvec(k,nkvec),k=1,3),(rkvec(k,nkvec),k=1,3),rknorm(nkvec)
   120 continue
 
 c I could just get out of the above loop after finding vcell_sim/vcell
 c but instead do check after loop to be safe.
-      write(6,'(/,''k-vector k-inv      kvec               rkvec'')')
+      write(ounit,'(/,''k-vector k-inv      kvec               rkvec'')')
       nkvec_tot=0
       do 130 i=1,nkvec
         nkvec_tot=nkvec_tot+k_inv(i)
-  130   write(6,'(''k-vec('',i2,'')='',i2,2x,3i4,2x,3f14.10,f11.6)') i,k_inv(i),(kvec(k,i),k=1,3),(rkvec(k,i),k=1,3)
+  130   write(ounit,'(''k-vec('',i2,'')='',i2,2x,3i4,2x,3f14.10,f11.6)') i,k_inv(i),(kvec(k,i),k=1,3),(rkvec(k,i),k=1,3)
      &,rknorm(i)
-      write(6,'(''nkvec,nkvec_tot='',2i5)') nkvec,nkvec_tot
+      write(ounit,'(''nkvec,nkvec_tot='',2i5)') nkvec,nkvec_tot
 
 c Write out k-pts in reciprocal lattice units for input to pw program
-      write(6,'(/,i2,'' k-vectors (shifted) in recip. latt. units for input to pw program'')') nkvec
+      write(ounit,'(/,i2,'' k-vectors (shifted) in recip. latt. units for input to pw program'')') nkvec
       do 150 ikv=1,nkvec
         do 140 k=1,3
           rkvec_latt(k)=0
           do 140 i=1,3
   140       rkvec_latt(k)=rkvec_latt(k)+glatt_inv(k,i)*rkvec(i,ikv)
-  150 write(6,'(''k-vec('',i2,'')='',i2,2x,3f14.10)') ikv,k_inv(ikv),(rkvec_latt(k),k=1,3)
+  150 write(ounit,'(''k-vec('',i2,'')='',i2,2x,3f14.10)') ikv,k_inv(ikv),(rkvec_latt(k),k=1,3)
 
       if(nkvec_tot.ne.nint(vcell_sim/vcell)) then
-        write(6,'(''Warning: nkvec != vcell_sim/vcell'',9i5)') nkvec_tot,nint(vcell_sim/vcell)
-        write(6,'(''Possibly the primitive and simulation cells are not commensurate'')')
+        write(ounit,'(''Warning: nkvec != vcell_sim/vcell'',9i5)') nkvec_tot,nint(vcell_sim/vcell)
+        write(ounit,'(''Possibly the primitive and simulation cells are not commensurate'')')
         if(nkvec_tot.lt.nint(vcell_sim/vcell))
      &  call fatal_error ('You probably need to increase limit of 120 loop if nkvec_tot < vcell_sim/vcell')
         if(nkvec_tot.gt.nint(vcell_sim/vcell))
@@ -1065,6 +1066,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use ewald_mod, only: NCOEFX, NPX
       use constant, only: twopi
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, i0, ifcon, ig, info
@@ -1117,8 +1119,8 @@ c e-e cusp conditions
         endif
       endif
 
-      write(6,'(/,''Ncoef ='',i5)') ncoef_per
-      write(6,'(''Beta1,beta2 ='',2f15.8)') beta1,beta2
+      write(ounit,'(/,''Ncoef ='',i5)') ncoef_per
+      write(ounit,'(''Beta1,beta2 ='',2f15.8)') beta1,beta2
 
 c zero right and left hand side of fitting equation
       do 10 i=1,ncoef_per
@@ -1154,13 +1156,13 @@ c add to left hand side
           do 20 j=i0,ncoef_per
    20       a(j,i)=a(j,i)+igmult(k)*c(i)*c(j)
 
-c     write(6,'(''a='',10d14.5)') ((a(i,j),i=i0,ncoef_per),j=i0,ncoef_per)
-c     write(6,'(''b='',10d14.5)') (b(i),i=i0,ncoef_per)
+c     write(ounit,'(''a='',10d14.5)') ((a(i,j),i=i0,ncoef_per),j=i0,ncoef_per)
+c     write(ounit,'(''b='',10d14.5)') (b(i),i=i0,ncoef_per)
 
 c invert right hand side
       if(nfree.gt.0) then
         call dpoco(a(i0,i0),NCOEFX,nfree,rcond,work,info)
-        write(6,'(''condition #, rcond, after return from dpoco'',d12.4)') rcond
+        write(ounit,'(''condition #, rcond, after return from dpoco'',d12.4)') rcond
         if(rcond.lt.1.d-14) call fatal_error ('rcond too small in dpoco')
         if(info.ne.0) call fatal_error ('info in dpoco.ne.0 when called from separate')
       endif
@@ -1171,15 +1173,15 @@ c make a spare copy of right hand side
 
 c solve linear equations
       call dposl(a(i0,i0),NCOEFX,nfree,b(i0))
-c     write(6,*) (b(i),i=i0,ncoef_per)
+c     write(ounit,*) (b(i),i=i0,ncoef_per)
 
 c b is now the solution (t in Ceperley's paper)
       do 40 i=i0,ncoef_per
    40   chisq=chisq-work(i)*b(i)
 c     if(chisq.gt.0) then
-c       write(6,'(''Rms error '',d12.5)') dsqrt(chisq)
+c       write(ounit,'(''Rms error '',d12.5)') dsqrt(chisq)
 c      else
-c       write(6,'(''Warning: Rms error missing, chisq negative in separate'',d12.4)') chisq
+c       write(ounit,'(''Warning: Rms error missing, chisq negative in separate'',d12.4)') chisq
 c       if(chisq.lt.0.d0) call fatal_error ('chisq<0 in separate')
 c     endif
 
@@ -1204,8 +1206,8 @@ c subtract effect of short range potential on fourier components
         do 50 i=1,ncoef_per
    50     y(k)=y(k)-c(i)*b(i)
 
-c     write(6,'(''Poly coefs (t) = '',5d14.6)') (b(i),i=1,ncoef_per)
-c     write(6,'(''Yk = '',20d12.4)') (y(k),k=1,ngnorm)
+c     write(ounit,'(''Poly coefs (t) = '',5d14.6)') (b(i),i=1,ncoef_per)
+c     write(ounit,'(''Yk = '',20d12.4)') (y(k),k=1,ngnorm)
 
       return
       end
@@ -1251,7 +1253,7 @@ c Warning check if we need to go one more.
         do 30 i=1,n+np-k
    30     c(i)=c(i)-c(i+1)
 
-c     write(6,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,n)
+c     write(ounit,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,n)
 
 c Calculate c from numerical integral rather than recursion for small non-zero g's
        if(g.ne.0.d0 .and. g.lt.10.d0) then
@@ -1275,7 +1277,7 @@ c Calculate c from numerical integral rather than recursion for small non-zero g
          endif
    36 continue
 
-c     write(6,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,n)
+c     write(ounit,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,n)
       endif
 
 c multiply by anorm
@@ -1332,7 +1334,7 @@ c       do 30 i=1,n+np-k
 
       if(n.gt.0) c(n)=vps_basis_fourier(ig)
 
-c     write(6,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,n)
+c     write(ounit,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,n)
 
 c Calculate c from numerical integral rather than recursion for small non-zero g's
        if(g.ne.0.d0 .and. g.lt.10.d0) then
@@ -1353,7 +1355,7 @@ c      do 36 i=1,n
          endif
    36 continue
 
-c     write(6,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,n)
+c     write(ounit,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,n)
       endif
 
 c multiply by anorm
@@ -1401,14 +1403,14 @@ c integral of sin(g*x)*x**i for i=1 to np*(n+1)+1 and x from 0 to 1
         em=ti*(et-ti)
         do 10 i=1,np*(n+1)+2
           if(i.gt.lowest_pow+1) d(i-lowest_pow-1)=dreal(em)
-c         write(6,'(''g,et,i*em'',f7.3,9d12.4)') g,et,i*em
+c         write(ounit,'(''g,et,i*em'',f7.3,9d12.4)') g,et,i*em
    10     em=ti*(et-i*em)
        else
         do 20 i=1,np*(n+1)+2
    20     d(i)=1.d0/(i+2+lowest_pow)
       endif
 
-c     write(6,'(''g,d='',f7.3,9f9.5)') g,(d(i),i=1,np*(n+1)+1)
+c     write(ounit,'(''g,d='',f7.3,9f9.5)') g,(d(i),i=1,np*(n+1)+1)
 
 c integral of sin(g*x)*x*(1-x^np)^{i+1} for i=1 to n and x from 0 to 1
 c     do 30 i=1,n
@@ -1419,7 +1421,7 @@ c     do 30 i=1,n
 
       if(n.gt.0) c(n)=vps_basis_fourier(ig)
 
-c     write(6,'(''g1,c='',f5.1,9f9.5)') g,(c(i),i=1,n)
+c     write(ounit,'(''g1,c='',f5.1,9f9.5)') g,(c(i),i=1,n)
 
 c Calculate c from numerical integral rather than recursion for small non-zero g's
        if(g.ne.0.d0 .and. g.lt.10.d0) then
@@ -1440,7 +1442,7 @@ c      do 36 i=1,n
          endif
    36 continue
 
-c     write(6,'(''g2,c='',f5.1,9f9.5)') g,(c(i),i=1,n)
+c     write(ounit,'(''g2,c='',f5.1,9f9.5)') g,(c(i),i=1,n)
       endif
 
 c multiply by anorm
@@ -1487,14 +1489,14 @@ c integral of sin(g*x)*x**i for i=1 to np*(n+1)+1 and x from 0 to 1
         em=ti*(et-ti)
         do 10 i=1,np*(n+1)+2
           if(i.gt.lowest_pow+1) d(i-lowest_pow-1)=dreal(em)
-c         write(6,'(''g,et,i*em'',f7.3,9d12.4)') g,et,i*em
+c         write(ounit,'(''g,et,i*em'',f7.3,9d12.4)') g,et,i*em
    10     em=ti*(et-i*em)
        else
         do 20 i=1,np*(n+1)+2
    20     d(i)=1.d0/(i+2+lowest_pow)
       endif
 
-c     write(6,'(''g,d='',f7.3,9f9.5)') g,(d(i),i=1,np*(n+1)+1)
+c     write(ounit,'(''g,d='',f7.3,9f9.5)') g,(d(i),i=1,np*(n+1)+1)
 
 c integral of sin(g*x)*x*(1-x^np)^{i+1} for i=1 to n and x from 0 to 1
 c     do 30 i=1,n
@@ -1505,7 +1507,7 @@ c     do 30 i=1,n
 
       if(n.gt.0) c(n)=vps_basis_fourier(ig)
 
-c     write(6,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,n)
+c     write(ounit,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,n)
 
 c Calculate c from numerical integral rather than recursion for small non-zero g's
        if(g.ne.0.d0 .and. g.lt.10.d0) then
@@ -1526,7 +1528,7 @@ c      do 36 i=1,n
          endif
    36 continue
 
-c     write(6,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,n)
+c     write(ounit,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,n)
       endif
 
 c multiply by anorm
@@ -1609,7 +1611,7 @@ c  10   vsrange1=b(ncoef_per-i+1)+x*vsrange1
       vsrange1=vsrange1*(1-x)**np
 
       call splfit_tm(r,l,ict,vpot)
-c     write(6,'(''ict,l,r,vsrange1,vpot'',2i3,9f9.5)') ict,l,r,vsrange1,vpot
+c     write(ounit,'(''ict,l,r,vsrange1,vpot'',2i3,9f9.5)') ict,l,r,vsrange1,vpot
       vsrange1=vsrange1+b(ncoef_per)*vpot
 
 c     if(lowest_pow.eq.-1) vsrange1=vsrange1/x
@@ -1646,7 +1648,7 @@ c  10   vsrange2=b(ncoef_per-i+1)+term*vsrange2
       vsrange2=vsrange2*term*term
 
       call splfit_tm(r,l,ict,vpot)
-c     write(6,'(''ict,l,r,vsrange2,vpot'',2i3,9f9.5)') ict,l,r,vsrange2,vpot
+c     write(ounit,'(''ict,l,r,vsrange2,vpot'',2i3,9f9.5)') ict,l,r,vsrange2,vpot
       vsrange2=vsrange2+b(ncoef_per)*vpot
 
 c     if(lowest_pow.eq.-1) vsrange2=vsrange2/x
@@ -1678,7 +1680,7 @@ c     do 10 i=1,ncoef_per
    10   vsrange3=vsrange3+b(i)*(1-x**(i+1))**np
 
       call splfit_tm(r,l,ict,vpot)
-c     write(6,'(''ict,l,r,vsrange3,vpot'',2i3,9f9.5)') ict,l,r,vsrange3,vpot
+c     write(ounit,'(''ict,l,r,vsrange3,vpot'',2i3,9f9.5)') ict,l,r,vsrange3,vpot
       vsrange3=vsrange3+b(ncoef_per)*vpot
 
 c     if(lowest_pow.eq.-1) vsrange3=vsrange3/x
@@ -1760,7 +1762,7 @@ c last line, which is there because we keep only half the vectors in the star.
      &            rvec(3)*gvec(3,ivec)
   10      ewald_pot_psp=ewald_pot_psp+cos(product)*y(k)*expon
       call splfit_tm(rr,l,ict,vpot)
-c     write(6,'(''rr,ewald_pot_psp'',f8.4,9f9.5)') rr,-z*(2*ewald_pot_psp+y(1)),vpot,-z*(2*ewald_pot_psp+y(1))+vpot
+c     write(ounit,'(''rr,ewald_pot_psp'',f8.4,9f9.5)') rr,-z*(2*ewald_pot_psp+y(1)),vpot,-z*(2*ewald_pot_psp+y(1))+vpot
       ewald_pot_psp=-z*(2*ewald_pot_psp+y(1))+vpot
 
       return
@@ -1799,7 +1801,6 @@ c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_
 c-----------------------------------------------------------------------
 
       function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 
@@ -1837,7 +1838,6 @@ c Written by Cyrus Umrigar
 c-----------------------------------------------------------------------
 
       function vlrange_ee_old2(nelec,ngnorm,igmult,cos_g,sin_g,y)
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 
@@ -1971,7 +1971,7 @@ c Written by Cyrus Umrigar
       pecent=vs+vl
       vs=vs*2/ncent
       vl=vl*2/ncent
-      write(6,'(''v_nn,vs,vl,vs1,vl1='',9f12.8)') pecent*2/ncent,vs,vl,znuc2_sum*c0*2/ncent
+      write(ounit,'(''v_nn,vs,vl,vs1,vl1='',9f12.8)') pecent*2/ncent,vs,vl,znuc2_sum*c0*2/ncent
       pecent=pecent*vcell_sim/vcell
 
       return
@@ -2027,7 +2027,7 @@ c     vl=vl+0.5d0*y_coul(1)*znuc_sum**2
       pecent=vs+vl
       vs=vs*2/ncent
       vl=vl*2/ncent
-      write(6,'(''v_nn,vs,vl,vs1,vl1='',9f12.8)') pecent*2/ncent,vs,vl,znuc2_sum*c0*2/ncent,y_coul(1)*znuc_sum**2/ncent
+      write(ounit,'(''v_nn,vs,vl,vs1,vl1='',9f12.8)') pecent*2/ncent,vs,vl,znuc2_sum*c0*2/ncent,y_coul(1)*znuc_sum**2/ncent
       pecent=pecent*vcell_sim/vcell
 
       return
@@ -2037,7 +2037,7 @@ c-----------------------------------------------------------------------
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
-      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MCENT
       use vmc_mod, only: MMAT_DIM2
       use atom, only: znuc, cent, iwctype, ncent
 
@@ -2111,8 +2111,8 @@ c       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
       vs=vs/nelec
       vl=vl/nelec
       if(ipr.ge.2) then
-        if(nloc.eq.0) write(6,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,-y_coul(1)*znuc_sum
-        if(nloc.ne.0) write(6,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,y_psp(1,1)*znuc_sum
+        if(nloc.eq.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,-y_coul(1)*znuc_sum
+        if(nloc.ne.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,y_psp(1,1)*znuc_sum
       endif
 
       return
@@ -2122,7 +2122,7 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
-      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MCENT
       use vmc_mod, only: MMAT_DIM2
       use const, only: nelec, ipr
       use ewald, only: b_coul_sim, y_coul_sim
@@ -2168,7 +2168,7 @@ c     vl=vl+0.5d0*y_coul_sim(1)*nelec**2
       pe_ee=vs+vl
       vs=vs*2/nelec
       vl=vl*2/nelec
-      if(ipr.ge.2) write(6,'(''v_ee,vs,vl,vs1,vl1='',9f12.8)') pe_ee*2/nelec,vs,vl,c0*2,y_coul_sim(1)*nelec
+      if(ipr.ge.2) write(ounit,'(''v_ee,vs,vl,vs1,vl1='',9f12.8)') pe_ee*2/nelec,vs,vl,c0*2,y_coul_sim(1)*nelec
 
       return
       end
@@ -2176,7 +2176,6 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
       use ewald_mod, only: NG1DX
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 
@@ -2234,7 +2233,6 @@ c-----------------------------------------------------------------------
       subroutine cossin_psi(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift,iflag)
       use ewald_mod, only: NG1DX
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 c iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
@@ -2315,7 +2313,7 @@ c If the calculation is for g-vectors then no shift; if for k-vectors there coul
         do 27 k=1,3
           dcos_g(k,ir,i)=-gvec(k,i)*sin_g(ir,i)
    27     dsin_g(k,ir,i)= gvec(k,i)*cos_g(ir,i)
-c       if(i.lt.5) write(6,'(''ir,i,gnorm(i),cos_g(ir,i),sin_g(ir,i),dcos_g(k,ir,i),dsin_g(k,ir,i)'',2i5,9d12.4)')
+c       if(i.lt.5) write(ounit,'(''ir,i,gnorm(i),cos_g(ir,i),sin_g(ir,i),dcos_g(k,ir,i),dsin_g(k,ir,i)'',2i5,9d12.4)')
 c    & ir,i,gnorm(i),cos_g(ir,i),sin_g(ir,i),(dcos_g(k,ir,i),dsin_g(k,ir,i),k=1,3)
         ddcos_g(ir,i)=-gnorm(i)*gnorm(i)*cos_g(ir,i)
    30   ddsin_g(ir,i)=-gnorm(i)*gnorm(i)*sin_g(ir,i)
@@ -2328,7 +2326,6 @@ c     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng
       subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
       use ewald_mod, only: NG1DX
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
@@ -2426,7 +2423,7 @@ c    &             +cos_tmp2*sin_gr(igvec(3,i),3)
         do 27 k=1,3
           dcos_g(k,i)=-gvec(k,i)*sin_g(i)
    27     dsin_g(k,i)= gvec(k,i)*cos_g(i)
-c       if(i.lt.5) write(6,'(''i,gnorm(in),cos_g(i),sin_g(i),dcos_g(k,i),dsin_g(k,i)'',2i5,9d12.4)')
+c       if(i.lt.5) write(ounit,'(''i,gnorm(in),cos_g(i),sin_g(i),dcos_g(k,i),dsin_g(k,i)'',2i5,9d12.4)')
 c    & i,gnorm(in),cos_g(i),sin_g(i),(dcos_g(k,i),dsin_g(k,i),k=1,3)
         ddcos_g(i)=-gnorm(in)*gnorm(in)*cos_g(i)
    30   ddsin_g(i)=-gnorm(in)*gnorm(in)*sin_g(i)
@@ -2438,7 +2435,6 @@ c-----------------------------------------------------------------------
 c     subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 c Needed for orbitals and their Laplacian.
@@ -2479,7 +2475,7 @@ c     do 30 ir=1,nr
         do 27 k=1,3
           dcos_g(k,i)=-gvec(k,i)*sin_g(i)
    27     dsin_g(k,i)= gvec(k,i)*cos_g(i)
-c       if(i.lt.5) write(6,'(''i,gnorm(i),cos_g(i),sin_g(i),dcos_g(k,i),dsin_g(k,i)'',2i5,9d12.4)')
+c       if(i.lt.5) write(ounit,'(''i,gnorm(i),cos_g(i),sin_g(i),dcos_g(k,i),dsin_g(k,i)'',2i5,9d12.4)')
 c    & i,gnorm(i),cos_g(i),sin_g(i),(dcos_g(k,i),dsin_g(k,i),k=1,3)
         ddcos_g(i)=-gnorm(i)*gnorm(i)*cos_g(i)
    30   ddsin_g(i)=-gnorm(i)*gnorm(i)*sin_g(i)
@@ -2625,7 +2621,6 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use vmc_mod, only: MELEC
       use const, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons

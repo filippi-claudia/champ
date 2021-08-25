@@ -8,6 +8,7 @@
       use ci000, only: nciterm
       use method_opt, only: method
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -35,7 +36,7 @@
 
       save eig_min
 
-      write(6,'(/,''Setup starting adiag'',/)')
+      write(ounit,'(/,''Setup starting adiag'',/)')
       eig_min=0
 
       if(method.eq.'linear') then
@@ -64,16 +65,16 @@ c Symmetrize the overlap
    4      s(j,i)=s(i,j)
 
       ! do i=1,nparm+is
-      !   write(6,*) 'h =',(h(i,j),j=1,nparm+is)
+      !   write(ounit,*) 'h =',(h(i,j),j=1,nparm+is)
       ! enddo
       ! do i=1,nparm+is
-      !   write(6,*) 's =',(s(i,j),j=1,nparm+is)
+      !   write(ounit,*) 's =',(s(i,j),j=1,nparm+is)
       ! enddo
 
 
       if(add_diag.gt.0.and.iter.eq.1) then
 
-      write(6,'(''Determine energy gap in super-CI hamiltonian at step 1'',/)')
+      write(ounit,'(''Determine energy gap in super-CI hamiltonian at step 1'',/)')
       call regularize_geneig(nparm+is,mparmx,h,s,work,seig_inv,hmod)
       call solve_geneig(nparm+is,mparmx,hmod,s,seig_inv,work,eig,eigi,eig_vec)
 
@@ -81,7 +82,7 @@ c Symmetrize the overlap
       do 5 j=1,nparm+is
        if (eigi(j).ne.0.d0) imag=1
     5 continue
-      if(imag.eq.1) write(6,'(''Warning: imaginary eigenvalues'')')
+      if(imag.eq.1) write(ounit,'(''Warning: imaginary eigenvalues'')')
 
 c Sort the eigenvalues
       call sort(nparm+is,eig,isort)
@@ -92,10 +93,10 @@ c Sort the eigenvalues
         if(eigi(i).eq.0) then
          ireal=ireal+1
          if(ireal.le.5)
-     &   write(6,'(''eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') i,eig(i),eigi(i)
+     &   write(ounit,'(''eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') i,eig(i),eigi(i)
         endif
     6 continue
-      write(6,*)
+      write(ounit,*)
 
 c use semiorthogonal basis and compute minimum norm in direction orthogonal to psi0
       dmult=1.d0
@@ -133,17 +134,17 @@ c           if(j.ne.1.and.k.ne.1) then
           isort_ovr=ii
         endif
         if(ireal.le.5) then
-          write(6,'(i4,'' eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') ii,i,eig(i),eigi(i)
-          write(6,'(4x,'' ortho dir  '',i4,'' = '',f15.5)') i,anorm_orth
+          write(ounit,'(i4,'' eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') ii,i,eig(i),eigi(i)
+          write(ounit,'(4x,'' ortho dir  '',i4,'' = '',f15.5)') i,anorm_orth
         endif
    20 continue
-   25 write(6,'(i4,'' real roots in energy range '',f15.5,'','',f15.5)') ireal,emin,emax
+   25 write(ounit,'(i4,'' real roots in energy range '',f15.5,'','',f15.5)') ireal,emin,emax
       if(ireal.eq.0) then
         dmult=dmult*2
         scale=scale*2
         goto 9
       endif
-      write(6,'(''maximum overlap = '',i5,f15.5,'' + i * '',2f15.5)') i_ovr,eig(i_ovr),eigi(i_ovr),anorm_orth_min
+      write(ounit,'(''maximum overlap = '',i5,f15.5,'' + i * '',2f15.5)') i_ovr,eig(i_ovr),eigi(i_ovr),anorm_orth_min
 
       i0=i_ovr
       if(isort_ovr.lt.nparm+is) then
@@ -153,7 +154,7 @@ c           if(j.ne.1.and.k.ne.1) then
         eig_min=0
       endif
 
-      write(6,'(''energy gap = '',f15.5)') eig_min
+      write(ounit,'(''energy gap = '',f15.5)') eig_min
       endif
 
       endif
@@ -168,7 +169,7 @@ c       add_diag=0
         add_diag=dabs(add_diag)
       endif
       if(ioptjas.eq.0.and.ioptorb.eq.0) add_diag=0
-      write(6,'(/,''starting adiag'',g12.4,/)') add_diag
+      write(ounit,'(/,''starting adiag'',g12.4,/)') add_diag
 
 
       return
@@ -178,7 +179,7 @@ c-----------------------------------------------------------------------
 
       use gradhess_all, only: MPARMALL
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, icut, ineg, isdinfo, j
@@ -201,7 +202,7 @@ c call dsyev to determine lworks
       call dsyev('V','U',n,s,mparmx,seig_vals,work,-1,isdinfo)
       lworks=work(1)
 
-c     write(6,*) 'S diag opt lwork=',lworks
+c     write(ounit,*) 'S diag opt lwork=',lworks
 
 c diagonalize s=S -> S_diag=U^T S U -> in output, s contains the unitary matrix U
       call dsyev('V','U',n,s,mparmx,seig_vals,work,lworks,isdinfo)
@@ -209,19 +210,19 @@ c diagonalize s=S -> S_diag=U^T S U -> in output, s contains the unitary matrix 
 
 c     call cpu_time(t)
 c     t_sdiag=t
-c     write(6,*) 'elapsed time for diagonalization:',t_sdiag-t0
+c     write(ounit,*) 'elapsed time for diagonalization:',t_sdiag-t0
 
       icut=1
       ineg=1
-      write(6,'(''overlap matrix: Maximum eigenvalue, threshold: '',1p2e12.4)') seig_vals(n),eps_eigval*seig_vals(n)
+      write(ounit,'(''overlap matrix: Maximum eigenvalue, threshold: '',1p2e12.4)') seig_vals(n),eps_eigval*seig_vals(n)
       do 10 i=1,n
         if((ineg.eq.1).and.(seig_vals(i).gt.0.d0)) then
           ineg=0
-          write(6,'(''first positive eigenvalue'',t41,i6)') i
+          write(ounit,'(''first positive eigenvalue'',t41,i6)') i
         endif
         if((icut.eq.1).and.(seig_vals(i).gt.eps_eigval*seig_vals(n))) then
           icut=0
-          write(6,'(''first eigenvalue larger than threshold'',t41,i6)') i
+          write(ounit,'(''first eigenvalue larger than threshold'',t41,i6)') i
         endif
   10  continue
       do 20 i=1,n
@@ -255,7 +256,7 @@ c Compute work_mat=A^T*H*A
 
       call cpu_time(t)
 c     t_hmod=t
-c     write(6,*) 'elapsed time to build Hmod:',t_hmod-t_sdiag
+c     write(ounit,*) 'elapsed time to build Hmod:',t_hmod-t_sdiag
 
       return
       end
@@ -297,15 +298,15 @@ c Determine ilwork
       call dgeev('N','V',n,hmod,MPARMALL,eig,eigi,eig_vecl,
      &        MPARMALL,eig_vec,MPARMALL,work,-1,isdinfo)
       ilwork=work(1)
-c     write(6,*) 'isdinfo, optimal lwork=',isdinfo,ilwork
+c     write(ounit,*) 'isdinfo, optimal lwork=',isdinfo,ilwork
 
 c Diagonalize
       call dgeev('N','V',n,hmod,MPARMALL,eig,eigi,eig_vecl,
      &        MPARMALL,eig_vec,MPARMALL,work,ilwork,isdinfo)
-c     write(6,*) 'isdinfo=',isdinfo
+c     write(ounit,*) 'isdinfo=',isdinfo
 c     call cpu_time(t)
 c     t_hmdiag=t
-c     write(6,*) 'elapsed time to diagonalize Hmod:',t-t0
+c     write(ounit,*) 'elapsed time to diagonalize Hmod:',t-t0
 
       do 20 k=1,n
         do 10 i=1,n
@@ -317,7 +318,7 @@ c     write(6,*) 'elapsed time to diagonalize Hmod:',t-t0
 
 c     call cpu_time(t)
 c     t_eigvec=t
-c     write(6,*) 'elapsed time to get eigenvectors:',t_eigvec-t_hmdiag
+c     write(ounit,*) 'elapsed time to get eigenvectors:',t_eigvec-t_hmdiag
 
       return
       end
@@ -335,6 +336,7 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
       use method_opt, only: method
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -393,10 +395,10 @@ c-----------------------------------------------------------------------
       endif
 
 c     do i=1,nparm+is
-c     write(6,'(''h '',1000e25.15)') (h(i,j),j=1,nparm+is)
+c     write(ounit,'(''h '',1000e25.15)') (h(i,j),j=1,nparm+is)
 c     enddo
 c     do i=1,nparm+is
-c     write(6,'(''s '',1000e25.15)') (s(i,j),j=1,nparm+is)
+c     write(ounit,'(''s '',1000e25.15)') (s(i,j),j=1,nparm+is)
 c     enddo
 
       call regularize_geneig(nparm+is,mparmx,h,s,work,seig_inv,hmod)
@@ -407,14 +409,14 @@ c     enddo
        if (eigi(j).ne.0.d0) imag=1
   110 continue
 
-      if(imag.eq.1) write(6,'(''Warning: imaginary eigenvalues'')')
+      if(imag.eq.1) write(ounit,'(''Warning: imaginary eigenvalues'')')
 
 c Sort the eigenvalues
       call sort(nparm+is,eig,isort)
 
       i_min=isort(1)
-      write(6,'(''generalized eigenvalue problem H c= E S c'')')
-      write(6,'(''lowest eigenval = '',i5,f15.5,'' + i * '',f15.5)') i_min,eig(i_min),eigi(i_min)
+      write(ounit,'(''generalized eigenvalue problem H c= E S c'')')
+      write(ounit,'(''lowest eigenval = '',i5,f15.5,'' + i * '',f15.5)') i_min,eig(i_min),eigi(i_min)
 
 c use semiorthogonal basis and compute minimum norm in direction orthogonal to psi0
       dmult=1.d0
@@ -456,14 +458,14 @@ c             if(j.ne.1.and.k.ne.1) then
             i_ovr=i
           endif
           if(ireal.le.5) then
-            write(6,'(i4,'' eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') ii,i,eig(i),eigi(i)
-            write(6,'(4x,'' ortho dir  '',i4,'' = '',f15.5)') i,anorm_orth
+            write(ounit,'(i4,'' eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') ii,i,eig(i),eigi(i)
+            write(ounit,'(4x,'' ortho dir  '',i4,'' = '',f15.5)') i,anorm_orth
           endif
         else
-          if(ireal.le.5) write(6,'(i4,'' eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') ii,i,eig(i),eigi(i)
+          if(ireal.le.5) write(ounit,'(i4,'' eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') ii,i,eig(i),eigi(i)
         endif
   119 continue
-  120 write(6,'(i4,'' real roots in energy range '',f15.5,'','',f15.5)') ireal,emin,emax
+  120 write(ounit,'(i4,'' real roots in energy range '',f15.5,'','',f15.5)') ireal,emin,emax
       if(ireal.eq.0) then
         dmult=dmult*2
         scale=scale*2
@@ -475,15 +477,15 @@ c             if(j.ne.1.and.k.ne.1) then
       endif
 
       if(ioptjas.eq.1.or.ioptorb.eq.1) then
-        write(6,'(''maximum overlap = '',i5,f15.5,'' + i * '',2f15.5)') i_ovr,eig(i_ovr),eigi(i_ovr),anorm_orth_min
+        write(ounit,'(''maximum overlap = '',i5,f15.5,'' + i * '',2f15.5)') i_ovr,eig(i_ovr),eigi(i_ovr),anorm_orth_min
 
-        if(i_ovr.ne.i_min) write(6,'(''Warning: max overlap not for min eigenvalue'')')
+        if(i_ovr.ne.i_min) write(ounit,'(''Warning: max overlap not for min eigenvalue'')')
 
         i_good=i_ovr
         do 130 i=2,nparm+is
   130    cdelta(i-1)=eig_vec(i,i_good)/eig_vec(1,i_good)
 
-        write(6,'(''dp  ='',1000f10.5)') (cdelta(i),i=1,nparm)
+        write(ounit,'(''dp  ='',1000f10.5)') (cdelta(i),i=1,nparm)
 
         bot=1
         do 145 i=1,nparmd
@@ -493,7 +495,7 @@ c minus sign because variation is subtracted when computing new parameters
         do 150 i=1,nparm
   150     cdelta(i)=-cdelta(i)/bot
 
-        write(6,'(''dpn ='',1000f10.5)') (-cdelta(i),i=1,nparm)
+        write(ounit,'(''dpn ='',1000f10.5)') (-cdelta(i),i=1,nparm)
 
         do 160 i=1,nparm
   160     dparm(i)=cdelta(i)
@@ -502,7 +504,7 @@ c minus sign because variation is subtracted when computing new parameters
         i0=0
         do 180 jj=1,nstates
 
-          write(6,'(''State '',i4)') jj
+          write(ounit,'(''State '',i4)') jj
           dnorm_jj=0
           idx=0
 
@@ -523,7 +525,7 @@ c minus sign because variation is subtracted when computing new parameters
           endif
           dnorm_jj=1.d0/dsqrt(dnorm_jj)
 
-          write(6,'(''state '',i4,'' norm '',1p1e12.5)') jj,dnorm_jj
+          write(ounit,'(''state '',i4,'' norm '',1p1e12.5)') jj,dnorm_jj
 
           do 172 j=i0+1,nparm
 
@@ -567,8 +569,8 @@ c minus sign because variation is subtracted when computing new parameters
 
               overlap(j)=dabs(overlap(j))*dnorm*dnorm_jj
 
-              write(6,'(i4,'' eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') j,jsort,eig(jsort),eigi(jsort)
-              write(6,'('' overlap state,eigenstate '',2i4,'' = '',f15.5)') jj,j,overlap(j)
+              write(ounit,'(i4,'' eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') j,jsort,eig(jsort),eigi(jsort)
+              write(ounit,'('' overlap state,eigenstate '',2i4,'' = '',f15.5)') jj,j,overlap(j)
 
             endif
   172     continue
@@ -583,8 +585,8 @@ c minus sign because variation is subtracted when computing new parameters
 
           do 178 i=1,nparm
   178       dparm(i+nparm*(jj-1))=eig_vec(i,isort(i0))*dnorm
-          write(6,'(''state '',i4,'' norm'',1p1e12.5,'' overlap '',1p1e12.5)') jj,dnorm,overlap(i0)
-          write(6,'(''pn  ='',1000f10.5)') (dparm(i+nparm*(jj-1)),i=1,nparm)
+          write(ounit,'(''state '',i4,'' norm'',1p1e12.5,'' overlap '',1p1e12.5)') jj,dnorm,overlap(i0)
+          write(ounit,'(''pn  ='',1000f10.5)') (dparm(i+nparm*(jj-1)),i=1,nparm)
 
           if(nstates.gt.1.and.jj.ne.nstates.and.eig(isort(i0+1)).eq.0.d0)
      &      call fatal_error('OPTWF: Overlap with state 1 for highest eigenvalue >0')

@@ -2,9 +2,9 @@ c-----------------------------------------------------------------------
       subroutine fetch_parameters(p)
 
       ! this was not in master but I think it's needed
-      ! this is so confusng ... 
+      ! this is so confusng ...
       use optwf_contrl, only: nparm
-      
+
       use precision_kinds, only: dp
       implicit none
 
@@ -12,7 +12,7 @@ c-----------------------------------------------------------------------
 
       real(dp), dimension(*) :: p
 
-      
+
 
       n=0
 
@@ -93,7 +93,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine fetch_ci(p,n)
       use csfs, only: ccsf, ncsf
-
+      use contrl_file,    only: ounit
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci
       use precision_kinds, only: dp
@@ -126,7 +126,7 @@ c-----------------------------------------------------------------------
       endif
 
 c     do 90 j=1,nstates
-c90     write(6,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
+c90     write(ounit,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
 
       return
       end

@@ -15,11 +15,14 @@ module pcm_3dgrid
     integer, parameter :: MGRID_PCM2 = MGRID_PCM*MGRID_PCM
     integer, parameter :: MGRID_PCM3 = MGRID_PCM2*MGRID_PCM
     real(dp), parameter :: UNDEFINED = -1234567890.d0
+    integer, parameter :: PCM_IUNDEFINED = -1234567890
+    real(dp),parameter :: PCM_UNDEFINED  = -1234567890.d0
     real(dp) :: PCM_SHIFT
 
     private
     public :: MGRID_PCM, MGRID_PCM2, MGRID_PCM3
     public :: UNDEFINED, IUNDEFINED, PCM_SHIFT
+    public :: PCM_UNDEFINED, PCM_IUNDEFINED
     save
 end module pcm_3dgrid
 
@@ -456,6 +459,7 @@ module pcmo
 contains
     subroutine allocate_pcmo()
         use pcm, only: MCHS
+        use dmc_mod, only: MWALK
         if (.not. allocated(enfpcmo)) allocate(enfpcmo(MCHS))
         if (.not. allocated(enfpcmo_dmc)) allocate(enfpcmo_dmc(MWALK, MCHS))
         if (.not. allocated(qopcmo_dmc)) allocate(qopcmo_dmc(MWALK))

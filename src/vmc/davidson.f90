@@ -5,14 +5,14 @@
 !! Computed pairs of eigenvalues/eigenvectors are deflated using algorithm
 !! described at: https://doi.org/10.1023/A:101919970
 !!
-!! Authors: Felipe Zapata and revised by P. Lopez-Tarifa NLeSC(2019)
+!! @Authors: Felipe Zapata and revised by P. Lopez-Tarifa NLeSC(2019)
 !>
-!> rief Solves the Davidson diagonalisation without storing matrices in memory.
+!> brief Solves the Davidson diagonalisation without storing matrices in memory.
 !>
 !> Matrices mtx and stx are calculated on the fly using the fun_mtx_gemv and fun_stx_gemv
 !> functions.
 !>
-!> uthor Felipe Zapata and P. Lopez-Tarifa NLeSC(2019)
+!> @author Felipe Zapata and P. Lopez-Tarifa NLeSC(2019)
 !>
 !> \param[in] mtx: Matrix to diagonalize
 !> \param[inout] stx: Optional matrix for the general eigenvalue problem:
@@ -35,6 +35,7 @@ module davidson
                               lapack_qr, lapack_solver
     use array_utils, only: concatenate, initialize_subspace, norm, write_matrix, write_vector, &
                            eye, check_deallocate_matrix, check_deallocate_vector, modified_gram_schmidt, diag_mat
+    use contrl_file,    only: ounit, errunit
     implicit none
 
     type davidson_parameters
@@ -54,7 +55,7 @@ contains
 
     subroutine generalized_eigensolver(fun_mtx_gemv, eigenvalues, eigenvectors, nparm, nparm_max, &
                                        lowest, nvecx, method, max_iters, tolerance, iters, fun_stx_gemv, nproc, idtask)
-        !> rief use a pair of functions fun_mtx and fun_stx to compute on the fly the matrices to solve
+        !> brief use a pair of functions fun_mtx and fun_stx to compute on the fly the matrices to solve
         !>  the general eigenvalue problem
         !> The current implementation uses a general  davidson algorithm, meaning
         !> that it compute all the eigenvalues simultaneusly using a block approach.
@@ -206,7 +207,7 @@ contains
         V = initialize_subspace(diag_mtx_cpy(1:init_subspace_size), init_subspace_size, nparm) ! Initial orthonormal basis
         deallocate (diag_mtx_cpy)
 
-        if (idtask == 0) write (6, '(''DAV: Setup subspace problem'')')
+        if (idtask == 0) write(ounit, '(''DAV: Setup subspace problem'')')
 
         ! allocate mtxV and stxV
         allocate (mtxV(parameters%nparm, parameters%basis_size))
@@ -223,19 +224,19 @@ contains
 
             select case (method)
             case ("DPR")
-                write (6, '(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
+                write(ounit, '(''DAV: Diagonal-Preconditioned-Residue (DPR)'')')
             case ("GJD")
-                write (6, '(''DAV: Generalized Jacobi-Davidson (GJD)'')')
+                write(ounit, '(''DAV: Generalized Jacobi-Davidson (GJD)'')')
             end select
 
-            write (6, '(''DAV: tolerance         : '', E10.3)') tolerance
-            write (6, '(''DAV: Number eigenvalues : '', I10)') parameters%lowest
-            write (6, '(''DAV: Update size        : '', I10)') size_update
-            write (6, '(''DAV: Max basis size     : '', I10)') nvecx
+            write(ounit, '(''DAV: tolerance         : '', E10.3)') tolerance
+            write(ounit, '(''DAV: Number eigenvalues : '', I10)') parameters%lowest
+            write(ounit, '(''DAV: Update size        : '', I10)') size_update
+            write(ounit, '(''DAV: Max basis size     : '', I10)') nvecx
             if (use_gs_ortho) then
-                write (6, '(''DAV: Modified Gram-Schmidt orthogonalization with projection update'')')
+                write(ounit, '(''DAV: Modified Gram-Schmidt orthogonalization with projection update'')')
             else
-                write (6, '(''DAV: QR orthogonalization with full projection'')')
+                write(ounit, '(''DAV: QR orthogonalization with full projection'')')
             end if
         endif
 
@@ -246,9 +247,9 @@ contains
             ! we could try to use openMP here via the lapack routines
             if (idtask == 0) then
 
-                write (6, '(''DAV: -----------------------------'')')
-                write (6, '(''DAV: Iteration: '', I10)') i
-                write (6, '(''DAV: Basis size: '', I10)') parameters%basis_size
+                write(ounit, '(''DAV: -----------------------------'')')
+                write(ounit, '(''DAV: Iteration: '', I10)') i
+                write(ounit, '(''DAV: Basis size: '', I10)') parameters%basis_size
 
                 ! needed if we want to vectorix the residue calculation
                 call check_deallocate_matrix(lambda)
@@ -291,7 +292,7 @@ contains
 
                 ! Solve the small eigenvalue problem
                 call lapack_generalized_eigensolver(mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
-                write (6, '(''DAV: eigv'',1000f12.5)') (eigenvalues_sub(j), j=1, parameters%lowest)
+                write(ounit, '(''DAV: eigv'',1000f12.5)') (eigenvalues_sub(j), j=1, parameters%lowest)
 
                 ! Compute the necessary ritz vectors
                 ritz_vectors = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :size_update))
@@ -306,10 +307,10 @@ contains
                 do j = 1, parameters%lowest
                     if (errors(j) < tolerance) has_converged(j) = .true.
                 end do
-                write (6, '(''DAV: resd'',1000f12.5)') (errors(j), j=1, parameters%lowest)
+                write(ounit, '(''DAV: resd'',1000f12.5)') (errors(j), j=1, parameters%lowest)
 
                 not_cnv = count(.not. has_converged(:))
-                write (6, '(''DAV: Root not yet converged     : '', I10)') not_cnv
+                write(ounit, '(''DAV: Root not yet converged     : '', I10)') not_cnv
 
                 ! Append correction vectors
                 if (parameters%basis_size + size_update <= nvecx) then
@@ -337,7 +338,7 @@ contains
                     ! Restart.
                 else
 
-                    write (6, '(''DAV: --- Restart ---'')')
+                    write(ounit, '(''DAV: --- Restart ---'')')
                     V = ritz_vectors(:, :init_subspace_size)
                     update_proj = .false.
 
@@ -352,7 +353,7 @@ contains
             if (all(has_converged)) then
                 iters = i
                 if (idtask == 0) then
-                    write (6, '(''DAV: roots are converged'')')
+                    write(ounit, '(''DAV: roots are converged'')')
                 endif
                 exit outer_loop
             end if
@@ -403,9 +404,9 @@ contains
 
             ! if we didnt converge
             if (i > max_iters) then
-                write (6, '(''DAV: Warning Davidson did not converge'')')
+                write(ounit, '(''DAV: Warning Davidson did not converge'')')
             else
-                write (6, '(''DAV: Davidson converged'')')
+                write(ounit, '(''DAV: Davidson converged'')')
             end if
 
             ! store eigenpairs
@@ -419,7 +420,7 @@ contains
         if (nproc > 1) then
 
             if (idtask == 0) then
-                write (6, '(''DAV: Broadcasting solutions'')')
+                write(ounit, '(''DAV: Broadcasting solutions'')')
             end if
             call MPI_BCAST(iters, 1, MPI_INT, 0, MPI_COMM_WORLD, ier)
             call MPI_BCAST(eigenvalues, parameters%lowest, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
@@ -442,7 +443,7 @@ contains
         endif
 
         if (idtask == 0) then
-            write (6, '(''DAV: Exiting Davidson'')')
+            write(ounit, '(''DAV: Exiting Davidson'')')
         endif
 
     end subroutine generalized_eigensolver
@@ -485,7 +486,7 @@ contains
         character msg*(*)
         integer ierr
 
-        write (6, '(''Fatal error: '',a)') msg
+        write(ounit, '(''Fatal error: '',a)') msg
         call mpi_abort(MPI_COMM_WORLD, 0, ierr)
 
     end subroutine

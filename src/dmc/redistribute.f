@@ -17,7 +17,7 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       use mpiconf, only: idtask, nproc, NPROCX
       use branch, only: nwalk
       use mpi
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, icomm, ido_again, ierr, ihi
@@ -36,7 +36,7 @@ c    &MPI_COMM_WORLD,ierr)
      &MPI_COMM_WORLD,ierr)
       call mpi_bcast(nwalk_all(0),nproc,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
-      if(ipr.ge.1) write(6,'(''nwalk_all='',(10i4))') (nwalk_all(i),i=0,nproc-1)
+      if(ipr.ge.1) write(ounit,'(''nwalk_all='',(10i4))') (nwalk_all(i),i=0,nproc-1)
 
       nwalk_sum=0
       do 10 i=0,nproc-1
@@ -45,7 +45,7 @@ c    &MPI_COMM_WORLD,ierr)
       nwalk_av_int=nwalk_sum/nproc
       nhi=nwalk_sum-nwalk_av_int*nproc
       nlo=(nwalk_sum-nhi*(nwalk_av_int+1))/nwalk_av_int
-      if(ipr.ge.1) write(6,'(''nwalk_sum,nwalk_av_int,nlo,nhi='',9i4)')
+      if(ipr.ge.1) write(ounit,'(''nwalk_sum,nwalk_av_int,nlo,nhi='',9i4)')
      &nwalk_sum,nwalk_av_int,nlo,nhi
 
    20 ilo=0
@@ -87,13 +87,13 @@ c    &MPI_COMM_WORLD,ierr)
 
    30 continue
       if(ipr.ge.1) then
-        write(6,'(''icommunicate_all='',(10i4))')
+        write(ounit,'(''icommunicate_all='',(10i4))')
      &   (icommunicate_all(i),i=0,nproc-1)
-        write(6,'(''iwalk_stack='',(10i4))')
+        write(ounit,'(''iwalk_stack='',(10i4))')
      &   (iwalk_stack(i),i=1,nproc)
-        write(6,'(''nwalk_all='',(10i4))') (nwalk_all(i),i=0,nproc-1)
-        write(6,'(''nwalk_stack='',i4)') nwalk_stack
-        write(6,*)
+        write(ounit,'(''nwalk_all='',(10i4))') (nwalk_all(i),i=0,nproc-1)
+        write(ounit,'(''nwalk_stack='',i4)') nwalk_stack
+        write(ounit,*)
       endif
 
 c     call flush(6)

@@ -41,15 +41,15 @@ module inputflags
     integer :: imodify_zmat
     integer :: izmatrix_check
     integer :: ihessian_zmat
-    integer :: node_cutoff
-    real(dp) :: eps_node_cutoff
+    integer :: node_cutoff, dmc_node_cutoff
+    real(dp) :: eps_node_cutoff, dmc_eps_node_cutoff
     real(dp) :: scalecoef
     integer :: iqmmm
- ! dmc specifics:   
+ ! dmc specifics:
     real(dp) :: enode_cutoff
     integer :: icircular
     integer :: idrifdifgfunc
-    integer :: ibranch_elec 
+    integer :: ibranch_elec
 
     private
     public :: iznuc, igeometry, ibasis_num, ilcao, iexponents
@@ -57,7 +57,7 @@ module inputflags
     public :: ici_def, iforces, icsfs, imstates, igradients, icharge_efield
     public :: imultideterminants, ioptorb_mixvirt, imodify_zmat, izmatrix_check
     public :: ihessian_zmat
-    public :: node_cutoff, eps_node_cutoff, scalecoef
+    public :: node_cutoff, dmc_node_cutoff, eps_node_cutoff, dmc_eps_node_cutoff, scalecoef
     public :: enode_cutoff, icircular, idrifdifgfunc, ibranch_elec
     public :: iqmmm
     save
@@ -67,20 +67,18 @@ module general
     !> Arguments: pooldir, pp_id, bas_id, filename, filenames_bas_num,
     !>            filenames_ps_gauss, filenames_ps_tm, atomtyp,
     !>            atomsymbol, wforce
-
     implicit none
-
-    character*256 :: pooldir
-    character*256 :: pp_id
-    character*256 :: bas_id
-    character*256 :: filename
+    character(:), allocatable :: pooldir
+    character(:), allocatable :: pp_id
+    character(:), allocatable :: bas_id
+    character(:), allocatable :: filename
     character*256, allocatable, dimension(:) :: filenames_bas_num
     character*256, allocatable, dimension(:) :: filenames_ps_gauss
     character*256, allocatable, dimension(:) :: filenames_ps_champ
     character*256, allocatable, dimension(:) :: filenames_ps_tm
-    character*20  :: atomtyp
-    character*20  :: atomsymbol
-    character*20  :: wforce
+    character(:), allocatable :: atomtyp
+    character(:), allocatable :: atomsymbol
+    character(:), allocatable :: wforce
 
     private
     public :: pooldir, pp_id, bas_id, atomtyp, filename
@@ -95,7 +93,7 @@ module method_opt
 
     implicit none
 
-    character*20 :: method
+    character(:), allocatable :: method
 
     private
     public :: method

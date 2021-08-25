@@ -4,7 +4,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use optjas, only: MPARMJ
-      use vmc_mod, only: MDET
+      use dets, only: ndet
       use const, only: hb, nelec, ipr
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
@@ -28,6 +28,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use multislater, only: detiab
       use inputflags, only: iqmmm
       use precision_kinds, only: dp
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -39,7 +40,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       real(dp), dimension(*) :: psid
       real(dp), dimension(*) :: energy
       real(dp), dimension(MSTATES) :: denergy
-      real(dp), dimension(MDET, 2) :: eloc_det
+      real(dp), dimension(ndet, 2) :: eloc_det
       real(dp), dimension(2) :: vpsp_det
       real(dp), dimension(MPARMJ) :: dvpsp_dj
 
@@ -55,10 +56,9 @@ c pe_en(nonloc) computed in nonloc_pot if nloc !=0
 
 c distances needed for Jastrow, determinants, and potential energy
       call distances(0,coord)
-
 c local potential contributions
       call pot_local(pe_local)
-      
+
 c external potential on a grid (e.g. MM from CPMD)
       if(iqmmm.eq.1) then
         ext_pot=0
@@ -73,7 +73,7 @@ c external charges
         pe_local=pe_local+ext_pot
       endif
 
-c PCM polarization charges 
+c PCM polarization charges
       if(ipcm.gt.1) then
         pepcms=0
         pepcmv=0
@@ -82,7 +82,7 @@ c PCM polarization charges
         pe_local=pe_local+pepcm
       endif
 
-c QM-MMPOL (charges+induced dipoles) 
+c QM-MMPOL (charges+induced dipoles)
       if(immpol.gt.1) then
         peQMdp=0
         peQMq=0
@@ -91,7 +91,7 @@ c QM-MMPOL (charges+induced dipoles)
         pe_local=pe_local+peQM
       endif
 
-      if(ipr.ge.3) write(6,'(''pe_loc before nonloc_pot'',9f12.5)') pe_local
+      if(ipr.ge.3) write(ounit,'(''pe_loc before nonloc_pot'',9f12.5)') pe_local
 
 c get contribution from jastrow (also compute derivatives wrt parameters and nuclei)
       if(ianalyt_lap.eq.1) then
@@ -99,7 +99,7 @@ c get contribution from jastrow (also compute derivatives wrt parameters and nuc
        else
         call jastrow_num(coord,vj,d2j,psij)
       endif
-      if(ipr.ge.3) write(6,'(''d2j,psij'',9f12.5)') d2j,psij
+      if(ipr.ge.3) write(ounit,'(''d2j,psij'',9f12.5)') d2j,psij
 
 c compute reference determinant, its derivatives, and kinetic contribution to B_eloc and its derivatives
       call determinant(ipass,coord,rvec_en,r_en)
@@ -110,26 +110,22 @@ c compute reference determinant, its derivatives, and kinetic contribution to B_
 c compute pseudo-potential contribution
 c nonloc_pot must be called after determinant because slater matrices are needed
 
-      if(nloc.gt.0) 
+      if(nloc.gt.0)
      &  call nonloc_pot(coord,rshift,rvec_en,r_en,pe_local,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
 
-      if(ipr.ge.3) then 
-        write(6,'(''pe_loc after nonloc_pot'',9f12.5)') pe_local
-        write(6,'(''pe_ref after nonloc_pot'',9f12.5)') (vpsp_det(ii),ii=1,2)
+      if(ipr.ge.3) then
+        write(ounit,'(''pe_loc after nonloc_pot'',9f12.5)') pe_local
+        write(ounit,'(''pe_ref after nonloc_pot'',9f12.5)') (vpsp_det(ii),ii=1,2)
       endif
 
-      
       call multideterminant_hpsi(vj,vpsp_det,eloc_det)
-      
       e_other=pe_local-hb*d2j
       do 10 i=1,nelec
    10   e_other=e_other-hb*(vj(1,i)**2+vj(2,i)**2+vj(3,i)**2)
 
       do 30 istate=1,nstates
-
 c combine determinantal quantities to obtain trial wave function
         call determinant_psit(psid(istate),istate)
-        
 c compute energy using Ymat
         denergy(istate)=0
         do 20 iab=1,2
@@ -143,21 +139,20 @@ c compute energy using Ymat
         energy(istate)=denergy(istate)+eloc_det(kref,1)+eloc_det(kref,2)+e_other
 
         if(ipr.ge.2) then
-          write(6,'(''state'',i4)') istate
-          write(6,'(''psid,psij'',9d12.5)') psid(istate),psij
-          write(6,'(''psitot   '',e18.11)') psid(istate)*exp(psij)
+          write(ounit,'(''state'',i4)') istate
+          write(ounit,'(''psid,psij'',9d12.5)') psid(istate),psij
+          write(ounit,'(''psitot   '',e18.11)') psid(istate)*exp(psij)
 c         do k=1,ndet
-c           write(6,'(''psitot_k '',i6,3e18.8)') k, detiab(k,1),detiab(k,2),detiab(k,1)*detiab(k,2)*exp(psij)
-c           write(6,'(''psitot_k '',i6,3e18.8)') k, detiab(k,1),detiab(k,2),cdet(k,1,1)*detiab(k,1)*detiab(k,2)*exp(psij)
+c           write(ounit,'(''psitot_k '',i6,3e18.8)') k, detiab(k,1),detiab(k,2),detiab(k,1)*detiab(k,2)*exp(psij)
+c           write(ounit,'(''psitot_k '',i6,3e18.8)') k, detiab(k,1),detiab(k,2),cdet(k,1,1)*detiab(k,1)*detiab(k,2)*exp(psij)
 c         enddo
 c         do 25 i=1,nelec
 c           do 25 k=1,3
-c  25         write(6,'(''vj'',2e18.11)') vj(k,i)
-          if(ipr.ge.3) write(6,'(''energy'',9f16.10)') energy(istate)
+c  25         write(ounit,'(''vj'',2e18.11)') vj(k,i)
+          if(ipr.ge.3) write(ounit,'(''energy'',9f16.10)') energy(istate)
         endif
 
    30 continue
-      
       if(ifr.eq.1) then
         if(iforce_analy.eq.1) call compute_force(psid(1),denergy(1))
 

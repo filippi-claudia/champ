@@ -30,9 +30,10 @@ c routine to print out final results
       use force_mod, only: MFORCE
       use branch, only: eold, nwalk
       use optwf_corsam, only: energy, energy_err, force, force_err
-      use contrl, only: nblkeq, nconf, nstep
+!      use contrl, only: nblkeq, nconf, nstep
+      use control_dmc, only: dmc_nblkeq, dmc_nconf, dmc_nstep
       use mpi
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -70,7 +71,7 @@ c Statement functions for error calculation, it might be reaplaced in the near f
       errc1(x,x2)=error(x,x2,wcum1,wcm21)
       errf1(x,x2)=error(x,x2,wfcum1,wfcm21)
       errg1(x,x2,i)=error(x,x2,wgcum1(i),wgcm21(i))
-      errw(x,x2)=errorn(x,x2,dfloat(iblk_proc))/nstep
+      errw(x,x2)=errorn(x,x2,dfloat(iblk_proc))/dmc_nstep
       errw1(x,x2)=errorn(x,x2,pass_proc)
 
       do 1 ifr=1,nforce
@@ -81,11 +82,11 @@ c Statement functions for error calculation, it might be reaplaced in the near f
         force(ifr)=0
     1   force_err(ifr)=0
 
-      passes=dfloat(iblk*nstep)
-      eval=nconf*passes
+      passes=dfloat(iblk*dmc_nstep)
+      eval=dmc_nconf*passes
       if(mode.eq.'dmc_one_mpi1') then
-        pass_proc=dfloat(iblk_proc*nstep)
-        eval_proc=nconf*pass_proc
+        pass_proc=dfloat(iblk_proc*dmc_nstep)
+        eval_proc=dmc_nconf*pass_proc
        else
         iblk_proc=iblk
         pass_proc=passes
@@ -97,21 +98,15 @@ c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-b
 c     eval_eff=nconf*rn_eff(wcum1,wcm21)
 c     evalf_eff=nconf*rn_eff(wfcum1,wfcm21)
 c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
+      eval_eff=dmc_nconf*dmc_nstep*rn_eff(wcum_dmc,wcm2)
+      evalf_eff=dmc_nconf*dmc_nstep*rn_eff(wfcum,wfcm2)
+      evalg_eff=dmc_nconf*dmc_nstep*rn_eff(wgcum(1),wgcm2(1))
+      rtpass1=dsqrt(pass_proc-1)
+      rteval_eff1=dsqrt(eval_eff-1)
+      rtevalf_eff1=dsqrt(evalf_eff-1)
+      rtevalg_eff1=dsqrt(evalg_eff-1)
 
-c The intrinsic rn_eff function must be evaluated only by the 'wid' (leading) node.
-c Why? wcum_dmc and wcm2 are non-zero only for the 'wid' node. If the condition is left out,
-c the rest of the nodes rise the IEEE_DIVIDE_BY_ZERO warning.
-      if (wid) then
-         eval_eff=nconf*nstep*rn_eff(wcum_dmc,wcm2)
-         evalf_eff=nconf*nstep*rn_eff(wfcum,wfcm2)
-         evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
-         rtpass1=dsqrt(pass_proc-1)
-         rteval_eff1=dsqrt(eval_eff-1)
-         rtevalf_eff1=dsqrt(evalf_eff-1)
-         rtevalg_eff1=dsqrt(evalg_eff-1)
-      endif
-
-      write(6,'(''passes,eval,pass_proc,eval_proc,eval_eff,
+      write(ounit,'(''passes,eval,pass_proc,eval_proc,eval_eff,
      &evalf_eff,evalg_eff'',19f9.0)')
      & passes,eval,pass_proc,eval_proc,eval_eff,evalf_eff,
      & evalg_eff
@@ -144,7 +139,7 @@ c Collect radial charge density for atoms
       if (ipr.gt.-2)
      &  write(11,'(3i5,f11.5,f7.4,f10.7,
      &  '' nstep,nblk,nconf,etrial,tau,taueff'')')
-     &  nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)
+     &  dmc_nstep,iblk,dmc_nconf,etrial,tau,taucum(1)/wgcum(1)
 
       if(.not.wid.and.mode.eq.'dmc_one_mpi2') return
 
@@ -157,23 +152,23 @@ c Collect radial charge density for atoms
       endif
 
       if(idmc.ge.0) then
-        write(6,'(10i6)') (iage(i),i=1,nwalk)
+        write(ounit,'(10i6)') (iage(i),i=1,nwalk)
         do 10 i=1,nwalk
           if(iage(i).gt.50) then
-            write(6,'(i4,i6,f10.4,99f8.4)') i,iage(i),eold(i,1),
+            write(ounit,'(i4,i6,f10.4,99f8.4)') i,iage(i),eold(i,1),
      &      ((xold_dmc(k,j,i,1),k=1,3),j=1,nelec)
-            write(6,'(99f8.4)') ((vold_dmc(k,j,i,1),k=1,3),j=1,nelec)
+            write(ounit,'(99f8.4)') ((vold_dmc(k,j,i,1),k=1,3),j=1,nelec)
           endif
    10   continue
 
-        write(6,'(''age of oldest walker (this generation, any gen)='',
+        write(ounit,'(''age of oldest walker (this generation, any gen)='',
      &   3i9)') ioldest,ioldestmx
       endif
 
-c     write(6,'(''average of the squares of the accepted step-size='',
+c     write(ounit,'(''average of the squares of the accepted step-size='',
 c    & f10.5)') dr2ac/trymove
 
-      write(6,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),
+      write(ounit,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),
      & ifr=1,nforce)
 
       if (wid) then
@@ -195,49 +190,44 @@ c    & f10.5)') dr2ac/trymove
       endif
 
       if(mode.eq.'dmc_one_mpi1') then
-        write(6,'(''dmc_mov1_mpi '',2a10)') title
+        write(ounit,'(''dmc_mov1_mpi '',2a10)') title
        else
-        write(6,'(''dmc_mov1_mpi_globalpop '',2a10)') title
+        write(ounit,'(''dmc_mov1_mpi_globalpop '',2a10)') title
       endif
-
-      if (wid) then
-        write(6,'(''No/frac. of node crossings,acceptance='',i9,3f10.6)')
+      write(ounit,'(''No/frac. of node crossings,acceptance='',i9,3f10.6)')
      &nodecr,dfloat(nodecr)/trymove,accav,accavn
-        if(idmc.ge.0) then
-          write(6,'(''No. of walkers at end of run='',i5)') nwalk
+      if(idmc.ge.0) then
+        write(ounit,'(''No. of walkers at end of run='',i5)') nwalk
 
-          write(6,'(''nwalk_eff/nwalk         ='',2f6.3)')
+        write(ounit,'(''nwalk_eff/nwalk         ='',2f6.3)')
      &   rn_eff(wcum1,wcm21)/pass_proc,rn_eff(wcum_dmc,wcm2)/iblk_proc
-          write(6,'(''nwalk_eff/nwalk with f  ='',2f6.3)')
+        write(ounit,'(''nwalk_eff/nwalk with f  ='',2f6.3)')
      &   rn_eff(wfcum1,wfcm21)/pass_proc,rn_eff(wfcum,wfcm2)/iblk_proc
-          write(6,'(''nwalk_eff/nwalk with fs ='',2f6.3)')
+        write(ounit,'(''nwalk_eff/nwalk with fs ='',2f6.3)')
      &   rn_eff(wgcum1(1),wgcm21(1))/pass_proc,rn_eff(wgcum(1),
      &   wgcm2(1))/iblk_proc
-        endif
       endif
 
-      write(6,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq  nproc  tau    taueff'',
+      write(ounit,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq  nproc  tau    taueff'',
      &/,2f12.0,5i6,2f9.5)')
-     &eval,passes,nconf,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
-      write(6,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
-
-      if(wid) then
-        if(idmc.ge.0) then
-          write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+     &eval,passes,dmc_nconf,dmc_nstep,iblk,dmc_nblkeq,nproc,tau,taucum(1)/wgcum(1)
+      write(ounit,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
+      if(idmc.ge.0) then
+        write(ounit,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  wave,werr,werr*rtpass1,werr1*rtpass1,(werr/werr1)**2
-          write(6,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+        write(ounit,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  wfave,wferr,wferr*rtpass1,wferr1*rtpass1,(wferr/wferr1)**2
-          do 20 ifr=1,nforce
-            wgave=wgcum(ifr)/pass_proc
-            wgerr=errw(wgcum(ifr),wgcm2(ifr))
-            wgerr1=errw1(wgcum1(ifr),wgcm21(ifr))
-            write(6,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
-     &      wgave,wgerr,wgerr*rtpass1,wgerr1*rtpass1,(wgerr/wgerr1)**2
-  20      continue
-          write(6,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,
+        do 20 ifr=1,nforce
+          wgave=wgcum(ifr)/pass_proc
+          wgerr=errw(wgcum(ifr),wgcm2(ifr))
+          wgerr1=errw1(wgcum1(ifr),wgcm21(ifr))
+          write(ounit,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+     &    wgave,wgerr,wgerr*rtpass1,wgerr1*rtpass1,(wgerr/wgerr1)**2
+  20    continue
+        write(ounit,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,
      &  2f9.5,f8.2)') eave,eerr,eerr*rteval_eff1,eerr1*rteval_eff1,
      &  (eerr/eerr1)**2
-          write(6,'(''total energy (   1) ='',t24,f12.7,'' +-'',f11.7,
+        write(ounit,'(''total energy (   1) ='',t24,f12.7,'' +-'',f11.7,
      &  2f9.5,f8.2)') efave,eferr,eferr*rtevalf_eff1,eferr1*rtevalf_eff1,
      &  (eferr/eferr1)**2
         endif
@@ -246,7 +236,7 @@ c    & f10.5)') dr2ac/trymove
         egave=egcum(ifr)/wgcum(ifr)
         egerr=errg(egcum(ifr),egcm2(ifr),ifr)
         egerr1=errg1(egcum1(ifr),egcm21(ifr),ifr)
-        write(6,'(''total energy ('',i4,'') ='',t24,f12.7,'' +-'',
+        write(ounit,'(''total energy ('',i4,'') ='',t24,f12.7,'' +-'',
      &  f11.7,2f9.5,f8.2)') nfprod,egave,egerr,egerr*rtevalg_eff1,
      &  egerr1*rtevalg_eff1,(egerr/egerr1)**2
         energy(ifr)=egave
@@ -260,11 +250,11 @@ c    & f10.5)') dr2ac/trymove
         peerr=errg(pecum_dmc(ifr),pecm2_dmc(ifr),ifr)
         tpberr=errg(tpbcum_dmc(ifr),tpbcm2_dmc(ifr),ifr)
         tjferr=errg(tjfcum_dmc(ifr),tjfcm_dmc(ifr),ifr)
-        write(6,'(''potential energy ='',t24,f12.7,'' +-''
+        write(ounit,'(''potential energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
-        write(6,'(''jf kinetic energy ='',t24,f12.7,'' +-''
+        write(ounit,'(''jf kinetic energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') tjfave,tjferr,tjferr*rtevalg_eff1
-        write(6,'(''pb kinetic energy ='',t24,f12.7,'' +-''
+        write(ounit,'(''pb kinetic energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_eff1
   40  continue
       do 50 ifr=2,nforce
@@ -278,12 +268,11 @@ c Done by Omar Valsson 2008-12-01
         endif
         fgave=fgave/deltot(ifr)
         fgerr=fgerr/abs(deltot(ifr))
-        write(6,'(''force config'',i2,t24,e19.10
+        write(ounit,'(''force config'',i2,t24,e19.10
      &  ,'' +-'',e16.8,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_eff1
         force(ifr)=fgave
         force_err(ifr)=fgerr
   50  continue
-      endif
 
       call prop_prt_dmc(iblk,1,wgcum,wgcm2)
       call pcm_fin(iblk,wgcum,wgcm2)

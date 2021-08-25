@@ -15,6 +15,7 @@
       use orbval, only: orb
       use multislater, only: detiab
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
@@ -123,7 +124,7 @@ c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MORB
       use vmc_mod, only: MMAT_DIM
       use vmc_mod, only: MEXCIT
       use dets, only: ndet
@@ -140,7 +141,7 @@ c-----------------------------------------------------------------------
       integer :: kk, nel
       real(dp) :: detratio, dum
       real(dp), dimension(nelec, MORB) :: aa
-      real(dp), dimension(MEXCIT**2, MDET) :: wfmat
+      real(dp), dimension(MEXCIT**2, ndet) :: wfmat
       real(dp), dimension(MORB, nelec) :: ymat
       real(dp), dimension(MORB, 3) :: b
       real(dp), dimension(3, MORB) :: dorb
@@ -177,6 +178,7 @@ c TMP to fix
         enddo
       enddo
 
+
       do 50 kk=1,3
 
         do jrep=ivirt(iab),norb
@@ -193,7 +195,7 @@ c TMP to fix
 
  50   continue
 
-c     if(iab.eq.2) write(6,*) 'gmat ',(((gmat(irep,jrep,kk),irep=iactv(iab),nel),jrep=ivirt(iab),norb),kk=1,3)
+c     if(iab.eq.2) write(ounit,*) 'gmat ',(((gmat(irep,jrep,kk),irep=iactv(iab),nel),jrep=ivirt(iab),norb),kk=1,3)
 
       do kk=1,3
         dum=0
@@ -205,7 +207,7 @@ c     if(iab.eq.2) write(6,*) 'gmat ',(((gmat(irep,jrep,kk),irep=iactv(iab),nel)
         velocity(kk)=dum*detratio
       enddo
 
-c     if(iab.eq.2) write(6,*) 'ymat ',((ymat(jrep,irep),irep=iactv(iab),nel),jrep=ivirt(iab),norb)
+c     if(iab.eq.2) write(ounit,*) 'ymat ',((ymat(jrep,irep),irep=iactv(iab),nel),jrep=ivirt(iab),norb)
       return
       end
 c-----------------------------------------------------------------------

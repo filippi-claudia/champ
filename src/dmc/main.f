@@ -5,19 +5,24 @@ c Written by Claudia Filippi
       use allocation_mod, only: deallocate_dmc
       use optwf_contrl, only: ioptwf
       use contr3, only: mode
+      use contrl_file, only: initialize
       use mpi
+      use contrl_file,    only: ounit
+      use mpitimer,    only: time, time_start, time_check1, time_final
 
       implicit none
 
-      integer :: ierr
+      integer :: ierr, ibranch_elec
       character*40 :: filename
 
       call mpi_init(ierr)
       call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
       call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
 
+      time_start = time()
       call mpiconf_init()
 
+      call initialize()
 
 c Open the standard output and the log file only on the master
       if(wid) then
@@ -28,18 +33,22 @@ c Open the standard output and the log file only on the master
         open(45, file='trash.log')
       endif
 
-      if(idtask.le.9) then
-        write(filename, '(''problem.'',i1)') idtask
-       elseif(idtask.le.99) then
-        write(filename, '(''problem.'',i2)') idtask
-       elseif(idtask.le.999) then
-        write(filename, '(''problem.'',i3)') idtask
-       else
-        call fatal_error('MAIN: idtask ge 1000')
-      endif
+      write(filename, '(''problem.'',i0)') idtask
       open(18,file=filename, status='unknown')
 
-      call read_input
+
+!     read the input from parser
+      call parser()
+      call MPI_BARRIER(MPI_Comm_World, ierr)
+
+
+      if(mode.eq.'dmc_one_mpi2') then
+        if(ioptwf.gt.0) call fatal_error('MAIN: no DMC optimization with global population')
+
+!        call p2gtid('dmc:ibranch_elec', ibranch_elec, 0, 1)
+        ! why a local variable is used to decide the following line
+        if(ibranch_elec.gt.0) call fatal_error('MAIN: no DMC single-branch with global population')
+      endif
 
       if(ioptwf.gt.0) then
        call optwf_matrix_corsamp
@@ -50,6 +59,9 @@ c Open the standard output and the log file only on the master
       close(5)
       close(6)
       close(45)
+
+      time_final = time()
+      !write(ounit,'(a,g16.6,a)') " Total time of computation ::  ", time_final - time_start, " seconds "
 
       call mpi_finalize(ierr)
       call deallocate_dmc()

@@ -27,7 +27,7 @@ c The prefered grid is 3.
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
       use grid3d_param, only: origin
       use general, only: filename, filenames_ps_champ
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -60,14 +60,14 @@ c position file to skip comments
 c The TM psp. format has npotd and npotu for down and up, but we just use one of them (lpot_max)
 c They are the number of different l components of the psp.
 
-        write(6,'(''Reading psp in champ format'')')
+        write(ounit,'(''Reading psp in champ format'')')
         read(title,*) lpot_max(ict),zion,r_asymp
-        write(6,'(''ict,lpot_max(ict),zion,r_asymp'',2i2,f4.0,f8.3)') ict,lpot_max(ict),zion,r_asymp
-        if(lpot_max(ict).le.0 .or. lpot_max(ict).gt.MPS_L) call fatal('READTM_CHAMP: lpot_max must be > 0 and <= MPS_L')
+        write(ounit,'(''ict,lpot_max(ict),zion,r_asymp'',2i2,f4.0,f8.3)') ict,lpot_max(ict),zion,r_asymp
+        if(lpot_max(ict).le.0 .or. lpot_max(ict).gt.MPS_L) call fatal_error('READTM_CHAMP: lpot_max must be > 0 and <= MPS_L')
 
 c Presently, only allow highest component to be the local
 c       if(lpot(ict).gt.lpot_max(ict)) then
-c         write(6,'(''lpot(ict),lpot_max(ict)='',2i3)') lpot(ict),lpot_max(ict)
+c         write(ounit,'(''lpot(ict),lpot_max(ict)='',2i3)') lpot(ict),lpot_max(ict)
 c         call fatal('READTM_CHAMP: Cannot choose local psp. to be > number of l components, lpot(ict) > lpot_max(ict)')
 c       endif
 c       if(lpot_max(ict).gt.MPS_L) call fatal('READTM_CHAMP: lpot_max(ict).gt.MPS_L')
@@ -75,20 +75,20 @@ c       if(lpot_max(ict).gt.MPS_L) call fatal('READTM_CHAMP: lpot_max(ict).gt.MP
 c If the local pseudopot component is not set in input, set it here
 c       if(lpot(ict).le.0) then
           lpot(ict)=lpot_max(ict)
-          write(6,'(''Center type'',i4,'' local pseudopot component reset to'',i3)') ict,lpot(ict)
+          write(ounit,'(''Center type'',i4,'' local pseudopot component reset to'',i3)') ict,lpot(ict)
 c       endif
 
-        write(6,'(''Center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
+        write(ounit,'(''Center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
      &  ,i2,'' is chosen to be local'')') ict,lpot_max(ict),lpot(ict)
 
         if(znuc(ict).ne.zion) then
-          write(6,'(''znuc(ict) != zion in readps_tm'',2f6.1)') znuc(ict),zion
-          call fatal('READTM_CHAMP: znuc(ict) != zion in readps_tm')
+          write(ounit,'(''znuc(ict) != zion in readps_tm'',2f6.1)') znuc(ict),zion
+          call fatal_error('READTM_CHAMP: znuc(ict) != zion in readps_tm')
         endif
 
         read(1,*) igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps
         nr=nr_ps(ict)
-        write(6,'(''igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps='',i2,i5,1pd22.15,0pf8.5)')
+        write(ounit,'(''igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps='',i2,i5,1pd22.15,0pf8.5)')
      &  igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps
         arg_ps(ict)=exp(h_ps)
 
@@ -96,11 +96,11 @@ c       endif
         if(igrid_ps(ict).lt.1 .and. r0_ps(ict).ne.0.d0) stop 'if igrid_ps(ict)=1 r0_ps(ict) must be 0'
 
         if(nr.lt.100) then
-          write(6,'(''nr in psp grid too small'',2i6)') nr
+          write(ounit,'(''nr in psp grid too small'',2i6)') nr
           stop 'nr in psp grid too small'
         endif
         if(nr.gt.MPS_GRID .or. igrid_ps(ict).eq.2.and.nr.gt.MPS_GRID-1) then
-          write(6,'(''nr > MPS_GRID'',2i6)') nr,MPS_GRID
+          write(ounit,'(''nr > MPS_GRID'',2i6)') nr,MPS_GRID
           stop 'nr > MPS_GRID'
         endif
 
@@ -120,12 +120,12 @@ c       endif
             r0_ps(ict)=r(2)
             arg_ps(ict)=r(3)/r(2)
             h_ps=dlog(arg_ps(ict))
-            write(6,'(''Grid parameters deduced from grid values are, r0_ps(ict),h_ps,arg_ps(ict)='',9f10.5)')
+            write(ounit,'(''Grid parameters deduced from grid values are, r0_ps(ict),h_ps,arg_ps(ict)='',9f10.5)')
      &      r0_ps(ict),h_ps,arg_ps(ict)
           endif
           do 30 i=1,lpot_max(ict)
             call intpol(r(2),vpseudo(2,ict,i),nrm1,r(1),vpseudo(1,ict,i),1,3)
-   30       write(6,'(''Interpolated psp'',9f16.12)') (vpseudo(ir,ict,i),ir=1,5)
+   30       write(ounit,'(''Interpolated psp'',9f16.12)') (vpseudo(ir,ict,i),ir=1,5)
         endif
 
         if(r0_ps(ict).lt.0.d0 .or. r0_ps(ict).gt.1.d-2) stop 'r0_ps in psp grid is not reasonable'
@@ -171,16 +171,16 @@ c so irmax_coul must be >= irmax_nloc.
         irmax_coul=max(irmax_coul,irmax_nloc)
         rmax_coul(ict)=r(irmax_coul)
 
-        write(6,'(''center '',i3,'' pseudopot rmax_coul,irmax_coul,rmax_nloc,irmax_nloc= '',2(f6.2,i5))')
+        write(ounit,'(''center '',i3,'' pseudopot rmax_coul,irmax_coul,rmax_nloc,irmax_nloc= '',2(f6.2,i5))')
      &  ict,rmax_coul(ict),irmax_coul,rmax_nloc(ict),irmax_nloc
 
         if(ipr.ge.1) then
           write(38,'(''r(j)  (vpseudo(j,ict,i),i=1,lpot_max(ict))  -znuc(ict)/r(j)'')')
           do 104 j=2,nr
             if(r(j).gt.0.d0) then
-              write(38,'(1pd12.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,lpot_max(ict)),-znuc(ict)/r(j)
+              write(38,'(1pd16.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,lpot_max(ict)),-znuc(ict)/r(j)
              else
-              write(38,'(1pd12.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,lpot_max(ict))
+              write(38,'(1pd16.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,lpot_max(ict))
             endif
   104     continue
         endif
@@ -209,7 +209,7 @@ c Set derivative at end point equal to 0 for nonlocal components and Z/r^2 for l
           if(i.eq.lpot(ict)) dpotn=zion/r(irmax_coul)**2
 c         if(i.eq.lpot(ict)) call deriv_intpol(r,vpseudo(1,ict,i),nr,r(irmax_coul),dpotn,irmax_coul,3)
 
-          write(6,'(''dpot1,dpotn'',1p2e15.5)') dpot1,dpotn
+          write(ounit,'(''dpot1,dpotn'',1p2e15.5)') dpot1,dpotn
 
 c get second derivative for spline fit
           call spline2(r,vpseudo(1,ict,i),irmax_coul,dpot1,dpotn,d2pot(1,ict,i),work)
@@ -227,13 +227,13 @@ c get second derivative for spline fit
       call gesqua(nquad,xq0,yq0,zq0,wq)
 c     call gesqua(nquad,xq,yq,zq,wq)
 
-      write(6,'(''quadrature points'')')
+      write(ounit,'(''quadrature points'')')
       do 210 i=1,nquad
-  210   write(6,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
+  210   write(ounit,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
 
       return
 
-  999 write(6,'(''Error: Pseudopot. file '',a20,'' is missing'')') filename
+  999 write(ounit,'(''Error: Pseudopot. file '',a20,'' is missing'')') filename
       stop 'Pseudopot. file is missing'
 
       end
@@ -242,13 +242,13 @@ c-----------------------------------------------------------------------
       subroutine getvps_champ(r_en,iel)
 c compute pseudopotential for electron iel
 
-      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MCENT
       use atom, only: znuc, iwctype, ncent
       use pseudo_champ, only: rmax_coul, rmax_nloc
       use atom, only: ncent_tot
       use pseudo, only: lpot, vps
       use const, only: nelec
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -274,7 +274,7 @@ c local potential
          else
           vps(iel,ic,lpot(ict))=-znuc(ict)/r
         endif
-c       write(6,'(''ic,iel,r,vpot='',2i3,f6.3,f9.5)') ic,iel,r,vps(iel,ic,lpot(ict))
+c       write(ounit,'(''ic,iel,r,vpot='',2i3,f6.3,f9.5)') ic,iel,r,vps(iel,ic,lpot(ict))
 c non-local pseudopotential
         do 10 l=1,lpot(ict)
           if(l.ne.lpot(ict)) then
@@ -304,7 +304,7 @@ c We assume that rmax_nloc(ict) <= rmax_coul(ict).
       use pseudo_tm, only: arg_ps, d2pot, r0_ps, vpseudo
 
       use pseudo, only: lpot
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -345,14 +345,14 @@ c Warning: this needs fixing to h_ps
         endif
 
         if(jx.lt.1) then
-          write(6,'(''ict,jx,xr,r,r0_ps(ict),arg_ps(ict),h_ps='',2i3,5d12.4)')
+          write(ounit,'(''ict,jx,xr,r,r0_ps(ict),arg_ps(ict),h_ps='',2i3,5d12.4)')
      &    ict,jx,xr,r,r0_ps(ict),arg_ps(ict),h_ps
-          write(6,'(''Warning: index < 1 in splfit_champ, r,xr='',2d12.4)') r,xr
+          write(ounit,'(''Warning: index < 1 in splfit_champ, r,xr='',2d12.4)') r,xr
           jx=1
         endif
 
         if(jx.gt.MPS_GRID) then
-          write(6,'(''ict,jx,xr,r,r0_ps(ict),arg_ps(ict),h_ps='',2i3,5d12.4)')
+          write(ounit,'(''ict,jx,xr,r,r0_ps(ict),arg_ps(ict),h_ps='',2i3,5d12.4)')
      &    ict,jx,xr,r,r0_ps(ict),arg_ps(ict),h_ps
           stop 'index > MPS_GRID in splfit_champ'
         endif

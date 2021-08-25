@@ -1,0 +1,2 @@
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+cmake --build build -j8 --clean-first

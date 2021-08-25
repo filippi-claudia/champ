@@ -1,7 +1,7 @@
-  
+
   ! Omar Valsson (o.valsson@tnw.utwente.nl)
   !
-  ! Set of subroutines for converting between 
+  ! Set of subroutines for converting between
   ! cartesian coordinanes and internial coordinaets
   ! (Z matrix).
 
@@ -21,12 +21,12 @@ module misc_bond_func
   public cross_product
 
   contains
-  
+
   function distance(cA,cB)
     implicit none
     real(kind=dp)  ::  distance
     real(kind=dp), dimension(1:3), intent(in)  ::  cA,cB
-    
+
     distance = sqrt(dot_product(cA-cB,cA-cB))
   end function distance
 
@@ -50,7 +50,7 @@ module misc_bond_func
 
   function torsion_angle(cA,cB,cC,cD)
   ! Taken from the torsion_angle subroutine from bo.c in
-  ! Babel 1.6 
+  ! Babel 1.6
     implicit none
     real(kind=dp)  ::  torsion_angle
     real(kind=dp), dimension(1:3), intent(in)  ::  cA,cB,cC,cD
@@ -59,18 +59,18 @@ module misc_bond_func
 
     vecBA=cA-cB; vecCB=cB-cC; vecDC=cC-cD
     norm1 = cross_product(vecCB,vecBA)
-    norm2 = cross_product(vecDC,vecCB)   
+    norm2 = cross_product(vecDC,vecCB)
 
     cos_angle = dot_product(norm1,norm2)/ &
         & (vector_length(norm1)*vector_length(norm2))
-    
+
     if (cos_angle > 1.0_dp) then
        cos_angle = 1.0_dp
     endif
     if (cos_angle < -1.0_dp) then
        cos_angle = -1.0_dp
     endif
-   
+
     !torsion_angle = acos(cos_angle)*rad2deg
     torsion_angle = acos(cos_angle)
     !
@@ -108,7 +108,8 @@ end module misc_bond_func
 
 
 subroutine cart2zmat(natoms,coord_cart,conn_zmatrix,coord_zmatrix)
-  use misc_bond_func 
+  use misc_bond_func
+  use contrl_file,    only: ounit
   implicit none
   integer, parameter  ::  dp = selected_real_kind(2*precision(1.0))
   integer, intent(in)  ::  natoms
@@ -130,7 +131,7 @@ subroutine cart2zmat(natoms,coord_cart,conn_zmatrix,coord_zmatrix)
   nA = 2
   nB = conn_zmatrix(1,nA)
   if(nB.ge.nA) then
-     write(6,*) 'zmat2cart: error in conn_zmatrix.' ; return
+     write(ounit,*) 'zmat2cart: error in conn_zmatrix.' ; return
   endif
   if(nB .eq. 0) return
   cA = coord_cart(:,nA)
@@ -144,7 +145,7 @@ subroutine cart2zmat(natoms,coord_cart,conn_zmatrix,coord_zmatrix)
   nB = conn_zmatrix(1,nA)
   nC = conn_zmatrix(2,nA)
   if(nB.ge.nA .or. nC.ge.nA) then
-     write(6,*) 'zmat2cart: error in conn_zmatrix.' ; return
+     write(ounit,*) 'zmat2cart: error in conn_zmatrix.' ; return
   endif
   if(nB .eq. 0 .or. nC .eq. 0) return
   cA = coord_cart(:,nA)
@@ -161,7 +162,7 @@ subroutine cart2zmat(natoms,coord_cart,conn_zmatrix,coord_zmatrix)
      nC = conn_zmatrix(2,nA)
      nD = conn_zmatrix(3,nA)
      if(nB.ge.nA .or. nC.ge.nA .or. nD.ge.nA) then
-        write(6,*) 'zmat2cart: error in conn_zmatrix.' ; return
+        write(ounit,*) 'zmat2cart: error in conn_zmatrix.' ; return
      endif
      if (nB.eq.0 .or. nC.eq.0 .or. nD.eq.0) return
      cA = coord_cart(:,nA)
@@ -171,14 +172,15 @@ subroutine cart2zmat(natoms,coord_cart,conn_zmatrix,coord_zmatrix)
      coord_zmatrix(1,nA) = distance(cA,cB)
      coord_zmatrix(2,nA) = bond_angle(cA,cB,cC)
      coord_zmatrix(3,nA) = torsion_angle(cA,cB,cC,cD)
-  enddo    
+  enddo
 end subroutine cart2zmat
 
 
 subroutine zmat2cart(natoms,conn_zmatrix,coord_zmatrix,coord_cart)
-  ! this is taken from int_to_cart subroutine in intcart.c 
+  ! this is taken from int_to_cart subroutine in intcart.c
   ! in Babel 1.6
-  use misc_bond_func 
+  use misc_bond_func
+  use contrl_file,    only: ounit
   implicit none
   integer, parameter  ::  dp = selected_real_kind(2*precision(1.0))
   integer, intent(in)  ::  natoms
@@ -207,7 +209,7 @@ subroutine zmat2cart(natoms,conn_zmatrix,coord_zmatrix,coord_cart)
   nA = 2
   nB = conn_zmatrix(1,nA)
   if(nB.ge.nA) then
-     write(6,*) 'zmat2cart: error in conn_zmatrix.' ; return
+     write(ounit,*) 'zmat2cart: error in conn_zmatrix.' ; return
   endif
   if(nB .eq. 0) return
   coord_cart(1,nA) = coord_zmatrix(1,nA)
@@ -219,7 +221,7 @@ subroutine zmat2cart(natoms,conn_zmatrix,coord_zmatrix,coord_cart)
   nB = conn_zmatrix(1,nA)
   nC = conn_zmatrix(2,nA)
   if(nB.ge.nA .or. nC.ge.nA) then
-     write(6,*) 'zmat2cart: error in conn_zmatrix.' ; return
+     write(ounit,*) 'zmat2cart: error in conn_zmatrix.' ; return
   endif
   if(nB .eq. 0 .or. nC .eq. 0) return
   dist = coord_zmatrix(1,nA)
@@ -237,7 +239,7 @@ subroutine zmat2cart(natoms,conn_zmatrix,coord_zmatrix,coord_cart)
      nC = conn_zmatrix(2,nA)
      nD = conn_zmatrix(3,nA)
      if(nB.ge.nA .or. nC.ge.nA .or. nD.ge.nA) then
-        write(6,*) 'zmat2cart: error in conn_zmatrix.' ; return
+        write(ounit,*) 'zmat2cart: error in conn_zmatrix.' ; return
      endif
      if (nB.eq.0 .or. nC.eq.0 .or. nD.eq.0) return
      dist = coord_zmatrix(1,nA)
@@ -246,14 +248,14 @@ subroutine zmat2cart(natoms,conn_zmatrix,coord_zmatrix,coord_cart)
      cB = coord_cart(:,nB)
      cC = coord_cart(:,nC)
      cD = coord_cart(:,nD)
-     
+
      xb = cC(1) - cB(1)
      yb = cC(2) - cB(2)
      zb = cC(3) - cB(3)
-     
+
      rbc = xb**2 + yb**2 + zb**2
      if(rbc.lt.0.0001_dp) then
-        write(6,*) 'zmat2cart: error rbc.lt.0001.'; return
+        write(ounit,*) 'zmat2cart: error rbc.lt.0001.'; return
      endif
      rbc = 1.0_dp/sqrt(rbc)
 
@@ -275,7 +277,7 @@ subroutine zmat2cart(natoms,conn_zmatrix,coord_zmatrix,coord_cart)
         xd = dist*cosa
         yd = dist*sina*cosd
         zd = dist*sina*sind
-        
+
         xyb = sqrt(xb**2 + yb**2)
         if(xyb .lt. 0.1) then
            ! Rotate about the y-axis
@@ -286,21 +288,21 @@ subroutine zmat2cart(natoms,conn_zmatrix,coord_zmatrix,coord_cart)
         else
            rotate_yaxis = .false.
         endif
-        
+
         costh = xb/xyb
         sinth = yb/xyb
         xpa = costh*xa + sinth*ya
         ypa = costh*ya - sinth*xa
-        
-        sinph = zb*rbc    
+
+        sinph = zb*rbc
         cosph = sqrt(1.0_dp - sinph**2)
         zqa = cosph*za - sinph*xpa
-       
+
         yza = sqrt(ypa**2 + zqa**2)
         if(yza .gt. 1.0e-10_dp) then
            coskh = ypa/yza
            sinkh = zqa/yza
-           
+
            ypd = coskh*yd - sinkh*zd
            zpd = coskh*zd + sinkh*yd
         else
@@ -309,12 +311,12 @@ subroutine zmat2cart(natoms,conn_zmatrix,coord_zmatrix,coord_cart)
            ypd = yd
            zpd = zd
         endif
-       
+
         xpd = cosph*xd  - sinph*zpd
         zqd = cosph*zpd + sinph*xd
         xqd = costh*xpd - sinth*ypd
         yqd = costh*ypd + sinth*xpd
- 
+
         if(rotate_yaxis) then
            coord_cart(1,nA) = coord_cart(1,nB) - zqd
            coord_cart(2,nA) = coord_cart(2,nB) + yqd
@@ -324,14 +326,15 @@ subroutine zmat2cart(natoms,conn_zmatrix,coord_zmatrix,coord_cart)
            coord_cart(2,nA) = coord_cart(2,nB) + yqd
            coord_cart(3,nA) = coord_cart(3,nB) + zqd
         endif
-        
-     endif  
-  enddo    
+
+     endif
+  enddo
 end subroutine zmat2cart
 
 
 subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_cart)
-  use misc_bond_func 
+  use misc_bond_func
+  use contrl_file,    only: ounit
   implicit none
   integer, parameter  ::  dp = selected_real_kind(2*precision(1.0))
   integer, intent(in)  ::  natoms
@@ -362,7 +365,7 @@ subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_ca
   nA = 2
   nB = conn_zmatrix(1,nA)
   if(nB.ge.nA) then
-     write(6,*) 'zmat2cart: error in conn_zmatrix.' ; return
+     write(ounit,*) 'zmat2cart: error in conn_zmatrix.' ; return
   endif
   if (nB.eq.0) return
   dist = coord_zmatrix(1,nA)
@@ -377,7 +380,7 @@ subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_ca
   nB = conn_zmatrix(1,nA)
   nC = conn_zmatrix(2,nA)
   if(nB.ge.nA .or. nC.ge.nA) then
-     write(6,*) 'zmat2cart: error in conn_zmatrix.' ; return
+     write(ounit,*) 'zmat2cart: error in conn_zmatrix.' ; return
   endif
   if (nB.eq.0 .or. nC.eq.0) return
   dist = coord_zmatrix(1,nA)
@@ -387,7 +390,7 @@ subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_ca
   vBA = refcoord_cart(:,nA)-coord_cart(:,nB)
   vBC = coord_cart(:,nC)-coord_cart(:,nB)
   v1 = cross_product(vBA,vBC)
-  v2 = cross_product(vBC,v1) 
+  v2 = cross_product(vBC,v1)
   vBC = vBC/vector_length(vBC)
   v2 = v2/vector_length(v2)
   coord_cart(1,nA) = coord_cart(1,nB) + dist*cosa*vBC(1) + dist*sina*v2(1)
@@ -401,7 +404,7 @@ subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_ca
      nC = conn_zmatrix(2,nA)
      nD = conn_zmatrix(3,nA)
      if(nB.ge.nA .or. nC.ge.nA .or. nD.ge.nA) then
-        write(6,*) 'zmat2cart: error in conn_zmatrix.' ; return
+        write(ounit,*) 'zmat2cart: error in conn_zmatrix.' ; return
      endif
      if (nB.eq.0 .or. nC.eq.0 .or. nD.eq.0) return
      dist = coord_zmatrix(1,nA)
@@ -410,14 +413,14 @@ subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_ca
      cB = coord_cart(:,nB)
      cC = coord_cart(:,nC)
      cD = coord_cart(:,nD)
-     
+
      xb = cC(1) - cB(1)
      yb = cC(2) - cB(2)
      zb = cC(3) - cB(3)
-     
+
      rbc = xb**2 + yb**2 + zb**2
      if(rbc.lt.0.0001_dp) then
-        write(6,*) 'zmat2cart: error rbc.lt.0001.'; return
+        write(ounit,*) 'zmat2cart: error rbc.lt.0001.'; return
      endif
      rbc = 1.0_dp/sqrt(rbc)
 
@@ -439,7 +442,7 @@ subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_ca
         xd = dist*cosa
         yd = dist*sina*cosd
         zd = dist*sina*sind
-        
+
         xyb = sqrt(xb**2 + yb**2)
         if(xyb .lt. 0.1) then
            ! Rotate about the y-axis
@@ -450,21 +453,21 @@ subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_ca
         else
            rotate_yaxis = .false.
         endif
-        
+
         costh = xb/xyb
         sinth = yb/xyb
         xpa = costh*xa + sinth*ya
         ypa = costh*ya - sinth*xa
-        
-        sinph = zb*rbc    
+
+        sinph = zb*rbc
         cosph = sqrt(1.0_dp - sinph**2)
         zqa = cosph*za - sinph*xpa
-       
+
         yza = sqrt(ypa**2 + zqa**2)
         if(yza .gt. 1.0e-10_dp) then
            coskh = ypa/yza
            sinkh = zqa/yza
-           
+
            ypd = coskh*yd - sinkh*zd
            zpd = coskh*zd + sinkh*yd
         else
@@ -473,12 +476,12 @@ subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_ca
            ypd = yd
            zpd = zd
         endif
-       
+
         xpd = cosph*xd  - sinph*zpd
         zqd = cosph*zpd + sinph*xd
         xqd = costh*xpd - sinth*ypd
         yqd = costh*ypd + sinth*xpd
- 
+
         if(rotate_yaxis) then
            coord_cart(1,nA) = coord_cart(1,nB) - zqd
            coord_cart(2,nA) = coord_cart(2,nB) + yqd
@@ -488,9 +491,9 @@ subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_ca
            coord_cart(2,nA) = coord_cart(2,nB) + yqd
            coord_cart(3,nA) = coord_cart(3,nB) + zqd
         endif
-        
-     endif  
-  enddo    
+
+     endif
+  enddo
 end subroutine zmat2cart_rc
 
 

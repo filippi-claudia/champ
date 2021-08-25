@@ -107,7 +107,8 @@ c-----------------------------------------------------------------------
 
       real(dp), allocatable, save :: ymat_tmp(:,:)
       if (.not. allocated(ymat_tmp)) then
-        allocate(ymat_tmp(norb,nelec))
+        ! CF : ymat_tmp(MORB,nelec) max value of # orb
+        allocate(ymat_tmp(MORB,nelec))
       endif
 
       ! save ymat_tmp
@@ -158,9 +159,9 @@ c All quantities saved (old) avaliable
           vd(3)=vd(3)*psi2gi
         endif
 
-c       write(6,*) 'VJ',(vj(kk,iel),kk=1,3)
-c       write(6,*) 'V0',(vref(kk),kk=1,3)
-c       write(6,*) 'VD',(vd(kk),kk=1,3)
+c       write(ounit,*) 'VJ',(vj(kk,iel),kk=1,3)
+c       write(ounit,*) 'V0',(vref(kk),kk=1,3)
+c       write(ounit,*) 'VD',(vd(kk),kk=1,3)
 
         vd(1)=vj(1,iel)+vd(1)
         vd(2)=vj(2,iel)+vd(2)
@@ -208,9 +209,9 @@ c Within single-electron move - quantities of electron iel not saved
           vd(3)=vd(3)*psi2gi
         endif
 
-c       write(6,*) 'VJ',(vjn(kk,iel),kk=1,3)
-c       write(6,*) 'V0',(vref(kk),kk=1,3)
-c       write(6,*) 'VD',(vd(kk),kk=1,3)
+c       write(ounit,*) 'VJ',(vjn(kk,iel),kk=1,3)
+c       write(ounit,*) 'V0',(vref(kk),kk=1,3)
+c       write(ounit,*) 'VD',(vd(kk),kk=1,3)
 
         vd(1)=vjn(1,iel)+vd(1)
         vd(2)=vjn(2,iel)+vd(2)

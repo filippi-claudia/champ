@@ -13,7 +13,7 @@ c Modified by A. Scemama
       use atom, only: ncent_tot
       use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, ier, iorb, k, m
@@ -96,7 +96,6 @@ c              do 24 m=1,nbasis
 
 c no 3d interpolation
         else
-
 c get basis functions for all electrons
          call basis_fns_vgl(x,rvec_en,r_en)
 
@@ -141,12 +140,12 @@ c           do 26 m=1,nbasis
 
       if(ipr.ge.0) then
         do 260 iorb=1,norb+nadorb
-  260     write(6,'(''iorb,orb='',i4,1000f15.11)') iorb,(orb(i,iorb),i=1,nelec)
+  260     write(ounit,'(''iorb,orb='',i4,1000f15.11)') iorb,(orb(i,iorb),i=1,nelec)
          do 270 iorb=1,norb+nadorb
-  270     write(6,'(''iorb,d2orb='',i4,1000f15.11)') iorb,(ddorb(i,iorb),i=1,nelec)
+  270     write(ounit,'(''iorb,d2orb='',i4,1000f15.11)') iorb,(ddorb(i,iorb),i=1,nelec)
         do 280 k=1,3
           do 280 iorb=1,norb+nadorb
-  280       write(6,'(''iorb,dorb='',2i4,1000f12.8)') k,iorb,(dorb(k,i,iorb),i=1,nelec)
+  280       write(ounit,'(''iorb,dorb='',2i4,1000f12.8)') k,iorb,(dorb(k,i,iorb),i=1,nelec)
       endif
 
       return
@@ -178,7 +177,7 @@ c assuming that basis function values in phin are up to date
 c primary geometry only:
       iwf=1
 c      if(norb+nadorb.gt.MORB) then
-c        write(6,'(''VIRTUAL_ORB: Too many orbitals, norb + nadorb='',
+c        write(ounit,'(''VIRTUAL_ORB: Too many orbitals, norb + nadorb='',
 c     &  i4,'' > MORB='',i4)') norb+nadorb,MORB
 c        call fatal_error('Aborted')
 c      endif

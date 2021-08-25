@@ -19,6 +19,7 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
   ! ... (real wavefunctions with only half plane waves stored)
   !
   use mpi
+  use contrl_file,    only: ounit, errunit
   IMPLICIT NONE
   !
   !
@@ -72,13 +73,13 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
     ! the product of S and psi
   LOGICAL, ALLOCATABLE :: conv(:)
     ! true if the root is converged
-  REAL*8 :: empty_ethr 
+  REAL*8 :: empty_ethr
     ! threshold for empty bands
   REAL*8, EXTERNAL :: ddot
   !
   ! EXTERNAL  h_psi_lin_d, s_psi_lin_d, g_psi_lin_d
     ! h_psi_lin_d(nparm,nvec,psi,hpsi)
-    !     calculates H|psi> 
+    !     calculates H|psi>
     ! s_psi_lin_d(nparm,nvec,psi,spsi)
     !     calculates S|psi> (if needed)
     !     Vectors psi,hpsi,spsi are dimensioned (nparmx,nvec)
@@ -159,19 +160,19 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
   !
   IF(ipr.gt.1) then
     do i=1,nbase
-      write(6,'(''REG HR '',100e10.3)') (hr(i,j),j=1,nbase)
+      write(ounit,'(''REG HR '',100e10.3)') (hr(i,j),j=1,nbase)
     enddo
     do i=1,nbase
-      write(6,'(''REG SR '',100e10.3)') (sr(i,j),j=1,nbase)
+      write(ounit,'(''REG SR '',100e10.3)') (sr(i,j),j=1,nbase)
     enddo
   ENDIF
   !
   CALL rdiaghg( nbase, nvec, hr, sr, nvecx, ew, vr )
   !
-  write(6,'(''LIN_D: EIG '',100e15.6)') (ew(j),j=1,nvec)
+  write(ounit,'(''LIN_D: EIG '',100e15.6)') (ew(j),j=1,nvec)
   IF(ipr.gt.1) then
     do i=1,nbase
-      write(6,'(''REG VEC'',100e10.3)') (vr(i,j),j=1,nvec)
+      write(ounit,'(''REG VEC'',100e10.3)') (vr(i,j),j=1,nvec)
     enddo
   ENDIF
   !
@@ -188,8 +189,8 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      IF(idtask.eq.0) then
      !
      dav_iter = kter
-     write( 6,'(''REG: -----------------------------'')')
-     write(6,'(''REG: Iteration: '', I10)') kter
+     write(ounit,'(''REG: -----------------------------'')')
+     write(ounit,'(''REG: Iteration: '', I10)') kter
      !
      np = 0
      !
@@ -197,12 +198,12 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
         !
         IF ( .NOT. conv(n) ) THEN
            !
-           ! ... this root not yet converged ... 
+           ! ... this root not yet converged ...
            !
            np = np + 1
            !
            ! ... reorder eigenvectors so that coefficients for unconverged
-           ! ... roots come first. This allows to use quick matrix-matrix 
+           ! ... roots come first. This allows to use quick matrix-matrix
            ! ... multiplications to set a new basis vector (see below)
            !
            IF ( np /= n ) vr(:,np) = vr(:,n)
@@ -210,15 +211,15 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
            ! ... for use in g_psi
            !
            ew(nbase+np) = e(n)
-           !   
+           !
         END IF
         !
      END DO
      !
      IF(ipr.gt.1) then
-       write(6,*) 'Not converged',(conv(n),n=1,nvec)
+       write(ounit,*) 'Not converged',(conv(n),n=1,nvec)
        !
-       write(6,'(''Expand with basis vectors '',i5)') notcnv
+       write(ounit,'(''Expand with basis vectors '',i5)') notcnv
      ENDIF
      !
      nb1 = nbase + 1
@@ -241,8 +242,8 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      !
 !    CALL g_psi_lin_d( nparm, notcnv, nb1, psi(1,nb1), ew(nb1) )
      !
-     ! ... "normalize" correction vectors psi(:,nb1:nbase+notcnv) in 
-     ! ... order to improve numerical stability of subspace diagonalization 
+     ! ... "normalize" correction vectors psi(:,nb1:nbase+notcnv) in
+     ! ... order to improve numerical stability of subspace diagonalization
      ! ... (rdiaghg) ew is used as work array :
      !
      ! ...         ew = <psi_i|psi_i>,  i = nbase + 1, nbase + notcnv
@@ -298,19 +299,19 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      !
      IF(ipr.gt.1) then
        do i=1,nbase
-         write(6,'(''REG HR '',100e10.3)') (hr(i,j),j=1,nbase)
+         write(ounit,'(''REG HR '',100e10.3)') (hr(i,j),j=1,nbase)
        enddo
        do i=1,nbase
-         write(6,'(''REG SR '',100e10.3)') (sr(i,j),j=1,nbase)
+         write(ounit,'(''REG SR '',100e10.3)') (sr(i,j),j=1,nbase)
        enddo
      ENDIF
      !
      CALL rdiaghg( nbase, nvec, hr, sr, nvecx, ew, vr )
      !
-     ! write(6,'(''LIN_D: EIG '',100e15.6)') (ew(j),j=1,nvec)
+     ! write(ounit,'(''LIN_D: EIG '',100e15.6)') (ew(j),j=1,nvec)
      IF(ipr.gt.1) then
        do i=1,nbase
-         write(6,'(''REG VEC'',100e10.3)') (vr(i,j),j=1,nvec)
+         write(ounit,'(''REG VEC'',100e10.3)') (vr(i,j),j=1,nvec)
        enddo
      ENDIF
      !
@@ -329,7 +330,7 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      notcnv = COUNT( .NOT. conv(:) )
      !
      e(1:nvec) = ew(1:nvec)
-     
+
      CALL DGEMM( 'N', 'N', nparm, nbase, nbase, 1.D0, &
                     spsi, nparmx, vr, nvecx, 0.D0, res, nparmx )
      !
@@ -340,11 +341,11 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      END DO
      !
      CALL DGEMM( 'N', 'N', nparm, nbase, nbase, 1.D0, &
-                 hpsi, nparmx, vr, nvecx, 1.D0, res, nparmx )     
+                 hpsi, nparmx, vr, nvecx, 1.D0, res, nparmx )
 
      res_norm = norm2(res(:,:nvec),1)
-     write(6,'(''REG: EIG '',100e15.6)') (e(j),j=1,nvec)
-     write(6,'(''REG: RES '',100e15.6)') (res_norm(j),j=1,nvec)
+     write(ounit,'(''REG: EIG '',100e15.6)') (e(j),j=1,nvec)
+     write(ounit,'(''REG: RES '',100e15.6)') (res_norm(j),j=1,nvec)
 
 !     WHERE( btype(1:nvec) == 1 )
         !
@@ -390,7 +391,7 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
            !
            ! ... last iteration, some roots not converged: return
            !
-           WRITE( 6, '(5X,"WARNING: ",I5, &
+           WRITE(ounit, '(5X,"WARNING: ",I5, &
                 &   " eigenvalues not converged in regterg")' ) notcnv
            !
            EXIT iterate
@@ -399,8 +400,8 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
         !
         IF(idtask.eq.0) then
         !
-!       if(ipr.gt.1) write(6,'(''Refresh, notcnv,nvec,nbase '',3i4)') notcnv,nvec,nbase
-        write(6,'(''Refresh, notcnv,nvec,nbase '',3i4)') notcnv,nvec,nbase
+!       if(ipr.gt.1) write(ounit,'(''Refresh, notcnv,nvec,nbase '',3i4)') notcnv,nvec,nbase
+        write(ounit,'(''Refresh, notcnv,nvec,nbase '',3i4)') notcnv,nvec,nbase
         !
         ! ... refresh psi, H*psi and S*psi
         !
@@ -444,9 +445,9 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
         END DO
         !
         END IF ! idtask.eq.0
-        ! 
+        !
         call MPI_BCAST(nbase,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-        ! 
+        !
      END IF
      !
   END DO iterate
@@ -460,7 +461,7 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
   DEALLOCATE( spsi )
   !
   DEALLOCATE( hpsi )
-  DEALLOCATE( psi )  
+  DEALLOCATE( psi )
   !
   RETURN
   !
@@ -475,6 +476,7 @@ SUBROUTINE rdiaghg( n, m, h, s, ldh, e, v )
   !
   ! ... LAPACK version - uses both DSYGV and DSYGVX
   !
+  use contrl_file,    only: ounit
   IMPLICIT NONE
   !
   INTEGER, INTENT(IN) :: n, m, ldh
@@ -578,13 +580,13 @@ SUBROUTINE rdiaghg( n, m, h, s, ldh, e, v )
   !
   IF ( info > n ) THEN
 !    CALL fatal_error( 'rdiaghg: S matrix not positive definite' )
-     write(6,*) 'rdiaghg: S matrix not positive definite' 
+     write(ounit,*) 'rdiaghg: S matrix not positive definite'
   ELSE IF ( info > 0 ) THEN
      CALL fatal_error( 'rdiaghg: eigenvectors failed to converge' )
   ELSE IF ( info < 0 ) THEN
      CALL fatal_error( 'rdiaghg: incorrect call to DSYGV*' )
   END IF
-  
+
   ! ... restore input S matrix from saved diagonal and lower triangle
   !
   DO i = 1, n

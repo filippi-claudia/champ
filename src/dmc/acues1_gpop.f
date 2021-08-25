@@ -21,7 +21,7 @@ c routine to accumulate estimators for energy etc.
       use force_mod, only: MFORCE
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
       use mpi
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: ierr, ifr, ipmod, mod, iabs, nfpro
@@ -104,7 +104,7 @@ c Estimate eigenvalue of G from the energy
         eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
         eigv=dexp((etrial-eest)*(taucum(1)+taublock)/
      &                          (wgcum(1)+wgsum(1)))
-        if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv,eest,accavn,
+        if(ipr.ge.1) write(ounit,'(''eigv'',9f14.6)') eigv,eest,accavn,
      &  egcum(1),egsum(1),wgcum(1),wgsum(1),fprod
       endif
 

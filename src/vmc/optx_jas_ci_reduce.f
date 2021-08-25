@@ -2,7 +2,7 @@
 c Written by Claudia Filippi
 
       use optjas, only: MPARMJ
-      use vmc_mod, only: MDET
+      use dets, only: ndet
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
       use optwf_contrl, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
@@ -15,7 +15,7 @@ c Written by Claudia Filippi
 
       integer :: i, ierr, j
 
-      real(dp), dimension(MPARMJ,MDET) :: collect
+      real(dp), dimension(MPARMJ,ndet) :: collect
 
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return

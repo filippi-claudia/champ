@@ -33,6 +33,7 @@ c routine to accumulate estimators for energy etc.
       use multislater, only: detiab
       use distance_mod, only: rshift, r_en, rvec_en
       use inputflags, only: node_cutoff, eps_node_cutoff
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -262,8 +263,8 @@ c rewrite psi2o if you are sampling guiding
       endif
 
       if(ipr.gt.1) then
-        write(6,'(''psid, psidg='',2d12.4)') psido(1),psidg
-        write(6,'(''psid2o='',f9.4)') psi2o(1,1)
+        write(ounit,'(''psid, psidg='',2d12.4)') psido(1),psidg
+        write(ounit,'(''psid2o='',f9.4)') psi2o(1,1)
       endif
 
       if(node_cutoff.gt.0) then
@@ -275,11 +276,11 @@ c rewrite psi2o if you are sampling guiding
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)
 
         if(ipr.gt.1) then
-          write(6,'(''distance_node='',d12.4)') distance_node
-          write(6,'(''rnorm_nodes='',d12.4)') rnorm_nodes
-          write(6,'(''psid2o_ncut='',f9.4)') psi2o(1,1)
+          write(ounit,'(''distance_node='',d12.4)') distance_node
+          write(ounit,'(''rnorm_nodes='',d12.4)') rnorm_nodes
+          write(ounit,'(''psid2o_ncut='',f9.4)') psi2o(1,1)
           do 84 i=1,nelec
-   84         write(6,'(''vd'',3e20.10)') (vold(k,i),k=1,3)
+   84         write(ounit,'(''vd'',3e20.10)') (vold(k,i),k=1,3)
         endif
       endif
 

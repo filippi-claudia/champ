@@ -32,7 +32,7 @@ c-----------------------------------------------------------------------
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
       use efield, only: iscreen, ncharges
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -45,7 +45,7 @@ c-----------------------------------------------------------------------
       efield_nucext=0
       atmp=0
       do 20 i=1,ncharges
-c         write(6,*) 'HELLO',i,ascreen(i),bscreen(i)
+c         write(ounit,*) 'HELLO',i,ascreen(i),bscreen(i)
          do 20 j=1,ncent
            rij2=(xcharge(i)-cent(1,j))**2+(ycharge(i)-cent(2,j))**2+(zcharge(i)-cent(3,j))**2
            rij=sqrt(rij2)
@@ -59,13 +59,13 @@ c         write(6,*) 'HELLO',i,ascreen(i),bscreen(i)
            rij=sqrt(rij2)
   30       efield_extext=efield_extext+qcharge(i)*qcharge(j)/rij
 
-      write(6,'(''Number of charges: '',i5)') ncharges
-      write(6,'(''Number of centers: '',i5)') ncent
-     
-c      write(6,*) 'znuc=',znuc(1:8)
+      write(ounit,'(''Number of charges: '',i5)') ncharges
+      write(ounit,'(''Number of centers: '',i5)') ncent
 
-      write(6,'(''Nuclear-external interaction: '',f15.9)') efield_nucext
-      write(6,'(''External-external interaction:'',f15.9)') efield_extext
+c      write(ounit,*) 'znuc=',znuc(1:8)
+
+      write(ounit,'(''Nuclear-external interaction: '',f15.9)') efield_nucext
+      write(ounit,'(''External-external interaction:'',f15.9)') efield_extext
       return
       end
 c-----------------------------------------------------------------------

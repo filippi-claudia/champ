@@ -7,7 +7,7 @@ c calculate interparticle distances
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use contrl_per, only: iperiodic
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -41,7 +41,7 @@ c calculate interparticle distances
             j=iel
           endif
           ij=((i-1)*(i-2))/2+j
-          
+
           r_ee_sav(jj)=r_ee(ij)
           do 15 m=1,3
    15       rvec_ee_sav(m,jj)=rvec_ee(m,ij)
@@ -88,10 +88,10 @@ c Calculate e-e inter-particle distances
           endif
    30   continue
 
-c     write(6,*) 'in distances'
-c     write(6,'(''r_en(i,j)'',9f9.5)') ((r_en(i,j),i=1,nelec),j=1,2)
-c     write(6,'(''r_ee(ij)'',9f9.5)') (r_ee(ij),ij=1,nelec*(nelec-1)/2)
-c     write(6,'(''rvec_ee(k,ij)'',9f12.4)') ((rvec_ee(k,ij),k=1,3),ij=1,nelec*(nelec-1)/2)
+c     write(ounit,*) 'in distances'
+c     write(ounit,'(''r_en(i,j)'',9f9.5)') ((r_en(i,j),i=1,nelec),j=1,2)
+c     write(ounit,'(''r_ee(ij)'',9f9.5)') (r_ee(ij),ij=1,nelec*(nelec-1)/2)
+c     write(ounit,'(''rvec_ee(k,ij)'',9f12.4)') ((rvec_ee(k,ij),k=1,3),ij=1,nelec*(nelec-1)/2)
 
       return
       end

@@ -1,6 +1,5 @@
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
-      use vmc_mod, only: MDET
       use const, only: hb, nelec
       use csfs, only: nstates
       use dets, only: ndet
@@ -11,7 +10,7 @@
       use zcompact, only: aaz, dzmat, emz, zmat
       use coefs, only: norb
       use Bloc, only: b, tildem, xmat
-      use denergy_det_m, only: denergy_det
+      use denergy_det_m, only: denergy_det, allocate_denergy_det_m
       use multimat, only: aa, wfmat
       use force_analy, only: iforce_analy
       use orbval, only: nadorb, orb
@@ -25,7 +24,7 @@
       integer :: irep, ish, istate, jorb
       integer :: jrep, k, ndim, nel
       real(dp) :: det, dum1, dum2, dum3
-      real(dp), dimension(MDET, 2) :: eloc_det
+      real(dp), dimension(ndet, 2) :: eloc_det
       real(dp), dimension(3, nelec) :: vj
       real(dp), dimension(*) :: vpsp_det
       real(dp), dimension(nelec**2, 2) :: btemp
@@ -63,7 +62,7 @@ c dimensioned at least max(nup**2,ndn**2)
         enddo
       enddo
 
-c     write(6,*) 'eloc_ref',eloc_det(kref,1),eloc_det(kref,2)
+c     write(ounit,*) 'eloc_ref',eloc_det(kref,1),eloc_det(kref,2)
 
       if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) call bxmatrix(kref,xmat(1,1),xmat(1,2),b)
 
@@ -117,13 +116,14 @@ c         enddo
 
 c     if(kref.ne.1) then
 c       do irep=1,13
-c         write(6,'(''SLM  '',15f7.2)') (slmi(irep+(i-1)*ndn,2),i=1,13)
+c         write(ounit,'(''SLM  '',15f7.2)') (slmi(irep+(i-1)*ndn,2),i=1,13)
 c       enddo
 c       do irep=1,13
-c         write(6,'(''AA-2 '',15f7.2)') (aa(irep,jrep,2),jrep=1,15)
+c         write(ounit,'(''AA-2 '',15f7.2)') (aa(irep,jrep,2),jrep=1,15)
 c       enddo
 c     endif
 
+      call allocate_denergy_det_m()
       denergy_det(kref,1)=0
       denergy_det(kref,2)=0
 
@@ -132,7 +132,7 @@ c     endif
       do 200 k=1,ndet
 
         if(k.eq.kref) then
-c         write(6,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
+c         write(ounit,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
           goto 200
         endif
 
@@ -158,22 +158,22 @@ c         write(6,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
             enddo
 
 c           if(kref.ne.1.and.k.eq.405) then
-c           write(6,'('' AA det'',3i6)') k, iab,ndim
+c           write(ounit,'('' AA det'',3i6)') k, iab,ndim
 c           do irep=1,ndim
-c             write(6,'(''AA'',10d12.4)') (wfmat(irep+(jrep-1)*ndim,k,iab),jrep=1,ndim)
+c             write(ounit,'(''AA'',10d12.4)') (wfmat(irep+(jrep-1)*ndim,k,iab),jrep=1,ndim)
 c           enddo
 c           endif
 
-c           write(6,*) 'B HELLO',k,ndim,(irepcol_det(irep,k,iab),irep=1,ndim),(ireporb_det(jrep,k,iab),jrep=1,ndim)
+c           write(ounit,*) 'B HELLO',k,ndim,(irepcol_det(irep,k,iab),irep=1,ndim),(ireporb_det(jrep,k,iab),jrep=1,ndim)
             call matinv(wfmat(1,k,iab),ndim,det)
 
-c           write(6,*) 'A HELLO',k,det
+c           write(ounit,*) 'A HELLO',k,det
             detiab(k,iab)=det
 
 c           if(kref.ne.1.and.k.eq.405) then
-c           write(6,'('' AA det'',i6,d12.4)') k, det
+c           write(ounit,'('' AA det'',i6,d12.4)') k, det
 c           do irep=1,ndim
-c             write(6,'(''AA'',10d12.4)') (wfmat(irep+(jrep-1)*ndim,k,iab),jrep=1,ndim)
+c             write(ounit,'(''AA'',10d12.4)') (wfmat(irep+(jrep-1)*ndim,k,iab),jrep=1,ndim)
 c           enddo
 c           endif
 
@@ -196,12 +196,12 @@ c           endif
 
         enddo
 
-c       write(6,*) 'denergy_det',denergy_det(k,1),denergy_det(k,2)
+c       write(ounit,*) 'denergy_det',denergy_det(k,1),denergy_det(k,2)
 
         eloc_det(k,1)=denergy_det(k,1)+eloc_det(kref,1)
         eloc_det(k,2)=denergy_det(k,2)+eloc_det(kref,2)
 
-c       write(6,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
+c       write(ounit,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
  200  continue
 
       do 400 k=1,ndet
@@ -236,7 +236,7 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
-      use vmc_mod, only: MORB, MDET
+      use vmc_mod, only: MORB
       use vmc_mod, only: MEXCIT
       use const, only: nelec
       use dets, only: cdet, ndet
@@ -254,9 +254,9 @@ c-----------------------------------------------------------------------
       integer :: j, jorb, jrep, k
       integer :: kk, ndim
       real(dp) :: detall, detrefi
-      real(dp), dimension(MDET) :: detu
-      real(dp), dimension(MDET) :: detd
-      real(dp), dimension(MEXCIT**2, MDET) :: wfmat
+      real(dp), dimension(ndet) :: detu
+      real(dp), dimension(ndet) :: detd
+      real(dp), dimension(MEXCIT**2, ndet) :: wfmat
       real(dp), dimension(MORB, nelec) :: ymat
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
@@ -482,14 +482,14 @@ c-----------------------------------------------------------------------
       do 100 istate=1,nstates
  100    call compute_ymat(iab,detiab(1,1),detiab(1,2),wfmat(1,1,iab),ymat(1,1,iab,istate),istate)
 
-c     write(6,*) 'DU',(detiab(k,1),k=1,56)
-c     write(6,*) 'DD',(detiab(k,2),k=1,56)
-c     write(6,*) 'WF',((wfmat(i,k,iab),i=1,9),k=1,56)
+c     write(ounit,*) 'DU',(detiab(k,1),k=1,56)
+c     write(ounit,*) 'DD',(detiab(k,2),k=1,56)
+c     write(ounit,*) 'WF',((wfmat(i,k,iab),i=1,9),k=1,56)
 c     do j=1,13
-c     if(iab.eq.2) write(6,*) j,'YMAT 1',(ymat(i,j,iab,1),i=1,96)
+c     if(iab.eq.2) write(ounit,*) j,'YMAT 1',(ymat(i,j,iab,1),i=1,96)
 c     enddo
 c     do j=1,13
-c     if(iab.eq.2) write(6,*) j,'YMAT 2',(ymat(i,j,iab,2),i=1,96)
+c     if(iab.eq.2) write(ounit,*) j,'YMAT 2',(ymat(i,j,iab,2),i=1,96)
 c     enddo
 
       return

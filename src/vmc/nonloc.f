@@ -25,7 +25,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use orbval, only: nadorb
       use slater, only: slmi
       use multislater, only: detiab
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -145,10 +145,10 @@ c loop quadrature points
                 call nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,psij_ratio,vjn,da_ratio_jn)
               endif
 
-c             write(6,*) 'PSI',psij_ratio
-c             write(6,*) 'HELLO',(vjn(k),k=1,3)
+c             write(ounit,*) 'PSI',psij_ratio
+c             write(ounit,*) 'HELLO',(vjn(k),k=1,3)
 c             do ll=1,ncent
-c               write(6,*) 'HELLO',(da_ratio_jn(k,ll),k=1,3)
+c               write(ounit,*) 'HELLO',(da_ratio_jn(k,ll),k=1,3)
 c             enddo
 
               term_radial=0.d0
@@ -209,7 +209,7 @@ c endif iskip
 c end loop nelec, ncent
   100 continue
 
-      if(ipr.ge.4) write(6,'(''vpsp_det,det,r_en(1)='',100d12.4)')
+      if(ipr.ge.4) write(ounit,'(''vpsp_det,det,r_en(1)='',100d12.4)')
      &,(vpsp_det(iab),detiab(1,iab),iab=1,2),r_en(1,1)
 
       return
@@ -402,8 +402,8 @@ c           do 25 m=1,nbasis
                 do 70 k=1,3
    70              dorbn(k,iorb)=dorbn(k,iorb)-da_orbn(k,ic,iorb)
           endif
-c         write(6,*)'orb_quad iel,ren',iel,rvec_en(1,iel,1),rvec_en(1,iel,2)
-c         write(6,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,1,iel)
+c         write(ounit,*)'orb_quad iel,ren',iel,rvec_en(1,iel,1),rvec_en(1,iel,2)
+c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,1,iel)
         endif
 
        else
@@ -711,6 +711,6 @@ c          if(jc.ne.ic) then
 c          endif
    54 continue
 
-c     write(6,*) 'AFT',iel,ic,iq,db(1,iel,1,ic)-sav_db
+c     write(ounit,*) 'AFT',iel,ic,iq,db(1,iel,1,ic)-sav_db
       return
       end

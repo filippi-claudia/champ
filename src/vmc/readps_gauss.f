@@ -1,105 +1,9 @@
-      subroutine readps_gauss
-c read 'Quantum-chemist' gauss pseudopotentials
-c file format: one text file with basename gauss_ecp.dat
-c              for each atom type
-c first line : arbitrary label (written to log-file)
-c second line: number of projectors + 1 (i.e. total number of components)
-c remaining lines: components in the order (local,L=0,L=1 ...)
-c     repeated for each component
-c        number terms
-c        repeated for each term in this component
-c          coefficient power exponent
-c
-c NOTE: as usual power n means r**(n-2)
-c
-      use pseudo_mod, only: MPS_L, MGAUSS
-      use atom, only: nctype
-      use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
-      use pseudo, only: lpot
-      use qua, only: nquad, wq, xq0, yq0, zq0
-      use general, only: filename, filenames_ps_gauss
-
-      use precision_kinds, only: dp
-      implicit none
-
-      integer :: i, ic, identify, idx, index
-      integer :: l, names
-
-      character*80 label
-
-CVARDOC String to identify pseudopotential. If set, fancy names for
-CVARDOC the pseudopotential files will be used.
-
-      do 300 ic=1,nctype
-        if (nctype.gt.100) call fatal_error('READPS_GAUSS: nctype>100')
-
-        filename = filenames_ps_gauss(ic)
-        open(1,file=filename(1:index(filename,' ')),status='old')
-
-        write(45,'(''Reading pseudopotential file '',a)')
-     &      filename(1:index(filename,' '))
-
-c label
-        read(1,100,err=999,end=1000)   label
-        write(45,101) ic,label
-
-c max projector
-        read(1,*,err=999,end=1000) lpot(ic)
-        write(45,111) lpot(ic)
-
-        if(lpot(ic).gt.MPS_L)
-     &  call fatal_error('READPS_GAUSS: increase MPS_L')
-
-c read terms of local part and all non-local parts
-c local part first in file, but stored at index lpot
-c non-local l=0 at index 1 etc, up to lpot-1
-
-        do 200 l=1,lpot(ic)
-          if(l.eq.1)then
-           idx=lpot(ic)
-           else
-            idx=l-1
-          endif
-          read(1,*,err=999,end=1000) necp_term(idx,ic)
-
-          if(necp_term(idx,ic).gt.MGAUSS)
-     &     call fatal_error('READPS_GAUSS: increase MGAUSS')
-          write(45,112) l,necp_term(idx,ic)
-          do 200 i=1,necp_term(idx,ic)
-            read(1,*,err=999,end=1000) ecp_coef(i,idx,ic),
-     &        necp_power(i,idx,ic),ecp_exponent(i,idx,ic)
-            write(45,113)  ecp_coef(i,idx,ic),necp_power(i,idx,ic)
-     &        ,ecp_exponent(i,idx,ic)
- 200  continue
-
-      close(1)
- 300  continue
-
-      call gesqua(nquad,xq0,yq0,zq0,wq)
-
- 100  format(a80)
- 101  format('ECP for atom type ',i4,' label= ',a80)
- 111  format('                         lpot = ',i3)
- 112  format('    component, #terms ',2i6)
- 113  format('    coef, power, expo ',f16.8,i2,f16.8)
-
-
-      return
-
- 999  continue
-      call fatal_error('READPS_GAUSS: error while reading potential')
-
- 1000 continue
-      call fatal_error('READPS_GAUSS: end of file while reading potential')
-
-      return
-      end
 c-----------------------------------------------------------------------
 
 c compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(rvec_en,r_en,iel)
 
-      use vmc_mod, only: MELEC, MCENT
+      use vmc_mod, only: MCENT
       use atom, only: znuc, iwctype, ncent, ncent_tot
       use const, only: nelec
       use pseudo, only: lpot, vps
@@ -147,7 +51,7 @@ c non-local pseudopotential
    10 continue
 
 c     do ic=1,ncent
-c       write(6,*) 'HELLO_GAUSS',da_vps(1,iel,ic,lpot(iwctype(ic)))
+c       write(ounit,*) 'HELLO_GAUSS',da_vps(1,iel,ic,lpot(iwctype(ic)))
 c     enddo
       return
       end

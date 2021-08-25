@@ -7,14 +7,18 @@ c written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
       use wfsec, only: iwftype, nwftype
-      use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
+
+!     use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
+      use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite
+      use control_vmc, only: vmc_nblk, vmc_nblk_max, vmc_nblk_ci
+
       use gradhess_all, only: MPARMALL
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nopt_iter, multiple_adiag
       use optwf_contrl, only: energy_tol, dparm_norm_min, ilastvmc
       ! I think that's needed
       use gradhess_all, only: grad, h, s
       use optwf_corsam, only: add_diag
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iadd_diag_loop1, iadiag, iflag, increase_nblk
@@ -51,8 +55,8 @@ c written by Claudia Filippi
       allocate(work2(MPARMALL,MPARMALL))
 
 c No dump/restart if optimizing wave function
-      irstar=0
-      idump=0
+      vmc_irstar=0
+      vmc_idump=0
 
 c Set up basis functions for test run
       do 1 iwft=2,3
@@ -68,22 +72,22 @@ c Set up basis functions for test run
 
 
 c Number of iterations
-      write(6,'(/,''Number of iterations'',i3)') nopt_iter
+      write(ounit,'(/,''Number of iterations'',i3)') nopt_iter
       if(ioptci.eq.1.and.ioptjas.eq.0.and.ioptorb.eq.0) then
         nopt_iter=1
-        write(6,'(''Reset number of iterations to 1'')')
+        write(ounit,'(''Reset number of iterations to 1'')')
       endif
 c Max number of blocks
-      write(6,'(/,''Maximum number of blocks'',i4)') nblk_max
+      write(ounit,'(/,''Maximum number of blocks'',i4)') vmc_nblk_max
 c Compute multiple adiag
-      write(6,'(/,''Perform test run with multiple adiag'',i2)') multiple_adiag
+      write(ounit,'(/,''Perform test run with multiple adiag'',i2)') multiple_adiag
 c Tolerance on energy
-      write(6,'(/,''Energy tolerance'',d12.2)') energy_tol
+      write(ounit,'(/,''Energy tolerance'',d12.2)') energy_tol
 
       if(ioptjas.eq.0.and.ioptorb.eq.0) add_diag(1)=-1
 
 c Set dparm_norm_min
-      write(6,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
+      write(ounit,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
 
       ioptjas_sav=ioptjas
       ioptorb_sav=ioptorb
@@ -95,7 +99,7 @@ c Set dparm_norm_min
 
 c CI step for state average of multiple states (optimal CI for input Jastrow and LCAO)
       if(ioptci.ne.0.and.nstates.gt.1.and.(ioptorb+ioptjas.gt.0)) then
-        write(6,'(/,''Perform CI run for SA calculation'')')
+        write(ounit,'(/,''Perform CI run for SA calculation'')')
         ioptjas=0
         ioptorb=0
         add_diag_sav=add_diag(1)
@@ -103,10 +107,10 @@ c CI step for state average of multiple states (optimal CI for input Jastrow and
 
         call set_nparms
 
-        nblk_sav=nblk
-        nblk=nblk_ci
+        nblk_sav=vmc_nblk
+        vmc_nblk=vmc_nblk_ci
         call qmc
-        nblk=nblk_sav
+        vmc_nblk=nblk_sav
 
         call combine_derivatives
 
@@ -114,7 +118,7 @@ c CI step for state average of multiple states (optimal CI for input Jastrow and
 
         call setup_optimization(nparm,MPARMALL,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
 
-        write(6,'(/,''Compute CI parameters'',/)')
+        write(ounit,'(/,''Compute CI parameters'',/)')
         call compute_dparm(nparm,MPARMALL,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy(1),energy_err(1))
 
@@ -129,7 +133,7 @@ c Iterate optimization
       do 900 iter=1,nopt_iter
 
 
-      write(6,'(/,''Optimization iteration'',i2)') iter
+      write(ounit,'(/,''Optimization iteration'',i2)') iter
       iadd_diag_loop1=0
 
  100  ioptjas=ioptjas_sav
@@ -156,16 +160,16 @@ c the CI step is unlikely to go wrong (unless the CI run is too short)
          if(iadd_diag_loop1.gt.5) call fatal_error('OPTWF: energy went up a lot and iadd_diag_loop1 > 5')
 
          add_diag(1)=200*add_diag(1)
-         write(6,'(/,''Iteration '',i4,'' sampling run to generate new parms '')') iter
-         write(6,'(''old energy'',2f12.5)') energy_sav,energy_err_sav
-         write(6,'(''new energy'',2f12.5)') energy(1),energy_err(1)
-         write(6,'(/,''Energy is worse, increase adiag to'',1pd11.4)') add_diag(1)
+         write(ounit,'(/,''Iteration '',i4,'' sampling run to generate new parms '')') iter
+         write(ounit,'(''old energy'',2f12.5)') energy_sav,energy_err_sav
+         write(ounit,'(''new energy'',2f12.5)') energy(1),energy_err(1)
+         write(ounit,'(/,''Energy is worse, increase adiag to'',1pd11.4)') add_diag(1)
          call restore_wf(1)
          call compute_dparm(nparm,MPARMALL,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy_sav,energy_err_sav)
          call compute_parameters(grad,iflag,1)
 c In case starting config is very bad, reset configuration by calling sites
-         isite=1
+         vmc_isite=1
          call reset_configs_start
          if(ioptci_sav.ne.0.and.nstates.gt.1.and.(ioptorb.ne.0.or.ioptjas.ne.0)) then
 c This case should never happen
@@ -180,10 +184,10 @@ c Save current energy and sigma
       energy_sav=energy(1)
       energy_err_sav=energy_err(1)
 
-      write(6,'(/,''Current energy = '',f12.7,'' +- '',f11.7)') energy_sav,energy_err_sav
+      write(ounit,'(/,''Current energy = '',f12.7,'' +- '',f11.7)') energy_sav,energy_err_sav
       energy_plus_err=energy(1)+2*energy_err(1)
       if(energy_plus_err.lt.energy_plus_err_best) then
-        write(6,'(/,''Current best energy + 2*error = '',f11.4)') energy_plus_err
+        write(ounit,'(/,''Current best energy + 2*error = '',f11.4)') energy_plus_err
         energy_plus_err_best=energy_plus_err
         call save_wf_best(ioptjas_sav,ioptorb_sav,ioptci_sav)
       endif
@@ -194,28 +198,28 @@ c Save current energy and sigma
       if(iter.eq.1) lwork_all_save=lwork
 
 c Compute corrections to parameters
-    6 write(6,'(/,''Compute parameters 1'',/)')
+    6 write(ounit,'(/,''Compute parameters 1'',/)')
       call compute_dparm(nparm,MPARMALL,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy_sav,energy_err_sav)
 
       call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,add_diag(1),iflag)
       if(iflag.ne.0) then
-       write(6,'(''Warning: add_diag_1 has dparm_norm>1'')')
+       write(ounit,'(''Warning: add_diag_1 has dparm_norm>1'')')
        add_diag(1)=10*add_diag(1)
-       write(6,'(''adiag_1 increased to '',g12.5)') add_diag(1)
+       write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
        go to 6
       endif
 
-c     write(6,'(/,''change in parameters 1'')')
-c     write(6,'(''-x='',9f15.9)') (-grad(i),i=1,nparm)
+c     write(ounit,'(/,''change in parameters 1'')')
+c     write(ounit,'(''-x='',9f15.9)') (-grad(i),i=1,nparm)
 
 c Compute new parameters
       call compute_parameters(grad,iflag,1)
       if(iflag.ne.0) then
-        write(6,'(''Warning: add_diag_1 has problems with a2 and/or b2'')')
+        write(ounit,'(''Warning: add_diag_1 has problems with a2 and/or b2'')')
         call restore_wf(1)
         add_diag(1)=10*add_diag(1)
-        write(6,'(''adiag_1 increased to '',g12.5)') add_diag(1)
+        write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
         go to 6
       endif
 
@@ -231,34 +235,34 @@ c add_diag=add_diag*10
         add_diag(iadiag)=10**(iadiag-1)*add_diag(1)
 
         call restore_wf(iadiag)
-        write(6,'(/,''Compute parameters '',i1,/)') iadiag
+        write(ounit,'(/,''Compute parameters '',i1,/)') iadiag
    10   call compute_dparm(nparm,MPARMALL,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(iadiag),energy_sav,energy_err_sav)
 
         call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,add_diag(iadiag),iflag)
         if(iflag.ne.0) then
-          write(6,'(''Warning: adiag_'',i1,'' has dparm_norm>1'')') iadiag
+          write(ounit,'(''Warning: adiag_'',i1,'' has dparm_norm>1'')') iadiag
           add_diag(1)=2*10**(iadiag-1)*add_diag(1)
-          write(6,'(''adiag_1 increased to '',g12.5)') add_diag(1)
+          write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
           go to 6
         endif
-c       write(6,'(/,''change in parameters '',i1)') iadiag
-c       write(6,'(''-x='',9f15.9)') (-grad(i),i=1,nparm)
+c       write(ounit,'(/,''change in parameters '',i1)') iadiag
+c       write(ounit,'(''-x='',9f15.9)') (-grad(i),i=1,nparm)
         call compute_parameters(grad,iflag,iadiag)
         if(iflag.ne.0) call fatal_error('OPTWF: adiag_1 or 2 still has problems')
  300   enddo
 
-       write(6,'(/,''adiag1,adiag2,adiag3'',1p3g15.8,/)') (add_diag(i),i=1,3)
-       write(6,'(/,''Correlated sampling test run for adiag'',/)')
+       write(ounit,'(/,''adiag1,adiag2,adiag3'',1p3g15.8,/)') (add_diag(i),i=1,3)
+       write(ounit,'(/,''Correlated sampling test run for adiag'',/)')
 
        ioptjas=0
        ioptorb=0
        ioptci=0
 
 c Test run for adiag_1,2,3 with correlated sampling
-       nblk_sav=nblk
-       nblk=max(2,nblk/2)
-c      nblk=max(2,nblk/10)
+       nblk_sav=vmc_nblk
+       vmc_nblk=max(2,vmc_nblk/2)
+c      vmc_nblk=max(2,vmc_nblk/10)
 
        call qmc
 
@@ -267,7 +271,7 @@ c      nblk=max(2,nblk/10)
        ioptci=ioptci_sav
        if(ioptci.ne.0.and.nstates.gt.1.and.(ioptorb.ne.0.or.ioptjas.ne.0)) ioptci=0
 
-       nblk=nblk_sav
+       vmc_nblk=nblk_sav
 
 c Check if something is very wrong in correlated sampling run
        denergy_min=1.d+99
@@ -283,8 +287,8 @@ c Check if something is very wrong in correlated sampling run
          endif
        enddo
        if(denergy_max/denergy_min.gt.10) then
-         write(6,'(/,''Problem with correlated sampling run'')')
-         write(6,'(''e,demin,e,demax'',2(f12.5,'' +- '',f12.5))')
+         write(ounit,'(/,''Problem with correlated sampling run'')')
+         write(ounit,'(''e,demin,e,demax'',2(f12.5,'' +- '',f12.5))')
      &   energy(k_demin),denergy_min,energy(k_demax),denergy_max
 
          if(k_demax.eq.1) then
@@ -292,12 +296,12 @@ c Check if something is very wrong in correlated sampling run
           else
            add_diag(1)=add_diag(1)*200
          endif
-         write(6,'(''adiag_1 increased to '',g12.5)') add_diag(1)
-         write(6,'(''generate again parameters for correlated sampling'')')
+         write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
+         write(ounit,'(''generate again parameters for correlated sampling'')')
 
          call restore_wf(1)
 c In case starting config is very bad, reset configuration by calling sites
-         isite=1
+         vmc_isite=1
          call reset_configs_start
 
          energy(1)=energy_sav
@@ -310,38 +314,39 @@ c In case starting config is very bad, reset configuration by calling sites
        de_worse_err1=sqrt(energy_err(1)**2+energy_err_sav**2)
        de_worse_err2=sqrt(energy_err(2)**2+energy_err_sav**2)
        de_worse_err3=sqrt(energy_err(3)**2+energy_err_sav**2)
-       write(6,'(/,''adiag, correlated energies, forces'')')
+       write(ounit,'(/,''adiag, correlated energies, forces'')')
        do k=1,3
          if(k.eq.1) then
-           write(6,'(g15.5,f12.5,'' +- '',f12.5)') add_diag(k),energy(k),energy_err(k)
+           write(ounit,'(g15.5,f12.5,'' +- '',f12.5)') add_diag(k),energy(k),energy_err(k)
           else
-           write(6,'(g15.5,f12.5,'' +- '',f12.5,e12.5,'' +- '',e12.5)') add_diag(k),energy(k),energy_err(k),force(k),force_err(k)
+           write(ounit,'(g15.5,f12.5,'' +- '',f12.5,e12.5,'' +- '',e12.5)')
+     &      add_diag(k), energy(k),energy_err(k),force(k),force_err(k)
          endif
        enddo
-       write(6,'(''old energy'',2f12.5)') energy_sav,energy_err_sav
-       write(6,'(''energy_adiag1-energy_old'',3f12.5)') de_worse1,de_worse_err1,3*de_worse_err1
-       write(6,'(''energy_adiag2-energy_old'',3f12.5)') de_worse2,de_worse_err2,3*de_worse_err2
-       write(6,'(''energy_adiag3-energy_old'',3f12.5)') de_worse3,de_worse_err3,3*de_worse_err3
+       write(ounit,'(''old energy'',2f12.5)') energy_sav,energy_err_sav
+       write(ounit,'(''energy_adiag1-energy_old'',3f12.5)') de_worse1,de_worse_err1,3*de_worse_err1
+       write(ounit,'(''energy_adiag2-energy_old'',3f12.5)') de_worse2,de_worse_err2,3*de_worse_err2
+       write(ounit,'(''energy_adiag3-energy_old'',3f12.5)') de_worse3,de_worse_err3,3*de_worse_err3
 
 c      if(de_worse2.gt.3*de_worse_err2.or.de_worse3.gt.3*de_worse_err3) then
        if(de_worse3.gt.3*de_worse_err3) then
-c        write(6,'(/,''energy_adiag2_3 is much worse than old energy'')')
-         write(6,'(/,''energy_adiag3 is much worse than old energy'')')
+c        write(ounit,'(/,''energy_adiag2_3 is much worse than old energy'')')
+         write(ounit,'(/,''energy_adiag3 is much worse than old energy'')')
 
          add_diag(1)=add_diag(1)*200
-         write(6,'(''adiag_1 increased to '',g12.5)') add_diag(1)
-         write(6,'(''generate again parameters for correlated sampling'')')
+         write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
+         write(ounit,'(''generate again parameters for correlated sampling'')')
 
          call restore_wf(1)
 c In case starting config is very bad, reset configuration by calling sites
-         isite=1
+         vmc_isite=1
          call reset_configs_start
 
          energy(1)=energy_sav
          go to 6
        endif
 
-       write(6,'(/,''find optimal adiag'')')
+       write(ounit,'(/,''find optimal adiag'')')
 c Find optimal a_diag
        call quad_min
 
@@ -352,30 +357,30 @@ c Find optimal a_diag
 
        call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,add_diag(1),iflag)
        if(iflag.ne.0) then
-        write(6,'(''Warning: adiag_optimal has dparm_norm>1'')')
+        write(ounit,'(''Warning: adiag_optimal has dparm_norm>1'')')
         add_diag(1)=200*add_diag(1)
-        write(6,'(''adiag_1 increased to '',g12.5)') add_diag(1)
+        write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
         call restore_wf(1)
         go to 7
        endif
 
-c      write(6,'(/,''Optimal change in parameters'')')
-c      write(6,'(''-x='',9f15.9)') (-grad(i),i=1,nparm)
+c      write(ounit,'(/,''Optimal change in parameters'')')
+c      write(ounit,'(''-x='',9f15.9)') (-grad(i),i=1,nparm)
 
 c Compute new parameters
-       write(6,'(/,''Compute parameters for optimal adiag'')')
+       write(ounit,'(/,''Compute parameters for optimal adiag'')')
        call compute_parameters(grad,iflag,1)
        if(iflag.ne.0) then
-         write(6,'(''Warning: adiag_optimal has problems'')')
+         write(ounit,'(''Warning: adiag_optimal has problems'')')
          add_diag(1)=200*add_diag(1)
-         write(6,'(''adiag_1 increased to '',g12.5)') add_diag(1)
+         write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
          call restore_wf(1)
          go to 7
        endif
 
        call write_wf(1,iter)
 
-       call check_length_run(iter,increase_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
+       call check_length_run(iter,increase_nblk,vmc_nblk,vmc_nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
 
        add_diag(1)=0.1d0*add_diag(1)
       else
@@ -401,10 +406,10 @@ c CI step for state average of multiple states
 
         call set_nparms
 
-        nblk_sav=nblk
-        nblk=nblk_ci
+        nblk_sav=vmc_nblk
+        vmc_nblk=vmc_nblk_ci
         call qmc
-        nblk=nblk_sav
+        vmc_nblk=nblk_sav
 
         call combine_derivatives
 
@@ -419,10 +424,10 @@ c CI step for state average of multiple states
 c add_diag used to generate current Jastrow+orbitals was divided by 10 before the end of the loop 900
 c           add_diag(1)=20*add_diag_sav
             add_diag(1)=200*add_diag_sav
-            write(6,'(/,''Iteration '',i4,'' sampling run to generate new CI coefs'')') iter
-            write(6,'(''old energy'',2f12.5)') energy_sav,energy_err_sav
-            write(6,'(''new energy'',2f12.5)') energy(1),energy_err(1)
-            write(6,'(/,''Energy is worse, increase adiag to '',1pd11.4)') add_diag(1)
+            write(ounit,'(/,''Iteration '',i4,'' sampling run to generate new CI coefs'')') iter
+            write(ounit,'(''old energy'',2f12.5)') energy_sav,energy_err_sav
+            write(ounit,'(''new energy'',2f12.5)') energy(1),energy_err(1)
+            write(ounit,'(/,''Energy is worse, increase adiag to '',1pd11.4)') add_diag(1)
 
 c Jastrow and orbital parameters give worse energy
             ioptjas=ioptjas_sav
@@ -436,7 +441,7 @@ c Jastrow and orbital parameters give worse energy
      &                     add_diag(1),energy_sav,energy_err_sav)
             call compute_parameters(grad,iflag,1)
 c In case starting config is very bad, reset configuration by calling sites
-            isite=1
+            vmc_isite=1
             call reset_configs_start
 
             call write_wf(1,iter)
@@ -447,7 +452,7 @@ c In case starting config is very bad, reset configuration by calling sites
         call setup_optimization(nparm,MPARMALL,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
         if(iter.eq.1) lwork_ci_save=lwork
 
-        write(6,'(/,''Compute CI parameters'',/)')
+        write(ounit,'(/,''Compute CI parameters'',/)')
         call compute_dparm(nparm,MPARMALL,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy(1),energy_err(1))
 
@@ -481,10 +486,10 @@ c end of optimization loop
       if(ilastvmc.eq.0) go to 970
 
       call qmc
-      write(6,'(/,''Current energy = '',f12.7,'' +- '',f11.7)') energy(1),energy_err(1)
+      write(ounit,'(/,''Current energy = '',f12.7,'' +- '',f11.7)') energy(1),energy_err(1)
       energy_plus_err=energy(1)+2*energy_err(1)
       if(energy_plus_err.lt.energy_plus_err_best) then
-        write(6,'(/,''Current best energy + 2*error = '',f11.4)') energy_plus_err
+        write(ounit,'(/,''Current best energy + 2*error = '',f11.4)') energy_plus_err
         energy_plus_err_best=energy_plus_err
         call save_wf_best(ioptjas_sav,ioptorb_sav,ioptci_sav)
       endif
@@ -507,7 +512,7 @@ c-----------------------------------------------------------------------
       subroutine check_length_run(iter,increase_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
 
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: increase_nblk, iter, nblk, nblk_max, nblk_new
@@ -523,7 +528,7 @@ c     do 5 k=1,3
 c       energy_min=min(energy_min,energy(k))
 c   5   energy_max=max(energy_max,energy(k))
 c     e_diff=energy_max-energy_min
-c     write(6,'(''iter,e_diff='',i4,d12.4)') iter,e_diff
+c     write(ounit,'(''iter,e_diff='',i4,d12.4)') iter,e_diff
 c
 c     dforce2=force_err(2)-energy_tol
 c     dforce3=force_err(2)-energy_tol
@@ -533,9 +538,9 @@ c       nblk_new=min(nblk_new,nblk_max)
 c       if(nblk_new.gt.nblk) then
 c         increase_nblk=0
 c         nblk=nblk_new
-c         write(6,'(''nblk reset to'',i8,9d12.4)') nblk,energy_err(1),energy_tol
+c         write(ounit,'(''nblk reset to'',i8,9d12.4)') nblk,energy_err(1),energy_tol
 c       endif
-c       write(6,'(''energy differences for different add_diag converged to'',d12.4)') energy_tol
+c       write(ounit,'(''energy differences for different add_diag converged to'',d12.4)') energy_tol
 c       goto 950
 c     endif
 
@@ -546,14 +551,14 @@ c Increase if subsequent energies are within errorbar
         if(nblk_new.gt.nblk) then
           increase_nblk=0
           nblk=nblk_new
-          write(6,'(''nblk reset to'',i8,9d12.4)') nblk,dabs(denergy),energy_tol
+          write(ounit,'(''nblk reset to'',i8,9d12.4)') nblk,dabs(denergy),energy_tol
         endif
       endif
 c Always increase nblk by a factor of 2 every other iteration
       if(increase_nblk.eq.2.and.nblk.lt.nblk_max) then
         increase_nblk=0
         nblk=min(2*nblk,nblk_max)
-        write(6,'(''nblk reset to'',i8,9d12.4)') nblk
+        write(ounit,'(''nblk reset to'',i8,9d12.4)') nblk
       endif
 
       return
@@ -563,7 +568,7 @@ c-----------------------------------------------------------------------
 
       use optwf_corsam, only: add_diag, energy, force, force_err
       use precision_kinds, only: dp
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, ierr, iwadd_diag, j, k
@@ -605,13 +610,13 @@ c Solve linear equations
       call lxb(a,nfunc,MFUNC,b)
       call uxb(a,nfunc,MFUNC,b)
 
-      write(6,'(''polinomial coeffcients b1+b2*adiag+b3*adiag^2'',f12.5,1p2e12.4)') (b(i),i=1,nfunc)
+      write(ounit,'(''polinomial coeffcients b1+b2*adiag+b3*adiag^2'',f12.5,1p2e12.4)') (b(i),i=1,nfunc)
       energy_min= 1.d99
       energy_max=-1.d99
       rms=0
       do 50 k=1,npts
         ee=b(1)+b(2)*add_diag_log(k)+b(3)*add_diag_log(k)**2
-        write(6,'(''fit log(adiag),e_fit,e '',3f12.5)') add_diag_log(k),ee,energy(k)
+        write(ounit,'(''fit log(adiag),e_fit,e '',3f12.5)') add_diag_log(k),ee,energy(k)
         if(energy(k).lt.energy_min) then
           k_min=k
           energy_min=energy(k)
@@ -619,16 +624,16 @@ c Solve linear equations
         energy_max=max(energy_max,energy(k))
    50   rms=rms+(ee-energy(k))**2
       rms=dsqrt(rms/npts)
-      write(6,'(''rms error in fit of energy to get optimal add_diag is'',d12.4)') rms
+      write(ounit,'(''rms error in fit of energy to get optimal add_diag is'',d12.4)') rms
 
       energy_var=energy_max-energy_min
       if(b(3).gt.0.and.abs(force(2)).gt.3*force_err(2).and.abs(force(3)).gt.3*force_err(3)) then
         iwadd_diag=0
         add_diag_log_min=-0.5d0*b(2)/b(3)
         add_diag_log_min=min(max(add_diag_log_min,add_diag_log(1)-1),add_diag_log(1)+3)
-        write(6,'(/,''computed optimal adiag '',g12.4)') 10**add_diag_log_min
+        write(ounit,'(/,''computed optimal adiag '',g12.4)') 10**add_diag_log_min
         eopt=b(1)+b(2)*add_diag_log_min+b(3)*add_diag_log_min**2
-        write(6,'(/,''computed optimal energy'',f12.5)') eopt
+        write(ounit,'(/,''computed optimal energy'',f12.5)') eopt
        elseif(energy(1).lt.energy(2)+force_err(2).and.energy_var.lt.1.d-3*abs(energy_max)) then
         iwadd_diag=1
         add_diag_log_min=add_diag_log(1)
@@ -638,13 +643,13 @@ c Solve linear equations
         add_diag_log_min=add_diag_log(2)
        else
         iwadd_diag=k_min
-        write(6,'(/,''b3 < 0 or error on one force too large'')')
+        write(ounit,'(/,''b3 < 0 or error on one force too large'')')
         add_diag_log_min=add_diag_log(k_min)
         if(k_min.eq.1.and.energy(1).lt.energy(2).and.add_diag_log_min.ge.0.d0) add_diag_log_min=add_diag_log_min-1.d0
       endif
       add_diag_log_min=max(add_diag_log_min,-6*1.d0)
       add_diag_min=10**add_diag_log_min
-      write(6,'(/,''optimal adiag '',i2,g12.4,/)') iwadd_diag,add_diag_min
+      write(ounit,'(/,''optimal adiag '',i2,g12.4,/)') iwadd_diag,add_diag_min
 
       add_diag(1)=add_diag_min
 
@@ -662,9 +667,10 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use gradhess_all, only: h, s
       use ci000, only: nciterm
+      use contrl_file,    only: ounit
       use method_opt, only: method
       use optorb_cblock, only: nreduced
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, i0, is, ishift, j
@@ -687,9 +693,9 @@ c Jastrow Hamiltonian
   110      s(i,j)=s_jas(i,j)
 
 c      do 111 i=1,nparmj+1
-c 111    write(6,'(''h1= '',1000d12.5)') (h(i,j),j=1,nparmj+1)
+c 111    write(ounit,'(''h1= '',1000d12.5)') (h(i,j),j=1,nparmj+1)
 c      do 112 i=1,nparmj+1
-c 112    write(6,'(''h1= '',1000d12.5)') (s(i,j),j=1,nparmj+1)
+c 112    write(ounit,'(''h1= '',1000d12.5)') (s(i,j),j=1,nparmj+1)
 
        ishift=nparmj+is
 
@@ -718,9 +724,9 @@ c CI Hamiltonian
            h(ishift+i,ishift+j)=h_ci(i+i0+is,j+i0+is)
   120      s(ishift+i,ishift+j)=s_ci(i+i0+is,j+i0+is)
 
-c      write(6,'(''h2 shift ='',i4)') ishift
+c      write(ounit,'(''h2 shift ='',i4)') ishift
 c      do 121 i=1,nciterm-i0
-c 121    write(6,'(''h2= '',1000f12.5)') (h_ci(i+i0+is,j+i0+is),j=1,nciterm-i0)
+c 121    write(ounit,'(''h2= '',1000f12.5)') (h_ci(i+i0+is,j+i0+is),j=1,nciterm-i0)
 
 c Jastrow-CI Hamiltonian
        do 130 j=1,nciterm-i0
@@ -731,8 +737,8 @@ c Jastrow-CI Hamiltonian
   130      s(j+ishift,i+1)=s_mix_jas_ci(i,j+i0)
 
 c      do 131 i=1,nparmj
-c        write(6,'(''h3= '',1000f12.5)') (h_mix_jas_ci(i,j+i0),j=1,nciterm-i0)
-c 131    write(6,'(''h3= '',1000f12.5)') (h_mix_jas_ci(i+nparmj,j+i0),j=1,nciterm-i0)
+c        write(ounit,'(''h3= '',1000f12.5)') (h_mix_jas_ci(i,j+i0),j=1,nciterm-i0)
+c 131    write(ounit,'(''h3= '',1000f12.5)') (h_mix_jas_ci(i+nparmj,j+i0),j=1,nciterm-i0)
 
        ishift=ishift+nciterm-i0
 
@@ -774,13 +780,13 @@ c ORB-CI Hamiltonian
 
   175  nparm=nparmj+nciterm+nreduced-i0
 
-       write(6,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)')
+       write(ounit,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)')
      & nparm,nparmj,nciterm,nreduced
 
 c      do 180 i=1,nparm+1
-c 180    write(6,'(''h= '',1000d12.5)') (h(i,j),j=1,nparm+1)
+c 180    write(ounit,'(''h= '',1000d12.5)') (h(i,j),j=1,nparm+1)
 c      do 185 i=1,nparm+1
-c 185    write(6,'(''s= '',1000d12.5)') (s(i,j),j=1,nparm+1)
+c 185    write(ounit,'(''s= '',1000d12.5)') (s(i,j),j=1,nparm+1)
 
       endif
 

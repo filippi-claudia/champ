@@ -11,7 +11,7 @@ c routine to calculate basis functions for electron k
       use wfsec, only: iwf
       use force_analy, only: iforce_analy
       use const, only: nelec
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -58,7 +58,7 @@ c get distance to center
       xc(1)=rvec_en(1,k,ic)
       xc(2)=rvec_en(2,k,ic)
       xc(3)=rvec_en(3,k,ic)
-c     write(6,'(''xc='',9f9.5)') xc(1),xc(2),xc(3)
+c     write(ounit,'(''xc='',9f9.5)') xc(1),xc(2),xc(3)
       r=r_en(k,ic)
       r2=r*r
       ri=one/r
@@ -94,7 +94,7 @@ c numerical orbitals
       call n0_inc(l,k,ic)
  800  continue
 
-c end of numerical orbitals 
+c end of numerical orbitals
       else
        stop
       endif

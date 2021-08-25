@@ -2,7 +2,7 @@
      1,numcal,mregions)
       implicit real*8(a-h,o-z)
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-c This is Cyrus Umrigar's rewrite of Mike Teter's integration routine.  
+c This is Cyrus Umrigar's rewrite of Mike Teter's integration routine.
 c This is a general purpose integration routine usable whenever the
 c function can be evaluated at arbitrary points.
 c If the non-analyticites of the function are known, then it helps to
@@ -55,7 +55,7 @@ c     save dx,wt3,wt9
 c The array x stores the boundary points of the regions.
 c Place initial boundary points at end-pts of region and at those
 c singular pts that are within the region.
-c nregion is the number of different intervals into which the 
+c nregion is the number of different intervals into which the
 c integration region is currently divided. The number of regions can
 c grow if more accuracy is needed by dividing the right-most region
 c into three regions. The number of regions shrinks when the integral
@@ -95,20 +95,20 @@ c and calculate initial estimate of integral.
           stop
         endif
 
-c Divide the rightmost region into three subregions.  
+c Divide the rightmost region into three subregions.
         del9=x(nregion+1)-x(nregion)
         x(nregion+3)=x(nregion+1)
         x(nregion+1)=x(nregion)+del9*dx(1)*2.
         x(nregion+2)=x(nregion+3)-del9*dx(1)*2.
 
-c The three data points already found for the region become the 
+c The three data points already found for the region become the
 c middle data points (number 2 in first index of fval) for each region.
         fval(2,nregion+2)=fval(3,nregion)
         fval(2,nregion+1)=fval(2,nregion)
         fval(2,nregion)=fval(1,nregion)
 
 c Now do the integral over the right-most region in two different ways-
-c a 3-point integral (value3) over each of the 3 subregions 
+c a 3-point integral (value3) over each of the 3 subregions
 c and a more accurate 9-point integral (value9) over the whole region.
 c value3 is used only for the error estimate.
         icount=0
@@ -138,7 +138,7 @@ c are not satisfied.
 c       if(dif.le.abserr*frac .or. dif.le.relerr*abs(value9) .or.
 c    1  (frac .le. 1.d-14)) then
 c The following commented out lines are Steve White's error criterion.
-c       if(dif .le. abserr*frac .or. dif.le.relerr*abs(value9) .or. 
+c       if(dif .le. abserr*frac .or. dif.le.relerr*abs(value9) .or.
 c    1   (frac .le. 1.d-15) .or.
 c    2   (frac .le. 1.d-8 .and. dif .le. abserr*0.1d0)) then
           grater=grater+value9
@@ -155,7 +155,7 @@ c If no more regions, we are done.
              else
               write(6,'(''num,val,error'',i8,2d21.14,d10.2)'
      &        ) numcal,grater,absestim,error
-              write(6,'(''relerr,abserr='',2d12.6)') relerr,abserr
+              write(6,'(''relerr,abserr='',2d16.6)') relerr,abserr
               safety=.5*safety
               if(safety.lt.1.d-3) stop 'safety2 < 1.d-3'
               if(isafety.ge.1 .and. numcal*error.gt.numcal_sav*error_sav
@@ -170,7 +170,7 @@ c If no more regions, we are done.
             endif
           endif
          else
-c If the integration is insufficiently accurate, make each of the 
+c If the integration is insufficiently accurate, make each of the
 c three subregions of the right-most region into regions.
 c On next pass the right-most of these is the new current region.
           nregion=nregion+2

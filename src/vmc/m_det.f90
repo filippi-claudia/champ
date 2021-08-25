@@ -41,10 +41,10 @@ module dets_equiv
     save
 contains
     subroutine allocate_dets_equiv()
-        use vmc_mod, only: MDET
+        use dets, only: ndet
 
-        if (.not. allocated(cdet_equiv)) allocate (cdet_equiv(MDET))
-        if (.not. allocated(dcdet_equiv)) allocate (dcdet_equiv(MDET))
+        if (.not. allocated(cdet_equiv)) allocate (cdet_equiv(ndet))
+        if (.not. allocated(dcdet_equiv)) allocate (dcdet_equiv(ndet))
 
     end subroutine allocate_dets_equiv
 

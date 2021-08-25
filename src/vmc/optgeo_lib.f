@@ -42,7 +42,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         use force_fin, only: da_energy_ave
         use zmatrix, only: czint, izcmat
         use force_analy, only: iforce_analy, iuse_zmat, alfgeo
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: ic, k
@@ -58,14 +58,14 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           call coords_compute_step (alfgeo)
           call coords_transform_step (czint, cent, izcmat)
 
-          write (6,*) 'INTERNAL'
+          write (ounit,*) 'INTERNAL'
           do ic=1,ncent
-            write (6,'(x 3f10.5)') czint(1:3, ic)
+            write (ounit,'(x 3f10.5)') czint(1:3, ic)
           enddo
 
-          write (6,*) 'CENT'
+          write (ounit,*) 'CENT'
           do ic=1,ncent
-            write(6,'(3f10.5)') (cent(k,ic),k=1,3)
+            write(ounit,'(3f10.5)') (cent(k,ic),k=1,3)
           enddo
 
         else
@@ -73,7 +73,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
             do k=1,3
               cent(k,ic)=cent(k,ic)-alfgeo*da_energy_ave(k,ic)
             enddo
-            write(6,*)'CENT ',(cent(k,ic),k=1,3)
+            write(ounit,*)'CENT ',(cent(k,ic),k=1,3)
           enddo
         endif
 

@@ -86,7 +86,7 @@ module optgeo_hessian
   !! @param dg change of the gradient in the last step
   !!
   subroutine optgeo_update_bfgs (h, dx, dg)
-
+    use contrl_file,    only: ounit
     real(kind=8), intent(inout) :: h(:,:)
     real(kind=8), intent(in) :: dx(:), dg(:)
 
@@ -95,7 +95,7 @@ module optgeo_hessian
     integer :: num
     real(kind=8) :: alpha
 
-    write (6,*) 'Do not use optgeo_update_bfgs. Not tested yet!'
+    write(ounit,*) 'Do not use optgeo_update_bfgs. Not tested yet!'
     stop
 
     ! initializes

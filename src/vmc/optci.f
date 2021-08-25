@@ -1,6 +1,6 @@
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
-      use vmc_mod, only: MDET
+      use dets, only: ndet
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
       use optwf_contrl, only: ioptci
       use ci000, only: nciprim
@@ -12,15 +12,17 @@
 
       use multislater, only: detiab
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
+
       implicit none
 
       integer :: i, icsf, idet, ix, j
       integer :: jcsf, k
       real(dp) :: ci_e_csf, ci_o_csf, e_other, energy, psid
       real(dp) :: psidi
-      real(dp), dimension(MDET) :: ciprim
-      real(dp), dimension(MDET) :: cieprim
-      real(dp), dimension(MDET, 2) :: eloc_det
+      real(dp), dimension(ndet) :: ciprim
+      real(dp), dimension(ndet) :: cieprim
+      real(dp), dimension(ndet, 2) :: eloc_det
 
 
 
@@ -315,7 +317,7 @@ c-----------------------------------------------------------------------
       use ci010_blk, only: ci_ooe_cum
 
       use method_opt, only: method
-
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iu, j, matdim, mciprim
@@ -328,13 +330,13 @@ c-----------------------------------------------------------------------
 
       read(iu) mciprim,mciterm
       if(mciprim.ne.nciprim) then
-       write (6,*) 'wrong number of primitive ci terms!'
-       write (6,*) 'old ',mciprim,' new ',nciprim
+       write(ounit,*) 'wrong number of primitive ci terms!'
+       write(ounit,*) 'old ',mciprim,' new ',nciprim
        call fatal_error('CI: Restart, inconsistent CI information')
       endif
       if(mciterm.ne.nciterm) then
-       write (6,*) 'wrong number of ci terms!'
-       write (6,*) 'old ',mciterm,' new ',nciterm
+       write(ounit,*) 'wrong number of ci terms!'
+       write(ounit,*) 'old ',mciterm,' new ',nciterm
        call fatal_error('CI: Restart, inconsistent CI information')
       endif
 
@@ -409,7 +411,7 @@ c-----------------------------------------------------------------------
       use ci000, only: iciprt, nciterm
 
       use method_opt, only: method
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -469,7 +471,7 @@ c Compute the hessian (also for first coefficient)
      &               +oav(i)*oelocav(j)+oav(j)*oelocav(i)-oav(i)*eav(j)-oav(j)*eav(i)
   40        h_ci(j,i)=h_ci(i,j)
 
-        write(6,'(''opening grad_hess.ci.dat'')')
+        write(ounit,'(''opening grad_hess.ci.dat'')')
         open(43,file='grad_hess.ci.dat',status='unknown')
 
         write(43,*) nciterm

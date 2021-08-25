@@ -2,7 +2,7 @@
 
       use mmpol_cntrl, only: immpol, immpolprt
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -33,14 +33,14 @@
 
       rtpass=dsqrt(wcum)
       if(immpol.eq.2)then
-        write(6,'(''mmpol dE (induced dipoles) ='',t17,f12.7,'' +-'',f11.7,f9.5)') dmmpol_ave,dmmpol_err,dmmpol_err*rtpass
-        write(6,'(''mmpol dE  (fixed charges)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') cmmpol_ave,cmmpol_err,cmmpol_merr*rtpass
-        write(6,'(''<H(QM/MM)>'',t17,f12.7,'' +-'',f11.7,f9.5)') dmmpol_ave+cmmpol_ave
+        write(ounit,'(''mmpol dE (induced dipoles) ='',t17,f12.7,'' +-'',f11.7,f9.5)') dmmpol_ave,dmmpol_err,dmmpol_err*rtpass
+        write(ounit,'(''mmpol dE  (fixed charges)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') cmmpol_ave,cmmpol_err,cmmpol_merr*rtpass
+        write(ounit,'(''<H(QM/MM)>'',t17,f12.7,'' +-'',f11.7,f9.5)') dmmpol_ave+cmmpol_ave
       endif
       if(immpol.eq.3)then
         qmmpol_ave=dmmpol_ave+cmmpol_ave
         qmmpol_err=dsqrt(dmmpol_err**2.0d0+cmmpol_err**2.0d0)
-        write(6,'(''mmpol <H(QM/MM)> ='',t17,f12.7,'' +-'',f11.7,f9.5)') qmmpol_ave,qmmpol_err,qmmpol_err*rtpass
+        write(ounit,'(''mmpol <H(QM/MM)> ='',t17,f12.7,'' +-'',f11.7,f9.5)') qmmpol_ave,qmmpol_err,qmmpol_err*rtpass
       endif
 
       return
@@ -53,7 +53,7 @@ c-----------------------------------------------------------------------
       use mmpol_parms, only: nchmm
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -72,7 +72,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(3, MCHMM) :: eek_ave
       real(dp), dimension(3, MCHMM) :: eek_err
 
-    
+
 
       data hatokc/627.509541d0/
 
@@ -93,15 +93,15 @@ c-----------------------------------------------------------------------
       icmmpol_err=nint(100000*cmmpol_err)
 
       if(immpol.eq.2)then
-        write(6,*)
-        write(6,'(''mmpol dE (induced dipoles) ='',t17,f12.7,'' +-'',f11.7,f9.5)') dmmpol_ave,dmmpol_err,dmmpol_err*rtpass
-        write(6,'(''mmpol dE  (fixed charges)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') cmmpol_ave,cmmpol_err,cmmpol_merr*rtpass
+        write(ounit,*)
+        write(ounit,'(''mmpol dE (induced dipoles) ='',t17,f12.7,'' +-'',f11.7,f9.5)') dmmpol_ave,dmmpol_err,dmmpol_err*rtpass
+        write(ounit,'(''mmpol dE  (fixed charges)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') cmmpol_ave,cmmpol_err,cmmpol_merr*rtpass
       endif
 
       if(immpol.eq.3)then
         qmmpol_ave=dmmpol_ave+cmmpol_ave
         qmmpol_err=dsqrt(dmmpol_err**2.0d0+cmmpol_err**2.0d0)
-        write(6,'(''mmpol <H(QM/MM)> ='',t17,f12.7,'' +-'',f11.7,f9.5)') qmmpol_ave,qmmpol_err,qmmpol_err*rtpass
+        write(ounit,'(''mmpol <H(QM/MM)> ='',t17,f12.7,'' +-'',f11.7,f9.5)') qmmpol_ave,qmmpol_err,qmmpol_err*rtpass
       endif
 
       if(immpol.ne.3)then
@@ -128,11 +128,11 @@ c-----------------------------------------------------------------------
 	dekcal=dmmpol_err*hatokc
 	cekcal=cmmpol_err*hatokc
 	dckcal=dmmpol_kcal+cmmpol_kcal
-	write(6,*)'    <H(QM/MM)/dipoles/charges/tot +- err (kcal/mol) '
-	write(6,1000)dmmpol_kcal,dekcal,cmmpol_kcal,cekcal,dckcal
-	write(6,*)'    <H(QM/MM)/dipoles/charges/tot +- err (hartree) '
-	write(6,1000)dmmpol_ave,dmmpol_err,cmmpol_ave,cmmpol_err,dckcal/hatokc
-        write(6,*)
+	write(ounit,*)'    <H(QM/MM)/dipoles/charges/tot +- err (kcal/mol) '
+	write(ounit,1000)dmmpol_kcal,dekcal,cmmpol_kcal,cekcal,dckcal
+	write(ounit,*)'    <H(QM/MM)/dipoles/charges/tot +- err (hartree) '
+	write(ounit,1000)dmmpol_ave,dmmpol_err,cmmpol_ave,cmmpol_err,dckcal/hatokc
+        write(ounit,*)
       endif
 
 

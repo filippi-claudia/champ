@@ -13,11 +13,14 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use phifun, only: phin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
-      use contrl, only: irstar
+!      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite, vmc_nconf
+      use control_vmc, only: vmc_nblk, vmc_nblkeq, vmc_nconf_new, vmc_nstep
       use phifun, only: d2phin, dphin, phin
       use grid3d_param, only: endpt, nstep3d, origin
       use distance_mod, only: r_en, rvec_en
       use precision_kinds, only: dp
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, ibcxmax, ibcxmin, ibcymax, ibcymin
@@ -74,7 +77,7 @@ c     Evaluate the energy needed for the calculation
       write (45,*) 'Allocated memory for the 3D spline fits of the LCAO:',
      & memory, 'Mb'
 
-      if ( irstar.ne.1 ) then
+      if ( vmc_irstar.ne.1 ) then
 
 c      ----------------------------------------------------------------
 c      Compute the orbitals values and gradients on the boundary points
@@ -205,17 +208,17 @@ c         Calculate e-N inter-particle distances
 
 c         Check that no atom is exactly on a grid point
           if (iok.eq.0) then
-            write(6,*) ''
-            write(6,*) 'There is an atom exactly on one point of the grid.'
-            write(6,*) 'Resubmit the job with the following parameters:'
+            write(ounit,*) ''
+            write(ounit,*) 'There is an atom exactly on one point of the grid.'
+            write(ounit,*) 'Resubmit the job with the following parameters:'
  10         format (a7,3(2x,a2,1x,f8.2))
-            write(6,10) '&3dgrid','x0', origin(1)+.01,
+            write(ounit,10) '&3dgrid','x0', origin(1)+.01,
      >                            'y0', origin(2)+.01,
      >                            'z0', origin(3)+.01
-            write(6,10) '&3dgrid','xn', endpt(1)+.01,
+            write(ounit,10) '&3dgrid','xn', endpt(1)+.01,
      >                            'yn', endpt(2)+.01,
      >                            'zn', endpt(3)+.01
-            write(6,*) ''
+            write(ounit,*) ''
             call fatal_error('aborted')
           endif
 
@@ -418,10 +421,11 @@ c Lagrange interpolation routines
       use orbital_num_lag, only: denom
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: nghostcent
-      use contrl, only: irstar
+      use control_vmc, only: vmc_irstar
       use phifun, only: phin, dphin, d2phin
       use distance_mod, only: r_en, rvec_en
       use precision_kinds, only: dp
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, ic, idenom, ier, iok
@@ -452,7 +456,7 @@ c     Evaluate the memory needed for the calculation
       write (45,*) 'Allocated memory for the 3D Lagrange fits of the LCAO:',
      & memory, 'Mb'
 
-      if ( irstar.ne.1 ) then
+      if ( vmc_irstar.ne.1 ) then
 
 c      ----------------------------------------------------------------
 c      Compute the orbitals values, gradients and laplacians
@@ -484,17 +488,17 @@ c         Calculate e-N inter-particle distances
 
 c         Check that no atom is exactly on a grid point
           if (iok.eq.0) then
-            write(6,*) ''
-            write(6,*) 'There is an atom exactly on one point of the grid.'
-            write(6,*) 'Resubmit the job with the following parameters:'
+            write(ounit,*) ''
+            write(ounit,*) 'There is an atom exactly on one point of the grid.'
+            write(ounit,*) 'Resubmit the job with the following parameters:'
  10         format (a7,3(2x,a2,1x,f8.2))
-            write(6,10) '&3dgrid','x0', origin(1)+.01,
+            write(ounit,10) '&3dgrid','x0', origin(1)+.01,
      >                            'y0', origin(2)+.01,
      >                            'z0', origin(3)+.01
-            write(6,10) '&3dgrid','xn', endpt(1)+.01,
+            write(ounit,10) '&3dgrid','xn', endpt(1)+.01,
      >                            'yn', endpt(2)+.01,
      >                            'zn', endpt(3)+.01
-            write(6,*) ''
+            write(ounit,*) ''
             call fatal_error('aborted')
           endif
 

@@ -29,13 +29,14 @@ c job where it left off
       use wfsec, only: iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use const2, only: deltar, deltat
-      use contrl, only: nstep
+!      use contrl, only: nstep
+      use control_vmc, only: vmc_nstep
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
       use basis, only: nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
       use mstates_ctrl, only: iguiding
       use inputflags, only: node_cutoff, eps_node_cutoff
-
+      use contrl_file,    only: ounit, errunit
       ! I'm 50% sure it's needed
       ! it was in master as part of the include optorb.h
       use optorb_cblock, only: ns_current
@@ -95,7 +96,7 @@ c job where it left off
 
       write(10) delta,deltar,deltat
 
-      write(10) nstep,iblk
+      write(10) vmc_nstep,iblk
       do 1 istate=1,nstates
         write(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),tjfcum(istate),r2cum,acc
         write(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),tjfcm2(istate),r2cm2
@@ -152,7 +153,7 @@ c job where it left off
 
       rewind 10
 
-      write(6,'(1x,''successful dump to unit 10'')')
+      write(ounit,'(1x,''successful dump to unit 10'')')
 
       return
 
@@ -165,7 +166,7 @@ c-----------------------------------------------------------------------
       if (dabs(deltatx-deltat).gt.small) call fatal_error('STARTR: deltat')
 
       read(10) nstepx,iblk
-      if (nstepx.ne.nstep) call fatal_error('STARTR: nstep')
+      if (nstepx.ne.vmc_nstep) call fatal_error('STARTR: nstep')
       do 2 istate=1,nstates
         read(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),tjfcum(istate),r2cum,acc
         read(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),tjfcm2(istate),r2cm2
@@ -267,8 +268,8 @@ c-----------------------------------------------------------------------
       call optx_jas_ci_rstrt(10)
       call optx_orb_ci_rstrt(10)
 
-      write(6,'(1x,''succesful read from unit 10'')')
-      write(6,'(t5,''enow'',t15,''eave'',t25,''eerr'',t35,''peave'',
+      write(ounit,'(1x,''succesful read from unit 10'')')
+      write(ounit,'(t5,''enow'',t15,''eave'',t25,''eerr'',t35,''peave'',
      &t45,''peerr'',t55,''tpbave'',t65,''tpberr'',t75,''tjfave'',
      &t85,''tjferr'',t95,''accept'',t105,''iter'')')
 

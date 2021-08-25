@@ -30,6 +30,7 @@ c rigidly with that nucleus
       use pcm_pot, only: penups, penupv
       use pcm_inda, only: inda
       use optwf_contrl, only: ioptwf
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -176,18 +177,18 @@ c Set up n-n potential energy (and PCM related quantities) at displaced position
       if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
       if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV))
 
-      write(6,'(''istrech,alfstr ='',i4,2f10.5)') istrech,alfstr
+      write(ounit,'(''istrech,alfstr ='',i4,2f10.5)') istrech,alfstr
 
       do 60 i=1,nforce
-        write(6,*) '--------------'
+        write(ounit,*) '--------------'
         do 60 ic=1,ncent
-   60     write(6,'(''center '',i2,'' conf '',i2,'' displace '',
+   60     write(ounit,'(''center '',i2,'' conf '',i2,'' displace '',
      &    3f15.7)') ic,i,(delc(k,ic,i),k=1,3)
-      write(6,'(''iwftypes'',20i2)') (iwftype(i),i=1,nforce)
+      write(ounit,'(''iwftypes'',20i2)') (iwftype(i),i=1,nforce)
 
       if(index(mode,'dmc').ne.0) then
         if(nwprod.gt.MFORCE_WT_PRD) call fatal_error('STRETCH: nwprod gt MFORCE_WT_PRD')
-        write(6,'(''nwprod,itausec='',2i4)') nwprod,itausec
+        write(ounit,'(''nwprod,itausec='',2i4)') nwprod,itausec
       endif
 
       do 65 icent=1,ncent
@@ -272,7 +273,7 @@ c check deviation of surface charges from charges of primary geometry
 c printout charges if deviation is  big
             if (delta_qs.gt.1.d-3) then
               do 85 i=1,nchs
-   85           write(6,'(''Warning: Large deviation in surface charges'',2d8.4)') q_strech(i),ch(i)
+   85           write(ounit,'(''Warning: Large deviation in surface charges'',2f16.8)') q_strech(i),ch(i)
             endif
 
             do 89 j=nchs+1,nch
@@ -313,7 +314,7 @@ c printout charges if deviation is  big
                   penupv_fc=penupv_fc+0.5d0*znuc(iwctype(i))*ch(j)/rnp
    96         continue
               delta_gpol_fc=penups_fc-penups+penupv_fc-penupv
-              write(6,'(''nuclear delta_gpol contribution to force'',i4,'' ='',1p1d14.5)') ifl,delta_gpol_fc
+              write(ounit,'(''nuclear delta_gpol contribution to force'',i4,'' ='',1p1d14.5)') ifl,delta_gpol_fc
               pecentn(ifl)=pecentn(ifl)+delta_gpol_fc
 c endif PCM
           endif
@@ -321,7 +322,7 @@ c endif PCM
 c end loop forces
   200 continue
 
-      write(6,'(''n-n potential energies '',10f10.5)') (pecentn(ifl),ifl=1,nforce)
+      write(ounit,'(''n-n potential energies '',10f10.5)') (pecentn(ifl),ifl=1,nforce)
 
       do 300 ifl=1,nforce
         deltot(ifl)=zero
@@ -342,7 +343,7 @@ c        deltot(ifl)=sign(dsqrt(deltot(ifl)*ncent),rsq-rsq1)
   300   if(deltot(ifl).eq.0) deltot(ifl)=1.d0
 
 
-      write(6,'(''deltot '',10f10.5)') (deltot(ifl),ifl=1,nforce)
+      write(ounit,'(''deltot '',10f10.5)') (deltot(ifl),ifl=1,nforce)
 
 
       return

@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar
       use vmc_mod, only: MTERMS
       use jaspar4, only: nordc
       use cuspmat4, only: d, iwc4, nterms
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iord, iprin, k, l
@@ -34,7 +35,7 @@ c Written by Cyrus Umrigar
               if(i.gt.MTERMS) stop 'nterms>MTERMS in cuspinit4'
               if(k.eq.1.and.iwc4(n-1).eq.0) iwc4(n-1)=i
               if(k.eq.0.and.iwc4(n+nordc-2).eq.0) iwc4(n+nordc-2)=i
-              if(iprin.gt.1) write(6,'(9i4)') i,n,k,l,m
+              if(iprin.gt.1) write(ounit,'(9i4)') i,n,k,l,m
               iord=l+2*m
               d(iord,i)=d(iord,i)-2*k
               if(l+m.gt.0) then
@@ -49,15 +50,15 @@ c Written by Cyrus Umrigar
    20 continue
       nterms=i
       if(iprin.gt.0) then
-        write(6,'(''# of e-e-n terms, nterms='',i5)') nterms
+        write(ounit,'(''# of e-e-n terms, nterms='',i5)') nterms
         if(iprin.gt.1) then
-          write(6,'(''d matrix:'')')
-          write(6,'(55i2)') (i,i=1,nterms)
+          write(ounit,'(''d matrix:'')')
+          write(ounit,'(55i2)') (i,i=1,nterms)
           do 30 n=1,2*(nordc-1)
-   30       write(6,'(55i2)') (nint(d(n,i)),i=1,nterms)
+   30       write(ounit,'(55i2)') (nint(d(n,i)),i=1,nterms)
         endif
-        write(6,'(''coefs. fixed by cusp conditions are'')')
-        write(6,'(55i3)') (iwc4(i),i=1,2*(nordc-1))
+        write(ounit,'(''coefs. fixed by cusp conditions are'')')
+        write(ounit,'(55i3)') (iwc4(i),i=1,2*(nordc-1))
       endif
 
       call checkdepend4(iprin)
@@ -72,7 +73,7 @@ c-----------------------------------------------------------------------
       use optwf_wjas, only: iwjasc
 
       use vardep, only: cdep, iwdepend, nvdepend
-
+      use contrl_file,    only: ounit
       use cuspmat4, only: d, iwc4, nterms
       use precision_kinds, only: dp
       implicit none
@@ -140,12 +141,12 @@ c indirectly on all the independent variables that are being varied.
    70 continue
 
       if(iprin.gt.1) then
-      write(6,'(''i  it nvdepend iwdepend or cdep'')')
+      write(ounit,'(''i  it nvdepend iwdepend or cdep'')')
       do 80 i=1,neqs
         do 80 it=1,nctype
-          write(6,'(i2,2i4,2x,50i4)') i,it,nvdepend(i,it),
+          write(ounit,'(i2,2i4,2x,50i4)') i,it,nvdepend(i,it),
      &   (iwdepend(i,j,it),j=1,nvdepend(i,it))
-   80     write(6,'(i2,2i4,2x,50f4.0)') i,it,nvdepend(i,it),
+   80     write(ounit,'(i2,2i4,2x,50f4.0)') i,it,nvdepend(i,it),
      &   (cdep(i,j,it),j=1,nvdepend(i,it))
       endif
 

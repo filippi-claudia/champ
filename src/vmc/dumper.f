@@ -21,7 +21,7 @@ c job where it left off
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq
       use mpi
-
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -105,11 +105,11 @@ c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
 c-----------------------------------------------------------------------
       entry startr
 
-      write(6,'(1x,''attempting restart from unit 10'')')
+      write(ounit,'(1x,''attempting restart from unit 10'')')
 
       rewind 10
       read(10) nproco
-      if(nproco.ne.nproc) write(6,'(''Warning: different number of processors'',/
+      if(nproco.ne.nproc) write(ounit,'(''Warning: different number of processors'',/
      & ,9x,''old number of processors'',i3,/,9x,''continuing with'',i3,'' processors'')')
      & nproco,nproc
       read(10) ((irn(i,j),i=1,4),j=0,nproco-1)

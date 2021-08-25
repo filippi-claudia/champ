@@ -58,10 +58,10 @@ module Bloc
 contains
     subroutine allocate_Bloc()
         use const, only: nelec
+        use coefs, only: norb
         use atom, only: ncent_tot
         use vmc_mod, only: MORB
         use optjas, only: MPARMJ
-
         if (.not. allocated(b)) allocate (b(MORB, nelec))
         if (.not. allocated(tildem)) allocate (tildem(nelec, MORB, 2))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
@@ -490,10 +490,12 @@ module multimat
 contains
     subroutine allocate_multimat()
         use const, only: nelec
-        use vmc_mod, only: MORB, MDET
+        use dets, only: ndet
+        use coefs, only: norb
+        use vmc_mod, only: MORB
         use vmc_mod, only: MEXCIT
         if (.not. allocated(aa)) allocate (aa(nelec, MORB, 2))
-        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, MDET, 2))
+        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, ndet, 2))
     end subroutine allocate_multimat
 
     subroutine deallocate_multimat()
@@ -519,10 +521,11 @@ module multimatn
 contains
     subroutine allocate_multimatn()
         use const, only: nelec
-        use vmc_mod, only: MORB, MDET
+        use dets, only: ndet
+        use vmc_mod, only: MORB
         use vmc_mod, only: MEXCIT
         if (.not. allocated(aan)) allocate (aan(nelec, MORB))
-        if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, MDET))
+        if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, ndet))
     end subroutine allocate_multimatn
 
     subroutine deallocate_multimatn()
@@ -535,7 +538,6 @@ end module multimatn
 module multislater
     !> Arguments: detiab
     use precision_kinds, only: dp
-    use vmc_mod, only: MDET
 
     implicit none
 
@@ -551,10 +553,10 @@ module multislater
     save
 contains
     subroutine allocate_multislater()
-        use vmc_mod, only: MDET
-        if (.not. allocated(detiab)) allocate(detiab(MDET, 2))
-        if (.not. allocated(detu)) allocate(detu(MDET))
-        if (.not. allocated(detd)) allocate(detd(MDET))
+        use dets, only: ndet
+        if (.not. allocated(detiab)) allocate(detiab(ndet, 2))
+        if (.not. allocated(detu)) allocate(detu(ndet))
+        if (.not. allocated(detd)) allocate(detd(ndet))
     end subroutine allocate_multislater
 
     subroutine deallocate_multislater()
@@ -568,7 +570,7 @@ end module multislater
 module multislatern
     !> Arguments: ddorbn, detn, dorbn, orbn
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB, MDET
+    use vmc_mod, only: MORB
 
     implicit none
 
@@ -583,9 +585,11 @@ module multislatern
     save
 contains
     subroutine allocate_multislatern()
-        use vmc_mod, only: MORB, MDET
+        use dets, only: ndet
+        use coefs, only: norb
+        use vmc_mod, only: MORB
         if (.not. allocated(ddorbn)) allocate (ddorbn(MORB))
-        if (.not. allocated(detn)) allocate (detn(MDET))
+        if (.not. allocated(detn)) allocate (detn(ndet))
         if (.not. allocated(dorbn)) allocate (dorbn(3, MORB))
         if (.not. allocated(orbn)) allocate (orbn(MORB))
     end subroutine allocate_multislatern
@@ -650,7 +654,8 @@ module orbval
 contains
     subroutine allocate_orbval()
         use const, only: nelec
-        use vmc_mod, only: MORB
+        use coefs, only: norb
+        use precision_kinds, only: dp
         if (.not. allocated(ddorb)) allocate (ddorb(nelec, MORB))
         if (.not. allocated(dorb)) allocate (dorb(3, nelec, MORB))
         if (.not. allocated(orb)) allocate (orb(nelec, MORB))
@@ -802,7 +807,7 @@ end module scale_more
 module scratch
     !> Arguments: denergy_det, dtildem
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB, MDET
+    use vmc_mod, only: MORB
 
     implicit none
 
@@ -816,8 +821,9 @@ module scratch
 contains
     subroutine allocate_scratch()
         use const, only: nelec
-        use vmc_mod, only: MORB, MDET
-        if (.not. allocated(denergy_det)) allocate (denergy_det(MDET, 2))
+        use dets, only: ndet
+        use vmc_mod, only: MORB
+        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
         if (.not. allocated(dtildem)) allocate (dtildem(nelec, MORB, 2))
     end subroutine allocate_scratch
 
@@ -1129,6 +1135,7 @@ module zmatrix_grad
 contains
     subroutine allocate_zmatrix_grad()
         use vmc_mod, only: MCENT3
+
         if (.not. allocated(transform_grd)) allocate (transform_grd(MCENT3, MCENT3))
     end subroutine allocate_zmatrix_grad
 
