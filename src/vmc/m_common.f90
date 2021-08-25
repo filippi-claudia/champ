@@ -1122,7 +1122,6 @@ module zmatrix_grad
     !> never called
     !> Arguments: transform_grd
     use precision_kinds, only: dp
-    use vmc_mod, only: MCENT3
 
     implicit none
 
@@ -1134,9 +1133,9 @@ module zmatrix_grad
     save
 contains
     subroutine allocate_zmatrix_grad()
-        use vmc_mod, only: MCENT3
+        use vmc_mod, only: ncent3
 
-        if (.not. allocated(transform_grd)) allocate (transform_grd(MCENT3, MCENT3))
+        if (.not. allocated(transform_grd)) allocate (transform_grd(ncent3, ncent3))
     end subroutine allocate_zmatrix_grad
 
     subroutine deallocate_zmatrix_grad()

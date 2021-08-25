@@ -550,7 +550,7 @@ c   from energy differences  calculated using correlated smapling.
       end
 c -----------------------------------------------------------------------
       subroutine transform_grad_zmat(force_cart)
-      use vmc_mod, only: MCENT3
+      use vmc_mod, only: ncent3
       use atom, only: cent, ncent, ncent_tot
 
       use grdntsmv, only: igrdmv
@@ -561,14 +561,14 @@ c -----------------------------------------------------------------------
       implicit none
 
       integer :: ic, ii, jc, jj, k
-      integer :: l, lc, ncent3, ncent_ind
+      integer :: l, lc, ncent_ind
       real(dp) :: czint_sav
       real(dp), dimension(3,ncent_tot) :: czcartp
       real(dp), dimension(3,ncent_tot) :: czcartm
-      real(dp), dimension(MCENT3,MCENT3) :: bwilson
-      real(dp), dimension(MCENT3*MCENT3) :: gmat
+      real(dp), dimension(ncent3,ncent3) :: bwilson
+      real(dp), dimension(ncent3*ncent3) :: gmat
       real(dp), dimension(3,*) :: force_cart
-      real(dp), dimension(MCENT3) :: force_int
+      real(dp), dimension(ncent3) :: force_int
       real(dp), parameter :: eps = 1.d-5
       real(dp), parameter :: epsi = 0.5d0/eps
 

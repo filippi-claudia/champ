@@ -55,7 +55,7 @@ subroutine multideterminants_define(iflag, icheck)
     use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
     use vmc_mod, only: radmax, delri
     use vmc_mod, only: NEQSX, MTERMS
-    use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+    use vmc_mod, only: NCOEF, MEXCIT
     use const, only: nelec
     use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet
