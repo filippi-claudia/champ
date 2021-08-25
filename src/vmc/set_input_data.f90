@@ -51,7 +51,7 @@ end subroutine inputcsf
 subroutine multideterminants_define(iflag, icheck)
 
     use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-    use vmc_mod, only: MORB, MCENT, MCTYPE, MCTYP3X
+    use vmc_mod, only: MORB, MCTYP3X
     use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
     use vmc_mod, only: radmax, delri
     use vmc_mod, only: NEQSX, MTERMS
@@ -69,8 +69,8 @@ subroutine multideterminants_define(iflag, icheck)
     ! not sure about that one either ....
     use wfsec, only: nwftype
 
-      use precision_kinds, only: dp
-      implicit none
+    use precision_kinds, only: dp
+    implicit none
 
 
     interface
@@ -281,7 +281,6 @@ end subroutine multideterminants_define
 subroutine inputforces
 ! Set all force displacements to zero
 !    use force_mod, only: MWF
-!    use vmc_mod, only: MCENT
 !    use force_mod, only: MFORCE
     use forcepar, only: nforce
     use forcestr, only: delc
@@ -424,7 +423,6 @@ subroutine inputjastrow()
 end subroutine inputjastrow
 
 subroutine set_displace_zero(nforce_tmp)
-!    use vmc_mod, only: MCENT
     use pcm, only: MCHS
     use forcestr, only: delc
     use pcm_force, only: sch_s
@@ -455,16 +453,12 @@ end subroutine set_displace_zero
 
 subroutine modify_zmat_define
 
-    use vmc_mod, only: MCENT
     use grdntsmv, only: igrdmv
     use atom, only: ncent
-      implicit none
+    implicit none
 
-      integer :: ic, k
+    integer :: ic, k
 
-
-    !call p2gti('atoms:natom', ncent, 1)
-    ! if (ncent .gt. MCENT) call fatal_error('MODIFY_ZMATRIX: ncent > MCENT')
 
     if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
 
@@ -479,17 +473,12 @@ end subroutine modify_zmat_define
 
 subroutine hessian_zmat_define
 
-    use vmc_mod, only: MCENT
     use grdnthes, only: hessian_zmat
     use atom, only: ncent
 
-      implicit none
+    implicit none
 
-      integer :: ic, k
-
-
-    !call p2gti('atoms:natom', ncent, 1)
-    ! if (ncent .gt. MCENT) call fatal_error('HESSIAN_ZMATRIX: ncent > MCENT')
+    integer :: ic, k
 
     if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))
 

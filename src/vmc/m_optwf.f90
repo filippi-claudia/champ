@@ -1,9 +1,9 @@
 module optwf_contrl
     !> Arguments: ioptci, ioptjas, ioptorb, idl_flag, ilbfgs_flag, ilbfgs_m, nparm,
     !>            nopt_iter, micro_iter_sr, energy_tol,
-    !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j, 
+    !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j,
     !>            iapprox, ncore, iuse_orbeigv, no_active, multiple_adiag, iroot_geo,
-    !>            ilastvmc, sr_tau, sr_adig, sr_adiag, sr_eps 
+    !>            ilastvmc, sr_tau, sr_adig, sr_adiag, sr_eps
 
     use precision_kinds, only: dp
 
@@ -18,7 +18,7 @@ module optwf_contrl
     integer :: nopt_iter
     integer :: micro_iter_sr
     real(dp) :: energy_tol
-    real(dp) :: dparm_norm_min 
+    real(dp) :: dparm_norm_min
     integer :: nvec
     integer :: nvecx
     real(dp) :: alin_adiag
@@ -27,9 +27,9 @@ module optwf_contrl
     integer :: ibeta
     integer :: ratio_j
     integer :: iapprox
-    integer :: ncore 
-    integer :: iuse_orbeigv 
-    integer :: no_active 
+    integer :: ncore
+    integer :: iuse_orbeigv
+    integer :: no_active
     integer :: multiple_adiag
     integer  :: iroot_geo
     integer :: ilastvmc
@@ -113,7 +113,7 @@ end module optwf_func
 
 module optwf_nparmj
     !> Arguments: nparma, nparmb, nparmc, nparmf
-    use vmc_mod, only: MCTYPE, MCTYP3X
+    use vmc_mod, only: MCTYP3X
 
     integer, dimension(:), allocatable :: nparma !(MCTYP3X)
     integer, dimension(:), allocatable :: nparmb !(3)
@@ -126,11 +126,13 @@ module optwf_nparmj
     save
 contains
     subroutine allocate_optwf_nparmj()
-        use vmc_mod, only: MCTYPE, MCTYP3X
+        use vmc_mod, only: MCTYP3X
+        use atom, only: nctype_tot
+
         if (.not. allocated(nparma)) allocate (nparma(MCTYP3X))
         if (.not. allocated(nparmb)) allocate (nparmb(3))
-        if (.not. allocated(nparmc)) allocate (nparmc(MCTYPE))
-        if (.not. allocated(nparmf)) allocate (nparmf(MCTYPE))
+        if (.not. allocated(nparmc)) allocate (nparmc(nctype_tot))
+        if (.not. allocated(nparmf)) allocate (nparmf(nctype_tot))
     end subroutine allocate_optwf_nparmj
 
     subroutine deallocate_optwf_nparmj()
@@ -159,7 +161,7 @@ end module optwf_parms
 
 module optwf_wjas
     !> Arguments: iwjasa, iwjasb, iwjasc, iwjasf
-    use vmc_mod, only: MCTYPE, MCTYP3X
+    use vmc_mod, only: MCTYP3X
 
     integer, dimension(:, :), allocatable :: iwjasa !(83,MCTYP3X)
     integer, dimension(:, :), allocatable :: iwjasb !(83,3)
@@ -173,7 +175,7 @@ module optwf_wjas
 contains
     subroutine allocate_optwf_wjas()
         use atom, only: nctype_tot
-        use vmc_mod, only: MCTYPE, MCTYP3X
+        use vmc_mod, only: MCTYP3X
         if (.not. allocated(iwjasa)) allocate (iwjasa(83, MCTYP3X))
         if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3))
         if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype_tot))

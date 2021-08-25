@@ -91,7 +91,7 @@ c     call gesqua (nquad,xq,yq,zq,wq)
 c-----------------------------------------------------------------------
       subroutine getvps(rad,iel)
 c Written by Claudia Filippi
-      use vmc_mod, only: MCENT
+
       use atom, only: znuc, iwctype, ncent, ncent_tot
       use const, only: nelec
       use pseudo_fahy, only: drad, dradl, npotl, potl, ptnlc, rcmax

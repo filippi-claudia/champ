@@ -2,12 +2,12 @@ module vmc_mod
     !> Arguments:
     use precision_kinds, only: dp
 
-    ! MELEC  >= number of electrons
+    ! nelec  >= number of electrons
     ! MORB   >= number of orbitals
-    ! MBASIS >= number of basis functions
-    ! MDET   >= number of determinants
-    ! MCENT  >= number of centers
-    ! MCTYPE >= number of center types
+    ! nbasis >= number of basis functions
+    ! ndet   >= number of determinants
+    ! ncent_tot  >= number of centers
+    ! nctype >= number of center types
     ! MCTYP3X=max(3,MCTYPE)
 
     ! Slater matrices are dimensioned (MELEC/2)**2 assuming
@@ -28,7 +28,6 @@ module vmc_mod
     integer, parameter :: nrad = 3001
     real(dp), parameter :: delri = (nrad - 1)/radmax
 
-    integer :: MCENT, MCTYPE
     integer :: MORB
     integer :: MCTYP3X
     integer, parameter :: NSPLIN = 1001, MORDJ = 7
@@ -43,7 +42,7 @@ module vmc_mod
     integer, parameter :: MEXCIT = 10
 
     private
-    public :: MORB, MCENT, MCTYPE, MCTYP3X
+    public :: MORB, MCTYP3X
     public :: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
     public :: radmax, delri
 

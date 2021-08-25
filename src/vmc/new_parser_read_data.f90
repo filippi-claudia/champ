@@ -1619,7 +1619,6 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     use contrl_file,    only: ounit, errunit
     use numbas_mod, only: MRWF
-    use vmc_mod, only: MCTYPE
     use numbas, only: iwrwf, numr
     use numbas1, only: iwlbas, nbastyp
     use basis, only: n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
@@ -2081,7 +2080,6 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     use mpiconf,            only: wid
 
     use contrl_file,        only: ounit, errunit
-    use vmc_mod,            only: MCENT
     use forcepar,           only: nforce
     use force_mod,          only: MFORCE
     use forcestr,           only: delc
@@ -2180,9 +2178,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     ! Originally written by Omar Valsson.
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
-
     use contrl_file,    only: ounit, errunit
-    use vmc_mod, only: MCENT
     use forcepar, only: nforce
     use force_mod, only: MFORCE
     use forcestr, only: delc

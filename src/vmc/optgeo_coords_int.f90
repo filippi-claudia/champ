@@ -130,7 +130,7 @@ module coords_int
 
 
   !>
-  !! Computes Wilson's B matrix with the dimensions (3*MCENT)x(nint) i.e.
+  !! Computes Wilson's B matrix with the dimensions (3*ncent)x(nint) i.e.
   !! number of cartesian coordinates times number of internal coordinates.
   !!
   !! @param cart_coords current cartesian coordinates
@@ -312,7 +312,7 @@ module coords_int
   !! Transforms the given cartesian gradients with the current
   !! B matrix.
   !!
-  !! @param cart_gradient2d gradients of the cartesian coordinates (3,MCENT)
+  !! @param cart_gradient2d gradients of the cartesian coordinates (3,ncent)
   !!
   subroutine coords_transform_gradients (cart_gradients2d)
     use contrl_file,    only: ounit
@@ -429,9 +429,9 @@ module coords_int
   !! Transforms the step from internal to cartesian coordinates
   !! and computes the new geometry.
   !!
-  !! @param int_coords2d internal coordinates in z-Matrix representation (3xMCENT)
-  !! @param cart_coords2d cartesian coordinates (3xMCENT)
-  !! @param connectivities z Matrix connectivity matrix (3xMCENT)
+  !! @param int_coords2d internal coordinates in z-Matrix representation (3xncent)
+  !! @param cart_coords2d cartesian coordinates (3xncent)
+  !! @param connectivities z Matrix connectivity matrix (3xncent)
   !!
   !!
   subroutine coords_transform_step (int_coords2d, cart_coords2d, connectivities)

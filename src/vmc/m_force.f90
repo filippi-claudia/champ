@@ -105,12 +105,6 @@ end module forcepar
      public :: deallocate_forcestr
      save
  contains
-    !  subroutine allocate_forcestr()
-    !      use force_mod, only: MFORCE
-    !      use precision_kinds, only: dp
-    !      use vmc_mod, only: MCENT
-    !      if (.not. allocated(delc)) allocate (delc(3, MCENT, MFORCE))
-    !  end subroutine allocate_forcestr
 
      subroutine deallocate_forcestr()
          if (allocated(delc)) deallocate (delc)

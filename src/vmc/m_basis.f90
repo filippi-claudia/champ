@@ -249,7 +249,7 @@ contains
         use coefs, only: nbasis
         use atom, only: nctype_tot
         if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot))
-        ! if (.not. allocated(nbastyp)) allocate (nbastyp(MCTYPE))
+        ! if (.not. allocated(nbastyp)) allocate (nbastyp(nctype_tot))
     end subroutine allocate_numbas1
 
     subroutine deallocate_numbas1()

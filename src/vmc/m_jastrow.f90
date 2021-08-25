@@ -166,7 +166,7 @@ contains
         use vmc_mod, only: MORDJ1
         if (.not. allocated(a)) allocate (a(MORDJ1, nwftype))
         ! if (.not. allocated(b)) allocate (b(MORDJ1, 2, MWF))
-        ! if (.not. allocated(c)) allocate (c(83, MCTYPE, MWF))
+        ! if (.not. allocated(c)) allocate (c(83, nctype_tot, MWF))
         if (.not. allocated(fck)) allocate (fck(15, nctype_tot, nwftype))
         ! if (.not. allocated(scalek)) allocate (scalek(MWF))
     end subroutine allocate_jaspar3
@@ -187,7 +187,7 @@ module jaspar4
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: a4 !(MORDJ1,MCTYPE,MWF)
+    real(dp), dimension(:, :, :), allocatable :: a4 !(MORDJ1,nctype_tot,MWF)
     integer :: norda
     integer :: nordb
     integer :: nordc
@@ -201,9 +201,8 @@ contains
     ! subroutine allocate_jaspar4()
     !     use force_mod, only: MWF
     !     use precision_kinds, only: dp
-    !     use vmc_mod, only: MCTYPE
     !     use vmc_mod, only: MORDJ1
-    !     if (.not. allocated(a4)) allocate (a4(MORDJ1, MCTYPE, MWF))
+    !     if (.not. allocated(a4)) allocate (a4(MORDJ1, nctype_tot, MWF))
     ! end subroutine allocate_jaspar4
 
     subroutine deallocate_jaspar4()
