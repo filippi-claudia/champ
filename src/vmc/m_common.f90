@@ -2,11 +2,11 @@ module b_tmove
     !> Arguments: b_t, iskip
     use pseudo_mod, only: MPS_QUAD
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
 
     implicit none
 
-    real(dp), dimension(:, :, :, :), allocatable :: b_t !(MORB,MPS_QUAD,MCENT,MELEC)
+    real(dp), dimension(:, :, :, :), allocatable :: b_t !(norb_tot,MPS_QUAD,MCENT,MELEC)
     integer, dimension(:, :), allocatable :: iskip !(MELEC,MCENT)
 
     private
@@ -18,8 +18,8 @@ contains
         use const, only: nelec
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
-        use vmc_mod, only: MORB
-        if (.not. allocated(b_t)) allocate (b_t(MORB, MPS_QUAD, ncent_tot, nelec))
+        use vmc_mod, only: norb_tot
+        if (.not. allocated(b_t)) allocate (b_t(norb_tot, MPS_QUAD, ncent_tot, nelec))
         if (.not. allocated(iskip)) allocate (iskip(nelec, ncent_tot))
     end subroutine allocate_b_tmove
 
@@ -33,21 +33,21 @@ end module b_tmove
 module Bloc
     !> Arguments: b, tildem, xmat
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
     use optjas, only: MPARMJ
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: b !(MORB,MELEC)
-    real(dp), dimension(:, :, :), allocatable :: tildem !(MELEC,MORB,2)
+    real(dp), dimension(:, :), allocatable :: b !(norb_tot,MELEC)
+    real(dp), dimension(:, :, :), allocatable :: tildem !(MELEC,norb_tot,2)
     real(dp), dimension(:, :), allocatable :: xmat !(MELEC**2,2)
 
     !> Former Bloc_da
-    real(dp), dimension(:, :, :, :), allocatable :: b_da !(3,MELEC,MORB,MCENT)
-    real(dp), dimension(:, :, :, :), allocatable :: db !(3,MELEC,MORB,MCENT)
+    real(dp), dimension(:, :, :, :), allocatable :: b_da !(3,MELEC,norb_tot,MCENT)
+    real(dp), dimension(:, :, :, :), allocatable :: db !(3,MELEC,norb_tot,MCENT)
 
     !> former Bloc_dj
-    real(dp), dimension(:, :, :), allocatable :: b_dj !(MORB,MELEC,MPARMJ)
+    real(dp), dimension(:, :, :), allocatable :: b_dj !(norb_tot,MELEC,MPARMJ)
 
     private
     public :: b, tildem, xmat
@@ -60,14 +60,14 @@ contains
         use const, only: nelec
         use coefs, only: norb
         use atom, only: ncent_tot
-        use vmc_mod, only: MORB
+        use vmc_mod, only: norb_tot
         use optjas, only: MPARMJ
-        if (.not. allocated(b)) allocate (b(MORB, nelec))
-        if (.not. allocated(tildem)) allocate (tildem(nelec, MORB, 2))
+        if (.not. allocated(b)) allocate (b(norb_tot, nelec))
+        if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
-        if (.not. allocated(b_da)) allocate (b_da(3, nelec, MORB, ncent_tot))
-        if (.not. allocated(db)) allocate (db(3, nelec, MORB, ncent_tot))
-        if (.not. allocated(b_dj)) allocate (b_dj(MORB, nelec, MPARMJ))
+        if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb_tot, ncent_tot))
+        if (.not. allocated(db)) allocate (db(3, nelec, norb_tot, ncent_tot))
+        if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, MPARMJ))
     end subroutine allocate_Bloc
 
     subroutine deallocate_Bloc()
@@ -480,7 +480,7 @@ module multimat
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: aa !(MELEC,MORB,2)
+    real(dp), dimension(:, :, :), allocatable :: aa !(MELEC,norb_tot,2)
     real(dp), dimension(:, :, :), allocatable :: wfmat !(MEXCIT**2,MDET,2)
 
     private
@@ -492,9 +492,9 @@ contains
         use const, only: nelec
         use dets, only: ndet
         use coefs, only: norb
-        use vmc_mod, only: MORB
+        use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aa)) allocate (aa(nelec, MORB, 2))
+        if (.not. allocated(aa)) allocate (aa(nelec, norb_tot, 2))
         if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, ndet, 2))
     end subroutine allocate_multimat
 
@@ -511,7 +511,7 @@ module multimatn
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: aan !(MELEC,MORB)
+    real(dp), dimension(:, :), allocatable :: aan !(MELEC,norb_tot)
     real(dp), dimension(:, :), allocatable :: wfmatn !(MEXCIT**2,MDET)
 
     private
@@ -522,9 +522,9 @@ contains
     subroutine allocate_multimatn()
         use const, only: nelec
         use dets, only: ndet
-        use vmc_mod, only: MORB
+        use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aan)) allocate (aan(nelec, MORB))
+        if (.not. allocated(aan)) allocate (aan(nelec, norb_tot))
         if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, ndet))
     end subroutine allocate_multimatn
 
@@ -570,14 +570,14 @@ end module multislater
 module multislatern
     !> Arguments: ddorbn, detn, dorbn, orbn
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: ddorbn !(MORB)
+    real(dp), dimension(:), allocatable :: ddorbn !(norb_tot)
     real(dp), dimension(:), allocatable :: detn !(MDET)
-    real(dp), dimension(:, :), allocatable :: dorbn !(3,MORB)
-    real(dp), dimension(:), allocatable :: orbn !(MORB)
+    real(dp), dimension(:, :), allocatable :: dorbn !(3,norb_tot)
+    real(dp), dimension(:), allocatable :: orbn !(norb_tot)
     private
 
     public ::  ddorbn, detn, dorbn, orbn
@@ -587,11 +587,11 @@ contains
     subroutine allocate_multislatern()
         use dets, only: ndet
         use coefs, only: norb
-        use vmc_mod, only: MORB
-        if (.not. allocated(ddorbn)) allocate (ddorbn(MORB))
+        use vmc_mod, only: norb_tot
+        if (.not. allocated(ddorbn)) allocate (ddorbn(norb_tot))
         if (.not. allocated(detn)) allocate (detn(ndet))
-        if (.not. allocated(dorbn)) allocate (dorbn(3, MORB))
-        if (.not. allocated(orbn)) allocate (orbn(MORB))
+        if (.not. allocated(dorbn)) allocate (dorbn(3, norb_tot))
+        if (.not. allocated(orbn)) allocate (orbn(norb_tot))
     end subroutine allocate_multislatern
 
     subroutine deallocate_multislatern()
@@ -637,15 +637,15 @@ end module ncusp
 module orbval
     !> Arguments: ddorb, dorb, nadorb, ndetorb, orb
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: ddorb !(MELEC,MORB)
-    real(dp), dimension(:, :, :), allocatable :: dorb !(3,MELEC,MORB)
+    real(dp), dimension(:, :), allocatable :: ddorb !(MELEC,norb_tot)
+    real(dp), dimension(:, :, :), allocatable :: dorb !(3,MELEC,norb_tot)
     integer :: nadorb
     integer :: ndetorb
-    real(dp), dimension(:, :), allocatable :: orb !(MELEC,MORB)
+    real(dp), dimension(:, :), allocatable :: orb !(MELEC,norb_tot)
 
     private
     public :: ddorb, dorb, nadorb, ndetorb, orb
@@ -656,9 +656,9 @@ contains
         use const, only: nelec
         use coefs, only: norb
         use precision_kinds, only: dp
-        if (.not. allocated(ddorb)) allocate (ddorb(nelec, MORB))
-        if (.not. allocated(dorb)) allocate (dorb(3, nelec, MORB))
-        if (.not. allocated(orb)) allocate (orb(nelec, MORB))
+        if (.not. allocated(ddorb)) allocate (ddorb(nelec, norb_tot))
+        if (.not. allocated(dorb)) allocate (dorb(3, nelec, norb_tot))
+        if (.not. allocated(orb)) allocate (orb(nelec, norb_tot))
     end subroutine allocate_orbval
 
     subroutine deallocate_orbval()
@@ -807,12 +807,12 @@ end module scale_more
 module scratch
     !> Arguments: denergy_det, dtildem
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
 
     implicit none
 
     real(dp), dimension(:, :), allocatable :: denergy_det !(MDET,2)
-    real(dp), dimension(:, :, :), allocatable :: dtildem !(MELEC,MORB,2)
+    real(dp), dimension(:, :, :), allocatable :: dtildem !(MELEC,norb_tot,2)
 
     private
     public :: denergy_det, dtildem
@@ -822,9 +822,9 @@ contains
     subroutine allocate_scratch()
         use const, only: nelec
         use dets, only: ndet
-        use vmc_mod, only: MORB
+        use vmc_mod, only: norb_tot
         if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
-        if (.not. allocated(dtildem)) allocate (dtildem(nelec, MORB, 2))
+        if (.not. allocated(dtildem)) allocate (dtildem(nelec, norb_tot, 2))
     end subroutine allocate_scratch
 
     subroutine deallocate_scratch()
@@ -991,13 +991,13 @@ end module velocity_jastrow
 module ycompact
     !> Arguments: dymat, ymat
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
     use mstates_mod, only: MSTATES
 
     implicit none
 
-    real(dp), dimension(:, :, :, :), allocatable :: dymat !(MORB,MELEC,2,MSTATES)
-    real(dp), dimension(:, :, :, :), allocatable :: ymat !(MORB,MELEC,2,MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: dymat !(norb_tot,MELEC,2,MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: ymat !(norb_tot,MELEC,2,MSTATES)
 
     private
     public :: dymat, ymat
@@ -1006,10 +1006,10 @@ module ycompact
 contains
     subroutine allocate_ycompact()
         use const, only: nelec
-        use vmc_mod, only: MORB
+        use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
-        if (.not. allocated(dymat)) allocate (dymat(MORB, nelec, 2, MSTATES))
-        if (.not. allocated(ymat)) allocate (ymat(MORB, nelec, 2, MSTATES))
+        if (.not. allocated(dymat)) allocate (dymat(norb_tot, nelec, 2, MSTATES))
+        if (.not. allocated(ymat)) allocate (ymat(norb_tot, nelec, 2, MSTATES))
     end subroutine allocate_ycompact
 
     subroutine deallocate_ycompact()
@@ -1022,12 +1022,12 @@ end module ycompact
 module ycompactn
     !> Arguments: ymatn
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
     use mstates_mod, only: MSTATES
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: ymatn !(MORB,MELEC,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: ymatn !(norb_tot,MELEC,MSTATES)
 
     private
     public :: ymatn
@@ -1036,9 +1036,9 @@ module ycompactn
 contains
     subroutine allocate_ycompactn()
         use const, only: nelec
-        use vmc_mod, only: MORB
+        use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
-        if (.not. allocated(ymatn)) allocate (ymatn(MORB, nelec, MSTATES))
+        if (.not. allocated(ymatn)) allocate (ymatn(norb_tot, nelec, MSTATES))
     end subroutine allocate_ycompactn
 
     subroutine deallocate_ycompactn()
@@ -1050,15 +1050,15 @@ end module ycompactn
 module zcompact
     !> Arguments: aaz, dzmat, emz, zmat
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
     use mstates_mod, only: MSTATES
 
     implicit none
 
     real(dp), dimension(:, :, :, :), allocatable :: aaz !(MELEC,MELEC,2,MSTATES)
-    real(dp), dimension(:, :, :, :), allocatable :: dzmat !(MORB,MELEC,2,MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: dzmat !(norb_tot,MELEC,2,MSTATES)
     real(dp), dimension(:, :, :, :), allocatable :: emz !(MELEC,MELEC,2,MSTATES)
-    real(dp), dimension(:, :, :, :), allocatable :: zmat !(MORB,MELEC,2,MSTATES)
+    real(dp), dimension(:, :, :, :), allocatable :: zmat !(norb_tot,MELEC,2,MSTATES)
 
     private
     public :: aaz, dzmat, emz, zmat
@@ -1067,12 +1067,12 @@ module zcompact
 contains
     subroutine allocate_zcompact()
         use const, only: nelec
-        use vmc_mod, only: MORB
+        use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
         if (.not. allocated(aaz)) allocate (aaz(nelec, nelec, 2, MSTATES))
-        if (.not. allocated(dzmat)) allocate (dzmat(MORB, nelec, 2, MSTATES))
+        if (.not. allocated(dzmat)) allocate (dzmat(norb_tot, nelec, 2, MSTATES))
         if (.not. allocated(emz)) allocate (emz(nelec, nelec, 2, MSTATES))
-        if (.not. allocated(zmat)) allocate (zmat(MORB, nelec, 2, MSTATES))
+        if (.not. allocated(zmat)) allocate (zmat(norb_tot, nelec, 2, MSTATES))
     end subroutine allocate_zcompact
 
     subroutine deallocate_zcompact()

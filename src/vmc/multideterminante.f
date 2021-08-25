@@ -1,6 +1,6 @@
       subroutine multideterminante(iel)
 
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use vmc_mod, only: MEXCIT
       use csfs, only: nstates
       use dets, only: ndet
@@ -23,11 +23,11 @@
       integer :: jorb, jrep, k, ndim
       integer :: nel
       real(dp) :: det, dum1
-      real(dp), dimension(nelec, MORB, 3) :: gmat
+      real(dp), dimension(nelec, norb_tot, 3) :: gmat
       real(dp), dimension(MEXCIT**2, 3) :: gmatn
-      real(dp), dimension(MORB, 3) :: b
+      real(dp), dimension(norb_tot, 3) :: b
       real(dp), dimension(3) :: ddx_mdet
-      real(dp), dimension(MORB) :: orb_sav
+      real(dp), dimension(norb_tot) :: orb_sav
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
 
@@ -124,7 +124,7 @@ c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use vmc_mod, only: nmat_dim
       use vmc_mod, only: MEXCIT
       use dets, only: ndet
@@ -140,12 +140,12 @@ c-----------------------------------------------------------------------
       integer :: j, jel, jrep, k
       integer :: kk, nel
       real(dp) :: detratio, dum
-      real(dp), dimension(nelec, MORB) :: aa
+      real(dp), dimension(nelec, norb_tot) :: aa
       real(dp), dimension(MEXCIT**2, ndet) :: wfmat
-      real(dp), dimension(MORB, nelec) :: ymat
-      real(dp), dimension(MORB, 3) :: b
-      real(dp), dimension(3, MORB) :: dorb
-      real(dp), dimension(nelec, MORB, 3) :: gmat
+      real(dp), dimension(norb_tot, nelec) :: ymat
+      real(dp), dimension(norb_tot, 3) :: b
+      real(dp), dimension(3, norb_tot) :: dorb
+      real(dp), dimension(nelec, norb_tot, 3) :: gmat
       real(dp), dimension(3) :: velocity
       real(dp), dimension(nmat_dim) :: slmi
       real(dp), parameter :: one = 1.d0

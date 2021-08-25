@@ -176,9 +176,9 @@ c assuming that basis function values in phin are up to date
 
 c primary geometry only:
       iwf=1
-c      if(norb+nadorb.gt.MORB) then
+c      if(norb+nadorb.gt.norb_tot) then
 c        write(ounit,'(''VIRTUAL_ORB: Too many orbitals, norb + nadorb='',
-c     &  i4,'' > MORB='',i4)') norb+nadorb,MORB
+c     &  i4,'' > norb_tot='',i4)') norb+nadorb,norb_tot
 c        call fatal_error('Aborted')
 c      endif
 

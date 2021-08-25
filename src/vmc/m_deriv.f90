@@ -68,13 +68,13 @@ end module da_jastrow4val
 module da_orbval
     !> Arguments: da_d2orb, da_dorb, da_orb
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
 
     implicit none
 
-    real(dp), dimension(:, :, :, :), allocatable :: da_d2orb !(3, MELEC, MORB, MCENT)
-    real(dp), dimension(:, :, :, :, :), allocatable :: da_dorb !(3, 3, MELEC, MORB, MCENT)
-    real(dp), dimension(:, :, :, :), allocatable :: da_orb !(3, MELEC, MORB, MCENT)
+    real(dp), dimension(:, :, :, :), allocatable :: da_d2orb !(3, MELEC, norb_tot, MCENT)
+    real(dp), dimension(:, :, :, :, :), allocatable :: da_dorb !(3, 3, MELEC, norb_tot, MCENT)
+    real(dp), dimension(:, :, :, :), allocatable :: da_orb !(3, MELEC, norb_tot, MCENT)
 
     private
     public   ::  da_d2orb, da_dorb, da_orb
@@ -84,10 +84,10 @@ contains
     subroutine allocate_da_orbval()
         use const, only: nelec
         use atom, only: ncent_tot
-        use vmc_mod, only: MORB
-        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, MORB, ncent_tot))
-        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, MORB, ncent_tot))
-        if (.not. allocated(da_orb)) allocate (da_orb(3, nelec, MORB, ncent_tot))
+        use vmc_mod, only: norb_tot
+        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, norb_tot, ncent_tot))
+        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, norb_tot, ncent_tot))
+        if (.not. allocated(da_orb)) allocate (da_orb(3, nelec, norb_tot, ncent_tot))
     end subroutine allocate_da_orbval
 
     subroutine deallocate_da_orbval()

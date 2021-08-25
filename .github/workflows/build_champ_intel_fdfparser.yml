@@ -2,9 +2,9 @@ name: Intel OneAPI Build and Testing
 
 on:
   push:
-    branches: [new-parser, merging-parser, refac-problematic]
+    branches: [remove-norb, merging-parser, refac-problematic]
   pull_request:
-    branches: [new-parser, merging-parser, refac-problematic]
+    branches: [remove-norb, merging-parser, refac-problematic]
 
 jobs:
   build_champ:

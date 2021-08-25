@@ -1,6 +1,6 @@
       subroutine startr
 
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use vmc_mod, only: nrad
       use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
       use basis, only: n4s, n4p
@@ -82,7 +82,7 @@
       real(dp) :: fratio_id, hbx, taux, wdsumo_id
       real(dp) :: wq_id, wt_id, xold_dmc_id, xq_id
       real(dp) :: yq_id, zq_id
-      real(dp), dimension(nbasis, MORB) :: coefx
+      real(dp), dimension(nbasis, norb_tot) :: coefx
       real(dp), dimension(nbasis) :: zexx
       real(dp), dimension(3, ncent_tot) :: centx
       real(dp), dimension(ncent_tot) :: znucx
