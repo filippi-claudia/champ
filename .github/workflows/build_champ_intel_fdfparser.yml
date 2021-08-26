@@ -11,6 +11,7 @@ jobs:
     name: Build CHAMP with Intel OneAPI
     runs-on: ubuntu-20.04
     timeout-minutes: 60
+    continue-on-error: true  # delete after testing
     defaults:
       run:
         shell: bash --noprofile --norc {0}
