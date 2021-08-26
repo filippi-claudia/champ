@@ -57,8 +57,8 @@ jobs:
         echo "Running the calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only
 
-        echo "Comparing the energy with the reference one (total E = -26.2099365) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_only.out "total E" -26.2099365 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.2099365 +- 0.0259833) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_only.out "total E" -26.2099365 0.0259833
     - name: "Upload results of test 01"
       uses: actions/upload-artifact@v2
       with:
@@ -77,8 +77,8 @@ jobs:
         echo "Running the calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_only.inp  -o vmc_only.out  -e error_vmc_only
 
-        echo "Comparing the energy with the reference one (total E = -26.2023287) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_only.out "total E" -26.2023287 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.2023287 +- 0.0194779) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_only.out "total E" -26.2023287 0.0194779
     - name: "Upload results of test 02"
       uses: actions/upload-artifact@v2
       with:
@@ -97,8 +97,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
-        echo "Comparing the energy with the reference one (total E = -26.1992624) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.1992624 --no_assert
+        echo "Comparing the energy with the reference one (total E = -22.1287210 +-  0.1000164) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -22.1287210  0.1000164
     - name: "Upload results of test 03"
       uses: actions/upload-artifact@v2
       with:
@@ -118,8 +118,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
-        echo "Comparing the energy with the reference one (total E = -26.1636431) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.1636431 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.1867967 +-  0.0163631) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.1867967  0.0163631
     - name: "Upload results of test 04"
       uses: actions/upload-artifact@v2
       with:
@@ -139,8 +139,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
-        echo "Comparing the energy with the reference one (total E = -25.6158039) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.6158039 --no_assert
+        echo "Comparing the energy with the reference one (total E = -25.5056924 +-  0.0591129) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.5056924  0.0591129
     - name: "Upload results of test 05"
       uses: actions/upload-artifact@v2
       with:
@@ -159,8 +159,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
-        echo "Comparing the energy with the reference one (total E = -25.2472141) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.2472141 --no_assert
+        echo "Comparing the energy with the reference one (total E = -25.8300233 +-  0.0252670) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.8300233  0.0252670
     - name: "Upload results of test 06"
       uses: actions/upload-artifact@v2
       with:
@@ -176,8 +176,8 @@ jobs:
         echo "Running the dmc.mov1 on one processor"
         mpirun -np 1  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_single_core.out  -e dmc_single_core.error
 
-        echo "Comparing the energy with the reference one (total energy (  100) = -26.3320038) "
-        $HOME/work/champ/champ/tools/compare_value.py dmc_single_core.out "total energy (  100)" -26.3320038 --no_assert
+        echo "Comparing the energy with the reference one (total energy (  100) = -26.3320038 +-  0.0393365) "
+        $HOME/work/champ/champ/tools/compare_value.py dmc_single_core.out "total energy (  100)" -26.3320038  0.0393365
     - name: "Upload results of test 07"
       uses: actions/upload-artifact@v2
       with:
@@ -194,8 +194,8 @@ jobs:
         echo "Running the dmc.mov1 on two processors"
         mpirun -np 2  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_double_core.out  -e dmc_double_core.error
 
-        echo "Comparing the energy with the reference one (total energy (  100) = -26.3187227) "
-        $HOME/work/champ/champ/tools/compare_value.py dmc_double_core.out "total energy (  100)" -26.3187227 --no_assert
+        echo "Comparing the energy with the reference one (total energy (  100) = -26.3187227 +-  0.0257183) "
+        $HOME/work/champ/champ/tools/compare_value.py dmc_double_core.out "total energy (  100)" -26.3187227  0.0257183
     - name: "Upload results of test 08"
       uses: actions/upload-artifact@v2
       with:
@@ -211,8 +211,8 @@ jobs:
         echo "Running the dmc.mov1 on one processor"
         mpirun -np 1  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_single.out  -e dmc_single_core.error
 
-        echo "Comparing the energy with the reference one (total energy (  100) = -26.2963582) "
-        $HOME/work/champ/champ/tools/compare_value.py dmc_workload_single.out "total energy (  100)" -26.2963582 --no_assert
+        echo "Comparing the energy with the reference one (total energy (  100) = -26.2963582 +-  0.0147048) "
+        $HOME/work/champ/champ/tools/compare_value.py dmc_workload_single.out "total energy (  100)" -26.2963582  0.0147048
     - name: "Upload results of test 09"
       uses: actions/upload-artifact@v2
       with:
@@ -228,8 +228,8 @@ jobs:
         echo "Running the dmc.mov1 on two processors"
         mpirun -np 2  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_double.out  -e dmc_double_core.error
 
-        echo "Comparing the energy with the reference one (total energy (  100) = -26.2894638) "
-        $HOME/work/champ/champ/tools/compare_value.py dmc_workload_double.out "total energy (  100)" -26.2894638 --no_assert
+        echo "Comparing the energy with the reference one (total energy (  100) = -26.2894638 +-  0.0108990) "
+        $HOME/work/champ/champ/tools/compare_value.py dmc_workload_double.out "total energy (  100)" -26.2894638  0.0108990
     - name: "Upload results of test 10"
       uses: actions/upload-artifact@v2
       with:
@@ -245,8 +245,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500.out  -e error_vmc_optimization_500
 
-        echo "Comparing the energy with the reference one (total E = -26.2048171) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.2048171 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.2085475 +-  0.0280294) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.2085475  0.0280294
     - name: "Upload results of test 11"
       uses: actions/upload-artifact@v2
       with:
@@ -263,8 +263,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500.out  -e error_vmc_optimization_500
 
-        echo "Comparing the energy with the reference one (total E = -26.2032228) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.2032228 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.2372892 +-  0.0180068 ) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.2372892  0.0180068
     - name: "Upload results of test 12"
       uses: actions/upload-artifact@v2
       with:
@@ -280,8 +280,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000.out  -e error_vmc_optimization_5000
 
-        echo "Comparing the energy with the reference one (total E = -26.1991674) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.1991674 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.1991674 +-  0.0234593) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.1991674  0.0234593
     - name: "Upload results of test 13"
       uses: actions/upload-artifact@v2
       with:
@@ -298,8 +298,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000.out  -e error_vmc_optimization_5000
 
-        echo "Comparing the energy with the reference one (total E = -26.2166306) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.2166306 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.2249396 +-  0.0142057) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.2249396  0.0142057
     - name: "Upload results of test 14"
       uses: actions/upload-artifact@v2
       with:
@@ -316,8 +316,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
 
-        echo "Comparing the energy with the reference one (total E = -26.2406578) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2406578 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.2406578 +-  0.0252445) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2406578 0.0252445
     - name: "Upload results of test 15"
       uses: actions/upload-artifact@v2
       with:
@@ -334,8 +334,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
 
-        echo "Comparing the energy with the reference one (total E = -26.2371252) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2371252 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.2342989 +-  0.0238496) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2342989  0.0238496
     - name: "Upload results of test 16"
       uses: actions/upload-artifact@v2
       with:
@@ -351,8 +351,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
 
-        echo "Comparing the energy with the reference one (total E = -26.2212718) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2212718 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.2212718 +-  0.0238787) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2212718  0.0238787
     - name: "Upload results of test 17"
       uses: actions/upload-artifact@v2
       with:
@@ -369,8 +369,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
 
-        echo "Comparing the energy with the reference one (total E = -26.2166595) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2166595 --no_assert
+        echo "Comparing the energy with the reference one (total E = -26.2525398 +-  0.0167864) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2525398  0.0167864
     - name: "Upload results of test 18"
       uses: actions/upload-artifact@v2
       with:
@@ -387,8 +387,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -1.0084981) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_single.out "total E" -1.0084981 --no_assert
+        echo "Comparing the energy with the reference one (total E = -1.0084981 +-  0.0070186) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_single.out "total E" -1.0084981  0.0070186
     - name: "Upload results of test 19"
       uses: actions/upload-artifact@v2
       with:
@@ -404,8 +404,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -1.0093392) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_double.out "total E" -1.0093392 --no_assert
+        echo "Comparing the energy with the reference one (total E = -1.0093392 +-  0.0050540) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_double.out "total E" -1.0093392  0.0050540
     - name: "Upload results of test 20"
       uses: actions/upload-artifact@v2
       with:
@@ -421,8 +421,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -1.0549647) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0549647 --no_assert
+        echo "Comparing the energy with the reference one (total E = -1.0588765 +-  0.0025689) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0588765 0.0025689
     - name: "Upload results of test 21"
       uses: actions/upload-artifact@v2
       with:
@@ -438,8 +438,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -1.0569553) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0569553 --no_assert
+        echo "Comparing the energy with the reference one (total E = -1.0598914 +-  0.0021138) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0598914  0.0021138
     - name: "Upload results of test 22"
       uses: actions/upload-artifact@v2
       with:
@@ -455,8 +455,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -1.0652911) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0652911 --no_assert
+        echo "Comparing the energy with the reference one (total E = -1.0553381 +-  0.0032097) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0553381  0.0032097
     - name: "Upload results of test 23"
       uses: actions/upload-artifact@v2
       with:
@@ -472,8 +472,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -1.0598502) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0598502 --no_assert
+        echo "Comparing the energy with the reference one (total E = -1.0576623 +-  0.0020286) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0576623  0.0020286
     - name: "Upload results of test 24"
       uses: actions/upload-artifact@v2
       with:
@@ -489,8 +489,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E of second state = -42.6475506 ) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_sr_n_single.out "total E" -42.6475506 --no_assert
+        echo "Comparing the energy with the reference one (total E of second state = -42.5842806 +-  0.0430782 ) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_sr_n_single.out "total E" -42.5842806  0.0430782
 
     - name: "Upload results of test 25"
       uses: actions/upload-artifact@v2
@@ -507,8 +507,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E of second state = -42.6384139) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_sr_n_double.out "total E" -42.6384139 --no_assert
+        echo "Comparing the energy with the reference one (total E of second state = -42.6446440 +-  0.0286540) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_sr_n_double.out "total E" -42.6446440 0.0286540
 
     - name: "Upload results of test 26"
       uses: actions/upload-artifact@v2
@@ -525,8 +525,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E of second state = -41.4910248 ) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_single.out "total E" -41.4910248 --no_assert
+        echo "Comparing the energy with the reference one (total E of second state = -41.5566918 +-  0.0472207 ) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_single.out "total E" -41.5566918  0.0472207
 
     - name: "Upload results of test 27"
       uses: actions/upload-artifact@v2
@@ -544,8 +544,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E of second state = -41.3989435 ) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_double.out "total E" -41.3989435 --no_assert
+        echo "Comparing the energy with the reference one (total E of second state = -41.7039946 +-  0.0499768  ) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_double.out "total E" -41.7039946  0.0499768
 
     - name: "Upload results of test 28"
       uses: actions/upload-artifact@v2
@@ -554,43 +554,43 @@ jobs:
         path: tests/CI_test/new-parser-psb3/revised_regterg_double.out
         retention-days: 3
 
-    - name: "Test 29 (psb3) optimize wavefunction and ci using lin_d method Davidson Calculation (400 determinants, 2 states, csfmap) on 1 processor"
-      run: |
-        echo "Running the tests using the new parser. PSB3 "
-        ulimit -s unlimited
-        cd tests/CI_test/new-parser-psb3
+    # - name: "Test 29 (psb3) optimize wavefunction and ci using lin_d method Davidson Calculation (400 determinants, 2 states, csfmap) on 1 processor"
+    #   run: |
+    #     echo "Running the tests using the new parser. PSB3 "
+    #     ulimit -s unlimited
+    #     cd tests/CI_test/new-parser-psb3
 
-        echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_free.inp -o revised_free_single.out -e error
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_free.inp -o revised_free_single.out -e error
 
-        echo "Comparing the energy with the reference one (eigenvalue[1] = -44.148262860328295) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_free_single.out "eigenvalue            1" -44.148262860328295 --no_assert
+    #     echo "Comparing the energy with the reference one (eigenvalue[1] = -44.148262860328295) "
+    #     $HOME/work/champ/champ/tools/compare_value.py revised_free_single.out "eigenvalue            1" -44.148262860328295
 
-    - name: "Upload results of test 29"
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-results-29
-        path: tests/CI_test/new-parser-psb3/revised_free_single.out
-        retention-days: 3
+    # - name: "Upload results of test 29"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-29
+    #     path: tests/CI_test/new-parser-psb3/revised_free_single.out
+    #     retention-days: 3
 
-    - name: "Test 30 (psb3) optimize wavefunction and ci using lin_d method Davidson Calculation (400 determinants, 2 states, csfmap) on 2 processors"
-      run: |
-        echo "Running the tests using the new parser. PSB3 "
-        ulimit -s unlimited
-        cd tests/CI_test/new-parser-psb3
+    # - name: "Test 30 (psb3) optimize wavefunction and ci using lin_d method Davidson Calculation (400 determinants, 2 states, csfmap) on 2 processors"
+    #   run: |
+    #     echo "Running the tests using the new parser. PSB3 "
+    #     ulimit -s unlimited
+    #     cd tests/CI_test/new-parser-psb3
 
-        echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_free.inp -o revised_free_double.out -e error
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_free.inp -o revised_free_double.out -e error
 
-        echo "Comparing the energy with the reference one (eigenvalue[1] = -50.815236723338842) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_free_double.out "eigenvalue            1" -50.815236723338842 --no_assert
+    #     echo "Comparing the energy with the reference one (eigenvalue[1] = -50.815236723338842) "
+    #     $HOME/work/champ/champ/tools/compare_value.py revised_free_double.out "eigenvalue            1" -50.815236723338842
 
-    - name: "Upload results of test 30"
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-results-30
-        path: tests/CI_test/new-parser-psb3/revised_free_double.out
-        retention-days: 3
+    # - name: "Upload results of test 30"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-30
+    #     path: tests/CI_test/new-parser-psb3/revised_free_double.out
+    #     retention-days: 3
 
     - name: "Test 31 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"
       run: |
@@ -600,8 +600,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_single.out -e error
 
-        echo "Comparing the energy with the reference one ("total E" -29.7665740) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.7665740 --no_assert
+        echo "Comparing the energy with the reference one ("total E" -29.9276565 +-  0.0193188) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.9276565  0.0193188
 
     - name: "Upload results of test 31"
       uses: actions/upload-artifact@v2
@@ -618,14 +618,56 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_double.out -e error
 
-        echo "Comparing the energy with the reference one ("total E" -29.9287659) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.9287659 --no_assert
+        echo "Comparing the energy with the reference one ("total E" -29.9650716 +-  0.0140104) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.9650716  0.0140104
 
     - name: "Upload results of test 32"
       uses: actions/upload-artifact@v2
       with:
         name: test-results-32
         path: tests/CI_test/new-parser-psb2/revised_psb2_mix_n_double.out
+        retention-days: 3
+
+    - name: "Test 33 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/new-parser-h2
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
+
+        echo "Comparing the energy with the reference one (Current energy = -1.0632280 +-   0.0016897) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0632280  0.0016897
+
+        echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0598"
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0598
+    - name: "Upload results of test 33"
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-33
+        path: tests/CI_test/new-parser-h2/revised_vmc_corsamp_single.out
+        retention-days: 3
+
+    - name: "Test 34 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/new-parser-h2
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
+
+        echo "Comparing the energy with the reference one (Current energy = -1.0593525 +-   0.0012286) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0593525  0.0012286
+
+        echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0591"
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0591
+    - name: "Upload results of test 34"
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-34
+        path: tests/CI_test/new-parser-h2/revised_vmc_corsamp_double.out
         retention-days: 3
 
 
