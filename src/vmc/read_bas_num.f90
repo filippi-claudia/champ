@@ -236,8 +236,10 @@ subroutine readps_gauss
   use general, only: pooldir, filename, pp_id, filenames_ps_gauss
   use contrl_file,        only: ounit, errunit
 
-  implicit real*8(a-h,o-z)
+  use precision_kinds, only: dp
+  implicit none
 
+  integer         :: i, ic, idx, l
   integer         :: iunit, iostat, counter = 0
   logical         :: exist, skip = .true.
 
