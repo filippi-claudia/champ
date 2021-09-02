@@ -50,7 +50,6 @@ contains
         use method_opt, only: method
         use contrl_file,    only: ounit
 
-!        implicit real*8(a - h, o - z)
         implicit none
 
         real(dp) :: adiag, denergy, alpha_omega, denergy_err, dparm_norm
