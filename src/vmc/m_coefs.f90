@@ -6,7 +6,7 @@ module coefs
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: coef !(MBASIS,MORB,MWF)
+    real(dp), dimension(:, :, :), allocatable :: coef !(MBASIS,norb_tot,MWF)
     integer :: nbasis
     integer :: norb
     integer :: next_max
@@ -20,8 +20,8 @@ contains
     ! subroutine allocate_coefs()
     !     use force_mod, only: MWF
     !     use precision_kinds, only: dp
-    !     use vmc_mod, only: MORB, MBASIS
-    !     if (.not. allocated(coef)) allocate (coef(MBASIS, MORB, MWF))
+    !     use vmc_mod, only: norb_tot, MBASIS
+    !     if (.not. allocated(coef)) allocate (coef(MBASIS, norb_tot, MWF))
     ! end subroutine allocate_coefs
 
     subroutine deallocate_coefs()

@@ -630,7 +630,7 @@ subroutine read_orbitals_file(file_orbitals)
     use inputflags, only: ilcao
     use orbval, only: nadorb
     use pcm_fdc, only: fs
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
     ! was not in master but is needed
     use wfsec, only: nwftype
     use general, only: pooldir
@@ -679,32 +679,32 @@ subroutine read_orbitals_file(file_orbitals)
         enddo
     endif
     ! read the first line
-    if (wid) read(iunit, *, iostat=iostat)  temp1, norb, nbasis, iwft
+    if (wid) read(iunit, *, iostat=iostat)  temp1, norb_tot, nbasis, iwft
     call bcast(nbasis)
-    call bcast(norb)
+    call bcast(norb_tot)
     call bcast(iwft)
 
     if (wid) then
         if (iostat == 0) then
             if (trim(temp1) == "lcao") then
                 write(ounit,int_format) " Number of basis functions ", nbasis
-                write(ounit,int_format) " Number of lcao orbitals ", norb
+                write(ounit,int_format) " Number of lcao orbitals ", norb_tot
                 write(ounit,int_format) " Type of wave functions ", iwft
-                MORB = norb
+                norb = norb_tot     ! norb will get updated later. norb_tot is fixed
             endif
         else
             write(ounit, *) " Check ", temp1, norb, nbasis, iwft
             call fatal_error ("Error in reading number of lcao orbitals / basis / number of wavefunction types")
         endif
     endif
-    call bcast(MORB)
+    call bcast(norb)
 
     if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(coef)) allocate (coef(nbasis, MORB, 3))
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3))
     else
-        if (.not. allocated(coef)) allocate (coef(nbasis, MORB, nwftype))
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
     endif
 
 
@@ -1390,7 +1390,7 @@ subroutine read_symmetry_file(file_symmetry)
     use contrl_file,        only: ounit, errunit
     use coefs,              only: norb
     use optorb,             only: irrep
-    use vmc_mod,            only: MORB
+    use vmc_mod,            only: norb_tot
     use general,            only: pooldir
 
     implicit none
@@ -1424,7 +1424,7 @@ subroutine read_symmetry_file(file_symmetry)
 
     if (wid) then
         read (iunit, *, iostat=iostat) label, nsym, mo
-        if (iostat /= 0) call fatal_error( "Error in reading symmetry file :: expecting 'sym_labels', nsym, norb")
+        if (iostat /= 0) call fatal_error( "Error in reading symmetry file :: expecting 'sym_labels', nsym, norb_tot")
     endif
     call bcast(label)
     call bcast(nsym)
@@ -1444,7 +1444,7 @@ subroutine read_symmetry_file(file_symmetry)
     write(ounit, *) temp2
 
     ! safe allocate
-    if (.not. allocated(irrep)) allocate (irrep(MORB))
+    if (.not. allocated(irrep)) allocate (irrep(norb_tot))
 
     ! read data
     if (wid) then
@@ -1547,7 +1547,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
 
     use contrl_file,        only: ounit, errunit
     use coefs,              only: norb
-    use vmc_mod,            only: MORB
+    use vmc_mod,            only: norb_tot
     use optorb,             only: orb_energy
     use general,            only: pooldir
 
@@ -1593,7 +1593,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
 
 
     ! safe allocate
-    if (.not. allocated(orb_energy)) allocate (orb_energy(MORB))
+    if (.not. allocated(orb_energy)) allocate (orb_energy(norb_tot))
 
     ! read data
     if (wid) then
@@ -1905,7 +1905,7 @@ subroutine read_dmatrix_file(file_dmatrix)
 
     use contrl_file,    only: ounit, errunit
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
     use csfs, only: nstates
     use sa_weights, only: iweight, nweight, weights
     use mstates_mod, only: MSTATES
@@ -1955,7 +1955,7 @@ subroutine read_dmatrix_file(file_dmatrix)
     call bcast(nweight)
 
 
-    allocate (dmat(MORB))
+    allocate (dmat(norb_tot))
     allocate (iwdmat(nstates))
 
     if (ndetorb .gt. norb) call fatal_error( 'READ_DMATRIX: wrong number of orbitals')
@@ -1971,7 +1971,7 @@ subroutine read_dmatrix_file(file_dmatrix)
         if (iwdmat(iw) .ne. iweight(iw)) call fatal_error('READ_DMATRIX: iwdmat')
     enddo
 
-    allocate (dmat_diag(MORB))
+    allocate (dmat_diag(norb_tot))
     dmat_diag = 0.0d0
 
     do iw = 1, nweight

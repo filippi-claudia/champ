@@ -236,7 +236,7 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use vmc_mod, only: MEXCIT
       use const, only: nelec
       use dets, only: cdet, ndet
@@ -257,7 +257,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(ndet) :: detu
       real(dp), dimension(ndet) :: detd
       real(dp), dimension(MEXCIT**2, ndet) :: wfmat
-      real(dp), dimension(MORB, nelec) :: ymat
+      real(dp), dimension(norb_tot, nelec) :: ymat
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
 
@@ -317,7 +317,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use vmc_mod, only: MEXCIT
       use const, only: nelec
       use dets, only: ndet
@@ -335,7 +335,7 @@ c-----------------------------------------------------------------------
       integer :: jj, jorb, jrep, kk
       integer :: ll, lorb, lrep, ndim
 
-      real(dp), dimension(MORB, nelec) :: dymat
+      real(dp), dimension(norb_tot, nelec) :: dymat
       real(dp), dimension(MEXCIT*MEXCIT) :: dmat1
       real(dp), dimension(MEXCIT*MEXCIT) :: dmat2
 
@@ -389,7 +389,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use elec, only: ndn, nup
       use multidet, only: iactv, ivirt
       use coefs, only: norb
@@ -404,10 +404,10 @@ c-----------------------------------------------------------------------
       integer :: iab, irep, ish, jrep, krep
       integer :: nel
 
-      real(dp), dimension(MORB, nelec, 2) :: ymat
-      real(dp), dimension(MORB, nelec, 2) :: dymat
-      real(dp), dimension(MORB, nelec, 2) :: zmat
-      real(dp), dimension(MORB, nelec, 2) :: dzmat
+      real(dp), dimension(norb_tot, nelec, 2) :: ymat
+      real(dp), dimension(norb_tot, nelec, 2) :: dymat
+      real(dp), dimension(norb_tot, nelec, 2) :: zmat
+      real(dp), dimension(norb_tot, nelec, 2) :: dzmat
       real(dp), dimension(nelec, nelec, 2) :: emz
       real(dp), dimension(nelec, nelec, 2) :: aaz
 

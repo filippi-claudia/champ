@@ -1,6 +1,6 @@
       subroutine bxmatrix(kref,xmatu,xmatd,b)
 
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use elec, only: ndn, nup
       use dorb_m, only: iworbd
       use slater, only: slmi
@@ -12,7 +12,7 @@
       integer :: i, iab, iel, ish, j
       integer :: kref, nel
 
-      real(dp), dimension(MORB, nelec) :: b
+      real(dp), dimension(norb_tot, nelec) :: b
       real(dp), dimension(nelec**2, 2) :: btemp
       real(dp), dimension(nelec**2) :: xmatu
       real(dp), dimension(nelec**2) :: xmatd

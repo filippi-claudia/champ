@@ -1,6 +1,6 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use const, only: nelec
       use atom, only: ncent
       use qua, only: nquad
@@ -22,7 +22,7 @@
       integer :: iel_move, iq, irep, ish
       integer :: j, jel, jrep, nel
       real(dp) :: detratio, dum, psid
-      real(dp), dimension(nelec, MORB) :: gmat
+      real(dp), dimension(nelec, norb_tot) :: gmat
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
 

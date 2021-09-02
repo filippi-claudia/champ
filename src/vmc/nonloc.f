@@ -2,7 +2,7 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use pseudo_mod, only: MPS_QUAD
       use optjas, only: MPARMJ
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use atom, only: iwctype, ncent, ncent_tot
       use const, only: nelec, ipr
       use elec, only: nup
@@ -54,9 +54,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(*) :: dvpsp_dj
       real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
       real(dp), dimension(MPARMJ) :: dpsij_ratio
-      real(dp), dimension(MORB) :: orbn
-      real(dp), dimension(3,MORB) :: dorbn
-      real(dp), dimension(3,ncent_tot,MORB) :: da_orbn
+      real(dp), dimension(norb_tot) :: orbn
+      real(dp), dimension(3,norb_tot) :: dorbn
+      real(dp), dimension(3,ncent_tot,norb_tot) :: da_orbn
       real(dp), dimension(3) :: term_radial_da_vps
       real(dp), dimension(3) :: vjn
       real(dp), dimension(3,ncent_tot) :: da_ratio_jn
@@ -638,7 +638,7 @@ c-----------------------------------------------------------------------
       subroutine compute_da_bnl(i,ic,ict,iq,r_en_sav,rvec_en_sav,costh,
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use atom, only: ncent, ncent_tot
       use Bloc, only: db
       use coefs, only: norb
@@ -657,10 +657,10 @@ c-----------------------------------------------------------------------
       real(dp) :: r_en_savi2, sav_db, term_radial, yl0
       real(dp), dimension(3,ncent_tot) :: rvec_en_sav
       real(dp), dimension(ncent_tot) :: r_en_sav
-      real(dp), dimension(MORB) :: orbn
-      real(dp), dimension(3,MORB) :: dorbn
+      real(dp), dimension(norb_tot) :: orbn
+      real(dp), dimension(3,norb_tot) :: dorbn
       real(dp), dimension(3) :: vjn
-      real(dp), dimension(3,ncent_tot,MORB) :: da_orbn
+      real(dp), dimension(3,ncent_tot,norb_tot) :: da_orbn
       real(dp), dimension(3,ncent_tot) :: da_ratio_jn
       real(dp), dimension(3) :: term_radial_da_vps
       real(dp), parameter :: one = 1.d0

@@ -30,7 +30,7 @@ c     write(ounit,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
 
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use atom, only: ncent, ncent_tot
       use const, only: nelec
       use da_energy_now, only: da_psi
@@ -51,9 +51,9 @@ c-----------------------------------------------------------------------
       integer :: irep, ish, j, jorb
       integer :: jrep, k, nel
       real(dp) :: c800, psid, trace
-      real(dp), dimension(MORB, nelec) :: b_a
+      real(dp), dimension(norb_tot, nelec) :: b_a
       real(dp), dimension(nelec*nelec) :: b_kref
-      real(dp), dimension(nelec, MORB) :: tildem_a
+      real(dp), dimension(nelec, norb_tot) :: tildem_a
       real(dp), dimension(3, ncent_tot) :: da_psi_ref
 
       do 400 ic=1,ncent

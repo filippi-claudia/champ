@@ -1,6 +1,6 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use elec, only: ndn, nup
       use multidet, only: ivirt, kref
       use optwf_contrl, only: ioptorb
@@ -21,8 +21,8 @@
       integer :: iterm, jo, nel
       real(dp) :: denergy, detratio, dorb_energy, dorb_energy_ref, dorb_psi
       real(dp) :: dorb_psi_ref, psid
-      real(dp), dimension(MORB, nelec, 2) :: zmat
-      real(dp), dimension(MORB, nelec, 2) :: dzmat
+      real(dp), dimension(norb_tot, nelec, 2) :: zmat
+      real(dp), dimension(norb_tot, nelec, 2) :: dzmat
       real(dp), dimension(nelec, nelec, 2) :: emz
       real(dp), dimension(nelec, nelec, 2) :: aaz
       real(dp), dimension(*) :: orbprim
@@ -780,7 +780,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_define
 
       use optorb_mod, only: MXORBOP, MXREDUCED
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use const, only: nelec
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -806,7 +806,7 @@ c-----------------------------------------------------------------------
       integer :: n1, noporb
       integer, dimension(2, ndet) :: iodet
       integer, dimension(2, ndet) :: iopos
-      integer, dimension(2, MORB) :: iflag
+      integer, dimension(2, norb_tot) :: iflag
       integer, dimension(2) :: ne
       integer, dimension(2) :: m
 

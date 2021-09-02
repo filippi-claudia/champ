@@ -70,7 +70,7 @@ c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use csfs, only: nstates
       use elec, only: nup
       use multidet, only: kref
@@ -99,16 +99,16 @@ c-----------------------------------------------------------------------
       real(dp), dimension(3) :: vd
       real(dp), dimension(3) :: vref
       real(dp), dimension(3) :: vd_s
-      real(dp), dimension(3, MORB) :: dorb_tmp
+      real(dp), dimension(3, norb) :: dorb_tmp
 
       ! NR : ymat_tmp was not saved ....
       ! it has the save keywoprd in the dev branch ...
-      ! real(dp), dimension(MORB, nelec) :: ymat_tmp
+      ! real(dp), dimension(norb_tot, nelec) :: ymat_tmp
 
       real(dp), allocatable, save :: ymat_tmp(:,:)
       if (.not. allocated(ymat_tmp)) then
-        ! CF : ymat_tmp(MORB,nelec) max value of # orb
-        allocate(ymat_tmp(MORB,nelec))
+        ! CF : ymat_tmp(norb_tot,nelec) max value of # orb
+        allocate(ymat_tmp(norb_tot,nelec))
       endif
 
       ! save ymat_tmp
@@ -269,7 +269,7 @@ c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use vmc_mod, only: nmat_dim
       use elec, only: ndn, nup
       use multidet, only: kref
@@ -281,7 +281,7 @@ c-----------------------------------------------------------------------
       integer :: nel
 
       real(dp), dimension(nmat_dim) :: slmi
-      real(dp), dimension(3, MORB) :: dorb
+      real(dp), dimension(3, norb_tot) :: dorb
       real(dp), dimension(3) :: ddx_ref
 
 
