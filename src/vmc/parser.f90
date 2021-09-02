@@ -1751,7 +1751,7 @@ subroutine flaginit_new
         use inputflags, only: imultideterminants, imodify_zmat, izmatrix_check
         use inputflags, only: ihessian_zmat
 
-        implicit real*8(a-h,o-z)
+        implicit none
 
         iznuc=0
         igeometry=0

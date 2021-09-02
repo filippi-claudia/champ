@@ -9,10 +9,14 @@ c Written by Claudia Filippi
       use method_opt, only: method
       use optorb_cblock, only: nreduced
       use mpi
-      
-      implicit real*8(a-h,o-z)
 
-      dimension collect(MXCITERM,MXREDUCED)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ierr, j
+
+      real(dp), dimension(MXCITERM,MXREDUCED) :: collect
+
 
       if(ioptci.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
