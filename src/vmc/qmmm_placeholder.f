@@ -14,6 +14,7 @@
 
       subroutine qmmm_extpot_final(nelec)
       implicit none
+      integer :: nelec
       return
       end
 
