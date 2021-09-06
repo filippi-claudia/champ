@@ -47,7 +47,7 @@ jobs:
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. Butadiene VMC "
-        cd tests/CI_test/new-parser-butadiene-vmc/no_optimization
+        cd tests/CI_test/butadiene-vmc/no_optimization
 
         echo "Copy an initial mc configuration for reference"
         cp -v mc_configs_start_save mc_configs_start
@@ -61,14 +61,14 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: test-results-01
-        path: tests/CI_test/new-parser-butadiene-vmc/no_optimization/vmc_only.out
+        path: tests/CI_test/butadiene-vmc/no_optimization/vmc_only.out
         retention-days: 3
 
     - name: "Test 02 (Butadiene) VMC only on 2 processors"
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. Butadiene VMC "
-        cd tests/CI_test/new-parser-butadiene-vmc/no_optimization
+        cd tests/CI_test/butadiene-vmc/no_optimization
 
         echo "Copy an initial mc configuration for reference"
         cp -v mc_configs_start_save mc_configs_start
@@ -82,42 +82,42 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: test-results-02
-        path: tests/CI_test/new-parser-butadiene-vmc/no_optimization/vmc_only.out
+        path: tests/CI_test/butadiene-vmc/no_optimization/vmc_only.out
         retention-days: 3
 
     - name: "Test 03 (Butadiene) VMC optimization all using sr_n (500 determinants) on 1 processor"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
-        cd tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb
+        cd tests/CI_test/butadiene-vmc/optimize_wf_ci_jastrow_orb
 
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
-        echo "Comparing the energy with the reference one (total E = -22.1287210 +-  0.1000164) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -22.1287210  0.1000164
+        echo "Comparing the energy with the reference one (total E = -24.1918086 +-  0.1923460) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -24.1918086  0.1923460
     - name: "Upload results of test 03"
       uses: actions/upload-artifact@v2
       with:
         name: test-results-03
-        path: tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb/vmc_optimization.out
+        path: tests/CI_test/butadiene-vmc/optimize_wf_ci_jastrow_orb/vmc_optimization.out
         retention-days: 3
 
 
     - name: "Test 04 (Butadiene) VMC optimization all using sr_n (500 determinants) on 2 processors"
       run: |
         echo "Running the tests using the new parser. Butadiene VMC "
-        cd tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb
+        cd tests/CI_test/butadiene-vmc/optimize_wf_ci_jastrow_orb
 
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
 
-        echo "Comparing the energy with the reference one (total E = -26.1867967 +-  0.0163631) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -26.1867967  0.0163631
+        echo "Comparing the energy with the reference one (total E = -24.9698661 +-  0.0928388) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -24.9698661  0.0928388
     - name: "Upload results of test 04"
       uses: actions/upload-artifact@v2
       with:
         name: test-results-04
-        path: tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb/vmc_optimization.out
+        path: tests/CI_test/butadiene-vmc/optimize_wf_ci_jastrow_orb/vmc_optimization.out
         retention-days: 3
 
 
@@ -125,36 +125,36 @@ jobs:
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. Butadiene VMC "
-        cd tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb_and_geometry
+        cd tests/CI_test/butadiene-vmc/optimize_wf_ci_jastrow_orb_and_geometry
 
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
-        echo "Comparing the energy with the reference one (total E = -25.5056924 +-  0.0591129) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.5056924  0.0591129
+        echo "Comparing the energy with the reference one (total E = -25.7413320 +-  0.0504240) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.7413320  0.0504240
     - name: "Upload results of test 05"
       uses: actions/upload-artifact@v2
       with:
         name: test-results-05
-        path: tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb_and_geometry/vmc_sr_opt_geom.out
+        path: tests/CI_test/butadiene-vmc/optimize_wf_ci_jastrow_orb_and_geometry/vmc_sr_opt_geom.out
         retention-days: 3
 
     - name: "Test 06 (Butadiene) VMC optimization including geometry and csfmap using sr_n (500 determinants) on 2 processors"
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. Butadiene VMC "
-        cd tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb_and_geometry
+        cd tests/CI_test/butadiene-vmc/optimize_wf_ci_jastrow_orb_and_geometry
 
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
-        echo "Comparing the energy with the reference one (total E = -25.8300233 +-  0.0252670) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.8300233  0.0252670
+        echo "Comparing the energy with the reference one (total E = -25.6993617 +-  0.0383819) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.6993617  0.0383819
     - name: "Upload results of test 06"
       uses: actions/upload-artifact@v2
       with:
         name: test-results-06
-        path: tests/CI_test/new-parser-butadiene-vmc/optimize_wf_ci_jastrow_orb_and_geometry/vmc_sr_opt_geom.out
+        path: tests/CI_test/butadiene-vmc/optimize_wf_ci_jastrow_orb_and_geometry/vmc_sr_opt_geom.out
         retention-days: 3
 
     - name: "Test 07 (Butadiene) DMC on 1 processor"

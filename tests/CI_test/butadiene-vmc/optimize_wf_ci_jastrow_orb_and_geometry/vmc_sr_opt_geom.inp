@@ -3,7 +3,6 @@
     pool         './pool/'
     pseudopot    BFD
     basis        BFD-Q
-    weights      [ 1.0d0,  1.0d0 , 1.0d0]
     mode         'vmc_one_mpi1'
 %endmodule
 
@@ -49,7 +48,7 @@ load jastrow_der     jastrow.der
 %endmodule
 
 %module blocking_vmc
-    vmc_nstep     20
+    vmc_nstep     10
     vmc_nblk      50
     vmc_nblkeq    1
     vmc_nconf_new 0

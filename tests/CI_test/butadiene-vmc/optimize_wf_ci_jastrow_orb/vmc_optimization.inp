@@ -4,7 +4,6 @@
     pseudopot    BFD
     basis        BFD-T-normf0
     mode         vmc
-    weights      [ 1.0d0,  1.0d0 , 1.0d0]
 %endmodule
 
 load molecule        $pool/butadiene.xyz
@@ -31,9 +30,9 @@ load symmetry        cas1010.sym
     multiple_adiag 0
     ncore         0
     nextorb       280
-    nblk_max      200
+    nblk_max      3000
     no_active     0
-    nopt_iter     3
+    nopt_iter     2
     sr_tau        0.05
     sr_eps        0.001
     sr_adiag      0.01
@@ -42,7 +41,7 @@ load symmetry        cas1010.sym
 %endmodule
 
 %module blocking_vmc
-    vmc_nstep     20
+    vmc_nstep     10
     vmc_nblk      100
     vmc_nblkeq    1
     vmc_nconf_new 0
