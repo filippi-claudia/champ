@@ -352,11 +352,11 @@ end module orb_mat_033
 module optorb
     !> Arguments: dmat_diag, irrep, orb_energy
     use precision_kinds, only: dp
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
 
-    real(dp), dimension(:), allocatable :: dmat_diag !(MORB)
-    integer, dimension(:), allocatable :: irrep !(MORB)
-    real(dp), dimension(:), allocatable :: orb_energy !(MORB)
+    real(dp), dimension(:), allocatable :: dmat_diag !(norb_tot)
+    integer, dimension(:), allocatable :: irrep !(norb_tot)
+    real(dp), dimension(:), allocatable :: orb_energy !(norb_tot)
 
     private
     public :: dmat_diag, irrep, orb_energy
@@ -364,10 +364,10 @@ module optorb
     save
 contains
     subroutine allocate_optorb()
-        use vmc_mod, only: MORB
-        if (.not. allocated(dmat_diag)) allocate (dmat_diag(MORB))
-        ! if (.not. allocated(irrep)) allocate (irrep(MORB))
-        ! if (.not. allocated(orb_energy)) allocate (orb_energy(MORB))
+        use vmc_mod, only: norb_tot
+        if (.not. allocated(dmat_diag)) allocate (dmat_diag(norb_tot))
+        ! if (.not. allocated(irrep)) allocate (irrep(norb_tot))
+        ! if (.not. allocated(orb_energy)) allocate (orb_energy(norb_tot))
     end subroutine allocate_optorb
 
     subroutine deallocate_optorb()
@@ -419,9 +419,9 @@ end module optorb_cblock
 
 module optorb_mix
     !> Arguments: iwmix_virt, norbopt, norbvirt
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
 
-    integer, dimension(:, :), allocatable :: iwmix_virt !(MORB,MORB)
+    integer, dimension(:, :), allocatable :: iwmix_virt !(norb_tot,norb_tot)
     integer :: norbopt
     integer :: norbvirt
 
@@ -431,8 +431,8 @@ module optorb_mix
     save
 contains
     subroutine allocate_optorb_mix()
-        use vmc_mod, only: MORB
-        if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(MORB, MORB))
+        use vmc_mod, only: norb_tot
+        if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norb_tot, norb_tot))
     end subroutine allocate_optorb_mix
 
     subroutine deallocate_optorb_mix()

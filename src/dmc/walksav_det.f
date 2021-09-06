@@ -6,7 +6,7 @@ c Written by Claudia Filippi
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: MWALK
       use const, only: nelec
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use vmc_mod, only: nmat_dim
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: MWALK
@@ -53,11 +53,11 @@ c Written by Claudia Filippi
       dimension istatus(MPI_STATUS_SIZE)
       dimension irequest_array(MPI_STATUS_SIZE)
 
-      if(.not.allocated(aaw)) allocate(aaw(nelec,MORB,MWALK,2))
+      if(.not.allocated(aaw)) allocate(aaw(nelec,norb_tot,MWALK,2))
       if(.not.allocated(wfmatw)) allocate(wfmatw(MEXCIT**2,ndet,MWALK,2))
-      if(.not.allocated(ymatw)) allocate(ymatw(MORB,nelec,MWALK,2,MSTATES))
-      if(.not.allocated(orbw)) allocate(orbw(nelec,MORB,MWALK))
-      if(.not.allocated(dorbw)) allocate(dorbw(3,nelec,MORB,MWALK))
+      if(.not.allocated(ymatw)) allocate(ymatw(norb_tot,nelec,MWALK,2,MSTATES))
+      if(.not.allocated(orbw)) allocate(orbw(nelec,norb_tot,MWALK))
+      if(.not.allocated(dorbw)) allocate(dorbw(3,nelec,norb_tot,MWALK))
 
       if(.not.allocated(krefw)) allocate(krefw(MWALK))
       if(.not.allocated(slmuiw)) allocate(slmuiw(nmat_dim,MWALK))
@@ -241,7 +241,7 @@ c Written by Claudia Filippi
       do 150 istate=1,nstates
         do 150 iab=1,2
         itag=itag+1
- 150    call mpi_isend(ymatw(1,1,nwalk,iab,istate),MORB*nelec,mpi_double_precision
+ 150    call mpi_isend(ymatw(1,1,nwalk,iab,istate),norb_tot*nelec,mpi_double_precision
      &   ,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
 
       do 160 iab=1,2
@@ -294,7 +294,7 @@ c Written by Claudia Filippi
       do 250 istate=1,nstates
         do 250 iab=1,2
         itag=itag+1
- 250    call mpi_recv(ymatw(1,1,nwalk,iab,istate),MORB*nelec,mpi_double_precision
+ 250    call mpi_recv(ymatw(1,1,nwalk,iab,istate),norb_tot*nelec,mpi_double_precision
      &   ,isend,itag,MPI_COMM_WORLD,istatus,ierr)
 
       do 260 iab=1,2
@@ -307,9 +307,9 @@ c Written by Claudia Filippi
         endif
  260  continue
 
-      call mpi_recv(orbw(1,1,nwalk),nelec*morb,mpi_double_precision
+      call mpi_recv(orbw(1,1,nwalk),nelec*norb_tot,mpi_double_precision
      &  ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(dorbw(1,1,1,nwalk),3*nelec*morb,mpi_double_precision
+      call mpi_recv(dorbw(1,1,1,nwalk),3*nelec*norb_tot,mpi_double_precision
      &  ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       itag=itag+2
 

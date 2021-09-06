@@ -37,7 +37,7 @@ subroutine parser
   use pcm,              only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
-  use vmc_mod, 			    only: MORB
+  use vmc_mod, 			    only: norb_tot
   use atom, 			      only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 			    only: nspin1, nspin2, is
   use ghostatom, 		    only: newghostype, nghostcent
@@ -1751,7 +1751,7 @@ subroutine flaginit_new
         use inputflags, only: imultideterminants, imodify_zmat, izmatrix_check
         use inputflags, only: ihessian_zmat
 
-        implicit real*8(a-h,o-z)
+        implicit none
 
         iznuc=0
         igeometry=0

@@ -23,7 +23,7 @@ c$$$     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
 c$$$     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
 c$$$     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
 c$$$     &,rkvec_shift(3),kvec(3,IVOL_RATIO),rkvec(3,IVOL_RATIO),rknorm(IVOL_RATIO)
-c$$$     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(MORB)
+c$$$     &,k_inv(IVOL_RATIO),nband(IVOL_RATIO),ireal_imag(norb_tot)
 c$$$     &,znuc_sum,znuc2_sum,vcell,vcell_sim
 c$$$     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
 c$$$     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
@@ -175,7 +175,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
       use ewald_mod, only: NGVEC_BIGX
-      use vmc_mod, only: MORB
+      use vmc_mod, only: norb_tot
       use const, only: nelec
       use periodic, only: glatt
       use periodic, only: igmult, igvec
@@ -199,9 +199,9 @@ c However, that causes problems when running with mpi, so comment out that part.
       real(dp) :: eig, sum
       real(dp) :: sum_abs, units
       real(dp), dimension(3) :: r
-      real(dp), dimension(nelec,MORB) :: orb
-      real(dp), dimension(3,nelec,MORB) :: dorb
-      real(dp), dimension(nelec,MORB) :: ddorb
+      real(dp), dimension(nelec,norb_tot) :: orb
+      real(dp), dimension(3,nelec,norb_tot) :: dorb
+      real(dp), dimension(nelec,norb_tot) :: ddorb
 
 
 
@@ -215,8 +215,8 @@ c     dimension igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC_BIGX),c_real(NGVEC_BIGX),c_
 c    &,rkvec_tmp(3),rkvec_tmp2(3)
 
 c Warning: Temporary
-c Warning: why do I print out zeros if I dimension to MORB rather than IVOL_RATIO?
-c It should be MORB
+c Warning: why do I print out zeros if I dimension to norb_tot rather than IVOL_RATIO?
+c It should be norb_tot
 
 
 c Warning: For the moment we assume that orbitals_pw_tm contains only the bands we want to keep.

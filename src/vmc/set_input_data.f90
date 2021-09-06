@@ -51,7 +51,6 @@ end subroutine inputcsf
 subroutine multideterminants_define(iflag, icheck)
 
     use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-    use vmc_mod, only: MORB
     use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, nmat_dim, nmat_dim2
     use vmc_mod, only: radmax, delri
     use vmc_mod, only: NEQSX, MTERMS
@@ -313,7 +312,6 @@ subroutine inputdet()
     ! Set the cdet to be equal
     use dets, only: cdet, ndet
     use csfs, only: nstates
-!    use vmc_mod, only: MORB
 !    use mstates_mod, only: MSTATES
     use wfsec, only: nwftype
     use method_opt, only: method
@@ -337,7 +335,7 @@ end subroutine inputdet
 
 subroutine inputlcao()
     ! Set the lcao to be equal
-    use vmc_mod, only: MORB
+    use vmc_mod, only: norb_tot
     use coefs, only: coef, nbasis, norb
     use wfsec, only: nwftype
     use method_opt, only: method
@@ -347,9 +345,9 @@ subroutine inputlcao()
 
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(coef)) allocate (coef(nbasis, MORB, 3))
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3))
     else
-        if (.not. allocated(coef)) allocate (coef(nbasis, MORB, nwftype))
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
     endif
 
     do iwft = 2, nwftype
