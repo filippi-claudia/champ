@@ -429,8 +429,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000.out  -e error_vmc_optimization_5000
 
-        echo "Comparing the energy with the reference one (total E = -26.1991674 +-  0.0234593) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.1991674  0.0234593
+        echo "Comparing the energy with the reference one (total E = -26.2479872 +-  0.0244621) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.2479872  0.0244621
     - name: "Upload results of test 21"
       uses: actions/upload-artifact@v2
       with:
@@ -448,8 +448,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000.out  -e error_vmc_optimization_5000
 
-        echo "Comparing the energy with the reference one (total E = -26.2249396 +-  0.0142057) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.2249396  0.0142057
+        echo "Comparing the energy with the reference one (total E = -26.2436517 +-  0.0248033) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000.out "total E" -26.2436517 +-  0.0248033
     - name: "Upload results of test 22"
       uses: actions/upload-artifact@v2
       with:
