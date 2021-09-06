@@ -44,5 +44,6 @@ if __name__ == "__main__":
         if not test:
             print('Value Error : Reference and test values are different')
     else:
-        #assert(compare_values(data, args.keyword, args.values, args.tolerance))
-        compare_values(data, args.keyword, args.values, args.tolerance) # delete after testing. Ravindra
+        # Strict comparison :: use assert
+        assert(compare_values(data, args.keyword, args.values, args.tolerance))
+        #compare_values(data, args.keyword, args.values, args.tolerance) # delete after testing. Ravindra
