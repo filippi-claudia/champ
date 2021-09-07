@@ -17,9 +17,9 @@
       implicit none
 
       integer :: i, ierr, j, matdim
-      real(dp) :: MXMATDIM, MXORBTERM
+      real(dp) :: nmatdim, MXORBTERM
 
-c     parameter(MXTMP=max(MXORBTERM,MXMATDIM))
+c     parameter(MXTMP=max(MXORBTERM,nmatdim))
 c     max does not work with g77
     !   parameter(MXTMP=MXCITERM+MXCIMATDIM)
     !   dimension collect(MXTMP),collect2(MXCITERM,MXCIREDUCED)
@@ -28,7 +28,7 @@ c     max does not work with g77
       real(dp), DIMENSION(:), ALLOCATABLE :: optci_reduce_collect
       real(dp), DIMENSION(:, :), ALLOCATABLE :: optci_reduce_collect2
 
-      MXTMP=max(MXORBTERM,MXMATDIM)
+      MXTMP=max(MXORBTERM,nmatdim)
 
       allocate(optci_reduce_collect(MXTMP))
       allocate(optci_reduce_collect2(MXCITERM,MXCIREDUCED))

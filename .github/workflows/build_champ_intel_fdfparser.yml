@@ -34,6 +34,7 @@ jobs:
     - name: Compile
       run: |
         source /opt/intel/oneapi/setvars.sh
+        printenv >> $GITHUB_ENV
         which mpiifort
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN

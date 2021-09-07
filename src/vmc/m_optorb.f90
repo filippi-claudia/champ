@@ -3,17 +3,17 @@ module optorb_mod
     ! maximal number of terms, max dim of reduced matrices
 
     ! integer, parameter :: MXREDUCED = 1
-    ! integer, parameter :: MXMATDIM = MXREDUCED*(MXREDUCED + 1)
-    ! integer, parameter :: MXMATDIM2 = MXMATDIM/2
+    ! integer, parameter :: nmatdim = MXREDUCED*(MXREDUCED + 1)
+    ! integer, parameter :: nmatdim2 = nmatdim/2
 
     integer :: MXORBOP = 10000
     integer :: MXREDUCED
-    integer :: MXMATDIM
-    integer :: MXMATDIM2
+    integer :: nmatdim
+    integer :: nmatdim2
 
     integer, parameter :: MXREP = 10
     private
-    public :: MXORBOP, MXREDUCED, MXMATDIM, MXMATDIM2, MXREP
+    public :: MXORBOP, MXREDUCED, nmatdim, nmatdim2, MXREP
     public :: set_optorb_size
     save
 
@@ -26,8 +26,8 @@ contains
         else
             MXREDUCED = 1
         end if
-        MXMATDIM = MXREDUCED*(MXREDUCED + 1)
-        MXMATDIM2 = MXMATDIM/2
+        nmatdim = MXREDUCED*(MXREDUCED + 1)
+        nmatdim2 = nmatdim/2
 
     end subroutine set_optorb_size
 end module optorb_mod
@@ -181,11 +181,11 @@ end module orb_mat_005
 
 module orb_mat_006
     !> Arguments: orb_oo_cum
-    use optorb_mod, only: MXMATDIM2
+    use optorb_mod, only: nmatdim2
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :), allocatable :: orb_oo_cum !(MXMATDIM2,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_oo_cum !(nmatdim2,MSTATES)
 
     private
     public :: orb_oo_cum
@@ -194,9 +194,9 @@ module orb_mat_006
 contains
     subroutine allocate_orb_mat_006()
 
-        use optorb_mod, only: MXMATDIM2
+        use optorb_mod, only: nmatdim2
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_oo_cum)) allocate (orb_oo_cum(MXMATDIM2, MSTATES))
+        if (.not. allocated(orb_oo_cum)) allocate (orb_oo_cum(nmatdim2, MSTATES))
     end subroutine allocate_orb_mat_006
 
     subroutine deallocate_orb_mat_006()
@@ -207,11 +207,11 @@ end module orb_mat_006
 
 module orb_mat_007
     !> Arguments: orb_oho_cum
-    use optorb_mod, only: MXMATDIM
+    use optorb_mod, only: nmatdim
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :), allocatable :: orb_oho_cum !(MXMATDIM,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_oho_cum !(nmatdim,MSTATES)
 
     private
     public :: orb_oho_cum
@@ -220,9 +220,9 @@ module orb_mat_007
 contains
     subroutine allocate_orb_mat_007()
 
-        use optorb_mod, only: MXMATDIM
+        use optorb_mod, only: nmatdim
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_oho_cum)) allocate (orb_oho_cum(MXMATDIM, MSTATES))
+        if (.not. allocated(orb_oho_cum)) allocate (orb_oho_cum(nmatdim, MSTATES))
     end subroutine allocate_orb_mat_007
 
     subroutine deallocate_orb_mat_007()

@@ -1,6 +1,6 @@
       subroutine optorb_reduce
 
-      use optorb_mod, only: MXORBOP, MXMATDIM
+      use optorb_mod, only: MXORBOP, nmatdim
       use csfs, only: nstates
       use optorb_cblock, only: norbterm
       use optwf_contrl, only: ioptorb
@@ -19,7 +19,7 @@
 
       integer :: i, iefpsample, ierr, isample_cmat, istate
       integer :: matdim, norb_f_bcum, norb_f_collect, nreduced
-      real(dp), dimension(MXORBOP+MXMATDIM) :: collect
+      real(dp), dimension(MXORBOP+nmatdim) :: collect
 
       if(ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -95,7 +95,7 @@
         do 64 istate=1,nstates
    64     orb_ecum(istate)=collect(istate)
       endif
-       
+
       if(isample_cmat.eq.0) return
 
       matdim=nreduced*(nreduced+1)/2
@@ -123,7 +123,7 @@
    75     orb_oho_cum(i,istate)=collect(i)
 
 c these averages should be set to zero on the slaves but optorb_reduce
-c is only called at the end of run (differently than prop_reduce) and 
+c is only called at the end of run (differently than prop_reduce) and
 c only the master writes to output and dumper
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
