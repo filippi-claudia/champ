@@ -145,14 +145,14 @@ end module gradhessjo
 
 module gradhess_ci
     !> Arguments: grad_ci, h_ci, s_ci
-    use optci, only: MXCITERM, MXCIREDUCED
+    use optci, only: mxciterm, MXCIREDUCED
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: grad_ci !(MXCITERM)
-    real(dp), dimension(:, :), allocatable :: h_ci !(MXCITERM,MXCIREDUCED)
-    real(dp), dimension(:, :), allocatable :: s_ci !(MXCITERM,MXCIREDUCED)
+    real(dp), dimension(:), allocatable :: grad_ci !(mxciterm)
+    real(dp), dimension(:, :), allocatable :: h_ci !(mxciterm,MXCIREDUCED)
+    real(dp), dimension(:, :), allocatable :: s_ci !(mxciterm,MXCIREDUCED)
 
     private
     public   ::  grad_ci, h_ci, s_ci
@@ -160,10 +160,10 @@ module gradhess_ci
     save
 contains
     subroutine allocate_gradhess_ci()
-        use optci, only: MXCITERM, MXCIREDUCED
-        if (.not. allocated(grad_ci)) allocate (grad_ci(MXCITERM))
-        if (.not. allocated(h_ci)) allocate (h_ci(MXCITERM, MXCIREDUCED))
-        if (.not. allocated(s_ci)) allocate (s_ci(MXCITERM, MXCIREDUCED))
+        use optci, only: mxciterm, MXCIREDUCED
+        if (.not. allocated(grad_ci)) allocate (grad_ci(mxciterm))
+        if (.not. allocated(h_ci)) allocate (h_ci(mxciterm, MXCIREDUCED))
+        if (.not. allocated(s_ci)) allocate (s_ci(mxciterm, MXCIREDUCED))
     end subroutine allocate_gradhess_ci
 
     subroutine deallocate_gradhess_ci()
@@ -208,13 +208,13 @@ end module gradhess_jas
 module gradhess_mix_jas_ci
     !> Arguments: h_mix_jas_ci, s_mix_jas_ci
     use optjas, only: MPARMJ
-    use optci, only: MXCITERM
+    use optci, only: mxciterm
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: h_mix_jas_ci !(2*MPARMJ,MXCITERM)
-    real(dp), dimension(:, :), allocatable :: s_mix_jas_ci !(MPARMJ,MXCITERM)
+    real(dp), dimension(:, :), allocatable :: h_mix_jas_ci !(2*MPARMJ,mxciterm)
+    real(dp), dimension(:, :), allocatable :: s_mix_jas_ci !(MPARMJ,mxciterm)
 
     private
     public   ::  h_mix_jas_ci, s_mix_jas_ci
@@ -223,9 +223,9 @@ module gradhess_mix_jas_ci
 contains
     subroutine allocate_gradhess_mix_jas_ci()
         use optjas, only: MPARMJ
-        use optci, only: MXCITERM
-        if (.not. allocated(h_mix_jas_ci)) allocate (h_mix_jas_ci(2*MPARMJ, MXCITERM))
-        if (.not. allocated(s_mix_jas_ci)) allocate (s_mix_jas_ci(MPARMJ, MXCITERM))
+        use optci, only: mxciterm
+        if (.not. allocated(h_mix_jas_ci)) allocate (h_mix_jas_ci(2*MPARMJ, mxciterm))
+        if (.not. allocated(s_mix_jas_ci)) allocate (s_mix_jas_ci(MPARMJ, mxciterm))
     end subroutine allocate_gradhess_mix_jas_ci
 
     subroutine deallocate_gradhess_mix_jas_ci()
@@ -268,13 +268,13 @@ end module gradhess_mix_jas_orb
 module gradhess_mix_orb_ci
     !> Arguments: h_mix_ci_orb, s_mix_ci_orb
     use optorb_mod, only: MXREDUCED
-    use optci, only: MXCITERM
+    use optci, only: mxciterm
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: h_mix_ci_orb !(2*MXCITERM,MXREDUCED)
-    real(dp), dimension(:, :), allocatable :: s_mix_ci_orb !(MXCITERM,MXREDUCED)
+    real(dp), dimension(:, :), allocatable :: h_mix_ci_orb !(2*mxciterm,MXREDUCED)
+    real(dp), dimension(:, :), allocatable :: s_mix_ci_orb !(mxciterm,MXREDUCED)
 
     private
     public   ::  h_mix_ci_orb, s_mix_ci_orb
@@ -283,9 +283,9 @@ module gradhess_mix_orb_ci
 contains
     subroutine allocate_gradhess_mix_orb_ci()
         use optorb_mod, only: MXREDUCED
-        use optci, only: MXCITERM
-        if (.not. allocated(h_mix_ci_orb)) allocate (h_mix_ci_orb(2*MXCITERM, MXREDUCED))
-        if (.not. allocated(s_mix_ci_orb)) allocate (s_mix_ci_orb(MXCITERM, MXREDUCED))
+        use optci, only: mxciterm
+        if (.not. allocated(h_mix_ci_orb)) allocate (h_mix_ci_orb(2*mxciterm, MXREDUCED))
+        if (.not. allocated(s_mix_ci_orb)) allocate (s_mix_ci_orb(mxciterm, MXREDUCED))
     end subroutine allocate_gradhess_mix_orb_ci
 
     subroutine deallocate_gradhess_mix_orb_ci()

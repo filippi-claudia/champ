@@ -91,7 +91,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_fin(passes,eave)
 
-      use optci, only: MXCITERM
+      use optci, only: mxciterm
       use csfs, only: ccsf, ncsf
       use dets, only: cdet
       use gradhess_ci, only: grad_ci
@@ -116,8 +116,8 @@ c-----------------------------------------------------------------------
 
       integer :: i, ishift, j
       real(dp) :: eave, h1, h2, passes
-      real(dp), dimension(MXCITERM) :: oelocav
-      real(dp), dimension(MXCITERM) :: eav
+      real(dp), dimension(mxciterm) :: oelocav
+      real(dp), dimension(mxciterm) :: eav
 
 
 c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)

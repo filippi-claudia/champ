@@ -70,13 +70,13 @@ module mix_jas_ci
  module mix_orb_ci
      !> Arguments: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
      use optorb_mod, only: MXREDUCED
-     use optci, only: MXCITERM
+     use optci, only: mxciterm
      use precision_kinds, only: dp
 
-     real(dp), dimension(:, :), allocatable :: ci_de_o !(MXCITERM,MXREDUCED)
-     real(dp), dimension(:, :), allocatable :: ci_o_ho !(MXCITERM,MXREDUCED)
-     real(dp), dimension(:, :), allocatable :: ci_o_o !(MXCITERM,MXREDUCED)
-     real(dp), dimension(:, :), allocatable :: ci_o_oe !(MXCITERM,MXREDUCED)
+     real(dp), dimension(:, :), allocatable :: ci_de_o !(mxciterm,MXREDUCED)
+     real(dp), dimension(:, :), allocatable :: ci_o_ho !(mxciterm,MXREDUCED)
+     real(dp), dimension(:, :), allocatable :: ci_o_o !(mxciterm,MXREDUCED)
+     real(dp), dimension(:, :), allocatable :: ci_o_oe !(mxciterm,MXREDUCED)
 
      private
      public :: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
@@ -85,11 +85,11 @@ module mix_jas_ci
  contains
      subroutine allocate_mix_orb_ci()
          use optorb_mod, only: MXREDUCED
-         use optci, only: MXCITERM
-         if (.not. allocated(ci_de_o)) allocate (ci_de_o(MXCITERM, MXREDUCED))
-         if (.not. allocated(ci_o_ho)) allocate (ci_o_ho(MXCITERM, MXREDUCED))
-         if (.not. allocated(ci_o_o)) allocate (ci_o_o(MXCITERM, MXREDUCED))
-         if (.not. allocated(ci_o_oe)) allocate (ci_o_oe(MXCITERM, MXREDUCED))
+         use optci, only: mxciterm
+         if (.not. allocated(ci_de_o)) allocate (ci_de_o(mxciterm, MXREDUCED))
+         if (.not. allocated(ci_o_ho)) allocate (ci_o_ho(mxciterm, MXREDUCED))
+         if (.not. allocated(ci_o_o)) allocate (ci_o_o(mxciterm, MXREDUCED))
+         if (.not. allocated(ci_o_oe)) allocate (ci_o_oe(mxciterm, MXREDUCED))
      end subroutine allocate_mix_orb_ci
 
      subroutine deallocate_mix_orb_ci()

@@ -32,7 +32,7 @@ subroutine parser
   use pseudo_mod,     	only: MPS_QUAD
   use properties,     	only: MAXPROP
   use optorb_mod,     	only: MXORBOP, MXREDUCED
-  use optci,          	only: MXCITERM
+  use optci,          	only: mxciterm
   use mstates_mod,      only: MSTATES
   use pcm,              only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
@@ -1156,9 +1156,9 @@ subroutine parser
 
     write(ounit,int_format)  " CI number of coefficients ", nciterm
     write(ounit,int_format)  " nciprim ", nciprim
-    MXCITERM = nciprim  ! validate this change debug ravindra
-    if((ncsf.eq.0) .and. (nciprim.gt.MXCITERM) ) call fatal_error('INPUT: nciprim gt MXCITERM')
-    if(nciterm.gt.MXCITERM) call fatal_error('INPUT: nciterm gt MXCITERM')
+    mxciterm = nciprim  ! validate this change debug ravindra
+    if((ncsf.eq.0) .and. (nciprim.gt.mxciterm) ) call fatal_error('INPUT: nciprim gt mxciterm')
+    if(nciterm.gt.mxciterm) call fatal_error('INPUT: nciterm gt mxciterm')
 
 ! Multiple states/efficiency/guiding flags
     ! Use guiding wave function constructed from mstates

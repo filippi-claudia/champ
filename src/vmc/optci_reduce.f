@@ -1,7 +1,7 @@
       subroutine optci_reduce
 
       use precision_kinds, only: dp
-      use optci, only: MXCITERM, MXCIREDUCED
+      use optci, only: mxciterm, MXCIREDUCED
       use optwf_contrl, only: ioptci
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
@@ -21,8 +21,8 @@
 
 c     parameter(MXTMP=max(MXORBTERM,nmatdim))
 c     max does not work with g77
-    !   parameter(MXTMP=MXCITERM+ncimatdim)
-    !   dimension collect(MXTMP),collect2(MXCITERM,MXCIREDUCED)
+    !   parameter(MXTMP=mxciterm+ncimatdim)
+    !   dimension collect(MXTMP),collect2(mxciterm,MXCIREDUCED)
 
       integer :: MXTMP
       real(dp), DIMENSION(:), ALLOCATABLE :: optci_reduce_collect
@@ -31,7 +31,7 @@ c     max does not work with g77
       MXTMP=max(MXORBTERM,nmatdim)
 
       allocate(optci_reduce_collect(MXTMP))
-      allocate(optci_reduce_collect2(MXCITERM,MXCIREDUCED))
+      allocate(optci_reduce_collect2(mxciterm,MXCIREDUCED))
 
       if (iefficiency.gt.0) then
         call mpi_reduce(effcum,optci_reduce_collect,nstates_psig
@@ -77,20 +77,20 @@ c     max does not work with g77
       do 20 i=1,nciterm
   20    ci_de_cum(i)=optci_reduce_collect(i)
 
-      call mpi_reduce(ci_oe_cum,optci_reduce_collect2,MXCITERM*nciterm
+      call mpi_reduce(ci_oe_cum,optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(optci_reduce_collect2,MXCITERM*nciterm
+      call mpi_bcast(optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 30 i=1,nciterm
        do 30 j=1,nciterm
   30    ci_oe_cum(i,j) = optci_reduce_collect2(i,j)
 
-      call mpi_reduce(ci_oe_cm2,optci_reduce_collect2,MXCITERM*nciterm
+      call mpi_reduce(ci_oe_cm2,optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(optci_reduce_collect2,MXCITERM*nciterm
+      call mpi_bcast(optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 40 i=1,nciterm

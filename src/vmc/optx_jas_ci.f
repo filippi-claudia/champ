@@ -88,7 +88,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_fin(passes,eave)
 
-      use optci, only: MXCITERM
+      use optci, only: mxciterm
       use csfs, only: ccsf, ncsf
       use dets, only: cdet
       use gradhess_ci, only: grad_ci
@@ -109,8 +109,8 @@ c-----------------------------------------------------------------------
 
       integer :: i, j
       real(dp) :: eave, h1, h2, passes
-      real(dp), dimension(MXCITERM) :: oelocav
-      real(dp), dimension(MXCITERM) :: eav
+      real(dp), dimension(mxciterm) :: oelocav
+      real(dp), dimension(mxciterm) :: eav
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -155,7 +155,7 @@ c H matrix h_jas_ci
 c H matrix h_ci_jas
    30     h_mix_jas_ci(i+nparmj,j)=(de_o_ci(i,j)+dj_oe_ci(i,j)
      &    +eave*dj(i,1)*ci_o_cum(j)/passes-dj(i,1)*oelocav(j)-ci_o_cum(j)*(de(i,1)+dj_e(i,1))/passes)/passes
-         
+
       endif
 
       return

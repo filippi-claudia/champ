@@ -408,13 +408,13 @@ end module jd_scratch
 
 module linear_norm
     !> Arguments: oav, ci_oav
-    use optci, only: MXCITERM
+    use optci, only: mxciterm
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: oav !(MXCITERM)
-    real(dp), dimension(:), allocatable :: ci_oav !(MXCITERM)
+    real(dp), dimension(:), allocatable :: oav !(mxciterm)
+    real(dp), dimension(:), allocatable :: ci_oav !(mxciterm)
 
     private
     public :: oav, ci_oav
@@ -422,9 +422,9 @@ module linear_norm
     save
 contains
     subroutine allocate_linear_norm()
-        use optci, only: MXCITERM
-        if (.not. allocated(oav)) allocate (oav(MXCITERM))
-        if (.not. allocated(ci_oav)) allocate (ci_oav(MXCITERM))
+        use optci, only: mxciterm
+        if (.not. allocated(oav)) allocate (oav(mxciterm))
+        if (.not. allocated(ci_oav)) allocate (ci_oav(mxciterm))
     end subroutine allocate_linear_norm
 
     subroutine deallocate_linear_norm()
