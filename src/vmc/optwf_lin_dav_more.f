@@ -224,7 +224,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
 
-      use sr_mod, only: MPARM, MCONF
+      use sr_mod, only: MPARM, mconf
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -245,7 +245,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real(dp) :: aux0, aux1, aux2, ddot
       real(dp), dimension(MPARM,*) :: psi
       real(dp), dimension(MPARM,*) :: hpsi
-      real(dp), dimension(MCONF) :: aux
+      real(dp), dimension(mconf) :: aux
       real(dp), dimension(MPARM,nvecx) :: hpsiloc
 
       i0=1
@@ -327,7 +327,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
 
-      use sr_mod, only: MPARM, MCONF
+      use sr_mod, only: MPARM, mconf
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -349,7 +349,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real(dp), dimension(MPARM,*) :: psi
       real(dp), dimension(MPARM,*) :: spsi
       real(dp), dimension(MPARM,nvecx) :: spsiloc
-      real(dp), dimension(MCONF) :: aux
+      real(dp), dimension(mconf) :: aux
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -411,7 +411,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
 
-      use sr_mod, only: MPARM, MCONF
+      use sr_mod, only: MPARM, mconf
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -434,7 +434,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real(dp), dimension(MPARM,*) :: psi
       real(dp), dimension(MPARM,*) :: hpsi
       real(dp), dimension(MPARM,nvecx) :: hpsiloc
-      real(dp), dimension(MCONF) :: aux
+      real(dp), dimension(mconf) :: aux
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -530,7 +530,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
 
-      use sr_mod, only: MPARM, MCONF
+      use sr_mod, only: MPARM, mconf
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -554,7 +554,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real(dp), dimension(MPARM,*) :: psi
       real(dp), dimension(MPARM,*) :: spsi
       real(dp), dimension(MPARM,nvecx) :: spsiloc
-      real(dp), dimension(MCONF) :: aux
+      real(dp), dimension(mconf) :: aux
       real(dp), dimension(MPARM) :: h_sr_sym
 
       i0=1
@@ -659,7 +659,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
-      use sr_mod, only: MPARM, MCONF
+      use sr_mod, only: MPARM, mconf
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -684,9 +684,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real(dp), dimension(MPARM,*) :: psi
       real(dp), dimension(MPARM,*) :: hpsi
       real(dp), dimension(MPARM,nvecx) :: hpsiloc
-      real(dp), dimension(MCONF) :: aux0
-      real(dp), dimension(MCONF) :: aux1
-      real(dp), dimension(MCONF) :: aux2
+      real(dp), dimension(mconf) :: aux0
+      real(dp), dimension(mconf) :: aux1
+      real(dp), dimension(mconf) :: aux2
       real(dp), dimension(MPARM) :: grad_ene
 
       i0=1

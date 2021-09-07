@@ -89,7 +89,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine atimes_n(n,z,r)
 c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
-      use sr_mod, only: MPARM, MCONF
+      use sr_mod, only: MPARM, mconf
       use csfs, only: nstates
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: weights
@@ -110,11 +110,11 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       real(dp) :: wts
       real(dp), dimension(*) :: z
       real(dp), dimension(*) :: r
-      real(dp), dimension(0:MCONF) :: aux
-      real(dp), dimension(0:MCONF) :: aux1
+      real(dp), dimension(0:mconf) :: aux
+      real(dp), dimension(0:mconf) :: aux1
       real(dp), dimension(MPARM) :: rloc
       real(dp), dimension(MPARM) :: r_s
-      real(dp), dimension(MCONF) :: oz_jasci
+      real(dp), dimension(mconf) :: oz_jasci
       real(dp), dimension(MPARM) :: tmp
       real(dp), dimension(MPARM) :: tmp2
 

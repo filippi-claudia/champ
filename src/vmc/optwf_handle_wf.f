@@ -994,7 +994,7 @@ c-----------------------------------------------------------------------
       subroutine optwf_store(l,wt,psid,energy)
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
-      use sr_mod, only: MPARM, MCONF
+      use sr_mod, only: MPARM, mconf
       use optjas, only: MPARMJ
       use csfs, only: nstates
       use derivjas, only: gvalue
@@ -1030,7 +1030,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       i0=1
       if(method.eq.'lin_d'.and.ioptjas+ioptorb.eq.0) i0=0
 
-      if(l.gt.MCONF) call fatal_error('SR_STORE: l gt MCONF')
+      if(l.gt.mconf) call fatal_error('SR_STORE: l gt mconf')
 
       call dcopy(nparmj,gvalue,1,sr_o(1,l),1)
 

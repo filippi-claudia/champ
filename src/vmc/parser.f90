@@ -28,7 +28,7 @@ subroutine parser
   use force_mod,      	only: MFORCE
 
 ! variables from process input
-  use sr_mod,         	only: MCONF
+  use sr_mod,         	only: mconf
   use pseudo_mod,     	only: MPS_QUAD
   use properties,     	only: MAXPROP
   use optorb_mod,     	only: MXORBOP, MXREDUCED
@@ -1781,7 +1781,7 @@ subroutine compute_mat_size_new()
   ! use const, only: nelec
   ! use atom, only: nctype_tot, ncent_tot
 
-  use sr_mod, only: MPARM, MOBS, MCONF
+  use sr_mod, only: MPARM, MOBS, mconf
   use control_vmc, only: vmc_nstep, vmc_nblk_max
 
   use vmc_mod, only: set_vmc_size
@@ -1794,7 +1794,7 @@ subroutine compute_mat_size_new()
 
   ! leads to circular dependecy of put in sr_mod ..
   MOBS = 10 + 6*MPARM
-  MCONF = vmc_nstep * vmc_nblk_max
+  mconf = vmc_nstep * vmc_nblk_max
 
   call set_vmc_size
   call set_optci_size

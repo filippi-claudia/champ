@@ -185,12 +185,12 @@ end module forcepar
  module force_mat_n
      !> Arguments: force_o
 
-     use sr_mod, only: MCONF
+     use sr_mod, only: mconf
      use precision_kinds, only: dp
 
      implicit none
 
-     real(dp), dimension(:, :), allocatable :: force_o !(6*MCENT,MCONF)
+     real(dp), dimension(:, :), allocatable :: force_o !(6*MCENT,mconf)
 
      private
      public   ::  force_o
@@ -198,9 +198,9 @@ end module forcepar
      save
  contains
      subroutine allocate_force_mat_n()
-         use sr_mod, only: MCONF
+         use sr_mod, only: mconf
          use atom, only: ncent_tot
-         if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, MCONF))
+         if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, mconf))
      end subroutine allocate_force_mat_n
 
      subroutine deallocate_force_mat_n()
