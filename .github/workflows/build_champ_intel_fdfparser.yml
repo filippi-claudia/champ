@@ -34,7 +34,6 @@ jobs:
     - name: Compile
       run: |
         source /opt/intel/oneapi/setvars.sh
-        printenv >> $GITHUB_ENV
         which mpiifort
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
@@ -346,7 +345,7 @@ jobs:
         retention-days: 3
 
 
-    - name: "Test 17 (Butadiene) VMC optimization including geometry and csfmap using sr_n (500 determinants) on 1 processor"
+    - name: "Test 17 (Butadiene) VMC optimization + node cutoff including geometry and csfmap using sr_n (500 determinants) on 1 processor"
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. Butadiene VMC "
@@ -355,8 +354,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
-        echo "Comparing the energy with the reference one (total E = -25.7413320 +-  0.0504240) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.7413320  0.0504240
+        echo "Comparing the energy with the reference one (total E = -25.6627410 +-  0.0637334) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.6627410  0.0637334
     - name: "Upload results of test 17"
       uses: actions/upload-artifact@v2
       with:
@@ -364,7 +363,7 @@ jobs:
         path: tests/CI_test/butadiene-vmc/optimize_wf_ci_jastrow_orb_and_geometry/vmc_sr_opt_geom.out
         retention-days: 3
 
-    - name: "Test 18 (Butadiene) VMC optimization including geometry and csfmap using sr_n (500 determinants) on 2 processors"
+    - name: "Test 18 (Butadiene) VMC optimization + node cutoff including geometry and csfmap using sr_n (500 determinants) on 2 processors"
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. Butadiene VMC "
@@ -373,8 +372,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
-        echo "Comparing the energy with the reference one (total E = -25.6993617 +-  0.0383819) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.6993617  0.0383819
+        echo "Comparing the energy with the reference one (total E = -25.9294000 +-  0.0379450) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.9294000  0.0379450
     - name: "Upload results of test 18"
       uses: actions/upload-artifact@v2
       with:

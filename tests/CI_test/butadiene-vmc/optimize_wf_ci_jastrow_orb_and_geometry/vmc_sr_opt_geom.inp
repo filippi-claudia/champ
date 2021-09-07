@@ -47,9 +47,14 @@ load jastrow_der     jastrow.der
     energy_tol    0.0
 %endmodule
 
+%module vmc
+    node_cutoff   1
+    enode_cutoff  0.001d0
+%endmodule
+
 %module blocking_vmc
-    vmc_nstep     10
-    vmc_nblk      50
+    vmc_nstep     5
+    vmc_nblk      100
     vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule
