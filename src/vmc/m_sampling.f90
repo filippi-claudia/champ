@@ -36,12 +36,12 @@ module config
     real(dp), dimension(:, :), allocatable :: xnew !(3, MELEC)
     real(dp), dimension(:, :), allocatable :: xold !(3, MELEC)
     !> DMC variables:
-    real(dp), dimension(:,:), allocatable :: d2o        ! (MWALK,MFORCE)
-    real(dp), dimension(:,:), allocatable :: peo_dmc    ! (MWALK,MFORCE)
-    real(dp), dimension(:,:), allocatable :: psido_dmc  ! (MWALK,MFORCE)
-    real(dp), dimension(:,:), allocatable :: psijo_dmc  ! (MWALK,MFORCE)
-    real(dp), dimension(:,:,:,:), allocatable :: vold_dmc ! (3,MELEC,MWALK,MFORCE)
-    real(dp), dimension(:,:,:,:), allocatable :: xold_dmc ! (3,MELEC,MWALK,MFORCE)
+    real(dp), dimension(:,:), allocatable :: d2o        ! (mwalk,MFORCE)
+    real(dp), dimension(:,:), allocatable :: peo_dmc    ! (mwalk,MFORCE)
+    real(dp), dimension(:,:), allocatable :: psido_dmc  ! (mwalk,MFORCE)
+    real(dp), dimension(:,:), allocatable :: psijo_dmc  ! (mwalk,MFORCE)
+    real(dp), dimension(:,:,:,:), allocatable :: vold_dmc ! (3,MELEC,mwalk,MFORCE)
+    real(dp), dimension(:,:,:,:), allocatable :: xold_dmc ! (3,MELEC,mwalk,MFORCE)
 
     private
     public   :: delttn, enew, eold, nearestn, nearesto, pen, peo, psi2n
@@ -110,16 +110,16 @@ contains
     subroutine allocate_config_dmc()
       use const, only: nelec
       use force_mod, only: MFORCE
-      use dmc_mod, only: MWALK
+      use dmc_mod, only: mwalk
 
       implicit none
 
-      if (.not. allocated(d2o)) allocate(d2o(MWALK,MFORCE))
-      if (.not. allocated(peo_dmc)) allocate(peo_dmc(MWALK,MFORCE))
-      if (.not. allocated(psido_dmc)) allocate(psido_dmc(MWALK,MFORCE))
-      if (.not. allocated(psijo_dmc)) allocate(psijo_dmc(MWALK,MFORCE))
-      if (.not. allocated(vold_dmc)) allocate(vold_dmc(3,nelec,MWALK,MFORCE))
-      if (.not. allocated(xold_dmc)) allocate(xold_dmc(3,nelec,MWALK,MFORCE))
+      if (.not. allocated(d2o)) allocate(d2o(mwalk,MFORCE))
+      if (.not. allocated(peo_dmc)) allocate(peo_dmc(mwalk,MFORCE))
+      if (.not. allocated(psido_dmc)) allocate(psido_dmc(mwalk,MFORCE))
+      if (.not. allocated(psijo_dmc)) allocate(psijo_dmc(mwalk,MFORCE))
+      if (.not. allocated(vold_dmc)) allocate(vold_dmc(3,nelec,mwalk,MFORCE))
+      if (.not. allocated(xold_dmc)) allocate(xold_dmc(3,nelec,mwalk,MFORCE))
     end subroutine allocate_config_dmc
 
     subroutine deallocate_config_dmc()

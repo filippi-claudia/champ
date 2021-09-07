@@ -1,22 +1,27 @@
 module dmc_mod
-    !> Arguments: MWALK, MFPROD, MFPRD1, MPATH
-    !> MWALK: Maximum number of walkers
+    !> Arguments: mwalk, MFPROD, MFPRD1, MPATH
+    !> mwalk: Maximum number of walkers
 
     implicit none
 
-    integer, parameter :: MWALK = 600
+    integer            :: mwalk
     integer, parameter :: MFPROD=3201
     integer, parameter :: MFPRD1=MFPROD-1
     integer, parameter :: MPATH=999
 
     private
-    public :: MWALK, MFPROD, MFPRD1, MPATH
+    public :: mwalk, set_mwalk, MFPROD, MFPRD1, MPATH
     save
+    contains
+    subroutine set_mwalk
+      use control_dmc, only: dmc_nconf
+      mwalk = dmc_nconf + int(0.5*dmc_nconf)  ! maximum number of walkers are 50% more than nwalk
+    end subroutine set_mwalk
 end module  dmc_mod
 
 module age
   !> Arguments: iage, ioldest, ioldestmx
-  use dmc_mod, only: MWALK
+  use dmc_mod, only: mwalk
 
   implicit none
 
@@ -31,7 +36,7 @@ module age
 contains
 
   subroutine allocate_iage()
-      if (.not. allocated(iage)) allocate (iage(MWALK))
+      if (.not. allocated(iage)) allocate (iage(mwalk))
   end subroutine allocate_iage
 
   subroutine deallocate_iage()
@@ -44,22 +49,22 @@ module branch
   !> wthist
    use precision_kinds, only: dp
    use force_mod, only: MFORCE, MFORCE_WT_PRD
-   use dmc_mod, only: MWALK, MFPRD1
+   use dmc_mod, only: mwalk, MFPRD1
 
   implicit none
 
    real(dp) :: eest
    real(dp) :: eigv
-   real(dp), dimension(:,:), allocatable :: eold !(MWALK,MFORCE)
+   real(dp), dimension(:,:), allocatable :: eold !(mwalk,MFORCE)
    real(dp), dimension(:), allocatable :: ff !(MFPRD1)
    real(dp) :: fprod
    integer  :: nwalk
-   real(dp), dimension(:,:), allocatable:: pwt !(MWALK,MFORCE)
+   real(dp), dimension(:,:), allocatable:: pwt !(mwalk,MFORCE)
    real(dp) :: wdsumo
    real(dp) :: wgdsumo
-   real(dp), dimension(:), allocatable :: wt !(MWALK)
+   real(dp), dimension(:), allocatable :: wt !(mwalk)
    real(dp), dimension(:), allocatable :: wtgen !(MFPRD1)
-   real(dp), dimension(:,:,:), allocatable :: wthist!(MWALK,MFORCE_WT_PRD,MFORCE)
+   real(dp), dimension(:,:,:), allocatable :: wthist!(mwalk,MFORCE_WT_PRD,MFORCE)
 
    private
    public :: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt
@@ -69,17 +74,17 @@ module branch
 
 contains
    subroutine allocate_branch()
-      if (.not. allocated(eold)) allocate(eold(MWALK,MFORCE))
+      if (.not. allocated(eold)) allocate(eold(mwalk,MFORCE))
       if (.not. allocated(ff)) allocate(ff(0:MFPRD1))
-      if (.not. allocated(pwt)) allocate(pwt(MWALK,MFORCE))
-      if (.not. allocated(wt)) allocate(wt(MWALK))
+      if (.not. allocated(pwt)) allocate(pwt(mwalk,MFORCE))
+      if (.not. allocated(wt)) allocate(wt(mwalk))
       if (.not. allocated(wtgen)) allocate(wtgen(0:MFPRD1))
-      if (.not. allocated(wthist)) allocate(wthist(MWALK,0:MFORCE_WT_PRD,MFORCE))
+      if (.not. allocated(wthist)) allocate(wthist(mwalk,0:MFORCE_WT_PRD,MFORCE))
    end subroutine allocate_branch
 
-!splitj.f:      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(MWALK,MFORCE),
-!splitj.f:     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-!splitj.f-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+!splitj.f:      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(mwalk,MFORCE),
+!splitj.f:     &pwt(mwalk,MFORCE),wthist(mwalk,0:MFORCE_WT_PRD,MFORCE),
+!splitj.f-     &wt(mwalk),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
    subroutine deallocate_branch()
       if (allocated(eold)) deallocate(eold)
       if (allocated(ff)) deallocate(ff)
@@ -152,7 +157,7 @@ end module c_averages_index
 
 module jacobsave
    !> Arguments: ajacob, ajacold
-   use dmc_mod, only: MWALK
+   use dmc_mod, only: mwalk
    use force_mod, only: MFORCE
    use precision_kinds, only: dp
 
@@ -168,7 +173,7 @@ module jacobsave
 
 contains
    subroutine allocate_jacobsave()
-      if (.not. allocated(ajacold)) allocate(ajacold(MWALK, MFORCE))
+      if (.not. allocated(ajacold)) allocate(ajacold(mwalk, MFORCE))
    end subroutine allocate_jacobsave
 
    subroutine deallocate_jacobsave()
@@ -180,13 +185,13 @@ end module jacobsave
 module velratio
    !> Arguments: fratio, xdrifted
    use precision_kinds, only: dp
-   use dmc_mod, only: MWALK
+   use dmc_mod, only: mwalk
    use force_mod, only: MFORCE
 
    implicit none
 
-   real(dp), dimension(:,:), allocatable :: fratio !(MWALK,MFORCE)
-   real(dp), dimension(:,:,:,:), allocatable :: xdrifted !(3,MELEC,MWALK,MFORCE)
+   real(dp), dimension(:,:), allocatable :: fratio !(mwalk,MFORCE)
+   real(dp), dimension(:,:,:,:), allocatable :: xdrifted !(3,MELEC,mwalk,MFORCE)
 
    private
    public :: fratio, xdrifted
@@ -195,11 +200,11 @@ module velratio
 
 contains
    subroutine allocate_velratio()
-      use dmc_mod, only: MWALK
+      use dmc_mod, only: mwalk
       use force_mod, only: MFORCE
       use const, only: nelec
-      if (.not. allocated(fratio)) allocate(fratio(MWALK, MFORCE))
-      if (.not. allocated(xdrifted)) allocate(xdrifted(3, nelec, MWALK, MFORCE))
+      if (.not. allocated(fratio)) allocate(fratio(mwalk, MFORCE))
+      if (.not. allocated(xdrifted)) allocate(xdrifted(3, nelec, mwalk, MFORCE))
    end subroutine allocate_velratio
 
    subroutine deallocate_velratio()

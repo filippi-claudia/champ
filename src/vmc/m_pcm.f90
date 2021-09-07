@@ -445,10 +445,10 @@ module pcmo
     real(dp) :: spcmo
     real(dp) :: vpcmo
     !> DMC arrays:
-    real(dp), dimension(:,:), allocatable :: enfpcmo_dmc !(MWALK, MCHS)
-    real(dp), dimension (:), allocatable :: qopcmo_dmc !(MWALK)
-    real(dp), dimension (:), allocatable :: spcmo_dmc !(MWALK)
-    real(dp), dimension (:), allocatable :: vpcmo_dmc !(MWALK)
+    real(dp), dimension(:,:), allocatable :: enfpcmo_dmc !(mwalk, MCHS)
+    real(dp), dimension (:), allocatable :: qopcmo_dmc !(mwalk)
+    real(dp), dimension (:), allocatable :: spcmo_dmc !(mwalk)
+    real(dp), dimension (:), allocatable :: vpcmo_dmc !(mwalk)
 
 
     private
@@ -459,12 +459,12 @@ module pcmo
 contains
     subroutine allocate_pcmo()
         use pcm, only: MCHS
-        use dmc_mod, only: MWALK
+        use dmc_mod, only: mwalk
         if (.not. allocated(enfpcmo)) allocate(enfpcmo(MCHS))
-        if (.not. allocated(enfpcmo_dmc)) allocate(enfpcmo_dmc(MWALK, MCHS))
-        if (.not. allocated(qopcmo_dmc)) allocate(qopcmo_dmc(MWALK))
-        if (.not. allocated(spcmo_dmc)) allocate(spcmo_dmc(MWALK))
-        if (.not. allocated(vpcmo_dmc)) allocate(vpcmo_dmc(MWALK))
+        if (.not. allocated(enfpcmo_dmc)) allocate(enfpcmo_dmc(mwalk, MCHS))
+        if (.not. allocated(qopcmo_dmc)) allocate(qopcmo_dmc(mwalk))
+        if (.not. allocated(spcmo_dmc)) allocate(spcmo_dmc(mwalk))
+        if (.not. allocated(vpcmo_dmc)) allocate(vpcmo_dmc(mwalk))
     end subroutine allocate_pcmo
 
     subroutine deallocate_pcmo()

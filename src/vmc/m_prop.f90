@@ -43,11 +43,11 @@ end module prp001
 
 module prp002
     !> Arguments: vprop_old
-    use dmc_mod, only: MWALK
+    use dmc_mod, only: mwalk
     use properties, only: MAXPROP
     use precision_kinds, only: dp
 
-    real(dp), dimension(:, :), allocatable :: vprop_old !(MAXPROP,MWALK)
+    real(dp), dimension(:, :), allocatable :: vprop_old !(MAXPROP,mwalk)
     real(dp), dimension(:), allocatable :: vprop_old2 !(MAXPROP)
 
     private
@@ -57,7 +57,7 @@ module prp002
 contains
     subroutine allocate_prp002()
         use properties, only: MAXPROP
-        if (.not. allocated(vprop_old)) allocate (vprop_old(MAXPROP, MWALK))
+        if (.not. allocated(vprop_old)) allocate (vprop_old(MAXPROP, mwalk))
         if (.not. allocated(vprop_old2)) allocate (vprop_old2(MAXPROP))
     end subroutine allocate_prp002
 

@@ -128,7 +128,7 @@ subroutine parser
   use optwf_contrl, 	  only: sr_tau , sr_adiag, sr_eps
   use optwf_func, 		  only: ifunc_omega, omega0, n_omegaf, n_omegat
   use optwf_corsam, 	  only: add_diag
-  use dmc_mod, 			    only: MWALK
+  use dmc_mod, 			    only: mwalk, set_mwalk
 
   use optorb_mix,       only: norbopt, norbvirt
 
@@ -679,8 +679,9 @@ subroutine parser
     write(ounit,int_format) " Number of DMC blocks before eq. = ", dmc_nblkeq
 
     write(ounit,int_format) " Target walker population = ", dmc_nconf
+    call set_mwalk()  ! to set up maximum allowed number of walkers
     if(dmc_nconf .le. 0) call fatal_error('INPUT: target population <= 0')
-    if(dmc_nconf .gt. MWALK) call fatal_error('INPUT: target population > MWALK')
+    if(dmc_nconf .gt. mwalk) call fatal_error('INPUT: target population > mwalk')
     write(ounit,int_format) " Number of configurations saved = ", dmc_nconf_new
   endif
 ! VMC/DMC calculation parameters settings ends here.

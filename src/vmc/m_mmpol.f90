@@ -108,18 +108,18 @@ module mmpolo
     !> Arguments: cmmpolo, dmmpolo, eeko
     use mmpol_mod, only: MCHMM
     use precision_kinds, only: dp
-    use dmc_mod, only: MWALK
+    use dmc_mod, only: mwalk
 
     real(dp) :: cmmpolo
     real(dp) :: dmmpolo
     real(dp), dimension(:, :), allocatable :: eeko !(3,MCHMM)
 
     !> DMC variables:
-    real(dp), dimension(:), allocatable :: cmmpolo_dmc !(MWALK)
-    real(dp), dimension(:), allocatable :: dmmpolo_dmc !(MWALK)
-    real(dp), dimension(:,:), allocatable :: eeko1 !(MWALK,MCHMM)
-    real(dp), dimension(:,:), allocatable :: eeko2 !(MWALK,MCHMM)
-    real(dp), dimension(:,:), allocatable :: eeko3 !(MWALK,MCHMM)
+    real(dp), dimension(:), allocatable :: cmmpolo_dmc !(mwalk)
+    real(dp), dimension(:), allocatable :: dmmpolo_dmc !(mwalk)
+    real(dp), dimension(:,:), allocatable :: eeko1 !(mwalk,MCHMM)
+    real(dp), dimension(:,:), allocatable :: eeko2 !(mwalk,MCHMM)
+    real(dp), dimension(:,:), allocatable :: eeko3 !(mwalk,MCHMM)
 
     private
     public :: cmmpolo, dmmpolo, eeko
@@ -130,11 +130,11 @@ contains
     subroutine allocate_mmpolo()
         use mmpol_mod, only: MCHMM
         if (.not. allocated(eeko)) allocate(eeko(3, MCHMM))
-        if (.not. allocated(cmmpolo_dmc)) allocate(cmmpolo_dmc(MWALK))
-        if (.not. allocated(dmmpolo_dmc)) allocate(dmmpolo_dmc(MWALK))
-        if (.not. allocated(eeko1)) allocate(eeko1(MWALK,MCHMM))
-        if (.not. allocated(eeko2)) allocate(eeko2(MWALK,MCHMM))
-        if (.not. allocated(eeko3)) allocate(eeko3(MWALK,MCHMM))
+        if (.not. allocated(cmmpolo_dmc)) allocate(cmmpolo_dmc(mwalk))
+        if (.not. allocated(dmmpolo_dmc)) allocate(dmmpolo_dmc(mwalk))
+        if (.not. allocated(eeko1)) allocate(eeko1(mwalk,MCHMM))
+        if (.not. allocated(eeko2)) allocate(eeko2(mwalk,MCHMM))
+        if (.not. allocated(eeko3)) allocate(eeko3(mwalk,MCHMM))
     end subroutine allocate_mmpolo
 
     subroutine deallocate_mmpolo()
