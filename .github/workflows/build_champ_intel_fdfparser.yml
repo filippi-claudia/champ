@@ -449,7 +449,7 @@ jobs:
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000_double.out  -e error_vmc_optimization_5000
 
         echo "Comparing the energy with the reference one (total E = -26.2436517 +-  0.0248033) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000_double.out "total E" -26.2436517 +-  0.0248033
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000_double.out "total E" -26.2436517  0.0248033
     - name: "Upload results of test 22"
       uses: actions/upload-artifact@v2
       with:
