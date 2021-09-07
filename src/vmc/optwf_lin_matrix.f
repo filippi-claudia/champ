@@ -326,7 +326,7 @@ c-----------------------------------------------------------------------
       subroutine compute_dparm(nparm,mparmx,lwork,dparm,h,h_sav,s,s_sav,work,eig_vec,
      &                     add_diag,energy_sav,energy_err_sav)
 
-      use optci, only: MXCITERM, MXCIMATDIM
+      use optci, only: MXCITERM, ncimatdim
       use csfs, only: ccsf, ncsf, nstates
       use dets, only: cdet
       use linear_norm, only: oav
@@ -361,7 +361,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(MPARMALL) :: seig_inv
       real(dp), dimension(MPARMALL,*) :: eig_vec
       real(dp), dimension(MPARMALL,MPARMALL) :: hmod
-      real(dp), dimension(MXCIMATDIM) :: s_norm
+      real(dp), dimension(ncimatdim) :: s_norm
       real(dp), dimension(MPARMALL) :: cdelta
       real(dp), dimension(MXCITERM) :: overlap
       real(dp), parameter :: eps = 1.d-12

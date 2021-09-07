@@ -21,7 +21,7 @@
 
 c     parameter(MXTMP=max(MXORBTERM,nmatdim))
 c     max does not work with g77
-    !   parameter(MXTMP=MXCITERM+MXCIMATDIM)
+    !   parameter(MXTMP=MXCITERM+ncimatdim)
     !   dimension collect(MXTMP),collect2(MXCITERM,MXCIREDUCED)
 
       integer :: MXTMP

@@ -5,10 +5,10 @@ module optci
     integer :: MXCITERM = 16000
 
     integer :: MXCIREDUCED
-    integer :: MXCIMATDIM
+    integer :: ncimatdim
 
     private
-    public :: MXCITERM, MXCIREDUCED, MXCIMATDIM
+    public :: MXCITERM, MXCIREDUCED, ncimatdim
     public :: set_optci_size
     save
 contains
@@ -19,7 +19,7 @@ contains
         else
             MXCIREDUCED = 1
         end if
-        MXCIMATDIM = MXCITERM*(MXCIREDUCED + 1)/2
+        ncimatdim = MXCITERM*(MXCIREDUCED + 1)/2
     end subroutine set_optci_size
 end module optci
 
@@ -225,12 +225,12 @@ end module ci008_blk
 
 module ci009_blk
     !> Arguments: ci_oo_sum, ci_oo_cm2, ci_oo_cum
-    use optci, only: MXCIMATDIM
+    use optci, only: ncimatdim
     use precision_kinds, only: dp
 
-    real(dp), dimension(:), allocatable :: ci_oo_cm2 !(MXCIMATDIM)
-    real(dp), dimension(:), allocatable :: ci_oo_cum !(MXCIMATDIM)
-    real(dp), dimension(:), allocatable :: ci_oo_sum !(MXCIMATDIM)
+    real(dp), dimension(:), allocatable :: ci_oo_cm2 !(ncimatdim)
+    real(dp), dimension(:), allocatable :: ci_oo_cum !(ncimatdim)
+    real(dp), dimension(:), allocatable :: ci_oo_sum !(ncimatdim)
 
     private
     public :: ci_oo_sum, ci_oo_cm2, ci_oo_cum
@@ -238,10 +238,10 @@ module ci009_blk
     save
 contains
     subroutine allocate_ci009_blk()
-        use optci, only: MXCIMATDIM
-        if (.not. allocated(ci_oo_cm2)) allocate (ci_oo_cm2(MXCIMATDIM))
-        if (.not. allocated(ci_oo_cum)) allocate (ci_oo_cum(MXCIMATDIM))
-        if (.not. allocated(ci_oo_sum)) allocate (ci_oo_sum(MXCIMATDIM))
+        use optci, only: ncimatdim
+        if (.not. allocated(ci_oo_cm2)) allocate (ci_oo_cm2(ncimatdim))
+        if (.not. allocated(ci_oo_cum)) allocate (ci_oo_cum(ncimatdim))
+        if (.not. allocated(ci_oo_sum)) allocate (ci_oo_sum(ncimatdim))
     end subroutine allocate_ci009_blk
 
     subroutine deallocate_ci009_blk()
@@ -254,11 +254,11 @@ end module ci009_blk
 
 module ci010_blk
     !> Arguments: ci_ooe_cum, ci_ooe_sum
-    use optci, only: MXCIMATDIM
+    use optci, only: ncimatdim
     use precision_kinds, only: dp
 
-    real(dp), dimension(:), allocatable :: ci_ooe_cum !(MXCIMATDIM)
-    real(dp), dimension(:), allocatable :: ci_ooe_sum !(MXCIMATDIM)
+    real(dp), dimension(:), allocatable :: ci_ooe_cum !(ncimatdim)
+    real(dp), dimension(:), allocatable :: ci_ooe_sum !(ncimatdim)
     private
 
     public :: ci_ooe_cum, ci_ooe_sum
@@ -266,9 +266,9 @@ module ci010_blk
     save
 contains
     subroutine allocate_ci010_blk()
-        use optci, only: MXCIMATDIM
-        if (.not. allocated(ci_ooe_cum)) allocate (ci_ooe_cum(MXCIMATDIM))
-        if (.not. allocated(ci_ooe_sum)) allocate (ci_ooe_sum(MXCIMATDIM))
+        use optci, only: ncimatdim
+        if (.not. allocated(ci_ooe_cum)) allocate (ci_ooe_cum(ncimatdim))
+        if (.not. allocated(ci_ooe_sum)) allocate (ci_ooe_sum(ncimatdim))
     end subroutine allocate_ci010_blk
 
     subroutine deallocate_ci010_blk()
