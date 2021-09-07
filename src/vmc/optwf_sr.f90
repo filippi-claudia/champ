@@ -263,7 +263,7 @@ contains
         ! <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
         use mpi
-        use sr_mod, only: MOBS
+        use sr_mod, only: mobs
         use csfs, only: nstates
         use mstates_mod, only: MSTATES
         use mpiconf, only: idtask
@@ -312,7 +312,7 @@ contains
         jelohfj = n_obs + 1
         n_obs = n_obs + nparm
 
-        if (n_obs .gt. MOBS) call fatal_error('SR_HS LIN: n_obs > MOBS)')
+        if (n_obs .gt. mobs) call fatal_error('SR_HS LIN: n_obs > mobs)')
 
         do k = 1, nparm
             h_sr(k) = 0.d0
@@ -405,7 +405,7 @@ contains
             s_diag(1, 1) = sr_adiag !!!
         endif
 
-        if (n_obs .gt. MOBS) call fatal_error('SR_HS LIN: n_obs > MOBS)')
+        if (n_obs .gt. mobs) call fatal_error('SR_HS LIN: n_obs > mobs)')
 
         do i = jhfj, n_obs
             obs(i, 1) = 0.d0

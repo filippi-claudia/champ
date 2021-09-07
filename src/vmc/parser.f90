@@ -1781,7 +1781,7 @@ subroutine compute_mat_size_new()
   ! use const, only: nelec
   ! use atom, only: nctype_tot, ncent_tot
 
-  use sr_mod, only: MPARM, MOBS, mconf
+  use sr_mod, only: MPARM, mobs, mconf
   use control_vmc, only: vmc_nstep, vmc_nblk_max
 
   use vmc_mod, only: set_vmc_size
@@ -1793,7 +1793,7 @@ subroutine compute_mat_size_new()
   implicit none
 
   ! leads to circular dependecy of put in sr_mod ..
-  MOBS = 10 + 6*MPARM
+  mobs = 10 + 6*MPARM
   mconf = vmc_nstep * vmc_nblk_max
 
   call set_vmc_size

@@ -29,7 +29,7 @@ c Written by Claudia Filippi
       real(dp), dimension(MSTATES, MFORCE) :: enow
 
 
-      integer MOBS
+      integer mobs
       integer iupdate
       character*20 filename
 
@@ -39,9 +39,9 @@ c Written by Claudia Filippi
       real(dp), dimension(:), allocatable  :: collect
 
 
-      MOBS = MSTATES*(8+5*MFORCE)+10
-      allocate(local_obs(MOBS))
-      allocate(collect(MOBS))
+      mobs = MSTATES*(8+5*MFORCE)+10
+      allocate(local_obs(mobs))
+      allocate(collect(mobs))
 
 
       ! ipudate was not declared anywhere
@@ -106,7 +106,7 @@ c Written by Claudia Filippi
 
       jo_tot=jo
 
-      if(jo_tot.gt.MOBS)  call fatal_error('ACUEST_REDUCE: increase MOBS')
+      if(jo_tot.gt.mobs)  call fatal_error('ACUEST_REDUCE: increase mobs')
 
       call mpi_reduce(local_obs,collect,jo_tot
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
