@@ -1,0 +1,30 @@
+%module general
+    title        'butadiene cas44 vmc calculation with 20 dets and 12 csf'
+    pool         './pool/'
+    pseudopot    BFD
+    basis        BFD-Q
+    mode         'vmc_one_mpi1'
+%endmodule
+
+load molecule        $pool/butadiene.xyz
+load basis_num_info  $pool/BFD-Q.bfinfo
+
+load determinants    cas44.det
+load orbitals        cas44.lcao
+load symmetry        cas44.sym
+load jastrow         jastrow_good_b3lyp.0
+load jastrow_der     jastrow.der
+
+
+
+%module electrons
+    nup           11
+    nelec         22
+%endmodule
+
+%module blocking_vmc
+    vmc_nstep     5
+    vmc_nblk      100
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+%endmodule
