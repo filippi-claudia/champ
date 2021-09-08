@@ -530,7 +530,7 @@ jobs:
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF_3body/butadiene_ras1022_Q_optWF+geo
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_ras1022_Q_optWF+geo
 
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_45000.inp  -o vmc_optimization_45000_single.out  -e error
@@ -548,7 +548,7 @@ jobs:
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF_3body/butadiene_ras1022_Q_optWF+geo
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_ras1022_Q_optWF+geo
 
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_45000.inp  -o vmc_optimization_45000_double.out  -e error
