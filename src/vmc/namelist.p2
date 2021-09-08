@@ -36,7 +36,7 @@ LIST optwf ioptwf idl_flag ilbfgs_flag ilbfgs_m method nopt_iter
      save_blocks force_blocks iorbsample
      iuse_trafo iuse_orbeigv ncore nextorb no_active
      approx approx_mix energy_tol
-     sr_tau sr_eps sr_adiag micro_iter_sr dl_mom
+     sr_tau sr_eps sr_adiag alambda micro_iter_sr dl_mom
      lin_eps lin_adiag lin_nvec lin_nvecx lin_jdav
      func_omega omega n_omegaf n_omegat
      sr_rescale

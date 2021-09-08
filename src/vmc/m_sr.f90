@@ -30,6 +30,7 @@ module sr_mat_n
 
     real(dp), dimension(:, :), allocatable :: elocal !(MCONF,MSTATES)
     real(dp), dimension(:, :), allocatable :: h_sr !(MPARM,MSTATES)
+    real(dp), dimension(:, :), allocatable :: h_sr_penalty !(MPARM,MSTATES)
     integer :: jefj
     integer :: jfj
     integer :: jhfj
@@ -44,7 +45,7 @@ module sr_mat_n
     real(dp), dimension(:, :), allocatable :: obs_tot !(MOBS,MSTATES)
 
     private
-    public :: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot, istat_curr
+    public :: elocal, h_sr, h_sr_penalty, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot, istat_curr
     public :: allocate_sr_mat_n, deallocate_sr_mat_n
     save
 contains
@@ -54,6 +55,7 @@ contains
         use mstates_mod, only: MSTATES
         if (.not. allocated(elocal)) allocate (elocal(MCONF, MSTATES))
         if (.not. allocated(h_sr)) allocate (h_sr(MPARM,MSTATES))
+        if (.not. allocated(h_sr_penalty)) allocate (h_sr_penalty(MPARM,MSTATES))
         if (.not. allocated(obs)) allocate (obs(MOBS, MSTATES))
         if (.not. allocated(s_diag)) allocate (s_diag(MPARM, MSTATES))
         if (.not. allocated(s_ii_inv)) allocate (s_ii_inv(MPARM, MSTATES))
@@ -72,6 +74,7 @@ contains
         if (allocated(s_diag)) deallocate (s_diag)
         if (allocated(obs)) deallocate (obs)
         if (allocated(h_sr)) deallocate (h_sr)
+        if (allocated(h_sr_penalty)) deallocate (h_sr_penalty)
         if (allocated(elocal)) deallocate (elocal)
     end subroutine deallocate_sr_mat_n
 

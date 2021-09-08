@@ -264,6 +264,8 @@ contains
 
         real(dp), DIMENSION(:), allocatable :: obs_wtg
         real(dp), DIMENSION(:), allocatable :: obs_wtg_tot
+        
+        real(dp), parameter :: eps_eigval=1.d-14
 
         allocate (obs_wtg(MSTATES))
         allocate (obs_wtg_tot(MSTATES))
@@ -358,7 +360,7 @@ contains
             do k = 1, nparm
                 if (s_ii_inv(k,1) .gt. smax) smax = s_ii_inv(k,1)
             enddo
-            write (6, '(''max S diagonal element '',t41,d8.2)') smax
+            write (6, '(''max S diagonal element '',t41,d9.2)') smax
 
             kk = 0
             do k = 1, nparm
@@ -481,8 +483,6 @@ contains
 
         if (idtask .eq. 0) then
         do i = 1, nparm
-            write (6, *) 'CIAO', obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1), obs_tot(jelo, 1), &
-                obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1)
             deltap(i) = deltap(i)/(obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1))
         enddo
         endif

@@ -101,7 +101,7 @@ contains
              sr_adiag=sr_adiag_sav
           endif
 
-	  call compute_norm_lin(nparm,deltap)
+	  call compute_norm_lin(nparm,-deltap)
           call compute_parameters(deltap,iflag,1)
           call write_wf(1,iter)
           call save_wf
@@ -147,9 +147,14 @@ contains
   subroutine sr_ortho(nparm,deltap,sr_adiag,sr_eps,i)
     use const, only: ipr
     use csfs, only: nstates
-    use sr_mat_n, only: h_sr, istat_curr
+    use sr_mat_n, only: h_sr, istat_curr, s_ii_inv, h_sr_penalty
     use mpiconf, only: idtask
     use optwf_sr_mod, only: sr_rescale_deltap
+    
+    ! stu added
+    use optorb_cblock, only: norbterm
+    use orb_mat_022, only: ideriv
+    use optwf_parms, only: nparmj
 
     implicit real*8(a-h,o-z)
     integer, intent(in) :: nparm
@@ -164,13 +169,6 @@ contains
     imod=50                   ! inv. freq. of calc. r=b-Ax vs. r=r-\alpha q (see pcg)
     deltap=0.0d0              ! initial guess of solution
 
-    !if (idtask.eq.0.and.ipr.gt.4) then
-    if (idtask.eq.0) then
-       print *, "Gradient state 1"
-       print *, h_sr(1:nparm,1)
-       print *, "Gradient state 2"
-       print *, h_sr(1:nparm,2)
-    end if
 
     do j=1,nstates
        istat_curr = j
@@ -178,6 +176,51 @@ contains
        call pcg(nparm,h_sr(1:nparm,istat_curr),deltap(1:nparm,istat_curr),i,imax,imod,sr_eps)
        call sr_rescale_deltap(nparm,deltap(1:nparm,istat_curr))
     enddo
+    
+    ! stu added
+    if (idtask.eq.0) then
+       iorbstart=nparmj+1
+       iorbend=norbterm+nparmj
+       icistart=nparmj+1+norbterm
+
+       do j=1,nstates
+          if (j.eq.1) then
+             print *, "State: ", j
+             print *, "Jastrow Parameters"
+             print *, "parm, deltap, full grad, s_ii_inv"
+             do i=1,nparmj
+                write(6,'(i7,3es26.15e3)') i, deltap(i,j), h_sr(i,j), s_ii_inv(i,j) 
+             enddo
+             print *, "Orbital Mixing Parameters"
+             print *, "parm, orbterm, deltap, full grad, s_ii_inv io, jo"
+             do i=iorbstart,iorbend
+                write(6,'(2i7,3es26.15e3,2i7)') i, i-nparmj, deltap(i,j), h_sr(i,j), s_ii_inv(i,j), ideriv(1,i-nparmj), ideriv(2,i-nparmj)
+             enddo
+             print *, "CI Parameters"
+             print *, "parm, citerm, deltap, full grad, s_ii_inv"
+             do i=icistart,nparm
+                write(6,'(2i7,3es26.15e3)') i, i-iorbend, deltap(i,j), h_sr(i,j), s_ii_inv(i,j)
+             enddo
+          else
+             print *, "State: ", j
+             print *, "Jastrow Parameters"
+             print *, "parm, deltap, full grad, ortho grad, s_ii_inv"
+             do i=1,nparmj
+                write(6,'(i7,4es26.15e3)') i, deltap(i,j), h_sr(i,j), h_sr_penalty(i,j), s_ii_inv(i,j) 
+             enddo
+             print *, "Orbital Mixing Parameters"
+             print *, "parm, orbterm, deltap, full grad, ortho grad, s_ii_inv io, jo"
+             do i=iorbstart,iorbend
+                write(6,'(2i7,4es26.15e3,2i7)') i, i-nparmj, deltap(i,j), h_sr(i,j), h_sr_penalty(i,j), s_ii_inv(i,j), ideriv(1,i-nparmj), ideriv(2,i-nparmj)
+             enddo
+             print *, "CI Parameters"
+             print *, "parm, citerm, deltap, full grad, ortho grad, s_ii_inv"
+             do i=icistart,nparm
+                write(6,'(2i7,4es26.15e3)') i, i-iorbend, deltap(i,j), h_sr(i,j), h_sr_penalty(i,j), s_ii_inv(i,j)
+             enddo
+          endif
+       enddo
+    endif
 
   end subroutine sr_ortho
 
@@ -227,12 +270,23 @@ contains
 
     if(idtask.eq.0) then
        do istate=1,nstates
+          tmp=obs_tot(jwtg,istate)+obs_norm_tot(jwfj,istate)
+          if(istate.eq.1) tmp1=tmp
           anormo(istate)=obs_tot(jwtg,istate)+obs_norm_tot(jwfj,istate)&
 		  +obs_norm_tot(jsqfj,istate)
-	  print *, "NORMS", istate, obs_tot(jwtg,istate)/passes, anormo(istate)/passes
+          write(6,'(''NORMS'',i3,6f10.4)') istate,obs_tot(jwtg,istate)/passes, anormo(istate)/passes,&
+                             obs_tot(jwtg,istate)/obs_tot(jwtg,1),anormo(istate)/anormo(1),tmp/tmp1
        enddo
-       anormo=anormo/passes
+       ! Ramon was using the anormo
+       !anormo=anormo/passes
+       ! Claudia tries this
+       do istate=2,nstates
+         anormo(istate)=anormo(istate)/anormo(1)
+       enddo
+       anormo(1)=1.d0
     endif
+    ! TMP
+    ! anormo=1.d0
     call MPI_BCAST(anormo(1),nstates,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
   end subroutine
@@ -245,7 +299,7 @@ contains
     use mpiconf, only: idtask
     use optwf_func, only: ifunc_omega, omega
     use sr_index, only: jelo, jelo2, jelohfj
-    use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
+    use sr_mat_n, only: elocal, h_sr, h_sr_penalty, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
     use sr_mat_n, only: sr_o, wtg, obs_tot
     use optorb_cblock, only: norbterm
     use method_opt, only: method
@@ -253,7 +307,10 @@ contains
     implicit real*8 (a-h,o-z)
 
     integer, intent(in) :: nparm
-    real(dp), dimension(nconf_n) :: aux
+    
+    real(dp), parameter :: eps_eigval=1.d-14
+
+    call p2gtfd('optwf:alambda',alambda,1.0d0,1)
 
     jwtg=1
     n_obs=nstates
@@ -273,61 +330,85 @@ contains
 
     if(n_obs.gt.MOBS) call fatal_error('SR_HS LIN: n_obs_ortho BS)')
 
-    do iconf=1,nconf_n
-       aux(iconf) = 0.0d0
-    enddo
-
+! main loop over the states
     do istate=1,nstates
+
        do i=1,n_obs
           obs(i,istate) = 0.0d0
        enddo
+
        do iconf=1,nconf_n
+
+! <psi(istate)^2/psig^2>
           obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
 
+! <(psi(istate)/psig)*(*psi(jstate)/psig)>
           do jstate=1,istate-1
              obs(jwtg+jstate,istate)=obs(jwtg+jstate,istate)&
 		     +sr_o(nparm+2,iconf,jstate)*sr_o(nparm+2,iconf,istate)
           enddo
 
+! <eloc(istate)*psi(istate)^2/psig^2>
           obs(jelo,istate)=obs(jelo,istate)&
 		  +elocal(iconf,istate)*wtg(iconf,istate)
 
           do i=1,nparm
+! <psi_i(istate)/psi(istate)*psi(istate)^2/psig^2>
              obs(jfj+i-1,istate)=obs(jfj+i-1,istate)&              
 		     +sr_o(i,iconf,istate)*wtg(iconf,istate)
+
+! <eloc(istate)*psi_i(istate)/psi(istate)*psi(istate)^2/psig^2>
              obs(jefj+i-1,istate)=obs(jefj+i-1,istate)&
        		     +elocal(iconf,istate)*sr_o(i,iconf,istate)*wtg(iconf,istate)
+
+! <(psi_i(istate)/psi(istate))^2*psi(istate)^2/psig^2>
              obs(jfifj+i-1,istate)=obs(jfifj+i-1,istate)&
        		     +sr_o(i,iconf,istate)*sr_o(i,iconf,istate)*wtg(iconf,istate)
           enddo
        enddo
 
+! reduce what computed so far
        n_obs_reduce=n_obs
        if(nstates.gt.1) n_obs_reduce=n_obs-nparm
 
        call MPI_REDUCE(obs(1,istate),obs_tot(1,istate),&
        	       n_obs_reduce,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
 
+! bcast overlaps only
        call MPI_BCAST(obs_tot(1,istate),nstates,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
-       if(istate.gt.1) then
+! compute part of gradient of cost function sum_jstate^{istate-1} chi_jstate,istate
+! sum_jstate^{istate-1} <(psi_i(istate)/psi(istate)*(psi(istate)/psig)*(psi(jstate/psig)>
+!                      *<(psi(istate)/psig)*(psi(jstate)/psig)>_tot/<psi(jstate)^2/psig^2>_tot
+       
+       !call cpu_time(dstart_time)
+       do jstate=1,istate-1
+          dum=obs_tot(jwtg+jstate,istate)/obs_tot(jwtg,jstate)
           do iconf=1,nconf_n
-             aux(iconf)=aux(iconf)+sr_o(nparm+2,iconf,istate-1)&
-       		     *obs_tot(jwtg+istate-1,istate)/obs_tot(jwtg,istate-1)
              do i=1,nparm
                 obs(jfjsi+i-1,istate)=obs(jfjsi+i-1,istate)&
-       			+sr_o(i,iconf,istate)*sr_o(nparm+2,iconf,istate)*aux(iconf)
+       			+sr_o(i,iconf,istate)*sr_o(nparm+2,iconf,istate)*sr_o(nparm+2,iconf,jstate)*dum
              enddo
           enddo
-          call MPI_REDUCE(obs(jfjsi,istate),obs_tot(jfjsi,istate),&
+       enddo
+       !call cpu_time(dend_time)
+       !print *, "Old loop time (s): ", dend_time-dstart_time
+
+
+       call MPI_REDUCE(obs(jfjsi,istate),obs_tot(jfjsi,istate),&
        		  nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
-       endif
+
+       ! added to check with new loop
+       !if(idtask.eq.0) print *, "state, first part of pen parm 1 tot: ", istate, obs_tot(jfjsi,istate)
+
+
     enddo
+! end loop over main istate
 
     if(idtask.eq.0) then
-       alambda=1.0d0
-       aux1=0.0d0
+
        do istate=1,nstates
+! normalize to current state via <psi(istate)^2/psig^2> (to elminate <psig|psig>)
           do i=2,n_obs
              obs_tot(i,istate)=obs_tot(i,istate)/obs_tot(jwtg,istate)
           enddo
@@ -337,29 +418,17 @@ contains
        		     -obs_tot(jfj+k-1,istate)*obs_tot(jfj+k-1,istate)
              s_diag(k,istate)=aux2*sr_adiag
              s_ii_inv(k,istate)=aux2+s_diag(k,istate)
+
+! gradient wrt parameters
              h_sr(k,istate)=-2.0d0*(obs_tot(jefj+k-1,istate)&
        		     -obs_tot(jfj+k-1,istate)*obs_tot(jelo,istate))
           enddo
-
-	  ! Orthogonalization
-          if(istate.gt.1) then
-             aux1=aux1+obs_tot(jwtg+istate-1,istate)*obs_tot(jwtg+istate-1,istate)&
-       	             *obs_tot(jwtg,istate)/obs_tot(jwtg,istate-1)
-
-             do k=1,nparm
-                h_sr(k,istate)=h_sr(k,istate)&
-       	        	-alambda*2.d0*(obs_tot(jfjsi+k-1,istate)-aux1*obs_tot(jfj+k-1,istate))
-             enddo
-	     print *, "State", istate
-	     print *, "lambda SR ortho", alambda
-	     print *, "lambda*S", alambda * aux1
-          endif
 
           smax=0.0d0
           do k=1,nparm
              if(s_ii_inv(k,istate).gt.smax) smax=s_ii_inv(k,istate)
           enddo
-          write(6,'(''max S diagonal element '',t41,d8.2)') smax
+          write(6,'(''max S diagonal element '',t41,d9.2)') smax
 
           kk=0
           do k=1,nparm
@@ -371,6 +440,26 @@ contains
              endif
           enddo
           write(6,'(''nparm, non-zero S diag'',t41,2i5)') nparm,kk
+          
+          ! Orthogonalization
+          if(istate.gt.1) then
+             
+! sum (<psi(jstate)|psi(istate)>/<psi(istate)|psi(istate)>)^2*<psi(istate)|psi(istate)>/<psi(jstate)|psi(jstate)>
+             penalty=0.d0
+             do jstate=1,istate-1
+               penalty=penalty+obs_tot(jwtg+jstate,istate)*obs_tot(jwtg+jstate,istate)&
+                     *obs_tot(jwtg,istate)/obs_tot(jwtg,jstate)
+             enddo
+
+             do k=1,nparm
+                h_sr_penalty(k,istate)= -alambda*2.d0*(obs_tot(jfjsi+k-1,istate)-penalty*obs_tot(jfj+k-1,istate))
+             enddo
+             h_sr(1:nparm,istate)=h_sr(1:nparm,istate)+h_sr_penalty(1:nparm,istate)
+             print *, "State", istate
+             print *, "lambda SR ortho", alambda
+             print *, "penalty ortho  ", penalty
+          
+          endif
        enddo
     endif
 
