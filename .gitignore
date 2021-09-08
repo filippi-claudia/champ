@@ -54,6 +54,7 @@ force_analytic
 check.*
 tape8
 walkalize.*
+*.vscode
 
 #local testing of workflow
 .github/workflows/test_locally.yml

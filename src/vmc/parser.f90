@@ -741,7 +741,9 @@ subroutine parser
 
   if ( fdf_load_defined('determinants') ) then
     call read_determinants_file(file_determinants)
+    if (ioptci .ne. 0) mxciterm = ndet
   elseif ( fdf_block('determinants', bfdf)) then
+    if (ioptci .ne. 0) mxciterm = ndet
   ! call fdf_read_determinants_block(bfdf)
     write(errunit,'(a)') "Error:: No information about determinants provided."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
@@ -772,8 +774,10 @@ subroutine parser
 
   if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
     call read_csf_file(file_determinants)
+    if (ioptci .ne. 0) mxciterm = ncsf
   elseif (fdf_block('csf', bfdf)) then
     call fdf_read_csf_block(bfdf)
+    if (ioptci .ne. 0) mxciterm = ncsf
   else
     ! No csf present; set default values; This replaces inputcsf
     nstates = 1
@@ -1157,6 +1161,7 @@ subroutine parser
     write(ounit,int_format)  " CI number of coefficients ", nciterm
     write(ounit,int_format)  " nciprim ", nciprim
     mxciterm = nciprim  ! validate this change debug ravindra
+
     if((ncsf.eq.0) .and. (nciprim.gt.mxciterm) ) call fatal_error('INPUT: nciprim gt mxciterm')
     if(nciterm.gt.mxciterm) call fatal_error('INPUT: nciterm gt mxciterm')
 
