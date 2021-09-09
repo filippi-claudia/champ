@@ -1,7 +1,7 @@
       subroutine optx_orb_ci_reduce
 c Written by Claudia Filippi
 
-      use optorb_mod, only: MXREDUCED
+      use optorb_mod, only: mxreduced
       use optci, only: mxciterm
       use optwf_contrl, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
@@ -15,7 +15,7 @@ c Written by Claudia Filippi
 
       integer :: i, ierr, j
 
-      real(dp), dimension(mxciterm,MXREDUCED) :: collect
+      real(dp), dimension(mxciterm,mxreduced) :: collect
 
 
       if(ioptci.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return

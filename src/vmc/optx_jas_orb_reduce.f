@@ -1,7 +1,7 @@
       subroutine optx_jas_orb_reduce
 c Written by Claudia Filippi
 
-      use optorb_mod, only: MXREDUCED
+      use optorb_mod, only: mxreduced
       use optjas, only: MPARMJ
       use csfs, only: nstates
       use optwf_contrl, only: ioptjas, ioptorb
@@ -14,7 +14,7 @@ c Written by Claudia Filippi
       implicit none
 
       integer :: i, ierr, istate, j, nreduced
-      real(dp), dimension(MPARMJ,MXREDUCED) :: collect
+      real(dp), dimension(MPARMJ,mxreduced) :: collect
 
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return

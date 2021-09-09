@@ -1,13 +1,13 @@
 module gradhess_all
     !> Arguments: MPARMALL, grad, h, s
-    ! use optorb_mod, only: MXREDUCED
+    ! use optorb_mod, only: mxreduced
     ! use optjas, only: MPARMJ
     ! use optci, only: MXCIREDUCED
     use precision_kinds, only: dp
 
     implicit none
 
-    ! integer, parameter :: MPARMALL = MPARMJ + MXCIREDUCED + MXREDUCED
+    ! integer, parameter :: MPARMALL = MPARMJ + MXCIREDUCED + mxreduced
     integer :: MPARMALL
     real(dp), dimension(:), allocatable :: grad !(MPARMALL)
     real(dp), dimension(:, :), allocatable :: h !(MPARMALL,MPARMALL)
@@ -22,8 +22,8 @@ contains
     subroutine set_gradhess_all_size()
         use optci, only: MXCIREDUCED
         use optjas, only: MPARMJ
-        use optorb_mod, only: MXREDUCED
-        MPARMALL = MPARMJ + MXCIREDUCED + MXREDUCED
+        use optorb_mod, only: mxreduced
+        MPARMALL = MPARMJ + MXCIREDUCED + mxreduced
     end subroutine set_gradhess_all_size
 
     subroutine allocate_gradhess_all()
@@ -237,14 +237,14 @@ end module gradhess_mix_jas_ci
 
 module gradhess_mix_jas_orb
     !> Arguments: h_mix_jas_orb, s_mix_jas_orb
-    use optorb_mod, only: MXREDUCED
+    use optorb_mod, only: mxreduced
     use optjas, only: MPARMJ
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: h_mix_jas_orb !(2*MPARMJ,MXREDUCED)
-    real(dp), dimension(:, :), allocatable :: s_mix_jas_orb !(MPARMJ,MXREDUCED)
+    real(dp), dimension(:, :), allocatable :: h_mix_jas_orb !(2*MPARMJ,mxreduced)
+    real(dp), dimension(:, :), allocatable :: s_mix_jas_orb !(MPARMJ,mxreduced)
 
     private
     public   ::  h_mix_jas_orb, s_mix_jas_orb
@@ -252,10 +252,10 @@ module gradhess_mix_jas_orb
     save
 contains
     subroutine allocate_gradhess_mix_jas_orb()
-        use optorb_mod, only: MXREDUCED
+        use optorb_mod, only: mxreduced
         use optjas, only: MPARMJ
-        if (.not. allocated(h_mix_jas_orb)) allocate (h_mix_jas_orb(2*MPARMJ, MXREDUCED))
-        if (.not. allocated(s_mix_jas_orb)) allocate (s_mix_jas_orb(MPARMJ, MXREDUCED))
+        if (.not. allocated(h_mix_jas_orb)) allocate (h_mix_jas_orb(2*MPARMJ, mxreduced))
+        if (.not. allocated(s_mix_jas_orb)) allocate (s_mix_jas_orb(MPARMJ, mxreduced))
     end subroutine allocate_gradhess_mix_jas_orb
 
     subroutine deallocate_gradhess_mix_jas_orb()
@@ -267,14 +267,14 @@ end module gradhess_mix_jas_orb
 
 module gradhess_mix_orb_ci
     !> Arguments: h_mix_ci_orb, s_mix_ci_orb
-    use optorb_mod, only: MXREDUCED
+    use optorb_mod, only: mxreduced
     use optci, only: mxciterm
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: h_mix_ci_orb !(2*mxciterm,MXREDUCED)
-    real(dp), dimension(:, :), allocatable :: s_mix_ci_orb !(mxciterm,MXREDUCED)
+    real(dp), dimension(:, :), allocatable :: h_mix_ci_orb !(2*mxciterm,mxreduced)
+    real(dp), dimension(:, :), allocatable :: s_mix_ci_orb !(mxciterm,mxreduced)
 
     private
     public   ::  h_mix_ci_orb, s_mix_ci_orb
@@ -282,10 +282,10 @@ module gradhess_mix_orb_ci
     save
 contains
     subroutine allocate_gradhess_mix_orb_ci()
-        use optorb_mod, only: MXREDUCED
+        use optorb_mod, only: mxreduced
         use optci, only: mxciterm
-        if (.not. allocated(h_mix_ci_orb)) allocate (h_mix_ci_orb(2*mxciterm, MXREDUCED))
-        if (.not. allocated(s_mix_ci_orb)) allocate (s_mix_ci_orb(mxciterm, MXREDUCED))
+        if (.not. allocated(h_mix_ci_orb)) allocate (h_mix_ci_orb(2*mxciterm, mxreduced))
+        if (.not. allocated(s_mix_ci_orb)) allocate (s_mix_ci_orb(mxciterm, mxreduced))
     end subroutine allocate_gradhess_mix_orb_ci
 
     subroutine deallocate_gradhess_mix_orb_ci()

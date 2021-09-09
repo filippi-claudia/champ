@@ -779,7 +779,7 @@ c replaced column
 c-----------------------------------------------------------------------
       subroutine optorb_define
 
-      use optorb_mod, only: MXORBOP, MXREDUCED
+      use optorb_mod, only: MXORBOP, mxreduced
       use vmc_mod, only: norb_tot
       use const, only: nelec
       use dets, only: ndet
@@ -984,7 +984,7 @@ c Define new operator (new variation) and its terms
 c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
       if(method.eq.'linear') then
 
-        if(MXREDUCED.ne.MXORBOP) call fatal_error('READ_INPUT: MXREDUCED.ne.MXORBOP')
+        if(mxreduced.ne.MXORBOP) call fatal_error('READ_INPUT: mxreduced.ne.MXORBOP')
         nreduced=norbterm
        elseif(method.eq.'sr_n'.or.method.eq.'lin_d'.or.method.eq.'mix_n') then
         nreduced=1

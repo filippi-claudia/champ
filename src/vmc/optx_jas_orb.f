@@ -101,7 +101,7 @@ c-----------------------------------------------------------------------
 
       do 200 istate=1,nstates
   200 write(iu) ((dj_o(i,j,istate),dj_oe(i,j,istate),dj_ho(i,j,istate),de_o(i,j,istate),i=1,nparmj),j=1,nreduced)
-  
+
 
       return
       end
@@ -130,7 +130,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_orb_fin(wcum,ecum)
 
-      use optorb_mod, only: MXREDUCED
+      use optorb_mod, only: mxreduced
       use csfs, only: nstates
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use optwf_contrl, only: ioptjas, ioptorb, iuse_orbeigv, iapprox
@@ -143,7 +143,7 @@ c-----------------------------------------------------------------------
       use orb_mat_005, only: orb_ho_cum
       use method_opt, only: method
       use optorb_cblock, only: nreduced
-      ! I think this one is not needed ... 
+      ! I think this one is not needed ...
       ! use gradhess_jas, only: grad_jas
       use precision_kinds, only: dp
 
@@ -154,7 +154,7 @@ c-----------------------------------------------------------------------
       real(dp) :: passesi, wts
       real(dp), dimension(*) :: wcum
       real(dp), dimension(*) :: ecum
-      real(dp), dimension(MXREDUCED) :: grad_orb
+      real(dp), dimension(mxreduced) :: grad_orb
 
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -183,7 +183,7 @@ c Approximate mixed Hessian terms using orbital eigenvalues
 
         do 10 j=1,nreduced
  10       grad_orb(j)=2*(orb_oe_cum(j,istate)-eave*orb_o_cum(j,istate))*passesi
- 
+
         do 20 i=1,nparmj
           grad_jas=2*(dj_e(i,istate)-eave*dj(i,istate))*passesi
           do 20 j=1,nreduced

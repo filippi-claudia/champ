@@ -2,18 +2,18 @@ module optorb_mod
     ! flags and dimensions for orbital optimization
     ! maximal number of terms, max dim of reduced matrices
 
-    ! integer, parameter :: MXREDUCED = 1
-    ! integer, parameter :: nmatdim = MXREDUCED*(MXREDUCED + 1)
+    ! integer, parameter :: mxreduced = 1
+    ! integer, parameter :: nmatdim = mxreduced*(mxreduced + 1)
     ! integer, parameter :: nmatdim2 = nmatdim/2
 
     integer :: MXORBOP = 10000
-    integer :: MXREDUCED
+    integer :: mxreduced
     integer :: nmatdim
     integer :: nmatdim2
 
     integer, parameter :: MXREP = 10
     private
-    public :: MXORBOP, MXREDUCED, nmatdim, nmatdim2, MXREP
+    public :: MXORBOP, mxreduced, nmatdim, nmatdim2, MXREP
     public :: set_optorb_size
     save
 
@@ -22,11 +22,11 @@ contains
 
         use method_opt, only: method
         if (method .eq. 'linear') then
-            MXREDUCED = MXORBOP
+            mxreduced = MXORBOP
         else
-            MXREDUCED = 1
+            mxreduced = 1
         end if
-        nmatdim = MXREDUCED*(MXREDUCED + 1)
+        nmatdim = mxreduced*(mxreduced + 1)
         nmatdim2 = nmatdim/2
 
     end subroutine set_optorb_size
