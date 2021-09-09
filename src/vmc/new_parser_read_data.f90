@@ -883,7 +883,7 @@ subroutine read_csfmap_file(file_determinants)
     use, intrinsic :: iso_fortran_env
     use contrl_file,    only: ounit, errunit
     use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    use dets, only: cdet, ndet
+    use dets, only: cdet, ndet, nmap
     use wfsec, only: nwftype
     use mstates_mod, only: MDETCSFX
     use precision_kinds,    only: dp
@@ -896,7 +896,7 @@ subroutine read_csfmap_file(file_determinants)
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iostat, i, j, k, iunit
     integer                         :: icsf, jx
-    integer                         :: nptr, nterm, id, nmap
+    integer                         :: nptr, nterm, id
     integer                         :: ncsf_check, ndet_check, nmap_check
     real(dp)                        :: c
     logical                         :: exist, printed
@@ -1017,7 +1017,7 @@ subroutine read_csfmap_file(file_determinants)
             write(ounit,'(i4)') icsf
             do j = iadet(icsf), ibdet(icsf)
                 jx = icxdet(j)
-                write(ounit,'(1(5x, i4, t12, f12.8, 1x))') icxdet(j), cxdet(j)
+                write(ounit,'(1(5x, i0, t15, f12.8, 1x))') icxdet(j), cxdet(j)
             enddo
         enddo
         write(ounit,*)

@@ -4,7 +4,6 @@
       use mpiconf,            only: wid
 
       use numbas_mod, only: MRWF, MRWF_PTS
-      use vmc_mod, only: NCOEF
       use atom, only: znuc, nctype, nctype_tot
 ! c Written by Claudia Filippi
 ! c Modified by F. Schautz to use fancy file names

@@ -5,9 +5,10 @@ module dets
 
     real(dp), dimension(:, :, :), allocatable :: cdet !(MDET,MSTATES,MWF)
     integer :: ndet
+    integer :: nmap
 
     private
-    public   :: cdet, ndet
+    public   :: cdet, ndet, nmap
 !    public :: allocate_dets
     public :: deallocate_dets
     save
