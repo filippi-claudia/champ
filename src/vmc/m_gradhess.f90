@@ -2,12 +2,12 @@ module gradhess_all
     !> Arguments: MPARMALL, grad, h, s
     ! use optorb_mod, only: mxreduced
     ! use optjas, only: MPARMJ
-    ! use optci, only: MXCIREDUCED
+    ! use optci, only: mxcireduced
     use precision_kinds, only: dp
 
     implicit none
 
-    ! integer, parameter :: MPARMALL = MPARMJ + MXCIREDUCED + mxreduced
+    ! integer, parameter :: MPARMALL = MPARMJ + mxcireduced + mxreduced
     integer :: MPARMALL
     real(dp), dimension(:), allocatable :: grad !(MPARMALL)
     real(dp), dimension(:, :), allocatable :: h !(MPARMALL,MPARMALL)
@@ -20,10 +20,10 @@ module gradhess_all
 contains
 
     subroutine set_gradhess_all_size()
-        use optci, only: MXCIREDUCED
+        use optci, only: mxcireduced
         use optjas, only: MPARMJ
         use optorb_mod, only: mxreduced
-        MPARMALL = MPARMJ + MXCIREDUCED + mxreduced
+        MPARMALL = MPARMJ + mxcireduced + mxreduced
     end subroutine set_gradhess_all_size
 
     subroutine allocate_gradhess_all()
@@ -145,14 +145,14 @@ end module gradhessjo
 
 module gradhess_ci
     !> Arguments: grad_ci, h_ci, s_ci
-    use optci, only: mxciterm, MXCIREDUCED
+    use optci, only: mxciterm, mxcireduced
     use precision_kinds, only: dp
 
     implicit none
 
     real(dp), dimension(:), allocatable :: grad_ci !(mxciterm)
-    real(dp), dimension(:, :), allocatable :: h_ci !(mxciterm,MXCIREDUCED)
-    real(dp), dimension(:, :), allocatable :: s_ci !(mxciterm,MXCIREDUCED)
+    real(dp), dimension(:, :), allocatable :: h_ci !(mxciterm,mxcireduced)
+    real(dp), dimension(:, :), allocatable :: s_ci !(mxciterm,mxcireduced)
 
     private
     public   ::  grad_ci, h_ci, s_ci
@@ -160,10 +160,10 @@ module gradhess_ci
     save
 contains
     subroutine allocate_gradhess_ci()
-        use optci, only: mxciterm, MXCIREDUCED
+        use optci, only: mxciterm, mxcireduced
         if (.not. allocated(grad_ci)) allocate (grad_ci(mxciterm))
-        if (.not. allocated(h_ci)) allocate (h_ci(mxciterm, MXCIREDUCED))
-        if (.not. allocated(s_ci)) allocate (s_ci(mxciterm, MXCIREDUCED))
+        if (.not. allocated(h_ci)) allocate (h_ci(mxciterm, mxcireduced))
+        if (.not. allocated(s_ci)) allocate (s_ci(mxciterm, mxcireduced))
     end subroutine allocate_gradhess_ci
 
     subroutine deallocate_gradhess_ci()

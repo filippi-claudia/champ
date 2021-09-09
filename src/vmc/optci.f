@@ -350,7 +350,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_avrg(wcum,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
 
-      use optci, only: mxciterm, MXCIREDUCED, ncimatdim
+      use optci, only: mxciterm, mxcireduced, ncimatdim
       use optwf_contrl, only: ioptci
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum
@@ -368,8 +368,8 @@ c-----------------------------------------------------------------------
       real(dp) :: err, wcum, x, x2
       real(dp), dimension(mxciterm) :: oav
       real(dp), dimension(mxciterm) :: deav
-      real(dp), dimension(mxciterm, MXCIREDUCED) :: oeav
-      real(dp), dimension(mxciterm, MXCIREDUCED) :: oeerr
+      real(dp), dimension(mxciterm, mxcireduced) :: oeav
+      real(dp), dimension(mxciterm, mxcireduced) :: oeerr
       real(dp), dimension(ncimatdim) :: ooav
       real(dp), dimension(ncimatdim) :: ooerr
       real(dp), dimension(ncimatdim) :: ooeav
@@ -402,7 +402,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_fin(iblk,passes,etot)
 
-      use optci, only: mxciterm, MXCIREDUCED, ncimatdim
+      use optci, only: mxciterm, mxcireduced, ncimatdim
       use csfs, only: ccsf, ncsf
       use dets, only: cdet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
@@ -419,8 +419,8 @@ c-----------------------------------------------------------------------
       integer :: j
       real(dp) :: etot, passes
       real(dp), dimension(mxciterm) :: deav
-      real(dp), dimension(mxciterm, MXCIREDUCED) :: oeav
-      real(dp), dimension(mxciterm, MXCIREDUCED) :: oeerr
+      real(dp), dimension(mxciterm, mxcireduced) :: oeav
+      real(dp), dimension(mxciterm, mxcireduced) :: oeerr
       real(dp), dimension(ncimatdim) :: ooav
       real(dp), dimension(ncimatdim) :: ooerr
       real(dp), dimension(ncimatdim) :: ooeav
@@ -523,7 +523,7 @@ c h_0,0, h_0,ci, h_ci,0, s_0,ci, s_ci,0
 
 c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
-      use optci, only: mxciterm, MXCIREDUCED, ncimatdim
+      use optci, only: mxciterm, mxcireduced, ncimatdim
       use linear_norm, only: oav
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciterm
@@ -538,8 +538,8 @@ c-----------------------------------------------------------------------
       integer, dimension(5) :: itemp_print
       real(dp) :: w
       real(dp), dimension(mxciterm) :: deav
-      real(dp), dimension(mxciterm, MXCIREDUCED) :: oeav
-      real(dp), dimension(mxciterm, MXCIREDUCED) :: oeerr
+      real(dp), dimension(mxciterm, mxcireduced) :: oeav
+      real(dp), dimension(mxciterm, mxcireduced) :: oeerr
       real(dp), dimension(ncimatdim) :: ooav
       real(dp), dimension(ncimatdim) :: ooerr
       real(dp), dimension(ncimatdim) :: ooeav
