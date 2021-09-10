@@ -1,7 +1,7 @@
       subroutine optjas_reduce
 c Written by Claudia Filippi
       use mpi
-      use optjas, only: MPARMJ
+      use optwf_parms, only: nparmj
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
@@ -18,78 +18,78 @@ c Written by Claudia Filippi
 
       integer :: i, ierr, istate, j, ngrad_jas_collect
 
-      real(dp), dimension(MPARMJ, MSTATES) :: collect
-      real(dp), dimension(MPARMJ, MPARMJ, MSTATES) :: collect2
+      real(dp), dimension(nparmj, MSTATES) :: collect
+      real(dp), dimension(nparmj, nparmj, MSTATES) :: collect2
 
 
       if(ioptjas.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
 c Note, to do: error is not collected
 
-      call mpi_reduce(dj,collect,MPARMJ*nstates
+      call mpi_reduce(dj,collect,nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect,MPARMJ*nstates
+      call mpi_bcast(collect,nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 10 istate=1,nstates
         do 10 i=1,nparmj
   10      dj(i,istate)=collect(i,istate)
 
-      call mpi_reduce(dj_e,collect,MPARMJ*nstates
+      call mpi_reduce(dj_e,collect,nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect,MPARMJ*nstates
+      call mpi_bcast(collect,nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 20 istate=1,nstates
         do 20 i=1,nparmj
   20      dj_e(i,istate)=collect(i,istate)
 
-      call mpi_reduce(de,collect,MPARMJ*nstates
+      call mpi_reduce(de,collect,nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect,MPARMJ*nstates
+      call mpi_bcast(collect,nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 25 istate=1,nstates
         do 25 i=1,nparmj
   25      de(i,istate)=collect(i,istate)
 
-      call mpi_reduce(de_e,collect,MPARMJ*nstates
+      call mpi_reduce(de_e,collect,nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect,MPARMJ*nstates
+      call mpi_bcast(collect,nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 26 istate=1,nstates
         do 26 i=1,nparmj
   26      de_e(i,istate)=collect(i,istate)
 
-      call mpi_reduce(e2,collect,MPARMJ*nstates
+      call mpi_reduce(e2,collect,nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect,MPARMJ*nstates
+      call mpi_bcast(collect,nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 27 istate=1,nstates
         do 27 i=1,nparmj
   27      e2(i,istate)=collect(i,istate)
 
-      call mpi_reduce(dj_e2,collect,MPARMJ*nstates
+      call mpi_reduce(dj_e2,collect,nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect,MPARMJ*nstates
+      call mpi_bcast(collect,nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 28 istate=1,nstates
         do 28 i=1,nparmj
   28      dj_e2(i,istate)=collect(i,istate)
 
-      call mpi_reduce(dj_de,collect2,MPARMJ*MPARMJ*nstates
+      call mpi_reduce(dj_de,collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect2,MPARMJ*MPARMJ*nstates
+      call mpi_bcast(collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 30 istate=1,nstates
@@ -97,10 +97,10 @@ c Note, to do: error is not collected
           do 30 j=1,nparmj
   30        dj_de(i,j,istate)=collect2(i,j,istate)
 
-      call mpi_reduce(dj_dj,collect2,MPARMJ*MPARMJ*nstates
+      call mpi_reduce(dj_dj,collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect2,MPARMJ*MPARMJ*nstates
+      call mpi_bcast(collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 40 istate=1,nstates
@@ -108,10 +108,10 @@ c Note, to do: error is not collected
           do 40 j=1,nparmj
   40        dj_dj(i,j,istate)=collect2(i,j,istate)
 
-      call mpi_reduce(dj_dj_e,collect2,MPARMJ*MPARMJ*nstates
+      call mpi_reduce(dj_dj_e,collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect2,MPARMJ*MPARMJ*nstates
+      call mpi_bcast(collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 50 istate=1,nstates
@@ -119,10 +119,10 @@ c Note, to do: error is not collected
           do 50 j=1,nparmj
   50        dj_dj_e(i,j,istate)=collect2(i,j,istate)
 
-      call mpi_reduce(d2j,collect2,MPARMJ*MPARMJ*nstates
+      call mpi_reduce(d2j,collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect2,MPARMJ*MPARMJ*nstates
+      call mpi_bcast(collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 52 istate=1,nstates
@@ -130,10 +130,10 @@ c Note, to do: error is not collected
           do 52 j=1,nparmj
   52        d2j(i,j,istate)=collect2(i,j,istate)
 
-      call mpi_reduce(d2j_e,collect2,MPARMJ*MPARMJ*nstates
+      call mpi_reduce(d2j_e,collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect2,MPARMJ*MPARMJ*nstates
+      call mpi_bcast(collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 54 istate=1,nstates
@@ -141,10 +141,10 @@ c Note, to do: error is not collected
           do 54 j=1,nparmj
   54        d2j_e(i,j,istate)=collect2(i,j,istate)
 
-      call mpi_reduce(de_de,collect2,MPARMJ*MPARMJ*nstates
+      call mpi_reduce(de_de,collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(collect2,MPARMJ*MPARMJ*nstates
+      call mpi_bcast(collect2,nparmj*nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       do 56 istate=1,nstates
@@ -161,20 +161,20 @@ c Note, to do: error is not collected
 
         ngrad_jas_bcum=ngrad_jas_collect
 
-        call mpi_reduce(grad_jas_bcum,collect,MPARMJ*nstates
+        call mpi_reduce(grad_jas_bcum,collect,nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-        call mpi_bcast(collect,MPARMJ*nstates
+        call mpi_bcast(collect,nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
         do 60 istate=1,nstates
           do 60 i=1,nparmj
   60        grad_jas_bcum(i,istate)=collect(i,istate)
 
-        call mpi_reduce(grad_jas_bcm2,collect,MPARMJ*nstates
+        call mpi_reduce(grad_jas_bcm2,collect,nparmj*nstates
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-        call mpi_bcast(collect,MPARMJ*nstates
+        call mpi_bcast(collect,nparmj*nstates
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
         do 70 istate=1,nstates

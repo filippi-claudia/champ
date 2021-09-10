@@ -164,13 +164,13 @@ end module da_energy_now
 
 module deloc_dj_m
     !> Arguments: denergy
-    use optjas, only: MPARMJ
+    use optwf_parms, only: nparmj
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: denergy !(MPARMJ, MSTATES)
+    real(dp), dimension(:, :), allocatable :: denergy !(nparmj, MSTATES)
 
     private
     public :: denergy
@@ -178,9 +178,9 @@ module deloc_dj_m
     save
 contains
     subroutine allocate_deloc_dj_m()
-        use optjas, only: MPARMJ
+        use optwf_parms, only: nparmj
         use mstates_mod, only: MSTATES
-        if (.not. allocated(denergy)) allocate (denergy(MPARMJ, MSTATES))
+        if (.not. allocated(denergy)) allocate (denergy(nparmj, MSTATES))
     end subroutine allocate_deloc_dj_m
 
     subroutine deallocate_deloc_dj_m()
@@ -243,15 +243,15 @@ end module denupdn
 
 module derivjas
     !> Arguments: d2g, g, go, gvalue
-    use optjas, only: MPARMJ
+    use optwf_parms, only: nparmj
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: d2g !(MPARMJ)
-    real(dp), dimension(:, :, :), allocatable :: g !(3, MELEC, MPARMJ)
-    real(dp), dimension(:, :, :), allocatable :: go !(MELEC, MELEC, MPARMJ)
-    real(dp), dimension(:), allocatable :: gvalue !(MPARMJ)
+    real(dp), dimension(:), allocatable :: d2g !(nparmj)
+    real(dp), dimension(:, :, :), allocatable :: g !(3, MELEC, nparmj)
+    real(dp), dimension(:, :, :), allocatable :: go !(MELEC, MELEC, nparmj)
+    real(dp), dimension(:), allocatable :: gvalue !(nparmj)
 
     private
     public   :: d2g, g, go, gvalue
@@ -260,11 +260,11 @@ module derivjas
 contains
     subroutine allocate_derivjas()
         use const, only: nelec
-        use optjas, only: MPARMJ
-        if (.not. allocated(d2g)) allocate (d2g(MPARMJ))
-        if (.not. allocated(g)) allocate (g(3, nelec, MPARMJ))
-        if (.not. allocated(go)) allocate (go(nelec, nelec, MPARMJ))
-        if (.not. allocated(gvalue)) allocate (gvalue(MPARMJ))
+        use optwf_parms, only: nparmj
+        if (.not. allocated(d2g)) allocate (d2g(nparmj))
+        if (.not. allocated(g)) allocate (g(3, nelec, nparmj))
+        if (.not. allocated(go)) allocate (go(nelec, nelec, nparmj))
+        if (.not. allocated(gvalue)) allocate (gvalue(nparmj))
     end subroutine allocate_derivjas
 
     subroutine deallocate_derivjas()

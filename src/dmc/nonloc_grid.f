@@ -5,7 +5,7 @@
       use contrldmc, only: tau
       use atom, only: cent, ncent
       use config, only: xold_dmc
-      use optjas, only: MPARMJ
+      use optwf_parms, only: nparmj
       use qua, only: nquad, xq, yq, zq
       use casula, only: icasula, t_vpsp
       use distance_mod, only: r_en, rshift, rvec_en
@@ -32,7 +32,7 @@
       real(dp) :: psidi, ri, t_cum
       real(dp) :: t_norm, t_normi, tauprim
       real(dp), dimension(2) :: vpsp_det
-      real(dp), dimension(MPARMJ) :: dvpsp_dj
+      real(dp), dimension(nparmj) :: dvpsp_dj
       real(dp), dimension(*) :: x
 
 c here vpsp_det and dvpsp_det are dummy

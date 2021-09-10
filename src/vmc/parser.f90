@@ -732,90 +732,10 @@ subroutine parser
   endif
 
 
-! Determinants (only)
-
   write(ounit,*)
-  write(ounit,'(a)') " Calculation Parameters :: Determinants : "
+  write(ounit,'(a)') " Calculation Parameters :: Jastrow and Jastrow Derivatives : "
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
-
-  if ( fdf_load_defined('determinants') ) then
-    call read_determinants_file(file_determinants)
-    if (ioptci .ne. 0) mxciterm = ndet
-  elseif ( fdf_block('determinants', bfdf)) then
-    if (ioptci .ne. 0) mxciterm = ndet
-  ! call fdf_read_determinants_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about determinants provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    if(nwftype.gt.1) then
-      if(ideterminants.ne.nwftype) then
-        write(ounit,*) "Warning INPUT: block determinants missing for one wave function"
-        write(ounit,*) "Warning INPUT: determinants blocks equal for all wave functions"
-        call inputdet(nwftype)
-      endif
-    endif
-  endif
-
-  ! allocation after determinants and basis
-  if (fdf_defined("optwf")) then
-    if ( method .eq. 'linear' ) then
-      nwftype = 3
-      nforce = 3
-    endif
-  endif
-
-  call compute_mat_size_new()
-  call allocate_vmc()
-  call allocate_dmc()
-
-! (3) CSF only
-
-  if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
-    call read_csf_file(file_determinants)
-    if (ioptci .ne. 0) mxciterm = ncsf
-  elseif (fdf_block('csf', bfdf)) then
-    call fdf_read_csf_block(bfdf)
-    if (ioptci .ne. 0) mxciterm = ncsf
-  else
-    ! No csf present; set default values; This replaces inputcsf
-    nstates = 1
-    ncsf = 0
-    if (ioptci .ne. 0 .and. ici_def .eq. 1) nciterm = nciprim
-  endif
-
-! (4) CSFMAP [#####]
-
-  if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
-    call read_csfmap_file(file_determinants)
-  elseif (fdf_block('determinants', bfdf)) then
-  ! call fdf_read_csfmap_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about csfmaps provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  endif
-
-
-
-
-! (17) multideterminants information (either block or from a file)
-
-  if ( fdf_load_defined('multideterminants') ) then
-    call read_multideterminants_file(file_multideterminants)
-  elseif (fdf_block('multideterminants', bfdf)) then
-  ! call fdf_read_multideterminants_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about multideterminants provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    if(imultideterminants.eq.0) then
-      write(errunit,*) "INPUT: multideterminant bloc MISSING"
-      call multideterminants_define(0,0)
-    endif
-  endif
-  imultideterminants = 1
-
 
 ! Jastrow Parameters (either block or from a file)
 
@@ -916,6 +836,93 @@ subroutine parser
     enddo
   endif
   call set_scale_dist(1)
+
+
+
+
+! Determinants (only)
+
+  write(ounit,*)
+  write(ounit,'(a)') " Calculation Parameters :: Determinants : "
+  write(ounit,*) '____________________________________________________________________'
+  write(ounit,*)
+
+  if ( fdf_load_defined('determinants') ) then
+    call read_determinants_file(file_determinants)
+    if (ioptci .ne. 0) mxciterm = ndet
+  elseif ( fdf_block('determinants', bfdf)) then
+    if (ioptci .ne. 0) mxciterm = ndet
+  ! call fdf_read_determinants_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about determinants provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    if(nwftype.gt.1) then
+      if(ideterminants.ne.nwftype) then
+        write(ounit,*) "Warning INPUT: block determinants missing for one wave function"
+        write(ounit,*) "Warning INPUT: determinants blocks equal for all wave functions"
+        call inputdet(nwftype)
+      endif
+    endif
+  endif
+
+  ! allocation after determinants and basis
+  if (fdf_defined("optwf")) then
+    if ( method .eq. 'linear' ) then
+      nwftype = 3
+      nforce = 3
+    endif
+  endif
+
+  call compute_mat_size_new()
+  call allocate_vmc()
+  call allocate_dmc()
+
+! (3) CSF only
+
+  if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
+    call read_csf_file(file_determinants)
+    if (ioptci .ne. 0) mxciterm = ncsf
+  elseif (fdf_block('csf', bfdf)) then
+    call fdf_read_csf_block(bfdf)
+    if (ioptci .ne. 0) mxciterm = ncsf
+  else
+    ! No csf present; set default values; This replaces inputcsf
+    nstates = 1
+    ncsf = 0
+    if (ioptci .ne. 0 .and. ici_def .eq. 1) nciterm = nciprim
+  endif
+
+! (4) CSFMAP [#####]
+
+  if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
+    call read_csfmap_file(file_determinants)
+  elseif (fdf_block('determinants', bfdf)) then
+  ! call fdf_read_csfmap_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about csfmaps provided."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  endif
+
+
+
+
+! (17) multideterminants information (either block or from a file)
+
+  if ( fdf_load_defined('multideterminants') ) then
+    call read_multideterminants_file(file_multideterminants)
+  elseif (fdf_block('multideterminants', bfdf)) then
+  ! call fdf_read_multideterminants_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about multideterminants provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    if(imultideterminants.eq.0) then
+      write(errunit,*) "INPUT: multideterminant bloc MISSING"
+      call multideterminants_define(0,0)
+    endif
+  endif
+  imultideterminants = 1
 
 
 ! (7) exponents

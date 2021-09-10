@@ -63,7 +63,6 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_mstates.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_mpi.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_optci.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_optjas.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_pseudo.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_sampling.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_sr.f90

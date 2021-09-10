@@ -1108,7 +1108,6 @@ subroutine read_jasderiv_file(file_jastrow_der)
     use mpiconf,            only: wid
 
     use contrl_file,        only: ounit, errunit
-    use optjas,             only: MPARMJ
     use atom,               only: nctype
     use jaspar,             only: nspin1, is
     use jaspar4,            only: norda, nordb, nordc
@@ -1273,7 +1272,6 @@ subroutine read_jasderiv_file(file_jastrow_der)
         enddo
 
         call bcast(nparmj)
-        if (nparmj .gt. MPARMJ) call fatal_error('JASDERIV: MPARMJ too small')
 
         do it = 1, nctype
             if (wid) read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))

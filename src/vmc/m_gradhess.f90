@@ -1,13 +1,13 @@
 module gradhess_all
     !> Arguments: MPARMALL, grad, h, s
     ! use optorb_mod, only: mxreduced
-    ! use optjas, only: MPARMJ
+      use optwf_parms, only: nparmj
     ! use optci, only: mxcireduced
     use precision_kinds, only: dp
 
     implicit none
 
-    ! integer, parameter :: MPARMALL = MPARMJ + mxcireduced + mxreduced
+    ! integer, parameter :: MPARMALL = nparmj + mxcireduced + mxreduced
     integer :: MPARMALL
     real(dp), dimension(:), allocatable :: grad !(MPARMALL)
     real(dp), dimension(:, :), allocatable :: h !(MPARMALL,MPARMALL)
@@ -21,9 +21,9 @@ contains
 
     subroutine set_gradhess_all_size()
         use optci, only: mxcireduced
-        use optjas, only: MPARMJ
+        use optwf_parms, only: nparmj
         use optorb_mod, only: mxreduced
-        MPARMALL = MPARMJ + mxcireduced + mxreduced
+        MPARMALL = nparmj + mxcireduced + mxreduced
     end subroutine set_gradhess_all_size
 
     subroutine allocate_gradhess_all()
@@ -42,24 +42,24 @@ end module gradhess_all
 
 module gradhessj
     !> Arguments: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2, e2
-    use optjas, only: MPARMJ
+    use optwf_parms, only: nparmj
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: d2j !(MPARMJ,MPARMJ,MSTATES)
-    real(dp), dimension(:, :, :), allocatable :: d2j_e !(MPARMJ,MPARMJ,MSTATES)
-    real(dp), dimension(:, :), allocatable :: de !(MPARMJ,MSTATES)
-    real(dp), dimension(:, :, :), allocatable :: de_de !(MPARMJ,MPARMJ,MSTATES)
-    real(dp), dimension(:, :), allocatable :: de_e !(MPARMJ,MSTATES)
-    real(dp), dimension(:, :), allocatable :: dj !(MPARMJ,MSTATES)
-    real(dp), dimension(:, :, :), allocatable :: dj_de !(MPARMJ,MPARMJ,MSTATES)
-    real(dp), dimension(:, :, :), allocatable :: dj_dj !(MPARMJ,MPARMJ,MSTATES)
-    real(dp), dimension(:, :, :), allocatable :: dj_dj_e !(MPARMJ,MPARMJ,MSTATES)
-    real(dp), dimension(:, :), allocatable :: dj_e !(MPARMJ,MSTATES)
-    real(dp), dimension(:, :), allocatable :: dj_e2 !(MPARMJ,MSTATES)
-    real(dp), dimension(:, :), allocatable :: e2 !(MPARMJ,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: d2j !(nparmj,nparmj,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: d2j_e !(nparmj,nparmj,MSTATES)
+    real(dp), dimension(:, :), allocatable :: de !(nparmj,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: de_de !(nparmj,nparmj,MSTATES)
+    real(dp), dimension(:, :), allocatable :: de_e !(nparmj,MSTATES)
+    real(dp), dimension(:, :), allocatable :: dj !(nparmj,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: dj_de !(nparmj,nparmj,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: dj_dj !(nparmj,nparmj,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: dj_dj_e !(nparmj,nparmj,MSTATES)
+    real(dp), dimension(:, :), allocatable :: dj_e !(nparmj,MSTATES)
+    real(dp), dimension(:, :), allocatable :: dj_e2 !(nparmj,MSTATES)
+    real(dp), dimension(:, :), allocatable :: e2 !(nparmj,MSTATES)
 
     private
     public :: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2, e2
@@ -67,20 +67,20 @@ module gradhessj
     save
 contains
     subroutine allocate_gradhessj()
-        use optjas, only: MPARMJ
+        use optwf_parms, only: nparmj
         use mstates_mod, only: MSTATES
-        if (.not. allocated(d2j)) allocate (d2j(MPARMJ, MPARMJ, MSTATES))
-        if (.not. allocated(d2j_e)) allocate (d2j_e(MPARMJ, MPARMJ, MSTATES))
-        if (.not. allocated(de)) allocate (de(MPARMJ, MSTATES))
-        if (.not. allocated(de_de)) allocate (de_de(MPARMJ, MPARMJ, MSTATES))
-        if (.not. allocated(de_e)) allocate (de_e(MPARMJ, MSTATES))
-        if (.not. allocated(dj)) allocate (dj(MPARMJ, MSTATES))
-        if (.not. allocated(dj_de)) allocate (dj_de(MPARMJ, MPARMJ, MSTATES))
-        if (.not. allocated(dj_dj)) allocate (dj_dj(MPARMJ, MPARMJ, MSTATES))
-        if (.not. allocated(dj_dj_e)) allocate (dj_dj_e(MPARMJ, MPARMJ, MSTATES))
-        if (.not. allocated(dj_e)) allocate (dj_e(MPARMJ, MSTATES))
-        if (.not. allocated(dj_e2)) allocate (dj_e2(MPARMJ, MSTATES))
-        if (.not. allocated(e2)) allocate (e2(MPARMJ, MSTATES))
+        if (.not. allocated(d2j)) allocate (d2j(nparmj, nparmj, MSTATES))
+        if (.not. allocated(d2j_e)) allocate (d2j_e(nparmj, nparmj, MSTATES))
+        if (.not. allocated(de)) allocate (de(nparmj, MSTATES))
+        if (.not. allocated(de_de)) allocate (de_de(nparmj, nparmj, MSTATES))
+        if (.not. allocated(de_e)) allocate (de_e(nparmj, MSTATES))
+        if (.not. allocated(dj)) allocate (dj(nparmj, MSTATES))
+        if (.not. allocated(dj_de)) allocate (dj_de(nparmj, nparmj, MSTATES))
+        if (.not. allocated(dj_dj)) allocate (dj_dj(nparmj, nparmj, MSTATES))
+        if (.not. allocated(dj_dj_e)) allocate (dj_dj_e(nparmj, nparmj, MSTATES))
+        if (.not. allocated(dj_e)) allocate (dj_e(nparmj, MSTATES))
+        if (.not. allocated(dj_e2)) allocate (dj_e2(nparmj, MSTATES))
+        if (.not. allocated(e2)) allocate (e2(nparmj, MSTATES))
     end subroutine allocate_gradhessj
 
     subroutine deallocate_gradhessj()
@@ -102,7 +102,7 @@ end module gradhessj
 
 module gradhessjo
     !> Arguments: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
-    use optjas, only: MPARMJ
+    use optwf_parms, only: nparmj
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
@@ -112,8 +112,8 @@ module gradhessjo
     real(dp), dimension(:), allocatable :: d1d2b_old !(2)
     real(dp), dimension(:), allocatable :: d2d2a_old !(MCTYPE)
     real(dp), dimension(:), allocatable :: d2d2b_old !(2)
-    real(dp), dimension(:, :), allocatable :: denergy_old !(MPARMJ,MSTATES)
-    real(dp), dimension(:), allocatable :: gvalue_old !(MPARMJ)
+    real(dp), dimension(:, :), allocatable :: denergy_old !(nparmj,MSTATES)
+    real(dp), dimension(:), allocatable :: gvalue_old !(nparmj)
 
     private
     public   ::  d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
@@ -122,14 +122,14 @@ module gradhessjo
 contains
     subroutine allocate_gradhessjo()
         use atom, only: nctype_tot
-        use optjas, only: MPARMJ
+        use optwf_parms, only: nparmj
         use mstates_mod, only: MSTATES
         if (.not. allocated(d1d2a_old)) allocate (d1d2a_old(nctype_tot))
         if (.not. allocated(d1d2b_old)) allocate (d1d2b_old(2))
         if (.not. allocated(d2d2a_old)) allocate (d2d2a_old(nctype_tot))
         if (.not. allocated(d2d2b_old)) allocate (d2d2b_old(2))
-        if (.not. allocated(denergy_old)) allocate (denergy_old(MPARMJ, MSTATES))
-        if (.not. allocated(gvalue_old)) allocate (gvalue_old(MPARMJ))
+        if (.not. allocated(denergy_old)) allocate (denergy_old(nparmj, MSTATES))
+        if (.not. allocated(gvalue_old)) allocate (gvalue_old(nparmj))
     end subroutine allocate_gradhessjo
 
     subroutine deallocate_gradhessjo()
@@ -176,14 +176,14 @@ end module gradhess_ci
 
 module gradhess_jas
     !> Arguments: grad_jas, h_jas, s_jas
-    use optjas, only: MPARMJ
+    use optwf_parms, only: nparmj
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: grad_jas !(MPARMJ)
-    real(dp), dimension(:, :), allocatable :: h_jas !(MPARMJ,MPARMJ)
-    real(dp), dimension(:, :), allocatable :: s_jas !(MPARMJ,MPARMJ)
+    real(dp), dimension(:), allocatable :: grad_jas !(nparmj)
+    real(dp), dimension(:, :), allocatable :: h_jas !(nparmj,nparmj)
+    real(dp), dimension(:, :), allocatable :: s_jas !(nparmj,nparmj)
 
     private
     public   ::  grad_jas, h_jas, s_jas
@@ -191,10 +191,10 @@ module gradhess_jas
     save
 contains
     subroutine allocate_gradhess_jas()
-        use optjas, only: MPARMJ
-        if (.not. allocated(grad_jas)) allocate (grad_jas(MPARMJ))
-        if (.not. allocated(h_jas)) allocate (h_jas(MPARMJ, MPARMJ))
-        if (.not. allocated(s_jas)) allocate (s_jas(MPARMJ, MPARMJ))
+        use optwf_parms, only: nparmj
+        if (.not. allocated(grad_jas)) allocate (grad_jas(nparmj))
+        if (.not. allocated(h_jas)) allocate (h_jas(nparmj, nparmj))
+        if (.not. allocated(s_jas)) allocate (s_jas(nparmj, nparmj))
     end subroutine allocate_gradhess_jas
 
     subroutine deallocate_gradhess_jas()
@@ -207,14 +207,14 @@ end module gradhess_jas
 
 module gradhess_mix_jas_ci
     !> Arguments: h_mix_jas_ci, s_mix_jas_ci
-    use optjas, only: MPARMJ
+    use optwf_parms, only: nparmj
     use optci, only: mxciterm
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: h_mix_jas_ci !(2*MPARMJ,mxciterm)
-    real(dp), dimension(:, :), allocatable :: s_mix_jas_ci !(MPARMJ,mxciterm)
+    real(dp), dimension(:, :), allocatable :: h_mix_jas_ci !(2*nparmj,mxciterm)
+    real(dp), dimension(:, :), allocatable :: s_mix_jas_ci !(nparmj,mxciterm)
 
     private
     public   ::  h_mix_jas_ci, s_mix_jas_ci
@@ -222,10 +222,10 @@ module gradhess_mix_jas_ci
     save
 contains
     subroutine allocate_gradhess_mix_jas_ci()
-        use optjas, only: MPARMJ
+        use optwf_parms, only: nparmj
         use optci, only: mxciterm
-        if (.not. allocated(h_mix_jas_ci)) allocate (h_mix_jas_ci(2*MPARMJ, mxciterm))
-        if (.not. allocated(s_mix_jas_ci)) allocate (s_mix_jas_ci(MPARMJ, mxciterm))
+        if (.not. allocated(h_mix_jas_ci)) allocate (h_mix_jas_ci(2*nparmj, mxciterm))
+        if (.not. allocated(s_mix_jas_ci)) allocate (s_mix_jas_ci(nparmj, mxciterm))
     end subroutine allocate_gradhess_mix_jas_ci
 
     subroutine deallocate_gradhess_mix_jas_ci()
@@ -238,13 +238,13 @@ end module gradhess_mix_jas_ci
 module gradhess_mix_jas_orb
     !> Arguments: h_mix_jas_orb, s_mix_jas_orb
     use optorb_mod, only: mxreduced
-    use optjas, only: MPARMJ
+    use optwf_parms, only: nparmj
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: h_mix_jas_orb !(2*MPARMJ,mxreduced)
-    real(dp), dimension(:, :), allocatable :: s_mix_jas_orb !(MPARMJ,mxreduced)
+    real(dp), dimension(:, :), allocatable :: h_mix_jas_orb !(2*nparmj,mxreduced)
+    real(dp), dimension(:, :), allocatable :: s_mix_jas_orb !(nparmj,mxreduced)
 
     private
     public   ::  h_mix_jas_orb, s_mix_jas_orb
@@ -253,9 +253,9 @@ module gradhess_mix_jas_orb
 contains
     subroutine allocate_gradhess_mix_jas_orb()
         use optorb_mod, only: mxreduced
-        use optjas, only: MPARMJ
-        if (.not. allocated(h_mix_jas_orb)) allocate (h_mix_jas_orb(2*MPARMJ, mxreduced))
-        if (.not. allocated(s_mix_jas_orb)) allocate (s_mix_jas_orb(MPARMJ, mxreduced))
+        use optwf_parms, only: nparmj
+        if (.not. allocated(h_mix_jas_orb)) allocate (h_mix_jas_orb(2*nparmj, mxreduced))
+        if (.not. allocated(s_mix_jas_orb)) allocate (s_mix_jas_orb(nparmj, mxreduced))
     end subroutine allocate_gradhess_mix_jas_orb
 
     subroutine deallocate_gradhess_mix_jas_orb()
@@ -297,19 +297,19 @@ end module gradhess_mix_orb_ci
 
 module gradjerr
     !> Arguments: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
-    use optjas, only: MPARMJ
+    use optwf_parms, only: nparmj
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: dj_bsum !(MPARMJ,MSTATES)
-    real(dp), dimension(:, :), allocatable :: dj_e_bsum !(MPARMJ,MSTATES)
-    real(dp), dimension(:, :), allocatable :: dj_e_save !(MPARMJ,MSTATES)
-    real(dp), dimension(:, :), allocatable :: dj_save !(MPARMJ,MSTATES)
-    real(dp), dimension(:), allocatable :: e_bsum !(MSTATES)
-    real(dp), dimension(:, :), allocatable :: grad_jas_bcm2 !(MPARMJ,MSTATES)
-    real(dp), dimension(:, :), allocatable :: grad_jas_bcum !(MPARMJ,MSTATES)
+    real(dp), dimension(:, :), allocatable :: dj_bsum !(nparmj,MSTATES)
+    real(dp), dimension(:, :), allocatable :: dj_e_bsum !(nparmj,MSTATES)
+    real(dp), dimension(:, :), allocatable :: dj_e_save !(nparmj,MSTATES)
+    real(dp), dimension(:, :), allocatable :: dj_save !(nparmj,MSTATES)
+    real(dp), dimension(:),    allocatable :: e_bsum !(MSTATES)
+    real(dp), dimension(:, :), allocatable :: grad_jas_bcm2 !(nparmj,MSTATES)
+    real(dp), dimension(:, :), allocatable :: grad_jas_bcum !(nparmj,MSTATES)
 
     private
     public   ::  dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
@@ -317,15 +317,15 @@ module gradjerr
     save
 contains
     subroutine allocate_gradjerr()
-        use optjas, only: MPARMJ
+        use optwf_parms, only: nparmj
         use mstates_mod, only: MSTATES
-        if (.not. allocated(dj_bsum)) allocate (dj_bsum(MPARMJ, MSTATES))
-        if (.not. allocated(dj_e_bsum)) allocate (dj_e_bsum(MPARMJ, MSTATES))
-        if (.not. allocated(dj_e_save)) allocate (dj_e_save(MPARMJ, MSTATES))
-        if (.not. allocated(dj_save)) allocate (dj_save(MPARMJ, MSTATES))
+        if (.not. allocated(dj_bsum)) allocate (dj_bsum(nparmj, MSTATES))
+        if (.not. allocated(dj_e_bsum)) allocate (dj_e_bsum(nparmj, MSTATES))
+        if (.not. allocated(dj_e_save)) allocate (dj_e_save(nparmj, MSTATES))
+        if (.not. allocated(dj_save)) allocate (dj_save(nparmj, MSTATES))
         if (.not. allocated(e_bsum)) allocate (e_bsum(MSTATES))
-        if (.not. allocated(grad_jas_bcm2)) allocate (grad_jas_bcm2(MPARMJ, MSTATES))
-        if (.not. allocated(grad_jas_bcum)) allocate (grad_jas_bcum(MPARMJ, MSTATES))
+        if (.not. allocated(grad_jas_bcm2)) allocate (grad_jas_bcm2(nparmj, MSTATES))
+        if (.not. allocated(grad_jas_bcum)) allocate (grad_jas_bcum(nparmj, MSTATES))
     end subroutine allocate_gradjerr
 
     subroutine deallocate_gradjerr()

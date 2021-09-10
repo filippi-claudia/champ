@@ -4,7 +4,6 @@
     pseudopot    BFD
     basis        BFD-T-normf0
     mode         vmc
-    weights      [ 1.0d0,  1.0d0 , 1.0d0]
 %endmodule
 
 load molecule        $pool/butadiene.xyz

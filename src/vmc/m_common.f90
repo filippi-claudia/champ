@@ -34,7 +34,7 @@ module Bloc
     !> Arguments: b, tildem, xmat
     use precision_kinds, only: dp
     use vmc_mod, only: norb_tot
-    use optjas, only: MPARMJ
+    use optwf_parms, only: nparmj
 
     implicit none
 
@@ -47,7 +47,7 @@ module Bloc
     real(dp), dimension(:, :, :, :), allocatable :: db !(3,MELEC,norb_tot,MCENT)
 
     !> former Bloc_dj
-    real(dp), dimension(:, :, :), allocatable :: b_dj !(norb_tot,MELEC,MPARMJ)
+    real(dp), dimension(:, :, :), allocatable :: b_dj !(norb_tot,MELEC,nparmj)
 
     private
     public :: b, tildem, xmat
@@ -61,13 +61,13 @@ contains
         use coefs, only: norb
         use atom, only: ncent_tot
         use vmc_mod, only: norb_tot
-        use optjas, only: MPARMJ
+        use optwf_parms, only: nparmj
         if (.not. allocated(b)) allocate (b(norb_tot, nelec))
         if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
         if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb_tot, ncent_tot))
         if (.not. allocated(db)) allocate (db(3, nelec, norb_tot, ncent_tot))
-        if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, MPARMJ))
+        if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, nparmj))
     end subroutine allocate_Bloc
 
     subroutine deallocate_Bloc()

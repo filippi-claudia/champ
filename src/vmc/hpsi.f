@@ -3,7 +3,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
-      use optjas, only: MPARMJ
+      use optwf_parms, only: nparmj
       use dets, only: ndet
       use const, only: hb, nelec, ipr
       use mstates_mod, only: MSTATES
@@ -42,7 +42,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       real(dp), dimension(MSTATES) :: denergy
       real(dp), dimension(ndet, 2) :: eloc_det
       real(dp), dimension(2) :: vpsp_det
-      real(dp), dimension(MPARMJ) :: dvpsp_dj
+      real(dp), dimension(nparmj) :: dvpsp_dj
 
 c Calculates energy
 

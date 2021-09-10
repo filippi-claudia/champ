@@ -1,7 +1,7 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use pseudo_mod, only: MPS_QUAD
-      use optjas, only: MPARMJ
+      use optwf_parms, only: nparmj
       use vmc_mod, only: norb_tot
       use atom, only: iwctype, ncent, ncent_tot
       use const, only: nelec, ipr
@@ -53,7 +53,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(*) :: vpsp_det
       real(dp), dimension(*) :: dvpsp_dj
       real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
-      real(dp), dimension(MPARMJ) :: dpsij_ratio
+      real(dp), dimension(nparmj) :: dpsij_ratio
       real(dp), dimension(norb_tot) :: orbn
       real(dp), dimension(3,norb_tot) :: dorbn
       real(dp), dimension(3,ncent_tot,norb_tot) :: da_orbn

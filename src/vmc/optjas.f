@@ -1,6 +1,6 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
-      use optjas, only: MPARMJ
+      use optwf_parms, only: nparmj
       use const, only: hb, nelec, ipr
       use csfs, only: nstates
       use derivjas, only: d2g, g
@@ -32,7 +32,7 @@
       real(dp), dimension(*) :: dvpsp_dj
       real(dp), dimension(*) :: energy
       real(dp), dimension(3, *) :: vj
-      real(dp), dimension(MPARMJ) :: deloc_dj
+      real(dp), dimension(nparmj) :: deloc_dj
 
 
       if(ioptjas.eq.0) return
@@ -543,7 +543,7 @@ c-----------------------------------------------------------------------
       subroutine optjas_fin(wcum,ecum)
 c Written by Claudia Filippi
 
-      use optjas, only: MPARMJ
+      use optwf_parms, only: nparmj
       use csfs, only: nstates
       use gradhess_jas, only: grad_jas, h_jas, s_jas
       use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
@@ -561,11 +561,11 @@ c Written by Claudia Filippi
       real(dp) :: botsum_j, dble, eave, errn
       real(dp) :: passes, ratio, topsum_j, x
       real(dp) :: x2
-      real(dp), dimension(MPARMJ, MPARMJ) :: hess1
-      real(dp), dimension(MPARMJ, MPARMJ) :: hess2
-      real(dp), dimension(MPARMJ, MPARMJ) :: hess3
-      real(dp), dimension(MPARMJ) :: grad_now
-      real(dp), dimension(MPARMJ) :: gerr
+      real(dp), dimension(nparmj, nparmj) :: hess1
+      real(dp), dimension(nparmj, nparmj) :: hess2
+      real(dp), dimension(nparmj, nparmj) :: hess3
+      real(dp), dimension(nparmj) :: grad_now
+      real(dp), dimension(nparmj) :: gerr
       real(dp), dimension(*) :: ecum
       real(dp), dimension(*) :: wcum
 

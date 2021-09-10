@@ -995,7 +995,7 @@ c-----------------------------------------------------------------------
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use sr_mod, only: MPARM, mconf
-      use optjas, only: MPARMJ
+      use optwf_parms, only: nparmj
       use csfs, only: nstates
       use derivjas, only: gvalue
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
@@ -1018,7 +1018,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       integer :: i0, ii, ijasci, istate, j
       integer :: l, ntmp
-      real(dp), dimension(MPARMJ) :: tmp_ho
+      real(dp), dimension(nparmj) :: tmp_ho
       real(dp), dimension(*) :: wt
       real(dp), dimension(*) :: psid
       real(dp), dimension(*) :: energy
