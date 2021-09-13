@@ -983,6 +983,9 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
        nparmd=max(nciterm-1,0)
        nparm=nparmj+norbterm+nciterm-i0
 
+      elseif(method.eq.'mix_n') then
+       nparmd=max(nciterm-1,0)
+       nparm=nparmj+nparmd+norbterm
       endif
 
       write(ounit,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)')
@@ -994,11 +997,11 @@ c-----------------------------------------------------------------------
       subroutine optwf_store(l,wt,psid,energy)
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
-      use sr_mod, only: MPARM, mconf
+      use sr_mod, only: mconf
       use optwf_parms, only: nparmj
       use csfs, only: nstates
       use derivjas, only: gvalue
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega
       use optwf_parms, only: nparmj
       use sr_mat_n, only: elocal, nconf_n, sr_ho
@@ -1038,7 +1041,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l),1)
 
       ijasci=nparmj+ntmp
-      if(ijasci+nstates*norbterm+nstates.gt.MPARM) call fatal_error('SR_STORE: iparm gt MPARM')
+      !if(ijasci+nstates*norbterm+nstates.gt.MPARM) call fatal_error('SR_STORE: iparm gt MPARM')
 
       do istate=1,nstates
         ii=ijasci+(istate-1)*norbterm

@@ -38,7 +38,6 @@ contains
 
     subroutine optwf_sr
 
-        use sr_mod, only: MPARM
         use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
         use mstates_mod, only: MSTATES
         use optwf_corsam, only: energy, energy_err
@@ -56,13 +55,12 @@ contains
         real(dp) :: energy_sav, energy_err_sav, omega, sigma, sigma_sav
         integer :: i, iflag, iter, miter
 
-        allocate (deltap(MPARM*MSTATES))
+        allocate (deltap(nparm*MSTATES))
 
         if (method .ne. 'sr_n') return
 
         call set_nparms_tot
 
-        if (nparm .gt. MPARM) call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
         write (ounit, '(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
 
@@ -517,7 +515,7 @@ contains
     subroutine forces_zvzb(nparm)
 
         use mpi
-        use sr_mod, only: MPARM
+        use optwf_contrl, only: nparm => MPARM
         use atom, only: ncent
         use force_fin, only: da_energy_ave
         use force_mat_n, only: force_o
@@ -539,7 +537,7 @@ contains
         real(dp), dimension(:), allocatable :: work
         integer, dimension(:), allocatable :: ipvt
         integer :: nparm, i, j, k, jfhfj, ia, icent, iparm, ish, n_obs, l, info
-        integer :: jparm, jwtg, jfifj
+        integer :: jparm, jwtg, jfifj, MPARM
         real(dp) :: dum, energy_tot, force_tmp, wtoti
 
         allocate (cloc(MTEST, MTEST))

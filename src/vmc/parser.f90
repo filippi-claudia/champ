@@ -132,6 +132,8 @@ subroutine parser
 
   use optorb_mix,       only: norbopt, norbvirt
   use optorb_cblock,    only: norbterm
+  use optwf_contrl,     only: nparm
+  use ci000,            only: nciterm
 
   use grdntspar, 		    only: delgrdxyz, igrdtype, ngradnts
   use grdntspar, 		    only: delgrdba, delgrdbl, delgrdda, ngradnts
@@ -890,17 +892,6 @@ subroutine parser
 !    if( mode(1:3) == 'vmc' ) error stop
   endif
 
-
-
-
-
-  ! Know the number of orbitals for optimization.
-  call get_norbterm()
-
-  call compute_mat_size_new()
-  call allocate_vmc()
-  call allocate_dmc()
-
 ! (3) CSF only
 
   if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
@@ -927,8 +918,14 @@ subroutine parser
     error stop
   endif
 
-
-
+  ! Know the number of orbitals for optimization.
+  call get_norbterm()
+  ! Add up all the parameters. It will be used to allocate arrays.
+  nciterm = mxciterm
+  call set_nparms_tot()
+  call compute_mat_size_new()
+  call allocate_vmc()
+  call allocate_dmc()
 
 ! (17) multideterminants information (either block or from a file)
 
@@ -1802,7 +1799,8 @@ subroutine compute_mat_size_new()
   ! use const, only: nelec
   ! use atom, only: nctype_tot, ncent_tot
 
-  use sr_mod, only: MPARM, mobs, mconf
+  use sr_mod, only: mobs, mconf
+  use optwf_contrl, only: nparm
   use control_vmc, only: vmc_nstep, vmc_nblk_max
 
   use vmc_mod, only: set_vmc_size
@@ -1814,7 +1812,7 @@ subroutine compute_mat_size_new()
   implicit none
 
   ! leads to circular dependecy of put in sr_mod ..
-  mobs = 10 + 6*MPARM
+  mobs = 10 + 6*nparm
   mconf = vmc_nstep * vmc_nblk_max
 
   call set_vmc_size
