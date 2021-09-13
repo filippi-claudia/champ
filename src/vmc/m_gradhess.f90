@@ -1,5 +1,5 @@
 module gradhess_all
-    !> Arguments: MPARMALL, grad, h, s
+    !> Arguments: nparmall, grad, h, s
     ! use optorb_mod, only: mxreduced
       use optwf_parms, only: nparmj
     ! use optci, only: mxcireduced
@@ -7,14 +7,14 @@ module gradhess_all
 
     implicit none
 
-    ! integer, parameter :: MPARMALL = nparmj + mxcireduced + mxreduced
-    integer :: MPARMALL
-    real(dp), dimension(:), allocatable :: grad !(MPARMALL)
-    real(dp), dimension(:, :), allocatable :: h !(MPARMALL,MPARMALL)
-    real(dp), dimension(:, :), allocatable :: s !(MPARMALL,MPARMALL)
+    ! integer, parameter :: nparmall = nparmj + mxcireduced + mxreduced
+    integer :: nparmall
+    real(dp), dimension(:), allocatable :: grad !(nparmall)
+    real(dp), dimension(:, :), allocatable :: h !(nparmall,nparmall)
+    real(dp), dimension(:, :), allocatable :: s !(nparmall,nparmall)
 
     private
-    public :: MPARMALL, grad, h, s
+    public :: nparmall, grad, h, s
     public :: allocate_gradhess_all, deallocate_gradhess_all, set_gradhess_all_size
     save
 contains
@@ -23,13 +23,13 @@ contains
         use optci, only: mxcireduced
         use optwf_parms, only: nparmj
         use optorb_mod, only: mxreduced
-        MPARMALL = nparmj + mxcireduced + mxreduced
+        nparmall = nparmj + mxcireduced + mxreduced
     end subroutine set_gradhess_all_size
 
     subroutine allocate_gradhess_all()
-        if (.not. allocated(grad)) allocate (grad(MPARMALL))
-        if (.not. allocated(h)) allocate (h(MPARMALL, MPARMALL))
-        if (.not. allocated(s)) allocate (s(MPARMALL, MPARMALL))
+        if (.not. allocated(grad)) allocate (grad(nparmall))
+        if (.not. allocated(h)) allocate (h(nparmall, nparmall))
+        if (.not. allocated(s)) allocate (s(nparmall, nparmall))
     end subroutine allocate_gradhess_all
 
     subroutine deallocate_gradhess_all()

@@ -12,7 +12,7 @@ c written by Claudia Filippi
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite
       use control_vmc, only: vmc_nblk, vmc_nblk_max, vmc_nblk_ci
 
-      use gradhess_all, only: MPARMALL
+      use gradhess_all, only: nparmall
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nopt_iter, multiple_adiag
       use optwf_contrl, only: energy_tol, dparm_norm_min, ilastvmc
       ! I think that's needed
@@ -32,12 +32,12 @@ c written by Claudia Filippi
       real(dp) :: energy_sav
 
 
-      ! parameter(MPARMALL2=MPARMALL*(MPARMALL+1)/2)
-      ! parameter(MWORK=50*MPARMALL)
-      ! dimension grad_sav(MPARMALL),h_sav(MPARMALL,MPARMALL),s_sav(MPARMALL2)
-      ! dimension work(MWORK),work2(MPARMALL,MPARMALL)
+      ! parameter(nparmall2=nparmall*(nparmall+1)/2)
+      ! parameter(MWORK=50*nparmall)
+      ! dimension grad_sav(nparmall),h_sav(nparmall,nparmall),s_sav(nparmall2)
+      ! dimension work(MWORK),work2(nparmall,nparmall)
 
-      integer :: MPARMALL2
+      integer :: nparmall2
       integer :: MWORK
       real(dp), DIMENSION(:), allocatable :: grad_sav
       real(dp), DIMENSION(:,:), allocatable :: h_sav
@@ -45,14 +45,14 @@ c written by Claudia Filippi
       real(dp), DIMENSION(:), allocatable :: work
       real(dp), DIMENSION(:, :), allocatable :: work2
 
-      MPARMALL2 = MPARMALL*(MPARMALL+1)/2
-      MWORK=50*MPARMALL
+      nparmall2 = nparmall*(nparmall+1)/2
+      MWORK=50*nparmall
 
-      allocate(grad_sav(MPARMALL))
-      allocate(h_sav(MPARMALL,MPARMALL))
-      allocate(s_sav(MPARMALL2))
+      allocate(grad_sav(nparmall))
+      allocate(h_sav(nparmall,nparmall))
+      allocate(s_sav(nparmall2))
       allocate(work(MWORK))
-      allocate(work2(MPARMALL,MPARMALL))
+      allocate(work2(nparmall,nparmall))
 
 c No dump/restart if optimizing wave function
       vmc_irstar=0
@@ -116,10 +116,10 @@ c CI step for state average of multiple states (optimal CI for input Jastrow and
 
         call save_wf
 
-        call setup_optimization(nparm,MPARMALL,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
+        call setup_optimization(nparm,nparmall,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
 
         write(ounit,'(/,''Compute CI parameters'',/)')
-        call compute_dparm(nparm,MPARMALL,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2,
+        call compute_dparm(nparm,nparmall,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy(1),energy_err(1))
 
         call compute_parameters(grad,iflag,1)
@@ -165,7 +165,7 @@ c the CI step is unlikely to go wrong (unless the CI run is too short)
          write(ounit,'(''new energy'',2f12.5)') energy(1),energy_err(1)
          write(ounit,'(/,''Energy is worse, increase adiag to'',1pd11.4)') add_diag(1)
          call restore_wf(1)
-         call compute_dparm(nparm,MPARMALL,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
+         call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy_sav,energy_err_sav)
          call compute_parameters(grad,iflag,1)
 c In case starting config is very bad, reset configuration by calling sites
@@ -194,12 +194,12 @@ c Save current energy and sigma
 
       call save_wf
 
-      call setup_optimization(nparm,MPARMALL,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
+      call setup_optimization(nparm,nparmall,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
       if(iter.eq.1) lwork_all_save=lwork
 
 c Compute corrections to parameters
     6 write(ounit,'(/,''Compute parameters 1'',/)')
-      call compute_dparm(nparm,MPARMALL,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
+      call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy_sav,energy_err_sav)
 
       call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,add_diag(1),iflag)
@@ -236,7 +236,7 @@ c add_diag=add_diag*10
 
         call restore_wf(iadiag)
         write(ounit,'(/,''Compute parameters '',i1,/)') iadiag
-   10   call compute_dparm(nparm,MPARMALL,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
+   10   call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(iadiag),energy_sav,energy_err_sav)
 
         call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,add_diag(iadiag),iflag)
@@ -352,7 +352,7 @@ c Find optimal a_diag
 
        call restore_wf(1)
 
-   7   call compute_dparm(nparm,MPARMALL,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
+   7   call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy_sav,energy_err_sav)
 
        call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,add_diag(1),iflag)
@@ -437,7 +437,7 @@ c Jastrow and orbital parameters give worse energy
             call set_nparms
 
             call restore_wf(1)
-            call compute_dparm(nparm,MPARMALL,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
+            call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy_sav,energy_err_sav)
             call compute_parameters(grad,iflag,1)
 c In case starting config is very bad, reset configuration by calling sites
@@ -449,11 +449,11 @@ c In case starting config is very bad, reset configuration by calling sites
           endif
         endif
 
-        call setup_optimization(nparm,MPARMALL,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
+        call setup_optimization(nparm,nparmall,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
         if(iter.eq.1) lwork_ci_save=lwork
 
         write(ounit,'(/,''Compute CI parameters'',/)')
-        call compute_dparm(nparm,MPARMALL,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2,
+        call compute_dparm(nparm,nparmall,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2,
      &                     add_diag(1),energy(1),energy_err(1))
 
         call compute_parameters(grad,iflag,1)

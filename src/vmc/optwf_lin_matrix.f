@@ -4,7 +4,7 @@
       use optwf_contrl, only: ioptjas, ioptorb, multiple_adiag
       use optwf_corsam, only: energy, energy_err
       use optwf_parms, only: nparmd, nparmj
-      use gradhess_all, only: MPARMALL
+      use gradhess_all, only: nparmall
       use ci000, only: nciterm
       use method_opt, only: method
       use precision_kinds, only: dp
@@ -16,7 +16,7 @@
       integer :: ii, imag, ireal, is
       integer :: isort_ovr, iter, j, k
       integer :: lwork, mparmx, nparm
-      integer, dimension(MPARMALL) :: isort
+      integer, dimension(nparmall) :: isort
       real(dp) :: MWORK, add_diag, anorm_orth, anorm_orth_min, bot
       real(dp) :: de_range, dmult, eig_min
       real(dp) :: emax, emin, scale
@@ -24,11 +24,11 @@
       real(dp), dimension(mparmx,*) :: s
       real(dp), dimension(mparmx,*) :: h_sav
       real(dp), dimension(*) :: s_sav
-      real(dp), dimension(MPARMALL) :: eig
-      real(dp), dimension(MPARMALL) :: eigi
-      real(dp), dimension(MPARMALL) :: seig_inv
-      real(dp), dimension(MPARMALL,*) :: eig_vec
-      real(dp), dimension(MPARMALL,MPARMALL) :: hmod
+      real(dp), dimension(nparmall) :: eig
+      real(dp), dimension(nparmall) :: eigi
+      real(dp), dimension(nparmall) :: seig_inv
+      real(dp), dimension(nparmall,*) :: eig_vec
+      real(dp), dimension(nparmall,nparmall) :: hmod
       real(dp), dimension(*) :: work
       real(dp), parameter :: eps = 1.d-12
 
@@ -177,7 +177,7 @@ c       add_diag=0
 c-----------------------------------------------------------------------
       subroutine regularize_geneig(n,mparmx,h,s,work,seig_valinv,hmod)
 
-      use gradhess_all, only: MPARMALL
+      use gradhess_all, only: nparmall
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
       implicit none
@@ -188,14 +188,14 @@ c-----------------------------------------------------------------------
       real(dp) :: t, t0
       real(dp), dimension(mparmx,*) :: h
       real(dp), dimension(mparmx,*) :: s
-      real(dp), dimension(MPARMALL) :: seig_vals
+      real(dp), dimension(nparmall) :: seig_vals
       real(dp), dimension(*) :: seig_valinv
-      real(dp), dimension(MPARMALL,*) :: hmod
+      real(dp), dimension(nparmall,*) :: hmod
       real(dp), dimension(*) :: work
       real(dp), parameter :: eps = 1.d-12
       real(dp), parameter :: eps_eigval = 1.d-14
 
-      ! parameter(MWORK=50*MPARMALL)
+      ! parameter(MWORK=50*nparmall)
 
       call cpu_time(t0)
 c call dsyev to determine lworks
@@ -264,7 +264,7 @@ c     write(ounit,*) 'elapsed time to build Hmod:',t_hmod-t_sdiag
 c-----------------------------------------------------------------------
       subroutine solve_geneig(n,mparmx,hmod,s,seig_valinv,work,eig,eigi,eig_vec)
 
-      use gradhess_all, only: MPARMALL
+      use gradhess_all, only: nparmall
       use precision_kinds, only: dp
 
       implicit none
@@ -275,14 +275,14 @@ c-----------------------------------------------------------------------
       real(dp), dimension(*) :: seig_valinv
       real(dp), dimension(mparmx,*) :: hmod
       real(dp), dimension(mparmx,*) :: s
-      real(dp), dimension(MPARMALL,*) :: eig_vec
-      real(dp), dimension(MPARMALL,MPARMALL) :: eig_vecl
+      real(dp), dimension(nparmall,*) :: eig_vec
+      real(dp), dimension(nparmall,nparmall) :: eig_vecl
       real(dp), dimension(*) :: work
-      real(dp), dimension(MPARMALL) :: eig
-      real(dp), dimension(MPARMALL) :: eigi
+      real(dp), dimension(nparmall) :: eig
+      real(dp), dimension(nparmall) :: eigi
       real(dp), parameter :: eps = 1.d-12
-      ! parameter(MWORK=50*MPARMALL)
-      ! dimension eig_vecl(MPARMALL,1)
+      ! parameter(MWORK=50*nparmall)
+      ! dimension eig_vecl(nparmall,1)
 
 c s_fordiag: a copy of S for diagonalization.
 c hmod: the modified Hamiltonian matrix (in the end, S^-1*U*H*U^T)
@@ -295,14 +295,14 @@ c MISSING
 c hmod+adiag/s_diag
 
 c Determine ilwork
-      call dgeev('N','V',n,hmod,MPARMALL,eig,eigi,eig_vecl,
-     &        MPARMALL,eig_vec,MPARMALL,work,-1,isdinfo)
+      call dgeev('N','V',n,hmod,nparmall,eig,eigi,eig_vecl,
+     &        nparmall,eig_vec,nparmall,work,-1,isdinfo)
       ilwork=work(1)
 c     write(ounit,*) 'isdinfo, optimal lwork=',isdinfo,ilwork
 
 c Diagonalize
-      call dgeev('N','V',n,hmod,MPARMALL,eig,eigi,eig_vecl,
-     &        MPARMALL,eig_vec,MPARMALL,work,ilwork,isdinfo)
+      call dgeev('N','V',n,hmod,nparmall,eig,eigi,eig_vecl,
+     &        nparmall,eig_vec,nparmall,work,ilwork,isdinfo)
 c     write(ounit,*) 'isdinfo=',isdinfo
 c     call cpu_time(t)
 c     t_hmdiag=t
@@ -332,7 +332,7 @@ c-----------------------------------------------------------------------
       use linear_norm, only: oav
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
-      use gradhess_all, only: MPARMALL
+      use gradhess_all, only: nparmall
       use ci000, only: nciterm
       use method_opt, only: method
       use precision_kinds, only: dp
@@ -345,7 +345,7 @@ c-----------------------------------------------------------------------
       integer :: is, j, jj, jsort
       integer :: k, lwork, mparmx, no_real_found
       integer :: nparm
-      integer, dimension(MPARMALL) :: isort
+      integer, dimension(nparmall) :: isort
       real(dp) :: add_diag, anorm_orth, anorm_orth_min, bot
       real(dp) :: de_range, dmul, dmult, dnorm
       real(dp) :: dnorm_jj, emax, emin, energy_err_sav
@@ -356,13 +356,13 @@ c-----------------------------------------------------------------------
       real(dp), dimension(mparmx,*) :: s
       real(dp), dimension(*) :: s_sav
       real(dp), dimension(*) :: work
-      real(dp), dimension(MPARMALL) :: eig
-      real(dp), dimension(MPARMALL) :: eigi
-      real(dp), dimension(MPARMALL) :: seig_inv
-      real(dp), dimension(MPARMALL,*) :: eig_vec
-      real(dp), dimension(MPARMALL,MPARMALL) :: hmod
+      real(dp), dimension(nparmall) :: eig
+      real(dp), dimension(nparmall) :: eigi
+      real(dp), dimension(nparmall) :: seig_inv
+      real(dp), dimension(nparmall,*) :: eig_vec
+      real(dp), dimension(nparmall,nparmall) :: hmod
       real(dp), dimension(ncimatdim) :: s_norm
-      real(dp), dimension(MPARMALL) :: cdelta
+      real(dp), dimension(nparmall) :: cdelta
       real(dp), dimension(mxciterm) :: overlap
       real(dp), parameter :: eps = 1.d-12
 
