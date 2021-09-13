@@ -172,6 +172,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_lib.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optjas.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optorb.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/get_norbterm.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optci.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optx_orb_ci.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_ci.f

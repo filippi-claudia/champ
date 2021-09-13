@@ -131,6 +131,7 @@ subroutine parser
   use dmc_mod, 			    only: mwalk, set_mwalk
 
   use optorb_mix,       only: norbopt, norbvirt
+  use optorb_cblock,    only: norbterm
 
   use grdntspar, 		    only: delgrdxyz, igrdtype, ngradnts
   use grdntspar, 		    only: delgrdba, delgrdbl, delgrdda, ngradnts
@@ -874,6 +875,28 @@ subroutine parser
     endif
   endif
 
+! (9) Symmetry information of orbitals (either block or from a file)
+
+  if ( fdf_load_defined('symmetry') ) then
+    call read_symmetry_file(file_symmetry)
+  elseif ( fdf_block('symmetry', bfdf)) then
+  ! call fdf_read_symmetry_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!    if( mode(1:3) == 'vmc' ) error stop
+  else
+    write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!    if( mode(1:3) == 'vmc' ) error stop
+  endif
+
+
+
+
+
+  ! Know the number of orbitals for optimization.
+  call get_norbterm()
+
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
@@ -945,20 +968,6 @@ subroutine parser
   iexponents = iexponents + 1
 
 
-! (9) Symmetry information of orbitals (either block or from a file)
-
-  if ( fdf_load_defined('symmetry') ) then
-    call read_symmetry_file(file_symmetry)
-  elseif ( fdf_block('symmetry', bfdf)) then
-  ! call fdf_read_symmetry_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    if( mode(1:3) == 'vmc' ) error stop
-  else
-    write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    if( mode(1:3) == 'vmc' ) error stop
-  endif
 
 ! (11) Eigenvalues information of orbitals (either block or from a file)
 
