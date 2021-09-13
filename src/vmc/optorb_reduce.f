@@ -1,6 +1,6 @@
       subroutine optorb_reduce
 
-      use optorb_mod, only: MXORBOP, nmatdim
+      use optorb_mod, only: nmatdim
       use csfs, only: nstates
       use optorb_cblock, only: norbterm
       use optwf_contrl, only: ioptorb
@@ -19,7 +19,7 @@
 
       integer :: i, iefpsample, ierr, isample_cmat, istate
       integer :: matdim, norb_f_bcum, norb_f_collect, nreduced
-      real(dp), dimension(MXORBOP+nmatdim) :: collect
+      real(dp), dimension(norbterm+nmatdim) :: collect
 
       if(ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 

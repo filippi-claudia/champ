@@ -33,7 +33,7 @@ subroutine get_norbterm
     integer, dimension(2) :: ne
     integer, dimension(2) :: m
     integer, dimension(norb_tot, norb_tot) :: local_iwmix_virt
-!    integer, dimension(norb_tot) :: local_irrep
+
 
     data icount_orbdef /1/
 
@@ -65,7 +65,7 @@ subroutine get_norbterm
     do i=1,ndet
      do j=1,nelec
       if(iworbd(j,i).gt.norb) then
-       write(ounit,1) i,j,iworbd(j,i),norb
+!       write(ounit,1) i,j,iworbd(j,i),norb
        call fatal_error('VERIFY: orbital index out of range')
       endif
       if(iworbd(j,i).gt.local_ndetorb) then
@@ -78,17 +78,16 @@ subroutine get_norbterm
 !   Number of external orbitals for orbital optimization
     local_next_max  = local_norb  - local_ndetorb
     if(nadorb.gt.next_max) local_nadorb = local_next_max
-     write(ounit, '(a, t40, i0)' ) 'norb', local_norb
-     write(ounit, '(a, t40, i0)') 'nadorb', local_nadorb
-     write(ounit, '(a, t40, i0)') 'ndet_orb', local_ndetorb
-     write(ounit, '(a, t40, i0)') 'next_max', local_next_max
-    ! call fatal_error('optorb.f')
+    ! write(ounit, '(a, t40, i0)' ) 'norb', local_norb
+    ! write(ounit, '(a, t40, i0)') 'nadorb', local_nadorb
+    ! write(ounit, '(a, t40, i0)') 'ndet_orb', local_ndetorb
+    ! write(ounit, '(a, t40, i0)') 'next_max', local_next_max
 
-    if(iprt.gt.0) then
-     write(ounit,'(''Determinantal orbitals in orbital optimization: '',i0)') local_ndetorb
-     write(ounit,'(''External orbitals in orbital optimization:      '',i0)') local_nadorb
-     write(ounit,'(''Total orbitals in orbital optimization:         '',i0)') local_nadorb + local_ndetorb - local_ncore
-    endif
+    ! if(iprt.gt.0) then
+    !  write(ounit,'(''Determinantal orbitals in orbital optimization: '',i0)') local_ndetorb
+    !  write(ounit,'(''External orbitals in orbital optimization:      '',i0)') local_nadorb
+    !  write(ounit,'(''Total orbitals in orbital optimization:         '',i0)') local_nadorb + local_ndetorb - local_ncore
+    ! endif
 
 !   norb becomes number of occupied orbitals in wf; total needed are norb+adorb
     local_norb=local_ndetorb
@@ -123,8 +122,8 @@ subroutine get_norbterm
        do 9 jo=local_ncore+1,local_ndetorb+local_nadorb
  9      iwmix_virt(io,jo)=jo
     elseif(local_norbopt.ne.local_ndetorb.or.local_norbvirt.lt.local_nadorb) then
-     write(ounit,'(''get_norbterm: norbopt,ndetorb'',2i6)') local_norbopt,local_ndetorb
-     write(ounit,'(''get_norbterm: noptvirt,nadorb'',2i6)') local_norbvirt,local_nadorb
+!     write(ounit,'(''get_norbterm: norbopt,ndetorb'',2i6)') local_norbopt,local_ndetorb
+!     write(ounit,'(''get_norbterm: noptvirt,nadorb'',2i6)') local_norbvirt,local_nadorb
      call fatal_error('get_norbterm: Mixvirt block, inconsistent')
     endif
 
@@ -135,9 +134,9 @@ subroutine get_norbterm
 
     local_noporb=0
 
-    if(iprt.gt.2) then
-        write(ounit,*) '(''=========== establish no. orb variations =========='')'
-    endif
+    ! if(iprt.gt.2) then
+    !     write(ounit,*) '(''=========== establish no. orb variations =========='')'
+    ! endif
 
     do 60 io=local_ncore+1,local_ndetorb
 !   Omit empty orbitals
@@ -177,7 +176,7 @@ subroutine get_norbterm
 30       continue
 40     continue
       if(m(1)+m(2).eq.0) then
-        if(iprt.gt.3) write(ounit,'(''no appropriate determinant for '',2i4)') io,jo
+!        if(iprt.gt.3) write(ounit,'(''no appropriate determinant for '',2i4)') io,jo
         goto 50
       endif
 
@@ -189,8 +188,7 @@ subroutine get_norbterm
 60   continue
 
     local_norbterm=local_noporb
-    write(ounit,'(''number of orbital variations: '',i0)') local_norbterm
-    print*, "number of orbital variations ",  local_norbterm
+!    write(ounit,'(''number of orbital variations: '',i0)') local_norbterm
 
 !   if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
     if(method.eq.'linear') then

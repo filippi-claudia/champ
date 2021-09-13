@@ -120,7 +120,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(mxciterm) :: eav
 
 
-c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
+c     common /gradhess_orb/ grad_orb(norbterm),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return

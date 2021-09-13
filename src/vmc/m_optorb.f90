@@ -1,3 +1,42 @@
+module optorb_cblock   ! from optorb.h
+    ! norbterm: number of terms (possibly after a transformation)
+    ! norbprim: number of primitive terms (determinant ratios)
+    integer :: norbterm
+    integer :: norbprim
+
+    ! PLT: From old common block /orb004/
+    integer :: nefp_blocks
+    integer :: nb_current
+    integer :: norb_f_bcum
+
+    ! reduced correlation matrix pointers
+    ! threshold in terms of std dev. , limit for keeping operators
+    ! if iuse_trafo: linearly transformed operators sampled instead of primitive
+    !     replacement operators
+    ! PLT: From old common blocks /orb006/ and /orb008/.
+    integer :: isample_cmat
+    integer :: nreduced
+    integer :: iuse_trafiuse_trafoo
+
+    ! Dumping block averages for error analysis.
+    ! PLT: From old common blocks /orb009/ and /orb010/.
+    integer :: idump_blockav
+    integer :: iorbsample
+    integer :: ns_current
+
+    ! Printing flags:
+    integer :: iorbprt
+    integer :: iorbprt_sav
+
+    private
+    public :: norbterm, norbprim
+    public :: nefp_blocks, nb_current, norb_f_bcum
+    public :: isample_cmat, nreduced, iuse_trafiuse_trafoo
+    public :: idump_blockav, iorbsample, ns_current
+    public :: iorbprt, iorbprt_sav
+    save
+end module optorb_cblock
+
 module optorb_mod
     ! flags and dimensions for orbital optimization
     ! maximal number of terms, max dim of reduced matrices
@@ -5,15 +44,15 @@ module optorb_mod
     ! integer, parameter :: mxreduced = 1
     ! integer, parameter :: nmatdim = mxreduced*(mxreduced + 1)
     ! integer, parameter :: nmatdim2 = nmatdim/2
+    use optorb_cblock, only: norbterm
 
-    integer :: MXORBOP = 10000
     integer :: mxreduced
     integer :: nmatdim
     integer :: nmatdim2
 
     integer, parameter :: MXREP = 10
     private
-    public :: MXORBOP, mxreduced, nmatdim, nmatdim2, MXREP
+    public :: mxreduced, nmatdim, nmatdim2, MXREP
     public :: set_optorb_size
     save
 
@@ -21,8 +60,9 @@ contains
     subroutine set_optorb_size()
 
         use method_opt, only: method
+        use optorb_cblock, only: norbterm
         if (method .eq. 'linear') then
-            mxreduced = MXORBOP
+            mxreduced = norbterm
         else
             mxreduced = 1
         end if
@@ -34,13 +74,13 @@ end module optorb_mod
 
 module orb_mat_001
     !> Arguments: orb_o, orb_oe, orb_ho
-    use optorb_mod, only: MXORBOP
+    use optorb_cblock, only: norbterm
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :), allocatable :: orb_ho !(MXORBOP,MSTATES)
-    real(dp), dimension(:, :), allocatable :: orb_o  !(MXORBOP,MSTATES)
-    real(dp), dimension(:, :), allocatable :: orb_oe !(MXORBOP,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_ho !(norbterm,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_o  !(norbterm,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_oe !(norbterm,MSTATES)
 
     private
     public :: orb_o, orb_oe, orb_ho
@@ -49,11 +89,11 @@ module orb_mat_001
 contains
     subroutine allocate_orb_mat_001()
 
-        use optorb_mod, only: MXORBOP
+        use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_ho)) allocate (orb_ho(MXORBOP, MSTATES))
-        if (.not. allocated(orb_o)) allocate (orb_o(MXORBOP, MSTATES))
-        if (.not. allocated(orb_oe)) allocate (orb_oe(MXORBOP, MSTATES))
+        if (.not. allocated(orb_ho)) allocate (orb_ho(norbterm, MSTATES))
+        if (.not. allocated(orb_o)) allocate (orb_o(norbterm, MSTATES))
+        if (.not. allocated(orb_oe)) allocate (orb_oe(norbterm, MSTATES))
     end subroutine allocate_orb_mat_001
 
     subroutine deallocate_orb_mat_001()
@@ -66,13 +106,13 @@ end module orb_mat_001
 
 module orb_mat_002
     !> Arguments: orb_ho_old, orb_o_old, orb_oe_old
-    use optorb_mod, only: MXORBOP
+    use optorb_cblock, only: norbterm
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :), allocatable :: orb_ho_old !(MXORBOP,MSTATES)
-    real(dp), dimension(:, :), allocatable :: orb_o_old !(MXORBOP,MSTATES)
-    real(dp), dimension(:, :), allocatable :: orb_oe_old !(MXORBOP,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_ho_old !(norbterm,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_o_old !(norbterm,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_oe_old !(norbterm,MSTATES)
 
     private
     public :: orb_ho_old, orb_o_old, orb_oe_old
@@ -81,11 +121,11 @@ module orb_mat_002
 contains
     subroutine allocate_orb_mat_002()
 
-        use optorb_mod, only: MXORBOP
+        use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_ho_old)) allocate (orb_ho_old(MXORBOP, MSTATES))
-        if (.not. allocated(orb_o_old)) allocate (orb_o_old(MXORBOP, MSTATES))
-        if (.not. allocated(orb_oe_old)) allocate (orb_oe_old(MXORBOP, MSTATES))
+        if (.not. allocated(orb_ho_old)) allocate (orb_ho_old(norbterm, MSTATES))
+        if (.not. allocated(orb_o_old)) allocate (orb_o_old(norbterm, MSTATES))
+        if (.not. allocated(orb_oe_old)) allocate (orb_oe_old(norbterm, MSTATES))
     end subroutine allocate_orb_mat_002
 
     subroutine deallocate_orb_mat_002()
@@ -98,12 +138,12 @@ end module orb_mat_002
 
 module orb_mat_003
     !> Arguments: orb_o_sum, orb_o_cum
-    use optorb_mod, only: MXORBOP
+    use optorb_cblock, only: norbterm
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :), allocatable :: orb_o_cum !(MXORBOP,MSTATES)
-    real(dp), dimension(:, :), allocatable :: orb_o_sum !(MXORBOP,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_o_cum !(norbterm,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_o_sum !(norbterm,MSTATES)
 
     private
     public :: orb_o_sum, orb_o_cum
@@ -112,10 +152,10 @@ module orb_mat_003
 contains
     subroutine allocate_orb_mat_003()
 
-        use optorb_mod, only: MXORBOP
+        use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_o_cum)) allocate (orb_o_cum(MXORBOP, MSTATES))
-        if (.not. allocated(orb_o_sum)) allocate (orb_o_sum(MXORBOP, MSTATES))
+        if (.not. allocated(orb_o_cum)) allocate (orb_o_cum(norbterm, MSTATES))
+        if (.not. allocated(orb_o_sum)) allocate (orb_o_sum(norbterm, MSTATES))
     end subroutine allocate_orb_mat_003
 
     subroutine deallocate_orb_mat_003()
@@ -127,12 +167,12 @@ end module orb_mat_003
 
 module orb_mat_004
     !> Arguments: orb_oe_sum, orb_oe_cum
-    use optorb_mod, only: MXORBOP
+    use optorb_cblock, only: norbterm
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :), allocatable :: orb_oe_cum !(MXORBOP,MSTATES)
-    real(dp), dimension(:, :), allocatable :: orb_oe_sum !(MXORBOP,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_oe_cum !(norbterm,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_oe_sum !(norbterm,MSTATES)
 
     private
     public :: orb_oe_sum, orb_oe_cum
@@ -140,10 +180,10 @@ module orb_mat_004
     save
 contains
     subroutine allocate_orb_mat_004()
-        use optorb_mod, only: MXORBOP
+        use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_oe_cum)) allocate (orb_oe_cum(MXORBOP, MSTATES))
-        if (.not. allocated(orb_oe_sum)) allocate (orb_oe_sum(MXORBOP, MSTATES))
+        if (.not. allocated(orb_oe_cum)) allocate (orb_oe_cum(norbterm, MSTATES))
+        if (.not. allocated(orb_oe_sum)) allocate (orb_oe_sum(norbterm, MSTATES))
     end subroutine allocate_orb_mat_004
 
     subroutine deallocate_orb_mat_004()
@@ -155,11 +195,11 @@ end module orb_mat_004
 
 module orb_mat_005
     !> Arguments: orb_ho_cum
-    use optorb_mod, only: MXORBOP
+    use optorb_cblock, only: norbterm
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
-    real(dp), dimension(:, :), allocatable :: orb_ho_cum !(MXORBOP,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_ho_cum !(norbterm,MSTATES)
 
     private
     public :: orb_ho_cum
@@ -168,9 +208,9 @@ module orb_mat_005
 contains
     subroutine allocate_orb_mat_005()
 
-        use optorb_mod, only: MXORBOP
+        use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_ho_cum)) allocate (orb_ho_cum(MXORBOP, MSTATES))
+        if (.not. allocated(orb_ho_cum)) allocate (orb_ho_cum(norbterm, MSTATES))
     end subroutine allocate_orb_mat_005
 
     subroutine deallocate_orb_mat_005()
@@ -232,10 +272,10 @@ contains
 end module orb_mat_007
 
 module orb_mat_022
-    use optorb_mod, only: MXORBOP
+    use optorb_cblock, only: norbterm
     !> Arguments: ideriv
 
-    integer, dimension(:, :), allocatable :: ideriv !(2,MXORBOP)
+    integer, dimension(:, :), allocatable :: ideriv !(2,norbterm)
 
     private
     public :: ideriv
@@ -243,8 +283,8 @@ module orb_mat_022
     save
 contains
     subroutine allocate_orb_mat_022()
-        use optorb_mod, only: MXORBOP
-        if (.not. allocated(ideriv)) allocate (ideriv(2, MXORBOP))
+        use optorb_cblock, only: norbterm
+        if (.not. allocated(ideriv)) allocate (ideriv(2, norbterm))
     end subroutine allocate_orb_mat_022
 
     subroutine deallocate_orb_mat_022()
@@ -255,15 +295,15 @@ end module orb_mat_022
 
 module orb_mat_024
     !> Arguments: orb_oe_bsum, orb_f_bcum, orb_e_bsum, orb_w_bsum, orb_o_bsum, orb_f_bcm2
-    use optorb_mod, only: MXORBOP
+    use optorb_cblock, only: norbterm
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
     real(dp), dimension(:), allocatable :: orb_e_bsum !(MSTATES)
-    real(dp), dimension(:, :), allocatable :: orb_f_bcm2 !(MXORBOP,MSTATES)
-    real(dp), dimension(:, :), allocatable :: orb_f_bcum !(MXORBOP,MSTATES)
-    real(dp), dimension(:, :), allocatable :: orb_o_bsum !(MXORBOP,MSTATES)
-    real(dp), dimension(:, :), allocatable :: orb_oe_bsum !(MXORBOP,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_f_bcm2 !(norbterm,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_f_bcum !(norbterm,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_o_bsum !(norbterm,MSTATES)
+    real(dp), dimension(:, :), allocatable :: orb_oe_bsum !(norbterm,MSTATES)
     real(dp), dimension(:), allocatable :: orb_w_bsum !(MSTATES)
 
     private
@@ -273,13 +313,13 @@ module orb_mat_024
 contains
     subroutine allocate_orb_mat_024()
 
-        use optorb_mod, only: MXORBOP
+        use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
         if (.not. allocated(orb_e_bsum)) allocate (orb_e_bsum(MSTATES))
-        if (.not. allocated(orb_f_bcm2)) allocate (orb_f_bcm2(MXORBOP, MSTATES))
-        if (.not. allocated(orb_f_bcum)) allocate (orb_f_bcum(MXORBOP, MSTATES))
-        if (.not. allocated(orb_o_bsum)) allocate (orb_o_bsum(MXORBOP, MSTATES))
-        if (.not. allocated(orb_oe_bsum)) allocate (orb_oe_bsum(MXORBOP, MSTATES))
+        if (.not. allocated(orb_f_bcm2)) allocate (orb_f_bcm2(norbterm, MSTATES))
+        if (.not. allocated(orb_f_bcum)) allocate (orb_f_bcum(norbterm, MSTATES))
+        if (.not. allocated(orb_o_bsum)) allocate (orb_o_bsum(norbterm, MSTATES))
+        if (.not. allocated(orb_oe_bsum)) allocate (orb_oe_bsum(norbterm, MSTATES))
         if (.not. allocated(orb_w_bsum)) allocate (orb_w_bsum(MSTATES))
     end subroutine allocate_orb_mat_024
 
@@ -322,12 +362,12 @@ contains
 end module orb_mat_030
 
 module orb_mat_033
-    use optorb_mod, only: MXORBOP
+    use optorb_cblock, only: norbterm
     !> Arguments: irepcol_ref, ideriv_ref, ideriv_iab
 
-    integer, dimension(:), allocatable :: ideriv_iab !(MXORBOP)
-    integer, dimension(:, :), allocatable :: ideriv_ref !(MXORBOP,2)
-    integer, dimension(:, :), allocatable :: irepcol_ref !(MXORBOP,2)
+    integer, dimension(:), allocatable :: ideriv_iab !(norbterm)
+    integer, dimension(:, :), allocatable :: ideriv_ref !(norbterm,2)
+    integer, dimension(:, :), allocatable :: irepcol_ref !(norbterm,2)
 
     private
     public :: irepcol_ref, ideriv_ref, ideriv_iab
@@ -335,10 +375,10 @@ module orb_mat_033
     save
 contains
     subroutine allocate_orb_mat_033()
-        use optorb_mod, only: MXORBOP
-        if (.not. allocated(ideriv_iab)) allocate (ideriv_iab(MXORBOP))
-        if (.not. allocated(ideriv_ref)) allocate (ideriv_ref(MXORBOP, 2))
-        if (.not. allocated(irepcol_ref)) allocate (irepcol_ref(MXORBOP, 2))
+        use optorb_cblock, only: norbterm
+        if (.not. allocated(ideriv_iab)) allocate (ideriv_iab(norbterm))
+        if (.not. allocated(ideriv_ref)) allocate (ideriv_ref(norbterm, 2))
+        if (.not. allocated(irepcol_ref)) allocate (irepcol_ref(norbterm, 2))
     end subroutine allocate_orb_mat_033
 
     subroutine deallocate_orb_mat_033()
@@ -377,45 +417,6 @@ contains
     end subroutine deallocate_optorb
 
 end module optorb
-
-module optorb_cblock   ! from optorb.h
-    ! norbterm: number of terms (possibly after a transformation)
-    ! norbprim: number of primitive terms (determinant ratios)
-    integer :: norbterm
-    integer :: norbprim
-
-    ! PLT: From old common block /orb004/
-    integer :: nefp_blocks
-    integer :: nb_current
-    integer :: norb_f_bcum
-
-    ! reduced correlation matrix pointers
-    ! threshold in terms of std dev. , limit for keeping operators
-    ! if iuse_trafo: linearly transformed operators sampled instead of primitive
-    !     replacement operators
-    ! PLT: From old common blocks /orb006/ and /orb008/.
-    integer :: isample_cmat
-    integer :: nreduced
-    integer :: iuse_trafiuse_trafoo
-
-    ! Dumping block averages for error analysis.
-    ! PLT: From old common blocks /orb009/ and /orb010/.
-    integer :: idump_blockav
-    integer :: iorbsample
-    integer :: ns_current
-
-    ! Printing flags:
-    integer :: iorbprt
-    integer :: iorbprt_sav
-
-    private
-    public :: norbterm, norbprim
-    public :: nefp_blocks, nb_current, norb_f_bcum
-    public :: isample_cmat, nreduced, iuse_trafiuse_trafoo
-    public :: idump_blockav, iorbsample, ns_current
-    public :: iorbprt, iorbprt_sav
-    save
-end module optorb_cblock
 
 module optorb_mix
     !> Arguments: iwmix_virt, norbopt, norbvirt

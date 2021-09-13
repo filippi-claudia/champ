@@ -555,7 +555,6 @@ c nreduced has to be set since it will only be known for non-continuation runs
 c-----------------------------------------------------------------------
       subroutine optorb_fin(wcum,ecum)
 
-      use optorb_mod, only: MXORBOP
       use csfs, only: nstates
       use optwf_contrl, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
@@ -567,7 +566,7 @@ c-----------------------------------------------------------------------
       use gradhess_all, only: grad, h, s
       use ci000, only: nciterm
       use method_opt, only: method
-      use optorb_cblock, only: nreduced
+      use optorb_cblock, only: nreduced, norbterm
       use optwf_contrl, only: iapprox, iuse_orbeigv
       use precision_kinds, only: dp
 
@@ -577,10 +576,10 @@ c-----------------------------------------------------------------------
       integer :: istate, j
       real(dp) :: eave, orb_oho, orb_oo, passes, passesi
       real(dp) :: wts
-      real(dp), dimension(MXORBOP) :: oav
-      real(dp), dimension(MXORBOP) :: eoav
-      real(dp), dimension(MXORBOP) :: fo
-      real(dp), dimension(MXORBOP) :: foerr
+      real(dp), dimension(norbterm) :: oav
+      real(dp), dimension(norbterm) :: eoav
+      real(dp), dimension(norbterm) :: fo
+      real(dp), dimension(norbterm) :: foerr
       real(dp), dimension(*) :: wcum
       real(dp), dimension(*) :: ecum
 
@@ -779,7 +778,7 @@ c replaced column
 c-----------------------------------------------------------------------
       subroutine optorb_define
 
-      use optorb_mod, only: MXORBOP, mxreduced
+      use optorb_mod, only: mxreduced
       use vmc_mod, only: norb_tot
       use const, only: nelec
       use dets, only: ndet
@@ -947,10 +946,10 @@ c Include: io is occupied in some determinant and jo not
 
 c Define new operator (new variation) and its terms
         noporb=noporb+1
-        if(noporb.gt.MXORBOP) then
-          write(ounit,'(''noporb,max_orb'',2i5)') noporb,MXORBOP
-          call fatal_error('ORB_DEFINE: too many terms, increase MXORBOP')
-        endif
+        ! if(noporb.gt.norbterm) then
+        !   write(ounit,'(''noporb,max_orb'',2i5)') noporb,norbterm
+        !   call fatal_error('ORB_DEFINE: too many terms, increase norbterm')
+        ! endif
 
         ideriv(1,noporb)=io
         ideriv(2,noporb)=jo
@@ -984,7 +983,7 @@ c Define new operator (new variation) and its terms
 c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
       if(method.eq.'linear') then
 
-        if(mxreduced.ne.MXORBOP) call fatal_error('READ_INPUT: mxreduced.ne.MXORBOP')
+        if(mxreduced.ne.norbterm) call fatal_error('READ_INPUT: mxreduced .ne. norbterm')
         nreduced=norbterm
        elseif(method.eq.'sr_n'.or.method.eq.'lin_d'.or.method.eq.'mix_n') then
         nreduced=1

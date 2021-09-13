@@ -675,7 +675,7 @@ c-----------------------------------------------------------------------
 
       integer :: i, i0, is, ishift, j
 
-c     common /gradhess_orb/ grad_orb(MXORBOP),h_orb(MXMATDIM),s_orb(MXMATDIM)
+c     common /gradhess_orb/ grad_orb(norbterm),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
 c Note: we do not vary the first (i0) CI coefficient unless full CI
 

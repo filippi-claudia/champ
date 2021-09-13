@@ -31,7 +31,7 @@ subroutine parser
   use sr_mod,         	only: mconf
   use pseudo_mod,     	only: MPS_QUAD
   use properties,     	only: MAXPROP
-  use optorb_mod,     	only: MXORBOP, mxreduced
+  use optorb_mod,     	only: mxreduced
   use optci,          	only: mxciterm
   use mstates_mod,      only: MSTATES
   use pcm,              only: MCHS
@@ -1119,8 +1119,8 @@ subroutine parser
     endif
 
     if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
-      if(method.eq.'linear' .and. mxreduced.ne.MXORBOP )  &
-          call fatal_error('READ_INPUT: mxreduced.ne.MXORBOP')
+      if(method.eq.'linear' .and. mxreduced.ne.norbterm )  &
+          call fatal_error('READ_INPUT: mxreduced .ne. norbterm')
     endif
 
 ! Optimization flag Jastrow  (vmc/dmc only)
