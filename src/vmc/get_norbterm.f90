@@ -53,6 +53,7 @@ subroutine get_norbterm
     local_nreduced    = nreduced
 
     if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norb_tot, norb_tot))
+    if (.not. allocated(irrep)) allocate (irrep(norb_tot))
 
     iprt=3
 
