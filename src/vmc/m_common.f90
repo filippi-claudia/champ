@@ -759,37 +759,6 @@ contains
 
 end module qua
 
-module rlobxy
-    !> only rlobx used in read input
-    !> Arguments: rlobx, rloby, rloby2
-    use precision_kinds, only: dp
-    use vmc_mod, only: NSPLIN
-
-    implicit none
-
-    real(dp), dimension(:), allocatable :: rlobx !(NSPLIN)
-    real(dp), dimension(:), allocatable :: rloby !(NSPLIN)
-    real(dp), dimension(:), allocatable :: rloby2 !(NSPLIN)
-
-    private
-    public :: rlobx, rloby, rloby2
-    public :: allocate_rlobxy, deallocate_rlobxy
-    save
-contains
-    subroutine allocate_rlobxy()
-        use vmc_mod, only: NSPLIN
-        if (.not. allocated(rlobx)) allocate (rlobx(NSPLIN))
-        if (.not. allocated(rloby)) allocate (rloby(NSPLIN))
-        if (.not. allocated(rloby2)) allocate (rloby2(NSPLIN))
-    end subroutine allocate_rlobxy
-
-    subroutine deallocate_rlobxy()
-        if (allocated(rloby2)) deallocate (rloby2)
-        if (allocated(rloby)) deallocate (rloby)
-        if (allocated(rlobx)) deallocate (rlobx)
-    end subroutine deallocate_rlobxy
-
-end module rlobxy
 
 module scale_more
     !> Arguments: dd3
@@ -1169,7 +1138,6 @@ subroutine allocate_m_common()
     use orbval, only: allocate_orbval
     use phifun, only: allocate_phifun
     use qua, only: allocate_qua
-    use rlobxy, only: allocate_rlobxy
     use scratch, only: allocate_scratch
     use slater, only: allocate_slater
     use slatn, only: allocate_slatn
@@ -1207,7 +1175,6 @@ subroutine allocate_m_common()
     call allocate_orbval()
     call allocate_phifun()
     call allocate_qua()
-    call allocate_rlobxy()
     call allocate_scratch()
     call allocate_slater()
     call allocate_slatn()
@@ -1245,7 +1212,6 @@ subroutine deallocate_m_common()
     use orbval, only: deallocate_orbval
     use phifun, only: deallocate_phifun
     use qua, only: deallocate_qua
-    use rlobxy, only: deallocate_rlobxy
     use scratch, only: deallocate_scratch
     use slater, only: deallocate_slater
     use slatn, only: deallocate_slatn
@@ -1283,7 +1249,6 @@ subroutine deallocate_m_common()
     call deallocate_orbval()
     call deallocate_phifun()
     call deallocate_qua()
-    call deallocate_rlobxy()
     call deallocate_scratch()
     call deallocate_slater()
     call deallocate_slatn()

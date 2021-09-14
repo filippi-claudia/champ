@@ -51,7 +51,7 @@ end subroutine inputcsf
 subroutine multideterminants_define(iflag, icheck)
 
     use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-    use vmc_mod, only: NSPLIN, nrad, nordj, nordj1, nmat_dim, nmat_dim2
+    use vmc_mod, only: nrad, nordj, nordj1, nmat_dim, nmat_dim2
     use vmc_mod, only: radmax, delri
     use vmc_mod, only: neqsx, MTERMS
     use const, only: nelec

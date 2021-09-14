@@ -68,7 +68,6 @@ subroutine parser
   use optwf_parms, 		  only: nparmj
   use optwf_sr_mod, 	  only: i_sr_rescale, izvzb
   use pars, 			      only: Z, a20, a21
-  use rlobxy, 			    only: rlobx
   use sa_weights, 		  only: iweight, nweight, weights
   use wfsec, 			      only: nwftype
   use zmatrix, 			    only: izmatrix

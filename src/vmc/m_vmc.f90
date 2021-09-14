@@ -29,7 +29,6 @@ module vmc_mod
 
     integer :: norb_tot
     integer :: nctyp3x
-    integer, parameter :: NSPLIN = 1001
     integer :: nordj
 
     integer :: nmat_dim, nmat_dim2
@@ -44,7 +43,7 @@ module vmc_mod
 
     private
     public :: norb_tot, nctyp3x
-    public :: NSPLIN, nrad, nordj, nordj1, nmat_dim, nmat_dim2
+    public :: nrad, nordj, nordj1, nmat_dim, nmat_dim2
     public :: radmax, delri
 
     public :: neqsx, MTERMS
