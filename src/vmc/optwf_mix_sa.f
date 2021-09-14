@@ -1,5 +1,6 @@
       subroutine optwf_mix
 
+      use sr_mod, only: MPARM
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use optwf_corsam, only: energy, energy_err
@@ -30,12 +31,12 @@
       real(dp) :: adiag, alin_adiag_sav, denergy, denergy_err, diffene
       real(dp) :: dparm_norm, energy_err_sav, energy_sav, errdiff
       real(dp) :: sigma, sigma_sav, sr_adiag_sav
-      real(dp), dimension(nparm*MSTATES) :: deltap
-      real(dp), dimension(nparm*MSTATES,5) :: deltap_more
+      real(dp), dimension(MPARM*MSTATES) :: deltap
+      real(dp), dimension(MPARM*MSTATES,5) :: deltap_more
       real(dp), dimension(MSTATES) :: energy_old
       real(dp), dimension(MSTATES) :: energy_err_old
       real(dp), dimension(6,MSTATES) :: energy_davidson
-      real(dp), dimension(nparm) :: deltap_new
+      real(dp), dimension(MPARM) :: deltap_new
       character*20 method_sav
 
       save method_sav
@@ -46,6 +47,7 @@
 
       call set_nparms_tot
 
+      if(nparm.gt.MPARM)call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
       write(ounit,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
       write(ounit,'(/,''SR adiag: '',f10.5)') sr_adiag

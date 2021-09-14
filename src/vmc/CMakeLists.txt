@@ -58,8 +58,8 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_det.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_coefs.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_constant.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/m_force.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_control.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_force.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_mstates.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_mpi.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_optci.f90

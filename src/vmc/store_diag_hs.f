@@ -1,5 +1,6 @@
       subroutine store_diag_hs(nparm_p1,hii,sii)
 
+      use sr_mod, only: MPARM
       use optwf_contrl, only: ioptjas, ioptorb, nparm
 
       use sr_index, only: jelo, jelo2, jelohfj
@@ -13,8 +14,8 @@
       integer :: i, ish, jfhfj, jfifj, jwtg
       integer :: n_obs, nparm_p1
 
-      real(dp), dimension(nparm) :: hii
-      real(dp), dimension(nparm) :: sii
+      real(dp), dimension(MPARM) :: hii
+      real(dp), dimension(MPARM) :: sii
 
 
       write(ounit,*) 'nparm_p1,nparm',nparm_p1,nparm

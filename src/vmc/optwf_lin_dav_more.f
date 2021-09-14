@@ -1,6 +1,7 @@
       subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,index_more,adiag,ethr)
 
       use mpi
+      use sr_mod, only: MPARM
       use const, only: ipr
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
@@ -24,11 +25,11 @@
       integer, dimension(5,MSTATES) :: index_more
       real(dp) :: adiag, bot, ethr, ortho_min
       real(dp), dimension(nvecx) :: e
-      real(dp), dimension(nparm,nvecx) :: evc
+      real(dp), dimension(MPARM,nvecx) :: evc
       real(dp), dimension(nvecx,MSTATES) :: overlap_psi
       real(dp), dimension(nvecx) :: anorm
       real(dp), dimension(*) :: deltap
-      real(dp), dimension(nparm*MSTATES,5) :: deltap_more
+      real(dp), dimension(MPARM*MSTATES,5) :: deltap_more
 
       ! include 'mpif.h'
 
@@ -53,19 +54,19 @@
       if(lin_jdav.eq.0) then
        write(ounit,*) "USING OLD REGTERG"
 
-        call regterg( nparm_p1, nparm, nvec, nvecx, evc, ethr,
+        call regterg( nparm_p1, MPARM, nvec, nvecx, evc, ethr,
      &                e, itype, notcnv, idav_iter, ipr, idtask )
 
        ! Davidson DPR
        elseif(lin_jdav.eq.1) then
         write(ounit,*) "USING DPR DAVIDSON"
-        call davidson_wrap( nparm_p1, nparm, nvec, nvecx, nvecx, evc,
+        call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, nvecx, evc,
      &       ethr, e, itype, notcnv, idav_iter, ipr, "DPR")
 
        ! Davidson JOCC
        elseif(lin_jdav.eq.2) then
         write(ounit,*) "USING GJD DAVIDSON"
-         call davidson_wrap( nparm_p1, nparm, nvec, nvecx, nvecx, evc,
+         call davidson_wrap( nparm_p1, MPARM, nvec, nvecx, nvecx, evc,
      &       ethr, e, itype, notcnv, idav_iter, ipr, "GJD")
 
        else
@@ -223,7 +224,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
 
-      use sr_mod, only: mconf
+      use sr_mod, only: MPARM, mconf
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -242,10 +243,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer :: jelo, jfifj, jwtg, n_obs
       integer :: ndim, nvec
       real(dp) :: aux0, aux1, aux2, ddot
-      real(dp), dimension(nparm,*) :: psi
-      real(dp), dimension(nparm,*) :: hpsi
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: hpsi
       real(dp), dimension(mconf) :: aux
-      real(dp), dimension(nparm,nvecx) :: hpsiloc
+      real(dp), dimension(MPARM,nvecx) :: hpsiloc
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -274,14 +275,14 @@ c loop vec
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
+       hpsiloc(i+i0,ivec)=0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
       enddo
 
       do iconf=1,nconf_n
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)+0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),nparm)
+       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)+0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
       enddo
 
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -326,7 +327,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
 
-      use sr_mod, only: mconf
+      use sr_mod, only: MPARM, mconf
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -345,9 +346,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer :: jelo, jfifj, jwtg, n_obs
       integer :: ndim, nvec
       real(dp) :: aux0, ddot
-      real(dp), dimension(nparm,*) :: psi
-      real(dp), dimension(nparm,*) :: spsi
-      real(dp), dimension(nparm,nvecx) :: spsiloc
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: spsi
+      real(dp), dimension(MPARM,nvecx) :: spsiloc
       real(dp), dimension(mconf) :: aux
 
       i0=1
@@ -374,7 +375,7 @@ c loop vec
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
+       spsiloc(i+i0,ivec)=ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
       enddo
 
       call MPI_REDUCE(spsiloc(1+i0,ivec),spsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -410,7 +411,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
 
-      use sr_mod, only: mconf
+      use sr_mod, only: MPARM, mconf
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -430,9 +431,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer :: jelo, jfifj, jwtg, n_obs
       integer :: ndim, nvec
       real(dp) :: aux0, aux1, aux2, ddot
-      real(dp), dimension(nparm,*) :: psi
-      real(dp), dimension(nparm,*) :: hpsi
-      real(dp), dimension(nparm,nvecx) :: hpsiloc
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: hpsi
+      real(dp), dimension(MPARM,nvecx) :: hpsiloc
       real(dp), dimension(mconf) :: aux
 
       i0=1
@@ -465,7 +466,7 @@ c loop vec
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=-0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
+       hpsiloc(i+i0,ivec)=-0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
       enddo
 
 c     do i=1,nparm+1
@@ -476,8 +477,8 @@ c     enddo
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)-0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),nparm)
-     &                                      +omega*ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
+       hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)-0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
+     &                                      +omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
       enddo
 
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -529,7 +530,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
 
-      use sr_mod, only: mconf
+      use sr_mod, only: MPARM, mconf
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -550,11 +551,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer :: jfifj, jwtg, n_obs, ndim
       integer :: nvec
       real(dp) :: aux0, aux1, aux2, aux3, ddot
-      real(dp), dimension(nparm,*) :: psi
-      real(dp), dimension(nparm,*) :: spsi
-      real(dp), dimension(nparm,nvecx) :: spsiloc
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: spsi
+      real(dp), dimension(MPARM,nvecx) :: spsiloc
       real(dp), dimension(mconf) :: aux
-      real(dp), dimension(nparm) :: h_sr_sym
+      real(dp), dimension(MPARM) :: h_sr_sym
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -597,16 +598,16 @@ c loop vec
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=omega*omega*ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
-     &                         -omega*ddot(nconf_n,aux(1),1,sr_ho(i,1),nparm)
+       spsiloc(i+i0,ivec)=omega*omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+     &                         -omega*ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
       enddo
 
       do iconf=1,nconf_n
        aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
-       spsiloc(i+i0,ivec)=spsiloc(i+i0,ivec)-omega*ddot(nconf_n,aux(1),1,sr_o(i,1),nparm)
-     &                                            +ddot(nconf_n,aux(1),1,sr_ho(i,1),nparm)
+       spsiloc(i+i0,ivec)=spsiloc(i+i0,ivec)-omega*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+     &                                            +ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
       enddo
 
       call MPI_REDUCE(spsiloc(1+i0,ivec),spsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
@@ -658,7 +659,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
-      use sr_mod, only: mconf
+      use sr_mod, only: MPARM, mconf
       use optwf_contrl, only: nvecx
       use mpiconf, only: idtask
       use optwf_contrl, only: ioptjas, ioptorb, nparm
@@ -680,13 +681,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer :: ndim, nvec
       real(dp) :: auxx0, auxx2, auxx3, ddot, hoz
       real(dp) :: oz, var
-      real(dp), dimension(nparm,*) :: psi
-      real(dp), dimension(nparm,*) :: hpsi
-      real(dp), dimension(nparm,nvecx) :: hpsiloc
+      real(dp), dimension(MPARM,*) :: psi
+      real(dp), dimension(MPARM,*) :: hpsi
+      real(dp), dimension(MPARM,nvecx) :: hpsiloc
       real(dp), dimension(mconf) :: aux0
       real(dp), dimension(mconf) :: aux1
       real(dp), dimension(mconf) :: aux2
-      real(dp), dimension(nparm) :: grad_ene
+      real(dp), dimension(MPARM) :: grad_ene
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -747,9 +748,9 @@ c loop vec
         aux2(iconf)=oz*wtg(iconf,1)
       enddo
       do i=1,nparm
-        hpsiloc(i+i0,ivec)=ddot(nconf_n,aux0(1),1,sr_ho(i,1),nparm)
-     &                    +ddot(nconf_n,aux2(1),1,sr_o(i,1),nparm)*var
-     &                    +ddot(nconf_n,aux1(1),1,sr_o(i,1),nparm)
+        hpsiloc(i+i0,ivec)=ddot(nconf_n,aux0(1),1,sr_ho(i,1),MPARM)
+     &                    +ddot(nconf_n,aux2(1),1,sr_o(i,1),MPARM)*var
+     &                    +ddot(nconf_n,aux1(1),1,sr_o(i,1),MPARM)
       enddo
       call MPI_REDUCE(hpsiloc(1+i0,ivec),hpsi(1+i0,ivec),nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
@@ -796,7 +797,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine g_psi_lin_d( ndim, nvec, nb1, psi, ew )
 
       use mpi
-      use optwf_contrl, only: nparm
+      use sr_mod, only: MPARM
       use sr_mat_n, only: jefj, jfj, jhfj, s_diag
       use sr_mat_n, only: obs_tot
       use optwf_contrl, only: ioptorb, ioptjas
@@ -813,11 +814,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       integer :: i, i0, ivec, jelo, jfhfj
       integer :: jfifj, jwtg, k, n_obs
-      integer :: nb1, ndim,  nvec
-      real(dp), dimension(nparm,*) :: psi
+      integer :: nb1, ndim, nparm, nvec
+      real(dp), dimension(MPARM,*) :: psi
       real(dp), dimension(*) :: ew
-      real(dp), dimension(nparm) :: s
-      real(dp), dimension(nparm) :: h
+      real(dp), dimension(MPARM) :: s
+      real(dp), dimension(MPARM) :: h
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -875,6 +876,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
 
+      use sr_mod, only: MPARM
       use optwf_contrl, only: nvecx
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
@@ -890,7 +892,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer :: i0, iconf, ier, istate, ivec
       integer :: ndim, nvec
       real(dp) :: den, dum, ratio
-      real(dp), dimension(nparm,*) :: psi
+      real(dp), dimension(MPARM,*) :: psi
       real(dp), dimension(nvecx,*) :: overlap_psi
       real(dp), dimension(*) :: anorm
       real(dp), dimension(nvecx,MSTATES) :: overlap_psiloc

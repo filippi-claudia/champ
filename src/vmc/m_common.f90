@@ -380,13 +380,13 @@ end module insout
 module jd_scratch
     !> only for (jacobi) davidson in linear method
     !> Arguments: qr, rr
-    use optwf_contrl, only: nparm
+    use sr_mod, only: MPARM
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: qr !(nparm)
-    real(dp), dimension(:), allocatable :: rr !(nparm)
+    real(dp), dimension(:), allocatable :: qr !(MPARM)
+    real(dp), dimension(:), allocatable :: rr !(MPARM)
 
     private
     public :: qr, rr
@@ -394,9 +394,9 @@ module jd_scratch
     save
 contains
     subroutine allocate_jd_scratch()
-        use optwf_contrl, only: nparm
-        if (.not. allocated(qr)) allocate (qr(nparm))
-        if (.not. allocated(rr)) allocate (rr(nparm))
+        use sr_mod, only: MPARM
+        if (.not. allocated(qr)) allocate (qr(MPARM))
+        if (.not. allocated(rr)) allocate (rr(MPARM))
     end subroutine allocate_jd_scratch
 
     subroutine deallocate_jd_scratch()

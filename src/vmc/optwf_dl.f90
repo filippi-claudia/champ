@@ -31,8 +31,9 @@ contains
     subroutine optwf_dl()
 
         use precision_kinds, only: dp
+use sr_mod, only: MPARM
         use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-        use optwf_contrl, only: idl_flag
+use optwf_contrl, only: idl_flag
         use optwf_corsam, only: energy, energy_err
         use optwf_contrl, only: dparm_norm_min, nopt_iter
         use optwf_contrl, only: sr_adiag
@@ -119,11 +120,13 @@ contains
 
     subroutine sanity_check()
 
+        use sr_mod, only: MPARM
         use optwf_contrl, only: nparm
         use optwf_contrl, only: idl_flag
         use method_opt, only: method
 
         if (method .ne. 'sr_n' .or. idl_flag .eq. 0) return
+        if (nparm .gt. MPARM) call fatal_error('SR_OPTWF: nparmtot gt MPARM')
 
     end subroutine sanity_check
 
