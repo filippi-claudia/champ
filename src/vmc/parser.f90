@@ -34,6 +34,7 @@ subroutine parser
   use optorb_mod,     	only: mxreduced
   use optci,          	only: mxciterm
   use mstates_mod,      only: MSTATES
+  use vmc_mod,          only: nordj, nordj1, neqsx
   use pcm,              only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
@@ -1721,6 +1722,10 @@ subroutine parser
         norda = fdf_bintegers(pline, 1) ! 1st integer in the line
         nordb = fdf_bintegers(pline, 2) ! 2nd integer in the line
         nordc = fdf_bintegers(pline, 3) ! 3rd integer in the line
+
+        nordj = max(norda, nordb, nordc)
+        nordj1 = nordj + 1
+        neqsx = 6*nordj
 
         mparmja = 2 + max(0, norda - 1)
         mparmjb = 2 + max(0, nordb - 1)

@@ -457,6 +457,7 @@ subroutine read_jastrow_file(file_jastrow)
     use elec,               only: ndn
     use jaspar3,            only: a, b, c, scalek
     use jaspar4,            only: a4, norda, nordb, nordc
+    use vmc_mod,            only: nordj, nordj1, neqsx
     use jaspar6,            only: cutjas, cutjasi, allocate_jaspar6
     use bparm,              only: nocuspb, nspin2b
     use contr2,             only: ifock, ijas
@@ -542,6 +543,10 @@ subroutine read_jastrow_file(file_jastrow)
         call bcast(norda)
         call bcast(nordb)
         call bcast(nordc)
+
+        nordj = max(norda, nordb, nordc)
+        nordj1 = nordj + 1
+        neqsx = 6*nordj
 
         write(ounit, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc
 

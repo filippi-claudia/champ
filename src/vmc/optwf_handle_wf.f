@@ -272,7 +272,7 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MORDJ1
+      use vmc_mod, only: nordj1
       use atom, only: nctype, nctype_tot
       use wfsec, only: nwftype
       use jaspar3, only: b, c
@@ -294,14 +294,14 @@ c-----------------------------------------------------------------------
       real(dp), allocatable, save :: b_save(:,:,:)
       real(dp), allocatable, save :: c_save(:,:,:)
 
-      ! dimension a4_save(MORDJ1,nctype_tot,MWF),b_save(MORDJ1,2,MWF),
+      ! dimension a4_save(nordj1,nctype_tot,MWF),b_save(nordj1,2,MWF),
       ! dimension c_save(83,nctype_tot,MWF)
       ! save a4_save,b_save,c_save
 
       save mparmja,mparmjb,mparmjc
 
-      if(.not.allocated(a4_save)) allocate(a4_save(MORDJ1,nctype_tot,nwftype))
-      if(.not.allocated(b_save)) allocate(b_save(MORDJ1,2,nwftype))
+      if(.not.allocated(a4_save)) allocate(a4_save(nordj1,nctype_tot,nwftype))
+      if(.not.allocated(b_save)) allocate(b_save(nordj1,2,nwftype))
       if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
 
 c Save parameters corresponding to run generating hessian
@@ -323,8 +323,8 @@ c Save parameters corresponding to run generating hessian
 
       entry restore_jastrow(iadiag)
 
-      if(.not.allocated(a4_save)) allocate(a4_save(MORDJ1,nctype_tot,nwftype))
-      if(.not.allocated(b_save)) allocate(b_save(MORDJ1,2,nwftype))
+      if(.not.allocated(a4_save)) allocate(a4_save(nordj1,nctype_tot,nwftype))
+      if(.not.allocated(b_save)) allocate(b_save(nordj1,2,nwftype))
       if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
 
 c Restore parameters corresponding to run generating hessian
@@ -524,7 +524,7 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
       use precision_kinds, only: dp
-      use vmc_mod, only: MORDJ1
+      use vmc_mod, only: nordj1
       use atom, only: nctype, nctype_tot
       use wfsec, only: nwftype
       use jaspar3, only: b, c
@@ -545,14 +545,14 @@ c-----------------------------------------------------------------------
       real(dp), allocatable, save :: b_best(:,:,:)
       real(dp), allocatable, save :: c_best(:,:,:)
 
-      ! dimension a4_best(MORDJ1,nctype_tot,MWF),b_best(MORDJ1,2,MWF),
+      ! dimension a4_best(nordj1,nctype_tot,MWF),b_best(nordj1,2,MWF),
       ! dimension c_best(83,nctype_tot,MWF)
       ! save a4_best,b_best,c_best
 
       save mparmja,mparmjb,mparmjc
 
-      if(.not.allocated(a4_best)) allocate(a4_best(MORDJ1,nctype_tot,nwftype))
-      if(.not.allocated(b_best)) allocate(b_best(MORDJ1,2,nwftype))
+      if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
+      if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftype))
       if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype))
 
 c Save parameters corresponding to run generating hessian
@@ -573,8 +573,8 @@ c Save parameters corresponding to run generating hessian
       return
 
       entry restore_jastrow_best
-      if(.not.allocated(a4_best)) allocate(a4_best(MORDJ1,nctype_tot,nwftype))
-      if(.not.allocated(b_best)) allocate(b_best(MORDJ1,2,nwftype))
+      if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
+      if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftype))
       if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype))
 
 c Restore parameters corresponding to run generating hessian

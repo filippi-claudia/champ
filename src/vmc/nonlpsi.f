@@ -1,7 +1,7 @@
       function psinl(u,rshifti,rshiftj,rri,rrj,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use vmc_mod, only: MORDJ
+      use vmc_mod, only: nordj
       use jaspar3, only: c
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
@@ -16,9 +16,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       real(dp) :: rri, rrj, rrri, rrrj, u
       real(dp) :: uuu
       real(dp) :: psinl
-      real(dp), dimension(0:MORDJ) :: uu
-      real(dp), dimension(0:MORDJ) :: ss
-      real(dp), dimension(0:MORDJ) :: tt
+      real(dp), dimension(0:nordj) :: uu
+      real(dp), dimension(0:nordj) :: ss
+      real(dp), dimension(0:nordj) :: tt
       real(dp), dimension(3) :: rshifti
       real(dp), dimension(3) :: rshiftj
       real(dp), parameter :: one = 1.d0
@@ -146,7 +146,7 @@ c-----------------------------------------------------------------------
 
       integer :: i, it
       real(dp) :: rri
-      real(dp) :: dpsianl 
+      real(dp) :: dpsianl
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f
@@ -177,7 +177,7 @@ c-----------------------------------------------------------------------
       integer :: i, isb, ipar
       real(dp) :: bot, boti, dbot, dfee, dtop
       real(dp) :: top, u
-      real(dp) :: dpsibnl 
+      real(dp) :: dpsibnl
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f

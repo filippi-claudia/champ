@@ -144,12 +144,12 @@ end module jaspar2
 module jaspar3
     !> Arguments: a, b, c, fck, nord, scalek
     use precision_kinds, only: dp
-    use vmc_mod, only: MORDJ1
+    use vmc_mod, only: nordj1
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: a !(MORDJ1,MWF)
-    real(dp), dimension(:, :, :), allocatable :: b !(MORDJ1,2,MWF)
+    real(dp), dimension(:, :), allocatable :: a !(nordj1,MWF)
+    real(dp), dimension(:, :, :), allocatable :: b !(nordj1,2,MWF)
     real(dp), dimension(:, :, :), allocatable :: c !(83,MCTYPE,MWF)
     real(dp), dimension(:, :, :), allocatable :: fck !(15,MCTYPE,MWF)
     integer :: nord
@@ -163,9 +163,9 @@ contains
     subroutine allocate_jaspar3()
         use wfsec, only: nwftype
         use atom, only: nctype_tot
-        use vmc_mod, only: MORDJ1
-        if (.not. allocated(a)) allocate (a(MORDJ1, nwftype))
-        ! if (.not. allocated(b)) allocate (b(MORDJ1, 2, MWF))
+        use vmc_mod, only: nordj1
+        if (.not. allocated(a)) allocate (a(nordj1, nwftype))
+        ! if (.not. allocated(b)) allocate (b(nordj1, 2, MWF))
         ! if (.not. allocated(c)) allocate (c(83, nctype_tot, MWF))
         if (.not. allocated(fck)) allocate (fck(15, nctype_tot, nwftype))
         ! if (.not. allocated(scalek)) allocate (scalek(MWF))
@@ -187,7 +187,7 @@ module jaspar4
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: a4 !(MORDJ1,nctype_tot,MWF)
+    real(dp), dimension(:, :, :), allocatable :: a4 !(nordj1,nctype_tot,MWF)
     integer :: norda
     integer :: nordb
     integer :: nordc
@@ -201,8 +201,8 @@ contains
     ! subroutine allocate_jaspar4()
     !     use force_mod, only: MWF
     !     use precision_kinds, only: dp
-    !     use vmc_mod, only: MORDJ1
-    !     if (.not. allocated(a4)) allocate (a4(MORDJ1, nctype_tot, MWF))
+    !     use vmc_mod, only: nordj1
+    !     if (.not. allocated(a4)) allocate (a4(nordj1, nctype_tot, MWF))
     ! end subroutine allocate_jaspar4
 
     subroutine deallocate_jaspar4()

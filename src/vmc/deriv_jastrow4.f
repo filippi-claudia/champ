@@ -1,6 +1,6 @@
       subroutine deriv_jastrow4(x,v,d2,value)
 c Written by Cyrus Umrigar and Claudia Filippi
-      use vmc_mod, only: MORDJ
+      use vmc_mod, only: nordj
       use atom, only: iwctype, nctype, ncent
       use const, only: nelec
       use derivjas, only: d2g, g, go, gvalue
@@ -56,11 +56,11 @@ c Written by Cyrus Umrigar and Claudia Filippi
       real(dp) :: value
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, *) :: v
-      real(dp), dimension(-2:MORDJ) :: uu
-      real(dp), dimension(-2:MORDJ) :: ss
-      real(dp), dimension(-2:MORDJ) :: tt
-      real(dp), dimension(-2:MORDJ) :: rri
-      real(dp), dimension(-2:MORDJ) :: rrj
+      real(dp), dimension(-2:nordj) :: uu
+      real(dp), dimension(-2:nordj) :: ss
+      real(dp), dimension(-2:nordj) :: tt
+      real(dp), dimension(-2:nordj) :: rri
+      real(dp), dimension(-2:nordj) :: rrj
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0

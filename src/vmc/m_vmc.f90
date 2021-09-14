@@ -16,11 +16,11 @@ module vmc_mod
     ! are attempted.
 
     ! PLT@eScienceCenter(2020) Moved the parameter here:
-    ! "For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
-    !  For Jastrow3 NEQSX=2*MORDJ should be sufficient.
-    !  I am setting NEQSX=6*MORDJ simply because that is how it was for
+    ! "For Jastrow4 neqsx=2*(nordj-1) is sufficient.
+    !  For Jastrow3 neqsx=2*nordj should be sufficient.
+    !  I am setting neqsx=6*nordj simply because that is how it was for
     !  Jastrow3 for reasons I do not understand."
-    !     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
+    !     parameter(neqsx=2*(nordj-1),MTERMS=55)
 
 
     real(dp), parameter :: radmax = 10.d0
@@ -29,12 +29,14 @@ module vmc_mod
 
     integer :: norb_tot
     integer :: nctyp3x
-    integer, parameter :: NSPLIN = 1001, MORDJ = 7
+    integer, parameter :: NSPLIN = 1001
+    integer :: nordj
 
     integer :: nmat_dim, nmat_dim2
-    integer, parameter :: MORDJ1 = MORDJ + 1
+    integer :: nordj1   ! nordj+1
 
-    integer, parameter :: NEQSX = 6*MORDJ, MTERMS = 55
+    integer :: neqsx    ! 6*nordj
+    integer, parameter :: MTERMS = 55
     integer :: ncent3
 
     integer, parameter :: NCOEF = 5
@@ -42,10 +44,10 @@ module vmc_mod
 
     private
     public :: norb_tot, nctyp3x
-    public :: NSPLIN, nrad, MORDJ, MORDJ1, nmat_dim, nmat_dim2
+    public :: NSPLIN, nrad, nordj, nordj1, nmat_dim, nmat_dim2
     public :: radmax, delri
 
-    public :: NEQSX, MTERMS
+    public :: neqsx, MTERMS
 
     public :: ncent3, NCOEF, MEXCIT
     public :: set_vmc_size

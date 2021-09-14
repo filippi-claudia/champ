@@ -3,7 +3,7 @@ c Written by Cyrus Umrigar, modified by C. Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
-      use vmc_mod, only: MORDJ
+      use vmc_mod, only: nordj
       use atom, only: iwctype, ncent
       use jaspar, only: sspinn
       use const, only: nelec
@@ -41,11 +41,11 @@ c Jastrow 6   must be used with one of isc=6,7
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, *) :: v
       real(dp), dimension(*) :: div_vj
-      real(dp), dimension(-2:MORDJ) :: uu
-      real(dp), dimension(-2:MORDJ) :: ss
-      real(dp), dimension(-2:MORDJ) :: tt
-      real(dp), dimension(-2:MORDJ) :: rri
-      real(dp), dimension(-2:MORDJ) :: rrj
+      real(dp), dimension(-2:nordj) :: uu
+      real(dp), dimension(-2:nordj) :: ss
+      real(dp), dimension(-2:nordj) :: tt
+      real(dp), dimension(-2:nordj) :: rri
+      real(dp), dimension(-2:nordj) :: rrj
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: eps = 1.d-12
 
@@ -385,7 +385,7 @@ c     write(ounit,'(''nterms4='',i5)') nterms4
 c-----------------------------------------------------------------------
       subroutine da_jastrow4(iwf,i,ic,it,rvec_en,r,rr,feni,fenii,dd1,dd2)
 
-      use vmc_mod, only: MORDJ
+      use vmc_mod, only: nordj
       use da_jastrow4val, only: da_d2j, da_j, da_vj
       use jaspar4, only: a4, norda
       use scale_more, only: dd3
@@ -398,7 +398,7 @@ c-----------------------------------------------------------------------
       real(dp) :: dd1, dd2, feni, fenii, feniii
       real(dp) :: r, ri, ri2
       real(dp), dimension(3) :: rvec_en
-      real(dp), dimension(-2:MORDJ) :: rr
+      real(dp), dimension(-2:nordj) :: rr
 
       feniii=0.d0
       do 10 iord=3,norda

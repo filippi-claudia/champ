@@ -1,7 +1,7 @@
       function deriv_psinl(u,rshifti,rshiftj,rri,rrj,gn,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use vmc_mod, only: MORDJ
+      use vmc_mod, only: nordj
       use jaspar3, only: c
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
@@ -23,9 +23,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       real(dp), dimension(3) :: rshifti
       real(dp), dimension(3) :: rshiftj
       real(dp), dimension(*) :: gn
-      real(dp), dimension(0:MORDJ) :: uu
-      real(dp), dimension(0:MORDJ) :: ss
-      real(dp), dimension(0:MORDJ) :: tt
+      real(dp), dimension(0:nordj) :: uu
+      real(dp), dimension(0:nordj) :: ss
+      real(dp), dimension(0:nordj) :: tt
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0

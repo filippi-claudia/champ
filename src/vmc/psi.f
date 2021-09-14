@@ -4,7 +4,7 @@ c **Warning** This routine needs to be upgraded to check rshifts
 c if we add in the capability to use numerical Laplacian for
 c periodic systems.
 
-      use vmc_mod, only: MORDJ
+      use vmc_mod, only: nordj
       use jaspar3, only: c
 
       use jaspar4, only: nordc
@@ -19,9 +19,9 @@ c periodic systems.
       real(dp) :: psi, ri, rij, rj
       real(dp) :: rri, rrj, s, t
       real(dp) :: u
-      real(dp), dimension(0:MORDJ) :: uu
-      real(dp), dimension(0:MORDJ) :: ss
-      real(dp), dimension(0:MORDJ) :: tt
+      real(dp), dimension(0:nordj) :: uu
+      real(dp), dimension(0:nordj) :: ss
+      real(dp), dimension(0:nordj) :: tt
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0

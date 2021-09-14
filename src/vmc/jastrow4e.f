@@ -2,7 +2,7 @@
 c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
-      use vmc_mod, only: MORDJ
+      use vmc_mod, only: nordj
       use atom, only: iwctype, ncent
       use jaspar, only: sspinn
       use const, only: nelec
@@ -38,11 +38,11 @@ c Jastrow 6   must be used with one of isc=6,7
       real(dp) :: topuu, u2mst, u2pst, value
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, *) :: v
-      real(dp), dimension(-2:MORDJ) :: uu
-      real(dp), dimension(-2:MORDJ) :: ss
-      real(dp), dimension(-2:MORDJ) :: tt
-      real(dp), dimension(-2:MORDJ) :: rri
-      real(dp), dimension(-2:MORDJ) :: rrj
+      real(dp), dimension(-2:nordj) :: uu
+      real(dp), dimension(-2:nordj) :: ss
+      real(dp), dimension(-2:nordj) :: tt
+      real(dp), dimension(-2:nordj) :: rri
+      real(dp), dimension(-2:nordj) :: rrj
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: eps = 1.d-12
 
@@ -265,7 +265,7 @@ c There are no C terms to order 1.
         fijn(2,j,i)=fijn(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
         fijn(3,j,i)=fijn(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
 
-        if(iflag.gt.0) 
+        if(iflag.gt.0)
      &    d2ijn(i,j)=d2ijn(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
      &    + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
    50 continue

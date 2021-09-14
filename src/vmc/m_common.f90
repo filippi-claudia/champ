@@ -141,13 +141,13 @@ module cuspmat
     !> Never called !
     !> Arguments: cm, ishe, iwc3, neqs
     use precision_kinds, only: dp
-    use vmc_mod, only: NEQSX
+    use vmc_mod, only: neqsx
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: cm !(NEQSX,NEQSX)
+    real(dp), dimension(:, :), allocatable :: cm !(neqsx,neqsx)
     integer :: ishe
-    integer, dimension(:), allocatable :: iwc3 !(NEQSX)
+    integer, dimension(:), allocatable :: iwc3 !(neqsx)
     integer :: neqs
 
     private
@@ -156,9 +156,9 @@ module cuspmat
     save
 contains
     subroutine allocate_cuspmat()
-        use vmc_mod, only: NEQSX
-        if (.not. allocated(cm)) allocate (cm(NEQSX, NEQSX))
-        if (.not. allocated(iwc3)) allocate (iwc3(NEQSX))
+        use vmc_mod, only: neqsx
+        if (.not. allocated(cm)) allocate (cm(neqsx, neqsx))
+        if (.not. allocated(iwc3)) allocate (iwc3(neqsx))
     end subroutine allocate_cuspmat
 
     subroutine deallocate_cuspmat()
@@ -170,13 +170,13 @@ end module cuspmat
 
 module cuspmat4
     !> Arguments: d, icusp, nterms
-    use vmc_mod, only: NEQSX, MTERMS
+    use vmc_mod, only: neqsx, MTERMS
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: d !(NEQSX,MTERMS)
-    integer, dimension(:), allocatable :: iwc4 !(NEQSX)
+    real(dp), dimension(:, :), allocatable :: d !(neqsx,MTERMS)
+    integer, dimension(:), allocatable :: iwc4 !(neqsx)
     integer :: nterms
     private
 
@@ -185,9 +185,9 @@ module cuspmat4
     save
 contains
     subroutine allocate_cuspmat4()
-        use vmc_mod, only: NEQSX, MTERMS
-        if (.not. allocated(d)) allocate (d(NEQSX, MTERMS))
-        if (.not. allocated(iwc4)) allocate (iwc4(NEQSX))
+        use vmc_mod, only: neqsx, MTERMS
+        if (.not. allocated(d)) allocate (d(neqsx, MTERMS))
+        if (.not. allocated(iwc4)) allocate (iwc4(neqsx))
     end subroutine allocate_cuspmat4
 
     subroutine deallocate_cuspmat4()
@@ -936,9 +936,9 @@ module vardep
     !> Arguments: cdep, iwdepend, nvdepend
     use precision_kinds, only: dp
 
-    real(dp), dimension(:, :, :), allocatable :: cdep !(NEQSX,83,MCTYPE)
-    integer, dimension(:, :, :), allocatable :: iwdepend !(NEQSX,83,MCTYPE)
-    integer, dimension(:, :), allocatable :: nvdepend !(NEQSX,MCTYPE)
+    real(dp), dimension(:, :, :), allocatable :: cdep !(neqsx,83,MCTYPE)
+    integer, dimension(:, :, :), allocatable :: iwdepend !(neqsx,83,MCTYPE)
+    integer, dimension(:, :), allocatable :: nvdepend !(neqsx,MCTYPE)
 
     private
     public :: cdep, iwdepend, nvdepend
@@ -947,10 +947,10 @@ module vardep
 contains
     subroutine allocate_vardep()
         use atom, only: nctype_tot
-        use vmc_mod, only: NEQSX
-        if (.not. allocated(cdep)) allocate (cdep(NEQSX, 83, nctype_tot))
-        if (.not. allocated(iwdepend)) allocate (iwdepend(NEQSX, 83, nctype_tot))
-        if (.not. allocated(nvdepend)) allocate (nvdepend(NEQSX, nctype_tot))
+        use vmc_mod, only: neqsx
+        if (.not. allocated(cdep)) allocate (cdep(neqsx, 83, nctype_tot))
+        if (.not. allocated(iwdepend)) allocate (iwdepend(neqsx, 83, nctype_tot))
+        if (.not. allocated(nvdepend)) allocate (nvdepend(neqsx, nctype_tot))
     end subroutine allocate_vardep
 
     subroutine deallocate_vardep()
