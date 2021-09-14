@@ -890,17 +890,6 @@ subroutine parser
 !    if( mode(1:3) == 'vmc' ) error stop
   endif
 
-
-
-
-
-  ! Know the number of orbitals for optimization.
-  call get_norbterm()
-
-  call compute_mat_size_new()
-  call allocate_vmc()
-  call allocate_dmc()
-
 ! (3) CSF only
 
   if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
@@ -927,8 +916,12 @@ subroutine parser
     error stop
   endif
 
+  ! Know the number of orbitals for optimization.
+  call get_norbterm()
 
-
+  call compute_mat_size_new()
+  call allocate_vmc()
+  call allocate_dmc()
 
 ! (17) multideterminants information (either block or from a file)
 

@@ -1,10 +1,9 @@
 module mstates_mod
-    !> Arguments: MSTATES, MDETCSFX
+    !> Arguments: MSTATES
     integer, parameter :: MSTATES = 3
-    integer, parameter :: MDETCSFX = 20
 
     private
-    public :: MSTATES, MDETCSFX
+    public :: MSTATES
     save
 end module mstates_mod
 
@@ -48,10 +47,10 @@ module csfs
     use precision_kinds, only: dp
 
     real(dp), dimension(:, :, :), allocatable :: ccsf !(MDET,MSTATES,MWF)
-    real(dp), dimension(:), allocatable :: cxdet !(MDET*MDETCSFX)
+    real(dp), dimension(:), allocatable :: cxdet !(nmap)
     integer, dimension(:), allocatable :: iadet !(MDET)
     integer, dimension(:), allocatable :: ibdet !(MDET)
-    integer, dimension(:), allocatable :: icxdet !(MDET*MDETCSFX)
+    integer, dimension(:), allocatable :: icxdet !(nmap)
     integer :: ncsf
     integer :: nstates
 
@@ -62,15 +61,13 @@ module csfs
 contains
     subroutine allocate_csfs()
         use wfsec, only: nwftype
-        use mstates_mod, only: MDETCSFX
         use mstates_mod, only: MSTATES
-        use dets, only: ndet
-
+        use dets, only: ndet, nmap
         if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, nwftype))
-        if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))
+        if (.not. allocated(cxdet)) allocate (cxdet(nmap))
         if (.not. allocated(iadet)) allocate (iadet(ndet))
         if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-        if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))
+        if (.not. allocated(icxdet)) allocate (icxdet(nmap))
     end subroutine allocate_csfs
 
     subroutine deallocate_csfs()

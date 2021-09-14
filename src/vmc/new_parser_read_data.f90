@@ -885,7 +885,6 @@ subroutine read_csfmap_file(file_determinants)
     use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet, nmap
     use wfsec, only: nwftype
-    use mstates_mod, only: MDETCSFX
     use precision_kinds,    only: dp
     use general,            only: pooldir
 
@@ -938,10 +937,10 @@ subroutine read_csfmap_file(file_determinants)
     if (.not. found) then
         ! No csfmap information present. One to one mapping cdet == ccsf
         ! Check this part carefully
-        if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
+        if (.not. allocated(cxdet)) allocate (cxdet(ndet))
         if (.not. allocated(iadet)) allocate (iadet(ndet))
         if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-        if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))   ! why MDETCSFX
+        if (.not. allocated(icxdet)) allocate (icxdet(ndet))
 
         do i = 1, ncsf
             iadet(i) = i
@@ -965,10 +964,10 @@ subroutine read_csfmap_file(file_determinants)
         call bcast(ndet_check)
         call bcast(nmap_check)
 
-        if (.not. allocated(cxdet)) allocate (cxdet(ndet*MDETCSFX))     ! why MDETCSFX
+        if (.not. allocated(cxdet)) allocate (cxdet(nmap_check))
         if (.not. allocated(iadet)) allocate (iadet(ndet))
         if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-        if (.not. allocated(icxdet)) allocate (icxdet(ndet*MDETCSFX))   ! why MDETCSFX
+        if (.not. allocated(icxdet)) allocate (icxdet(nmap_check))
 
         nptr = 1
         do i = 1, ncsf
@@ -983,12 +982,11 @@ subroutine read_csfmap_file(file_determinants)
                 icxdet(nptr) = id
                 cxdet(nptr) = c
                 nptr = nptr + 1
-                if (nptr .gt. ndet*MDETCSFX) call fatal_error ('Error in CSFMAP:: problem with nmap')
+                if (nptr - 1 .gt. nmap_check) call fatal_error ('Error in CSFMAP:: problem with nmap')
             enddo
         enddo
         if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
-        nmap = nptr
-
+        nmap = nptr - 1
 !        if (allocated(cdet)) deallocate (cdet)
 !        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
 
