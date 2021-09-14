@@ -151,47 +151,47 @@ jobs:
         path: tests/CI_test/VMC-H2/revised_vmc_lin_double.out
         retention-days: 3
 
-    - name: "Test 07 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
+    # - name: "Test 07 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the tests using the new parser. H2 "
+    #     cd tests/CI_test/VMC-H2
 
-        echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
 
-        echo "Comparing the energy with the reference one (Current energy = -1.0632280 +-   0.0016897) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0632280  0.0016897
+    #     echo "Comparing the energy with the reference one (Current energy = -1.0632280 +-   0.0016897) "
+    #     $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0632280  0.0016897
 
-        echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0598"
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0598 0.0016897
-    - name: "Upload results of test 07"
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-results-07
-        path: tests/CI_test/VMC-H2/revised_vmc_corsamp_single.out
-        retention-days: 3
+    #     echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0598"
+    #     $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0598 0.0016897
+    # - name: "Upload results of test 07"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-07
+    #     path: tests/CI_test/VMC-H2/revised_vmc_corsamp_single.out
+    #     retention-days: 3
 
-    - name: "Test 08 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
+    # - name: "Test 08 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the tests using the new parser. H2 "
+    #     cd tests/CI_test/VMC-H2
 
-        echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
 
-        echo "Comparing the energy with the reference one (Current energy = -1.0593525 +-   0.0012286) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0593525  0.0012286
+    #     echo "Comparing the energy with the reference one (Current energy = -1.0593525 +-   0.0012286) "
+    #     $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0593525  0.0012286
 
-        echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0591"
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0591 0.0012286
-    - name: "Upload results of test 08"
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-results-08
-        path: tests/CI_test/VMC-H2/revised_vmc_corsamp_double.out
-        retention-days: 3
+    #     echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0591"
+    #     $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0591 0.0012286
+    # - name: "Upload results of test 08"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-08
+    #     path: tests/CI_test/VMC-H2/revised_vmc_corsamp_double.out
+    #     retention-days: 3
 
     # - name: "Test 09 (Butadiene) DMC on 1 processor"
     #   run: |
@@ -678,43 +678,43 @@ jobs:
     #     path: tests/CI_test/VMC-PSB3-400_dets-175_csfs/revised_free_double.out
     #     retention-days: 3
 
-    - name: "Test 29 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. PSB2 "
-        cd tests/CI_test/VMC-PSB2-36_dets-20_csfs
+    # - name: "Test 29 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the tests using the new parser. PSB2 "
+    #     cd tests/CI_test/VMC-PSB2-36_dets-20_csfs
 
-        echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_single.out -e error
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_single.out -e error
 
-        echo "Comparing the energy with the reference one ("total E" -29.9276565 +-  0.0193188) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.9276565  0.0193188
+    #     echo "Comparing the energy with the reference one ("total E" -29.9276565 +-  0.0193188) "
+    #     $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.9276565  0.0193188
 
-    - name: "Upload results of test 29"
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-results-29
-        path: tests/CI_test/VMC-PSB2-36_dets-20_csfs/revised_psb2_mix_n_single.out
-        retention-days: 3
+    # - name: "Upload results of test 29"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-29
+    #     path: tests/CI_test/VMC-PSB2-36_dets-20_csfs/revised_psb2_mix_n_single.out
+    #     retention-days: 3
 
-    - name: "Test 30 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 2 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. PSB2 "
-        cd tests/CI_test/VMC-PSB2-36_dets-20_csfs
+    # - name: "Test 30 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 2 processor"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the tests using the new parser. PSB2 "
+    #     cd tests/CI_test/VMC-PSB2-36_dets-20_csfs
 
-        echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_double.out -e error
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_double.out -e error
 
-        echo "Comparing the energy with the reference one ("total E" -29.9650716 +-  0.0140104) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.9650716  0.0140104
+    #     echo "Comparing the energy with the reference one ("total E" -29.9650716 +-  0.0140104) "
+    #     $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.9650716  0.0140104
 
-    - name: "Upload results of test 30"
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-results-30
-        path: tests/CI_test/VMC-PSB2-36_dets-20_csfs/revised_psb2_mix_n_double.out
-        retention-days: 3
+    # - name: "Upload results of test 30"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-30
+    #     path: tests/CI_test/VMC-PSB2-36_dets-20_csfs/revised_psb2_mix_n_double.out
+    #     retention-days: 3
 
 
     - name: "Zip the test reults"
