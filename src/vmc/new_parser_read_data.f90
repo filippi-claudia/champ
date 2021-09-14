@@ -936,11 +936,11 @@ subroutine read_csfmap_file(file_determinants)
     ! if there is no mention of "csfmap" in the file
     if (.not. found) then
         ! No csfmap information present. One to one mapping cdet == ccsf
-        ! Check this part carefully
-        if (.not. allocated(cxdet)) allocate (cxdet(ndet))
+        nmap = ndet
+        if (.not. allocated(cxdet)) allocate (cxdet(nmap))
         if (.not. allocated(iadet)) allocate (iadet(ndet))
         if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-        if (.not. allocated(icxdet)) allocate (icxdet(ndet))
+        if (.not. allocated(icxdet)) allocate (icxdet(nmap))
 
         do i = 1, ncsf
             iadet(i) = i
