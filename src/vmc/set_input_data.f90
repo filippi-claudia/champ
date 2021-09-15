@@ -53,7 +53,7 @@ subroutine multideterminants_define(iflag, icheck)
     use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
     use vmc_mod, only: nrad, nordj, nordj1, nmat_dim, nmat_dim2
     use vmc_mod, only: radmax, delri
-    use vmc_mod, only: neqsx, MTERMS
+    use vmc_mod, only: neqsx
     use const, only: nelec
     use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet

@@ -38,7 +38,7 @@ subroutine parser
   use pcm,              only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
-  use vmc_mod, 			    only: norb_tot
+  use vmc_mod, 			    only: norb_tot, mterms
   use atom, 			      only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 			    only: nspin1, nspin2, is
   use ghostatom, 		    only: newghostype, nghostcent
@@ -149,6 +149,14 @@ subroutine parser
 
 !
   implicit none
+
+  interface
+  function nterms4(nord)
+      integer, intent(in) :: nord
+      integer :: nterms4
+  end function nterms4
+  end interface
+
 !--------------------------------------------------------------- Local Variables
   integer, parameter         :: maxa = 100
   logical                    :: doit, debug
@@ -918,6 +926,9 @@ subroutine parser
 
   ! Know the number of orbitals for optimization.
   call get_norbterm()
+
+  ! Jastrow mterms needed for allocations
+  mterms = nterms4(nordc)
 
   call compute_mat_size_new()
   call allocate_vmc()

@@ -170,12 +170,12 @@ end module cuspmat
 
 module cuspmat4
     !> Arguments: d, icusp, nterms
-    use vmc_mod, only: neqsx, MTERMS
+    use vmc_mod, only: neqsx, mterms
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: d !(neqsx,MTERMS)
+    real(dp), dimension(:, :), allocatable :: d !(neqsx,mterms)
     integer, dimension(:), allocatable :: iwc4 !(neqsx)
     integer :: nterms
     private
@@ -185,8 +185,8 @@ module cuspmat4
     save
 contains
     subroutine allocate_cuspmat4()
-        use vmc_mod, only: neqsx, MTERMS
-        if (.not. allocated(d)) allocate (d(neqsx, MTERMS))
+        use vmc_mod, only: neqsx, mterms
+        if (.not. allocated(d)) allocate (d(neqsx, mterms))
         if (.not. allocated(iwc4)) allocate (iwc4(neqsx))
     end subroutine allocate_cuspmat4
 

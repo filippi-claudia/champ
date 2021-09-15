@@ -1,6 +1,6 @@
       subroutine cuspinit4(iprin)
 c Written by Cyrus Umrigar
-      use vmc_mod, only: MTERMS
+      use vmc_mod, only: mterms
       use jaspar4, only: nordc
       use cuspmat4, only: d, iwc4, nterms
       use contrl_file,    only: ounit
@@ -17,7 +17,7 @@ c Written by Cyrus Umrigar
 
       do 10 n=1,2*(nordc-1)
         iwc4(n)=0
-        do 10 i=1,MTERMS
+        do 10 i=1,mterms
    10   d(n,i)=0
 
       i=0
@@ -32,7 +32,7 @@ c Written by Cyrus Umrigar
             m=(n-k-l)/2
             if(2*m.eq.n-k-l) then
               i=i+1
-              if(i.gt.MTERMS) stop 'nterms>MTERMS in cuspinit4'
+              if(i.gt.mterms) stop 'nterms>mterms in cuspinit4'
               if(k.eq.1.and.iwc4(n-1).eq.0) iwc4(n-1)=i
               if(k.eq.0.and.iwc4(n+nordc-2).eq.0) iwc4(n+nordc-2)=i
               if(iprin.gt.1) write(ounit,'(9i4)') i,n,k,l,m

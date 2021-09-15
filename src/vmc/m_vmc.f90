@@ -35,7 +35,7 @@ module vmc_mod
     integer :: nordj1   ! nordj+1
 
     integer :: neqsx    ! 6*nordj
-    integer, parameter :: MTERMS = 55
+    integer :: mterms
     integer :: ncent3
 
     integer, parameter :: NCOEF = 5
@@ -46,7 +46,7 @@ module vmc_mod
     public :: nrad, nordj, nordj1, nmat_dim, nmat_dim2
     public :: radmax, delri
 
-    public :: neqsx, MTERMS
+    public :: neqsx, mterms
 
     public :: ncent3, NCOEF, MEXCIT
     public :: set_vmc_size
