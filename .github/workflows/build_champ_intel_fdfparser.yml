@@ -160,11 +160,11 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
 
-        echo "Comparing the energy with the reference one (Current energy = -1.0632280 +-   0.0016897) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0632280  0.0016897
+        echo "Comparing the energy with the reference one (Current energy = -1.0247271 +-  0.0114836) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0247271  0.0114836
 
-        echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0598"
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0598 0.0016897
+        echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0018"
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0018 0.0114836
     # - name: "Upload results of test 07"
     #   uses: actions/upload-artifact@v2
     #   with:
@@ -181,11 +181,11 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
 
-        echo "Comparing the energy with the reference one (Current energy = -1.0593525 +-   0.0012286) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0593525  0.0012286
+        echo "Comparing the energy with the reference one (Current energy = -1.0204969 +-  0.0085151) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0204969  0.0085151
 
         echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0591"
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0591 0.0012286
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0035 0.0085151
     # - name: "Upload results of test 08"
     #   uses: actions/upload-artifact@v2
     #   with:

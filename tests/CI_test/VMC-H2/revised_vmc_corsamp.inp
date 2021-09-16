@@ -2,10 +2,8 @@
     title        'H2'
     pool         './pool/'
     basis        sto_cvb1
-    weights      [ 1.0d0,  1.0d0 , 1.0d0]
     mode         'vmc_one_mpi1'
     nloc        0
-    ipr 1 
 %endmodule
 
 load molecule        $pool/h2.xyz
@@ -25,13 +23,13 @@ load jastrow_der     jastrow.der
 %module optwf
     ioptwf        1
     ioptci        1
-    ioptjas       1
+    ioptjas       0
     ioptorb       0
     method        'linear'
     multiple_adiag 1
     ncore         0
     nextorb       280
-    nblk_max      500
+    nblk_max      2000
     no_active     1
     nopt_iter     5
 %endmodule
@@ -44,7 +42,7 @@ load jastrow_der     jastrow.der
 
 
 %module blocking_vmc
-    vmc_nstep     50
+    vmc_nstep     10
     vmc_nblk      200
     vmc_nblkeq    1
     vmc_nconf_new 0
