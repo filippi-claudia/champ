@@ -1,4 +1,9 @@
 subroutine get_norbterm
+  !> This subroutine computes the number of orbital parameters needed for
+  !> the allocations of the arrays.
+  !> @author Ravindra Shinde
+  !> @email  r.l.shinde@utwente.nl
+  !> @date   14-09-2021
 
     use optorb_mod, only: mxreduced
     use vmc_mod, only: norb_tot
@@ -55,13 +60,16 @@ subroutine get_norbterm
     if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norb_tot, norb_tot))
     if (.not. allocated(irrep)) allocate (irrep(norb_tot))
 
+    ! check the following condition against known cases
+    if (method .eq. "linear") irrep = 0   !initialize irrep array to 0
+
     iprt=3
 
     ndn=nelec-nup
 
     ne(1)=nup
     ne(2)=nelec
-    ndetorb=0
+    local_ndetorb=0
 
     do i=1,ndet
      do j=1,nelec
