@@ -919,7 +919,7 @@ subroutine parser
   endif
 
   ! Know the number of orbitals for optimization.
-  call get_norbterm()
+  if (ioptorb .ne. 0) call get_norbterm()
   ! Add up all the parameters. It will be used to allocate arrays.
   nciterm = mxciterm
   call set_nparms_tot()
