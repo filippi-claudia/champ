@@ -925,11 +925,14 @@ subroutine parser
   endif
 
   ! Know the number of orbitals for optimization.
-  call get_norbterm()
+  if (ioptorb .ne. 0) call get_norbterm()
 
   ! Jastrow mterms needed for allocations
   mterms = nterms4(nordc)
 
+  ! Add up all the parameters. It will be used to allocate arrays.
+  nciterm = mxciterm
+  call set_nparms_tot()
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
