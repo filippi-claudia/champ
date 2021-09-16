@@ -1,6 +1,6 @@
       subroutine optwf_lin_d
 
-      use sr_mod, only: MPARM
+      use sr_mod, only: mparm
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
@@ -22,15 +22,15 @@
       real(dp) :: adiag, alin_adiag_sav, alpha_omega, denergy, denergy_err
       real(dp) :: dparm_norm, energy_err_sav, energy_sav, sigma
       real(dp) :: sigma_sav
-      real(dp), dimension(MPARM*MSTATES) :: grad
-      real(dp), dimension(MPARM*MSTATES,5) :: grad_more
+      real(dp), dimension(mparm*MSTATES) :: grad
+      real(dp), dimension(mparm*MSTATES,5) :: grad_more
       character*20 method_sav
 
       if(method .ne.'lin_d')return
 
       call set_nparms_tot
 
-      if(nparm.gt.MPARM)call fatal_error('OPTWF_LIN_D: nparmtot gt MPARM')
+      if(nparm.gt.mparm)call fatal_error('OPTWF_LIN_D: nparmtot gt mparm')
 
       write(ounit,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
 
@@ -171,15 +171,15 @@ c enddo iteration
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_lin_d(ndim,nvec,psi,hpsi)
 
-      use sr_mod, only: MPARM
+      use sr_mod, only: mparm
       use optwf_func, only: ifunc_omega
       use precision_kinds, only: dp
 
       implicit none
 
       integer :: ndim, nvec
-      real(dp), dimension(MPARM,*) :: psi
-      real(dp), dimension(MPARM,*) :: hpsi
+      real(dp), dimension(mparm,*) :: psi
+      real(dp), dimension(mparm,*) :: hpsi
 
       if(ifunc_omega.eq.0) then
         call h_psi_energymin(ndim,nvec,psi,hpsi)
@@ -195,15 +195,15 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine s_psi_lin_d(ndim,nvec,psi,spsi)
 
-      use sr_mod, only: MPARM
+      use sr_mod, only: mparm
       use optwf_func, only: ifunc_omega
       use precision_kinds, only: dp
 
       implicit none
 
       integer :: ndim, nvec
-      real(dp), dimension(MPARM,*) :: psi
-      real(dp), dimension(MPARM,*) :: spsi
+      real(dp), dimension(mparm,*) :: psi
+      real(dp), dimension(mparm,*) :: spsi
 
       if(ifunc_omega.le.2) then
         call s_psi_energymin(ndim,nvec,psi,spsi )

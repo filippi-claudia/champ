@@ -89,7 +89,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine atimes_n(n,z,r)
 c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
-      use sr_mod, only: MPARM, mconf
+      use sr_mod, only: mparm, mconf
       use csfs, only: nstates
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: weights
@@ -112,11 +112,11 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       real(dp), dimension(*) :: r
       real(dp), dimension(0:mconf) :: aux
       real(dp), dimension(0:mconf) :: aux1
-      real(dp), dimension(MPARM) :: rloc
-      real(dp), dimension(MPARM) :: r_s
+      real(dp), dimension(mparm) :: rloc
+      real(dp), dimension(mparm) :: r_s
       real(dp), dimension(mconf) :: oz_jasci
-      real(dp), dimension(MPARM) :: tmp
-      real(dp), dimension(MPARM) :: tmp2
+      real(dp), dimension(mparm) :: tmp
+      real(dp), dimension(mparm) :: tmp2
 
       call MPI_BCAST(z,n,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
@@ -143,21 +143,21 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
 !       Following three lines commented and replaced by dgemv after profiling
 !        do i=1,nparm_jasci
-!          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+!          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1),mparm)
 !        enddo
 
-        call dgemv('N', nparm_jasci, nconf_n, 1.0d0, sr_o(1,1), MPARM, aux(1), 1, 0.0d0, rloc(1), 1)
+        call dgemv('N', nparm_jasci, nconf_n, 1.0d0, sr_o(1,1), mparm, aux(1), 1, 0.0d0, rloc(1), 1)
 
 
 !       Following code commented and replaced by dgemv after profiling
 !        do i=nparm_jasci+1,n
 !          i0=i+(istate-1)*norbterm
-!          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i0,1),MPARM)
+!          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i0,1),mparm)
 !        enddo
 
         i0 = nparm_jasci + 1 +(istate-1)*norbterm
         i1 = nparm_jasci + 1
-        call dgemv('N', n - nparm_jasci, nconf_n, 1.0d0, sr_o(i0,1), MPARM, aux(1), 1, 0.0d0, rloc(i1), 1)
+        call dgemv('N', n - nparm_jasci, nconf_n, 1.0d0, sr_o(i0,1), mparm, aux(1), 1, 0.0d0, rloc(i1), 1)
 
         call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
@@ -181,8 +181,8 @@ c ifunc_omega.gt.0
         aux(iconf)=(hoz-omega_hes*oz)*wtg(iconf,1)
       enddo
       do i=1,n
-        rloc(i)=ddot(nconf_n,aux(1),1,sr_ho(i,1),MPARM)
-        rloc(i)=rloc(i)-omega_hes*ddot(nconf_n,aux(1),1,sr_o(i,1),MPARM)
+        rloc(i)=ddot(nconf_n,aux(1),1,sr_ho(i,1),mparm)
+        rloc(i)=rloc(i)-omega_hes*ddot(nconf_n,aux(1),1,sr_o(i,1),mparm)
       enddo
       call MPI_REDUCE(rloc,r,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 

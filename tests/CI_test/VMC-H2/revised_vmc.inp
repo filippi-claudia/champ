@@ -24,7 +24,7 @@ load jastrow_der     jastrow.der
 %module optwf
     ioptwf        0
     ioptci        0
-    ioptjas       1
+    ioptjas       0
     ioptorb       0
     method        'sr_n'
     multiple_adiag 0

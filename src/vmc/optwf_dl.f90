@@ -31,7 +31,7 @@ contains
     subroutine optwf_dl()
 
         use precision_kinds, only: dp
-use sr_mod, only: MPARM
+use sr_mod, only: mparm
         use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
 use optwf_contrl, only: idl_flag
         use optwf_corsam, only: energy, energy_err
@@ -120,13 +120,13 @@ use optwf_contrl, only: idl_flag
 
     subroutine sanity_check()
 
-        use sr_mod, only: MPARM
+        use sr_mod, only: mparm
         use optwf_contrl, only: nparm
         use optwf_contrl, only: idl_flag
         use method_opt, only: method
 
         if (method .ne. 'sr_n' .or. idl_flag .eq. 0) return
-        if (nparm .gt. MPARM) call fatal_error('SR_OPTWF: nparmtot gt MPARM')
+        if (nparm .gt. mparm) call fatal_error('SR_OPTWF: nparmtot gt mparm')
 
     end subroutine sanity_check
 

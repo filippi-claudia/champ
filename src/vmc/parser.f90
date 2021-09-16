@@ -28,7 +28,7 @@ subroutine parser
   use force_mod,      	only: MFORCE
 
 ! variables from process input
-  use sr_mod,         	only: mconf
+  use sr_mod,         	only: mconf, mparm
   use pseudo_mod,     	only: MPS_QUAD
   use properties,     	only: MAXPROP
   use optorb_mod,     	only: mxreduced
@@ -60,7 +60,7 @@ subroutine parser
   use numbas, 			    only: numr
   use numbas1, 			    only: nbastyp
   use numbas2, 			    only: ibas0, ibas1
-  use optwf_contrl, 	  only: ioptci, ioptjas, ioptorb, ioptwf
+  use optwf_contrl, 	  only: ioptci, ioptjas, ioptorb, ioptwf, nparm
   use optwf_contrl, 	  only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
   use optwf_contrl, 	  only: ibeta, ratio_j, iapprox, ncore
   use optwf_contrl, 	  only: iuse_orbeigv
@@ -933,6 +933,9 @@ subroutine parser
   ! Add up all the parameters. It will be used to allocate arrays.
   nciterm = mxciterm
   call set_nparms_tot()
+  ! Set maximum number of parameters. For multistate orbital optimization
+  ! the following additional terms will be present. The last +1 is failsafe mechanism.
+  mparm = nparm + (nstates-1)*(norbterm) + 1
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
@@ -1813,7 +1816,7 @@ subroutine compute_mat_size_new()
   ! use const, only: nelec
   ! use atom, only: nctype_tot, ncent_tot
 
-  use sr_mod, only: MPARM, mobs, mconf
+  use sr_mod, only: mparm, mobs, mconf
   use control_vmc, only: vmc_nstep, vmc_nblk_max
 
   use vmc_mod, only: set_vmc_size
@@ -1825,7 +1828,7 @@ subroutine compute_mat_size_new()
   implicit none
 
   ! leads to circular dependecy of put in sr_mod ..
-  mobs = 10 + 6*MPARM
+  mobs = 10 + 6*mparm
   mconf = vmc_nstep * vmc_nblk_max
 
   call set_vmc_size

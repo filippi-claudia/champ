@@ -1,5 +1,5 @@
       subroutine optwf_olbfgs
-      use sr_mod, only: MPARM
+      use sr_mod, only: mparm
       use olbfgs, only: initialize_olbfgs
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err
@@ -14,8 +14,8 @@
 
       integer :: i, iflag, ilbfgs_m, inc_nblk, iter
       real(dp) :: denergy, denergy_err, dparm_norm, energy_err_sav, energy_sav
-      real(dp), dimension(MPARM) :: deltap
-      real(dp), dimension(MPARM) :: parameters
+      real(dp), dimension(mparm) :: deltap
+      real(dp), dimension(mparm) :: parameters
 
       character*20 dl_alg
 
@@ -28,7 +28,7 @@ c vector of wave function parameters
 
       call set_nparms_tot
 
-      if(nparm.gt.MPARM)call fatal_error('SR_OPTWF: nparmtot gt MPARM')
+      if(nparm.gt.mparm)call fatal_error('SR_OPTWF: nparmtot gt mparm')
 
       write(ounit,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
 

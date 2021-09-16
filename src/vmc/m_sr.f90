@@ -1,11 +1,11 @@
 module sr_mod
     !> Arguments:
-    integer, parameter :: MPARM = 26000
+    integer :: mparm
     integer :: mobs
     integer :: mconf
 
     private
-    public :: MPARM, mobs, mconf
+    public :: mparm, mobs, mconf
     save
 end module sr_mod
 
@@ -23,21 +23,21 @@ end module sr_index
 
 module sr_mat_n
     !> Arguments: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
-    use sr_mod, only: MPARM, mobs, mconf
+    use sr_mod, only: mparm, mobs, mconf
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
     real(dp), dimension(:, :), allocatable :: elocal !(mconf,MSTATES)
-    real(dp), dimension(:), allocatable :: h_sr !(MPARM)
+    real(dp), dimension(:), allocatable :: h_sr !(mparm)
     integer :: jefj
     integer :: jfj
     integer :: jhfj
     integer :: nconf_n
     real(dp), dimension(:, :), allocatable :: obs !(mobs,MSTATES)
-    real(dp), dimension(:, :), allocatable :: s_diag !(MPARM,MSTATES)
-    real(dp), dimension(:), allocatable :: s_ii_inv !(MPARM)
-    real(dp), dimension(:, :), allocatable :: sr_ho !(MPARM,mconf)
-    real(dp), dimension(:, :), allocatable :: sr_o !(MPARM,mconf)
+    real(dp), dimension(:, :), allocatable :: s_diag !(mparm,MSTATES)
+    real(dp), dimension(:), allocatable :: s_ii_inv !(mparm)
+    real(dp), dimension(:, :), allocatable :: sr_ho !(mparm,mconf)
+    real(dp), dimension(:, :), allocatable :: sr_o !(mparm,mconf)
     real(dp), dimension(:, :), allocatable :: wtg !(mconf,MSTATES)
     real(dp), dimension(:, :), allocatable :: obs_tot !(mobs,MSTATES)
 
@@ -47,15 +47,15 @@ module sr_mat_n
     save
 contains
     subroutine allocate_sr_mat_n()
-        use sr_mod, only: MPARM, mobs, mconf
+        use sr_mod, only: mparm, mobs, mconf
         use mstates_mod, only: MSTATES
         if (.not. allocated(elocal)) allocate (elocal(mconf, MSTATES))
-        if (.not. allocated(h_sr)) allocate (h_sr(MPARM))
+        if (.not. allocated(h_sr)) allocate (h_sr(mparm))
         if (.not. allocated(obs)) allocate (obs(mobs, MSTATES))
-        if (.not. allocated(s_diag)) allocate (s_diag(MPARM, MSTATES))
-        if (.not. allocated(s_ii_inv)) allocate (s_ii_inv(MPARM))
-        if (.not. allocated(sr_ho)) allocate (sr_ho(MPARM, mconf))
-        if (.not. allocated(sr_o)) allocate (sr_o(MPARM, mconf))
+        if (.not. allocated(s_diag)) allocate (s_diag(mparm, MSTATES))
+        if (.not. allocated(s_ii_inv)) allocate (s_ii_inv(mparm))
+        if (.not. allocated(sr_ho)) allocate (sr_ho(mparm, mconf))
+        if (.not. allocated(sr_o)) allocate (sr_o(mparm, mconf))
         if (.not. allocated(wtg)) allocate (wtg(mconf, MSTATES))
         if (.not. allocated(obs_tot)) allocate (obs_tot(mobs, MSTATES))
     end subroutine allocate_sr_mat_n
