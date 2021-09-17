@@ -14,6 +14,7 @@
       use optwf_sr_mod, only: sr_hs
       use precision_kinds, only: dp
       use contrl_file,    only: ounit, errunit
+      use mpitimer,    only: time, time_start, time_check1, time_check2
       implicit none
 
       integer :: i, i0, i_ortho_min, i_overlap_max, idav_iter
@@ -33,6 +34,7 @@
 
       ! include 'mpif.h'
 
+      time_check1 = time()
 
       write(ounit,*) 'LIN_D NPARM',nparm
 
@@ -77,7 +79,9 @@
       write(ounit,'(''LIN_D: no. iterations'',i4)') idav_iter
       write(ounit,'(''LIN_D: no. not converged roots '',i4)') notcnv
 
-      call my_second(2,'david ')
+      time_check2 = time()
+      write(ounit, '(a,t40, f12.3, f12.3)') "END OF David, REAL TIME IS", time_check2 - time_start, time_check2 - time_check1
+      time_check1 = time_check2
 
 
       call compute_overlap_psi(nparm_p1,nvec,evc,overlap_psi,anorm)
