@@ -687,8 +687,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_single.out -e error
 
-        echo "Comparing the energy with the reference one ("total E" -29.9276565 +-  0.0193188) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.9276565  0.0193188
+        echo "Comparing the energy with the reference one ("total E" -29.8103804 +-  0.0282917) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.8103804  0.0282917
 
     # - name: "Upload results of test 29"
     #   uses: actions/upload-artifact@v2
@@ -706,8 +706,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_double.out -e error
 
-        echo "Comparing the energy with the reference one ("total E" -29.9650716 +-  0.0140104) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.9650716  0.0140104
+        echo "Comparing the energy with the reference one ("total E" -29.2605918 +-  0.0262458) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.2605918  0.0262458
 
     # - name: "Upload results of test 30"
     #   uses: actions/upload-artifact@v2
