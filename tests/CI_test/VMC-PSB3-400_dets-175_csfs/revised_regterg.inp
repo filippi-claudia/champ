@@ -3,8 +3,8 @@
     pool            './pool/'
     pseudopot       BFD
     basis           BFD-Da
-    weights         [ 1.0d0,  1.0d0 , 1.0d0]
-    weights_guiding [ 1.0d0,  1.0d0 , 1.0d0]
+    weights         [ 1.0d0,  1.0d0]
+    weights_guiding [ 1.0d0,  1.0d0]
     mode            'vmc_one_mpi1'
 %endmodule
 
@@ -42,7 +42,7 @@ load symmetry        ci66_BFD-Da_sa2.sym
     multiple_adiag 0
     ncore         0
     nextorb       600
-    nblk_max      300
+    nblk_max      500
     no_active     1
     nopt_iter     1
     isample_cmat  0
@@ -50,8 +50,8 @@ load symmetry        ci66_BFD-Da_sa2.sym
 %endmodule
 
 %module blocking_vmc
-    vmc_nstep     20
-    vmc_nblk      50
+    vmc_nstep     1
+    vmc_nblk      500
     vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule
