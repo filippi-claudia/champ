@@ -610,8 +610,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E of second state = -41.4175942 +-  0.0471447 ) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_single.out "total E" -41.4175942  0.0471447
+        echo "Comparing the energy with the reference one (total E of second state = -41.3160682 +-  0.0908603 ) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_single.out "total E" -41.3160682  0.0908603
 
     # - name: "Upload results of test 27"
     #   uses: actions/upload-artifact@v2
@@ -630,8 +630,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E of second state = -41.1959230 +-  0.0364969  ) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_double.out "total E" -41.1959230  0.0364969
+        echo "Comparing the energy with the reference one (total E of second state = -41.3316252 +-  0.0637987  ) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_double.out "total E" -41.3316252  0.0637987
 
     # - name: "Upload results of test 28"
     #   uses: actions/upload-artifact@v2

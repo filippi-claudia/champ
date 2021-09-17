@@ -51,7 +51,7 @@ load symmetry        ci66_BFD-Da_sa2.sym
 
 %module blocking_vmc
     vmc_nstep     1
-    vmc_nblk      500
+    vmc_nblk      200
     vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule
