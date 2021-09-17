@@ -374,3 +374,42 @@ c cubic spline interpolation
 
       return
       end
+
+
+!-----------------------------------------------------------------------------
+! Subroutines from cyrus directory
+
+      subroutine intpol(x,y,n,xi,yi,ni,m)
+        !> Does a Lagrange interpolation.
+        !> x and y are arrays of length n with the original data.
+        !> xi is the point at which the interpolated value yi is needed.
+        !> ni is the closest mesh point below xi.
+        !> m = order of polynomial using m+1 original grid pts
+        !> If m < 1, then m is reset to 3
+        !> Probably a good idea to have m odd, so there are an equal number of
+        !> original mesh pts below and above xi.
+        !> If m=3 the 4 points used to perform the interpolation are
+        !> ni-1,ni,ni+1,ni+2 (2 below, 2 above) except at the end points.
+        !> If m=4 the 5 points used to perform the interpolation are
+        !> ni-2,ni-1,ni,ni+1,ni+2 (3 below, 2 above) except at the end points.
+
+        implicit none
+        dimension x(n),y(n)
+
+        integer :: i,j,n,m,ni,n1,n2
+        double precision :: xi,yi, x,y, prod
+
+        if(m.lt.1) m=3
+        n1=min0(n-m,max0(1,ni-m/2))
+        n2=n1+m
+    !     write(6,'(i5,9d12.4)') n1,xi,(x(ii),ii=n1,n2)
+        yi=0.0d0
+        do i=n1,n2
+          prod=1.0d0
+          do j=n1,n2
+            if(j.ne.i) prod=prod*(xi-x(j))/(x(i)-x(j))
+          enddo
+          yi=yi+prod*y(i)
+        enddo
+        return
+      end subroutine

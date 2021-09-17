@@ -138,7 +138,6 @@ endforeach(flag)
 # Include the following subdirectories
 add_subdirectory(src/parser)
 add_subdirectory(tools/interface)
-add_subdirectory(lib/cyrus)
 add_subdirectory(lib/pspline)
 add_subdirectory(src/vmc)
 add_subdirectory(src/dmc)

@@ -269,7 +269,7 @@ if (MPI_Fortran_FOUND)
     )
 
   target_link_libraries(vmc.mov1
-    cyrus pspline
+    pspline
     ${LINEAR_ALGEBRA})
 
 endif()

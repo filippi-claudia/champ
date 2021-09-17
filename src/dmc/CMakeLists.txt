@@ -27,7 +27,7 @@ target_compile_options(dmc.mov1
   )
 
 target_link_libraries(dmc.mov1
-  cyrus pspline
+  pspline
   ${LINEAR_ALGEBRA})
 
 set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
