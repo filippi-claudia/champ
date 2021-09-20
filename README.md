@@ -1,19 +1,17 @@
 ```
-**********************************************************
-**                                                      **
-**   Cornell Holland Ab-initio Materials Package        **
-**                                                      **
-**    CCCCC   HH    HH    AAAAA   MMM   MMM   PPPPPP    **
-**   CC   CC  HH    HH   AA   AA  MM M M MM   PP   PP   **
-**   CC       HH    HH   AA   AA  MM  M  MM   PP   PP   **
-**   CC       HHHHHHHH   AAAAAAA  MM     MM   PPPPPP    **
-**   CC       HH    HH   AA   AA  MM     MM   PP        **
-**   CC   CC  HH    HH   AA   AA  MM     MM   PP        **
-**    CCCCC   HH    HH   AA   AA  MM     MM   PP        **
-**                                                      **
-**   Cornell Holland Ab-initio Materials Package        **
-**                                                      **
-**********************************************************
+ ____________________________________________________________________
+
+
+  .d8888b.   888    888         d8888  888b     d888  8888888b.
+ d88P  Y88b  888    888        d88888  8888b   d8888  888   Y88b
+ 888    888  888    888       d88P888  88888b.d88888  888    888
+ 888         8888888888      d88P 888  888Y88888P888  888   d88P
+ 888         888    888     d88P  888  888 Y888P 888  8888888P"
+ 888    888  888    888    d88P   888  888  Y8P  888  888
+ Y88b  d88P  888    888   d8888888888  888   "   888  888
+  "Y8888P"   888    888  d88P     888  888       888  888
+
+ ____________________________________________________________________
 ```
 ------
 
@@ -21,13 +19,13 @@
 
 [![Self-hosted Intel OneAPI build](https://github.com/neelravi/champ/actions/workflows/self_hosted_oneapi_new_parser.yml/badge.svg)](https://github.com/neelravi/champ/actions/workflows/self_hosted_oneapi_new_parser.yml)
 
-The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo 
-suite of programs for electronic structure calculations of atomic and molecular systems. 
-The code is a sister code of the homonymous program originally developed by Cyrus Umrigar 
-and Claudia Filippi of which it retains the accelerated Metropolis method and the efficient 
+The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo
+suite of programs for electronic structure calculations of atomic and molecular systems.
+The code is a sister code of the homonymous program originally developed by Cyrus Umrigar
+and Claudia Filippi of which it retains the accelerated Metropolis method and the efficient
 diffusion Monte Carlo algorithms.
 
-The European branch of the code is currently developed by Claudia Filippi and Saverio Moroni, 
+The European branch of the code is currently developed by Claudia Filippi and Saverio Moroni,
 with significant contributions by Claudio Amovilli and other collaborators.
 
 CHAMP has three basic capabilities:
@@ -45,7 +43,7 @@ Noteworthy features of CHAMP are:
 
 **NOTE**
 
-You should neither obtain this program from any other source nor should you distribute it 
+You should neither obtain this program from any other source nor should you distribute it
 or any portion thereof to any person, including people in the same research group.
 
 It is expected that users of the programs will do so in collaboration
@@ -53,7 +51,7 @@ with one of the principal authors.  This serves to ensure both that the
 programs are used correctly and that the principal authors get adequate
 scientific credit for the time invested in developing the programs.
 
-**Usual disclaimer**  
+**Usual disclaimer**
 
 The authors make no claims about the correctness of
 the program suite and people who use it do so at their own risk.
@@ -62,14 +60,14 @@ the program suite and people who use it do so at their own risk.
 
 CHAMP relies on various other program packages:
 
-1. Parser2: 
-   An easy-to-use and easy-to-extend keyword based input facility for fortran 
+1. Parser2:
+   An easy-to-use and easy-to-extend keyword based input facility for fortran
    programs written by Friedemann Schautz.
 
 2. GAMESS:
    For finite systems the starting wavefunction is obtained from the
    quantum chemistry program GAMESS, written by Mike Schmidt and
-   collaborators at Iowa State University.  
+   collaborators at Iowa State University.
 
 3. GAMESS_Interface:
    The wavefunction produced by GAMESS has to be cast in a form
@@ -95,7 +93,7 @@ required.
 
 To select a given compiler, you can type:
 ```
-cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=ifort 
+cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=ifort
 ```
 To use LAPACK and BLAS installed locally, include the path to the libraries:
 ```
@@ -115,7 +113,7 @@ Compared to the previous Makefiles the dependencies for the include files
 #### CMAKE Recipes
 
 Here are a couple of recipes for commonly used computing facilities, which can be easily adapted.
-* **Cartesius**:  
+* **Cartesius**:
 	- To compile the code, first load the required modules:
 		```
 		module load 2019
@@ -145,14 +143,14 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		module load 2019
 		module load CMake iimpi/2018b intel/2018b
 		srun path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
-		```	
-* **CCPGate**:  
-	- To build with ifort set the variables for the Intel Compiler and MPI:  
+		```
+* **CCPGate**:
+	- To build with ifort set the variables for the Intel Compiler and MPI:
 		If you use CSH:
 		```
 		source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.csh -arch intel64 -platform linux
 		source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.csh -arch intel64 -platform linux
-		```  
+		```
 		If you use BASH:
 		```
 		. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.sh intel64
@@ -161,8 +159,8 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		Setup the build:
 		```
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-		```  
- 	- To build with gfortran:  
+		```
+ 	- To build with gfortran:
 		If you use CSH:
 		```
 		source /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh -arch intel64 -platform linux
@@ -175,13 +173,13 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
 		```
-		which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them already if none of the Intel MKL variables are set.) Combining gfortran with the Intel MKL is possible but requires special care to work with the compiler flag `-mcmodel=large`.  
-	- To run the code:   
+		which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them already if none of the Intel MKL variables are set.) Combining gfortran with the Intel MKL is possible but requires special care to work with the compiler flag `-mcmodel=large`.
+	- To run the code:
 		```
 		mpirun -s all -np "n process" -machinefile "machinefile"
 		```
-* **Ubuntu desktop**:  
-	- Ubuntu 18.04:  
+* **Ubuntu desktop**:
+	- Ubuntu 18.04:
 		Install the required packages:
 		```
 		sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev
@@ -191,14 +189,14 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort
 		```
 		Build:
-		```    
+		```
 		cmake --build build -- -j2
 		```
 		To run in parallel:
-		```		
+		```
 		mpirun --stdin all -n 2 path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
 		```
-	- Ubuntu 20.04:    
+	- Ubuntu 20.04:
 	We are still working on the CHAMP built on the latest Unbuntu release using a OpenMPI v4.X version. The code compiles but fails to run the test in parallel. For the time being, we urge the user to use an older version of Ubuntu, as shown above.
 
 ------------------------------------------------------------------------
