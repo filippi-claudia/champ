@@ -286,7 +286,7 @@ c-------------------------------------------------------------------------------
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
-      use coefs, only: coef, norb
+      use coefs, only: coef, norb, nbasis
       use contrl_per, only: iperiodic
       use atom, only: ncent_tot
       use grid3dflag, only: i3dlagorb, i3dsplorb
