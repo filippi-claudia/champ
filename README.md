@@ -17,7 +17,6 @@
 
 [![Intel OneAPI build](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel_fdfparser.yml/badge.svg?branch=new-parser)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel_fdfparser.yml)
 
-[![Self-hosted Intel OneAPI build](https://github.com/neelravi/champ/actions/workflows/self_hosted_oneapi_new_parser.yml/badge.svg)](https://github.com/neelravi/champ/actions/workflows/self_hosted_oneapi_new_parser.yml)
 
 The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo
 suite of programs for electronic structure calculations of atomic and molecular systems.
@@ -60,9 +59,8 @@ the program suite and people who use it do so at their own risk.
 
 CHAMP relies on various other program packages:
 
-1. Parser2:
-   An easy-to-use and easy-to-extend keyword based input facility for fortran
-   programs written by Friedemann Schautz.
+1. [Parser](https://github.com/neelravi/mpi-libfdf-parser):
+   An easy-to-use and easy-to-extend keyword-value pair based input file parser written in Fortran 2008.  This parser uses a heavily modified libFDF library and is written by Ravindra Shinde. The parser is built in the code, however, the parser folder can be easily adapted by any other Fortran-based code.
 
 2. GAMESS:
    For finite systems the starting wavefunction is obtained from the
@@ -113,36 +111,49 @@ Compared to the previous Makefiles the dependencies for the include files
 #### CMAKE Recipes
 
 Here are a couple of recipes for commonly used computing facilities, which can be easily adapted.
-* **Cartesius**:
+* **Cartesius** (cartesius.surfasara.nl):
 	- To compile the code, first load the required modules:
-		```
-		module load 2019
-		module load CMake iimpi/2018b intel/2018b
+		```bash
+		module load 2021
+		module load git
+        module load CMake/3.20.1-GCCcore-10.3.0
+        module load intel-compilers/2021.2.0
+        module load imkl/2021.2.0-iimpi-2021a
+        module load impi/2021.2.0-intel-compilers-2021.2.0
 		```
 		then set-up the build:
-		```
+		```bash
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 		```
 		and finally build:
-		```
-		cmake --build build  --target all -- -j4
+		```bash
+		cmake --build build -j8 --clean-first
 		```
 	- To run the code, you need to submit a job to the queue system:
-		```
+		```bash
 		sbatch job.cmd
 		```
 		where `job.cmd` is a SLURM script that looks like this:
-		```
+
+		```bash
 		#!/bin/bash
-		#SBATCH -p normal                # partition (queue)
-		#SBATCH -n 5                     # number of cores
-		#SBATCH -t 01:00:00              # time (D-HH:MM)
-		#SBATCH -o slurm.%N.%j.out       # STDOUT
-		#SBATCH -e slurm.%N.%j.err       # STDERR
-		#
-		module load 2019
-		module load CMake iimpi/2018b intel/2018b
-		srun path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
+        #SBATCH -t 0-12:00:00           # time in (day-hours:min:sec)
+        #SBATCH -N 60                   # number of nodes
+        #SBATCH -n 1440                 # number of cores
+        #SBATCH --ntasks-per-node 24    # tasks per node
+        #SBATCH -J cn19-B1              # name of the job
+        #SBATCH -o vmc.%j.out           # std output file name for slurm
+        #SBATCH -e vmc.%j.err           # std error file name for slurm
+        #SBATCH --constraint=haswell    # specific requirements about procs
+		#SBATCH -p normal               # partition (queue)
+        #
+        module purge
+		module load 2021
+		module load imkl
+        #
+        export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi2.so
+        cd $PWD
+		srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
 		```
 * **CCPGate**:
 	- To build with ifort set the variables for the Intel Compiler and MPI:
