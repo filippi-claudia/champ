@@ -81,6 +81,26 @@ if (ENABLE_MPI)
   find_package(MPI COMPONENTS Fortran REQUIRED)
 endif(ENABLE_MPI)
 
+## Know the architecture of the CPU and set compile flags accordingly
+set(TARGET_ARCHITECTURE "generic")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+   file(READ "/proc/cpuinfo" _cpuinfo)
+   string(REGEX REPLACE ".*flags[ \t]*:[ \t]+([^\n]+).*" "\\1" _cpu_flags "${_cpuinfo}")
+endif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+
+if(_cpu_flags MATCHES "avx512")
+  list(APPEND Fortran_FLAGS "-xCORE-AVX512")
+  set(TARGET_ARCHITECTURE "avx512")
+  add_definitions(-DVECTORIZATION="avx512")
+  elseif(_cpu_flags MATCHES "avx2")
+  list(APPEND Fortran_FLAGS "-xCORE-AVX2")
+  set(TARGET_ARCHITECTURE "avx2")
+  add_definitions(-DVECTORIZATION="avx2")
+endif()
+
+add_definitions(-DTARGET_ARCHITECTURE=\"${TARGET_ARCHITECTURE}\")
+## Architecture specific flags end here
+
 # Git info
 execute_process(COMMAND git rev-parse --abbrev-ref HEAD  OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
 execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)

@@ -377,12 +377,23 @@ c get the value from the 3d-interpolated orbitals
 c get basis functions for electron iel
           call basis_fnse_v(iel,rvec_en,r_en)
 
+! Vectorization dependent code selection
+#ifdef VECTORIZATION
+          ! The following loop changed for better vectorization AVX512/AVX2
+          do iorb=1,norb+nadorb
+            orbn(iorb)=0.d0
+            do m=1,nbasis
+              orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
+            enddo
+          enddo
+#else
           do 25 iorb=1,norb+nadorb
             orbn(iorb)=0.d0
 c           do 25 m=1,nbasis
             do 25 m0=1,n0_nbasis(iel)
               m=n0_ibasis(m0,iel)
    25         orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
+#endif
 
           if(iforce_analy.gt.0) then
 

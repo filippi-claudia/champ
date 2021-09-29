@@ -115,6 +115,27 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iw
 c        call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
 c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
 
+!        Vectorization dependent code selection
+#ifdef VECTORIZATION
+!     Following loop changed for better vectorization AVX512/AVX2
+          do iorb=1,norb+nadorb
+            do i=1,nelec
+              orb(i,iorb)=0
+              dorb(1,i,iorb)=0
+              dorb(2,i,iorb)=0
+              dorb(3,i,iorb)=0
+              ddorb(i,iorb)=0
+              do m=1,nbasis
+                orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
+                dorb (1,i,iorb)=dorb (1,i,iorb)+coef(m,iorb,iwf)*dphin (1,m,i)
+                dorb (2,i,iorb)=dorb (2,i,iorb)+coef(m,iorb,iwf)*dphin (2,m,i)
+                dorb (3,i,iorb)=dorb (3,i,iorb)+coef(m,iorb,iwf)*dphin (3,m,i)
+                ddorb(  i,iorb)=ddorb(  i,iorb)+coef(m,iorb,iwf)*d2phin( m,i)
+              enddo
+            enddo
+          enddo
+#else
+!       keep the old localization code if no vectorization instructions available
          do 26 iorb=1,norb+nadorb
            do 26 i=1,nelec
             orb(i,iorb)=0
@@ -130,6 +151,7 @@ c           do 26 m=1,nbasis
              dorb (2,i,iorb)=dorb (2,i,iorb)+coef(m,iorb,iwf)*dphin (2,m,i)
              dorb (3,i,iorb)=dorb (3,i,iorb)+coef(m,iorb,iwf)*dphin (3,m,i)
    26        ddorb(  i,iorb)=ddorb(  i,iorb)+coef(m,iorb,iwf)*d2phin( m,i)
+#endif
        endif
 
        if(iforce_analy.eq.1) call da_orbitals
@@ -313,6 +335,25 @@ c get basis functions for electron iel
             call basis_fnse_vgl(iel,rvec_en,r_en)
           endif
 
+
+!       Vectorization dependent code. useful for AVX512 and AVX2
+#ifdef VECTORIZATION
+          do iorb=1,norb
+            orbn(iorb)=0
+            dorbn(1,iorb)=0
+            dorbn(2,iorb)=0
+            dorbn(3,iorb)=0
+            ddorbn(iorb)=0
+            do m=1,nbasis
+              orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
+              dorbn(1,iorb)=dorbn(1,iorb)+coef(m,iorb,iwf)*dphin(1,m,iel)
+              dorbn(2,iorb)=dorbn(2,iorb)+coef(m,iorb,iwf)*dphin(2,m,iel)
+              dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(3,m,iel)
+              if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
+            enddo
+          enddo
+#else
+!         Keep the localization for the non-vectorized code
           do 25 iorb=1,norb
             orbn(iorb)=0
             dorbn(1,iorb)=0
@@ -328,7 +369,7 @@ c           do 25 m=1,nbasis
              dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(3,m,iel)
              if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
    25     continue
-
+#endif
         endif
        else
         call orbitals_pw_grade(iel,x(1,iel),orbn,dorbn,ddorbn)
