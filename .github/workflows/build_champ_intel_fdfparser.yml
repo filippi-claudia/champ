@@ -88,8 +88,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -1.0568201 +-  0.0025689) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0568201 0.0025689
+        echo "Comparing the energy with the reference one (total E = -1.0606661 +-  0.0037025) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0606661  0.0037025
     # - name: "Upload results of test 03"
     #   uses: actions/upload-artifact@v2
     #   with:
