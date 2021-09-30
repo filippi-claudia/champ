@@ -10,7 +10,7 @@ c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       integer ilinx,iliny,nx,ny,inf3,ier
 
       REAL*8 xget,yget
-      REAL*8 fval(6)
+      REAL*8 fval(*)
       REAL*8 x(nx),y(ny),f(4,4,inf3,ny)
 
 c  modification -- dmc 11 Jan 1999 -- remove SAVE stmts; break routine
@@ -79,14 +79,16 @@ c      ier = 0 -- successful completion; = 1 -- an error occurred.
 c-------------------------------------------------------------------
 c  local
 
-      integer i,j
+      integer i(1),j(1)
 
-      REAL*8 dx,dy
+      REAL*8 dx(1),dy(1)
 
 c--------------------------
+         i(1)=0
+         j(1)=0
 
       call r8bcspevxy(xget,yget,x,nx,y,ny,ilinx,iliny,
-     >   i,j,dx,dy,ier)
+     >   i(1),j(1),dx(1),dy(1),ier)
       if(ier.ne.0) return
 
       call r8bcspevfn(iselect,1,1,fval,i,j,dx,dy,f,inf3,ny)

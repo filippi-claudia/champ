@@ -8,7 +8,7 @@ c  bcspeval -- eval bicubic spline function and/or derivatives
       integer ilinx,iliny,nx,ny,inf3,ier
 
       real xget,yget
-      real fval(6)
+      real fval(*)
       real x(nx),y(ny),f(4,4,inf3,ny)
 
 c  modification -- dmc 11 Jan 1999 -- remove SAVE stmts; break routine
@@ -77,14 +77,16 @@ c      ier = 0 -- successful completion; = 1 -- an error occurred.
 c-------------------------------------------------------------------
 c  local
 
-      integer i,j
+      integer i(1),j(1)
 
-      real dx,dy
+      real dx(1),dy(1)
 
 c--------------------------
+         i(1) = 0
+         j(1) = 0
 
       call bcspevxy(xget,yget,x,nx,y,ny,ilinx,iliny,
-     >   i,j,dx,dy,ier)
+     >   i(1),j(1),dx(1),dy(1),ier)
       if(ier.ne.0) return
 
       call bcspevfn(iselect,1,1,fval,i,j,dx,dy,f,inf3,ny)

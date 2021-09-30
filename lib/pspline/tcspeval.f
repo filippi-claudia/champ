@@ -8,7 +8,7 @@ c  tcspeval -- eval tricubic spline function and/or derivatives
       integer ilinx,iliny,ilinz,nx,ny,nz,inf4,inf5,ier
 
       real xget,yget,zget
-      real fval(10)
+      real fval(*)
       real x(nx),y(ny),z(nz),f(4,4,4,inf4,inf5,nz)
 
 c  modification -- dmc 11 Jan 1999 -- remove SAVE stmts; break routine
@@ -96,14 +96,17 @@ c      ier = 0 -- successful completion; = 1 -- an error occurred.
 c-------------------------------------------------------------------
 c  local
 
-      integer i,j,k
+      integer i(1),j(1),k(1)
 
-      real dx,dy,dz
+      real dx(1),dy(1),dz(1)
 
 c--------------------------
+         i(1)=0
+         j(1)=0
+         k(1)=0
 
       call tcspevxyz(xget,yget,zget,x,nx,y,ny,z,nz,ilinx,iliny,ilinz,
-     >   i,j,k,dx,dy,dz,ier)
+     >   i(1),j(1),k(1),dx(1),dy(1),dz(1),ier)
       if(ier.ne.0) return
 
       call tcspevfn(iselect,1,1,fval,i,j,k,dx,dy,dz,f,inf4,inf5,nz)
