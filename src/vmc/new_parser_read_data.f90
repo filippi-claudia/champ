@@ -81,6 +81,10 @@ subroutine header_printing()
     write(ounit,'(2a)')  " Compiler version           :: ", COMPILER_VERSION
 #endif
 
+#if defined(TARGET_ARCHITECTURE)
+    write(ounit,'(2a)')  " Vectorization Instructions :: ", TARGET_ARCHITECTURE
+#endif
+
     call hostnm(output)
     write(ounit, '(2a)') " Hostname                   :: ",   output
     call get_environment_variable ("PWD", output)
