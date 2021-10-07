@@ -5,6 +5,7 @@ project(CHAMP LANGUAGES Fortran CXX C)
 
 # Needed for something which we don't know
 cmake_policy(SET CMP0079 NEW)
+
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 # ## Build type
@@ -16,9 +17,9 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 # useful info
-message(STATUS "Compiling                :: " ${CMAKE_PROJECT_NAME})
-message(STATUS "Fortran compiler         :: " ${CMAKE_Fortran_COMPILER} )
-message(STATUS "Fortran compiler version :: " ${CMAKE_Fortran_COMPILER_VERSION} )
+message(STATUS "Compiling                        :: " ${CMAKE_PROJECT_NAME})
+message(STATUS "Fortran compiler                 :: " ${CMAKE_Fortran_COMPILER} )
+message(STATUS "Fortran compiler version         :: " ${CMAKE_Fortran_COMPILER_VERSION} )
 
 
 # Set folder variables:
@@ -26,6 +27,7 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_VMC_DIR ${CMAKE_SOURCE_DIR}/src/vmc)
 set(CMAKE_DMC_DIR ${CMAKE_SOURCE_DIR}/src/dmc)
 set(CMAKE_PARSER_DIR ${CMAKE_SOURCE_DIR}/src/parser)
+set(CMAKE_TREXIO_DIR ${CMAKE_SOURCE_DIR}/lib/trexio)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -54,12 +56,12 @@ if (MKL_FOUND)
   set(LINEAR_ALGEBRA ${MKL_LIBRARIES} pthread m dl)
   message("")
   message(STATUS "Using MKL for the linear algebra calculations!")
-  message(STATUS "MKL INCLUDE DIRS         :: " ${MKL_INCLUDE_DIRS})
+  message(STATUS "MKL INCLUDE DIRS                 :: " ${MKL_INCLUDE_DIRS})
 # message(STATUS "MKL_LIBRARIES            :: " ${MKL_LIBRARIES})
   # Printing individual libraries in the list
-  message(STATUS "MKL_LIBRARIES            : ")
+  message(STATUS "MKL_LIBRARIES                    : ")
   foreach(lib ${MKL_LIBRARIES})
-    message("                            :: " ${lib})
+    message("                                    :: " ${lib})
   endforeach(lib)
 else()
   # search for lapack
@@ -69,6 +71,8 @@ else()
   set(LINEAR_ALGEBRA ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
   message(STATUS "MKL NOT FOUND! Using default BLAS and LAPACK")
 endif(MKL_FOUND)
+message(STATUS "                                    ")
+
 
 # LibFDF is built-in in the src/parser folder
 
@@ -76,18 +80,21 @@ endif(MKL_FOUND)
 find_package(HDF5)
 message(STATUS "Is HDF5 library found            :: " HDF5_FOUND)
 message(STATUS "Is HDF5 library parallel         :: " HDF5_IS_PARALLEL)
-message(STATUS "HDF5 Library include dirs        :: " ${HDF5_INCLUDE_DIRS})
-message(STATUS "HDF5 Library lib dirs            :: " ${HDF5_LIBRARIES})
 message(STATUS "HDF5 Library C Compiler exec     :: " ${HDF5_C_COMPILER_EXECUTABLE})
-message(STATUS "HDF5 Library CXX Compiler exec   :: " ${HDF5_CXX_COMPILER_EXECUTABLE})
-message(STATUS "HDF5 Library F Compiler exec     :: " ${HDF5_Fortran_COMPILER_EXECUTABLE})
+message(STATUS "HDF5 include dirs                :: " ${HDF5_INCLUDE_DIRS})
+message(STATUS "HDF5 library directories         :  " )
+foreach(lib ${HDF5_LIBRARIES})
+  message("                                    :: " ${lib})
+endforeach(lib)
+message(STATUS "                                    ")
 
 # Find TREXIO
 include(${CMAKE_MODULE_PATH}/FindTREXIO.cmake)
 find_package(TREXIO)
-message(STATUS "Is TREXIO library found            :: " TREXIO_FOUND)
-message(STATUS "TREXIO Library include dirs        :: " ${TREXIO_INCLUDE_DIR})
-message(STATUS "TREXIO Library lib dirs            :: " ${TREXIO_LIBRARY})
+message(STATUS "Is TREXIO library found          :: " TREXIO_FOUND)
+message(STATUS "TREXIO Library include dirs      :: " ${TREXIO_INCLUDE_DIR})
+message(STATUS "TREXIO Library lib dirs          :: " ${TREXIO_LIBRARY})
+message(STATUS "                                    ")
 
 #  documentation requirements
 if (BUILD_DOC)
@@ -134,8 +141,12 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-DGIT_HASH=\"${GIT_HASH}\"")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
-  list(APPEND Fortran_FLAGS "-ltrexio")
+  if (TREXIO_FOUND)
+    list(APPEND Fortran_FLAGS "-ltrexio")
+  endif()
+
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-512 -fno-automatic")
+
   if (MKL_FOUND)
     #list(APPEND Fortran_FLAGS "-fdefault-integer-8")
     list(APPEND Fortran_FLAGS "-m64")
@@ -150,10 +161,10 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
   list(APPEND Fortran_FLAGS "-DGIT_HASH=\"${GIT_HASH}\"")
   list(APPEND Fortran_FLAGS "-D_MPI_")
-  list(APPEND Fortran_FLAGS "-DCLUSTER"
-  list(APPEND Fortran_FLAGS "-ltrexio")
-  )
-
+  list(APPEND Fortran_FLAGS "-DCLUSTER")
+  if (TREXIO_FOUND)
+    list(APPEND Fortran_FLAGS "-ltrexio")
+  endif()
 
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
   #if (MKL_FOUND)
@@ -171,7 +182,7 @@ endif()
 message("")
 message(STATUS "Fortran compiler flags   : " )
 foreach(flag ${Fortran_FLAGS})
-  message("                            :: " ${flag})
+  message("                                    :: " ${flag})
 endforeach(flag)
 
 
@@ -180,6 +191,7 @@ endforeach(flag)
 add_subdirectory(src/parser)
 add_subdirectory(tools/interface)
 add_subdirectory(lib/pspline)
+add_subdirectory(lib/trexio)
 add_subdirectory(src/vmc)
 add_subdirectory(src/dmc)
 

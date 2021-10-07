@@ -85,7 +85,6 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_grdnt.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_allocation.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_state_avrg.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/trexio_f.f90
     ${CMAKE_PARSER_DIR}/fdf.F90
     ${CMAKE_PARSER_DIR}/io_fdf.F90
     ${CMAKE_PARSER_DIR}/parse.F90

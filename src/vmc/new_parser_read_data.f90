@@ -97,7 +97,7 @@ subroutine header_printing()
     write(ounit, '(2a)') " Error file                 :: ",   file_error
     write(ounit, '(4a)') " Code compiled on           :: ",__DATE__, " at ", __TIME__
     write(ounit, '(a,i0)') " Number of processors       :: ", nproc
-    write(ounit,*) " trexio library ", TREXIO_SUCCESS
+    if (TREXIO_SUCCESS == 0) write(ounit,*) "Is TREXIO library linked   :: ", "Yes"
     write(ounit,*)
 
 
