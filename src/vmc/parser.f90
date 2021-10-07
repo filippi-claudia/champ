@@ -189,7 +189,7 @@ subroutine parser
   character(len=72)          :: file_modify_zmatrix,file_hessian_zmatrix
   character(len=72)          :: file_gradients_zmatrix, file_gradients_cartesian
   character(len=72)          ::	file_multideterminants, file_forces
-
+  character(len=72)          :: file_trexio
 
 
 ! from process input subroutine
@@ -453,6 +453,7 @@ subroutine parser
 
 
   ! Filenames parsing
+  file_trexio     		      = fdf_load_filename('trexio', 		'default.hdf5')
   file_basis        		    = fdf_load_filename('basis', 			'default.bas')
   file_molecule     		    = fdf_load_filename('molecule', 		'default.xyz')
   file_determinants 		    = fdf_load_filename('determinants', 	'default.det')
@@ -544,6 +545,8 @@ subroutine parser
     call fdf_read_molecule_block(bfdf)
   elseif ( fdf_load_defined('molecule') ) then
     call read_molecule_file(file_molecule)
+  elseif ( fdf_load_defined('trexio') ) then
+    call read_trexio_molecule_file(file_trexio)
   else
     write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
