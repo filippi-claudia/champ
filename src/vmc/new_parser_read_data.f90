@@ -9,6 +9,7 @@ subroutine header_printing()
     use, intrinsic :: iso_fortran_env, only: iostat_end
     use contrl_file,    only: file_input, file_output, file_error
     use contrl_file,    only: ounit, errunit
+    use trexio
 
     implicit none
 
@@ -96,6 +97,7 @@ subroutine header_printing()
     write(ounit, '(2a)') " Error file                 :: ",   file_error
     write(ounit, '(4a)') " Code compiled on           :: ",__DATE__, " at ", __TIME__
     write(ounit, '(a,i0)') " Number of processors       :: ", nproc
+    write(ounit,*) " trexio library ", TREXIO_SUCCESS
     write(ounit,*)
 
 

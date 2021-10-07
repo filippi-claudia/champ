@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 # Project's name
-project(CHAMP LANGUAGES Fortran CXX)
+project(CHAMP LANGUAGES Fortran CXX C)
 
-set(CMAKE_VERBOSE_MAKEFILE off)
+# Needed for something which we don't know
+cmake_policy(SET CMP0079 NEW)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 # ## Build type
 # if(NOT CMAKE_BUILD_TYPE)
@@ -70,6 +72,23 @@ endif(MKL_FOUND)
 
 # LibFDF is built-in in the src/parser folder
 
+# Find HDF5 library
+find_package(HDF5)
+message(STATUS "Is HDF5 library found            :: " HDF5_FOUND)
+message(STATUS "Is HDF5 library parallel         :: " HDF5_IS_PARALLEL)
+message(STATUS "HDF5 Library include dirs        :: " ${HDF5_INCLUDE_DIRS})
+message(STATUS "HDF5 Library lib dirs            :: " ${HDF5_LIBRARIES})
+message(STATUS "HDF5 Library C Compiler exec     :: " ${HDF5_C_COMPILER_EXECUTABLE})
+message(STATUS "HDF5 Library CXX Compiler exec   :: " ${HDF5_CXX_COMPILER_EXECUTABLE})
+message(STATUS "HDF5 Library F Compiler exec     :: " ${HDF5_Fortran_COMPILER_EXECUTABLE})
+
+# Find TREXIO
+include(${CMAKE_MODULE_PATH}/FindTREXIO.cmake)
+find_package(TREXIO)
+message(STATUS "Is TREXIO library found            :: " TREXIO_FOUND)
+message(STATUS "TREXIO Library include dirs        :: " ${TREXIO_INCLUDE_DIR})
+message(STATUS "TREXIO Library lib dirs            :: " ${TREXIO_LIBRARY})
+
 #  documentation requirements
 if (BUILD_DOC)
   find_package(DOXYGEN)
@@ -115,6 +134,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-DGIT_HASH=\"${GIT_HASH}\"")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
+  list(APPEND Fortran_FLAGS "-ltrexio")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-512 -fno-automatic")
   if (MKL_FOUND)
     #list(APPEND Fortran_FLAGS "-fdefault-integer-8")
@@ -130,7 +150,9 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
   list(APPEND Fortran_FLAGS "-DGIT_HASH=\"${GIT_HASH}\"")
   list(APPEND Fortran_FLAGS "-D_MPI_")
-  list(APPEND Fortran_FLAGS "-DCLUSTER")
+  list(APPEND Fortran_FLAGS "-DCLUSTER"
+  list(APPEND Fortran_FLAGS "-ltrexio")
+  )
 
 
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
@@ -153,7 +175,6 @@ foreach(flag ${Fortran_FLAGS})
 endforeach(flag)
 
 
-
 ## Subdirectories
 # Include the following subdirectories
 add_subdirectory(src/parser)
@@ -161,6 +182,9 @@ add_subdirectory(tools/interface)
 add_subdirectory(lib/pspline)
 add_subdirectory(src/vmc)
 add_subdirectory(src/dmc)
+
+target_link_libraries(vmc.mov1 ${TREXIO_LIBRARY})
+target_link_libraries(dmc.mov1 ${TREXIO_LIBRARY})
 
 if(ENABLE_TEST)
   MESSAGE(STATUS "enable test")
