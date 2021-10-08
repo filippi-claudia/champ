@@ -178,20 +178,33 @@ subroutine parser
   character(len=100)         :: string_format  = '(A, T40, ":: ", T50, A)'
 
 !------------------------------------------------------------------------- BEGIN
-! debug purpose only
-  character(len=72)          :: optwf, blocking_vmc, blocking_dmc
-  character(len=72)          :: file_basis, 			  file_molecule
-  character(len=72)          ::	file_determinants, 	file_symmetry
-  character(len=72)          :: file_jastrow, 			file_jastrow_der
-  character(len=72)          ::	file_orbitals, 			file_pseudo
-  character(len=72)          :: file_exponents, 		file_optorb_mixvirt
-  character(len=72)          :: file_efield,			  file_zmatrix_connection
-  character(len=72)          :: file_eigenvalues, 	file_basis_num_info
-  character(len=72)          :: file_dmatrix,			  file_cavity_spheres
-  character(len=72)          :: file_modify_zmatrix,file_hessian_zmatrix
-  character(len=72)          :: file_gradients_zmatrix, file_gradients_cartesian
-  character(len=72)          ::	file_multideterminants, file_forces
-  character(len=72)          :: file_trexio, trex_backend
+
+  character(:), allocatable  :: optwf, blocking_vmc, blocking_dmc
+  character(:), allocatable  :: file_basis
+  character(:), allocatable  :: file_molecule
+  character(:), allocatable  :: file_determinants
+  character(:), allocatable  :: file_symmetry
+  character(:), allocatable  :: file_jastrow
+  character(:), allocatable  :: file_jastrow_der
+  character(:), allocatable  :: file_orbitals
+  character(:), allocatable  :: file_pseudo
+  character(:), allocatable  :: file_exponents
+  character(:), allocatable  :: file_optorb_mixvirt
+  character(:), allocatable  :: file_efield
+  character(:), allocatable  :: file_zmatrix_connection
+  character(:), allocatable  :: file_eigenvalues
+  character(:), allocatable  :: file_basis_num_info
+  character(:), allocatable  :: file_dmatrix
+  character(:), allocatable  :: file_cavity_spheres
+  character(:), allocatable  :: file_modify_zmatrix
+  character(:), allocatable  :: file_hessian_zmatrix
+  character(:), allocatable  :: file_gradients_zmatrix
+  character(:), allocatable  :: file_gradients_cartesian
+  character(:), allocatable  :: file_multideterminants
+  character(:), allocatable  :: file_forces
+  character(:), allocatable  :: file_trexio
+  character(:), allocatable  :: file_trexio_path
+  character(:), allocatable  :: trex_backend
 
 
 ! from process input subroutine

@@ -342,3 +342,151 @@ subroutine readps_gauss
   call bcast(zq0)
   return
 end subroutine readps_gauss
+
+! subroutine trexio_read_ecp_gaussian
+!   !> This subroutine reads the ECP pseudopotential in Gaussian format
+!   !! from the trexio hdf5/text file.
+!   !! first line : arbitrary label (written to log-file)
+!   !! second line: number of projectors + 1 (i.e. total number of components)
+!   !! remaining lines: components in the order (local,L=0,L=1 ...)
+!   !!     repeated for each component
+!   !!        number terms
+!   !!        repeated for each term in this component
+!   !!          coefficient power exponent
+!   !!
+!   !! NOTE: as usual power n means r**(n-2)
+!   !!
+!   !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+!   use custom_broadcast,   only: bcast
+!   use mpiconf,            only: wid
+
+!   use pseudo_mod, only: MPS_L, MGAUSS, MPS_QUAD
+!   use atom, only: nctype, atomtyp
+!   use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
+!   use gauss_ecp, only: allocate_gauss_ecp
+!   use pseudo, only: lpot
+!   use qua, only: nquad, wq, xq0, yq0, zq0
+!   use general, only: pooldir, filename, pp_id, filenames_ps_gauss
+!   use contrl_file,        only: ounit, errunit
+
+!   use precision_kinds, only: dp
+!   use trexio
+!   implicit none
+
+!   integer                   :: i, ic, idx, l
+!   integer                   :: iunit, iostat, counter = 0
+!   logical                   :: exist, skip = .true.
+!   character(:), allocatable :: label
+
+!   ! trexio
+!   character(:), allocatable :: file_trexio, file_trexio_path
+!   integer(8)                :: trex_ecp_file
+!   integer                   :: rc = 1
+
+
+!   if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
+!     file_trexio_path = pooldir // file_trexio(7:)
+!   else
+!     file_trexio_path = file_trexio
+!   endif
+
+
+
+!   do ic=1,nctype
+!     if (wid) then
+!       if (nctype.gt.100) call fatal_error('READPS_GAUSS: nctype>100')
+!       filename =  trim(pooldir) // trim(pp_id) // ".gauss_ecp.dat." // atomtyp(ic)
+
+!       inquire(file=filename, exist=exist)
+!       if (exist) then
+!         open (newunit=iunit,file=filename, iostat=iostat, action='read', status='old')
+!         if (iostat .ne. 0) error stop "Problem in opening the pseudopotential file (Gaussian)"
+!       else
+!         call fatal_error( " Pseudopotential file (Gaussian) "// filename // " does not exist.")
+!       endif
+
+!     !   External file reading
+!       write(ounit,*) '-----------------------------------------------------------------------'
+!       write(ounit,'(4a)')  " Reading ECP pseudopotential for ", trim(atomtyp(ic))," from the file :: ", trim(filename)
+!       write(ounit,*) '-----------------------------------------------------------------------'
+
+!   ! label
+
+!       read(iunit,'(a80)',iostat=iostat) label
+!       if (iostat .ne. 0) then
+!         write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: label"
+!         write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!       endif
+!       write(ounit,'(a,i4,a,a80)') 'ECP for atom type ', ic, ' label = ', adjustl(label)
+!     endif
+!     call bcast(label)
+!     ! max projector
+!     if (.not. allocated(lpot)) allocate (lpot(nctype))
+
+!     if (wid) then
+!       read(iunit,*,iostat=iostat) lpot(ic)
+!       if (iostat .ne. 0) then
+!         write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: lpot"
+!         write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!       endif
+!       write(ounit,'(a,i4,a,i4)') 'ECP for atom type ', ic, ' lpot = ', lpot(ic)
+
+!       if(lpot(ic).gt.MPS_L) call fatal_error('READPS_GAUSS: increase MPS_L')
+!     endif
+!     call bcast(lpot)
+!   ! read terms of local part and all non-local parts
+!   ! local part first in file, but stored at index lpot
+!   ! non-local l=0 at index 1 etc, up to lpot-1
+
+!     call allocate_gauss_ecp()
+!     do l=1,lpot(ic)
+!         if(l.eq.1)then
+!           idx=lpot(ic)
+!           else
+!           idx=l-1
+!         endif
+!         if (wid) then
+!           read(iunit,*,iostat=iostat) necp_term(idx,ic)
+!           if (iostat .ne. 0) then
+!               write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: necp_term"
+!               write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!           endif
+!         endif
+!         call bcast(necp_term)
+
+!         if(necp_term(idx,ic).gt.MGAUSS) call fatal_error('READPS_GAUSS: increase MGAUSS')
+
+!         write(ounit,'(a,2i6)') '    component, #terms ', l,necp_term(idx,ic)
+
+!         do i=1,necp_term(idx,ic)
+!           if (wid) then
+!             read(iunit,*,iostat=iostat) ecp_coef(i,idx,ic), necp_power(i,idx,ic),ecp_exponent(i,idx,ic)
+
+!             if (iostat .ne. 0) then
+!               write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: ecp_coeff, power, ecp_exponents"
+!               write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!             endif
+!             write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic),necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
+!           endif
+!         enddo
+!         call bcast(ecp_coef)
+!         call bcast(necp_power)
+!         call bcast(ecp_exponent)
+!     enddo
+
+!     if (wid) close(iunit)
+!   enddo
+
+!   if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
+!   if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
+!   if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
+!   if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))
+
+!   call gesqua(nquad,xq0,yq0,zq0,wq)
+!   call bcast(wq)
+!   call bcast(xq0)
+!   call bcast(yq0)
+!   call bcast(zq0)
+!   return
+! end subroutine readps_gauss
+
