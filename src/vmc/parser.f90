@@ -5,10 +5,10 @@ subroutine parser
   !> @author Ravindra Shinde
   !> @email  r.l.shinde@utwente.nl
   !> @date   11-08-2021
-  !> @version 1.0
+  !> @version 1.2
 
   use fdf               ! modified libfdf
-  use trexio,           only: TREXIO_HDF5, TREXIO_TEXT
+  use trexio            ! trexio library for reading and writing hdf5 files
   use custom_broadcast, only: bcast
   use mpiconf,          only: wid
   use, intrinsic :: iso_fortran_env, only : iostat_end

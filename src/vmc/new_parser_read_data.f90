@@ -252,6 +252,8 @@ subroutine read_trexio_molecule_file(file_trexio)
     use ghostatom, 		    only: newghostype, nghostcent
     use inputflags,         only: igeometry
     use periodic_table,     only: atom_t, element
+    use elec,           	only: ndn, nup
+    use const,          	only: nelec
     use contrl_file,        only: ounit, errunit, backend
     use general,            only: pooldir
     use trexio
@@ -290,11 +292,12 @@ subroutine read_trexio_molecule_file(file_trexio)
 
     ! Check if the file exists
 
-!    if (wid) then
-        trex_molecule_file = trexio_open(file_trexio_path, 'r', backend, rc)
-        rc = trexio_read_nucleus_num(trex_molecule_file, ncent)
-!    endif
-!    call bcast(ncent)
+    trex_molecule_file = trexio_open(file_trexio_path, 'r', backend, rc)
+    rc = trexio_read_nucleus_num(trex_molecule_file, ncent)
+
+    rc = trexio_read_electron_up_num(trex_molecule_file, nup)
+    rc = trexio_read_electron_dn_num(trex_molecule_file, ndn)
+    nelec = nup + ndn
 
     ! Do the allocations based on the ncent
     if (.not. allocated(cent))    allocate(cent(3,ncent))
@@ -302,14 +305,10 @@ subroutine read_trexio_molecule_file(file_trexio)
     if (.not. allocated(iwctype)) allocate(iwctype(ncent))
     if (.not. allocated(unique))  allocate(unique(ncent))
 
-!    if (wid) then
-        rc = trexio_read_nucleus_coord(trex_molecule_file, cent)
-        rc = trexio_read_nucleus_label(trex_molecule_file, symbol, 3)
-!    endif
-    rc = trexio_close(trex_molecule_file)
 
-!    call bcast(cent)
-!    call bcast(symbol)
+    rc = trexio_read_nucleus_coord(trex_molecule_file, cent)
+    rc = trexio_read_nucleus_label(trex_molecule_file, symbol, 3)
+    rc = trexio_close(trex_molecule_file)
 
     write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
     write(ounit,*)
