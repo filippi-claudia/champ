@@ -23,6 +23,12 @@ jobs:
         rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
         sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
         sudo apt-get update
+
+    - name: Install Cmake and HDF5
+      run: |
+        sudo apt-get install -y cmake
+        sudo apt-get install -y libhdf5-serial-dev
+
     - name: install Intel oneapi components
       run: |
         sudo apt-get install -y intel-oneapi-common-vars
@@ -31,7 +37,23 @@ jobs:
         sudo apt-get install -y intel-oneapi-mkl-devel-2021.3.0
         sudo apt-get install -y intel-oneapi-mpi-2021.3.0
         sudo apt-get install -y intel-oneapi-mpi-devel-2021.3.0
-    - name: Compile
+
+    - name: Install Trexio
+      run: |
+        sudo apt-get install -y cmake
+        sudo apt-get install -y libhdf5-serial-dev
+        sudo apt-get install -y gfortran
+        sudo apt-get install -y gcc
+        wget https://github.com/TREX-CoE/trexio/releases/download/v1.0/trexio-1.0.0.tar.gz
+        tar -xzf trexio-1.0.0.tar.gz
+        cd trexio-1.0.0/
+        ./configure FC=gfortran CC=gcc
+        make all
+        make check
+        sudo make install
+        sudo cp include/* /usr/local/include/
+
+    - name: Compile the CHAMP code
       run: |
         source /opt/intel/oneapi/setvars.sh
         printenv >> $GITHUB_ENV
