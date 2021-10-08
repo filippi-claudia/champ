@@ -86,6 +86,10 @@ subroutine header_printing()
     write(ounit,'(2a)')  " Vectorization Instructions :: ", TARGET_ARCHITECTURE
 #endif
 
+#if defined(HDF5_VERSION)
+    write(ounit,'(2a)')  " HDF5 library version       :: ", HDF5_VERSION
+#endif
+
     call hostnm(output)
     write(ounit, '(2a)') " Hostname                   :: ",   output
     call get_environment_variable ("PWD", output)

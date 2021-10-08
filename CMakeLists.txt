@@ -86,6 +86,7 @@ foreach(lib ${HDF5_LIBRARIES})
   message("                                    :: " ${lib})
 endforeach(lib)
 message(STATUS "                                    ")
+add_definitions(-DHDF5_VERSION=\"${HDF5_VERSION}\")
 
 # Find TREXIO
 include(${CMAKE_MODULE_PATH}/FindTREXIO.cmake)
