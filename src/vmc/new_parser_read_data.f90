@@ -252,7 +252,7 @@ subroutine read_trexio_molecule_file(file_trexio)
     use ghostatom, 		    only: newghostype, nghostcent
     use inputflags,         only: igeometry
     use periodic_table,     only: atom_t, element
-    use contrl_file,        only: ounit, errunit
+    use contrl_file,        only: ounit, errunit, backend
     use general,            only: pooldir
     use trexio
 
@@ -291,7 +291,7 @@ subroutine read_trexio_molecule_file(file_trexio)
     ! Check if the file exists
 
 !    if (wid) then
-        trex_molecule_file = trexio_open(file_trexio_path, 'r', TREXIO_HDF5, rc)
+        trex_molecule_file = trexio_open(file_trexio_path, 'r', backend, rc)
         rc = trexio_read_nucleus_num(trex_molecule_file, ncent)
 !    endif
 !    call bcast(ncent)

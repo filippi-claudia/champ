@@ -8,6 +8,7 @@ subroutine parser
   !> @version 1.0
 
   use fdf               ! modified libfdf
+  use trexio,           only: TREXIO_HDF5, TREXIO_TEXT
   use custom_broadcast, only: bcast
   use mpiconf,          only: wid
   use, intrinsic :: iso_fortran_env, only : iostat_end
@@ -16,6 +17,7 @@ subroutine parser
   use contr3,         	only: mode
   use contrl_file,    	only: file_input, file_output, file_error
   use contrl_file,    	only: iunit, ounit, errunit
+  use contrl_file,      only: backend
   use allocation_mod, 	only: allocate_vmc, allocate_dmc
   use periodic_table, 	only: atom_t, element
 
@@ -189,7 +191,7 @@ subroutine parser
   character(len=72)          :: file_modify_zmatrix,file_hessian_zmatrix
   character(len=72)          :: file_gradients_zmatrix, file_gradients_cartesian
   character(len=72)          ::	file_multideterminants, file_forces
-  character(len=72)          :: file_trexio
+  character(len=72)          :: file_trexio, trex_backend
 
 
 ! from process input subroutine
@@ -239,6 +241,11 @@ subroutine parser
   i3dsplorb   = fdf_get('i3dsplorb',0)
   i3dlagorb   = fdf_get('i3dlagorb',0)
   i3ddensity  = fdf_get('i3ddensity',0)
+
+  ! trexio
+  trex_backend = fdf_get('backend', 'hdf5')
+  if (trex_backend == "hdf5") backend = TREXIO_HDF5
+  if (trex_backend == "text") backend = TREXIO_TEXT
 
 ! %module electrons (complete)
   nelec       = fdf_get('nelec', 1)
