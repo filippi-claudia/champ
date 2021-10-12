@@ -16,6 +16,22 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 # Cmake modules/macros are in a subdirectory to keep this file cleaner
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
+# Print the header text art
+message( "____________________________________________________________________" )
+message( "                                                                    " )
+message( "                                                                    " )
+message( " .d8888b.   888    888         d8888  888b     d888  8888888b.      " )
+message( "d88P  Y88b  888    888        d88888  8888b   d8888  888   Y88b     " )
+message( "888    888  888    888       d88P888  88888b.d88888  888    888     " )
+message( "888         8888888888      d88P 888  888Y88888P888  888   d88P     " )
+message( "888         888    888     d88P  888  888 Y888P 888  8888888P''     " )
+message( "888    888  888    888    d88P   888  888  Y8P  888  888            " )
+message( "Y88b  d88P  888    888   d8888888888  888   '   888  888            " )
+message( " 'Y8888P'   888    888  d88P     888  888       888  888            " )
+message( "                                                                    " )
+message( "____________________________________________________________________" )
+message(" ")
+message(" ")
 # useful info
 message(STATUS "Compiling                        :: " ${CMAKE_PROJECT_NAME})
 message(STATUS "Fortran compiler                 :: " ${CMAKE_Fortran_COMPILER} )

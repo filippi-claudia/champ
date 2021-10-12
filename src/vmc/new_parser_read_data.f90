@@ -889,6 +889,108 @@ subroutine read_orbitals_file(file_orbitals)
 
 end subroutine read_orbitals_file
 
+subroutine read_trexio_orbitals_file(file_trexio)
+    !> This subroutine reads the .hdf5 trexio generated file/folder. It then reads the
+    !! number of molecular and atomic orbitals and their corresponding coefficients.
+    !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+    !! @date 12 October 2021
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+    use contrl_file,        only: ounit, errunit, backend
+    use coefs,              only: coef, nbasis, norb
+    use inputflags,         only: ilcao
+    use orbval,             only: nadorb
+    use pcm_fdc,            only: fs
+    use vmc_mod,            only: norb_tot
+    use wfsec,              only: nwftype
+    use general,            only: pooldir
+    use method_opt,         only: method
+    use trexio
+
+    implicit none
+
+!   local use
+    character(len=72), intent(in)   :: file_trexio
+    character(len=40)               :: temp1, temp2
+    character(len=120)              :: temp3, file_trexio_path
+    integer                         :: iunit, iostat, iwft
+    integer                         :: iorb, ibasis, i, k, counter
+    logical                         :: exist
+    logical                         :: skip = .true.
+
+    !   Formatting
+    character(len=100)               :: int_format     = '(A, T60, I0)'
+    character(len=100)               :: string_format  = '(A, T60, A)'
+    character(len=100)               :: float_format   = '(A, T60, f12.8)'
+
+    ! trexio
+    integer(8)                      :: trex_orbitals_file
+    integer                         :: rc = 1
+
+
+    !   External file reading
+
+    if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
+        file_trexio_path = pooldir // file_trexio(7:)
+    else
+        file_trexio_path = file_trexio
+    endif
+
+    write(ounit,*) '---------------------------------------------------------------------------'
+    write(ounit,string_format)  " Reading LCAO orbitals from the file :: ",  trim(file_trexio_path)
+    write(ounit,*) '---------------------------------------------------------------------------'
+    ! Check if the file exists
+
+    trex_orbitals_file = trexio_open(file_trexio_path, 'r', backend, rc)
+    rc = trexio_read_mo_num(trex_orbitals_file, norb)
+    rc = trexio_read_ao_num(trex_orbitals_file, nbasis)
+
+    ! Do the array allocations
+    if( (method(1:3) == 'lin')) then
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb, 3))
+    else
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
+    endif
+
+    ! Read the orbitals
+    rc = trexio_read_mo_coefficient(trex_orbitals_file, coef(:,:,1))
+
+    print*, "first line of coeff", coef(1:100,1:3,1)
+    ! Close the trexio file
+    rc = trexio_close(trex_orbitals_file)
+
+
+    write(ounit,*)
+    write(ounit,*) " LCAO orbitals "
+
+    temp3 = '(T8, T14, i3, T28, i3, T42, i3, T56, i3, T70, i3, T84, i3, T98, i3, T112, i3, T126, i3, T140, i3)'
+    ! print orbs in blocks of 10
+    counter = 0
+    do k = 10, nbasis, 10
+!        write(ounit,*) " Orbitals  ", k-9 , "  to ", k
+        write(ounit, fmt=temp3 )  (i, i = k-9, k)
+        do iorb = 1, norb
+            write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=k-9, k)
+        enddo
+        counter = counter + 10
+    enddo
+
+
+    ! Remaining block
+    write(ounit, fmt=temp3 )  (i, i = counter, nbasis)
+    do iorb = 1, norb
+        write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=counter, nbasis)
+    enddo
+    ilcao = ilcao + 1
+
+
+    write(ounit,*) "----------------------------------------------------------"
+
+end subroutine read_trexio_orbitals_file
+
+
+
+
 subroutine read_csf_file(file_determinants)
     ! This subroutine reads the csf coefficients from the determinant file.
     ! Ravindra

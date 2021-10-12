@@ -728,6 +728,8 @@ subroutine parser
 
   if ( fdf_load_defined('orbitals') ) then
     call read_orbitals_file(file_orbitals)
+  elseif ( fdf_load_defined('trexio') ) then
+    call read_trexio_orbitals_file(file_trexio)
   elseif ( fdf_block('orbitals', bfdf)) then
   ! call fdf_read_orbitals_block(bfdf)
     write(errunit,'(a)') "Error:: No information about orbitals provided."
