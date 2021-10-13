@@ -75,6 +75,12 @@ interface
      integer(8), intent(in), value :: trex_file
    end function trexio_close
 end interface
+
+character(len = 12) :: TREXIO_PACKAGE_VERSION = "1.1.0"
+integer(4) :: TREXIO_VERSION_MAJOR = 1
+integer(4) :: TREXIO_VERSION_MINOR = 1
+integer(4) :: TREXIO_VERSION_PATCH = 0
+
 interface
    integer function trexio_has_metadata_code_num (trex_file) bind(C)
      use, intrinsic :: iso_c_binding

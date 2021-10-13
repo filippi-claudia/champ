@@ -101,7 +101,9 @@ subroutine header_printing()
     write(ounit, '(2a)') " Error file                 :: ",   file_error
     write(ounit, '(4a)') " Code compiled on           :: ",__DATE__, " at ", __TIME__
     write(ounit, '(a,i0)') " Number of processors       :: ", nproc
-    if (TREXIO_SUCCESS == 0) write(ounit,*) "Is TREXIO library linked   :: ", "Yes"
+#if defined(TREXIO_FOUND)
+    if (TREXIO_SUCCESS == 0) write(ounit,*) "TREXIO library version     :: ", TREXIO_PACKAGE_VERSION
+#endif
     write(ounit,*)
 
 
