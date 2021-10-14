@@ -957,7 +957,10 @@ subroutine read_trexio_orbitals_file(file_trexio)
     ! Read the orbitals
     rc = trexio_read_mo_coefficient(trex_orbitals_file, coef(:,:,1))
 
-    print*, "first line of coeff", coef(1:100,1:3,1)
+    ! IMPORTANT
+    ! The orbital ordering should be made consistent with the CHAMP code.
+    ! call a function to transform the ordering.
+    ! DEBUG #148
     ! Close the trexio file
     rc = trexio_close(trex_orbitals_file)
 
