@@ -76,9 +76,9 @@ interface
    end function trexio_close
 end interface
 
-character(len = 12) :: TREXIO_PACKAGE_VERSION = "1.1.0"
-integer(4) :: TREXIO_VERSION_MAJOR = 1
-integer(4) :: TREXIO_VERSION_MINOR = 1
+character(len = 12) :: TREXIO_PACKAGE_VERSION = "2.0.0"
+integer(4) :: TREXIO_VERSION_MAJOR = 2
+integer(4) :: TREXIO_VERSION_MINOR = 0
 integer(4) :: TREXIO_VERSION_PATCH = 0
 
 interface
@@ -117,24 +117,10 @@ interface
 end interface
 
 interface
-   integer function trexio_has_ecp_local_num_n_max (trex_file) bind(C)
+   integer function trexio_has_ecp_num (trex_file) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-   end function trexio_has_ecp_local_num_n_max
-end interface
-
-interface
-   integer function trexio_has_ecp_non_local_num_n_max (trex_file) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-   end function trexio_has_ecp_non_local_num_n_max
-end interface
-
-interface
-   integer function trexio_has_basis_num (trex_file) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-   end function trexio_has_basis_num
+   end function trexio_has_ecp_num
 end interface
 
 interface
@@ -142,6 +128,13 @@ interface
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
    end function trexio_has_basis_prim_num
+end interface
+
+interface
+   integer function trexio_has_basis_shell_num (trex_file) bind(C)
+     use, intrinsic :: iso_c_binding
+     integer(8), intent(in), value :: trex_file
+   end function trexio_has_basis_shell_num
 end interface
 
 interface
@@ -215,10 +208,10 @@ interface
 end interface
 
 interface
-   integer function trexio_has_ecp_lmax_plus_1 (trex_file) bind(C)
+   integer function trexio_has_ecp_max_ang_mom_plus_1 (trex_file) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-   end function trexio_has_ecp_lmax_plus_1
+   end function trexio_has_ecp_max_ang_mom_plus_1
 end interface
 
 interface
@@ -229,59 +222,38 @@ interface
 end interface
 
 interface
-   integer function trexio_has_ecp_local_n (trex_file) bind(C)
+   integer function trexio_has_ecp_ang_mom (trex_file) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-   end function trexio_has_ecp_local_n
+   end function trexio_has_ecp_ang_mom
 end interface
 
 interface
-   integer function trexio_has_ecp_local_exponent (trex_file) bind(C)
+   integer function trexio_has_ecp_nucleus_index (trex_file) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-   end function trexio_has_ecp_local_exponent
+   end function trexio_has_ecp_nucleus_index
 end interface
 
 interface
-   integer function trexio_has_ecp_local_coef (trex_file) bind(C)
+   integer function trexio_has_ecp_exponent (trex_file) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-   end function trexio_has_ecp_local_coef
+   end function trexio_has_ecp_exponent
 end interface
 
 interface
-   integer function trexio_has_ecp_local_power (trex_file) bind(C)
+   integer function trexio_has_ecp_coefficient (trex_file) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-   end function trexio_has_ecp_local_power
+   end function trexio_has_ecp_coefficient
 end interface
 
 interface
-   integer function trexio_has_ecp_non_local_n (trex_file) bind(C)
+   integer function trexio_has_ecp_power (trex_file) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-   end function trexio_has_ecp_non_local_n
-end interface
-
-interface
-   integer function trexio_has_ecp_non_local_exponent (trex_file) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-   end function trexio_has_ecp_non_local_exponent
-end interface
-
-interface
-   integer function trexio_has_ecp_non_local_coef (trex_file) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-   end function trexio_has_ecp_non_local_coef
-end interface
-
-interface
-   integer function trexio_has_ecp_non_local_power (trex_file) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-   end function trexio_has_ecp_non_local_power
+   end function trexio_has_ecp_power
 end interface
 
 interface
@@ -292,24 +264,10 @@ interface
 end interface
 
 interface
-   integer function trexio_has_basis_nucleus_shell_num (trex_file) bind(C)
+   integer function trexio_has_basis_ang_mom (trex_file) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-   end function trexio_has_basis_nucleus_shell_num
-end interface
-
-interface
-   integer function trexio_has_basis_shell_ang_mom (trex_file) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-   end function trexio_has_basis_shell_ang_mom
-end interface
-
-interface
-   integer function trexio_has_basis_shell_prim_num (trex_file) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-   end function trexio_has_basis_shell_prim_num
+   end function trexio_has_basis_ang_mom
 end interface
 
 interface
@@ -320,10 +278,10 @@ interface
 end interface
 
 interface
-   integer function trexio_has_basis_shell_prim_index (trex_file) bind(C)
+   integer function trexio_has_basis_shell_index (trex_file) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-   end function trexio_has_basis_shell_prim_index
+   end function trexio_has_basis_shell_index
 end interface
 
 interface
@@ -563,27 +521,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_ecp_local_num_n_max_32 (trex_file, num) bind(C)
+   integer function trexio_read_ecp_num_32 (trex_file, num) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: num
-   end function trexio_read_ecp_local_num_n_max_32
-end interface
-
-interface
-   integer function trexio_read_ecp_non_local_num_n_max_32 (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(out) :: num
-   end function trexio_read_ecp_non_local_num_n_max_32
-end interface
-
-interface
-   integer function trexio_read_basis_num_32 (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(out) :: num
-   end function trexio_read_basis_num_32
+   end function trexio_read_ecp_num_32
 end interface
 
 interface
@@ -592,6 +534,14 @@ interface
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: num
    end function trexio_read_basis_prim_num_32
+end interface
+
+interface
+   integer function trexio_read_basis_shell_num_32 (trex_file, num) bind(C)
+     use, intrinsic :: iso_c_binding
+     integer(8), intent(in), value :: trex_file
+     integer(4), intent(out) :: num
+   end function trexio_read_basis_shell_num_32
 end interface
 
 interface
@@ -659,27 +609,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_ecp_local_num_n_max_64 (trex_file, num) bind(C)
+   integer function trexio_read_ecp_num_64 (trex_file, num) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(out) :: num
-   end function trexio_read_ecp_local_num_n_max_64
-end interface
-
-interface
-   integer function trexio_read_ecp_non_local_num_n_max_64 (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(8), intent(out) :: num
-   end function trexio_read_ecp_non_local_num_n_max_64
-end interface
-
-interface
-   integer function trexio_read_basis_num_64 (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(8), intent(out) :: num
-   end function trexio_read_basis_num_64
+   end function trexio_read_ecp_num_64
 end interface
 
 interface
@@ -688,6 +622,14 @@ interface
      integer(8), intent(in), value :: trex_file
      integer(8), intent(out) :: num
    end function trexio_read_basis_prim_num_64
+end interface
+
+interface
+   integer function trexio_read_basis_shell_num_64 (trex_file, num) bind(C)
+     use, intrinsic :: iso_c_binding
+     integer(8), intent(in), value :: trex_file
+     integer(8), intent(out) :: num
+   end function trexio_read_basis_shell_num_64
 end interface
 
 interface
@@ -755,27 +697,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_ecp_local_num_n_max (trex_file, num) bind(C)
+   integer function trexio_read_ecp_num (trex_file, num) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: num
-   end function trexio_read_ecp_local_num_n_max
-end interface
-
-interface
-   integer function trexio_read_ecp_non_local_num_n_max (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(out) :: num
-   end function trexio_read_ecp_non_local_num_n_max
-end interface
-
-interface
-   integer function trexio_read_basis_num (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(out) :: num
-   end function trexio_read_basis_num
+   end function trexio_read_ecp_num
 end interface
 
 interface
@@ -784,6 +710,14 @@ interface
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: num
    end function trexio_read_basis_prim_num
+end interface
+
+interface
+   integer function trexio_read_basis_shell_num (trex_file, num) bind(C)
+     use, intrinsic :: iso_c_binding
+     integer(8), intent(in), value :: trex_file
+     integer(4), intent(out) :: num
+   end function trexio_read_basis_shell_num
 end interface
 
 interface
@@ -877,83 +811,59 @@ interface
 end interface
 
 interface
-   integer function trexio_read_ecp_lmax_plus_1_32 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_max_ang_mom_plus_1_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_lmax_plus_1_32
+   end function trexio_read_ecp_max_ang_mom_plus_1_32
 end interface
 
 interface
    integer function trexio_read_ecp_z_core_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-     real(4), intent(out) :: dset(*)
+     integer(4), intent(out) :: dset(*)
    end function trexio_read_ecp_z_core_32
 end interface
 
 interface
-   integer function trexio_read_ecp_local_n_32 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_ang_mom_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_n_32
+   end function trexio_read_ecp_ang_mom_32
 end interface
 
 interface
-   integer function trexio_read_ecp_local_exponent_32 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_exponent_32
-end interface
-
-interface
-   integer function trexio_read_ecp_local_coef_32 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_coef_32
-end interface
-
-interface
-   integer function trexio_read_ecp_local_power_32 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_nucleus_index_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_power_32
+   end function trexio_read_ecp_nucleus_index_32
 end interface
 
 interface
-   integer function trexio_read_ecp_non_local_n_32 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_n_32
-end interface
-
-interface
-   integer function trexio_read_ecp_non_local_exponent_32 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_exponent_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_exponent_32
+   end function trexio_read_ecp_exponent_32
 end interface
 
 interface
-   integer function trexio_read_ecp_non_local_coef_32 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_coefficient_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_coef_32
+   end function trexio_read_ecp_coefficient_32
 end interface
 
 interface
-   integer function trexio_read_ecp_non_local_power_32 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_power_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_power_32
+   end function trexio_read_ecp_power_32
 end interface
 
 interface
@@ -965,27 +875,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_basis_nucleus_shell_num_32 (trex_file, dset) bind(C)
+   integer function trexio_read_basis_ang_mom_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_basis_nucleus_shell_num_32
-end interface
-
-interface
-   integer function trexio_read_basis_shell_ang_mom_32 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(out) :: dset(*)
-   end function trexio_read_basis_shell_ang_mom_32
-end interface
-
-interface
-   integer function trexio_read_basis_shell_prim_num_32 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(out) :: dset(*)
-   end function trexio_read_basis_shell_prim_num_32
+   end function trexio_read_basis_ang_mom_32
 end interface
 
 interface
@@ -997,11 +891,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_basis_shell_prim_index_32 (trex_file, dset) bind(C)
+   integer function trexio_read_basis_shell_index_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_basis_shell_prim_index_32
+   end function trexio_read_basis_shell_index_32
 end interface
 
 interface
@@ -1205,83 +1099,59 @@ interface
 end interface
 
 interface
-   integer function trexio_read_ecp_lmax_plus_1_64 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_max_ang_mom_plus_1_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_lmax_plus_1_64
+   end function trexio_read_ecp_max_ang_mom_plus_1_64
 end interface
 
 interface
    integer function trexio_read_ecp_z_core_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-     real(8), intent(out) :: dset(*)
+     integer(8), intent(out) :: dset(*)
    end function trexio_read_ecp_z_core_64
 end interface
 
 interface
-   integer function trexio_read_ecp_local_n_64 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_ang_mom_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_n_64
+   end function trexio_read_ecp_ang_mom_64
 end interface
 
 interface
-   integer function trexio_read_ecp_local_exponent_64 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_exponent_64
-end interface
-
-interface
-   integer function trexio_read_ecp_local_coef_64 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_coef_64
-end interface
-
-interface
-   integer function trexio_read_ecp_local_power_64 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_nucleus_index_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_power_64
+   end function trexio_read_ecp_nucleus_index_64
 end interface
 
 interface
-   integer function trexio_read_ecp_non_local_n_64 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_n_64
-end interface
-
-interface
-   integer function trexio_read_ecp_non_local_exponent_64 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_exponent_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_exponent_64
+   end function trexio_read_ecp_exponent_64
 end interface
 
 interface
-   integer function trexio_read_ecp_non_local_coef_64 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_coefficient_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_coef_64
+   end function trexio_read_ecp_coefficient_64
 end interface
 
 interface
-   integer function trexio_read_ecp_non_local_power_64 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_power_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_power_64
+   end function trexio_read_ecp_power_64
 end interface
 
 interface
@@ -1293,27 +1163,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_basis_nucleus_shell_num_64 (trex_file, dset) bind(C)
+   integer function trexio_read_basis_ang_mom_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(out) :: dset(*)
-   end function trexio_read_basis_nucleus_shell_num_64
-end interface
-
-interface
-   integer function trexio_read_basis_shell_ang_mom_64 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(8), intent(out) :: dset(*)
-   end function trexio_read_basis_shell_ang_mom_64
-end interface
-
-interface
-   integer function trexio_read_basis_shell_prim_num_64 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(8), intent(out) :: dset(*)
-   end function trexio_read_basis_shell_prim_num_64
+   end function trexio_read_basis_ang_mom_64
 end interface
 
 interface
@@ -1325,11 +1179,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_basis_shell_prim_index_64 (trex_file, dset) bind(C)
+   integer function trexio_read_basis_shell_index_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(out) :: dset(*)
-   end function trexio_read_basis_shell_prim_index_64
+   end function trexio_read_basis_shell_index_64
 end interface
 
 interface
@@ -1533,83 +1387,59 @@ interface
 end interface
 
 interface
-   integer function trexio_read_ecp_lmax_plus_1 (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_max_ang_mom_plus_1 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_lmax_plus_1
+   end function trexio_read_ecp_max_ang_mom_plus_1
 end interface
 
 interface
    integer function trexio_read_ecp_z_core (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-     real(8), intent(out) :: dset(*)
+     integer(4), intent(out) :: dset(*)
    end function trexio_read_ecp_z_core
 end interface
 
 interface
-   integer function trexio_read_ecp_local_n (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_ang_mom (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_n
+   end function trexio_read_ecp_ang_mom
 end interface
 
 interface
-   integer function trexio_read_ecp_local_exponent (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_exponent
-end interface
-
-interface
-   integer function trexio_read_ecp_local_coef (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_coef
-end interface
-
-interface
-   integer function trexio_read_ecp_local_power (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_nucleus_index (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_local_power
+   end function trexio_read_ecp_nucleus_index
 end interface
 
 interface
-   integer function trexio_read_ecp_non_local_n (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_n
-end interface
-
-interface
-   integer function trexio_read_ecp_non_local_exponent (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_exponent (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_exponent
+   end function trexio_read_ecp_exponent
 end interface
 
 interface
-   integer function trexio_read_ecp_non_local_coef (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_coefficient (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(8), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_coef
+   end function trexio_read_ecp_coefficient
 end interface
 
 interface
-   integer function trexio_read_ecp_non_local_power (trex_file, dset) bind(C)
+   integer function trexio_read_ecp_power (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_ecp_non_local_power
+   end function trexio_read_ecp_power
 end interface
 
 interface
@@ -1621,27 +1451,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_basis_nucleus_shell_num (trex_file, dset) bind(C)
+   integer function trexio_read_basis_ang_mom (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_basis_nucleus_shell_num
-end interface
-
-interface
-   integer function trexio_read_basis_shell_ang_mom (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(out) :: dset(*)
-   end function trexio_read_basis_shell_ang_mom
-end interface
-
-interface
-   integer function trexio_read_basis_shell_prim_num (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(out) :: dset(*)
-   end function trexio_read_basis_shell_prim_num
+   end function trexio_read_basis_ang_mom
 end interface
 
 interface
@@ -1653,11 +1467,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_basis_shell_prim_index (trex_file, dset) bind(C)
+   integer function trexio_read_basis_shell_index (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_basis_shell_prim_index
+   end function trexio_read_basis_shell_index
 end interface
 
 interface
@@ -1930,27 +1744,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_ecp_local_num_n_max_32 (trex_file, num) bind(C)
+   integer function trexio_write_ecp_num_32 (trex_file, num) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in), value :: num
-   end function trexio_write_ecp_local_num_n_max_32
-end interface
-
-interface
-   integer function trexio_write_ecp_non_local_num_n_max_32 (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(in), value :: num
-   end function trexio_write_ecp_non_local_num_n_max_32
-end interface
-
-interface
-   integer function trexio_write_basis_num_32 (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(in), value :: num
-   end function trexio_write_basis_num_32
+   end function trexio_write_ecp_num_32
 end interface
 
 interface
@@ -1959,6 +1757,14 @@ interface
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in), value :: num
    end function trexio_write_basis_prim_num_32
+end interface
+
+interface
+   integer function trexio_write_basis_shell_num_32 (trex_file, num) bind(C)
+     use, intrinsic :: iso_c_binding
+     integer(8), intent(in), value :: trex_file
+     integer(4), intent(in), value :: num
+   end function trexio_write_basis_shell_num_32
 end interface
 
 interface
@@ -2026,27 +1832,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_ecp_local_num_n_max_64 (trex_file, num) bind(C)
+   integer function trexio_write_ecp_num_64 (trex_file, num) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(in), value :: num
-   end function trexio_write_ecp_local_num_n_max_64
-end interface
-
-interface
-   integer function trexio_write_ecp_non_local_num_n_max_64 (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(8), intent(in), value :: num
-   end function trexio_write_ecp_non_local_num_n_max_64
-end interface
-
-interface
-   integer function trexio_write_basis_num_64 (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(8), intent(in), value :: num
-   end function trexio_write_basis_num_64
+   end function trexio_write_ecp_num_64
 end interface
 
 interface
@@ -2055,6 +1845,14 @@ interface
      integer(8), intent(in), value :: trex_file
      integer(8), intent(in), value :: num
    end function trexio_write_basis_prim_num_64
+end interface
+
+interface
+   integer function trexio_write_basis_shell_num_64 (trex_file, num) bind(C)
+     use, intrinsic :: iso_c_binding
+     integer(8), intent(in), value :: trex_file
+     integer(8), intent(in), value :: num
+   end function trexio_write_basis_shell_num_64
 end interface
 
 interface
@@ -2122,27 +1920,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_ecp_local_num_n_max (trex_file, num) bind(C)
+   integer function trexio_write_ecp_num (trex_file, num) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in), value :: num
-   end function trexio_write_ecp_local_num_n_max
-end interface
-
-interface
-   integer function trexio_write_ecp_non_local_num_n_max (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(in), value :: num
-   end function trexio_write_ecp_non_local_num_n_max
-end interface
-
-interface
-   integer function trexio_write_basis_num (trex_file, num) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(in), value :: num
-   end function trexio_write_basis_num
+   end function trexio_write_ecp_num
 end interface
 
 interface
@@ -2151,6 +1933,14 @@ interface
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in), value :: num
    end function trexio_write_basis_prim_num
+end interface
+
+interface
+   integer function trexio_write_basis_shell_num (trex_file, num) bind(C)
+     use, intrinsic :: iso_c_binding
+     integer(8), intent(in), value :: trex_file
+     integer(4), intent(in), value :: num
+   end function trexio_write_basis_shell_num
 end interface
 
 interface
@@ -2244,83 +2034,59 @@ interface
 end interface
 
 interface
-   integer function trexio_write_ecp_lmax_plus_1_32 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_max_ang_mom_plus_1_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_lmax_plus_1_32
+   end function trexio_write_ecp_max_ang_mom_plus_1_32
 end interface
 
 interface
    integer function trexio_write_ecp_z_core_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-     real(4), intent(in) :: dset(*)
+     integer(4), intent(in) :: dset(*)
    end function trexio_write_ecp_z_core_32
 end interface
 
 interface
-   integer function trexio_write_ecp_local_n_32 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_ang_mom_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_n_32
+   end function trexio_write_ecp_ang_mom_32
 end interface
 
 interface
-   integer function trexio_write_ecp_local_exponent_32 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_exponent_32
-end interface
-
-interface
-   integer function trexio_write_ecp_local_coef_32 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_coef_32
-end interface
-
-interface
-   integer function trexio_write_ecp_local_power_32 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_nucleus_index_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_power_32
+   end function trexio_write_ecp_nucleus_index_32
 end interface
 
 interface
-   integer function trexio_write_ecp_non_local_n_32 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_n_32
-end interface
-
-interface
-   integer function trexio_write_ecp_non_local_exponent_32 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_exponent_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_exponent_32
+   end function trexio_write_ecp_exponent_32
 end interface
 
 interface
-   integer function trexio_write_ecp_non_local_coef_32 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_coefficient_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_coef_32
+   end function trexio_write_ecp_coefficient_32
 end interface
 
 interface
-   integer function trexio_write_ecp_non_local_power_32 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_power_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_power_32
+   end function trexio_write_ecp_power_32
 end interface
 
 interface
@@ -2332,27 +2098,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_basis_nucleus_shell_num_32 (trex_file, dset) bind(C)
+   integer function trexio_write_basis_ang_mom_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_basis_nucleus_shell_num_32
-end interface
-
-interface
-   integer function trexio_write_basis_shell_ang_mom_32 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(in) :: dset(*)
-   end function trexio_write_basis_shell_ang_mom_32
-end interface
-
-interface
-   integer function trexio_write_basis_shell_prim_num_32 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(in) :: dset(*)
-   end function trexio_write_basis_shell_prim_num_32
+   end function trexio_write_basis_ang_mom_32
 end interface
 
 interface
@@ -2364,11 +2114,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_basis_shell_prim_index_32 (trex_file, dset) bind(C)
+   integer function trexio_write_basis_shell_index_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_basis_shell_prim_index_32
+   end function trexio_write_basis_shell_index_32
 end interface
 
 interface
@@ -2572,83 +2322,59 @@ interface
 end interface
 
 interface
-   integer function trexio_write_ecp_lmax_plus_1_64 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_max_ang_mom_plus_1_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_lmax_plus_1_64
+   end function trexio_write_ecp_max_ang_mom_plus_1_64
 end interface
 
 interface
    integer function trexio_write_ecp_z_core_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-     real(8), intent(in) :: dset(*)
+     integer(8), intent(in) :: dset(*)
    end function trexio_write_ecp_z_core_64
 end interface
 
 interface
-   integer function trexio_write_ecp_local_n_64 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_ang_mom_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_n_64
+   end function trexio_write_ecp_ang_mom_64
 end interface
 
 interface
-   integer function trexio_write_ecp_local_exponent_64 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_exponent_64
-end interface
-
-interface
-   integer function trexio_write_ecp_local_coef_64 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_coef_64
-end interface
-
-interface
-   integer function trexio_write_ecp_local_power_64 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_nucleus_index_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_power_64
+   end function trexio_write_ecp_nucleus_index_64
 end interface
 
 interface
-   integer function trexio_write_ecp_non_local_n_64 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_n_64
-end interface
-
-interface
-   integer function trexio_write_ecp_non_local_exponent_64 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_exponent_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_exponent_64
+   end function trexio_write_ecp_exponent_64
 end interface
 
 interface
-   integer function trexio_write_ecp_non_local_coef_64 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_coefficient_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_coef_64
+   end function trexio_write_ecp_coefficient_64
 end interface
 
 interface
-   integer function trexio_write_ecp_non_local_power_64 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_power_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_power_64
+   end function trexio_write_ecp_power_64
 end interface
 
 interface
@@ -2660,27 +2386,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_basis_nucleus_shell_num_64 (trex_file, dset) bind(C)
+   integer function trexio_write_basis_ang_mom_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(in) :: dset(*)
-   end function trexio_write_basis_nucleus_shell_num_64
-end interface
-
-interface
-   integer function trexio_write_basis_shell_ang_mom_64 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(8), intent(in) :: dset(*)
-   end function trexio_write_basis_shell_ang_mom_64
-end interface
-
-interface
-   integer function trexio_write_basis_shell_prim_num_64 (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(8), intent(in) :: dset(*)
-   end function trexio_write_basis_shell_prim_num_64
+   end function trexio_write_basis_ang_mom_64
 end interface
 
 interface
@@ -2692,11 +2402,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_basis_shell_prim_index_64 (trex_file, dset) bind(C)
+   integer function trexio_write_basis_shell_index_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(in) :: dset(*)
-   end function trexio_write_basis_shell_prim_index_64
+   end function trexio_write_basis_shell_index_64
 end interface
 
 interface
@@ -2900,83 +2610,59 @@ interface
 end interface
 
 interface
-   integer function trexio_write_ecp_lmax_plus_1 (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_max_ang_mom_plus_1 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_lmax_plus_1
+   end function trexio_write_ecp_max_ang_mom_plus_1
 end interface
 
 interface
    integer function trexio_write_ecp_z_core (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-     real(8), intent(in) :: dset(*)
+     integer(4), intent(in) :: dset(*)
    end function trexio_write_ecp_z_core
 end interface
 
 interface
-   integer function trexio_write_ecp_local_n (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_ang_mom (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_n
+   end function trexio_write_ecp_ang_mom
 end interface
 
 interface
-   integer function trexio_write_ecp_local_exponent (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_exponent
-end interface
-
-interface
-   integer function trexio_write_ecp_local_coef (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     real(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_coef
-end interface
-
-interface
-   integer function trexio_write_ecp_local_power (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_nucleus_index (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_local_power
+   end function trexio_write_ecp_nucleus_index
 end interface
 
 interface
-   integer function trexio_write_ecp_non_local_n (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_n
-end interface
-
-interface
-   integer function trexio_write_ecp_non_local_exponent (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_exponent (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_exponent
+   end function trexio_write_ecp_exponent
 end interface
 
 interface
-   integer function trexio_write_ecp_non_local_coef (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_coefficient (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      real(8), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_coef
+   end function trexio_write_ecp_coefficient
 end interface
 
 interface
-   integer function trexio_write_ecp_non_local_power (trex_file, dset) bind(C)
+   integer function trexio_write_ecp_power (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_ecp_non_local_power
+   end function trexio_write_ecp_power
 end interface
 
 interface
@@ -2988,27 +2674,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_basis_nucleus_shell_num (trex_file, dset) bind(C)
+   integer function trexio_write_basis_ang_mom (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_basis_nucleus_shell_num
-end interface
-
-interface
-   integer function trexio_write_basis_shell_ang_mom (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(in) :: dset(*)
-   end function trexio_write_basis_shell_ang_mom
-end interface
-
-interface
-   integer function trexio_write_basis_shell_prim_num (trex_file, dset) bind(C)
-     use, intrinsic :: iso_c_binding
-     integer(8), intent(in), value :: trex_file
-     integer(4), intent(in) :: dset(*)
-   end function trexio_write_basis_shell_prim_num
+   end function trexio_write_basis_ang_mom
 end interface
 
 interface
@@ -3020,11 +2690,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_basis_shell_prim_index (trex_file, dset) bind(C)
+   integer function trexio_write_basis_shell_index (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_basis_shell_prim_index
+   end function trexio_write_basis_shell_index
 end interface
 
 interface

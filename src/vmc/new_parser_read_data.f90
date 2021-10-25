@@ -297,12 +297,16 @@ subroutine read_trexio_molecule_file(file_trexio)
     write(ounit,*) '-----------------------------------------------------------------------'
 
     ! Check if the file exists
+    if (wid) then
+        trex_molecule_file = trexio_open(file_trexio_path, 'r', backend, rc)
+        rc = trexio_read_nucleus_num(trex_molecule_file, ncent)
+        rc = trexio_read_electron_up_num(trex_molecule_file, nup)
+        rc = trexio_read_electron_dn_num(trex_molecule_file, ndn)
+    endif
+    call bcast(ncent)
+    call bcast(nup)
+    call bcast(ndn)
 
-    trex_molecule_file = trexio_open(file_trexio_path, 'r', backend, rc)
-    rc = trexio_read_nucleus_num(trex_molecule_file, ncent)
-
-    rc = trexio_read_electron_up_num(trex_molecule_file, nup)
-    rc = trexio_read_electron_dn_num(trex_molecule_file, ndn)
     nelec = nup + ndn
 
     ! Do the allocations based on the ncent
@@ -311,10 +315,14 @@ subroutine read_trexio_molecule_file(file_trexio)
     if (.not. allocated(iwctype)) allocate(iwctype(ncent))
     if (.not. allocated(unique))  allocate(unique(ncent))
 
-
+    if (wid) then
     rc = trexio_read_nucleus_coord(trex_molecule_file, cent)
     rc = trexio_read_nucleus_label(trex_molecule_file, symbol, 3)
     rc = trexio_close(trex_molecule_file)
+    endif
+    call bcast(cent)
+    call bcast(symbol)
+
 
     write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
     write(ounit,*)
@@ -943,9 +951,13 @@ subroutine read_trexio_orbitals_file(file_trexio)
     write(ounit,*) '---------------------------------------------------------------------------'
     ! Check if the file exists
 
-    trex_orbitals_file = trexio_open(file_trexio_path, 'r', backend, rc)
-    rc = trexio_read_mo_num(trex_orbitals_file, norb)
-    rc = trexio_read_ao_num(trex_orbitals_file, nbasis)
+    if (wid) then
+        trex_orbitals_file = trexio_open(file_trexio_path, 'r', backend, rc)
+        rc = trexio_read_mo_num(trex_orbitals_file, norb)
+        rc = trexio_read_ao_num(trex_orbitals_file, nbasis)
+    endif
+    call bcast(norb)
+    call bcast(nbasis)
 
     ! Do the array allocations
     if( (method(1:3) == 'lin')) then
@@ -955,14 +967,17 @@ subroutine read_trexio_orbitals_file(file_trexio)
     endif
 
     ! Read the orbitals
-    rc = trexio_read_mo_coefficient(trex_orbitals_file, coef(:,:,1))
+    if (wid) then
+        rc = trexio_read_mo_coefficient(trex_orbitals_file, coef(:,:,1))
+    endif
+    call bcast(coef)
 
     ! IMPORTANT
     ! The orbital ordering should be made consistent with the CHAMP code.
     ! call a function to transform the ordering.
     ! DEBUG #148
     ! Close the trexio file
-    rc = trexio_close(trex_orbitals_file)
+    if (wid) rc = trexio_close(trex_orbitals_file)
 
 
     write(ounit,*)
