@@ -264,10 +264,10 @@ interface
 end interface
 
 interface
-   integer function trexio_has_basis_ang_mom (trex_file) bind(C)
+   integer function trexio_has_basis_shell_ang_mom (trex_file) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
-   end function trexio_has_basis_ang_mom
+   end function trexio_has_basis_shell_ang_mom
 end interface
 
 interface
@@ -875,11 +875,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_basis_ang_mom_32 (trex_file, dset) bind(C)
+   integer function trexio_read_basis_shell_ang_mom_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_basis_ang_mom_32
+   end function trexio_read_basis_shell_ang_mom_32
 end interface
 
 interface
@@ -1163,11 +1163,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_basis_ang_mom_64 (trex_file, dset) bind(C)
+   integer function trexio_read_basis_shell_ang_mom_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(out) :: dset(*)
-   end function trexio_read_basis_ang_mom_64
+   end function trexio_read_basis_shell_ang_mom_64
 end interface
 
 interface
@@ -1451,11 +1451,11 @@ interface
 end interface
 
 interface
-   integer function trexio_read_basis_ang_mom (trex_file, dset) bind(C)
+   integer function trexio_read_basis_shell_ang_mom (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(out) :: dset(*)
-   end function trexio_read_basis_ang_mom
+   end function trexio_read_basis_shell_ang_mom
 end interface
 
 interface
@@ -2098,11 +2098,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_basis_ang_mom_32 (trex_file, dset) bind(C)
+   integer function trexio_write_basis_shell_ang_mom_32 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_basis_ang_mom_32
+   end function trexio_write_basis_shell_ang_mom_32
 end interface
 
 interface
@@ -2386,11 +2386,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_basis_ang_mom_64 (trex_file, dset) bind(C)
+   integer function trexio_write_basis_shell_ang_mom_64 (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(8), intent(in) :: dset(*)
-   end function trexio_write_basis_ang_mom_64
+   end function trexio_write_basis_shell_ang_mom_64
 end interface
 
 interface
@@ -2674,11 +2674,11 @@ interface
 end interface
 
 interface
-   integer function trexio_write_basis_ang_mom (trex_file, dset) bind(C)
+   integer function trexio_write_basis_shell_ang_mom (trex_file, dset) bind(C)
      use, intrinsic :: iso_c_binding
      integer(8), intent(in), value :: trex_file
      integer(4), intent(in) :: dset(*)
-   end function trexio_write_basis_ang_mom
+   end function trexio_write_basis_shell_ang_mom
 end interface
 
 interface
