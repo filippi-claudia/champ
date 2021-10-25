@@ -317,8 +317,8 @@ jobs:
         echo "Running the calculation"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_noopt_cas44.inp  -o vmc_noopt_cas44_double.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -26.2493643  0.0308416) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_noopt_cas44_double.out "total E" -26.2493643  0.0308416
+        echo "Comparing the energy with the reference one (total E = -26.1772303  0.0308416) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_noopt_cas44_double.out "total E" -26.1772303  0.0308416
     # - name: "Upload results of test 12"
     #   uses: actions/upload-artifact@v2
     #   with:
