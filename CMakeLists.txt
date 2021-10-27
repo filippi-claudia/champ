@@ -171,7 +171,7 @@ execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-512")
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-132")
   list(APPEND Fortran_FLAGS "-DCOMPILER=\"${CMAKE_Fortran_COMPILER}\"")
   list(APPEND Fortran_FLAGS "-DCOMPILER_VERSION=\"${CMAKE_Fortran_COMPILER_VERSION}\"")
   list(APPEND Fortran_FLAGS "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
@@ -182,7 +182,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
     list(APPEND Fortran_FLAGS "-ltrexio")
   endif()
 
-  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-512 -fno-automatic")
+  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
 
   if (MKL_FOUND)
     #list(APPEND Fortran_FLAGS "-fdefault-integer-8")

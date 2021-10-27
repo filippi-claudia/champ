@@ -218,7 +218,7 @@ subroutine multideterminants_define(iflag, icheck)
         if (k .eq. kref) go to 8
         do iab = 1, 2
             do irep = 1, numrep_det(k, iab)
-        if (irepcol_det(irep, k, iab) .ne. 0 .and. irepcol_det(irep, k, iab) .lt. iactv(iab)) iactv(iab) = irepcol_det(irep, k, iab)
+        if (irepcol_det(irep, k, iab) .ne. 0 .and. irepcol_det(irep, k, iab) .lt. iactv(iab)) iactv(iab)=irepcol_det(irep, k, iab)
                 if (ireporb_det(irep, k, iab) .lt. ivirt(iab)) ivirt(iab) = ireporb_det(irep, k, iab)
             enddo
         enddo

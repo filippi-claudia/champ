@@ -182,7 +182,8 @@ c xerr = current error of x
             ifgerr=nint(100000* fgerr)
           endif
           egave1=egcum(1)/wgcum(1)
-          derivtotave=-(derivcum(1,ifr)-derivcum(1,1)+derivcum(2,ifr)-derivcum(2,1)-egave1*(derivcum(3,ifr)-derivcum(3,1)))/wgcum(1)
+          derivtotave=-(derivcum(1,ifr)-derivcum(1,1)+
+     &                 derivcum(2,ifr)-derivcum(2,1)-egave1*(derivcum(3,ifr)-derivcum(3,1)))/wgcum(1)
          else
           call prop_cum(wgsum(ifr))
           call pcm_cum(wgsum(ifr))

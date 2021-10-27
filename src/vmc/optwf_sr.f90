@@ -349,8 +349,10 @@ contains
                 enddo
                 do i = nparm_jasci + 1, nparm
                     obs(jfj + i - 1, istate) = obs(jfj + i - 1, istate) + sr_o(ish + i, iconf)*wtg(iconf, istate)
-               obs(jefj + i - 1, istate) = obs(jefj + i - 1, istate) + elocal(iconf, istate)*sr_o(ish + i, iconf)*wtg(iconf, istate)
-              obs(jfifj + i - 1, istate) = obs(jfifj + i - 1, istate) + sr_o(ish + i, iconf)*sr_o(ish + i, iconf)*wtg(iconf, istate)
+                    obs(jefj + i - 1, istate) = obs(jefj + i - 1, istate) + &
+                                    elocal(iconf, istate)*sr_o(ish + i, iconf)*wtg(iconf, istate)
+                    obs(jfifj + i - 1, istate) = obs(jfifj + i - 1, istate) + &
+                                    sr_o(ish + i, iconf)*sr_o(ish + i, iconf)*wtg(iconf, istate)
                 enddo
             enddo
 
@@ -431,7 +433,7 @@ contains
                 ! variance
                 var = obs_tot(jelo2, 1) - obs_tot(jelo, 1)**2
                 do k = 1, nparm
-                h_sr(k) = -2*(obs_tot(jelohfj + k - 1, 1) - (obs_tot(jhfj + k - 1, 1) - obs_tot(jefj + k - 1, 1))*obs_tot(jelo, 1) &
+                h_sr(k) = -2*(obs_tot(jelohfj + k - 1, 1) - (obs_tot(jhfj + k - 1, 1) - obs_tot(jefj + k - 1, 1))*obs_tot(jelo, 1)&
                                   - obs_tot(jfj + k - 1, 1)*obs_tot(jelo2, 1) &
                                   - 2*obs_tot(jelo, 1)*(obs_tot(jefj + k - 1, 1) - obs_tot(jfj + k - 1, 1)*obs_tot(jelo, 1)))
                 enddo

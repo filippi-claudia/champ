@@ -843,7 +843,8 @@ subroutine parser
   ! should be dimensioned to MWF
   if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
     if(iperiodic.ne.0 .and. cutjas_tmp.gt.cutjas) then
-        write(ounit, '(a,f9.5,a,f9.5)')  "**Warning: input cutjas > half shortest sim. cell lattice vector;  cutjas reset from ", cutjas_tmp, " to ", cutjas
+        write(ounit, '(a,f9.5,a,f9.5)')  "**Warning: input cutjas > half shortest sim. cell lattice vector; &
+                                          cutjas reset from ", cutjas_tmp, " to ", cutjas
         else
         cutjas=cutjas_tmp
         write(ounit,'(a, d12.5)' ) " input cutjas = ", cutjas_tmp
@@ -1779,7 +1780,8 @@ subroutine parser
         print*, "mparmjc ", mparmjc
       endif
 
-      if ((pline%id(2) .eq. "r") .and. (pline%id(4) .eq. "r") .and. (pline%id(1) .eq. "n") .and. (pline%id(3) .eq. "n")) then  ! check if it is the only integer present in a line
+      ! check if it is the only integer present in a line
+      if ((pline%id(2) .eq. "r") .and. (pline%id(4) .eq. "r") .and. (pline%id(1) .eq. "n") .and. (pline%id(3) .eq. "n")) then
         scalek(iwft) = fdf_bvalues(pline, 1) ! 1st integer in the line
         print*, "scalek ", scalek(iwft)
         a21          = fdf_bvalues(pline, 2) ! 2nd integer in the line
@@ -1789,7 +1791,7 @@ subroutine parser
       !print*, "check all the ids ", pline%id(1:6)
       ! fix this part
 
-      ! if ((pline%id(1) .eq. "n") .and. (pline%ntokens .eq. mparmja+1) ) then  ! check if it is the only integer present in a line
+      ! if ((pline%id(1) .eq. "n") .and. (pline%ntokens .eq. mparmja+1) ) then  !check if it is the only integer present in a line
       !   do j = 1, nctype
       !     do i = 1, mparmja
       !       a4(i,j,iwft) = fdf_bvalues(pline, i)

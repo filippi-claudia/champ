@@ -1710,7 +1710,7 @@ subroutine read_symmetry_file(file_symmetry)
     ! read data
     if (wid) then
         read (iunit, *, iostat=iostat) (irrep(io), io=1, norb)
-        if (iostat /= 0) call fatal_error( "Error in reading symmetry file :: expecting irrep correspondence for all norb orbitals")
+        if (iostat/=0) call fatal_error("Error in reading symmetry file :: expecting irrep correspondence for all norb orbitals")
     endif
     call bcast(irrep)
 

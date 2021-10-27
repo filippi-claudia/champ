@@ -90,7 +90,8 @@ c    & iel,ig,jorb,cos_rp,cos_g(ig),c_rp(iv,jorb)
    80         continue
 
 c           write(ounit,'(''dcos_k(k,iel,ikvec),dsin_k(k,iel,ikvec),dcos_rp(k),dsin_rm(k),dsin_im(k),dcos_ip(k)'',30f9.5)')
-c    &(dcos_k(k,iel,ikvec),k=1,3),(dsin_k(k,iel,ikvec),k=1,3),(dcos_rp(k),k=1,3),(dsin_rm(k),k=1,3),(dsin_im(k),k=1,3),(dcos_ip(k),k=1,3
+c    &(dcos_k(k,iel,ikvec),k=1,3),(dsin_k(k,iel,ikvec),k=1,3),(dcos_rp(k),k=1,3),(dsin_rm(k),k=1,3), &
+c      (dsin_im(k),k=1,3),(dcos_ip(k),k=1,3
 c    &)
 
             if(k_inv(ikvec).eq.2. .or. ireal_imag(iorb+1).eq.1) then

@@ -302,4 +302,4 @@ c      write(ounit,*) "COPUTING NEW CI, ccsf(1,istate,1)", ccsf(1,istate,1), dpa
 
       return
       end
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

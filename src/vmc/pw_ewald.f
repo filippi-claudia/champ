@@ -274,7 +274,8 @@ c Fourier transfom of 1/r
 
 c debug n-n interaction (primitive cell)
       if(ipr.ge.0) then
-        write(ounit,'(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')
+        write(ounit, &
+        '(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')
         lowest_pow=-1
         npts=101
         dx=cutr/(npts-1)
@@ -349,7 +350,8 @@ c Note vbare_coul is used both for primitive and simulation cells
 c Since Jastrow has singlularity at 0, cannot match there, so evaluate
 c rms error only for latter 3/4 of interval
       if(ipr.ge.0) then
-        write(ounit,'(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')
+        write(ounit,&
+        '(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')
         lowest_pow=-1
         npts=101
         dx=cutr_sim/(npts-1)

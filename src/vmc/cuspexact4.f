@@ -34,7 +34,8 @@ c coefs:   1  4 10 19 32 49  2  6 12 22 35 53
 
 c So the terms varied for a 5th, 6th order polynomial are:
 c    3   5   7 8 9    11    13 14 15 16 17 18    20 21    23 (iwjasc(iparm),iparm=1,nparmc)
-c    3   5   7 8 9    11    13 14 15 16 17 18    20 21    23 24 25 26 27 28 29 30 31    33 34    36 37 (iwjasc(iparm),iparm=1,nparmc)
+c    3   5   7 8 9    11    13 14 15 16 17 18    20 21    23 24 25 26 27 28 29 30 31    33 34    36 37
+c                                                                 (iwjasc(iparm),iparm=1,nparmc)
 
 
 c All the dependent variables, except one (the one from the 2nd order

@@ -91,7 +91,8 @@
           if (wid) read(iunit,*,iostat=iostat) (l(irb),irb=1,nrbas(ic))
           if (iostat .ne. 0) then
             write(errunit,'(a)') "Error:: Problem in reading the numerical basis file"
-            write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+            write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
+            write(errunit,'(a,i6)') "at line ", __LINE__
           endif
           call bcast(l)
         endif
@@ -103,7 +104,8 @@
           enddo
           if (iostat .ne. 0) then
             write(errunit,'(a)') "Error:: Problem in reading the numerical basis file"
-            write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+            write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
+            write(errunit,'(a,i6)') "at line ", __LINE__
           endif
         endif
         call bcast(x)
@@ -268,7 +270,8 @@ subroutine readps_gauss
       read(iunit,'(a80)',iostat=iostat) label
       if (iostat .ne. 0) then
         write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: label"
-        write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+        write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
+        write(errunit,'(a,i6)') "at line ", __LINE__
       endif
       write(ounit,'(a,i4,a,a80)') 'ECP for atom type ', ic, ' label = ', adjustl(label)
     endif
@@ -280,7 +283,8 @@ subroutine readps_gauss
       read(iunit,*,iostat=iostat) lpot(ic)
       if (iostat .ne. 0) then
         write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: lpot"
-        write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+        write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
+        write(errunit,'(a,i6)') "at line ", __LINE__
       endif
       write(ounit,'(a,i4,a,i4)') 'ECP for atom type ', ic, ' lpot = ', lpot(ic)
 
@@ -302,7 +306,8 @@ subroutine readps_gauss
           read(iunit,*,iostat=iostat) necp_term(idx,ic)
           if (iostat .ne. 0) then
               write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: necp_term"
-              write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+              write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
+              write(errunit,'(a,i6)') "at line ", __LINE__
           endif
         endif
         call bcast(necp_term)
@@ -317,9 +322,11 @@ subroutine readps_gauss
 
             if (iostat .ne. 0) then
               write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: ecp_coeff, power, ecp_exponents"
-              write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+              write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
+              write(errunit,'(a,i6)') "at line ", __LINE__
             endif
-            write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic),necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
+            write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic), &
+                                                    necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
           endif
         enddo
         call bcast(ecp_coef)
