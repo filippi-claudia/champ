@@ -8,7 +8,9 @@ subroutine parser
   !> @version 1.2
 
   use fdf               ! modified libfdf
+#if defined(TREXIO_FOUND)
   use trexio            ! trexio library for reading and writing hdf5 files
+#endif
   use custom_broadcast, only: bcast
   use mpiconf,          only: wid
   use, intrinsic :: iso_fortran_env, only : iostat_end

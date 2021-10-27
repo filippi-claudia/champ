@@ -134,7 +134,7 @@ endif(ENABLE_MPI)
 set(TARGET_ARCHITECTURE "generic")
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
    file(READ "/proc/cpuinfo" _cpuinfo)
-   string(REGEX REPLACE ".*flags[ \t]*:[ \t]+([^\n]+).*" "\\1" _cpu_flags "${_cpuinfo}")
+   string(REGEX REPLACE ".*\nflags[ \t]*:[ \t]+([^\n]+).*" "\\1" _cpu_flags "${_cpuinfo}")
 endif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
 string( TOLOWER "${VECTORIZED}" VECTORIZED )
@@ -160,7 +160,6 @@ else()
 	endif()
 endif()
 unset(VECTORIZED CACHE)
-
 
 add_definitions(-DTARGET_ARCHITECTURE=\"${TARGET_ARCHITECTURE}\")
 ## Architecture specific flags end here
