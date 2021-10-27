@@ -158,7 +158,7 @@ else()
   		set(TARGET_ARCHITECTURE "avx2")
   		add_definitions(-DVECTORIZATION="avx2")
 	endif()
-endif()		
+endif()
 unset(VECTORIZED CACHE)
 
 
@@ -232,8 +232,10 @@ add_subdirectory(lib/pspline)
 add_subdirectory(src/vmc)
 add_subdirectory(src/dmc)
 
-target_link_libraries(vmc.mov1 ${TREXIO_LIBRARY})
-target_link_libraries(dmc.mov1 ${TREXIO_LIBRARY})
+if (TREXIO_FOUND)
+  target_link_libraries(vmc.mov1 ${TREXIO_LIBRARY})
+  target_link_libraries(dmc.mov1 ${TREXIO_LIBRARY})
+endif()
 
 if(ENABLE_TEST)
   MESSAGE(STATUS "enable test")
