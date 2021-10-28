@@ -4,6 +4,10 @@ if (MPI_Fortran_FOUND)
   file(GLOB VMC_SOURCE *.f)
   file(GLOB VMC90_SOURCE *.f90)
 
+  if (NOT TREXIO_FOUND)
+    list(REMOVE_ITEM VMC90_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/trexio_f.f90)
+  endif()
+
   set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-check bounds -g -traceback")
 
   # --------------------------------------------------------------------
