@@ -161,14 +161,18 @@ contains
 end module contrldmc
 
 module contrl_file
+#if defined(TREXIO_FOUND)
     use trexio,  only: trexio_backend
+#endif
     implicit none
 
     character(20) :: log_filename
     character(20) :: proc_filename
     character(80) :: file_input, file_output, file_error
     integer       :: iunit, ounit, errunit
+#if defined(TREXIO_FOUND)
     integer(trexio_backend) :: backend
+#endif
 
     private
     public :: log_filename, proc_filename
@@ -176,7 +180,9 @@ module contrl_file
     public :: close_files
     public :: init_procfile, init_logfile, initialize
     public :: iunit, ounit, errunit
+#if defined(TREXIO_FOUND)
     public :: backend
+#endif
     save
 contains
 

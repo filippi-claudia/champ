@@ -9,7 +9,9 @@ subroutine header_printing()
     use, intrinsic :: iso_fortran_env, only: iostat_end
     use contrl_file,    only: file_input, file_output, file_error
     use contrl_file,    only: ounit, errunit
+#if defined(TREXIO_FOUND)
     use trexio
+#endif
 
     implicit none
 
@@ -260,9 +262,12 @@ subroutine read_trexio_molecule_file(file_trexio)
     use periodic_table,     only: atom_t, element
     use elec,           	only: ndn, nup
     use const,          	only: nelec
-    use contrl_file,        only: ounit, errunit, backend
+    use contrl_file,        only: ounit, errunit
     use general,            only: pooldir
+#if defined(TREXIO_FOUND)
     use trexio
+    use contrl_file,        only: backend
+#endif
 
     implicit none
 
@@ -298,10 +303,12 @@ subroutine read_trexio_molecule_file(file_trexio)
 
     ! Check if the file exists
     if (wid) then
+#if defined(TREXIO_FOUND)
         trex_molecule_file = trexio_open(file_trexio_path, 'r', backend, rc)
         rc = trexio_read_nucleus_num(trex_molecule_file, ncent)
         rc = trexio_read_electron_up_num(trex_molecule_file, nup)
         rc = trexio_read_electron_dn_num(trex_molecule_file, ndn)
+#endif
     endif
     call bcast(ncent)
     call bcast(nup)
@@ -316,9 +323,11 @@ subroutine read_trexio_molecule_file(file_trexio)
     if (.not. allocated(unique))  allocate(unique(ncent))
 
     if (wid) then
+#if defined(TREXIO_FOUND)
     rc = trexio_read_nucleus_coord(trex_molecule_file, cent)
     rc = trexio_read_nucleus_label(trex_molecule_file, symbol, 3)
     rc = trexio_close(trex_molecule_file)
+#endif
     endif
     call bcast(cent)
     call bcast(symbol)
@@ -906,7 +915,7 @@ subroutine read_trexio_orbitals_file(file_trexio)
     !! @date 12 October 2021
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
-    use contrl_file,        only: ounit, errunit, backend
+    use contrl_file,        only: ounit, errunit
     use coefs,              only: coef, nbasis, norb
     use inputflags,         only: ilcao
     use orbval,             only: nadorb
@@ -915,8 +924,10 @@ subroutine read_trexio_orbitals_file(file_trexio)
     use wfsec,              only: nwftype
     use general,            only: pooldir
     use method_opt,         only: method
+#if defined(TREXIO_FOUND)
     use trexio
-
+    use contrl_file,        only: backend
+#endif
     implicit none
 
 !   local use
@@ -952,9 +963,11 @@ subroutine read_trexio_orbitals_file(file_trexio)
     ! Check if the file exists
 
     if (wid) then
+#if defined(TREXIO_FOUND)
         trex_orbitals_file = trexio_open(file_trexio_path, 'r', backend, rc)
         rc = trexio_read_mo_num(trex_orbitals_file, norb)
         rc = trexio_read_ao_num(trex_orbitals_file, nbasis)
+#endif
     endif
     call bcast(norb)
     call bcast(nbasis)
@@ -968,7 +981,9 @@ subroutine read_trexio_orbitals_file(file_trexio)
 
     ! Read the orbitals
     if (wid) then
+#if defined(TREXIO_FOUND)
         rc = trexio_read_mo_coefficient(trex_orbitals_file, coef(:,:,1))
+#endif
     endif
     call bcast(coef)
 
@@ -977,7 +992,9 @@ subroutine read_trexio_orbitals_file(file_trexio)
     ! call a function to transform the ordering.
     ! DEBUG #148
     ! Close the trexio file
+#if defined(TREXIO_FOUND)
     if (wid) rc = trexio_close(trex_orbitals_file)
+#endif
 
 
     write(ounit,*)

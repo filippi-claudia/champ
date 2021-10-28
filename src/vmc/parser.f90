@@ -10,6 +10,7 @@ subroutine parser
   use fdf               ! modified libfdf
 #if defined(TREXIO_FOUND)
   use trexio            ! trexio library for reading and writing hdf5 files
+  use contrl_file,      only: backend
 #endif
   use custom_broadcast, only: bcast
   use mpiconf,          only: wid
@@ -19,7 +20,6 @@ subroutine parser
   use contr3,         	only: mode
   use contrl_file,    	only: file_input, file_output, file_error
   use contrl_file,    	only: iunit, ounit, errunit
-  use contrl_file,      only: backend
   use allocation_mod, 	only: allocate_vmc, allocate_dmc
   use periodic_table, 	only: atom_t, element
 
@@ -259,9 +259,10 @@ subroutine parser
 
   ! trexio
   trex_backend = fdf_get('backend', 'hdf5')
+#if defined(TREXIO_FOUND)
   if (trex_backend == "hdf5") backend = TREXIO_HDF5
   if (trex_backend == "text") backend = TREXIO_TEXT
-
+#endif
 ! %module electrons (complete)
   nelec       = fdf_get('nelec', 1)
   nup         = fdf_get('nup', 1)
