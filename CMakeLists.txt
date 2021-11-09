@@ -72,7 +72,6 @@ if (MKL_FOUND)
   message("")
   message(STATUS "Using MKL for the linear algebra calculations!")
   message(STATUS "MKL INCLUDE DIRS                 :: " ${MKL_INCLUDE_DIRS})
-# message(STATUS "MKL_LIBRARIES            :: " ${MKL_LIBRARIES})
   # Printing individual libraries in the list
   message(STATUS "MKL_LIBRARIES                    : ")
   foreach(lib ${MKL_LIBRARIES})

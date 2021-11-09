@@ -147,14 +147,13 @@ if (MPI_Fortran_FOUND)
 	  read_bas_num.f90 
     regterg.f90 
     set_input_data.f90 
-    trexio_f.f90
 	  )
 
-  if (NOT TREXIO_FOUND)
-    list(REMOVE_ITEM VMC90_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/trexio_f.f90)
-  endif()
+  # if (NOT TREXIO_FOUND)
+  #   list(REMOVE_ITEM VMC90_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/trexio_f.f90)
+  # endif()
 
-  set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-check bounds -g -traceback")
+  # set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-check bounds -g -traceback")
 
   # --------------------------------------------------------------------
   # Set files according to CMAKE options:
@@ -197,94 +196,52 @@ if (MPI_Fortran_FOUND)
   # - shared_modules: all .f90 modules that must be compiled first.
   # - shared_objects: rest of shared objects (.f90/.f).
   # --------------------------------------------------------------------
-  if (TREXIO_FOUND)
-    set(SHARED_MODULES
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_kinds.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_basis.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_periodic_table.F90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_atom.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_timer.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_det.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_coefs.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_constant.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_control.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_force.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_mstates.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_mpi.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_optci.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_pseudo.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_sampling.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_sr.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_dmc.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_vmc.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_grid.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_pcm.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_ewald.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_jastrow.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_mmpol.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_optorb.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_prop.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_efield.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_gradhess.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_optwf.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_estimators.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_deriv.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_mixderiv.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_input.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_grdnt.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_allocation.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_state_avrg.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/trexio_f.f90
-      ${CMAKE_PARSER_DIR}/fdf.F90
-      ${CMAKE_PARSER_DIR}/io_fdf.F90
-      ${CMAKE_PARSER_DIR}/parse.F90
-      ${CMAKE_PARSER_DIR}/prec.F90
-      ${CMAKE_PARSER_DIR}/utils.F90)
-  else()
-    set(SHARED_MODULES
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_kinds.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_basis.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_common.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_periodic_table.F90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_atom.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_timer.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_det.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_coefs.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_constant.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_control.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_force.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_mstates.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_mpi.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_optci.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_pseudo.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_sampling.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_sr.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_dmc.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_vmc.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_grid.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_pcm.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_ewald.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_jastrow.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_mmpol.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_optorb.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_prop.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_efield.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_gradhess.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_optwf.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_estimators.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_deriv.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_mixderiv.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_input.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_grdnt.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_allocation.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/m_state_avrg.f90
-      ${CMAKE_PARSER_DIR}/fdf.F90
-      ${CMAKE_PARSER_DIR}/io_fdf.F90
-      ${CMAKE_PARSER_DIR}/parse.F90
-      ${CMAKE_PARSER_DIR}/prec.F90
-      ${CMAKE_PARSER_DIR}/utils.F90)
-  endif()
+  set(SHARED_MODULES
+    m_kinds.f90
+    m_basis.f90
+    m_common.f90
+    m_periodic_table.F90
+    m_atom.f90
+    m_timer.f90
+    m_det.f90
+    m_coefs.f90
+    m_constant.f90
+    m_control.f90
+    m_force.f90
+    m_mstates.f90
+    m_mpi.f90
+    m_optci.f90
+    m_pseudo.f90
+    m_sampling.f90
+    m_sr.f90
+    m_dmc.f90
+    m_vmc.f90
+    m_grid.f90
+    m_pcm.f90
+    m_ewald.f90
+    m_jastrow.f90
+    m_mmpol.f90
+    m_optorb.f90
+    m_prop.f90
+    m_efield.f90
+    m_gradhess.f90
+    m_optwf.f90
+    m_estimators.f90
+    m_deriv.f90
+    m_mixderiv.f90
+    m_input.f90
+    m_grdnt.f90
+    m_allocation.f90
+    m_state_avrg.f90
+    ${CMAKE_PARSER_DIR}/fdf.F90
+    ${CMAKE_PARSER_DIR}/io_fdf.F90
+    ${CMAKE_PARSER_DIR}/parse.F90
+    ${CMAKE_PARSER_DIR}/prec.F90
+    ${CMAKE_PARSER_DIR}/utils.F90)
+
+    if (TREXIO_FOUND)
+      list(APPEND SHARED_MODULES trexio_f.f90)
+    endif()
 
   set(SHARED_OBJECTS
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr.f90
