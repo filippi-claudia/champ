@@ -231,11 +231,8 @@ endforeach(flag)
 
 ## Subdirectories
 # Include the following subdirectories
-add_subdirectory(src/parser)
-add_subdirectory(tools/interface)
-add_subdirectory(lib/pspline)
-add_subdirectory(src/vmc)
-add_subdirectory(src/dmc)
+add_subdirectory(src)
+add_subdirectory(lib)
 
 if (TREXIO_FOUND)
   target_link_libraries(vmc.mov1 ${TREXIO_LIBRARY})
