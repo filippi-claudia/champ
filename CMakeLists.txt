@@ -232,6 +232,7 @@ endforeach(flag)
 ## Subdirectories
 # Include the following subdirectories
 add_subdirectory(src)
+add_subdirectory(tools)
 add_subdirectory(lib)
 
 if (TREXIO_FOUND)
