@@ -1,8 +1,44 @@
 if (MPI_Fortran_FOUND)
 
   # Source files
-  file(GLOB VMC_SOURCE *.f)
-  file(GLOB VMC90_SOURCE *.f90)
+  file(GLOB VMC_SOURCE 
+	  3dgrid.f 3dgrid_orbitals.f acuest.f acuest_reduce.f acuest_write.f
+	  basis_fns_vgl.f basis_fnse_v.f basis_fnse_vg.f basis_fnse_vgl.f
+	  basis_norm.f bxmatrices.f cuspexact4.f cuspinit4.f deriv_jastrow.f
+	  deriv_jastrow4.f deriv_nonloc.f deriv_nonlpsi.f determinant.f
+	  determinant_psig.f determinant_psit.f determinante.f
+	  determinante_psit.f detsav.f distances.f dumper.f dumper_more.f
+	  efield.f error.f fetch_parameters.f fin_reduce.f finwrt.f
+	  finwrt_more.f force_analy_reduce.f force_analytic.f gammai.f
+	  hpsi.f hpsie.f jassav.f jastrow.f jastrow4.f jastrow4e.f
+	  jastrow_num.f jastrowe.f jdqz_lib.f jdqz_main.f matinv.f
+	  mc_configs.f metrop_mov1_slat.f misc_grdnts.f mmpol.f
+	  mmpol_reduce.f mmpol_vmc.f multideterminant.f multideterminante.f
+	  multiple_states.f multiply_slmi_mderiv.f nodes_distance.f nonloc.f
+	  nonloc_pot.f nonlpsi.f optci.f optci_reduce.f optgeo_lib.f optjas.f
+	  optjas_reduce.f optorb.f optorb_reduce.f optwf_handle_wf.f
+	  optwf_lib.f optwf_lin_dav.f optwf_lin_dav_more.f optwf_lin_matrix.f
+	  optwf_matrix_corsamp.f optwf_mix_sa.f optwf_olbfgs.f
+	  optwf_olbfgs_more.f optwf_sr_more.f optwf_vmc.f optx_jas_ci.f
+	  optx_jas_ci_reduce.f optx_jas_orb.f optx_jas_orb_reduce.f
+	  optx_orb_ci.f optx_orb_ci_reduce.f orbitals.f pcm.f pcm_3dgrid.f
+	  pcm_reduce.f pcm_vmc.f pot.f pot_local.f prop_reduce.f prop_vmc.f
+	  properties.f psi.f pw_ewald.f pw_find_image.f pw_orbitals.f
+	  pw_orbitals_e.f pw_placeholder.f pw_read.f qmmm_placeholder.f
+	  rannyu.f readps.f readps_champ.f readps_gauss.f readps_tm.f
+	  rotqua.f scale_dist.f sites.f slm.f splfit.f spline.f spline2.f
+	  store_diag_hs.f strech.f verify_orbitals.f vmc.f write_orb_loc.f
+	  )
+
+  file(GLOB VMC90_SOURCE
+	  array_resize_utils.f90 array_utils.f90 davidson.f90
+	  davidson_wrap.f90 get_norbterm.f90 lapack_wrapper.f90
+	  main.f90 new_parser_read_data.f90 olbfgs.f90
+	  optgeo_convcartzmat.f90 optgeo_coords_int.f90 optgeo_hessian.f90
+	  optwf.f90 optwf_dl.f90 optwf_sr.f90 parser.f90 qmmm_bspline.f90
+	  qmmm_density.f90 qmmm_modules.f90 qmmm_pot.f90 qmmm_writecube.f90
+	  read_bas_num.f90 regterg.f90 set_input_data.f90 trexio_f.f90
+	  )
 
   if (NOT TREXIO_FOUND)
     list(REMOVE_ITEM VMC90_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/trexio_f.f90)
