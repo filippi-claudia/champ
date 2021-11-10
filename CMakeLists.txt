@@ -5,6 +5,7 @@ project(CHAMP LANGUAGES Fortran CXX C)
 
 # Needed for something which we don't know
 cmake_policy(SET CMP0079 NEW)
+cmake_policy(SET CMP0076 NEW)
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
@@ -170,6 +171,9 @@ add_definitions(-DTARGET_ARCHITECTURE=\"${TARGET_ARCHITECTURE}\")
 ## Architecture specific flags end here
 
 # Git info
+include(${CMAKE_MODULE_PATH}/gitinfo.cmake)
+gitinfo(${CMAKE_SOURCE_DIR})
+
 execute_process(COMMAND git rev-parse --abbrev-ref HEAD  OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
 execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
 #
