@@ -11,7 +11,7 @@ find_library(TREXIO_LIBRARY
              NAMES ${TREXIO_LIB}
              PATHS /usr/lib
                    /usr/local/lib
-                   ${HOME}/lib
+                   $ENV{HOME}/lib
              NO_DEFAULT_PATH)
 
 

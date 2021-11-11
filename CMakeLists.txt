@@ -1,3 +1,5 @@
+## Ravindra Shinde (2021) (c) TREX-CoE
+
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 # Project's name
@@ -63,14 +65,17 @@ option(ENABLE_PERIODIC "enable_periodic" off)
 
 ## External packages
 # Include function to Load MKL
+message("")
 include(${CMAKE_MODULE_PATH}/FindMKL.cmake)
 # Find MKL
+message(CHECK_START "Finding Math Kernel Library (MKL)")
+list(APPEND CMAKE_MESSAGE_INDENT "  ")
 find_package(MKL)
 if (MKL_FOUND)
   include_directories(${MKL_INCLUDE_DIRS})
   set(MKL_INCLUDE ${MKL_INCLUDE_DIRS}/intel64/ilp64)
   set(LINEAR_ALGEBRA ${MKL_LIBRARIES} pthread m dl)
-  message("")
+  message(CHECK_PASS "Found")
   message(STATUS "Using MKL for the linear algebra calculations!")
   message(STATUS "MKL INCLUDE DIRS                 :: " ${MKL_INCLUDE_DIRS})
   # Printing individual libraries in the list
@@ -78,6 +83,7 @@ if (MKL_FOUND)
   foreach(lib ${MKL_LIBRARIES})
     message("                                    :: " ${lib})
   endforeach(lib)
+  list(POP_BACK CMAKE_MESSAGE_INDENT)
 else()
   # search for lapack
   find_package(LAPACK COMPONENTS Fortran REQUIRED)
@@ -231,14 +237,7 @@ add_subdirectory(src)
 add_subdirectory(tools)
 add_subdirectory(lib)
 
-if (TREXIO_FOUND)
-  target_link_libraries(vmc.mov1 ${TREXIO_LIBRARY} MPI::MPI_Fortran)
-  target_link_libraries(dmc.mov1 ${TREXIO_LIBRARY} MPI::MPI_Fortran)
-endif()
-
-if(ENABLE_TEST)
-  MESSAGE(STATUS "enable test")
-  enable_testing()
-  add_subdirectory(tests/CI_test)
-#  add_test(example ${FORTRAN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test.py)
-endif(ENABLE_TEST)
+## Testing
+MESSAGE(STATUS " Tests are enabled ::  cd build; ctest")
+enable_testing()
+add_subdirectory(tests)
