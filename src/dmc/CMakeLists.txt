@@ -1,10 +1,38 @@
 # Source files
-file(GLOB DMC_SOURCE acues1_reduce.f averages.f dumper.f gauss.f main.f
-  mmpol_reduce.f nonloc_grid.f pcm_reduce.f redistribute.f splitj.f
-  zerest.f acues1.f acuest.f dmc.f dumper_gpop.f hpsiedmc.f mc_configs.f
-  move_walker.f optwf_dmc.f prop_dmc.f restart.f walksav_det.f acues1_gpop.f
-  acuest_gpop.f dmc_ps_mov1.f finwrt.f init.f mmpol_dmc.f multideterminant_tmove.f
-  pcm_dmc.f prop_reduce.f restart_gpop.f walksav_jas.f
+file(GLOB DMC_SOURCE
+  acues1_reduce.f
+  averages.f
+  dumper.f
+  gauss.f
+  main.f
+  mmpol_reduce.f
+  nonloc_grid.f
+  pcm_reduce.f
+  redistribute.f
+  splitj.f
+  zerest.f
+  acues1.f
+  acuest.f
+  dmc.f
+  dumper_gpop.f
+  hpsiedmc.f
+  mc_configs.f
+  move_walker.f
+  optwf_dmc.f
+  prop_dmc.f
+  restart.f
+  walksav_det.f
+  acues1_gpop.f
+  acuest_gpop.f
+  dmc_ps_mov1.f
+  finwrt.f
+  init.f
+  mmpol_dmc.f
+  multideterminant_tmove.f
+  pcm_dmc.f
+  prop_reduce.f
+  restart_gpop.f
+  walksav_jas.f
   )
 
 include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
@@ -34,6 +62,7 @@ target_compile_options(dmc.mov1
 
 target_link_libraries(dmc.mov1
   pspline
-  ${LINEAR_ALGEBRA})
+  ${LINEAR_ALGEBRA}
+  MPI::MPI_Fortran)
 
 set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")

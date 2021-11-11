@@ -68,20 +68,20 @@ subroutine header_printing()
     call get_command_argument(number=0, value=output)
     write(ounit, '(2a)') " Executable                 :: ",   output
 
-#if defined(GIT_BRANCH)
-    write(ounit,'(2a)')  " Git branch                 :: ", GIT_BRANCH
+#if defined(GIT_HEAD_BRANCH)
+    write(ounit,'(2a)')  " Git branch                 :: ", GIT_HEAD_BRANCH
 #endif
 
-#if defined(GIT_HASH)
-    write(ounit,'(2a)')  " Git commit hash            :: ", GIT_HASH
+#if defined(GIT_REVISION_HASH)
+    write(ounit,'(2a)')  " Git commit hash            :: ", GIT_REVISION_HASH
 #endif
 
-#if defined(COMPILER)
-    write(ounit,'(2a)')  " Compiler                   :: ", COMPILER
+#if defined(CMAKE_Fortran_COMPILER)
+    write(ounit,'(2a)')  " Compiler                   :: ", CMAKE_Fortran_COMPILER
 #endif
 
-#if defined(COMPILER_VERSION)
-    write(ounit,'(2a)')  " Compiler version           :: ", COMPILER_VERSION
+#if defined(CMAKE_Fortran_COMPILER_VERSION)
+    write(ounit,'(2a)')  " Compiler version           :: ", CMAKE_Fortran_COMPILER_VERSION
 #endif
 
 #if defined(TARGET_ARCHITECTURE)
