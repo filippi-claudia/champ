@@ -3,7 +3,8 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 # Project's name
-project(CHAMP LANGUAGES Fortran CXX C)
+project(CHAMP VERSION 2.0.5 LANGUAGES Fortran CXX C)
+
 
 # Needed for something which we don't know
 cmake_policy(SET CMP0079 NEW)
@@ -241,3 +242,15 @@ add_subdirectory(lib)
 MESSAGE(STATUS " Tests are enabled ::  cd build; ctest")
 enable_testing()
 add_subdirectory(tests)
+
+#Packaging
+set(CPACK_SOURCE_GENERATOR "TBZ2")
+set(CPACK_PACKAGE_VERSION "2.0.5")
+set(CPACK_PACKAGE_NAME "CHAMP")
+set(CPACK_ARCHIVE_FILE_NAME "CHAMP-v2.0.5.tar.bz2")
+set(CPACK_PACKAGE_VERSION "v2.0.5")
+set(CPACK_PACKAGE_VERSION_MAJOR "2")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "5")
+include(CPack)
+
