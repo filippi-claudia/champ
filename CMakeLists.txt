@@ -170,21 +170,20 @@ unset(VECTORIZED CACHE)
 add_definitions(-DTARGET_ARCHITECTURE=\"${TARGET_ARCHITECTURE}\")
 ## Architecture specific flags end here
 
-# Git info
+# system information
+include(${CMAKE_MODULE_PATH}/systeminfo.cmake)
+
+# Git information
 include(${CMAKE_MODULE_PATH}/gitinfo.cmake)
 gitinfo(${CMAKE_SOURCE_DIR})
-
-execute_process(COMMAND git rev-parse --abbrev-ref HEAD  OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND git rev-parse HEAD OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
-#
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-132")
   list(APPEND Fortran_FLAGS "-DCOMPILER=\"${CMAKE_Fortran_COMPILER}\"")
   list(APPEND Fortran_FLAGS "-DCOMPILER_VERSION=\"${CMAKE_Fortran_COMPILER_VERSION}\"")
-  list(APPEND Fortran_FLAGS "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
-  list(APPEND Fortran_FLAGS "-DGIT_HASH=\"${GIT_HASH}\"")
+  list(APPEND Fortran_FLAGS "-DGIT_BRANCH=\"${GIT_HEAD_BRANCH}\"")
+  list(APPEND Fortran_FLAGS "-DGIT_HASH=\"${GIT_REVISION_HASH}\"")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if (TREXIO_FOUND)
@@ -204,8 +203,8 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
 	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   list(APPEND Fortran_FLAGS "-DCOMPILER=\"${CMAKE_Fortran_COMPILER}\"")
   list(APPEND Fortran_FLAGS "-DCOMPILER_VERSION=\"${CMAKE_Fortran_COMPILER_VERSION}\"")
-  list(APPEND Fortran_FLAGS "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
-  list(APPEND Fortran_FLAGS "-DGIT_HASH=\"${GIT_HASH}\"")
+  list(APPEND Fortran_FLAGS "-DGIT_BRANCH=\"${GIT_HEAD_BRANCH}\"")
+  list(APPEND Fortran_FLAGS "-DGIT_HASH=\"${GIT_REVISION_HASH}\"")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if (TREXIO_FOUND)
