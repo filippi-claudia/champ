@@ -21,26 +21,12 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 # Print the header text art
-message( "____________________________________________________________________" )
-message( "                                                                    " )
-message( "                                                                    " )
-message( " .d8888b.   888    888         d8888  888b     d888  8888888b.      " )
-message( "d88P  Y88b  888    888        d88888  8888b   d8888  888   Y88b     " )
-message( "888    888  888    888       d88P888  88888b.d88888  888    888     " )
-message( "888         8888888888      d88P 888  888Y88888P888  888   d88P     " )
-message( "888         888    888     d88P  888  888 Y888P 888  8888888P''     " )
-message( "888    888  888    888    d88P   888  888  Y8P  888  888            " )
-message( "Y88b  d88P  888    888   d8888888888  888   '   888  888            " )
-message( " 'Y8888P'   888    888  d88P     888  888       888  888            " )
-message( "                                                                    " )
-message( "____________________________________________________________________" )
-message(" ")
-message(" ")
+include(${CMAKE_MODULE_PATH}/banner.cmake)
+
 # useful info
 message(STATUS "Compiling                        :: " ${CMAKE_PROJECT_NAME})
 message(STATUS "Fortran compiler                 :: " ${CMAKE_Fortran_COMPILER} )
 message(STATUS "Fortran compiler version         :: " ${CMAKE_Fortran_COMPILER_VERSION} )
-
 
 # Set folder variables:
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
@@ -137,45 +123,8 @@ if (ENABLE_MPI)
   find_package(MPI COMPONENTS Fortran REQUIRED)
 endif(ENABLE_MPI)
 
-## Know the architecture of the CPU and set compile flags accordingly
-set(TARGET_ARCHITECTURE "generic")
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-   file(READ "/proc/cpuinfo" _cpuinfo)
-   string(REGEX REPLACE ".*\nflags[ \t]*:[ \t]+([^\n]+).*" "\\1" _cpu_flags "${_cpuinfo}")
-endif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-
-string( TOLOWER "${VECTORIZED}" VECTORIZED )
-message(STATUS "Vectorization status  " ${VECTORIZED} )
-
-if(VECTORIZED STREQUAL "yes")
-	message(STATUS "Vectorization switched ON by user  " )
-	list(APPEND Fortran_FLAGS "-xCORE-AVX512")
-	set(TARGET_ARCHITECTURE "avx512")
-	add_definitions(-DVECTORIZATION="avx512")
-elseif(VECTORIZED STREQUAL "no")
-	message(STATUS "Vectorization switched off by user  " )
-else()
-	message(STATUS "Vectorization is default  " )
-	if(_cpu_flags MATCHES "avx512")
-  		list(APPEND Fortran_FLAGS "-xCORE-AVX512")
-  		set(TARGET_ARCHITECTURE "avx512")
-  		add_definitions(-DVECTORIZATION="avx512")
-	elseif(_cpu_flags MATCHES "avx2")
-      if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  		  list(APPEND Fortran_FLAGS "-xCORE-AVX2")
-  			set(TARGET_ARCHITECTURE "avx2")
-  			add_definitions(-DVECTORIZATION="avx2")
-		  else()
-  			list(APPEND Fortran_FLAGS "-axCORE-AVX2")
-  			set(TARGET_ARCHITECTURE "avx2")
-  			add_definitions(-DVECTORIZATION="avx2")
-		endif()
-	endif()
-endif()
-unset(VECTORIZED CACHE)
-
-add_definitions(-DTARGET_ARCHITECTURE=\"${TARGET_ARCHITECTURE}\")
-## Architecture specific flags end here
+# SIMD instructions
+include(${CMAKE_MODULE_PATH}/simd.cmake)
 
 # system information
 include(${CMAKE_MODULE_PATH}/systeminfo.cmake)
@@ -192,8 +141,6 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   if (TREXIO_FOUND)
     list(APPEND Fortran_FLAGS "-ltrexio")
   endif()
-
-  list(APPEND Fortran_FLAGS "-g" "-O0" "-debug" "-traceback")
 
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
 

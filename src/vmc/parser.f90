@@ -572,7 +572,7 @@ subroutine parser
     call read_trexio_molecule_file(file_trexio)
   else
     write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif
 ! By this point all information about geometry and znuc should be present.
@@ -614,7 +614,7 @@ subroutine parser
     write(ounit,'(a)') "Warning:: Is this an all electron calculation?"
   else
     write(errunit,'(a)') "Error:: No information about pseudo provided in the input."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
   endif
   write(ounit,*)
 ! Pseudopotential section ends here
@@ -736,7 +736,7 @@ subroutine parser
   elseif ( fdf_block('orbitals', bfdf)) then
   ! call fdf_read_orbitals_block(bfdf)
     write(errunit,'(a)') "Error:: No information about orbitals provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     if(nwftype.gt.1) then
@@ -760,11 +760,11 @@ subroutine parser
   elseif (.not. fdf_block('basis_num_info', bfdf)) then
   ! call fdf_read_eigenvalues_block(bfdf)
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif
 
@@ -781,7 +781,7 @@ subroutine parser
   elseif (fdf_block('jastrow', bfdf)) then
   !call fdf_read_jastrow_block(bfdf)
     write(errunit,'(a)') "Error:: No information about jastrow provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     ! no information about jastrow present.
@@ -802,11 +802,11 @@ subroutine parser
   elseif ( fdf_block('jastrow_der', bfdf)) then
   !call fdf_read_jastrow_derivative_block(bfdf)
     write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     if( mode(1:3) == 'vmc' ) error stop
   else
     write(errunit,'(a)') "Error:: No information about jastrow derivatives provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     if( mode(1:3) == 'vmc' ) error stop
   endif
 
@@ -892,7 +892,7 @@ subroutine parser
     if (ioptci .ne. 0) mxciterm = ndet
   ! call fdf_read_determinants_block(bfdf)
     write(errunit,'(a)') "Error:: No information about determinants provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     if(nwftype.gt.1) then
@@ -919,11 +919,11 @@ subroutine parser
   elseif ( fdf_block('symmetry', bfdf)) then
   ! call fdf_read_symmetry_block(bfdf)
     write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !    if( mode(1:3) == 'vmc' ) error stop
   else
     write(errunit,'(a)') "Error:: No information about orbital symmetries provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !    if( mode(1:3) == 'vmc' ) error stop
   endif
 
@@ -949,7 +949,7 @@ subroutine parser
   elseif (fdf_block('determinants', bfdf)) then
   ! call fdf_read_csfmap_block(bfdf)
     write(errunit,'(a)') "Error:: No information about csfmaps provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif
 
@@ -976,7 +976,7 @@ subroutine parser
   elseif (fdf_block('multideterminants', bfdf)) then
   ! call fdf_read_multideterminants_block(bfdf)
     write(errunit,'(a)') "Error:: No information about multideterminants provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     if(imultideterminants.eq.0) then
@@ -994,7 +994,7 @@ subroutine parser
   elseif ( fdf_block('exponents', bfdf)) then
   ! call fdf_read_exponents_block(bfdf)
     write(errunit,'(a)') "Error:: No information about exponents provided."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     if( (method(1:3) == 'lin')) then
@@ -1015,11 +1015,11 @@ subroutine parser
   elseif ( fdf_block('eigenvalues', bfdf)) then
   ! call fdf_read_eigenvalues_block(bfdf)
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !    error stop
   endif
 
@@ -1056,7 +1056,7 @@ subroutine parser
       endif
     else
       write(errunit,'(a)') "Error:: No information about basis provided in the block."
-      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+      !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     endif
   elseif (ibasis.eq.2) then
@@ -1326,11 +1326,11 @@ subroutine parser
   elseif (fdf_block('dmatrix', bfdf)) then
   ! call fdf_read_dmatrix_block(bfdf)
     write(errunit,'(a)') "Error:: No information about dmatrix provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     write(errunit,'(a)') "Error:: No information about dmatrix provided in the input."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !    error stop
   endif
 
@@ -1391,11 +1391,11 @@ subroutine parser
   elseif ( fdf_block('optorb_mixvirt', bfdf)) then
   ! call fdf_read_optorb_mixvirt_block(bfdf)
     write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
   endif
 
 
@@ -1406,11 +1406,11 @@ subroutine parser
 !   elseif ( fdf_block('cavity_spheres', bfdf)) then
 !   ! call fdf_read_cavity_spheres_block(bfdf)
 !     write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
-!     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !     error stop
 !   else
 !     write(errunit,'(a)') "Error:: No information about cavity_spheres provided in the block."
-!     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 ! !    error stop
 !   endif
 
@@ -1423,11 +1423,11 @@ subroutine parser
   elseif ( fdf_block('gradients_zmatrix', bfdf)) then
   ! call fdf_read_gradients_zmatrix_block(bfdf)
     write(errunit,'(a)') "Error:: No information about gradients_zmatrix provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     write(errunit,'(a)') "Error:: No information about gradients_zmatrix provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !    error stop
   endif
 
@@ -1438,11 +1438,11 @@ subroutine parser
   elseif ( fdf_block('gradients_cartesian', bfdf)) then
   ! call fdf_read_gradients_cartesian_block(bfdf)
     write(errunit,'(a)') "Error:: No information about gradients_cartesian provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     write(errunit,'(a)') "Error:: No information about gradients_cartesian provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !    error stop
   endif
 
@@ -1454,7 +1454,7 @@ subroutine parser
     elseif ( fdf_block('modify_zmatrix', bfdf)) then
     ! call fdf_read_modify_zmatrix_block(bfdf)
       write(errunit,'(a)') "Error:: No information about modify_zmatrix provided in the block."
-      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+      !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     else
       if(imodify_zmat.eq.0) call modify_zmat_define
@@ -1468,7 +1468,7 @@ subroutine parser
     elseif ( fdf_block('hessian_zmatrix', bfdf)) then
     ! call fdf_read_hessian_zmatrix_block(bfdf)
       write(errunit,'(a)') "Error:: No information about hessian_zmatrix provided in the block."
-      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+      !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     else
       if(ihessian_zmat.eq.0) call hessian_zmat_define
@@ -1482,11 +1482,11 @@ subroutine parser
   elseif ( fdf_block('zmatrix_connection', bfdf)) then
   ! call fdf_read_zmatrix_connection_block(bfdf)
     write(errunit,'(a)') "Error:: No information about zmatrix_connection provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     write(errunit,'(a)') "Error:: No information about zmatrix_connection provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     if(iuse_zmat.gt.0.and.izmatrix_check.eq.0) call fatal_error('INPUT: block connectionzmatrix missing')
   endif
 
@@ -1507,11 +1507,11 @@ subroutine parser
   elseif ( fdf_block('efield', bfdf)) then
   ! call fdf_read_efield_block(bfdf)
     write(errunit,'(a)') "Error:: No information about efield provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
     write(errunit,'(a)') "Error:: No information about efield provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",trim(__FILE__), " at line ", trim(__LINE__)
 !    error stop
   endif
 
