@@ -17,6 +17,7 @@ local_test.sh
 vmc/all.p2
 vmc/commands.p2
 input/p2nmcheck.f
+bin
 
 # CMake
 CMakeCache.txt
