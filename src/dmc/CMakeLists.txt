@@ -35,7 +35,7 @@ file(GLOB DMC_SOURCE
   walksav_jas.f
   )
 
-include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+find_package(FortranFormat)
 formatFortran("${DMC_SOURCE}") # Set Fixed format property
 
 # --------------------------------------------------------------------

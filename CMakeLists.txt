@@ -21,7 +21,7 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 # Print the header text art
-include(${CMAKE_MODULE_PATH}/banner.cmake)
+find_package(Banner)
 
 # useful info
 message(STATUS "Compiling                        :: " ${CMAKE_PROJECT_NAME})
@@ -53,39 +53,28 @@ option(ENABLE_PERIODIC "enable_periodic" off)
 ## External packages
 # Include function to Load MKL
 message("")
+find_package(BLAS COMPONENTS Fortran REQUIRED QUIET)
+find_package(LAPACK COMPONENTS Fortran REQUIRED QUIET)
 
-# Find MKL
 message(CHECK_START "Finding Math Kernel Library (MKL)")
-list(APPEND CMAKE_MESSAGE_INDENT "  ")
-find_package(MKL)
-if (MKL_FOUND)
-  include_directories(${MKL_INCLUDE_DIRS})
-  set(MKL_INCLUDE ${MKL_INCLUDE_DIRS}/intel64/ilp64)
-  set(LINEAR_ALGEBRA ${MKL_LIBRARIES} pthread m dl)
+if (BLAS_FOUND AND LAPACK_FOUND)
   message(CHECK_PASS "Found")
-  message(STATUS "Using MKL for the linear algebra calculations!")
-  message(STATUS "MKL INCLUDE DIRS                 :: " ${MKL_INCLUDE_DIRS})
+  message(STATUS "Using BLAS and LAPACK for the linear algebra calculations!")
   # Printing individual libraries in the list
-  message(STATUS "MKL_LIBRARIES                    : ")
-  foreach(lib ${MKL_LIBRARIES})
+  message(STATUS "BLAS and LAPACK LIBRARIES          : ")
+  foreach(lib ${LAPACK_LIBRARIES})
     message("                                    :: " ${lib})
   endforeach(lib)
   list(POP_BACK CMAKE_MESSAGE_INDENT)
-else()
-  # search for lapack
-  find_package(LAPACK COMPONENTS Fortran REQUIRED)
-  # Search for Blas
-  find_package(BLAS COMPONENTS Fortran REQUIRED)
-  set(LINEAR_ALGEBRA ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
-  message(STATUS "MKL NOT FOUND! Using default BLAS and LAPACK")
-endif(MKL_FOUND)
-message(STATUS "                                    ")
+endif()
 
+set(LINEAR_ALGEBRA ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+link_libraries(${LINEAR_ALGEBRA})
 
 # LibFDF is built-in in the src/parser folder
 
 # Find HDF5 library
-find_package(HDF5)
+find_package(HDF5 QUIET)
 if (HDF5_FOUND)
   message(STATUS "Is HDF5 library found            :: " ${HDF5_VERSION})
   message(STATUS "Is HDF5 library parallel         :: " ${HDF5_IS_PARALLEL})
@@ -96,12 +85,12 @@ if (HDF5_FOUND)
     message("                                    :: " ${lib})
   endforeach(lib)
   message(STATUS "                                    ")
-  add_definitions(-DHDF5_VERSION=\"${HDF5_VERSION}\")
+#  add_definitions(-DHDF5_VERSION=\"${HDF5_VERSION}\")
 endif(HDF5_FOUND)
 
 # Find TREXIO
 if (HDF5_FOUND)
-  find_package(TREXIO)
+  find_package(TREXIO QUIET)
 endif(HDF5_FOUND)
 if (TREXIO_FOUND)
   message(STATUS "Is TREXIO library found          :: " ${TREXIO_FOUND})
@@ -123,13 +112,13 @@ if (ENABLE_MPI)
 endif(ENABLE_MPI)
 
 # SIMD instructions
-include(${CMAKE_MODULE_PATH}/simd.cmake)
+find_package(SIMD)
 
 # system information
-include(${CMAKE_MODULE_PATH}/systeminfo.cmake)
+find_package(SystemInfo)
 
 # Git information
-include(${CMAKE_MODULE_PATH}/gitinfo.cmake)
+find_package(GitInfo)
 gitinfo(${CMAKE_SOURCE_DIR})
 
 ## Compiler FLAGS
