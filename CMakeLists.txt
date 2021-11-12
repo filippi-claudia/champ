@@ -53,7 +53,7 @@ option(ENABLE_PERIODIC "enable_periodic" off)
 ## External packages
 # Include function to Load MKL
 message("")
-include(${CMAKE_MODULE_PATH}/FindMKL.cmake)
+
 # Find MKL
 message(CHECK_START "Finding Math Kernel Library (MKL)")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
@@ -101,7 +101,6 @@ endif(HDF5_FOUND)
 
 # Find TREXIO
 if (HDF5_FOUND)
-  include(${CMAKE_MODULE_PATH}/FindTREXIO.cmake)
   find_package(TREXIO)
 endif(HDF5_FOUND)
 if (TREXIO_FOUND)
@@ -191,13 +190,14 @@ enable_testing()
 add_subdirectory(tests)
 
 #Packaging
-set(CPACK_SOURCE_GENERATOR "TBZ2")
-set(CPACK_PACKAGE_VERSION "2.0.5")
+set(CPACK_ARCHIVE_COMPONENT_INSTALL 1)
+set(CPACK_ARCHIVE_GENERATOR "TBZ2")
+set(CPACK_SOURCE_GENERATOR "ZIP")
+set(CPACK_PACKAGE_VERSION "2.0.7")
 set(CPACK_PACKAGE_NAME "CHAMP")
-set(CPACK_ARCHIVE_FILE_NAME "CHAMP-v2.0.5.tar.bz2")
-set(CPACK_PACKAGE_VERSION "v2.0.5")
+set(CPACK_ARCHIVE_FILE_NAME "CHAMP-v2.0.7.zip")
+set(CPACK_PACKAGE_VERSION "v2.0.7")
 set(CPACK_PACKAGE_VERSION_MAJOR "2")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH "5")
+set(CPACK_PACKAGE_VERSION_PATCH "7")
 include(CPack)
-
