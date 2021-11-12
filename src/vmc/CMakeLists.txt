@@ -384,8 +384,8 @@ if (MPI_Fortran_FOUND)
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
 
+  # add_dependencies(shared_objects parser)
   add_dependencies(shared_objects shared_modules)
-
   # --------------------------------------------------------------------
   # Remove code that has been already compiled:
   # --------------------------------------------------------------------
@@ -425,6 +425,7 @@ if (MPI_Fortran_FOUND)
     target_link_libraries(vmc.mov1
       PRIVATE
       pspline
+      parser
       ${LINEAR_ALGEBRA}
       ${TREXIO_LIBRARY}
       MPI::MPI_Fortran)
@@ -432,6 +433,7 @@ if (MPI_Fortran_FOUND)
     target_link_libraries(vmc.mov1
       PRIVATE
       pspline
+      parser
       ${LINEAR_ALGEBRA}
       MPI::MPI_Fortran)
   endif()
