@@ -157,6 +157,7 @@ if (MPI_Fortran_FOUND)
   CMAKE_Fortran_COMPILER_VERSION=\"${CMAKE_Fortran_COMPILER_VERSION}\"
   GIT_HEAD_BRANCH=\"${GIT_HEAD_BRANCH}\"
   GIT_REVISION_HASH=\"${GIT_REVISION_HASH}\"
+  HDF5_VERSION=\"${HDF5_VERSION}\"
   )
 
 
@@ -192,7 +193,7 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f)
   endif()
 
-  include(${CMAKE_MODULE_PATH}/FortranFormat.cmake)
+  find_package(FortranFormat)
   formatFortran("${VMC_SOURCE}") # Set Fixed format property
 
   # --------------------------------------------------------------------
