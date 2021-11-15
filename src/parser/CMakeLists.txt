@@ -13,3 +13,5 @@ add_library(parser SHARED ${PARSER_SOURCE})
 target_compile_options(parser
   PRIVATE
   ${Fortran_FLAGS})
+
+link_libraries(parser)

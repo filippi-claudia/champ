@@ -53,19 +53,21 @@ option(ENABLE_PERIODIC "enable_periodic" off)
 ## External packages
 # Include function to Load MKL
 message("")
+
+if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+  set(BLA_VENDOR Intel10_64_dyn)
+endif()
+
 find_package(BLAS COMPONENTS Fortran REQUIRED QUIET)
 find_package(LAPACK COMPONENTS Fortran REQUIRED QUIET)
 
-message(CHECK_START "Finding Math Kernel Library (MKL)")
 if (BLAS_FOUND AND LAPACK_FOUND)
-  message(CHECK_PASS "Found")
   message(STATUS "Using BLAS and LAPACK for the linear algebra calculations!")
   # Printing individual libraries in the list
   message(STATUS "BLAS and LAPACK LIBRARIES          : ")
-  foreach(lib ${LAPACK_LIBRARIES})
+  foreach(lib ${BLAS_LIBRARIES})
     message("                                    :: " ${lib})
   endforeach(lib)
-  list(POP_BACK CMAKE_MESSAGE_INDENT)
 endif()
 
 set(LINEAR_ALGEBRA ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
