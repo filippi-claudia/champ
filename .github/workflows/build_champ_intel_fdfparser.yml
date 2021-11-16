@@ -2,9 +2,9 @@ name: Intel OneAPI Build and Testing
 
 on:
   push:
-    branches: [refac-problematic]
+    branches: [main]
   pull_request:
-    branches: [refac-problematic]
+    branches: [main]
 
 jobs:
   build_champ:

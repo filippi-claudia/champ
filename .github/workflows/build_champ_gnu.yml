@@ -2,9 +2,9 @@ name: GNU Compiler Build and Testing
 
 on:
   push:
-    branches: [new-parser, merging-parser, refac-problematic]
+    branches: [main]
   pull_request:
-    branches: [new-parser, merging-parser, refac-problematic]
+    branches: [main]
 
 jobs:
   build_champ:
