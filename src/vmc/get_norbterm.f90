@@ -102,34 +102,42 @@ subroutine get_norbterm
     local_norb=local_ndetorb
 
 !   Omit doubly occupied in all input determinants
-    do 5 i=1,local_ndetorb
+    do i=1,local_ndetorb
       iflag(1,i)=0
-      do 3 k=1,ndet
+      do k=1,ndet
         iocc=0
-        do 2 j=1,nelec
- 2        if(iworbd(j,k).eq.i) iocc=iocc+1
+        do j=1,nelec
+          if(iworbd(j,k).eq.i) iocc=iocc+1
+        enddo
         if(iocc.ne.2) then
           iflag(1,i)=1
           goto 5
         endif
- 3    continue
+      enddo
  5  continue
+    enddo
 
 !   Omit empty orbitals
 
-    do 6 i=1,local_ndetorb
+    do i=1,local_ndetorb
      iflag(2,i)=0
-     do 6 k=1,ndet
-      do 6 j=1,nelec
- 6      if(iworbd(j,k).eq.i) iflag(2,i)=1
-    do 8 i=local_ndetorb+1,local_ndetorb+local_nadorb
+     do k=1,ndet
+      do j=1,nelec
+        if(iworbd(j,k).eq.i) iflag(2,i)=1
+      enddo
+     enddo
+    enddo
+    do i=local_ndetorb+1,local_ndetorb+local_nadorb
      iflag(1,i)=1
- 8   iflag(2,i)=0
+     iflag(2,i)=0
+    enddo
 
     if(local_norbopt.eq.0.or.local_norbvirt.eq.0) then
-      do 9 io=1,local_ndetorb
-       do 9 jo=local_ncore+1,local_ndetorb+local_nadorb
- 9      iwmix_virt(io,jo)=jo
+      do io=1,local_ndetorb
+       do jo=local_ncore+1,local_ndetorb+local_nadorb
+        iwmix_virt(io,jo)=jo
+       enddo
+      enddo
     elseif(local_norbopt.ne.local_ndetorb.or.local_norbvirt.lt.local_nadorb) then
 !     write(ounit,'(''get_norbterm: norbopt,ndetorb'',2i6)') local_norbopt,local_ndetorb
 !     write(ounit,'(''get_norbterm: noptvirt,nadorb'',2i6)') local_norbvirt,local_nadorb
@@ -147,10 +155,10 @@ subroutine get_norbterm
     !     write(ounit,*) '(''=========== establish no. orb variations =========='')'
     ! endif
 
-    do 60 io=local_ncore+1,local_ndetorb
+    do io=local_ncore+1,local_ndetorb
 !   Omit empty orbitals
      if(iflag(2,io).eq.0) goto 60
-     do 50 jo=local_ncore+1,local_ndetorb+local_nadorb
+     do jo=local_ncore+1,local_ndetorb+local_nadorb
 !   Omit if io and jo are the same
       if(io.eq.jo) goto 50
 !   Omit if io and jo have different symmetry
@@ -162,7 +170,7 @@ subroutine get_norbterm
 !   Omit if we only want to mix according to the table mixvirt
       if(iwmix_virt(io,jo).eq.0) goto 50
 !   Include: io is occupied in some determinant and jo not
-      do 40 iab=1,2
+      do iab=1,2
         n0=0
         n1=nup
         if(iab.eq.2) then
@@ -170,20 +178,22 @@ subroutine get_norbterm
           n1=ndn
         endif
         m(iab)=0
-        do 30 k=1,ndet
-          do 15 ie=1,n1
+        do k=1,ndet
+          do ie=1,n1
             if(iworbd(ie+n0,k).eq.io) then
               iesave=ie
               goto 20
             endif
-15         continue
+          enddo
           goto 30
 20         continue
-          do 25 ie=1,n1
-25           if(iworbd(ie+n0,k).eq.jo) goto 30
+          do ie=1,n1
+             if(iworbd(ie+n0,k).eq.jo) goto 30
+          enddo
           m(iab)=m(iab)+1
 30       continue
-40     continue
+        enddo
+      enddo
       if(m(1)+m(2).eq.0) then
 !        if(iprt.gt.3) write(ounit,'(''no appropriate determinant for '',2i4)') io,jo
         goto 50
@@ -194,7 +204,9 @@ subroutine get_norbterm
 
 
 50    continue
+     enddo
 60   continue
+    enddo
 
     local_norbterm=local_noporb
 !    write(ounit,'(''number of orbital variations: '',i0)') local_norbterm

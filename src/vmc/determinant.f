@@ -39,7 +39,7 @@ c compute orbitals
       icheck=0
   10  continue
 
-      do 400 iab=1,2
+      do iab=1,2
 
       if(iab.eq.1) then
         ish=0
@@ -87,7 +87,7 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
             write(ounit,*) 'slmi',iab,'M',(slmi(ii+ik,iab),ii=1,nel)
           enddo
         endif
- 400  continue
+      enddo
 
       if(ipr.ge.4) write(ounit,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
 

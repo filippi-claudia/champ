@@ -51,9 +51,10 @@ c job where it left off
 
       rewind 10
 
-      do 10 i=0,nproc-1
+      do i=0,nproc-1
         ircounts(i)=4
-   10   idispls(i)=i*4
+        idispls(i)=i*4
+      enddo
       idispls(nproc)=4*nproc
       nscounts=ircounts(idtask)
 
@@ -81,7 +82,7 @@ c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
         write(10) nelec,nforce,nloc
         write(10) ((xold(k,i),k=1,3),i=1,nelec)
         if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
-        do 20 id=1,nproc-1
+        do id=1,nproc-1
           call mpi_recv(xold,3*nelec,mpi_double_precision,id
      &    ,1,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(xq,nquad,mpi_double_precision,id
@@ -91,7 +92,8 @@ c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
           call mpi_recv(zq,nquad,mpi_double_precision,id
      &    ,4,MPI_COMM_WORLD,istatus,ierr)
           write(10) ((xold(k,i),k=1,3),i=1,nelec)
-   20     if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+          if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+        enddo
       endif
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
@@ -119,30 +121,35 @@ c-----------------------------------------------------------------------
       if (nforcex.ne.nforce) call fatal_error('STARTR: nforce')
       if (nlocx.ne.nloc) call fatal_error('STARTR: nloc')
       if(idtask.le.nproco-1) then
-        do 30 id=0,idtask
+        do id=0,idtask
           read(10) ((xold(k,i),k=1,3),i=1,nelec)
-   30     if(nloc.gt.0) read(10) nqx,(xq(i),yq(i),zq(i),wq(i),i=1,nqx)
+          if(nloc.gt.0) read(10) nqx,(xq(i),yq(i),zq(i),wq(i),i=1,nqx)
+        enddo
         if(nqx.ne.nquad) call fatal_error('STARTR: nquad')
-        do 40 id=idtask+1,nproco-1
+        do id=idtask+1,nproco-1
           read(10) (x_id,i=1,3*nelec)
-   40     if(nloc.gt.0) read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nqd_id)
+          if(nloc.gt.0) read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nqd_id)
+        enddo
        else
-        do 50 id=0,nproco-1
+        do id=0,nproco-1
           read(10) (x_id,i=1,3*nelec)
-   50     if(nloc.gt.0) read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nqd_id)
+          if(nloc.gt.0) read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nqd_id)
+        enddo
       endif
 
       if(nproc.gt.nproco) then
         if(idtask.le.nproco-1) then
-          do 60 idget=nproco,nproc-1
+          do idget=nproco,nproc-1
 c xold from idtask to idget
-   60       if(idtask.eq.mod(idget,nproco))
+            if(idtask.eq.mod(idget,nproco))
      &      call mpi_send(xold,3*nelec,mpi_double_precision,idget
      &      ,idget,MPI_COMM_WORLD,ierr)
 c    &      ,idget,MPI_COMM_WORLD,irequest,ierr)
+          enddo
          else
-          do 70 id=1,(3*nelec)*idtask
-   70       rnd=rannyu(0)
+          do id=1,(3*nelec)*idtask
+            rnd=rannyu(0)
+          enddo
           idfrom=mod(idtask,nproco)
 c xold from idfrom to idtask
           call mpi_recv(xold,3*nelec,mpi_double_precision,idfrom
@@ -158,7 +165,7 @@ c xold from idfrom to idtask
 
       r2cum=0
       r2cm2=0
-      do 80 istate=1,nstates
+      do istate=1,nstates
 
       pecum(istate)=0
       tpbcum(istate)=0
@@ -173,20 +180,23 @@ c xold from idfrom to idtask
       ecm21(istate)=0
       ecm21s(istate)=0
 
-      do 80 ifr=1,nforce
+      do ifr=1,nforce
         ecum(istate,ifr)=0
         ecm2(istate,ifr)=0
         wcum(istate,ifr)=0
         fcum(istate,ifr)=0
-   80   fcm2(istate,ifr)=0
+        fcm2(istate,ifr)=0
+      enddo
+      enddo
 
-      do 90 i=1,nrad
+      do i=1,nrad
         try(i)=0
         suc(i)=0
         trunfb(i)=0
         ekin(i)=0
         ekin2(i)=0
-   90   rprob(i)=0
+        rprob(i)=0
+      enddo
 
       call optjas_init
       call optorb_init(0)

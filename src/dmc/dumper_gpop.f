@@ -97,7 +97,7 @@ c job where it left off
 c       if(nforce.gt.1) write(10) nwprod
 c    &  ,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
-        do 450 id=1,nproc-1
+        do id=1,nproc-1
           call mpi_recv(nwalk,1,mpi_integer,id
      &    ,1,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(xold_dmc,3*nelec*nwalk,mpi_double_precision,id
@@ -123,7 +123,7 @@ c    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
 c         if(nforce.gt.1) write(10) nwprod
 c    &    ,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
-  450   continue
+        enddo
       endif
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 

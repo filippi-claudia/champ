@@ -13,11 +13,12 @@ c Written by Cyrus Umrigar
       real(dp), dimension(3, *) :: v
       real(dp), dimension(nelec) :: div_vj
 
-      do 10 i=1,nelec
+      do i=1,nelec
         div_vj(i)=0
         v(1,i)=0
         v(2,i)=0
-   10   v(3,i)=0
+        v(3,i)=0
+      enddo
       d2=0
 
       if(ifr.gt.1.or.ioptjas.eq.0) then

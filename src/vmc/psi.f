@@ -66,26 +66,29 @@ c periodic systems.
       uu(0)=one
       ss(0)=2
       tt(0)=one
-      do 40 jp=1,nordc
+      do jp=1,nordc
         uu(jp)=u**jp
         ss(jp)=rri**jp+rrj**jp
-   40   tt(jp)=(rri*rrj)**jp
+        tt(jp)=(rri*rrj)**jp
+      enddo
 
       ll=0
-      do 50 n=2,nordc
-        do 50 k=n-1,0,-1
+      do n=2,nordc
+        do k=n-1,0,-1
           if(k.eq.0) then
             l_hi=n-k-2
            else
             l_hi=n-k
           endif
-          do 50 l=l_hi,0,-1
+          do l=l_hi,0,-1
             m=(n-k-l)/2
             if(2*m.eq.n-k-l) then
               ll=ll+1
               psi=psi+c(ll,it,iwf)*uu(k)*ss(l)*tt(m)
             endif
-   50 continue
+          enddo
+        enddo
+      enddo
 
       return
       end
@@ -126,12 +129,14 @@ c-----------------------------------------------------------------------
 
       if(ijas.eq.4.or.ijas.eq.5) then
         psia=a4(1,it,iwf)*rri/(one+a4(2,it,iwf)*rri)-asymp_jasa(it)
-        do 10 i=2,norda
-   10     psia=psia+a4(i+1,it,iwf)*rri**i
+        do i=2,norda
+          psia=psia+a4(i+1,it,iwf)*rri**i
+        enddo
        elseif(ijas.eq.6) then
         psia=a4(1,it,iwf)*rri/(one+a4(2,it,iwf)*(1-rri))
-        do 20 i=2,norda
-   20     psia=psia+a4(i+1,it,iwf)*rri**i
+        do i=2,norda
+          psia=psia+a4(i+1,it,iwf)*rri**i
+        enddo
       endif
 
       return
@@ -175,17 +180,20 @@ c-----------------------------------------------------------------------
 
       if(ijas.eq.4) then
         psib=sspinn*b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)-asymp_jasb(ipar+1)
-        do 10 i=2,nordb
-   10     psib=psib+b(i+1,isb,iwf)*u**i
+        do i=2,nordb
+          psib=psib+b(i+1,isb,iwf)*u**i
+        enddo
        elseif(ijas.eq.5) then
         psib=b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)-asymp_jasb(ipar+1)
-        do 20 i=2,nordb
-   20     psib=psib+b(i+1,isb,iwf)*u**i
+        do i=2,nordb
+          psib=psib+b(i+1,isb,iwf)*u**i
+        enddo
         psib=sspinn*psib
        elseif(ijas.eq.6) then
         psib=b(1,isb,iwf)*u/(one+b(2,isb,iwf)*(1-u))
-        do 30 i=2,nordb
-   30     psib=psib+b(i+1,isb,iwf)*u**i
+        do i=2,nordb
+          psib=psib+b(i+1,isb,iwf)*u**i
+        enddo
         psib=sspinn*psib
       endif
 

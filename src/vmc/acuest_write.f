@@ -54,8 +54,8 @@ c write out current values of averages
         accept=acc/(acc_denom*nelec)
       endif
 
-      do 25 ifr=1,nforce
-        do 25 istate=1,nstates
+      do ifr=1,nforce
+        do istate=1,nstates
         eave=ecum(istate,ifr)/wcum(istate,ifr)
         if(iblk.eq.1) then
           eerr=0
@@ -109,7 +109,8 @@ c different meaning of last argument: 0 acuest, 1 finwrt
           write(ounit,'(f10.5,f10.5,''('',i5,'')'',51x,f14.9,''('',i9,'')'')
      &    ') enow(istate,ifr),eave,ieerr,fave,iferr
         endif
-  25  continue
+        enddo
+      enddo
 
 
       return

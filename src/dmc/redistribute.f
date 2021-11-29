@@ -39,8 +39,9 @@ c    &MPI_COMM_WORLD,ierr)
       if(ipr.ge.1) write(ounit,'(''nwalk_all='',(10i4))') (nwalk_all(i),i=0,nproc-1)
 
       nwalk_sum=0
-      do 10 i=0,nproc-1
-   10   nwalk_sum=nwalk_sum+nwalk_all(i)
+      do i=0,nproc-1
+        nwalk_sum=nwalk_sum+nwalk_all(i)
+      enddo
 
       nwalk_av_int=nwalk_sum/nproc
       nhi=nwalk_sum-nwalk_av_int*nproc
@@ -51,7 +52,7 @@ c    &MPI_COMM_WORLD,ierr)
    20 ilo=0
       ihi=0
       nwalk_stack=0
-      do 30 i=0,nproc-1
+      do i=0,nproc-1
         if(nwalk_all(i).ge.nwalk_av_int+1) then
           ihi=ihi+1
          elseif(nwalk_all(i).le.nwalk_av_int) then
@@ -85,7 +86,7 @@ c    &MPI_COMM_WORLD,ierr)
           nwalk_stack=nwalk_stack-1
         endif
 
-   30 continue
+      enddo
       if(ipr.ge.1) then
         write(ounit,'(''icommunicate_all='',(10i4))')
      &   (icommunicate_all(i),i=0,nproc-1)
@@ -120,9 +121,10 @@ c and to update the values of nwalk on each processor
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       ido_again=0
-      do 40 i=0,nproc-1
-   40 if(nwalk_all(i).gt.nwalk_av_int+1 .or.
+      do i=0,nproc-1
+      if(nwalk_all(i).gt.nwalk_av_int+1 .or.
      &  nwalk_all(i).lt.nwalk_av_int) ido_again=1
+      enddo
 
       if(ido_again.eq.1) goto 20
 

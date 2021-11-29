@@ -26,13 +26,15 @@
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(wid) then
-        do 10 i=1,nprop
+        do i=1,nprop
           vprop_cum(i)=vpcollect(i)
-   10     vprop_cm2(i)=vp2collect(i)
+          vprop_cm2(i)=vp2collect(i)
+        enddo
        else
-        do 20 i=1,nprop
+        do i=1,nprop
           vprop_cum(i)=0
-   20     vprop_cm2(i)=0
+          vprop_cm2(i)=0
+        enddo
       endif
 
       return

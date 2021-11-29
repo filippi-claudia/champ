@@ -13,10 +13,11 @@ c Written by Claudia Filippi by modifying jastrow
       real(dp), parameter :: zero = 0.d0
 
 
-      do 10 i=1,nelec
+      do i=1,nelec
         v(1,i)=zero
         v(2,i)=zero
-   10   v(3,i)=zero
+        v(3,i)=zero
+      enddo
 
       call jastrow4e(iel,x,v,d2,value,iflag)
 

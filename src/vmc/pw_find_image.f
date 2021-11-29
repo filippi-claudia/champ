@@ -29,10 +29,11 @@ c good enough -- no need to use 1/2 the shortest perpendicular distance.
 
       rlenmax=0
       rlenmin=9.d99
-      do 20 i=1,3
+      do i=1,3
         rlen=0
-        do 10 k=1,3
-   10     rlen=rlen+rlatt(k,i)**2
+        do k=1,3
+          rlen=rlen+rlatt(k,i)**2
+        enddo
         if (rlen.gt.rlenmax) then
           rlenmax=max(rlen,rlenmax)
           imax=i
@@ -41,7 +42,7 @@ c good enough -- no need to use 1/2 the shortest perpendicular distance.
           rlenmin=min(rlen,rlenmin)
           imin=i
         endif
-   20 continue
+      enddo
       rlenmax=sqrt(rlenmax)
       rlenmin=sqrt(rlenmin)
       cutr=rlenmin/2
@@ -67,14 +68,15 @@ c       cutjas=rlenmin/2
 c     endif
 c     cutjas=rlenmin/2
 
-      do 40 i1=-1,1
-        do 40 i2=-1,1
-          do 40 i3=-1,1
+      do i1=-1,1
+        do i2=-1,1
+          do i3=-1,1
             if((imax.eq.1.and.i1.ne.0).or.(imax.eq.2.and.i2.ne.0)
      &      .or.(imax.eq.3.and.i3.ne.0)) then
               rlen=0
-              do 30 k=1,3
-   30           rlen=rlen+(i1*rlatt(k,1)+i2*rlatt(k,2)+i3*rlatt(k,3))**2
+              do k=1,3
+                rlen=rlen+(i1*rlatt(k,1)+i2*rlatt(k,2)+i3*rlatt(k,3))**2
+              enddo
               rlen=sqrt(rlen)
               if (rlen.lt.rlenmax-eps) then
                 write(ounit,*) 'found shorter lattice vector'
@@ -86,7 +88,9 @@ c     cutjas=rlenmin/2
                 call fatal_error ('one can find shorter lattice vectors: see check_lattice')
               endif
             endif
-   40 continue
+          enddo
+        enddo
+      enddo
 
       return
       end
@@ -116,19 +120,23 @@ c r_basis = rlatt_inv * r
 
 
 c Find vector in basis coordinates
-      do 20 k=1,3
+      do k=1,3
         r_basis(k)=0
-        do 10 i=1,3
-   10     r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
-   20   r_basis(k)=r_basis(k)-nint(r_basis(k))
+        do i=1,3
+          r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
+        enddo
+        r_basis(k)=r_basis(k)-nint(r_basis(k))
+      enddo
 
 c     write(ounit,'(''r_basis'',9f9.4)') r_basis
 
 c Convert back to cartesian coodinates
-      do 30 k=1,3
+      do k=1,3
         r(k)=0
-        do 30 i=1,3
-   30     r(k)=r(k)+rlatt(k,i)*r_basis(i)
+        do i=1,3
+          r(k)=r(k)+rlatt(k,i)*r_basis(i)
+        enddo
+      enddo
 
       return
       end
@@ -156,11 +164,13 @@ c r_basis = rlatt_inv * r
 
 
 c Find vector in basis coordinates
-      do 20 k=1,3
+      do k=1,3
         r_basis(k)=0
-        do 10 i=1,3
-   10     r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
-   20   i_basis(k)=nint(r_basis(k))
+        do i=1,3
+          r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
+        enddo
+        i_basis(k)=nint(r_basis(k))
+      enddo
 
       return
       end
@@ -193,41 +203,51 @@ c a) its length
 c b) sign along each of lattice directions
 
       r2=0
-      do 20 k=1,3
+      do k=1,3
         r2=r2+r(k)**2
         r_basis(k)=0
-        do 10 i=1,3
-   10     r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
+        do i=1,3
+          r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
+        enddo
         if(abs(r_basis(k)).gt.1.d0) write(ounit,'(''**Warning, abs(r_basis)>1'')')
-   20   isign(k)=nint(sign(1.d0,r_basis(k)))
+        isign(k)=nint(sign(1.d0,r_basis(k)))
+      enddo
 
-      do 25 k=1,3
-   25   i_sav(k)=0
+      do k=1,3
+        i_sav(k)=0
+      enddo
 
 c Check just 8, rather than 27, trapezoids
-      do 60 i1=0,isign(1),isign(1)
-        do 30 k=1,3
-   30     r1_try(k)=r(k)-i1*rlatt(k,1)
-        do 60 i2=0,isign(2),isign(2)
-          do 40 k=1,3
-   40       r2_try(k)=r1_try(k)-i2*rlatt(k,2)
-          do 60 i3=0,isign(3),isign(3)
+      do i1=0,isign(1),isign(1)
+        do k=1,3
+          r1_try(k)=r(k)-i1*rlatt(k,1)
+        enddo
+        do i2=0,isign(2),isign(2)
+          do k=1,3
+            r2_try(k)=r1_try(k)-i2*rlatt(k,2)
+          enddo
+          do i3=0,isign(3),isign(3)
             r_try2=0
-            do 50 k=1,3
+            do k=1,3
               r3_try(k)=r2_try(k)-i3*rlatt(k,3)
-   50         r_try2=r_try2+r3_try(k)**2
+              r_try2=r_try2+r3_try(k)**2
+            enddo
           if(r_try2.lt.r2) then
             i_sav(1)=i1
             i_sav(2)=i2
             i_sav(3)=i3
             r2=r_try2
           endif
-   60 continue
+          enddo
+        enddo
+      enddo
 
 c Replace r by its shortest image
-      do 70 i=1,3
-        do 70 k=1,3
-   70     r(k)=r(k)-i_sav(i)*rlatt(k,i)
+      do i=1,3
+        do k=1,3
+          r(k)=r(k)-i_sav(i)*rlatt(k,i)
+        enddo
+      enddo
 
 c     write(ounit,'(''rnew'',9f10.5)') (r(k),k=1,3),sqrt(r2)
 
@@ -267,37 +287,46 @@ c Needs precomputed r_basis1,r_basis2,i_basis1,i_basis2.
 
 c Find length of original vector and sign along each of lattice directions
       r2=0
-      do 20 k=1,3
+      do k=1,3
       r2=r2+r(k)**2
-   20   isign(k)=int(sign(1.d0,r_basis2(k)-r_basis1(k)-i_basis2(k)+i_basis1(k)))
+        isign(k)=int(sign(1.d0,r_basis2(k)-r_basis1(k)-i_basis2(k)+i_basis1(k)))
+      enddo
 
-      do 25 k=1,3
-   25   i_sav(k)=0
+      do k=1,3
+        i_sav(k)=0
+      enddo
 
 c Check just 8, rather than 27, trapezoids (not needed for orthorhombic lattice)
-      do 60 i1=0,isign(1),isign(1)
-        do 30 k=1,3
-   30     r1_try(k)=r(k)-rlatt(k,1)*(i1+i_basis2(1)-i_basis1(1))
-        do 60 i2=0,isign(2),isign(2)
-          do 40 k=1,3
-   40       r2_try(k)=r1_try(k)-rlatt(k,2)*(i2+i_basis2(2)-i_basis1(2))
-          do 60 i3=0,isign(3),isign(3)
+      do i1=0,isign(1),isign(1)
+        do k=1,3
+          r1_try(k)=r(k)-rlatt(k,1)*(i1+i_basis2(1)-i_basis1(1))
+        enddo
+        do i2=0,isign(2),isign(2)
+          do k=1,3
+            r2_try(k)=r1_try(k)-rlatt(k,2)*(i2+i_basis2(2)-i_basis1(2))
+          enddo
+          do i3=0,isign(3),isign(3)
             r_try2=0
-            do 50 k=1,3
+            do k=1,3
               r3_try(k)=r2_try(k)-rlatt(k,3)*(i3+i_basis2(3)-i_basis1(3))
-   50         r_try2=r_try2+r3_try(k)**2
+              r_try2=r_try2+r3_try(k)**2
+            enddo
           if(r_try2.lt.r2) then
             i_sav(1)=i1+i_basis2(1)-i_basis1(1)
             i_sav(2)=i2+i_basis2(2)-i_basis1(2)
             i_sav(3)=i3+i_basis2(3)-i_basis1(3)
             r2=r_try2
           endif
-   60 continue
+          enddo
+        enddo
+      enddo
 
 c Replace r by its shortest image
-      do 70 i=1,3
-        do 70 k=1,3
-   70     r(k)=r(k)-rlatt(k,i)*i_sav(i)
+      do i=1,3
+        do k=1,3
+          r(k)=r(k)-rlatt(k,i)*i_sav(i)
+        enddo
+      enddo
 
       return
       end
@@ -328,59 +357,72 @@ c by its closest image and finds its norm
 
 
 c Warning: tempor
-      do 5 k=1,3
-    5   rsav(k)=r(k)
+      do k=1,3
+        rsav(k)=r(k)
+      enddo
 
 c a) reduce vector to central cell by expressing vector in lattice coordinates and
 c    removing nint of it in each direction
 c b) sign along each of lattice directions of vector reduced to central cell
-      do 20 k=1,3
+      do k=1,3
         r_basis(k)=0
-        do 10 i=1,3
-   10     r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
+        do i=1,3
+          r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
+        enddo
         r_basis(k)=r_basis(k)-nint(r_basis(k))
-   20   isign(k)=nint(sign(1.d0,r_basis(k)))
+        isign(k)=nint(sign(1.d0,r_basis(k)))
+      enddo
 
 c Convert back to cartesian coodinates and find squared length
       r2=0
-      do 23 k=1,3
+      do k=1,3
         r(k)=0
-        do 22 i=1,3
-   22     r(k)=r(k)+rlatt(k,i)*r_basis(i)
-   23   r2=r2+r(k)**2
+        do i=1,3
+          r(k)=r(k)+rlatt(k,i)*r_basis(i)
+        enddo
+        r2=r2+r(k)**2
+      enddo
 
-      do 25 k=1,3
-   25   i_sav(k)=0
+      do k=1,3
+        i_sav(k)=0
+      enddo
 
 c Check just 8, rather than 27, trapezoids (not needed for orthorhombic lattice)
-      do 60 i1=0,isign(1),isign(1)
+      do i1=0,isign(1),isign(1)
 c     do 60 i1=-1,1,1
-        do 30 k=1,3
-   30     r1_try(k)=r(k)-i1*rlatt(k,1)
-        do 60 i2=0,isign(2),isign(2)
+        do k=1,3
+          r1_try(k)=r(k)-i1*rlatt(k,1)
+        enddo
+        do i2=0,isign(2),isign(2)
 c       do 60 i2=-1,1,1
-          do 40 k=1,3
-   40       r2_try(k)=r1_try(k)-i2*rlatt(k,2)
-          do 60 i3=0,isign(3),isign(3)
+          do k=1,3
+            r2_try(k)=r1_try(k)-i2*rlatt(k,2)
+          enddo
+          do i3=0,isign(3),isign(3)
 c         do 60 i3=-1,1,1
             r_try2=0
-            do 50 k=1,3
+            do k=1,3
               r3_try(k)=r2_try(k)-i3*rlatt(k,3)
-   50         r_try2=r_try2+r3_try(k)**2
+              r_try2=r_try2+r3_try(k)**2
+            enddo
           if(r_try2.lt.r2) then
             i_sav(1)=i1
             i_sav(2)=i2
             i_sav(3)=i3
             r2=r_try2
           endif
-   60 continue
+          enddo
+        enddo
+      enddo
 
 c Replace r by its shortest image
       rnorm=0
-      do 80 k=1,3
-        do 70 i=1,3
-   70     r(k)=r(k)-rlatt(k,i)*i_sav(i)
-   80   rnorm=rnorm+r(k)**2
+      do k=1,3
+        do i=1,3
+          r(k)=r(k)-rlatt(k,i)*i_sav(i)
+        enddo
+        rnorm=rnorm+r(k)**2
+      enddo
       rnorm=sqrt(rnorm)
 
 c     if(rnorm.gt.5.d0) write(ounit,'(''long'',6i2,10f8.4)')
@@ -418,52 +460,64 @@ c a) reduce vector to central cell by expressing vector in lattice coordinates a
 c    removing nint of it in each direction
 c b) sign along each of lattice directions of vector reduced to central cell
 c Note: rhift is just a work array here; calculated for real only at end.
-      do 20 k=1,3
+      do k=1,3
         r_basis(k)=0
-        do 10 i=1,3
-   10     r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
+        do i=1,3
+          r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
+        enddo
         rshift(k)=r_basis(k)-nint(r_basis(k))
-   20   isign(k)=nint(sign(1.d0,rshift(k)))
+        isign(k)=nint(sign(1.d0,rshift(k)))
+      enddo
 
 c Convert back to cartesian coodinates and find squared length
       r2=0
-      do 23 k=1,3
+      do k=1,3
         r(k)=0
-        do 22 i=1,3
-   22     r(k)=r(k)+rlatt(k,i)*rshift(i)
-   23   r2=r2+r(k)**2
+        do i=1,3
+          r(k)=r(k)+rlatt(k,i)*rshift(i)
+        enddo
+        r2=r2+r(k)**2
+      enddo
 
-      do 25 k=1,3
-   25   i_sav(k)=0
+      do k=1,3
+        i_sav(k)=0
+      enddo
 
 c Check just 8, rather than 27, trapezoids (not needed for orthorhombic lattice)
-      do 60 i1=0,isign(1),isign(1)
-        do 30 k=1,3
-   30     r1_try(k)=r(k)-i1*rlatt(k,1)
-        do 60 i2=0,isign(2),isign(2)
-          do 40 k=1,3
-   40       r2_try(k)=r1_try(k)-i2*rlatt(k,2)
-          do 60 i3=0,isign(3),isign(3)
+      do i1=0,isign(1),isign(1)
+        do k=1,3
+          r1_try(k)=r(k)-i1*rlatt(k,1)
+        enddo
+        do i2=0,isign(2),isign(2)
+          do k=1,3
+            r2_try(k)=r1_try(k)-i2*rlatt(k,2)
+          enddo
+          do i3=0,isign(3),isign(3)
             r_try2=0
-            do 50 k=1,3
+            do k=1,3
               r3_try(k)=r2_try(k)-i3*rlatt(k,3)
-   50         r_try2=r_try2+r3_try(k)**2
+              r_try2=r_try2+r3_try(k)**2
+            enddo
           if(r_try2.lt.r2) then
             i_sav(1)=i1
             i_sav(2)=i2
             i_sav(3)=i3
             r2=r_try2
           endif
-   60 continue
+          enddo
+        enddo
+      enddo
 
 c Replace r by its shortest image and calculate rshift
       rnorm=0
-      do 80 k=1,3
+      do k=1,3
         rshift(k)=0
-        do 70 i=1,3
+        do i=1,3
           rshift(k)=rshift(k)+rlatt(k,i)*(nint(r_basis(i))+i_sav(i))
-   70     r(k)=r(k)-rlatt(k,i)*i_sav(i)
-   80   rnorm=rnorm+r(k)**2
+          r(k)=r(k)-rlatt(k,i)*i_sav(i)
+        enddo
+        rnorm=rnorm+r(k)**2
+      enddo
       rnorm=sqrt(rnorm)
 
       return

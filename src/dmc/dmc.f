@@ -148,7 +148,7 @@ c forces implemented only for certain dmc control options
 
 c     call flush(6)
 c loops for dmc calculation
-      do 360 i=1,dmc_nblk+2*dmc_nblkeq
+      do i=1,dmc_nblk+2*dmc_nblkeq
         if((i.eq.dmc_nblkeq+1.or.i.eq.2*dmc_nblkeq+1).and.dmc_irstar.ne.1) then
 !          call my_second(2,'equilb')
           ! Improved timers
@@ -160,7 +160,7 @@ c loops for dmc calculation
           call zerest
           call average(0)
         endif
-        do 355 j=1,dmc_nstep
+        do j=1,dmc_nstep
           ipass=ipass+1
           if (nloc.gt.0) call rotqua
           if(iabs(idmc).eq.1) then
@@ -176,10 +176,12 @@ c             call dmc_good
           endif
           call mc_configs_write(i,ipass)
 
-  355     call acues1
+          call acues1
+        enddo
         call average(2)
         call average_write
-  360   call acuest
+        call acuest
+      enddo
 
       call acues1_reduce
 

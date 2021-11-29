@@ -121,14 +121,15 @@ c xerr = current error of x
       ecum_dmc=ecum_dmc+esum_dmc
       efcum=efcum+efsum
 
-      do 15 ifr=1,nforce
+      do ifr=1,nforce
 
         pesum_dmc(ifr)=pecollect(ifr)
         tpbsum_dmc(ifr)=tpbcollect(ifr)
         tjfsum_dmc(ifr)=tjfcollect(ifr)
         tausum(ifr)=taucollect(ifr)
-        do 13 k=1,3
-  13      derivsum(k,ifr)=derivcollect(k,ifr)
+        do k=1,3
+          derivsum(k,ifr)=derivcollect(k,ifr)
+        enddo
 
         wgnow=wgsum(ifr)/dmc_nstep
         egnow=egsum(ifr)/wgsum(ifr)
@@ -148,8 +149,9 @@ c xerr = current error of x
         tpbcum_dmc(ifr)=tpbcum_dmc(ifr)+tpbsum_dmc(ifr)
         tjfcum_dmc(ifr)=tjfcum_dmc(ifr)+tjfsum_dmc(ifr)
         taucum(ifr)=taucum(ifr)+tausum(ifr)
-        do 14 k=1,3
-  14      derivcum(k,ifr)=derivcum(k,ifr)+derivsum(k,ifr)
+        do k=1,3
+          derivcum(k,ifr)=derivcum(k,ifr)+derivsum(k,ifr)
+        enddo
 
         if(iblk.eq.1) then
           egerr=0
@@ -220,7 +222,7 @@ c write out current values of averages etc.
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
      &    fgave,ifgerr,derivtotave,nint(wgsum(ifr))
         endif
-   15 continue
+      enddo
 
 c     call flush(6)
 
@@ -237,15 +239,17 @@ c zero out xsum variables for metrop
       r2sum=zero
       risum=zero
 
-      do 18 ifr=1,nforce
+      do ifr=1,nforce
         egsum(ifr)=zero
         wgsum(ifr)=zero
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
         tjfsum_dmc(ifr)=zero
         tausum(ifr)=zero
-        do 18 k=1,10
-   18     derivsum(k,ifr)=zero
+        do k=1,10
+          derivsum(k,ifr)=zero
+        enddo
+      enddo
 
       call prop_init(1)
       call pcm_init(1)

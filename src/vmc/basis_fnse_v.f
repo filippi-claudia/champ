@@ -48,7 +48,7 @@ c cf=sqrt(7/(4*pi)),cf2=cf*sqrt(5),cf3=cf*sqrt(15)
 
 c loop through centers
 
-      do 900 ic=1,ncent+nghostcent
+      do ic=1,ncent+nghostcent
       ll=0
 
       i=iwctype(ic)
@@ -71,13 +71,13 @@ c analytical orbital
       if(numr.gt.0) then
 
 c numerical orbitals
-      do 600 irb=1,nrbas(i)
+      do irb=1,nrbas(i)
       call splfit(r,irb,i,iwf,wfv(1,irb),iforce_analy)
-  600 continue
+      enddo
 
       ll=0
       iwlbas0=0
-      do 800 j=1,nbastyp(i)
+      do j=1,nbastyp(i)
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -92,7 +92,7 @@ c numerical orbitals
         call phie_combine(iwlbas0,ri,ri2,wfv(1,irb),y,phin(l,k))
       endif
       call n0_inc(l,k,ic)
- 800  continue
+      enddo
 
 c end of numerical orbitals
       else
@@ -100,7 +100,7 @@ c end of numerical orbitals
       endif
 
 c loop over all atoms
-  900 continue
+      enddo
 
       return
       end

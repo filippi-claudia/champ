@@ -44,32 +44,42 @@ c Written by Claudia Filippi
       endif
 
       ikel=nel*(iel-ish-1)
-      do 15 j=1,nel*nel
-   15   slmi(j,iab)=slmin(j)
-      do 30 j=ivirt(iab),norb
-        do 30 i=1,nel
-          do 20 istate=1,nstates
-   20       ymat(j,i,iab,istate)=ymatn(j,i,istate)
-   30   aa(i,j,iab)=aan(i,j)
+      do j=1,nel*nel
+        slmi(j,iab)=slmin(j)
+      enddo
+      do j=ivirt(iab),norb
+        do i=1,nel
+          do istate=1,nstates
+            ymat(j,i,iab,istate)=ymatn(j,i,istate)
+          enddo
+        aa(i,j,iab)=aan(i,j)
+        enddo
+      enddo
 
-        do 50 k=1,ndet
+        do k=1,ndet
           if(k.eq.kref) go to 50
           ndim=numrep_det(k,iab)
-          do 40 i=1,ndim*ndim
-   40         wfmat(i,k,iab)=wfmatn(i,k)
+          do i=1,ndim*ndim
+              wfmat(i,k,iab)=wfmatn(i,k)
+          enddo
    50   continue
+        enddo
 
-        do 60 j=1,nel
+        do j=1,nel
           fp(1,j+ikel,iab)=dorbn(1,iworbd(j+ish,kref))
           fp(2,j+ikel,iab)=dorbn(2,iworbd(j+ish,kref))
-   60     fp(3,j+ikel,iab)=dorbn(3,iworbd(j+ish,kref))
-        do 70 k=1,ndet
-   70     detiab(k,iab)=detn(k)
+          fp(3,j+ikel,iab)=dorbn(3,iworbd(j+ish,kref))
+        enddo
+        do k=1,ndet
+          detiab(k,iab)=detn(k)
+        enddo
 
-         do 80 iorb=1,norb
+         do iorb=1,norb
            orb(iel,iorb)=orbn(iorb)
-           do 80 kk=1,3
-   80        dorb(kk,iel,iorb)=dorbn(kk,iorb)
+           do kk=1,3
+             dorb(kk,iel,iorb)=dorbn(kk,iorb)
+           enddo
+         enddo
 
       return
       end

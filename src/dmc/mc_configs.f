@@ -47,11 +47,13 @@
 c set the random number seed, setrn already called in read_input
       if(dmc_irstar.ne.1) then
         if(nproc.gt.1) then
-          do 5 id=1,(3*nelec)*idtask
-    5       rnd=rannyu(0)
+          do id=1,(3*nelec)*idtask
+            rnd=rannyu(0)
+          enddo
           call savern(irn)
-          do 6 i=1,4
-    6       irn(i)=mod(irn(i)+int(rannyu(0)*idtask*9999),9999)
+          do i=1,4
+            irn(i)=mod(irn(i)+int(rannyu(0)*idtask*9999),9999)
+          enddo
           call setrn(irn)
         endif
       endif
@@ -64,10 +66,11 @@ c set the random number seed, setrn already called in read_input
        else
         open(unit=1,status='old',form='formatted',file='mc_configs')
         rewind 1
-        do 330 id=0,idtask
-          do 330 i=1,dmc_nconf
+        do id=0,idtask
+          do i=1,dmc_nconf
             read(1,fmt=*,end=340) ((xold_dmc(ic,j,i,1),ic=1,3),j=1,nelec)
-  330   continue
+          enddo
+        enddo
         goto 345
   340   call fatal_error('DMC: error reading mc_configs')
   345   close (1)
@@ -112,9 +115,10 @@ c Write out configuration for optimization/dmc/gfmc here
              else
               write(fmt,'(a1,i3,a21)')'(',3*nelec,'f14.8,i3,d12.4,f12.5)'
             endif
-            do 352 iwalk=1,nwalk
-  352         write(7,fmt) ((xold_dmc(ii,jj,iwalk,1),ii=1,3),jj=1,nelec),
+            do iwalk=1,nwalk
+              write(7,fmt) ((xold_dmc(ii,jj,iwalk,1),ii=1,3),jj=1,nelec),
      &        int(sign(1.d0,psido_dmc(iwalk,1))),log(dabs(psido_dmc(iwalk,1)))+psijo_dmc(iwalk,1),eold(iwalk,1)
+            enddo
           endif
 
       return

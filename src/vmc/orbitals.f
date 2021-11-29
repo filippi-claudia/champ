@@ -36,38 +36,40 @@ c Modified by A. Scemama
 
 c spline interpolation
         if(i3dsplorb.eq.2) then
-          do 23 i=1,nelec
+          do i=1,nelec
             ier = 0.d0
-            do 21 iorb=1,norb+nadorb
+            do iorb=1,norb+nadorb
               ddorb(i,iorb)=1.d0    ! compute the laplacian
               dorb(1,i,iorb)=1.d0   ! compute the gradients
               dorb(2,i,iorb)=1.d0   ! compute the gradients
               dorb(3,i,iorb)=1.d0   ! compute the gradients
-   21         call spline_mo (x(1,i),iorb,orb(i,iorb),dorb(1,i,iorb),ddorb(i,iorb),ier)
+              call spline_mo (x(1,i),iorb,orb(i,iorb),dorb(1,i,iorb),ddorb(i,iorb),ier)
+            enddo
 
             if(ier.eq.1) then
               call basis_fnse_vgl(i,rvec_en,r_en)
-              do 22 iorb=1,norb+nadorb
+              do iorb=1,norb+nadorb
                 orb(i,iorb)=0.d0
                 dorb(1,i,iorb)=0.d0
                 dorb(2,i,iorb)=0.d0
                 dorb(3,i,iorb)=0.d0
                 ddorb(i,iorb)=0.d0
 c               do 22 m=1,nbasis
-                do 22 m0=1,n0_nbasis(i)
+                do m0=1,n0_nbasis(i)
                   m=n0_ibasis(m0,i)
                   orb(i,iorb)=orb(i,iorb)+coef(m,iorb,iwf)*phin(m,i)
                   dorb(1,i,iorb)=dorb(1,i,iorb)+coef(m,iorb,iwf)*dphin(1,m,i)
                   dorb(2,i,iorb)=dorb(2,i,iorb)+coef(m,iorb,iwf)*dphin(2,m,i)
                   dorb(3,i,iorb)=dorb(3,i,iorb)+coef(m,iorb,iwf)*dphin(3,m,i)
                   ddorb(i,iorb)=ddorb(i,iorb)+coef(m,iorb,iwf)*d2phin(m,i)
-   22         continue
+                enddo
+              enddo
             endif
-   23     continue
+          enddo
 
 c Lagrange interpolation
         elseif(i3dlagorb.eq.2) then
-         do 25 i=1,nelec
+         do i=1,nelec
            ier=0
            call lagrange_mos(1,x(1,i),orb,i,ier)
            call lagrange_mos_grad(2,x(1,i),dorb,i,ier)
@@ -77,22 +79,24 @@ c Lagrange interpolation
 
            if(ier.eq.1) then
              call basis_fnse_vgl(i,rvec_en,r_en)
-             do 24 iorb=1,norb+nadorb
+             do iorb=1,norb+nadorb
                orb(i,iorb)=0.d0
                dorb(1,i,iorb)=0.d0
                dorb(2,i,iorb)=0.d0
                dorb(3,i,iorb)=0.d0
                ddorb(i,iorb)=0.d0
 c              do 24 m=1,nbasis
-               do 24 m0=1,n0_nbasis(i)
+               do m0=1,n0_nbasis(i)
                  m=n0_ibasis(m0,i)
                  orb(i,iorb)=orb(i,iorb)+coef(m,iorb,iwf)*phin(m,i)
                  dorb(1,i,iorb)=dorb(1,i,iorb)+coef(m,iorb,iwf)*dphin(1,m,i)
                  dorb(2,i,iorb)=dorb(2,i,iorb)+coef(m,iorb,iwf)*dphin(2,m,i)
                  dorb(3,i,iorb)=dorb(3,i,iorb)+coef(m,iorb,iwf)*dphin(3,m,i)
-   24            ddorb(i,iorb)=ddorb(i,iorb)+coef(m,iorb,iwf)*d2phin(m,i)
+                 ddorb(i,iorb)=ddorb(i,iorb)+coef(m,iorb,iwf)*d2phin(m,i)
+               enddo
+             enddo
            endif
-   25    continue
+         enddo
 
 c no 3d interpolation
         else
@@ -136,21 +140,24 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iw
           enddo
 #else
 !       keep the old localization code if no vectorization instructions available
-         do 26 iorb=1,norb+nadorb
-           do 26 i=1,nelec
+         do iorb=1,norb+nadorb
+           do i=1,nelec
             orb(i,iorb)=0
             dorb(1,i,iorb)=0
             dorb(2,i,iorb)=0
             dorb(3,i,iorb)=0
             ddorb(i,iorb)=0
 c           do 26 m=1,nbasis
-            do 26 m0=1,n0_nbasis(i)
+            do m0=1,n0_nbasis(i)
              m=n0_ibasis(m0,i)
              orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
              dorb (1,i,iorb)=dorb (1,i,iorb)+coef(m,iorb,iwf)*dphin (1,m,i)
              dorb (2,i,iorb)=dorb (2,i,iorb)+coef(m,iorb,iwf)*dphin (2,m,i)
              dorb (3,i,iorb)=dorb (3,i,iorb)+coef(m,iorb,iwf)*dphin (3,m,i)
-   26        ddorb(  i,iorb)=ddorb(  i,iorb)+coef(m,iorb,iwf)*d2phin( m,i)
+             ddorb(  i,iorb)=ddorb(  i,iorb)+coef(m,iorb,iwf)*d2phin( m,i)
+            enddo
+           enddo
+         enddo
 #endif
        endif
 
@@ -161,13 +168,17 @@ c           do 26 m=1,nbasis
       endif
 
       if(ipr.ge.0) then
-        do 260 iorb=1,norb+nadorb
-  260     write(ounit,'(''iorb,orb='',i4,1000f15.11)') iorb,(orb(i,iorb),i=1,nelec)
-         do 270 iorb=1,norb+nadorb
-  270     write(ounit,'(''iorb,d2orb='',i4,1000f15.11)') iorb,(ddorb(i,iorb),i=1,nelec)
-        do 280 k=1,3
-          do 280 iorb=1,norb+nadorb
-  280       write(ounit,'(''iorb,dorb='',2i4,1000f12.8)') k,iorb,(dorb(k,i,iorb),i=1,nelec)
+        do iorb=1,norb+nadorb
+          write(ounit,'(''iorb,orb='',i4,1000f15.11)') iorb,(orb(i,iorb),i=1,nelec)
+        enddo
+         do iorb=1,norb+nadorb
+          write(ounit,'(''iorb,d2orb='',i4,1000f15.11)') iorb,(ddorb(i,iorb),i=1,nelec)
+         enddo
+        do k=1,3
+          do iorb=1,norb+nadorb
+            write(ounit,'(''iorb,dorb='',2i4,1000f12.8)') k,iorb,(dorb(k,i,iorb),i=1,nelec)
+          enddo
+        enddo
       endif
 
       return
@@ -271,12 +282,13 @@ c-------------------------------------------------------------------------------
       enddo
       n=3*nelec
       m=3*nelec
-      do 50 ic=1,ncent
+      do ic=1,ncent
         k=ibas1(ic)-ibas0(ic)+1
         j=ibas0(ic)
       call dgemm('n','n',  n,norb,k,-1.d0,tphin(1,j)     ,  m,coef(j,1,iwf),nbasis,0.d0,da_orb(1,1,1,ic)   ,  m)
       call dgemm('n','n',  n,norb,k,-1.d0,t3phin(1,j)    ,  m,coef(j,1,iwf),nbasis,0.d0,da_d2orb(1,1,1,ic) ,  m)
-  50  call dgemm('n','n',3*n,norb,k,-1.d0,t2phin_all(1,j),3*m,coef(j,1,iwf),nbasis,0.d0,da_dorb(1,1,1,1,ic),3*m)
+      call dgemm('n','n',3*n,norb,k,-1.d0,t2phin_all(1,j),3*m,coef(j,1,iwf),nbasis,0.d0,da_dorb(1,1,1,1,ic),3*m)
+      enddo
 
       return
       end
@@ -309,12 +321,13 @@ c get the value and gradients from the 3d-interpolated orbitals
         ier=0
 c spline interplolation
         if(i3dsplorb.ge.1) then
-          do 15 iorb=1,norb
+          do iorb=1,norb
             ddorbn(iorb)=0    ! Don't compute the laplacian
             dorbn(1,iorb)=1   ! compute the gradients
             dorbn(2,iorb)=1   ! compute the gradients
             dorbn(3,iorb)=1   ! compute the gradients
-   15       call spline_mo (x(1,iel),iorb,orbn(iorb),dorbn(1,iorb),ddorbn(iorb),ier)
+            call spline_mo (x(1,iel),iorb,orbn(iorb),dorbn(1,iorb),ddorbn(iorb),ier)
+          enddo
 
 c Lagrange interpolation
          elseif(i3dlagorb.ge.1) then
@@ -354,21 +367,22 @@ c get basis functions for electron iel
           enddo
 #else
 !         Keep the localization for the non-vectorized code
-          do 25 iorb=1,norb
+          do iorb=1,norb
             orbn(iorb)=0
             dorbn(1,iorb)=0
             dorbn(2,iorb)=0
             dorbn(3,iorb)=0
             ddorbn(iorb)=0
 c           do 25 m=1,nbasis
-            do 25 m0=1,n0_nbasis(iel)
+            do m0=1,n0_nbasis(iel)
              m=n0_ibasis(m0,iel)
              orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
              dorbn(1,iorb)=dorbn(1,iorb)+coef(m,iorb,iwf)*dphin(1,m,iel)
              dorbn(2,iorb)=dorbn(2,iorb)+coef(m,iorb,iwf)*dphin(2,m,iel)
              dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(3,m,iel)
              if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
-   25     continue
+            enddo
+          enddo
 #endif
         endif
        else

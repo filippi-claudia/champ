@@ -44,13 +44,16 @@
       if(ioptorb+ioptjas.eq.0) i0=0
       nparm_p1=nparm+i0
 
-      do 10 ivec=1,nvec
-        do 10 iparm=1,nparm_p1
- 10       evc(iparm,ivec)=0.d0
+      do ivec=1,nvec
+        do iparm=1,nparm_p1
+          evc(iparm,ivec)=0.d0
+        enddo
+      enddo
 
-      do 20 ivec=1,nvec
+      do ivec=1,nvec
         itype(ivec)=1
- 20     evc(ivec,ivec)=1.d0
+        evc(ivec,ivec)=1.d0
+      enddo
 
       ! regterg
       if(lin_jdav.eq.0) then

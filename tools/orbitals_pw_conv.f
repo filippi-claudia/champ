@@ -30,15 +30,17 @@ c for each k-pt.
       open(1,file='gvectors_qmc')
       read(1,*) ngvec
       if(ngvec.gt.NGVECX) call fatal_error ('ngvec>NGVECX')
-      do 10 i=1,ngvec
-   10   read(1,*) (igvec(k,i),k=1,3)
+      do i=1,ngvec
+        read(1,*) (igvec(k,i),k=1,3)
+      enddo
 c  10   write(6,*) (igvec(k,i),k=1,3)
 
 c     open(2,file='gvectors')
       open(30,file='orbitals_pw_tm')
       read(30,*) ngvec_dft
-      do 20 i=1,ngvec_dft
-   20   read(30,*,end=22) (igvec_dft(k,i),k=1,3)
+      do i=1,ngvec_dft
+        read(30,*,end=22) (igvec_dft(k,i),k=1,3)
+      enddo
 c  20   read(30,*,end=22) junk,junk,(igvec_dft(k,i),k=1,3)
 c  20   write(6,*) (igvec_dft(k,i),k=1,3)
 
@@ -47,32 +49,34 @@ c  20   write(6,*) (igvec_dft(k,i),k=1,3)
       write(3,'(2i4,'' nkvec,ngvec'')') nkvec,ngvec
       if(nkvec.gt.IVOL_RATIO) call fatal_error ('nkvec>IVOL_RATIO')
 
-   22 do 50 i=1,nkvec
+   22 do i=1,nkvec
         read(30,*) ikpt,nband(i),ng,(rkvec(k,i),k=1,3)
         write(3,'(2i4,3f9.5'' ikpt, nband, rkvec(in recip. lat. units)'')') i,nband(i),(rkvec(k,i),k=1,3)
         if(ng.gt.NGVEC_BIGX) call fatal_error ('ng>NGVEC_BIGX')
         read(30,*) (iwgvec(j),j=1,ng)
-        do 50 iband=1,nband(i)
+        do iband=1,nband(i)
           read(30,*) iband_tmp,eig
           read(30,*) (c_real(ig),c_imag(ig),ig=1,ng)
-          do 25 igv=1,ngvec
+          do igv=1,ngvec
             c_rp(igv,i)=0
             c_rm(igv,i)=0
             c_ip(igv,i)=0
-   25       c_im(igv,i)=0
+            c_im(igv,i)=0
+          enddo
           ifound=0
-          do 40 igv=1,ngvec
+          do igv=1,ngvec
             if(igvec(1,igv).eq.0 .and. igvec(2,igv).eq.0 .and.  igvec(3,igv).eq.0) then
               isign_min=1
              else
               isign_min=-1
             endif
-            do 40 ig=1,ng
-              do 40 isign=1,isign_min,-2
+            do ig=1,ng
+              do isign=1,isign_min,-2
                 norm=0
 c               write(6,*) (igvec_dft(k,iwgvec(ig)),k=1,3),(igvec(k,igv),k=1,3)
-                do 30 k=1,3
-   30             norm=norm+(igvec_dft(k,iwgvec(ig))-isign*igvec(k,igv))**2
+                do k=1,3
+                  norm=norm+(igvec_dft(k,iwgvec(ig))-isign*igvec(k,igv))**2
+                enddo
                 if(norm.eq.0) then
                   ifound=ifound+1
                   c_rp(igv,i)=c_rp(igv,i)+c_real(ig)
@@ -80,14 +84,18 @@ c               write(6,*) (igvec_dft(k,iwgvec(ig)),k=1,3),(igvec(k,igv),k=1,3)
                   c_ip(igv,i)=c_ip(igv,i)+c_imag(ig)
                   c_im(igv,i)=c_im(igv,i)+c_imag(ig)*isign
                 endif
-   40    continue
+              enddo
+            enddo
+          enddo
          if(ifound.ne.ng) then
            write(3,'(''ng,ifound='',2i5)') ng,ifound
            if(ifound.lt.ng) call fatal_error ('probably need more g-vectors in gvectors_qmc file')
            if(ifound.gt.ng) call fatal_error ('probably need more g-vectors in gvectors file')
          endif
          write(3,'(2i5,f10.6,'' ikpt, iband, eig (Ry)'')') i,iband,eig
-   50    write(3,'(1p4d22.14)') (c_rp(igv,i),c_rm(igv,i),c_ip(igv,i),c_im(igv,i),igv=1,ngvec)
+         write(3,'(1p4d22.14)') (c_rp(igv,i),c_rm(igv,i),c_ip(igv,i),c_im(igv,i),igv=1,ngvec)
+        enddo
+      enddo
 
       call fatal_error('')
       end

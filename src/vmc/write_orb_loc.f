@@ -28,9 +28,9 @@ c 2) a gaussian basis
 
 c Check that nbasis in lcao matches specified basis on all centers
       ncheck=0
-      do 20 ic=1,ncent
+      do ic=1,ncent
         i=iwctype(ic)
-   20   ncheck=ncheck+ iabs(n1s(i))+iabs(n2s(i))
+        ncheck=ncheck+ iabs(n1s(i))+iabs(n2s(i))
      &  +iabs(n2p(1,i))+iabs(n2p(2,i))+iabs(n2p(3,i))
      &  +iabs(n3s(i))+iabs(n3p(1,i))+iabs(n3p(2,i))+iabs(n3p(3,i))
      &  +iabs(n3dzr(i))+iabs(n3dx2(i))
@@ -43,6 +43,7 @@ c Check that nbasis in lcao matches specified basis on all centers
      &  +iabs(nsa(i))+iabs(npa(1,i))+iabs(npa(2,i))+iabs(npa(3,i))
      &  +iabs(ndzra(i))+iabs(ndx2a(i))
      &  +iabs(ndxya(i))+iabs(ndxza(i))+iabs(ndyza(i))
+      enddo
 
 
       if(ncheck.ne.nbasis) then
@@ -53,8 +54,9 @@ c Check that nbasis in lcao matches specified basis on all centers
 
 c Exponent for asymptotic basis
       betaq=zero
-      do 30 ic=1,ncent
-   30   betaq=betaq+znuc(iwctype(ic))
+      do ic=1,ncent
+        betaq=betaq+znuc(iwctype(ic))
+      enddo
       betaq=betaq-nelec+one
 
       write(ounit,'(/,''center type'',(12i4))') (i,i=1,nctype)

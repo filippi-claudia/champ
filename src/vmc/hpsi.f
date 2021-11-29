@@ -120,20 +120,24 @@ c nonloc_pot must be called after determinant because slater matrices are needed
 
       call multideterminant_hpsi(vj,vpsp_det,eloc_det)
       e_other=pe_local-hb*d2j
-      do 10 i=1,nelec
-   10   e_other=e_other-hb*(vj(1,i)**2+vj(2,i)**2+vj(3,i)**2)
+      do i=1,nelec
+        e_other=e_other-hb*(vj(1,i)**2+vj(2,i)**2+vj(3,i)**2)
+      enddo
 
-      do 30 istate=1,nstates
+      do istate=1,nstates
 c combine determinantal quantities to obtain trial wave function
         call determinant_psit(psid(istate),istate)
 c compute energy using Ymat
         denergy(istate)=0
-        do 20 iab=1,2
+        do iab=1,2
           nel=nup
           if(iab.eq.2) nel=ndn
-          do 20 jrep=ivirt(iab),norb
-            do 20 irep=iactv(iab),nel
-   20         denergy(istate)=denergy(istate)+ymat(jrep,irep,iab,istate)*tildem(irep,jrep,iab)
+          do jrep=ivirt(iab),norb
+            do irep=iactv(iab),nel
+              denergy(istate)=denergy(istate)+ymat(jrep,irep,iab,istate)*tildem(irep,jrep,iab)
+            enddo
+          enddo
+        enddo
         denergy(istate)=denergy(istate)*detiab(kref,1)*detiab(kref,2)/psid(istate)
 
         energy(istate)=denergy(istate)+eloc_det(kref,1)+eloc_det(kref,2)+e_other
@@ -152,7 +156,7 @@ c  25         write(ounit,'(''vj'',2e18.11)') vj(k,i)
           if(ipr.ge.3) write(ounit,'(''energy'',9f16.10)') energy(istate)
         endif
 
-   30 continue
+      enddo
       if(ifr.eq.1) then
         if(iforce_analy.eq.1) call compute_force(psid(1),denergy(1))
 

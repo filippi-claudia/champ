@@ -59,14 +59,17 @@ c No dump/restart if optimizing wave function
       vmc_idump=0
 
 c Set up basis functions for test run
-      do 1 iwft=2,3
-   1    iwftype(iwft)=iwft
+      do iwft=2,3
+        iwftype(iwft)=iwft
+      enddo
       if(numr.gt.0) then
-        do 2 iwft=2,3
-   2      call read_bas_num(iwft)
+        do iwft=2,3
+          call read_bas_num(iwft)
+        enddo
        else
-        do 3 iwft=2,3
-   3      call copy_zex(iwft)
+        do iwft=2,3
+          call copy_zex(iwft)
+        enddo
       endif
       call set_displace_zero(3)
 
@@ -130,7 +133,7 @@ c CI step for state average of multiple states (optimal CI for input Jastrow and
       endif
 
 c Iterate optimization
-      do 900 iter=1,nopt_iter
+      do iter=1,nopt_iter
 
 
       write(ounit,'(/,''Optimization iteration'',i2)') iter
@@ -229,7 +232,7 @@ c Compute new parameters
        nwftype=3
        call setup_wf
 
-       do 300 iadiag=2,3
+       do iadiag=2,3
 
 c add_diag=add_diag*10
         add_diag(iadiag)=10**(iadiag-1)*add_diag(1)
@@ -250,7 +253,7 @@ c       write(ounit,'(/,''change in parameters '',i1)') iadiag
 c       write(ounit,'(''-x='',9f15.9)') (-grad(i),i=1,nparm)
         call compute_parameters(grad,iflag,iadiag)
         if(iflag.ne.0) call fatal_error('OPTWF: adiag_1 or 2 still has problems')
- 300   enddo
+       enddo
 
        write(ounit,'(/,''adiag1,adiag2,adiag3'',1p3g15.8,/)') (add_diag(i),i=1,3)
        write(ounit,'(/,''Correlated sampling test run for adiag'',/)')
@@ -475,7 +478,7 @@ c endif CI step for multiple states
       endif
 
 c end of optimization loop
- 900  continue
+      enddo
 
  950  nforce=1
 
@@ -583,18 +586,23 @@ c-----------------------------------------------------------------------
       npts=3
       nfunc=3
 
-      do 5 k=1,npts
-    5   add_diag_log(k)=dlog10(add_diag(k))
+      do k=1,npts
+        add_diag_log(k)=dlog10(add_diag(k))
+      enddo
 
-      do 30 i=1,nfunc
+      do i=1,nfunc
         b(i)=0
-        do 10 k=1,npts
-   10     b(i)=b(i)+energy(k)*add_diag_log(k)**(i-1)
-        do 30 j=1,i
+        do k=1,npts
+          b(i)=b(i)+energy(k)*add_diag_log(k)**(i-1)
+        enddo
+        do j=1,i
           a(i,j)=0
-          do 20 k=1,npts
-   20       a(i,j)=a(i,j)+add_diag_log(k)**(i+j-2)
-   30     a(j,i)=a(i,j)
+          do k=1,npts
+            a(i,j)=a(i,j)+add_diag_log(k)**(i+j-2)
+          enddo
+          a(j,i)=a(i,j)
+        enddo
+      enddo
 
 c Do cholesky decomposition
       call chlsky(a,nfunc,MFUNC,ierr)
@@ -602,9 +610,11 @@ c Do cholesky decomposition
 
 c Symmetrize decomposed matrix (needs to be done before calling uxb
 c or need to modify uxb)
-      do 40 i=1,nfunc
-        do 40 j=i+1,nfunc
-   40     a(i,j)=a(j,i)
+      do i=1,nfunc
+        do j=i+1,nfunc
+          a(i,j)=a(j,i)
+        enddo
+      enddo
 
 c Solve linear equations
       call lxb(a,nfunc,MFUNC,b)
@@ -614,7 +624,7 @@ c Solve linear equations
       energy_min= 1.d99
       energy_max=-1.d99
       rms=0
-      do 50 k=1,npts
+      do k=1,npts
         ee=b(1)+b(2)*add_diag_log(k)+b(3)*add_diag_log(k)**2
         write(ounit,'(''fit log(adiag),e_fit,e '',3f12.5)') add_diag_log(k),ee,energy(k)
         if(energy(k).lt.energy_min) then
@@ -622,7 +632,8 @@ c Solve linear equations
           energy_min=energy(k)
         endif
         energy_max=max(energy_max,energy(k))
-   50   rms=rms+(ee-energy(k))**2
+        rms=rms+(ee-energy(k))**2
+      enddo
       rms=dsqrt(rms/npts)
       write(ounit,'(''rms error in fit of energy to get optimal add_diag is'',d12.4)') rms
 
@@ -687,10 +698,12 @@ c Note: we do not vary the first (i0) CI coefficient unless full CI
        if(ioptjas.eq.0) go to 115
 
 c Jastrow Hamiltonian
-       do 110 j=1,nparmj+is
-         do 110 i=1,nparmj+is
+       do j=1,nparmj+is
+         do i=1,nparmj+is
            h(i,j)=h_jas(i,j)
-  110      s(i,j)=s_jas(i,j)
+           s(i,j)=s_jas(i,j)
+         enddo
+       enddo
 
 c      do 111 i=1,nparmj+1
 c 111    write(ounit,'(''h1= '',1000d12.5)') (h(i,j),j=1,nparmj+1)
@@ -711,30 +724,35 @@ c 112    write(ounit,'(''h1= '',1000d12.5)') (s(i,j),j=1,nparmj+1)
         i0=1
         h(1,1)=h_ci(1,1)
         s(1,1)=s_ci(1,1)
-        do 125 i=1,nciterm-i0
+        do i=1,nciterm-i0
           h(ishift+i,1)=h_ci(i+i0+is,1)
           h(1,ishift+i)=h_ci(1,i+i0+is)
           s(ishift+i,1)=s_ci(i+i0+is,1)
-  125     s(1,ishift+i)=s_ci(1,i+i0+is)
+          s(1,ishift+i)=s_ci(1,i+i0+is)
+        enddo
        endif
 
 c CI Hamiltonian
-       do 120 j=1,nciterm-i0
-         do 120 i=1,nciterm-i0
+       do j=1,nciterm-i0
+         do i=1,nciterm-i0
            h(ishift+i,ishift+j)=h_ci(i+i0+is,j+i0+is)
-  120      s(ishift+i,ishift+j)=s_ci(i+i0+is,j+i0+is)
+           s(ishift+i,ishift+j)=s_ci(i+i0+is,j+i0+is)
+         enddo
+       enddo
 
 c      write(ounit,'(''h2 shift ='',i4)') ishift
 c      do 121 i=1,nciterm-i0
 c 121    write(ounit,'(''h2= '',1000f12.5)') (h_ci(i+i0+is,j+i0+is),j=1,nciterm-i0)
 
 c Jastrow-CI Hamiltonian
-       do 130 j=1,nciterm-i0
-         do 130 i=1,nparmj
+       do j=1,nciterm-i0
+         do i=1,nparmj
            h(i+1,j+ishift)=h_mix_jas_ci(i,j+i0)
            h(j+ishift,i+1)=h_mix_jas_ci(i+nparmj,j+i0)
            s(i+1,j+ishift)=s_mix_jas_ci(i,j+i0)
-  130      s(j+ishift,i+1)=s_mix_jas_ci(i,j+i0)
+           s(j+ishift,i+1)=s_mix_jas_ci(i,j+i0)
+         enddo
+       enddo
 
 c      do 131 i=1,nparmj
 c        write(ounit,'(''h3= '',1000f12.5)') (h_mix_jas_ci(i,j+i0),j=1,nciterm-i0)
@@ -763,20 +781,24 @@ c          h(ishift+i,ishift+j)=h_orb(i+1+jk)
 c 150      s(ishift+i,ishift+j)=s_orb(i+1+jk)
 
 c Jastrow-ORB Hamiltonian
-       do 160 j=1,nreduced
-         do 160 i=1,nparmj
+       do j=1,nreduced
+         do i=1,nparmj
            h(i+1,j+ishift)=h_mix_jas_orb(i,j)
            h(j+ishift,i+1)=h_mix_jas_orb(i+nparmj,j)
            s(i+1,j+ishift)=s_mix_jas_orb(i,j)
-  160      s(j+ishift,i+1)=s_mix_jas_orb(i,j)
+           s(j+ishift,i+1)=s_mix_jas_orb(i,j)
+         enddo
+       enddo
 
 c ORB-CI Hamiltonian
-       do 170 j=1,nreduced
-         do 170 i=1,nciterm-i0
+       do j=1,nreduced
+         do i=1,nciterm-i0
            h(i+nparmj+1,j+ishift)=h_mix_ci_orb(i+i0,j)
            h(j+ishift,i+nparmj+1)=h_mix_ci_orb(i+nciterm+i0,j)
            s(i+nparmj+1,j+ishift)=s_mix_ci_orb(i+i0,j)
-  170      s(j+ishift,i+nparmj+1)=s_mix_ci_orb(i+i0,j)
+           s(j+ishift,i+nparmj+1)=s_mix_ci_orb(i+i0,j)
+         enddo
+       enddo
 
   175  nparm=nparmj+nciterm+nreduced-i0
 

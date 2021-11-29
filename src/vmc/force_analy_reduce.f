@@ -22,14 +22,18 @@
 
       if(wid) then
         ii=0
-        do 10 ic=1,ncent
-          do 10 k=1,3
+        do ic=1,ncent
+          do k=1,3
             ii=ii+1
-  10        da_energy_cum(k,ic)=collect(ii)
+            da_energy_cum(k,ic)=collect(ii)
+          enddo
+        enddo
        else
-        do 15 ic=1,ncent
-          do 15 k=1,3
-  15        da_energy_cum(k,ic)=0.d0
+        do ic=1,ncent
+          do k=1,3
+            da_energy_cum(k,ic)=0.d0
+          enddo
+        enddo
       endif
 
       call mpi_reduce(da_psi_cum,collect,3*ncent
@@ -37,14 +41,18 @@
 
       if(wid) then
         ii=0
-        do 20 ic=1,ncent
-          do 20 k=1,3
+        do ic=1,ncent
+          do k=1,3
             ii=ii+1
-  20        da_psi_cum(k,ic)=collect(ii)
+            da_psi_cum(k,ic)=collect(ii)
+          enddo
+        enddo
        else
-        do 25 ic=1,ncent
-          do 25 k=1,3
-  25        da_psi_cum(k,ic)=0.d0
+        do ic=1,ncent
+          do k=1,3
+            da_psi_cum(k,ic)=0.d0
+          enddo
+        enddo
       endif
 
       call mpi_reduce(da_energy_cm2,collect,3*ncent
@@ -52,14 +60,18 @@
 
       if(wid) then
         ii=0
-        do 30 ic=1,ncent
-          do 30 k=1,3
+        do ic=1,ncent
+          do k=1,3
             ii=ii+1
-  30        da_energy_cm2(k,ic)=collect(ii)
+            da_energy_cm2(k,ic)=collect(ii)
+          enddo
+        enddo
        else
-        do 35 ic=1,ncent
-          do 35 k=1,3
-  35        da_energy_cm2(k,ic)=0.d0
+        do ic=1,ncent
+          do k=1,3
+            da_energy_cm2(k,ic)=0.d0
+          enddo
+        enddo
       endif
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)

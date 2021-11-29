@@ -21,19 +21,25 @@ c Written by Claudia Filippi
 
 
       if(iflag.eq.0) then
-        do 10 k=1,3
-          do 10 i=1,nelec
-  10        vdonly(k,i)=v(k,i)-vjn(k,i)
+        do k=1,3
+          do i=1,nelec
+            vdonly(k,i)=v(k,i)-vjn(k,i)
+          enddo
+        enddo
        else
-        do 20 k=1,3
-          do 20 i=1,nelec
-  20        vdonly(k,i)=v(k,i)-vj(k,i)
+        do k=1,3
+          do i=1,nelec
+            vdonly(k,i)=v(k,i)-vj(k,i)
+          enddo
+        enddo
       endif
 
       distance_node=0.d0
-      do 100 k=1,3
-        do 100 i=1,nelec
-  100     distance_node=distance_node+vdonly(k,i)*vdonly(k,i)
+      do k=1,3
+        do i=1,nelec
+          distance_node=distance_node+vdonly(k,i)*vdonly(k,i)
+        enddo
+      enddo
       distance_node=1.d0/dsqrt(distance_node)
 
       return

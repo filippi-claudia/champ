@@ -108,7 +108,7 @@
       rewind 10
       read(10) nprock
       if(nprock.ne.nproc) call fatal_error('STARTR: different num procs')
-      do 4 id=0,idtask
+      do id=0,idtask
         read(10) nwalk
         read(10) (((xold_dmc(ic,i,iw,1),ic=1,3),i=1,nelec),iw=1,nwalk)
         read(10) nfprod,(ff(i),i=0,nfprod),(wt(i),i=1,nwalk),fprod
@@ -118,9 +118,10 @@
 c       read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),tjfcum_dmc(i),
 c    &  wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),tjfcm_dmc(i),taucum(i),
 c    &  i=1,nforce)
-    4   if(nloc.gt.0)
+        if(nloc.gt.0)
      &  read(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
-      do 5 id=idtask+1,nproc-1
+      enddo
+      do id=idtask+1,nproc-1
         read(10) nwalk_id
         read(10) (xold_dmc_id,i=1,3*nelec*nwalk_id)
         read(10) n1_id,(ff_id,i=0,n1_id),(wt_id,i=1,nwalk_id),fprod_id
@@ -130,8 +131,9 @@ c    &  i=1,nforce)
 c       read(10) (wgcum_id,egcum_id,pecum_dmc_id,tpbcum_dmc_id,tjfcum_dmc_id,
 c    &  wgcm2_id,egcm2_id,pecm2_dmc_id,tpbcm2_dmc_id,tjfcm_dmc_id,taucum_id,
 c    &  i=1,nforce)
-    5   if(nloc.gt.0)
+        if(nloc.gt.0)
      &  read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nquad)
+      enddo
 c     if(nforce.gt.1) read(10) nwprod
 c    &,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
@@ -173,10 +175,11 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       call mmpol_rstrt(10)
       read(10) ((coefx(ib,i),ib=1,nbasis),i=1,norb)
       read(10) nbasx
-      do 10 j=1,norb
-      do 10 i=1,nbasis
+      do j=1,norb
+      do i=1,nbasis
       if (dabs(coefx(i,j)-coef(i,j,1)).gt.small) call fatal_error('STARTR: coef')
-   10 continue
+      enddo
+      enddo
       if (nbasx.ne.nbasis) call fatal_error('STARTR: nbasis')
       read(10) (zexx(ib),ib=1,nbasis)
       read(10) nctypex,ncentx,newghostypex,nghostcentx,(iwctype(i),i=1,ncentx+nghostcentx)
@@ -205,14 +208,15 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
 
       if (ncentx.ne.ncent) call fatal_error('STARTR: ncent')
       if (nctypex.ne.nctype) call fatal_error('STARTR: nctype')
-      do 20 i=1,nbasis
+      do i=1,nbasis
       if (dabs(zexx(i)-zex(i,1)).gt.small) call fatal_error('STARTR: zex')
-   20 continue
-      do 30 i=1,ncent+nghostcent
-      do 30 k=1,3
+      enddo
+      do i=1,ncent+nghostcent
+      do k=1,3
       if (dabs(cent(k,i)-centx(k,i)).gt.small) call fatal_error('STARTR: cent')
-   30 continue
-      do 40 i=1,nctype
+      enddo
+      enddo
+      do i=1,nctype
       if (dabs(znucx(i)-znuc(i)).gt.small) call fatal_error('STARTR: znuc')
       if (n1s(i).ne.n1sx(i)) call fatal_error('STARTR: n1s')
       if (n2s(i).ne.n2sx(i)) call fatal_error('STARTR: n2s')
@@ -229,17 +233,18 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       if (ndxya(i).ne.ndxyax(i)) call fatal_error('STARTR: ndxya')
       if (ndxza(i).ne.ndxzax(i)) call fatal_error('STARTR: ndxza')
       if (ndyza(i).ne.ndyzax(i)) call fatal_error('STARTR: ndyza')
-      do 40 ic=1,3
+      do ic=1,3
       if (n2p(ic,i).ne.n2px(ic,i)) call fatal_error('STARTR: n2p')
       if (n3p(ic,i).ne.n3px(ic,i)) call fatal_error('STARTR: n3p')
       if (n4p(ic,i).ne.n4px(ic,i)) call fatal_error('STARTR: n4p')
       if (npa(ic,i).ne.npax(ic,i)) call fatal_error('STARTR: npa')
-   40 continue
+      enddo
+      enddo
       read(10) (cdetx(i),i=1,ndet)
       read(10) ndetx,nupx,ndnx
-      do 50 i=1,ndet
+      do i=1,ndet
       if (dabs(cdetx(i)-cdet(i,1,1)).gt.small) call fatal_error('STARTR: cdet')
-   50 continue
+      enddo
       if (ndetx.ne.ndet) call fatal_error('STARTR: ndet')
       if (nupx.ne.nup) call fatal_error('STARTR: nup')
       if (ndnx.ne.ndn) call fatal_error('STARTR: ndn')
@@ -252,14 +257,17 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
      &,''(tpberr)'' ,t66,''tjfave'',t72,''(tjferr)'',t83,''npass'',t93
      &,''wgsum'',t103 ,''ioldest'')')
 
-      do 70 iw=1,nwalk
+      do iw=1,nwalk
         if(istrech.eq.0) then
-          do 60 ifr=2,nforce
-            do 60 ie=1,nelec
-              do 60 k=1,3
-   60           xold_dmc(k,ie,iw,ifr)=xold_dmc(k,ie,iw,1)
+          do ifr=2,nforce
+            do ie=1,nelec
+              do k=1,3
+                xold_dmc(k,ie,iw,ifr)=xold_dmc(k,ie,iw,1)
+              enddo
+            enddo
+          enddo
         endif
-        do 70 ifr=1,nforce
+        do ifr=1,nforce
           if(nforce.gt.1) then
             if(ifr.eq.1.or.istrech.eq.0) then
               call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,ifr),ajacob,ifr,0)
@@ -273,8 +281,9 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
           if(icasula.lt.0) i_vpsp=icasula
           call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),eold(iw,ifr),0,ifr)
           i_vpsp=0
-          do 65 i=1,nelec
-   65       call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
+          do i=1,nelec
+            call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
+          enddo
           if(ifr.eq.1) then
             call walksav_det(iw)
             call walksav_jas(iw)
@@ -284,7 +293,8 @@ c           call t_vpsp_sav(iw)
             call pcm_save(iw)
             call mmpol_save(iw)
           endif
-   70 continue
+        enddo
+      enddo
 
 c zero out xsum variables for metrop
 
@@ -299,15 +309,17 @@ c zero out xsum variables for metrop
       r2sum=zero
       risum=zero
 
-      do 80 ifr=1,nforce
+      do ifr=1,nforce
         egsum(ifr)=zero
         wgsum(ifr)=zero
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
         tjfsum_dmc(ifr)=zero
         tausum(ifr)=zero
-        do 80 k=1,3
-   80     derivsum(k,ifr)=zero
+        do k=1,3
+          derivsum(k,ifr)=zero
+        enddo
+      enddo
 
       call prop_init(1)
       call pcm_init(1)
@@ -324,8 +336,9 @@ c zero out xsum variables for metrop
           call fatal_error('STARTR: idtask > 999')
         endif
         open(unit=11,file=filename,status='old')
-        do 90 i=1,2000000000
-   90     read(11,fmt=*,end=100)
+        do i=1,2000000000
+          read(11,fmt=*,end=100)
+        enddo
       endif
   100 backspace 11
       backspace 11

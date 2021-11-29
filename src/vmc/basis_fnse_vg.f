@@ -59,7 +59,7 @@ c cf=sqrt(7/(4*pi)),cf2=cf*sqrt(5),cf3=cf*sqrt(15)
 
 c loop through centers
 
-      do 900 ic=1,ncent+nghostcent
+      do ic=1,ncent+nghostcent
       ll=0
 
       i=iwctype(ic)
@@ -85,15 +85,15 @@ c numerical orbitals
 
       ider=1
       rk=r
-      do 600 irb=1,nrbas(i)
+      do irb=1,nrbas(i)
       call splfit(rk,irb,i,iwf,wfv(1,irb),ider)
-  600 continue
+      enddo
 
 c s states
 
       if (iabs(n1s(i)).lt.1) goto 620
       ju=iabs(n1s(i))
-      do 610 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -102,14 +102,14 @@ c s states
       dphin(2,l,k)=cs*xc(2)*ri*wfv(2,irb)
       dphin(3,l,k)=cs*xc(3)*ri*wfv(2,irb)
       call n0_inc(l,k,ic)
-  610 continue
+      enddo
   620 continue
 
 c p states
 
       if (iabs(n2p(1,i)).lt.1) goto 640
       ju=iabs(n2p(1,i))
-      do 630 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -122,12 +122,12 @@ c p states
       dphin(2,l,k)=cp*xvec*yvec*wf1
       dphin(3,l,k)=cp*xvec*zvec*wf1
       call n0_inc(l,k,ic)
-  630 continue
+      enddo
   640 continue
 
       if (iabs(n2p(2,i)).lt.1) goto 660
       ju=iabs(n2p(2,i))
-      do 650 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -140,12 +140,12 @@ c p states
       dphin(2,l,k)=cp*yvec*yvec*wf1+cp*ri*wfv(1,irb)
       dphin(3,l,k)=cp*yvec*zvec*wf1
       call n0_inc(l,k,ic)
-  650 continue
+      enddo
   660 continue
 
       if (iabs(n2p(3,i)).lt.1) goto 680
       ju=iabs(n2p(3,i))
-      do 670 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -158,14 +158,14 @@ c p states
       dphin(2,l,k)=cp*zvec*yvec*wf1
       dphin(3,l,k)=cp*zvec*zvec*wf1+cp*ri*wfv(1,irb)
       call n0_inc(l,k,ic)
-  670 continue
+      enddo
   680 continue
 
 c d states
 
       if (iabs(n3dzr(i)).lt.1) goto 700
       ju=iabs(n3dzr(i))
-      do 690 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -179,12 +179,12 @@ c d states
       dphin(2,l,k)=cd1*yvec*(zr*wf1-wfv(1,irb)*ri)
       dphin(3,l,k)=cd1*zvec*(zr*wf1+two*wfv(1,irb)*ri)
       call n0_inc(l,k,ic)
-  690 continue
+      enddo
 
   700 continue
       if (iabs(n3dx2(i)).lt.1) goto 720
       ju=iabs(n3dx2(i))
-      do 710 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -198,12 +198,12 @@ c d states
       dphin(2,l,k)=cd2*yvec*(x2y2*wf1-wfv(1,irb)*ri)
       dphin(3,l,k)=cd2*zvec* x2y2*wf1
       call n0_inc(l,k,ic)
-  710 continue
+      enddo
 
   720 continue
       if (iabs(n3dxy(i)).lt.1) goto 740
       ju=iabs(n3dxy(i))
-      do 730 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -217,12 +217,12 @@ c d states
       dphin(2,l,k)=cd2*(yvec*xy*wf1+xvec*wfv(1,irb)*ri)
       dphin(3,l,k)=cd2* zvec*xy*wf1
       call n0_inc(l,k,ic)
-  730 continue
+      enddo
 
   740 continue
       if (iabs(n3dxz(i)).lt.1) goto 760
       ju=iabs(n3dxz(i))
-      do 750 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -236,12 +236,12 @@ c d states
       dphin(2,l,k)=cd2* yvec*xz*wf1
       dphin(3,l,k)=cd2*(zvec*xz*wf1+xvec*wfv(1,irb)*ri)
       call n0_inc(l,k,ic)
-  750 continue
+      enddo
 
   760 continue
       if (iabs(n3dyz(i)).lt.1) goto 780
       ju=iabs(n3dyz(i))
-      do 770 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -255,12 +255,12 @@ c d states
       dphin(2,l,k)=cd2*(yvec*yz*wf1+zvec*wfv(1,irb)*ri)
       dphin(3,l,k)=cd2*(zvec*yz*wf1+yvec*wfv(1,irb)*ri)
       call n0_inc(l,k,ic)
-  770 continue
+      enddo
   780 continue
 
       if (iabs(n4fxxx(i)).lt.1) goto 790
       ju=iabs(n4fxxx(i))
-      do 785 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -274,11 +274,11 @@ c d states
       dphin(2,l,k)=term*yvec
       dphin(3,l,k)=term*zvec
       call n0_inc(l,k,ic)
- 785  continue
+      enddo
  790  continue
       if (iabs(n4fyyy(i)).lt.1) goto 805
       ju=iabs(n4fyyy(i))
-      do 795 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -292,11 +292,11 @@ c d states
       dphin(2,l,k)=cf*3*yvec**2*wfv(1,irb)*ri+term*yvec
       dphin(3,l,k)=term*zvec
       call n0_inc(l,k,ic)
- 795  continue
+      enddo
  805  continue
       if (iabs(n4fzzz(i)).lt.1) goto 810
       ju=iabs(n4fzzz(i))
-      do 808 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -310,11 +310,11 @@ c d states
       dphin(2,l,k)=term*yvec
       dphin(3,l,k)=cf*3*zvec**2*wfv(1,irb)*ri+term*zvec
       call n0_inc(l,k,ic)
- 808  continue
+      enddo
  810  continue
       if (iabs(n4fxxy(i)).lt.1) goto 820
       ju=iabs(n4fxxy(i))
-      do 815 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -328,11 +328,11 @@ c d states
       dphin(2,l,k)=cf2*xvec*xvec*wfv(1,irb)*ri+term*yvec
       dphin(3,l,k)=term*zvec
       call n0_inc(l,k,ic)
- 815  continue
+      enddo
  820  continue
       if (iabs(n4fxxz(i)).lt.1) goto 825
       ju=iabs(n4fxxz(i))
-      do 818 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -346,11 +346,11 @@ c d states
       dphin(2,l,k)=term*yvec
       dphin(3,l,k)=cf2*xvec*xvec*wfv(1,irb)*ri+term*zvec
       call n0_inc(l,k,ic)
- 818  continue
+      enddo
  825  continue
       if (iabs(n4fyyx(i)).lt.1) goto 835
       ju=iabs(n4fyyx(i))
-      do 830 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -364,11 +364,11 @@ c d states
       dphin(2,l,k)=cf2*2*yvec*xvec*wfv(1,irb)*ri+term*yvec
       dphin(3,l,k)=term*zvec
       call n0_inc(l,k,ic)
- 830  continue
+      enddo
  835  continue
       if (iabs(n4fyyz(i)).lt.1) goto 845
       ju=iabs(n4fyyz(i))
-      do 840 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -382,11 +382,11 @@ c d states
       dphin(2,l,k)=cf2*2*yvec*zvec*wfv(1,irb)*ri+term*yvec
       dphin(3,l,k)=cf2*yvec*yvec*wfv(1,irb)*ri+term*zvec
       call n0_inc(l,k,ic)
- 840  continue
+      enddo
  845  continue
       if (iabs(n4fzzx(i)).lt.1) goto 855
       ju=iabs(n4fzzx(i))
-      do 850 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -400,11 +400,11 @@ c d states
       dphin(2,l,k)=term*yvec
       dphin(3,l,k)=cf2*2*zvec*xvec*wfv(1,irb)*ri+term*zvec
       call n0_inc(l,k,ic)
- 850  continue
+      enddo
  855  continue
       if (iabs(n4fzzy(i)).lt.1) goto 865
       ju=iabs(n4fzzy(i))
-      do 860 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -418,11 +418,11 @@ c d states
       dphin(2,l,k)=cf2*zvec*zvec*wfv(1,irb)*ri+term*yvec
       dphin(3,l,k)=cf2*2*zvec*yvec*wfv(1,irb)*ri+term*zvec
       call n0_inc(l,k,ic)
- 860  continue
+      enddo
  865  continue
       if (iabs(n4fxyz(i)).lt.1) goto 875
       ju=iabs(n4fxyz(i))
-      do 870 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -436,14 +436,14 @@ c d states
       dphin(2,l,k)=cf3*xvec*zvec*wfv(1,irb)*ri+term*yvec
       dphin(3,l,k)=cf3*xvec*yvec*wfv(1,irb)*ri+term*zvec
       call n0_inc(l,k,ic)
- 870  continue
+      enddo
  875  continue
 
       else
        stop
       endif
 
-  900 continue
+      enddo
 
       return
       end

@@ -26,7 +26,7 @@ c rcmax = cutoff radius for non-local potential
 c npotl = number of mesh point for local potential
 c dradl = spacing of uniform mesh for local potential
 
-      do 20 ic=1,nctype
+      do ic=1,nctype
 
       if(ic.lt.10) then
         write(atomtyp,'(i1)') ic
@@ -53,8 +53,9 @@ c local potential
 
       read(3,*) (potl(i,ic),i=1,npotl(ic))
 
-      do 5 i=1,npotl(ic)
-  5     write(33,*) (i-1)*dradl(ic),potl(i,ic)
+      do i=1,npotl(ic)
+        write(33,*) (i-1)*dradl(ic),potl(i,ic)
+      enddo
 
 c non-local potential
       read(3,*)
@@ -68,22 +69,25 @@ c non-local potential
         call fatal_error('READPS')
       endif
 
-      do 10 l=1,nlang
+      do l=1,nlang
         read(3,*)
         read(3,*) (ptnlc(i,ic,l),i=1,nlrad(ic))
-      do 10 i=1,nlrad(ic)
- 10     write(34,*) (i-1)*drad(ic),ptnlc(i,ic,l)
+      do i=1,nlrad(ic)
+        write(34,*) (i-1)*drad(ic),ptnlc(i,ic,l)
+      enddo
+      enddo
 
       close(3)
- 20   continue
+      enddo
 
 
       call gesqua (nquad,xq0,yq0,zq0,wq)
 c     call gesqua (nquad,xq,yq,zq,wq)
 
       write(ounit,'(''quadrature points'')')
-      do 30 i=1,nquad
- 30     write(ounit,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
+      do i=1,nquad
+        write(ounit,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
+      enddo
 
       return
       end
@@ -110,7 +114,7 @@ c Written by Claudia Filippi
 
 
 
-      do 10 ic=1,ncent
+      do ic=1,ncent
         ict=iwctype(ic)
         r=rad(iel,ic)
 c local potential
@@ -124,7 +128,7 @@ c local potential
           vps(iel,ic,lpot(ict))=-znuc(ict)/r
         endif
 c non-local pseudopotential
-        do 10 l=1,lpot(ict)-1
+        do l=1,lpot(ict)-1
           if(r.lt.rcmax(ict)) then
             ri=r/drad(ict)
             ir=int(ri)
@@ -134,7 +138,8 @@ c non-local pseudopotential
            else
             vps(iel,ic,l)=0.0d0
           endif
-   10 continue
+        enddo
+      enddo
 
       return
       end

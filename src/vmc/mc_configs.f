@@ -46,11 +46,13 @@ c   1      continue
 c         endif
 
         if(nproc.gt.1) then
-          do 5 id=1,(3*nelec)*idtask
-    5       rnd=rannyu(0)
+          do id=1,(3*nelec)*idtask
+            rnd=rannyu(0)
+          enddo
           call savern(irn)
-          do 6 i=1,4
-    6       irn(i)=mod(irn(i)+int(rannyu(0)*idtask*9999),9999)
+          do i=1,4
+            irn(i)=mod(irn(i)+int(rannyu(0)*idtask*9999),9999)
+          enddo
           call setrn(irn)
         endif
 
@@ -58,19 +60,21 @@ c check sites flag if one gets initial configuration from sites routine
         if (vmc_isite.eq.1) goto 20
         open(unit=9,err=20,file='mc_configs_start')
         rewind 9
-        do 10 id=0,idtask
-   10     read(9,*,end=20,err=20) ((xold(k,i),k=1,3),i=1,nelec)
+        do id=0,idtask
+          read(9,*,end=20,err=20) ((xold(k,i),k=1,3),i=1,nelec)
+        enddo
         write(ounit,'(/,''initial configuration from unit 9'')')
         goto 40
 
    20   continue
 	ntotal_sites=0
-        do 25 i=1,ncent
-   25     ntotal_sites=ntotal_sites+int(znuc(iwctype(i))+0.5d0)
+        do i=1,ncent
+          ntotal_sites=ntotal_sites+int(znuc(iwctype(i))+0.5d0)
+        enddo
         icharge_system=ntotal_sites-nelec
 
         l=0
-        do 30 i=1,ncent
+        do i=1,ncent
           nsite(i)=int(znuc(iwctype(i))+0.5d0)
           if (vmc_icharged_atom.eq.i) then
             nsite(i)=int(znuc(iwctype(i))+0.5d0)-icharge_system
@@ -81,7 +85,7 @@ c check sites flag if one gets initial configuration from sites routine
             nsite(i)=nsite(i)-(l-nelec)
             l=nelec
           endif
-   30   continue
+        enddo
         if (l.lt.nelec) nsite(1)=nsite(1)+(nelec-l)
 
         call sites(xold,nelec,nsite)
@@ -93,9 +97,11 @@ c check sites flag if one gets initial configuration from sites routine
 
 c If we are moving one electron at a time, then we need to initialize
 c xnew, since only the first electron gets initialized in metrop
-        do 50 i=1,nelec
-          do 50 k=1,3
-   50       xnew(k,i)=xold(k,i)
+        do i=1,nelec
+          do k=1,3
+            xnew(k,i)=xold(k,i)
+          enddo
+        enddo
       endif
 
 c If nconf_new > 0 then we want to dump configurations for a future
@@ -129,10 +135,11 @@ c    &  ,1,MPI_COMM_WORLD,irequest,ierr)
        else
         rewind 9
         write(9,*) ((xold(ic,i),ic=1,3),i=1,nelec)
-        do 60 id=1,nproc-1
+        do id=1,nproc-1
           call mpi_recv(xnew,3*nelec,mpi_double_precision,id
      &    ,1,MPI_COMM_WORLD,istatus,ierr)
-   60     write(9,*) ((xnew(ic,i),ic=1,3),i=1,nelec)
+          write(9,*) ((xnew(ic,i),ic=1,3),i=1,nelec)
+        enddo
       endif
       close(9)
 

@@ -19,12 +19,14 @@
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
-      do 10 i=1,nparmj
-        do 10 j=1,nciterm
+      do i=1,nparmj
+        do j=1,nciterm
         dj_o_ci(i,j)=dj_o_ci(i,j)  +p*gvalue(i)*ci_o(j)+q*gvalue_old(i)*ci_o_old(j)
         dj_oe_ci(i,j)=dj_oe_ci(i,j)+p*gvalue(i)*ci_o(j)*enew+q*gvalue_old(i)*ci_o_old(j)*eold
         de_o_ci(i,j)=de_o_ci(i,j)  +p*denergy(i,1)*ci_o(j)+q*denergy_old(i,1)*ci_o_old(j)
-  10    dj_de_ci(i,j)=dj_de_ci(i,j)+p*gvalue(i)*ci_de(j)+q*gvalue_old(i)*ci_de_old(j)
+        dj_de_ci(i,j)=dj_de_ci(i,j)+p*gvalue(i)*ci_de(j)+q*gvalue_old(i)*ci_de_old(j)
+        enddo
+      enddo
 
       return
       end
@@ -42,12 +44,14 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
-      do 10 i=1,nparmj
-        do 10 j=1,nciterm
+      do i=1,nparmj
+        do j=1,nciterm
           dj_o_ci(i,j)=0
           dj_oe_ci(i,j)=0
           de_o_ci(i,j)=0
-  10      dj_de_ci(i,j)=0
+          dj_de_ci(i,j)=0
+        enddo
+      enddo
 
       return
       end
@@ -117,12 +121,14 @@ c-----------------------------------------------------------------------
       if(method.eq.'hessian') then
 
 c Compute mix Hessian
-      do 10 i=1,nparmj
-        do 10 j=1,nciterm
+      do i=1,nparmj
+        do j=1,nciterm
           h1=2*(2*(dj_oe_ci(i,j)-eave*dj_o_ci(i,j))-dj(i,1)*grad_ci(j)-grad_jas(i)*ci_o_cum(j))
           h2=de_o_ci(i,j)-de(i,1)*ci_o_cum(j)/passes
      &         +dj_de_ci(i,j)-dj(i,1)*ci_de_cum(j)/passes
-  10      h_mix_jas_ci(i,j)=(h1+h2)/passes
+          h_mix_jas_ci(i,j)=(h1+h2)/passes
+        enddo
+      enddo
 
       write(21,*) nciterm
       write(21,*) ((h_mix_jas_ci(i,j),j=1,nciterm),i=1,nparmj)
@@ -130,31 +136,37 @@ c Compute mix Hessian
       elseif(method.eq.'linear') then
 
       if(ncsf.eq.0) then
-        do 20 i=1,nciterm
+        do i=1,nciterm
           oelocav(i)=0
           eav(i)=0
-          do 20 j=1,nciterm
+          do j=1,nciterm
             oelocav(i)=oelocav(i)+ci_oe_cum(i,j)*cdet(j,1,1)/passes
-  20        eav(i)=eav(i)+ci_oe_cum(j,i)*cdet(j,1,1)/passes
+            eav(i)=eav(i)+ci_oe_cum(j,i)*cdet(j,1,1)/passes
+          enddo
+        enddo
        else
-        do 25 i=1,ncsf
+        do i=1,ncsf
           oelocav(i)=0
           eav(i)=0
-          do 25 j=1,ncsf
+          do j=1,ncsf
             oelocav(i)=oelocav(i)+ci_oe_cum(i,j)*ccsf(j,1,1)/passes
-  25        eav(i)=eav(i)+ci_oe_cum(j,i)*ccsf(j,1,1)/passes
+            eav(i)=eav(i)+ci_oe_cum(j,i)*ccsf(j,1,1)/passes
+          enddo
+        enddo
       endif
 
-      do 30 i=1,nparmj
-        do 30 j=1,nciterm
+      do i=1,nparmj
+        do j=1,nciterm
 c Overlap s_jas_ci
           s_mix_jas_ci(i,j)=(dj_o_ci(i,j)-dj(i,1)*ci_o_cum(j)/passes)/passes
 c H matrix h_jas_ci
           h_mix_jas_ci(i,j)=(dj_de_ci(i,j)+dj_oe_ci(i,j)
      &    +eave*dj(i,1)*ci_o_cum(j)/passes-dj(i,1)*eav(j)-ci_o_cum(j)*dj_e(i,1)/passes)/passes
 c H matrix h_ci_jas
-   30     h_mix_jas_ci(i+nparmj,j)=(de_o_ci(i,j)+dj_oe_ci(i,j)
+          h_mix_jas_ci(i+nparmj,j)=(de_o_ci(i,j)+dj_oe_ci(i,j)
      &    +eave*dj(i,1)*ci_o_cum(j)/passes-dj(i,1)*oelocav(j)-ci_o_cum(j)*(de(i,1)+dj_e(i,1))/passes)/passes
+        enddo
+      enddo
 
       endif
 

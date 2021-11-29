@@ -30,10 +30,10 @@ c loop over spins and centers. If odd number of electrons on all
 c atoms then the up-spins have an additional electron.
 
       l=0
-      do 10 ispin=1,2
-        do 10 i=1,ncent
+      do ispin=1,2
+        do i=1,ncent
           ju=(nsite(i)+2-ispin)/2
-          do 10 j=1,ju
+          do j=1,ju
             l=l+1
             if (l.gt.nelec) return
             if(j.eq.1) then
@@ -43,13 +43,17 @@ c atoms then the up-spins have an additional electron.
              else
               sitsca=3/(znuc(iwctype(i))-10)
             endif
-            do 10 ic=1,3
+            do ic=1,3
 
 c sample position from exponentials around center
 
              site=-dlog(rannyu(0))
              site=sign(site,(rannyu(0)-half))
-   10        x(ic,l)=sitsca*site+cent(ic,i)
+             x(ic,l)=sitsca*site+cent(ic,i)
+            enddo
+          enddo
+        enddo
+      enddo
       write(ounit,'(''number of electrons placed ='',i5)') l
       if (l.lt.nelec) call fatal_error('SITES: bad input')
       return

@@ -70,58 +70,67 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
 
       iparma=nparma(1)
-      do 1 it=2,nctype
-    1  iparma=iparma+nparma(it)
+      do it=2,nctype
+       iparma=iparma+nparma(it)
+      enddo
 
       fsum=0
-      do 3 i=1,nelec
+      do i=1,nelec
         v(1,i)=0
         v(2,i)=0
-    3   v(3,i)=0
+        v(3,i)=0
+      enddo
       d2=0
 
-      do 5 i=-2,-1
+      do i=-2,-1
         uu(i)=0
         ss(i)=0
         tt(i)=0
         rri(i)=0
-    5   rrj(i)=0
+        rrj(i)=0
+      enddo
       uu(0)=1
       ss(0)=2
       tt(0)=1
       rri(0)=1
       rrj(0)=1
 
-      do 7 iparm=1,nparmj
+      do iparm=1,nparmj
         gvalue(iparm)=0
         d2g(iparm)=0
-        do 7 i=1,nelec
+        do i=1,nelec
           g(1,i,iparm)=0
           g(2,i,iparm)=0
-   7      g(3,i,iparm)=0
-      do 8 isb=1,nspin2b
+          g(3,i,iparm)=0
+        enddo
+      enddo
+      do isb=1,nspin2b
         d1d2b(isb)=0
-   8    d2d2b(isb)=0
-      do 9 it=1,nctype
+        d2d2b(isb)=0
+      enddo
+      do it=1,nctype
         d1d2a(it)=0
-   9    d2d2a(it)=0
+        d2d2a(it)=0
+      enddo
 
       if (nelec.lt.2) goto 65
 
 c e-e and e-e-n terms
       ij=0
-      do 60 i=2,nelec
+      do i=2,nelec
       im1=i-1
-      do 60 j=1,im1
+      do j=1,im1
       ij=ij+1
 
       fso(i,j)=0
       d2ijo(i,j)=0
-      do 10 k=1,3
+      do k=1,3
         fijo(k,i,j)=0
-   10   fijo(k,j,i)=0
-      do 12 iparm=1,nparmj
-   12   go(i,j,iparm)=0
+        fijo(k,j,i)=0
+      enddo
+      do iparm=1,nparmj
+        go(i,j,iparm)=0
+      enddo
 
       sspinn=1
       isb=1
@@ -156,25 +165,27 @@ c Check rij after scaling because uu(1) used in e-e-n terms too
       feeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
       feeuu=feeuu/bot
 
-      do 20 iord=2,nordb
+      do iord=2,nordb
         uu(iord)=uu(1)*uu(iord-1)
         fee=fee+b(iord+1,isb,iwf)*uu(iord)
         feeu=feeu+b(iord+1,isb,iwf)*iord*uu(iord-1)
-   20   feeuu=feeuu+b(iord+1,isb,iwf)*iord*(iord-1)*uu(iord-2)
+        feeuu=feeuu+b(iord+1,isb,iwf)*iord*(iord-1)*uu(iord-2)
+      enddo
 
       feeuu=feeuu*dd1*dd1+feeu*dd2
       feeu=feeu*dd1/rij
 
       fso(i,j)=fso(i,j)+fee
-      do 21 k=1,3
+      do k=1,3
         fijo(k,i,j)= fijo(k,i,j) + feeu*rvec_ee(k,ij)
-   21   fijo(k,j,i)= fijo(k,j,i) - feeu*rvec_ee(k,ij)
+        fijo(k,j,i)= fijo(k,j,i) - feeu*rvec_ee(k,ij)
+      enddo
       d2ijo(i,j)=d2ijo(i,j)+2*(feeuu+2*feeu)
 
 c derivatives of wave function wrt b(1),b(2) and rest of b(i)
       iparm0=iparma
       if(isb.eq.2) iparm0=iparm0+nparmb(1)
-      do 25 jparm=1,nparmb(isb)
+      do jparm=1,nparmb(isb)
         iparm=iparm0+jparm
 
         if(iwjasb(jparm,isb).eq.1) then
@@ -241,7 +252,7 @@ c derivatives of wave function wrt b(1),b(2) and rest of b(i)
 
         d2g(iparm)=d2g(iparm) + two*(geeuu+two*geeu)
 
-   25 continue
+      enddo
 
 c There are no C terms to order 1.
    30 if(nordc.le.1) goto 58
@@ -249,19 +260,21 @@ c There are no C terms to order 1.
       if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
       if(ijas.eq.4.or.ijas.eq.5) then
         call switch_scale2(uu(1),dd1,dd2)
-        do 35 iord=2,nordc
-   35     uu(iord)=uu(1)*uu(iord-1)
+        do iord=2,nordc
+          uu(iord)=uu(1)*uu(iord-1)
+        enddo
       endif
 
-      do 57 ic=1,ncent
+      do ic=1,ncent
         it=iwctype(ic)
 
         ri=r_en(i,ic)
         rj=r_en(j,ic)
 
         if(ri.gt.cutjas .or. rj.gt.cutjas) goto 57
-        do 37 k=1,3
-   37     if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) goto 57
+        do k=1,3
+          if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) goto 57
+        enddo
 
         call scale_dist2(ri,rri(1),dd7,dd9,2)
         call scale_dist2(rj,rrj(1),dd8,dd10,2)
@@ -279,11 +292,12 @@ c       u2mt2=rij*rij-t*t
 c       s2mu2=s*s-rij*rij
 c       s2mt2=s*s-t*t
 
-        do 50 iord=1,nordc
+        do iord=1,nordc
           rri(iord)=rri(1)*rri(iord-1)
           rrj(iord)=rrj(1)*rrj(iord-1)
           ss(iord)=rri(iord)+rrj(iord)
-   50     tt(iord)=rri(iord)*rrj(iord)
+          tt(iord)=rri(iord)*rrj(iord)
+        enddo
 
         fc=0
         fu=0
@@ -297,14 +311,14 @@ c       s2mt2=s*s-t*t
         ll=0
         jj=1
         jparm=1
-        do 55 n=2,nordc
-          do 55 k=n-1,0,-1
+        do n=2,nordc
+          do k=n-1,0,-1
             if(k.eq.0) then
               l_hi=n-k-2
              else
               l_hi=n-k
             endif
-            do 55 l=l_hi,0,-1
+            do l=l_hi,0,-1
               m=(n-k-l)/2
               if(2*m.eq.n-k-l) then
                 ll=ll+1
@@ -352,12 +366,12 @@ c               endif
                 if(ll.eq.iwjasc(jparm,it)) then
                   ideriv=2
                  else
-                  do 31 id=1,2*(nordc-1)
+                  do id=1,2*(nordc-1)
                     if(ll.eq.iwc4(id)) then
                       jj=id
                       if(nvdepend(jj,it).gt.0) ideriv=1
                     endif
-   31             continue
+                  enddo
                 endif
 
                 if(ideriv.gt.0) then
@@ -384,7 +398,7 @@ c               endif
 
                   if(ideriv.eq.1) then
 
-                  do 33 id=1,nvdepend(jj,it)
+                  do id=1,nvdepend(jj,it)
 
                   iparm=npoint(it)+iwdepend(jj,id,it)
                   cd=cdep(jj,id,it)
@@ -399,9 +413,10 @@ c               endif
                   g(2,j,iparm)=g(2,j,iparm)+cd*(gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij))
                   g(3,j,iparm)=g(3,j,iparm)+cd*(gj*rvec_en(3,j,ic)-gu*rvec_ee(3,ij))
 
-   33             d2g(iparm)=d2g(iparm) + cd*(2*(guu + 2*gu)
+                  d2g(iparm)=d2g(iparm) + cd*(2*(guu + 2*gu)
      &            + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
      &            + gii + 2*gi + gjj + 2*gj)
+                  enddo
 
 c                 jj=jj+1
 
@@ -428,7 +443,9 @@ c                 jj=jj+1
 
                 endif
               endif
-   55   continue
+            enddo
+          enddo
+        enddo
 
         fuu=fuu*dd1*dd1+fu*dd2
         fu=fu*dd1/rij
@@ -455,6 +472,7 @@ c       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
      &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
 
    57 continue
+      enddo
 
    58 fsum=fsum+fso(i,j)
       v(1,i)=v(1,i)+fijo(1,i,j)
@@ -465,10 +483,12 @@ c       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
       v(3,j)=v(3,j)+fijo(3,j,i)
 c     div_vj(i)=div_vj(i)+d2ijo(i,j)/2
 c     div_vj(j)=div_vj(j)+d2ijo(i,j)/2
-   60 d2=d2+d2ijo(i,j)
+      d2=d2+d2ijo(i,j)
+      enddo
+      enddo
 
 c e-n terms
-   65 do 90 i=1,nelec
+   65 do i=1,nelec
 
         fso(i,i)=0
         fijo(1,i,i)=0
@@ -476,10 +496,11 @@ c e-n terms
         fijo(3,i,i)=0
         d2ijo(i,i)=0
 
-        do 66 iparm=1,nparmj
-   66     go(i,i,iparm)=zero
+        do iparm=1,nparmj
+          go(i,i,iparm)=zero
+        enddo
 
-        do 80 ic=1,ncent
+        do ic=1,ncent
           it=iwctype(ic)
 
           ri=r_en(i,ic)
@@ -501,11 +522,12 @@ c e-n terms
           fenii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
           fenii=fenii/bot
 
-          do 70 iord=2,norda
+          do iord=2,norda
             rri(iord)=rri(1)*rri(iord-1)
             fen=fen+a4(iord+1,it,iwf)*rri(iord)
             feni=feni+a4(iord+1,it,iwf)*iord*rri(iord-1)
-   70       fenii=fenii+a4(iord+1,it,iwf)*iord*(iord-1)*rri(iord-2)
+            fenii=fenii+a4(iord+1,it,iwf)*iord*(iord-1)*rri(iord-2)
+          enddo
 
           feni_save=feni
           fenii_save=fenii
@@ -524,7 +546,7 @@ c         write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i
 
           if(iforce_analy.eq.1) call da_jastrow4(iwf,i,ic,it,rvec_en(1,i,ic),ri,rri,feni_save,fenii_save,dd7,dd9)
 
-          do 78 jparm=1,nparma(it)
+          do jparm=1,nparma(it)
             iparm=npointa(it)+jparm
 
             if(iwjasa(jparm,it).eq.1) then
@@ -581,8 +603,10 @@ c           write(ounit,*) 'CIAO',iord,rri(iord),genii,d77,geni,dd9
             g(2,i,iparm)=g(2,i,iparm)+geni*rvec_en(2,i,ic)
             g(3,i,iparm)=g(3,i,iparm)+geni*rvec_en(3,i,ic)
 
-   78       d2g(iparm)=d2g(iparm)+genii+two*geni
+            d2g(iparm)=d2g(iparm)+genii+two*geni
+          enddo
    80     continue
+        enddo
 
         fsum=fsum+fso(i,i)
         v(1,i)=v(1,i)+fijo(1,i,i)
@@ -591,14 +615,15 @@ c           write(ounit,*) 'CIAO',iord,rri(iord),genii,d77,geni,dd9
 c       write(ounit,'(''v='',9d12.4)') (v(k,i),k=1,3)
 c       div_vj(i)=div_vj(i)+d2ijo(i,i)
         d2=d2+d2ijo(i,i)
-   90 continue
+      enddo
 
       fsumo=fsum
       d2o=d2
-      do 110 i=1,nelec
+      do i=1,nelec
         fjo(1,i)=v(1,i)
         fjo(2,i)=v(2,i)
-  110   fjo(3,i)=v(3,i)
+        fjo(3,i)=v(3,i)
+      enddo
 
       value=fsum
 c     write(ounit,*) (d2g(iparm),iparm=1,nparmj)

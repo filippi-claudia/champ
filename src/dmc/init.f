@@ -47,15 +47,18 @@ c get nuclear potential energy
       nwalk=dmc_nconf
       fprod=one
 
-      do 80 iw=1,dmc_nconf
+      do iw=1,dmc_nconf
         wt(iw)=one
         if(istrech.eq.0) then
-          do 71 ifr=2,nforce
-            do 71 ie=1,nelec
-              do 71 k=1,3
-   71           xold_dmc(k,ie,iw,ifr)=xold_dmc(k,ie,iw,1)
+          do ifr=2,nforce
+            do ie=1,nelec
+              do k=1,3
+                xold_dmc(k,ie,iw,ifr)=xold_dmc(k,ie,iw,1)
+              enddo
+            enddo
+          enddo
         endif
-        do 72 ifr=1,nforce
+        do ifr=1,nforce
           if(nforce.gt.1) then
             if(ifr.eq.1.or.istrech.eq.0) then
               call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,ifr),ajacob,ifr,0)
@@ -69,8 +72,9 @@ c get nuclear potential energy
           if(icasula.lt.0) i_vpsp=icasula
           call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),eold(iw,ifr),0,ifr)
           i_vpsp=0
-          do 73 i=1,nelec
-   73       call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
+          do i=1,nelec
+            call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
+          enddo
 
           if(ifr.eq.1) then
             call walksav_det(iw)
@@ -82,16 +86,19 @@ c           call t_vpsp_sav(iw)
             call mmpol_save(iw)
           endif
           pwt(iw,ifr)=0
-          do 72 ip=0,nwprod-1
-   72       wthist(iw,ip,ifr)=0
-   80 continue
+          do ip=0,nwprod-1
+            wthist(iw,ip,ifr)=0
+          enddo
+        enddo
+      enddo
 
       if(mode.eq.'dmc_one_mpi2') dmc_nconf=dmc_nconf*nproc
       wdsumo=dmc_nconf
       wgdsumo=dmc_nconf
-      do 70 i=0,MFPRD1
+      do i=0,MFPRD1
         wtgen(i)=dmc_nconf
-   70   ff(i)=one
+        ff(i)=one
+      enddo
 
       call zerest
 

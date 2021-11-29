@@ -73,139 +73,175 @@ c Written by Claudia Filippi
 
 
 
-       do 20 k=1,ndet
+       do k=1,ndet
          detuw(k,iw)=detiab(k,1)
-   20    detdw(k,iw)=detiab(k,2)
+         detdw(k,iw)=detiab(k,2)
+       enddo
 
        krefw(iw)=kref
-       do 40 j=1,nup*nup
+       do j=1,nup*nup
          slmuiw(j,iw)=slmi(j,1)
          fpuw(1,j,iw)=fp(1,j,1)
          fpuw(2,j,iw)=fp(2,j,1)
-   40    fpuw(3,j,iw)=fp(3,j,1)
-       do 50 j=1,ndn*ndn
+         fpuw(3,j,iw)=fp(3,j,1)
+       enddo
+       do j=1,ndn*ndn
          slmdiw(j,iw)=slmi(j,2)
          fpdw(1,j,iw)=fp(1,j,2)
          fpdw(2,j,iw)=fp(2,j,2)
-   50    fpdw(3,j,iw)=fp(3,j,2)
-       do 55 i=1,nelec
+         fpdw(3,j,iw)=fp(3,j,2)
+       enddo
+       do i=1,nelec
          ddxw(1,i,iw)=ddx(1,i)
          ddxw(2,i,iw)=ddx(2,i)
-   55    ddxw(3,i,iw)=ddx(3,i)
+         ddxw(3,i,iw)=ddx(3,i)
+       enddo
 
-       do 62 iab=1,2
+       do iab=1,2
          nel=nup
          if(iab.eq.2) nel=ndn
-         do 58 j=ivirt(iab),norb
-          do 58 i=1,nel
-            do 57 istate=1,nstates
-   57         ymatw(j,i,iw,iab,istate)=ymat(j,i,iab,istate)
-   58       aaw(i,j,iw,iab)=aa(i,j,iab)
-          do 62 k=1,ndet
+         do j=ivirt(iab),norb
+          do i=1,nel
+            do istate=1,nstates
+              ymatw(j,i,iw,iab,istate)=ymat(j,i,iab,istate)
+            enddo
+            aaw(i,j,iw,iab)=aa(i,j,iab)
+          enddo
+         enddo
+          do k=1,ndet
             if(k.ne.kref) then
               ndim=numrep_det(k,iab)
-              do 60 i=1,ndim*ndim
-   60           wfmatw(i,k,iw,iab)=wfmat(i,k,iab)
+              do i=1,ndim*ndim
+                wfmatw(i,k,iw,iab)=wfmat(i,k,iab)
+              enddo
             endif
-   62  continue
+          enddo
+       enddo
 
-       do 63 i=1,nelec
-         do 63 iorb=1,norb
+       do i=1,nelec
+         do iorb=1,norb
            orbw(i,iorb,iw)=orb(i,iorb)
-           do 63 kk=1,3
-   63        dorbw(kk,i,iorb,iw)=dorb(kk,i,iorb)
+           do kk=1,3
+             dorbw(kk,i,iorb,iw)=dorb(kk,i,iorb)
+           enddo
+         enddo
+       enddo
 
       return
 
       entry walkstrdet(iw)
 
-      do 70 k=1,ndet
+      do k=1,ndet
         detiab(k,1)=detuw(k,iw)
-   70   detiab(k,2)=detdw(k,iw)
+        detiab(k,2)=detdw(k,iw)
+      enddo
 
       kref=krefw(iw)
-      do 80 j=1,nup*nup
+      do j=1,nup*nup
         slmi(j,1)=slmuiw(j,iw)
         fp(1,j,1)=fpuw(1,j,iw)
         fp(2,j,1)=fpuw(2,j,iw)
-   80   fp(3,j,1)=fpuw(3,j,iw)
-      do 90 j=1,ndn*ndn
+        fp(3,j,1)=fpuw(3,j,iw)
+      enddo
+      do j=1,ndn*ndn
         slmi(j,2)=slmdiw(j,iw)
         fp(1,j,2)=fpdw(1,j,iw)
         fp(2,j,2)=fpdw(2,j,iw)
-   90   fp(3,j,2)=fpdw(3,j,iw)
-      do 95 i=1,nelec
+        fp(3,j,2)=fpdw(3,j,iw)
+      enddo
+      do i=1,nelec
         ddx(1,i)=ddxw(1,i,iw)
         ddx(2,i)=ddxw(2,i,iw)
-   95   ddx(3,i)=ddxw(3,i,iw)
+        ddx(3,i)=ddxw(3,i,iw)
+      enddo
 
-       do 102 iab=1,2
+       do iab=1,2
          nel=nup
          if(iab.eq.2) nel=ndn
-         do 98 j=ivirt(iab),norb
-          do 98 i=1,nel
-            do 97 istate=1,nstates
-   97         ymat(j,i,iab,istate)=ymatw(j,i,iw,iab,istate)
-   98       aa(i,j,iab)=aaw(i,j,iw,iab)
-          do 102 k=1,ndet
+         do j=ivirt(iab),norb
+          do i=1,nel
+            do istate=1,nstates
+              ymat(j,i,iab,istate)=ymatw(j,i,iw,iab,istate)
+            enddo
+            aa(i,j,iab)=aaw(i,j,iw,iab)
+          enddo
+         enddo
+          do k=1,ndet
             if(k.ne.kref) then
               ndim=numrep_det(k,iab)
-              do 100 i=1,ndim*ndim
-  100           wfmat(i,k,iab)=wfmatw(i,k,iw,iab)
+              do i=1,ndim*ndim
+                wfmat(i,k,iab)=wfmatw(i,k,iw,iab)
+              enddo
             endif
-  102  continue
+          enddo
+       enddo
 
-       do 103 i=1,nelec
-         do 103 iorb=1,norb
+       do i=1,nelec
+         do iorb=1,norb
            orb(i,iorb)=orbw(i,iorb,iw)
-           do 103 kk=1,3
-  103        dorb(kk,i,iorb)=dorbw(kk,i,iorb,iw)
+           do kk=1,3
+             dorb(kk,i,iorb)=dorbw(kk,i,iorb,iw)
+           enddo
+         enddo
+       enddo
 
       return
 
       entry splitjdet(iw,iw2)
 
-      do 110 k=1,ndet
+      do k=1,ndet
         detuw(k,iw2)=detuw(k,iw)
-  110   detdw(k,iw2)=detdw(k,iw)
+        detdw(k,iw2)=detdw(k,iw)
+      enddo
 
       krefw(iw2)=krefw(iw)
-      do 120 j=1,nup*nup
+      do j=1,nup*nup
         slmuiw(j,iw2)=slmuiw(j,iw)
         fpuw(1,j,iw2)=fpuw(1,j,iw)
         fpuw(2,j,iw2)=fpuw(2,j,iw)
-  120   fpuw(3,j,iw2)=fpuw(3,j,iw)
-      do 130 j=1,ndn*ndn
+        fpuw(3,j,iw2)=fpuw(3,j,iw)
+      enddo
+      do j=1,ndn*ndn
         slmdiw(j,iw2)=slmdiw(j,iw)
         fpdw(1,j,iw2)=fpdw(1,j,iw)
         fpdw(2,j,iw2)=fpdw(2,j,iw)
-  130   fpdw(3,j,iw2)=fpdw(3,j,iw)
-      do 135 i=1,nelec
+        fpdw(3,j,iw2)=fpdw(3,j,iw)
+      enddo
+      do i=1,nelec
         ddxw(1,i,iw2)=ddxw(1,i,iw)
         ddxw(2,i,iw2)=ddxw(2,i,iw)
-  135   ddxw(3,i,iw2)=ddxw(3,i,iw)
+        ddxw(3,i,iw2)=ddxw(3,i,iw)
+      enddo
 
-       do 142 iab=1,2
+       do iab=1,2
          nel=nup
          if(iab.eq.2) nel=ndn
-         do 138 j=ivirt(iab),norb
-          do 138 i=1,nel
-            do 137 istate=1,nstates
-  137         ymatw(j,i,iw2,iab,istate)=ymatw(j,i,iw,iab,istate)
-  138       aaw(i,j,iw2,iab)=aaw(i,j,iw,iab)
-          do 142 k=1,ndet
+         do j=ivirt(iab),norb
+          do i=1,nel
+            do istate=1,nstates
+              ymatw(j,i,iw2,iab,istate)=ymatw(j,i,iw,iab,istate)
+            enddo
+            aaw(i,j,iw2,iab)=aaw(i,j,iw,iab)
+          enddo
+         enddo
+          do k=1,ndet
             if(k.ne.krefw(iw)) then
               ndim=numrep_det(k,iab)
-              do 140 i=1,ndim*ndim
-  140           wfmatw(i,k,iw2,iab)=wfmatw(i,k,iw,iab)
+              do i=1,ndim*ndim
+                wfmatw(i,k,iw2,iab)=wfmatw(i,k,iw,iab)
+              enddo
             endif
-  142  continue
+          enddo
+       enddo
 
-       do 143 i=1,nelec
-         do 143 iorb=1,norb
+       do i=1,nelec
+         do iorb=1,norb
            orbw(i,iorb,iw2)=orbw(i,iorb,iw)
-           do 143 kk=1,3
-  143        dorbw(kk,i,iorb,iw2)=dorbw(kk,i,iorb,iw)
+           do kk=1,3
+             dorbw(kk,i,iorb,iw2)=dorbw(kk,i,iorb,iw)
+           enddo
+         enddo
+       enddo
 
       return
 
@@ -238,21 +274,24 @@ c Written by Claudia Filippi
      & ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+2
 
-      do 150 istate=1,nstates
-        do 150 iab=1,2
+      do istate=1,nstates
+        do iab=1,2
         itag=itag+1
- 150    call mpi_isend(ymatw(1,1,nwalk,iab,istate),norb_tot*nelec,mpi_double_precision
+        call mpi_isend(ymatw(1,1,nwalk,iab,istate),norb_tot*nelec,mpi_double_precision
      &   ,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
+        enddo
+      enddo
 
-      do 160 iab=1,2
-        do 160 k=1,ndet
+      do iab=1,2
+        do k=1,ndet
           ndim=numrep_det(k,iab)
           if(k.ne.krefw(nwalk).and.ndim.gt.0) then
             itag=itag+1
             call mpi_isend(wfmatw(1,k,nwalk,iab),ndim*ndim,mpi_double_precision
      &     ,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
           endif
- 160  continue
+        enddo
+      enddo
 
       call mpi_isend(orbw(1,1,nwalk),nelec*norb,mpi_double_precision
      &  ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
@@ -291,21 +330,24 @@ c Written by Claudia Filippi
      & ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       itag=itag+2
 
-      do 250 istate=1,nstates
-        do 250 iab=1,2
+      do istate=1,nstates
+        do iab=1,2
         itag=itag+1
- 250    call mpi_recv(ymatw(1,1,nwalk,iab,istate),norb_tot*nelec,mpi_double_precision
+        call mpi_recv(ymatw(1,1,nwalk,iab,istate),norb_tot*nelec,mpi_double_precision
      &   ,isend,itag,MPI_COMM_WORLD,istatus,ierr)
+        enddo
+      enddo
 
-      do 260 iab=1,2
-        do 260 k=1,ndet
+      do iab=1,2
+        do k=1,ndet
           ndim=numrep_det(k,iab)
           if(k.ne.krefw(nwalk).and.ndim.gt.0) then
             itag=itag+1
             call mpi_recv(wfmatw(1,k,nwalk,iab),ndim*ndim,mpi_double_precision
      &     ,isend,itag,MPI_COMM_WORLD,istatus,ierr)
         endif
- 260  continue
+        enddo
+      enddo
 
       call mpi_recv(orbw(1,1,nwalk),nelec*norb_tot,mpi_double_precision
      &  ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)

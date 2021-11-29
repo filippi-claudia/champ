@@ -24,11 +24,13 @@ c cf=sqrt(7/(4*pi)),cf2=cf*sqrt(5),cf3=cf*sqrt(15)
       data cf,cf2,cf3/0.746352665180231d0,1.66889529453114d0,2.89061144264055d0/
 
       ddy_lap=0.d0
-      do 1 i=1,3
+      do i=1,3
         dy(i)=0.d0
         dlapy(i)=0.d0
-        do 1 j=1,3
-  1       ddy(i,j)=0.d0
+        do j=1,3
+          ddy(i,j)=0.d0
+        enddo
+      enddo
 
       if(iforce_analy.eq.1) goto 200
 

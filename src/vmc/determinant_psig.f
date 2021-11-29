@@ -18,9 +18,10 @@
 
 
       psig=0
-      do 200 i=1,nstates
+      do i=1,nstates
         istate=iweight_g(i)
-  200   psig=psig+weights_g(i)*psid(istate)*psid(istate)
+        psig=psig+weights_g(i)*psid(istate)*psid(istate)
+      enddo
 
       psig=dsqrt(psig)
 

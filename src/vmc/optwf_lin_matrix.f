@@ -51,18 +51,22 @@ c If CI only, we solve secular equation on basis of J*CSF
        else
 c Save the overlap and hamiltonian
         idx=0
-        do 3 i=1,nparm+is
-          do 3 j=1,i
+        do i=1,nparm+is
+          do j=1,i
             idx=idx+1
             s_sav(idx)=s(i,j)
             h_sav(i,j)=h(i,j)
-   3        h_sav(j,i)=h(j,i)
+            h_sav(j,i)=h(j,i)
+          enddo
+        enddo
       endif
 
 c Symmetrize the overlap
-      do 4 i=1,nparm+is
-        do 4 j=1,i
-   4      s(j,i)=s(i,j)
+      do i=1,nparm+is
+        do j=1,i
+          s(j,i)=s(i,j)
+        enddo
+      enddo
 
       ! do i=1,nparm+is
       !   write(ounit,*) 'h =',(h(i,j),j=1,nparm+is)
@@ -79,23 +83,23 @@ c Symmetrize the overlap
       call solve_geneig(nparm+is,mparmx,hmod,s,seig_inv,work,eig,eigi,eig_vec)
 
       imag=0
-      do 5 j=1,nparm+is
+      do j=1,nparm+is
        if (eigi(j).ne.0.d0) imag=1
-    5 continue
+      enddo
       if(imag.eq.1) write(ounit,'(''Warning: imaginary eigenvalues'')')
 
 c Sort the eigenvalues
       call sort(nparm+is,eig,isort)
 
       ireal=0
-      do 6 ii=1,nparm+is
+      do ii=1,nparm+is
         i=isort(ii)
         if(eigi(i).eq.0) then
          ireal=ireal+1
          if(ireal.le.5)
      &   write(ounit,'(''eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') i,eig(i),eigi(i)
         endif
-    6 continue
+      enddo
       write(ounit,*)
 
 c use semiorthogonal basis and compute minimum norm in direction orthogonal to psi0
@@ -107,18 +111,19 @@ c use semiorthogonal basis and compute minimum norm in direction orthogonal to p
 
       ireal=0
       anorm_orth_min=1.d+99
-      do 20 ii=1,nparm+is
+      do ii=1,nparm+is
         i=isort(ii)
         if(eigi(i).ne.0.or.eig(i).lt.emin) go to 20
         if(eig(i).gt.emax) go to 25
         ireal=ireal+1
         bot=1.d0
-        do 10 j=1,nparmd
-   10     bot=bot-eig_vec(j+nparmj+is,i)*oav(j+1)/eig_vec(1,i)
+        do j=1,nparmd
+          bot=bot-eig_vec(j+nparmj+is,i)*oav(j+1)/eig_vec(1,i)
+        enddo
         idx=0
         anorm_orth=0.d0
-        do 15 j=1,nparm+is
-          do 15 k=1,j
+        do j=1,nparm+is
+          do k=1,j
             idx=idx+1
 c 21/8 - ERROR?
 c           if(j.ne.1.and.k.ne.1) then
@@ -126,7 +131,8 @@ c           if(j.ne.1.and.k.ne.1) then
               anorm_orth=anorm_orth+eig_vec(j,i)*eig_vec(k,i)*s_sav(idx)
               if(j.ne.k) anorm_orth=anorm_orth+eig_vec(k,i)*eig_vec(j,i)*s_sav(idx)
             endif
-   15   continue
+          enddo
+        enddo
         anorm_orth=sqrt(dabs(anorm_orth))/abs(bot*eig_vec(1,i))
         if(anorm_orth.lt.anorm_orth_min) then
           anorm_orth_min=anorm_orth
@@ -138,6 +144,7 @@ c           if(j.ne.1.and.k.ne.1) then
           write(ounit,'(4x,'' ortho dir  '',i4,'' = '',f15.5)') i,anorm_orth
         endif
    20 continue
+      enddo
    25 write(ounit,'(i4,'' real roots in energy range '',f15.5,'','',f15.5)') ireal,emin,emax
       if(ireal.eq.0) then
         dmult=dmult*2
@@ -215,7 +222,7 @@ c     write(ounit,*) 'elapsed time for diagonalization:',t_sdiag-t0
       icut=1
       ineg=1
       write(ounit,'(''overlap matrix: Maximum eigenvalue, threshold: '',1p2e12.4)') seig_vals(n),eps_eigval*seig_vals(n)
-      do 10 i=1,n
+      do i=1,n
         if((ineg.eq.1).and.(seig_vals(i).gt.0.d0)) then
           ineg=0
           write(ounit,'(''first positive eigenvalue'',t41,i6)') i
@@ -224,35 +231,44 @@ c     write(ounit,*) 'elapsed time for diagonalization:',t_sdiag-t0
           icut=0
           write(ounit,'(''first eigenvalue larger than threshold'',t41,i6)') i
         endif
-  10  continue
-      do 20 i=1,n
+      enddo
+      do i=1,n
         if(seig_vals(i)/seig_vals(n).gt.eps_eigval) then
           seig_valinv(i)=1.0d0/dsqrt(seig_vals(i))
          else
           seig_valinv(i)=0.0d0
         endif
   20  continue
+      enddo
 
 c I = A^T S A where A_ij= U_ij/sqrt(s_eigval(j))
 c s in input contains U -> s is overwritten and contains A
-      do 30 i=1,n
-        do 30 j=1,n
+      do i=1,n
+        do j=1,n
           s(i,j)=s(i,j)*seig_valinv(j)
-  30  continue
+        enddo
+      enddo
 
 c Compute work_mat=A^T*H*A
-      do 35 i=1,n
-        do 35 l=1,n
-  35      hmod(l,i)=0.d0
+      do i=1,n
+        do l=1,n
+          hmod(l,i)=0.d0
+        enddo
+      enddo
 
-      do 50 l=1,n
-        do 40 m=1,n
+      do l=1,n
+        do m=1,n
           work(m)=0.d0
-          do 40 k=1,n
-  40        work(m)=work(m)+s(k,l)*h(k,m)
-        do 50 i=1,n
-          do 50 m=1,n
-  50        hmod(l,i)=hmod(l,i)+work(m)*s(m,i)
+          do k=1,n
+            work(m)=work(m)+s(k,l)*h(k,m)
+          enddo
+        enddo
+        do i=1,n
+          do m=1,n
+            hmod(l,i)=hmod(l,i)+work(m)*s(m,i)
+          enddo
+        enddo
+      enddo
 
       call cpu_time(t)
 c     t_hmod=t
@@ -308,13 +324,17 @@ c     call cpu_time(t)
 c     t_hmdiag=t
 c     write(ounit,*) 'elapsed time to diagonalize Hmod:',t-t0
 
-      do 20 k=1,n
-        do 10 i=1,n
+      do k=1,n
+        do i=1,n
           work(i)=0.d0
-          do 10 j=1,n
-  10        work(i)=work(i)+s(i,j)*eig_vec(j,k)
-        do 20 i=1,n
+          do j=1,n
+            work(i)=work(i)+s(i,j)*eig_vec(j,k)
+          enddo
+        enddo
+        do i=1,n
   20      eig_vec(i,k)=work(i)
+        enddo
+      enddo
 
 c     call cpu_time(t)
 c     t_eigvec=t
@@ -374,24 +394,29 @@ c-----------------------------------------------------------------------
       if(ioptjas.eq.0.and.ioptorb.eq.0) then
 	is=0
         idx=0
-        do 105 i=1,nparm+is
-          do 105 j=1,i
+        do i=1,nparm+is
+          do j=1,i
             idx=idx+1
-  105       s_norm(idx)=s(i,j)
+            s_norm(idx)=s(i,j)
+          enddo
+        enddo
        else
         idx=0
-        do 107 i=1,nparm+is
-          do 107 j=1,i
+        do i=1,nparm+is
+          do j=1,i
             idx=idx+1
             s(i,j)=s_sav(idx)
-  107       s(j,i)=s_sav(idx)
-        do 108 i=1,nparm+is
-          do 108 j=1,nparm+is
+            s(j,i)=s_sav(idx)
+          enddo
+        enddo
+        do i=1,nparm+is
+          do j=1,nparm+is
             h(i,j)=h_sav(i,j)
-  108   continue
-        do 109 i=2,nparm+is
+          enddo
+        enddo
+        do i=2,nparm+is
           h(i,i)=h(i,i)+add_diag
-  109   continue
+        enddo
       endif
 
 c     do i=1,nparm+is
@@ -405,9 +430,9 @@ c     enddo
       call solve_geneig(nparm+is,mparmx,hmod,s,seig_inv,work,eig,eigi,eig_vec)
 
       imag=0
-      do 110 j=1,nparm+is
+      do j=1,nparm+is
        if (eigi(j).ne.0.d0) imag=1
-  110 continue
+      enddo
 
       if(imag.eq.1) write(ounit,'(''Warning: imaginary eigenvalues'')')
 
@@ -429,7 +454,7 @@ c use semiorthogonal basis and compute minimum norm in direction orthogonal to p
 
       ireal=0
       anorm_orth_min=1.d+99
-      do 119 ii=1,nparm+is
+      do ii=1,nparm+is
         i=isort(ii)
         if(eigi(i).ne.0.or.eig(i).lt.emin) go to 119
         if(eig(i).gt.emax) go to 120
@@ -438,12 +463,13 @@ c use semiorthogonal basis and compute minimum norm in direction orthogonal to p
         if(ioptjas.ne.0.or.ioptorb.ne.0) then
 
           bot=1.d0
-          do 117 j=1,nparmd
-  117        bot=bot-eig_vec(nparmj+is+j,i)*oav(j+1)/eig_vec(1,i)
+          do j=1,nparmd
+             bot=bot-eig_vec(nparmj+is+j,i)*oav(j+1)/eig_vec(1,i)
+          enddo
           idx=0
           anorm_orth=0.d0
-          do 118 j=1,nparm+is
-            do 118 k=1,j
+          do j=1,nparm+is
+            do k=1,j
               idx=idx+1
 c 21/8 - ERROR?
 c             if(j.ne.1.and.k.ne.1) then
@@ -451,7 +477,8 @@ c             if(j.ne.1.and.k.ne.1) then
                 anorm_orth=anorm_orth+eig_vec(j,i)*eig_vec(k,i)*s_sav(idx)
                 if(j.ne.k) anorm_orth=anorm_orth+eig_vec(k,i)*eig_vec(j,i)*s_sav(idx)
               endif
-  118     continue
+            enddo
+          enddo
           anorm_orth=sqrt(dabs(anorm_orth))/abs(bot*eig_vec(1,i))
           if(anorm_orth.lt.anorm_orth_min) then
             anorm_orth_min=anorm_orth
@@ -465,6 +492,7 @@ c             if(j.ne.1.and.k.ne.1) then
           if(ireal.le.5) write(ounit,'(i4,'' eigenvalue '',i4,'' = '',f15.5,'' + i* '',f15.5)') ii,i,eig(i),eigi(i)
         endif
   119 continue
+      enddo
   120 write(ounit,'(i4,'' real roots in energy range '',f15.5,'','',f15.5)') ireal,emin,emax
       if(ireal.eq.0) then
         dmult=dmult*2
@@ -482,52 +510,60 @@ c             if(j.ne.1.and.k.ne.1) then
         if(i_ovr.ne.i_min) write(ounit,'(''Warning: max overlap not for min eigenvalue'')')
 
         i_good=i_ovr
-        do 130 i=2,nparm+is
-  130    cdelta(i-1)=eig_vec(i,i_good)/eig_vec(1,i_good)
+        do i=2,nparm+is
+         cdelta(i-1)=eig_vec(i,i_good)/eig_vec(1,i_good)
+        enddo
 
         write(ounit,'(''dp  ='',1000f10.5)') (cdelta(i),i=1,nparm)
 
         bot=1
-        do 145 i=1,nparmd
-  145     bot=bot-cdelta(nparmj+i)*oav(i+1)
+        do i=1,nparmd
+          bot=bot-cdelta(nparmj+i)*oav(i+1)
+        enddo
 
 c minus sign because variation is subtracted when computing new parameters
-        do 150 i=1,nparm
-  150     cdelta(i)=-cdelta(i)/bot
+        do i=1,nparm
+          cdelta(i)=-cdelta(i)/bot
+        enddo
 
         write(ounit,'(''dpn ='',1000f10.5)') (-cdelta(i),i=1,nparm)
 
-        do 160 i=1,nparm
-  160     dparm(i)=cdelta(i)
+        do i=1,nparm
+          dparm(i)=cdelta(i)
+        enddo
 
        else
         i0=0
-        do 180 jj=1,nstates
+        do jj=1,nstates
 
           write(ounit,'(''State '',i4)') jj
           dnorm_jj=0
           idx=0
 
           if(ncsf.gt.0) then
-            do 162 i=1,nparm
-              do 162 k=1,i
+            do i=1,nparm
+              do k=1,i
                 idx=idx+1
                 dmul=1.d0
                 if(i.ne.k) dmul=2.d0
-  162            dnorm_jj=dnorm_jj+dmul*ccsf(i,jj,1)*ccsf(k,jj,1)*s_norm(idx)
+                 dnorm_jj=dnorm_jj+dmul*ccsf(i,jj,1)*ccsf(k,jj,1)*s_norm(idx)
+              enddo
+            enddo
           else
-            do 163 i=1,nparm
-              do 163 k=1,i
+            do i=1,nparm
+              do k=1,i
                 idx=idx+1
                 dmul=1.d0
                 if(i.ne.k) dmul=2.d0
-  163            dnorm_jj=dnorm_jj+dmul*cdet(i,jj,1)*cdet(k,jj,1)*s_norm(idx)
+                 dnorm_jj=dnorm_jj+dmul*cdet(i,jj,1)*cdet(k,jj,1)*s_norm(idx)
+              enddo
+            enddo
           endif
           dnorm_jj=1.d0/dsqrt(dnorm_jj)
 
           write(ounit,'(''state '',i4,'' norm '',1p1e12.5)') jj,dnorm_jj
 
-          do 172 j=i0+1,nparm
+          do j=i0+1,nparm
 
             overlap(j)=0.d0
 
@@ -536,35 +572,39 @@ c minus sign because variation is subtracted when computing new parameters
             if(eig(jsort).ne.0.and.eigi(jsort).eq.0.d0) then
               idx=0
               if(ncsf.gt.0) then
-                do 166 i=1,nparm
-                  do 166 k=1,i
+                do i=1,nparm
+                  do k=1,i
                     idx=idx+1
                     if(i.ne.k) then
                       overlap(j)=overlap(j)+(eig_vec(i,jsort)*ccsf(k,jj,1)+eig_vec(k,jsort)*ccsf(i,jj,1))*s_norm(idx)
                      else
                       overlap(j)=overlap(j)+eig_vec(i,jsort)*ccsf(k,jj,1)*s_norm(idx)
                     endif
-  166           continue
+                  enddo
+                enddo
                else
-                do 167 i=1,nparm
-                  do 167 k=1,i
+                do i=1,nparm
+                  do k=1,i
                     idx=idx+1
                     if(i.ne.k) then
                       overlap(j)=overlap(j)+(eig_vec(i,jsort)*cdet(k,jj,1)+eig_vec(k,jsort)*cdet(i,jj,1))*s_norm(idx)
                      else
                       overlap(j)=overlap(j)+eig_vec(i,jsort)*cdet(k,jj,1)*s_norm(idx)
                     endif
-  167           continue
+                  enddo
+                enddo
               endif
 
               dnorm=0.d0
               idx=0
-              do 170 i=1,nparm
-                do 170 k=1,i
+              do i=1,nparm
+                do k=1,i
                   idx=idx+1
                   dmul=1.d0
                   if(i.ne.k) dmul=2.d0
-  170             dnorm=dnorm+dmul*eig_vec(i,jsort)*eig_vec(k,jsort)*s_norm(idx)
+                  dnorm=dnorm+dmul*eig_vec(i,jsort)*eig_vec(k,jsort)*s_norm(idx)
+                enddo
+              enddo
               dnorm=1.d0/dsqrt(dnorm)
 
               overlap(j)=dabs(overlap(j))*dnorm*dnorm_jj
@@ -573,24 +613,25 @@ c minus sign because variation is subtracted when computing new parameters
               write(ounit,'('' overlap state,eigenstate '',2i4,'' = '',f15.5)') jj,j,overlap(j)
 
             endif
-  172     continue
+          enddo
 
           target_overlap=-1.d0
-          do 175 j=i0+1,nparm
+          do j=i0+1,nparm
             if(overlap(j).gt.target_overlap) then
               i0=j
               target_overlap=overlap(j)
             endif
-  175     continue
+          enddo
 
-          do 178 i=1,nparm
-  178       dparm(i+nparm*(jj-1))=eig_vec(i,isort(i0))*dnorm
+          do i=1,nparm
+            dparm(i+nparm*(jj-1))=eig_vec(i,isort(i0))*dnorm
+          enddo
           write(ounit,'(''state '',i4,'' norm'',1p1e12.5,'' overlap '',1p1e12.5)') jj,dnorm,overlap(i0)
           write(ounit,'(''pn  ='',1000f10.5)') (dparm(i+nparm*(jj-1)),i=1,nparm)
 
           if(nstates.gt.1.and.jj.ne.nstates.and.eig(isort(i0+1)).eq.0.d0)
      &      call fatal_error('OPTWF: Overlap with state 1 for highest eigenvalue >0')
-  180   continue
+        enddo
        endif
 
       endif

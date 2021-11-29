@@ -44,8 +44,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
         if(nordc.eq.0) return
 
         if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
-        do 37 k=1,3
-   37     if(abs(rshifti(k)-rshiftj(k)).gt.eps) return
+        do k=1,3
+          if(abs(rshifti(k)-rshiftj(k)).gt.eps) return
+        enddo
 
         uu(1)=u
         rrri=rri
@@ -57,22 +58,23 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
         uu(0)=1
         ss(0)=2
         tt(0)=1
-        do 40 jp=1,nordc
+        do jp=1,nordc
           uu(jp)=uu(1)*uu(jp-1)
           ss(jp)=rrri**jp+rrrj**jp
-   40     tt(jp)=(rrri*rrrj)**jp
+          tt(jp)=(rrri*rrrj)**jp
+        enddo
 
         ll=0
         jj=1
         jparm=1
-        do 50 n=2,nordc
-          do 50 k=n-1,0,-1
+        do n=2,nordc
+          do k=n-1,0,-1
             if(k.eq.0) then
               l_hi=n-k-2
              else
               l_hi=n-k
             endif
-            do 50 l=l_hi,0,-1
+            do l=l_hi,0,-1
               m=(n-k-l)/2
               if(2*m.eq.n-k-l) then
                 ll=ll+1
@@ -83,25 +85,28 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
                 if(ll.eq.iwjasc(jparm,it)) then
                   ideriv=2
                  else
-                  do 31 id=1,2*(nordc-1)
+                  do id=1,2*(nordc-1)
                     if(ll.eq.iwc4(id)) then
                       jj=id
                       if(nvdepend(jj,it).gt.0) ideriv=1
                     endif
-   31             continue
+                  enddo
                 endif
 
                 if(ideriv.eq.1) then
-                  do 43 id=1,nvdepend(jj,it)
+                  do id=1,nvdepend(jj,it)
                     iparm=iwdepend(jj,id,it)
-   43               gn(iparm)=gn(iparm)+cdep(jj,id,it)*p
+                    gn(iparm)=gn(iparm)+cdep(jj,id,it)*p
+                  enddo
 c                 jj=jj+1
                  elseif(ideriv.eq.2) then
                   gn(jparm)=gn(jparm)+p
                   jparm=jparm+1
                 endif
               endif
-   50   continue
+            enddo
+          enddo
+        enddo
 
       endif
 
@@ -143,9 +148,10 @@ c written for general iwf, whereas others (asymp_r) assume iwf=1.
       if(ijas.ge.4.and.ijas.le.6) then
 
         deriv_psianl=a4(1,it,iwf)*rri/(one+a4(2,it,iwf)*rri)-asymp_jasa(it)
-        do 20 i=2,norda
-   20     deriv_psianl=deriv_psianl+a4(i+1,it,iwf)*rri**i
-        do 30 jparm=1,nparma(it)
+        do i=2,norda
+          deriv_psianl=deriv_psianl+a4(i+1,it,iwf)*rri**i
+        enddo
+        do jparm=1,nparma(it)
             if(iwjasa(jparm,it).eq.1) then
               top=rri
               bot=one+a4(2,it,iwf)*rri
@@ -160,7 +166,7 @@ c written for general iwf, whereas others (asymp_r) assume iwf=1.
               gen=rri**iord-asymp_r**iord
             endif
             gn(jparm)=gn(jparm)+gen
-   30    continue
+        enddo
       endif
 
       return
@@ -217,11 +223,12 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 
       deriv_psibnl=sspinn*fee-asymp_jasb(ipar+1)
       if(ijas.ge.4.and.ijas.le.6) then
-        do 10 i=2,nordb
-   10     deriv_psibnl=deriv_psibnl+b(i+1,isb,iwf)*u**i
+        do i=2,nordb
+          deriv_psibnl=deriv_psibnl+b(i+1,isb,iwf)*u**i
+        enddo
       endif
 
-      do 20 jparm=1,nparmb(isb)
+      do jparm=1,nparmb(isb)
         if(iwjasb(jparm,isb).eq.1) then
           top=u
           bot=one+b(2,isb,iwf)*u
@@ -236,7 +243,7 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
           gee=u**iord-asymp_r**iord
         endif
         gn(jparm)=gn(jparm)+gee
-  20  continue
+      enddo
 
       return
       end

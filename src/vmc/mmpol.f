@@ -563,11 +563,11 @@ c......................................................
 
       peQMdp=penu_dp+peq_dp+u_self+u_dd
       peQMq =penu_q+peqq
-      do 200 i=1,nelec
+      do i=1,nelec
         call mmpol_extpot_ene_elec(coord(1,i))
         peQMq=peQMq+pepol_q
         peQMdp=peQMdp+pepol_dp
-  200 continue
+      enddo
 
       if (icall_mm.eq.1)then
         write(ounit,*)
@@ -887,7 +887,7 @@ c the matrix a is replaced by its inverse.
       det(1) = 1.0d0
       det(2) = 0.0d0
       ten = 10.0d0
-      do 50 i = 1, nsub
+      do i = 1, nsub
         if (ipvt(i) .ne. i) det(1) = -det(1)
         det(1) = a(i,i)*det(1)
 c        ...exit
@@ -902,7 +902,7 @@ c        ...exit
           det(2) = det(2) + 1.0d0
         go to 30
    40   continue
-   50 continue
+      enddo
    60 continue
 
       determinant = det(1)*10.0**det(2)

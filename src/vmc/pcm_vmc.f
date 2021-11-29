@@ -110,9 +110,10 @@ c-----------------------------------------------------------------------
       endif
 
       if(ipcm.ne.3)then
-        do 10 i=1,nchs
+        do i=1,nchs
           enfpcm_ave(i)=enfpcm_cum(i)/wcum
-   10     enfpcm_err(i)=err(enfpcm_cum(i),enfpcm_cm2(i))
+          enfpcm_err(i)=err(enfpcm_cum(i),enfpcm_cm2(i))
+        enddo
  	call qpcm_charges(enfpcm_ave,enfpcm_err,qpol,sqpol2)
 
         qtheo=(fs-1.0d0)*(qfree+qopcm_ave)

@@ -77,10 +77,12 @@ c of a nucleus or an electron is present within cutr and cutr_sim respectively.
 
 c Calculate inverse transformations (from lattice coordinates to real coordinates)
 c and cell volumes
-      do 5 i=1,3
-        do 5 k=1,3
+      do i=1,3
+        do k=1,3
           rlatt_inv(k,i)=rlatt(k,i)
-    5     rlatt_sim_inv(k,i)=rlatt_sim(k,i)
+          rlatt_sim_inv(k,i)=rlatt_sim(k,i)
+        enddo
+      enddo
       call matinv(rlatt_inv,3,det)
       call matinv(rlatt_sim_inv,3,det_sim)
 
@@ -139,9 +141,11 @@ c    &   -rlatt_sim(2,1)*rlatt_sim(1,2)*rlatt_sim(3,3)
 
 c Calculate inverse transformation for reciprocal lattice (from lattice coordinates to real coordinates)
 c Needed to transform k-vectors
-      do 7 i=1,3
-        do 7 k=1,3
-    7     glatt_inv(k,i)=glatt(k,i)
+      do i=1,3
+        do k=1,3
+          glatt_inv(k,i)=glatt(k,i)
+        enddo
+      enddo
       call matinv(glatt_inv,3,det)
 
 
@@ -175,13 +179,13 @@ c generate shells of primitive cell g-vectors
 
       ngnorm=ngnorm_big
       ngvec=0
-      do 10 k=1,ngnorm_big
+      do k=1,ngnorm_big
         if(gnorm(k).gt.cutg+eps) then
           ngnorm=k-1
           goto 20
         endif
         ngvec=ngvec+igmult(k)
-   10 continue
+      enddo
 
    20 write(ounit,'(/,''Shells within cutg_big,cutg'',2i8)') ngnorm_big,ngnorm
       write(ounit,'(/,''Vects. within cutg_big,cutg'',2i8)') ngvec_big,ngvec
@@ -194,12 +198,12 @@ c generate shells of primitive cell g-vectors
         write(ounit,'(''ngnorm,NGNORMX='',2i8)') ngnorm,NGNORMX
         call fatal_error ('ngnorm>NGNORMX in set_ewald')
       endif
-      do 30 k=1,3
+      do k=1,3
         if(ng1d(k).gt.NG1DX) then
           write(ounit,'(''k,ng1d(k),NG1DX='',i1,2i8)') k,ng1d(k),NG1DX
           call fatal_error ('ng1d(k)>NG1DX in set_ewald')
         endif
-   30 continue
+      enddo
 
       open(1,file='gvectors_qmc')
       write(1,'(i5,'' ngvec (half of them only)'')') ngvec
@@ -212,29 +216,33 @@ c generate shells of simulation cell g-vectors
 
       ngnorm_sim=ngnorm_sim_big
       ngvec_sim=0
-      do 40 k=1,ngnorm_sim_big
+      do k=1,ngnorm_sim_big
         if(gnorm_sim(k).gt.cutg_sim+eps) then
           ngnorm_sim=k-1
           goto 50
         endif
         ngvec_sim=ngvec_sim+igmult_sim(k)
-   40 continue
+      enddo
 
    50 write(ounit,'(/,''Shells within cutg_sim_big,cutg_sim'',2i8)') ngnorm_sim_big,ngnorm_sim
       write(ounit,'(/,''Vects. within cutg_sim_big,cutg_sim'',2i8)') ngvec_sim_big,ngvec_sim
       write(ounit,'(/,''ng1d for simulation cell'',3i4)') (ng1d_sim(k),k=1,3)
       if(ngvec_sim.gt.NGVEC_SIMX) call fatal_error ('ngvec_sim>NGVEC_SIMX in set_ewald')
       if(ngnorm_sim.gt.NGNORM_SIMX) call fatal_error ('ngnorm_sim>NGNORM_SIMX in set_ewald')
-      do 60 k=1,3
-   60   if(ng1d_sim(k).gt.NG1DX) call fatal_error ('ng1d_sim(k)>NG1DX in shells')
+      do k=1,3
+        if(ng1d_sim(k).gt.NG1DX) call fatal_error ('ng1d_sim(k)>NG1DX in shells')
+      enddo
 
 c Convert k-vector shift from simulation-cell recip. lattice vector units to cartesian coordinates
-      do 62 k=1,3
-   62   rkvec_shift_tmp(k)=rkvec_shift(k)
-      do 65 k=1,3
+      do k=1,3
+        rkvec_shift_tmp(k)=rkvec_shift(k)
+      enddo
+      do k=1,3
         rkvec_shift(k)=0
-        do 65 i=1,3
-   65     rkvec_shift(k)=rkvec_shift(k)+rkvec_shift_tmp(i)*glatt_sim(k,i)
+        do i=1,3
+          rkvec_shift(k)=rkvec_shift(k)+rkvec_shift_tmp(i)*glatt_sim(k,i)
+        enddo
+      enddo
       write(ounit,'(/,''rkvec_shift in sim-cell recip. lat. vec. units'',9f9.4)') (rkvec_shift_tmp(k),k=1,3)
       write(ounit,'(''rkvec_shift in cartesian coodinates'',9f9.4)') (rkvec_shift(k),k=1,3)
 
@@ -252,9 +260,10 @@ c Coulomb interactions in primitive and simulation cells
 c n-n, e-n interactions (primitive cell)
 c put in uniform background by setting k=0 term to zero
       vbare_coul(1)=0.d0
-      do 70 k=2,ngnorm_big
+      do k=2,ngnorm_big
 c Fourier transfom of 1/r
-   70   vbare_coul(k)=2*twopi/(vcell*gnorm(k)**2)
+        vbare_coul(k)=2*twopi/(vcell*gnorm(k)**2)
+      enddo
 
       call separate(vbare_coul,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm
      &,cutr,vcell,ncoef_per,np,b_coul,y_coul,chisq,ifcon,isrange)
@@ -281,19 +290,20 @@ c debug n-n interaction (primitive cell)
         dx=cutr/(npts-1)
 
         sum=0
-        do 74 i=1,npts
+        do i=1,npts
           rr=(i-1)*dx+1.d-20
           if(i.eq.1.or.i.eq.npts) then
             wt=0.5d0
            else
             wt=1
           endif
-   74     sum=sum+wt*rr**2*vsrange(rr,cutr,lowest_pow,ncoef_per,np,b_coul)
+          sum=sum+wt*rr**2*vsrange(rr,cutr,lowest_pow,ncoef_per,np,b_coul)
+        enddo
         const=2*twopi*sum*dx/vcell
         write(ounit,'(''const='',9f12.8)') const
 
         rms=0
-        do 75 i=1,npts
+        do i=1,npts
           r_tmp(1)=(i-1)*dx+1.d-20
           r_tmp(2)=0
           r_tmp(3)=0
@@ -312,7 +322,8 @@ c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_coul)
      &      ,1/rr,(true-true_s)/dx,(test-test_s)/dx,vs,vl
           endif
           true_s=true
-   75   test_s=test
+        test_s=test
+        enddo
         rms=sqrt(rms/(npts-1))
         write(ounit,'(''Rms error of 1/r (prim cell) fit ='',d12.4)') rms
         if(rms.gt.1.d-3) write(ounit,'(''Warning: rms error of 1/r (prim cell) fit too large'',d12.4)') rms
@@ -323,11 +334,12 @@ c e-e interactions (simulation cell) (we can reuse vbare_coul)
 c put in uniform background by setting k=0 term to zero
       vbare_coul(1)=0.d0
       vbare_jas(1)=0.d0
-      do 80 k=2,ngnorm_sim_big
+      do k=2,ngnorm_sim_big
 c Fourier transfom of 1/r
         vbare_coul(k)=2*twopi/(vcell_sim*gnorm_sim(k)**2)
 c Fourier transform of -1/r*(1-exp(-r/f)) for Jastrow
-   80   vbare_jas(k)=-vbare_coul(k)/(1+(f*gnorm_sim(k))**2)
+        vbare_jas(k)=-vbare_coul(k)/(1+(f*gnorm_sim(k))**2)
+      enddo
 
       call separate(vbare_coul,b0,lowest_pow,ngnorm_sim_big,igmult_sim,gnorm_sim,ngnorm_sim
      &,cutr_sim,vcell_sim,ncoef_per,np,b_coul_sim,y_coul_sim,chisq,ifcon,isrange)
@@ -357,19 +369,20 @@ c rms error only for latter 3/4 of interval
         dx=cutr_sim/(npts-1)
 
         sum=0
-        do 84 i=1,npts
+        do i=1,npts
           rr=(i-1)*dx+1.d-20
           if(i.eq.1.or.i.eq.npts) then
             wt=0.5d0
            else
             wt=1
           endif
-   84     sum=sum+wt*rr**2*vsrange(rr,cutr_sim,lowest_pow,ncoef_per,np,b_coul_sim)
+          sum=sum+wt*rr**2*vsrange(rr,cutr_sim,lowest_pow,ncoef_per,np,b_coul_sim)
+        enddo
         const=2*twopi*sum*dx/vcell_sim
         write(ounit,'(''const='',9f12.8)') const
 
         rms=0
-        do 85 i=1,npts
+        do i=1,npts
           r_tmp(1)=(i-1)*dx+1.d-20
           r_tmp(2)=0
           r_tmp(3)=0
@@ -388,7 +401,8 @@ c         true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_coul)
      &      ,1/rr,(true-true_s)/dx,(test-test_s)/dx,vs,vl
           endif
           true_s=true
-   85   test_s=test
+        test_s=test
+        enddo
         rms=sqrt(rms/(npts-1))
         write(ounit,'(''Rms error of 1/r fit (sim cell) ='',d12.4)') rms
         if(rms.gt.1.d-3) write(ounit,'(''Warning: rms error of 1/r (sim cell) fit too large'',d12.4)') rms
@@ -426,7 +440,7 @@ c rms error only for latter 3/4 of interval
         npts=101
         dx=cutr_sim/(npts-1)
         rms=0
-        do 86 i=1,npts
+        do i=1,npts
           r_tmp(1)=(i-1)*dx+1.d-20
           r_tmp(2)=0
           r_tmp(3)=0
@@ -442,7 +456,8 @@ c rms error only for latter 3/4 of interval
      &      ,-1/rr*(1-exp(-rr/f)),(true-true_s)/dx,(test-test_s)/dx
           endif
           true_s=true
-   86   test_s=test
+        test_s=test
+        enddo
         rms=sqrt(4*rms/(3*npts))
         write(ounit,'(''Rms error of jas fit on larger 3/4 interval='',d12.4)') rms
         if(rms.gt.1.d-3) write(ounit,'(''Warning: rms error of jas fit too large'',d12.4)') rms
@@ -458,7 +473,7 @@ c distribution after doing the numerical fourier transform.
 
       if(nloc.eq.0) goto 197
 
-   88 do 195 ict=1,nctype
+   88 do ict=1,nctype
 
 c If this is done just to find fourier components of potential, the cut-off
 c radius can be rmax(ict), but if we are to use it also for one of the basis
@@ -470,23 +485,25 @@ c     r0=rmax/(arg**(nr-1)-1)
       vps_short(1)=vpseudo(1,ict,lpot(ict))+znuc(ict)*2*alpha/sqrt(pi)
       vpseudo(1,ict,lpot(ict))=vps_short(1)
       write(ounit,'(''alpha'',9d12.4)') alpha,rmax(ict),arg(ict)
-      do 90 ir=2,nr_ps(ict)
+      do ir=2,nr_ps(ict)
         r(ir)=r0(ict)*(arg(ict)**(ir-1)-1.d0)
         vps_short(ir)=vpseudo(ir,ict,lpot(ict))+znuc(ict)*derf(alpha*r(ir))/r(ir)
 c       write(ounit,'(''r,vpseudo,z*derf/r,z/r'',9d12.4)') r(ir),vpseudo(ir,ict,lpot(ict))+znuc(ict)/r(ir),
 c    & -znuc(ict)*derf(alpha*r(ir))/r(ir)+znuc(ict)/r(ir),vpseudo(ir,ict,lpot(ict))+znuc(ict)*derf(alpha*r(ir))/r(ir)
 
-   90   vpseudo(ir,ict,lpot(ict))=vps_short(ir)
+        vpseudo(ir,ict,lpot(ict))=vps_short(ir)
+      enddo
 
 c Derivative at origin 0 because of nature of psp, and at last pt 0 because we subtracted out asymp behaviour
       dpot1=0
       dpotn=0
       call spline2(r,vpseudo(1,ict,lpot(ict)),nr_ps(ict),dpot1,dpotn,d2pot(1,ict,lpot(ict)),work)
 
-      do 100 ir=1,nr_ps(ict),50
+      do ir=1,nr_ps(ict),50
         call splfit_tm(r(ir),lpot(ict),ict,vpot)
 c 100   write(ounit,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vps_short(ir)
-  100   write(ounit,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vpseudo(ir,ict,lpot(ict)),vpot
+        write(ounit,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vpseudo(ir,ict,lpot(ict)),vpot
+      enddo
 
       write(ounit,'(/,''Grid parameters, r0,rmax,arg  '',d10.4,2f10.5)')
      & r0(ict),r(nr_ps(ict)),arg(ict)
@@ -504,22 +521,25 @@ c    & vbare_psp)
       call fourier_transform(r,arg(ict),r0(ict),nr_ps(ict),vps_short,vcell,gnorm,ngnorm_big,
      & vps_basis_fourier)
 
-      do 110 ig=1,ngnorm_big,10
+      do ig=1,ngnorm_big,10
 c 110   write(ounit,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vbare_psp(ig)
-  110   write(ounit,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vps_basis_fourier(ig)
+        write(ounit,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vps_basis_fourier(ig)
+      enddo
 
 c Add in (4*pi*Z/V) Integ d^3r (1-erf(alpha*r))/r to get correct background contribution
 c     vbare_psp(1)=vbare_psp(1)+pi*znuc(ict)/(vcell*alpha**2)
       vbare_psp(1)=vps_basis_fourier(1)+pi*znuc(ict)/(vcell*alpha**2)
-      do 120 ig=2,ngnorm_big
+      do ig=2,ngnorm_big
         g2=gnorm(ig)**2
         g2a=0.25d0*g2/alpha**2
 c       write(ounit,*) ig,twopi,znuc(ict),exp(-g2a),(vcell*g2)
 c 120   vbare_psp(ig)=vbare_psp(ig)-2*twopi*znuc(ict)*exp(-g2a)/(vcell*g2)
-  120   vbare_psp(ig)=vps_basis_fourier(ig)-2*twopi*znuc(ict)*exp(-g2a)/(vcell*g2)
+        vbare_psp(ig)=vps_basis_fourier(ig)-2*twopi*znuc(ict)*exp(-g2a)/(vcell*g2)
+      enddo
 
-      do 130 ig=1,ngnorm_big,10
-  130   write(ounit,'(''CHECK FT2'',i5,g12.5,9d12.4)') ig,gnorm(ig),vbare_psp(ig),vps_basis_fourier(ig)
+      do ig=1,ngnorm_big,10
+        write(ounit,'(''CHECK FT2'',i5,g12.5,9d12.4)') ig,gnorm(ig),vbare_psp(ig),vps_basis_fourier(ig)
+      enddo
 
 c One cannot numerically fourier transform a function with a long 1/r
 c tail.  So, add Z/r potential to cancel -Z/r tail and subtract out the
@@ -589,9 +609,10 @@ c n-n, e-n interactions (primitive cell)
 c put in uniform background by setting k=0 term to zero
       if(vcell_sim.ne.vcell) then
         vbare_coul(1)=0.d0
-        do 185 k=2,ngnorm_big
+        do k=2,ngnorm_big
 c Fourier transfom of 1/r
-  185     vbare_coul(k)=2*twopi/(vcell*gnorm(k)**2)
+          vbare_coul(k)=2*twopi/(vcell*gnorm(k)**2)
+        enddo
       endif
 
 c Note that 1/r and Jastrow have singlularities at r=0 and so at short r we cannot test
@@ -602,7 +623,7 @@ c bare long-range parts.  The psp does not have a singularity so we can test it 
         npts=101
         dx=cutr/(npts-1)
         rms=0
-        do 191 i=1,npts
+        do i=1,npts
           r_tmp(1)=(i-1)*dx+1.d-20
           r_tmp(2)=0
           r_tmp(3)=0
@@ -624,18 +645,20 @@ c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_psp)
      &      ,(true-true_s)/dx,(test-test_s)/dx,vs,vl
           endif
           true_s=true
-  191   test_s=test
+        test_s=test
+        enddo
         rms=sqrt(rms/npts)
         write(ounit,'(''Rms error of psp fit='',d12.4)') rms
         if(rms.gt.1.d-3) write(ounit,'(''Warning: rms error of psp fit too large'',d12.4)') rms
       endif
-  195 continue
+      enddo
 
   197 znuc_sum=0
       znuc2_sum=0
-      do 200 i=1,ncent
+      do i=1,ncent
         znuc_sum=znuc_sum+znuc(iwctype(i))
-  200   znuc2_sum=znuc2_sum+znuc(iwctype(i))**2
+        znuc2_sum=znuc2_sum+znuc(iwctype(i))**2
+      enddo
 
 c     call pot_nn_ewald_old
 c     c_madelung=pecent*dist_nn/(znuc(1)*znuc(2)*ncent/2)
@@ -755,27 +778,28 @@ c         1  simulation cell
 
 
 
-      do 1 k=1,3
-    1   ng1d(k)=int(cutg/gdist(k))
+      do k=1,3
+        ng1d(k)=int(cutg/gdist(k))
+      enddo
 
       cutg2=cutg**2
       ngvec_big=0
 c     do 10 i1=-ng1d(1),ng1d(1)
-      do 10 i1=0,ng1d(1)
+      do i1=0,ng1d(1)
         if(i1.ne.0) then
           i2min=-ng1d(2)
          else
           i2min=0
         endif
 c       do 10 i2=-ng1d(2),ng1d(2)
-        do 10 i2=i2min,ng1d(2)
+        do i2=i2min,ng1d(2)
           if(i2.ne.0.or.i1.ne.0) then
             i3min=-ng1d(3)
            else
             i3min=0
           endif
 c         do 10 i3=-ng1d(3),ng1d(3)
-          do 10 i3=i3min,ng1d(3)
+          do i3=i3min,ng1d(3)
 
             gx=i1*glatt(1,1)+i2*glatt(1,2)+i3*glatt(1,3)
             gy=i1*glatt(2,1)+i2*glatt(2,2)+i3*glatt(2,3)
@@ -801,7 +825,9 @@ c         do 10 i3=-ng1d(3),ng1d(3)
 
               gnorm_tmp(ngvec_big)=dsqrt(glen2)
             endif
-   10 continue
+          enddo
+        enddo
+      enddo
 
       call sort(igvec,gvec,gnorm_tmp,gnorm,igmult,ngvec_big,ngnorm_big,icell)
 
@@ -832,29 +858,33 @@ c Written by Cyrus Umrigar
 
       lognb2=int(dlog(dfloat(ngvec_big))/dlog(2.d0)+1.d-14)
       m=ngvec_big
-      do 20 nn=1,lognb2
+      do nn=1,lognb2
         m=m/2
         k=ngvec_big-m
-        do 20 j=1,k
-          do 10 i=j,1,-m
+        do j=1,k
+          do i=j,1,-m
             l=i+m
             if (gnorm_tmp(l).gt.gnorm_tmp(i)-eps) goto 20
             t=gnorm_tmp(i)
             gnorm_tmp(i)=gnorm_tmp(l)
             gnorm_tmp(l)=t
-            do 10 k=1,3
+            do k=1,3
               it=igvec(k,i)
               igvec(k,i)=igvec(k,l)
               igvec(k,l)=it
               t=gvec(k,i)
               gvec(k,i)=gvec(k,l)
-   10         gvec(k,l)=t
+              gvec(k,l)=t
+            enddo
+          enddo
    20     continue
+        enddo
+      enddo
 
 c figure out the multiplicities and convert gnorm from being ngvec_big long to being ngnorm_big long
       ngnorm_big=1
       icount=0
-      do 30 i=2,ngvec_big
+      do i=2,ngvec_big
         icount=icount+1
         if(gnorm_tmp(i)-gnorm_tmp(i-1).gt.eps) then
           igmult(ngnorm_big)=icount
@@ -869,13 +899,14 @@ c figure out the multiplicities and convert gnorm from being ngvec_big long to b
           endif
           icount=0
         endif
-   30 continue
+      enddo
       igmult(ngnorm_big)=icount+1
       gnorm(ngnorm_big)=gnorm_tmp(ngvec_big)
 
       icheck=0
-      do 40 i=1,ngnorm_big
-   40   icheck=icheck+igmult(i)
+      do i=1,ngnorm_big
+        icheck=icheck+igmult(i)
+      enddo
       if(icheck.ne.ngvec_big) call fatal_error ('problem in sort')
 
 c     j=0
@@ -922,79 +953,94 @@ c a symmetry one could use later on.
 
 
       k_inv(1)=1
-      do 10 k=1,3
+      do k=1,3
         kvec(k,1)=0
-   10   rkvec(k,1)=rkvec_shift(k)
+        rkvec(k,1)=rkvec_shift(k)
+      enddo
 c     write(ounit,'(''k-vec( 1)='',3i5,3f9.4)') (kvec(k,1),k=1,3),(rkvec(k,1),k=1,3)
 
       nkvec=0
 c Warning: Need to think more about do loop limit
 c     do 120 i=1,min(ngvec_sim,vcell_sim*NSYM/vcell)
-      do 120 i=1,min(ngvec_sim,nint(8*vcell_sim/vcell))
-        do 20 k=1,3
+      do i=1,min(ngvec_sim,nint(8*vcell_sim/vcell))
+        do k=1,3
    20     rkvec_try(k)=rkvec_shift(k)+gvec_sim(k,i)
+        enddo
 c Check if after translation by primitive cell reciprocal lattice vector it is
 c the same as an existing k-vector
-        do 50 j=2,ngvec
-          do 50 l=1,nkvec
+        do j=2,ngvec
+          do l=1,nkvec
             rnorm=0
-            do 30 k=1,3
-   30         rnorm=rnorm+(rkvec_try(k)-gvec(k,j)-rkvec(k,l))**2
+            do k=1,3
+              rnorm=rnorm+(rkvec_try(k)-gvec(k,j)-rkvec(k,l))**2
+            enddo
             if(rnorm.lt.eps) goto 120
             rnorm=0
-            do 40 k=1,3
-   40         rnorm=rnorm+(rkvec_try(k)+gvec(k,j)-rkvec(k,l))**2
+            do k=1,3
+              rnorm=rnorm+(rkvec_try(k)+gvec(k,j)-rkvec(k,l))**2
+            enddo
             if(rnorm.lt.eps) goto 120
    50   continue
+          enddo
+        enddo
 c Check if after translation by primitive cell reciprocal lattice vector it is
 c the inverse of an existing k-vector
-        do 80 j=2,ngvec
-          do 80 l=1,nkvec
+        do j=2,ngvec
+          do l=1,nkvec
             rnorm=0
-            do 60 k=1,3
-   60         rnorm=rnorm+(rkvec_try(k)-gvec(k,j)+rkvec(k,l))**2
+            do k=1,3
+              rnorm=rnorm+(rkvec_try(k)-gvec(k,j)+rkvec(k,l))**2
+            enddo
             if(rnorm.lt.eps) then
               k_inv(l)=2
               goto 120
             endif
             rnorm=0
-            do 70 k=1,3
-   70         rnorm=rnorm+(rkvec_try(k)+gvec(k,j)+rkvec(k,l))**2
+            do k=1,3
+              rnorm=rnorm+(rkvec_try(k)+gvec(k,j)+rkvec(k,l))**2
+            enddo
             if(rnorm.lt.eps) then
               k_inv(l)=2
               goto 120
             endif
-   80   continue
+          enddo
+        enddo
 c Voila, found a new one
         nkvec=nkvec+1
         k_inv(nkvec)=1
         rknorm(nkvec)=0
-        do 110 k=1,3
+        do k=1,3
           kvec(k,nkvec)=igvec_sim(k,i)
           rkvec(k,nkvec)=rkvec_try(k)
-  110     rknorm(nkvec)=rknorm(nkvec)+rkvec_try(k)**2
+          rknorm(nkvec)=rknorm(nkvec)+rkvec_try(k)**2
+        enddo
         rknorm(nkvec)=sqrt(rknorm(nkvec))
 c       write(ounit,'(''k-vec('',i2,'')='',3i5,3f9.4,f11.6)') nkvec,(kvec(k,nkvec),k=1,3),(rkvec(k,nkvec),k=1,3),rknorm(nkvec)
   120 continue
+      enddo
 
 c I could just get out of the above loop after finding vcell_sim/vcell
 c but instead do check after loop to be safe.
       write(ounit,'(/,''k-vector k-inv      kvec               rkvec'')')
       nkvec_tot=0
-      do 130 i=1,nkvec
+      do i=1,nkvec
         nkvec_tot=nkvec_tot+k_inv(i)
-  130   write(ounit,'(''k-vec('',i2,'')='',i2,2x,3i4,2x,3f14.10,f11.6)') i,k_inv(i),(kvec(k,i),k=1,3),(rkvec(k,i),k=1,3)
+        write(ounit,'(''k-vec('',i2,'')='',i2,2x,3i4,2x,3f14.10,f11.6)') i,k_inv(i),(kvec(k,i),k=1,3),(rkvec(k,i),k=1,3)
      &,rknorm(i)
+      enddo
       write(ounit,'(''nkvec,nkvec_tot='',2i5)') nkvec,nkvec_tot
 
 c Write out k-pts in reciprocal lattice units for input to pw program
       write(ounit,'(/,i2,'' k-vectors (shifted) in recip. latt. units for input to pw program'')') nkvec
-      do 150 ikv=1,nkvec
-        do 140 k=1,3
+      do ikv=1,nkvec
+        do k=1,3
           rkvec_latt(k)=0
-          do 140 i=1,3
-  140       rkvec_latt(k)=rkvec_latt(k)+glatt_inv(k,i)*rkvec(i,ikv)
-  150 write(ounit,'(''k-vec('',i2,'')='',i2,2x,3f14.10)') ikv,k_inv(ikv),(rkvec_latt(k),k=1,3)
+          do i=1,3
+            rkvec_latt(k)=rkvec_latt(k)+glatt_inv(k,i)*rkvec(i,ikv)
+          enddo
+        enddo
+      write(ounit,'(''k-vec('',i2,'')='',i2,2x,3f14.10)') ikv,k_inv(ikv),(rkvec_latt(k),k=1,3)
+      enddo
 
       if(nkvec_tot.ne.nint(vcell_sim/vcell)) then
         write(ounit,'(''Warning: nkvec != vcell_sim/vcell'',9i5)') nkvec_tot,nint(vcell_sim/vcell)
@@ -1039,22 +1085,26 @@ c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
 c shifted exponential grid
       rlogarg=dlog(arg)
-      do 10 ir=1,nr
-   10   vps_short(ir)=(r(ir)+r0)*vps_short(ir)*rlogarg
+      do ir=1,nr
+        vps_short(ir)=(r(ir)+r0)*vps_short(ir)*rlogarg
+      enddo
 
       dx=1.d0
 c g != 0 components
-      do 30 ig=2,ngnorm_big
-        do 20  ir=1,nr
+      do ig=2,ngnorm_big
+        do  ir=1,nr
    20     y(ir)=r(ir)*vps_short(ir)*sin(gnorm(ig)*r(ir))
+        enddo
         call simson(y,vbare_psp(ig),dx,nr)
 c       nrr=((nr-1)/4)*4+1
 c       vbare_psp(ig)=bode(y,dx,nrr)
-   30   vbare_psp(ig)=anorm*vbare_psp(ig)/gnorm(ig)
+        vbare_psp(ig)=anorm*vbare_psp(ig)/gnorm(ig)
+      enddo
 
 c g=0 component
-      do 40  ir=1,nr
-   40   y(ir)=r(ir)*r(ir)*vps_short(ir)
+      do  ir=1,nr
+        y(ir)=r(ir)*r(ir)*vps_short(ir)
+      enddo
       call simson(y,vbare_psp(1),dx,nr)
       vbare_psp(1)=anorm*vbare_psp(1)
 
@@ -1124,14 +1174,16 @@ c e-e cusp conditions
       write(ounit,'(''Beta1,beta2 ='',2f15.8)') beta1,beta2
 
 c zero right and left hand side of fitting equation
-      do 10 i=1,ncoef_per
+      do i=1,ncoef_per
         b(i)=0.d0
-        do 10 j=1,ncoef_per
-   10     a(j,i)=0.d0
+        do j=1,ncoef_per
+          a(j,i)=0.d0
+        enddo
+      enddo
 
       chisq=0.d0
 c go over k values larger than those explicitly used
-      do 20 k=ngnorm+1,ngnorm_big
+      do k=ngnorm+1,ngnorm_big
         gr=gnorm(k)*cutr
         ig=k
         if(isrange.eq.0) then
@@ -1151,11 +1203,14 @@ c Constraints.  That for c(2) is for cusp constraint only.
         chisq=chisq+igmult(k)*vk**2
 
 c add to right hand side
-        do 20 i=i0,ncoef_per
+        do i=i0,ncoef_per
           b(i)=b(i)+igmult(k)*vk*c(i)
 c add to left hand side
-          do 20 j=i0,ncoef_per
+          do j=i0,ncoef_per
    20       a(j,i)=a(j,i)+igmult(k)*c(i)*c(j)
+          enddo
+        enddo
+      enddo
 
 c     write(ounit,'(''a='',10d14.5)') ((a(i,j),i=i0,ncoef_per),j=i0,ncoef_per)
 c     write(ounit,'(''b='',10d14.5)') (b(i),i=i0,ncoef_per)
@@ -1169,16 +1224,18 @@ c invert right hand side
       endif
 
 c make a spare copy of right hand side
-      do 30 i=i0,ncoef_per
-   30   work(i)=b(i)
+      do i=i0,ncoef_per
+        work(i)=b(i)
+      enddo
 
 c solve linear equations
       call dposl(a(i0,i0),NCOEFX,nfree,b(i0))
 c     write(ounit,*) (b(i),i=i0,ncoef_per)
 
 c b is now the solution (t in Ceperley's paper)
-      do 40 i=i0,ncoef_per
-   40   chisq=chisq-work(i)*b(i)
+      do i=i0,ncoef_per
+        chisq=chisq-work(i)*b(i)
+      enddo
 c     if(chisq.gt.0) then
 c       write(ounit,'(''Rms error '',d12.5)') dsqrt(chisq)
 c      else
@@ -1191,7 +1248,7 @@ c this is cusp constraint
 
 c subtract effect of short range potential on fourier components
 
-      do 50 k=1,ngnorm
+      do k=1,ngnorm
         gr=gnorm(k)*cutr
         ig=k
         if(isrange.eq.0) then
@@ -1204,8 +1261,10 @@ c subtract effect of short range potential on fourier components
           call integral_sin_poly3(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
         endif
         y(k)=v(k)
-        do 50 i=1,ncoef_per
+        do i=1,ncoef_per
    50     y(k)=y(k)-c(i)*b(i)
+        enddo
+      enddo
 
 c     write(ounit,'(''Poly coefs (t) = '',5d14.6)') (b(i),i=1,ncoef_per)
 c     write(ounit,'(''Yk = '',20d12.4)') (y(k),k=1,ngnorm)
@@ -1240,27 +1299,31 @@ c integrates sin(g*x)*x**i for i=lowest_pow+1 to n+np+lowest_pow and x from 0 to
         ti=dcmplx(0.d0,-gi)
         et=dcmplx(dsin(g)*gi,-dcos(g)*gi)
         em=ti*(et-ti)
-        do 10 i=1,n+np+lowest_pow+1
+        do i=1,n+np+lowest_pow+1
           if(i.gt.lowest_pow+1) c(i-lowest_pow-1)=dreal(em)
-   10     em=ti*(et-i*em)
+          em=ti*(et-i*em)
+        enddo
        else
-        do 20 i=1,n+np+lowest_pow+1
+        do i=1,n+np+lowest_pow+1
    20     c(i)=1.d0/(i+2+lowest_pow)
+        enddo
       endif
 
 c take care that expansion functions are h_i(x) = x**i*(1-x)**np
 c Warning check if we need to go one more.
-      do 30 k=1,np
-        do 30 i=1,n+np-k
-   30     c(i)=c(i)-c(i+1)
+      do k=1,np
+        do i=1,n+np-k
+          c(i)=c(i)-c(i+1)
+        enddo
+      enddo
 
 c     write(ounit,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,n)
 
 c Calculate c from numerical integral rather than recursion for small non-zero g's
        if(g.ne.0.d0 .and. g.lt.10.d0) then
        dx=1.d0/(NPTS-1)
-       do 36 i=1,n
-         do 35 j=1,NPTS
+       do i=1,n
+         do j=1,NPTS
            x=(j-1)*dx
            if(g.gt.1.d-9) then
              if(i+lowest_pow.ne.0) then
@@ -1271,19 +1334,20 @@ c Calculate c from numerical integral rather than recursion for small non-zero g
             else
              y(j)=x**(i+1+lowest_pow)*(1-x)**np
            endif
-   35    continue
+         enddo
          c(i)=bode(y,dx,NPTS)
          if(g.gt.1.d-6) then
            c(i)=c(i)/g
          endif
-   36 continue
+       enddo
 
 c     write(ounit,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,n)
       endif
 
 c multiply by anorm
-      do 40 i=1,n
-   40   c(i)=anorm*c(i)
+      do i=1,n
+        c(i)=anorm*c(i)
+      enddo
 
       return
       end
@@ -1318,20 +1382,24 @@ c integrates sin(g*x)*x**i for i=lowest_pow+1 to n+np+lowest_pow and x from 0 to
         ti=dcmplx(0.d0,-gi)
         et=dcmplx(dsin(g)*gi,-dcos(g)*gi)
         em=ti*(et-ti)
-        do 10 i=1,n+np+lowest_pow+1
+        do i=1,n+np+lowest_pow+1
           if(i.gt.lowest_pow+1) c(i-lowest_pow-1)=dreal(em)
-   10     em=ti*(et-i*em)
+          em=ti*(et-i*em)
+        enddo
        else
-        do 20 i=1,n+np+lowest_pow+1
+        do i=1,n+np+lowest_pow+1
    20     c(i)=1.d0/(i+2+lowest_pow)
+        enddo
       endif
 
 c take care that expansion functions are h_i(x) = x**i*(1-x)**np
 c Warning check if we need to go one more.
-      do 30 k=1,np
+      do k=1,np
 c       do 30 i=1,n+np-k
-        do 30 i=1,n+np-k-1
-   30     c(i)=c(i)-c(i+1)
+        do i=1,n+np-k-1
+          c(i)=c(i)-c(i+1)
+        enddo
+      enddo
 
       if(n.gt.0) c(n)=vps_basis_fourier(ig)
 
@@ -1341,28 +1409,29 @@ c Calculate c from numerical integral rather than recursion for small non-zero g
        if(g.ne.0.d0 .and. g.lt.10.d0) then
        dx=1.d0/(NPTS-1)
 c      do 36 i=1,n
-       do 36 i=1,n-1
-         do 35 j=1,NPTS
+       do i=1,n-1
+         do j=1,NPTS
            x=(j-1)*dx
            if(g.gt.1.d-6) then
              y(j)=x**(i+lowest_pow)*(1-x)**np*sin(g*x)
             else
              y(j)=x**(i+1+lowest_pow)*(1-x)**np
            endif
-   35    continue
+         enddo
          c(i)=bode(y,dx,NPTS)
          if(g.gt.1.d-6) then
            c(i)=c(i)/g
          endif
-   36 continue
+       enddo
 
 c     write(ounit,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,n)
       endif
 
 c multiply by anorm
 c     do 40 i=1,n
-      do 40 i=1,n-1
-   40   c(i)=anorm*c(i)
+      do i=1,n-1
+        c(i)=anorm*c(i)
+      enddo
 
       return
       end
@@ -1402,23 +1471,27 @@ c integral of sin(g*x)*x**i for i=1 to np*(n+1)+1 and x from 0 to 1
         ti=dcmplx(0.d0,-gi)
         et=dcmplx(dsin(g)*gi,-dcos(g)*gi)
         em=ti*(et-ti)
-        do 10 i=1,np*(n+1)+2
+        do i=1,np*(n+1)+2
           if(i.gt.lowest_pow+1) d(i-lowest_pow-1)=dreal(em)
 c         write(ounit,'(''g,et,i*em'',f7.3,9d12.4)') g,et,i*em
-   10     em=ti*(et-i*em)
+          em=ti*(et-i*em)
+        enddo
        else
-        do 20 i=1,np*(n+1)+2
+        do i=1,np*(n+1)+2
    20     d(i)=1.d0/(i+2+lowest_pow)
+        enddo
       endif
 
 c     write(ounit,'(''g,d='',f7.3,9f9.5)') g,(d(i),i=1,np*(n+1)+1)
 
 c integral of sin(g*x)*x*(1-x^np)^{i+1} for i=1 to n and x from 0 to 1
 c     do 30 i=1,n
-      do 30 i=1,n-1
+      do i=1,n-1
         c(i)=0
-        do 30 j=0,i+1
-   30     c(i)=c(i)+choose(i+1,j)*d(j*np+1)*(-1)**j
+        do j=0,i+1
+          c(i)=c(i)+choose(i+1,j)*d(j*np+1)*(-1)**j
+        enddo
+      enddo
 
       if(n.gt.0) c(n)=vps_basis_fourier(ig)
 
@@ -1428,27 +1501,28 @@ c Calculate c from numerical integral rather than recursion for small non-zero g
        if(g.ne.0.d0 .and. g.lt.10.d0) then
        dx=1.d0/(NPTS-1)
 c      do 36 i=1,n
-       do 36 i=1,n-1
-         do 35 j=1,NPTS
+       do i=1,n-1
+         do j=1,NPTS
            x=(j-1)*dx
            if(g.gt.1.d-6) then
              y(j)=(1-x**np)**(i+1)*x*sin(g*x)
             else
              y(j)=(1-x**np)**(i+1)*x*x
            endif
-   35    continue
+         enddo
          c(i)=bode(y,dx,NPTS)
          if(g.gt.1.d-6) then
            c(i)=c(i)/g
          endif
-   36 continue
+       enddo
 
 c     write(ounit,'(''g2,c='',f5.1,9f9.5)') g,(c(i),i=1,n)
       endif
 
 c multiply by anorm
-      do 40 i=1,n-1
-   40   c(i)=anorm*c(i)
+      do i=1,n-1
+        c(i)=anorm*c(i)
+      enddo
 
       return
       end
@@ -1488,23 +1562,27 @@ c integral of sin(g*x)*x**i for i=1 to np*(n+1)+1 and x from 0 to 1
         ti=dcmplx(0.d0,-gi)
         et=dcmplx(dsin(g)*gi,-dcos(g)*gi)
         em=ti*(et-ti)
-        do 10 i=1,np*(n+1)+2
+        do i=1,np*(n+1)+2
           if(i.gt.lowest_pow+1) d(i-lowest_pow-1)=dreal(em)
 c         write(ounit,'(''g,et,i*em'',f7.3,9d12.4)') g,et,i*em
-   10     em=ti*(et-i*em)
+          em=ti*(et-i*em)
+        enddo
        else
-        do 20 i=1,np*(n+1)+2
+        do i=1,np*(n+1)+2
    20     d(i)=1.d0/(i+2+lowest_pow)
+        enddo
       endif
 
 c     write(ounit,'(''g,d='',f7.3,9f9.5)') g,(d(i),i=1,np*(n+1)+1)
 
 c integral of sin(g*x)*x*(1-x^np)^{i+1} for i=1 to n and x from 0 to 1
 c     do 30 i=1,n
-      do 30 i=1,n-1
+      do i=1,n-1
         c(i)=0
-        do 30 j=0,np
-   30     c(i)=c(i)+choose(np,j)*d(j*(i+1)+1)*(-1)**j
+        do j=0,np
+          c(i)=c(i)+choose(np,j)*d(j*(i+1)+1)*(-1)**j
+        enddo
+      enddo
 
       if(n.gt.0) c(n)=vps_basis_fourier(ig)
 
@@ -1514,28 +1592,29 @@ c Calculate c from numerical integral rather than recursion for small non-zero g
        if(g.ne.0.d0 .and. g.lt.10.d0) then
        dx=1.d0/(NPTS-1)
 c      do 36 i=1,n
-       do 36 i=1,n-1
-         do 35 j=1,NPTS
+       do i=1,n-1
+         do j=1,NPTS
            x=(j-1)*dx
            if(g.gt.1.d-6) then
              y(j)=(1-x**(i+1))**np*x*sin(g*x)
             else
              y(j)=(1-x**(i+1))**np*x*x
            endif
-   35    continue
+         enddo
          c(i)=bode(y,dx,NPTS)
          if(g.gt.1.d-6) then
            c(i)=c(i)/g
          endif
-   36 continue
+       enddo
 
 c     write(ounit,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,n)
       endif
 
 c multiply by anorm
 c     do 40 i=1,n
-      do 40 i=1,n-1
-   40   c(i)=anorm*c(i)
+      do i=1,n-1
+        c(i)=anorm*c(i)
+      enddo
 
       return
       end
@@ -1551,8 +1630,9 @@ c Binomial coefficients ^nC_m
       real(dp) :: choose
 
       choose=1
-      do 10 i=1,m
-   10   choose=choose*(n-i+1)/dfloat(i)
+      do i=1,m
+        choose=choose*(n-i+1)/dfloat(i)
+      enddo
       return
       end
 c-----------------------------------------------------------------------
@@ -1575,8 +1655,9 @@ c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
       vsrange=0
       if(x.gt.1.d0) return
 
-      do 10 i=1,ncoef_per
-   10   vsrange=b(ncoef_per-i+1)+x*vsrange
+      do i=1,ncoef_per
+        vsrange=b(ncoef_per-i+1)+x*vsrange
+      enddo
 
       vsrange=vsrange*(1-x)**np
 
@@ -1606,8 +1687,9 @@ c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
 
 c     do 10 i=1,ncoef_per
 c  10   vsrange1=b(ncoef_per-i+1)+x*vsrange1
-      do 10 i=1,ncoef_per-1
-   10   vsrange1=b(ncoef_per-i)+x*vsrange1
+      do i=1,ncoef_per-1
+        vsrange1=b(ncoef_per-i)+x*vsrange1
+      enddo
 
       vsrange1=vsrange1*(1-x)**np
 
@@ -1643,8 +1725,9 @@ c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^np)^{i+1}, x=r/cutr
       term=1-x**np
 c     do 10 i=1,ncoef_per
 c  10   vsrange2=b(ncoef_per-i+1)+term*vsrange2
-      do 10 i=1,ncoef_per-1
-   10   vsrange2=b(ncoef_per-i)+term*vsrange2
+      do i=1,ncoef_per-1
+        vsrange2=b(ncoef_per-i)+term*vsrange2
+      enddo
 
       vsrange2=vsrange2*term*term
 
@@ -1677,8 +1760,9 @@ c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^{i+1})^np, x=r/cutr
       if(x.gt.1.d0) return
 
 c     do 10 i=1,ncoef_per
-      do 10 i=1,ncoef_per-1
-   10   vsrange3=vsrange3+b(i)*(1-x**(i+1))**np
+      do i=1,ncoef_per-1
+        vsrange3=vsrange3+b(i)*(1-x**(i+1))**np
+      enddo
 
       call splfit_tm(r,l,ict,vpot)
 c     write(ounit,'(''ict,l,r,vsrange3,vpot'',2i3,9f9.5)') ict,l,r,vsrange3,vpot
@@ -1714,14 +1798,16 @@ c Written by Cyrus Umrigar
 c The factor of 2 in the next line is just to compensate for the 2 in the
 c last line, which is there because we keep only half the vectors in the star.
       ewald_pot=-pi/(2*vcell*gaus_exp**2)
-      do 10 k=2,ngnorm
+      do k=2,ngnorm
         expon=exp(-(gnorm(k)/(2*gaus_exp))**2)
-        do 10 im=1,igmult(k)
+        do im=1,igmult(k)
           ivec=ivec+1
           product=rvec(1)*gvec(1,ivec)+
      &            rvec(2)*gvec(2,ivec)+
      &            rvec(3)*gvec(3,ivec)
-  10      ewald_pot=ewald_pot+cos(product)*y(k)*expon
+          ewald_pot=ewald_pot+cos(product)*y(k)*expon
+        enddo
+      enddo
       ewald_pot=2*ewald_pot+y(1)+derfc(gaus_exp*rr)/rr
 
       return
@@ -1754,14 +1840,16 @@ c Written by Cyrus Umrigar
 c The factor of 2 in the next line is just to compensate for the 2 in the
 c last line, which is there because we keep only half the vectors in the star.
       ewald_pot_psp=-pi/(2*vcell*gaus_exp**2)
-      do 10 k=2,ngnorm
+      do k=2,ngnorm
         expon=exp(-(gnorm(k)/(2*gaus_exp))**2)
-        do 10 im=1,igmult(k)
+        do im=1,igmult(k)
           ivec=ivec+1
           product=rvec(1)*gvec(1,ivec)+
      &            rvec(2)*gvec(2,ivec)+
      &            rvec(3)*gvec(3,ivec)
-  10      ewald_pot_psp=ewald_pot_psp+cos(product)*y(k)*expon
+          ewald_pot_psp=ewald_pot_psp+cos(product)*y(k)*expon
+        enddo
+      enddo
       call splfit_tm(rr,l,ict,vpot)
 c     write(ounit,'(''rr,ewald_pot_psp'',f8.4,9f9.5)') rr,-z*(2*ewald_pot_psp+y(1)),vpot,-z*(2*ewald_pot_psp+y(1))+vpot
       ewald_pot_psp=-z*(2*ewald_pot_psp+y(1))+vpot
@@ -1788,13 +1876,15 @@ c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_
 
       ivec=1
       vlrange=0
-      do 10 k=2,ngnorm
-        do 10 im=1,igmult(k)
+      do k=2,ngnorm
+        do im=1,igmult(k)
           ivec=ivec+1
           product=rvec(1)*gvec(1,ivec)+
      &            rvec(2)*gvec(2,ivec)+
      &            rvec(3)*gvec(3,ivec)
-  10      vlrange=vlrange+cos(product)*y(k)
+          vlrange=vlrange+cos(product)*y(k)
+        enddo
+      enddo
       vlrange_old=2*vlrange+y(1)
 
       return
@@ -1822,16 +1912,19 @@ c Written by Cyrus Umrigar
 
       ivec=1
       vl=0
-      do 70 k=2,ngnorm
-        do 70 im=1,igmult(k)
+      do k=2,ngnorm
+        do im=1,igmult(k)
           ivec=ivec+1
           cos_sum=0
           sin_sum=0
-          do 60 i=1,ncent
+          do i=1,ncent
             znuci=znuc(iwctype(i))
             cos_sum=cos_sum+znuci*cos_g(i,ivec)
-   60       sin_sum=sin_sum+znuci*sin_g(i,ivec)
-   70     vl=vl+y(k)*(cos_sum**2+sin_sum**2)
+            sin_sum=sin_sum+znuci*sin_g(i,ivec)
+          enddo
+          vl=vl+y(k)*(cos_sum**2+sin_sum**2)
+        enddo
+      enddo
       vlrange_nn_old2=vl
 
       return
@@ -1856,15 +1949,18 @@ c Written by Cyrus Umrigar
 
       ivec=1
       vl=0
-      do 70 k=2,ngnorm
-        do 70 im=1,igmult(k)
+      do k=2,ngnorm
+        do im=1,igmult(k)
           ivec=ivec+1
           cos_sum=0
           sin_sum=0
-          do 60 i=1,nelec
+          do i=1,nelec
             cos_sum=cos_sum+cos_g(i,ivec)
-   60       sin_sum=sin_sum+sin_g(i,ivec)
-   70     vl=vl+y(k)*(cos_sum**2+sin_sum**2)
+            sin_sum=sin_sum+sin_g(i,ivec)
+          enddo
+          vl=vl+y(k)*(cos_sum**2+sin_sum**2)
+        enddo
+      enddo
       vlrange_ee_old2=vl
 
       return
@@ -1890,10 +1986,12 @@ c Written by Cyrus Umrigar
 
       ivec=1
       vl=0.5d0*y(1)*(cos1_sum(1)*cos2_sum(1)+sin1_sum(1)*sin2_sum(1))
-      do 70 k=2,ngnorm
-        do 70 im=1,igmult(k)
+      do k=2,ngnorm
+        do im=1,igmult(k)
           ivec=ivec+1
-   70     vl=vl+y(k)*(cos1_sum(ivec)*cos2_sum(ivec)+sin1_sum(ivec)*sin2_sum(ivec))
+          vl=vl+y(k)*(cos1_sum(ivec)*cos2_sum(ivec)+sin1_sum(ivec)*sin2_sum(ivec))
+        enddo
+      enddo
       vlrange=vl
 
       return
@@ -1918,10 +2016,12 @@ c Written by Cyrus Umrigar
 
       ivec=1
       vl=0.5d0*(cos1_sum(1)*cos2_sum(1)+sin1_sum(1)*sin2_sum(1))
-      do 70 k=2,ngnorm
-        do 70 im=1,igmult(k)
+      do k=2,ngnorm
+        do im=1,igmult(k)
           ivec=ivec+1
-   70     vl=vl+(cos1_sum(ivec)*cos2_sum(ivec)+sin1_sum(ivec)*sin2_sum(ivec))
+          vl=vl+(cos1_sum(ivec)*cos2_sum(ivec)+sin1_sum(ivec)*sin2_sum(ivec))
+        enddo
+      enddo
       vlrange_p=vl
 
       return
@@ -1957,11 +2057,12 @@ c Written by Cyrus Umrigar
       c0=(b_coul(2)-np*b_coul(1))/2
       vs=c0*znuc2_sum
       vl=0
-      do 20 i=1,ncent
-        do 20 j=1,i
+      do i=1,ncent
+        do j=1,i
           zprod=znuc(iwctype(i))*znuc(iwctype(j))
-          do 10 k=1,3
-   10       r(k)=cent(k,j)-cent(k,i)
+          do k=1,3
+            r(k)=cent(k,j)-cent(k,i)
+          enddo
           call find_image3(r,rnorm)
           if(i.ne.j) then
             vs=vs+zprod*vsrange(rnorm,cutr,lowest_pow,ncoef_per,np,b_coul)
@@ -1969,6 +2070,8 @@ c Written by Cyrus Umrigar
           vlr=vlrange_old(r,gvec,ngnorm,igmult,y_coul)
           if(i.eq.j) vlr=0.5d0*vlr
    20     vl=vl+zprod*vlr
+        enddo
+      enddo
       pecent=vs+vl
       vs=vs*2/ncent
       vl=vl*2/ncent
@@ -2009,13 +2112,16 @@ c short-range sum
       lowest_pow=-1
       c0=(b_coul(2)-np*b_coul(1))/2
       vs=c0*znuc2_sum
-      do 40 i=1,ncent
-        do 40 j=1,i-1
+      do i=1,ncent
+        do j=1,i-1
           zprod=znuc(iwctype(i))*znuc(iwctype(j))
-          do 10 k=1,3
-   10       r(k)=cent(k,j)-cent(k,i)
+          do k=1,3
+            r(k)=cent(k,j)-cent(k,i)
+          enddo
           call find_image3(r,rnorm)
-   40     vs=vs+zprod*vsrange(rnorm,cutr,lowest_pow,ncoef_per,np,b_coul)
+          vs=vs+zprod*vsrange(rnorm,cutr,lowest_pow,ncoef_per,np,b_coul)
+        enddo
+      enddo
 
 c long-range sum
 c     call cossin_old2(glatt,igvec,ngvec,cent,ncent,ng1d,cos_g,sin_g)
@@ -2074,11 +2180,12 @@ c Written by Cyrus Umrigar
 c short-range sum
 c Warning: I need to call the appropriate vsrange
       vs=0
-      do 40 i=1,ncent
+      do i=1,ncent
         ict=iwctype(i)
-        do 40 j=1,nelec
-          do 10 k=1,3
-   10       rvec_en(k,j,i)=x(k,j)-cent(k,i)
+        do j=1,nelec
+          do k=1,3
+            rvec_en(k,j,i)=x(k,j)-cent(k,i)
+          enddo
 c         call find_image3(rvec_en(1,j,i),r_en(j,i))
           call find_image4(rshift(1,j,i),rvec_en(1,j,i),r_en(j,i))
           if(nloc.eq.0) then
@@ -2092,7 +2199,8 @@ c           vs=vs+vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict))
             if(isrange.eq.2) vs=vs+vsrange2(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
             if(isrange.eq.3) vs=vs+vsrange3(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
           endif
-   40 continue
+        enddo
+      enddo
 
 c long-range sum
 c     call cossin_e(glatt,igvec,ngvec,xold,nelec,ng1d,cos_e_sum,sin_e_sum)
@@ -2147,13 +2255,16 @@ c short-range sum
       c0=(b_coul_sim(2)-np*b_coul_sim(1))/2
       vs=c0*nelec
       ij=0
-      do 40 i=1,nelec
-        do 40 j=1,i-1
+      do i=1,nelec
+        do j=1,i-1
           ij=ij+1
-          do 10 k=1,3
-   10       rvec_ee(k,ij)=x(k,i)-x(k,j)
+          do k=1,3
+            rvec_ee(k,ij)=x(k,i)-x(k,j)
+          enddo
           call find_image3(rvec_ee(1,ij),r_ee(ij))
-   40     vs=vs+vsrange(r_ee(ij),cutr_sim,lowest_pow,ncoef_per,np,b_coul_sim)
+          vs=vs+vsrange(r_ee(ij),cutr_sim,lowest_pow,ncoef_per,np,b_coul_sim)
+        enddo
+      enddo
 
 c long-range sum
 c     call cossin_old2(glatt_sim,igvec_sim,ngvec_sim,xold,nelec,ng1d_sim,cos_g,sin_g)
@@ -2196,34 +2307,39 @@ c Written by Cyrus Umrigar
 
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
-      do 30 ir=1,nr
-      do 20 i=1,3
+      do ir=1,nr
+      do i=1,3
         dot=0
-        do 10 k=1,3
-   10     dot=dot+glatt(k,i)*r(k,ir)
+        do k=1,3
+          dot=dot+glatt(k,i)*r(k,ir)
+        enddo
         cos_gr(1,i)=cos(dot)
         sin_gr(1,i)=sin(dot)
         cos_gr(-1,i)=cos_gr(1,i)
         sin_gr(-1,i)=-sin_gr(1,i)
         cos_gr(0,i)=1.d0
         sin_gr(0,i)=0.d0
-        do 20 n=2,ng1d(i)
+        do n=2,ng1d(i)
           cos_gr(n,i)=cos_gr(n-1,i)*cos_gr(1,i)-sin_gr(n-1,i)*sin_gr(1,i)
           sin_gr(n,i)=sin_gr(n-1,i)*cos_gr(1,i)+cos_gr(n-1,i)*sin_gr(1,i)
           cos_gr(-n,i)=cos_gr(n,i)
    20     sin_gr(-n,i)=-sin_gr(n,i)
+        enddo
+      enddo
 
       cos_g(ir,1)=1.d0
       sin_g(ir,1)=0.d0
-      do 30 i=2,ngvec
+      do i=2,ngvec
         cos_tmp=cos_gr(igvec(1,i),1)*cos_gr(igvec(2,i),2)
      &         -sin_gr(igvec(1,i),1)*sin_gr(igvec(2,i),2)
         sin_tmp=sin_gr(igvec(1,i),1)*cos_gr(igvec(2,i),2)
      &         +cos_gr(igvec(1,i),1)*sin_gr(igvec(2,i),2)
         cos_g(ir,i)=cos_tmp*cos_gr(igvec(3,i),3)
      &             -sin_tmp*sin_gr(igvec(3,i),3)
-   30   sin_g(ir,i)=sin_tmp*cos_gr(igvec(3,i),3)
+        sin_g(ir,i)=sin_tmp*cos_gr(igvec(3,i),3)
      &             +cos_tmp*sin_gr(igvec(3,i),3)
+      enddo
+      enddo
 
       return
       end
@@ -2265,22 +2381,25 @@ c Presently using cossin_psi_g and cossin_psi_k instead.
 
 
 c Calculate cosines and sines for recip. lattice vectors along axes first.
-      do 30 ir=1,nr
-      do 20 i=1,3
+      do ir=1,nr
+      do i=1,3
         dot=0
-        do 10 k=1,3
-   10     dot=dot+glatt(k,i)*r(k,ir)
+        do k=1,3
+          dot=dot+glatt(k,i)*r(k,ir)
+        enddo
         cos_gr(1,i)=cos(dot)
         sin_gr(1,i)=sin(dot)
         cos_gr(-1,i)=cos_gr(1,i)
         sin_gr(-1,i)=-sin_gr(1,i)
         cos_gr(0,i)=1.d0
         sin_gr(0,i)=0.d0
-        do 20 n=2,ng1d(i)
+        do n=2,ng1d(i)
           cos_gr(n,i)=cos_gr(n-1,i)*cos_gr(1,i)-sin_gr(n-1,i)*sin_gr(1,i)
           sin_gr(n,i)=sin_gr(n-1,i)*cos_gr(1,i)+cos_gr(n-1,i)*sin_gr(1,i)
           cos_gr(-n,i)=cos_gr(n,i)
    20     sin_gr(-n,i)=-sin_gr(n,i)
+        enddo
+      enddo
 
 c If the calculation is for g-vectors then no shift; if for k-vectors there could be one.
       if(iflag.eq.0) then
@@ -2288,15 +2407,16 @@ c If the calculation is for g-vectors then no shift; if for k-vectors there coul
         sin_tmp0=0.d0
        elseif(iflag.eq.1) then
         dot=0
-        do 25 k=1,3
-   25     dot=dot+g_shift(k)*r(k,ir)
+        do k=1,3
+          dot=dot+g_shift(k)*r(k,ir)
+        enddo
         cos_tmp0=cos(dot)
         sin_tmp0=sin(dot)
        else
         call fatal_error ('iflag must be 0 or 1 in cossin_psi')
       endif
 
-      do 30 i=1,ngvec
+      do i=1,ngvec
         cos_tmp1=cos_tmp0*cos_gr(igvec(1,i),1)
      &          -sin_tmp0*sin_gr(igvec(1,i),1)
         sin_tmp1=sin_tmp0*cos_gr(igvec(1,i),1)
@@ -2309,13 +2429,16 @@ c If the calculation is for g-vectors then no shift; if for k-vectors there coul
      &             -sin_tmp2*sin_gr(igvec(3,i),3)
         sin_g(ir,i)=sin_tmp2*cos_gr(igvec(3,i),3)
      &             +cos_tmp2*sin_gr(igvec(3,i),3)
-        do 27 k=1,3
+        do k=1,3
           dcos_g(k,ir,i)=-gvec(k,i)*sin_g(ir,i)
-   27     dsin_g(k,ir,i)= gvec(k,i)*cos_g(ir,i)
+          dsin_g(k,ir,i)= gvec(k,i)*cos_g(ir,i)
+        enddo
 c       if(i.lt.5) write(ounit,'(''ir,i,gnorm(i),cos_g(ir,i),sin_g(ir,i),dcos_g(k,ir,i),dsin_g(k,ir,i)'',2i5,9d12.4)')
 c    & ir,i,gnorm(i),cos_g(ir,i),sin_g(ir,i),(dcos_g(k,ir,i),dsin_g(k,ir,i),k=1,3)
         ddcos_g(ir,i)=-gnorm(i)*gnorm(i)*cos_g(ir,i)
-   30   ddsin_g(ir,i)=-gnorm(i)*gnorm(i)*sin_g(ir,i)
+        ddsin_g(ir,i)=-gnorm(i)*gnorm(i)*sin_g(ir,i)
+      enddo
+      enddo
 
       return
       end
@@ -2361,21 +2484,24 @@ c    &,ddcos_g(nelec,*),ddsin_g(nelec,*),g_shift(*)
 
 c Calculate cosines and sines for recip. lattice vectors along axes first.
 c     do 30 ir=1,nr
-      do 20 i=1,3
+      do i=1,3
         dot=0
-        do 10 k=1,3
-   10     dot=dot+glatt(k,i)*r(k)
+        do k=1,3
+          dot=dot+glatt(k,i)*r(k)
+        enddo
         cos_gr(1,i)=cos(dot)
         sin_gr(1,i)=sin(dot)
         cos_gr(-1,i)=cos_gr(1,i)
         sin_gr(-1,i)=-sin_gr(1,i)
         cos_gr(0,i)=1.d0
         sin_gr(0,i)=0.d0
-        do 20 n=2,ng1d(i)
+        do n=2,ng1d(i)
           cos_gr(n,i)=cos_gr(n-1,i)*cos_gr(1,i)-sin_gr(n-1,i)*sin_gr(1,i)
           sin_gr(n,i)=sin_gr(n-1,i)*cos_gr(1,i)+cos_gr(n-1,i)*sin_gr(1,i)
           cos_gr(-n,i)=cos_gr(n,i)
    20     sin_gr(-n,i)=-sin_gr(n,i)
+        enddo
+      enddo
 
 c If the calculation is for g-vectors then no shift; if for k-vectors there could be one.
 c     if(iflag.eq.0) then
@@ -2394,8 +2520,8 @@ c     endif
 c     cos_g(1)=1.d0
 c     sin_g(1)=0.d0
       i=0
-      do 30 in=1,ngnorm
-        do 30 im=1,igmult(in)
+      do in=1,ngnorm
+        do im=1,igmult(in)
         i=i+1
         cos_tmp=cos_gr(igvec(1,i),1)*cos_gr(igvec(2,i),2)
      &         -sin_gr(igvec(1,i),1)*sin_gr(igvec(2,i),2)
@@ -2419,13 +2545,16 @@ c       cos_g(i)=cos_tmp2*cos_gr(igvec(3,i),3)
 c    &             -sin_tmp2*sin_gr(igvec(3,i),3)
 c       sin_g(i)=sin_tmp2*cos_gr(igvec(3,i),3)
 c    &             +cos_tmp2*sin_gr(igvec(3,i),3)
-        do 27 k=1,3
+        do k=1,3
           dcos_g(k,i)=-gvec(k,i)*sin_g(i)
-   27     dsin_g(k,i)= gvec(k,i)*cos_g(i)
+          dsin_g(k,i)= gvec(k,i)*cos_g(i)
+        enddo
 c       if(i.lt.5) write(ounit,'(''i,gnorm(in),cos_g(i),sin_g(i),dcos_g(k,i),dsin_g(k,i)'',2i5,9d12.4)')
 c    & i,gnorm(in),cos_g(i),sin_g(i),(dcos_g(k,i),dsin_g(k,i),k=1,3)
         ddcos_g(i)=-gnorm(in)*gnorm(in)*cos_g(i)
-   30   ddsin_g(i)=-gnorm(in)*gnorm(in)*sin_g(i)
+        ddsin_g(i)=-gnorm(in)*gnorm(in)*sin_g(i)
+        enddo
+      enddo
 
       return
       end
@@ -2465,19 +2594,22 @@ c    &,dcos_g(3,nelec,*),dsin_g(3,nelec,*)
 c    &,ddcos_g(nelec,*),ddsin_g(nelec,*),g_shift(*)
 
 c     do 30 ir=1,nr
-      do 30 i=1,ngvec
+      do i=1,ngvec
         dot=0
-        do 10 k=1,3
-   10     dot=dot+gvec(k,i)*r(k)
+        do k=1,3
+          dot=dot+gvec(k,i)*r(k)
+        enddo
         cos_g(i)=cos(dot)
         sin_g(i)=sin(dot)
-        do 27 k=1,3
+        do k=1,3
           dcos_g(k,i)=-gvec(k,i)*sin_g(i)
-   27     dsin_g(k,i)= gvec(k,i)*cos_g(i)
+          dsin_g(k,i)= gvec(k,i)*cos_g(i)
+        enddo
 c       if(i.lt.5) write(ounit,'(''i,gnorm(i),cos_g(i),sin_g(i),dcos_g(k,i),dsin_g(k,i)'',2i5,9d12.4)')
 c    & i,gnorm(i),cos_g(i),sin_g(i),(dcos_g(k,i),dsin_g(k,i),k=1,3)
         ddcos_g(i)=-gnorm(i)*gnorm(i)*cos_g(i)
-   30   ddsin_g(i)=-gnorm(i)*gnorm(i)*sin_g(i)
+        ddsin_g(i)=-gnorm(i)*gnorm(i)*sin_g(i)
+      enddo
 
       return
       end
@@ -2514,27 +2646,31 @@ c Calculate cos_sum and sin_sum for nuclei
 
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
-      do 20 ir=1,nr
-        do 20 i=1,3
+      do ir=1,nr
+        do i=1,3
           dot=0
-          do 10 k=1,3
-   10       dot=dot+glatt(k,i)*r(k,ir)
+          do k=1,3
+            dot=dot+glatt(k,i)*r(k,ir)
+          enddo
           cos_gr(1,i,ir)=cos(dot)
           sin_gr(1,i,ir)=sin(dot)
           cos_gr(-1,i,ir)=cos_gr(1,i,ir)
           sin_gr(-1,i,ir)=-sin_gr(1,i,ir)
           cos_gr(0,i,ir)=1.d0
           sin_gr(0,i,ir)=0.d0
-          do 20 n=2,ng1d(i)
+          do n=2,ng1d(i)
             cos_gr(n,i,ir)=cos_gr(n-1,i,ir)*cos_gr(1,i,ir)-sin_gr(n-1,i,ir)*sin_gr(1,i,ir)
             sin_gr(n,i,ir)=sin_gr(n-1,i,ir)*cos_gr(1,i,ir)+cos_gr(n-1,i,ir)*sin_gr(1,i,ir)
             cos_gr(-n,i,ir)=cos_gr(n,i,ir)
    20       sin_gr(-n,i,ir)=-sin_gr(n,i,ir)
+          enddo
+        enddo
+      enddo
 
-      do 30 i=1,ngvec
+      do i=1,ngvec
         cos_sum(i)=0
         sin_sum(i)=0
-        do 30 ir=1,nr
+        do ir=1,nr
           cos_tmp=cos_gr(igvec(1,i),1,ir)*cos_gr(igvec(2,i),2,ir)
      &           -sin_gr(igvec(1,i),1,ir)*sin_gr(igvec(2,i),2,ir)
           sin_tmp=sin_gr(igvec(1,i),1,ir)*cos_gr(igvec(2,i),2,ir)
@@ -2542,9 +2678,11 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
           cos_sum(i)=cos_sum(i)+znuc(iwctype(ir))*
      &               (cos_tmp*cos_gr(igvec(3,i),3,ir)
      &               -sin_tmp*sin_gr(igvec(3,i),3,ir))
-   30     sin_sum(i)=sin_sum(i)+znuc(iwctype(ir))*
+          sin_sum(i)=sin_sum(i)+znuc(iwctype(ir))*
      &               (sin_tmp*cos_gr(igvec(3,i),3,ir)
      &               +cos_tmp*sin_gr(igvec(3,i),3,ir))
+        enddo
+      enddo
 
       return
       end
@@ -2577,30 +2715,34 @@ c Calculate cos_sum and sin_sum for pseudopotentials
 
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
-      do 20 ir=1,nr
-        do 20 i=1,3
+      do ir=1,nr
+        do i=1,3
           dot=0
-          do 10 k=1,3
-   10       dot=dot+glatt(k,i)*r(k,ir)
+          do k=1,3
+            dot=dot+glatt(k,i)*r(k,ir)
+          enddo
           cos_gr(1,i,ir)=cos(dot)
           sin_gr(1,i,ir)=sin(dot)
           cos_gr(-1,i,ir)=cos_gr(1,i,ir)
           sin_gr(-1,i,ir)=-sin_gr(1,i,ir)
           cos_gr(0,i,ir)=1.d0
           sin_gr(0,i,ir)=0.d0
-          do 20 n=2,ng1d(i)
+          do n=2,ng1d(i)
             cos_gr(n,i,ir)=cos_gr(n-1,i,ir)*cos_gr(1,i,ir)-sin_gr(n-1,i,ir)*sin_gr(1,i,ir)
             sin_gr(n,i,ir)=sin_gr(n-1,i,ir)*cos_gr(1,i,ir)+cos_gr(n-1,i,ir)*sin_gr(1,i,ir)
             cos_gr(-n,i,ir)=cos_gr(n,i,ir)
    20       sin_gr(-n,i,ir)=-sin_gr(n,i,ir)
+          enddo
+        enddo
+      enddo
 
       i=0
-      do 30 k=1,ngnorm
-        do 30 im=1,igmult(k)
+      do k=1,ngnorm
+        do im=1,igmult(k)
         i=i+1
         cos_sum(i)=0
         sin_sum(i)=0
-        do 30 ir=1,nr
+        do ir=1,nr
           cos_tmp=cos_gr(igvec(1,i),1,ir)*cos_gr(igvec(2,i),2,ir)
      &           -sin_gr(igvec(1,i),1,ir)*sin_gr(igvec(2,i),2,ir)
           sin_tmp=sin_gr(igvec(1,i),1,ir)*cos_gr(igvec(2,i),2,ir)
@@ -2608,9 +2750,12 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
           cos_sum(i)=cos_sum(i)+y_psp(k,iwctype(ir))*
      &               (cos_tmp*cos_gr(igvec(3,i),3,ir)
      &               -sin_tmp*sin_gr(igvec(3,i),3,ir))
-   30     sin_sum(i)=sin_sum(i)+y_psp(k,iwctype(ir))*
+          sin_sum(i)=sin_sum(i)+y_psp(k,iwctype(ir))*
      &               (sin_tmp*cos_gr(igvec(3,i),3,ir)
      &               +cos_tmp*sin_gr(igvec(3,i),3,ir))
+        enddo
+        enddo
+      enddo
 
       return
       end
@@ -2640,27 +2785,31 @@ c Calculate cos_sum and sin_sum for electrons
 
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
-      do 20 ir=1,nr
-        do 20 i=1,3
+      do ir=1,nr
+        do i=1,3
           dot=0
-          do 10 k=1,3
-   10       dot=dot+glatt(k,i)*r(k,ir)
+          do k=1,3
+            dot=dot+glatt(k,i)*r(k,ir)
+          enddo
           cos_gr(1,i,ir)=cos(dot)
           sin_gr(1,i,ir)=sin(dot)
           cos_gr(-1,i,ir)=cos_gr(1,i,ir)
           sin_gr(-1,i,ir)=-sin_gr(1,i,ir)
           cos_gr(0,i,ir)=1.d0
           sin_gr(0,i,ir)=0.d0
-          do 20 n=2,ng1d(i)
+          do n=2,ng1d(i)
             cos_gr(n,i,ir)=cos_gr(n-1,i,ir)*cos_gr(1,i,ir)-sin_gr(n-1,i,ir)*sin_gr(1,i,ir)
             sin_gr(n,i,ir)=sin_gr(n-1,i,ir)*cos_gr(1,i,ir)+cos_gr(n-1,i,ir)*sin_gr(1,i,ir)
             cos_gr(-n,i,ir)=cos_gr(n,i,ir)
    20       sin_gr(-n,i,ir)=-sin_gr(n,i,ir)
+          enddo
+        enddo
+      enddo
 
-      do 30 i=1,ngvec
+      do i=1,ngvec
         cos_sum(i)=0
         sin_sum(i)=0
-        do 30 ir=1,nr
+        do ir=1,nr
           cos_tmp=cos_gr(igvec(1,i),1,ir)*cos_gr(igvec(2,i),2,ir)
      &           -sin_gr(igvec(1,i),1,ir)*sin_gr(igvec(2,i),2,ir)
           sin_tmp=sin_gr(igvec(1,i),1,ir)*cos_gr(igvec(2,i),2,ir)
@@ -2668,9 +2817,11 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
           cos_sum(i)=cos_sum(i)+
      &               (cos_tmp*cos_gr(igvec(3,i),3,ir)
      &               -sin_tmp*sin_gr(igvec(3,i),3,ir))
-   30     sin_sum(i)=sin_sum(i)+
+          sin_sum(i)=sin_sum(i)+
      &               (sin_tmp*cos_gr(igvec(3,i),3,ir)
      &               +cos_tmp*sin_gr(igvec(3,i),3,ir))
+        enddo
+      enddo
 
       return
       end

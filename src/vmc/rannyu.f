@@ -9,9 +9,9 @@ c Uses 48 bits, rather than the usual 32 bits.
 
 
       integer iseed(4)
-         do 10 i=1,4
+         do i=1,4
          ll(i)=iseed(i)
-   10    continue
+         enddo
       ll(4)=2*(ll(4)/2)+1
       return
       end
@@ -80,8 +80,8 @@ c-----------------------------------------------------------------------
 
 
       integer iseed(4)
-      do 10 i=1,4
+      do i=1,4
          iseed(i)=ll(i)
-   10    continue
+      enddo
       return
       end

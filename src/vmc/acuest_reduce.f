@@ -50,12 +50,13 @@ c Written by Claudia Filippi
       iblk=iblk+nproc
 
       jo=0
-      do 10 istate=1,nstates
+      do istate=1,nstates
         jo=jo+1
         local_obs(jo)=enow(istate,1)
 
         jo=jo+1
-   10   local_obs(jo)=apsi(istate)
+        local_obs(jo)=apsi(istate)
+      enddo
 
       jo=jo+1
       local_obs(jo)=aref
@@ -65,8 +66,8 @@ c Written by Claudia Filippi
         local_obs(jo)=detref(iab)
       enddo
 
-      do 20 ifr=1,nforce
-        do 20 istate=1,nstates
+      do ifr=1,nforce
+        do istate=1,nstates
           jo=jo+1
           local_obs(jo)=ecum(istate,ifr)
 
@@ -80,9 +81,11 @@ c Written by Claudia Filippi
           local_obs(jo)=fcm2(istate,ifr)
 
           jo=jo+1
-   20     local_obs(jo)=wcum(istate,ifr)
+          local_obs(jo)=wcum(istate,ifr)
+        enddo
+      enddo
 
-      do 30 i=1,nstates
+      do i=1,nstates
         jo=jo+1
         local_obs(jo)=pecum(i)
 
@@ -99,7 +102,8 @@ c Written by Claudia Filippi
         local_obs(jo)=tpbcm2(i)
 
         jo=jo+1
-   30   local_obs(jo)=tjfcm2(i)
+        local_obs(jo)=tjfcm2(i)
+      enddo
 
       jo=jo+1
       local_obs(jo)=acc
@@ -115,12 +119,13 @@ c Written by Claudia Filippi
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       jo=0
-      do 110 istate=1,nstates
+      do istate=1,nstates
         jo=jo+1
         enow(istate,1)=collect(jo)/nproc
 
         jo=jo+1
-  110   apsi(istate)=collect(jo)/nproc
+        apsi(istate)=collect(jo)/nproc
+      enddo
 
       jo=jo+1
       aref=collect(jo)/nproc
@@ -130,8 +135,8 @@ c Written by Claudia Filippi
         detref(iab)=collect(jo)/nproc
       enddo
 
-      do 120 ifr=1,nforce
-        do 120 istate=1,nstates
+      do ifr=1,nforce
+        do istate=1,nstates
           jo=jo+1
           ecum(istate,ifr)=collect(jo)
 
@@ -145,9 +150,11 @@ c Written by Claudia Filippi
           fcm2(istate,ifr)=collect(jo)
 
           jo=jo+1
-  120     wcum(istate,ifr)=collect(jo)
+          wcum(istate,ifr)=collect(jo)
+        enddo
+      enddo
 
-      do 130 i=1,nstates
+      do i=1,nstates
         jo=jo+1
         pecum(i)=collect(jo)
 
@@ -164,7 +171,8 @@ c Written by Claudia Filippi
         tpbcm2(i)=collect(jo)
 
         jo=jo+1
-  130   tjfcm2(i)=collect(jo)
+        tjfcm2(i)=collect(jo)
+      enddo
 
       jo=jo+1
       acollect=collect(jo)
@@ -188,21 +196,24 @@ c optorb reduced at the end of the run: set printout to 0
 
        else
 
-        do 210 ifr=1,nforce
-          do 210 istate=1,nstates
+        do ifr=1,nforce
+          do istate=1,nstates
            ecum(istate,ifr)=0
            ecm2(istate,ifr)=0
            fcum(istate,ifr)=0
            fcm2(istate,ifr)=0
-  210      wcum(istate,ifr)=0
+           wcum(istate,ifr)=0
+          enddo
+        enddo
 
-        do 220 i=1,nstates
+        do i=1,nstates
           pecum(i)=0
           tpbcum(i)=0
           tjfcum(i)=0
           pecm2(i)=0
           tpbcm2(i)=0
-  220     tjfcm2(i)=0
+          tjfcm2(i)=0
+        enddo
 
         acc=0
       endif

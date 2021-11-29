@@ -52,13 +52,13 @@ c       or else to have a specified first derivative.
       endif
 
 c     Decomposition loop of tridiagonal algorithm:
-      do 100 i=2,n-1
+      do i=2,n-1
         sig = (x(i)-x(i-1))/(x(i+1)-x(i-1))
         p = sig*y2(i-1) + 2.d0
         y2(i) = (sig-1.d0)/p
         work(i)=(6.d0*((y(i+1)-y(i))/(x(i+1)-x(i))-(y(i)-y(i-1))
      &   /(x(i)-x(i-1)))/(x(i+1)-x(i-1))-sig*work(i-1))/p
-  100 continue
+      enddo
 
       if(ypn.gt.1.d+30) then
 c       Set upper boundary condition to be natural ...
@@ -72,9 +72,9 @@ c       Or else to have a specified first derivative
 
       y2(n) = (workn-qn*work(n-1))/(qn*y2(n-1)+1.d0)
 c     Backsubstitution loop of tridiagonal algorithm:
-      do 200 k=n-1,1,-1
+      do k=n-1,1,-1
         y2(k)=y2(k)*y2(k+1)+work(k)
-  200 continue
+      enddo
 
       return
       end

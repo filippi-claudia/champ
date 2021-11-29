@@ -41,22 +41,26 @@
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       if(wid) then
-        do 10 i=1,nchs
-  10      enfpcm_cum(i)=collect(i)
+        do i=1,nchs
+          enfpcm_cum(i)=collect(i)
+        enddo
        else
-        do 15 i=1,nchs
-  15      enfpcm_cum(i)=0
+        do i=1,nchs
+          enfpcm_cum(i)=0
+        enddo
       endif
 
       call mpi_reduce(enfpcm_cm2,collect,nchs
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       if(wid) then
-        do 20 i=1,nchs
-  20      enfpcm_cm2(i)=collect(i)
+        do i=1,nchs
+          enfpcm_cm2(i)=collect(i)
+        enddo
        else
-        do 25 i=1,nchs
-  25      enfpcm_cm2(i)=0
+        do i=1,nchs
+          enfpcm_cm2(i)=0
+        enddo
       endif
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
@@ -108,8 +112,9 @@
      &  MPI_COMM_WORLD,ierr)
 
       nch=nchs
-      do 1 i=0,nproc-1
-   1    nch=nch+nchv_proc(i)
+      do i=0,nproc-1
+        nch=nch+nchv_proc(i)
+      enddo
       if(nch.gt.MCHV) call fatal_error('PCM_REDUCE: increase MCHV')
 
 c     call mpi_allgather(qvol,1,mpi_double_precision,charge,1,mpi_double_precision,
@@ -120,17 +125,18 @@ c 15    qvol=qvol+charge(i)
 
 c     tmp=(1.0d0-fs)/nscv
 c     qvol=tmp/nproc
-      do 16 i=nchs+1,nch
-  16    ch(i)=qvol
+      do i=nchs+1,nch
+        ch(i)=qvol
+      enddo
 
       write(ounit,*) ' *** pcm update *** ',nch-nchs,qvol
 
       idispl(0)=3*nchs
       icount(0)=3*nchv_proc(0)
-      do 10 i=1,nproc-1
+      do i=1,nproc-1
         icount(i)=3*nchv_proc(i)
         idispl(i)=idispl(i-1)+3*nchv_proc(i-1)
-  10  continue
+      enddo
 c     write(ounit,*) ' *** pcm update *** ',(icount(i),i=0,nproc-1)
 c     write(ounit,*) ' *** pcm update *** ',(idispl(i),i=0,nproc-1)
 

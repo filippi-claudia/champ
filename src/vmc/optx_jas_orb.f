@@ -22,31 +22,35 @@
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
 
       p=wtg_new(istate)
-      do 10 i=1,nparmj
-        do 10 j=1,nreduced
+      do i=1,nparmj
+        do j=1,nreduced
         dj_o(i,j,istate)=dj_o(i,j,istate)  +p*gvalue(i)*orb_o(j,istate)
         dj_oe(i,j,istate)=dj_oe(i,j,istate)+p*gvalue(i)*orb_oe(j,istate)
         dj_ho(i,j,istate)=dj_ho(i,j,istate)+p*gvalue(i)*orb_ho(j,istate)
-   10   de_o(i,j,istate)=de_o(i,j,istate)  +p*denergy(i,istate)*orb_o(j,istate)
+        de_o(i,j,istate)=de_o(i,j,istate)  +p*denergy(i,istate)*orb_o(j,istate)
+        enddo
+      enddo
 
-  200 continue
+      enddo
 
       if(iflag.eq.0) return
 
-      do 300 istate=1,nstates
+      do istate=1,nstates
 
       q=wtg_old(istate)
-      do 20 i=1,nparmj
-        do 20 j=1,nreduced
+      do i=1,nparmj
+        do j=1,nreduced
         dj_o(i,j,istate)=dj_o(i,j,istate)  +q*gvalue_old(i)*orb_o_old(j,istate)
         dj_oe(i,j,istate)=dj_oe(i,j,istate)+q*gvalue_old(i)*orb_oe_old(j,istate)
         dj_ho(i,j,istate)=dj_ho(i,j,istate)+q*gvalue_old(i)*orb_ho_old(j,istate)
-   20   de_o(i,j,istate)=de_o(i,j,istate)  +q*denergy_old(i,istate)*orb_o_old(j,istate)
+        de_o(i,j,istate)=de_o(i,j,istate)  +q*denergy_old(i,istate)*orb_o_old(j,istate)
+        enddo
+      enddo
 
-  300 continue
+      enddo
 
       return
       end
@@ -69,16 +73,18 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
 
-      do 10 i=1,nparmj
-        do 10 j=1,nreduced
+      do i=1,nparmj
+        do j=1,nreduced
           dj_o(i,j,istate)=0
           dj_oe(i,j,istate)=0
           dj_ho(i,j,istate)=0
-  10      de_o(i,j,istate)=0
+          de_o(i,j,istate)=0
+        enddo
+      enddo
 
-  200 continue
+      enddo
 
       return
       end
@@ -99,8 +105,9 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do 200 istate=1,nstates
-  200 write(iu) ((dj_o(i,j,istate),dj_oe(i,j,istate),dj_ho(i,j,istate),de_o(i,j,istate),i=1,nparmj),j=1,nreduced)
+      do istate=1,nstates
+      write(iu) ((dj_o(i,j,istate),dj_oe(i,j,istate),dj_ho(i,j,istate),de_o(i,j,istate),i=1,nparmj),j=1,nreduced)
+      enddo
 
 
       return
@@ -122,8 +129,9 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do 200 istate=1,nstates
-  200 read(iu) ((dj_o(i,j,istate),dj_oe(i,j,istate),dj_ho(i,j,istate),de_o(i,j,istate),i=1,nparmj),j=1,nreduced)
+      do istate=1,nstates
+      read(iu) ((dj_o(i,j,istate),dj_oe(i,j,istate),dj_ho(i,j,istate),de_o(i,j,istate),i=1,nparmj),j=1,nreduced)
+      enddo
 
       return
       end
@@ -159,11 +167,13 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do 1 i=1,nparmj
-        do 1 j=1,nreduced
+      do i=1,nparmj
+        do j=1,nreduced
           s_mix_jas_orb(i,j)=0
           h_mix_jas_orb(i,j)=0
-   1      h_mix_jas_orb(i+nparmj,j)=0
+          h_mix_jas_orb(i+nparmj,j)=0
+        enddo
+      enddo
 
 c Hessian method
       if(method.eq.'hessian') then
@@ -173,7 +183,7 @@ c Exact mixed Hessian terms not implemented
         call fatal_error('OPTX_JAS_ORB_FIN: exact mix hessian formulas not implemented')
        else
 c Approximate mixed Hessian terms using orbital eigenvalues
-        do 50 istate=1,nstates
+        do istate=1,nstates
 
         wts=weights(istate)
 
@@ -181,17 +191,20 @@ c Approximate mixed Hessian terms using orbital eigenvalues
         passesi=1/passes
         eave=ecum(istate)*passesi
 
-        do 10 j=1,nreduced
- 10       grad_orb(j)=2*(orb_oe_cum(j,istate)-eave*orb_o_cum(j,istate))*passesi
+        do j=1,nreduced
+          grad_orb(j)=2*(orb_oe_cum(j,istate)-eave*orb_o_cum(j,istate))*passesi
+        enddo
 
-        do 20 i=1,nparmj
+        do i=1,nparmj
           grad_jas=2*(dj_e(i,istate)-eave*dj(i,istate))*passesi
-          do 20 j=1,nreduced
+          do j=1,nreduced
             h1=2*(2*(dj_oe(i,j,istate)-eave*dj_o(i,j,istate))-dj(i,istate)*grad_orb(j)-grad_jas*orb_o_cum(j,istate))
             h2=2*(de_o(i,j,istate)-de(i,istate)*orb_o_cum(j,istate)*passesi)
- 20         h_mix_jas_orb(i,j)=h_mix_jas_orb(i,j)+wts*(h1+h2)*passesi
+            h_mix_jas_orb(i,j)=h_mix_jas_orb(i,j)+wts*(h1+h2)*passesi
+          enddo
+        enddo
 
- 50   continue
+        enddo
 
       endif
 
@@ -201,7 +214,7 @@ c Linear method
 c Exact Hamiltonian mixed terms on semi-orthogonal basis
       if(iuse_orbeigv.eq.0) then
 
-      do 70 istate=1,nstates
+      do istate=1,nstates
 
       wts=weights(istate)
 
@@ -209,8 +222,8 @@ c Exact Hamiltonian mixed terms on semi-orthogonal basis
       passesi=1/passes
       eave=ecum(istate)*passesi
 
-      do 60 i=1,nparmj
-        do 60 j=1,nreduced
+      do i=1,nparmj
+        do j=1,nreduced
 c Overlap jas_orb
           s_mix_jas_orb(i,j)=s_mix_jas_orb(i,j)+wts*(dj_o(i,j,istate)-dj(i,istate)*orb_o_cum(j,istate)*passesi)*passesi
 c Hamiltonian jas_orb
@@ -222,9 +235,10 @@ c Hamiltonian orb_jas
      &    (eave*dj(i,istate)*orb_o_cum(j,istate)-dj(i,istate)*orb_oe_cum(j,istate)-
      &    orb_o_cum(j,istate)*(de(i,istate)+dj_e(i,istate)))*passesi)*passesi
 
- 60   continue
+        enddo
+      enddo
 
- 70   continue
+      enddo
 
       endif
 
@@ -232,20 +246,26 @@ c Hamiltonian orb_jas
 
       if(method.eq.'linear') then
       if(iapprox.eq.1) then
-        do 100 i=1,nparmj
-          do 100 j=1,nreduced
- 100        h_mix_jas_orb(i,j)=h_mix_jas_orb(i+nparmj,j)
+        do i=1,nparmj
+          do j=1,nreduced
+            h_mix_jas_orb(i,j)=h_mix_jas_orb(i+nparmj,j)
+          enddo
+        enddo
        elseif(iapprox.eq.2) then
-        do 110 i=1,nparmj
-          do 110 j=1,nreduced
+        do i=1,nparmj
+          do j=1,nreduced
             s_mix_jas_orb(i,j)=0
             h_mix_jas_orb(i,j)=0
- 110        h_mix_jas_orb(i+nparmj,j)=0
+            h_mix_jas_orb(i+nparmj,j)=0
+          enddo
+        enddo
        elseif(iapprox.eq.3) then
-        do 120 i=1,nparmj
-          do 120 j=1,nreduced
+        do i=1,nparmj
+          do j=1,nreduced
             h_mix_jas_orb(i,j)=0.5*(h_mix_jas_orb(i,j)+h_mix_jas_orb(i+nparmj,j))
- 120        h_mix_jas_orb(i+nparmj,j)=h_mix_jas_orb(i,j)
+            h_mix_jas_orb(i+nparmj,j)=h_mix_jas_orb(i,j)
+          enddo
+        enddo
       endif
 
       endif

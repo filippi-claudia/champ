@@ -43,26 +43,30 @@
       ikel=nel*(iel-ish-1)
 
       ratio_kref=0
-      do 55 j=1,nel
-   55   ratio_kref=ratio_kref+slmi(j+ikel,iab)*orbn(iworbd(j+ish,kref))
+      do j=1,nel
+        ratio_kref=ratio_kref+slmi(j+ikel,iab)*orbn(iworbd(j+ish,kref))
+      enddo
 
       detn(kref)=detiab(kref,iab)*ratio_kref
 
       if(ratio_kref.eq.0.d0) return
 
-      do 70 i=1,nel
+      do i=1,nel
         if(i+ish.ne.iel) then
           ik=nel*(i-1)
           sum=0
-          do 60 j=1,nel
-   60       sum=sum+slmi(j+ik,iab)*orbn(iworbd(j+ish,kref))
+          do j=1,nel
+            sum=sum+slmi(j+ik,iab)*orbn(iworbd(j+ish,kref))
+          enddo
           sum=sum/ratio_kref
-          do 65 j=1,nel
-   65      slmin(j+ik)=slmi(j+ik,iab)-slmi(j+ikel,iab)*sum
+          do j=1,nel
+           slmin(j+ik)=slmi(j+ik,iab)-slmi(j+ikel,iab)*sum
+          enddo
         endif
-   70 continue
-      do 75 j=1,nel
-   75   slmin(j+ikel)=slmi(j+ikel,iab)/ratio_kref
+      enddo
+      do j=1,nel
+        slmin(j+ikel)=slmi(j+ikel,iab)/ratio_kref
+      enddo
 
       return
       end
@@ -300,10 +304,11 @@ c-----------------------------------------------------------------------
       endif
 
       ik=(jel-1)*nel
-      do 84 j=1,nel
+      do j=1,nel
         ddx_ref(1)=ddx_ref(1)+slmi(j+ik)*dorb(1,iworbd(j+ish,kref))
         ddx_ref(2)=ddx_ref(2)+slmi(j+ik)*dorb(2,iworbd(j+ish,kref))
-   84   ddx_ref(3)=ddx_ref(3)+slmi(j+ik)*dorb(3,iworbd(j+ish,kref))
+        ddx_ref(3)=ddx_ref(3)+slmi(j+ik)*dorb(3,iworbd(j+ish,kref))
+      enddo
 
       return
       end
