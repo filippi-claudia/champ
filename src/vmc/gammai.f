@@ -68,12 +68,12 @@ c       write(ounit,*)'series'
         del=sum
         iter=int(21+3*(x-a))
 ci      do 10 n=1,itmax
-        do 10 n=1,iter
+        do n=1,iter
           ap=ap+1
           del=del*x/ap
           sum=sum+del
 ci        if(del.lt.sum*eps)go to 20
-   10   continue
+        enddo
 ci      call fatal_error ('a too large, itmax too small')
 ci 20   gammai=sum*dexp(-x+a*dlog(x))
         gammai=sum*xae
@@ -88,7 +88,7 @@ c       gold=0
         fac=1
         iter=max(20+nint(a-x),7)
 ci      do 30 n=1,itmax
-        do 30 n=1,iter
+        do n=1,iter
           an=dfloat(n)
           ana=an-a
           a0=(a1+a0*ana)*fac
@@ -101,7 +101,7 @@ ci      do 30 n=1,itmax
 c           if(abs((g-gold)/g).lt.eps)go to 40
 ci          if(abs((g-gold)).lt.eps*g)go to 40
 c           gold=g
-   30   continue
+        enddo
 ci      call fatal_error ('a too large, itmax too small')
 ci 40   gammcf=g*dexp(-x+a*dlog(x))
         gammcf=g*xae
@@ -138,9 +138,10 @@ c For a=3/2 the error of this formula is 5.d-11
 c     tmp=(x+half)*dlog(tmp)-tmp
       tmp=tmp**(x+half)*dexp(-tmp)
       ser=one
-      do 10 j=1,6
+      do j=1,6
         x=x+one
-   10   ser=ser+cof(j)/x
+        ser=ser+cof(j)/x
+      enddo
 c     gammln=tmp+dlog(stp*ser)
 c     gamm=dexp(gammln)
       gamm=stp*ser*tmp

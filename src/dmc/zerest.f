@@ -89,7 +89,7 @@ c zero out estimators
       ioldest=0
       ioldestmx=0
 
-      do 85 ifr=1,nforce
+      do ifr=1,nforce
         tausum(ifr)=zero
         taucum(ifr)=zero
         wgcum1(ifr)=zero
@@ -118,9 +118,11 @@ c zero out estimators
         fgcum(ifr)=zero
         fgcm2(ifr)=zero
         derivcm2(ifr)=zero
-        do 85 k=1,10
+        do k=1,10
           derivsum(k,ifr)=zero
-   85     derivcum(k,ifr)=zero
+          derivcum(k,ifr)=zero
+        enddo
+      enddo
 
       nbrnch=0
       trymove=0
@@ -129,10 +131,11 @@ c zero out estimators
       nodecr=0
 
 c Zero out estimators for charge density of atom.
-      do 90 i=1,nrad
+      do i=1,nrad
         rprobup(i)=zero
         rprobdn(i)=zero
-   90   rprob(i)=zero
+        rprob(i)=zero
+      enddo
 
       call optjas_init
       call optci_init(0)

@@ -122,23 +122,23 @@ C     sorts in ascending order
       real(dp) :: a, arr(n)
       integer i,indxt,ir,itemp,j,jstack,k,l,istack(nstack)
 
-      do 11 j=1,n
+      do j=1,n
         indx(j)=j
-11    continue
+      enddo
       jstack=0
       l=1
       ir=n
 1     if(ir-l.lt.m)then
-        do 13 j=l+1,ir
+        do j=l+1,ir
           indxt=indx(j)
           a=arr(indxt)
-          do 12 i=j-1,l,-1
+          do i=j-1,l,-1
             if(arr(indx(i)).le.a)goto 2
             indx(i+1)=indx(i)
-12        continue
+          enddo
           i=l-1
 2         indx(i+1)=indxt
-13      continue
+        enddo
         if(jstack.eq.0)return
         ir=istack(jstack)
         l=istack(jstack-1)

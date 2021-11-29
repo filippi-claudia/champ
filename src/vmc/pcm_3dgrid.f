@@ -187,18 +187,21 @@ c Evaluate the energy needed for the calculation
 
       if(irstar.ne.1) then
        write(45,*) 'Computation of the grid points...'
-       do 10 ix=1,ipcm_nstep3d(1)
+       do ix=1,ipcm_nstep3d(1)
           r(1)=pcm_cart_from_int(ix,1)
 
-          do 10 iy=1,ipcm_nstep3d(2)
+          do iy=1,ipcm_nstep3d(2)
             r(2)=pcm_cart_from_int(iy,2)
 
-            do 10 iz=1,ipcm_nstep3d(3)
+            do iz=1,ipcm_nstep3d(3)
               r(3) =pcm_cart_from_int(iz,3)
 
 c Calculate the value of the pcm potential on the position [r(1),r(2),r(3)]
               call pcm_extpot_ene_elec(r,pepol_s,pepol_v)
-  10          pcm_num_spl(1,ix,iy,iz)=pepol_s+pepol_v
+              pcm_num_spl(1,ix,iy,iz)=pepol_s+pepol_v
+            enddo
+          enddo
+       enddo
 
        nwk=80*ipcm_nstep3d(1)*ipcm_nstep3d(2)*ipcm_nstep3d(3)
        ier=0

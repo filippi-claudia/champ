@@ -18,11 +18,12 @@ c----------------------------------------------------------------------
       determ_psigi=1.d0/determ_psig
 c     write(ounit,*) ((determ_s(j)*determ_psigi)**2,j=1,nstates_psig)
 
-      do 100 j=1,nstates_psig
+      do j=1,nstates_psig
         ratio=determ_s(j)*determ_psigi
         wi=ratio*ratio
         effcum(j)=effcum(j)+wi
-  100   effcm2(j)=effcm2(j)+wi*wi
+        effcm2(j)=effcm2(j)+wi*wi
+      enddo
 
 c     write(88,*) (effcum(j),effcm2(j),j=1,nstates_psig),(determ_s(j),j=1,nstates_psig),determ_psig
 c     write(88,*) (effcum(j)*effcum(j)/effcm2(j)/ipass,j=1,nstates_psig)
@@ -38,9 +39,10 @@ c----------------------------------------------------------------------
 
 
 
-      do 100 j=1,nstates_psig
+      do j=1,nstates_psig
         effcum(j)=0
-  100   effcm2(j)=0
+        effcm2(j)=0
+      enddo
 
       end
 c----------------------------------------------------------------------
@@ -61,10 +63,11 @@ c----------------------------------------------------------------------
 
       write(ounit,*)
       write(ounit,'(''efficiency for multiple states'')')
-      do 200 j=1,nstates_psig
+      do j=1,nstates_psig
         efficiency=effcum(j)*effcum(j)/effcm2(j)/passes
 c       write(ounit,*) effcum(j)*effcum(j)/passes,effcm2(j)
-  200   write(ounit,'(''efficiency state '',i4,f8.3)') j,efficiency
+        write(ounit,'(''efficiency state '',i4,f8.3)') j,efficiency
+      enddo
 
       end
 c----------------------------------------------------------------------

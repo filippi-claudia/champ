@@ -322,8 +322,9 @@ c............................................................
       ncopcm=ncopcm+1
       iscv=mod(ncopcm,iscov)
       qopcm=0.0d0
-      do 1 i=1,nchs
-   1    enfpcm(i)=0
+      do i=1,nchs
+        enfpcm(i)=0
+      enddo
 
       do i=1,nelec
         in=0
@@ -551,7 +552,7 @@ c......................................................
 
       pepcms=penups
       pepcmv=penupv
-      do 200 i=1,nelec
+      do i=1,nelec
         if(ipcm_3dgrid.gt.0) then
           ier=0
           call spline_pcm(coord(1,i),pepol_sv,ier)
@@ -565,7 +566,7 @@ c......................................................
           pepcms=pepcms+pepol_s
           pepcmv=pepcmv+pepol_v
         endif
-  200 continue
+      enddo
 
       if (icall.eq.1)then
         write(ounit,*)
@@ -1595,7 +1596,7 @@ c the matrix a is replaced by its inverse.
       det(1) = 1.0d0
       det(2) = 0.0d0
       ten = 10.0d0
-      do 50 i = 1, nsub
+      do i = 1, nsub
         if (ipvt(i) .ne. i) det(1) = -det(1)
         det(1) = a(i,i)*det(1)
 c        ...exit
@@ -1610,7 +1611,7 @@ c        ...exit
           det(2) = det(2) + 1.0d0
         go to 30
    40   continue
-   50 continue
+      enddo
    60 continue
 
       determinant = det(1)*10.0**det(2)

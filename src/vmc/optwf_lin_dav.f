@@ -224,11 +224,13 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer :: i, iadiag, icsf, iroot
 
 
-      do 30 i=1,ndet
-   30   cdet(i,1,1)=cdet(i,iroot,1)
+      do i=1,ndet
+        cdet(i,1,1)=cdet(i,iroot,1)
+      enddo
 
-      do 40 icsf=1,ncsf
-   40   ccsf(icsf,1,iadiag)=ccsf(icsf,iroot,1)
+      do icsf=1,ncsf
+        ccsf(icsf,1,iadiag)=ccsf(icsf,iroot,1)
+      enddo
 
       return
       end

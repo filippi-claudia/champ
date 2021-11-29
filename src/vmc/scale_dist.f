@@ -66,13 +66,15 @@ c used for J_en and J_ee when isc=16,17.
 
 c Calculate asymptotic value of A and B terms
       asymp_r=c1_jas6i/scalek(1)
-      do 10 it=1,nctype
+      do it=1,nctype
         asymp_jasa(it)=a4(1,it,1)*asymp_r/(1+a4(2,it,1)*asymp_r)
-        do 10 iord=2,norda
-   10     asymp_jasa(it)=asymp_jasa(it)+a4(iord+1,it,1)*asymp_r**iord
+        do iord=2,norda
+          asymp_jasa(it)=asymp_jasa(it)+a4(iord+1,it,1)*asymp_r**iord
+        enddo
+      enddo
 
       if(ijas.eq.4) then
-        do 20 i=1,2
+        do i=1,2
           if(i.eq.1) then
             sspinn=1
             isp=1
@@ -85,10 +87,12 @@ c Calculate asymptotic value of A and B terms
             isp=nspin2b
           endif
           asymp_jasb(i)=sspinn*b(1,isp,1)*asymp_r/(1+b(2,isp,1)*asymp_r)
-          do 20 iord=2,nordb
-   20       asymp_jasb(i)=asymp_jasb(i)+b(iord+1,isp,1)*asymp_r**iord
+          do iord=2,nordb
+            asymp_jasb(i)=asymp_jasb(i)+b(iord+1,isp,1)*asymp_r**iord
+          enddo
+        enddo
        elseif(ijas.eq.5) then
-        do 35 i=1,2
+        do i=1,2
           if(i.eq.1) then
             sspinn=1
             isp=1
@@ -101,9 +105,11 @@ c Calculate asymptotic value of A and B terms
             isp=nspin2b
           endif
           asymp_jasb(i)=b(1,isp,1)*asymp_r/(1+b(2,isp,1)*asymp_r)
-          do 30 iord=2,nordb
-   30       asymp_jasb(i)=asymp_jasb(i)+b(iord+1,isp,1)*asymp_r**iord
-   35     asymp_jasb(i)=sspinn*asymp_jasb(i)
+          do iord=2,nordb
+            asymp_jasb(i)=asymp_jasb(i)+b(iord+1,isp,1)*asymp_r**iord
+          enddo
+          asymp_jasb(i)=sspinn*asymp_jasb(i)
+        enddo
       endif
       if((ijas.eq.4.or.ijas.eq.5).and.ipr.gt.1) then
         write(ounit,'(''asymp_r='',f10.6)') asymp_r

@@ -129,7 +129,7 @@ c     endif
 
       if(ndet.eq.1) return
 
-      do 200 k=1,ndet
+      do k=1,ndet
 
         if(k.eq.kref) then
 c         write(ounit,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
@@ -203,20 +203,22 @@ c       write(ounit,*) 'denergy_det',denergy_det(k,1),denergy_det(k,2)
 
 c       write(ounit,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
  200  continue
+      enddo
 
-      do 400 k=1,ndet
+      do k=1,ndet
         if(k.eq.kref) goto 400
-        do 300 iab=1,2
+        do iab=1,2
           if(iwundet(k,iab).ne.kref) then
             detiab(k,iab)=detiab(k,iab)*detiab(kref,iab)
           endif
- 300  continue
+        enddo
  400  continue
+      enddo
 
 
 c compute Ymat for future use
 
-      do 800 istate=1,nstates
+      do istate=1,nstates
 
         call compute_ymat(1,detiab(1,1),detiab(1,2),wfmat(1,1,1),ymat(1,1,1,istate),istate)
         if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_dymat(1,dymat(1,1,1,istate))
@@ -228,7 +230,7 @@ c compute Ymat for future use
 
         if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_zmat(ymat(1,1,1,istate),dymat(1,1,1,istate)
      &    ,zmat(1,1,1,istate),dzmat(1,1,1,istate),emz(1,1,1,istate),aaz(1,1,1,istate))
- 800  continue
+      enddo
 
       return
       end
@@ -269,11 +271,13 @@ c-----------------------------------------------------------------------
 
       detrefi=1.d0/(detu(kref)*detd(kref))
 
-      do 10 i=1,nelec
-        do 10 j=1,norb
- 10       ymat(j,i)=0
+      do i=1,nelec
+        do j=1,norb
+          ymat(j,i)=0
+        enddo
+      enddo
 
-      do 300 k=1,ndet
+      do k=1,ndet
         if(k.eq.kref) goto 300
 
         cdet_equiv(k)=0
@@ -294,8 +298,9 @@ c-----------------------------------------------------------------------
         dcdet_equiv(kk)=dcdet_equiv(kk)+cdet(k,istate,iwf)*detall*(denergy_det(k,1)+denergy_det(k,2))
 
  300  continue
+      enddo
 
-      do 400 kk=1,ndet
+      do kk=1,ndet
 
         if(kk.eq.kref.or.iwundet(kk,iab).ne.kk) goto 400
 
@@ -311,6 +316,7 @@ c-----------------------------------------------------------------------
         enddo
 
  400  continue
+      enddo
 
       return
       end
@@ -341,11 +347,13 @@ c-----------------------------------------------------------------------
 
 
 
-      do 10 i=1,nelec
-        do 10 j=1,norb
- 10       dymat(j,i)=0
+      do i=1,nelec
+        do j=1,norb
+          dymat(j,i)=0
+        enddo
+      enddo
 
-      do 400 kk=1,ndet
+      do kk=1,ndet
 
         if(kk.eq.kref.or.iwundet(kk,iab).ne.kk) goto 400
 
@@ -383,6 +391,7 @@ c-----------------------------------------------------------------------
         enddo
 
  400  continue
+      enddo
 
       return
       end
@@ -412,7 +421,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(nelec, nelec, 2) :: aaz
 
 
-      do 100 iab=1,2
+      do iab=1,2
         if(iab.eq.2.and.ndn.eq.0) goto 100
 
         if(iab.eq.1) then
@@ -450,6 +459,7 @@ c           do krep=ivirt(iab),norb+nadorb
         enddo
 
   100 continue
+      enddo
 
       return
       end
@@ -479,8 +489,9 @@ c-----------------------------------------------------------------------
         iab=1
       endif
 
-      do 100 istate=1,nstates
+      do istate=1,nstates
  100    call compute_ymat(iab,detiab(1,1),detiab(1,2),wfmat(1,1,iab),ymat(1,1,iab,istate),istate)
+      enddo
 
 c     write(ounit,*) 'DU',(detiab(k,1),k=1,56)
 c     write(ounit,*) 'DD',(detiab(k,2),k=1,56)

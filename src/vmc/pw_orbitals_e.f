@@ -41,9 +41,10 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
 
 
 
-      do 5 iorb=1,norb
+      do iorb=1,norb
 c       do 5 iel=1,nelec
-    5     orb(iorb)=0
+          orb(iorb)=0
+      enddo
 
 c     do 130 iel=1,nelec
 
@@ -69,8 +70,8 @@ c    &cos_k(1,1),sin_k(1,1),(dcos_k(k,1,1),k=1,3),(dsin_k(k,1,1),k=1,3),ddcos_k(
 
         iorb=0
         jorb=0
-        do 130 ikvec=1,nkvec
-          do 130 iband=1,nband(ikvec)
+        do ikvec=1,nkvec
+          do iband=1,nband(ikvec)
             jorb=jorb+1
 
             cos_rp=0
@@ -79,7 +80,7 @@ c    &cos_k(1,1),sin_k(1,1),(dcos_k(k,1,1),k=1,3),(dsin_k(k,1,1),k=1,3),ddcos_k(
             sin_im=0
 c           do 80 iv=2,ngorb(ikvec)
 c             ig=isortg(iv,ikvec)
-            do 80 iv=2,ngvec_orb
+            do iv=2,ngvec_orb
               ig=iv
               cos_rp=cos_rp+cos_g(ig)*c_rp(iv,jorb)
               sin_rm=sin_rm+sin_g(ig)*c_rm(iv,jorb)
@@ -87,7 +88,7 @@ c             ig=isortg(iv,ikvec)
               sin_im=sin_im+sin_g(ig)*c_im(iv,jorb)
 c             write(ounit,'(''iel,ig,jorb,cos_rp,cos_g(ig),c_rp(iv,jorb)'',3i5,9d12.4)')
 c    & iel,ig,jorb,cos_rp,cos_g(ig),c_rp(iv,jorb)
-   80         continue
+            enddo
 
 c           write(ounit,'(''dcos_k(k,iel,ikvec),dsin_k(k,iel,ikvec),dcos_rp(k),dsin_rm(k),dsin_im(k),dcos_ip(k)'',30f9.5)')
 c    &(dcos_k(k,iel,ikvec),k=1,3),(dsin_k(k,iel,ikvec),k=1,3),(dcos_rp(k),k=1,3),(dsin_rm(k),k=1,3), &
@@ -131,6 +132,8 @@ c           endif
             endif
 
   130       continue
+          enddo
+        enddo
 
       if(ipr.ge.4) write(ounit,'(i4,'' electrons placed in'',i4,'' orbitals'')') nelec,iorb
 

@@ -23,16 +23,16 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c     electron coordinates
 
       if(iprop.eq.0) return
-      do 5 i=1,nprop
+      do i=1,nprop
        vprop(i)=0.d0
- 5    enddo
+      enddo
 
-      do 10 i=1,nelec
-       do 20 m=1,3
+      do i=1,nelec
+       do m=1,3
         vprop(m)  = vprop(m)+coord(m,i)
         vprop(3+m)= vprop(3+m) + coord(m,i)**2
- 20    enddo
- 10   enddo
+       enddo
+      enddo
       end
 
 c-----------------------------------------------------------------------

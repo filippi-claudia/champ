@@ -37,7 +37,7 @@
 
       if(ioptjas.eq.0) return
 
-      do 200 iparm=1,nparmj
+      do iparm=1,nparmj
 
         deloc_dj(iparm)=dvpsp_dj(iparm)
         do i=1,nelec
@@ -46,8 +46,9 @@
         enddo
 
         deloc_dj_kref=deloc_dj(iparm)
-        do 100 istate=1,nstates
- 100      denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref*detiab(kref,1)*detiab(kref,2)
+        do istate=1,nstates
+          denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref*detiab(kref,1)*detiab(kref,2)
+        enddo
 
 C       test=0
 C       do j=1,nup
@@ -140,9 +141,10 @@ c d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
         enddo
         term_jas=-hb*term_jas
 
-        do 200 istate=1,nstates
+        do istate=1,nstates
           denergy(iparm,istate)=term_jas+denergy(iparm,istate)/psid(istate)
- 200  continue
+        enddo
+      enddo
 
       if(ipr.gt.3) then
         do istate=1,nstates
@@ -186,30 +188,32 @@ c Written by Claudia Filippi
 
       if(ioptjas.eq.0) return
 
-      do 100 istate=1,nstates
+      do istate=1,nstates
       p=wtg_new(istate)
 
-      do 10 i=1,nparmj
+      do i=1,nparmj
         dj(i,istate)=dj(i,istate)      +p*gvalue(i)
         de(i,istate)=de(i,istate)      +p*denergy(i,istate)
         dj_e(i,istate)=dj_e(i,istate)  +p*gvalue(i)*enew(istate)
         de_e(i,istate)=de_e(i,istate)  +p*denergy(i,istate)*enew(istate)
         dj_e2(i,istate)=dj_e2(i,istate)+p*gvalue(i)*enew(istate)**2
         e2(i,istate)=e2(i,istate)      +p*enew(istate)**2
-        do 10 j=1,i
+        do j=1,i
           dj_dj(i,j,istate)=dj_dj(i,j,istate)           +p*gvalue(i)*gvalue(j)
           dj_de(i,j,istate)=dj_de(i,j,istate)           +p*gvalue(i)*denergy(j,istate)
           if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+p*gvalue(j)*denergy(i,istate)
           dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)       +p*gvalue(i)*gvalue(j)*enew(istate)
-   10     de_de(i,j,istate)=de_de(i,j,istate)           +p*denergy(i,istate)*denergy(j,istate)
+          de_de(i,j,istate)=de_de(i,j,istate)           +p*denergy(i,istate)*denergy(j,istate)
+        enddo
+      enddo
 
-      do 20 it=1,nctype
-        do 20 jparm=1,nparma(it)
+      do it=1,nctype
+        do jparm=1,nparma(it)
           iparm=npointa(it)+jparm
           if(iwjasa(jparm,it).eq.2) then
             d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+p*d2d2a(it)
             d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+p*d2d2a(it)*enew(istate)
-            do 15 kparm=1,nparma(it)
+            do kparm=1,nparma(it)
               if(iwjasa(kparm,it).eq.1) then
                 lparm=npointa(it)+kparm
                 sav1=p*d1d2a(it)
@@ -222,19 +226,20 @@ c Written by Claudia Filippi
                   d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
                 endif
               endif
-   15       continue
+            enddo
           endif
-   20 continue
+        enddo
+      enddo
 
       iparm0=npointa(nctype)+nparma(nctype)
-      do 30 isb=1,nspin2b
+      do isb=1,nspin2b
         if(isb.eq.2) iparm0=iparm0+nparmb(1)
-        do 30 jparm=1,nparmb(isb)
+        do jparm=1,nparmb(isb)
           iparm=iparm0+jparm
           if(iwjasb(jparm,isb).eq.2) then
             d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+p*d2d2b(isb)
             d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+p*d2d2b(isb)*enew(istate)
-            do 25 kparm=1,nparmb(isb)
+            do kparm=1,nparmb(isb)
               if(iwjasb(kparm,isb).eq.1) then
                 lparm=iparm0+kparm
                 sav1=p*d1d2b(isb)
@@ -247,39 +252,42 @@ c Written by Claudia Filippi
                   d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
                 endif
               endif
-   25       continue
+            enddo
           endif
-   30 continue
+        enddo
+      enddo
 
-  100 continue
+      enddo
 
       if(iflag.eq.0) return
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
 
       q=wtg_old(istate)
 
-      do 40 i=1,nparmj
+      do i=1,nparmj
         dj(i,istate)=dj(i,istate)      +q*gvalue_old(i)
         de(i,istate)=de(i,istate)      +q*denergy_old(i,istate)
         dj_e(i,istate)=dj_e(i,istate)  +q*gvalue_old(i)*eold(istate)
         de_e(i,istate)=de_e(i,istate)  +q*denergy_old(i,istate)*eold(istate)
         dj_e2(i,istate)=dj_e2(i,istate)+q*gvalue_old(i)*eold(istate)**2
         e2(i,istate)=e2(i,istate)      +q*eold(istate)**2
-        do 40 j=1,i
+        do j=1,i
           dj_dj(i,j,istate)=dj_dj(i,j,istate)           +q*gvalue_old(i)*gvalue_old(j)
           dj_de(i,j,istate)=dj_de(i,j,istate)           +q*gvalue_old(i)*denergy_old(j,istate)
           if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+q*gvalue_old(j)*denergy_old(i,istate)
           dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)       +q*gvalue_old(i)*gvalue_old(j)*eold(istate)
-   40     de_de(i,j,istate)=de_de(i,j,istate)           +q*denergy_old(i,istate)*denergy_old(j,istate)
+          de_de(i,j,istate)=de_de(i,j,istate)           +q*denergy_old(i,istate)*denergy_old(j,istate)
+        enddo
+      enddo
 
-      do 50 it=1,nctype
-        do 50 jparm=1,nparma(it)
+      do it=1,nctype
+        do jparm=1,nparma(it)
           iparm=npointa(it)+jparm
           if(iwjasa(jparm,it).eq.2) then
             d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+q*d2d2a_old(it)
             d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+q*d2d2a_old(it)*eold(istate)
-            do 45 kparm=1,nparma(it)
+            do kparm=1,nparma(it)
               if(iwjasa(kparm,it).eq.1) then
                 lparm=npointa(it)+kparm
                 sav1=q*d1d2a_old(it)
@@ -292,19 +300,20 @@ c Written by Claudia Filippi
                   d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
                 endif
               endif
-   45       continue
+            enddo
           endif
-   50 continue
+        enddo
+      enddo
 
       iparm0=npointa(nctype)+nparma(nctype)
-      do 60 isb=1,nspin2b
+      do isb=1,nspin2b
         if(isb.eq.2) iparm0=iparm0+nparmb(1)
-        do 60 jparm=1,nparmb(isb)
+        do jparm=1,nparmb(isb)
           iparm=iparm0+jparm
           if(iwjasb(jparm,isb).eq.2) then
             d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+q*d2d2b_old(isb)
             d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+q*d2d2b_old(isb)*eold(istate)
-            do 55 kparm=1,nparmb(isb)
+            do kparm=1,nparmb(isb)
               if(iwjasb(kparm,isb).eq.1) then
                 lparm=iparm0+kparm
                 sav1=q*d1d2b_old(isb)
@@ -317,11 +326,12 @@ c Written by Claudia Filippi
                   d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
                 endif
               endif
-   55       continue
+            enddo
           endif
-   60 continue
+        enddo
+      enddo
 
-  200 continue
+      enddo
 
 c     write(ounit,*) 'HELLO',enew,p,eold,q,(dj_dj_e(nparmj,i),i=1,nparmj)
 
@@ -351,33 +361,37 @@ c Written by Claudia Filippi
 
       nbj_current=nbj_current+1
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
 
-      do 10 i=1,nparmj
+      do i=1,nparmj
         dj_e_b(i)=dj_e(i,istate)-dj_e_save(i,istate)
-  10    dj_b(i)=dj(i,istate)-dj_save(i,istate)
+        dj_b(i)=dj(i,istate)-dj_save(i,istate)
+      enddo
 
       e_bsum(istate)=e_bsum(istate)+enow(istate)
-      do 20 i=1,nparmj
+      do i=1,nparmj
         dj_e_bsum(i,istate)=dj_e_bsum(i,istate)+dj_e_b(i)/wsum
-  20    dj_bsum(i,istate)=dj_bsum(i,istate)+dj_b(i)/wsum
+        dj_bsum(i,istate)=dj_bsum(i,istate)+dj_b(i)/wsum
+      enddo
 
-      do 30 i=1,nparmj
+      do i=1,nparmj
          dj_e_save(i,istate)=dj_e(i,istate)
-  30     dj_save(i,istate)=dj(i,istate)
+         dj_save(i,istate)=dj(i,istate)
+      enddo
 
       if(nbj_current.eq.ngrad_jas_blocks)then
         eb=e_bsum(istate)/dble(ngrad_jas_blocks)
         e_bsum(istate)=0
-        do 40 i=1,nparmj
+        do i=1,nparmj
           gnow=2*(dj_e_bsum(i,istate)-dj_bsum(i,istate)*eb)/dble(ngrad_jas_blocks)
           grad_jas_bcum(i,istate)=grad_jas_bcum(i,istate)+gnow
           grad_jas_bcm2(i,istate)=grad_jas_bcm2(i,istate)+gnow**2
           dj_e_bsum(i,istate)=0
-  40      dj_bsum(i,istate)=0
+          dj_bsum(i,istate)=0
+        enddo
       endif
 
-  200 continue
+      enddo
 
       if(nbj_current.eq.ngrad_jas_blocks) then
         nbj_current=0
@@ -406,18 +420,22 @@ c Written by Claudia Filippi
 
       if(ioptjas.eq.0) return
 
-      do 10 i=1,nparmj
+      do i=1,nparmj
         gvalue_old(i)=gvalue(i)
-        do 10 istate=1,nstates
-  10      denergy_old(i,istate)=denergy(i,istate)
+        do istate=1,nstates
+          denergy_old(i,istate)=denergy(i,istate)
+        enddo
+      enddo
 
-      do 20 it=1,nctype
+      do it=1,nctype
         d1d2a_old(it)=d1d2a(it)
-  20    d2d2a_old(it)=d2d2a(it)
+        d2d2a_old(it)=d2d2a(it)
+      enddo
 
-      do 30 isb=1,nspin2b
+      do isb=1,nspin2b
         d1d2b_old(isb)=d1d2b(isb)
-  30    d2d2b_old(isb)=d2d2b(isb)
+        d2d2b_old(isb)=d2d2b(isb)
+      enddo
 
       return
       end
@@ -439,33 +457,36 @@ c Written by Claudia Filippi
 
       if(ioptjas.eq.0) return
 
-      do 30 istate=1,nstates
-        do 10 i=1,nparmj
+      do istate=1,nstates
+        do i=1,nparmj
           dj(i,istate)=0
           de(i,istate)=0
           dj_e(i,istate)=0
           de_e(i,istate)=0
           dj_e2(i,istate)=0
           e2(i,istate)=0
-          do 10 j=1,i
+          do j=1,i
             dj_de(i,j,istate)=0
             dj_de(j,i,istate)=0
             dj_dj(i,j,istate)=0
             dj_dj_e(i,j,istate)=0
             d2j(i,j,istate)=0
             d2j_e(i,j,istate)=0
-  10        de_de(i,j,istate)=0
+            de_de(i,j,istate)=0
+          enddo
+        enddo
 
       e_bsum(istate)=0
-      do 20 i=1,nparmj
+      do i=1,nparmj
         grad_jas_bcum(i,istate)=0
         grad_jas_bcm2(i,istate)=0
         dj_e_bsum(i,istate)=0
         dj_bsum(i,istate)=0
         dj_e_save(i,istate)=0
-  20    dj_save(i,istate)=0
+        dj_save(i,istate)=0
+      enddo
 
-  30  continue
+      enddo
 
       nbj_current=0
       ngrad_jas_bcum=0
@@ -492,7 +513,7 @@ c Written by Claudia Filippi
 c to do: write out which parameters are being varied -> check for restart
 c Warning: Except for dj_de the rest are sym. so we do not really need to write entire matrix
       write(iu) nparmj
-      do 200 istate=1,nstates
+      do istate=1,nstates
       write(iu) (dj(i,istate),de(i,istate),dj_e(i,istate),de_e(i,istate),dj_e2(i,istate),e2(i,istate),i=1,nparmj)
       write(iu) ((dj_de(i,j,istate),j=1,nparmj),i=1,nparmj)
       write(iu) ((dj_dj(i,j,istate),dj_dj_e(i,j,istate),j=1,nparmj),i=1,nparmj)
@@ -500,7 +521,7 @@ c Warning: Except for dj_de the rest are sym. so we do not really need to write 
       write(iu) ((de_de(i,j,istate),j=1,nparmj),i=1,nparmj)
       if(ngrad_jas_blocks.gt.0)
      & write(iu) (grad_jas_bcum(i,istate),grad_jas_bcm2(i,istate),i=1,nparmj),ngrad_jas_bcum
-  200 continue
+      enddo
 
       return
       end
@@ -523,7 +544,7 @@ c Written by Claudia Filippi
       if(ioptjas.eq.0) return
 
       read(iu) nparmj
-      do 200 istate=1,nstates
+      do istate=1,nstates
       read(iu) (dj(i,istate),de(i,istate),dj_e(i,istate),de_e(i,istate),dj_e2(i,istate),e2(i,istate),i=1,nparmj)
       read(iu) ((dj_de(i,j,istate),j=1,nparmj),i=1,nparmj)
       read(iu) ((dj_dj(i,j,istate),dj_dj_e(i,j,istate),j=1,nparmj),i=1,nparmj)
@@ -532,11 +553,12 @@ c Written by Claudia Filippi
       if(ngrad_jas_blocks.gt.0)
      & read(iu) (grad_jas_bcum(i,istate),grad_jas_bcm2(i,istate),i=1,nparmj),ngrad_jas_bcum
 
-      do 10 i=1,nparmj
+      do i=1,nparmj
         dj_e_save(i,istate)=dj_e(i,istate)
-   10   dj_save(i,istate)=dj(i,istate)
+        dj_save(i,istate)=dj(i,istate)
+      enddo
 
-  200 continue
+      enddo
       return
       end
 c-----------------------------------------------------------------------
@@ -574,20 +596,23 @@ c Written by Claudia Filippi
 
       if(ioptjas.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do 10 i=1,nparmj+1
+      do i=1,nparmj+1
         grad_jas(i)=0
-        do 10 j=1,nparmj+1
+        do j=1,nparmj+1
           s_jas(i,j)=0
-   10     h_jas(i,j)=0
+          h_jas(i,j)=0
+        enddo
+      enddo
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
 
       passes=wcum(istate)
       eave=ecum(istate)/passes
 c Compute gradient
-      do 20 i=1,nparmj
+      do i=1,nparmj
         grad_now(i)=2*(dj_e(i,istate)-eave*dj(i,istate))/passes
-   20   grad_jas(i)=grad_jas(i)+weights(istate)*grad_now(i)
+        grad_jas(i)=grad_jas(i)+weights(istate)*grad_now(i)
+      enddo
 
       if(method.eq.'hessian') then
 
@@ -595,32 +620,39 @@ c Compute hessian (symmetrized dj_de term)
 
 c Hessian h = hess1 + hess2 + hess3
 c hess1=S_h, hess2=2*G, hess3=terms depending on d2j
-      do 30 i=1,nparmj
-        do 30 j=1,i
+      do i=1,nparmj
+        do j=1,i
           hess1(i,j)=(dj_de(i,j,istate)+dj_de(j,i,istate)-(dj(i,istate)*de(j,istate)+dj(j,istate)*de(i,istate))/passes)/passes
           hess2(i,j)=2*(2*(dj_dj_e(i,j,istate)-eave*dj_dj(i,j,istate))-grad_now(i)*dj(j,istate)-grad_now(j)*dj(i,istate))/passes
-   30     hess3(i,j)=2*(d2j_e(i,j,istate)-eave*d2j(i,j,istate))/passes
+          hess3(i,j)=2*(d2j_e(i,j,istate)-eave*d2j(i,j,istate))/passes
+        enddo
+      enddo
 
 c Compute ratio for reweighted expression of the hessian
       botsum_j=0
       topsum_j=0
-      do 40 i=1,nparmj
-        do 40 j=1,i
+      do i=1,nparmj
+        do j=1,i
           botsum_j=botsum_j+hess1(i,j)
-   40     topsum_j=topsum_j+hess2(i,j)
+          topsum_j=topsum_j+hess2(i,j)
+        enddo
+      enddo
       ratio_j=(topsum_j+botsum_j)/botsum_j
 
 c Construct hessian
 c Hessian h = hess1 + hess2 + hess3 (ratio=1, ibeta=1)
 c Reduced fluctuation hessian = ratio*hess1 + hess3 (ratio, ibeta=-1)
-      do 45 i=1,nparmj
-        do 45 j=1,i
+      do i=1,nparmj
+        do j=1,i
           h_jas(i,j)=h_jas(i,j)+weights(istate)*(ratio*hess1(i,j)+0.5d0*(1+ibeta)*hess2(i,j)+hess3(i,j))
-   45     h_jas(j,i)=h_jas(i,j)
+          h_jas(j,i)=h_jas(i,j)
+        enddo
+      enddo
 
       if(ngrad_jas_blocks.gt.0) then
-        do 80 i=1,nparmj
-  80      gerr(i)=errn(grad_jas_bcum(i,istate),grad_jas_bcm2(i,istate),ngrad_jas_bcum)
+        do i=1,nparmj
+          gerr(i)=errn(grad_jas_bcum(i,istate),grad_jas_bcm2(i,istate),ngrad_jas_bcum)
+        enddo
       endif
 
       elseif(method.eq.'linear') then
@@ -629,37 +661,43 @@ c Compute <dj H dj>/<psi|psi> and <dj dj>/<psi|psi>
 
 c Hamiltonian h = <dj H dj>/<psi|psi>
       h_jas(1,1)=h_jas(1,1)+weights(istate)*eave
-      do 130 i=1,nparmj
+      do i=1,nparmj
         h_jas(1,i+1)=h_jas(1,i+1)+weights(istate)*(de(i,istate)+dj_e(i,istate)-eave*dj(i,istate))/passes
-  130   h_jas(i+1,1)=h_jas(i+1,1)+weights(istate)*(dj_e(i,istate)-eave*dj(i,istate))/passes
+        h_jas(i+1,1)=h_jas(i+1,1)+weights(istate)*(dj_e(i,istate)-eave*dj(i,istate))/passes
+      enddo
 
-      do 140 i=1,nparmj
+      do i=1,nparmj
         h_jas(i+1,i+1)=h_jas(i+1,i+1)+weights(istate)*(dj_de(i,i,istate)+dj_dj_e(i,i,istate)
      &                  +dj(i,istate)*(eave*dj(i,istate)-de(i,istate)-2*dj_e(i,istate))/passes)/passes
-        do 140 j=1,i-1
+        do j=1,i-1
           h_jas(i+1,j+1)=h_jas(i+1,j+1)+weights(istate)*(dj_de(i,j,istate)+dj_dj_e(i,j,istate)
      &                  +(eave*dj(i,istate)*dj(j,istate)
      &                  -dj(i,istate)*(de(j,istate)+dj_e(j,istate))
      &                  -dj(j,istate)*dj_e(i,istate))/passes)/passes
-  140     h_jas(j+1,i+1)=h_jas(j+1,i+1)+weights(istate)*(dj_de(j,i,istate)+dj_dj_e(i,j,istate)
+          h_jas(j+1,i+1)=h_jas(j+1,i+1)+weights(istate)*(dj_de(j,i,istate)+dj_dj_e(i,j,istate)
      &                  +(eave*dj(i,istate)*dj(j,istate)
      &                  -dj(j,istate)*(de(i,istate)+dj_e(i,istate))
      &                  -dj(i,istate)*dj_e(j,istate))/passes)/passes
+        enddo
+      enddo
 
 c Overlap s = <dj dj>/<psi|psi>
       s_jas(1,1)=1
-      do 150 i=1,nparmj
+      do i=1,nparmj
         s_jas(i+1,1)=0
-  150   s_jas(1,i+1)=0
+        s_jas(1,i+1)=0
+      enddo
 
-      do 160 i=1,nparmj
-        do 160 j=1,i
+      do i=1,nparmj
+        do j=1,i
           s_jas(i+1,j+1)=s_jas(i+1,j+1)+weights(istate)*(dj_dj(i,j,istate)-dj(i,istate)*dj(j,istate)/passes)/passes
-  160     s_jas(j+1,i+1)=s_jas(i+1,j+1)
+          s_jas(j+1,i+1)=s_jas(i+1,j+1)
+        enddo
+      enddo
 
       endif
 
-  200 continue
+      enddo
 
       return
       end

@@ -73,15 +73,18 @@ c     enddo
 
       t_norm=0.d0
       psidi=1.d0/psid
-      do 10 ii=i1,i2
+      do ii=i1,i2
         i=ii
         if(i.gt.nelec) i=i-nelec
         if(i.lt.1) i=i+nelec
-        do 10 iq=1,nquad
-          do 10 ic=1,ncent
+        do iq=1,nquad
+          do ic=1,ncent
             t_vpsp(ic,iq,i)=t_vpsp(ic,iq,i)
             if(t_vpsp(ic,iq,i).gt.0.d0) t_vpsp(ic,iq,i)=0.d0
- 10         t_norm=t_norm-t_vpsp(ic,iq,i)
+            t_norm=t_norm-t_vpsp(ic,iq,i)
+          enddo
+        enddo
+      enddo
       t_norm=1.d0+t_norm*tauprim
       t_normi=1.d0/t_norm
 c     write(ounit,*) 'tnormi=',t_normi
@@ -93,12 +96,12 @@ c     enddo
 
       t_cum=0.d0
       p=rannyu(0)
-      do 20 ii=i1,i2
+      do ii=i1,i2
         i=ii
         if(i.gt.nelec) i=i-nelec
         if(i.lt.1) i=i+nelec
-        do 20 iq=1,nquad
-          do 20 ic=1,ncent
+        do iq=1,nquad
+          do ic=1,ncent
             t_cum=t_cum-tauprim*t_vpsp(ic,iq,i)*t_normi
             if(t_cum.gt.p)then
               ic_good=ic
@@ -107,7 +110,9 @@ c     enddo
               imove=1
               go to 30
             endif
- 20   continue
+          enddo
+        enddo
+      enddo
 
  30   if(imove.eq.1)then
         iq=iq_good
@@ -157,19 +162,25 @@ c-----------------------------------------------------------------------
       ! real(dp), dimension(ncent_tot, MPS_QUAD, nelec) :: t_vpsp_save
       ! save t_vpsp_save
 
-      do 10 i=1,nelec
-        do 10 iq=1,nquad
-          do 10 ic=1,ncent
-   10       t_vpsp_save(ic,iq,i)=t_vpsp(ic,iq,i)
+      do i=1,nelec
+        do iq=1,nquad
+          do ic=1,ncent
+            t_vpsp_save(ic,iq,i)=t_vpsp(ic,iq,i)
+          enddo
+        enddo
+      enddo
 
       return
 
       entry t_vpsp_get
 
-      do 20 i=1,nelec
-        do 20 iq=1,nquad
-          do 20 ic=1,ncent
-   20       t_vpsp(ic,iq,i)=t_vpsp_save(ic,iq,i)
+      do i=1,nelec
+        do iq=1,nquad
+          do ic=1,ncent
+            t_vpsp(ic,iq,i)=t_vpsp_save(ic,iq,i)
+          enddo
+        enddo
+      enddo
 
       return
       end

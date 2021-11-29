@@ -48,15 +48,17 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
      &,cos_k(IVOL_RATIO),sin_k(IVOL_RATIO),dcos_k(3,IVOL_RATIO),dsin_k(3,IVOL_RATIO)
      &,ddcos_k(IVOL_RATIO),ddsin_k(IVOL_RATIO)
 
-      do 5 iorb=1,norb
-        do 5 iel=1,nelec
+      do iorb=1,norb
+        do iel=1,nelec
           orb(iel,iorb)=0
           dorb(1,iel,iorb)=0
           dorb(2,iel,iorb)=0
           dorb(3,iel,iorb)=0
-    5     ddorb(iel,iorb)=0
+          ddorb(iel,iorb)=0
+        enddo
+      enddo
 
-      do 130 iel=1,nelec
+      do iel=1,nelec
 
 c compute cos(g.r), sin(g.r) and derivatives
 c     call cossin_psi_g(glatt,gnorm,igmult,ngnorm_orb,gvec,igvec,ngvec_orb,x,nelec,ng1d,cos_g,sin_g
@@ -81,26 +83,27 @@ c     call cossin_psi_k(glatt_sim,rknorm,rkvec,kvec,nkvec,x,nelec,ng1d_sim,cos_k
 
         iorb=0
         jorb=0
-        do 130 ikvec=1,nkvec
-          do 130 iband=1,nband(ikvec)
+        do ikvec=1,nkvec
+          do iband=1,nband(ikvec)
             jorb=jorb+1
 
             cos_rp=0
             sin_rm=0
             cos_ip=0
             sin_im=0
-            do 60 k=1,3
+            do k=1,3
               dcos_rp(k)=0
               dsin_rm(k)=0
               dcos_ip(k)=0
-   60         dsin_im(k)=0
+              dsin_im(k)=0
+            enddo
             ddcos_rp=0
             ddsin_rm=0
             ddcos_ip=0
             ddsin_im=0
 c           do 80 iv=2,ngorb(ikvec)
 c             ig=isortg(iv,ikvec)
-            do 80 iv=2,ngvec_orb
+            do iv=2,ngvec_orb
               ig=iv
               cos_rp=cos_rp+cos_g(ig)*c_rp(iv,jorb)
               sin_rm=sin_rm+sin_g(ig)*c_rm(iv,jorb)
@@ -108,15 +111,17 @@ c             ig=isortg(iv,ikvec)
               sin_im=sin_im+sin_g(ig)*c_im(iv,jorb)
 c             write(ounit,'(''iel,ig,jorb,cos_rp,cos_g(ig),c_rp(iv,jorb)'',3i5,9d12.4)')
 c    & iel,ig,jorb,cos_rp,cos_g(ig),c_rp(iv,jorb)
-              do 70 k=1,3
+              do k=1,3
                 dcos_rp(k)=dcos_rp(k)+dcos_g(k,ig)*c_rp(iv,jorb)
                 dsin_rm(k)=dsin_rm(k)+dsin_g(k,ig)*c_rm(iv,jorb)
                 dcos_ip(k)=dcos_ip(k)+dcos_g(k,ig)*c_ip(iv,jorb)
-   70           dsin_im(k)=dsin_im(k)+dsin_g(k,ig)*c_im(iv,jorb)
+                dsin_im(k)=dsin_im(k)+dsin_g(k,ig)*c_im(iv,jorb)
+              enddo
               ddcos_rp=ddcos_rp+ddcos_g(ig)*c_rp(iv,jorb)
               ddsin_rm=ddsin_rm+ddsin_g(ig)*c_rm(iv,jorb)
               ddcos_ip=ddcos_ip+ddcos_g(ig)*c_ip(iv,jorb)
-   80         ddsin_im=ddsin_im+ddsin_g(ig)*c_im(iv,jorb)
+              ddsin_im=ddsin_im+ddsin_g(ig)*c_im(iv,jorb)
+            enddo
 
 c           write(ounit,'(''dcos_k(k,ikvec),dsin_k(k,ikvec),dcos_rp(k),dsin_rm(k),dsin_im(k),dcos_ip(k)'',30f9.5)')
 c    &(dcos_k(k,ikvec),k=1,3),(dsin_k(k,ikvec),k=1,3),(dcos_rp(k),k=1,3),(dsin_rm(k),k=1,3),(dsin_im(k),k=1,3),(dcos_ip(k),k=1,3
@@ -134,11 +139,12 @@ c    &)
      &,cos_rp,cos_ip,sin_rm,sin_im='',2i5,20d12.4)')
      & iel,iorb,orb(iel,iorb),cos_k(ikvec),sin_k(ikvec),c_rp(1,jorb),c_ip(1,jorb),cos_rp,cos_ip,sin_rm,sin_im
 
-            do 90 k=1,3
-   90         dorb(k,iel,iorb)=dcos_k(k,ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
+            do k=1,3
+              dorb(k,iel,iorb)=dcos_k(k,ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
      &                        -dsin_k(k,ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
      &                        +cos_k(ikvec)*(dcos_rp(k)-dsin_im(k))
      &                        -sin_k(ikvec)*(dsin_rm(k)+dcos_ip(k))
+            enddo
 
             ddorb(iel,iorb)=ddcos_k(ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
      &                     -ddsin_k(ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
@@ -148,10 +154,11 @@ c      write(ounit,'(''ddcos_k(ikvec),ddsin_k(ikvec),cos_k(ikvec),ddcos_rp,sin_k
 c    &ddcos_k(ikvec),ddsin_k(ikvec),cos_k(ikvec),ddcos_rp,sin_k(ikvec),ddsin_rm
 
 c           write(ounit,'(''orb'',2i5,9d12.4)') iel,iorb,orb(iel,iorb),(dorb(k,iel,iorb),k=1,3)
-            do 100 k=1,3
-  100         ddorb(iel,iorb)=ddorb(iel,iorb)
+            do k=1,3
+              ddorb(iel,iorb)=ddorb(iel,iorb)
      &                       +2*(dcos_k(k,ikvec)*(dcos_rp(k)-dsin_im(k))
      &                          -dsin_k(k,ikvec)*(dsin_rm(k)+dcos_ip(k)))
+            enddo
 
             if(k_inv(ikvec).eq.1) goto 130
             endif
@@ -170,25 +177,30 @@ c           if(k_inv(ikvec).eq.2. .or. ireal_imag(iorb+1).eq.2) then
      &,cos_rp,cos_ip,sin_rm,sin_im='',2i5,20d12.4)')
      & iel,iorb,orb(iel,iorb),cos_k(ikvec),sin_k(ikvec),c_rp(1,jorb),c_ip(1,jorb),cos_rp,cos_ip,sin_rm,sin_im
 
-            do 110 k=1,3
-  110         dorb(k,iel,iorb)=dcos_k(k,ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
+            do k=1,3
+              dorb(k,iel,iorb)=dcos_k(k,ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
      &                        +dsin_k(k,ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
      &                        +cos_k(ikvec)*(dsin_rm(k)+dcos_ip(k))
      &                        +sin_k(ikvec)*(dcos_rp(k)-dsin_im(k))
+            enddo
 
             ddorb(iel,iorb)=ddcos_k(ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
      &                     +ddsin_k(ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
      &                     +cos_k(ikvec)*(ddsin_rm+ddcos_ip)
      &                     +sin_k(ikvec)*(ddcos_rp-ddsin_im)
 c           write(ounit,'(''orb2'',2i5,9d12.4)') iel,iorb,orb(iel,iorb),(dorb(k,iel,iorb),k=1,3)
-            do 120 k=1,3
-  120         ddorb(iel,iorb)=ddorb(iel,iorb)
+            do k=1,3
+              ddorb(iel,iorb)=ddorb(iel,iorb)
      &                       +2*(dcos_k(k,ikvec)*(dsin_rm(k)+dcos_ip(k))
      &                          +dsin_k(k,ikvec)*(dcos_rp(k)-dsin_im(k)))
+            enddo
 c           endif
             endif
 
   130       continue
+          enddo
+        enddo
+      enddo
 
       if(ipr.ge.4) write(ounit,'(i4,'' electrons placed in'',i4,'' orbitals'')') nelec,iorb
 
@@ -249,12 +261,14 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
 
 
 
-      do 5 iorb=1,norb
+      do iorb=1,norb
 c       do 5 iel=1,nelec
           orb(iorb)=0
           ddorb(iorb)=0
-          do 5 k=1,3
-    5       dorb(k,iorb)=0
+          do k=1,3
+            dorb(k,iorb)=0
+          enddo
+      enddo
 
 c     do 130 iel=1,nelec
 
@@ -282,26 +296,27 @@ c     do 130 iel=1,nelec
 
         iorb=0
         jorb=0
-        do 130 ikvec=1,nkvec
-          do 130 iband=1,nband(ikvec)
+        do ikvec=1,nkvec
+          do iband=1,nband(ikvec)
             jorb=jorb+1
 
             cos_rp=0
             sin_rm=0
             cos_ip=0
             sin_im=0
-            do 60 k=1,3
+            do k=1,3
               dcos_rp(k)=0
               dsin_rm(k)=0
               dcos_ip(k)=0
-   60         dsin_im(k)=0
+              dsin_im(k)=0
+            enddo
             ddcos_rp=0
             ddsin_rm=0
             ddcos_ip=0
             ddsin_im=0
 c           do 80 iv=2,ngorb(ikvec)
 c             ig=isortg(iv,ikvec)
-            do 80 iv=2,ngvec_orb
+            do iv=2,ngvec_orb
               ig=iv
               cos_rp=cos_rp+cos_g(ig)*c_rp(iv,jorb)
               sin_rm=sin_rm+sin_g(ig)*c_rm(iv,jorb)
@@ -309,15 +324,17 @@ c             ig=isortg(iv,ikvec)
               sin_im=sin_im+sin_g(ig)*c_im(iv,jorb)
 c             write(ounit,'(''iel,ig,jorb,cos_rp,cos_g(ig),c_rp(iv,jorb)'',3i5,9d12.4)')
 c    & iel,ig,jorb,cos_rp,cos_g(ig),c_rp(iv,jorb)
-              do 70 k=1,3
+              do k=1,3
                 dcos_rp(k)=dcos_rp(k)+dcos_g(k,ig)*c_rp(iv,jorb)
                 dsin_rm(k)=dsin_rm(k)+dsin_g(k,ig)*c_rm(iv,jorb)
                 dcos_ip(k)=dcos_ip(k)+dcos_g(k,ig)*c_ip(iv,jorb)
-   70           dsin_im(k)=dsin_im(k)+dsin_g(k,ig)*c_im(iv,jorb)
+                dsin_im(k)=dsin_im(k)+dsin_g(k,ig)*c_im(iv,jorb)
+              enddo
               ddcos_rp=ddcos_rp+ddcos_g(ig)*c_rp(iv,jorb)
               ddsin_rm=ddsin_rm+ddsin_g(ig)*c_rm(iv,jorb)
               ddcos_ip=ddcos_ip+ddcos_g(ig)*c_ip(iv,jorb)
-   80         ddsin_im=ddsin_im+ddsin_g(ig)*c_im(iv,jorb)
+              ddsin_im=ddsin_im+ddsin_g(ig)*c_im(iv,jorb)
+            enddo
 
 c           write(ounit,'(''dcos_k(k,ikvec),dsin_k(k,ikvec),dcos_rp(k),dsin_rm(k),dsin_im(k),dcos_ip(k)'',30f9.5)')
 c    &(dcos_k(k,ikvec),k=1,3),(dsin_k(k,ikvec),k=1,3),(dcos_rp(k),k=1,3),(dsin_rm(k),k=1,3),(dsin_im(k),k=1,3),(dcos_ip(k),k=1,3
@@ -333,11 +350,12 @@ c    &)
      &,cos_rp,cos_ip,sin_rm,sin_im='',2i5,20d12.4)')
      & iel,iorb,orb(iorb),cos_k(ikvec),sin_k(ikvec),c_rp(1,jorb),c_ip(1,jorb),cos_rp,cos_ip,sin_rm,sin_im
 
-            do 90 k=1,3
-   90         dorb(k,iorb)=dcos_k(k,ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
+            do k=1,3
+              dorb(k,iorb)=dcos_k(k,ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
      &                    -dsin_k(k,ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
      &                    +cos_k(ikvec)*(dcos_rp(k)-dsin_im(k))
      &                    -sin_k(ikvec)*(dsin_rm(k)+dcos_ip(k))
+            enddo
 
             ddorb(iorb)=ddcos_k(ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
      &                 -ddsin_k(ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
@@ -347,10 +365,11 @@ c      write(ounit,'(''ddcos_k(ikvec),ddsin_k(ikvec),cos_k(ikvec),ddcos_rp,sin_k
 c    &ddcos_k(ikvec),ddsin_k(ikvec),cos_k(ikvec),ddcos_rp,sin_k(ikvec),ddsin_rm
 
 c           write(ounit,'(''orb'',2i5,9d12.4)') iel,iorb,orb(iorb),(dorb(k,iorb),k=1,3)
-            do 100 k=1,3
-  100         ddorb(iorb)=ddorb(iorb)
+            do k=1,3
+              ddorb(iorb)=ddorb(iorb)
      &                   +2*(dcos_k(k,ikvec)*(dcos_rp(k)-dsin_im(k))
      &                      -dsin_k(k,ikvec)*(dsin_rm(k)+dcos_ip(k)))
+            enddo
 
             if(k_inv(ikvec).eq.1) goto 130
 
@@ -365,26 +384,30 @@ c           if(k_inv(ikvec).eq.1) goto 130
             orb(iorb)=cos_k(ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
      &               +sin_k(ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
 
-            do 110 k=1,3
-  110         dorb(k,iorb)=dcos_k(k,ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
+            do k=1,3
+              dorb(k,iorb)=dcos_k(k,ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
      &                    +dsin_k(k,ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
      &                    +cos_k(ikvec)*(dsin_rm(k)+dcos_ip(k))
      &                    +sin_k(ikvec)*(dcos_rp(k)-dsin_im(k))
+            enddo
 
             ddorb(iorb)=ddcos_k(ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
      &                 +ddsin_k(ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
      &                 +cos_k(ikvec)*(ddsin_rm+ddcos_ip)
      &                 +sin_k(ikvec)*(ddcos_rp-ddsin_im)
 c           write(ounit,'(''orb2'',2i5,9d12.4)') iel,iorb,orb(iorb),(dorb(k,iorb),k=1,3)
-            do 120 k=1,3
-  120         ddorb(iorb)=ddorb(iorb)
+            do k=1,3
+              ddorb(iorb)=ddorb(iorb)
      &                   +2*(dcos_k(k,ikvec)*(dsin_rm(k)+dcos_ip(k))
      &                      +dsin_k(k,ikvec)*(dcos_rp(k)-dsin_im(k)))
+            enddo
 
             endif
             endif
 
   130       continue
+          enddo
+        enddo
 
       if(ipr.ge.4) write(ounit,'(i4,'' electrons placed in'',i4,'' orbitals'')') nelec,iorb
 

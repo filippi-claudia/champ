@@ -74,13 +74,14 @@ c Statement functions for error calculation, it might be reaplaced in the near f
       errw(x,x2)=errorn(x,x2,dfloat(iblk_proc))/dmc_nstep
       errw1(x,x2)=errorn(x,x2,pass_proc)
 
-      do 1 ifr=1,nforce
+      do ifr=1,nforce
         energy(ifr)=0
         energy_err(ifr)=0
         ffin_grdnts(ifr)=0
         ferr_grdnts(ifr)=0
         force(ifr)=0
-    1   force_err(ifr)=0
+        force_err(ifr)=0
+      enddo
 
       passes=dfloat(iblk*dmc_nstep)
       eval=dmc_nconf*passes
@@ -117,8 +118,9 @@ c Collect radial charge density for atoms
       if(iperiodic.eq.0) then
         call mpi_reduce(rprob,rprobcollect,nrad,mpi_double_precision
      &  ,mpi_sum,0,MPI_COMM_WORLD,ierr)
-        do 2 i=1,nrad
-    2     rprob(i)=rprobcollect(i)
+        do i=1,nrad
+          rprob(i)=rprobcollect(i)
+        enddo
       endif
 
       call mpi_reduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,0,
@@ -147,19 +149,20 @@ c Collect radial charge density for atoms
         write(45,'(''  r   rprob'')')
         delr=one/delri
         term=one/(wgcum(1)*delr)
-        do 5 i=1,nrad
-    5     write(45,'(f5.3,3f9.5)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
+        do i=1,nrad
+          write(45,'(f5.3,3f9.5)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
+        enddo
       endif
 
       if(idmc.ge.0) then
         write(ounit,'(10i6)') (iage(i),i=1,nwalk)
-        do 10 i=1,nwalk
+        do i=1,nwalk
           if(iage(i).gt.50) then
             write(ounit,'(i4,i6,f10.4,99f8.4)') i,iage(i),eold(i,1),
      &      ((xold_dmc(k,j,i,1),k=1,3),j=1,nelec)
             write(ounit,'(99f8.4)') ((vold_dmc(k,j,i,1),k=1,3),j=1,nelec)
           endif
-   10   continue
+        enddo
 
         write(ounit,'(''age of oldest walker (this generation, any gen)='',
      &   3i9)') ioldest,ioldestmx
@@ -217,13 +220,13 @@ c    & f10.5)') dr2ac/trymove
      &  wave,werr,werr*rtpass1,werr1*rtpass1,(werr/werr1)**2
         write(ounit,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  wfave,wferr,wferr*rtpass1,wferr1*rtpass1,(wferr/wferr1)**2
-        do 20 ifr=1,nforce
+        do ifr=1,nforce
           wgave=wgcum(ifr)/pass_proc
           wgerr=errw(wgcum(ifr),wgcm2(ifr))
           wgerr1=errw1(wgcum1(ifr),wgcm21(ifr))
           write(ounit,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &    wgave,wgerr,wgerr*rtpass1,wgerr1*rtpass1,(wgerr/wgerr1)**2
-  20    continue
+        enddo
         write(ounit,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,
      &  2f9.5,f8.2)') eave,eerr,eerr*rteval_eff1,eerr1*rteval_eff1,
      &  (eerr/eerr1)**2
@@ -232,7 +235,7 @@ c    & f10.5)') dr2ac/trymove
      &  (eferr/eferr1)**2
         endif
 
-      do 30 ifr=1,nforce
+      do ifr=1,nforce
         egave=egcum(ifr)/wgcum(ifr)
         egerr=errg(egcum(ifr),egcm2(ifr),ifr)
         egerr1=errg1(egcum1(ifr),egcm21(ifr),ifr)
@@ -241,8 +244,8 @@ c    & f10.5)') dr2ac/trymove
      &  egerr1*rtevalg_eff1,(egerr/egerr1)**2
         energy(ifr)=egave
         energy_err(ifr)=egerr
-  30  continue
-      do 40 ifr=1,nforce
+      enddo
+      do ifr=1,nforce
         peave=pecum_dmc(ifr)/wgcum(ifr)
         tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
         tjfave=tjfcum_dmc(ifr)/wgcum(ifr)
@@ -256,8 +259,8 @@ c    & f10.5)') dr2ac/trymove
      &  ,f11.7,f9.5)') tjfave,tjferr,tjferr*rtevalg_eff1
         write(ounit,'(''pb kinetic energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_eff1
-  40  continue
-      do 50 ifr=2,nforce
+      enddo
+      do ifr=2,nforce
         fgave=egcum(1)/wgcum(1)-egcum(ifr)/wgcum(ifr)
         fgerr=errg(fgcum(ifr),fgcm2(ifr),1)
 c save forces and forces errors for calculations of energy gradients.
@@ -272,7 +275,7 @@ c Done by Omar Valsson 2008-12-01
      &  ,'' +-'',e16.8,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_eff1
         force(ifr)=fgave
         force_err(ifr)=fgerr
-  50  continue
+      enddo
 
       call prop_prt_dmc(iblk,1,wgcum,wgcm2)
       call pcm_fin(iblk,wgcum,wgcm2)

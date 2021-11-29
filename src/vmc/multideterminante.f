@@ -68,7 +68,7 @@ c temporarely copy orbn to orb
       enddo
 
 c compute wave function
-      do 200 k=1,ndet
+      do k=1,ndet
 
         if(k.ne.kref) then
 
@@ -100,18 +100,18 @@ c compute wave function
 
         endif
 
- 200  continue
+      enddo
 
-      do 400 k=1,ndet
+      do k=1,ndet
         if(k.ne.kref.and.iwundet(k,iab).ne.kref) then
           detn(k)=detn(k)*detn(kref)
         endif
- 400  continue
+      enddo
 
-      do 800 istate=1,nstates
+      do istate=1,nstates
         if(iab.eq.1) call compute_ymat(iab,detn,detiab(1,2),wfmatn,ymatn(1,1,istate),istate)
         if(iab.eq.2) call compute_ymat(iab,detiab(1,1),detn,wfmatn,ymatn(1,1,istate),istate)
- 800  continue
+      enddo
 
       do iorb=1,norb
         orb(iel,iorb)=orb_sav(iorb)
@@ -179,7 +179,7 @@ c TMP to fix
       enddo
 
 
-      do 50 kk=1,3
+      do kk=1,3
 
         do jrep=ivirt(iab),norb
           dum=0
@@ -193,7 +193,7 @@ c TMP to fix
           enddo
         enddo
 
- 50   continue
+      enddo
 
 c     if(iab.eq.2) write(ounit,*) 'gmat ',(((gmat(irep,jrep,kk),irep=iactv(iab),nel),jrep=ivirt(iab),norb),kk=1,3)
 

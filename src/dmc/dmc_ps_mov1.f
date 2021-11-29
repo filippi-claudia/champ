@@ -148,12 +148,12 @@ c Undo weights
 
 c Store (well behaved velocity/velocity)
       if(ncall.eq.0.and.dmc_irstar.eq.0) then
-        do 5 iw=1,nwalk
-          do 5 ifr=1,nforce
+        do iw=1,nwalk
+          do ifr=1,nforce
 
             vav2sumo=zero
             v2sumo=zero
-            do 4 i=1,nelec
+            do i=1,nelec
 
 c Tau secondary in drift is one (first time around)
               tratio=one
@@ -166,11 +166,13 @@ c Tau secondary in drift is one (first time around)
               vav2sumo=vav2sumo+vavvo*vavvo*v2old
               v2sumo=v2sumo+v2old
 
-              do 4 k=1,3
+              do k=1,3
                 xdrifted(k,i,iw,ifr)=xold_dmc(k,i,iw,ifr)+vold_dmc(k,i,iw,ifr)*vavvt
-   4          continue
+              enddo
+            enddo
             fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
-   5      continue
+          enddo
+        enddo
         ncall=ncall+1
       endif
 
@@ -178,7 +180,7 @@ c Tau secondary in drift is one (first time around)
       ioldest=0
       ncount_casula=0
       nmove_casula=0
-      do 300 iw=1,nwalk
+      do iw=1,nwalk
 c Loop over primary walker
 
         call distances(0,xold_dmc(1,1,iw,1))
@@ -198,7 +200,7 @@ c Sample Green function for forward move
         iaccept=0
 
         if(icasula.eq.3) then
-          do 60 i=1,nelec
+          do i=1,nelec
             imove=0
             call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove)
             ncount_casula=ncount_casula+1
@@ -209,9 +211,10 @@ c Sample Green function for forward move
               call compute_determinante_grad(i,psidn,psidn,vnew(1,i),0)
               iaccept=1
               iage(iw)=0
-              do 50 k=1,3
+              do k=1,3
                 xold_dmc(k,i,iw,1)=xnew(k)
-  50            vold_dmc(k,i,iw,1)=vnew(k,i)
+                vold_dmc(k,i,iw,1)=vnew(k,i)
+              enddo
               psido_dmc(iw,1)=psidn
               psijo_dmc(iw,1)=psijn
               call jassav(i,0)
@@ -221,19 +224,22 @@ c Sample Green function for forward move
              else
               call distancese_restore(i)
             endif
-  60      continue
+          enddo
           if(nforce.gt.1.and.istrech.gt.0) then
-            do 61 ifr=1,nforce
+            do ifr=1,nforce
               call strech(xold_dmc(1,1,iw,1),xstrech,ajacob,ifr,1)
-              do 61 k=1,3
-                do 61 j=1,nelec
-  61              xold_dmc(k,j,iw,ifr)=xstrech(k,j)
+              do k=1,3
+                do j=1,nelec
+                  xold_dmc(k,j,iw,ifr)=xstrech(k,j)
+                enddo
+              enddo
+            enddo
           endif
         endif
 
         dwt=1
 
-        do 200 i=1,nelec
+        do i=1,nelec
 
           if(i.le.nup) then
             iflag_up=2
@@ -252,13 +258,14 @@ c Tau primary -> tratio=one
 
           dr2=zero
           dfus2o=zero
-          do 80 k=1,3
+          do k=1,3
             drift=vavvt*vold_dmc(k,i,iw,1)
             dfus=gauss()*rttau
             dx=drift+dfus
             dr2=dr2+dx**2
             dfus2o=dfus2o+dfus**2
-   80       xnew(k)=xold_dmc(k,i,iw,1)+dx
+            xnew(k)=xold_dmc(k,i,iw,1)+dx
+          enddo
 
           if(ipr.ge.1) then
             write(ounit,'(''xold_dmc'',2i4,9f8.5)') iw,i,(xold_dmc(k,i,iw,1),k=1,3)
@@ -274,11 +281,13 @@ c calculate psi and velocity at new configuration
 
           distance_node_ratio2=1.d0
           if(node_cutoff.gt.0) then
-            do 100 jel=1,nup
-  100         if(jel.ne.i) call compute_determinante_grad(jel,psidn,psidn,vnew(1,jel),iflag_up)
+            do jel=1,nup
+              if(jel.ne.i) call compute_determinante_grad(jel,psidn,psidn,vnew(1,jel),iflag_up)
+            enddo
 
-            do 105 jel=nup+1,nelec
-  105         if(jel.ne.i) call compute_determinante_grad(jel,psidn,psidn,vnew(1,jel),iflag_dn)
+            do jel=nup+1,nelec
+              if(jel.ne.i) call compute_determinante_grad(jel,psidn,psidn,vnew(1,jel),iflag_dn)
+            enddo
 
             call nodes_distance(vold_dmc(1,1,iw,1),distance_node,1)
             rnorm_nodes_old=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
@@ -303,11 +312,12 @@ c Calculate Green function for the reverse move
           vavvt=(dsqrt(one+two*adrift*v2new*tau)-one)/(adrift*v2new)
 
           dfus2n=zero
-          do 150 k=1,3
+          do k=1,3
             drift=vavvt*vnew(k,i)
             xbac(k)=xnew(k)+drift
             dfus=xbac(k)-xold_dmc(k,i,iw,1)
-  150       dfus2n=dfus2n+dfus**2
+            dfus2n=dfus2n+dfus**2
+          enddo
 
           if(ipr.ge.1) then
             write(ounit,'(''xold_dmc'',9f10.6)')(xold_dmc(k,i,iw,1),k=1,3),
@@ -345,11 +355,12 @@ c Calculate density and moments of r for primary walk
           r2n=zero
           rmino=zero
           rminn=zero
-          do 165 k=1,3
+          do k=1,3
             r2o=r2o+xold_dmc(k,i,iw,1)**2
             r2n=r2n+xnew(k)**2
             rmino=rmino+(xold_dmc(k,i,iw,1)-cent(k,1))**2
-  165       rminn=rminn+(xnew(k)-cent(k,1))**2
+            rminn=rminn+(xnew(k)-cent(k,1))**2
+          enddo
           rmino=sqrt(rmino)
           rminn=sqrt(rminn)
           itryo(i)=min(int(delri*rmino)+1,nrad)
@@ -369,9 +380,10 @@ c If we are using weights rather than accept/reject
             if(ipq.le.0) p=one
 
             iage(iw)=0
-            do 170 k=1,3
+            do k=1,3
               drifdif=drifdif+(xold_dmc(k,i,iw,1)-xnew(k))**2
-  170         xold_dmc(k,i,iw,1)=xnew(k)
+              xold_dmc(k,i,iw,1)=xnew(k)
+            enddo
             psido_dmc(iw,1)=psidn
             psijo_dmc(iw,1)=psijn
             call jassav(i,0)
@@ -390,12 +402,12 @@ c Calculate moments of r and save rejection probability for primary walk
 
           call update_ymat(i)
 
-  200   continue
+        enddo
 
 c Effective tau for branching
         tauprim=tau*dfus2ac/dfus2un
 
-        do 280 ifr=1,nforce
+        do ifr=1,nforce
 
           if(ifr.eq.1) then
 c Primary configuration
@@ -421,18 +433,22 @@ c Secondary configuration
               call strech(xold_dmc(1,1,iw,ifr),xold_dmc(1,1,iw,ifr),ajacob,ifr,0)
               drifdifr=one
 c No streched positions for electrons
-              do 210 i=1,nelec
-                do 210 k=1,3
-  210             xold_dmc(k,i,iw,ifr)=xold_dmc(k,i,iw,1)
+              do i=1,nelec
+                do k=1,3
+                  xold_dmc(k,i,iw,ifr)=xold_dmc(k,i,iw,1)
+                enddo
+              enddo
               ajacold(iw,ifr)=one
              else
 c Compute streched electronic positions for all nucleus displacement
               call strech(xold_dmc(1,1,iw,1),xstrech,ajacob,ifr,1)
               drifdifs=zero
-              do 220 i=1,nelec
-                do 220 k=1,3
+              do i=1,nelec
+                do k=1,3
                   drifdifs=drifdifs+(xstrech(k,i)-xold_dmc(k,i,iw,ifr))**2
-  220             xold_dmc(k,i,iw,ifr)=xstrech(k,i)
+                  xold_dmc(k,i,iw,ifr)=xstrech(k,i)
+                enddo
+              enddo
               ajacold(iw,ifr)=ajacob
               if(drifdif.eq.0.d0) then
                 drifdifr=one
@@ -445,12 +461,13 @@ c Compute streched electronic positions for all nucleus displacement
             i_vpsp=0
           endif
 
-          do 230 i=1,nelec
-  230         call compute_determinante_grad(i,psidn,psidn,vold_dmc(1,i,iw,ifr),1)
+          do i=1,nelec
+              call compute_determinante_grad(i,psidn,psidn,vold_dmc(1,i,iw,ifr),1)
+          enddo
 
           vav2sumn=zero
           v2sumn=zero
-          do 260 i=1,nelec
+          do i=1,nelec
 
 c Use more accurate formula for the drift and tau secondary in drift
             tratio=one
@@ -465,9 +482,10 @@ c Use more accurate formula for the drift and tau secondary in drift
             vav2sumn=vav2sumn+vavvn**2*v2old
             v2sumn=v2sumn+v2old
 
-            do 260 k=1,3
+            do k=1,3
               xdriftedn(k,i)=xold_dmc(k,i,iw,ifr)+vold_dmc(k,i,iw,ifr)*vavvt
-  260     continue
+            enddo
+          enddo
           fration=dsqrt(vav2sumn/v2sumn)
 
           taunow=tauprim*drifdifr
@@ -502,12 +520,13 @@ c Exercise population control if dmc or vmc with weights
           drifdifgfunc=1.d0
           if(nforce.gt.1.and.idrifdifgfunc.gt.0) then
             dfus=0
-            do 265 i=1,nelec
+            do i=1,nelec
               if(iacc_elec(i).gt.0) then
-                do 264 k=1,3
-  264             dfus=dfus+(xold_dmc(k,i,iw,ifr)-xdrifted(k,i,iw,ifr))**2
+                do k=1,3
+                  dfus=dfus+(xold_dmc(k,i,iw,ifr)-xdrifted(k,i,iw,ifr))**2
+                enddo
               endif
-  265       continue
+            enddo
             dfus=0.5d0*dfus/tau
             drifdifgfunc=-dfus
 c           drifdifgfunc=drifdifgfunc-2*log(rnorm_nodes)
@@ -545,9 +564,10 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
           if(ifr.eq.1) then
             r2sum=r2sum+wtg*r2sume
             risum=risum+wtg*risume
-            do 270 i=1,nelec
+            do i=1,nelec
               rprob(itryo(i))=rprob(itryo(i))+wtg*unacp(i)
-  270         rprob(itryn(i))=rprob(itryn(i))+wtg*(one-unacp(i))
+              rprob(itryn(i))=rprob(itryn(i))+wtg*(one-unacp(i))
+            enddo
           endif
           tausum(ifr)=tausum(ifr)+wtg*taunow
 
@@ -565,9 +585,11 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
           psido_dmc(iw,ifr)=psidn
           psijo_dmc(iw,ifr)=psijn
           fratio(iw,ifr)=fration
-          do 275 i=1,nelec
-            do 275 k=1,3
-  275         xdrifted(k,i,iw,ifr)=xdriftedn(k,i)
+          do i=1,nelec
+            do k=1,3
+              xdrifted(k,i,iw,ifr)=xdriftedn(k,i)
+            enddo
+          enddo
           call prop_save_dmc(iw)
           call pcm_save(iw)
           call mmpol_save(iw)
@@ -642,7 +664,7 @@ c           endif
             endif
           endif
 
-  280   continue
+        enddo
 c       write(ounit,*) 'IN DMC',ajacold(iw,2)
 
 c       wtg=wt(iw)*fprod/rnorm_nodes**2
@@ -672,8 +694,9 @@ c         call t_vpsp_get(iw)
 c           call compute_determinante_grad(iel,psidn,psidn,vnew(1,iel),0)
 
             iage(iw)=0
-            do 290 k=1,3
-  290         xold_dmc(k,iel,iw,1)=xnew(k)
+            do k=1,3
+              xold_dmc(k,iel,iw,1)=xnew(k)
+            enddo
 c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
             psido_dmc(iw,1)=psidn
             psijo_dmc(iw,1)=psijn
@@ -686,11 +709,14 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
             call walksav_det(iw)
             call walksav_jas(iw)
             if(nforce.gt.1.and.istrech.gt.0) then
-              do 295 ifr=1,nforce
+              do ifr=1,nforce
                 call strech(xold_dmc(1,1,iw,1),xstrech,ajacob,ifr,1)
-                do 295 k=1,3
-                  do 295 i=1,nelec
-  295                xold_dmc(k,i,iw,ifr)=xstrech(k,i)
+                do k=1,3
+                  do i=1,nelec
+                     xold_dmc(k,i,iw,ifr)=xstrech(k,i)
+                  enddo
+                enddo
+              enddo
             endif
 
 
@@ -698,7 +724,7 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
         endif
 
       call average(1)
-  300 continue
+      enddo
 
       if(wsum1(1).gt.1.1d0*dmc_nconf) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
      &fprod/ff(ipmod2),wsum1(1),wgdsumo
@@ -707,7 +733,7 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
         wfsum1=wsum1(1)*ffn
         efsum1=esum1_dmc(1)*ffn
       endif
-      do 305 ifr=1,nforce
+      do ifr=1,nforce
         if(idmc.gt.0.or.iacc_rej.eq.0) then
           wgsum1(ifr)=wsum1(ifr)*fprod
           egsum1(ifr)=esum1_dmc(ifr)*fprod
@@ -715,7 +741,7 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
           wgsum1(ifr)=wsum1(ifr)
           egsum1(ifr)=esum1_dmc(ifr)
         endif
-  305 continue
+      enddo
 
       call splitj
       if(icasula.eq.0) ncount_casula=1

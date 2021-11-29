@@ -39,7 +39,7 @@ c Modified by F. Schautz to use fancy file names
       character*10 ititle(7),iray(6)
 
 
-      do 200 ic=1,nctype
+      do ic=1,nctype
 
       if(ic.gt.100) call fatal_error('READPS_TM: nctype>100')
 
@@ -83,24 +83,25 @@ c
 
       rmax(ic)=0.d0
       jmax=0
-      do 100 i=1,npotd
+      do i=1,npotd
         if(nloc.eq.2) then
           read(1) ii,(vpseudo(j,ic,i),j=2,nr)
          elseif(nloc.eq.3) then
           read(1,*) ii,(vpseudo(j,ic,i),j=2,nr)
         endif
         vpseudo(1,ic,i)=0.d0
-        do 50 j=nr,1,-1
+        do j=nr,1,-1
 c         write(ounit,'(''vps'',f8.4,f12.6,d12.4)') r(j),vpseudo(j,ic,i)/2,vpseudo(j,ic,i)/2+zion
           if(dabs(vpseudo(j,ic,i)+2.d0*zion).gt.1.d-6) then
             rmax(ic)=max(rmax(ic),r(j))
             jmax=max(jmax,j)
             goto 60
           endif
-   50   continue
-   60   do 100 j=2,nr
+        enddo
+   60   do j=2,nr
           vpseudo(j,ic,i)=0.5d0*vpseudo(j,ic,i)/r(j)
-  100 continue
+        enddo
+      enddo
       jmax=jmax+5
       write(45,'(''center '',i3,'' pseudopot rmax,jmax= '',f6.2,i4)')
      & ic,rmax(ic),jmax
@@ -111,47 +112,54 @@ c         write(ounit,'(''vps'',f8.4,f12.6,d12.4)') r(j),vpseudo(j,ic,i)/2,vpseu
       arg(ic)=dexp(arg(ic))
       write(45,'(''potential grid param: r0, alpha, nr = '',2f10.4,i5)') r0(ic),arg(ic),nr_ps(ic)
 
-      do 110 i=1,npotd-1
-        do 110 j=2,nr
+      do i=1,npotd-1
+        do j=2,nr
           if(ipr.ge.1) then
             if(i.eq.1) write(38,*) r(j),vpseudo(j,ic,i),vpseudo(j,ic,npotd),-znuc(ic)/r(j)
             if(i.eq.2) write(39,*) r(j),vpseudo(j,ic,i),vpseudo(j,ic,npotd),-znuc(ic)/r(j)
           endif
           vpseudo(j,ic,i)=vpseudo(j,ic,i)-vpseudo(j,ic,npotd)
-  110 continue
+        enddo
+      enddo
 
       if(rmax(ic).eq.0.d0) goto 200
-      do 190 i=1,npotd
+      do i=1,npotd
 c small radii pot(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
         ll=0
-        do 120 jj=1,NCOEF
+        do jj=1,NCOEF
           y(jj)=vpseudo(jj+1,ic,i)
-          do 120 ii=1,NCOEF
+          do ii=1,NCOEF
             ll=ll+1
-  120       dmatr(ll)=r(ii+1)**(jj-1)
+            dmatr(ll)=r(ii+1)**(jj-1)
+          enddo
+        enddo
         call dgesv(NCOEF,1,dmatr,NCOEF,ipiv,y,NCOEF,info)
 
-        do 125 icoef=1,NCOEF
-  125     ce(icoef)=y(icoef)
+        do icoef=1,NCOEF
+          ce(icoef)=y(icoef)
+        enddo
 
         if(ipr.gt.1) then
 c         write(45,'(''coefficients'',1p10e22.10)') (ce(iff),iff=1,NCOEF)
           write(45,'(''check the small radius expansion for l= '',i3)')i-1
           write(45,'(''irad, rad, extrapolated, correct value, diff'')')
-          do 130 ir=1,10
+          do ir=1,10
             val=ce(1)
-            do 128 icoef=2,NCOEF
-  128         val=val+ce(icoef)*r(ir)**(icoef-1)
+            do icoef=2,NCOEF
+              val=val+ce(icoef)*r(ir)**(icoef-1)
+            enddo
 c             if(ir.eq.1) vpseudo(ir,ic,i)=val
-  130       write(45,'(i2,1p3e16.8,1p1e11.2)')
+            write(45,'(i2,1p3e16.8,1p1e11.2)')
      &      ir,r(ir),val,vpseudo(ir,ic,i),val-vpseudo(ir,ic,i)
+          enddo
         endif
 
         vpseudo(1,ic,i)=ce(1)
 
         dpot1=ce(2)
-        do 135 icoef=3,NCOEF
-  135     dpot1=dpot1+(icoef-1)*ce(icoef)*r(1)**(icoef-2)
+        do icoef=3,NCOEF
+          dpot1=dpot1+(icoef-1)*ce(icoef)*r(1)**(icoef-2)
+        enddo
 
         dpotn=0.d0
         if(i.eq.npotd) dpotn=zion/r(jmax)**2
@@ -166,12 +174,13 @@ c get second derivative for spline fit
           if(i.eq.1) ipot_io=35
           if(i.eq.2) ipot_io=36
           if(i.eq.3) ipot_io=37
-          do 140 j=1,jmax
-  140       write(ipot_io,*)
+          do j=1,jmax
+            write(ipot_io,*)
 c    &      r(j),vpseudo(j,ic,i),d2pot(j,ic,i),-znuc(ic)/r(j),-2*znuc(ic)/r(j)**3
      &      r(j),vpseudo(j,ic,i),d2pot(j,ic,i)
+          enddo
         endif
-  190 continue
+      enddo
 
 c Warning: Temporary print of psp
 c     write(20,'(2f9.5,'' znuc,rpotc'')') znuc(1)
@@ -180,13 +189,15 @@ c     do 195 ir=1,nr
 c 195   write(20,'(2d20.12)') r(ir),vpseudo(ir,ic,lpot(ic))
 
   200 continue
+      enddo
 
       call gesqua(nquad,xq0,yq0,zq0,wq)
 c     call gesqua(nquad,xq,yq,zq,wq)
 
       write(45,'(''Quadrature points'',i3)') nquad
-      do 210 i=1,nquad
-  210   write(45,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
+      do i=1,nquad
+        write(45,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
+      enddo
 
       return
       end
@@ -212,7 +223,7 @@ c compute tm-pseudopotential for electron iel
 
 
 
-      do 10 ic=1,ncent
+      do ic=1,ncent
         ict=iwctype(ic)
 
         r=r_en(iel,ic)
@@ -224,14 +235,15 @@ c local potential
           vps(iel,ic,lpot(ict))=-znuc(ict)/r
         endif
 c non-local pseudopotential
-        do 10 l=1,lpot(ict)-1
+        do l=1,lpot(ict)-1
           if(r.lt.rmax(ict)) then
             call splfit_tm(r,l,ict,vpot)
             vps(iel,ic,l)=vpot
            else
             vps(iel,ic,l)=0.d0
           endif
-   10 continue
+        enddo
+      enddo
 
       return
       end

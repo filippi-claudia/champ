@@ -40,30 +40,36 @@ c Written by Claudia Filippi
 
       fsumow(iw)=fsumo
 
-      do 10 i=1,nelec
+      do i=1,nelec
         fjow(1,i,iw)=fjo(1,i)
         fjow(2,i,iw)=fjo(2,i)
-  10    fjow(3,i,iw)=fjo(3,i)
+        fjow(3,i,iw)=fjo(3,i)
+      enddo
 
-      do 20 i=2,nelec
-        do 20 j=1,i-1
+      do i=2,nelec
+        do j=1,i-1
         fsow(i,j,iw)=fso(i,j)
         fijow(1,i,j,iw)=fijo(1,i,j)
         fijow(2,i,j,iw)=fijo(2,i,j)
         fijow(3,i,j,iw)=fijo(3,i,j)
         fijow(1,j,i,iw)=fijo(1,j,i)
         fijow(2,j,i,iw)=fijo(2,j,i)
-  20    fijow(3,j,i,iw)=fijo(3,j,i)
+        fijow(3,j,i,iw)=fijo(3,j,i)
+        enddo
+      enddo
 
-      do 25 i=1,nelec
+      do i=1,nelec
         fsow(i,i,iw)=fso(i,i)
         fijow(1,i,i,iw)=fijo(1,i,i)
         fijow(2,i,i,iw)=fijo(2,i,i)
-  25    fijow(3,i,i,iw)=fijo(3,i,i)
+        fijow(3,i,i,iw)=fijo(3,i,i)
+      enddo
 
-      do 26 i=1,nelec
-        do 26 kk=1,3
-  26      vjw(kk,i,iw)=vj(kk,i)
+      do i=1,nelec
+        do kk=1,3
+          vjw(kk,i,iw)=vj(kk,i)
+        enddo
+      enddo
 
       return
 
@@ -71,30 +77,36 @@ c Written by Claudia Filippi
 
       fsumo=fsumow(iw)
 
-      do 30 i=1,nelec
+      do i=1,nelec
         fjo(1,i)=fjow(1,i,iw)
         fjo(2,i)=fjow(2,i,iw)
-  30    fjo(3,i)=fjow(3,i,iw)
+        fjo(3,i)=fjow(3,i,iw)
+      enddo
 
-      do 40 i=2,nelec
-        do 40 j=1,i-1
+      do i=2,nelec
+        do j=1,i-1
         fso(i,j)=fsow(i,j,iw)
         fijo(1,i,j)=fijow(1,i,j,iw)
         fijo(2,i,j)=fijow(2,i,j,iw)
         fijo(3,i,j)=fijow(3,i,j,iw)
         fijo(1,j,i)=fijow(1,j,i,iw)
         fijo(2,j,i)=fijow(2,j,i,iw)
-  40    fijo(3,j,i)=fijow(3,j,i,iw)
+        fijo(3,j,i)=fijow(3,j,i,iw)
+        enddo
+      enddo
 
-      do 45 i=1,nelec
+      do i=1,nelec
         fso(i,i)=fsow(i,i,iw)
         fijo(1,i,i)=fijow(1,i,i,iw)
         fijo(2,i,i)=fijow(2,i,i,iw)
-  45    fijo(3,i,i)=fijow(3,i,i,iw)
+        fijo(3,i,i)=fijow(3,i,i,iw)
+      enddo
 
-      do 46 i=1,nelec
-        do 46 kk=1,3
-  46      vj(kk,i)=vjw(kk,i,iw)
+      do i=1,nelec
+        do kk=1,3
+          vj(kk,i)=vjw(kk,i,iw)
+        enddo
+      enddo
 
       return
 
@@ -102,30 +114,36 @@ c Written by Claudia Filippi
 
       fsumow(iw2)=fsumow(iw)
 
-      do 50 i=1,nelec
+      do i=1,nelec
         fjow(1,i,iw2)=fjow(1,i,iw)
         fjow(2,i,iw2)=fjow(2,i,iw)
-  50    fjow(3,i,iw2)=fjow(3,i,iw)
+        fjow(3,i,iw2)=fjow(3,i,iw)
+      enddo
 
-      do 60 i=2,nelec
-        do 60 j=1,i-1
+      do i=2,nelec
+        do j=1,i-1
         fsow(i,j,iw2)=fsow(i,j,iw)
         fijow(1,i,j,iw2)=fijow(1,i,j,iw)
         fijow(2,i,j,iw2)=fijow(2,i,j,iw)
         fijow(3,i,j,iw2)=fijow(3,i,j,iw)
         fijow(1,j,i,iw2)=fijow(1,j,i,iw)
         fijow(2,j,i,iw2)=fijow(2,j,i,iw)
-  60    fijow(3,j,i,iw2)=fijow(3,j,i,iw)
+        fijow(3,j,i,iw2)=fijow(3,j,i,iw)
+        enddo
+      enddo
 
-      do 65 i=1,nelec
+      do i=1,nelec
         fsow(i,i,iw2)=fsow(i,i,iw)
         fijow(1,i,i,iw2)=fijow(1,i,i,iw)
         fijow(2,i,i,iw2)=fijow(2,i,i,iw)
-  65    fijow(3,i,i,iw2)=fijow(3,i,i,iw)
+        fijow(3,i,i,iw2)=fijow(3,i,i,iw)
+      enddo
 
-      do 66 i=1,nelec
-        do 66 kk=1,3
-  66      vjw(kk,i,iw2)=vjw(kk,i,iw)
+      do i=1,nelec
+        do kk=1,3
+          vjw(kk,i,iw2)=vjw(kk,i,iw)
+        enddo
+      enddo
 
       return
 

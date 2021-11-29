@@ -25,14 +25,16 @@
        call mpi_reduce(vprop_sum,vpcollect,nprop
      &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      do 1 i=1,nprop
-  1     vprop_sum(i)=vpcollect(i)
+      do i=1,nprop
+        vprop_sum(i)=vpcollect(i)
+      enddo
 
       else
 
-      do 10 i=1,nprop
+      do i=1,nprop
         vpnow=vprop_sum(i)/wgsum
- 10     vp2sum(i)=vprop_sum(i)*vpnow
+        vp2sum(i)=vprop_sum(i)*vpnow
+      enddo
 
       call mpi_reduce(vprop_sum,vpcollect,nprop
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -44,10 +46,10 @@
 
       if(.not.wid) return
 
-      do 20 i=1,nprop
+      do i=1,nprop
        vprop_cum(i)=vprop_cum(i)+vpcollect(i)
        vprop_cm2(i)=vprop_cm2(i)+vp2collect(i)
- 20   enddo
+      enddo
 
       endif
 

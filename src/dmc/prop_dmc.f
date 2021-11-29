@@ -50,7 +50,7 @@ c         >1 after ipropprt iterations reduced printout
 
       icount=1
 
-      do 10 i=1,nprop
+      do i=1,nprop
         pav(i)=vprop_cum(i)/wgcum(1)
         if(iblk.eq.1) then
           perr(i)=0
@@ -67,7 +67,7 @@ c         >1 after ipropprt iterations reduced printout
           write(ounit,'(''property '',a3,t17,f12.7,'' +-''
      &       ,f11.7,f9.5)') pnames(i),pav(i),perr(i),perr(i)*rtevalg_eff1
         endif
- 10   enddo
+      enddo
 c....dipole
       write(ounit,50) 'center of nuclear charge: ',cc_nuc
       write(ounit,30)

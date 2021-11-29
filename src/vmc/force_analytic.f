@@ -16,11 +16,14 @@
       call compute_da_psi(psid,da_psi_ref)
       call compute_da_energy(psid,denergy)
 
-      do 800 ic=1,ncent
-        do 800 k=1,3
+      do ic=1,ncent
+        do k=1,3
           da_psi(k,ic)=da_psi(k,ic)+da_psi_ref(k,ic)
-          do 800 i=1,nelec
- 800        da_psi(k,ic)=da_psi(k,ic)+da_j(k,i,ic)
+          do i=1,nelec
+            da_psi(k,ic)=da_psi(k,ic)+da_j(k,i,ic)
+          enddo
+        enddo
+      enddo
 
 c     write(ounit,*)'da_ref',((da_psi_ref(l,ic),l=1,3),ic=1,ncent)
 c     write(ounit,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
@@ -56,8 +59,8 @@ c-----------------------------------------------------------------------
       real(dp), dimension(nelec, norb_tot) :: tildem_a
       real(dp), dimension(3, ncent_tot) :: da_psi_ref
 
-      do 400 ic=1,ncent
-        do 400 k=1,3
+      do ic=1,ncent
+        do k=1,3
 
           do i=1,nelec
             do iorb=1,norb
@@ -78,15 +81,19 @@ c-----------------------------------------------------------------------
             endif
 
             ii=-nel
-            do 110 i=1,nel
+            do i=1,nel
               ii=ii+nel
-              do 110 j=1,nel
-  110           b_kref(j+ii)=b_a(iworbd(j+ish,kref),i+ish)
+              do j=1,nel
+                b_kref(j+ii)=b_a(iworbd(j+ish,kref),i+ish)
+              enddo
+            enddo
 
 c compute force for reference determinant
-            do 120 i=1,nel
-              do 120 j=1,nel
-  120           da_psi_ref(k,ic)=da_psi_ref(k,ic)+slmi(i+(j-1)*nel,iab)*b_kref(i+(j-1)*nel)
+            do i=1,nel
+              do j=1,nel
+                da_psi_ref(k,ic)=da_psi_ref(k,ic)+slmi(i+(j-1)*nel,iab)*b_kref(i+(j-1)*nel)
+              enddo
+            enddo
 
             do jrep=ivirt(iab),norb
               do irep=1,nel
@@ -106,7 +113,8 @@ c enddo iab
 
           da_psi(k,ic)=trace*detiab(kref,1)*detiab(kref,2)/psid
 
- 400  continue
+        enddo
+      enddo
 
 c     do 800 ic=1,ncent
 c       do 800 k=1,3
@@ -149,8 +157,8 @@ c-----------------------------------------------------------------------
       real(dp) :: da_other_kin, da_other_pot, denergy, psid, trace
       real(dp), dimension(3, ncent_tot) :: da_energy_ref
 
-      do 400 ic=1,ncent
-        do 400 k=1,3
+      do ic=1,ncent
+        do k=1,3
 
           trace=0
           da_energy_ref(k,ic)=0
@@ -165,11 +173,13 @@ c-----------------------------------------------------------------------
             endif
 
 c compute force for reference determinant
-            do 120 i=1,nel
-              do 120 j=1,nel
+            do i=1,nel
+              do j=1,nel
                 jorb=iworbd(j+ish,kref)
-  120           da_energy_ref(k,ic)=da_energy_ref(k,ic)+slmi(j+(i-1)*nel,iab)*b_da(k,i+ish,jorb,ic)
+                da_energy_ref(k,ic)=da_energy_ref(k,ic)+slmi(j+(i-1)*nel,iab)*b_da(k,i+ish,jorb,ic)
      &                                                 -da_orb(k,i+ish,jorb,ic)*xmat(i+(j-1)*nel,iab)
+              enddo
+            enddo
             do jrep=ivirt(iab),norb
               do irep=1,nel
                 trace=trace+zmat(jrep,irep,iab,1)*b_da(k,irep+ish,jrep,ic)
@@ -188,25 +198,28 @@ c enddo iab
           enddo
 
           da_energy(k,ic)=trace*detiab(kref,1)*detiab(kref,2)/psid
-  400 continue
+        enddo
+      enddo
 
-      do 800 ic=1,ncent
+      do ic=1,ncent
         ict=iwctype(ic)
 
-        do 800 k=1,3
+        do k=1,3
 
           da_other_kin=0.d0
           da_other_pot=da_pecent(k,ic)
-          do 410 i=1,nelec
+          do i=1,nelec
             da_other_kin=da_other_kin+da_d2j(k,i,ic)
      &               +2*(vj(1,i)*da_vj(k,1,i,ic)+vj(2,i)*da_vj(k,2,i,ic)+vj(3,i)*da_vj(k,3,i,ic))
-  410       da_other_pot=da_other_pot+da_vps(k,i,ic,lpot(ict))
+            da_other_pot=da_other_pot+da_vps(k,i,ic,lpot(ict))
+          enddo
 
           da_energy(k,ic)=da_energy(k,ic)+da_energy_ref(k,ic)-hb*da_other_kin+da_other_pot
      &                   -denergy*da_psi(k,ic)
 
 c complete da_psi
-  800 continue
+        enddo
+      enddo
 
 c     write(ounit,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
 
@@ -225,18 +238,22 @@ c-----------------------------------------------------------------------
 
       if(iforce_analy.eq.0) return
 
-      do 10 ic=1,ncent
-        do 10 k=1,3
+      do ic=1,ncent
+        do k=1,3
           da_psi_sum(k,ic)=0.0d0
-  10      da_energy_sum(k,ic)=0.0d0
+          da_energy_sum(k,ic)=0.0d0
+        enddo
+      enddo
 
       if(iflag.gt.0) return
 
-      do 20 ic=1,ncent
-        do 20 k=1,3
+      do ic=1,ncent
+        do k=1,3
           da_psi_cum(k,ic)=0.0d0
           da_energy_cum(k,ic)=0.0d0
-  20      da_energy_cm2(k,ic)=0.0d0
+          da_energy_cm2(k,ic)=0.0d0
+        enddo
+      enddo
 
       return
       end
@@ -257,11 +274,13 @@ c-----------------------------------------------------------------------
 
       if(iforce_analy.eq.0) return
 
-      do 10 ic=1,ncent
-        do 10 k=1,3
+      do ic=1,ncent
+        do k=1,3
           da_energy(k,ic)=da_energy(k,ic)+2*eloc*da_psi(k,ic)
           da_psi_sum(k,ic)= da_psi_sum(k,ic)+p*da_psi(k,ic)
-  10      da_energy_sum(k,ic)= da_energy_sum(k,ic)+p*da_energy(k,ic)
+          da_energy_sum(k,ic)= da_energy_sum(k,ic)+p*da_energy(k,ic)
+        enddo
+      enddo
 
       return
       end
@@ -280,12 +299,14 @@ c-----------------------------------------------------------------------
 
       if(iforce_analy.eq.0) return
 
-      do 10 ic=1,ncent
-        do 10 k=1,3
+      do ic=1,ncent
+        do k=1,3
           da_energy_now=(da_energy_sum(k,ic)-2*eave*da_psi_sum(k,ic))/wsum
           da_energy_cm2(k,ic)=da_energy_cm2(k,ic)+wsum*da_energy_now**2
           da_psi_cum(k,ic)=da_psi_cum(k,ic)+da_psi_sum(k,ic)
-  10      da_energy_cum(k,ic)=da_energy_cum(k,ic)+da_energy_sum(k,ic)
+          da_energy_cum(k,ic)=da_energy_cum(k,ic)+da_energy_sum(k,ic)
+        enddo
+      enddo
 
       return
       end
@@ -311,11 +332,13 @@ c-----------------------------------------------------------------------
       rtpass=dsqrt(wcum)
 
       open(80,file='force_analytic',form='formatted',status='unknown')
-      do 20 ic=1,ncent
-        do 10 k=1,3
+      do ic=1,ncent
+        do k=1,3
           da_energy_ave(k,ic)=(da_energy_cum(k,ic)-2*eave*da_psi_cum(k,ic))/wcum
-   10     da_energy_err(k)=err(da_energy_ave(k,ic),da_energy_cm2(k,ic))
-   20   write(80,'(i5,1p6e14.5)') ic,(da_energy_ave(k,ic),k=1,3),(da_energy_err(k),k=1,3)
+          da_energy_err(k)=err(da_energy_ave(k,ic),da_energy_cm2(k,ic))
+        enddo
+        write(80,'(i5,1p6e14.5)') ic,(da_energy_ave(k,ic),k=1,3),(da_energy_err(k),k=1,3)
+      enddo
 
        ! TODO JF this is included in the treatment of internal
        ! coordinates, remove this when finished

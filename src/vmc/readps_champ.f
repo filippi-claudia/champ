@@ -43,7 +43,7 @@ c The prefered grid is 3.
       character*80 title
 
 
-      do 200 ict=1,nctype
+      do ict=1,nctype
 
         if(ict.gt.100)  call fatal_error('READPS_CHAMP: nctype>100')
 
@@ -106,15 +106,17 @@ c       endif
 
         if(igrid_ps(ict).eq.1 .or. igrid_ps(ict).eq.3) then
           nr=nr_ps(ict)
-          do 10 ir=1,nr_ps(ict)
-   10       read(1,*) r(ir),(vpseudo(ir,ict,i),i=1,lpot_max(ict))
+          do ir=1,nr_ps(ict)
+            read(1,*) r(ir),(vpseudo(ir,ict,i),i=1,lpot_max(ict))
+          enddo
           if(r(1).ne.0.d0) stop 'if igrid_ps is 1 or 3, r(1) must be 0'
          else
           nr_ps(ict)=nr_ps(ict)+1
           nr=nr_ps(ict)
           nrm1=nr-1
-          do 20 ir=2,nr_ps(ict)
-   20       read(1,*) r(ir),(vpseudo(ir,ict,i),i=1,lpot_max(ict))
+          do ir=2,nr_ps(ict)
+            read(1,*) r(ir),(vpseudo(ir,ict,i),i=1,lpot_max(ict))
+          enddo
           r(1)=0
           if(r0_ps(ict).le.0.d0 .or. h_ps.le.0.d0) then
             r0_ps(ict)=r(2)
@@ -123,9 +125,10 @@ c       endif
             write(ounit,'(''Grid parameters deduced from grid values are, r0_ps(ict),h_ps,arg_ps(ict)='',9f10.5)')
      &      r0_ps(ict),h_ps,arg_ps(ict)
           endif
-          do 30 i=1,lpot_max(ict)
+          do i=1,lpot_max(ict)
             call intpol(r(2),vpseudo(2,ict,i),nrm1,r(1),vpseudo(1,ict,i),1,3)
-   30       write(ounit,'(''Interpolated psp'',9f16.12)') (vpseudo(ir,ict,i),ir=1,5)
+            write(ounit,'(''Interpolated psp'',9f16.12)') (vpseudo(ir,ict,i),ir=1,5)
+          enddo
         endif
 
         if(r0_ps(ict).lt.0.d0 .or. r0_ps(ict).gt.1.d-2) stop 'r0_ps in psp grid is not reasonable'
@@ -140,28 +143,31 @@ c the local component is 0.  Also, rmax_coul is used in splfit_champ when it is
 c called in a calculation of a periodic system.
         rmax_coul(ict)=0.d0
         irmax_coul=0
-        do 50 ir=nr,1,-1
-          do 50 i=1,lpot_max(ict)
+        do ir=nr,1,-1
+          do i=1,lpot_max(ict)
             if(dabs(r(ir)*vpseudo(ir,ict,i)+zion).gt..5d-6) then
               rmax_coul(ict)=max(rmax_coul(ict),r(ir))
               irmax_coul=ir
               goto 60
             endif
-   50   continue
+          enddo
+        enddo
    60   irmax_coul=min(irmax_coul+5,nr)
 
 c Find the point beyond which the various v components differ from each other by no more than .5*d-6
         rmax_nloc(ict)=0.d0
         irmax_nloc=0
-        do 70 ir=nr,1,-1
-          do 70 i=2,lpot_max(ict)
-            do 70 j=1,i-1
+        do ir=nr,1,-1
+          do i=2,lpot_max(ict)
+            do j=1,i-1
               if(dabs(vpseudo(ir,ict,i)-vpseudo(ir,ict,j)).gt..5d-6) then
                 rmax_nloc(ict)=max(rmax_nloc(ict),r(ir))
                 irmax_nloc=ir
                 goto 80
               endif
-   70   continue
+            enddo
+          enddo
+        enddo
    80   irmax_nloc=irmax_nloc+1
         rmax_nloc(ict)=r(irmax_nloc)
 
@@ -176,26 +182,27 @@ c so irmax_coul must be >= irmax_nloc.
 
         if(ipr.ge.1) then
           write(38,'(''r(j)  (vpseudo(j,ict,i),i=1,lpot_max(ict))  -znuc(ict)/r(j)'')')
-          do 104 j=2,nr
+          do j=2,nr
             if(r(j).gt.0.d0) then
               write(38,'(1pd16.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,lpot_max(ict)),-znuc(ict)/r(j)
              else
               write(38,'(1pd16.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,lpot_max(ict))
             endif
-  104     continue
+          enddo
         endif
 
-        do 110 i=1,lpot_max(ict)
+        do i=1,lpot_max(ict)
           if(i.ne.lpot(ict)) then
-            do 105 j=1,nr
-  105         vpseudo(j,ict,i)=vpseudo(j,ict,i)-vpseudo(j,ict,lpot(ict))
+            do j=1,nr
+              vpseudo(j,ict,i)=vpseudo(j,ict,i)-vpseudo(j,ict,lpot(ict))
+            enddo
           endif
 
-  110   continue
+        enddo
 
         if(rmax_coul(ict).eq.0.d0) goto 200
 
-        do 190 i=1,lpot_max(ict)
+        do i=1,lpot_max(ict)
 
 c Construct the spline
 
@@ -214,22 +221,25 @@ c         if(i.eq.lpot(ict)) call deriv_intpol(r,vpseudo(1,ict,i),nr,r(irmax_cou
 c get second derivative for spline fit
           call spline2(r,vpseudo(1,ict,i),irmax_coul,dpot1,dpotn,d2pot(1,ict,i),work)
 
-          do 190 j=1,nr
+          do j=1,nr
             if(ipr.ge.2) then
               if(i.eq.1) write(35,'(1p5d14.6)') r(j),vpseudo(j,ict,i),d2pot(j,ict,i),-znuc(ict)/r(j),-2*znuc(ict)/r(j)**3
               if(i.eq.2) write(36,'(1p5d14.6)') r(j),vpseudo(j,ict,i),d2pot(j,ict,i),-znuc(ict)/r(j),-2*znuc(ict)/r(j)**3
               if(i.eq.3) write(37,'(1p5d14.6)') r(j),vpseudo(j,ict,i),d2pot(j,ict,i),-znuc(ict)/r(j),-2*znuc(ict)/r(j)**3
             endif
-  190   continue
+          enddo
+        enddo
 
   200 continue
+      enddo
 
       call gesqua(nquad,xq0,yq0,zq0,wq)
 c     call gesqua(nquad,xq,yq,zq,wq)
 
       write(ounit,'(''quadrature points'')')
-      do 210 i=1,nquad
-  210   write(ounit,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
+      do i=1,nquad
+        write(ounit,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
+      enddo
 
       return
 
@@ -262,7 +272,7 @@ c compute pseudopotential for electron iel
 
 
 
-      do 10 ic=1,ncent
+      do ic=1,ncent
         ict=iwctype(ic)
 
         r=r_en(iel,ic)
@@ -275,7 +285,7 @@ c local potential
         endif
 c       write(ounit,'(''ic,iel,r,vpot='',2i3,f6.3,f9.5)') ic,iel,r,vps(iel,ic,lpot(ict))
 c non-local pseudopotential
-        do 10 l=1,lpot(ict)
+        do l=1,lpot(ict)
           if(l.ne.lpot(ict)) then
             if(r.lt.rmax_nloc(ict)) then
               call splfit_champ(r,l,ict,vpot)
@@ -284,7 +294,8 @@ c non-local pseudopotential
               vps(iel,ic,l)=0.d0
             endif
           endif
-   10 continue
+        enddo
+      enddo
 
       return
       end

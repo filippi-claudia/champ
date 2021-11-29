@@ -12,8 +12,9 @@
 
 
       determ=0.0d0
-      do 110 k=1,ndet
-  110   determ=determ+detiab(k,1)*detiab(k,2)*cdet(k,istate,iwf)
+      do k=1,ndet
+        determ=determ+detiab(k,1)*detiab(k,2)*cdet(k,istate,iwf)
+      enddo
 
 
       return

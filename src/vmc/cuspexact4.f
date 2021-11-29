@@ -44,32 +44,37 @@ c the one from the 2nd order e-n cusp depends only on other dependent
 c variables.
 
 
-      do 100 it=1,nctype
+      do it=1,nctype
 
 c Set dep. variables from e-e cusp
-        do 20 i=1,nordc-1
+        do i=1,nordc-1
           sum=0
-          do 10 j=1,nterms
-   10       if(j.ne.iwc4(i)) sum=sum+d(i,j)*c(j,it,iadiag)
-   20     c(iwc4(i),it,iadiag)=-sum/d(i,iwc4(i))
+          do j=1,nterms
+            if(j.ne.iwc4(i)) sum=sum+d(i,j)*c(j,it,iadiag)
+          enddo
+          c(iwc4(i),it,iadiag)=-sum/d(i,iwc4(i))
+        enddo
 
 c Set dep. variables from 3rd and higher order e-n cusp
-        do 40 i=nordc+1,2*(nordc-1)
+        do i=nordc+1,2*(nordc-1)
           sum=0
-          do 30 j=1,nterms
-   30       if(j.ne.iwc4(i)) sum=sum+d(i,j)*c(j,it,iadiag)
-   40     c(iwc4(i),it,iadiag)=-sum/d(i,iwc4(i))
+          do j=1,nterms
+            if(j.ne.iwc4(i)) sum=sum+d(i,j)*c(j,it,iadiag)
+          enddo
+          c(iwc4(i),it,iadiag)=-sum/d(i,iwc4(i))
+        enddo
 
 c Set dep. variables from 2nd order e-n cusp
         if(nordc.gt.1) then
           i=nordc
           sum=0
-          do 50 j=1,nterms
-   50       if(j.ne.iwc4(i)) sum=sum+d(i,j)*c(j,it,iadiag)
+          do j=1,nterms
+            if(j.ne.iwc4(i)) sum=sum+d(i,j)*c(j,it,iadiag)
+          enddo
           c(iwc4(i),it,iadiag)=-sum/d(i,iwc4(i))
         endif
 
- 100  continue
+      enddo
 
       return
       end

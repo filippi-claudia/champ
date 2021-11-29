@@ -44,8 +44,9 @@ c compute all determinants
 
 
       if(detn(kref).eq.0.d0) then
-        do 1 istate=1,nstates
-   1      psid(istate)=0.d0
+        do istate=1,nstates
+          psid(istate)=0.d0
+        enddo
         return
       endif
 
@@ -54,18 +55,20 @@ c compute all determinants
 
 c combine determinantal quantities to obtain trial wave function
 
-      do 10 istate=1,nstates
-   10   call determinante_psit(iel,psid(istate),istate)
+      do istate=1,nstates
+        call determinante_psit(iel,psid(istate),istate)
+      enddo
 
 
       if(ipass.gt.2) then
 
         check_apsi_min=1.d+99
-        do 20 istate=1,nstates
+        do istate=1,nstates
           apsi_now=apsi(istate)/(ipass-1)
           check_apsi=abs(psid(istate))/apsi_now
 
-   20    check_apsi_min=min(check_apsi,check_apsi_min)
+         check_apsi_min=min(check_apsi,check_apsi_min)
+        enddo
 
         aref_now=aref/(ipass-1)
         check_dref=abs(detn(kref))/aref_now

@@ -15,16 +15,21 @@ c Written by Claudia Filippi
       real(dp), dimension(3, nelec) :: x
 
 
-      do 10 ic=1,3
-      do 10 i=1,iel-1
-  10    x(ic,i)=xold_dmc(ic,i,iw,1)
+      do ic=1,3
+      do i=1,iel-1
+        x(ic,i)=xold_dmc(ic,i,iw,1)
+      enddo
+      enddo
 
-      do 20 ic=1,3
-  20    x(ic,iel)=coord(ic)
+      do ic=1,3
+        x(ic,iel)=coord(ic)
+      enddo
 
-      do 30 ic=1,3
-      do 30 i=iel+1,nelec
-  30    x(ic,i)=xold_dmc(ic,i,iw,1)
+      do ic=1,3
+      do i=iel+1,nelec
+        x(ic,i)=xold_dmc(ic,i,iw,1)
+      enddo
+      enddo
 
       idum=1
       call psie(iel,x,psid,psij,idum,iflag)

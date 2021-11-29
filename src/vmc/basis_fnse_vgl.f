@@ -76,7 +76,7 @@ c cf=sqrt(7/(4*pi)),cf2=cf*sqrt(5),cf3=cf*sqrt(15)
       n0_nbasis(k)=0
 c loop through centers
 
-      do 900 ic=1,ncent+nghostcent
+      do ic=1,ncent+nghostcent
       ll=0
 
       i=iwctype(ic)
@@ -105,7 +105,7 @@ c analytical orbital
 c 1s states
 
       ju=n1s(i)
-      do 40 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=ex
@@ -114,9 +114,9 @@ c 1s states
       dphin(2,l,k)=x1*xc(2)*ex
       dphin(3,l,k)=x1*xc(3)*ex
       d2phin(l,k)=(two*x1+zex(l,iwf)**2)*ex
-   40 continue
+      enddo
       ju=-ju
-      do 45 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r2)
       phin(l,k)=ex
@@ -125,14 +125,14 @@ c 1s states
       dphin(2,l,k)=x1*xc(2)*ex
       dphin(3,l,k)=x1*xc(3)*ex
       d2phin(l,k)=x1*(three+x1*r2)*ex
-   45 continue
+      enddo
    50 continue
       if (iabs(n2s(i)).lt.1) goto 70
 
 c 2s states
 
       ju=n2s(i)
-      do 60 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=r*ex
@@ -142,19 +142,19 @@ c 2s states
       dphin(2,l,k)=x1*xc(2)*ex
       dphin(3,l,k)=x1*xc(3)*ex
       d2phin(l,k)=(two*ri-four*zex(l,iwf)+zex(l,iwf)**2*r)*ex
-   60 continue
+      enddo
       if(ju.lt.0) call fatal_error('BAS: negative n2s not implemented')
       ju=-ju
-      do 65 j=1,ju
+      do j=1,ju
       l=l+1
-   65 continue
+      enddo
    70 continue
 
 c 2p states
 
       if (iabs(n2p(1,i)).lt.1) goto 90
       ju=n2p(1,i)
-      do 80 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(1)*ex
@@ -164,17 +164,17 @@ c 2p states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)
       dphin(3,l,k)=x1*xc(3)*phin(l,k)
       d2phin(l,k)=(-four*zex(l,iwf)*ri+zex(l,iwf)**2)*phin(l,k)
-   80 continue
+      enddo
       if(ju.lt.0) call fatal_error('BAS: negative n2p not implemented')
       ju=-ju
-      do 85 j=1,ju
+      do j=1,ju
       l=l+1
-   85 continue
+      enddo
 
    90 continue
       if (iabs(n2p(2,i)).lt.1) goto 110
       ju=n2p(2,i)
-      do 100 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(2)*ex
@@ -184,17 +184,17 @@ c 2p states
       dphin(2,l,k)=ex*(one-zex(l,iwf)*xc(2)**2*ri)
       dphin(3,l,k)=x1*xc(3)*phin(l,k)
       d2phin(l,k)=(-four*zex(l,iwf)*ri+zex(l,iwf)**2)*phin(l,k)
-  100 continue
+      enddo
       if(ju.lt.0) call fatal_error('BAS: negative n2p not implemented')
       ju=-ju
-      do 105 j=1,ju
+      do j=1,ju
       l=l+1
-  105 continue
+      enddo
 
   110 continue
       if (iabs(n2p(3,i)).lt.1) goto 130
       ju=n2p(3,i)
-      do 120 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(3)*ex
@@ -204,19 +204,19 @@ c 2p states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)
       dphin(3,l,k)=ex*(one-zex(l,iwf)*xc(3)**2*ri)
       d2phin(l,k)=(-four*zex(l,iwf)*ri+zex(l,iwf)**2)*phin(l,k)
-  120 continue
+      enddo
       if(ju.lt.0) call fatal_error('BAS: negative n2p not implemented')
       ju=-ju
-      do 125 j=1,ju
+      do j=1,ju
       l=l+1
-  125 continue
+      enddo
   130 continue
 
 c 3s state
 
       if (iabs(n3s(i)).lt.1) goto 155
       ju=n3s(i)
-      do 150 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=r**2*ex
@@ -225,19 +225,19 @@ c 3s state
       dphin(2,l,k)=x1*xc(2)
       dphin(3,l,k)=x1*xc(3)
       d2phin(l,k)=(six-six*zex(l,iwf)*r+zex(l,iwf)**2*r**2)*ex
-  150 continue
+      enddo
       if(ju.lt.0) call fatal_error('BAS: negative n3s not implemented')
       ju=-ju
-      do 152 j=1,ju
+      do j=1,ju
       l=l+1
-  152 continue
+      enddo
   155 continue
 
 c 3p states
 
       if (iabs(n3p(1,i)).lt.1) goto 170
       ju=n3p(1,i)
-      do 160 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(1)*r*ex
@@ -247,17 +247,17 @@ c 3p states
       dphin(3,l,k)=x1*xc(3)
       d2phin(l,k)=(four*ri-six*zex(l,iwf)+zex(l,iwf)**2*r)
      &                 *xc(1)*ex
-  160 continue
+      enddo
       if(ju.lt.0) call fatal_error('BAS: negative n3p not implemented')
       ju=-ju
-      do 165 j=1,ju
+      do j=1,ju
       l=l+1
-  165 continue
+      enddo
 
   170 continue
       if (iabs(n3p(2,i)).lt.1) goto 190
       ju=n3p(2,i)
-      do 180 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(2)*r*ex
@@ -267,17 +267,17 @@ c 3p states
       dphin(3,l,k)=x1*xc(3)
       d2phin(l,k)=(four*ri-six*zex(l,iwf)+zex(l,iwf)**2*r)
      &                 *xc(2)*ex
-  180 continue
+      enddo
       if(ju.lt.0) call fatal_error('BAS: negative n3p not implemented')
       ju=-ju
-      do 185 j=1,ju
+      do j=1,ju
       l=l+1
-  185 continue
+      enddo
 
   190 continue
       if (iabs(n3p(3,i)).lt.1) goto 210
       ju=n3p(3,i)
-      do 200 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(3)*r*ex
@@ -287,18 +287,18 @@ c 3p states
       dphin(3,l,k)=(xc(3)**2*ri-zex(l,iwf)*xc(3)**2+r)*ex
       d2phin(l,k)=(four*ri-six*zex(l,iwf)+zex(l,iwf)**2*r)
      &                 *xc(3)*ex
-  200 continue
+      enddo
       if(ju.lt.0) call fatal_error('BAS: negative n3p not implemented')
       ju=-ju
-      do 205 j=1,ju
+      do j=1,ju
       l=l+1
-  205 continue
+      enddo
   210 continue
 
 c 3d states
 
       if (iabs(n3dzr(i)).lt.1) goto 230
-      do 220 j=1,n3dzr(i)
+      do j=1,n3dzr(i)
       l=l+1
       ex=half*dexp(-zex(l,iwf)*r)
       x2=three*xc(3)**2-r**2
@@ -308,11 +308,11 @@ c 3d states
       dphin(2,l,k)=x1*xc(2)
       dphin(3,l,k)=(four-zex(l,iwf)*ri*x2)*xc(3)*ex
       d2phin(l,k)=(zex(l,iwf)**2-six*zex(l,iwf)*ri)*phin(l,k)
-  220 continue
+      enddo
 
   230 continue
       if (iabs(n3dx2(i)).lt.1) goto 250
-      do 240 j=1,n3dx2(i)
+      do j=1,n3dx2(i)
       l=l+1
       ex=rt3b2*dexp(-zex(l,iwf)*r)
       x2=xc(1)**2-xc(2)**2
@@ -321,11 +321,11 @@ c 3d states
       dphin(2,l,k)=-(two+zex(l,iwf)*x2*ri)*xc(2)*ex
       dphin(3,l,k)=-zex(l,iwf)*x2*ri*xc(3)*ex
       d2phin(l,k)=(zex(l,iwf)**2-six*zex(l,iwf)*ri)*phin(l,k)
-  240 continue
+      enddo
 
   250 continue
       if (iabs(n3dxy(i)).lt.1) goto 270
-      do 260 j=1,n3dxy(i)
+      do j=1,n3dxy(i)
       l=l+1
       ex=rt3*dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(1)*xc(2)*ex
@@ -333,11 +333,11 @@ c 3d states
       dphin(2,l,k)=(one-zex(l,iwf)*xc(2)**2*ri)*xc(1)*ex
       dphin(3,l,k)=-zex(l,iwf)*xc(3)*ri*phin(l,k)
       d2phin(l,k)=(zex(l,iwf)**2-six*zex(l,iwf)*ri)*phin(l,k)
-  260 continue
+      enddo
 
   270 continue
       if (iabs(n3dxz(i)).lt.1) goto 290
-      do 280 j=1,n3dxz(i)
+      do j=1,n3dxz(i)
       l=l+1
       ex=rt3*dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(1)*xc(3)*ex
@@ -345,11 +345,11 @@ c 3d states
       dphin(2,l,k)=-zex(l,iwf)*xc(2)*ri*phin(l,k)
       dphin(3,l,k)=(one-zex(l,iwf)*xc(3)**2*ri)*xc(1)*ex
       d2phin(l,k)=(zex(l,iwf)**2-six*zex(l,iwf)*ri)*phin(l,k)
-  280 continue
+      enddo
 
   290 continue
       if (iabs(n3dyz(i)).lt.1) goto 310
-      do 300 j=1,n3dyz(i)
+      do j=1,n3dyz(i)
       l=l+1
       ex=rt3*dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(2)*xc(3)*ex
@@ -357,13 +357,13 @@ c 3d states
       dphin(2,l,k)=(one-zex(l,iwf)*xc(2)**2*ri)*xc(3)*ex
       dphin(3,l,k)=(one-zex(l,iwf)*xc(3)**2*ri)*xc(2)*ex
       d2phin(l,k)=(zex(l,iwf)**2-six*zex(l,iwf)*ri)*phin(l,k)
-  300 continue
+      enddo
   310 continue
 
 c 4s state
 
       if (iabs(n4s(i)).lt.1) goto 330
-      do 320 j=1,n4s(i)
+      do j=1,n4s(i)
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=r**3*ex
@@ -373,13 +373,13 @@ c 4s state
       dphin(3,l,k)=x1*xc(3)
       d2phin(l,k)=(zex(l,iwf)**2*r**3-eight*zex(l,iwf)*r**2
      &             +twelve*r)*ex
-  320 continue
+      enddo
   330 continue
 
 c 4p states
 
       if (iabs(n4p(1,i)).lt.1) goto 350
-      do 340 j=1,n4p(1,i)
+      do j=1,n4p(1,i)
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(1)*r**2*ex
@@ -390,11 +390,11 @@ c 4p states
       dphin(3,l,k)=x1*xc(3)
       d2phin(l,k)=(zex(l,iwf)**2*r**2-eight*zex(l,iwf)*r+ten)
      &*xc(1)*ex
-  340 continue
+      enddo
 
   350 continue
       if (iabs(n4p(2,i)).lt.1) goto 370
-      do 360 j=1,n4p(2,i)
+      do j=1,n4p(2,i)
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(2)*r**2*ex
@@ -405,11 +405,11 @@ c 4p states
       dphin(3,l,k)=x1*xc(3)
       d2phin(l,k)=(zex(l,iwf)**2*r**2-eight*zex(l,iwf)*r+ten)
      &*xc(2)*ex
-  360 continue
+      enddo
 
   370 continue
       if (iabs(n4p(3,i)).lt.1) goto 390
-      do 380 j=1,n4p(3,i)
+      do j=1,n4p(3,i)
       l=l+1
       ex=dexp(-zex(l,iwf)*r)
       phin(l,k)=xc(3)*r**2*ex
@@ -420,14 +420,14 @@ c 4p states
      &*ex
       d2phin(l,k)=(zex(l,iwf)**2*r**2-eight*zex(l,iwf)*r+ten)
      &*xc(3)*ex
-  380 continue
+      enddo
   390 continue
 
 c s asymptotic/gaussian states
 
       if (iabs(nsa(i)).lt.1) goto 410
       ju=nsa(i)
-      do 400 j=1,ju
+      do j=1,ju
       l=l+1
       beta=betaq/zex(l,iwf)-one
       bb1=beta*(beta-one)
@@ -443,9 +443,9 @@ c s asymptotic/gaussian states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)
       dphin(3,l,k)=x1*xc(3)*phin(l,k)
       d2phin(l,k)=(two*x1+x2)*phin(l,k)
-  400 continue
+      enddo
       ju=-ju
-      do 405 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r2)
       phin(l,k)=r2*ex
@@ -454,14 +454,14 @@ c s asymptotic/gaussian states
       dphin(2,l,k)=(two+x1*r2)*xc(2)*ex
       dphin(3,l,k)=(two+x1*r2)*xc(3)*ex
       d2phin(l,k)=(six+x1*r2*(seven+x1*r2))*ex
-  405 continue
+      enddo
   410 continue
 
 c p asymptotic/gaussian states
 
       if (iabs(npa(1,i)).lt.1) goto 430
       ju=npa(1,i)
-      do 420 j=1,ju
+      do j=1,ju
       l=l+1
       beta=betaq/zex(l,iwf)-one
       b1=beta-one
@@ -480,9 +480,9 @@ c p asymptotic/gaussian states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)
       dphin(3,l,k)=x1*xc(3)*phin(l,k)
       d2phin(l,k)=(two*x1+x2)*phin(l,k)
-  420 continue
+      enddo
       ju=-ju
-      do 425 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r2)
       phin(l,k)=xc(1)*ex
@@ -491,12 +491,12 @@ c p asymptotic/gaussian states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)
       dphin(3,l,k)=x1*xc(3)*phin(l,k)
       d2phin(l,k)=x1*(five+x1*r2)*phin(l,k)
-  425 continue
+      enddo
 
   430 continue
       if (iabs(npa(2,i)).lt.1) goto 450
       ju=npa(2,i)
-      do 440 j=1,ju
+      do j=1,ju
       l=l+1
       beta=betaq/zex(l,iwf)-one
       b1=beta-one
@@ -515,9 +515,9 @@ c p asymptotic/gaussian states
       dphin(2,l,k)=ex*(one+x1*xc(2)**2)
       dphin(3,l,k)=x1*xc(3)*phin(l,k)
       d2phin(l,k)=(two*x1+x2)*phin(l,k)
-  440 continue
+      enddo
       ju=-ju
-      do 445 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r2)
       phin(l,k)=xc(2)*ex
@@ -526,12 +526,12 @@ c p asymptotic/gaussian states
       dphin(2,l,k)=(one+x1*xc(2)*xc(2))*ex
       dphin(3,l,k)=x1*xc(3)*phin(l,k)
       d2phin(l,k)=x1*(five+x1*r2)*phin(l,k)
-  445 continue
+      enddo
 
   450 continue
       if (iabs(npa(3,i)).lt.1) goto 470
       ju=npa(3,i)
-      do 460 j=1,ju
+      do j=1,ju
       l=l+1
       beta=betaq/zex(l,iwf)-one
       b1=beta-one
@@ -550,9 +550,9 @@ c p asymptotic/gaussian states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)
       dphin(3,l,k)=ex*(one+x1*xc(3)**2)
       d2phin(l,k)=(two*x1+x2)*phin(l,k)
-  460 continue
+      enddo
       ju=-ju
-      do 465 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r2)
       phin(l,k)=xc(3)*ex
@@ -561,14 +561,14 @@ c p asymptotic/gaussian states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)
       dphin(3,l,k)=(one+x1*xc(3)*xc(3))*ex
       d2phin(l,k)=x1*(five+x1*r2)*phin(l,k)
-  465 continue
+      enddo
   470 continue
 
 c d asymptotic/gaussian states
 
       if (ndzra(i).eq.0) goto 490
       ju=ndzra(i)
-      do 480 j=1,ju
+      do j=1,ju
       l=l+1
       beta=betaq/zex(l,iwf)-one
       b2=beta-two
@@ -587,9 +587,9 @@ c d asymptotic/gaussian states
       dphin(2,l,k)=ex*(x1*xa-two)*xc(2)
       dphin(3,l,k)=ex*(x1*xa+four)*xc(3)
       d2phin(l,k)=(two*x1+x2)*phin(l,k)
-  480 continue
+      enddo
       ju=-ju
-      do 485 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r2)
       phin(l,k)=(three*xc(3)**2-r**2)*ex
@@ -598,12 +598,12 @@ c d asymptotic/gaussian states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)-two*xc(2)*ex
       dphin(3,l,k)=x1*xc(3)*phin(l,k)+four*xc(3)*ex
       d2phin(l,k)=x1*(seven+x1*r2)*phin(l,k)
-  485 continue
+      enddo
 
   490 continue
       if (ndx2a(i).eq.0) goto 510
       ju=ndx2a(i)
-      do 500 j=1,ju
+      do j=1,ju
       l=l+1
       beta=betaq/zex(l,iwf)-one
       b2=beta-two
@@ -622,9 +622,9 @@ c d asymptotic/gaussian states
       dphin(2,l,k)=ex*(x1*xa-two)*xc(2)
       dphin(3,l,k)=ex*x1*xa*xc(3)
       d2phin(l,k)=(two*x1+x2)*phin(l,k)
-  500 continue
+      enddo
       ju=-ju
-      do 505 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r2)
       phin(l,k)=(xc(1)**2-xc(2)**2)*ex
@@ -633,12 +633,12 @@ c d asymptotic/gaussian states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)-two*xc(2)*ex
       dphin(3,l,k)=x1*xc(3)*phin(l,k)
       d2phin(l,k)=x1*(seven+x1*r2)*phin(l,k)
-  505 continue
+      enddo
 
   510 continue
       if (ndxya(i).eq.0) goto 530
       ju=ndxya(i)
-      do 520 j=1,ju
+      do j=1,ju
       l=l+1
       beta=betaq/zex(l,iwf)-one
       b2=beta-two
@@ -657,9 +657,9 @@ c d asymptotic/gaussian states
       dphin(2,l,k)=ex*(x1*xa*xc(2)+xc(1))
       dphin(3,l,k)=ex*x1*xa*xc(3)
       d2phin(l,k)=(two*x1+x2)*phin(l,k)
-  520 continue
+      enddo
       ju=-ju
-      do 525 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r2)
       phin(l,k)=xc(1)*xc(2)*ex
@@ -668,12 +668,12 @@ c d asymptotic/gaussian states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)+xc(1)*ex
       dphin(3,l,k)=x1*xc(3)*phin(l,k)
       d2phin(l,k)=x1*(seven+x1*r2)*phin(l,k)
-  525 continue
+      enddo
 
   530 continue
       if (ndxza(i).eq.0) goto 550
       ju=ndxza(i)
-      do 540 j=1,ju
+      do j=1,ju
       l=l+1
       beta=betaq/zex(l,iwf)-one
       b2=beta-two
@@ -692,9 +692,9 @@ c d asymptotic/gaussian states
       dphin(2,l,k)=ex*x1*xa*xc(2)
       dphin(3,l,k)=ex*(x1*xa*xc(3)+xc(1))
       d2phin(l,k)=(two*x1+x2)*phin(l,k)
-  540 continue
+      enddo
       ju=-ju
-      do 545 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r2)
       phin(l,k)=xc(1)*xc(3)*ex
@@ -703,12 +703,12 @@ c d asymptotic/gaussian states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)
       dphin(3,l,k)=x1*xc(3)*phin(l,k)+xc(1)*ex
       d2phin(l,k)=x1*(seven+x1*r2)*phin(l,k)
-  545 continue
+      enddo
 
   550 continue
       if (ndyza(i).eq.0) goto 570
       ju=ndyza(i)
-      do 560 j=1,ju
+      do j=1,ju
       l=l+1
       beta=betaq/zex(l,iwf)-one
       b2=beta-two
@@ -727,9 +727,9 @@ c d asymptotic/gaussian states
       dphin(2,l,k)=ex*(x1*xa*xc(2)+xc(3))
       dphin(3,l,k)=ex*(x1*xa*xc(3)+xc(2))
       d2phin(l,k)=(two*x1+x2)*phin(l,k)
-  560 continue
+      enddo
       ju=-ju
-      do 565 j=1,ju
+      do j=1,ju
       l=l+1
       ex=dexp(-zex(l,iwf)*r2)
       phin(l,k)=xc(2)*xc(3)*ex
@@ -738,7 +738,7 @@ c d asymptotic/gaussian states
       dphin(2,l,k)=x1*xc(2)*phin(l,k)+xc(3)*ex
       dphin(3,l,k)=x1*xc(3)*phin(l,k)+xc(2)*ex
       d2phin(l,k)=x1*(seven+x1*r2)*phin(l,k)
-  565 continue
+      enddo
   570 continue
 
       else
@@ -747,15 +747,15 @@ c numerical orbitals
 
       ider=1
       rk=r
-      do 600 irb=1,nrbas(i)
+      do irb=1,nrbas(i)
       call splfit(rk,irb,i,iwf,wfv(1,k,irb),ider)
-  600 continue
+      enddo
 
 c s states
 
       if (iabs(n1s(i)).lt.1) goto 620
       ju=iabs(n1s(i))
-      do 610 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -765,14 +765,14 @@ c s states
       dphin(3,l,k)=cs*xc(3)*ri*wfv(2,k,irb)
       d2phin(l,k)=cs*(wfv(3,k,irb)+two*ri*wfv(2,k,irb))
       call n0_inc(l,k,ic)
-  610 continue
+      enddo
   620 continue
 
 c p states
 
       if (iabs(n2p(1,i)).lt.1) goto 640
       ju=iabs(n2p(1,i))
-      do 630 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -786,12 +786,12 @@ c p states
       dphin(3,l,k)=cp*xvec*zvec*wf1
       d2phin(l,k)=cp*xvec*(wfv(3,k,irb)+two*ri*wf1)
       call n0_inc(l,k,ic)
-  630 continue
+      enddo
   640 continue
 
       if (iabs(n2p(2,i)).lt.1) goto 660
       ju=iabs(n2p(2,i))
-      do 650 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -805,12 +805,12 @@ c p states
       dphin(3,l,k)=cp*yvec*zvec*wf1
       d2phin(l,k)=cp*yvec*(wfv(3,k,irb)+two*ri*wf1)
       call n0_inc(l,k,ic)
-  650 continue
+      enddo
   660 continue
 
       if (iabs(n2p(3,i)).lt.1) goto 680
       ju=iabs(n2p(3,i))
-      do 670 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -824,14 +824,14 @@ c p states
       dphin(3,l,k)=cp*zvec*zvec*wf1+cp*ri*wfv(1,k,irb)
       d2phin(l,k)=cp*zvec*(wfv(3,k,irb)+two*ri*wf1)
       call n0_inc(l,k,ic)
-  670 continue
+      enddo
   680 continue
 
 c d states
 
       if (iabs(n3dzr(i)).lt.1) goto 700
       ju=iabs(n3dzr(i))
-      do 690 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -847,12 +847,12 @@ c d states
       dphin(3,l,k)=cd1*zvec*(zr*wf1+two*wfv(1,k,irb)*ri)
       d2phin(l,k)=cd1*zr*(wfv(3,k,irb)+two*ri*wf2)
       call n0_inc(l,k,ic)
-  690 continue
+      enddo
 
   700 continue
       if (iabs(n3dx2(i)).lt.1) goto 720
       ju=iabs(n3dx2(i))
-      do 710 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -868,12 +868,12 @@ c d states
       dphin(3,l,k)=cd2*zvec* x2y2*wf1
       d2phin(l,k)=cd2*x2y2*(wfv(3,k,irb)+two*ri*wf2)
       call n0_inc(l,k,ic)
-  710 continue
+      enddo
 
   720 continue
       if (iabs(n3dxy(i)).lt.1) goto 740
       ju=iabs(n3dxy(i))
-      do 730 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -889,12 +889,12 @@ c d states
       dphin(3,l,k)=cd2* zvec*xy*wf1
       d2phin(l,k)=cd2*xy*(wfv(3,k,irb)+two*ri*wf2)
       call n0_inc(l,k,ic)
-  730 continue
+      enddo
 
   740 continue
       if (iabs(n3dxz(i)).lt.1) goto 760
       ju=iabs(n3dxz(i))
-      do 750 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -910,12 +910,12 @@ c d states
       dphin(3,l,k)=cd2*(zvec*xz*wf1+xvec*wfv(1,k,irb)*ri)
       d2phin(l,k)=cd2*xz*(wfv(3,k,irb)+two*ri*wf2)
       call n0_inc(l,k,ic)
-  750 continue
+      enddo
 
   760 continue
       if (iabs(n3dyz(i)).lt.1) goto 780
       ju=iabs(n3dyz(i))
-      do 770 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -931,12 +931,12 @@ c d states
       dphin(3,l,k)=cd2*(zvec*yz*wf1+yvec*wfv(1,k,irb)*ri)
       d2phin(l,k)=cd2*yz*(wfv(3,k,irb)+two*ri*wf2)
       call n0_inc(l,k,ic)
-  770 continue
+      enddo
 
   780 continue
       if (iabs(n4fxxx(i)).lt.1) goto 790
       ju=iabs(n4fxxx(i))
-      do 785 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -952,12 +952,12 @@ c d states
       d2phin(l,k)=cf*xvec3*(wfv(3,k,irb)+2*ri*wfv(2,k,irb))
      &            +6*(cf*xvec*wfv(1,k,irb)-2*phin(l,k))*ri2
       call n0_inc(l,k,ic)
- 785  continue
+      enddo
 
  790  continue
       if (iabs(n4fyyy(i)).lt.1) goto 805
       ju=iabs(n4fyyy(i))
-      do 795 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -973,12 +973,12 @@ c d states
       d2phin(l,k)=cf*yvec3*(wfv(3,k,irb)+2*ri*wfv(2,k,irb))
      &            +6*(cf*yvec*wfv(1,k,irb)-2*phin(l,k))*ri2
       call n0_inc(l,k,ic)
- 795  continue
+      enddo
 
  805  continue
       if (iabs(n4fzzz(i)).lt.1) goto 810
       ju=iabs(n4fzzz(i))
-      do 808 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -994,12 +994,12 @@ c d states
       d2phin(l,k)=cf*zvec3*(wfv(3,k,irb)+2*ri*wfv(2,k,irb))
      &            +6*(cf*zvec*wfv(1,k,irb)-2*phin(l,k))*ri2
       call n0_inc(l,k,ic)
- 808  continue
+      enddo
 
  810  continue
       if (iabs(n4fxxy(i)).lt.1) goto 820
       ju=iabs(n4fxxy(i))
-      do 815 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -1015,12 +1015,12 @@ c d states
       d2phin(l,k)=cf2*x2y*(wfv(3,k,irb)+2*ri*wfv(2,k,irb))
      &            +2*(cf2*yvec*wfv(1,k,irb)-6*phin(l,k))*ri2
       call n0_inc(l,k,ic)
- 815  continue
+      enddo
 
  820  continue
       if (iabs(n4fxxz(i)).lt.1) goto 825
       ju=iabs(n4fxxz(i))
-      do 818 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -1036,12 +1036,12 @@ c d states
       d2phin(l,k)=cf2*x2z*(wfv(3,k,irb)+2*ri*wfv(2,k,irb))
      &            +2*(cf2*zvec*wfv(1,k,irb)-6*phin(l,k))*ri2
       call n0_inc(l,k,ic)
- 818  continue
+      enddo
 
  825  continue
       if (iabs(n4fyyx(i)).lt.1) goto 835
       ju=iabs(n4fyyx(i))
-      do 830 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -1057,12 +1057,12 @@ c d states
       d2phin(l,k)=cf2*y2x*(wfv(3,k,irb)+2*ri*wfv(2,k,irb))
      &            +2*(cf2*xvec*wfv(1,k,irb)-6*phin(l,k))*ri2
       call n0_inc(l,k,ic)
- 830  continue
+      enddo
 
  835  continue
       if (iabs(n4fyyz(i)).lt.1) goto 845
       ju=iabs(n4fyyz(i))
-      do 840 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -1078,12 +1078,12 @@ c d states
       d2phin(l,k)=cf2*y2z*(wfv(3,k,irb)+2*ri*wfv(2,k,irb))
      &            +2*(cf2*zvec*wfv(1,k,irb)-6*phin(l,k))*ri2
       call n0_inc(l,k,ic)
- 840  continue
+      enddo
 
  845  continue
       if (iabs(n4fzzx(i)).lt.1) goto 855
       ju=iabs(n4fzzx(i))
-      do 850 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -1099,12 +1099,12 @@ c d states
       d2phin(l,k)=cf2*z2x*(wfv(3,k,irb)+2*ri*wfv(2,k,irb))
      &            +2*(cf2*xvec*wfv(1,k,irb)-6*phin(l,k))*ri2
       call n0_inc(l,k,ic)
- 850  continue
+      enddo
 
  855  continue
       if (iabs(n4fzzy(i)).lt.1) goto 865
       ju=iabs(n4fzzy(i))
-      do 860 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -1120,13 +1120,13 @@ c d states
       d2phin(l,k)=cf2*z2y*(wfv(3,k,irb)+2*ri*wfv(2,k,irb))
      &            +2*(cf2*yvec*wfv(1,k,irb)-6*phin(l,k))*ri2
       call n0_inc(l,k,ic)
- 860  continue
+      enddo
 
 
  865  continue
       if (iabs(n4fxyz(i)).lt.1) goto 875
       ju=iabs(n4fxyz(i))
-      do 870 j=1,ju
+      do j=1,ju
       l=l+1
       ll=ll+1
       irb=iwrwf(ll,i)
@@ -1142,12 +1142,12 @@ c d states
       d2phin(l,k)=cf3*xyz*(wfv(3,k,irb)+2*ri*wfv(2,k,irb))
      &            -12*phin(l,k)*ri2
       call n0_inc(l,k,ic)
- 870  continue
+      enddo
 
  875  continue
       endif
 
-  900 continue
+      enddo
 
       return
       end

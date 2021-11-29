@@ -97,7 +97,7 @@ c job where it left off
       write(10) delta,deltar,deltat
 
       write(10) vmc_nstep,iblk
-      do 1 istate=1,nstates
+      do istate=1,nstates
         write(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),tjfcum(istate),r2cum,acc
         write(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),tjfcm2(istate),r2cm2
         if(nforce.gt.1) then
@@ -105,7 +105,8 @@ c job where it left off
          else
           write(10) wcum(istate,1)
         endif
-  1     write(10) ecum1s(istate),ecm21s(istate)
+        write(10) ecum1s(istate),ecm21s(istate)
+      enddo
       write(10) (try(i),suc(i),trunfb(i),rprob(i),
      &rprobup(i),rprobdn(i),ekin(i),ekin2(i),i=1,nrad)
       call optorb_dump(10)
@@ -167,7 +168,7 @@ c-----------------------------------------------------------------------
 
       read(10) nstepx,iblk
       if (nstepx.ne.vmc_nstep) call fatal_error('STARTR: nstep')
-      do 2 istate=1,nstates
+      do istate=1,nstates
         read(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),tjfcum(istate),r2cum,acc
         read(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),tjfcm2(istate),r2cm2
         if(nforce.gt.1) then
@@ -175,7 +176,8 @@ c-----------------------------------------------------------------------
          else
           read(10) wcum(istate,1)
         endif
-  2     read(10) ecum1s(istate),ecm21s(istate)
+        read(10) ecum1s(istate),ecm21s(istate)
+      enddo
       read(10) (try(i),suc(i),trunfb(i),rprob(i),
      &rprobup(i),rprobdn(i),ekin(i),ekin2(i),i=1,nrad)
 
@@ -217,18 +219,21 @@ c-----------------------------------------------------------------------
       read(10) (ndxyax(i),i=1,nctype)
       read(10) (ndxzax(i),i=1,nctype)
       read(10) (ndyzax(i),i=1,nctype)
-      do 10 j=1,norb
-        do 10 i=1,nbasis
-   10     if (dabs(coefx(i,j)-coef(i,j,1)).gt.small) call fatal_error('STARTR: coef')
-      do 20 i=1,nbasis
+      do j=1,norb
+        do i=1,nbasis
+          if (dabs(coefx(i,j)-coef(i,j,1)).gt.small) call fatal_error('STARTR: coef')
+        enddo
+      enddo
+      do i=1,nbasis
         if (dabs(zexx(i)-zex(i,1)).gt.small) call fatal_error('STARTR: zex')
-   20 continue
-      do 30 i=1,ncent+nghostcent
-        do 30 k=1,3
+      enddo
+      do i=1,ncent+nghostcent
+        do k=1,3
           if (dabs(cent(k,i)-centx(k,i)).gt.small) call fatal_error('STARTR: cent')
-   30 continue
+        enddo
+      enddo
       if (pecx.ne.pecent) call fatal_error('STARTR: pec')
-      do 40 i=1,nctype
+      do i=1,nctype
         if (dabs(znucx(i)-znuc(i)).gt.small) call fatal_error('STARTR: znuc')
         if (n1s(i).ne.n1sx(i)) call fatal_error('STARTR: n1s')
         if (n2s(i).ne.n2sx(i)) call fatal_error('STARTR: n2s')
@@ -245,17 +250,18 @@ c-----------------------------------------------------------------------
         if (ndxya(i).ne.ndxyax(i)) call fatal_error('STARTR: ndxya')
         if (ndxza(i).ne.ndxzax(i)) call fatal_error('STARTR: ndxza')
         if (ndyza(i).ne.ndyzax(i)) call fatal_error('STARTR: ndyza')
-        do 40 k=1,3
+        do k=1,3
           if (n2p(k,i).ne.n2px(k,i)) call fatal_error('STARTR: n2p')
           if (n3p(k,i).ne.n3px(k,i)) call fatal_error('STARTR: n3p')
           if (n4p(k,i).ne.n4px(k,i)) call fatal_error('STARTR: n4p')
           if (npa(k,i).ne.npax(k,i)) call fatal_error('STARTR: npa')
-   40 continue
+        enddo
+      enddo
       read(10) (cdetx(i),i=1,ndet)
       read(10) ndetx,nupx,ndnx
-      do 50 i=1,ndet
+      do i=1,ndet
         if (dabs(cdetx(i)-cdet(i,1,1)).gt.small) call fatal_error('STARTR: cdet')
-   50 continue
+      enddo
       if (ndetx.ne.ndet) call fatal_error('STARTR: ndet')
       if (nupx.ne.nup) call fatal_error('STARTR: nup')
       if (ndnx.ne.ndn) call fatal_error('STARTR: ndn')
@@ -281,21 +287,24 @@ c-----------------------------------------------------------------------
       endif
 
 c loop over secondary config
-      do 60 ifr=2,nforce
+      do ifr=2,nforce
 c set n- and e-coord and n-n potential
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,eold(1,ifr),0,ifr)
-        do 60 istate=1,nforce
-   60     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+        do istate=1,nforce
+          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+        enddo
+      enddo
 
 c primary config
 c set n-coord and n-n potential
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,eold(1,1),0,1)
-      do 65 istate=1,nforce
+      do istate=1,nforce
         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
         tjfo(istate)=d2(istate)
-   65   tjfo(istate)=-tjfo(istate)*half*hb
+        tjfo(istate)=-tjfo(istate)*half*hb
+      enddo
 
       if(iguiding.gt.0) then
         call determinant_psig(psido,psidg)
@@ -304,8 +313,9 @@ c rewrite psi2o if you are sampling guiding
       endif
 
       if(node_cutoff.gt.0) then
-        do 83 jel=1,nelec
-   83     call compute_determinante_grad(jel,psido,psido,vold(1,jel),1)
+        do jel=1,nelec
+          call compute_determinante_grad(jel,psido,psido,vold(1,jel),1)
+        enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
 
@@ -319,32 +329,39 @@ c rewrite psi2o if you are sampling guiding
       call optci_save
       call optorb_save
 
-      do 70 i=1,nelec
-        do 70 k=1,3
-   70     xnew(k,i)=xold(k,i)
+      do i=1,nelec
+        do k=1,3
+          xnew(k,i)=xold(k,i)
+        enddo
+      enddo
 
-      do 100 i=1,nelec
+      do i=1,nelec
         rmino(i)=99.d9
-        do 90 j=1,ncent
+        do j=1,ncent
           dist=0
-          do 80 k=1,3
-   80       dist=dist+(xold(k,i)-cent(k,j))**2
+          do k=1,3
+            dist=dist+(xold(k,i)-cent(k,j))**2
+          enddo
           if(dist.lt.rmino(i)) then
             rmino(i)=dist
             nearesto(i)=j
           endif
-   90   continue
+        enddo
         rmino(i)=dsqrt(rmino(i))
-        do 100 k=1,3
-  100     rvmino(k,i)=xold(k,i)-cent(k,nearesto(i))
+        do k=1,3
+          rvmino(k,i)=xold(k,i)-cent(k,nearesto(i))
+        enddo
+      enddo
 
-      do 130 istate=1,nstates
-        do 110 ifr=1,nforce
+      do istate=1,nstates
+        do ifr=1,nforce
           esum(istate,ifr)=0
-  110     wsum(istate,ifr)=0
+          wsum(istate,ifr)=0
+        enddo
         pesum(istate)=0
         tpbsum(istate)=0
-  130   tjfsum(istate)=0
+        tjfsum(istate)=0
+      enddo
       r2sum=0
 
       return

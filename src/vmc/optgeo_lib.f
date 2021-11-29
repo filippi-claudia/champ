@@ -25,8 +25,9 @@
       write(2,'(''# geometry iter '',i5)') iter
       write(2,'(''&atoms nctype '',i5,'' natom '',i5)') nctype,ncent
       write(2,'(''geometry'')')
-      do 20 i=1,ncent
-  20    write(2,'(3f14.6,i5)') (cent(k,i),k=1,3),iwctype(i)
+      do i=1,ncent
+        write(2,'(3f14.6,i5)') (cent(k,i),k=1,3),iwctype(i)
+      enddo
       write(2,'(''end'')')
 
       close(2)
@@ -112,15 +113,19 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer :: i, ii, k, l
 
       ii=0
-      do 10 i=1,ncent
-        do 10 k=1,3
+      do i=1,ncent
+        do k=1,3
           ii=ii+1
-  10      force_o(ii,l)=da_psi(k,i)
+          force_o(ii,l)=da_psi(k,i)
+        enddo
+      enddo
 
-      do 30 i=1,ncent
-        do 30 k=1,3
+      do i=1,ncent
+        do k=1,3
           ii=ii+1
-  30      force_o(ii,l)=da_energy(k,i)
+          force_o(ii,l)=da_energy(k,i)
+        enddo
+      enddo
 
       return
       end

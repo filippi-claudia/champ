@@ -34,8 +34,9 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       if(nordc.le.1) return
 
       if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
-      do 37 k=1,3
-   37   if(abs(rshifti(k)-rshiftj(k)).gt.eps) return
+      do k=1,3
+        if(abs(rshifti(k)-rshiftj(k)).gt.eps) return
+      enddo
 
       uuu=u
       rrri=rri
@@ -47,26 +48,29 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       uu(0)=one
       ss(0)=two
       tt(0)=one
-      do 40 jp=1,nordc
+      do jp=1,nordc
         uu(jp)=uuu**jp
         ss(jp)=rrri**jp+rrrj**jp
-   40   tt(jp)=(rrri*rrrj)**jp
+        tt(jp)=(rrri*rrrj)**jp
+      enddo
 
       ll=0
-      do 50 n=2,nordc
-        do 50 k=n-1,0,-1
+      do n=2,nordc
+        do k=n-1,0,-1
           if(k.eq.0) then
             l_hi=n-k-2
            else
             l_hi=n-k
           endif
-          do 50 l=l_hi,0,-1
+          do l=l_hi,0,-1
             m=(n-k-l)/2
             if(2*m.eq.n-k-l) then
               ll=ll+1
               psinl=psinl+c(ll,it,iwf)*uu(k)*ss(l)*tt(m)
             endif
-   50 continue
+          enddo
+        enddo
+      enddo
 
       return
       end
@@ -94,8 +98,9 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       if(rri.eq.asymp_r) return
 
       psianl=a4(1,it,iwf)*rri/(1.d0+a4(2,it,iwf)*rri)-asymp_jasa(it)
-      do 10 i=2,norda
-   10   psianl=psianl+a4(i+1,it,iwf)*rri**i
+      do i=2,norda
+        psianl=psianl+a4(i+1,it,iwf)*rri**i
+      enddo
 
       return
       end
@@ -128,8 +133,9 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       psibnl=sspinn*fee
 
       psibnl=psibnl-asymp_jasb(ipar+1)
-      do 10 i=2,nordb
-   10   psibnl=psibnl+b(i+1,isb,iwf)*u**i
+      do i=2,nordb
+        psibnl=psibnl+b(i+1,isb,iwf)*u**i
+      enddo
 
       return
       end
@@ -155,8 +161,9 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       dpsianl=0.d0
       if(rri.eq.asymp_r) return
 
-      do 10 i=2,norda
-   10   dpsianl=dpsianl+i*a4(i+1,it,iwf)*rri**(i-1)
+      do i=2,norda
+        dpsianl=dpsianl+i*a4(i+1,it,iwf)*rri**(i-1)
+      enddo
 
       return
       end
@@ -195,8 +202,9 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       dfee=dtop*boti-top*boti*boti*dbot
       dpsibnl=sspinn*dfee
 
-      do 10 i=2,nordb
-   10   dpsibnl=dpsibnl+i*b(i+1,isb,iwf)*u**(i-1)
+      do i=2,nordb
+        dpsibnl=dpsibnl+i*b(i+1,isb,iwf)*u**(i-1)
+      enddo
 
       return
       end

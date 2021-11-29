@@ -32,23 +32,27 @@ c MPI version written by Claudia Filippi
 
       call mpi_reduce(ecum1,collect,nstates,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      do 10 istate=1,nstates
-  10    ecum1(istate)=collect(istate)
+      do istate=1,nstates
+        ecum1(istate)=collect(istate)
+      enddo
 
       call mpi_reduce(ecm21,collect,nstates,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      do 20 istate=1,nstates
-  20    ecm21(istate)=collect(istate)
+      do istate=1,nstates
+        ecm21(istate)=collect(istate)
+      enddo
 
       call mpi_reduce(ecum1s,collect,nstates,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      do 30 istate=1,nstates
-  30    ecum1s(istate)=collect(istate)
+      do istate=1,nstates
+        ecum1s(istate)=collect(istate)
+      enddo
 
       call mpi_reduce(ecm21s,collect,nstates,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      do 40 istate=1,nstates
-  40    ecm21s(istate)=collect(istate)
+      do istate=1,nstates
+        ecm21s(istate)=collect(istate)
+      enddo
 
       call mpi_reduce(rprob,rprobt,nrad,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -57,10 +61,11 @@ c MPI version written by Claudia Filippi
       call mpi_reduce(try,tryt,nrad,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      do 50 i=1,nrad
+      do i=1,nrad
         rprob(i)=rprobt(i)
         suc(i)=suct(i)
-   50   try(i)=tryt(i)
+        try(i)=tryt(i)
+      enddo
 
       call optjas_reduce
 

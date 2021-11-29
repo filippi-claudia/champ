@@ -115,7 +115,7 @@ c xerr = current error of x
       e2sum=esum_dmc*enow
       ef2sum=efsum*efnow
 
-      do 10 ifr=1,nforce
+      do ifr=1,nforce
         wgnow=wgsum(ifr)/dmc_nstep
         egnow=egsum(ifr)/wgsum(ifr)
         penow=pesum_dmc(ifr)/wgsum(ifr)
@@ -131,7 +131,7 @@ c xerr = current error of x
           fsum(ifr)=wgsum(1)*(egnow-egsum(1)/wgsum(1))
           f2sum(ifr)=wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
         endif
-  10  continue
+      enddo
 
       call mpi_allreduce(wgsum,wgcollect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -140,11 +140,11 @@ c xerr = current error of x
       call mpi_allreduce(tausum,taucollect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-      do 12 ifr=1,nforce
+      do ifr=1,nforce
         wgcum(ifr)=wgcum(ifr)+wgcollect(ifr)
         egcum(ifr)=egcum(ifr)+egcollect(ifr)
         taucum(ifr)=taucum(ifr)+taucollect(ifr)
-  12  continue
+      enddo
 
       call mpi_reduce(pesum_dmc,pecollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -211,7 +211,7 @@ c xerr = current error of x
       ecum_dmc=ecum_dmc+ecollect
       efcum=efcum+efcollect
 
-      do 15 ifr=1,nforce
+      do ifr=1,nforce
         wgcm2(ifr)=wgcm2(ifr)+wg2collect(ifr)
         egcm2(ifr)=egcm2(ifr)+eg2collect(ifr)
         pecm2_dmc(ifr)=pecm2_dmc(ifr)+pe2collect(ifr)
@@ -221,8 +221,9 @@ c xerr = current error of x
         pecum_dmc(ifr)=pecum_dmc(ifr)+pecollect(ifr)
         tpbcum_dmc(ifr)=tpbcum_dmc(ifr)+tpbcollect(ifr)
         tjfcum_dmc(ifr)=tjfcum_dmc(ifr)+tjfcollect(ifr)
-        do 13 k=1,3
-  13      derivcum(k,ifr)=derivcum(k,ifr)+derivcollect(k,ifr)
+        do k=1,3
+          derivcum(k,ifr)=derivcum(k,ifr)+derivcollect(k,ifr)
+        enddo
 
         if(iblk.eq.1) then
           egerr=0
@@ -302,7 +303,7 @@ c write out current values of averages etc.
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
      &    fgave,ifgerr,derivtotave,iderivgerr,nint(wgcollect(ifr)/nproc)
         endif
-   15 continue
+      enddo
 
 c zero out xsum variables for metrop
 
@@ -317,15 +318,17 @@ c zero out xsum variables for metrop
       r2sum=zero
       risum=zero
 
-      do 20 ifr=1,nforce
+      do ifr=1,nforce
         egsum(ifr)=zero
         wgsum(ifr)=zero
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
         tjfsum_dmc(ifr)=zero
         tausum(ifr)=zero
-        do 20 k=1,10
-   20     derivsum(k,ifr)=zero
+        do k=1,10
+          derivsum(k,ifr)=zero
+        enddo
+      enddo
 
       call optorb_init(1)
       call optci_init(1)

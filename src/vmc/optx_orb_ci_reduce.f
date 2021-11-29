@@ -26,9 +26,11 @@ c Written by Claudia Filippi
       call mpi_bcast(collect,mxciterm*nreduced
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do 10 j=1,nreduced
-        do 10 i=1,nciterm
-  10     ci_o_o(i,j)=collect(i,j)
+      do j=1,nreduced
+        do i=1,nciterm
+         ci_o_o(i,j)=collect(i,j)
+        enddo
+      enddo
 
       call mpi_reduce(ci_o_oe,collect,mxciterm*nreduced
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -36,9 +38,11 @@ c Written by Claudia Filippi
       call mpi_bcast(collect,mxciterm*nreduced
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do 20 j=1,nreduced
-        do 20 i=1,nciterm
-  20     ci_o_oe(i,j)=collect(i,j)
+      do j=1,nreduced
+        do i=1,nciterm
+         ci_o_oe(i,j)=collect(i,j)
+        enddo
+      enddo
 
       call mpi_reduce(ci_de_o,collect,mxciterm*nreduced
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -46,9 +50,11 @@ c Written by Claudia Filippi
       call mpi_bcast(collect,mxciterm*nreduced
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do 30 j=1,nreduced
-        do 30 i=1,nciterm
-  30     ci_de_o(i,j)=collect(i,j)
+      do j=1,nreduced
+        do i=1,nciterm
+         ci_de_o(i,j)=collect(i,j)
+        enddo
+      enddo
 
       call mpi_reduce(ci_o_ho,collect,mxciterm*nreduced
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -56,9 +62,11 @@ c Written by Claudia Filippi
       call mpi_bcast(collect,mxciterm*nreduced
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do 40 j=1,nreduced
-        do 40 i=1,nciterm
-  40     ci_o_ho(i,j)=collect(i,j)
+      do j=1,nreduced
+        do i=1,nciterm
+         ci_o_ho(i,j)=collect(i,j)
+        enddo
+      enddo
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 

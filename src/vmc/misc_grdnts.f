@@ -25,7 +25,7 @@ c   energy gradients (cartesian).
       write(ounit,'(''Correlated sampling used to calculate energy gradients (Cartesian)'')')
       write(ounit,'(''- Number of gradients: '',i0)') ngradnts
       write(ounit,'(''- Gradients calculated for:'')')
-      do 20 ig=1,ngradnts
+      do ig=1,ngradnts
         if(igrdcidx(ig).eq.1) then
           write(ounit,'(''   x coordinate of atom'',i0)') igrdaidx(ig)
         elseif(igrdcidx(ig).eq.2) then
@@ -33,7 +33,7 @@ c   energy gradients (cartesian).
         else
           write(ounit,'(''   z coordinate of atom'',i0)') igrdaidx(ig)
         endif
-   20 continue
+      enddo
       write(ounit,'(''- Displacement of x,y,z coordinates - delgrdxyz = '',f7.5)') delgrdxyz
       write(ounit,*)
 
@@ -60,7 +60,7 @@ c   energy gradients (z matrix/internal).
       write(ounit,'(''Correlated sampling used to calculate energy gradients (Z matrix)'')')
       write(ounit,'(''- Number of gradients: '',i0)') ngradnts
       write(ounit,'(''- Gradients calculated for:'')')
-      do 20 ig=1,ngradnts
+      do ig=1,ngradnts
         na=igrdaidx(ig)
         nb=izcmat(1,na)
         nc=izcmat(2,na)
@@ -72,7 +72,7 @@ c   energy gradients (z matrix/internal).
         else
           write(ounit,'(''   dihedral angle between atoms '',i0,'','',i0,'','',i0,'' and '',i0)') na,nb,nc,nd
         endif
-   20 continue
+      enddo
       write(ounit,'(''- Displacement of bond lengths      -   delgrdbl = '',f7.5)') delgrdbl
       write(ounit,'(''- Displacement of bond angles       -   delgrdba = '',f7.5)') delgrdba
       write(ounit,'(''- Displacement of dihedral angles   -   delgrdda = '',f7.5)') delgrdda
@@ -107,13 +107,14 @@ c   calculated using correlated smapling.
 
 
 
-      do 5 if=1,nforce-2,2
+      do if=1,nforce-2,2
         grdnts_ave((if+1)/2)=((-forces_ave(if)+forces_ave(if+1))/delgrdxyz)*0.5d0
-    5   grdnts_err((if+1)/2)=(dsqrt(forces_err(if)**2+forces_err(if+1)**2)/delgrdxyz)*0.5d0
+        grdnts_err((if+1)/2)=(dsqrt(forces_err(if)**2+forces_err(if+1)**2)/delgrdxyz)*0.5d0
+      enddo
 
       write(ounit,*)
       write(ounit,'(''Energy gradients (dE/d{x,y,z}):'')')
-      do 10 ig=1,ngradnts
+      do ig=1,ngradnts
         if(igrdcidx(ig).eq.1) then
           write(ounit,'(''  x coordinate of atom'',i3,'': '',f10.7,'' +- '',f10.7)')
      &      igrdaidx(ig),grdnts_ave(ig),grdnts_err(ig)
@@ -124,24 +125,25 @@ c   calculated using correlated smapling.
           write(ounit,'(''  z coordinate of atom'',i3,'': '',f10.7,'' +- '',f10.7)')
      &      igrdaidx(ig),grdnts_ave(ig),grdnts_err(ig)
         endif
-   10 continue
+      enddo
 
       write(ounit,*)
 
       ig=1
       write(ounit,'(''Energy gradients (Cartesian) - atom table:'')')
       write(ounit,'(1x,''Atom'',7x,''dE/dx'',21x,''dE/dy'',21x,''dE/dz'',15x,''iwctype'')')
-      do 20 ic=1,ncent
+      do ic=1,ncent
         write(ounit,'(1x,i3,3x)',advance='no') ic
-        do 30 k=1,3
+        do k=1,3
           if(igrdmv(k,ic).eq.1) then
             write(ounit,'(f10.7,'' +- '',f9.7,3x)',advance='no') grdnts_ave(ig),grdnts_err(ig)
             ig=ig+1
           else
             write(ounit,'(a10,'' +- '',a9,3x)',advance='no') 'x.xxxxxxx','x.xxxxxxx'
           endif
-   30   continue
-   20   write(ounit,'(i3)') iwctype(ic)
+        enddo
+        write(ounit,'(i3)') iwctype(ic)
+      enddo
       write(ounit,'('' ---------------------------------------------------------------------------------------'')')
       write(ounit,*)
 
@@ -177,7 +179,7 @@ c   calculated using correlated smapling.
 
 
 
-      do 5 ifr=1,nforce-2,2
+      do ifr=1,nforce-2,2
         if(igrdcidx((ifr+1)/2).eq.1) then
           delgrd_tmp=delgrdbl
         elseif(igrdcidx((ifr+1)/2).eq.2) then
@@ -186,11 +188,12 @@ c   calculated using correlated smapling.
           delgrd_tmp=delgrdda
         endif
         grdnts_ave((ifr+1)/2)=((-forces_ave(ifr)+forces_ave(ifr+1))/delgrd_tmp)*0.5d0
-    5   grdnts_err((ifr+1)/2)=(dsqrt(forces_err(ifr)**2+forces_err(ifr+1)**2)/delgrd_tmp)*0.5d0
+        grdnts_err((ifr+1)/2)=(dsqrt(forces_err(ifr)**2+forces_err(ifr+1)**2)/delgrd_tmp)*0.5d0
+      enddo
 
       write(ounit,*)
       write(ounit,'(''Energy gradients (dE/d{bl,ba,da}):'')')
-      do 10 ig=1,ngradnts
+      do ig=1,ngradnts
         na=igrdaidx(ig)
         nb=izcmat(1,na)
         nc=izcmat(2,na)
@@ -205,7 +208,7 @@ c   calculated using correlated smapling.
           write(ounit,'('' dihedral angle between atoms '',i0,'','',i0,'','',i0,'' and '',i0,'': '',t50,f10.7,'' +- '',f10.7)')
      &            na,nb,nc,nd,grdnts_ave(ig),grdnts_err(ig)
         endif
-   10 continue
+      enddo
 
       write(ounit,*)
 
@@ -229,27 +232,28 @@ c   calculated using correlated smapling.
       write(ounit,'(i3)') iwctype(ic)
       ic=3
       write(ounit,'(1x,i3,3x,2(i2,2x),1(2x,2x),2x)',advance='no') ic,(izcmat(k,ic),k=1,2)
-      do 15 k=1,2
+      do k=1,2
         if(igrdmv(k,ic).eq.1) then
           write(ounit,'(f10.7,'' +- '',f9.7,3x)',advance='no') grdnts_ave(ig),grdnts_err(ig)
           ig=ig+1
         else
           write(ounit,'(a10,'' +- '',a9,3x)',advance='no') 'x.xxxxxxx','x.xxxxxxx'
         endif
-   15 continue
+      enddo
       write(ounit,'(1(10x,4x,9x,3x))',advance='no')
       write(ounit,'(i3)') iwctype(ic)
-      do 20 ic=4,ncent
+      do ic=4,ncent
         write(ounit,'(1x,i3,3x,3(i2,2x),2x)',advance='no') ic,(izcmat(k,ic),k=1,3)
-        do 30 k=1,3
+        do k=1,3
           if(igrdmv(k,ic).eq.1) then
             write(ounit,'(f10.7,'' +- '',f9.7,3x)',advance='no') grdnts_ave(ig),grdnts_err(ig)
             ig=ig+1
           else
             write(ounit,'(a10,'' +- '',a9,3x)',advance='no') 'x.xxxxxxx','x.xxxxxxx'
           endif
-   30   continue
-   20   write(ounit,'(i3)') iwctype(ic)
+        enddo
+        write(ounit,'(i3)') iwctype(ic)
+      enddo
       write(ounit,'(''# ---------------------------------------------------------------------------------------'')')
       write(ounit,*)
 
@@ -276,27 +280,28 @@ c   calculated using correlated smapling.
       write(2,'(i3)') iwctype(ic)
       ic=3
       write(2,'(1x,i3,3x,2(i2,2x),1(2x,2x),2x)',advance='no') ic,(izcmat(k,ic),k=1,2)
-      do 55 k=1,2
+      do k=1,2
         if(igrdmv(k,ic).eq.1) then
           write(2,'(f10.7,'' +- '',f9.7,3x)',advance='no') grdnts_ave(ig),grdnts_err(ig)
           ig=ig+1
         else
           write(2,'(a10,'' +- '',a9,3x)',advance='no') '0.0000000','0.0000000'
         endif
-   55 continue
+      enddo
       write(2,'(1(10x,4x,9x,3x))',advance='no')
       write(2,'(i3)') iwctype(ic)
-      do 60 ic=4,ncent
+      do ic=4,ncent
         write(2,'(1x,i3,3x,3(i2,2x),2x)',advance='no') ic,(izcmat(k,ic),k=1,3)
-        do 70 k=1,3
+        do k=1,3
           if(igrdmv(k,ic).eq.1) then
             write(2,'(f10.7,'' +- '',f9.7,3x)',advance='no') grdnts_ave(ig),grdnts_err(ig)
             ig=ig+1
           else
             write(2,'(a10,'' +- '',a9,3x)',advance='no') '0.0000000','0.0000000'
           endif
-   70   continue
-   60   write(2,'(i3)') iwctype(ic)
+        enddo
+        write(2,'(i3)') iwctype(ic)
+      enddo
       write(2,'(''# ---------------------------------------------------------------------------------------'')')
       write(2,'(''# '')')
 
@@ -337,18 +342,22 @@ c   using Z matrix (internal) coordinates
         delgrd_tmp=delfactor*delgrdda
       endif
 
-      do 20 ic=1,ncent
-        do 20 k=1,3
+      do ic=1,ncent
+        do k=1,3
           czint_t1(k,ic)=czint(k,ic)
-   20     czcart_t1(k,ic)=0.0d0
+          czcart_t1(k,ic)=0.0d0
+        enddo
+      enddo
 
 
       czint_t1(k_in,ic_in)=czint_t1(k_in,ic_in)+delgrd_tmp
       call zmat2cart_rc(ncent_tot,izcmat,czint_t1,czcart_t1,czcart_ref)
 
-      do 30 ic=1,ncent
-        do 30 k=1,3
-   30     delc(k,ic,ia_in)=czcart_t1(k,ic)-czcart(k,ic)
+      do ic=1,ncent
+        do k=1,3
+          delc(k,ic,ia_in)=czcart_t1(k,ic)-czcart(k,ic)
+        enddo
+      enddo
 
       return
       end
@@ -375,13 +384,15 @@ c   information regarding the Z matrix.
       write(ounit,'(1x,i3,3x,1(i2,2x),10x,1(f11.7,3x),28x,i3)') ic,izcmat(1,ic),czint(1,ic),iwctype(ic)
       ic=3
       write(ounit,'(1x,i3,3x,2(i2,2x),6x,1(f11.7,3x),1(f11.6,3x),14x,i3)') ic,(izcmat(k,ic),k=1,2),(czint(k,ic),k=1,2),iwctype(ic)
-      do 20 ic=4,ncent
-   20   write(ounit,'(1x,i3,3x,3(i2,2x),2x,1(f11.7,3x),2(f11.6,3x),i3)') ic,(izcmat(k,ic),k=1,3),(czint(k,ic),k=1,3),iwctype(ic)
+      do ic=4,ncent
+        write(ounit,'(1x,i3,3x,3(i2,2x),2x,1(f11.7,3x),2(f11.6,3x),i3)') ic,(izcmat(k,ic),k=1,3),(czint(k,ic),k=1,3),iwctype(ic)
+      enddo
       write(ounit,'('' ----------------------------------------------------------------------'')')
       write(ounit,'(''Internal coordiantes converted back into cartesian coordinates:'')')
       write(ounit,'(1x,''Atom'',t12,''x'',t26,''y'',t40,''z'',t51,''iwctype'')')
-      do 30 ic=1,ncent
-   30   write(ounit,'(1x,i3,3x,3(f11.7,3x),i3)') ic,(czcart(k,ic),k=1,3),iwctype(ic)
+      do ic=1,ncent
+        write(ounit,'(1x,i3,3x,3(f11.7,3x),i3)') ic,(czcart(k,ic),k=1,3),iwctype(ic)
+      enddo
       write(ounit,'('' --------------------------------------------------------'')')
       write(ounit,*)
 
@@ -422,7 +433,7 @@ c   from energy differences  calculated using correlated smapling.
 
 
 
-      do 5 ifr=1,nforce-2,2
+      do ifr=1,nforce-2,2
         if(igrdcidx((ifr+1)/2).eq.1) then
           delgrd_tmp=delgrdbl
         elseif(igrdcidx((ifr+1)/2).eq.2) then
@@ -431,11 +442,12 @@ c   from energy differences  calculated using correlated smapling.
           delgrd_tmp=delgrdda
         endif
         diaghess_ave((ifr+1)/2)=((-forces_ave(ifr)-forces_ave(ifr+1))/delgrd_tmp**2)
-    5   diaghess_err((ifr+1)/2)=(dsqrt(forces_err(ifr)**2+forces_err(ifr+1)**2)/delgrd_tmp**2)
+        diaghess_err((ifr+1)/2)=(dsqrt(forces_err(ifr)**2+forces_err(ifr+1)**2)/delgrd_tmp**2)
+      enddo
 
       write(ounit,*)
       write(ounit,'(''Diagonal of the Hessian (d^2E/d{bl,ba,da}^2):'')')
-      do 10 ig=1,ngradnts
+      do ig=1,ngradnts
         na=igrdaidx(ig)
         nb=izcmat(1,na)
         nc=izcmat(2,na)
@@ -450,7 +462,7 @@ c   from energy differences  calculated using correlated smapling.
           write(ounit,'('' dihedral angle between atoms '',i0,'','',i0,'','',i0,'' and '',i0,'': '',t50,f10.7,'' +- '',f10.7)')
      &            na,nb,nc,nd,diaghess_ave(ig),diaghess_err(ig)
         endif
-   10 continue
+      enddo
 
       write(ounit,*)
 
@@ -474,27 +486,28 @@ c   from energy differences  calculated using correlated smapling.
       write(ounit,'(i3)') iwctype(ic)
       ic=3
       write(ounit,'(1x,i3,3x,2(i2,2x),1(2x,2x),2x)',advance='no') ic,(izcmat(k,ic),k=1,2)
-      do 15 k=1,2
+      do k=1,2
         if(igrdmv(k,ic).eq.1) then
           write(ounit,'(f10.7,'' +- '',f9.7,3x)',advance='no') diaghess_ave(ig),diaghess_err(ig)
           ig=ig+1
         else
           write(ounit,'(a10,'' +- '',a9,3x)',advance='no') 'x.xxxxxxx','x.xxxxxxx'
         endif
-   15 continue
+      enddo
       write(ounit,'(1(10x,4x,9x,3x))',advance='no')
       write(ounit,'(i3)') iwctype(ic)
-      do 20 ic=4,ncent
+      do ic=4,ncent
         write(ounit,'(1x,i3,3x,3(i2,2x),2x)',advance='no') ic,(izcmat(k,ic),k=1,3)
-        do 30 k=1,3
+        do k=1,3
           if(igrdmv(k,ic).eq.1) then
             write(ounit,'(f10.7,'' +- '',f9.7,3x)',advance='no') diaghess_ave(ig),diaghess_err(ig)
             ig=ig+1
           else
             write(ounit,'(a10,'' +- '',a9,3x)',advance='no') 'x.xxxxxxx','x.xxxxxxx'
           endif
-   30   continue
-   20   write(ounit,'(i3)') iwctype(ic)
+        enddo
+        write(ounit,'(i3)') iwctype(ic)
+      enddo
       write(ounit,'(''# ---------------------------------------------------------------------------------------'')')
       write(ounit,*)
 
@@ -520,27 +533,28 @@ c   from energy differences  calculated using correlated smapling.
       write(2,'(i3)') iwctype(ic)
       ic=3
       write(2,'(1x,i3,3x,2(i2,2x),1(2x,2x),2x)',advance='no') ic,(izcmat(k,ic),k=1,2)
-      do 55 k=1,2
+      do k=1,2
         if(igrdmv(k,ic).eq.1) then
           write(2,'(f10.7,'' +- '',f9.7,3x)',advance='no') diaghess_ave(ig),diaghess_err(ig)
           ig=ig+1
         else
           write(2,'(a10,'' +- '',a9,3x)',advance='no') '0.0000000','0.0000000'
         endif
-   55 continue
+      enddo
       write(2,'(1(10x,4x,9x,3x))',advance='no')
       write(2,'(i3)') iwctype(ic)
-      do 60 ic=4,ncent
+      do ic=4,ncent
         write(2,'(1x,i3,3x,3(i2,2x),2x)',advance='no') ic,(izcmat(k,ic),k=1,3)
-        do 70 k=1,3
+        do k=1,3
           if(igrdmv(k,ic).eq.1) then
             write(2,'(f10.7,'' +- '',f9.7,3x)',advance='no') diaghess_ave(ig),diaghess_err(ig)
             ig=ig+1
           else
             write(2,'(a10,'' +- '',a9,3x)',advance='no') '0.0000000','0.0000000'
           endif
-   70   continue
-   60   write(2,'(i3)') iwctype(ic)
+        enddo
+        write(2,'(i3)') iwctype(ic)
+      enddo
       write(2,'(''# ---------------------------------------------------------------------------------------'')')
       write(2,'(''# '')')
 
@@ -577,9 +591,11 @@ c -----------------------------------------------------------------------
 
 
 
-      do 10 ic=1,3
-        do 10 k=1,3
-   10     czcart_ref(k,ic)=cent(k,ic)
+      do ic=1,3
+        do k=1,3
+          czcart_ref(k,ic)=cent(k,ic)
+        enddo
+      enddo
 
 c     write(ounit,*) 'HELLO'
 c     do 20 ic=1,ncent
@@ -598,8 +614,8 @@ c 21    write(ounit,'(1p3e12.5)') (czcart(k,ic),k=1,3)
 c     return
 
       ii=0
-      do 100 ic=2,ncent
-        do 100 k=1,3
+      do ic=2,ncent
+        do k=1,3
           if(ic.eq.2.and.k.ne.1) goto 100
           if(ic.eq.3.and.k.eq.3) goto 100
 
@@ -609,22 +625,27 @@ c     return
           czint(k,ic)=czint_sav+eps
           call zmat2cart_rc(ncent,izcmat,czint,czcartp,czcart_ref)
 
-          do 11 lc=1,3
-            do 11 l=1,3
-   11         czcart_ref(l,lc)=cent(l,lc)
+          do lc=1,3
+            do l=1,3
+              czcart_ref(l,lc)=cent(l,lc)
+            enddo
+          enddo
 
           czint(k,ic)=czint_sav-eps
           call zmat2cart_rc(ncent,izcmat,czint,czcartm,czcart_ref)
 
           jj=0
-          do 50 jc=1,ncent
-            do 50 l=1,3
+          do jc=1,ncent
+            do l=1,3
               jj=jj+1
               bwilson(ii,jj)=(czcartp(l,jc)-czcartm(l,jc))*epsi
-  50      continue
+            enddo
+          enddo
 
           czint(k,ic)=czint_sav
  100  continue
+        enddo
+      enddo
 
       ncent_ind=3*ncent-6
       if(ncent.eq.2) ncent_ind=1
@@ -633,22 +654,26 @@ c     do ic=1,ncent_ind
 c       write(ounit,*) 'Bmat',(bwilson(ic,jc),jc=1,ncent3)
 c     enddo
 
-      do 150 ic=1,ncent_ind
+      do ic=1,ncent_ind
         force_int(ic)=0
         jj=0
-        do 150 jc=1,ncent
-          do 150 l=1,3
+        do jc=1,ncent
+          do l=1,3
           jj=jj+1
- 150      force_int(ic)=force_int(ic)+bwilson(ic,jj)*force_cart(l,jc)
+          force_int(ic)=force_int(ic)+bwilson(ic,jj)*force_cart(l,jc)
+          enddo
+        enddo
+      enddo
 
       open(81,file='force_analytic_zmat',form='formatted',status='unknown')
       write(81,'(i5,1p3e14.5)') 1,0.d0,0.d0,0.d0
       write(81,'(i5,1p3e14.5)') 2,force_int(1)*igrdmv(1,2),0.d0,0.d0
       if(ncent.gt.2) write(81,'(i5,1p3e14.5)') 3,force_int(2)*igrdmv(1,3),force_int(3)*igrdmv(2,3),0.d0
       ii=3
-      do 200 ic=4,ncent_ind,3
+      do ic=4,ncent_ind,3
         ii=ii+1
- 200    write(81,'(i5,1p3e14.5)') ii,(force_int(ic+k)*igrdmv(k+1,ii),k=0,2)
+        write(81,'(i5,1p3e14.5)') ii,(force_int(ic+k)*igrdmv(k+1,ii),k=0,2)
+      enddo
       close(81)
 
       if(iuse_zmat.eq.1) then
@@ -665,10 +690,12 @@ c     enddo
         endif
 
         ii=3
-        do 300 ic=4,ncent_ind,3
+        do ic=4,ncent_ind,3
           ii=ii+1
-          do 300 k=0,2
- 300        force_cart(k+1,ii)=force_int(ic+k)*igrdmv(k+1,ii)
+          do k=0,2
+            force_cart(k+1,ii)=force_int(ic+k)*igrdmv(k+1,ii)
+          enddo
+        enddo
       endif
 
       return

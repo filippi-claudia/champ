@@ -67,10 +67,11 @@ c quantities not computed in acuest_write
         term=one/(passes*delr)
         trysum=0
         sucsum=0
-        do 100 i=1,nrad
+        do i=1,nrad
           trysum=trysum+try(i)
           sucsum=sucsum+suc(i)
-  100     write(45,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
+          write(45,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
+        enddo
       endif
 
 c quantities also computed in acuest_write
@@ -81,15 +82,16 @@ c quantities also computed in acuest_write
         accept=acc/(passes*nelec)
       endif
 
-      do 150 ifr=1,nforce
+      do ifr=1,nforce
         energy(ifr)=0
         energy_err(ifr)=0
         ffin_grdnts(ifr)=0
         ferr_grdnts(ifr)=0
         force(ifr)=0
-  150   force_err(ifr)=0
+        force_err(ifr)=0
+      enddo
 
-      do 200 istate=1,nstates
+      do istate=1,nstates
 
       eerr1=err1(ecum1(istate),ecm21(istate),istate)
       eerr1s=err1(ecum1s(istate),ecm21s(istate),istate)
@@ -143,7 +145,7 @@ c is precisely what is being reflected when we get T_corr < 1.
       efin_p=efin
       eerr_p=eerr
 
-      do 110 ifr=2,nforce
+      do ifr=2,nforce
         efin=ecum(istate,ifr)/wcum(istate,ifr)
         eerr=err(ecum(istate,ifr),ecm2(istate,ifr),istate,ifr)
         ffin=ecum(istate,1)/wcum(istate,1)-efin
@@ -168,12 +170,13 @@ c Done by Omar Valsson 2008-12-01
         endif
 
         write(ounit,'(''total E ='',t17,f12.7,'' +-'',f11.7,f9.5)') efin,eerr,eerr*rtpass
-  110   write(ounit,'(''force   ='',t17,e19.10,'' +-'',e16.8,f9.5)') ffin/deltot(ifr),ferr,ferr*rtpass
+        write(ounit,'(''force   ='',t17,e19.10,'' +-'',e16.8,f9.5)') ffin/deltot(ifr),ferr,ferr*rtpass
+      enddo
       write(ounit,'(''potential E ='',t17,f12.7,'' +-'',f11.7,f9.5)') pefin,peerr,peerr*rtpass
       write(ounit,'(''jf kinetic E ='',t17,f12.7,'' +-'',f11.7,f9.5)') tjffin,tjferr,tjferr*rtpass
       write(ounit,'(''pb kinetic E ='',t17,f12.7,'' +-'',f11.7,f9.5)') tpbfin,tpberr,tpberr*rtpass
 
-  200 continue
+      enddo
 
 c TMP
 c     do 250 ifr=1,nforce

@@ -51,7 +51,7 @@
       call allocate_numbas()
       call allocate_numexp()
 
-      do 100 ic=1,nctype+newghostype
+      do ic=1,nctype+newghostype
         if (ic .gt. 999) call fatal_error('READ_BAS_NUM: atomtyp > 999')
         filename =  trim(pooldir) //  trim(bas_id) // ".basis." // atomtyp(ic)
 
@@ -116,20 +116,23 @@
         call bcast(arg)
         call bcast(r0)
 
-        do 100 irb=1,nrbas(ic)
+        do irb=1,nrbas(ic)
 
         if(nloc.eq.0.and.l(irb).eq.0.and.icusp(ic).eq.1) then
 
 ! c small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4
-          do 15 ii=1,NCOEF-1
-  15        dmatr(ii)=1.d0-znuc(ic)*x(ii)
+          do ii=1,NCOEF-1
+            dmatr(ii)=1.d0-znuc(ic)*x(ii)
+          enddo
           y(1)=rwf(1,irb,ic,iwf)
           ll=NCOEF-1
-          do 16 jj=2,NCOEF-1
+          do jj=2,NCOEF-1
             y(jj)=rwf(jj,irb,ic,iwf)
-            do 16 ii=2,NCOEF-1
+            do ii=2,NCOEF-1
               ll=ll+1
-  16          dmatr(ll)=x(ii)**jj
+              dmatr(ll)=x(ii)**jj
+            enddo
+          enddo
 
           call dgesv(NCOEF-1,1,dmatr,NCOEF-1,ipiv,y,NCOEF,info)
           ce(1,irb,ic,iwf)=y(1)
@@ -141,15 +144,18 @@
 
 ! c small radii wf(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
           ll=0
-          do 25 jj=1,NCOEF
+          do jj=1,NCOEF
             y(jj)=rwf(jj,irb,ic,iwf)
-            do 25 ii=1,NCOEF
+            do ii=1,NCOEF
               ll=ll+1
-  25          dmatr(ll)=x(ii)**(jj-1)
+              dmatr(ll)=x(ii)**(jj-1)
+            enddo
+          enddo
           call dgesv(NCOEF,1,dmatr,NCOEF,ipiv,y,NCOEF,info)
 
-          do 26 icoef=1,NCOEF
-  26        ce(icoef,irb,ic,iwf)=y(icoef)
+          do icoef=1,NCOEF
+            ce(icoef,irb,ic,iwf)=y(icoef)
+          enddo
         endif
 
 
@@ -161,16 +167,19 @@
                     (ce(iff,irb,ic,iwf),iff=1,NCOEF)
           write(45,'(''check the small radius expansion'')')
           write(45,'(''irad, rad, extrapolated value, correct value'')')
-          do 30 ir=1,10
+          do ir=1,10
             val=ce(1,irb,ic,iwf)
-            do 28 icoef=2,NCOEF
-  28        val=val+ce(icoef,irb,ic,iwf)*x(ir)**(icoef-1)
-  30        write(45,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
+            do icoef=2,NCOEF
+            val=val+ce(icoef,irb,ic,iwf)*x(ir)**(icoef-1)
+            enddo
+            write(45,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
+          enddo
 ! c       endif
 
         dwf1=0.d0
-        do 32 icoef=2,NCOEF
-  32      dwf1=dwf1+(icoef-1)*ce(icoef,irb,ic,iwf)*x(1)**(icoef-2)
+        do icoef=2,NCOEF
+          dwf1=dwf1+(icoef-1)*ce(icoef,irb,ic,iwf)*x(1)**(icoef-2)
+        enddo
 
 ! c large radii wf(r)=a0*exp(-ak*r)
 ! c       xm=0.5d0*(x(nr(ic))+x(nr(ic)-1))
@@ -192,10 +201,11 @@
           write(45,'(''a0,ak'',1p2e22.10)')     &
                             ae(1,irb,ic,iwf),ae(2,irb,ic,iwf)
           write(45,'(''irad, rad, extrapolated value, correct value'')')
-          do 40 ir=1,10
+          do ir=1,10
             val=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
-  40        write(45,'(i2,1p3e22.14)')      &
+            write(45,'(i2,1p3e22.14)')      &
             ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf)
+          enddo
           write(45,*) 'dwf1,dwfn',dwf1,dwfn
 ! c       endif
         if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
@@ -204,7 +214,8 @@
         d2rwf(1,irb,ic,iwf),work)
 
         if (wid) close(iunit)
-  100  continue
+        enddo
+      enddo
 
       return
       end subroutine read_bas_num

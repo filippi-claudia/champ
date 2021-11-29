@@ -40,8 +40,9 @@ c     max does not work with g77
         call mpi_bcast(optci_reduce_collect,nstates_psig
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-       do 80 j=1,nstates_psig
-  80     effcum(j)=optci_reduce_collect(j)
+       do j=1,nstates_psig
+         effcum(j)=optci_reduce_collect(j)
+       enddo
 
        call mpi_reduce(effcm2,optci_reduce_collect,nstates_psig
      &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -49,8 +50,9 @@ c     max does not work with g77
         call mpi_bcast(optci_reduce_collect,nstates_psig
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-       do 90 j=1,nstates_psig
-  90     effcm2(j)=optci_reduce_collect(j)
+       do j=1,nstates_psig
+         effcm2(j)=optci_reduce_collect(j)
+       enddo
       endif
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') then
@@ -65,8 +67,9 @@ c     max does not work with g77
       call mpi_bcast(optci_reduce_collect,nciterm
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do 10 i=1,nciterm
-  10    ci_o_cum(i)=optci_reduce_collect(i)
+      do i=1,nciterm
+        ci_o_cum(i)=optci_reduce_collect(i)
+      enddo
 
       call mpi_reduce(ci_de_cum(1),optci_reduce_collect(1),nciterm
      &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -74,8 +77,9 @@ c     max does not work with g77
       call mpi_bcast(optci_reduce_collect,nciterm
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do 20 i=1,nciterm
-  20    ci_de_cum(i)=optci_reduce_collect(i)
+      do i=1,nciterm
+        ci_de_cum(i)=optci_reduce_collect(i)
+      enddo
 
       call mpi_reduce(ci_oe_cum,optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -83,9 +87,11 @@ c     max does not work with g77
       call mpi_bcast(optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do 30 i=1,nciterm
-       do 30 j=1,nciterm
-  30    ci_oe_cum(i,j) = optci_reduce_collect2(i,j)
+      do i=1,nciterm
+       do j=1,nciterm
+        ci_oe_cum(i,j) = optci_reduce_collect2(i,j)
+       enddo
+      enddo
 
       call mpi_reduce(ci_oe_cm2,optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -93,9 +99,11 @@ c     max does not work with g77
       call mpi_bcast(optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do 40 i=1,nciterm
-       do 40 j=1,nciterm
-  40    ci_oe_cm2(i,j) = optci_reduce_collect2(i,j)
+      do i=1,nciterm
+       do j=1,nciterm
+        ci_oe_cm2(i,j) = optci_reduce_collect2(i,j)
+       enddo
+      enddo
 
       matdim=nciterm*(nciterm+1)/2
 
@@ -105,8 +113,9 @@ c     max does not work with g77
       call mpi_bcast(optci_reduce_collect,matdim
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do 50 i=1,matdim
-  50    ci_oo_cum(i)=optci_reduce_collect(i)
+      do i=1,matdim
+        ci_oo_cum(i)=optci_reduce_collect(i)
+      enddo
 
       call mpi_reduce(ci_oo_cm2(1),optci_reduce_collect(1),matdim
      &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -114,8 +123,9 @@ c     max does not work with g77
       call mpi_bcast(optci_reduce_collect,matdim
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do 60 i=1,matdim
-  60    ci_oo_cm2(i)=optci_reduce_collect(i)
+      do i=1,matdim
+        ci_oo_cm2(i)=optci_reduce_collect(i)
+      enddo
 
       call mpi_reduce(ci_ooe_cum(1),optci_reduce_collect(1),matdim
      &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -123,8 +133,9 @@ c     max does not work with g77
       call mpi_bcast(optci_reduce_collect,matdim
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do 70 i=1,matdim
-  70    ci_ooe_cum(i)=optci_reduce_collect(i)
+      do i=1,matdim
+        ci_ooe_cum(i)=optci_reduce_collect(i)
+      enddo
 
       deallocate(optci_reduce_collect)
       deallocate(optci_reduce_collect2)

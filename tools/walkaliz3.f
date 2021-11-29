@@ -14,10 +14,11 @@ c than the old way.       Cyrus Umrigar (Mar 1992, Sep. 2001)
       nskip=2*nstep*nblkeq
       ndata=nstep*nblk
       if(nskip+ndata.gt.MDATA) stop 'MDATA exceeded'
-      do 5 i=1,nskip+ndata
-    5   read(11,*) istep,f(i),w(i),e(i)
+      do i=1,nskip+ndata
+        read(11,*) istep,f(i),w(i),e(i)
+      enddo
 
-      do 30 if=0,nf
+      do if=0,nf
         esum=0
         wsum=0
         w2sum=0
@@ -25,19 +26,21 @@ c than the old way.       Cyrus Umrigar (Mar 1992, Sep. 2001)
         wdsum=0
         pow=1-1/dfloat(if+1)
         fprod(0)=1
-        do 15 i=1,nskip+ndata
-   15     fprod(i)=fprod(i-1)**pow*f(i)
-        do 20 i=nskip+1,nskip+ndata
+        do i=1,nskip+ndata
+          fprod(i)=fprod(i-1)**pow*f(i)
+        enddo
+        do i=nskip+1,nskip+ndata
           esum=esum+fprod(i)*w(i)*e(i)
           wsum=wsum+fprod(i)*w(i)
           w2sum=w2sum+(fprod(i)*w(i))**2
           wgsum=wgsum+fprod(i-1)*f(i)*w(i)
           wdsum=wdsum+fprod(i-1)*w(i-1) 
-   20     continue
+        enddo
         emix=esum/wsum
         eig=wgsum/wdsum
         egro=etrial-dlog(eig)/taueff
         werr=sqrt(w2sum/ndata-(wsum/ndata)**2)
-   30   write(6,'(f8.5,9f12.7)') if*taueff,emix,egro,werr
+        write(6,'(f8.5,9f12.7)') if*taueff,emix,egro,werr
+      enddo
         stop
         end

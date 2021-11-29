@@ -71,18 +71,20 @@
       call mpi_reduce(wgcm21,wg21collect,MFORCE,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      do 1 ifr=1,nforce
+      do ifr=1,nforce
         egcum1(ifr)=eg1collect(ifr)
         wgcum1(ifr)=wg1collect(ifr)
         egcm21(ifr)=eg21collect(ifr)
-    1   wgcm21(ifr)=wg21collect(ifr)
+        wgcm21(ifr)=wg21collect(ifr)
+      enddo
 
 c Collect radial charge density for atoms
       if(iperiodic.eq.0) then
         call mpi_reduce(rprob,rprobcollect,nrad,mpi_double_precision
      &  ,mpi_sum,0,MPI_COMM_WORLD,ierr)
-        do 2 i=1,nrad
-    2     rprob(i)=rprobcollect(i)
+        do i=1,nrad
+          rprob(i)=rprobcollect(i)
+        enddo
       endif
 
       call mpi_reduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,0,
@@ -106,11 +108,12 @@ c Collect radial charge density for atoms
       call optx_orb_ci_reduce
 
       if(wid) then
-        do 60 id=1,nproc-1
+        do id=1,nproc-1
           call mpi_isend(egcum1,1,mpi_double_precision,id
      &    ,1,MPI_COMM_WORLD,irequest,ierr)
-   60     call mpi_isend(wgcum1,1,mpi_double_precision,id
+          call mpi_isend(wgcum1,1,mpi_double_precision,id
      &    ,2,MPI_COMM_WORLD,irequest,ierr)
+        enddo
        else
         call mpi_recv(egcum1,1,mpi_double_precision,0
      &  ,1,MPI_COMM_WORLD,istatus,ierr)

@@ -64,21 +64,24 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       fsumn=0
 
-       do 1 k=1,3
-   1     vjn(k)=0.d0
+       do k=1,3
+         vjn(k)=0.d0
+       enddo
 
 C TMP
 c     do 5 iparm=1,nparmj
 c   5   gn(iparm)=gvalue(iparm)
-      do 5 iparm=1,nparmj
-    5   gn(iparm)=0
+      do iparm=1,nparmj
+        gn(iparm)=0
+      enddo
 
       if (nelec.lt.2) goto 47
 
       ipara=nparma(1)
       if(ijas.ge.4.and.ijas.le.6) then
-        do 7 it=2,nctype
-    7     ipara=ipara+nparma(it)
+        do it=2,nctype
+          ipara=ipara+nparma(it)
+        enddo
       endif
 
 c     do 15 i=1,nelec
@@ -92,7 +95,7 @@ c         call scale_dist(rij,u(i),1)
 c       endif
 c  15 continue
 
-      do 45 jj=1,nelec
+      do jj=1,nelec
 
         if(jj.eq.iel) goto 45
         if(jj.lt.iel) then
@@ -128,12 +131,14 @@ c  15 continue
           isb=1
         endif
 
-        do 10 k=1,3
-   10     dx(k)=x(k,jj)-x(k,iel)
+        do k=1,3
+          dx(k)=x(k,jj)-x(k,iel)
+        enddo
         if(iperiodic.eq.0) then
           rij=0
-          do 20 k=1,3
-   20       rij=rij+dx(k)**2
+          do k=1,3
+            rij=rij+dx(k)**2
+          enddo
           rij=dsqrt(rij)
          else
           call find_image3(dx,rij)
@@ -145,9 +150,10 @@ c e-e terms
          else
           call scale_dist1(rij,u,dd1u,1)
           dum=dpsibnl(u,isb,ipar)*dd1u/rij
-          do 30 k=1,3
+          do k=1,3
             dumk=-dum*dx(k)
-   30       vjn(k)=vjn(k)+dumk
+            vjn(k)=vjn(k)+dumk
+          enddo
         endif
 
         iparm0=ipara
@@ -155,46 +161,54 @@ c e-e terms
         fsn(i,j)=deriv_psibnl(u,gn(iparm0+1),isb,ipar)
 c       fsn(i,j)=fsn(i,j) + deriv_psibnl(u(jj),gn(iparm0+1),isb,ipar)
 
-        do 25 jparm=1,nparmb(isb)
+        do jparm=1,nparmb(isb)
           iparm=iparm0+jparm
-   25     gn(iparm)=gn(iparm)-go(i,j,iparm)
+          gn(iparm)=gn(iparm)-go(i,j,iparm)
+        enddo
 
 c e-e-n terms
 c The scaling is switched in deriv_psinl, so do not do it here.
       if(isc.ge.12) call scale_dist(rij,u,3)
 
-        do 40 ic=1,ncent
+        do ic=1,ncent
           it=iwctype(ic)
 c         ri=r_en(i,ic)
 c         rj=r_en(j,ic)
           iparm0=npoint(it)
-   40     fsn(i,j)=fsn(i,j) +
+          fsn(i,j)=fsn(i,j) +
      &    deriv_psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,ic),gn(iparm0+1),it)
 c    &    deriv_psinl(u(jj),rr_en2(i,ic),rr_en2(j,ic),gn(iparm0+1),it)
+        enddo
 
-        do 42 it=1,nctype
+        do it=1,nctype
           iparm0=npoint(it)
-          do 42 jparm=1,nparmc(it)
+          do jparm=1,nparmc(it)
             iparm=iparm0+jparm
-   42       gn(iparm)=gn(iparm)-go(i,j,iparm)
+            gn(iparm)=gn(iparm)-go(i,j,iparm)
+          enddo
+        enddo
 
         fsumn=fsumn+fsn(i,j)-fso(i,j)
    45 continue
+      enddo
 
 c e-n terms
    47 fsn(iel,iel)=0
 
       if(ijas.ge.4.and.ijas.le.6) then
-        do 55 ic=1,ncent
+        do ic=1,ncent
           it=iwctype(ic)
           iparm0=npointa(it)
-   55     fsn(iel,iel)=fsn(iel,iel)+
+          fsn(iel,iel)=fsn(iel,iel)+
      &                 deriv_psianl(rr_en(iel,ic),gn(iparm0+1),it)
-        do 56 it=1,nctype
+        enddo
+        do it=1,nctype
           iparm0=npointa(it)
-          do 56 jparm=1,nparma(it)
+          do jparm=1,nparma(it)
             iparm=iparm0+jparm
-   56       gn(iparm)=gn(iparm)-go(iel,iel,iparm)
+            gn(iparm)=gn(iparm)-go(iel,iel,iparm)
+          enddo
+        enddo
       endif
 
       fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)
@@ -202,13 +216,15 @@ c e-n terms
 
       if(iforce_analy.eq.0) return
 
-       do 70 ic=1,ncent
+       do ic=1,ncent
         it=iwctype(ic)
         dum=dpsianl(rr_en(iel,ic),it)*dd1(iel,ic)/r_en(iel,ic)
-        do 70 k=1,3
+        do k=1,3
           dumk=dum*rvec_en(k,iel,ic)
           vjn(k)=vjn(k)+dumk
-   70     da_ratio_jn(k,ic)=-dumk-da_j(k,iel,ic)
+          da_ratio_jn(k,ic)=-dumk-da_j(k,iel,ic)
+        enddo
+       enddo
 
 
       return

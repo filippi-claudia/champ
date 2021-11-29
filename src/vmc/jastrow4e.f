@@ -46,12 +46,13 @@ c Jastrow 6   must be used with one of isc=6,7
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: eps = 1.d-12
 
-      do 5 i=-2,-1
+      do i=-2,-1
         uu(i)=0
         ss(i)=0
         tt(i)=0
         rri(i)=0
-    5   rrj(i)=0
+        rrj(i)=0
+      enddo
       uu(0)=1
       ss(0)=2
       tt(0)=1
@@ -59,13 +60,15 @@ c Jastrow 6   must be used with one of isc=6,7
       rrj(0)=1
       if (nelec.lt.2) goto 65
 
-      do 10 i=1,nelec
-        do 10 k=1,3
-   10   fjn(k,i)=fjo(k,i)
+      do i=1,nelec
+        do k=1,3
+        fjn(k,i)=fjo(k,i)
+        enddo
+      enddo
       fsumn=fsumo
       d2n=d2o
 
-      do 60 jj=1,nelec
+      do jj=1,nelec
 
       if(jj.eq.iel) goto 60
       if(jj.lt.iel) then
@@ -118,18 +121,20 @@ c Jastrow 6   must be used with one of isc=6,7
       fee=top/bot-asymp_jasb(ipar+1)
       feeu=topu/bot-botu*top/bot2
 
-      do 20 iord=2,nordb
+      do iord=2,nordb
         uu(iord)=uu(1)*uu(iord-1)
         fee=fee+b(iord+1,isb,iwf)*uu(iord)
-   20   feeu=feeu+b(iord+1,isb,iwf)*iord*uu(iord-1)
+        feeu=feeu+b(iord+1,isb,iwf)*iord*uu(iord-1)
+      enddo
 
       if(iflag.gt.0) then
         topuu=0
         botuu=0
         feeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
         feeuu=feeuu/bot
-        do 21 iord=2,nordb
-   21     feeuu=feeuu+b(iord+1,isb,iwf)*iord*(iord-1)*uu(iord-2)
+        do iord=2,nordb
+          feeuu=feeuu+b(iord+1,isb,iwf)*iord*(iord-1)*uu(iord-2)
+        enddo
         feeuu=feeuu*dd1*dd1+feeu*dd2
       endif
 
@@ -157,19 +162,21 @@ c There are no C terms to order 1.
         if(ijas.eq.4.or.ijas.eq.5) call switch_scale2(uu(1),dd1,dd2)
       endif
       if(ijas.eq.4.or.ijas.eq.5) then
-        do 25 iord=2,nordc
-   25     uu(iord)=uu(1)*uu(iord-1)
+        do iord=2,nordc
+          uu(iord)=uu(1)*uu(iord-1)
+        enddo
       endif
 
-      do 50 ic=1,ncent
+      do ic=1,ncent
         it=iwctype(ic)
 
         ri=r_en(i,ic)
         rj=r_en(j,ic)
 
         if(ri.gt.cutjas .or. rj.gt.cutjas) goto 50
-        do 27 k=1,3
-   27     if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) goto 50
+        do k=1,3
+          if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) goto 50
+        enddo
 
         if(iflag.eq.0) then
           call scale_dist1(ri,rri(1),dd7,2)
@@ -187,11 +194,12 @@ c There are no C terms to order 1.
           endif
         endif
 
-        do 30 iord=1,nordc
+        do iord=1,nordc
           rri(iord)=rri(1)*rri(iord-1)
           rrj(iord)=rrj(1)*rrj(iord-1)
           ss(iord)=rri(iord)+rrj(iord)
-   30     tt(iord)=rri(iord)*rrj(iord)
+          tt(iord)=rri(iord)*rrj(iord)
+        enddo
 
         fc=0
         fu=0
@@ -203,14 +211,14 @@ c There are no C terms to order 1.
         fui=0
         fuj=0
         ll=0
-        do 40 n=2,nordc
-          do 40 k=n-1,0,-1
+        do n=2,nordc
+          do k=n-1,0,-1
             if(k.eq.0) then
               l_hi=n-k-2
              else
               l_hi=n-k
             endif
-            do 40 l=l_hi,0,-1
+            do l=l_hi,0,-1
               m=(n-k-l)/2
               if(2*m.eq.n-k-l) then
                 ll=ll+1
@@ -236,7 +244,9 @@ c There are no C terms to order 1.
                 endif
 
               endif
-   40   continue
+            enddo
+          enddo
+        enddo
 
         if(iflag.gt.0) then
           s=ri+rj
@@ -269,6 +279,7 @@ c There are no C terms to order 1.
      &    d2ijn(i,j)=d2ijn(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
      &    + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
    50 continue
+      enddo
 
    55 fsumn=fsumn+fsn(i,j)-fso(i,j)
       fjn(1,i)=fjn(1,i)+fijn(1,i,j)-fijo(1,i,j)
@@ -279,6 +290,7 @@ c There are no C terms to order 1.
       fjn(3,j)=fjn(3,j)+fijn(3,j,i)-fijo(3,j,i)
       d2n=d2n+d2ijn(i,j)-d2ijo(i,j)
    60 continue
+      enddo
 
 c e-n terms
 
@@ -288,7 +300,7 @@ c e-n terms
       fsn(iel,iel)=0
       d2ijn(iel,iel)=0
 
-      do 80 ic=1,ncent
+      do ic=1,ncent
         it=iwctype(ic)
 
         ri=r_en(iel,ic)
@@ -311,18 +323,20 @@ c e-n terms
         fen=top/bot-asymp_jasa(it)
         feni=topi/bot-boti*top/bot2
 
-        do 70 iord=2,norda
+        do iord=2,norda
           rri(iord)=rri(1)**iord
           fen=fen+a4(iord+1,it,iwf)*rri(iord)
-   70     feni=feni+a4(iord+1,it,iwf)*iord*rri(iord-1)
+          feni=feni+a4(iord+1,it,iwf)*iord*rri(iord-1)
+        enddo
 
         if(iflag.gt.0) then
           topii=0
           botii=0
           fenii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
           fenii=fenii/bot
-          do 72 iord=2,norda
-   72       fenii=fenii+a4(iord+1,it,iwf)*iord*(iord-1)*rri(iord-2)
+          do iord=2,norda
+            fenii=fenii+a4(iord+1,it,iwf)*iord*(iord-1)*rri(iord-2)
+          enddo
           fenii=fenii*dd7*dd7+feni*dd9
         endif
 
@@ -336,6 +350,7 @@ c e-n terms
 
         if(iflag.gt.0) d2ijn(iel,iel) = d2ijn(iel,iel) + fenii + 2*feni
    80 continue
+      enddo
 
       fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)
       fjn(1,iel)=fjn(1,iel)+fijn(1,iel,iel)-fijo(1,iel,iel)
@@ -343,10 +358,11 @@ c e-n terms
       fjn(3,iel)=fjn(3,iel)+fijn(3,iel,iel)-fijo(3,iel,iel)
       d2n=d2n+d2ijn(iel,iel)-d2ijo(iel,iel)
 
-      do 110 i=1,nelec
+      do i=1,nelec
         v(1,i)=fjn(1,i)
         v(2,i)=fjn(2,i)
-  110   v(3,i)=fjn(3,i)
+        v(3,i)=fjn(3,i)
+      enddo
       value=fsumn
       d2=d2n
 

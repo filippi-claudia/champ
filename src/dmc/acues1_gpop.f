@@ -61,9 +61,10 @@ c statistical fluctuations without blocking
       esum1_dmc(1)=ecollect
       efsum1=efcollect
       wfsum1=wfcollect
-      do 20 ifr=1,nforce
+      do ifr=1,nforce
         wgsum1(ifr)=wgcollect(ifr)
-   20   egsum1(ifr)=egcollect(ifr)
+        egsum1(ifr)=egcollect(ifr)
+      enddo
 
       wcum1=wcum1+wsum1(1)
       wfcum1=wfcum1+wfsum1
@@ -77,11 +78,12 @@ c statistical fluctuations without blocking
       efcm21=efcm21+efsum1**2/wfsum1
       ei3cm2=ei3cm2+(wfsum1/wdsum1)**2
 
-      do 21 ifr=1,nforce
+      do ifr=1,nforce
         wgcum1(ifr)=wgcum1(ifr)+wgsum1(ifr)
         egcum1(ifr)=egcum1(ifr)+egsum1(ifr)
         wgcm21(ifr)=wgcm21(ifr)+wgsum1(ifr)**2
-   21   egcm21(ifr)=egcm21(ifr)+egsum1(ifr)**2/wgsum1(ifr)
+        egcm21(ifr)=egcm21(ifr)+egsum1(ifr)**2/wgsum1(ifr)
+      enddo
 
 c sum1 block averages
       wsum_dmc=wsum_dmc+wsum1(1)
@@ -91,9 +93,10 @@ c sum1 block averages
       esum_dmc=esum_dmc+esum1_dmc(1)
       efsum=efsum+efsum1
       eisum=eisum+wfsum1/wdsum1
-      do 22 ifr=1,nforce
+      do ifr=1,nforce
         wgsum(ifr)=wgsum(ifr)+wgsum1(ifr)
-   22   egsum(ifr)=egsum(ifr)+egsum1(ifr)
+        egsum(ifr)=egsum(ifr)+egsum1(ifr)
+      enddo
 
 c Estimate eigenvalue of G from the energy
       ipmod=mod(ipass,nfprod)
@@ -127,11 +130,12 @@ c zero out step averages
       wfsum1=zero
       wdsum1=zero
       efsum1=zero
-      do 24 ifr=1,nforce
+      do ifr=1,nforce
         wsum1(ifr)=zero
         wgsum1(ifr)=zero
         esum1_dmc(ifr)=zero
-   24   egsum1(ifr)=zero
+        egsum1(ifr)=zero
+      enddo
 
       return
       end

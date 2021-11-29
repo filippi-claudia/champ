@@ -17,14 +17,18 @@ c  pe from nucleus-nucleus repulsion
       pe_ee=0.d0
       pe_en=0.d0
       if(iperiodic.eq.0) then
-        do 40 i=1,nelec
-          do 40 ic=1,ncent+nghostcent
-   40       if(nloc.eq.0.and.ic.le.ncent) pe=pe-znuc(iwctype(ic))/r_en(i,ic)
+        do i=1,nelec
+          do ic=1,ncent+nghostcent
+            if(nloc.eq.0.and.ic.le.ncent) pe=pe-znuc(iwctype(ic))/r_en(i,ic)
+          enddo
+        enddo
         ij=0
-        do 50 i=2,nelec
-          do 50 j=1,i-1
+        do i=2,nelec
+          do j=1,i-1
             ij=ij+1
-   50       pe=pe+1/r_ee(ij)
+            pe=pe+1/r_ee(ij)
+          enddo
+        enddo
        else
         call pot_en_ewald(x,pe_en)
         call pot_ee_ewald(x,pe_ee)

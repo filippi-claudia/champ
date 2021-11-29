@@ -146,8 +146,8 @@ c       Equilibration steps done. Zero out estimators again.
 c now do averaging steps
 
       l=0
-      do 440 i=1,vmc_nblk
-        do 430 j=1,vmc_nstep
+      do i=1,vmc_nblk
+        do j=1,vmc_nstep
         l=l+1
       !   write(ounit, *) i, nblk, j, nstep
         if (nloc.gt.0) call rotqua
@@ -162,9 +162,10 @@ c write out configuration for optimization/dmc/gfmc here
           write(7,fmt) ((xold(ii,jj),ii=1,3),jj=1,nelec),
      &    int(sign(1.d0,psido(1))),log(dabs(psido(1)))+psijo,eold(1,1)
         endif
-  430   continue
+        enddo
 
-  440 call acuest
+      call acuest
+      enddo
 
 !      call my_second(2,'all   ')
       ! Improved timers

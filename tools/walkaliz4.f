@@ -14,7 +14,7 @@ c than the old way.       Cyrus Umrigar (Mar 1992, Sep. 2001)
       read(5,*) nproc, nf
       if(nproc.gt.MPROC) stop 'nproc.gt.MPROC'
 
-      do 5 iproc=0,nproc-1
+      do iproc=0,nproc-1
         if(iproc.le.9) then
           write(filename,'(''walkalize.'',i1)') iproc
          elseif(iproc.le.99) then
@@ -35,32 +35,37 @@ c than the old way.       Cyrus Umrigar (Mar 1992, Sep. 2001)
          else
           read(11,*)
         endif
-        do 5 i=1,nskip+ndata
-    5     read(11,*) ii,f(i,iproc+1),w(i,iproc+1),e(i,iproc+1)
+        do i=1,nskip+ndata
+          read(11,*) ii,f(i,iproc+1),w(i,iproc+1),e(i,iproc+1)
+        enddo
+      enddo
 
-      do 30 if=0,nf
+      do if=0,nf
         esum=0
         wsum=0
         w2sum=0
         wgsum=0
         wdsum=0
         pow=1-1/dfloat(if+1)
-        do 20 iproc=1,nproc
+        do iproc=1,nproc
           fprod(0,iproc)=1
-          do 15 i=1,nskip+ndata
-   15       fprod(i,iproc)=fprod(i-1,iproc)**pow*f(i,iproc)
-          do 20 i=nskip+1,nskip+ndata
+          do i=1,nskip+ndata
+            fprod(i,iproc)=fprod(i-1,iproc)**pow*f(i,iproc)
+          enddo
+          do i=nskip+1,nskip+ndata
             esum=esum+fprod(i,iproc)*w(i,iproc)*e(i,iproc)
             wsum=wsum+fprod(i,iproc)*w(i,iproc)
             w2sum=w2sum+(fprod(i,iproc)*w(i,iproc))**2
             wgsum=wgsum+fprod(i-1,iproc)*f(i,iproc)*w(i,iproc)
             wdsum=wdsum+fprod(i-1,iproc)*w(i-1,iproc) 
-   20   continue
+          enddo
+        enddo
         emix=esum/wsum
         eig=wgsum/wdsum
         egro=etrial-dlog(eig)/taueff
         data=ndata*nproc
         werr=sqrt(w2sum/data-(wsum/data)**2)
-   30   write(6,'(f8.5,9f14.7)') if*taueff,emix,egro,werr
+        write(6,'(f8.5,9f14.7)') if*taueff,emix,egro,werr
+      enddo
         stop
         end

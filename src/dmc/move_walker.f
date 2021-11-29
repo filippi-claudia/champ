@@ -27,7 +27,7 @@ c Written by Claudia Filippi
      &,MPI_COMM_WORLD,irequest,ierr)
 
       itag=2
-      do 15 ifr=1,nforce
+      do ifr=1,nforce
         call mpi_isend(ajacold(nwalk,ifr),1,mpi_double_precision,irecv
      &  ,itag+1,MPI_COMM_WORLD,irequest,ierr)
         call mpi_isend(eold(nwalk,ifr),1,mpi_double_precision,irecv
@@ -49,11 +49,12 @@ c Written by Claudia Filippi
         call mpi_isend(xold_dmc(1,1,nwalk,ifr),3*nelec,mpi_double_precision
      &  ,irecv,itag+10,MPI_COMM_WORLD,irequest,ierr)
         itag=itag+10
-        do 15 ip=0,nwprod-1
+        do ip=0,nwprod-1
         itag=itag+1
         call mpi_isend(wthist(nwalk,ip,ifr),1,mpi_double_precision,irecv
      &  ,itag,MPI_COMM_WORLD,irequest,ierr)
-   15 continue
+        enddo
+      enddo
 
 c     call send_det(itag,irecv)
 c     call send_jas(itag,irecv)
@@ -76,7 +77,7 @@ c     nwalk=nwalk+1
      &,MPI_COMM_WORLD,istatus,ierr)
 
       itag=2
-      do 25 ifr=1,nforce
+      do ifr=1,nforce
         call mpi_recv(ajacold(nwalk,ifr),1,mpi_double_precision,isend
      &  ,itag+1,MPI_COMM_WORLD,istatus,ierr)
         call mpi_recv(eold(nwalk,ifr),1,mpi_double_precision,isend
@@ -98,11 +99,12 @@ c     nwalk=nwalk+1
         call mpi_recv(xold_dmc(1,1,nwalk,ifr),3*nelec,mpi_double_precision
      &  ,isend,itag+10,MPI_COMM_WORLD,istatus,ierr)
         itag=itag+10
-        do 25 ip=0,nwprod-1
+        do ip=0,nwprod-1
         itag=itag+1
         call mpi_recv(wthist(nwalk,ip,ifr),1,mpi_double_precision,isend
      &  ,itag,MPI_COMM_WORLD,istatus,ierr)
-   25 continue
+        enddo
+      enddo
 
 c     call recv_det(itag,isend)
 c     call recv_jas(itag,isend)

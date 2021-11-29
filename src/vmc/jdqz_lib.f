@@ -1754,11 +1754,11 @@ c
       iy = 1
       if(incx.lt.0)ix = (-n+1)*incx + 1
       if(incy.lt.0)iy = (-n+1)*incy + 1
-      do 10 i = 1,n
+      do i = 1,n
         dy(iy) = da*dy(iy) + dx(ix)
         ix = ix + incx
         iy = iy + incy
-   10 continue
+      enddo
       return
 c
 c        code for both increments equal to 1
@@ -1768,17 +1768,17 @@ c        clean-up loop
 c
    20 m = mod(n,4)
       if( m .eq. 0 ) go to 40
-      do 30 i = 1,m
+      do i = 1,m
         dy(i) = da*dy(i) + dx(i)
-   30 continue
+      enddo
       if( n .lt. 4 ) return
    40 mp1 = m + 1
-      do 50 i = mp1,n,4
+      do i = mp1,n,4
         dy(i) = da*dy(i) + dx(i)
         dy(i + 1) = da*dy(i + 1) + dx(i + 1)
         dy(i + 2) = da*dy(i + 2) + dx(i + 2)
         dy(i + 3) = da*dy(i + 3) + dx(i + 3)
-   50 continue
+      enddo
       return
       end
       subroutine zzeros (n, x)

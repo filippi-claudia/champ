@@ -31,7 +31,7 @@
 
       norb_f_bcum=norb_f_collect
 
-      do 60 istate=1,nstates
+      do istate=1,nstates
 
         call mpi_reduce(orb_o_cum(1,istate),collect,norbterm
      &        ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -39,8 +39,9 @@
         call mpi_bcast(collect,norbterm
      &        ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        do 10 i=1,norbterm
-   10     orb_o_cum(i,istate)=collect(i)
+        do i=1,norbterm
+          orb_o_cum(i,istate)=collect(i)
+        enddo
 
         call mpi_reduce(orb_oe_cum(1,istate),collect,norbterm
      &        ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -48,8 +49,9 @@
         call mpi_bcast(collect,norbterm
      &        ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        do 20 i=1,norbterm
-   20     orb_oe_cum(i,istate)=collect(i)
+        do i=1,norbterm
+          orb_oe_cum(i,istate)=collect(i)
+        enddo
 
         call mpi_reduce(orb_ho_cum(1,istate),collect,norbterm
      &        ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -57,8 +59,9 @@
         call mpi_bcast(collect,norbterm
      &        ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        do 30 i=1,norbterm
-   30     orb_ho_cum(i,istate)=collect(i)
+        do i=1,norbterm
+          orb_ho_cum(i,istate)=collect(i)
+        enddo
 
         call mpi_reduce(orb_f_bcum(1,istate),collect,norbterm
      &        ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -66,8 +69,9 @@
         call mpi_bcast(collect,norbterm
      &        ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        do 50 i=1,norbterm
-   50     orb_f_bcum(i,istate)=collect(i)
+        do i=1,norbterm
+          orb_f_bcum(i,istate)=collect(i)
+        enddo
 
         call mpi_reduce(orb_f_bcm2(1,istate),collect,norbterm
      &        ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -75,8 +79,10 @@
         call mpi_bcast(collect,norbterm
      &        ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        do 60 i=1,norbterm
-   60     orb_f_bcm2(i,istate)=collect(i)
+        do i=1,norbterm
+          orb_f_bcm2(i,istate)=collect(i)
+        enddo
+      enddo
 
       if(iefpsample.ne.1) then
         call mpi_reduce(orb_wcum,collect,nstates
@@ -84,43 +90,49 @@
         call mpi_bcast(collect,nstates
      &        ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        do 62 istate=1,nstates
-   62     orb_wcum(istate)=collect(istate)
+        do istate=1,nstates
+          orb_wcum(istate)=collect(istate)
+        enddo
 
         call mpi_reduce(orb_ecum,collect,nstates
      &       ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         call mpi_bcast(collect,nstates
      &        ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        do 64 istate=1,nstates
-   64     orb_ecum(istate)=collect(istate)
+        do istate=1,nstates
+          orb_ecum(istate)=collect(istate)
+        enddo
       endif
 
       if(isample_cmat.eq.0) return
 
       matdim=nreduced*(nreduced+1)/2
 
-      do 70 istate=1,nstates
+      do istate=1,nstates
         call mpi_reduce(orb_oo_cum(1,istate),collect,matdim
      &        ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
         call mpi_bcast(collect,matdim
      &        ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        do 70 i=1,matdim
-   70     orb_oo_cum(i,istate)=collect(i)
+        do i=1,matdim
+          orb_oo_cum(i,istate)=collect(i)
+        enddo
+      enddo
 
       matdim=nreduced*nreduced
 
-      do 75 istate=1,nstates
+      do istate=1,nstates
         call mpi_reduce(orb_oho_cum(1,istate),collect,matdim
      &        ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
         call mpi_bcast(collect,matdim
      &        ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        do 75 i=1,matdim
-   75     orb_oho_cum(i,istate)=collect(i)
+        do i=1,matdim
+          orb_oho_cum(i,istate)=collect(i)
+        enddo
+      enddo
 
 c these averages should be set to zero on the slaves but optorb_reduce
 c is only called at the end of run (differently than prop_reduce) and

@@ -136,7 +136,7 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
       deltri=one/deltar
 
       call check_orbitals
-      do 300 i=1,nelec
+      do i=1,nelec
 
         if(i.le.nup) then
           iab=1
@@ -170,18 +170,20 @@ c Choose lower and upper values of r sampling
         rtop=rmino(i)*deltar
 c Calculate magnitude of the velocity in the radial direction
         voldr=zero
-        do 10 ic=1,3
-   10     voldr=voldr+vold(ic,i)*rvmino(ic,i)
+        do ic=1,3
+          voldr=voldr+vold(ic,i)*rvmino(ic,i)
+        enddo
 
         voldr=voldr/rmino(i)
 
 c Place x-axis along direction of angular change and
 c Calculate the velocity in the phi direction
         voldp=zero
-        do 20 ic=1,3
+        do ic=1,3
           zaxis(ic)=rvmino(ic,i)/rmino(i)
           xaxis(ic)=vold(ic,i)-voldr*zaxis(ic)
-   20     voldp=voldp+xaxis(ic)**2
+          voldp=voldp+xaxis(ic)**2
+        enddo
         voldp=dsqrt(voldp)
         if(voldp.lt.eps) then
           xaxis(1)=eps*(one-zaxis(1)**2)
@@ -189,8 +191,9 @@ c Calculate the velocity in the phi direction
           xaxis(3)=eps*(-zaxis(1)*zaxis(3))
           voldp=eps*sqrt(one-zaxis(1)**2)
         endif
-        do 30 ic=1,3
-   30     xaxis(ic)=xaxis(ic)/voldp
+        do ic=1,3
+          xaxis(ic)=xaxis(ic)/voldp
+        enddo
 
 c Limit radial component of velocity.
 c It may be a good idea to limit it if it is positive too.
@@ -325,32 +328,35 @@ c Calculate x and y coordinates in local coordinate system
         if(rannyu(0).lt.half) yprime=-yprime
 
 c Convert back to original coordinate system
-        do 80 ic=1,3
+        do ic=1,3
           rvminno(ic,i)=xaxis(ic)*xprime+yaxis(ic)*yprime+zaxis(ic)
      &    *zprime
-   80     xnew(ic,i)=rvminno(ic,i)+cent(ic,nearo)
+          xnew(ic,i)=rvminno(ic,i)+cent(ic,nearo)
+        enddo
         rminno(i)=rtry
 
 c Do geometrical rejections for molecules
         rminn(i)=99.d9
-        do 85 j=1,ncent
+        do j=1,ncent
           dist=zero
-          do 84 ic=1,3
-   84       dist=dist+(xnew(ic,i)-cent(ic,j))**2
+          do ic=1,3
+            dist=dist+(xnew(ic,i)-cent(ic,j))**2
+          enddo
           if(dist.lt.rminn(i)) then
             rminn(i)=dist
             nearestn(i)=j
           endif
-   85     continue
+        enddo
         nearn=nearestn(i)
         rminn(i)=dsqrt(rminn(i))
         rminon(i)=zero
         dot=zero
-        do 86  ic=1,3
+        do  ic=1,3
           rvminn(ic,i)=xnew(ic,i)-cent(ic,nearestn(i))
           rvminon(ic,i)=xold(ic,i)-cent(ic,nearestn(i))
           rminon(i)=rminon(i)+rvminon(ic,i)**2
-   86     dot=dot+rvminn(ic,i)*rvminon(ic,i)
+          dot=dot+rvminn(ic,i)*rvminon(ic,i)
+        enddo
         rminon(i)=dsqrt(rminon(i))
         dot=dot/(rminn(i)*rminon(i))
         costht=dot
@@ -412,11 +418,13 @@ c calculate psi at new configuration
       psi2n(1)=2*(dlog(dabs(psig))+psijn)
 
       if(node_cutoff.ne.0) then
-        do 100 jel=1,nup
-  100     if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,vnew(1,jel),iflag_up)
+        do jel=1,nup
+          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,vnew(1,jel),iflag_up)
+        enddo
 
-        do 105 jel=nup+1,nelec
-  105     if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,vnew(1,jel),iflag_dn)
+        do jel=nup+1,nelec
+          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,vnew(1,jel),iflag_dn)
+        enddo
 
         call nodes_distance(vnew,distance_node,0)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
@@ -437,16 +445,18 @@ c Choose lower and upper values of r sampling
         rtop=rminn(i)*deltar
 c Calculate magnitude of the velocity in the radial direction
         vnewr=zero
-        do 110 ic=1,3
-  110     vnewr=vnewr+vnew(ic,i)*rvminn(ic,i)
+        do ic=1,3
+          vnewr=vnewr+vnew(ic,i)*rvminn(ic,i)
+        enddo
         vnewr=vnewr/rminn(i)
 
 c Place x-axis along direction of angular change and
 c Calculate the velocity in the phi direction
         vnewp=zero
-        do 120 ic=1,3
+        do ic=1,3
           xaxis(ic)=vnew(ic,i)-vnewr*rvminn(ic,i)/rminn(i)
-  120     vnewp=vnewp+xaxis(ic)**2
+          vnewp=vnewp+xaxis(ic)**2
+        enddo
         vnewp=dsqrt(vnewp)
         if(vnewp.lt.eps) then
           xaxis(1)=eps*(one-rvminn(1,i)**2)
@@ -454,8 +464,9 @@ c Calculate the velocity in the phi direction
           xaxis(3)=eps*(-rvminn(1,i)*rvminn(3,i))
           vnewp=eps*sqrt(one-rvminn(1,i)**2*(two-rminn(i)**2))
         endif
-        do 130 ic=1,3
-  130     xaxis(ic)=xaxis(ic)/vnewp
+        do ic=1,3
+          xaxis(ic)=xaxis(ic)/vnewp
+        enddo
 
 c Limit radial component of velocity.
 c It may be a good idea to limit it if it is positive too.
@@ -542,10 +553,11 @@ clim    term=vnewp*raver*sintht
 c Determine cos(phi)
         cosphi=zero
         rnorm=zero
-        do 160 ic=1,3
+        do ic=1,3
           term2=rvminon(ic,i)/rminon(i)-costht*rvminn(ic,i)/rminn(i)
           rnorm=rnorm+term2*term2
-  160     cosphi=cosphi+term2*xaxis(ic)
+          cosphi=cosphi+term2*xaxis(ic)
+        enddo
         cosphi=cosphi/dsqrt(rnorm)
         fxnp=fxnp*(one+term*cosphi)
 clim    fxnp=fxnp*abs(one+term*cosphi)
@@ -606,8 +618,9 @@ c and q times old, and keep track of which bin the old was in
 
       rprob(itryo)=rprob(itryo)+q
       rprob(itryn)=rprob(itryn)+p
-      do 210 ic=1,3
-  210   r2sum=r2sum+p*xnew(ic,i)**2+q*xold(ic,i)**2
+      do ic=1,3
+        r2sum=r2sum+p*xnew(ic,i)**2+q*xold(ic,i)**2
+      enddo
 
 c accept new move with probability p
 c Note when one electron moves the velocity on all electrons change.
@@ -616,13 +629,16 @@ c Note when one electron moves the velocity on all electrons change.
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)
         psi2o(1,1)=psi2n(1)
-        do 240 ic=1,3
+        do ic=1,3
           xold(ic,i)=xnew(ic,i)
-  240     rvmino(ic,i)=rvminn(ic,i)
+          rvmino(ic,i)=rvminn(ic,i)
+        enddo
         if(node_cutoff.gt.0) then
-          do 245 ic=1,3
-            do 245 ii=1,nelec
-  245         vold(ic,ii)=vnew(ic,ii)
+          do ic=1,3
+            do ii=1,nelec
+              vold(ic,ii)=vnew(ic,ii)
+            enddo
+          enddo
         endif
         do istate=1,nstates
           psido(istate)=psidn(istate)
@@ -635,22 +651,25 @@ c Note when one electron moves the velocity on all electrons change.
        else
         if(ipr.ge.1) write(ounit,*)'METROP REJECT'
         idist(i)=itryo
-        do 250 ic=1,3
-  250     xnew(ic,i)=xold(ic,i)
+        do ic=1,3
+          xnew(ic,i)=xold(ic,i)
+        enddo
         if(igeometrical.eq.0) call distancese_restore(i)
       endif
 
       call update_ymat(i)
 
-  300 continue
+      enddo
 
 
 c loop over secondary configurations
-      do 350 ifr=2,nforce
+      do ifr=2,nforce
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido(1),psijo,eold(1,ifr),ipass,ifr)
-        do 350 istate=1,nstates
-  350     psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+        do istate=1,nstates
+          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+        enddo
+      enddo
 
 
       call check_orbitals_reset
@@ -658,8 +677,9 @@ c loop over secondary configurations
 c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido(1),psijo,eold(1,1),ipass,1)
-      do 355 istate=1,nstates
-  355    psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
+      do istate=1,nstates
+         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
+      enddo
 
       if(iguiding.eq.0) then
         psidg=psido(1)
@@ -674,8 +694,9 @@ c primary configuration
 
       rnorm_nodes=1.d0
       if(node_cutoff.gt.0) then
-        do 356 jel=1,nelec
-  356     call compute_determinante_grad(jel,psidg,psido(1),vold(1,jel),1)
+        do jel=1,nelec
+          call compute_determinante_grad(jel,psidg,psido(1),vold(1,jel),1)
+        enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
         psidg=psido(1)*rnorm_nodes
@@ -687,7 +708,7 @@ c primary configuration
         distance_node_sum=distance_node_sum+distance_node
       endif
 
-      do 360 istate=1,nstates
+      do istate=1,nstates
         wtg(istate)=psido(istate)/psidg
         wtg(istate)=wtg(istate)*wtg(istate)
 
@@ -697,7 +718,8 @@ c form expected values of e, pe, etc.
         esum(istate,1)=esum(istate,1)+eold(istate,1)*wtg(istate)
         pesum(istate)=pesum(istate)+peo(istate)*wtg(istate)
         tpbsum(istate)=tpbsum(istate)+(eold(istate,1)-peo(istate))*wtg(istate)
-  360   tjfsum(istate)=tjfsum(istate)+tjfoo*wtg(istate)
+        tjfsum(istate)=tjfsum(istate)+tjfoo*wtg(istate)
+      enddo
 
       if(ipr.gt.1) write(ounit,'(''energy reweighted '',d12.4)') eold(1,1)*wtg(1)
 
@@ -726,19 +748,23 @@ c use 'new' not 'old' value
 
       call acues1(wtg)
 
-      do 370 istate=1,nstates
-  370   esum1(istate)=eold(istate,1)
+      do istate=1,nstates
+        esum1(istate)=eold(istate,1)
+      enddo
       call acusig(wtg)
 
-      do 380 ifr=2,nforce
-        do 380 istate=1,nstates
+      do ifr=2,nforce
+        do istate=1,nstates
           wstro=exp(psi2o(istate,ifr)-psi2o(istate,1))*wtg(istate)
           esum(istate,ifr)=esum(istate,ifr)+eold(istate,ifr)*wstro
-  380     wsum(istate,ifr)=wsum(istate,ifr)+wstro
-      do 390 i=1,nelec
+          wsum(istate,ifr)=wsum(istate,ifr)+wstro
+        enddo
+      enddo
+      do i=1,nelec
         dtdx2o(i)=dtdx2n(i)
         ekin(idist(i))=ekin(idist(i))+dtdx2o(i)*wtg(1)
-  390   ekin2(idist(i))=ekin2(idist(i))+dtdx2o(i)**2*wtg(1)
+        ekin2(idist(i))=ekin2(idist(i))+dtdx2o(i)**2*wtg(1)
+      enddo
 
 c rewrite psi2o for next metropolis step if you are sampling guiding
       if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)

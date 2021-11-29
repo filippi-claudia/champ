@@ -23,7 +23,7 @@ c compute gauss-pseudopotential for electron iel
 
 
 
-      do 10 ic=1,ncent
+      do ic=1,ncent
         ict=iwctype(ic)
 
         r=max(1.0d-10,r_en(iel,ic))
@@ -35,19 +35,22 @@ c local potential
         call gauss_pot(r,lpot(ict),ict,vpot,dvpot)
         vpot=vpot-znuc(ict)*ri
         vps(iel,ic,lpot(ict))=vpot
-        do 5 k=1,3
+        do k=1,3
           reni=rvec_en(k,iel,ic)*ri
-    5     da_vps(k,iel,ic,lpot(ict))=-(dvpot+znuc(ict)*ri2)*reni
+          da_vps(k,iel,ic,lpot(ict))=-(dvpot+znuc(ict)*ri2)*reni
+        enddo
 c non-local pseudopotential
-        do 10 l=1,lpot(ict)-1
+        do l=1,lpot(ict)-1
          vpot=0.d0
          dvpot=0.d0
          call gauss_pot(r,l,ict,vpot,dvpot)
          vps(iel,ic,l)=vpot
-         do 10 k=1,3
+         do k=1,3
           reni=rvec_en(k,iel,ic)*ri
           da_vps(k,iel,ic,l)=-dvpot*reni
-   10 continue
+         enddo
+        enddo
+      enddo
 
 c     do ic=1,ncent
 c       write(ounit,*) 'HELLO_GAUSS',da_vps(1,iel,ic,lpot(iwctype(ic)))

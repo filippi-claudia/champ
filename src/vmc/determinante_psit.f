@@ -20,7 +20,7 @@ c-----------------------------------------------------------------------
 
       determ=0
 
-      do 110 k=1,ndet
+      do k=1,ndet
         if(iel.le.nup) then
           det=detn(k)*detiab(k,2)
          else
@@ -28,7 +28,7 @@ c-----------------------------------------------------------------------
         endif
 
         determ=determ+det*cdet(k,istate,iwf)
-  110 continue
+      enddo
 
       return
       end
