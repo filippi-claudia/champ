@@ -252,12 +252,15 @@ c     set n- and e-coords and n-n potentials before getting wavefn. etc.
          psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(istate))
       enddo
 
-      if(iguiding.gt.0) then
-         call determinant_psig(psido,psijo,psig)
+      if(iguiding.eq.0) then
+        psidg=psido(1)
+        psig=psido(1)*exp(psijo(1))
+       else
+        call determinant_psig(psido,psijo,psig)
 c     rewrite psi2o if you are sampling guiding
-         psi2o(1,1)=2*(dlog(dabs(psig)))
+        psi2o(1,1)=2*(dlog(dabs(psig)))
       endif
-
+         
       if(ipr.gt.1) then
          write(6,'(''psid(istate), psig='',10d12.4)') (psido(istate),istate=1,nstates),psig
          write(6,'(''psid2o='',f9.4)') psi2o(1,1)
@@ -265,7 +268,7 @@ c     rewrite psi2o if you are sampling guiding
 
       if(node_cutoff.gt.0) then
          do jel=1,nelec
-            call compute_determinante_grad(jel,psido,psido,vold(1,jel),1)
+            call compute_determinante_grad(jel,psig,psido,psijo,vold(1,jel),1)
          enddo
 
          call nodes_distance(vold,distance_node,1)
