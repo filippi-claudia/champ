@@ -360,7 +360,7 @@ c calculate psi at new configuration
         do 105 jel=nup+1,nelec
   105     if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,psijn,vnew(1,jel),iflag_dn)
 
-        call nodes_distance(vnew,distance_node,0)
+        call nodes_distance(vnew,distance_node,0,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
 
         psi2n(1)=psi2n(1)+2*dlog(rnorm_nodes)
@@ -615,7 +615,7 @@ c primary configuration
       if(node_cutoff.gt.0) then
         do 356 jel=1,nelec
   356     call compute_determinante_grad(jel,psig,psido(1),psijo,vold(1,jel),1)
-        call nodes_distance(vold,distance_node,1)
+        call nodes_distance(vold,distance_node,1,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
         psig=psig*rnorm_nodes
         if(ipr.gt.1) then
