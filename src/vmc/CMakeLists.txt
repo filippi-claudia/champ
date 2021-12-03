@@ -202,52 +202,6 @@ if (MPI_Fortran_FOUND)
   # - shared_modules: all .f90 modules that must be compiled first.
   # - shared_objects: rest of shared objects (.f90/.f).
   # --------------------------------------------------------------------
-  set(SHARED_MODULES
-    m_kinds.f90
-    m_basis.f90
-    m_common.f90
-    m_periodic_table.F90
-    m_atom.f90
-    m_timer.f90
-    m_det.f90
-    m_coefs.f90
-    m_constant.f90
-    m_control.f90
-    m_force.f90
-    m_mstates.f90
-    m_mpi.f90
-    m_optci.f90
-    m_pseudo.f90
-    m_sampling.f90
-    m_sr.f90
-    m_dmc.f90
-    m_vmc.f90
-    m_grid.f90
-    m_pcm.f90
-    m_ewald.f90
-    m_jastrow.f90
-    m_mmpol.f90
-    m_optorb.f90
-    m_prop.f90
-    m_efield.f90
-    m_gradhess.f90
-    m_optwf.f90
-    m_estimators.f90
-    m_deriv.f90
-    m_mixderiv.f90
-    m_input.f90
-    m_grdnt.f90
-    m_allocation.f90
-    m_state_avrg.f90
-    ${CMAKE_PARSER_DIR}/fdf.F90
-    ${CMAKE_PARSER_DIR}/io_fdf.F90
-    ${CMAKE_PARSER_DIR}/parse.F90
-    ${CMAKE_PARSER_DIR}/prec.F90
-    ${CMAKE_PARSER_DIR}/utils.F90)
-
-    if (TREXIO_FOUND)
-      list(APPEND SHARED_MODULES trexio_f.f90)
-    endif()
 
   set(SHARED_OBJECTS
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr.f90
@@ -372,13 +326,15 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f)
   endif()
 
-  add_library(shared_modules OBJECT ${SHARED_MODULES})
-  target_compile_options(shared_modules
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
+
 
   add_library(shared_objects OBJECT ${SHARED_OBJECTS})
+
+  #  Add headers
+  target_include_directories(shared_objects
+  PUBLIC
+  ${CMAKE_SOURCE_DIR}/build/src/module
+  )
 
   target_compile_options(shared_objects
     PRIVATE
@@ -387,6 +343,7 @@ if (MPI_Fortran_FOUND)
 
   # add_dependencies(shared_objects parser)
   add_dependencies(shared_objects shared_modules)
+
   # --------------------------------------------------------------------
   # Remove code that has been already compiled:
   # --------------------------------------------------------------------
@@ -414,6 +371,13 @@ if (MPI_Fortran_FOUND)
     # source that is not already included in the objects
     ${VMC_SOURCE}
     ${VMC90_SOURCE})
+
+  #  Add headers
+  target_include_directories(vmc.mov1
+  PUBLIC
+  ${CMAKE_SOURCE_DIR}/build/src/module
+  )
+
 
   # compilation
   target_compile_options(vmc.mov1
