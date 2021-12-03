@@ -1,4 +1,4 @@
-      subroutine setrn(iseed)
+      subroutine setrn_(iseed)
 c NYU linear congruential random number generator.
 c Uses 48 bits, rather than the usual 32 bits.
 
@@ -15,6 +15,24 @@ c Uses 48 bits, rather than the usual 32 bits.
       ll(4)=2*(ll(4)/2)+1
       return
       end
+c----------------------------------------------
+      subroutine setrn(iseed)
+      implicit none
+      integer, intent(in) :: iseed(4)
+      integer size
+      integer, allocatable :: new_seed(:)
+
+
+      call random_seed(size = size)
+      allocate(new_seed(size))
+
+      new_seed = iseed(1)
+      call random_seed(put=new_seed)
+
+      deallocate(new_seed)
+      return
+      end
+
 c-----------------------------------------------------------------------
 
 c     function rannyu(idum)
@@ -38,8 +56,20 @@ c    &       two**(-12)*(dfloat(l4)))))
 c     return
 c     end
 
-c-----------------------------------------------------------------------
+c----------------------------------------------------------------------
+
       function rannyu(idum)
+      use precision_kinds, only: dp
+      implicit none
+      integer, intent(in) :: idum
+
+      real(dp) :: rannyu
+      call random_number(rannyu)
+      return
+      end
+
+c-----------------------------------------------------------------------
+      function rannyu_(idum)
       use rnyucm, only: ll, mm
 
       use precision_kinds, only: dp
@@ -50,7 +80,7 @@ c-----------------------------------------------------------------------
       integer, parameter :: itwo12 = 4096
 
       real(dp), parameter :: two12i = 2.44140625d-4
-      real(dp) :: rannyu
+      real(dp) :: rannyu_
 
 c     On bat it is more efficient to not precompute 2**12 and 2**-12
 c     Therefore use original verion of code instead of this one.
@@ -64,7 +94,7 @@ c     Therefore use original verion of code instead of this one.
       i2=i2+i3/itwo12
       ll(2)=mod(i2,itwo12)
       ll(1)=mod(i1+i2/itwo12,itwo12)
-      rannyu=two12i *(dfloat(ll(1))+
+      rannyu_=two12i *(dfloat(ll(1))+
      &       two12i*(dfloat(ll(2))+
      &       two12i*(dfloat(ll(3))+
      &       two12i*(dfloat(ll(4))))))
