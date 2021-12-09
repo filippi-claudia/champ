@@ -318,7 +318,7 @@ jobs:
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_noopt_cas44.inp  -o vmc_noopt_cas44_double.out  -e error
 
         echo "Comparing the energy with the reference one (total E = -26.1772303  0.0308416) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_noopt_cas44_double.out "total E" -26.1772303  0.0308416 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py vmc_noopt_cas44_double.out "total E" -26.1772303  0.0308416
     # - name: "Upload results of test 12"
     #   uses: actions/upload-artifact@v2
     #   with:
@@ -372,7 +372,7 @@ jobs:
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
         echo "Comparing the energy with the reference one (total E = -25.6627410 +-  0.0637334) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.6627410  0.0637334 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.6627410  0.0637334
     # - name: "Upload results of test 13"
     #   uses: actions/upload-artifact@v2
     #   with:
@@ -390,7 +390,7 @@ jobs:
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
         echo "Comparing the energy with the reference one (total E = -25.2188005 +-  0.0379450) "
-        $HOME/work/champ/champ/tools/compare_value.py --no_assert vmc_sr_opt_geom.out "total E" -25.2188005  0.0379450
+        $HOME/work/champ/champ/tools/compare_value.py  vmc_sr_opt_geom.out "total E" -25.2188005  0.0379450
     # - name: "Upload results of test 14"
     #   uses: actions/upload-artifact@v2
     #   with:
