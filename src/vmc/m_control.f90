@@ -151,7 +151,7 @@ module contrldmc
 contains
     subroutine allocate_contrldmc()
         use force_mod, only: MFORCE
-        if (.not. allocated(taueff)) allocate (taueff(MFORCE))
+        if (.not. allocated(taueff)) allocate (taueff(MFORCE), source=0.0_dp)
     end subroutine allocate_contrldmc
 
     subroutine deallocate_contrldmc()
@@ -231,6 +231,7 @@ contains
 
         argcount = command_argument_count()
         if ( .not. allocated(arg)) allocate(arg(12))
+        arg = ""
         do i = 1, argcount
             call get_command_argument(i, arg(i))
         end do

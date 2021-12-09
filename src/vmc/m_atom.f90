@@ -20,9 +20,9 @@ module atom
 contains
     subroutine allocate_atom()
 
-        if (.not. allocated(cent)) allocate (cent(3, ncent_tot))
-        if (.not. allocated(znuc)) allocate (znuc(nctype_tot))
-        if (.not. allocated(iwctype)) allocate (iwctype(nctype_tot))
+        if (.not. allocated(cent)) allocate (cent(3, ncent_tot), source=0.0_dp)
+        if (.not. allocated(znuc)) allocate (znuc(nctype_tot), source=0.0_dp)
+        if (.not. allocated(iwctype)) allocate (iwctype(nctype_tot), source=0)
         if (.not. allocated(symbol)) allocate (symbol(ncent_tot))
     end subroutine allocate_atom
 

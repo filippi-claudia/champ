@@ -22,10 +22,10 @@ contains
         integer :: i
 
         ! initial setup upon first call
-        allocate(s(history_size, num_pars))
-        allocate(y(history_size, num_pars))
-        allocate(gradient_prev(num_pars))
-        allocate(parms_prev(num_pars))
+        allocate(s(history_size, num_pars), source=0.0_dp)
+        allocate(y(history_size, num_pars), source=0.0_dp)
+        allocate(gradient_prev(num_pars), source=0.0_dp)
+        allocate(parms_prev(num_pars), source=0.0_dp)
 
         gradient_prev = (/(eps_zero, i=1, num_pars)/)
         parms_prev = (/(eps_zero, i=1, num_pars)/)
@@ -42,7 +42,7 @@ contains
         
         ! local data
         real(dp), allocatable :: p(:)
-        allocate(p(n))
+        allocate(p(n), source=0.0_dp)
 
         n = size(s(1, :))
 
@@ -86,10 +86,10 @@ contains
         m = size(s(:, 1)) ! history size
 
         ! allocate return value
-        allocate(initial_direction(n))
+        allocate(initial_direction(n), source=0.0_dp)
 
         ! allocate local data
-        allocate(alphas(min(m, iteration)))
+        allocate(alphas(min(m, iteration)), source=0.0_dp)
 
         ! perform hessian approximation using history
         initial_direction = -gradient(1:n)

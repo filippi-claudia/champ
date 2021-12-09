@@ -110,17 +110,17 @@ module coords_int
 !      endif
 !    enddo
 
-    allocate (b(num_int, num_cart))
-    allocate (binv(num_cart, num_int))
-    if (project) allocate (p(num_int, num_int))
+    allocate (b(num_int, num_cart), source=0.0_8)
+    allocate (binv(num_cart, num_int), source=0.0_8)
+    if (project) allocate (p(num_int, num_int), source=0.0_8)
 
-    allocate (int_gradients(num_int))
-    allocate (int_step(num_int))
-    allocate (int_coords(num_int))
+    allocate (int_gradients(num_int), source=0.0_8)
+    allocate (int_step(num_int), source=0.0_8)
+    allocate (int_coords(num_int), source=0.0_8)
 
-    allocate (cart_gradients(num_cart))
+    allocate (cart_gradients(num_cart), source=0.0_8)
 
-    allocate (h(num_int, num_int))
+    allocate (h(num_int, num_int), source=0.0_8)
     call optgeo_diagonal_scaled (h, num_centers, 2 * num_centers - 2)
 
     initialized = .true.
@@ -343,14 +343,14 @@ module coords_int
     ! computes the inverse of B -> B^+
     !
     allocate (a, source=b)
-    allocate (s(num_int))
-    allocate (u(num_cart, num_cart))
+    allocate (s(num_int), source=0.0_8)
+    allocate (u(num_cart, num_cart), source=0.0_8)
     u=0d0
     do i=1,num_cart
       u(i,i) = 1d0
     enddo
-    allocate (work(1))
-    allocate (iwork(1))
+    allocate (work(1), source=0.0_8)
+    allocate (iwork(1), source=0)
 
     ! queries for work space size
     call dgelsd (num_int, num_cart, num_int, a, num_int, u, num_cart, s, rcond, irank, work, lwork, iwork, info)
@@ -362,10 +362,10 @@ module coords_int
     ! allocates optimal work and iwork
     lwork = int (work(1))
     deallocate (work)
-    allocate (work(lwork))
+    allocate (work(lwork), source=0.0_8)
     liwork = iwork(1)
     deallocate (iwork)
-    allocate (iwork(liwork))
+    allocate (iwork(liwork), source=0)
 
 
     call dgelsd (num_int, num_cart, num_int, a, num_int, u, num_cart, s, rcond, irank, work, lwork, iwork, info)
@@ -376,7 +376,7 @@ module coords_int
     end if
 
     ! extracts pseudo-inverse
-    allocate (btinv(num_int, num_cart))
+    allocate (btinv(num_int, num_cart), source=0.0_8)
     binv = u(1:num_cart, 1:num_int) ! save for later
     btinv = transpose(binv)
 

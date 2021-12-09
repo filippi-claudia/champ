@@ -27,9 +27,9 @@ contains
     end subroutine set_gradhess_all_size
 
     subroutine allocate_gradhess_all()
-        if (.not. allocated(grad)) allocate (grad(nparmall))
-        if (.not. allocated(h)) allocate (h(nparmall, nparmall))
-        if (.not. allocated(s)) allocate (s(nparmall, nparmall))
+        if (.not. allocated(grad)) allocate (grad(nparmall), source=0.0_dp)
+        if (.not. allocated(h)) allocate (h(nparmall, nparmall), source=0.0_dp)
+        if (.not. allocated(s)) allocate (s(nparmall, nparmall), source=0.0_dp)
     end subroutine allocate_gradhess_all
 
     subroutine deallocate_gradhess_all()
@@ -69,18 +69,18 @@ contains
     subroutine allocate_gradhessj()
         use optwf_parms, only: nparmj
         use mstates_mod, only: MSTATES
-        if (.not. allocated(d2j)) allocate (d2j(nparmj, nparmj, MSTATES))
-        if (.not. allocated(d2j_e)) allocate (d2j_e(nparmj, nparmj, MSTATES))
-        if (.not. allocated(de)) allocate (de(nparmj, MSTATES))
-        if (.not. allocated(de_de)) allocate (de_de(nparmj, nparmj, MSTATES))
-        if (.not. allocated(de_e)) allocate (de_e(nparmj, MSTATES))
-        if (.not. allocated(dj)) allocate (dj(nparmj, MSTATES))
-        if (.not. allocated(dj_de)) allocate (dj_de(nparmj, nparmj, MSTATES))
-        if (.not. allocated(dj_dj)) allocate (dj_dj(nparmj, nparmj, MSTATES))
-        if (.not. allocated(dj_dj_e)) allocate (dj_dj_e(nparmj, nparmj, MSTATES))
-        if (.not. allocated(dj_e)) allocate (dj_e(nparmj, MSTATES))
-        if (.not. allocated(dj_e2)) allocate (dj_e2(nparmj, MSTATES))
-        if (.not. allocated(e2)) allocate (e2(nparmj, MSTATES))
+        if (.not. allocated(d2j)) allocate (d2j(nparmj, nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(d2j_e)) allocate (d2j_e(nparmj, nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(de)) allocate (de(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(de_de)) allocate (de_de(nparmj, nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(de_e)) allocate (de_e(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(dj)) allocate (dj(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(dj_de)) allocate (dj_de(nparmj, nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(dj_dj)) allocate (dj_dj(nparmj, nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(dj_dj_e)) allocate (dj_dj_e(nparmj, nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(dj_e)) allocate (dj_e(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(dj_e2)) allocate (dj_e2(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(e2)) allocate (e2(nparmj, MSTATES), source=0.0_dp)
     end subroutine allocate_gradhessj
 
     subroutine deallocate_gradhessj()
@@ -124,12 +124,12 @@ contains
         use atom, only: nctype_tot
         use optwf_parms, only: nparmj
         use mstates_mod, only: MSTATES
-        if (.not. allocated(d1d2a_old)) allocate (d1d2a_old(nctype_tot))
-        if (.not. allocated(d1d2b_old)) allocate (d1d2b_old(2))
-        if (.not. allocated(d2d2a_old)) allocate (d2d2a_old(nctype_tot))
-        if (.not. allocated(d2d2b_old)) allocate (d2d2b_old(2))
-        if (.not. allocated(denergy_old)) allocate (denergy_old(nparmj, MSTATES))
-        if (.not. allocated(gvalue_old)) allocate (gvalue_old(nparmj))
+        if (.not. allocated(d1d2a_old)) allocate (d1d2a_old(nctype_tot), source=0.0_dp)
+        if (.not. allocated(d1d2b_old)) allocate (d1d2b_old(2), source=0.0_dp)
+        if (.not. allocated(d2d2a_old)) allocate (d2d2a_old(nctype_tot), source=0.0_dp)
+        if (.not. allocated(d2d2b_old)) allocate (d2d2b_old(2), source=0.0_dp)
+        if (.not. allocated(denergy_old)) allocate (denergy_old(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(gvalue_old)) allocate (gvalue_old(nparmj), source=0.0_dp)
     end subroutine allocate_gradhessjo
 
     subroutine deallocate_gradhessjo()
@@ -161,9 +161,9 @@ module gradhess_ci
 contains
     subroutine allocate_gradhess_ci()
         use optci, only: mxciterm, mxcireduced
-        if (.not. allocated(grad_ci)) allocate (grad_ci(mxciterm))
-        if (.not. allocated(h_ci)) allocate (h_ci(mxciterm, mxcireduced))
-        if (.not. allocated(s_ci)) allocate (s_ci(mxciterm, mxcireduced))
+        if (.not. allocated(grad_ci)) allocate (grad_ci(mxciterm), source=0.0_dp)
+        if (.not. allocated(h_ci)) allocate (h_ci(mxciterm, mxcireduced), source=0.0_dp)
+        if (.not. allocated(s_ci)) allocate (s_ci(mxciterm, mxcireduced), source=0.0_dp)
     end subroutine allocate_gradhess_ci
 
     subroutine deallocate_gradhess_ci()
@@ -192,9 +192,9 @@ module gradhess_jas
 contains
     subroutine allocate_gradhess_jas()
         use optwf_parms, only: nparmj
-        if (.not. allocated(grad_jas)) allocate (grad_jas(nparmj))
-        if (.not. allocated(h_jas)) allocate (h_jas(nparmj, nparmj))
-        if (.not. allocated(s_jas)) allocate (s_jas(nparmj, nparmj))
+        if (.not. allocated(grad_jas)) allocate (grad_jas(nparmj), source=0.0_dp)
+        if (.not. allocated(h_jas)) allocate (h_jas(nparmj, nparmj), source=0.0_dp)
+        if (.not. allocated(s_jas)) allocate (s_jas(nparmj, nparmj), source=0.0_dp)
     end subroutine allocate_gradhess_jas
 
     subroutine deallocate_gradhess_jas()
@@ -224,8 +224,8 @@ contains
     subroutine allocate_gradhess_mix_jas_ci()
         use optwf_parms, only: nparmj
         use optci, only: mxciterm
-        if (.not. allocated(h_mix_jas_ci)) allocate (h_mix_jas_ci(2*nparmj, mxciterm))
-        if (.not. allocated(s_mix_jas_ci)) allocate (s_mix_jas_ci(nparmj, mxciterm))
+        if (.not. allocated(h_mix_jas_ci)) allocate (h_mix_jas_ci(2*nparmj, mxciterm), source=0.0_dp)
+        if (.not. allocated(s_mix_jas_ci)) allocate (s_mix_jas_ci(nparmj, mxciterm), source=0.0_dp)
     end subroutine allocate_gradhess_mix_jas_ci
 
     subroutine deallocate_gradhess_mix_jas_ci()
@@ -254,8 +254,8 @@ contains
     subroutine allocate_gradhess_mix_jas_orb()
         use optorb_mod, only: mxreduced
         use optwf_parms, only: nparmj
-        if (.not. allocated(h_mix_jas_orb)) allocate (h_mix_jas_orb(2*nparmj, mxreduced))
-        if (.not. allocated(s_mix_jas_orb)) allocate (s_mix_jas_orb(nparmj, mxreduced))
+        if (.not. allocated(h_mix_jas_orb)) allocate (h_mix_jas_orb(2*nparmj, mxreduced), source=0.0_dp)
+        if (.not. allocated(s_mix_jas_orb)) allocate (s_mix_jas_orb(nparmj, mxreduced), source=0.0_dp)
     end subroutine allocate_gradhess_mix_jas_orb
 
     subroutine deallocate_gradhess_mix_jas_orb()
@@ -284,8 +284,8 @@ contains
     subroutine allocate_gradhess_mix_orb_ci()
         use optorb_mod, only: mxreduced
         use optci, only: mxciterm
-        if (.not. allocated(h_mix_ci_orb)) allocate (h_mix_ci_orb(2*mxciterm, mxreduced))
-        if (.not. allocated(s_mix_ci_orb)) allocate (s_mix_ci_orb(mxciterm, mxreduced))
+        if (.not. allocated(h_mix_ci_orb)) allocate (h_mix_ci_orb(2*mxciterm, mxreduced), source=0.0_dp)
+        if (.not. allocated(s_mix_ci_orb)) allocate (s_mix_ci_orb(mxciterm, mxreduced), source=0.0_dp)
     end subroutine allocate_gradhess_mix_orb_ci
 
     subroutine deallocate_gradhess_mix_orb_ci()
@@ -319,13 +319,13 @@ contains
     subroutine allocate_gradjerr()
         use optwf_parms, only: nparmj
         use mstates_mod, only: MSTATES
-        if (.not. allocated(dj_bsum)) allocate (dj_bsum(nparmj, MSTATES))
-        if (.not. allocated(dj_e_bsum)) allocate (dj_e_bsum(nparmj, MSTATES))
-        if (.not. allocated(dj_e_save)) allocate (dj_e_save(nparmj, MSTATES))
-        if (.not. allocated(dj_save)) allocate (dj_save(nparmj, MSTATES))
-        if (.not. allocated(e_bsum)) allocate (e_bsum(MSTATES))
-        if (.not. allocated(grad_jas_bcm2)) allocate (grad_jas_bcm2(nparmj, MSTATES))
-        if (.not. allocated(grad_jas_bcum)) allocate (grad_jas_bcum(nparmj, MSTATES))
+        if (.not. allocated(dj_bsum)) allocate (dj_bsum(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(dj_e_bsum)) allocate (dj_e_bsum(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(dj_e_save)) allocate (dj_e_save(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(dj_save)) allocate (dj_save(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(e_bsum)) allocate (e_bsum(MSTATES), source=0.0_dp)
+        if (.not. allocated(grad_jas_bcm2)) allocate (grad_jas_bcm2(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(grad_jas_bcum)) allocate (grad_jas_bcum(nparmj, MSTATES), source=0.0_dp)
     end subroutine allocate_gradjerr
 
     subroutine deallocate_gradjerr()

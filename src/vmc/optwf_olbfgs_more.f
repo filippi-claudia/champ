@@ -18,8 +18,8 @@
       real(dp), dimension(1), allocatable :: parameters_old(:)
       real(dp), dimension(1), allocatable :: parms_lbfgs(:)
 
-      allocate(parameters_old(nparm))
-      allocate(parms_lbfgs(nparm))
+      allocate(parameters_old(nparm), source=0.0_dp)
+      allocate(parms_lbfgs(nparm), source=0.0_dp)
 
       parms_lbfgs = parameters(1:nparm)
       parameters_old = parms_lbfgs

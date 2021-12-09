@@ -33,9 +33,9 @@ contains
         use pseudo_mod, only: MPS_L
         use force_mod, only: MFORCE
 
-        if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
-        if (.not. allocated(vps)) allocate (vps(nelec, ncent_tot, MPS_L))
-        if (.not. allocated(vpso)) allocate (vpso(nelec, ncent_tot, MPS_L, MFORCE))
+        if (.not. allocated(lpot)) allocate (lpot(nctype_tot), source=0)
+        if (.not. allocated(vps)) allocate (vps(nelec, ncent_tot, MPS_L), source=0.0_dp)
+        if (.not. allocated(vpso)) allocate (vpso(nelec, ncent_tot, MPS_L, MFORCE), source=0.0_dp)
     end subroutine allocate_pseudo
 
     subroutine deallocate_pseudo()
@@ -63,9 +63,9 @@ contains
     subroutine allocate_pseudo_champ()
         use atom, only: nctype_tot
 
-        if (.not. allocated(igrid_ps)) allocate (igrid_ps(nctype_tot))
-        if (.not. allocated(rmax_coul)) allocate (rmax_coul(nctype_tot))
-        if (.not. allocated(rmax_nloc)) allocate (rmax_nloc(nctype_tot))
+        if (.not. allocated(igrid_ps)) allocate (igrid_ps(nctype_tot), source=0)
+        if (.not. allocated(rmax_coul)) allocate (rmax_coul(nctype_tot), source=0.0_dp)
+        if (.not. allocated(rmax_nloc)) allocate (rmax_nloc(nctype_tot), source=0.0_dp)
     end subroutine allocate_pseudo_champ
 
     subroutine deallocate_pseudo_champ()
@@ -99,13 +99,13 @@ contains
         use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MPS_GRID
 
-        if (.not. allocated(drad)) allocate (drad(nctype_tot))
-        if (.not. allocated(dradl)) allocate (dradl(nctype_tot))
-        if (.not. allocated(nlrad)) allocate (nlrad(nctype_tot))
-        if (.not. allocated(npotl)) allocate (npotl(nctype_tot))
-        if (.not. allocated(potl)) allocate (potl(MPS_GRID, nctype_tot))
-        if (.not. allocated(ptnlc)) allocate (ptnlc(MPS_GRID, nctype_tot, MPS_L))
-        if (.not. allocated(rcmax)) allocate (rcmax(nctype_tot))
+        if (.not. allocated(drad)) allocate (drad(nctype_tot), source=0.0_dp)
+        if (.not. allocated(dradl)) allocate (dradl(nctype_tot), source=0.0_dp)
+        if (.not. allocated(nlrad)) allocate (nlrad(nctype_tot), source=0)
+        if (.not. allocated(npotl)) allocate (npotl(nctype_tot), source=0)
+        if (.not. allocated(potl)) allocate (potl(MPS_GRID, nctype_tot), source=0.0_dp)
+        if (.not. allocated(ptnlc)) allocate (ptnlc(MPS_GRID, nctype_tot, MPS_L), source=0.0_dp)
+        if (.not. allocated(rcmax)) allocate (rcmax(nctype_tot), source=0.0_dp)
     end subroutine allocate_pseudo_fahy
 
     subroutine deallocate_pseudo_fahy()
@@ -145,15 +145,15 @@ contains
         use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MPS_GRID
 
-        if (.not. allocated(arg)) allocate (arg(nctype_tot))
-        if (.not. allocated(arg_ps)) allocate (arg_ps(nctype_tot))
-        if (.not. allocated(d2pot)) allocate (d2pot(MPS_GRID, nctype_tot, MPS_L))
-        if (.not. allocated(nr_ps)) allocate (nr_ps(nctype_tot))
-        if (.not. allocated(r0)) allocate (r0(nctype_tot))
-        if (.not. allocated(r0_ps)) allocate (r0_ps(nctype_tot))
-        if (.not. allocated(rmax)) allocate (rmax(nctype_tot))
-        if (.not. allocated(rmax_ps)) allocate (rmax_ps(nctype_tot))
-        if (.not. allocated(vpseudo)) allocate (vpseudo(MPS_GRID, nctype_tot, MPS_L))
+        if (.not. allocated(arg)) allocate (arg(nctype_tot), source=0.0_dp)
+        if (.not. allocated(arg_ps)) allocate (arg_ps(nctype_tot), source=0.0_dp)
+        if (.not. allocated(d2pot)) allocate (d2pot(MPS_GRID, nctype_tot, MPS_L), source=0.0_dp)
+        if (.not. allocated(nr_ps)) allocate (nr_ps(nctype_tot), source=0)
+        if (.not. allocated(r0)) allocate (r0(nctype_tot), source=0.0_dp)
+        if (.not. allocated(r0_ps)) allocate (r0_ps(nctype_tot), source=0.0_dp)
+        if (.not. allocated(rmax)) allocate (rmax(nctype_tot), source=0.0_dp)
+        if (.not. allocated(rmax_ps)) allocate (rmax_ps(nctype_tot), source=0.0_dp)
+        if (.not. allocated(vpseudo)) allocate (vpseudo(MPS_GRID, nctype_tot, MPS_L), source=0.0_dp)
     end subroutine allocate_pseudo_tm
 
     subroutine deallocate_pseudo_tm()

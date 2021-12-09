@@ -387,7 +387,7 @@ subroutine parser
   energy_tol    = fdf_get('energy_tol', 1.d-3)
   dparm_norm_min = fdf_get('dparm_norm_min', 1.0d0)
 ! attention needed here.
-  if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
+  if (.not. allocated(add_diag)) allocate (add_diag(MFORCE), source=0.0_dp)
   add_diag(1)   = fdf_get('add_diag',1.d-6)
 
   nopt_iter     = fdf_get('nopt_iter',6)
@@ -998,9 +998,9 @@ subroutine parser
     error stop
   else
     if( (method(1:3) == 'lin')) then
-      if (.not. allocated(zex)) allocate (zex(nbasis, 3))
+      if (.not. allocated(zex)) allocate (zex(nbasis, 3), source=0.0_dp)
     else
-      if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
+      if (.not. allocated(zex)) allocate (zex(nbasis, nwftype), source=0.0_dp)
     endif
     zex = 1   ! debug check condition about numr == 0
   endif
@@ -1045,8 +1045,8 @@ subroutine parser
           call read_bas_num(iwft)
         enddo
         ! See if this is really allocated at this point
-        if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
-        if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
+        if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot), source=0)
+        if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot), source=0)
         ibas0(1)=1
         ibas1(1)=nbastyp(iwctype(1))
         do ic=2,ncent
@@ -1226,8 +1226,8 @@ subroutine parser
       write(ounit, *) "Guiding function: square root of sum of squares"
 
       ! Part which handles the guiding weights
-      if (.not. allocated(weights_g)) allocate (weights_g(MSTATES))
-      if (.not. allocated(iweight_g)) allocate (iweight_g(MSTATES))
+      if (.not. allocated(weights_g)) allocate (weights_g(MSTATES), source=0.0_dp)
+      if (.not. allocated(iweight_g)) allocate (iweight_g(MSTATES), source=0)
 
       if ( fdf_islreal('weights_guiding') .and. fdf_islist('weights_guiding') &
           .and. (.not. fdf_islinteger('weights_guiding')) ) then
@@ -1337,8 +1337,8 @@ subroutine parser
 
 ! Part which handles the weights. needs modifications for guiding
 
-  if (.not. allocated(weights)) allocate (weights(MSTATES))
-  if (.not. allocated(iweight)) allocate (iweight(MSTATES))
+  if (.not. allocated(weights)) allocate (weights(MSTATES), source=0.0_dp)
+  if (.not. allocated(iweight)) allocate (iweight(MSTATES), source=0)
 
 
   if ( fdf_islreal('weights') .and. fdf_islist('weights') &
@@ -1571,9 +1571,9 @@ subroutine parser
         write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
       endif
 
-      if (.not. allocated(cent)) allocate(cent(3,ncent))
+      if (.not. allocated(cent)) allocate(cent(3,ncent), source=0.0_dp)
       if (.not. allocated(symbol)) allocate(symbol(ncent))
-      if (.not. allocated(iwctype)) allocate(iwctype(ncent))
+      if (.not. allocated(iwctype)) allocate(iwctype(ncent), source=0)
       if (.not. allocated(unique)) allocate(unique(ncent))
 
       ! get the coordinates: 4 tokens per line; first char (n) and three (r)reals or (i)ints.
@@ -1605,7 +1605,7 @@ subroutine parser
     write(ounit,*)
 
     if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))
-    if (.not. allocated(znuc)) allocate(znuc(nctype))
+    if (.not. allocated(znuc)) allocate(znuc(nctype), source=0.0_dp)
 
     ! get the correspondence for each atom according to the rule defined for atomtypes
     do j = 1, ncent
@@ -1652,8 +1652,8 @@ subroutine parser
     type(parsed_line), pointer :: pline
     integer                    :: i,j,k
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
-    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce), source=0.0_dp)
+    if (.not. allocated(iwftype)) allocate (iwftype(nforce), source=0)
 
     i = 1; j = 1
     do while((fdf_bline(bfdf, pline)))
@@ -1705,9 +1705,9 @@ subroutine parser
     nstates = fdf_bintegers(bfdf%mark%pline, 2) ! 2nd integer in the line
 
     if( (method(1:3) == 'lin')) then
-      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, 3))
+      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, 3), source=0.0_dp)
     else
-      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
+      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype), source=0.0_dp)
     endif
 
     j = 1
@@ -1751,9 +1751,9 @@ subroutine parser
 
 
     if( (method(1:3) == 'lin')) then
-      allocate (scalek(3))
+      allocate (scalek(3), source=0.0_dp)
     else
-      allocate (scalek(nwftype))
+      allocate (scalek(nwftype), source=0.0_dp)
     endif
 
     j = 1

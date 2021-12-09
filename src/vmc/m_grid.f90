@@ -25,8 +25,8 @@ module grid_mod
 
 contains
     subroutine allocate_grid_mod()
-        if (.not. allocated(grid3d)) allocate (grid3d(MXNSTEP, MXNSTEP, MXNSTEP))
-        if (.not. allocated(cart_from_int)) allocate (cart_from_int(MXNSTEP, 3))
+        if (.not. allocated(grid3d)) allocate (grid3d(MXNSTEP, MXNSTEP, MXNSTEP), source=0.0_sp)
+        if (.not. allocated(cart_from_int)) allocate (cart_from_int(MXNSTEP, 3), source=0.0_sp)
     end subroutine allocate_grid_mod
 
     subroutine deallocate_grid_mod()
@@ -57,7 +57,7 @@ contains
     subroutine allocate_grid_spline_mod()
         use const, only: nelec
         MORB_OCC = nelec/2 + 3
-        if (.not. allocated(orb_num_spl)) allocate (orb_num_spl(8, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC))
+        if (.not. allocated(orb_num_spl)) allocate (orb_num_spl(8, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC), source=0.0_sp)
     end subroutine allocate_grid_spline_mod
 
     subroutine deallocate_grid_spline_mod()
@@ -93,7 +93,7 @@ contains
         use const, only: nelec
         use grid_mod, only: MXNSTEP
         MORB_OCC = nelec/2
-        if (.not. allocated(orb_num_lag)) allocate (orb_num_lag(5, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC))
+        if (.not. allocated(orb_num_lag)) allocate (orb_num_lag(5, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC), source=0.0_sp)
     end subroutine allocate_grid_lagrange_mod
 
     subroutine deallocate_grid_lagrange_mod()
@@ -119,10 +119,10 @@ module grid3d_param
     save
 contains
     subroutine allocate_grid3d_param()
-        if (.not. allocated(endpt)) allocate (endpt(3))
-        if (.not. allocated(nstep3d)) allocate (nstep3d(3))
-        if (.not. allocated(origin)) allocate (origin(3))
-        if (.not. allocated(step3d)) allocate (step3d(3))
+        if (.not. allocated(endpt)) allocate (endpt(3), source=0.0_dp)
+        if (.not. allocated(nstep3d)) allocate (nstep3d(3), source=0)
+        if (.not. allocated(origin)) allocate (origin(3), source=0.0_dp)
+        if (.not. allocated(step3d)) allocate (step3d(3), source=0.0_dp)
     end subroutine allocate_grid3d_param
 
     subroutine deallocate_grid3d_param()
@@ -166,8 +166,8 @@ module orbital_num_lag
 contains
     subroutine allocate_orbital_num_lag()
         use grid_lagrange_mod, only: LAGSTART, LAGEND
-        if (.not. allocated(denom)) allocate (denom(LAGSTART:LAGEND, 3))
-        if (.not. allocated(step_inv)) allocate (step_inv(3, 3))
+        if (.not. allocated(denom)) allocate (denom(LAGSTART:LAGEND, 3), source=0.0_dp)
+        if (.not. allocated(step_inv)) allocate (step_inv(3, 3), source=0.0_dp)
     end subroutine allocate_orbital_num_lag
 
     subroutine deallocate_orbital_num_lag()

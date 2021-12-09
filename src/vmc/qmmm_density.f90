@@ -15,8 +15,8 @@
         title_dens(1)='Variational Monte Carlo Density'
         title_dens(2)=''
         n_atomsd=ncent
-        allocate(x_atomd(n_atomsd,3),id_atomd(n_atomsd))
-        allocate(chrg_atomd(n_atomsd))
+        allocate(x_atomd(n_atomsd,3),id_atomd(n_atomsd), source=0.0_dp)
+        allocate(chrg_atomd(n_atomsd), source=0.0_dp)
       
         cc_nuc(:)=0.d0 
         cc_ele(:)=0.d0 
@@ -54,8 +54,8 @@
 !       deltad(2)=.516129
 !       deltad(3)=.516129
 
-        allocate(dens(n_xd,n_yd,n_zd)) 
-        allocate(sme(n_xd,n_yd,n_zd)) 
+        allocate(dens(n_xd,n_yd,n_zd)), source=0.0_dp 
+        allocate(sme(n_xd,n_yd,n_zd)), source=0.0_dp 
         dens(:,:,:)=0.d0
         sme(:,:,:)=0.d0
         outofbox=0.d0

@@ -58,28 +58,28 @@ contains
         use force_mod, only: MFORCE
         use mstates_mod, only: MSTATES
         implicit none
-        if (.not. allocated(delttn)) allocate (delttn(nelec))
-        if (.not. allocated(enew)) allocate (enew(MFORCE))
-        if (.not. allocated(eold)) allocate (eold(MSTATES, MFORCE))
-        if (.not. allocated(nearestn)) allocate (nearestn(nelec))
-        if (.not. allocated(nearesto)) allocate (nearesto(nelec))
-        if (.not. allocated(peo)) allocate (peo(MSTATES))
-        if (.not. allocated(psi2n)) allocate (psi2n(MFORCE))
-        if (.not. allocated(psi2o)) allocate (psi2o(MSTATES, MFORCE))
-        if (.not. allocated(psido)) allocate (psido(MSTATES))
-        if (.not. allocated(rminn)) allocate (rminn(nelec))
-        if (.not. allocated(rminno)) allocate (rminno(nelec))
-        if (.not. allocated(rmino)) allocate (rmino(nelec))
-        if (.not. allocated(rminon)) allocate (rminon(nelec))
-        if (.not. allocated(rvminn)) allocate (rvminn(3, nelec))
-        if (.not. allocated(rvminno)) allocate (rvminno(3, nelec))
-        if (.not. allocated(rvmino)) allocate (rvmino(3, nelec))
-        if (.not. allocated(rvminon)) allocate (rvminon(3, nelec))
-        if (.not. allocated(tjfo)) allocate (tjfo(MSTATES))
-        if (.not. allocated(vnew)) allocate (vnew(3, nelec))
-        if (.not. allocated(vold)) allocate (vold(3, nelec))
-        if (.not. allocated(xnew)) allocate (xnew(3, nelec))
-        if (.not. allocated(xold)) allocate (xold(3, nelec))
+        if (.not. allocated(delttn)) allocate (delttn(nelec), source=0.0_dp)
+        if (.not. allocated(enew)) allocate (enew(MFORCE), source=0.0_dp)
+        if (.not. allocated(eold)) allocate (eold(MSTATES, MFORCE), source=0.0_dp)
+        if (.not. allocated(nearestn)) allocate (nearestn(nelec), source=0)
+        if (.not. allocated(nearesto)) allocate (nearesto(nelec), source=0)
+        if (.not. allocated(peo)) allocate (peo(MSTATES), source=0.0_dp)
+        if (.not. allocated(psi2n)) allocate (psi2n(MFORCE), source=0.0_dp)
+        if (.not. allocated(psi2o)) allocate (psi2o(MSTATES, MFORCE), source=0.0_dp)
+        if (.not. allocated(psido)) allocate (psido(MSTATES), source=0.0_dp)
+        if (.not. allocated(rminn)) allocate (rminn(nelec), source=0.0_dp)
+        if (.not. allocated(rminno)) allocate (rminno(nelec), source=0.0_dp)
+        if (.not. allocated(rmino)) allocate (rmino(nelec), source=0.0_dp)
+        if (.not. allocated(rminon)) allocate (rminon(nelec), source=0.0_dp)
+        if (.not. allocated(rvminn)) allocate (rvminn(3, nelec), source=0.0_dp)
+        if (.not. allocated(rvminno)) allocate (rvminno(3, nelec), source=0.0_dp)
+        if (.not. allocated(rvmino)) allocate (rvmino(3, nelec), source=0.0_dp)
+        if (.not. allocated(rvminon)) allocate (rvminon(3, nelec), source=0.0_dp)
+        if (.not. allocated(tjfo)) allocate (tjfo(MSTATES), source=0.0_dp)
+        if (.not. allocated(vnew)) allocate (vnew(3, nelec), source=0.0_dp)
+        if (.not. allocated(vold)) allocate (vold(3, nelec), source=0.0_dp)
+        if (.not. allocated(xnew)) allocate (xnew(3, nelec), source=0.0_dp)
+        if (.not. allocated(xold)) allocate (xold(3, nelec), source=0.0_dp)
     end subroutine allocate_config
 
     subroutine deallocate_config()
@@ -114,12 +114,12 @@ contains
 
       implicit none
 
-      if (.not. allocated(d2o)) allocate(d2o(mwalk,MFORCE))
-      if (.not. allocated(peo_dmc)) allocate(peo_dmc(mwalk,MFORCE))
-      if (.not. allocated(psido_dmc)) allocate(psido_dmc(mwalk,MFORCE))
-      if (.not. allocated(psijo_dmc)) allocate(psijo_dmc(mwalk,MFORCE))
-      if (.not. allocated(vold_dmc)) allocate(vold_dmc(3,nelec,mwalk,MFORCE))
-      if (.not. allocated(xold_dmc)) allocate(xold_dmc(3,nelec,mwalk,MFORCE))
+      if (.not. allocated(d2o)) allocate(d2o(mwalk,MFORCE), source=0.0_dp)
+      if (.not. allocated(peo_dmc)) allocate(peo_dmc(mwalk,MFORCE), source=0.0_dp)
+      if (.not. allocated(psido_dmc)) allocate(psido_dmc(mwalk,MFORCE), source=0.0_dp)
+      if (.not. allocated(psijo_dmc)) allocate(psijo_dmc(mwalk,MFORCE), source=0.0_dp)
+      if (.not. allocated(vold_dmc)) allocate(vold_dmc(3,nelec,mwalk,MFORCE), source=0.0_dp)
+      if (.not. allocated(xold_dmc)) allocate(xold_dmc(3,nelec,mwalk,MFORCE), source=0.0_dp)
     end subroutine allocate_config_dmc
 
     subroutine deallocate_config_dmc()
@@ -191,12 +191,12 @@ module step
 contains
     subroutine allocate_step()
         use vmc_mod, only: nrad
-        if (.not. allocated(ekin)) allocate (ekin(nrad))
-        if (.not. allocated(ekin2)) allocate (ekin2(nrad))
-        if (.not. allocated(rprob)) allocate (rprob(nrad))
-        if (.not. allocated(suc)) allocate (suc(nrad))
-        if (.not. allocated(trunfb)) allocate (trunfb(nrad))
-        if (.not. allocated(try)) allocate (try(nrad))
+        if (.not. allocated(ekin)) allocate (ekin(nrad), source=0.0_dp)
+        if (.not. allocated(ekin2)) allocate (ekin2(nrad), source=0.0_dp)
+        if (.not. allocated(rprob)) allocate (rprob(nrad), source=0.0_dp)
+        if (.not. allocated(suc)) allocate (suc(nrad), source=0.0_dp)
+        if (.not. allocated(trunfb)) allocate (trunfb(nrad), source=0.0_dp)
+        if (.not. allocated(try)) allocate (try(nrad), source=0.0_dp)
     end subroutine allocate_step
 
     subroutine deallocate_step()
@@ -238,8 +238,8 @@ module kinet
 contains
     subroutine allocate_kinet()
         use const, only: nelec
-        if (.not. allocated(dtdx2n)) allocate (dtdx2n(nelec))
-        if (.not. allocated(dtdx2o)) allocate (dtdx2o(nelec))
+        if (.not. allocated(dtdx2n)) allocate (dtdx2n(nelec), source=0.0_dp)
+        if (.not. allocated(dtdx2o)) allocate (dtdx2o(nelec), source=0.0_dp)
     end subroutine allocate_kinet
 
     subroutine deallocate_kinet()

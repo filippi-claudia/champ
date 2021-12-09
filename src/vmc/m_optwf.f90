@@ -76,12 +76,12 @@ contains
     subroutine allocate_optwf_corsam()
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
-        if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
-        if (.not. allocated(add_diag_tmp)) allocate (add_diag_tmp(MFORCE))
-        if (.not. allocated(energy)) allocate (energy(MFORCE))
-        if (.not. allocated(energy_err)) allocate (energy_err(MFORCE))
-        if (.not. allocated(force)) allocate (force(MFORCE))
-        if (.not. allocated(force_err)) allocate (force_err(MFORCE))
+        if (.not. allocated(add_diag)) allocate (add_diag(MFORCE), source=0.0_dp)
+        if (.not. allocated(add_diag_tmp)) allocate (add_diag_tmp(MFORCE), source=0.0_dp)
+        if (.not. allocated(energy)) allocate (energy(MFORCE), source=0.0_dp)
+        if (.not. allocated(energy_err)) allocate (energy_err(MFORCE), source=0.0_dp)
+        if (.not. allocated(force)) allocate (force(MFORCE), source=0.0_dp)
+        if (.not. allocated(force_err)) allocate (force_err(MFORCE), source=0.0_dp)
     end subroutine allocate_optwf_corsam
 
     subroutine deallocate_optwf_corsam()
@@ -128,10 +128,10 @@ contains
         use vmc_mod, only: nctyp3x
         use atom, only: nctype_tot
 
-        if (.not. allocated(nparma)) allocate (nparma(nctyp3x))
-        if (.not. allocated(nparmb)) allocate (nparmb(3))
-        if (.not. allocated(nparmc)) allocate (nparmc(nctype_tot))
-        if (.not. allocated(nparmf)) allocate (nparmf(nctype_tot))
+        if (.not. allocated(nparma)) allocate (nparma(nctyp3x), source=0)
+        if (.not. allocated(nparmb)) allocate (nparmb(3), source=0)
+        if (.not. allocated(nparmc)) allocate (nparmc(nctype_tot), source=0)
+        if (.not. allocated(nparmf)) allocate (nparmf(nctype_tot), source=0)
     end subroutine allocate_optwf_nparmj
 
     subroutine deallocate_optwf_nparmj()
@@ -174,10 +174,10 @@ contains
     subroutine allocate_optwf_wjas()
         use atom, only: nctype_tot
         use vmc_mod, only: nctyp3x
-        if (.not. allocated(iwjasa)) allocate (iwjasa(83, nctyp3x))
-        if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3))
-        if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype_tot))
-        if (.not. allocated(iwjasf)) allocate (iwjasf(15, nctype_tot))
+        if (.not. allocated(iwjasa)) allocate (iwjasa(83, nctyp3x), source=0)
+        if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3), source=0)
+        if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype_tot), source=0)
+        if (.not. allocated(iwjasf)) allocate (iwjasf(15, nctype_tot), source=0)
     end subroutine allocate_optwf_wjas
 
     subroutine deallocate_optwf_wjas()

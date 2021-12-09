@@ -18,7 +18,7 @@ contains
     !     use precision_kinds, only: dp
     !     use vmc_mod, only: MDET
     !     use mstates_mod, only: MSTATES
-    !     if (.not. allocated(cdet)) allocate (cdet(MDET, MSTATES, MWF))
+    !     if (.not. allocated(cdet)) allocate (cdet(MDET, MSTATES, MWF), source=0.0_dp)
     ! end subroutine allocate_dets
 
     subroutine deallocate_dets()
@@ -44,8 +44,8 @@ contains
     subroutine allocate_dets_equiv()
         use dets, only: ndet
 
-        if (.not. allocated(cdet_equiv)) allocate (cdet_equiv(ndet))
-        if (.not. allocated(dcdet_equiv)) allocate (dcdet_equiv(ndet))
+        if (.not. allocated(cdet_equiv)) allocate (cdet_equiv(ndet), source=0.0_dp)
+        if (.not. allocated(dcdet_equiv)) allocate (dcdet_equiv(ndet), source=0.0_dp)
 
     end subroutine allocate_dets_equiv
 

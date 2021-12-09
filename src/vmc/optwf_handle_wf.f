@@ -308,9 +308,9 @@ c-----------------------------------------------------------------------
 
       save mparmja,mparmjb,mparmjc
 
-      if(.not.allocated(a4_save)) allocate(a4_save(nordj1,nctype_tot,nwftype))
-      if(.not.allocated(b_save)) allocate(b_save(nordj1,2,nwftype))
-      if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
+      if(.not.allocated(a4_save)) allocate(a4_save(nordj1,nctype_tot,nwftype), source=0.0_dp)
+      if(.not.allocated(b_save)) allocate(b_save(nordj1,2,nwftype), source=0.0_dp)
+      if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype), source=0.0_dp)
 
 c Save parameters corresponding to run generating hessian
 
@@ -336,9 +336,9 @@ c Save parameters corresponding to run generating hessian
 
       entry restore_jastrow(iadiag)
 
-      if(.not.allocated(a4_save)) allocate(a4_save(nordj1,nctype_tot,nwftype))
-      if(.not.allocated(b_save)) allocate(b_save(nordj1,2,nwftype))
-      if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
+      if(.not.allocated(a4_save)) allocate(a4_save(nordj1,nctype_tot,nwftype), source=0.0_dp)
+      if(.not.allocated(b_save)) allocate(b_save(nordj1,2,nwftype), source=0.0_dp)
+      if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype), source=0.0_dp)
 
 c Restore parameters corresponding to run generating hessian
       do ict=1,nctype
@@ -371,7 +371,7 @@ c-----------------------------------------------------------------------
       integer :: i, iadiag, j
       real(dp), allocatable, save :: coef_save(:,:,:)
 
-      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb_tot, nwftype))
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb_tot, nwftype), source=0.0_dp)
       ! dimension coef_save(nbasis,norb,MWF)
       ! save coef_save
 
@@ -384,7 +384,7 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_lcao(iadiag)
-      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb_tot, nwftype))
+      if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb_tot, nwftype), source=0.0_dp)
 
       do i=1,norb
        do j=1,nbasis
@@ -409,8 +409,8 @@ c-----------------------------------------------------------------------
       real(dp), ALLOCATABLE, save :: cdet_save(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_save(:,:)
 
-      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
-      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
+      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES), source=0.0_dp)
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES), source=0.0_dp)
 
       ! dimension cdet_save(ndet,nstates),ccsf_save(ndet,nstates)
       ! save cdet_save,ccsf_save
@@ -430,8 +430,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci(iadiag)
-      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
-      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
+      if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES), source=0.0_dp)
+      if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES), source=0.0_dp)
 
       do j=1,nstates
         do i=1,ndet
@@ -596,9 +596,9 @@ c-----------------------------------------------------------------------
 
       save mparmja,mparmjb,mparmjc
 
-      if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
-      if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftype))
-      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype))
+      if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype), source=0.0_dp)
+      if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftype), source=0.0_dp)
+      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype), source=0.0_dp)
 
 c Save parameters corresponding to run generating hessian
 
@@ -623,9 +623,9 @@ c Save parameters corresponding to run generating hessian
       return
 
       entry restore_jastrow_best
-      if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
-      if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftype))
-      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype))
+      if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype), source=0.0_dp)
+      if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftype), source=0.0_dp)
+      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype), source=0.0_dp)
 
 c Restore parameters corresponding to run generating hessian
       do ict=1,nctype
@@ -657,7 +657,7 @@ c-----------------------------------------------------------------------
       integer :: i, j
       real(dp), allocatable, save :: coef_best(:,:,:)
 
-      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb_tot, nwftype))
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb_tot, nwftype), source=0.0_dp)
       ! dimension coef_best(nbasis,norb,MWF)
       ! save coef_best
 
@@ -672,7 +672,7 @@ c-----------------------------------------------------------------------
       entry restore_lcao_best
 
 c     if(ioptorb.eq.0) return
-      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb_tot, nwftype))
+      if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb_tot, nwftype), source=0.0_dp)
       do i=1,norb
        do j=1,nbasis
         coef(j,i,1)=coef_best(j,i,1)
@@ -696,8 +696,8 @@ c-----------------------------------------------------------------------
       real(dp), ALLOCATABLE, save :: cdet_best(:,:)
       real(dp), ALLOCATABLE, save :: ccsf_best(:,:)
 
-      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
-      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
+      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES), source=0.0_dp)
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES), source=0.0_dp)
 
       ! dimension cdet_best(ndet,nstates),ccsf_best(ndet,nstates)
       ! save cdet_best,ccsf_best
@@ -717,8 +717,8 @@ c-----------------------------------------------------------------------
       return
 
       entry restore_ci_best
-      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
-      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
+      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES), source=0.0_dp)
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES), source=0.0_dp)
 
 c     if(ioptci.eq.0) return
 

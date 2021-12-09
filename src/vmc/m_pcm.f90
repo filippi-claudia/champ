@@ -41,8 +41,8 @@ module pcm_ah
 contains
     subroutine allocate_pcm_ah()
         use pcm, only: MCHS
-        if (.not. allocated(ahca)) allocate (ahca(MCHS, MCHS))
-        if (.not. allocated(bh)) allocate (bh(MCHS))
+        if (.not. allocated(ahca)) allocate (ahca(MCHS, MCHS), source=0.0_dp)
+        if (.not. allocated(bh)) allocate (bh(MCHS), source=0.0_dp)
     end subroutine allocate_pcm_ah
 
     subroutine deallocate_pcm_ah()
@@ -67,8 +67,8 @@ module pcm_ameta
 contains
     subroutine allocate_pcm_ameta()
         use pcm, only: MCHS
-        if (.not. allocated(amdlg)) allocate (amdlg(MCHS))
-        if (.not. allocated(eta)) allocate (eta(3, MCHS))
+        if (.not. allocated(amdlg)) allocate (amdlg(MCHS), source=0.0_dp)
+        if (.not. allocated(eta)) allocate (eta(3, MCHS), source=0.0_dp)
     end subroutine allocate_pcm_ameta
 
     subroutine deallocate_pcm_ameta()
@@ -107,9 +107,9 @@ module pcm_averages
 contains
     subroutine allocate_pcm_averages()
         use pcm, only: MCHS
-        if (.not. allocated(enfpcm_sum)) allocate (enfpcm_sum(MCHS))
-        if (.not. allocated(enfpcm_cum)) allocate (enfpcm_cum(MCHS))
-        if (.not. allocated(enfpcm_cm2)) allocate (enfpcm_cm2(MCHS))
+        if (.not. allocated(enfpcm_sum)) allocate (enfpcm_sum(MCHS), source=0.0_dp)
+        if (.not. allocated(enfpcm_cum)) allocate (enfpcm_cum(MCHS), source=0.0_dp)
+        if (.not. allocated(enfpcm_cm2)) allocate (enfpcm_cm2(MCHS), source=0.0_dp)
     end subroutine allocate_pcm_averages
 
     subroutine deallocate_pcm_averages()
@@ -167,7 +167,7 @@ contains
     subroutine allocate_pcm_force()
         use pcm, only: MCHS
         use force_mod, only: MFORCE
-        if (.not. allocated(sch_s)) allocate (sch_s(MCHS, MFORCE))
+        if (.not. allocated(sch_s)) allocate (sch_s(MCHS, MFORCE), source=0.0_dp)
     end subroutine allocate_pcm_force
 
     subroutine deallocate_pcm_force()
@@ -200,7 +200,7 @@ module pcm_grid3d_array
 contains
     subroutine allocate_pcm_grid3d_array()
         use pcm_3dgrid, only: MGRID_PCM
-        if (.not. allocated(pcm_cart_from_int)) allocate (pcm_cart_from_int(MGRID_PCM, 3))
+        if (.not. allocated(pcm_cart_from_int)) allocate (pcm_cart_from_int(MGRID_PCM, 3), source=0.0_dp)
     end subroutine allocate_pcm_grid3d_array
 
     subroutine deallocate_pcm_grid3d_array()
@@ -225,10 +225,10 @@ module pcm_grid3d_param
 contains
     subroutine allocate_pcm_grid3d_param()
         integer, parameter :: size = 3
-        if (.not. allocated(ipcm_nstep3d)) allocate (ipcm_nstep3d(size))
-        if (.not. allocated(pcm_endpt)) allocate (pcm_endpt(size))
-        if (.not. allocated(pcm_origin)) allocate (pcm_origin(size))
-        if (.not. allocated(pcm_step3d)) allocate (pcm_step3d(size))
+        if (.not. allocated(ipcm_nstep3d)) allocate (ipcm_nstep3d(size), source=0)
+        if (.not. allocated(pcm_endpt)) allocate (pcm_endpt(size), source=0.0_dp)
+        if (.not. allocated(pcm_origin)) allocate (pcm_origin(size), source=0.0_dp)
+        if (.not. allocated(pcm_step3d)) allocate (pcm_step3d(size), source=0.0_dp)
     end subroutine allocate_pcm_grid3d_param
 
     subroutine deallocate_pcm_grid3d_param()
@@ -261,7 +261,7 @@ module pcm_hpsi
 contains
     subroutine allocate_pcm_hpsi()
         use pcm, only: MCHS
-        if (.not. allocated(enfpcm)) allocate (enfpcm(MCHS))
+        if (.not. allocated(enfpcm)) allocate (enfpcm(MCHS), source=0.0_dp)
     end subroutine allocate_pcm_hpsi
 
     subroutine deallocate_pcm_hpsi()
@@ -283,7 +283,7 @@ module pcm_inda
 contains
     subroutine allocate_pcm_inda()
         use pcm, only: MCHS
-        if (.not. allocated(inda)) allocate (inda(MCHS))
+        if (.not. allocated(inda)) allocate (inda(MCHS), source=0)
     end subroutine allocate_pcm_inda
 
     subroutine deallocate_pcm_inda()
@@ -306,7 +306,7 @@ module m_pcm_num_spl
 contains
     subroutine allocate_m_pcm_num_spl()
         use pcm_3dgrid, only: MGRID_PCM
-        if (.not. allocated(pcm_num_spl)) allocate (pcm_num_spl(8, MGRID_PCM, MGRID_PCM, MGRID_PCM))
+        if (.not. allocated(pcm_num_spl)) allocate (pcm_num_spl(8, MGRID_PCM, MGRID_PCM, MGRID_PCM), source=0.0_dp)
     end subroutine allocate_m_pcm_num_spl
 
     subroutine deallocate_m_pcm_num_spl()
@@ -365,13 +365,13 @@ module pcm_parms
 contains
     subroutine allocate_pcm_parms()
         use pcm, only: MCHV, MSPHERE
-        if (.not. allocated(ch)) allocate (ch(MCHV))
-        if (.not. allocated(re)) allocate (re(MSPHERE))
-        if (.not. allocated(re2)) allocate (re2(MSPHERE))
-        if (.not. allocated(xe)) allocate (xe(MSPHERE))
-        if (.not. allocated(xpol)) allocate (xpol(3, MCHV))
-        if (.not. allocated(ye)) allocate (ye(MSPHERE))
-        if (.not. allocated(ze)) allocate (ze(MSPHERE))
+        if (.not. allocated(ch)) allocate (ch(MCHV), source=0.0_dp)
+        if (.not. allocated(re)) allocate (re(MSPHERE), source=0.0_dp)
+        if (.not. allocated(re2)) allocate (re2(MSPHERE), source=0.0_dp)
+        if (.not. allocated(xe)) allocate (xe(MSPHERE), source=0.0_dp)
+        if (.not. allocated(xpol)) allocate (xpol(3, MCHV), source=0.0_dp)
+        if (.not. allocated(ye)) allocate (ye(MSPHERE), source=0.0_dp)
+        if (.not. allocated(ze)) allocate (ze(MSPHERE), source=0.0_dp)
     end subroutine allocate_pcm_parms
 
     subroutine deallocate_pcm_parms()
@@ -413,7 +413,7 @@ module pcm_xv_new
 contains
     subroutine allocate_pcm_xv_new()
         use pcm, only: MCHV
-        if (.not. allocated(xv_new)) allocate (xv_new(3, MCHV))
+        if (.not. allocated(xv_new)) allocate (xv_new(3, MCHV), source=0.0_dp)
     end subroutine allocate_pcm_xv_new
 
     subroutine deallocate_pcm_xv_new()
@@ -460,11 +460,11 @@ contains
     subroutine allocate_pcmo()
         use pcm, only: MCHS
         use dmc_mod, only: mwalk
-        if (.not. allocated(enfpcmo)) allocate(enfpcmo(MCHS))
-        if (.not. allocated(enfpcmo_dmc)) allocate(enfpcmo_dmc(mwalk, MCHS))
-        if (.not. allocated(qopcmo_dmc)) allocate(qopcmo_dmc(mwalk))
-        if (.not. allocated(spcmo_dmc)) allocate(spcmo_dmc(mwalk))
-        if (.not. allocated(vpcmo_dmc)) allocate(vpcmo_dmc(mwalk))
+        if (.not. allocated(enfpcmo)) allocate(enfpcmo(MCHS), source=0.0_dp)
+        if (.not. allocated(enfpcmo_dmc)) allocate(enfpcmo_dmc(mwalk, MCHS), source=0.0_dp)
+        if (.not. allocated(qopcmo_dmc)) allocate(qopcmo_dmc(mwalk), source=0.0_dp)
+        if (.not. allocated(spcmo_dmc)) allocate(spcmo_dmc(mwalk), source=0.0_dp)
+        if (.not. allocated(vpcmo_dmc)) allocate(vpcmo_dmc(mwalk), source=0.0_dp)
     end subroutine allocate_pcmo
 
     subroutine deallocate_pcmo()
@@ -489,7 +489,7 @@ module spc
     save
 contains
     subroutine allocate_spc()
-        if (.not. allocated(num)) allocate (num(50))
+        if (.not. allocated(num)) allocate (num(50), source=0)
     end subroutine allocate_spc
 
     subroutine deallocate_spc()
@@ -512,9 +512,9 @@ module spc1
     save
 contains
     subroutine allocate_spc1()
-        if (.not. allocated(csf)) allocate (csf(750, 4, 50))
-        if (.not. allocated(qsf)) allocate (qsf(50, 3))
-        if (.not. allocated(rsf)) allocate (rsf(50))
+        if (.not. allocated(csf)) allocate (csf(750, 4, 50), source=0.0_dp)
+        if (.not. allocated(qsf)) allocate (qsf(50, 3), source=0.0_dp)
+        if (.not. allocated(rsf)) allocate (rsf(50), source=0.0_dp)
     end subroutine allocate_spc1
 
     subroutine deallocate_spc1()
@@ -539,8 +539,8 @@ module spc2
     save
 contains
     subroutine allocate_spc2()
-        if (.not. allocated(sfxyz)) allocate (sfxyz(5000, 4))
-        if (.not. allocated(usf)) allocate (usf(5000, 3))
+        if (.not. allocated(sfxyz)) allocate (sfxyz(5000, 4), source=0.0_dp)
+        if (.not. allocated(usf)) allocate (usf(5000, 3), source=0.0_dp)
     end subroutine allocate_spc2
 
     subroutine deallocate_spc2()

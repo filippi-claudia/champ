@@ -13,7 +13,7 @@ module grdnthes
  contains
      subroutine allocate_grdnthes()
         use atom, only: ncent_tot
-         if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent_tot))
+         if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent_tot), source=0.0_dp)
      end subroutine allocate_grdnthes
 
      subroutine deallocate_grdnthes()
@@ -40,9 +40,9 @@ module grdnthes
      subroutine allocate_grdntsmv()
         use atom, only: ncent_tot
          use force_mod, only: MFORCE
-         if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
-         if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
-         if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent_tot))
+         if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE), source=0)
+         if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE), source=0)
+         if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent_tot), source=0)
      end subroutine allocate_grdntsmv
 
      subroutine deallocate_grdntsmv()
