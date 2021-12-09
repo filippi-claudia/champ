@@ -139,11 +139,13 @@ module rnyucm
 
     integer  :: ll(4)
     integer  :: mm(4)
+    integer  :: switch_rng = 0
+
     data mm/502, 1521, 4071, 2107/
     data ll/0, 0, 0, 1/
 
     private
-    public :: ll, mm
+    public :: ll, mm, switch_rng
     save
 
 end module rnyucm
