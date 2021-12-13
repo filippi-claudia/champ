@@ -42,9 +42,10 @@ contains
         
         ! local data
         real(dp), allocatable :: p(:)
-        allocate(p(n), source=0.0_dp)
 
         n = size(s(1, :))
+        allocate(p(n), source=0.0_dp)
+
 
         ! compute initial search direction
         p = initial_direction(gradient, iteration)

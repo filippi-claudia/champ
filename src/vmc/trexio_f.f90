@@ -3081,7 +3081,7 @@ integer function trexio_read_metadata_code (trex_file, dset, max_str_len)
   rc = trexio_read_metadata_code_num_64(trex_file, metadata_code_num)
   if (rc /= TREXIO_SUCCESS) trexio_read_metadata_code = rc
 
-  allocate(str_compiled(metadata_code_num*(max_str_len+1)+1), source=0.0_dp)
+  allocate(str_compiled(metadata_code_num*(max_str_len+1)+1))
 
   rc = trexio_read_metadata_code_low(trex_file, str_compiled, max_str_len)
   if (rc /= TREXIO_SUCCESS) then 
@@ -3108,7 +3108,7 @@ integer function trexio_read_metadata_author (trex_file, dset, max_str_len)
   rc = trexio_read_metadata_author_num_64(trex_file, metadata_author_num)
   if (rc /= TREXIO_SUCCESS) trexio_read_metadata_author = rc
 
-  allocate(str_compiled(metadata_author_num*(max_str_len+1)+1), source=0.0_dp)
+  allocate(str_compiled(metadata_author_num*(max_str_len+1)+1))
 
   rc = trexio_read_metadata_author_low(trex_file, str_compiled, max_str_len)
   if (rc /= TREXIO_SUCCESS) then 
@@ -3135,7 +3135,7 @@ integer function trexio_read_nucleus_label (trex_file, dset, max_str_len)
   rc = trexio_read_nucleus_num_64(trex_file, nucleus_num)
   if (rc /= TREXIO_SUCCESS) trexio_read_nucleus_label = rc
 
-  allocate(str_compiled(nucleus_num*(max_str_len+1)+1), source=0.0_dp)
+  allocate(str_compiled(nucleus_num*(max_str_len+1)+1))
 
   rc = trexio_read_nucleus_label_low(trex_file, str_compiled, max_str_len)
   if (rc /= TREXIO_SUCCESS) then 
@@ -3162,7 +3162,7 @@ integer function trexio_read_mo_class (trex_file, dset, max_str_len)
   rc = trexio_read_mo_num_64(trex_file, mo_num)
   if (rc /= TREXIO_SUCCESS) trexio_read_mo_class = rc
 
-  allocate(str_compiled(mo_num*(max_str_len+1)+1), source=0.0_dp)
+  allocate(str_compiled(mo_num*(max_str_len+1)+1))
 
   rc = trexio_read_mo_class_low(trex_file, str_compiled, max_str_len)
   if (rc /= TREXIO_SUCCESS) then 
@@ -3189,7 +3189,7 @@ integer function trexio_read_mo_symmetry (trex_file, dset, max_str_len)
   rc = trexio_read_mo_num_64(trex_file, mo_num)
   if (rc /= TREXIO_SUCCESS) trexio_read_mo_symmetry = rc
 
-  allocate(str_compiled(mo_num*(max_str_len+1)+1), source=0.0_dp)
+  allocate(str_compiled(mo_num*(max_str_len+1)+1))
 
   rc = trexio_read_mo_symmetry_low(trex_file, str_compiled, max_str_len)
   if (rc /= TREXIO_SUCCESS) then 

@@ -287,7 +287,7 @@ contains
                         file_error = arg(i+1)
                     else
                         write(error_unit,*) "error file should be named 'error' or should have &
-                                            an extention .e / .err to the filename"
+                                            &an extention .e / .err to the filename"
                         stop
                     endif
                     open (newunit=errunit,file=file_error, iostat=iostat, action='write' )

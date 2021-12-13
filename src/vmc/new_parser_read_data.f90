@@ -291,6 +291,8 @@ subroutine read_trexio_molecule_file(file_trexio)
     character(len=100)              :: float_format   = '(A, T60, f12.8)'
     character(len=100)              :: string_format  = '(A, T60, A)'
 
+    trex_molecule_file = 0
+
     !   External file reading
 
     if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
@@ -953,7 +955,8 @@ subroutine read_trexio_orbitals_file(file_trexio)
     integer(8)                      :: trex_orbitals_file
     integer                         :: rc = 1
 
-
+    iwft = 0
+    trex_orbitals_file = 0
     !   External file reading
 
     if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
@@ -2217,6 +2220,8 @@ subroutine read_dmatrix_file(file_dmatrix)
     !   Formatting
     character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
+
+    ipr = 0
 
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'

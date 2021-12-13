@@ -200,6 +200,8 @@ use precision_kinds, only: dp
         real(dp) :: v_corr
         real(dp) :: damp
 
+        v_corr = 0.0
+
         ! Damping parameter for Nesterov gradient descent
         damp = 10.d0
         select case (dl_alg)

@@ -228,6 +228,7 @@ contains
         integer, intent(in) :: i
         integer :: j, k
 
+        k = -1
         do j = 1, size(keys)
             if (keys(j) == i) then
                 k = j

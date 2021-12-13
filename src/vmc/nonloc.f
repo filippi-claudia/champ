@@ -240,6 +240,8 @@ c-----------------------------------------------------------------------
 
       integer :: l
       real(dp) :: costh, yl0
+     
+      yl0 = 0.0
 
       if(l.eq.1) then
         yl0=1.d0
@@ -261,7 +263,9 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: l
-      real(dp) :: costh, dyl0
+      real(dp) :: costh, dyl0 
+      
+      dyl0 = 0.0
 
       if(l.eq.1) then
         dyl0=0.d0

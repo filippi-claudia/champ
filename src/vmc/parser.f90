@@ -845,7 +845,7 @@ subroutine parser
   if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
     if(iperiodic.ne.0 .and. cutjas_tmp.gt.cutjas) then
         write(ounit, '(a,f9.5,a,f9.5)')  "**Warning: input cutjas > half shortest sim. cell lattice vector; &
-                                          cutjas reset from ", cutjas_tmp, " to ", cutjas
+                                          &cutjas reset from ", cutjas_tmp, " to ", cutjas
         else
         cutjas=cutjas_tmp
         write(ounit,'(a, d12.5)' ) " input cutjas = ", cutjas_tmp

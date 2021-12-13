@@ -56,6 +56,8 @@ contains
         real(dp) :: energy_sav, energy_err_sav, omega, sigma, sigma_sav
         integer :: i, iflag, iter, miter
 
+        sigma_sav = 0.0
+        energy_sav= 0.0
         allocate (deltap(mparm*MSTATES), source=0.0_dp)
 
         if (method .ne. 'sr_n') return
@@ -544,6 +546,7 @@ contains
         integer :: jparm, jwtg, jfifj
         real(dp) :: dum, energy_tot, force_tmp, wtoti
 
+        wtoti = 0.0
         allocate (cloc(MTEST, MTEST), source=0.0_dp)
         allocate (c(MTEST, MTEST), source=0.0_dp)
         allocate (oloc(mparm), source=0.0_dp)
