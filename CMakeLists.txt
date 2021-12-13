@@ -131,7 +131,9 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
     list(APPEND Fortran_FLAGS "-fcheck=all" "-fbacktrace"
         "-Og" "-g" "-ffpe-trap=invalid,zero,overflow" "-Wall" "-Wextra"
-        "-Wno-unused" "-Wno-conversion"
+        "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument" 
+        "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
+        "-Wno-c-binding-type"
         )
   else()
     list(APPEND Fortran_FLAGS "-O2")
@@ -154,7 +156,7 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
-    list(APPEND Fortran_FLAGS "-diag-enable=all" "-traceback" "-g" "-fpe-trap=common" )
+    list(APPEND Fortran_FLAGS "-diag-enable=all" "-traceback" "-g" "-fpe0" )
   else()
   endif()
   if (TREXIO_FOUND)
