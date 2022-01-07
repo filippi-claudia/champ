@@ -46,80 +46,6 @@ contains
 
 end module pseudo
 
-module pseudo_champ
-    !> Arguments: igrid_ps, rmax_coul, rmax_nloc
-    use precision_kinds, only: dp
-
-
-    integer, dimension(:), allocatable :: igrid_ps !(MCTYPE)
-    real(dp), dimension(:), allocatable :: rmax_coul !(MCTYPE)
-    real(dp), dimension(:), allocatable :: rmax_nloc !(MCTYPE)
-
-    private
-    public :: igrid_ps, rmax_coul, rmax_nloc
-    public :: allocate_pseudo_champ, deallocate_pseudo_champ
-    save
-contains
-    subroutine allocate_pseudo_champ()
-        use atom, only: nctype_tot
-
-        if (.not. allocated(igrid_ps)) allocate (igrid_ps(nctype_tot))
-        if (.not. allocated(rmax_coul)) allocate (rmax_coul(nctype_tot))
-        if (.not. allocated(rmax_nloc)) allocate (rmax_nloc(nctype_tot))
-    end subroutine allocate_pseudo_champ
-
-    subroutine deallocate_pseudo_champ()
-        if (allocated(rmax_nloc)) deallocate (rmax_nloc)
-        if (allocated(rmax_coul)) deallocate (rmax_coul)
-        if (allocated(igrid_ps)) deallocate (igrid_ps)
-    end subroutine deallocate_pseudo_champ
-
-end module pseudo_champ
-
-module pseudo_fahy
-    !> Arguments: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
-
-    use precision_kinds, only: dp
-
-
-    real(dp), dimension(:), allocatable :: drad !(MCTYPE)
-    real(dp), dimension(:), allocatable :: dradl !(MCTYPE)
-    integer, dimension(:), allocatable :: nlrad !(MCTYPE)
-    integer, dimension(:), allocatable :: npotl !(MCTYPE)
-    real(dp), dimension(:, :), allocatable :: potl !(MPS_GRID,MCTYPE)
-    real(dp), dimension(:, :, :), allocatable :: ptnlc !(MPS_GRID,MCTYPE,MPS_L)
-    real(dp), dimension(:), allocatable :: rcmax !(MCTYPE)
-
-    private
-    public :: drad, dradl, nlrad, npotl, potl, ptnlc, rcmax
-    public :: allocate_pseudo_fahy, deallocate_pseudo_fahy
-    save
-contains
-    subroutine allocate_pseudo_fahy()
-        use atom, only: nctype_tot
-        use pseudo_mod, only: MPS_L, MPS_GRID
-
-        if (.not. allocated(drad)) allocate (drad(nctype_tot))
-        if (.not. allocated(dradl)) allocate (dradl(nctype_tot))
-        if (.not. allocated(nlrad)) allocate (nlrad(nctype_tot))
-        if (.not. allocated(npotl)) allocate (npotl(nctype_tot))
-        if (.not. allocated(potl)) allocate (potl(MPS_GRID, nctype_tot))
-        if (.not. allocated(ptnlc)) allocate (ptnlc(MPS_GRID, nctype_tot, MPS_L))
-        if (.not. allocated(rcmax)) allocate (rcmax(nctype_tot))
-    end subroutine allocate_pseudo_fahy
-
-    subroutine deallocate_pseudo_fahy()
-        if (allocated(rcmax)) deallocate (rcmax)
-        if (allocated(ptnlc)) deallocate (ptnlc)
-        if (allocated(potl)) deallocate (potl)
-        if (allocated(npotl)) deallocate (npotl)
-        if (allocated(nlrad)) deallocate (nlrad)
-        if (allocated(dradl)) deallocate (dradl)
-        if (allocated(drad)) deallocate (drad)
-    end subroutine deallocate_pseudo_fahy
-
-end module pseudo_fahy
-
 module pseudo_tm
     !> Arguments: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
 
@@ -172,25 +98,17 @@ end module pseudo_tm
 
 subroutine allocate_m_pseudo()
     use pseudo, only: allocate_pseudo
-    use pseudo_champ, only: allocate_pseudo_champ
-    use pseudo_fahy, only: allocate_pseudo_fahy
     use pseudo_tm, only: allocate_pseudo_tm
 
     call allocate_pseudo()
-    call allocate_pseudo_champ()
-    call allocate_pseudo_fahy()
     call allocate_pseudo_tm()
 end subroutine allocate_m_pseudo
 
 subroutine deallocate_m_pseudo()
     use pseudo, only: deallocate_pseudo
-    use pseudo_champ, only: deallocate_pseudo_champ
-    use pseudo_fahy, only: deallocate_pseudo_fahy
     use pseudo_tm, only: deallocate_pseudo_tm
 
     call deallocate_pseudo()
-    call deallocate_pseudo_champ()
-    call deallocate_pseudo_fahy()
     call deallocate_pseudo_tm()
 end subroutine deallocate_m_pseudo
 

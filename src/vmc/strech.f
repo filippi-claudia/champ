@@ -17,7 +17,7 @@ c rigidly with that nucleus
       use atom, only: znuc, cent, pecent, iwctype, ncent, ncent_tot
       use const, only: nelec
       use force_dmc, only: itausec, nwprod
-      use forcepar, only: deltot, istrech, nforce
+      use forcepar, only: istrech, nforce
       use forcestr, only: delc
       use pcm_force, only: sch_s
       use wfsec, only: iwftype
@@ -366,32 +366,6 @@ c end loop forces
       enddo
 
       write(ounit,'(''n-n potential energies '',10f10.5)') (pecentn(ifl),ifl=1,nforce)
-
-      do ifl=1,nforce
-        deltot(ifl)=zero
-        rsq=zero
-        do jc=1,ncent
-          do k=1,3
-            rcm=zero
-            do ic=1,ncent
-              rcm=rcm+delc(k,ic,ifl)
-              rsq=rsq+
-     &        (cent(k,ic)+delc(k,ic,ifl)-cent(k,jc)-delc(k,jc,ifl))**2
-            enddo
-            rcm=rcm/ncent
-            deltot(ifl)=deltot(ifl)+(delc(k,jc,ifl)-rcm)**2
-          enddo
-        enddo
-        if(ifl.eq.1) rsq1=rsq
-c Warning: TEMPORARY: multiplication by ncent right for diatomics
-c        deltot(ifl)=sign(dsqrt(deltot(ifl)*ncent),rsq-rsq1)
-        deltot(ifl)=1.d0
-        if(deltot(ifl).eq.0) deltot(ifl)=1.d0
-      enddo
-
-
-      write(ounit,'(''deltot '',10f10.5)') (deltot(ifl),ifl=1,nforce)
-
 
       return
       end

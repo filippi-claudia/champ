@@ -66,7 +66,7 @@ end module inputflags
 module general
     !> Arguments: pooldir, pp_id, bas_id, filename, filenames_bas_num,
     !>            filenames_ps_gauss, filenames_ps_tm, atomtyp,
-    !>            atomsymbol, wforce
+    !>            atomsymbol
     implicit none
     character(:), allocatable :: pooldir
     character(:), allocatable :: pp_id
@@ -78,12 +78,11 @@ module general
     character*256, allocatable, dimension(:) :: filenames_ps_tm
     character(:), allocatable :: atomtyp
     character(:), allocatable :: atomsymbol
-    character(:), allocatable :: wforce
 
     private
     public :: pooldir, pp_id, bas_id, atomtyp, filename
     public :: filenames_bas_num, filenames_ps_gauss
-    public :: filenames_ps_champ, filenames_ps_tm, atomsymbol, wforce
+    public :: filenames_ps_champ, filenames_ps_tm, atomsymbol
     save
 end module general
 
@@ -99,31 +98,3 @@ module method_opt
     public :: method
     save
 end module method_opt
-
-module pars
-    !> only used in read input and only Z, a20, a21 are called in vmc
-    !> more are called in dmc
-    !> Arguments: Z, a00, a20, a21, c0000, c1110, c2000, eps_fock, xm1, xm12, xm2, xma, xms
-    use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp) :: Z
-    real(dp) :: a00
-    real(dp) :: a20
-    real(dp) :: a21
-    real(dp) :: c0000
-    real(dp) :: c1110
-    real(dp) :: c2000
-    real(dp) :: eps_fock
-    real(dp) :: xm1
-    real(dp) :: xm12
-    real(dp) :: xm2
-    real(dp) :: xma
-    real(dp) :: xms
-
-    private
-    public :: Z, a00, a20, a21, c0000, c1110, c2000
-    public :: eps_fock, xm1, xm12, xm2, xma, xms
-    save
-end module pars

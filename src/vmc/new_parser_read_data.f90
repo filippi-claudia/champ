@@ -612,12 +612,12 @@ subroutine read_jastrow_file(file_jastrow)
     use force_mod,          only: MWF
     use jaspar,             only: nspin1, nspin2
     use elec,               only: ndn
-    use jaspar3,            only: a, b, c, scalek
+    use jaspar3,            only: b, c, scalek
     use jaspar4,            only: a4, norda, nordb, nordc
     use vmc_mod,            only: nordj, nordj1, neqsx
     use jaspar6,            only: cutjas, cutjasi, allocate_jaspar6
     use bparm,              only: nocuspb, nspin2b
-    use contr2,             only: ifock, ijas
+    use contr2,             only: ijas
     use contr2,             only: isc
     use inputflags,         only: ijastrow_parameter
     use wfsec,              only: nwftype
@@ -635,7 +635,7 @@ subroutine read_jastrow_file(file_jastrow)
     integer                         :: iunit, iostat, it, isp, iparm, iwft
     integer                         :: mparmja, mparmjb, mparmjc, nterms4
     logical                         :: exist
-    real(dp)                        :: a21, cutjas_tmp
+    real(dp)                        :: cutjas_tmp
     integer                         :: i, j
 
     !   Formatting
@@ -695,7 +695,6 @@ subroutine read_jastrow_file(file_jastrow)
     endif
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
-        if (ifock .gt. 0) call fatal_error('JASTROW: fock not yet implemented for ijas=4,5,6')
         if (wid) read (iunit, *) norda, nordb, nordc
         call bcast(norda)
         call bcast(nordb)
@@ -708,11 +707,10 @@ subroutine read_jastrow_file(file_jastrow)
         write(ounit, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc
 
         if (isc .ge. 2) then
-            if (wid) read (iunit, *) scalek(iwft), a21
+            if (wid) read (iunit, *) scalek(iwft)
         endif
         call bcast(scalek)
-        call bcast(a21)
-        write(ounit, '(2(A,f12.6))') " scalek = ", scalek(iwft), "; a21 = ", a21
+        write(ounit, '(A,f12.6)') " scalek = ", scalek(iwft)
 
         mparmja = 2 + max(0, norda - 1)
         mparmjb = 2 + max(0, nordb - 1)

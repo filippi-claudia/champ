@@ -12,33 +12,43 @@ module force_mod
  end module force_mod
 
  module forcepar
-    !> Arguments: deltot, istrech, nforce, alfstr
+    !> Arguments: istrech, nforce, alfstr
     use force_mod, only: MFORCE
     use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: deltot !(MFORCE)
     integer :: istrech
     integer :: nforce
     real(dp) :: alfstr
 
     private
-    public   ::  deltot, istrech, nforce, alfstr
-    public :: allocate_forcepar, deallocate_forcepar
+    public   ::  istrech, nforce, alfstr
+    save
+ end module forcepar
+
+module wfsec
+    !> Arguments: iwf, iwftype, nwftype
+
+    integer :: iwf
+    integer, dimension(:), allocatable :: iwftype !(MFORCE)
+    integer :: nwftype
+
+    private
+    public :: iwf, iwftype, nwftype
+    public :: allocate_wfsec, deallocate_wfsec
     save
 contains
-    subroutine allocate_forcepar()
-        use force_mod, only: MFORCE
-        if (.not. allocated(deltot)) allocate (deltot(MFORCE))
-    end subroutine allocate_forcepar
+    ! subroutine allocate_wfsec()
+    !     use force_mod, only: MFORCE
+    !     if (.not. allocated(iwftype)) allocate (iwftype(MFORCE))
+    ! end subroutine allocate_wfsec
 
-    subroutine deallocate_forcepar()
-        if (allocated(deltot)) deallocate (deltot)
-    end subroutine deallocate_forcepar
+    subroutine deallocate_wfsec()
+        if (allocated(iwftype)) deallocate (iwftype)
+    end subroutine deallocate_wfsec
 
-end module forcepar
-
+end module wfsec
  module force_analy
      !> Arguments: iforce_analy, iuse_zmat, alfgeo
      use precision_kinds, only: dp
@@ -215,7 +225,6 @@ end module forcepar
      use forcewt, only: allocate_forcewt
      use force_fin, only: allocate_force_fin
      use force_mat_n, only: allocate_force_mat_n
-     use forcepar, only: allocate_forcepar
 
      implicit none
 
@@ -224,7 +233,6 @@ end module forcepar
      call allocate_forcewt()
      call allocate_force_fin()
      call allocate_force_mat_n()
-     call allocate_forcepar()
  end subroutine allocate_m_force
 
  subroutine deallocate_m_force()
@@ -233,7 +241,6 @@ end module forcepar
      use forcewt, only: deallocate_forcewt
      use force_fin, only: deallocate_force_fin
      use force_mat_n, only: deallocate_force_mat_n
-     use forcepar, only: deallocate_forcepar
 
      implicit none
 
@@ -242,5 +249,4 @@ end module forcepar
      call deallocate_forcewt()
      call deallocate_force_fin()
      call deallocate_force_mat_n()
-     call deallocate_forcepar()
  end subroutine deallocate_m_force

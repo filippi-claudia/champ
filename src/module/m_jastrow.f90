@@ -87,76 +87,19 @@ module jaspar
     save
 end module jaspar
 
-module jaspar1
-    !> Arguments: cjas1, cjas2
-    use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp), dimension(:), allocatable :: cjas1 !(MWF)
-    real(dp), dimension(:), allocatable :: cjas2 !(MWF)
-
-    private
-    public   ::  cjas1, cjas2
-    public :: allocate_jaspar1, deallocate_jaspar1
-    save
-contains
-    subroutine allocate_jaspar1()
-        use wfsec, only: nwftype
-        if (.not. allocated(cjas1)) allocate (cjas1(nwftype))
-        if (.not. allocated(cjas2)) allocate (cjas2(nwftype))
-    end subroutine allocate_jaspar1
-
-    subroutine deallocate_jaspar1()
-        if (allocated(cjas2)) deallocate (cjas2)
-        if (allocated(cjas1)) deallocate (cjas1)
-    end subroutine deallocate_jaspar1
-
-end module jaspar1
-
-module jaspar2
-    !> Arguments: a1, a2
-    use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp), dimension(:, :, :), allocatable :: a1 !(83,3,MWF)
-    real(dp), dimension(:, :, :), allocatable :: a2 !(83,3,MWF)
-
-    private
-    public :: a1, a2
-    public :: allocate_jaspar2, deallocate_jaspar2
-    save
-contains
-    subroutine allocate_jaspar2()
-        use wfsec, only: nwftype
-        if (.not. allocated(a1)) allocate (a1(83, 3, nwftype))
-        if (.not. allocated(a2)) allocate (a2(83, 3, nwftype))
-    end subroutine allocate_jaspar2
-
-    subroutine deallocate_jaspar2()
-        if (allocated(a2)) deallocate (a2)
-        if (allocated(a1)) deallocate (a1)
-    end subroutine deallocate_jaspar2
-
-end module jaspar2
-
 module jaspar3
-    !> Arguments: a, b, c, fck, nord, scalek
+    !> Arguments: b, c, scalek
     use precision_kinds, only: dp
     use vmc_mod, only: nordj1
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: a !(nordj1,MWF)
     real(dp), dimension(:, :, :), allocatable :: b !(nordj1,2,MWF)
     real(dp), dimension(:, :, :), allocatable :: c !(83,MCTYPE,MWF)
-    real(dp), dimension(:, :, :), allocatable :: fck !(15,MCTYPE,MWF)
-    integer :: nord
     real(dp), dimension(:), allocatable :: scalek !(MWF)
 
     private
-    public :: a, b, c, fck, nord, scalek
+    public :: b, c, scalek
     public :: allocate_jaspar3, deallocate_jaspar3
     save
 contains
@@ -164,19 +107,15 @@ contains
         use wfsec, only: nwftype
         use atom, only: nctype_tot
         use vmc_mod, only: nordj1
-        if (.not. allocated(a)) allocate (a(nordj1, nwftype))
         ! if (.not. allocated(b)) allocate (b(nordj1, 2, MWF))
         ! if (.not. allocated(c)) allocate (c(83, nctype_tot, MWF))
-        if (.not. allocated(fck)) allocate (fck(15, nctype_tot, nwftype))
         ! if (.not. allocated(scalek)) allocate (scalek(MWF))
     end subroutine allocate_jaspar3
 
     subroutine deallocate_jaspar3()
         if (allocated(scalek)) deallocate (scalek)
-        if (allocated(fck)) deallocate (fck)
         if (allocated(c)) deallocate (c)
         if (allocated(b)) deallocate (b)
-        if (allocated(a)) deallocate (a)
     end subroutine deallocate_jaspar3
 
 end module jaspar3
@@ -270,11 +209,38 @@ contains
 
 end module jaspointer
 
+module cuspmat4
+    !> Arguments: d, nterms
+    use vmc_mod, only: neqsx, mterms
+    use precision_kinds, only: dp
+
+    implicit none
+
+    real(dp), dimension(:, :), allocatable :: d !(neqsx,mterms)
+    integer, dimension(:), allocatable :: iwc4 !(neqsx)
+    integer :: nterms
+    private
+
+    public :: d, iwc4, nterms
+    public :: allocate_cuspmat4, deallocate_cuspmat4
+    save
+contains
+    subroutine allocate_cuspmat4()
+        use vmc_mod, only: neqsx, mterms
+        if (.not. allocated(d)) allocate (d(neqsx, mterms))
+        if (.not. allocated(iwc4)) allocate (iwc4(neqsx))
+    end subroutine allocate_cuspmat4
+
+    subroutine deallocate_cuspmat4()
+        if (allocated(iwc4)) deallocate (iwc4)
+        if (allocated(d)) deallocate (d)
+    end subroutine deallocate_cuspmat4
+
+end module cuspmat4
+
 subroutine allocate_m_jastrow()
     use jasn, only: allocate_jasn
     use jaso, only: allocate_jaso
-    use jaspar1, only: allocate_jaspar1
-    use jaspar2, only: allocate_jaspar2
     use jaspar3, only: allocate_jaspar3
 !    use jaspar4, only: allocate_jaspar4
     use jaspar6, only: allocate_jaspar6
@@ -284,8 +250,6 @@ subroutine allocate_m_jastrow()
 
     call allocate_jasn()
     call allocate_jaso()
-    call allocate_jaspar1()
-    call allocate_jaspar2()
     call allocate_jaspar3()
     ! call allocate_jaspar4()
     call allocate_jaspar6()
@@ -296,8 +260,6 @@ end subroutine allocate_m_jastrow
 subroutine deallocate_m_jastrow()
     use jasn, only: deallocate_jasn
     use jaso, only: deallocate_jaso
-    use jaspar1, only: deallocate_jaspar1
-    use jaspar2, only: deallocate_jaspar2
     use jaspar3, only: deallocate_jaspar3
     use jaspar4, only: deallocate_jaspar4
     use jaspar6, only: deallocate_jaspar6
@@ -307,10 +269,10 @@ subroutine deallocate_m_jastrow()
 
     call deallocate_jasn()
     call deallocate_jaso()
-    call deallocate_jaspar1()
-    call deallocate_jaspar2()
     call deallocate_jaspar3()
     call deallocate_jaspar4()
     call deallocate_jaspar6()
     call deallocate_jaspointer()
 end subroutine deallocate_m_jastrow
+
+

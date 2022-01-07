@@ -2,10 +2,10 @@
 !        Optimization routine using stochastic reconfiguration
 !------------------------------------------------------------------------------
 !> @author
-!> Claudia Filippi
+!> Saverio Moroni, Claudia Filippi
 !
 ! DESCRIPTION:
-!> Opitmize the wave function parameters using the ADAM optimizer
+!> Optimize the wave function parameters using the SR method
 !
 ! URL           : https://github.com/filippi-claudia/champ
 !---------------------------------------------------------------------------

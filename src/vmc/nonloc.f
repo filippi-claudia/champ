@@ -357,7 +357,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use precision_kinds, only: dp
       implicit none
 
-      integer :: ic, iel, ier, iforce_analy, ii
+      integer :: ic, iel, ider, ier, iforce_analy, ii
       integer :: iorb, k, m, m0
 
       real(dp), dimension(3) :: x
@@ -367,14 +367,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(3,*) :: dorbn
       real(dp), dimension(3,ncent_tot,*) :: da_orbn
       real(dp), dimension(3) :: dtmp
-
-
-
-
-
-
-
-      ! call resize_tensor(coef, norb+nadorb, 2)
 
       if(iperiodic.eq.0) then
 
@@ -396,7 +388,9 @@ c get the value from the 3d-interpolated orbitals
 
         if(ier.eq.1) then
 c get basis functions for electron iel
-          call basis_fnse_v(iel,rvec_en,r_en)
+          ider=1
+          if(iforce_analy.gt.0) ider=2
+          call basis_fns(iel,iel,rvec_en,r_en,ider)
 
 ! Vectorization dependent code selection
 #ifdef VECTORIZATION
@@ -410,7 +404,6 @@ c get basis functions for electron iel
 #else
           do iorb=1,norb+nadorb
             orbn(iorb)=0.d0
-c           do 25 m=1,nbasis
             do m0=1,n0_nbasis(iel)
               m=n0_ibasis(m0,iel)
               orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
@@ -419,7 +412,6 @@ c           do 25 m=1,nbasis
 #endif
 
           if(iforce_analy.gt.0) then
-
             do iorb=1,norb
               do ic=1,ncent
                 do k=1,3

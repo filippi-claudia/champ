@@ -123,80 +123,6 @@ contains
 
 end module casula
 
-module chck
-    !> Never called
-    !> Arguments: bot
-    use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp) :: bot
-
-    private
-    public :: bot
-    save
-end module chck
-
-module cuspmat
-    !> Never called !
-    !> Arguments: cm, ishe, iwc3, neqs
-    use precision_kinds, only: dp
-    use vmc_mod, only: neqsx
-
-    implicit none
-
-    real(dp), dimension(:, :), allocatable :: cm !(neqsx,neqsx)
-    integer :: ishe
-    integer, dimension(:), allocatable :: iwc3 !(neqsx)
-    integer :: neqs
-
-    private
-    public :: cm, ishe, iwc3, neqs
-    public :: allocate_cuspmat, deallocate_cuspmat
-    save
-contains
-    subroutine allocate_cuspmat()
-        use vmc_mod, only: neqsx
-        if (.not. allocated(cm)) allocate (cm(neqsx, neqsx))
-        if (.not. allocated(iwc3)) allocate (iwc3(neqsx))
-    end subroutine allocate_cuspmat
-
-    subroutine deallocate_cuspmat()
-        if (allocated(iwc3)) deallocate (iwc3)
-        if (allocated(cm)) deallocate (cm)
-    end subroutine deallocate_cuspmat
-
-end module cuspmat
-
-module cuspmat4
-    !> Arguments: d, icusp, nterms
-    use vmc_mod, only: neqsx, mterms
-    use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp), dimension(:, :), allocatable :: d !(neqsx,mterms)
-    integer, dimension(:), allocatable :: iwc4 !(neqsx)
-    integer :: nterms
-    private
-
-    public :: d, iwc4, nterms
-    public :: allocate_cuspmat4, deallocate_cuspmat4
-    save
-contains
-    subroutine allocate_cuspmat4()
-        use vmc_mod, only: neqsx, mterms
-        if (.not. allocated(d)) allocate (d(neqsx, mterms))
-        if (.not. allocated(iwc4)) allocate (iwc4(neqsx))
-    end subroutine allocate_cuspmat4
-
-    subroutine deallocate_cuspmat4()
-        if (allocated(iwc4)) deallocate (iwc4)
-        if (allocated(d)) deallocate (d)
-    end subroutine deallocate_cuspmat4
-
-end module cuspmat4
-
 module distance_mod
     use precision_kinds, only: dp
     use vmc_mod, only: nmat_dim2
@@ -1121,7 +1047,6 @@ subroutine allocate_m_common()
     use casula, only: allocate_casula
     ! use coefs, only: allocate_coefs
     use csfs, only: allocate_csfs
-    use cuspmat, only: allocate_cuspmat
     use cuspmat4, only: allocate_cuspmat4
     ! use dets, only: allocate_dets
     use dets_equiv, only: allocate_dets_equiv
@@ -1158,7 +1083,6 @@ subroutine allocate_m_common()
     call allocate_casula()
     ! call allocate_coefs()
     call allocate_csfs()
-    call allocate_cuspmat()
     call allocate_cuspmat4()
     ! call allocate_dets()
     call allocate_dets_equiv()
@@ -1195,7 +1119,6 @@ subroutine deallocate_m_common()
     use casula, only: deallocate_casula
     use coefs, only: deallocate_coefs
     use csfs, only: deallocate_csfs
-    use cuspmat, only: deallocate_cuspmat
     use cuspmat4, only: deallocate_cuspmat4
     use dets, only: deallocate_dets
     use dets_equiv, only: deallocate_dets_equiv
@@ -1232,7 +1155,6 @@ subroutine deallocate_m_common()
     call deallocate_casula()
     call deallocate_coefs()
     call deallocate_csfs()
-    call deallocate_cuspmat()
     call deallocate_cuspmat4()
     call deallocate_dets()
     call deallocate_dets_equiv()
