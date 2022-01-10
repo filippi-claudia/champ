@@ -226,6 +226,8 @@ contains
         character(len=10), dimension(12)        :: extensions
         character(len=100)                      :: string_format  = '(A, T40, A)'
 
+        ! Make sure ounit default is stdout
+        ounit = output_unit
         ! Get all the command line arguments
 ! The next line is commented as all mpi processes read this information. old style
 

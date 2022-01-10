@@ -177,6 +177,8 @@ subroutine read_molecule_file(file_molecule)
     if (.not. allocated(symbol)) allocate(symbol(ncent))
     if (.not. allocated(iwctype)) allocate(iwctype(ncent), source=0)
     if (.not. allocated(unique)) allocate(unique(ncent))
+    unique = ''
+    symbol = ''
 
     if (wid) read(iunit,'(A)')  comment
     call bcast(comment)
