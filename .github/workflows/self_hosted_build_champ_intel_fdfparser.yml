@@ -23,9 +23,9 @@ jobs:
         which mpiifort
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
-        cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-        cmake --build build -- -j2
+        /usr/bin/cmake --version
+        /usr/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+        /usr/bin/cmake --build build -- -j2
         ulimit -s unlimited
 
     - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
