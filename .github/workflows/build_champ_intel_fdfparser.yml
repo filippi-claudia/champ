@@ -7,9 +7,9 @@ on:
     branches: [main]
 
 jobs:
-  build_champ_intel:
+  build_champ:
     name: Build CHAMP with Intel OneAPI
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 60
     defaults:
       run:
@@ -32,11 +32,11 @@ jobs:
     - name: install Intel oneapi components
       run: |
         sudo apt-get install -y intel-oneapi-common-vars
-        sudo apt-get install -y intel-oneapi-compiler-fortran
-        sudo apt-get install -y intel-oneapi-mkl
-        sudo apt-get install -y intel-oneapi-mkl-devel
-        sudo apt-get install -y intel-oneapi-mpi
-        sudo apt-get install -y intel-oneapi-mpi-devel
+        sudo apt-get install -y intel-oneapi-compiler-fortran-2021.3.0
+        sudo apt-get install -y intel-oneapi-mkl-2021.3.0
+        sudo apt-get install -y intel-oneapi-mkl-devel-2021.3.0
+        sudo apt-get install -y intel-oneapi-mpi-2021.3.0
+        sudo apt-get install -y intel-oneapi-mpi-devel-2021.3.0
 
     - name: Install Trexio
       run: |

@@ -7,9 +7,9 @@ on:
     branches: [main]
 
 jobs:
-  build_champ_gnu:
+  build_champ:
     name: Build CHAMP with GNU compiler
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 60
     defaults:
       run:
