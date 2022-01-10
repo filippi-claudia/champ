@@ -18,7 +18,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Compile the CHAMP code
       run: |
-        source /software/intel/oneapi/setvars.sh
+        module load compiler/latest
+        module load mkl/latest
+        module load mpi/latest
         printenv >> $GITHUB_ENV
         which mpiifort
         MPIRUN=`which mpirun`
