@@ -18,9 +18,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Compile the CHAMP code
       run: |
-        module load compiler/latest
-        module load mkl/latest
-        module load mpi/latest
+        source /software/intel/oneapi/setvars.sh
+        module load hdf5/1.12.1-intel
+        module load trexio/2.0.0-intel
         which mpiifort
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
