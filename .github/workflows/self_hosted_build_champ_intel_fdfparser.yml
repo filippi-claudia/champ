@@ -1,4 +1,4 @@
-name: Intel OneAPI Build and Testing on a self-hosted runner ccpgate
+name: Intel OneAPI Build and Testing on a self-hosted runner ccpgate/ccp01
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_champ:
-    name: Build CHAMP with Intel OneAPI self-hosted runner ccpgate
+    name: Build CHAMP with Intel OneAPI self-hosted runner ccpgate/ccp01
     runs-on: self-hosted
     timeout-minutes: 200
     defaults:
