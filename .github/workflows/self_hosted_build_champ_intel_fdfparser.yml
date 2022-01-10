@@ -21,18 +21,15 @@ jobs:
         module load compiler/latest
         module load mkl/latest
         module load mpi/latest
-        printenv >> $GITHUB_ENV
         which mpiifort
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         /software/cmake-3.22.1/bin/cmake --version
         /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
         /software/cmake-3.22.1/bin/cmake --build build -- -j2
-        ulimit -s unlimited
 
     - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
       run: |
-        ulimit -s unlimited
         echo "Running the tests using the new parser. H2 "
         cd tests/CI_test/VMC-H2
 
