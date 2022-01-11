@@ -760,7 +760,7 @@ jobs:
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_double.out  -e error
 
         echo "Comparing the energy with the reference one (total E = 26.2044165 +-  0.0180068) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_hdf5_double.out "total E" 26.2044165  0.0180068
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_hdf5_double.out "total E" -26.2044165  0.0180068
 
     - name: "Test 33 (Butadiene) TREXIO interface testing with TEXT backend on 1 processor"
       run: |
