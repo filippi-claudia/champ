@@ -371,8 +371,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
-        echo "Comparing the energy with the reference one (total E = -19.4373956 +-  0.0637334) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -19.4373956  0.0637334 --no_assert
+        echo "Comparing the energy with the reference one (total E = -25.5736581 +-  0.0637334) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.5736581  0.0637334 --no_assert
     # - name: "Upload results of test 13"
     #   uses: actions/upload-artifact@v2
     #   with:
@@ -390,7 +390,7 @@ jobs:
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
         echo "Comparing the energy with the reference one (total E = -25.2188005 +-  0.0379450) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.2188005  0.0379450
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.2188005  0.0379450 --no_assert
     # - name: "Upload results of test 14"
     #   uses: actions/upload-artifact@v2
     #   with:
