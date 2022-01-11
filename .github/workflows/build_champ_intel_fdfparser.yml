@@ -110,8 +110,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -1.0606661 +-  0.0037025) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0606661  0.0037025
+        echo "Comparing the energy with the reference one (total E = -1.0568201 +-  0.0037025) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0568201  0.0037025
     # - name: "Upload results of test 03"
     #   uses: actions/upload-artifact@v2
     #   with:
@@ -371,8 +371,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
-        echo "Comparing the energy with the reference one (total E = -25.6627410 +-  0.0637334) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.6627410  0.0637334 --no_assert
+        echo "Comparing the energy with the reference one (total E = -25.5736581 +-  0.0637334) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.5736581  0.0637334 --no_assert
     # - name: "Upload results of test 13"
     #   uses: actions/upload-artifact@v2
     #   with:
@@ -390,7 +390,7 @@ jobs:
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
 
         echo "Comparing the energy with the reference one (total E = -25.2188005 +-  0.0379450) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.2188005  0.0379450
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.2188005  0.0379450 --no_assert
     # - name: "Upload results of test 14"
     #   uses: actions/upload-artifact@v2
     #   with:
@@ -759,8 +759,8 @@ jobs:
         echo "Running the calculation with trexio library linked"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_double.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -26.1862817 +-  0.0180068) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_hdf5_double.out "total E" -26.1862817  0.0180068
+        echo "Comparing the energy with the reference one (total E = 26.2044165 +-  0.0180068) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_hdf5_double.out "total E" -26.2044165  0.0180068
 
     - name: "Test 33 (Butadiene) TREXIO interface testing with TEXT backend on 1 processor"
       run: |
@@ -771,10 +771,10 @@ jobs:
         echo "Running the calculation with trexio library linked"
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500_text.inp  -o vmc_optimization_500_text_single.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -26.2164721 +-  0.0280294) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_text_single.out "total E" -26.2164721  0.0280294
+        echo "Comparing the energy with the reference one (total E = -26.2265231 +-  0.0280294) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_text_single.out "total E" -26.2265231  0.0280294
 
-    - name: "Test 32 (Butadiene) TREXIO interface testing with TEXT backend on 2 processor"
+    - name: "Test 34 (Butadiene) TREXIO interface testing with TEXT backend on 2 processor"
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. Butadiene VMC 500 dets"
@@ -783,8 +783,8 @@ jobs:
         echo "Running the calculation with trexio library linked"
         mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500_text.inp  -o vmc_optimization_500_text_double.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -26.1862817 +-  0.0180068) "
-        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_text_double.out "total E" -26.1862817  0.0180068
+        echo "Comparing the energy with the reference one (total E = -26.2044165 +-  0.0180068) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_text_double.out "total E" -26.2044165  0.0180068
 
 
     - name: "Zip the test reults"
