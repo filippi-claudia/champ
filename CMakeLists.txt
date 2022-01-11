@@ -125,13 +125,14 @@ gitinfo(${CMAKE_SOURCE_DIR})
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-02" "-cpp" "-mcmodel=large" "-ffree-line-length-132")
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-132")
+  # list(APPEND Fortran_FLAGS "-cpp" "-mcmodel=large" "-ffree-line-length-132")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
     list(APPEND Fortran_FLAGS "-fcheck=all" "-fbacktrace"
         "-g" "-ffpe-trap=invalid,zero,overflow" "-Wall" "-Wextra"
-        "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument" 
+        "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
         "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
         "-Wno-c-binding-type" "-Wno-function-elimination"
         )
