@@ -33,9 +33,9 @@ contains
         use pseudo_mod, only: MPS_L
         use force_mod, only: MFORCE
 
-        if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
-        if (.not. allocated(vps)) allocate (vps(nelec, ncent_tot, MPS_L))
-        if (.not. allocated(vpso)) allocate (vpso(nelec, ncent_tot, MPS_L, MFORCE))
+        if (.not. allocated(lpot)) allocate (lpot(nctype_tot), source=0)
+        if (.not. allocated(vps)) allocate (vps(nelec, ncent_tot, MPS_L), source=0.0_dp)
+        if (.not. allocated(vpso)) allocate (vpso(nelec, ncent_tot, MPS_L, MFORCE), source=0.0_dp)
     end subroutine allocate_pseudo
 
     subroutine deallocate_pseudo()
@@ -71,15 +71,15 @@ contains
         use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MPS_GRID
 
-        if (.not. allocated(arg)) allocate (arg(nctype_tot))
-        if (.not. allocated(arg_ps)) allocate (arg_ps(nctype_tot))
-        if (.not. allocated(d2pot)) allocate (d2pot(MPS_GRID, nctype_tot, MPS_L))
-        if (.not. allocated(nr_ps)) allocate (nr_ps(nctype_tot))
-        if (.not. allocated(r0)) allocate (r0(nctype_tot))
-        if (.not. allocated(r0_ps)) allocate (r0_ps(nctype_tot))
-        if (.not. allocated(rmax)) allocate (rmax(nctype_tot))
-        if (.not. allocated(rmax_ps)) allocate (rmax_ps(nctype_tot))
-        if (.not. allocated(vpseudo)) allocate (vpseudo(MPS_GRID, nctype_tot, MPS_L))
+        if (.not. allocated(arg)) allocate (arg(nctype_tot), source=0.0_dp)
+        if (.not. allocated(arg_ps)) allocate (arg_ps(nctype_tot), source=0.0_dp)
+        if (.not. allocated(d2pot)) allocate (d2pot(MPS_GRID, nctype_tot, MPS_L), source=0.0_dp)
+        if (.not. allocated(nr_ps)) allocate (nr_ps(nctype_tot), source=0)
+        if (.not. allocated(r0)) allocate (r0(nctype_tot), source=0.0_dp)
+        if (.not. allocated(r0_ps)) allocate (r0_ps(nctype_tot), source=0.0_dp)
+        if (.not. allocated(rmax)) allocate (rmax(nctype_tot), source=0.0_dp)
+        if (.not. allocated(rmax_ps)) allocate (rmax_ps(nctype_tot), source=0.0_dp)
+        if (.not. allocated(vpseudo)) allocate (vpseudo(MPS_GRID, nctype_tot, MPS_L), source=0.0_dp)
     end subroutine allocate_pseudo_tm
 
     subroutine deallocate_pseudo_tm()

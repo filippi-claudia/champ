@@ -60,12 +60,12 @@ module estcum
      subroutine allocate_estcum()
          use force_mod, only: MFORCE
          use mstates_mod, only: MSTATES
-         if (.not. allocated(ecum)) allocate (ecum(MSTATES, MFORCE))
-         if (.not. allocated(ecum1)) allocate (ecum1(MSTATES))
-         if (.not. allocated(pecum)) allocate (pecum(MSTATES))
-         if (.not. allocated(tjfcum)) allocate (tjfcum(MSTATES))
-         if (.not. allocated(tpbcum)) allocate (tpbcum(MSTATES))
-         if (.not. allocated(avcum)) allocate (avcum(MSTATES*3))
+         if (.not. allocated(ecum)) allocate (ecum(MSTATES, MFORCE), source=0.0_dp)
+         if (.not. allocated(ecum1)) allocate (ecum1(MSTATES), source=0.0_dp)
+         if (.not. allocated(pecum)) allocate (pecum(MSTATES), source=0.0_dp)
+         if (.not. allocated(tjfcum)) allocate (tjfcum(MSTATES), source=0.0_dp)
+         if (.not. allocated(tpbcum)) allocate (tpbcum(MSTATES), source=0.0_dp)
+         if (.not. allocated(avcum)) allocate (avcum(MSTATES*3), source=0.0_dp)
      end subroutine allocate_estcum
 
      subroutine deallocate_estcum()
@@ -78,14 +78,14 @@ module estcum
      end subroutine deallocate_estcum
 
      subroutine allocate_estcum_dmc()
-         if (.not. allocated(egcum)) allocate(egcum(MFORCE))
-         if (.not. allocated(egcum1)) allocate(egcum1(MFORCE))
-         if (.not. allocated(pecum_dmc)) allocate(pecum_dmc(MFORCE))
-         if (.not. allocated(taucum)) allocate(taucum(MFORCE))
-         if (.not. allocated(tjfcum_dmc)) allocate(tjfcum_dmc(MFORCE))
-         if (.not. allocated(tpbcum_dmc)) allocate(tpbcum_dmc(MFORCE))
-         if (.not. allocated(wgcum)) allocate(wgcum(MFORCE))
-         if (.not. allocated(wgcum1)) allocate(wgcum1(MFORCE))
+         if (.not. allocated(egcum)) allocate(egcum(MFORCE), source=0.0_dp)
+         if (.not. allocated(egcum1)) allocate(egcum1(MFORCE), source=0.0_dp)
+         if (.not. allocated(pecum_dmc)) allocate(pecum_dmc(MFORCE), source=0.0_dp)
+         if (.not. allocated(taucum)) allocate(taucum(MFORCE), source=0.0_dp)
+         if (.not. allocated(tjfcum_dmc)) allocate(tjfcum_dmc(MFORCE), source=0.0_dp)
+         if (.not. allocated(tpbcum_dmc)) allocate(tpbcum_dmc(MFORCE), source=0.0_dp)
+         if (.not. allocated(wgcum)) allocate(wgcum(MFORCE), source=0.0_dp)
+         if (.not. allocated(wgcum1)) allocate(wgcum1(MFORCE), source=0.0_dp)
      end subroutine allocate_estcum_dmc
 
      subroutine deallocate_estcum_dmc()
@@ -117,8 +117,8 @@ module estcum
  contains
      subroutine allocate_estsig()
          use mstates_mod, only: MSTATES
-         if (.not. allocated(ecm21s)) allocate (ecm21s(MSTATES))
-         if (.not. allocated(ecum1s)) allocate (ecum1s(MSTATES))
+         if (.not. allocated(ecm21s)) allocate (ecm21s(MSTATES), source=0.0_dp)
+         if (.not. allocated(ecum1s)) allocate (ecum1s(MSTATES), source=0.0_dp)
      end subroutine allocate_estsig
 
      subroutine deallocate_estsig()
@@ -190,11 +190,11 @@ module estcum
      subroutine allocate_estsum()
          use force_mod, only: MFORCE
          use mstates_mod, only: MSTATES
-         if (.not. allocated(esum)) allocate (esum(MSTATES, MFORCE))
-         if (.not. allocated(esum1)) allocate (esum1(MSTATES))
-         if (.not. allocated(pesum)) allocate (pesum(MSTATES))
-         if (.not. allocated(tjfsum)) allocate (tjfsum(MSTATES))
-         if (.not. allocated(tpbsum)) allocate (tpbsum(MSTATES))
+         if (.not. allocated(esum)) allocate (esum(MSTATES, MFORCE), source=0.0_dp)
+         if (.not. allocated(esum1)) allocate (esum1(MSTATES), source=0.0_dp)
+         if (.not. allocated(pesum)) allocate (pesum(MSTATES), source=0.0_dp)
+         if (.not. allocated(tjfsum)) allocate (tjfsum(MSTATES), source=0.0_dp)
+         if (.not. allocated(tpbsum)) allocate (tpbsum(MSTATES), source=0.0_dp)
      end subroutine allocate_estsum
 
      subroutine deallocate_estsum()
@@ -207,16 +207,16 @@ module estcum
 
      subroutine allocate_estsum_dmc()
          use force_mod, only: MFORCE
-         if (.not. allocated(egsum)) allocate(egsum(MFORCE))
-         if (.not. allocated(egsum1)) allocate(egsum1(MFORCE))
-         if (.not. allocated(esum1_dmc)) allocate(esum1_dmc(MFORCE))
-         if (.not. allocated(pesum_dmc)) allocate(pesum_dmc(MFORCE))
-         if (.not. allocated(tausum)) allocate(tausum(MFORCE))
-         if (.not. allocated(tjfsum_dmc)) allocate(tjfsum_dmc(MFORCE))
-         if (.not. allocated(tpbsum_dmc)) allocate(tpbsum_dmc(MFORCE))
-         if (.not. allocated(wgsum)) allocate(wgsum(MFORCE))
-         if (.not. allocated(wgsum1)) allocate(wgsum1(MFORCE))
-         if (.not. allocated(wsum1)) allocate(wsum1(MFORCE))
+         if (.not. allocated(egsum)) allocate(egsum(MFORCE), source=0.0_dp)
+         if (.not. allocated(egsum1)) allocate(egsum1(MFORCE), source=0.0_dp)
+         if (.not. allocated(esum1_dmc)) allocate(esum1_dmc(MFORCE), source=0.0_dp)
+         if (.not. allocated(pesum_dmc)) allocate(pesum_dmc(MFORCE), source=0.0_dp)
+         if (.not. allocated(tausum)) allocate(tausum(MFORCE), source=0.0_dp)
+         if (.not. allocated(tjfsum_dmc)) allocate(tjfsum_dmc(MFORCE), source=0.0_dp)
+         if (.not. allocated(tpbsum_dmc)) allocate(tpbsum_dmc(MFORCE), source=0.0_dp)
+         if (.not. allocated(wgsum)) allocate(wgsum(MFORCE), source=0.0_dp)
+         if (.not. allocated(wgsum1)) allocate(wgsum1(MFORCE), source=0.0_dp)
+         if (.not. allocated(wsum1)) allocate(wsum1(MFORCE), source=0.0_dp)
      end subroutine allocate_estsum_dmc
 
      subroutine deallocate_estsum_dmc()
@@ -251,8 +251,8 @@ module estcum
  contains
      subroutine allocate_estpsi()
          use mstates_mod, only: MSTATES
-         if (.not. allocated(apsi)) allocate (apsi(MSTATES))
-         if (.not. allocated(detref)) allocate (detref(2))
+         if (.not. allocated(apsi)) allocate (apsi(MSTATES), source=0.0_dp)
+         if (.not. allocated(detref)) allocate (detref(2), source=0.0_dp)
      end subroutine allocate_estpsi
 
      subroutine deallocate_estpsi()
@@ -320,12 +320,12 @@ module estcum
      subroutine allocate_est2cm()
          use force_mod, only: MFORCE
          use mstates_mod, only: MSTATES
-         if (.not. allocated(ecm2))   allocate(ecm2(MSTATES, MFORCE))
-         if (.not. allocated(ecm21))  allocate(ecm21(MSTATES))
-         if (.not. allocated(pecm2))  allocate(pecm2(MSTATES))
-         if (.not. allocated(tjfcm2)) allocate(tjfcm2(MSTATES))
-         if (.not. allocated(tpbcm2)) allocate(tpbcm2(MSTATES))
-         if (.not. allocated(avcm2))  allocate(avcm2(MSTATES*3))
+         if (.not. allocated(ecm2))   allocate(ecm2(MSTATES, MFORCE), source=0.0_dp)
+         if (.not. allocated(ecm21))  allocate(ecm21(MSTATES), source=0.0_dp)
+         if (.not. allocated(pecm2))  allocate(pecm2(MSTATES), source=0.0_dp)
+         if (.not. allocated(tjfcm2)) allocate(tjfcm2(MSTATES), source=0.0_dp)
+         if (.not. allocated(tpbcm2)) allocate(tpbcm2(MSTATES), source=0.0_dp)
+         if (.not. allocated(avcm2))  allocate(avcm2(MSTATES*3), source=0.0_dp)
      end subroutine allocate_est2cm
 
      subroutine deallocate_est2cm()
@@ -338,13 +338,13 @@ module estcum
      end subroutine deallocate_est2cm
 
      subroutine allocate_est2cm_dmc()
-         if (.not. allocated(egcm2))      allocate(egcm2(MFORCE))
-         if (.not. allocated(egcm21))     allocate(egcm21(MFORCE))
-         if (.not. allocated(pecm2_dmc))  allocate(pecm2_dmc(MFORCE))
-         if (.not. allocated(tjfcm_dmc))  allocate(tjfcm_dmc(MFORCE))
-         if (.not. allocated(tpbcm2_dmc)) allocate(tpbcm2_dmc(MFORCE))
-         if (.not. allocated(wgcm2))      allocate(wgcm2(MFORCE))
-         if (.not. allocated(wgcm21))     allocate(wgcm21(MFORCE))
+         if (.not. allocated(egcm2))      allocate(egcm2(MFORCE), source=0.0_dp)
+         if (.not. allocated(egcm21))     allocate(egcm21(MFORCE), source=0.0_dp)
+         if (.not. allocated(pecm2_dmc))  allocate(pecm2_dmc(MFORCE), source=0.0_dp)
+         if (.not. allocated(tjfcm_dmc))  allocate(tjfcm_dmc(MFORCE), source=0.0_dp)
+         if (.not. allocated(tpbcm2_dmc)) allocate(tpbcm2_dmc(MFORCE), source=0.0_dp)
+         if (.not. allocated(wgcm2))      allocate(wgcm2(MFORCE), source=0.0_dp)
+         if (.not. allocated(wgcm21))     allocate(wgcm21(MFORCE), source=0.0_dp)
      end subroutine allocate_est2cm_dmc
 
      subroutine deallocate_est2cm_dmc()

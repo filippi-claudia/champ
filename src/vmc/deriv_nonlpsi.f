@@ -32,7 +32,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       real(dp), parameter :: half = 0.5d0
       real(dp), parameter :: eps = 1.d-12
 
-
+      deriv_psinl = 0.0
 
 
 
@@ -131,6 +131,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(*) :: gn
       real(dp), parameter :: one = 1.d0
 
+      deriv_psianl = 0.0
 
 
 

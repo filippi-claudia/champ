@@ -53,8 +53,8 @@ module ci001_blk
 contains
     subroutine allocate_ci001_blk()
         use optci, only: mxciterm, mxcireduced
-        if (.not. allocated(ci_o)) allocate (ci_o(mxciterm))
-        if (.not. allocated(ci_oe)) allocate (ci_oe(mxciterm, mxcireduced))
+        if (.not. allocated(ci_o)) allocate (ci_o(mxciterm), source=0.0_dp)
+        if (.not. allocated(ci_oe)) allocate (ci_oe(mxciterm, mxcireduced), source=0.0_dp)
     end subroutine allocate_ci001_blk
 
     subroutine deallocate_ci001_blk()
@@ -79,8 +79,8 @@ module ci002_blk
 contains
     subroutine allocate_ci002_blk()
         use optci, only: mxciterm, mxcireduced
-        if (.not. allocated(ci_o_old)) allocate (ci_o_old(mxciterm))
-        if (.not. allocated(ci_oe_old)) allocate (ci_oe_old(mxciterm, mxcireduced))
+        if (.not. allocated(ci_o_old)) allocate (ci_o_old(mxciterm), source=0.0_dp)
+        if (.not. allocated(ci_oe_old)) allocate (ci_oe_old(mxciterm, mxcireduced), source=0.0_dp)
     end subroutine allocate_ci002_blk
 
     subroutine deallocate_ci002_blk()
@@ -105,8 +105,8 @@ module ci003_blk
 contains
     subroutine allocate_ci003_blk()
         use optci, only: mxciterm
-        if (.not. allocated(ci_e)) allocate (ci_e(mxciterm))
-        if (.not. allocated(ci_e_old)) allocate (ci_e_old(mxciterm))
+        if (.not. allocated(ci_e)) allocate (ci_e(mxciterm), source=0.0_dp)
+        if (.not. allocated(ci_e_old)) allocate (ci_e_old(mxciterm), source=0.0_dp)
     end subroutine allocate_ci003_blk
 
     subroutine deallocate_ci003_blk()
@@ -131,8 +131,8 @@ module ci004_blk
 contains
     subroutine allocate_ci004_blk()
         use optci, only: mxciterm
-        if (.not. allocated(ci_de)) allocate (ci_de(mxciterm))
-        if (.not. allocated(ci_de_old)) allocate (ci_de_old(mxciterm))
+        if (.not. allocated(ci_de)) allocate (ci_de(mxciterm), source=0.0_dp)
+        if (.not. allocated(ci_de_old)) allocate (ci_de_old(mxciterm), source=0.0_dp)
     end subroutine allocate_ci004_blk
 
     subroutine deallocate_ci004_blk()
@@ -157,8 +157,8 @@ module ci005_blk
 contains
     subroutine allocate_ci005_blk()
         use optci, only: mxciterm
-        if (.not. allocated(ci_o_cum)) allocate (ci_o_cum(mxciterm))
-        if (.not. allocated(ci_o_sum)) allocate (ci_o_sum(mxciterm))
+        if (.not. allocated(ci_o_cum)) allocate (ci_o_cum(mxciterm), source=0.0_dp)
+        if (.not. allocated(ci_o_sum)) allocate (ci_o_sum(mxciterm), source=0.0_dp)
     end subroutine allocate_ci005_blk
 
     subroutine deallocate_ci005_blk()
@@ -183,8 +183,8 @@ module ci006_blk
 contains
     subroutine allocate_ci006_blk()
         use optci, only: mxciterm
-        if (.not. allocated(ci_de_cum)) allocate (ci_de_cum(mxciterm))
-        if (.not. allocated(ci_de_sum)) allocate (ci_de_sum(mxciterm))
+        if (.not. allocated(ci_de_cum)) allocate (ci_de_cum(mxciterm), source=0.0_dp)
+        if (.not. allocated(ci_de_sum)) allocate (ci_de_sum(mxciterm), source=0.0_dp)
     end subroutine allocate_ci006_blk
 
     subroutine deallocate_ci006_blk()
@@ -210,9 +210,9 @@ module ci008_blk
 contains
     subroutine allocate_ci008_blk()
         use optci, only: mxciterm, mxcireduced
-        if (.not. allocated(ci_oe_cm2)) allocate (ci_oe_cm2(mxciterm, mxcireduced))
-        if (.not. allocated(ci_oe_cum)) allocate (ci_oe_cum(mxciterm, mxcireduced))
-        if (.not. allocated(ci_oe_sum)) allocate (ci_oe_sum(mxciterm, mxcireduced))
+        if (.not. allocated(ci_oe_cm2)) allocate (ci_oe_cm2(mxciterm, mxcireduced), source=0.0_dp)
+        if (.not. allocated(ci_oe_cum)) allocate (ci_oe_cum(mxciterm, mxcireduced), source=0.0_dp)
+        if (.not. allocated(ci_oe_sum)) allocate (ci_oe_sum(mxciterm, mxcireduced), source=0.0_dp)
     end subroutine allocate_ci008_blk
 
     subroutine deallocate_ci008_blk()
@@ -239,9 +239,9 @@ module ci009_blk
 contains
     subroutine allocate_ci009_blk()
         use optci, only: ncimatdim
-        if (.not. allocated(ci_oo_cm2)) allocate (ci_oo_cm2(ncimatdim))
-        if (.not. allocated(ci_oo_cum)) allocate (ci_oo_cum(ncimatdim))
-        if (.not. allocated(ci_oo_sum)) allocate (ci_oo_sum(ncimatdim))
+        if (.not. allocated(ci_oo_cm2)) allocate (ci_oo_cm2(ncimatdim), source=0.0_dp)
+        if (.not. allocated(ci_oo_cum)) allocate (ci_oo_cum(ncimatdim), source=0.0_dp)
+        if (.not. allocated(ci_oo_sum)) allocate (ci_oo_sum(ncimatdim), source=0.0_dp)
     end subroutine allocate_ci009_blk
 
     subroutine deallocate_ci009_blk()
@@ -267,8 +267,8 @@ module ci010_blk
 contains
     subroutine allocate_ci010_blk()
         use optci, only: ncimatdim
-        if (.not. allocated(ci_ooe_cum)) allocate (ci_ooe_cum(ncimatdim))
-        if (.not. allocated(ci_ooe_sum)) allocate (ci_ooe_sum(ncimatdim))
+        if (.not. allocated(ci_ooe_cum)) allocate (ci_ooe_cum(ncimatdim), source=0.0_dp)
+        if (.not. allocated(ci_ooe_sum)) allocate (ci_ooe_sum(ncimatdim), source=0.0_dp)
     end subroutine allocate_ci010_blk
 
     subroutine deallocate_ci010_blk()

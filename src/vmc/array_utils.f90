@@ -95,7 +95,7 @@ contains
         new_dim = dim_cols + size(brr, 2)
 
         ! move to temporal array
-        allocate (tmp_array(dim_rows, new_dim))
+        allocate (tmp_array(dim_rows, new_dim), source=0.0_dp)
         tmp_array(:, :dim_cols) = arr
 
         ! Move to new expanded matrix
@@ -202,7 +202,7 @@ contains
         nrows = size(mat, 1)
         ncols = size(mat, 2)
 
-        allocate (tmp_array(nrows))
+        allocate (tmp_array(nrows), source=0.0_dp)
 
         do i = idx_start, ncols
 
@@ -228,6 +228,7 @@ contains
         integer, intent(in) :: i
         integer :: j, k
 
+        k = -1
         do j = 1, size(keys)
             if (keys(j) == i) then
                 k = j

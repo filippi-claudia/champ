@@ -64,7 +64,7 @@ c xnow = average of values of x from metrop
 c xcum = accumulated sums of xnow
 c xcm2 = accumulated sums of xnow**2
 
-      allocate(enow(MSTATES, MFORCE))
+      allocate(enow(MSTATES, MFORCE), source=0.0_dp)
 
 
 c collect cumulative averages

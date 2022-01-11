@@ -42,10 +42,10 @@ module ewald_mod
  contains
      subroutine allocate_ewald()
          use ewald_mod, only: NCOEFX, NGNORMX, NGNORM_SIMX
-         if (.not. allocated(b_coul)) allocate (b_coul(NCOEFX))
-         if (.not. allocated(b_coul_sim)) allocate (b_coul_sim(NCOEFX))
-         if (.not. allocated(y_coul)) allocate (y_coul(NGNORMX))
-         if (.not. allocated(y_coul_sim)) allocate (y_coul_sim(NGNORM_SIMX))
+         if (.not. allocated(b_coul)) allocate (b_coul(NCOEFX), source=0.0_dp)
+         if (.not. allocated(b_coul_sim)) allocate (b_coul_sim(NCOEFX), source=0.0_dp)
+         if (.not. allocated(y_coul)) allocate (y_coul(NGNORMX), source=0.0_dp)
+         if (.not. allocated(y_coul_sim)) allocate (y_coul_sim(NGNORM_SIMX), source=0.0_dp)
      end subroutine allocate_ewald
 
      subroutine deallocate_ewald()
@@ -73,7 +73,7 @@ module ewald_mod
  contains
      subroutine allocate_ewald_basis()
          use ewald_mod, only: NGNORM_BIGX
-         if (.not. allocated(vps_basis_fourier)) allocate (vps_basis_fourier(NGNORM_BIGX))
+         if (.not. allocated(vps_basis_fourier)) allocate (vps_basis_fourier(NGNORM_BIGX), source=0.0_dp)
      end subroutine allocate_ewald_basis
 
      subroutine deallocate_ewald_basis()
@@ -162,30 +162,30 @@ module ewald_mod
          use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
          use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
          use vmc_mod, only: norb_tot
-         if (.not. allocated(glatt)) allocate (glatt(3, 3))
-         if (.not. allocated(glatt_inv)) allocate (glatt_inv(3, 3))
-         if (.not. allocated(glatt_sim)) allocate (glatt_sim(3, 3))
-         if (.not. allocated(gnorm)) allocate (gnorm(NGNORM_BIGX))
-         if (.not. allocated(gnorm_sim)) allocate (gnorm_sim(NGNORM_SIM_BIGX))
-         if (.not. allocated(gvec)) allocate (gvec(3, NGVEC_BIGX))
-         if (.not. allocated(gvec_sim)) allocate (gvec_sim(3, NGVEC_SIM_BIGX))
-         if (.not. allocated(igmult)) allocate (igmult(NGNORM_BIGX))
-         if (.not. allocated(igmult_sim)) allocate (igmult_sim(NGNORM_SIM_BIGX))
-         if (.not. allocated(igvec)) allocate (igvec(3, NGVEC_BIGX))
-         if (.not. allocated(igvec_sim)) allocate (igvec_sim(3, NGVEC_SIM_BIGX))
-         if (.not. allocated(ireal_imag)) allocate (ireal_imag(norb_tot))
-         if (.not. allocated(k_inv)) allocate (k_inv(IVOL_RATIO))
-         if (.not. allocated(kvec)) allocate (kvec(3, IVOL_RATIO))
-         if (.not. allocated(nband)) allocate (nband(IVOL_RATIO))
-         if (.not. allocated(ng1d)) allocate (ng1d(3))
-         if (.not. allocated(ng1d_sim)) allocate (ng1d_sim(3))
-         if (.not. allocated(rknorm)) allocate (rknorm(IVOL_RATIO))
-         if (.not. allocated(rkvec)) allocate (rkvec(3, IVOL_RATIO))
-         if (.not. allocated(rkvec_shift)) allocate (rkvec_shift(3))
-         if (.not. allocated(rlatt)) allocate (rlatt(3, 3))
-         if (.not. allocated(rlatt_inv)) allocate (rlatt_inv(3, 3))
-         if (.not. allocated(rlatt_sim)) allocate (rlatt_sim(3, 3))
-         if (.not. allocated(rlatt_sim_inv)) allocate (rlatt_sim_inv(3, 3))
+         if (.not. allocated(glatt)) allocate (glatt(3, 3), source=0.0_dp)
+         if (.not. allocated(glatt_inv)) allocate (glatt_inv(3, 3), source=0.0_dp)
+         if (.not. allocated(glatt_sim)) allocate (glatt_sim(3, 3), source=0.0_dp)
+         if (.not. allocated(gnorm)) allocate (gnorm(NGNORM_BIGX), source=0.0_dp)
+         if (.not. allocated(gnorm_sim)) allocate (gnorm_sim(NGNORM_SIM_BIGX), source=0.0_dp)
+         if (.not. allocated(gvec)) allocate (gvec(3, NGVEC_BIGX), source=0.0_dp)
+         if (.not. allocated(gvec_sim)) allocate (gvec_sim(3, NGVEC_SIM_BIGX), source=0.0_dp)
+         if (.not. allocated(igmult)) allocate (igmult(NGNORM_BIGX), source=0)
+         if (.not. allocated(igmult_sim)) allocate (igmult_sim(NGNORM_SIM_BIGX), source=0)
+         if (.not. allocated(igvec)) allocate (igvec(3, NGVEC_BIGX), source=0)
+         if (.not. allocated(igvec_sim)) allocate (igvec_sim(3, NGVEC_SIM_BIGX), source=0)
+         if (.not. allocated(ireal_imag)) allocate (ireal_imag(norb_tot), source=0)
+         if (.not. allocated(k_inv)) allocate (k_inv(IVOL_RATIO), source=0)
+         if (.not. allocated(kvec)) allocate (kvec(3, IVOL_RATIO), source=0)
+         if (.not. allocated(nband)) allocate (nband(IVOL_RATIO), source=0)
+         if (.not. allocated(ng1d)) allocate (ng1d(3), source=0)
+         if (.not. allocated(ng1d_sim)) allocate (ng1d_sim(3), source=0)
+         if (.not. allocated(rknorm)) allocate (rknorm(IVOL_RATIO), source=0.0_dp)
+         if (.not. allocated(rkvec)) allocate (rkvec(3, IVOL_RATIO), source=0.0_dp)
+         if (.not. allocated(rkvec_shift)) allocate (rkvec_shift(3), source=0.0_dp)
+         if (.not. allocated(rlatt)) allocate (rlatt(3, 3), source=0.0_dp)
+         if (.not. allocated(rlatt_inv)) allocate (rlatt_inv(3, 3), source=0.0_dp)
+         if (.not. allocated(rlatt_sim)) allocate (rlatt_sim(3, 3), source=0.0_dp)
+         if (.not. allocated(rlatt_sim_inv)) allocate (rlatt_sim_inv(3, 3), source=0.0_dp)
      end subroutine allocate_periodic
 
      subroutine deallocate_periodic()
@@ -244,13 +244,13 @@ module ewald_mod
          use ewald_mod, only: IVOL_RATIO
          use ewald_mod, only: NGVECX
          use vmc_mod, only: norb_tot
-         if (.not. allocated(c_im)) allocate (c_im(NGVECX, norb_tot))
-         if (.not. allocated(c_ip)) allocate (c_ip(NGVECX, norb_tot))
-         if (.not. allocated(c_rm)) allocate (c_rm(NGVECX, norb_tot))
-         if (.not. allocated(c_rp)) allocate (c_rp(NGVECX, norb_tot))
-         if (.not. allocated(isortg)) allocate (isortg(NGVECX, norb_tot))
-         if (.not. allocated(isortk)) allocate (isortk(IVOL_RATIO))
-         if (.not. allocated(ngorb)) allocate (ngorb(norb_tot))
+         if (.not. allocated(c_im)) allocate (c_im(NGVECX, norb_tot), source=0.0_dp)
+         if (.not. allocated(c_ip)) allocate (c_ip(NGVECX, norb_tot), source=0.0_dp)
+         if (.not. allocated(c_rm)) allocate (c_rm(NGVECX, norb_tot), source=0.0_dp)
+         if (.not. allocated(c_rp)) allocate (c_rp(NGVECX, norb_tot), source=0.0_dp)
+         if (.not. allocated(isortg)) allocate (isortg(NGVECX, norb_tot), source=0)
+         if (.not. allocated(isortk)) allocate (isortk(IVOL_RATIO), source=0)
+         if (.not. allocated(ngorb)) allocate (ngorb(norb_tot), source=0)
      end subroutine allocate_pworbital
 
      subroutine deallocate_pworbital()
@@ -286,9 +286,9 @@ module ewald_mod
      subroutine allocate_test()
          use ewald_mod, only: NGNORM_BIGX
          use ewald_mod, only: NGNORM_SIM_BIGX
-         if (.not. allocated(vbare_coul)) allocate (vbare_coul(NGNORM_SIM_BIGX))
-         if (.not. allocated(vbare_jas)) allocate (vbare_jas(NGNORM_SIM_BIGX))
-         if (.not. allocated(vbare_psp)) allocate (vbare_psp(NGNORM_BIGX))
+         if (.not. allocated(vbare_coul)) allocate (vbare_coul(NGNORM_SIM_BIGX), source=0.0_dp)
+         if (.not. allocated(vbare_jas)) allocate (vbare_jas(NGNORM_SIM_BIGX), source=0.0_dp)
+         if (.not. allocated(vbare_psp)) allocate (vbare_psp(NGNORM_BIGX), source=0.0_dp)
      end subroutine allocate_test
 
      subroutine deallocate_test()
@@ -337,13 +337,13 @@ module ewald_mod
      subroutine allocate_tempor_test()
          use ewald_mod, only: IVOL_RATIO
          use ewald_mod, only: NGVEC_BIGX
-         if (.not. allocated(c_imag)) allocate (c_imag(NGVEC_BIGX))
-         if (.not. allocated(c_real)) allocate (c_real(NGVEC_BIGX))
-         if (.not. allocated(igvec_dft)) allocate (igvec_dft(3, NGVEC_BIGX))
-         if (.not. allocated(iwgvec)) allocate (iwgvec(NGVEC_BIGX))
-         if (.not. allocated(ngg)) allocate (ngg(IVOL_RATIO))
-         if (.not. allocated(rkvec_tmp)) allocate (rkvec_tmp(3))
-         if (.not. allocated(rkvec_tmp2)) allocate (rkvec_tmp2(3))
+         if (.not. allocated(c_imag)) allocate (c_imag(NGVEC_BIGX), source=0.0_dp)
+         if (.not. allocated(c_real)) allocate (c_real(NGVEC_BIGX), source=0.0_dp)
+         if (.not. allocated(igvec_dft)) allocate (igvec_dft(3, NGVEC_BIGX), source=0)
+         if (.not. allocated(iwgvec)) allocate (iwgvec(NGVEC_BIGX), source=0)
+         if (.not. allocated(ngg)) allocate (ngg(IVOL_RATIO), source=0)
+         if (.not. allocated(rkvec_tmp)) allocate (rkvec_tmp(3), source=0.0_dp)
+         if (.not. allocated(rkvec_tmp2)) allocate (rkvec_tmp2(3), source=0.0_dp)
      end subroutine allocate_tempor_test
 
      subroutine deallocate_tempor_test()

@@ -123,7 +123,7 @@ c     call flush(6)
         call setup_force
        else
         ! debug line. ravindra
-        if (.not. allocated(iwftype)) allocate (iwftype(nforce))
+        if (.not. allocated(iwftype)) allocate (iwftype(nforce), source=0)
         nwprod=1
         nwftype=1
         iwftype(1)=1
