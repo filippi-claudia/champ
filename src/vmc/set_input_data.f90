@@ -9,6 +9,7 @@ subroutine inputzex
     use contrl_per, only: iperiodic
     use wfsec, only: nwftype
     use method_opt, only: method
+    use precision_kinds,    only: dp
       implicit none
 
       integer :: i, iwft
@@ -16,9 +17,9 @@ subroutine inputzex
 
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(zex)) allocate (zex(nbasis, 3))
+        if (.not. allocated(zex)) allocate (zex(nbasis, 3), source=0.0_dp)
     else
-        if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
+        if (.not. allocated(zex)) allocate (zex(nbasis, nwftype), source=0.0_dp)
     endif
 
     if (numr .eq. 0 .and. iperiodic .eq. 0) &
@@ -67,7 +68,6 @@ subroutine multideterminants_define(iflag, icheck)
     ! not sure about that one either ....
     use wfsec, only: nwftype
 
-    use precision_kinds, only: dp
     implicit none
 
 
@@ -114,10 +114,10 @@ subroutine multideterminants_define(iflag, icheck)
     endif
     kref_old = kref
 
-    if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
-    if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
-    if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
-    if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2))
+    if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2), source=0)
+    if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2), source=0)
+    if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2), source=0)
+    if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2), source=0)
 
     do iab = 1, 2
         numrep_det(kref, iab) = 0
@@ -285,12 +285,13 @@ subroutine inputforces
     use wfsec, only: iwftype, nwftype
     use contrl_file, only: errunit
     use atom, only: ncent
+    use precision_kinds,    only: dp
 
     implicit none
     integer             :: i
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
-    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce), source=0.0_dp)
+    if (.not. allocated(iwftype)) allocate (iwftype(nforce), source=0)
 
     call set_displace_zero(nforce)
 
@@ -314,14 +315,15 @@ subroutine inputdet()
 !    use mstates_mod, only: MSTATES
     use wfsec, only: nwftype
     use method_opt, only: method
+    use precision_kinds,    only: dp
 
     implicit none
     integer             :: iwft, k
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(cdet)) allocate(cdet(ndet,nstates,3))
+        if (.not. allocated(cdet)) allocate(cdet(ndet,nstates,3), source=0.0_dp)
     else
-        if (.not. allocated(cdet)) allocate(cdet(ndet,nstates,nwftype))
+        if (.not. allocated(cdet)) allocate(cdet(ndet,nstates,nwftype), source=0.0_dp)
     endif
 
     do iwft = 2, nwftype
@@ -338,15 +340,16 @@ subroutine inputlcao()
     use coefs, only: coef, nbasis, norb
     use wfsec, only: nwftype
     use method_opt, only: method
+    use precision_kinds,    only: dp
 
     implicit none
     integer             :: iwft, i,j
 
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3))
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3), source=0.0_dp)
     else
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype), source=0.0_dp)
     endif
 
     do iwft = 2, nwftype
@@ -370,6 +373,7 @@ subroutine inputjastrow()
     use contr2, only: isc
     use wfsec, only: nwftype
     use atom, only: ncent, nctype
+    use precision_kinds,    only: dp
 
       implicit none
 
@@ -384,16 +388,16 @@ subroutine inputjastrow()
       integer :: mparmjb, mparmjc
 
 
-    if (.not. allocated(scalek)) allocate (scalek(nwftype))
+    if (.not. allocated(scalek)) allocate (scalek(nwftype), source=0.0_dp)
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
         mparmja = 2 + max(0, norda - 1)
         mparmjb = 2 + max(0, nordb - 1)
         mparmjc = nterms4(nordc)
 
-        if (.not. allocated(a4)) allocate (a4(mparmja, nctype, nwftype))
-        if (.not. allocated(b))  allocate (b(mparmjb, 2, nwftype))
-        if (.not. allocated(c))  allocate (c(mparmjc, nctype, nwftype))
+        if (.not. allocated(a4)) allocate (a4(mparmja, nctype, nwftype), source=0.0_dp)
+        if (.not. allocated(b))  allocate (b(mparmjb, 2, nwftype), source=0.0_dp)
+        if (.not. allocated(c))  allocate (c(mparmjc, nctype, nwftype), source=0.0_dp)
 
         do iwft = 2, nwftype
             scalek(iwft) = scalek(1)
@@ -427,15 +431,16 @@ subroutine set_displace_zero(nforce_tmp)
     use pcm_parms, only: ch, nchs
 
     use atom, only: ncent
+    use precision_kinds,    only: dp
 
     implicit none
     integer         :: i, j, nforce_tmp
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce_tmp))
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce_tmp), source=0.0_dp)
 
     delc = 0.d0
 
-    if (.not. allocated(sch_s)) allocate (sch_s(MCHS, nforce_tmp))
+    if (.not. allocated(sch_s)) allocate (sch_s(MCHS, nforce_tmp), source=0.0_dp)
 
     if (ipcm .eq. 3) then
         do i = 1, nforce_tmp
@@ -457,7 +462,7 @@ subroutine modify_zmat_define
     integer :: ic, k
 
 
-    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent), source=0)
 
     do ic = 1, ncent
         do k = 1, 3
@@ -472,12 +477,13 @@ subroutine hessian_zmat_define
 
     use grdnthes, only: hessian_zmat
     use atom, only: ncent
+    use precision_kinds,    only: dp
 
     implicit none
 
     integer :: ic, k
 
-    if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))
+    if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent), source=0.0_dp)
 
     do ic = 1, ncent
         do k = 1, 3

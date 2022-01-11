@@ -135,11 +135,11 @@ use optwf_contrl, only: idl_flag
         use optwf_contrl, only: nparm
 
         !> allocate
-        allocate (deltap(nparm))
-        allocate (dl_momentum(nparm))  !< 'momentum' variables
-        allocate (dl_EG_sq(nparm))     !< moving average of past squared gradients
-        allocate (dl_EG(nparm))        !< moving average of past gradients
-        allocate (parameters(nparm))   !< vector of wave function parameters
+        allocate (deltap(nparm), source=0.0_dp)
+        allocate (dl_momentum(nparm), source=0.0_dp)  !< 'momentum' variable
+        allocate (dl_EG_sq(nparm), source=0.0_dp)     !< moving average of past squared gradient
+        allocate (dl_EG(nparm), source=0.0_dp)        !< moving average of past gradient
+        allocate (parameters(nparm), source=0.0_dp)   !< vector of wave function parameter
 
         !> init
         dl_momentum(:) = 0.d0
@@ -199,6 +199,8 @@ use precision_kinds, only: dp
         real(dp) :: dl_EG_corr, dl_EG_sq_corr, dl_momentum_prev, parm_old, dl_EG_old
         real(dp) :: v_corr
         real(dp) :: damp
+
+        v_corr = 0.0
 
         ! Damping parameter for Nesterov gradient descent
         damp = 10.d0

@@ -48,11 +48,11 @@ c written by Claudia Filippi
       nparmall2 = nparmall*(nparmall+1)/2
       MWORK=50*nparmall
 
-      allocate(grad_sav(nparmall))
-      allocate(h_sav(nparmall,nparmall))
-      allocate(s_sav(nparmall2))
-      allocate(work(MWORK))
-      allocate(work2(nparmall,nparmall))
+      allocate(grad_sav(nparmall), source=0.0_dp)
+      allocate(h_sav(nparmall,nparmall), source=0.0_dp)
+      allocate(s_sav(nparmall2), source=0.0_dp)
+      allocate(work(MWORK), source=0.0_dp)
+      allocate(work2(nparmall,nparmall), source=0.0_dp)
 
 c No dump/restart if optimizing wave function
       vmc_irstar=0

@@ -91,9 +91,9 @@ contains
 
         use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_ho)) allocate (orb_ho(norbterm, MSTATES))
-        if (.not. allocated(orb_o)) allocate (orb_o(norbterm, MSTATES))
-        if (.not. allocated(orb_oe)) allocate (orb_oe(norbterm, MSTATES))
+        if (.not. allocated(orb_ho)) allocate (orb_ho(norbterm, MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_o)) allocate (orb_o(norbterm, MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_oe)) allocate (orb_oe(norbterm, MSTATES), source=0.0_dp)
     end subroutine allocate_orb_mat_001
 
     subroutine deallocate_orb_mat_001()
@@ -123,9 +123,9 @@ contains
 
         use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_ho_old)) allocate (orb_ho_old(norbterm, MSTATES))
-        if (.not. allocated(orb_o_old)) allocate (orb_o_old(norbterm, MSTATES))
-        if (.not. allocated(orb_oe_old)) allocate (orb_oe_old(norbterm, MSTATES))
+        if (.not. allocated(orb_ho_old)) allocate (orb_ho_old(norbterm, MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_o_old)) allocate (orb_o_old(norbterm, MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_oe_old)) allocate (orb_oe_old(norbterm, MSTATES), source=0.0_dp)
     end subroutine allocate_orb_mat_002
 
     subroutine deallocate_orb_mat_002()
@@ -154,8 +154,8 @@ contains
 
         use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_o_cum)) allocate (orb_o_cum(norbterm, MSTATES))
-        if (.not. allocated(orb_o_sum)) allocate (orb_o_sum(norbterm, MSTATES))
+        if (.not. allocated(orb_o_cum)) allocate (orb_o_cum(norbterm, MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_o_sum)) allocate (orb_o_sum(norbterm, MSTATES), source=0.0_dp)
     end subroutine allocate_orb_mat_003
 
     subroutine deallocate_orb_mat_003()
@@ -182,8 +182,8 @@ contains
     subroutine allocate_orb_mat_004()
         use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_oe_cum)) allocate (orb_oe_cum(norbterm, MSTATES))
-        if (.not. allocated(orb_oe_sum)) allocate (orb_oe_sum(norbterm, MSTATES))
+        if (.not. allocated(orb_oe_cum)) allocate (orb_oe_cum(norbterm, MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_oe_sum)) allocate (orb_oe_sum(norbterm, MSTATES), source=0.0_dp)
     end subroutine allocate_orb_mat_004
 
     subroutine deallocate_orb_mat_004()
@@ -210,7 +210,7 @@ contains
 
         use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_ho_cum)) allocate (orb_ho_cum(norbterm, MSTATES))
+        if (.not. allocated(orb_ho_cum)) allocate (orb_ho_cum(norbterm, MSTATES), source=0.0_dp)
     end subroutine allocate_orb_mat_005
 
     subroutine deallocate_orb_mat_005()
@@ -236,7 +236,7 @@ contains
 
         use optorb_mod, only: nmatdim2
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_oo_cum)) allocate (orb_oo_cum(nmatdim2, MSTATES))
+        if (.not. allocated(orb_oo_cum)) allocate (orb_oo_cum(nmatdim2, MSTATES), source=0.0_dp)
     end subroutine allocate_orb_mat_006
 
     subroutine deallocate_orb_mat_006()
@@ -262,7 +262,7 @@ contains
 
         use optorb_mod, only: nmatdim
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_oho_cum)) allocate (orb_oho_cum(nmatdim, MSTATES))
+        if (.not. allocated(orb_oho_cum)) allocate (orb_oho_cum(nmatdim, MSTATES), source=0.0_dp)
     end subroutine allocate_orb_mat_007
 
     subroutine deallocate_orb_mat_007()
@@ -284,7 +284,7 @@ module orb_mat_022
 contains
     subroutine allocate_orb_mat_022()
         use optorb_cblock, only: norbterm
-        if (.not. allocated(ideriv)) allocate (ideriv(2, norbterm))
+        if (.not. allocated(ideriv)) allocate (ideriv(2, norbterm), source=0)
     end subroutine allocate_orb_mat_022
 
     subroutine deallocate_orb_mat_022()
@@ -315,12 +315,12 @@ contains
 
         use optorb_cblock, only: norbterm
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_e_bsum)) allocate (orb_e_bsum(MSTATES))
-        if (.not. allocated(orb_f_bcm2)) allocate (orb_f_bcm2(norbterm, MSTATES))
-        if (.not. allocated(orb_f_bcum)) allocate (orb_f_bcum(norbterm, MSTATES))
-        if (.not. allocated(orb_o_bsum)) allocate (orb_o_bsum(norbterm, MSTATES))
-        if (.not. allocated(orb_oe_bsum)) allocate (orb_oe_bsum(norbterm, MSTATES))
-        if (.not. allocated(orb_w_bsum)) allocate (orb_w_bsum(MSTATES))
+        if (.not. allocated(orb_e_bsum)) allocate (orb_e_bsum(MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_f_bcm2)) allocate (orb_f_bcm2(norbterm, MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_f_bcum)) allocate (orb_f_bcum(norbterm, MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_o_bsum)) allocate (orb_o_bsum(norbterm, MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_oe_bsum)) allocate (orb_oe_bsum(norbterm, MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_w_bsum)) allocate (orb_w_bsum(MSTATES), source=0.0_dp)
     end subroutine allocate_orb_mat_024
 
     subroutine deallocate_orb_mat_024()
@@ -350,8 +350,8 @@ contains
     subroutine allocate_orb_mat_030()
 
         use mstates_mod, only: MSTATES
-        if (.not. allocated(orb_ecum)) allocate (orb_ecum(MSTATES))
-        if (.not. allocated(orb_wcum)) allocate (orb_wcum(MSTATES))
+        if (.not. allocated(orb_ecum)) allocate (orb_ecum(MSTATES), source=0.0_dp)
+        if (.not. allocated(orb_wcum)) allocate (orb_wcum(MSTATES), source=0.0_dp)
     end subroutine allocate_orb_mat_030
 
     subroutine deallocate_orb_mat_030()
@@ -376,9 +376,9 @@ module orb_mat_033
 contains
     subroutine allocate_orb_mat_033()
         use optorb_cblock, only: norbterm
-        if (.not. allocated(ideriv_iab)) allocate (ideriv_iab(norbterm))
-        if (.not. allocated(ideriv_ref)) allocate (ideriv_ref(norbterm, 2))
-        if (.not. allocated(irepcol_ref)) allocate (irepcol_ref(norbterm, 2))
+        if (.not. allocated(ideriv_iab)) allocate (ideriv_iab(norbterm), source=0)
+        if (.not. allocated(ideriv_ref)) allocate (ideriv_ref(norbterm, 2), source=0)
+        if (.not. allocated(irepcol_ref)) allocate (irepcol_ref(norbterm, 2), source=0)
     end subroutine allocate_orb_mat_033
 
     subroutine deallocate_orb_mat_033()
@@ -405,9 +405,9 @@ module optorb
 contains
     subroutine allocate_optorb()
         use vmc_mod, only: norb_tot
-        if (.not. allocated(dmat_diag)) allocate (dmat_diag(norb_tot))
-        ! if (.not. allocated(irrep)) allocate (irrep(norb_tot))
-        ! if (.not. allocated(orb_energy)) allocate (orb_energy(norb_tot))
+        if (.not. allocated(dmat_diag)) allocate (dmat_diag(norb_tot), source=0.0_dp)
+        ! if (.not. allocated(irrep)) allocate (irrep(norb_tot), source=0.0_dp)
+        ! if (.not. allocated(orb_energy)) allocate (orb_energy(norb_tot), source=0.0_dp)
     end subroutine allocate_optorb
 
     subroutine deallocate_optorb()
@@ -433,7 +433,7 @@ module optorb_mix
 contains
     subroutine allocate_optorb_mix()
         use vmc_mod, only: norb_tot
-        if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norb_tot, norb_tot))
+        if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norb_tot, norb_tot), source=0)
     end subroutine allocate_optorb_mix
 
     subroutine deallocate_optorb_mix()

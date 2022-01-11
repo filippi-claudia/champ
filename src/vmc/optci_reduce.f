@@ -30,8 +30,8 @@ c     max does not work with g77
 
       MXTMP=max(MXORBTERM,nmatdim)
 
-      allocate(optci_reduce_collect(MXTMP))
-      allocate(optci_reduce_collect2(mxciterm,mxcireduced))
+      allocate(optci_reduce_collect(MXTMP), source=0.0_dp)
+      allocate(optci_reduce_collect2(mxciterm,mxcireduced), source=0.0_dp)
 
       if (iefficiency.gt.0) then
         call mpi_reduce(effcum,optci_reduce_collect,nstates_psig

@@ -127,6 +127,7 @@ subroutine read_molecule_file(file_molecule)
     use periodic_table,     only: atom_t, element
     use contrl_file,        only: ounit, errunit
     use general,            only: pooldir
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -172,10 +173,12 @@ subroutine read_molecule_file(file_molecule)
     write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
     write(ounit,*)
 
-    if (.not. allocated(cent)) allocate(cent(3,ncent))
+    if (.not. allocated(cent)) allocate(cent(3,ncent), source=0.0_dp)
     if (.not. allocated(symbol)) allocate(symbol(ncent))
-    if (.not. allocated(iwctype)) allocate(iwctype(ncent))
+    if (.not. allocated(iwctype)) allocate(iwctype(ncent), source=0)
     if (.not. allocated(unique)) allocate(unique(ncent))
+    unique = ''
+    symbol = ''
 
     if (wid) read(iunit,'(A)')  comment
     call bcast(comment)
@@ -207,7 +210,7 @@ subroutine read_molecule_file(file_molecule)
     write(ounit,*)
 
     if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))
-    if (.not. allocated(znuc)) allocate(znuc(nctype))
+    if (.not. allocated(znuc)) allocate(znuc(nctype), source=0.0_dp)
 
     ! get the correspondence for each atom according to the rule defined for atomtypes
     do j = 1, ncent
@@ -264,6 +267,7 @@ subroutine read_trexio_molecule_file(file_trexio)
     use const,          	only: nelec
     use contrl_file,        only: ounit, errunit
     use general,            only: pooldir
+    use precision_kinds, only: dp
 #if defined(TREXIO_FOUND)
     use trexio
     use contrl_file,        only: backend
@@ -288,6 +292,8 @@ subroutine read_trexio_molecule_file(file_trexio)
     character(len=100)              :: int_format     = '(A, T60, I0)'
     character(len=100)              :: float_format   = '(A, T60, f12.8)'
     character(len=100)              :: string_format  = '(A, T60, A)'
+
+    trex_molecule_file = 0
 
     !   External file reading
 
@@ -317,9 +323,9 @@ subroutine read_trexio_molecule_file(file_trexio)
     nelec = nup + ndn
 
     ! Do the allocations based on the ncent
-    if (.not. allocated(cent))    allocate(cent(3,ncent))
+    if (.not. allocated(cent))    allocate(cent(3,ncent), source=0.0_dp)
     if (.not. allocated(symbol))  allocate(symbol(ncent))
-    if (.not. allocated(iwctype)) allocate(iwctype(ncent))
+    if (.not. allocated(iwctype)) allocate(iwctype(ncent), source=0)
     if (.not. allocated(unique))  allocate(unique(ncent))
 
     if (wid) then
@@ -349,7 +355,7 @@ subroutine read_trexio_molecule_file(file_trexio)
     write(ounit,*)
 
     if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))
-    if (.not. allocated(znuc)) allocate(znuc(nctype))
+    if (.not. allocated(znuc)) allocate(znuc(nctype), source=0.0_dp)
 
     ! get the correspondence for each atom according to the rule defined for atomtypes
     do j = 1, ncent
@@ -411,6 +417,7 @@ subroutine read_determinants_file(file_determinants)
     use elec,           only: ndn, nup
     use const,          only: nelec
     use method_opt,     only: method
+    use precision_kinds, only: dp
 
     implicit none
 
@@ -474,9 +481,9 @@ subroutine read_determinants_file(file_determinants)
 
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,3))
+        if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,3), source=0.0_dp)
     else
-        if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,nwftype))
+        if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,nwftype), source=0.0_dp)
     endif
 
     if (wid) then
@@ -490,7 +497,7 @@ subroutine read_determinants_file(file_determinants)
     write(ounit,'(10(1x, f11.8, 1x))') (cdet(i,1,1), i=1,ndet)
 
 !       allocate the orbital mapping array
-    if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
+    if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet), source=0)
 
     if (wid) then
         do i = 1, ndet
@@ -571,10 +578,10 @@ subroutine read_multideterminants_file(file_multideterminants)
         endif
     endif
 
-    if (.not. allocated(iwundet)) allocate(iwundet(ndet, 2))
-    if (.not. allocated(numrep_det)) allocate(numrep_det(ndet, 2))
-    if (.not. allocated(irepcol_det)) allocate(irepcol_det(nelec, ndet, 2))
-    if (.not. allocated(ireporb_det)) allocate(ireporb_det(nelec, ndet, 2))
+    if (.not. allocated(iwundet)) allocate(iwundet(ndet, 2), source=0)
+    if (.not. allocated(numrep_det)) allocate(numrep_det(ndet, 2), source=0)
+    if (.not. allocated(irepcol_det)) allocate(irepcol_det(nelec, ndet, 2), source=0)
+    if (.not. allocated(ireporb_det)) allocate(ireporb_det(nelec, ndet, 2), source=0)
 
     if (wid) then
         do k = 2, ndet_local
@@ -689,9 +696,9 @@ subroutine read_jastrow_file(file_jastrow)
     call bcast(iwft)
 
     if( (method(1:3) == 'lin')) then
-        allocate (scalek(3))
+        allocate (scalek(3), source=0.0_dp)
     else
-        allocate (scalek(nwftype))
+        allocate (scalek(nwftype), source=0.0_dp)
     endif
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
@@ -719,9 +726,9 @@ subroutine read_jastrow_file(file_jastrow)
         mparmjc = nterms4(nordc)
 
         if( (method(1:3) == 'lin')) then
-            allocate (a4(mparmja, nctype, 3))
+            allocate (a4(mparmja, nctype, 3), source=0.0_dp)
         else
-            allocate (a4(mparmja, nctype, nwftype))
+            allocate (a4(mparmja, nctype, nwftype), source=0.0_dp)
         endif
 
         write(ounit, '(A)') "Jastrow parameters :: "
@@ -735,9 +742,9 @@ subroutine read_jastrow_file(file_jastrow)
         call bcast(a4)
 
         if( (method(1:3) == 'lin')) then
-            allocate (b(mparmjb, 2, 3))
+            allocate (b(mparmjb, 2, 3), source=0.0_dp)
         else
-            allocate (b(mparmjb, 2, nwftype))
+            allocate (b(mparmjb, 2, nwftype), source=0.0_dp)
         endif
 
         write(ounit, '(A)') "mparmjb : "
@@ -750,9 +757,9 @@ subroutine read_jastrow_file(file_jastrow)
         call bcast(b)
 
         if( (method(1:3) == 'lin')) then
-            allocate (c(mparmjc, nctype, 3))
+            allocate (c(mparmjc, nctype, 3), source=0.0_dp)
         else
-            allocate (c(mparmjc, nctype, nwftype))
+            allocate (c(mparmjc, nctype, nwftype), source=0.0_dp)
         endif
 
         write(ounit, '(A)') "mparmjc : "
@@ -797,6 +804,7 @@ subroutine read_orbitals_file(file_orbitals)
     use wfsec, only: nwftype
     use general, only: pooldir
     use method_opt, only: method
+    use precision_kinds, only: dp
 
     implicit none
 
@@ -864,9 +872,9 @@ subroutine read_orbitals_file(file_orbitals)
     if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3))
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3), source=0.0_dp)
     else
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype), source=0.0_dp)
     endif
 
 
@@ -924,6 +932,7 @@ subroutine read_trexio_orbitals_file(file_trexio)
     use wfsec,              only: nwftype
     use general,            only: pooldir
     use method_opt,         only: method
+    use precision_kinds, only: dp
 #if defined(TREXIO_FOUND)
     use trexio
     use contrl_file,        only: backend
@@ -948,7 +957,8 @@ subroutine read_trexio_orbitals_file(file_trexio)
     integer(8)                      :: trex_orbitals_file
     integer                         :: rc = 1
 
-
+    iwft = 0
+    trex_orbitals_file = 0
     !   External file reading
 
     if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
@@ -974,9 +984,9 @@ subroutine read_trexio_orbitals_file(file_trexio)
 
     ! Do the array allocations
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb, 3))
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb, 3), source=0.0_dp)
     else
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype), source=0.0_dp)
     endif
 
     ! Read the orbitals
@@ -1047,6 +1057,7 @@ subroutine read_csf_file(file_determinants)
     use optwf_contrl, only: ioptci
     use general, only: pooldir
     use method_opt, only: method
+    use precision_kinds, only: dp
     implicit none
 
     !   local use
@@ -1097,9 +1108,9 @@ subroutine read_csf_file(file_determinants)
         printed = .true.
         ! if there is no mention of "csf" in the file:: allocate and assign
         if( (method(1:3) == 'lin')) then
-            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, 3))
+            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, 3), source=0.0_dp)
         else
-            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype), source=0.0_dp)
         endif
 
 
@@ -1124,9 +1135,9 @@ subroutine read_csf_file(file_determinants)
         call bcast(nstates)
 
         if( (method(1:3) == 'lin')) then
-            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, 3))
+            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, 3), source=0.0_dp)
         else
-            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype), source=0.0_dp)
         endif
 
         if (wid) then
@@ -1219,10 +1230,10 @@ subroutine read_csfmap_file(file_determinants)
     if (.not. found) then
         ! No csfmap information present. One to one mapping cdet == ccsf
         nmap = ndet
-        if (.not. allocated(cxdet)) allocate (cxdet(nmap))
-        if (.not. allocated(iadet)) allocate (iadet(ndet))
-        if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-        if (.not. allocated(icxdet)) allocate (icxdet(nmap))
+        if (.not. allocated(cxdet)) allocate (cxdet(nmap), source=0.0_dp)
+        if (.not. allocated(iadet)) allocate (iadet(ndet), source=0)
+        if (.not. allocated(ibdet)) allocate (ibdet(ndet), source=0)
+        if (.not. allocated(icxdet)) allocate (icxdet(nmap), source=0)
 
         do i = 1, ncsf
             iadet(i) = i
@@ -1246,10 +1257,10 @@ subroutine read_csfmap_file(file_determinants)
         call bcast(ndet_check)
         call bcast(nmap_check)
 
-        if (.not. allocated(cxdet)) allocate (cxdet(nmap_check))
-        if (.not. allocated(iadet)) allocate (iadet(ndet))
-        if (.not. allocated(ibdet)) allocate (ibdet(ndet))
-        if (.not. allocated(icxdet)) allocate (icxdet(nmap_check))
+        if (.not. allocated(cxdet)) allocate (cxdet(nmap_check), source=0.0_dp)
+        if (.not. allocated(iadet)) allocate (iadet(ndet), source=0)
+        if (.not. allocated(ibdet)) allocate (ibdet(ndet), source=0)
+        if (.not. allocated(icxdet)) allocate (icxdet(nmap_check), source=0)
 
         nptr = 1
         do i = 1, ncsf
@@ -1270,7 +1281,7 @@ subroutine read_csfmap_file(file_determinants)
         if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
         nmap = nptr - 1
 !        if (allocated(cdet)) deallocate (cdet)
-!        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
+!        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype), source=0.0_dp)
 
         write(ounit, '(''Warning: det coef overwritten with csf'')')
 
@@ -1324,6 +1335,7 @@ subroutine read_exponents_file(file_exponents)
     use wfsec,              only: nwftype
     use general,            only: pooldir
     use method_opt,         only: method
+    use precision_kinds, only: dp
     implicit none
 
     !   local use
@@ -1355,9 +1367,9 @@ subroutine read_exponents_file(file_exponents)
     write(ounit, *) 'nwftype', nwftype
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(zex)) allocate (zex(nbasis, 3))
+        if (.not. allocated(zex)) allocate (zex(nbasis, 3), source=0.0_dp)
     else
-        if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
+        if (.not. allocated(zex)) allocate (zex(nbasis, nwftype), source=0.0_dp)
     endif
 
     do iwft = 1, nwftype
@@ -1437,18 +1449,18 @@ subroutine read_jasderiv_file(file_jastrow_der)
     na2 = nctype
     nctyp3x = max(3, nctype_tot)
 
-    if (.not. allocated(nparma)) allocate (nparma(nctyp3x))
-    if (.not. allocated(nparmb)) allocate (nparmb(3))
-    if (.not. allocated(nparmc)) allocate (nparmc(nctype))
-    if (.not. allocated(nparmf)) allocate (nparmf(nctype))
+    if (.not. allocated(nparma)) allocate (nparma(nctyp3x), source=0)
+    if (.not. allocated(nparmb)) allocate (nparmb(3), source=0)
+    if (.not. allocated(nparmc)) allocate (nparmc(nctype), source=0)
+    if (.not. allocated(nparmf)) allocate (nparmf(nctype), source=0)
 
-    if (.not. allocated(iwjasa)) allocate (iwjasa(83, nctyp3x))
-    if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3))
-    if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype))
-    if (.not. allocated(iwjasf)) allocate (iwjasf(15, nctype))
+    if (.not. allocated(iwjasa)) allocate (iwjasa(83, nctyp3x), source=0)
+    if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3), source=0)
+    if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype), source=0)
+    if (.not. allocated(iwjasf)) allocate (iwjasf(15, nctype), source=0)
 
-    if (.not. allocated(npoint)) allocate (npoint(nctyp3x))
-    if (.not. allocated(npointa)) allocate (npointa(3*nctyp3x))
+    if (.not. allocated(npoint)) allocate (npoint(nctyp3x), source=0)
+    if (.not. allocated(npointa)) allocate (npointa(3*nctyp3x), source=0)
 
     ! to escape the comments before the "jasderiv" line
     if (wid) then
@@ -1591,6 +1603,7 @@ subroutine read_forces_file(file_forces)
     use inputflags,         only: iforces
     use general,            only: pooldir
     use atom,               only: ncent
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -1621,8 +1634,8 @@ subroutine read_forces_file(file_forces)
         endif
     endif
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
-    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce), source=0.0_dp)
+    if (.not. allocated(iwftype)) allocate (iwftype(nforce), source=0)
 
     if (wid) then
         read (iunit, *, iostat=iostat) (iwftype(i), i=1, nforce)
@@ -1670,6 +1683,7 @@ subroutine read_symmetry_file(file_symmetry)
     use optorb,             only: irrep
     use vmc_mod,            only: norb_tot
     use general,            only: pooldir
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -1722,7 +1736,7 @@ subroutine read_symmetry_file(file_symmetry)
     write(ounit, *) temp2
 
     ! safe allocate
-    if (.not. allocated(irrep)) allocate (irrep(norb_tot))
+    if (.not. allocated(irrep)) allocate (irrep(norb_tot), source=0)
 
     ! read data
     if (wid) then
@@ -1748,6 +1762,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     use coefs,              only: norb
     use inputflags,         only: ioptorb_mixvirt
     use general,            only: pooldir
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -1795,7 +1810,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     call bcast(norbvirt)
 
 
-    if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norbopt, norbvirt))
+    if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norbopt, norbvirt), source=0)
 
     do io = 1, norbopt
         if (wid) then
@@ -1828,6 +1843,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
     use vmc_mod,            only: norb_tot
     use optorb,             only: orb_energy
     use general,            only: pooldir
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -1871,7 +1887,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
 
 
     ! safe allocate
-    if (.not. allocated(orb_energy)) allocate (orb_energy(norb_tot))
+    if (.not. allocated(orb_energy)) allocate (orb_energy(norb_tot), source=0.0_dp)
 
     ! read data
     if (wid) then
@@ -1956,44 +1972,44 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
 
-    allocate (nbastyp(nctot))
-    allocate (n1s(nctot))
-    allocate (n2s(nctot))
-    allocate (n2p(3, nctot))
-    allocate (n3s(nctot))
-    allocate (n3p(3, nctot))
-    allocate (n3dzr(nctot))
-    allocate (n3dx2(nctot))
-    allocate (n3dxy(nctot))
-    allocate (n3dxz(nctot))
-    allocate (n3dyz(nctot))
-    allocate (n4s(nctot))
-    allocate (n4p(3, nctot))
-    allocate (n4fxxx(nctot))
-    allocate (n4fyyy(nctot))
-    allocate (n4fzzz(nctot))
-    allocate (n4fxxy(nctot))
-    allocate (n4fxxz(nctot))
-    allocate (n4fyyx(nctot))
-    allocate (n4fyyz(nctot))
-    allocate (n4fzzx(nctot))
-    allocate (n4fzzy(nctot))
-    allocate (n4fxyz(nctot))
-    allocate (nsa(nctot))
-    allocate (npa(3, nctot))
-    allocate (ndzra(nctot))
-    allocate (ndz2a(nctot))
-    allocate (ndxya(nctot))
-    allocate (ndxza(nctot))
-    allocate (ndx2a(nctot))
-    allocate (ndyza(nctot))
+    allocate (nbastyp(nctot), source=0)
+    allocate (n1s(nctot),     source=0)
+    allocate (n2s(nctot),     source=0)
+    allocate (n2p(3, nctot),  source=0)
+    allocate (n3s(nctot),     source=0)
+    allocate (n3p(3, nctot),  source=0)
+    allocate (n3dzr(nctot),   source=0)
+    allocate (n3dx2(nctot),   source=0)
+    allocate (n3dxy(nctot),   source=0)
+    allocate (n3dxz(nctot),   source=0)
+    allocate (n3dyz(nctot),   source=0)
+    allocate (n4s(nctot),     source=0)
+    allocate (n4p(3, nctot),  source=0)
+    allocate (n4fxxx(nctot),  source=0)
+    allocate (n4fyyy(nctot),  source=0)
+    allocate (n4fzzz(nctot),  source=0)
+    allocate (n4fxxy(nctot),  source=0)
+    allocate (n4fxxz(nctot),  source=0)
+    allocate (n4fyyx(nctot),  source=0)
+    allocate (n4fyyz(nctot),  source=0)
+    allocate (n4fzzx(nctot),  source=0)
+    allocate (n4fzzy(nctot),  source=0)
+    allocate (n4fxyz(nctot),  source=0)
+    allocate (nsa(nctot),     source=0)
+    allocate (npa(3, nctot),  source=0)
+    allocate (ndzra(nctot),   source=0)
+    allocate (ndz2a(nctot),   source=0)
+    allocate (ndxya(nctot),   source=0)
+    allocate (ndxza(nctot),   source=0)
+    allocate (ndx2a(nctot),   source=0)
+    allocate (ndyza(nctot),   source=0)
 
     if (nbasis .eq. 0) then
         call fatal_error('Please Load LCAO before basis info in the input file')
     endif
 
-    allocate (iwlbas(nbasis, nctot))
-    allocate (iwrwf(nbasis, nctot))
+    allocate (iwlbas(nbasis, nctot), source=0)
+    allocate (iwrwf(nbasis, nctot), source=0)
 
     if (wid) then
         do i = 1, nctype + newghostype
@@ -2207,6 +2223,8 @@ subroutine read_dmatrix_file(file_dmatrix)
     character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
+    ipr = 0
+
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading dmatrix the file :: ",  trim(file_dmatrix)
@@ -2233,13 +2251,13 @@ subroutine read_dmatrix_file(file_dmatrix)
     call bcast(nweight)
 
 
-    allocate (dmat(norb_tot))
-    allocate (iwdmat(nstates))
+    allocate (dmat(norb_tot), source=0.0_dp)
+    allocate (iwdmat(nstates), source=0)
 
     if (ndetorb .gt. norb) call fatal_error( 'READ_DMATRIX: wrong number of orbitals')
 
-    allocate (weights(nstates))
-    allocate (iweight(nstates))
+    allocate (weights(nstates), source=0.0_dp)
+    allocate (iweight(nstates), source=0)
 
 
     if (wid) read (iunit, *) (iwdmat(i), i=1, nweight)
@@ -2249,7 +2267,7 @@ subroutine read_dmatrix_file(file_dmatrix)
         if (iwdmat(iw) .ne. iweight(iw)) call fatal_error('READ_DMATRIX: iwdmat')
     enddo
 
-    allocate (dmat_diag(norb_tot))
+    allocate (dmat_diag(norb_tot), source=0.0_dp)
     dmat_diag = 0.0d0
 
     do iw = 1, nweight
@@ -2288,6 +2306,7 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
     use pcm_parms,          only: nesph, re, re2
     use pcm_parms,          only: xe, ye, ze
     use general,            only: pooldir
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -2327,11 +2346,11 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
     endif
     call bcast(nesph)
 
-    if (.not. allocated(re)) allocate (re(nesph))
-    if (.not. allocated(re2)) allocate (re2(nesph))
-    if (.not. allocated(xe)) allocate (xe(nesph))
-    if (.not. allocated(ye)) allocate (ye(nesph))
-    if (.not. allocated(ze)) allocate (ze(nesph))
+    if (.not. allocated(re)) allocate (re(nesph), source=0.0_dp)
+    if (.not. allocated(re2)) allocate (re2(nesph), source=0.0_dp)
+    if (.not. allocated(xe)) allocate (xe(nesph), source=0.0_dp)
+    if (.not. allocated(ye)) allocate (ye(nesph), source=0.0_dp)
+    if (.not. allocated(ze)) allocate (ze(nesph), source=0.0_dp)
 
     do i = 1, nesph
         if (wid) read (iunit, *) xe(i), ye(i), ze(i), re(i)
@@ -2367,6 +2386,7 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     use inputflags,         only: igradients
     use general,            only: pooldir
     use atom,               only: ncent
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -2407,10 +2427,10 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     if (igrdtype .ne. 1) call fatal_error('GRADIENTS_CARTESIAN: igrdtype /= 1')
     if ((2*ngradnts + 1) .ne. nforce) call fatal_error('GRADIENTS_CARTESIAN: (2*ngradnts+1)  /=  nforce')
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, MFORCE))
-    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
-    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
-    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
+    if (.not. allocated(delc)) allocate (delc(3, ncent, MFORCE), source=0.0_dp)
+    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE), source=0)
+    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE), source=0)
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent), source=0)
 
     ! initialize the values to zero
 
@@ -2467,6 +2487,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     use inputflags, only: igradients
     use general, only:pooldir
     use atom, only: ncent
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -2507,10 +2528,10 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     if (izmatrix .ne. 1) call fatal_error('GRADIENTS_ZMATRIX: No Z matrix connection matrix')
     if ((2*ngradnts + 1) .ne. nforce) call fatal_error('GRADIENTS_ZMATRIX: (2*ngradnts+1)  /=  nforce')
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, MFORCE))
-    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
-    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
-    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
+    if (.not. allocated(delc)) allocate (delc(3, ncent, MFORCE), source=0.0_dp)
+    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE), source=0)
+    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE), source=0)
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent), source=0)
 
     ! initialize the values to zero
 
@@ -2599,7 +2620,7 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     endif
 
 
-    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent), source=0)
 
     if (wid) then
         do ic = 1, ncent
@@ -2631,6 +2652,7 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     use grdnthes,           only: hessian_zmat
     use inputflags,         only: ihessian_zmat
     use atom,               only: ncent
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -2669,7 +2691,7 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
 
     endif
 
-    if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))
+    if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent), source=0.0_dp)
 
     if (wid) then
         do ic = 1, ncent
@@ -2706,6 +2728,7 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     use atom, only: cent, ncent
     use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
     use inputflags, only: izmatrix_check
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -2745,10 +2768,10 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     endif
 
 
-    if (.not. allocated(czcart)) allocate (czcart(3, ncent))
-    if (.not. allocated(czint)) allocate (czint(3, ncent))
-    if (.not. allocated(czcart_ref)) allocate (czcart_ref(3, 3))
-    if (.not. allocated(izcmat)) allocate (izcmat(3, ncent))
+    if (.not. allocated(czcart)) allocate (czcart(3, ncent), source=0.0_dp)
+    if (.not. allocated(czint)) allocate (czint(3, ncent), source=0.0_dp)
+    if (.not. allocated(czcart_ref)) allocate (czcart_ref(3, 3), source=0.0_dp)
+    if (.not. allocated(izcmat)) allocate (izcmat(3, ncent), source=0)
 
     czcart_ref = cent
 
@@ -2791,6 +2814,7 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
     use efield, only: iscreen, ncharges
     use inputflags, only: icharge_efield
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -2836,12 +2860,12 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
 
     if (ncharges .gt. MCHARGES) call fatal_error('EFIELD: ncharges > MCHARGES')
 
-    if (.not. allocated(ascreen)) allocate (ascreen(ncharges))
-    if (.not. allocated(bscreen)) allocate (bscreen(ncharges))
-    if (.not. allocated(qcharge)) allocate (qcharge(ncharges))
-    if (.not. allocated(xcharge)) allocate (xcharge(ncharges))
-    if (.not. allocated(ycharge)) allocate (ycharge(ncharges))
-    if (.not. allocated(zcharge)) allocate (zcharge(ncharges))
+    if (.not. allocated(ascreen)) allocate (ascreen(ncharges), source=0.0_dp)
+    if (.not. allocated(bscreen)) allocate (bscreen(ncharges), source=0.0_dp)
+    if (.not. allocated(qcharge)) allocate (qcharge(ncharges), source=0.0_dp)
+    if (.not. allocated(xcharge)) allocate (xcharge(ncharges), source=0.0_dp)
+    if (.not. allocated(ycharge)) allocate (ycharge(ncharges), source=0.0_dp)
+    if (.not. allocated(zcharge)) allocate (zcharge(ncharges), source=0.0_dp)
 
     if (wid) then
         do i = 1, ncharges

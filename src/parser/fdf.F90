@@ -898,6 +898,9 @@ endif ! (rank==0)
       integer(ip)                :: i, ierr, ntok, ind_less, nlstart, nlend, counter
       type(parsed_line), pointer :: pline
 
+!-------------------------------------------------------------- Initialize
+      nlstart = 0
+
 !------------------------------------------------------------------------- BEGIN
 !     Open reading input file
       call fdf_open(filein)
@@ -1174,6 +1177,9 @@ endif ! (rank==0)
       character(len=MAX_LENGTH*2):: line
       integer(ip)                :: i, ierr, ntok, ind_less, nlstart
       type(parsed_line), pointer :: pline
+
+!-------------------------------------------------------------- Initialize
+      nlstart = 0
 
 !------------------------------------------------------------------------- BEGIN
 !     Open reading input file
@@ -3443,6 +3449,8 @@ endif ! (rank==0)
           'torque  ', 'ry/deg    ', 13.6058d0, &
           'torque  ', 'ry/rad    ', 0.237466d0 /
 
+!-------------------------------------------------------------- Initialize
+      fdf_convfac = 0
 !
       ifrom = 0
       ito   = 0

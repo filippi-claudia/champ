@@ -81,7 +81,7 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
 
     end interface
 
-    allocate (ritz_vectors(nparm, nvec))
+    allocate (ritz_vectors(nparm, nvec), source=0.0_dp)
 
     call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
     call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
@@ -118,8 +118,8 @@ function fun_mtx_gemv(parameters, input_vect) result(output_vect)
     real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
     real(dp), dimension(:, :), allocatable :: psi, hpsi
 
-    allocate (psi(parameters%nparm_max, 2*parameters%nvecx))
-    allocate (hpsi(parameters%nparm_max, 2*parameters%nvecx))
+    allocate (psi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
+    allocate (hpsi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
 
     psi = 0.0_dp
     psi(1:size(input_vect, 1), 1:size(input_vect, 2)) = input_vect
@@ -145,8 +145,8 @@ function fun_stx_gemv(parameters, input_vect) result(output_vect)
     real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
     real(dp), dimension(:, :), allocatable :: psi, spsi
 
-    allocate (psi(parameters%nparm_max, 2*parameters%nvecx))
-    allocate (spsi(parameters%nparm_max, 2*parameters%nvecx))
+    allocate (psi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
+    allocate (spsi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
 
     psi = 0.0_dp
     psi(1:size(input_vect, 1), 1:size(input_vect, 2)) = input_vect

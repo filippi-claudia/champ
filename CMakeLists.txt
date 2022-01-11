@@ -125,9 +125,17 @@ gitinfo(${CMAKE_SOURCE_DIR})
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-132")
+  list(APPEND Fortran_FLAGS "-02" "-cpp" "-mcmodel=large" "-ffree-line-length-132")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
+  if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+    list(APPEND Fortran_FLAGS "-fcheck=all" "-fbacktrace"
+        "-g" "-ffpe-trap=invalid,zero,overflow" "-Wall" "-Wextra"
+        "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument" 
+        "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
+        "-Wno-c-binding-type" "-Wno-function-elimination"
+        )
+  endif()
   if (TREXIO_FOUND)
     list(APPEND Fortran_FLAGS "-ltrexio")
   endif()
@@ -145,6 +153,10 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
 	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
+  if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+    list(APPEND Fortran_FLAGS "-diag-enable=all" "-traceback" "-g" "-fpe0" )
+  else()
+  endif()
   if (TREXIO_FOUND)
     list(APPEND Fortran_FLAGS "-ltrexio")
   endif()

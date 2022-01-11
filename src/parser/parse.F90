@@ -575,6 +575,9 @@ MODULE parse
       logical                           :: found
       integer(ip)                       :: i, j, starting_pos
 
+!-------------------------------------------------------------- Initialize
+      integers = 0
+
 !----------------------------------------------------------- BEGIN
       if (PRESENT(after)) then
         if (after .lt. 0) then
@@ -627,6 +630,7 @@ MODULE parse
       integer(ip)                       :: i, j, starting_pos
 
 !----------------------------------------------------------- BEGIN
+      reals = 0.0_dp
       if (PRESENT(after)) then
         if (after .lt. 0) then
           call die('PARSE module: reals', 'Wrong starting position',    &
@@ -1239,6 +1243,7 @@ MODULE parse
       integer(ip)                       :: i, j, starting_pos
 
 !----------------------------------------------------------- BEGIN
+      values = 0.0_dp
       if (PRESENT(after)) then
         if (after .lt. 0) then
           call die('PARSE module: values', 'Wrong starting position',   &

@@ -30,7 +30,7 @@ module force_mod
 contains
     subroutine allocate_forcepar()
         use force_mod, only: MFORCE
-        if (.not. allocated(deltot)) allocate (deltot(MFORCE))
+        if (.not. allocated(deltot)) allocate (deltot(MFORCE), source=0.0_dp)
     end subroutine allocate_forcepar
 
     subroutine deallocate_forcepar()
@@ -74,11 +74,11 @@ end module forcepar
      subroutine allocate_forcest()
          use force_mod, only: MFORCE
          use mstates_mod, only: MSTATES
-         if (.not. allocated(fcm2)) allocate (fcm2(MSTATES, MFORCE))
-         if (.not. allocated(fcum)) allocate (fcum(MSTATES, MFORCE))
+         if (.not. allocated(fcm2)) allocate (fcm2(MSTATES, MFORCE), source=0.0_dp)
+         if (.not. allocated(fcum)) allocate (fcum(MSTATES, MFORCE), source=0.0_dp)
          ! DMC arrays:
-         if (.not. allocated(fgcm2)) allocate (fgcm2(MFORCE))
-         if (.not. allocated(fgcum)) allocate (fgcum(MFORCE))
+         if (.not. allocated(fgcm2)) allocate (fgcm2(MFORCE), source=0.0_dp)
+         if (.not. allocated(fgcum)) allocate (fgcum(MFORCE), source=0.0_dp)
      end subroutine allocate_forcest
 
      subroutine deallocate_forcest()
@@ -131,8 +131,8 @@ end module forcepar
      subroutine allocate_forcewt()
          use force_mod, only: MFORCE
          use mstates_mod, only: MSTATES
-         if (.not. allocated(wcum)) allocate (wcum(MSTATES, MFORCE))
-         if (.not. allocated(wsum)) allocate (wsum(MSTATES, MFORCE))
+         if (.not. allocated(wcum)) allocate (wcum(MSTATES, MFORCE), source=0.0_dp)
+         if (.not. allocated(wsum)) allocate (wsum(MSTATES, MFORCE), source=0.0_dp)
      end subroutine allocate_forcewt
 
      subroutine deallocate_forcewt()
@@ -171,8 +171,8 @@ end module forcepar
  contains
      subroutine allocate_force_fin()
          use atom, only: ncent_tot
-         if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot))
-         if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))
+         if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot), source=0.0_dp)
+         if (.not. allocated(da_energy_err)) allocate (da_energy_err(3), source=0.0_dp)
      end subroutine allocate_force_fin
 
      subroutine deallocate_force_fin()
@@ -200,7 +200,7 @@ end module forcepar
      subroutine allocate_force_mat_n()
          use sr_mod, only: mconf
          use atom, only: ncent_tot
-         if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, mconf))
+         if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, mconf), source=0.0_dp)
      end subroutine allocate_force_mat_n
 
      subroutine deallocate_force_mat_n()
