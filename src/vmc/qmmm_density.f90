@@ -54,8 +54,8 @@
 !       deltad(2)=.516129
 !       deltad(3)=.516129
 
-        allocate(dens(n_xd,n_yd,n_zd)), source=0.0_dp 
-        allocate(sme(n_xd,n_yd,n_zd)), source=0.0_dp 
+        allocate(dens(n_xd,n_yd,n_zd), source=0.0_dp)
+        allocate(sme(n_xd,n_yd,n_zd), source=0.0_dp)
         dens(:,:,:)=0.d0
         sme(:,:,:)=0.d0
         outofbox=0.d0
