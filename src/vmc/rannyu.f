@@ -1,6 +1,6 @@
       subroutine setrn(iseed)
 
-            use rnyucm, only : switch_rng
+      use rnyucm, only : switch_rng
       implicit none
 
       integer, intent(in) :: iseed(4)
@@ -31,18 +31,36 @@ c Uses 48 bits, rather than the usual 32 bits.
       end
 c----------------------------------------------
       subroutine setrn_rannyu_std(iseed)
+      use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
+
       integer, intent(in) :: iseed(4)
       integer size
       integer, allocatable :: new_seed(:)
+      integer i
 
-
+      ! determine the seed size
       call random_seed(size = size)
-      allocate(new_seed(size))
 
-      new_seed = iseed(1)
+      ! allocate the new seed
+      allocate(new_seed(size), source=0)
+
+      ! input the seed
+      do i=1,min(size,4)
+            new_seed(i) = iseed(i)
+      end do
+
+      ! check the new seed
+      write(ounit, *) 'seed size', size
+      do i=1,size
+            write(ounit, *) 'seed     ', i, new_seed(i)
+      end do
+
+      ! set the new seed
       call random_seed(put=new_seed)
 
+      ! deallocate
       deallocate(new_seed)
       return
       end
