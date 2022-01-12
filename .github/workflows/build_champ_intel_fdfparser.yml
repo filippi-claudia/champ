@@ -61,7 +61,7 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DVECTORIZED=no
         cmake --build build -- -j2
         ulimit -s unlimited
 
