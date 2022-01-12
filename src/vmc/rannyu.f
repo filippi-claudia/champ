@@ -1,5 +1,6 @@
       subroutine setrn(iseed)
-      use rnyucm, only : switch_rng
+
+            use rnyucm, only : switch_rng
       implicit none
 
       integer, intent(in) :: iseed(4)
