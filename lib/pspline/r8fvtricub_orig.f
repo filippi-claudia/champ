@@ -75,6 +75,14 @@ C   ...in x direction
          xp2=xp*xp
          xpi2=xpi*xpi
 
+c        initialize values
+         cx = 0.0
+         cxi = 0.0
+         hx2 = 0.0
+
+         cxd = 0.0
+         cxdi = 0.0
+
          if((ict(1).eq.1).or.(ict(3).eq.1).or.(ict(4).eq.1).or.
      >      (ict(6).eq.1).or.(ict(7).eq.1).or.(ict(10).eq.1)) then
             cx=xp*(xp2-1.0d0)
@@ -93,6 +101,14 @@ C   ...and in y direction
          yp2=yp*yp
          ypi2=ypi*ypi
 
+c        initialize values
+         cy = 0.0
+         cyi = 0.0
+         hy2 = 0.0
+
+         cyd = 0.0
+         cydi = 0.0
+
          if((ict(1).eq.1).or.(ict(2).eq.1).or.(ict(4).eq.1).or.
      >      (ict(5).eq.1).or.(ict(7).eq.1).or.(ict(9).eq.1)) then
             cy=yp*(yp2-1.0d0)
@@ -110,6 +126,14 @@ C   ...and in z direction
          zpi=1.0d0-zp
          zp2=zp*zp
          zpi2=zpi*zpi
+
+c        initialize values
+         cz = 0.0
+         czi = 0.0
+         hz2 = 0.0
+
+         czd = 0.0
+         czdi = 0.0
 
          if((ict(1).eq.1).or.(ict(2).eq.1).or.(ict(3).eq.1).or.
      >      (ict(5).eq.1).or.(ict(6).eq.1).or.(ict(8).eq.1)) then

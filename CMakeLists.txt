@@ -131,7 +131,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
     list(APPEND Fortran_FLAGS "-fcheck=all" "-fbacktrace"
         "-g" "-ffpe-trap=invalid,zero,overflow" "-Wall" "-Wextra"
-        "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument" 
+        "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
         "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
         "-Wno-c-binding-type" "-Wno-function-elimination"
         )

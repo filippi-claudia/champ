@@ -46,4 +46,4 @@ if __name__ == "__main__":
     else:
         # Strict comparison :: use assert
         assert(compare_values(data, args.keyword, args.values, args.tolerance))
-        #compare_values(data, args.keyword, args.values, args.tolerance) # delete after testing. Ravindra
+        # compare_values(data, args.keyword, args.values, args.tolerance) # delete after testing. Ravindra
