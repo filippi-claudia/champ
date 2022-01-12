@@ -139,7 +139,7 @@ module rnyucm
 
     integer  :: ll(4)
     integer  :: mm(4)
-    integer  :: switch_rng = 0
+    integer  :: switch_rng = 1
 
     data mm/502, 1521, 4071, 2107/
     data ll/0, 0, 0, 1/
