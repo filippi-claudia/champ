@@ -2,9 +2,9 @@ name: Intel OneAPI Build and Testing on a self-hosted runner ccpgate/ccp01
 
 on:
   push:
-    branches: [main]
+    branches: [check-self-hosted]
   pull_request:
-    branches: [main]
+    branches: [check-self-hosted]
 
 jobs:
   build_champ:
