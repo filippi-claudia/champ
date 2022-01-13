@@ -28,7 +28,7 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         /software/cmake-3.22.1/bin/cmake --version
-        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DBLA_STATIC -DBLA_VENDOR=Intel10_64lp
+        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp
         /software/cmake-3.22.1/bin/cmake --build build -- -j4
 
     - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
