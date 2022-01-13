@@ -19,8 +19,7 @@ jobs:
     - name: Compile the CHAMP code
       run: |
         source /software/intel/oneapi/setvars.sh
-        module load hdf5/1.12.1-intel
-        module load trexio/2.0.0-intel
+        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:$LD_LIBRARY_PATH
         which ifort
         which python
         which mpiifort
