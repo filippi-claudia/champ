@@ -55,7 +55,7 @@ option(ENABLE_PERIODIC "enable_periodic" off)
 message("")
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  set(BLA_VENDOR Intel10_64ilp)
+  # set(BLA_VENDOR Intel10_64ilp)
   set(BLA_STATIC)
 endif()
 
