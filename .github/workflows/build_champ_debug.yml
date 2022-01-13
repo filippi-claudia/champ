@@ -33,6 +33,19 @@ jobs:
         sudo apt-get install -y cmake
         sudo apt-get install -y libhdf5-serial-dev
 
+    - name: Install GNU compilers and libraries
+      if: matrix.toolchain == 'gnu'
+      run: |
+           sudo apt install -y gfortran
+           sudo apt install -y openmpi-bin
+           sudo apt install -y libopenmpi-dev
+           sudo apt install -y gawk
+           sudo apt install -y libblacs-mpi-dev
+           sudo apt install -y liblapack-dev
+           gawk --version
+           mpirun --version
+           gfortran --version
+
     - name: install Intel oneapi components
       if: matrix.toolchain == 'intel'
       run: |
@@ -74,7 +87,6 @@ jobs:
     - name: Compile with GNU
       if: matrix.toolchain == 'gnu'
       run: |
-        source /opt/intel/oneapi/setvars.sh
         printenv >> $GITHUB_ENV
         which mpif90
         MPIRUN=`which mpirun`
