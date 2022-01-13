@@ -288,14 +288,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
 
-        echo "Comparing the energy with the reference one (total E = -26.2212899 +-  0.0238787) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2212899  0.0238787
-    # - name: "Upload results of test 21"
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: test-results-21
-    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF_3body/vmc_optimization_15000_3body.out
-    #     retention-days: 3
+        echo "Comparing the energy with the reference one (total E = -26.2470439 +-  0.0209539) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2470439  0.0209539
 
 
     - name: "Test 22 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 2 processors"
@@ -307,14 +301,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
 
-        echo "Comparing the energy with the reference one (total E = -26.2045494 +-  0.0167864) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2045494  0.0167864
-    # - name: "Upload results of test 22"
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: test-results-22
-    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF_3body/vmc_optimization_15000_3body.out
-    #     retention-days: 3
+        echo "Comparing the energy with the reference one (total E = -26.2470439 +-  0.0209539) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2470439   0.0209539
 
     - name: "Test 23 (Butadiene) Workload VMC optimization all using sr_n (45000 dets, 8300 csf, 426 orbs) on 1 processor"
       run: |
@@ -325,14 +313,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_45000.inp  -o vmc_optimization_45000_single.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -25.9951404 +-  0.0523977) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_45000_single.out "total E" -25.9951404  0.0523977
-    # - name: "Upload results of test 23"
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: test-results-23
-    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_ras1022_Q_optWF+geo/vmc_optimization_45000_single.out
-    #     retention-days: 3
+        echo "Comparing the energy with the reference one (total E = -25.9720257 +-  0.0473508) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_45000_single.out "total E" -25.9720257   0.0473508
 
     - name: "Test 24 (Butadiene) Workload VMC optimization all using sr_n (45000 dets, 8300 csf, 426 orbs) on 2 processors"
       run: |
@@ -343,14 +325,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_45000.inp  -o vmc_optimization_45000_double.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -26.0818466 +-  0.0368988) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_45000_double.out "total E" -26.0818466  0.0368988
-    # - name: "Upload results of test 24"
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: test-results-24
-    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_ras1022_Q_optWF+geo/vmc_optimization_45000_double.out
-    #     retention-days: 3
+        echo "Comparing the energy with the reference one (total E = -26.0003991 +-  0.0321032 ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_45000_double.out "total E" -26.0003991  0.0321032
 
 
     - name: "Test 25 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 1 processor"
@@ -362,15 +338,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E of second state = -42.551463 +-  0.0447015  ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_sr_n_single.out "total E" -42.551463  0.0447015
-
-    # - name: "Upload results of test 25"
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: test-results-25
-    #     path: tests/CI_test/VMC-PSB3-400_dets-175_csfs/revised_sr_n_single.out
-    #     retention-days: 3
+        echo "Comparing the energy with the reference one (total E of second state = -42.6455836 +-  0.0396994  ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_sr_n_single.out "total E" -42.6455836  0.0396994
 
     - name: "Test 26 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 2 processors"
       run: |
@@ -381,15 +350,9 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E of second state = -42.5843775 +-  0.0307300) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_sr_n_double.out "total E" -42.5843775  0.0307300
+        echo "Comparing the energy with the reference one (total E of second state = -42.6712854 +-  0.0325136) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_sr_n_double.out "total E" -42.6712854  0.0325136
 
-    # - name: "Upload results of test 26"
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: test-results-26
-    #     path: tests/CI_test/VMC-PSB3-400_dets-175_csfs/revised_sr_n_double.out
-    #     retention-days: 3
 
     - name: "Test 27 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 1 processor"
       run: |
@@ -400,15 +363,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_single.out -e error
 
-        echo "Comparing the energy with the reference one (total E of second state = -41.1372264 +-  0.0908603 ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_single.out "total E" -41.1372264  0.0908603
-
-    # - name: "Upload results of test 27"
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: test-results-27
-    #     path: tests/CI_test/VMC-PSB3-400_dets-175_csfs/revised_regterg_single.out
-    #     retention-days: 3
+        echo "Comparing the energy with the reference one (total E of second state = -41.1583686 +-  0.1024946 ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_single.out "total E" -41.1583686  0.1024946
 
     - name: "Test 28 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 2 processors"
       run: |
@@ -420,8 +376,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E of second state = -41.0184285 +-  0.0637987  ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_double.out "total E" -41.0184285  0.0637987
+        echo "Comparing the energy with the reference one (total E of second state = -41.3218808 +-  0.0521367  ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_double.out "total E" -41.3218808  0.0521367
 
 
     - name: "Test 29 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"
@@ -433,15 +389,9 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_single.out -e error
 
-        echo "Comparing the energy with the reference one ("total E" -29.6957339 +-  0.0395116) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.6957339  0.0395116
+        echo "Comparing the energy with the reference one ("total E" -29.5974930 +-  0.0510641) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.5974930  0.0510641
 
-    # - name: "Upload results of test 29"
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: test-results-29
-    #     path: tests/CI_test/VMC-PSB2-36_dets-20_csfs/revised_psb2_mix_n_single.out
-    #     retention-days: 3
 
     - name: "Test 30 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 2 processor"
       run: |
@@ -452,15 +402,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_double.out -e error
 
-        echo "Comparing the energy with the reference one ("total E" -29.8666018 +-  0.0301539) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.8666018  0.0301539
-
-    # - name: "Upload results of test 30"
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: test-results-30
-    #     path: tests/CI_test/VMC-PSB2-36_dets-20_csfs/revised_psb2_mix_n_double.out
-    #     retention-days: 3
+        echo "Comparing the energy with the reference one ("total E" -29.7587667  0.0292759) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.7587667  0.0292759
 
     - name: "Test 31 (Butadiene) TREXIO interface testing with HDF5 backend on 1 processor"
       run: |
