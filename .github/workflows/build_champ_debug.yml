@@ -8,7 +8,7 @@ on:
 
 jobs:
   debug_build_test_champ:
-    name: Buid Champ and run tests with i${{ matrix.toolchain }} in DEBUG mode
+    name: Buid Champ and run tests with ${{ matrix.toolchain }} in DEBUG mode
     strategy: 
       matrix:
         toolchain: ['intel','gnu']
