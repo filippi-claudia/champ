@@ -405,53 +405,53 @@ jobs:
         echo "Comparing the energy with the reference one ("total E" -29.7587667  0.0292759) "
         $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.7587667  0.0292759
 
-    - name: "Test 31 (Butadiene) TREXIO interface testing with HDF5 backend on 1 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. Butadiene VMC 500 dets"
-        cd tests/CI_test/TREXIO
+    # - name: "Test 31 (Butadiene) TREXIO interface testing with HDF5 backend on 1 processor"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the tests using the new parser. Butadiene VMC 500 dets"
+    #     cd tests/CI_test/TREXIO
 
-        echo "Running the calculation with trexio library linked"
-        mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_single.out  -e error
+    #     echo "Running the calculation with trexio library linked"
+    #     mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_single.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -26.2164721 +-  0.0280294) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_hdf5_single.out "total E" -26.2164721  0.0280294
+    #     echo "Comparing the energy with the reference one (total E = -26.2164721 +-  0.0280294) "
+    #     $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_hdf5_single.out "total E" -26.2164721  0.0280294
 
-    - name: "Test 32 (Butadiene) TREXIO interface testing with HDF5 backend on 2 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. Butadiene VMC 500 dets"
-        cd tests/CI_test/TREXIO
+    # - name: "Test 32 (Butadiene) TREXIO interface testing with HDF5 backend on 2 processor"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the tests using the new parser. Butadiene VMC 500 dets"
+    #     cd tests/CI_test/TREXIO
 
-        echo "Running the calculation with trexio library linked"
-        mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_double.out  -e error
+    #     echo "Running the calculation with trexio library linked"
+    #     mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_double.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -26.1862817 +-  0.0180068) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_hdf5_double.out "total E" -26.1862817  0.0180068
+    #     echo "Comparing the energy with the reference one (total E = -26.1862817 +-  0.0180068) "
+    #     $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_hdf5_double.out "total E" -26.1862817  0.0180068
 
-    - name: "Test 33 (Butadiene) TREXIO interface testing with TEXT backend on 1 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. Butadiene VMC 500 dets"
-        cd tests/CI_test/TREXIO
+    # - name: "Test 33 (Butadiene) TREXIO interface testing with TEXT backend on 1 processor"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the tests using the new parser. Butadiene VMC 500 dets"
+    #     cd tests/CI_test/TREXIO
 
-        echo "Running the calculation with trexio library linked"
-        mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_text.inp  -o vmc_optimization_500_text_single.out  -e error
+    #     echo "Running the calculation with trexio library linked"
+    #     mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_text.inp  -o vmc_optimization_500_text_single.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -26.2164721 +-  0.0280294) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_text_single.out "total E" -26.2164721  0.0280294
+    #     echo "Comparing the energy with the reference one (total E = -26.2164721 +-  0.0280294) "
+    #     $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_text_single.out "total E" -26.2164721  0.0280294
 
-    - name: "Test 32 (Butadiene) TREXIO interface testing with TEXT backend on 2 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. Butadiene VMC 500 dets"
-        cd tests/CI_test/TREXIO
+    # - name: "Test 32 (Butadiene) TREXIO interface testing with TEXT backend on 2 processor"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the tests using the new parser. Butadiene VMC 500 dets"
+    #     cd tests/CI_test/TREXIO
 
-        echo "Running the calculation with trexio library linked"
-        mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_text.inp  -o vmc_optimization_500_text_double.out  -e error
+    #     echo "Running the calculation with trexio library linked"
+    #     mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_text.inp  -o vmc_optimization_500_text_double.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -26.1862817 +-  0.0180068) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_text_double.out "total E" -26.1862817  0.0180068
+    #     echo "Comparing the energy with the reference one (total E = -26.1862817 +-  0.0180068) "
+    #     $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_text_double.out "total E" -26.1862817  0.0180068
 
 
     - name: "Zip the test reults"
