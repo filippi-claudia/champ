@@ -19,7 +19,7 @@ jobs:
     - name: Compile the CHAMP code
       run: |
         source /software/intel/oneapi/setvars.sh
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
         which ifort
         which python
         which mpiifort
