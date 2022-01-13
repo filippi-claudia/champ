@@ -57,7 +57,7 @@ jobs:
         mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0629156 +-  0.0032473) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0629156 +-  0.0032473
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0629156  0.0032473
 
     - name: "Test 04 (H2) sto basis optimize wf+jastrow using lin_d method on 2 processors"
       run: |
@@ -264,15 +264,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
 
-        echo "Comparing the energy with the reference one (total E = -26.2860258 +-  0.0252445) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2860258 0.0252445
-    # - name: "Upload results of test 19"
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: test-results-19
-    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF/vmc_optimization_15000.out
-    #     retention-days: 3
-
+        echo "Comparing the energy with the reference one (total E = -26.2175954 +-  0.0237214) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2175954  0.0237214
 
     - name: "Test 20 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 2 processors"
       run: |
@@ -283,14 +276,8 @@ jobs:
         echo "Running the optimization calculation"
         mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
 
-        echo "Comparing the energy with the reference one (total E = -26.2344421 +-  0.0238496) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2344421  0.0238496
-    # - name: "Upload results of test 20"
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: test-results-20
-    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF/vmc_optimization_15000.out
-    #     retention-days: 3
+        echo "Comparing the energy with the reference one (total E = -26.2314751 +-  0.0195221) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2314751  0.0195221
 
     - name: "Test 21 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 1 processor"
       run: |
