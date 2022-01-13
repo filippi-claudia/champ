@@ -56,6 +56,7 @@ message("")
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   set(BLA_VENDOR Intel10_64ilp)
+  set(BLA_STATIC)
 endif()
 
 find_package(BLAS COMPONENTS Fortran REQUIRED QUIET)

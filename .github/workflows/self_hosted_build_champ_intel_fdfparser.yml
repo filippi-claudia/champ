@@ -18,8 +18,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Compile the CHAMP code
       run: |
-        source /exports/software/intel/oneapi/setvars.sh
-        export LD_LIBRARY_PATH=/exports/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:$LD_LIBRARY_PATH
+        source /software/intel/oneapi/setvars.sh
+        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:$LD_LIBRARY_PATH
         which ifort
         which python
         which mpiifort
