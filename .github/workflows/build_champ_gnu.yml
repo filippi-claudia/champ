@@ -9,7 +9,7 @@ on:
 jobs:
   build_champ:
     name: Build CHAMP with GNU compiler
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
     timeout-minutes: 60
     defaults:
       run:
@@ -18,6 +18,13 @@ jobs:
     - uses: actions/checkout@v2
     - uses: s-weigand/setup-conda@v1
     - run: conda --version
+
+    - name: Install Cmake and HDF5
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake
+        sudo apt-get install -y libhdf5-serial-dev
+
 
     - name: Install GNU compilers and libraries
       run: |
@@ -32,6 +39,22 @@ jobs:
            gfortran --version
            conda install -c conda-forge numpy
            conda install -c conda-forge scipy
+
+
+    - name: Install Trexio
+      run: |
+        sudo apt-get install -y cmake
+        sudo apt-get install -y libhdf5-serial-dev
+        sudo apt-get install -y gfortran
+        sudo apt-get install -y gcc
+        wget https://github.com/TREX-CoE/trexio/releases/download/v1.0/trexio-1.0.0.tar.gz
+        tar -xzf trexio-1.0.0.tar.gz
+        cd trexio-1.0.0/
+        ./configure FC=gfortran CC=gcc
+        make all
+        make check
+        sudo make install
+        sudo cp include/* /usr/local/include/
 
     - name: Compile
       run: |
