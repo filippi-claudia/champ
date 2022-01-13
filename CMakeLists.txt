@@ -55,7 +55,7 @@ option(ENABLE_PERIODIC "enable_periodic" off)
 message("")
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  set(BLA_VENDOR Intel10_64_dyn)
+  set(BLA_VENDOR Intel10_64ilp)
 endif()
 
 find_package(BLAS COMPONENTS Fortran REQUIRED QUIET)
