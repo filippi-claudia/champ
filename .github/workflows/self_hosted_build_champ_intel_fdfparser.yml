@@ -23,6 +23,8 @@ jobs:
         which ifort
         which python
         which mpiifort
+        echo $LD_LIBRARY_PATH
+        whoami
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         /software/cmake-3.22.1/bin/cmake --version
