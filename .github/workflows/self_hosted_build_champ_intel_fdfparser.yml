@@ -19,6 +19,7 @@ jobs:
     - name: Compile the CHAMP code
       run: |
         source /software/intel/oneapi/setvars.sh
+        which mpirun
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
         /software/cmake-3.22.1/bin/cmake --version
         /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp
@@ -454,18 +455,18 @@ jobs:
     #     $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_text_double.out "total E" -26.1862817  0.0180068
 
 
-    - name: "Zip the test reults"
-      run: |
-        echo "Compressing the test results from workflow"
-        cd tests/
-        tar -czvf workflow_artifacts.tar.gz CI_test/
+    # - name: "Zip the test reults"
+    #   run: |
+    #     echo "Compressing the test results from workflow"
+    #     cd tests/
+    #     tar -czvf workflow_artifacts.tar.gz CI_test/
 
-    - name: Upload calculation result artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: results-workflow-actions
-        path: tests/workflow_artifacts.tar.gz
-        retention-days: 2
+    # - name: Upload calculation result artifacts
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: results-workflow-actions
+    #     path: tests/workflow_artifacts.tar.gz
+    #     retention-days: 2
 
 
 
