@@ -8,6 +8,7 @@ settings.make
 *.i90
 *.log
 *.i90
+*.tmp
 local_test.sh
 
 # binaries
@@ -56,6 +57,7 @@ check.*
 tape8
 walkalize.*
 *.vscode
+*.error
 
 #local testing of workflow
 .github/workflows/test_locally.yml
