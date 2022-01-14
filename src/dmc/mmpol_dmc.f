@@ -147,11 +147,12 @@ c-----------------------------------------------------------------------
 
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
-
+      use mmpol_parms, only: nchmm
+      use mmpol_cntrl, only: immpol
       use precision_kinds, only: dp
       implicit none
 
-      integer :: i, immpol, nchmm
+      integer :: i !, immpol, nchmm
       real(dp) :: cmmpolnow, dmmpolnow, eek_now1, eek_now2, eek_now3
       real(dp) :: wsum_dmc
 
@@ -187,11 +188,12 @@ c-----------------------------------------------------------------------
       subroutine mmpol_splitj(iw,iw2)
 
       use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
+      use mmpol_parms, only: nchmm
 
 
       implicit none
 
-      integer :: i, iw, iw2, nchmm
+      integer :: i, iw, iw2 !, nchmm
 
 
       dmmpolo_dmc(iw2)=dmmpolo_dmc(iw)
