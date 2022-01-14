@@ -518,14 +518,14 @@ contains
 
         j = 1
         do k = 1, size(residues, 2)
-            if (.not. has_converged(k)) then
+            ! if (.not. has_converged(k)) then
                 correction(:, j) = residues(:, k)
 
                 do ii = 1, size(correction, 1)
                     correction(ii, j) = correction(ii, j)/(eigenvalues(k)*diag_stx(ii) - diag_mtx(ii))
                 end do
                 j = j + 1
-            endif
+            ! endif
         end do
 
     end function compute_DPR
