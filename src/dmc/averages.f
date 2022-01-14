@@ -111,7 +111,12 @@ c deriv
       integer :: ifr
       real(dp) :: derivtotave, egave
 
-      egave=cum_av(jderiv(1,1))/cum_w(jderiv(1,1))
+      if (cum_w(jderiv(1,1)).eq.0) then
+        egave = 0.0
+      else
+        egave=cum_av(jderiv(1,1))/cum_w(jderiv(1,1))
+      endif
+
       do ifr=2,nforce
        derivtotave=-(cum_av(jderiv(1,ifr))-cum_av(jderiv(1,1))
      &              +cum_av(jderiv(2,ifr))-cum_av(jderiv(2,1))
