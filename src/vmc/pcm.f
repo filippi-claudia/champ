@@ -419,7 +419,7 @@ c............................................................
       return
       end
 
-      subroutine qpcm_update_vol()
+      subroutine qpcm_update_vol(iupdate)
 c............................................................
 c      update of volume charges and penupol
 c............................................................
@@ -433,7 +433,8 @@ c............................................................
       use pcm_fdc, only: qvol
       implicit none
 
-      integer :: iupdate, kn, ko, nsco
+      integer, intent(inout) :: iupdate
+      integer :: kn, ko, nsco
 
 
       iupdate=0

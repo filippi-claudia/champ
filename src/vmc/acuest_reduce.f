@@ -225,7 +225,7 @@ c optorb reduced at the end of the run: set printout to 0
 
       entry acues1_reduce
 
-      call qpcm_update_vol()
+      call qpcm_update_vol(iupdate)
       if(iupdate.eq.1) then
         call pcm_reduce_chvol
         call pcm_compute_penupv
