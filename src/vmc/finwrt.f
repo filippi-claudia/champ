@@ -127,7 +127,11 @@ c T_corr=1 when nstep=1, whereas if one uses T_corr=(eerr/eerr1s)^2, then
 c T_corr will be a bit < 1 when nstep=1. However, it makes sense to use
 c the latter definition because p*new+q*old does reduce T_corr and that
 c is precisely what is being reflected when we get T_corr < 1.
-      tcsq=eerr/eerr1s
+      if(eerr1s.eq.0.0) then
+        tcsq = 0.0
+      else
+        tcsq=eerr/eerr1s
+      endif
       sigma=eerr1s*rtpass
 
       if(istate.eq.1) then

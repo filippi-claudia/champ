@@ -28,6 +28,7 @@ c     max does not work with g77
       real(dp), DIMENSION(:), ALLOCATABLE :: optci_reduce_collect
       real(dp), DIMENSION(:, :), ALLOCATABLE :: optci_reduce_collect2
 
+      ! both nmatdim and MXORBTERM are un-initialized !
       MXTMP=max(MXORBTERM,nmatdim)
 
       allocate(optci_reduce_collect(MXTMP), source=0.0_dp)
