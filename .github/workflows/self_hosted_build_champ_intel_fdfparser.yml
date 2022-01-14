@@ -33,7 +33,7 @@ jobs:
         mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0059842 +-  0.0070988) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_single.out "total E" -1.0059842  0.0070988
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_single.out "total E" -1.0059842   0.0070988
 
     - name: "Test 02 (H2) sto basis optimize jastrow sr_n method on 2 processors"
       run: |
