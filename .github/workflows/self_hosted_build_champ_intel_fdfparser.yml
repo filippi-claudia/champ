@@ -2,9 +2,25 @@ name: Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01
 
 on:
   push:
-    branches: [check-self-hosted]
+    branches:
+      - 'releases/**'
+      - main
+      - check-self-hosted
+      - create-module-library
+      - debug_intel
+      - feature/debug-ci
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - v2.*.*
   pull_request:
-    branches: [check-self-hosted]
+    branches:
+      - 'releases/**'
+      - main
+      - check-self-hosted
+      - create-module-library
+      - debug_intel
+      - feature/debug-ci
+
 
 jobs:
   build_champ:
@@ -19,6 +35,7 @@ jobs:
     - name: Compile the CHAMP code
       run: |
         module load compiler-rt/latest compiler/latest icc/latest mkl/latest mpi/latest python3/latest tbb/latest
+        module load hdf5/1.12.1-intel trexio/2.0.0-intel
         which mpirun
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
         /software/cmake-3.22.1/bin/cmake --version
@@ -69,8 +86,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E = -1.0603592 +-  0.0021138) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0603592  0.0021138
+        echo "Comparing the energy with the reference one (total E = -1.0588247 +-  0.0022854) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0588247  0.0022854
 
     - name: "Test 05 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
       run: |
@@ -289,8 +306,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
 
-        echo "Comparing the energy with the reference one (total E = -26.2470439 +-  0.0209539) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2470439  0.0209539
+        echo "Comparing the energy with the reference one (total E = -26.1936851 +-  0.0261391) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.1936851  0.0261391
 
 
     - name: "Test 22 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 2 processors"
@@ -455,18 +472,18 @@ jobs:
     #     $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_text_double.out "total E" -26.1862817  0.0180068
 
 
-    # - name: "Zip the test reults"
-    #   run: |
-    #     echo "Compressing the test results from workflow"
-    #     cd tests/
-    #     tar -czvf workflow_artifacts.tar.gz CI_test/
+    - name: "Zip the test reults"
+      run: |
+        echo "Compressing the test results from workflow"
+        cd tests/
+        tar -czvf workflow_artifacts.tar.gz CI_test/
 
-    # - name: Upload calculation result artifacts
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: results-workflow-actions
-    #     path: tests/workflow_artifacts.tar.gz
-    #     retention-days: 2
+    - name: Upload calculation result artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: results-workflow-actions
+        path: tests/workflow_artifacts.tar.gz
+        retention-days: 2
 
 
 
