@@ -252,17 +252,17 @@ jobs:
     #     path: tests/CI_test/butadiene-dmc/butadiene_500_DMC_pablo/dmc_double_core.out
     #     retention-days: 3
 
-    - name: "Test 09 (Butadiene) Workload DMC on 1 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the DMC tests using the new parser. Butadiene DMC from workload single core"
-        cd tests/CI_test/DMC-Butadiene-cipsi500
+    # - name: "Test 09 (Butadiene) Workload DMC on 1 processor"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the DMC tests using the new parser. Butadiene DMC from workload single core"
+    #     cd tests/CI_test/DMC-Butadiene-cipsi500
 
-        echo "Running the dmc.mov1 on one processor"
-        mpirun -np 1  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_single.out  -e dmc_single_core.error
+    #     echo "Running the dmc.mov1 on one processor"
+    #     mpirun -np 1  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_single.out  -e dmc_single_core.error
 
-        echo "Comparing the energy with the reference one (total energy (  100) = -26.2963582 +-  0.0147048) "
-        $HOME/work/champ/champ/tools/compare_value.py dmc_workload_single.out "total energy (  100)" -26.2963582  0.0147048
+    #     echo "Comparing the energy with the reference one (total energy (  100) = -26.2963582 +-  0.0147048) "
+    #     $HOME/work/champ/champ/tools/compare_value.py dmc_workload_single.out "total energy (  100)" -26.2963582  0.0147048
     # - name: "Upload results of test 09"
     #   uses: actions/upload-artifact@v2
     #   with:
@@ -270,17 +270,17 @@ jobs:
     #     path: tests/CI_test/DMC-Butadiene-cipsi500/dmc_workload_single.out
     #     retention-days: 3
 
-    - name: "Test 10 (Butadiene) Workload DMC on 2 processors"
-      run: |
-        ulimit -s unlimited
-        echo "Running the DMC tests using the new parser. Butadiene DMC  from workload two cores"
-        cd tests/CI_test/DMC-Butadiene-cipsi500
+    # - name: "Test 10 (Butadiene) Workload DMC on 2 processors"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the DMC tests using the new parser. Butadiene DMC  from workload two cores"
+    #     cd tests/CI_test/DMC-Butadiene-cipsi500
 
-        echo "Running the dmc.mov1 on two processors"
-        mpirun -np 2  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_double.out  -e dmc_double_core.error
+    #     echo "Running the dmc.mov1 on two processors"
+    #     mpirun -np 2  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_double.out  -e dmc_double_core.error
 
-        echo "Comparing the energy with the reference one (total energy (  100) = -26.2894638 +-  0.0108990) "
-        $HOME/work/champ/champ/tools/compare_value.py dmc_workload_double.out "total energy (  100)" -26.2894638  0.0108990
+    #     echo "Comparing the energy with the reference one (total energy (  100) = -26.2894638 +-  0.0108990) "
+    #     $HOME/work/champ/champ/tools/compare_value.py dmc_workload_double.out "total energy (  100)" -26.2894638  0.0108990
     # - name: "Upload results of test 10"
     #   uses: actions/upload-artifact@v2
     #   with:
