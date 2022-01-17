@@ -195,3 +195,38 @@ C     sorts in ascending order
       goto 1
       end
 c-----------------------------------------------------------------------
+
+
+      pure recursive subroutine QUICKSORT(a, b, first, last)
+      use precision_kinds, only: dp
+      implicit none
+      real(dp), intent(inout)              :: a(:)
+      integer, intent(inout)            :: b(:)
+      integer, intent(in)               :: first, last
+      integer                           :: t_i
+      real(dp)                             :: t_r, x
+      integer                           :: i, j
+
+      x = a((first+last)/2)
+      i = first
+      j = last
+      do
+      do while( a(i) < x)
+        i=i+1
+      end do
+      do while( x < a(j))
+        j=j-1
+      end do
+      if( i >= j )EXIT
+      t_r  = a(i)
+      a(i) = a(j)
+      a(j) = t_r
+      t_i  = b(i)
+      b(i) = b(j)
+      b(j) = t_i
+      i=i+1
+      j=j-1
+      end do
+      if( first < i-1 )call quicksort(a, b, first, i-1)
+      if( j+1 < last )call quicksort(a, b, j+1, last)
+      end subroutine QUICKSORT

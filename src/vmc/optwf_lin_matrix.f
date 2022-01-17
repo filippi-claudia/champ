@@ -91,6 +91,7 @@ c Symmetrize the overlap
 c Sort the eigenvalues
       call sort(nparm+is,eig,isort)
 
+
       ireal=0
       do ii=1,nparm+is
         i=isort(ii)
@@ -437,7 +438,20 @@ c     enddo
       if(imag.eq.1) write(ounit,'(''Warning: imaginary eigenvalues'')')
 
 c Sort the eigenvalues
+      ! write(*,*) nparm+is
+      ! do ii=1,nparm+is
+      !   write(*,*) ii, eig(ii)
+      !   isort(ii) = ii
+      ! enddo
+
+      ! call qsort(eig, isort, 1, nparm+is)
       call sort(nparm+is,eig,isort)
+
+      ! do ii=1,nparm+is
+      !   write(*,*) ii, isort(ii)
+      ! enddo
+
+
 
       i_min=isort(1)
       write(ounit,'(''generalized eigenvalue problem H c= E S c'')')
@@ -629,7 +643,8 @@ c minus sign because variation is subtracted when computing new parameters
           write(ounit,'(''state '',i4,'' norm'',1p1e12.5,'' overlap '',1p1e12.5)') jj,dnorm,overlap(i0)
           write(ounit,'(''pn  ='',1000f10.5)') (dparm(i+nparm*(jj-1)),i=1,nparm)
 
-          if(nstates.gt.1.and.jj.ne.nstates.and.eig(isort(i0+1)).eq.0.d0)
+          ! if(nstates.gt.1.and.jj.ne.nstates.and.eig(isort(i0+1)).eq.0.d0)
+          if(nstates.gt.1.and.jj.ne.nstates.and.eig(isort(i0)).eq.0.d0)
      &      call fatal_error('OPTWF: Overlap with state 1 for highest eigenvalue >0')
         enddo
        endif
