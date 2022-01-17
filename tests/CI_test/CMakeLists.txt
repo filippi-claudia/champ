@@ -9,13 +9,21 @@
 # 3. The following cmake ctest will automatically run all the tests
 # 4. To just list the tests, run "ctest -N"
 
-file(GLOB_RECURSE tests_script LIST_DIRECTORIES false "*.sh")
+file(GLOB_RECURSE tests_script LIST_DIRECTORIES false "*_short.sh")
   foreach(test_src ${tests_script})
       get_filename_component(dir ${test_src} PATH)
       get_filename_component(scriptname ${test_src} NAME)
-      add_test(NAME ${test_src}
+      add_test(NAME "${test_src}.1"
                WORKING_DIRECTORY ${dir}
-              COMMAND ${scriptname}
+               COMMAND "bash" "-c" 
+               "./${scriptname} > ${scriptname}.1.out 2> ${scriptname}.1.err"
               )
+      set_tests_properties("${test_src}.1" PROPERTIES LABELS "one_proc;short")
+      add_test(NAME "${test_src}.2"
+               WORKING_DIRECTORY ${dir}
+               COMMAND "bash" "-c" 
+               "mpirun -np 2 ./${scriptname} > ${scriptname}.2.out 2> >(tee ${scriptname}.2.err >&2)"
+              )
+      set_tests_properties("${test_src}.2" PROPERTIES LABELS "two_proc;short")
   endforeach(test_src)
 
