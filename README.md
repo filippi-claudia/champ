@@ -14,8 +14,7 @@
  ____________________________________________________________________
 ```
 ------
-
-[![Intel OneAPI build](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel_fdfparser.yml/badge.svg?branch=new-parser)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel_fdfparser.yml)
+[![Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ_intel_fdfparser.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ_intel_fdfparser.yml)
 
 [![CI using Doxygen generated doc](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml)
 
