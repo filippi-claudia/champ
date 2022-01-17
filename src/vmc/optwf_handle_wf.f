@@ -1123,17 +1123,17 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       if(l.gt.mconf) call fatal_error('SR_STORE: l gt mconf')
 
-      call dcopy(nparmj,gvalue,1,sr_o(1,l),1)
+      if(nparmj /= 0) call dcopy(nparmj,gvalue,1,sr_o(1,l),1)
 
       ntmp=max(nciterm-i0,0)
-      call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l),1)
+      if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l),1)
 
       ijasci=nparmj+ntmp
       if(ijasci+nstates*norbterm+nstates.gt.mparm) call fatal_error('SR_STORE: iparm gt mparm')
 
       do istate=1,nstates
         ii=ijasci+(istate-1)*norbterm
-        call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l),1)
+        if (norbterm /= 0) call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l),1)
         elocal(l,istate)=energy(istate)
         wtg(l,istate)=wt(istate)
       enddo
@@ -1153,11 +1153,11 @@ c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secu
         tmp_ho(j)=denergy(j,1)+gvalue(j)*energy(1)
       enddo
 
-      call dcopy(nparmj,tmp_ho,1,sr_ho(1,l),1)
+      if(nparmj /= 0) call dcopy(nparmj,tmp_ho,1,sr_ho(1,l),1)
 
-      call dcopy(ntmp,ci_e(1+i0),1,sr_ho(nparmj+1,l),1)
+      if(ntmp /= 0) call dcopy(ntmp,ci_e(1+i0),1,sr_ho(nparmj+1,l),1)
 
-      call dcopy(norbterm,orb_ho(1,1),1,sr_ho(nparmj+ntmp+1,l),1)
+      if(norbterm /= 0) call dcopy(norbterm,orb_ho(1,1),1,sr_ho(nparmj+ntmp+1,l),1)
 
       return
       end
