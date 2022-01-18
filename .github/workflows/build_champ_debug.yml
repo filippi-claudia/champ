@@ -97,7 +97,7 @@ jobs:
         which mpif90
         /software/cmake-3.22.1/bin/cmake -H. -Bbuild \
         -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=DEBUG
-        /software/cmake-3.22.1/bin/cmake --build build -- -j2
+        /software/cmake-3.22.1/bin/cmake --build build -- -j2 VERBOSE=1
 
     - name: "Run all short tests"
       if: github.event_name != 'workflow_dispatch'
