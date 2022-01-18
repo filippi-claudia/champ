@@ -15,7 +15,6 @@ jobs:
       matrix:
         toolchain: ['intel','gnu']
       fail-fast: false
-    runs-on: ubuntu-20.04
     timeout-minutes: 60
     defaults:
       run:
