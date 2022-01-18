@@ -509,7 +509,7 @@ contains
         real(dp), dimension(:), intent(in) :: eigenvalues
         real(dp), dimension(:), intent(in) :: diag_mtx, diag_stx
         logical, dimension(:), intent(in) :: has_converged
-        logical :: update_vector
+        logical :: include_update_vector
 
         ! local variables
         type(davidson_parameters) :: parameters
@@ -521,16 +521,14 @@ contains
         do k = 1, size(residues, 2)
 
             ! if (.not. has_converged(k)) then
-            update_vector = .false.
+            include_update_vector = .true.
             if (k .le. parameters%lowest) then
-                if (.not. has_converged(k)) then
-                    update_vector = .true.
+                if (has_converged(k)) then
+                    include_update_vector = .false.
                 endif
-            else
-                update_vector = .true.
             end if
 
-            if(update_vector) then
+            if(include_update_vector) then
                 correction(:, j) = residues(:, k)
 
                 do ii = 1, size(correction, 1)
