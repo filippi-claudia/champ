@@ -522,13 +522,13 @@ contains
 
             ! if (.not. has_converged(k)) then
             update_vector = .false.
-            if (k .le. parameters.lowest) then
+            if (k .le. parameters%lowest) then
                 if (.not. has_converged(k)) then
                     update_vector = .true.
                 endif
             else
                 update_vector = .true.
-            endif
+            end if
 
             if(update_vector) then
                 correction(:, j) = residues(:, k)
@@ -537,7 +537,7 @@ contains
                     correction(ii, j) = correction(ii, j)/(eigenvalues(k)*diag_stx(ii) - diag_mtx(ii))
                 end do
                 j = j + 1
-            endif
+            end if
         end do
 
     end function compute_DPR
