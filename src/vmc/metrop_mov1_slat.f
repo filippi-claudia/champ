@@ -242,7 +242,7 @@ c Determine the maximum value of radial function for rejection sampling
           fmax2=sqrt(rmax2)*abs(one+co*rmax2)*dexp(-zeta*rmax2)
           fmax=max(fmax,fmax2)
         else
-          rmax2=0.
+          rmax2=0.0_dp
         endif
 
 c   Sample sqrt(r_f)*abs(1+co*r_f)*exp(-zeta*r_f) by rejection
@@ -387,11 +387,11 @@ c rratio^2 is needed for the density of the angular moves
           write(ounit,'(''vold='',9d12.4)') (vold(ic,i),ic=1,3)
           write(ounit,'(''voldr,voldp='',9d12.4)') voldr,voldp
           write(ounit,'(''axes='',(3f8.4,3x))') xaxis,yaxis,zaxis
-          write(ounit,'(''rmino(i),rmax1,rmax2,rzero'',9f9.4)')
+          write(ounit,'(''rmino(i),rmax1,rmax2,rzero'',9d12.4)')
      &    rmino(i),rmax1,rmax2,rzero
-          write(ounit,'(''rtry,costht,sintht,phitry'',9f9.4)') rtry,costht,
+          write(ounit,'(''rtry,costht,sintht,phitry'',9d12.4)') rtry,costht,
      &    sintht,phitry
-          write(ounit,'(''fxop'',9f12.4)') fxop
+          write(ounit,'(''fxop'',9d12.4)') fxop
         endif
 
 c calculate psi at new configuration
@@ -573,16 +573,16 @@ c p is the probability of accepting new move
       p=rratio**2*exp(psi2n(1)-psi2o(1,1))*dabs((fxnp*areao)/(fxop*arean))
 
         if(ipr.ge.1) then
-          write(ounit,'(''rminn,rvminn,vnew,vnewr'',9f10.4)')
+          write(ounit,'(''rminn,rvminn,vnew,vnewr'',9d12.4)')
      &    rminn(i),(rvminn(ic,i),ic=1,3),(vnew(ic,i),ic=1,3),vnewr
           write(ounit,'(''vnew='',9d12.4)') (vnew(ic,i),ic=1,3)
           write(ounit,'(''vnewr,vnewp='',9d12.4)') vnewr,vnewp
           write(ounit,'(''axes='',(3f8.4,3x))') xaxis,yaxis,zaxis
-          write(ounit,'(''rminn(i),rmax1,rmax2,rzero'',9f9.4)')
+          write(ounit,'(''rminn(i),rmax1,rmax2,rzero'',9d12.4)')
      &    rminn(i),rmax1,rmax2,rzero
-          write(ounit,'(''rtry,costht,sintht,phitry,cosphi'',9f9.4)') rtry,
+          write(ounit,'(''rtry,costht,sintht,phitry,cosphi'',9d12.4)') rtry,
      &    costht,sintht,phitry,cosphi
-          write(ounit,'(''fxop,fxnp,areao,arean,psi2n,psi2o,p'',9f9.4)')
+          write(ounit,'(''fxop,fxnp,areao,arean,psi2n,psi2o,p'',9d12.4)')
      &                  fxop,fxnp,areao,arean,psi2n(1),psi2o(1,1),p
           if(dabs(vnew(1,i))+dabs(vnew(1,i))+dabs(vnew(1,i)).gt.10d+8) then
             do ii=1,i-1
