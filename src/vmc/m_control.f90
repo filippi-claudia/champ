@@ -226,8 +226,9 @@ contains
         character(len=10), dimension(12)        :: extensions
         character(len=100)                      :: string_format  = '(A, T40, A)'
 
-        ! Make sure ounit default is stdout
+        ! Make sure ounit default is stdout, and errunit is stderr
         ounit = output_unit
+        errunit = error_unit
         ! Get all the command line arguments
 ! The next line is commented as all mpi processes read this information. old style
 
@@ -303,8 +304,6 @@ contains
                     extensions(5) = ".log" ; extensions(6) = ".err" ; extensions(7) = ".e"   ; extensions(8) = "error"
 
                     ! default error file if not mentioned.
-                    file_error = "error"
-                    open (newunit=errunit,file=file_error, iostat=iostat, action='write' )
                     do j = 1, 8
                         if (index(arg(i+1), extensions(j)) /= 0) then
                             write(output_unit, '(2a)') 'unrecognised command-line option: ', arg(i)
