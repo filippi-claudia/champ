@@ -6,10 +6,9 @@ if [ $# -eq 0 ]; then
 else
 nproc=$1
 fi 
-filename=revised_vmc_lin
+filename=dmc
 
-mpirun -n $nproc ../../../bin/vmc.mov1 -i ${filename}.inp \
+mpirun -n $nproc ../../../bin/dmc.mov1 -i ${filename}.inp \
          > ${filename}.$nproc.out 2> >(tee ${filename}.$nproc.err >&2)
 #../../../tools/compare_value.py ${filename}.$nproc.out \
 #   "total E" -1.0137312  0.0070186
-
