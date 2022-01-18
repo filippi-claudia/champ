@@ -292,7 +292,7 @@ contains
 
                 ! Solve the small eigenvalue problem
                 call lapack_generalized_eigensolver(mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
-                write(ounit, '(''DAV: eigv'',1000f12.5)') (eigenvalues_sub(j), j=1, parameters%lowest)
+                write(ounit, '(''DAV: eigv'',1000d12.5)') (eigenvalues_sub(j), j=1, parameters%lowest)
 
                 ! Compute the necessary ritz vectors
                 ritz_vectors = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :size_update))
@@ -307,7 +307,7 @@ contains
                 do j = 1, parameters%lowest
                     if (errors(j) < tolerance) has_converged(j) = .true.
                 end do
-                write(ounit, '(''DAV: resd'',1000f12.5)') (errors(j), j=1, parameters%lowest)
+                write(ounit, '(''DAV: resd'',1000d12.5)') (errors(j), j=1, parameters%lowest)
 
                 not_cnv = count(.not. has_converged(:))
                 write(ounit, '(''DAV: Root not yet converged     : '', I10)') not_cnv
