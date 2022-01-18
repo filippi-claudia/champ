@@ -1,7 +1,7 @@
       subroutine optci_reduce
 
       use precision_kinds, only: dp
-      use optci, only: mxciterm, mxcireduced
+      use optci, only: mxciterm, mxcireduced, ncimatdim
       use optwf_contrl, only: ioptci
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
@@ -28,7 +28,10 @@ c     max does not work with g77
       real(dp), DIMENSION(:), ALLOCATABLE :: optci_reduce_collect
       real(dp), DIMENSION(:, :), ALLOCATABLE :: optci_reduce_collect2
 
-      MXTMP=max(MXORBTERM,nmatdim)
+      ! defined like that in reference branch
+      ! https://github.com/filippi-claudia/champ/blob/847f0e5e94d77035d957158406aac47c3e27af54/src/vmc/optci_reduce.f#L16
+      MXTMP = mxciterm + ncimatdim
+      ! MXTMP=max(MXORBTERM,nmatdim)
 
       allocate(optci_reduce_collect(MXTMP), source=0.0_dp)
       allocate(optci_reduce_collect2(mxciterm,mxcireduced), source=0.0_dp)
