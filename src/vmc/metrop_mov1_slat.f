@@ -241,6 +241,8 @@ c Determine the maximum value of radial function for rejection sampling
           if(rmax2.gt.rtop) rmax2=rtop
           fmax2=sqrt(rmax2)*abs(one+co*rmax2)*dexp(-zeta*rmax2)
           fmax=max(fmax,fmax2)
+        else
+          rmax2=0.
         endif
 
 c   Sample sqrt(r_f)*abs(1+co*r_f)*exp(-zeta*r_f) by rejection
