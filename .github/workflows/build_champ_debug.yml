@@ -109,12 +109,12 @@ jobs:
         cd tests/
         tar -czvf workflow_artifacts.tar.gz CI_test/
 
-    - name: Upload calculation result artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: results-workflow-actions
-        path: tests/workflow_artifacts.tar.gz
-        retention-days: 2
+#- name: Upload calculation result artifacts
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: results-workflow-actions
+#        path: tests/workflow_artifacts.tar.gz
+#        retention-days: 2
 
 
 
