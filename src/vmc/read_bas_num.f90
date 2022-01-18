@@ -31,7 +31,7 @@
       integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
       integer         :: iwf, info
       real(dp)        :: val, dwf1, wfm, dwfn, dwfm
-      integer         :: iunit, iostat, counter = 0
+      integer         :: iunit, iostat = 0, counter = 0
       logical         :: exist, skip = .true.
 
       real(dp), dimension(MRWF_PTS)       ::  x, work
