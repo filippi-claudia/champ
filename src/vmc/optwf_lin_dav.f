@@ -147,7 +147,8 @@ c         if(-denergy.gt.3*denergy_err) alfgeo=alfgeo/1.2
 
         energy_sav=energy(1)
         energy_err_sav=energy_err(1)
-        sigma_sav=sigma
+        ! sigma_sav=sigma
+        sigma_sav=0 ! sigma is not initialized and never changed ...
       enddo
 c enddo iteration
 
