@@ -103,7 +103,7 @@ jobs:
       if: github.event_name != 'workflow_dispatch'
       run: |
         cd build
-        ctest --output-on-failure -L VMC-H2
+        ctest --output-on-failure -L short
 
     - name: "Run tests with tag: ${{ github.event.inputs.tags }}"
       if: github.event_name == 'workflow_dispatch'
