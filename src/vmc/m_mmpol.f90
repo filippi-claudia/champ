@@ -80,7 +80,7 @@ module mmpol_parms
     use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: chmm !(MCHMM)
-    integer :: nchmm
+    integer :: nchmm = 1
     real(dp), dimension(:, :), allocatable :: rqq !(MCHMM,MCHMM)
     real(dp), dimension(:, :), allocatable :: x_mmpol !(3,MCHMM)
 
