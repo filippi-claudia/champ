@@ -19,7 +19,7 @@ contains
     !> \param eigenvalues: lowest eigenvalues
     !> \param eigenvectors: corresponding eigenvectors
     !> \return eigenvalues/eigenvectors
-    
+
     ! input/output
     implicit none
     real(dp), dimension(:, :), intent(in) :: mtx
@@ -38,7 +38,7 @@ contains
      ! ALL the eigenvalues of the subpace (re, im)
     real(dp), dimension(size(mtx, 1)) :: eigenvalues_work
     real(dp), dimension(:), allocatable :: work ! workspace, see lapack documentation
-    
+
     ! ! dimension of the guess space
     dim = size(mtx, 1)
 
@@ -55,7 +55,7 @@ contains
 
     ! Query size of the optimal workspace
     allocate(work(1), source=0.0_dp)
-    
+
     if (gev) then
       call DSYGV(itype,"V", "U", dim, mtx_copy, dim, stx_copy, dim, eigenvalues_work, work, -1, info)
       call check_lapack_call(info, "DSYGV")
@@ -81,14 +81,14 @@ contains
     ! Sort the eigenvalues and eigenvectors of the basis
     eigenvalues = eigenvalues_work
     eigenvectors = mtx_copy
-    
+
     ! release memory
     deallocate(work)
     deallocate(mtx_copy)
-    if (gev) then 
+    if (gev) then
       deallocate(stx_copy)
     end if
-    
+
   end subroutine lapack_generalized_eigensolver
 
     subroutine lapack_generalized_eigensolver_lowest(mtx, stx, eigenvalues, eigenvectors, lowest)
@@ -98,9 +98,9 @@ contains
     !> \param stx: Overlap Matrix to diaogonalize
     !> \param eigenvalues: lowest eigenvalues
     !> \param eigenvectors: corresponding eigenvectors
-    !> \param lowest: number of lowest eigenvalues/eigenvectors pairs to compute  
+    !> \param lowest: number of lowest eigenvalues/eigenvectors pairs to compute
     !> \return eigenvalues/eigenvectors
-    
+
     ! input/output
     implicit none
     real(dp), dimension(:, :), intent(in) :: mtx
@@ -119,13 +119,13 @@ contains
     ! Failed eigenvalues
     integer, dimension(size(mtx, 1)) :: ifail
 
-    
+
      ! ALL the eigenvalues of the subpace (re, im)
     real(dp), dimension(size(mtx, 1)) :: eigenvalues_work
     real(dp), dimension(size(mtx, 1), lowest) :: eigenvectors_work
     real(dp), dimension(:), allocatable :: work ! workspace, see lapack documentation
     integer, dimension(:), allocatable :: iwork ! workspace, see lapack documentation
-    
+
     ! ! dimension of the guess space
     dim = size(mtx, 1)
 
@@ -141,7 +141,7 @@ contains
     vu = 0.0_dp
 
     ! Absolute tolerance
-    
+
     ! Query size of the optimal workspace
     allocate(work(1), source=0.0_dp)
     allocate(iwork(1), source=0)
@@ -164,16 +164,16 @@ contains
          dim, work, lwork, iwork, ifail, info)
 
     call check_lapack_call(info, "DSYGVX")
-      
+
     ! Copy the eigenvalues and eigenvectors
     eigenvalues = eigenvalues_work(1:lowest)
     eigenvectors = eigenvectors_work(1:dim, 1:lowest)
-    
+
     ! release memory
     deallocate(work, iwork, mtx_copy, stx_copy)
-    
+
   end subroutine lapack_generalized_eigensolver_lowest
-  
+
   subroutine lapack_qr(basis)
     !> Orthoghonalize the basis using the QR factorization.
     !> QR factorization of the M-by-N (M>N) matrx A=Q*R in the form where
@@ -186,9 +186,9 @@ contains
     !> combination of Q1 columns, i.e. they span the same linear space.
     !> In other words, columns of Q1 is the result of ortogonalization of columns A.
     !> DGEQRF does not not compute Q directly, DORGQR must be call subsequently.
-    
+
     !> \param basis
-    !> \return orthogonal basis    
+    !> \return orthogonal basis
 
     implicit none
     real(dp), dimension(:, :), intent(inout) :: basis
@@ -230,12 +230,12 @@ contains
     ! 2.3 compute the matrix Q
     call DORGQR(m, n, min(m, n), basis, m, tau, work, lwork, info)
     call check_lapack_call(info, "DORGQR")
-    
+
     ! release memory
     deallocate(work)
-    
+
   end subroutine lapack_qr
-  
+
   subroutine lapack_solver(arr, brr)
     !> Call lapack DSYSV subroutine to solve a AX=B Linear system
     !> \param arr: matrix with the coefficients of the linear system
@@ -243,14 +243,14 @@ contains
     !> \returns: Solution vector X (overwriten brr)
 
     implicit none
-    
+
     real(dp), dimension(:, :), intent(inout) :: arr, brr
-    
+
     ! local variables
     real(dp), dimension(:), allocatable :: work
     integer :: n, info, lwork
     integer, dimension(size(arr, 1)) :: ipiv
-    
+
     n = size(arr, 1)
 
     ! query spacework size
@@ -262,7 +262,7 @@ contains
     lwork = max(1, int(work(1)))
     deallocate(work)
     allocate(work(lwork), source=0.0_dp)
-    
+
     ! run linear solver
     call DSYSV("U", n, 1, arr, n, ipiv, brr, n, work, lwork, info)
     ! If the diagonalization fails due to a singular value try to recover
@@ -274,7 +274,7 @@ contains
     end if
 
     deallocate(work)
-    
+
   end subroutine lapack_solver
 
     function lapack_matmul(transA, transB, arr, brr, alpha) result (mtx)
@@ -284,14 +284,14 @@ contains
     !> \param transB: 'T' transpose B, 'N' do not tranpose
     !> \param arr: first matrix to multiply
     !> \param brr: second matrix
-    !> \param alpha: optional scalar number   
+    !> \param alpha: optional scalar number
     !> \return matrix multiplication
 
     implicit none
-    
+
     character(len=1), intent(in) :: transA, transB
     real(dp), dimension(:, :), intent(in) :: arr, brr
-    real(dp), optional, intent(in) :: alpha 
+    real(dp), optional, intent(in) :: alpha
     real(dp), dimension(:, :), allocatable :: mtx
 
     ! local variables
@@ -301,7 +301,7 @@ contains
 
     ! check optional variable
     if (present(alpha)) x=alpha
-    
+
     if (transA == 'T') then
        k = size(arr, 1)
        m = size(arr, 2)
@@ -311,7 +311,7 @@ contains
        m = size(arr, 1)
        lda = m
     end if
-    
+
     if (transB == 'T') then
        n = size(brr, 1)
        ldb = n
@@ -338,28 +338,28 @@ contains
     !> \return resulting vector
 
     implicit none
-    
+
     character(len=1), intent(in) :: transA
     real(dp), dimension(:, :), intent(in) :: mtx
     real(dp), dimension(:), intent(in) :: vector
-    real(dp), optional, intent(in) :: alpha 
+    real(dp), optional, intent(in) :: alpha
     real(dp), dimension(:), allocatable :: rs
 
     ! local variable
     integer :: m, n
     real(dp) :: scalar
     scalar = 1.d0
-    
+
     ! check optional variable
     if (present(alpha)) scalar=alpha
-    
+
     ! number of row of mtx
     m = size(mtx, 1)
     n = size(mtx, 2)
 
     allocate(rs(m), source=0.0_dp)
     rs = 0.d0
-    
+
     call DGEMV(transA, m, n, scalar, mtx, m, vector, 1, 0.d0, rs, 1)
 
   end function lapack_matrix_vector
@@ -378,10 +378,10 @@ contains
     real(dp), dimension(size(vector)) :: xs
     integer :: i, j, info
     xs = vector
-    
+
     call DLASRT(id, size(vector), vector, info)
     call check_lapack_call(info, "DLASRT")
-    
+
     do i=1,size(vector)
        do j=1, size(vector)
           if (abs(vector(j) - xs(i)) < 1e-16) then
@@ -389,23 +389,25 @@ contains
           end if
        end do
     end do
-    
+
   end function lapack_sort
-  
-  
+
+
   subroutine check_lapack_call(info, name)
     !> Check if a subroutine finishes sucessfully
     !> \param info: Termination signal
     !> \param name: Name of the subroutine
+    use contrl_file,    	only: iunit, ounit, errunit
+    implicit none
     integer :: info
     character(len=*), intent(in) :: name
-    
-    if (info /= 0) then
-       print *, "call to subroutine: ", name, " has failed!"
-       print *, "info: ", info
+
+    if (info .ne. 0) then
+       write(errunit,*) "call to subroutine: ", name, " has failed!"
+       write(errunit,*) "info: ", info
        error stop
     end if
-    
+
   end subroutine check_lapack_call
-  
+
 end module lapack_wrapper
