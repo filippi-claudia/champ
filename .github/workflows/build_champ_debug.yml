@@ -81,23 +81,22 @@ jobs:
     - name: Compile the CHAMP code with INTEL
       if: matrix.toolchain == 'intel'
       run: |
-        source /software/intel/oneapi/setvars.sh
-        module load hdf5/1.12.1-intel
-        module load trexio/2.0.0-intel
+        module load compiler-rt/latest compiler/latest icc/latest mkl/latest mpi/latest python3/latest tbb/latest
+        module load hdf5/1.12.1-intel trexio/2.0.0-intel
         which mpiifort
-        MPIRUN=`which mpirun`
-        echo "mpirun used is " $MPIRUN
         /software/cmake-3.22.1/bin/cmake --version
-        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_BUILD_TYPE=DEBUG
+        /software/cmake-3.22.1/bin/cmake -H. -Bbuild \
+        -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_BUILD_TYPE=DEBUG \
+        -DCMAKE_C_COMPILER=mpiicc
         /software/cmake-3.22.1/bin/cmake --build build -- -j2
 
     - name: Compile with GNU
       if: matrix.toolchain == 'gnu'
       run: |
+        module load compiler-rt/latest compiler/latest mpi/latest 
         which mpif90
-        MPIRUN=`which mpirun`
-        echo "mpirun used is " $MPIRUN
-        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=DEBUG
+        /software/cmake-3.22.1/bin/cmake -H. -Bbuild \
+        -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=DEBUG
         /software/cmake-3.22.1/bin/cmake --build build -- -j2
 
     - name: "Run all short tests"
@@ -109,6 +108,7 @@ jobs:
     - name: "Run tests with tag: ${{ github.event.inputs.tags }}"
       if: github.event_name == 'workflow_dispatch'
       run: |
+        module load compiler-rt/latest compiler/latest icc/latest mkl/latest mpi/latest python3/latest tbb/latest
         cd build
         ctest -V -L ${{ github.event.inputs.tags }}
 
