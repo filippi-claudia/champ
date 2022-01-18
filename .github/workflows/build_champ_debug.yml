@@ -15,7 +15,6 @@ jobs:
       matrix:
         toolchain: ['intel','gnu']
       fail-fast: false
-    timeout-minutes: 60
     defaults:
       run:
         shell: bash --noprofile --norc {0}
