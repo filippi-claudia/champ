@@ -16,7 +16,7 @@ jobs:
     name: Buid Champ and run tests with ${{ matrix.toolchain }} in DEBUG mode
     runs-on: self-hosted
     timeout-minutes: 200
-    strategy: 
+    strategy:
       matrix:
         toolchain: ['intel','gnu']
       fail-fast: false
@@ -93,7 +93,7 @@ jobs:
     - name: Compile with GNU
       if: matrix.toolchain == 'gnu'
       run: |
-        module load compiler-rt/latest compiler/latest mpi/latest 
+        module load compiler-rt/latest compiler/latest mpi/latest
         which mpif90
         /software/cmake-3.22.1/bin/cmake -H. -Bbuild \
         -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=DEBUG
@@ -103,7 +103,7 @@ jobs:
       if: github.event_name != 'workflow_dispatch'
       run: |
         cd build
-        ctest --output-on-failure -L short
+        ctest --output-on-failure -L VMC-H2
 
     - name: "Run tests with tag: ${{ github.event.inputs.tags }}"
       if: github.event_name == 'workflow_dispatch'
