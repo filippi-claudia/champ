@@ -37,6 +37,9 @@ build
 *.out
 slurm*
 *.iter*
+*.err
+error
+det_optimal.*
 
 # emacs
 *~
