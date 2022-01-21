@@ -23,7 +23,8 @@ c routine to accumulate estimators for energy etc.
       implicit none
 
       integer :: ifr, ipmod, nfpro
-      real(dp) :: wgdsum1, eisum
+      real(dp) :: wgdsum1
+      real(dp) :: eisum = 0.0_dp  !eisum was uninit causing issue on line 64 (check with claudia)
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
