@@ -14,6 +14,9 @@
  ____________________________________________________________________
 ```
 ------
+![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.png?raw=true | width=200)
+
+
 [![Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ_intel_fdfparser.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ_intel_fdfparser.yml)
 
 [![CI using Doxygen generated doc](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml)
@@ -76,6 +79,15 @@ CHAMP relies on various other program packages:
 4. MOLCAS_Interface: recently added thanks to Csaba Daday and Monika Dash
 
 ------------------------------------------------------------------------
+
+### Requirements
+1. cmake >= 3.21
+2. gfortran/gcc >= 9.3.0 or Intel Fortran 2020 onwards
+3. BLAS/LAPACK or Intel MKL
+4. openMPI >= 3.0 or Intel MPI
+5. [Optional] TREXIO library >= 2.0.0
+6. [Optional] doxygen (for documentation)
+
 
 ### Installation Using CMake
 To install **Champ** using [cmake](https://cmake.org/) you need to run the following commands:
