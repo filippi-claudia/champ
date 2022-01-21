@@ -581,8 +581,14 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
      &    wt(iw),enew-etrial,eold(iw,ifr)-etrial,(xnew(ii),ii=1,3)
 
           eold(iw,ifr)=enew
-          peo_dmc(iw,ifr)=pen
-          d2o(iw,ifr)=d2n
+          ! peo_dmc(iw,ifr)=pen <= pen is undefined, could be den mispelled ?
+          if(icut_e .ne. 0) then  ! <= check that with claudia
+            peo_dmc(iw,ifr)=den
+          else
+            peo_dmc(iw,ifr)=0.0_dp
+          end if
+          ! d2o(iw,ifr)=d2n <= dn2 is not initialized I don't think it' s mispelled
+          d2o(iw,ifr)=0.0_dp ! I set it to 0 but we must check with Claudia
           psido_dmc(iw,ifr)=psidn
           psijo_dmc(iw,ifr)=psijn
           fratio(iw,ifr)=fration
