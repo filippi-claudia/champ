@@ -28,7 +28,8 @@ c routine to accumulate estimators for energy etc.
       real(dp) :: wgdsum1, ecollect
       real(dp), dimension(MFORCE) :: egcollect
       real(dp), dimension(MFORCE) :: wgcollect
-      real(dp) :: wcollect, efcollect, wfcollect, taublock, eisum, accavn
+      real(dp) :: wcollect, efcollect, wfcollect, taublock, accavn
+      real(dp) :: eisum = 0.0_dp !eisum was uninit causing issue on line 96 (check with claudia)
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
