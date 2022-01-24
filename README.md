@@ -14,7 +14,7 @@
  ____________________________________________________________________
 ```
 ------
-![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.png?raw=true | width=200)
+![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.png?raw=true)
 
 
 [![Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ_intel_fdfparser.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ_intel_fdfparser.yml)
